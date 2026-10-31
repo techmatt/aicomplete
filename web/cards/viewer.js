@@ -7,12 +7,39 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const FLAGS = ['ok', 'too cheap', 'too dear', 'rework', 'unclear text'];
 const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];
-const LABEL = { ai: 'AI board' };
+const LABEL = { ai: 'AI board', noted: 'has a note', unnoted: 'no note', changed: 'changed since note' };
 const label = (k) => LABEL[k] ?? k;
+
+// The grid's sizes in CSS px, for fitting two rows: a printed card's 88 mm at zoom 1, the
+// stat line under it, and main's top padding and row gap (viewer.css).
+const CARD_HEIGHT = (88 * 96) / 25.4;
+const STAT_LINE = 20;
+const ABOVE_ROWS = 12;
+const ROW_GAP = 14;
+const ROWS = 2;
+const SIZE_KEY = 'aic-cards-size';
+const FILTERS_KEY = 'aic-cards-filters-hidden';
 
 let data = null;
 let layout = null;
-const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), sort: 'kind', desc: false, shown: [], open: null };
+const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), keywords: new Set(), reviews: new Set(), sort: 'kind', desc: false, shown: [], open: null };
+
+// Storage can be refused (private windows, a locked-down profile): the page works without it.
+const stored = (key) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+const store = (key, value) => {
+  try {
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
+  } catch {
+    // Remembered for this page only.
+  }
+};
 
 function load(next) {
   data = next;
@@ -28,6 +55,7 @@ async function call(path, body) {
 
 const status = (msg, bad = false) => {
   $('status').textContent = msg;
+  $('status').title = msg;
   $('status').className = bad ? 'bad' : '';
 };
 
@@ -36,6 +64,13 @@ const status = (msg, bad = false) => {
 const noteOf = (c) => data.notes[c.id];
 const isChanged = (c) => noteOf(c) && noteOf(c).hash !== c.hash;
 const isNew = (c) => !data.seen[c.id] && !noteOf(c);
+const REVIEW = {
+  noted: (c) => !!noteOf(c),
+  unnoted: (c) => !noteOf(c),
+  changed: isChanged,
+  new: isNew,
+  ...Object.fromEntries(FLAGS.map((f) => [f, (c) => noteOf(c)?.flag === f])),
+};
 
 function badges(c) {
   const n = noteOf(c);
@@ -98,18 +133,11 @@ function matches(c) {
   const lo = $('cost-min').value;
   const hi = $('cost-max').value;
   if ((lo !== '' || hi !== '') && (c.cost == null || (lo !== '' && c.cost < +lo) || (hi !== '' && c.cost > +hi))) return false;
-  const k = $('keyword').value;
-  if (k && !c.keywords.includes(k)) return false;
-  const r = $('review').value;
-  const n = noteOf(c);
-  if (r === 'noted' && !n) return false;
-  if (r === 'unnoted' && n) return false;
-  if (r === 'changed' && !isChanged(c)) return false;
-  if (r === 'new' && !isNew(c)) return false;
-  if (FLAGS.includes(r) && n?.flag !== r) return false;
+  if (ui.keywords.size && !c.keywords.some((k) => ui.keywords.has(k))) return false;
+  if (ui.reviews.size && ![...ui.reviews].some((r) => REVIEW[r](c))) return false;
   const q = $('search').value.trim().toLowerCase();
   if (q) {
-    const hay = [c.name, c.id, c.text, c.kind, c.tags.join(' '), c.keywords.join(' '), n?.comment, ...c.sections.map((s) => `${s.head} ${s.text}`)].join(' ').toLowerCase();
+    const hay = [c.name, c.id, c.text, c.kind, c.tags.join(' '), c.keywords.join(' '), noteOf(c)?.comment, ...c.sections.map((s) => `${s.head} ${s.text}`)].join(' ').toLowerCase();
     if (!q.split(/\s+/).every((w) => hay.includes(w))) return false;
   }
   return true;
@@ -162,17 +190,51 @@ function table(list) {
     .join('')}</tbody></table>`;
 }
 
+/** The size that fits two rows and their stat lines under the header, on the slider's steps. */
+function fittedSize() {
+  const z = $('zoom');
+  const room = window.innerHeight - $('header').offsetHeight - ABOVE_ROWS - ROW_GAP - ROWS * STAT_LINE;
+  const fit = Math.floor((room / (ROWS * CARD_HEIGHT)) * 20) / 20;
+  return Math.min(Number(z.max), Math.max(Number(z.min), fit));
+}
+
+/** A size the slider chose stands, here and on the next visit; otherwise the size follows the window. */
+function applySize() {
+  const chosen = Number(stored(SIZE_KEY));
+  const z = $('zoom');
+  const own = chosen >= Number(z.min) && chosen <= Number(z.max);
+  z.value = own ? chosen : fittedSize();
+  $('fit').hidden = !own;
+  document.documentElement.style.setProperty('--zoom', z.value);
+}
+
 function render() {
   const list = sorted(data.cards.filter(matches));
   ui.shown = list.map((c) => c.id);
   $('count').textContent = `${list.length} of ${data.cards.length}`;
   $('dir').textContent = ui.desc ? '↓' : '↑';
-  document.documentElement.style.setProperty('--zoom', $('zoom').value);
   $('zoom-box').hidden = $('view').value !== 'grid';
+  reviewChips();
+  filterBar();
   ($('view').value === 'grid' ? grid : table)(list);
+  applySize();
+}
+
+/** The collapsed bar still says how many filters are on. */
+function filterBar() {
+  const on = ui.kinds.size + ui.tags.size + ui.tiers.size + ui.keywords.size + ui.reviews.size + ($('cost-min').value !== '' || $('cost-max').value !== '' ? 1 : 0);
+  const hidden = $('filters').hidden;
+  $('filters-toggle').textContent = `${hidden ? '▸' : '▾'} Filters${on ? ` (${on})` : ''}`;
+  $('filters-toggle').setAttribute('aria-expanded', String(!hidden));
+}
+
+// Its counts move with every note, so it is drawn with the cards, not with the controls.
+function reviewChips() {
+  chips($('reviews'), Object.keys(REVIEW), ui.reviews, (v) => data.cards.filter(REVIEW[v]).length);
 }
 
 function chips(el, values, set, count) {
+  for (const v of set) if (!values.includes(v)) set.delete(v);
   el.innerHTML = values.map((v) => `<button class="chip ${set.has(v) ? 'on' : ''}" data-v="${esc(v)}">${esc(label(v))} <small>${count(v)}</small></button>`).join('');
 }
 
@@ -192,8 +254,7 @@ function controls() {
   const tiers = [...new Set(data.cards.map((c) => c.tierLabel))].filter((t) => /^(Unique|Tier|Stage)/.test(t)).sort();
   chips($('tiers'), tiers, ui.tiers, (v) => of((c) => c.tierLabel === v));
   const keywords = [...new Set(data.cards.flatMap((c) => c.keywords))].sort();
-  setSelect($('keyword'), [['', 'any'], ...keywords.map((k) => [k, k])]);
-  setSelect($('review'), [['', 'any'], ['noted', 'has a note'], ['unnoted', 'no note'], ['changed', 'changed since note'], ['new', 'new'], ...FLAGS.map((f) => [f, `flag: ${f}`])]);
+  chips($('keywords'), keywords, ui.keywords, (v) => of((c) => c.keywords.includes(v)));
   setSelect($('sort'), [['kind', 'Kind'], ['cost', 'Cost'], ['tier', 'Tier'], ['name', 'Name'], ...data.stats.columns.map((c) => [c.key, c.label])]);
   $('sort').value = [...$('sort').options].some((o) => o.value === ui.sort) ? ui.sort : 'kind';
   ui.sort = $('sort').value;
@@ -349,8 +410,26 @@ function wire() {
   $('kinds').onclick = (e) => toggleChip(e, ui.kinds);
   $('tags').onclick = (e) => toggleChip(e, ui.tags);
   $('tiers').onclick = (e) => toggleChip(e, ui.tiers);
-  for (const id of ['search', 'cost-min', 'cost-max', 'zoom']) $(id).oninput = render;
-  for (const id of ['keyword', 'review', 'view', 'agent']) $(id).onchange = render;
+  $('keywords').onclick = (e) => toggleChip(e, ui.keywords);
+  $('reviews').onclick = (e) => toggleChip(e, ui.reviews);
+  for (const id of ['search', 'cost-min', 'cost-max']) $(id).oninput = render;
+  for (const id of ['view', 'agent']) $(id).onchange = render;
+  $('zoom').oninput = () => {
+    store(SIZE_KEY, $('zoom').value);
+    applySize();
+  };
+  $('fit').onclick = () => {
+    store(SIZE_KEY, null);
+    applySize();
+  };
+  $('filters').hidden = stored(FILTERS_KEY) === '1';
+  $('filters-toggle').onclick = () => {
+    $('filters').hidden = !$('filters').hidden;
+    store(FILTERS_KEY, $('filters').hidden ? '1' : null);
+    filterBar();
+  };
+  new ResizeObserver(applySize).observe($('header'));
+  window.addEventListener('resize', applySize);
   $('sort').onchange = () => {
     ui.sort = $('sort').value;
     render();
@@ -360,8 +439,8 @@ function wire() {
     render();
   };
   $('clear').onclick = () => {
-    for (const s of [ui.kinds, ui.tags, ui.tiers]) s.clear();
-    for (const id of ['search', 'cost-min', 'cost-max', 'keyword', 'review']) $(id).value = '';
+    for (const s of [ui.kinds, ui.tags, ui.tiers, ui.keywords, ui.reviews]) s.clear();
+    for (const id of ['search', 'cost-min', 'cost-max']) $(id).value = '';
     controls();
     render();
   };

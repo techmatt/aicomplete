@@ -7,18 +7,24 @@ header { position: sticky; top: 0; z-index: 5; background: var(--panel); border-
 h1 { font-size: 17px; margin: 0; }
 .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 3px 0; }
 .bar label { color: var(--dim); display: inline-flex; align-items: center; gap: 4px; }
+#zoom-box { display: inline-flex; align-items: center; gap: 6px; }
+#count { white-space: nowrap; }
 input, select, button, textarea { background: #15171a; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 3px 7px; font: inherit; }
 button { cursor: pointer; }
 button:hover { border-color: #5d6675; }
 button:disabled { opacity: .5; cursor: default; }
 #search { width: 240px; }
-#cost-min, #cost-max { width: 58px; }
-#status { color: var(--dim); }
+#cost-min, #cost-max { width: 58px; padding: 0 5px; font-size: 13px; }
+#status { color: var(--dim); flex: 1 1 160px; min-width: 0; text-align: right; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#status.bad { white-space: normal; }
 #status.bad, #notice { color: var(--warn); }
-#notice { font-size: 13px; }
+#notice { font-size: 12px; }
 #notice div { padding: 1px 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 4px 22px; padding: 2px 0 3px; border-top: 1px solid var(--line); }
+.group { min-width: 0; }
+.group-label { font-size: 10px; line-height: 15px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+.range { color: var(--dim); white-space: nowrap; }
 .chips { display: flex; flex-wrap: wrap; gap: 3px; }
-.chips + .chips { border-left: 1px solid var(--line); padding-left: 10px; }
 .chip { padding: 1px 8px; border-radius: 11px; font-size: 13px; text-transform: capitalize; }
 .chip small { color: var(--dim); }
 .chip.on { background: var(--on); border-color: var(--on); }

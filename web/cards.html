@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="cards/viewer.css">
 </head>
 <body>
-  <header>
+  <header id="header">
     <div class="bar">
       <h1>Cards</h1>
       <span id="count"></span>
@@ -15,20 +15,21 @@
       <label>Sort <select id="sort"></select></label>
       <button id="dir" title="Reverse the sort">↑</button>
       <label>View <select id="view"><option value="grid">Cards</option><option value="table">Table</option></select></label>
-      <label id="zoom-box">Size <input id="zoom" type="range" min="0.4" max="1.2" step="0.05" value="0.6"></label>
+      <span id="zoom-box"><label>Size <input id="zoom" type="range" min="0.4" max="1.6" step="0.05" value="0.6"></label><button id="fit" title="Back to two rows per screen" hidden>Fit</button></span>
       <label id="agent-box">Stats <select id="agent"></select></label>
+      <button id="filters-toggle" aria-controls="filters" title="Show or hide the filter groups">Filters</button>
+      <button id="clear">Clear filters</button>
       <button id="seen-all" title="Clear every new badge">Mark all seen</button>
       <button id="rebuild" title="Export again from this checkout">Rebuild</button>
       <span id="status"></span>
     </div>
-    <div class="bar filters">
-      <div class="chips" id="kinds"></div>
-      <div class="chips" id="tags"></div>
-      <div class="chips" id="tiers"></div>
-      <label>Cost <input id="cost-min" type="number" min="0" placeholder="min"> – <input id="cost-max" type="number" min="0" placeholder="max"></label>
-      <label>Keyword <select id="keyword"></select></label>
-      <label>Review <select id="review"></select></label>
-      <button id="clear">Clear filters</button>
+    <div class="filters" id="filters">
+      <div class="group"><div class="group-label">Kind</div><div class="chips" id="kinds"></div></div>
+      <div class="group"><div class="group-label">Tag</div><div class="chips" id="tags"></div></div>
+      <div class="group"><div class="group-label">Stage / Tier</div><div class="chips" id="tiers"></div></div>
+      <div class="group"><div class="group-label">Cost</div><div class="range"><input id="cost-min" type="number" min="0" placeholder="min" aria-label="Lowest cost"> – <input id="cost-max" type="number" min="0" placeholder="max" aria-label="Highest cost"></div></div>
+      <div class="group"><div class="group-label">Keyword</div><div class="chips" id="keywords"></div></div>
+      <div class="group"><div class="group-label">Review</div><div class="chips" id="reviews"></div></div>
     </div>
     <div id="notice"></div>
   </header>
