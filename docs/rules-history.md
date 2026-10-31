@@ -33,6 +33,10 @@ instead of 2 (82 / 68: all three clocks live, c2 out of the band); those with `e
 46); with `escalation_ambassadors` 2 (83 / 54); with `project_discord_per` 1 (75 / 71); that last on
 its own (70 / 62, 56 seeds: inside the band, and the first number to try if more push is wanted).
 
+Agents, no rules change, 054: the planner's lines average over 4 sampled Unity deals, an alternative
+must lead by `lead` 60, and rollouts keep `prune` 12 actions (6 crippled them). r23's band was read on
+the old planner: see `experiments/results/screen-054-deals/deals.md`.
+
 Agents, no rules change: D20, which Alignment cards a game dealt is hidden from every agent, the
 planner's lines included (`hide_alignment_deal`). The `abandon` check. Stats, no rules change: Discord
 Sway is tallied by source (`alignment.discord_from.*`). 052's clamp on `niche_jobs` is what this item

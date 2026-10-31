@@ -6,11 +6,20 @@
 //! plays on the real state, decks and dice included, so a line is exactly the
 //! game that would follow. It is not a model of a table; it is a stronger
 //! judge of the rules than a one-step agent. The one exception is D20: which
-//! Alignment cards were dealt is a guess held for the line, so a line is
-//! dropped at the next real tip: it may have seen another card. Each decision
-//! inside a line is
+//! Alignment cards were dealt is never read. Each decision inside a line is
 //! still the engine's own, scored on a guess: scored on the open decks the
 //! one-step heuristic won 19% against the guessing engine's 59% (c2 d2).
+//!
+//! **Sampled deals (054).** A line's value is averaged over `deals` guesses of
+//! the deal, the same guesses for every line. Up to its first tip a line plays
+//! the same on all of them, since nothing else reads the cards, so it is
+//! played once and forks at that tip; one way it goes on the first guess is
+//! the line followed, and it is dropped at the next real tip: the table has
+//! seen a card and the guesses another. An alternative must lead the line to
+//! beat by over `lead`, on the first guess and then on the mean: a guessed
+//! line is a noisy read, and the best of several noisy reads is mostly luck.
+//! Only one past the first test plays the other guesses, so a line
+//! unchallenged plays one.
 //!
 //! **Speed.** Because the game is deterministic from a state, the line chosen
 //! at one decision is still valid at the next: the engine's own continuation
@@ -63,20 +72,40 @@ pub struct PlannerCfg {
     pub samples: usize,
     /// Actions each seat keeps through a phase of a rollout ([`Greedy`]).
     pub prune: usize,
+    /// Guesses of the Alignment deal a line's value is averaged over.
+    pub deals: usize,
+    /// What an alternative must lead the line to beat by.
+    pub lead: f64,
 }
+
+/// The table before a line's first tip, and the move that makes the tip.
+type Fork = (GameState, Action);
 
 /// A line of play: the actions from `cursor` on, and where they end.
 struct Line {
+    /// As played on the first deal: the same on all of them up to the first tip.
     actions: Vec<Action>,
     next: usize,
     /// The table the next action is played on.
     cursor: GameState,
-    end: GameState,
-    value: f64,
-    /// `end` is the first decision of this round, or the end of the game.
+    /// Where each deal ends: the first deal's alone until the line forks.
+    ends: Vec<GameState>,
+    /// Each end's value.
+    values: Vec<f64>,
+    /// The line's first tip, while the other deals are to play it.
+    fork: Option<Fork>,
+    /// Every end is the first decision of this round, or the end of the game.
     stop: u32,
     /// Tips made when the line was built (D20): its later cards are a guess.
     tips: i64,
+}
+
+impl Line {
+    /// The line's value: the mean over the deals it has played. Before its
+    /// first tip one deal stands for all.
+    fn value(&self) -> f64 {
+        self.values.iter().sum::<f64>() / self.values.len() as f64
+    }
 }
 
 pub struct Planner {
@@ -128,9 +157,18 @@ impl Planner {
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round
-    /// `stop` or the end of the game, adding its moves to `actions`.
-    fn play_on(&self, rules: &Rules, g: &mut GameState, stop: u32, actions: &mut Vec<Action>) {
+    /// `stop` or the end of the game, adding its moves to `actions`. With
+    /// `watch` tips made so far, gives back the next tip.
+    fn play_on(
+        &self,
+        rules: &Rules,
+        g: &mut GameState,
+        stop: u32,
+        actions: &mut Vec<Action>,
+        mut watch: Option<i64>,
+    ) -> Option<Fork> {
         let mut agent = self.policy(g);
+        let mut fork = None;
         let mut legal = Vec::new();
         while !g.is_over() && g.round < stop {
             rules.legal_actions_into(g, &mut legal);
@@ -138,33 +176,69 @@ impl Planner {
                 break;
             }
             let i = if legal.len() == 1 { 0 } else { agent.choose(rules, g, &legal) };
+            let before = watch.map(|_| g.clone());
             if prof::time(Part::ApplyMut, || rules.apply_mut(g, &legal[i], None)).is_err() {
                 break;
             }
             actions.push(legal[i].clone());
+            if watch.is_some_and(|t| t != tips(g)) {
+                fork = before.map(|b| (b, legal[i].clone()));
+                watch = None;
+            }
         }
+        fork
     }
 
-    /// The line from `state` opening with `first`, or the engine's own.
+    /// The tip count `play_on` should watch on a line that has not forked.
+    fn watch(&self, line_tips: i64) -> Option<i64> {
+        (self.cfg.deals > 1).then_some(line_tips)
+    }
+
+    /// The first deal of the line from `state` opening with `first`, or the
+    /// engine's own.
     fn line_from(&self, rules: &Rules, state: &GameState, first: Option<&Action>, stop: u32) -> Option<Line> {
         prof::time(Part::Line, || {
             let mut end = state.clone();
-            hide_alignment_deal(rules, &mut end, state.seed);
+            hide_alignment_deal(rules, &mut end, state.seed, 0);
             let mut actions = Vec::new();
+            let made = tips(state);
+            let mut fork = None;
             if let Some(a) = first {
+                let before = self.watch(made).map(|_| end.clone());
                 rules.apply_mut(&mut end, a, None).ok()?;
                 actions.push(a.clone());
+                if tips(&end) != made {
+                    fork = before.map(|b| (b, a.clone()));
+                }
             }
-            self.play_on(rules, &mut end, stop, &mut actions);
+            let watch = if fork.is_none() { self.watch(made) } else { None };
+            fork = fork.or(self.play_on(rules, &mut end, stop, &mut actions, watch));
             Some(Line {
                 actions,
                 next: 0,
                 cursor: state.clone(),
-                value: self.ev.value(rules, &end),
-                end,
+                values: vec![self.ev.value(rules, &end)],
+                ends: vec![end],
+                fork,
                 stop,
-                tips: tips(state),
+                tips: made,
             })
+        })
+    }
+
+    /// Plays the line's other deals from its fork, if it has reached one.
+    fn other_deals(&self, rules: &Rules, line: &mut Line) {
+        let Some((table, tipping)) = line.fork.take() else { return };
+        prof::time(Part::Line, || {
+            for sample in 1..self.cfg.deals {
+                let mut end = table.clone();
+                hide_alignment_deal(rules, &mut end, table.seed, sample);
+                if rules.apply_mut(&mut end, &tipping, None).is_ok() {
+                    self.play_on(rules, &mut end, line.stop, &mut Vec::new(), None);
+                }
+                line.values.push(self.ev.value(rules, &end));
+                line.ends.push(end);
+            }
         })
     }
 
@@ -200,13 +274,35 @@ impl Planner {
             return self.line_from(rules, state, None, stop).expect("only an opening move can be refused");
         };
         if l.stop < stop {
-            let mut end = std::mem::replace(&mut l.end, state.clone());
-            self.play_on(rules, &mut end, stop, &mut l.actions);
-            l.value = self.ev.value(rules, &end);
-            l.end = end;
+            // Only one that has not forked can fork now.
+            let watch = if l.ends.len() == 1 && l.fork.is_none() { self.watch(l.tips) } else { None };
+            let mut unused = Vec::new();
+            for (k, end) in l.ends.iter_mut().enumerate() {
+                let actions = if k == 0 { &mut l.actions } else { &mut unused };
+                if let Some(f) = self.play_on(rules, end, stop, actions, watch) {
+                    l.fork = Some(f);
+                }
+                l.values[k] = self.ev.value(rules, end);
+            }
             l.stop = stop;
         }
         l
+    }
+
+    /// `alt` if it leads `best` by over `lead` on the first deal and then on
+    /// the mean. Neither plays its other deals before the first test.
+    fn better(&self, rules: &Rules, mut alt: Line, mut best: Line) -> Line {
+        let bar = self.cfg.lead + 1e-9;
+        if alt.values[0] <= best.values[0] + bar {
+            return best;
+        }
+        self.other_deals(rules, &mut alt);
+        self.other_deals(rules, &mut best);
+        if alt.value() > best.value() + bar {
+            alt
+        } else {
+            best
+        }
     }
 }
 
@@ -251,9 +347,7 @@ impl Agent for Planner {
                 tried += 1;
                 self.spent.1 += 1;
                 if let Some(l) = self.line_from(rules, state, Some(&legal[i]), stop) {
-                    if l.value > best.value + 1e-9 {
-                        best = l;
-                    }
+                    best = self.better(rules, l, best);
                 }
             }
         }

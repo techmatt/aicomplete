@@ -1,0 +1,13 @@
+{
+  "name": "gate-close-054",
+  "note": "054: the checks gate-exploit left level or ahead at --seed 6000, under the engine, 48 paired seeds, no early stop.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine", "engine:tier2_rush=1", "engine:always_consolidate=1", "engine:no_powers=1", "engine:science_board=1", "engine:never_tag=1", "engine:never_tag=2"],
+  "games": 48,
+  "records": 0
+}

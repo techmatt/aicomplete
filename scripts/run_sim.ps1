@@ -6,7 +6,7 @@ Builds aic-sim and starts one run the safe way on this box.
 Builds release, stops if the build failed (a failed build leaves the old exe in place),
 copies the exe to out/<Name>.exe so later builds can't touch it or be blocked by it, and
 starts the run at below-normal priority, detached, with stdout and stderr in
-out/<Name>.out and out/<Name>.err. Prints the pid and returns. out/<Name>.exit appears
+out/<Name>.out and out/<Name>.err, both written as the run goes. Prints the pid and returns. out/<Name>.exit appears
 when the run ends, holding its exit code: wait on that.
 
 .EXAMPLE
@@ -36,9 +36,12 @@ Remove-Item "out/$Name.exit" -ErrorAction SilentlyContinue
 
 # The wrapper is what stays below normal and writes the exit marker: the sim inherits its
 # priority, and the marker can't be missed by whoever waits, whatever way the sim ends.
-$quoted = ($SimArgs | ForEach-Object { "'" + ($_ -replace "'", "''") + "'" }) -join ' '
-$script = "& './$exe' $quoted > 'out/$Name.out' 2> 'out/$Name.err'; " +
-          "Set-Content 'out/$Name.exit' `$LASTEXITCODE"
+# Start-Process hands the sim the files themselves: `2>` in the wrapper would hold its
+# stderr back until it exits, and a wait on `panicked` must fire mid-run.
+$list = ($SimArgs | ForEach-Object { '"' + ($_ -replace "'", "''") + '"' }) -join ' '
+$script = "`$p = Start-Process -FilePath './$exe' -ArgumentList '$list' -NoNewWindow -PassThru " +
+          "-RedirectStandardOutput 'out/$Name.out' -RedirectStandardError 'out/$Name.err'; " +
+          "`$null = `$p.Handle; `$p.WaitForExit(); Set-Content 'out/$Name.exit' `$p.ExitCode"
 $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
 $p = Start-Process pwsh -ArgumentList '-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded -WindowStyle Hidden -PassThru
 $p.PriorityClass = 'BelowNormal'

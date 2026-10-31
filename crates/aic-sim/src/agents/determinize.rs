@@ -57,7 +57,11 @@ const DEALT: [(Side, u8, &str); 4] = [
 /// Deals each Alignment pile again from the printed cards of its tier not
 /// yet resolved, at the pile's size (D20): which cards were dealt is face
 /// down. A pile with no such cards to fill it (only a test's) stays.
-fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
+///
+/// `turn` rotates each shuffled pool, so deals 0, 1, 2... of one `rng` seed
+/// open on different cards while each alone is a uniform deal: a sample of
+/// deals covers the next card, the one a line feels first (054).
+fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng, turn: usize) {
     let w = rules.world();
     for (side, tier, key) in DEALT {
         let n = g.pile(key).len();
@@ -74,6 +78,8 @@ fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
             .collect();
         pool.shuffle(rng);
         if pool.len() >= n {
+            let turn = turn % pool.len();
+            pool.rotate_left(turn);
             pool.truncate(n);
             g.piles.insert(key.into(), Arc::new(pool));
         }
@@ -81,12 +87,12 @@ fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
 }
 
 /// The planner's lines (D20): the table as it is, decks and dice included,
-/// except for which Alignment cards were dealt, a guess fixed by `seed` so a
-/// line repeats. A pending choice's snapshot gets the same piles, under what
-/// its step drew, as in [`guess`].
-pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64) {
+/// except for which Alignment cards were dealt, the `sample`th guess fixed by
+/// `seed` so a line repeats. A pending choice's snapshot gets the same piles,
+/// under what its step drew, as in [`guess`].
+pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: usize) {
     let original = g.pending.is_some().then(|| g.clone());
-    redeal_alignment(rules, g, &mut ChaCha8Rng::seed_from_u64(seed));
+    redeal_alignment(rules, g, &mut ChaCha8Rng::seed_from_u64(seed), sample);
     let guessed = DEALT.map(|(_, _, key)| g.pile(key).to_vec());
     let (Some(p), Some(original)) = (g.pending.as_mut().map(Arc::make_mut), &original) else {
         return;
@@ -119,7 +125,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
             pile.shuffle(rng);
         }
     }
-    redeal_alignment(rules, g, rng);
+    redeal_alignment(rules, g, rng, 0);
     resample_adversary_deck(rules, g, rng);
     shuffle_project_stages(rules, g, rng);
     let seeds: Vec<(Key, u64)> = g.rng.keys().map(|k| (*k, rng.next_u64())).collect();
@@ -379,9 +385,34 @@ mod tests {
         deal[0] = outside.clone();
         other.piles.insert(key.into(), Arc::new(deal));
         let (mut ga, mut gb) = (g.clone(), other);
-        hide_alignment_deal(&r, &mut ga, 7);
-        hide_alignment_deal(&r, &mut gb, 7);
+        hide_alignment_deal(&r, &mut ga, 7, 0);
+        hide_alignment_deal(&r, &mut gb, 7, 0);
         assert_eq!(ga.pile(key), gb.pile(key));
+    }
+
+    /// 054: a planner's samples are all blind to the deal, and open on
+    /// different cards while the printed cards last.
+    #[test]
+    fn sampled_deals_are_blind_and_open_differently() {
+        let r = rules(0);
+        let w = r.world();
+        let key = "alignment.deck.unity.1";
+        let g = r.new_game(3);
+        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier == 1).count();
+        let mut other = g.clone();
+        Arc::make_mut(other.piles.get_mut(key).unwrap()).reverse();
+        let deals = 4.min(printed);
+        let mut tops = Vec::new();
+        for sample in 0..deals {
+            let (mut a, mut b) = (g.clone(), other.clone());
+            hide_alignment_deal(&r, &mut a, 7, sample);
+            hide_alignment_deal(&r, &mut b, 7, sample);
+            assert_eq!(a.pile(key), b.pile(key), "sample {sample} read the table's deal");
+            tops.push(a.pile(key)[0].clone());
+        }
+        tops.sort();
+        tops.dedup();
+        assert_eq!(tops.len(), deals);
     }
 
     /// In the middle of a resolution (a pending choice), answering on the

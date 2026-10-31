@@ -37,7 +37,8 @@
 //!
 //! - `planner` (028): the engine, trying a shortlist of alternatives in the
 //!   action phase by rolling each out `horizon` rounds with the engine as
-//!   the policy, on full information but for the Alignment deal ([`planner`]).
+//!   the policy, on full information but for the Alignment deal, whose guesses
+//!   it averages ([`planner`]).
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, and applies the dominance checks' forced behaviours.
@@ -248,7 +249,9 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("margin", 40.0, "only actions within this of the engine's best score are tried"),
             ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
             ("samples", 1.0, "guesses of the hidden cards averaged per decision"),
-            ("prune", 6.0, "actions each seat keeps through a phase of a rollout (0: all)"),
+            ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
+            ("deals", 4.0, "guesses of the Alignment deal a line's value is averaged over"),
+            ("lead", 60.0, "what an alternative must lead the line to beat by, on the first deal and on the mean"),
         ],
     ),
 ];
@@ -286,7 +289,7 @@ impl AgentSpec {
                 // (`engine`'s width and candidates 0 mean "no beam" and "no rollouts",
                 // so those two only for beam and rollout.)
                 let at_least_one = (k == "horizon" && kind == "planner")
-                    || ["samples", "depth", "rollouts"].contains(&k)
+                    || ["samples", "depth", "rollouts", "deals"].contains(&k)
                     || (k == "width" && (kind == "beam" || kind == "rollout"))
                     || (k == "candidates" && kind == "rollout");
                 if v < 1.0 && at_least_one {
@@ -516,6 +519,8 @@ impl AgentSpec {
                     choices: self.p("choices"),
                     samples: self.p("samples").max(1),
                     prune: self.p("prune"),
+                    deals: self.p("deals").max(1),
+                    lead: self.params["lead"],
                 },
             )),
             k => unreachable!("agent kind {k} is checked in parse"),
@@ -670,6 +675,35 @@ mod tests {
                 let ib = spec.build(&r, 9).choose(&r, &b, &legal);
                 assert_eq!(ia, ib, "{} seed {seed}", spec.label());
             }
+        }
+    }
+
+    /// D20 with sampled deals (054): two tables that differ only in which
+    /// Unity cards were dealt give the same decision, deep in a line's forks.
+    #[test]
+    fn sampled_deals_ignore_the_true_deal() {
+        let r = rules(2);
+        let key = "alignment.deck.unity.1";
+        let spec = AgentSpec::parse("planner:budget=2,horizon=1,deals=3").unwrap();
+        let mut legal = Vec::new();
+        for seed in 0..2 {
+            let a = r.new_game(seed);
+            let printed: Vec<aic_core::Key> = r
+                .world()
+                .content
+                .alignment
+                .iter()
+                .filter(|c| c.side == aic_core::content::Side::Unity && c.tier == 1)
+                .map(|c| aic_core::Key::new(&c.id))
+                .collect();
+            let other: Vec<aic_core::Key> =
+                printed.iter().filter(|id| !a.pile(key).contains(id)).cloned().collect();
+            let mut b = a.clone();
+            b.piles.insert(key.into(), std::sync::Arc::new(other));
+            r.legal_actions_into(&a, &mut legal);
+            let ia = spec.build(&r, 9).choose(&r, &a, &legal);
+            let ib = spec.build(&r, 9).choose(&r, &b, &legal);
+            assert_eq!(ia, ib, "seed {seed}");
         }
     }
 
