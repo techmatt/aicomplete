@@ -2,9 +2,9 @@
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
 import { inset, renderCard } from '../card/card.js';
+import { esc, plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const FLAGS = ['ok', 'too cheap', 'too dear', 'rework', 'unclear text'];
 const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];
 const LABEL = { ai: 'AI board', noted: 'has a note', unnoted: 'no note', changed: 'changed since note' };
@@ -102,18 +102,7 @@ function printed(c, scene = true) {
   return `<div class="trim">${html.replaceAll('<img ', '<img loading="lazy" decoding="async" ')}</div>`;
 }
 
-function plain(c, scene = true) {
-  const paras = [c.text, ...c.sections.map((s) => [s.head, s.text])]
-    .filter((p) => p && (Array.isArray(p) ? p[1] : true))
-    .map((p) => (Array.isArray(p) ? `<p><b>${esc(p[0])}.</b> ${esc(p[1])}</p>` : `<p>${esc(p)}</p>`));
-  return `<div class="plain tone-${esc(c.kind)}">
-    <div class="strip"><span>${esc(label(c.kind))}</span><span>${esc(c.tierLabel)}</span></div>
-    <h3>${esc(c.name)}</h3>
-    ${scene && c.scene ? `<img loading="lazy" decoding="async" alt="" src="/scene/${esc(c.scene)}.png">` : ''}
-    <div class="body">${paras.join('')}</div>
-    ${c.costLabel ? `<div class="foot">${esc(c.costLabel)}</div>` : ''}
-  </div>`;
-}
+const plain = (c, scene = true) => plainFace(c, label(c.kind), scene && c.scene ? `/scene/${c.scene}.png` : undefined);
 
 function face(c) {
   if (!c.render) return plain(c);

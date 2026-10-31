@@ -1,0 +1,50 @@
+{
+ "name": "card_fonts_r1",
+ "title": "Card fonts, round 1",
+ "intro": "The same eight cards in each pairing, trimmed, at 300 dpi: print a sheet at 300 dpi for true size. Body text stays at the size each card prints today (default 7.5 pt) in every sheet. Below 7.5 pt: how many of the 158 player cards would need a smaller body size in that font, tried on the real text of the whole set; 83 print smaller today, because today's sizing is a character-count estimate. Over the plate: titles wider than their banner on one line. Figures (cost, insight, numbers on icon lines) stay Saira Condensed in every sheet. All serif sets titles at 13.5 pt, not 15: at 15 pt, 16 titles were over the plate. The threat and Discord card have no frame yet, so they show the viewer's plain face.",
+ "rows": [
+  {
+   "id": "favorite",
+   "label": "Your favorite",
+   "kind": "one",
+   "note": "Use the note for what to change, a mix of two pairings included.",
+   "options": [
+    {
+     "key": "current",
+     "image": "../art-originals/picks/card_fonts_r1/current.jpg",
+     "label": "Current: Saira Condensed / Source Serif 4. 70 cards of 158 below 7.5 pt, 2 titles over the plate"
+    },
+    {
+     "key": "all_serif",
+     "image": "../art-originals/picks/card_fonts_r1/all_serif.jpg",
+     "label": "All serif: Source Serif 4 display semibold / Source Serif 4. 70 cards of 158 below 7.5 pt, 7 titles over the plate"
+    },
+    {
+     "key": "sturdy_serif",
+     "image": "../art-originals/picks/card_fonts_r1/sturdy_serif.jpg",
+     "label": "Sturdier serif: Saira Condensed / Source Serif 4 caption optical size. 73 cards of 158 below 7.5 pt, 2 titles over the plate, 1 panel overflowing at today's size"
+    },
+    {
+     "key": "slab",
+     "image": "../art-originals/picks/card_fonts_r1/slab.jpg",
+     "label": "Slab bridge: Saira Condensed / Zilla Slab medium. 61 cards of 158 below 7.5 pt, 2 titles over the plate"
+    },
+    {
+     "key": "barlow_title",
+     "image": "../art-originals/picks/card_fonts_r1/barlow_title.jpg",
+     "label": "Matched condensed title: Barlow Condensed / Source Serif 4. 70 cards of 158 below 7.5 pt, 3 titles over the plate"
+    },
+    {
+     "key": "barlow_body",
+     "image": "../art-originals/picks/card_fonts_r1/barlow_body.jpg",
+     "label": "Sans body, condensed: Saira Condensed / Barlow Semi Condensed medium. 58 cards of 158 below 7.5 pt, 2 titles over the plate"
+    },
+    {
+     "key": "source_sans",
+     "image": "../art-originals/picks/card_fonts_r1/source_sans.jpg",
+     "label": "Sans body: Saira Condensed / Source Sans 3. 60 cards of 158 below 7.5 pt, 2 titles over the plate"
+    }
+   ]
+  }
+ ]
+}

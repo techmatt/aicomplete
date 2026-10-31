@@ -207,7 +207,7 @@ cards -- --port 60476`). If the port is taken it says so and exits.
 ## Card art
 
 The card renderer is `web/card/` (`card.js`, `card.css`, `icons.js`, the generated
-`faces.json`, `layout.json`, `containers/`, bundled `fonts/`): `renderCard(card, layout, frameUrl, fit)`
+`faces.json`, `layout.json`, `containers/`, bundled `fonts/`): `renderCard(card, layout, frameUrl, fit, artUrl, fonts)`
 turns card content into HTML, in mm, so one template serves print and, later, the web
 client. **Cards are composed live, never pre-baked:** composed cards and print sheets go
 to `out/cards/` (git-ignored). Committed: frame templates (`art/frames/`), guides
@@ -269,6 +269,13 @@ browser; `npm ci` first):
 - `npm run picker`: writes `picks/card_frames_r3.json` from `out/cards/`, with its images
   in `art-originals/picks/card_frames_r3/`. Stops if that folder isn't reachable (see
   *Originals*).
+- `npm run fonts` (about 45 s; background it): the card font picker. One sheet of the same eight cards per
+  font choice at 300 dpi, trimmed, in `art-originals/picks/card_fonts_r1/`, with counts over every
+  player card, and `picks/card_fonts_r1.json`. `--measure` prints the counts and writes nothing.
+  A choice is `renderCard`'s `fonts` argument, a block in `web/card/fonts.css`, which only this
+  script loads; left out, cards print in `card.css`'s fonts. The text-size ladder in `card.js`
+  (`SIZES`) estimates from character counts and can't see a font, so the counts try each size
+  on the real text. Threats and Discord have no frame, so they show the viewer's plain face.
 - `npm run guides`: six labelled guides plus unlabelled `-blocks` twins, from
   `layout.json`. The twins are what the image tool sees: labels invite text.
 - `npm run gen -- steel-program-1 … --pool=3`: raw frame draws for a new direction: Codex CLI's `$imagegen` on Matt's ChatGPT Plus login, the wordwarriors route

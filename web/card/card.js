@@ -103,11 +103,13 @@ const effectBox = (cls, box, lines = [], text = '') => {
  * @param fit      optional measured zones of this frame (art/frames/r3/fit.json), in mm:
  *                 cost, banner, top, art, effect, the guide's where absent; plate, a colour
  * @param artUrl   optional scene for the art window, centre-cropped to it
+ * @param fonts    optional font choice, a `.fonts-<name>` block in web/card/fonts.css (which
+ *                 the page must load); left out, card.css's fonts. Sizes don't change with it
  */
-export function renderCard(card, layout, frameUrl, fit = {}, artUrl) {
+export function renderCard(card, layout, frameUrl, fit = {}, artUrl, fonts) {
   const z = { ...layout.common, ...layout.kinds[card.kind], ...fit };
   const reqX = card.insight ? z.insight[2] + 0.5 : z.cost[2] + 2.4;
-  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}" style="--strip:${layout.kind_colour[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
+  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}${fonts ? ` fonts-${esc(fonts)}` : ''}" style="--strip:${layout.kind_colour[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
   <img class="frame" src="${esc(frameUrl)}" alt="">
   ${artUrl ? `<img class="art" src="${esc(artUrl)}" alt="" style="${place(z.art)}">` : ''}
   <div class="content">
