@@ -30,7 +30,8 @@ use aic_core::modules::{adversary, ai, alignment, board, cards, economy, threats
 use aic_core::{GameState, Rules};
 use serde::{Deserialize, Serialize};
 
-use super::{credit_equivalent, INSIGHT_COST};
+use super::policy::list_cost;
+use super::INSIGHT_COST;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Weights {
@@ -137,7 +138,7 @@ pub struct Weights {
     pub antimatter: f64,
     pub insight: f64,
     /// A card in hand: `hand + hand_cost * cost`, cost in credits (see
-    /// [`credit_equivalent`]).
+    /// [`super::credit_equivalent`]).
     pub hand: f64,
     pub hand_cost: f64,
     /// A drafted card not yet kept, as a share of its hand value.
@@ -367,7 +368,14 @@ impl Eval {
     }
 
     fn cost(d: &CardDef) -> f64 {
-        credit_equivalent(d, d.cost).max(0) as f64
+        list_cost(d).max(0) as f64
+    }
+
+    /// A card in hand, before any chance of paying for it. The packet's
+    /// formula stays apart: its keep price sits inside the bracket, and moving
+    /// it changes the last bits of a score and so the order of ties.
+    fn card_value(w: &Weights, d: &CardDef) -> f64 {
+        w.hand + w.hand_cost * Self::cost(d)
     }
 
     /// Adversary cards still to come: the face-up one and the deck.
@@ -733,11 +741,11 @@ impl Eval {
             let mut cards: Vec<f64> = g
                 .pile(&cards::hand(s))
                 .iter()
-                .map(|id| w.hand + w.hand_cost * Self::cost(cards::def(&world, id)))
+                .map(|id| Self::card_value(w, cards::def(&world, id)))
                 .collect();
             let drafted = g.pile(&cards::drafted(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
-                (w.drafted * (w.hand + w.hand_cost * Self::cost(d)), d.tier)
+                (w.drafted * Self::card_value(w, d), d.tier)
             });
             let packet = g.pile(&cards::packet(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
@@ -916,7 +924,7 @@ impl Eval {
                         p = f64::min(p, (1.0 - rounds / (left + 1.0)).max(0.0));
                     }
                 }
-                p * (w.hand + w.hand_cost * Self::cost(d))
+                p * Self::card_value(w, d)
             };
             let mut cards: Vec<f64> = g.pile(&cards::hand(s)).iter().map(|id| play(id)).collect();
             let mut picks = Vec::new();

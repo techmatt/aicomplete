@@ -23,15 +23,37 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import screens as s  # noqa: E402
 from screens import ROUND, avg, cnt, hist, mean  # noqa: E402
 
-CONTENT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'content', 'ais.json')
+CONTENT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'content')
 
 
 @functools.lru_cache(maxsize=None)
+def ais():
+    with open(os.path.join(CONTENT, 'ais.json'), encoding='utf-8') as f:
+        return json.load(f)
+
+
+@functools.lru_cache(maxsize=None)
+def tiers():
+    """Each player card's tier."""
+    with open(os.path.join(CONTENT, 'cards.json'), encoding='utf-8') as f:
+        return {c['id']: c['tier'] for c in json.load(f)}
+
+
 def tokens():
     """Presence tokens on an AI board's two tracks."""
-    with open(CONTENT, encoding='utf-8') as f:
-        ai = json.load(f)[0]
+    ai = ais()[0]
     return len(ai['presence']) + len(ai['presence2'])
+
+
+def growth_key(board, option):
+    return f'ai.growth.{board}.{option}'
+
+
+def growth_keys():
+    """Every board's tally per growth option, by option: boards list their options in the same
+    order (Expand, Develop, Consolidate), a convention of content/ais.json, which nothing checks."""
+    most = max(len(b['growth']) for b in ais())
+    return [[growth_key(b['id'], k) for b in ais() if k < len(b['growth'])] for k in range(most)]
 
 
 def wins(gs):
@@ -105,11 +127,21 @@ def tokens_left(c, gs):
     return f"{avg([tokens() - 1 - cnt(g, 'board.presence_placed') / s.seats(c) for g in gs]):.1f}"
 
 
-@reads(*(f'ai.growth.{b}.{k}' for b in ('builder', 'protector') for k in range(3)))
+@reads(*(k for keys in growth_keys() for k in keys))
 def growth(c, gs):
-    """Share of growth picks by option (Expand, Develop, Consolidate), over both boards."""
-    picks = [sum(cnt(g, f'ai.growth.{b}.{k}') for g in gs for b in ('builder', 'protector')) for k in range(3)]
+    """Share of growth picks by option (Expand, Develop, Consolidate), over every board."""
+    picks = [sum(cnt(g, k) for g in gs for k in keys) for keys in growth_keys()]
     return ' / '.join(f'{100 * n / max(1, sum(picks)):.0f}' for n in picks)
+
+
+def by_tier(field):
+    """A `cards` field of games.jsonl per game, by tier: tier 1 / tier 2. Offered against
+    played says whether a card rework is one the agents ever see."""
+    def f(c, gs):
+        def tier(t):
+            return mean(gs, lambda g: sum(n[field] for k, n in g['cards'].items() if tiers().get(k) == t))
+        return f'{tier(1):.1f} / {tier(2):.1f}'
+    return f
 
 
 @reads('board.presence_placed.r01', 'board.presence_placed.r02')
@@ -182,6 +214,9 @@ COLUMNS = {
     'troop_destroyed': ('destroyed P / S / F', per_game('board.troop_destroyed.presence', 'board.troop_destroyed.station', 'board.troop_destroyed.factory')),
     'kept': ('kept', total('cards.kept.')),
     'played': ('played', total('cards.played.')),
+    'offered_tier': ('offered: tier 1 / 2', by_tier('offered')),
+    'kept_tier': ('kept: tier 1 / 2', by_tier('kept')),
+    'played_tier': ('played: tier 1 / 2', by_tier('played')),
     'tier2_dealt': ('tier-2 dealt', per_game('cards.dealt_tier2')),
     'powers': ('powers / tags', per_game('ai.powers_used', 'ai.tags_sacrificed')),
     'replaced': ('replaced', per_game('cards.replaced')),
@@ -190,6 +225,7 @@ COLUMNS = {
 }
 
 PRESETS = {
+    'tiers': ('variant,d,agent,n,win,offered_tier,kept_tier,played_tier', False),
     '041': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,tokens_left,growth,markers,'
             'markers_city,placed_by_round,rich_uses,presence_lost,freed,delayed', True),
     '034': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,presence_rounds,tokens_left,'

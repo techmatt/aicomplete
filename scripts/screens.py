@@ -61,8 +61,9 @@ def ends_text(gs):
 
 
 def seats(c):
-    """A cell's seats, from its variant's name: the c3 variants are three, everything else two."""
-    return 3 if c['variant'].startswith('c3') else 2
+    """A cell's seats (a seat a country). Outputs from before 052 have no `countries`: their
+    variant's name decides, the c3 variants three and everything else two."""
+    return c.get('countries', 3 if c['variant'].startswith('c3') else 2)
 
 
 def checked_cnt(games):

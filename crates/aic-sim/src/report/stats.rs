@@ -19,6 +19,8 @@ pub struct CellSummary {
     /// The content this cell played, overlay applied.
     pub content_hash: String,
     pub variant: String,
+    /// Countries, so seats: from the resolved config, whatever the variant's name.
+    pub countries: u8,
     pub difficulty: i64,
     pub agent: String,
     pub tier: usize,
@@ -686,6 +688,7 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                 config_hash: c.rules.config_hash.clone(),
                 content_hash: c.rules.content_hash.to_string(),
                 variant: c.variant.clone(),
+                countries: c.rules.config.countries,
                 difficulty: c.difficulty,
                 agent: c.agent.label(),
                 tier: c.agent.tier(),

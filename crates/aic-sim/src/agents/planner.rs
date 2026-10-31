@@ -27,11 +27,19 @@ use rand_chacha::ChaCha8Rng;
 
 use super::eval::{Eval, Weights};
 use super::policy::{Forced, Policy};
-use super::search::{full_growth, greedy_scores, pick, Greedy, PhaseHistory};
+use super::search::{greedy_scores, pick, Greedy, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
 
 /// The phase the planner searches.
 const ACTION_PHASE: &str = "cards.play+";
+
+/// Whether `state`'s phase is one the planner searches, a pending choice
+/// inside it included. In every other phase it plays the next move of its
+/// line, whatever the top-level score says; a real growth pick moves the line
+/// first (see `choose`).
+fn searched_phase(state: &GameState) -> bool {
+    state.config.round.get(state.phase).is_some_and(|p| p.starts_with(ACTION_PHASE))
+}
 
 pub struct PlannerCfg {
     /// Rounds a line runs past the current one's start.
@@ -169,12 +177,12 @@ impl Planner {
 
     /// The line to beat at `state`: the one being followed, run on to `stop`
     /// if the round has moved, or else the engine's.
-    fn incumbent(&mut self, rules: &Rules, state: &GameState, legal: &[Action], stop: u32) -> Option<Line> {
+    fn incumbent(&mut self, rules: &Rules, state: &GameState, legal: &[Action], stop: u32) -> Line {
         let line = self.line.take().filter(|l| {
             l.actions.get(l.next).is_some_and(|a| legal.contains(a))
         });
         let Some(mut l) = line else {
-            return self.line_from(rules, state, None, stop);
+            return self.line_from(rules, state, None, stop).expect("only an opening move can be refused");
         };
         if l.stop < stop {
             let mut end = std::mem::replace(&mut l.end, state.clone());
@@ -183,7 +191,7 @@ impl Planner {
             l.end = end;
             l.stop = stop;
         }
-        Some(l)
+        l
     }
 }
 
@@ -197,15 +205,12 @@ impl Agent for Planner {
         if self.spent.0 != state.round {
             self.spent = (state.round, 0);
         }
-        let samples = self.cfg.samples;
-        let mut scores = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, samples, 1, self.cfg.choices, full_growth(self.cfg.choices));
+        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices);
+        let mut scores = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, how);
         self.history.mask(legal, &mut scores);
         let engine = pick(legal, &scores);
         let stop = state.round + self.cfg.horizon;
-        let Some(mut best) = self.incumbent(rules, state, legal, stop) else {
-            self.history.push(&legal[engine]);
-            return engine;
-        };
+        let mut best = self.incumbent(rules, state, legal, stop);
         // 046: a line's growth was scored shallow, so a real one is the top
         // level's score, and the line follows it.
         if matches!(legal[engine], Action::Growth { .. }) && best.actions.get(best.next) != Some(&legal[engine]) {
@@ -213,8 +218,7 @@ impl Agent for Planner {
                 best = l;
             }
         }
-        let phase = state.config.round.get(state.phase).map_or("", String::as_str);
-        if phase.starts_with(ACTION_PHASE) {
+        if searched_phase(state) {
             let mut order: Vec<usize> = (0..legal.len()).filter(|&i| scores[i].is_finite()).collect();
             order.sort_by(|&x, &y| scores[y].total_cmp(&scores[x]));
             let top = scores[engine];

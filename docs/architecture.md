@@ -388,8 +388,8 @@ and `web/card/faces.json`; `python scripts/cards/cards_doc.py`, which reads the 
 [cards.md](cards.md). `aic-sim docs` also fails on a broken harm distribution check
 (`harm_failures`).
 A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
-`snake_case` tunable that doesn't exist (`NOT_TUNABLES` lists the op names and retired
-parameters it may also print). Change the source, not the table. A block is a pure function of `Rules` or `Content`
+`snake_case` name that is neither a tunable nor an op (`NOT_TUNABLES` lists the action names,
+content fields and retired parameters it may also print). Change the source, not the table. A block is a pure function of `Rules` or `Content`
 in `crates/aic-sim/src/docs.rs`, named in `run`; its unit tests there check it moves with
 its source. The round cap is read from a game the engine dealt at each difficulty. Elsewhere
 rules.md names a tunable in backticks rather than repeat its value: history rows and

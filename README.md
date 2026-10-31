@@ -67,9 +67,16 @@ Current:
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
-  (`--columns a,b,c`, `--preset 041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
+  (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
   each check against its own agent, with games per check when `results.json` has a `gate`
-  key. `scripts/screens.py` holds what it shares with the kept scripts below.
+  key. `--preset tiers` (052) is cards offered, kept and played per game by tier: run it on the
+  first screen of a card rework, since agents draft tier 2 about three picks in four
+  ([card-pricing.md](docs/card-pricing.md)) and a tier-1 change may never show.
+  `scripts/screens.py` holds what it shares with the kept scripts below.
+- `run_sim.ps1 NAME [-NoBuild] ARGS...` (052): builds release, stops if the build failed, copies
+  the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
+  `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on
+  that file. Use it for any long run.
 - Kept for the results docs that cite them, each saying so at its top: `cards/screen_034.py`
   (a shim for `screen.py --preset 034`), `cards/screen_028.py` (r17), `cards/screen_027.py`
   (r16), `cards/screen_024.py` (r15); `screen_023.py` and `screen_022.py` still read r15; `cards/screen_021.py` (r12) runs, but its
@@ -290,7 +297,7 @@ the background task end, so check the exit code. To cap build jobs use `cargo te
 --workspace -j 3 -- --include-ignored`; `cargo test-all --test-threads=3` caps test
 threads. A new test that takes more than about a second goes in the slow lane, ideally with a
 cheaper fast-lane twin (fewer seeds, fewer actions). Times measured on this 12-thread
-machine with nothing else heavy running (lanes remeasured in 025); the first build of the test profile takes about 40 s.
+machine with nothing else heavy running (lanes remeasured in 048); the first build of the test profile takes about 40 s.
 
 - The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`;
   debug assertions and overflow checks stay on): unoptimized, the same tests took
@@ -305,9 +312,9 @@ machine with nothing else heavy running (lanes remeasured in 025); the first bui
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`; "always the
 first action" can now pay and withdraw a threat counter forever). If a rules change is
-intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update the
-fingerprint in both `crates/aic-core/src/tests/mod.rs` (`GOLDEN_FINGERPRINT`) and
-`scripts/wasm-smoke.mjs`. The fingerprint covers the whole final state, config `name`
+intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update
+`GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and the
+fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two differ). The fingerprint covers the whole final state, config `name`
 included, so a rename that plays the same moves it with no bump. The revision is recorded with every sim result, so old and new results are
 never mixed up.
 
@@ -324,6 +331,12 @@ never mixed up.
   every thread is busy.
 - Windows can't replace a running exe: copy it to `out/` (git-ignored) to run one build
   while rebuilding another. Never to `%TEMP%`.
+- A cargo build that fails leaves the old exe in `target/release`: a launcher that copies it
+  and starts a run must check the build's exit code (`scripts/run_sim.ps1` does). Don't edit
+  source during a build: it breaks the build or bakes in a mix of old and new.
+- Two checkouts sharing a `CARGO_TARGET_DIR` share `release/aic-sim.exe` and its fingerprints:
+  one read a 0.08 s `Finished` and an old-against-new comparison ran one binary twice (047). Give
+  each checkout its own target dir, and `md5sum` both binaries before a `pair` or `same_play`.
 - On Windows a Python script printing a non-ASCII character to a redirected stdout writes
   cp1252, not UTF-8: scripts reconfigure stdout, and pass `encoding='utf-8'` to `open`.
 - Bash heredocs holding Python fail here (triple quotes, and backslashes get mangled even
@@ -415,9 +428,16 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 - **Own randomness.** Each agent's RNG is the game seed on a stream named after the agent
   kind, apart from every engine stream. Games replay from seed + actions, and results
   don't depend on `--threads`.
-- **Decides at the top level:** the planner follows its line outside the action phase, so draft,
-  keep and pending choices are the rollout policy's. Growth is the exception (046): scored at
-  `choices` × 2 at the top level, plain `choices` inside rollouts, and the line follows it.
+- **Decides at the top level:** outside the action phase (`searched_phase` in `planner.rs`) the
+  planner follows its line, so draft and keep decisions are the rollout policy's, not the
+  shortlist's. A prompt inside the action phase is shortlisted like any action there. Growth is
+  the exception (046): scored at `choices` × 2 at the top level, plain `choices` inside
+  rollouts, and the line follows it.
+- **`choices` counts prompts, not effects.** One placement is two prompts (a track, then a hex;
+  a prompt with one option doesn't count), so `choices` 2 scores one placement. Only
+  `Action::Growth` gets × 2: a card that asks more (Relay Mast Rollout, Aegis Grid Lockdown,
+  Beamed Power Constellation, Open-Weights Release) is judged part of the way, and beam's
+  search doesn't double at all (only its greedy fallback does).
 - **Heuristic** (`agents/eval.rs`, 014 board): win/loss; corrupted cities (`corrupted`
   30), a seat down to its last presence (`presence_danger` 60; 0.5 of that with two, 0.25 with three, 0.1 with four), aligned cities
   (`aligned` 8); adversary ambassadors (`adv_ambassador` 3 each, `on_piece` 2 more on a
@@ -442,7 +462,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing presence, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
-| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state (**full information**, Matt, 2026-10-29), so it is the game that follows; each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the engine. **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 6 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring). Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
+| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state (**full information**, Matt, 2026-10-29), so it is the game that follows; each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 6 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring). Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
 
 **Keeping by plan and the dominance checks (022, `agents/policy.rs`).** Greedy and
 engine keep drafted cards by a plan (`plan_keep` 1; 0 lets the heuristic decide keeps,
@@ -453,7 +473,7 @@ budget with the cards it would play (hand plus the candidates) in value-per-cost
 (value: the card's printed cost in credits, antimatter 3, insight 2, a lowered income
 point 3, plus 1; cost: what this seat pays, its building discount off), and keeps each
 drafted card, best ratio first, only if the plan with it is worth more than without it
-(a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and shield it prints adds `plan_niche` 3 to the card's value). The dominance checks are the same agents with
+(a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and presence it would shield adds `plan_niche` 3 to the card's value). The dominance checks are the same agents with
 one behaviour forced: `keep_all=1`, `keep_k=2`, `tier1_only=1`, `tier2_rush=1`,
 `no_powers=1`, `no_counters=1`, `no_presence=1` (`docs/principles.md`, *Dominance
 checks*).
@@ -487,8 +507,8 @@ $S experiment experiments/archive/screen-014-board.json --quick     # scoping: s
 $S experiment experiments/archive/screen-014-board.json --quick --resume  # continue a stopped run: the same flags (--quick, --out, --games, --seed) as it started with
 ```
 
-**Content levers run on one binary (040).** A variant's `set` (or `--set`) takes a content
-overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
+**Content levers run on one binary (040).** A variant's `set` (or `--set` on `run` and
+`compare`) takes a content overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes.
 `cards.telemetry_archive.cost=3`, `cards.turnkey_factory.effects=[]`,
 `cards.turnkey_factory.passives.0.amount=2`, `ais.*.presence.4.cost=2`,
@@ -500,6 +520,10 @@ worked sweep. The map is out of reach. Only player-card text is generated, so a 
 project's, adversary or Alignment card's text keeps its printed numbers, and the viewer
 reads the printed content (`wasm.content()`): faces, adversary rows and power labels of
 an overlaid record show the printed values, though the game plays the overlay.
+
+A spec has no set shared by its variants and `experiment` refuses `--set`, so a lever on two
+sizes is two variants, each repeating the whole list (`c2x`: the lever; `c3x`: `countries=3` and
+the lever; `experiments/archive/screen-041-tune.json`).
 
 **Gate early-stopping (040).** A spec with `"gate": {"z": 2.0, "min_games": 8, "every": 4}`
 treats `planner:<check>` as a check of `planner` in the same variant and difficulty, and
@@ -515,6 +539,26 @@ about half the time and about 1% of runs get the sign the cap wouldn't. `experim
 is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h at the cap and
 5.5 h for 034's hand-cut plan, 1h 4m on 4 below-normal threads**, every verdict the same
 (`experiments/results/gate-034-earlystop/gate.md`).
+
+**Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
+`min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
+`experiments/gate.json`: 31 agents × 2 sizes = 62 cells, so 496 games in the first block (20 min
+on 8 threads at r22) and 1,984 at the cap. Measured, in planner games a minute: 14 on 4 threads
+(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046). Budget 45-60 min, and start it at least 75 min
+before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
+rate; for a gate that is to the cap, so the most it can take. Before a gate, `aic-sim experiment
+SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
+shows in minutes, not at the end of a block (its own `--out`: a run without `--resume` moves an
+earlier stream aside). In a long gate, watch stderr too: `panicked` means a game failed while the
+run goes on, and `^time: wall` that an `experiment` finished.
+
+**Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
+gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
+that picked the levers.
+
+**Seeds are noisy at c3.** The same r22 rules at c3 d2 read 56 / 38 / 71 on 16 / 16 / 14 seeds
+(33 on the first 12 of the 38's): about ±15 on any one set. A 16-seed calibration can't separate levers under about
+20 points. Compare on the same seeds, confirm on fresh ones.
 
 **A game that panics (050).** It fails alone: the run goes on, stderr and `failed.jsonl`
 name its seed, config, overrides and panic, `report.md` lists them under *Failed games* with
@@ -541,20 +585,20 @@ python scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag try1 \
 **Growth screen and gate (041, r20)**: `experiments/archive/screen-041.json` (planner, d2, `c2`, `c3`) and
 `experiments/archive/gate-041.json` (early-stopped), with `python scripts/cards/screen.py DIR --preset 041`
 and `screen.py --gate DIR`. Fixed policies: `planner:always_expand=1`, `always_consolidate=1`,
-`never_remove=1`, `science_board=1`. A planner game at r20 d2 is about 28 s of thread time; a 16-seed
-screen takes about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
-A cargo build that fails leaves the old exe in `target/release`: a launcher that copies it and
-starts a run must check the build's exit code.
+`never_remove=1`, `science_board=1`. A planner game at r20 d2 was about 28 s of thread time; a 16-seed
+screen took about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
 
 **Fast exploit check (050)**: `experiments/gate-exploit.json` is the first read for a rules
-item, before `gate-046.json`: the 12 checks that could still beat thinking, at c2 and c3 under
+item, before `gate.json`: the 12 checks that could still beat thinking, at c2 and c3 under
 the engine, early-stopped, capped at 32 seeds, read with `screen.py --gate DIR`. **468 of 832
 games, 45 min of game time, 8 min on 6 below-normal threads on a loaded box** (r22). Under the
 planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s at c2 and 67 s at
-c3 there. At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
-gate-046, under the planner, decides.
+c3 there (on that loaded box; quiet, a c2 game is about 9 s, `scripts/bench/speed_baseline.json`).
+At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
+`gate.json`, under the planner, decides.
 
-**Niche and growth gate (046, r22)**: `experiments/gate-046.json` is every 034 check plus 041's four
+**Niche and growth gate (046, r22)**: `experiments/gate.json` (`gate-046.json` until 052; a spec
+per revision until then, each in `archive/`) is every 034 check plus 041's four
 fixed policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
 `experiments/screen-046-curve.json` is the curve. `python scripts/bench/first_divergence.py OLD NEW`
 says where two runs of one spec first play differently, game by game. Results and timings:
@@ -684,6 +728,7 @@ spec, every cell's and group's measures, the card table, the records), `games.cs
 row per game; `economy_buildings_standing` follows `buildings_standing`) and `cards.csv`
 (per agent, variant, config, difficulty and card), and `records/`, plus
 `games.jsonl` (`aic-games/2`, written as the games finish; see *Results as they go*).
+Each cell in `results.json` has its `countries` (052), read from the resolved config.
 
 `results.json` and `report.md` also carry **agents paired, per variant** (`agent_pairs`,
 *Agents paired, per variant*; none with a single agent): per config × variant × difficulty, A against B on
@@ -723,7 +768,11 @@ nothing extra):
   count); every game, `margin.cities_corrupted_end` and `margin.cities_aligned_end`
   (also columns of `games.csv`, with the core's `adversary.corruptions`,
   `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`
-  counters; every counter is in `games.jsonl`).
+  counters; every whole-game counter is in `games.jsonl`. Per-round tables reach it as
+  `<key>.rNN`, summed over seats, only for keys starting `cards.`, `ai.`, `economy.` or
+  `board.presence`: add to the list in `experiment.rs` for another. In the core `cx.count(g,
+  "x", n)` writes `<module>.x` and `cx.tally` and `cx.per_round` take the full key, so a
+  growth pick is `ai.growth.builder.0`: a screen column on the bare name prints zeros).
 - **Game length**, ends by reason and round; **adversary operations** per round (mean,
   max) and at setup.
 - **Help and counters**: gifts, payments and withdrawals per game; threats countered of

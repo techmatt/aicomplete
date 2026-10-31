@@ -82,22 +82,44 @@ fn lookahead(rules: &Rules, ev: &Eval, g: &GameState, depth: usize, choices: usi
     }
 }
 
+/// How far [`greedy_scores`] looks.
+#[derive(Clone, Copy)]
+pub struct Scoring {
+    /// Guesses averaged (0 = use the state as it is: it is already a guess).
+    pub samples: usize,
+    /// Actions looked ahead.
+    pub depth: usize,
+    /// Levels of prompts an action's own choices resolve before it is scored:
+    /// prompts, not effects, so one placement (a track, a hex) takes two, and
+    /// a card that places more is judged part of the way.
+    pub choices: usize,
+    /// `choices` for a Growth action.
+    pub growth_choices: usize,
+}
+
+impl Scoring {
+    /// At the top level of a decision: growth at [`full_growth`].
+    pub fn decision(samples: usize, depth: usize, choices: usize) -> Self {
+        Scoring { samples, depth, choices, growth_choices: full_growth(choices) }
+    }
+
+    /// Inside a rollout: growth at plain `choices` (046).
+    pub fn in_rollout(self) -> Self {
+        Scoring { growth_choices: self.choices, ..self }
+    }
+}
+
 /// Scores every legal action of `state` by greedy look-ahead, averaged over
-/// `samples` determinizations (0 = use `state` as it is: it is already a guess).
-/// `growth_choices` is `choices` for a Growth action: [`full_growth`] at the top
-/// level of a decision, plain `choices` inside a rollout.
-#[allow(clippy::too_many_arguments)]
+/// the guesses `how` asks for.
 pub fn greedy_scores(
     rules: &Rules,
     ev: &Eval,
     rng: &mut ChaCha8Rng,
     state: &GameState,
     legal: &[Action],
-    samples: usize,
-    depth: usize,
-    choices: usize,
-    growth_choices: usize,
+    how: Scoring,
 ) -> Vec<f64> {
+    let Scoring { samples, depth, choices, growth_choices } = how;
     let mut scores = vec![0.0; legal.len()];
     let n = samples.max(1);
     for _ in 0..n {
@@ -134,7 +156,7 @@ pub fn greedy_scores(
 /// places up to 2 presence, each a track and a hex: scored at 2 levels, Expand
 /// looked like its first token. 046: not inside rollouts, at about 3.7
 /// evaluations a decision, so a planner decides growth on its top-level score.
-pub fn full_growth(choices: usize) -> usize {
+fn full_growth(choices: usize) -> usize {
     choices * 2
 }
 
@@ -185,10 +207,7 @@ impl PhaseHistory {
 pub struct Greedy {
     ev: Eval,
     rng: ChaCha8Rng,
-    samples: usize,
-    depth: usize,
-    choices: usize,
-    growth_choices: usize,
+    how: Scoring,
     history: PhaseHistory,
     /// When above 0: after a decision phase's first full scoring, each seat
     /// keeps only this many actions for the rest of the phase (the planner's
@@ -203,10 +222,7 @@ impl Greedy {
         Greedy {
             ev,
             rng,
-            samples,
-            depth,
-            choices,
-            growth_choices: full_growth(choices),
+            how: Scoring::decision(samples, depth, choices),
             history: PhaseHistory::default(),
             prune: 0,
             dropped: None,
@@ -220,7 +236,7 @@ impl Greedy {
 
     /// As a rollout's policy: growth at plain `choices` (046).
     pub fn in_rollout(mut self) -> Self {
-        self.growth_choices = self.choices;
+        self.how = self.how.in_rollout();
         self
     }
 
@@ -228,17 +244,13 @@ impl Greedy {
     /// phase's first full scoring drops all but each seat's best `prune`.
     fn scores(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> Vec<f64> {
         if self.prune == 0 || state.pending.is_some() {
-            return greedy_scores(
-                rules, &self.ev, &mut self.rng, state, legal, self.samples, self.depth, self.choices, self.growth_choices,
-            );
+            return greedy_scores(rules, &self.ev, &mut self.rng, state, legal, self.how);
         }
         let live: Vec<usize> = (0..legal.len())
             .filter(|&i| self.dropped.as_ref().is_none_or(|d| !d.contains(&legal[i])))
             .collect();
         let menu: Vec<Action> = live.iter().map(|&i| legal[i].clone()).collect();
-        let found = greedy_scores(
-            rules, &self.ev, &mut self.rng, state, &menu, self.samples, self.depth, self.choices, self.growth_choices,
-        );
+        let found = greedy_scores(rules, &self.ev, &mut self.rng, state, &menu, self.how);
         let mut out = vec![f64::NEG_INFINITY; legal.len()];
         for (k, &i) in live.iter().enumerate() {
             out[i] = found[k];
@@ -483,7 +495,8 @@ impl Beam {
                 let i = if legal.len() == 1 {
                     0
                 } else {
-                    let sc = greedy_scores(rules, &self.ev, &mut self.rng, &s, &legal, 0, 1, 1, 1);
+                    let how = Scoring::decision(0, 1, 1).in_rollout();
+                    let sc = greedy_scores(rules, &self.ev, &mut self.rng, &s, &legal, how);
                     pick(&legal, &sc)
                 };
                 if rules.apply_mut(&mut s, &legal[i], None).is_err() {
@@ -555,7 +568,7 @@ impl Agent for Beam {
         }
         // The fresh plan should start here; if it cannot, fall back to greedy.
         self.plan.clear();
-        let s = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, 1, 1, 1, full_growth(1));
+        let s = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, Scoring::decision(1, 1, 1));
         pick(legal, &s)
     }
 }

@@ -93,7 +93,7 @@ the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by prin
 Each check is a fixed, simple policy: the planner with one behaviour forced
 (`planner:<check>=1` in an experiment spec; `crates/aic-sim/src/agents/policy.rs`). The
 strategy-health gate runs them beside the planner at d2, early-stopped
-(`experiments/gate-046.json`, summarised by `scripts/cards/screen.py --gate`).
+(`experiments/gate.json`, summarised by `scripts/cards/screen.py --gate`).
 
 - **Healthy:** every check loses ground to the planner at d2. Report each check's gap
   (planner win % minus the check's) with its noise.
@@ -129,7 +129,7 @@ could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
 summarised by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate-046.json`: planner only, d2, early-stopped, every 034
+current gate** is `experiments/gate.json`: planner only, d2, early-stopped, every 034
 check plus 041's four fixed policies, summarised by `scripts/cards/screen.py --gate`. Its
 predecessors are `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
 `experiments/gate-exploit.json` (050) is its fast first read: the 12 checks that could still beat

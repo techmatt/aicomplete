@@ -612,8 +612,8 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
             real_choices += 1;
             if real_choices % spec.closeness.every == 0 {
                 let t = Instant::now();
-                let mut s =
-                    search::greedy_scores(rules, &probe_eval, &mut probe_rng, &g, &legal, 1, 1, 1, search::full_growth(1));
+                let how = search::Scoring::decision(1, 1, 1);
+                let mut s = search::greedy_scores(rules, &probe_eval, &mut probe_rng, &g, &legal, how);
                 record_closeness(&mut r, &mut s, spec.closeness.gap);
                 r.probe_ms += ms_since(t);
             }
@@ -714,8 +714,9 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
         .map(|i| round_ops.get(i).copied().unwrap_or(0) as u32)
         .collect();
     r.counters = g.stats.counters.iter().map(|(k, v)| (k.to_string(), *v)).collect();
-    // 021: the card and economy per-round counters, as `<key>.rNN` (summed
-    // over seats), for the screen's by-round tables.
+    // 021: the per-round tables of the card, AI, economy and presence
+    // counters, as `<key>.rNN` (summed over seats), for the screen's by-round
+    // tables. Others (`adversary.*`) stay out, to keep games.jsonl small.
     for (k, v) in &g.stats.per_round {
         if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.presence") {
             for (i, n) in v.iter().enumerate().skip(1) {

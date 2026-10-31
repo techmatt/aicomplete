@@ -1,7 +1,7 @@
 # One standard placement, a Science niche, a better Develop (046, r22)
 
 Judged by the `planner`, d2. The prompt called this revision r21; 044 took that number. **The gate is
-partial:** `experiments/gate-046.json` on fresh seeds from 3000 crashed at 495 games on an engine bug
+partial:** `experiments/gate-046.json` (`experiments/gate.json` since 052) on fresh seeds from 3000 crashed at 495 games on an engine bug
 (fixed here, ruling 3 below). It was resumed on the fixed
 binary and cut at 2:44am for time: 623 of 1,984 games, 12-14 seeds a check, not 32. Read each gap as direction, not as a verdict.
 
@@ -130,7 +130,8 @@ r22's bigger hands (draws) and longer games cost more than that.
 
 - `niche_jobs` (`agents/policy.rs`) counts a card's printed shields, not what the seat's hexes can take, and
   jobs per card, so two clear cards can claim one marker. Agent-only; found in review with the gate
-  running, left as played so the gate stays valid. Cheap fix, next agent change.
+  running, left as played so the gate stays valid. Cheap fix, next agent change. (052 clamped the
+  shields; two cards claiming one job is still open.)
 - Scoring per-seat: the Protector's Develop at 18-19% is under the 20% floor by a hair.
 
 ## New-player summary of r22

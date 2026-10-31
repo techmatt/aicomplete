@@ -96,8 +96,8 @@ pub struct Forced {
     /// What a credit paid for a keep costs the plan (024).
     pub plan_credit: f64,
     /// What the keep plan adds, in credits, for each marker a card would clear
-    /// and threat it would delay on the table as it stands, and each shield it
-    /// prints (046: priced at its printed cost, a 2-credit Science card lost
+    /// threat it would delay and presence it would shield on the table as it
+    /// stands (046: priced at its printed cost, a 2-credit Science card lost
     /// every keep to a tier-2).
     pub plan_niche: f64,
 }
@@ -505,7 +505,7 @@ fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced) -> f
 }
 
 /// The jobs `d` would do for seat `s` on this table: markers in reach to
-/// clear, threats to delay, a shield always.
+/// clear, threats to delay, presence with no token to shield.
 fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
     d.effects
         .iter()
@@ -517,7 +517,9 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
             Op::DelayThreat { count } => {
                 (*count).min(threats::active(g).iter().filter(|(t, _)| !threats::waits(g, t)).count() as i64)
             }
-            Op::ShieldPresence { count } => *count,
+            Op::ShieldPresence { count } => {
+                (*count).min((0..g.hexes.len()).filter(|&h| effects::shieldable(g, s, h)).count() as i64)
+            }
             _ => 0,
         })
         .sum()
@@ -633,4 +635,25 @@ fn plan(
     // 024: credits paid to keep are credits not spent on the board (the
     // opening's 5-credit keeps took all 20 starting credits).
     Some((total - f.plan_credit * paid as f64, planned))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Arc;
+
+    #[test]
+    fn a_shield_counts_only_the_presence_it_can_cover() {
+        let r = crate::agents::tests::rules(0);
+        let mut g = r.new_game(1);
+        let w = r.world();
+        let shield = cards::def(&w, "benchmark_suite");
+        let open = (0..g.hexes.len()).filter(|&h| effects::shieldable(&g, 0, h)).count() as i64;
+        assert!(open > 0);
+        assert_eq!(niche_jobs(&w, &g, 0, shield), open.min(2));
+        for h in g.hexes.iter_mut() {
+            Arc::make_mut(h).tokens.clear();
+        }
+        assert_eq!(niche_jobs(&w, &g, 0, shield), 0);
+    }
 }

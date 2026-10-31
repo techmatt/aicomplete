@@ -246,8 +246,7 @@ impl Module for Board {
                 if !price.affordable(g, s) || targets.is_empty() {
                     return Err("can't take that standard action now".into());
                 }
-                // A placement pays in `place_presence`, once the track is chosen.
-                if !matches!(act, StandardAction::Presence | StandardAction::PresenceBuy) {
+                if !act.pays_on_placing() {
                     price.pay(g, cx, s);
                 }
                 cx.tally(g, &format!("board.std.{}", act.name()), 1);

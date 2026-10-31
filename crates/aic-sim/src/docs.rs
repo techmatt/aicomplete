@@ -1106,30 +1106,25 @@ fn fill(text: &str, block: &dyn Fn(&str) -> Option<String>) -> String {
 /// Dotted names rules.md may print that are counters, not tunables or phases.
 const COUNTERS: [&str; 1] = ["threats.short"];
 
-/// Bare `snake_case` names rules.md may print that are no tunable: op and
+/// Bare `snake_case` names rules.md may print that are no tunable or op:
 /// action names, content fields, and retired parameters in its history.
-const NOT_TUNABLES: [&str; 16] = [
-    "cash_out",
-    "clear_city",
+const NOT_TUNABLES: [&str; 10] = [
     "free_city_at",
     "free_keep",
-    "gain_per_tokens",
     "harden_buy",
     "legal_actions",
-    "move_ambassadors",
-    "move_one",
     "node_energy",
     "per_round",
     "presence_buy",
     "purge_round",
     "shared_row",
-    "spread_ambassadors",
     "unity_win",
 ];
 
 /// Backticked `module.name` words in `text` that are no tunable, phase or
-/// counter of the baseline, and bare `snake_case` words that are no tunable.
-fn unknown_params(text: &str, r: &Rules) -> Vec<String> {
+/// counter of the baseline, and bare `snake_case` words that are no tunable
+/// or name in `ops`.
+fn unknown_params(text: &str, r: &Rules, ops: &[String]) -> Vec<String> {
     let mut known: Vec<String> = r.tunables().into_iter().map(|t| t.key).collect();
     let modules: Vec<String> = known
         .iter()
@@ -1153,6 +1148,7 @@ fn unknown_params(text: &str, r: &Rules) -> Vec<String> {
         } else if tick.contains('_')
             && tick.chars().all(|c| c.is_ascii_lowercase() || c == '_' || c.is_ascii_digit())
             && !NOT_TUNABLES.contains(&tick)
+            && !ops.iter().any(|o| o == tick)
             && !known.iter().any(|k| k.split_once('.').is_some_and(|(_, p)| p == tick))
         {
             out.push(tick.to_string());
@@ -1203,9 +1199,10 @@ pub fn run(o: &Options) {
         eprintln!("{HARMS_MD}: {f}");
     }
     if o.check {
-        let bad = unknown_params(&old, &r);
+        let ops: Vec<String> = op_docs(&src).into_iter().map(|o| o.name).collect();
+        let bad = unknown_params(&old, &r, &ops);
         for b in &bad {
-            eprintln!("{RULES_MD}: `{b}` is not a tunable");
+            eprintln!("{RULES_MD}: `{b}` is not a tunable or an op (docs/architecture.md, *Generated docs*)");
         }
         for (path, ..) in &stale {
             eprintln!("{path} is stale: run aic-sim docs");
@@ -1296,8 +1293,16 @@ mod tests {
     #[test]
     fn check_flags_a_bare_name_that_is_no_tunable() {
         let r = baseline(&[]);
-        assert!(unknown_params("`hold_base`, `presence_buy`", &r).is_empty());
-        assert_eq!(unknown_params("`hold_bass`", &r), ["hold_bass"]);
+        assert!(unknown_params("`hold_base`, `presence_buy`", &r, &[]).is_empty());
+        assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
+    }
+
+    #[test]
+    fn check_takes_an_op_name() {
+        let r = baseline(&[]);
+        let ops: Vec<String> = op_docs(include_str!("../../aic-core/src/op.rs")).into_iter().map(|o| o.name).collect();
+        assert!(ops.iter().any(|o| o == "clear_markers"));
+        assert!(unknown_params("`clear_markers`, `move_one`", &r, &ops).is_empty());
     }
 
     #[test]

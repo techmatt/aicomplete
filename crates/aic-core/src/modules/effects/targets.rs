@@ -77,7 +77,7 @@ pub(super) fn marker_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -
 }
 
 /// Seat `seat`'s presence with no hardening token on it.
-pub(super) fn shieldable(g: &GameState, seat: usize, h: usize) -> bool {
+pub fn shieldable(g: &GameState, seat: usize, h: usize) -> bool {
     g.tokens(h, &presence(seat)) > 0 && g.tokens(h, HARDEN) == 0
 }
 

@@ -62,6 +62,12 @@ impl StandardAction {
     pub fn parse(name: &str) -> Option<StandardAction> {
         STANDARD.into_iter().find(|a| a.name() == name)
     }
+
+    /// A placement pays in `place_presence`, once the track is chosen: its
+    /// price depends on that. Every other action pays before it resolves.
+    pub(super) fn pays_on_placing(self) -> bool {
+        matches!(self, StandardAction::Presence | StandardAction::PresenceBuy)
+    }
 }
 
 /// What something costs: the one shape every standard action and every

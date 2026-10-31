@@ -1,5 +1,5 @@
 {
-  "name": "gate-046",
+  "name": "gate",
   "note": "The r22 gate at d2 against the planner, 2 and 3 countries, early-stopped, capped at 32 seeds: every 034 check and 041's four fixed policies.",
   "configs": ["configs/baseline.json"],
   "variants": [

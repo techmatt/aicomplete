@@ -129,7 +129,7 @@ macro_rules! with_policy_params {
             ("plan_hand", 0.0, "keep nothing while the hand holds this many cards (0: off)"),
             ("plan_t2", 1.0, "share of a tier-2 card's value the keep plan counts"),
             ("plan_credit", 3.0, "what a credit paid for a keep costs the keep plan"),
-            ("plan_niche", 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and shield it prints"),
+            ("plan_niche", 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield"),
             ("keep_all", 0.0, "dominance check: keep every drafted card"),
             ("keep_k", 0.0, "dominance check: keep only the k cheapest drafted cards (0: off)"),
             ("keep_none", 0.0, "sanity check (028): keep no drafted card"),

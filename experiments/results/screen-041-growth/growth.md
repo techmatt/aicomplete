@@ -1,7 +1,7 @@
 # Growth as a choice, the marker worth clearing, Science on the board (041, r20)
 
 Judged by the `planner`, d2, 32 seeds a cell (±8-12 points on a win rate), with 040's early-stopping
-gate: `aic-sim experiment experiments/gate-041.json`, then `python scripts/cards/screen.py --gate DIR`
+gate: `aic-sim experiment experiments/archive/gate-041.json`, then `python scripts/cards/screen.py --gate DIR`
 and `--preset 041`. Full tables: `gate.md`, `gate-detail.md`. The gate ran 15 of 034's 27 agents for
 time: the four new policies, all six ignore-tag checks and four exploits (no mono-tag, keep-all,
 tier-1-only, no-presence, turtle, Unity farm, free cities, events-only, no-powers, keep-cheapest-2).
@@ -86,7 +86,8 @@ c2. I did not tune around them. Structural causes, as far as I can read them:
 and pulls 2 Sway back (the ruling's "press harder"). **No game ended at the cap in any of the gate's 628
 games.** Harder late stages can't make cap losses on
 their own: they end games earlier by presence or Discord, or they slow a win that then lands by 10. A
-longer Unity deck (4, 3 and 4, 4, `screen-041-tune2.json`, 16 seeds) moved wins a round later and made no
+longer Unity deck (4, 3 in `experiments/archive/screen-041-tune2.json`; 4, 4 the same probe with
+`alignment.unity_cards=4,4`, its spec not kept; 16 seeds) moved wins a round later and made no
 cap loss either: at 4, 4 one win reached round 11. Stage III did move the mix: Discord's share of
 presence lost 54% to 53%, twists 16% to 25%, and c3 losses from 8 / 2 to about 2:1. Cap losses need a
 team that survives to 11 without winning, so what would make them is a win that gets harder late
@@ -161,4 +162,4 @@ Against r19: 100, 100, 67, 17, 17 and 100, 58, 42, 0, 0. d0-d1 no longer differ 
 d2 is easier at both sizes, and d3-d4 lift off zero. The step from d2 to d3 is still the steep one, and
 losses at d3-d4 are mostly presence (c2 13 of 16, c3 17 of 21), with stage III as hard as it is. c3 at d0
 now loses, to Discord only. No cell had a cap loss, at 120 games: a d3-d4 cap of 10 ended none either.
-`experiments/screen-041-curve.json`, `--quick --games 12`, 7.5 min on 8 threads.
+`experiments/archive/screen-041-curve.json`, `--quick --games 12`, 7.5 min on 8 threads.

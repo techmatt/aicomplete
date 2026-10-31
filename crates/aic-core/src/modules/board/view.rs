@@ -151,7 +151,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         out.standard(act.name(), e, cr, chips, &doc);
     }
     for s in 0..g.seats.len() {
-        // 034: what a presence costs this seat now, rise and step extra in.
+        // 034: what a presence costs this seat now, rise and step cost in.
         out.seat(
             s,
             "presence_energy_now",

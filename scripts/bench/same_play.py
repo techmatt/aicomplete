@@ -40,17 +40,22 @@ THREADS = []
 RENAME_IGNORED = ("config_hash", "final_fingerprint")
 
 
+def sim_to(f, cmd):
+    """Runs `cmd` with stdout to `f`; a refused config or a crash stops the matrix, named."""
+    done = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
+    if done.returncode != 0:
+        sys.exit(f"{' '.join(cmd)}\nfailed: {done.stderr.strip()}")
+
+
 def play(sim, out, label, agent, games, config, sets):
     base = [os.path.abspath(sim), "run", f"configs/{config}.json", "--seed", "1000", "--agent", agent]
     extra = [x for s in sets for x in ("--set", s)]
     rec = os.path.join(out, "rec", label)
     with open(os.path.join(out, label + ".json"), "w", encoding="utf-8") as f:
-        subprocess.run(base + extra + THREADS + ["--games", str(games), "--json", "--save", rec,
-                                       "--save-when", "all", "--save-max", "1000"],
-                       stdout=f, stderr=subprocess.DEVNULL, check=True)
+        sim_to(f, base + extra + THREADS + ["--games", str(games), "--json", "--save", rec,
+                                            "--save-when", "all", "--save-max", "1000"])
     with open(os.path.join(out, label + ".trace"), "wb") as f:
-        subprocess.run(base + extra + ["--games", "1", "--threads", "1", "--trace"],
-                       stdout=f, stderr=subprocess.DEVNULL, check=True)
+        sim_to(f, base + extra + ["--games", "1", "--threads", "1", "--trace"])
 
 
 def run(sim, out):

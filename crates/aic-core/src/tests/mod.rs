@@ -375,14 +375,14 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-// r19 (034).
+const GOLDEN_REVISION: u32 = 22;
 const GOLDEN_FINGERPRINT: &str = "ec7bf766ab51e225";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).
 /// `scripts/wasm-smoke.mjs` checks the wasm build reaches the same state.
 /// If this fails after an intended rules change, bump `RULES_REVISION`
-/// and update both fingerprints.
+/// and update `GOLDEN_REVISION` and both fingerprints.
 #[test]
 fn golden_game() {
     let rules = Rules::new(&baseline()).unwrap();
@@ -398,6 +398,12 @@ fn golden_game() {
     assert!(g.is_over());
     assert_eq!(
         (RULES_REVISION, g.fingerprint().as_str()),
-        (22, GOLDEN_FINGERPRINT)
+        (GOLDEN_REVISION, GOLDEN_FINGERPRINT)
     );
+}
+
+#[test]
+fn wasm_smoke_expects_the_golden_fingerprint() {
+    let smoke = include_str!("../../../../scripts/wasm-smoke.mjs");
+    assert!(smoke.contains(GOLDEN_FINGERPRINT), "scripts/wasm-smoke.mjs holds another fingerprint");
 }

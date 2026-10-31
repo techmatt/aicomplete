@@ -70,10 +70,11 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
         let mut l = last.lock().expect("progress lock");
         if done == all || l.elapsed().as_secs() >= 10 {
             *l = Instant::now();
-            eprintln!(
-                "  {done}/{all} games, {:.0} s",
-                start.elapsed().as_secs_f64()
-            );
+            let elapsed = start.elapsed().as_secs_f64();
+            let played = done.saturating_sub(resumed).max(1) as f64;
+            let left = all.saturating_sub(done) as f64 * elapsed / played / 60.0;
+            // A gate's `all` is its cap, so for a gate this is the most it can take.
+            eprintln!("  {done}/{all} games, {elapsed:.0} s, about {left:.0} min left at this rate");
         }
     };
     let failed_path = format!("{dir}/failed.jsonl");

@@ -20,7 +20,10 @@ def one(root, agent, games, first, countries):
     cmd = [os.path.abspath(os.path.join(root, 'aic-sim.exe')), 'run', 'configs/baseline.json',
            '--seed', str(first), '--agent', agent, '--games', str(games), '--threads', '1',
            '--json', '--set', f'countries={countries}', '--set', 'adversary.difficulty=2']
-    out = subprocess.run(cmd, cwd=root, capture_output=True, text=True, check=True).stdout
+    run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+    if run.returncode != 0:
+        sys.exit(f"{cmd[0]} failed in {root} (its own configs/baseline.json is what it plays): {run.stderr.strip()}")
+    out = run.stdout
     r = json.loads(out)['results'][0]
     return {
         'rules': json.loads(out)['rules_revision'],

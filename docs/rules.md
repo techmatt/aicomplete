@@ -766,8 +766,9 @@ of 5 ended no game, a hit of 7 ends some. Eval: the Unity deck counts as a clock
 `experiments/results/screen-034-clocks/clocks.md`).** The round cap: the review's 12, 11 at d2
 ended no game in 69 planner losses, because wins and the other clocks come first; 11, 10 at d2
 (`stage_cards` 4, 5, 2) ends about a tenth of losses and keeps stage III late. The tracks: 13
-tokens left too few on the tracks (0.3-1.1 a seat), so 14; growth and cards place about 70% of
-tokens and skip the step extras, so the extras price only the last third. The last Discord step is
+tokens left too few on the tracks (0.3-1.1 a seat), so 14; growth and cards then placed about 70%
+of tokens and skipped the step costs, which so priced only the last third (041 made every placement
+pay). The last Discord step is
 2, not the review's 3: at 3 Discord cards were 63% of presence lost. `corruption_reach` 1 makes
 corruption a real source; `war_reach` 1 as well took the planner from 75 / 44 to 53 / 34 and is
 off. Stage-III cards sway 1, not 2. `alignment.free_city` 5, not 4: c3 was at 28%, its wins late.
