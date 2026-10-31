@@ -77,6 +77,8 @@ The standing contract for every executor working in this repo.
 - **`npm run check` in a fresh worktree needs the wasm built first:** `cd web && npm install &&
   npm run wasm`. It typechecks against `web/src/wasm/`, which is git-ignored.
 - **LF line endings.** `.gitattributes` sets `* text=auto eol=lf`; don't override it.
+- **Cleanups never delete `review/`.** It is git-ignored and holds Matt's card notes
+  (`review/card-notes.json`): nothing regenerates them.
 - **Operational facts go into `README.md`**: how to build, run and test, measured run
   times, ports, gotchas. Never leave one only in a report.
 

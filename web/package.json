@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "e2e": "node scripts/e2e.mjs",
     "sweep": "node scripts/sweep.mjs",
-    "odd": "node scripts/odd.mjs"
+    "odd": "node scripts/odd.mjs",
+    "cards": "node scripts/cards-server.mjs",
+    "cards:check": "node scripts/cards-check.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

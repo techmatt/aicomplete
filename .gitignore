@@ -1,6 +1,7 @@
 /target
 /crates/aic-wasm/pkg
 /out
+/review
 __pycache__/
 /art-originals
 /tools/card-art/node_modules

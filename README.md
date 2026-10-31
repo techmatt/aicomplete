@@ -150,6 +150,60 @@ Details, and the browser check (`npm run e2e`), are in [web/README.md](web/READM
 - `web/scripts/shots-017.mjs`, `shots-019.mjs` and `shots-021.mjs` save the viewer shots of
   their items; how to run them is in [experiments/history.md](experiments/history.md).
 
+## Card viewer
+
+```sh
+cd web && npm run cards                            # exports, then serves http://localhost:5180/cards.html until stopped
+```
+
+Conductor's button runs that command in the main checkout and opens that URL: keep the
+command, port and path as they are. It needs no `npm install`, wasm or cargo: plain Node over
+the checkout it runs in. The export takes about 0.4 s. `--port N` serves elsewhere (`npm run
+cards -- --port 60476`). If the port is taken it says so and exits.
+
+- **Every card in content:** programs, buildings, events, threats, Unity, Discord, adversary
+  cards, projects, megaprojects and AI boards. Player cards go through `web/card/card.js` with
+  their scene from `art-originals/` (no art folder, no scene, nothing else lost); a kind with
+  no frame gets a plain face drawn from the same export. The scene is the one
+  `tools/card-art/scenes.json` wrote for that card, its only link to a card. Country pieces are
+  map, not cards, and are not shown.
+- **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
+  `web/card/faces.json`, `configs/baseline.json`, `docs/card-pricing.md` and
+  `experiments/results/`. It never runs `aic-sim docs`: faces are as committed, so a card
+  edited without it shows its old text (the fast lane stops that reaching `main`). **Rebuild**
+  on the page exports again without a restart, about 0.1 s.
+- **Stats** come from the newest `results.json` of 100 games or more with a per-card `cards`
+  table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
+  most plain agents, then most games); the page says which and warns when it is behind the
+  rules. Today that is r16: later items committed reports, not `results.json`. Kept % is keeps per 100 games of the
+  agent, about the share of games a one-copy card was kept in: the report's kept ÷ offered
+  counts draft packets only, while the opening deal is kept undrafted, so it read 1000% on a card
+  offered four times. Played % is the report's, played ÷ (kept + drawn). Win Δ comes from `games.csv`, which names only the buildings standing at the end, so it is blank
+  for other cards and a correlation for buildings. A CSV under `experiments/results/` with a
+  `card` (or `id`) column and a column with `reason` in its name, `card-prices.csv` by
+  convention, adds the reasoned price and printed minus reasoned. No results: no columns.
+- **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
+  cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is empty or
+  one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the card's text when
+  the note was saved; `hash` is a SHA-256 prefix of the card's content row and face, key order
+  aside (`contentHash` in the export). A planner reads this file directly; a note counts as
+  stale when its `hash` differs from that card's in `out/cards-export.json`.
+- **Badges:** *changed since your note* when the hash moved; saving the note again takes it
+  off. *New* for a card missing from `review/card-seen.json`, until it is opened, noted or
+  *Mark all seen* is pressed. The first run seeds that ledger with the whole set, so nothing
+  is new until content adds a card.
+- **Pricing lines** are every table row led by the card's full name, then bullets and
+  paragraphs naming it, those that only pass by marked *in passing*. A short form of a name
+  ("Mutual Aid") doesn't match, and the doc's older sections keep the numbers of their day.
+- **Leaving a card keeps what was typed:** closing or stepping saves the note. Each save leaves
+  the previous file as `review/card-notes.json.bak`. A broken notes file shows on the page and
+  refuses saves rather than being overwritten.
+- **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser through
+  all of the above on a copy under `out/cards-check/`; screenshots land there. Content and
+  real notes aren't touched.
+- Scenes are full-size PNGs of about 3.6 MB, loaded as they scroll in: a fast scroll shows grey
+  windows for a second or two.
+
 ## Card art
 
 The card renderer is `web/card/` (`card.js`, `card.css`, `icons.js`, the generated
