@@ -99,7 +99,7 @@ pub enum Site {
     Industrial,
     /// Research stations, whoever owns them.
     Stations,
-    /// Military bases.
+    /// Each country's first military base (`base_sites_per_country`).
     Bases,
 }
 

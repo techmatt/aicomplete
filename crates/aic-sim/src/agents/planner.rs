@@ -5,7 +5,10 @@
 //! **Full information** (Matt, 2026-10-29, `docs/principles.md`): a rollout
 //! plays on the real state, decks and dice included, so a line is exactly the
 //! game that would follow. It is not a model of a table; it is a stronger
-//! judge of the rules than a one-step agent. Each decision inside a line is
+//! judge of the rules than a one-step agent. The one exception is D20: which
+//! Alignment cards were dealt is a guess held for the line, so a line is
+//! dropped at the next real tip: it may have seen another card. Each decision
+//! inside a line is
 //! still the engine's own, scored on a guess: scored on the open decks the
 //! one-step heuristic won 19% against the guessing engine's 59% (c2 d2).
 //!
@@ -21,10 +24,13 @@
 //! A dominance check is a [`Policy`] around the planner, with the same
 //! [`Forced`] in its rollouts, so the check's rule holds for the whole line.
 
+use aic_core::content::Side;
+use aic_core::modules::alignment;
 use aic_core::{Action, Agent, GameState, Rules};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
+use super::determinize::hide_alignment_deal;
 use super::eval::{Eval, Weights};
 use super::policy::{Forced, Policy};
 use super::search::{greedy_scores, pick, Greedy, PhaseHistory, Scoring};
@@ -69,6 +75,8 @@ struct Line {
     value: f64,
     /// `end` is the first decision of this round, or the end of the game.
     stop: u32,
+    /// Tips made when the line was built (D20): its later cards are a guess.
+    tips: i64,
 }
 
 pub struct Planner {
@@ -80,6 +88,11 @@ pub struct Planner {
     /// (round, alternatives tried in it).
     spent: (u32, usize),
     history: PhaseHistory,
+}
+
+/// Tips made so far, both sides.
+fn tips(g: &GameState) -> i64 {
+    g.var(alignment::tips_key(Side::Unity)) + g.var(alignment::tips_key(Side::Discord))
 }
 
 /// Actions that are the same idea: the shortlist tries one of each. A threat
@@ -136,6 +149,7 @@ impl Planner {
     fn line_from(&self, rules: &Rules, state: &GameState, first: Option<&Action>, stop: u32) -> Option<Line> {
         prof::time(Part::Line, || {
             let mut end = state.clone();
+            hide_alignment_deal(rules, &mut end, state.seed);
             let mut actions = Vec::new();
             if let Some(a) = first {
                 rules.apply_mut(&mut end, a, None).ok()?;
@@ -149,6 +163,7 @@ impl Planner {
                 value: self.ev.value(rules, &end),
                 end,
                 stop,
+                tips: tips(state),
             })
         })
     }
@@ -169,7 +184,7 @@ impl Planner {
                 }
                 l.next += 1;
             }
-            if l.cursor != *state {
+            if l.cursor != *state || l.tips != tips(state) {
                 self.line = None;
             }
         })

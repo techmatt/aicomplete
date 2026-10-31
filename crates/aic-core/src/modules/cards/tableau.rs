@@ -3,13 +3,11 @@
 use super::*;
 
 /// Standing effects that apply to seat `s`: its AI's innate rule and its
-/// powered active buildings.
+/// active buildings.
 pub fn passives<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<&'w Op> {
     let mut out: Vec<&'w Op> = ai::board(w, seat).innate.passives.iter().collect();
     for id in g.pile(&built(seat)) {
-        if g.var(&unpowered(seat, id)) == 0 {
-            out.extend(def(w, id).passives.iter());
-        }
+        out.extend(def(w, id).passives.iter());
     }
     out
 }
@@ -104,7 +102,7 @@ pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
     }
     for id in token_cards(&w, g, seat, None) {
         let n = def(&w, &id).tokens.as_ref().map_or(0, |t| t.per_round);
-        if n > 0 && g.var(&unpowered(seat, &id)) == 0 {
+        if n > 0 {
             add_tokens(g, cx, seat, &id, n);
         }
     }

@@ -418,8 +418,9 @@ hands and drafts open, and answers the "players choose" questions too. Agents pl
 through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, reading the state).
 
 - **No peeking.** Before any search an agent replaces what the printed game hides with
-  a guess from its own RNG (`agents/determinize.rs`): the player-card, threat and
-  Unity/Discord decks are shuffled (contents are public, order is not); each hidden
+  a guess from its own RNG (`agents/determinize.rs`): the player-card and threat
+  decks are shuffled (contents are public, order is not); the Unity and Discord piles are dealt again
+  from their tier's unresolved printed cards (a game deals a subset face down, 053); each hidden
   adversary-deck position gets an unseen printed card of its stage (stages are stacked and
   public; next round's card is face up, and the top cards stay put under Recon Sweep);
   every RNG stream is reseeded. The guess depends only
@@ -462,7 +463,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing presence, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
-| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state (**full information**, Matt, 2026-10-29), so it is the game that follows; each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 6 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring). Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
+| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), so it is the game that follows; each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 6 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring). Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
 
 **Keeping by plan and the dominance checks (022, `agents/policy.rs`).** Greedy and
 engine keep drafted cards by a plan (`plan_keep` 1; 0 lets the heuristic decide keeps,
@@ -542,10 +543,10 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
-`experiments/gate.json`: 31 agents × 2 sizes = 62 cells, so 496 games in the first block (20 min
-on 8 threads at r22) and 1,984 at the cap. Measured, in planner games a minute: 14 on 4 threads
-(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046). Budget 45-60 min, and start it at least 75 min
-before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
+`experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
+the first block and 512 at the cap. Measured, in planner games a minute: 14 on 4 threads
+(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min). Budget
+30 min, and start it at least 45 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
 rate; for a gate that is to the cap, so the most it can take. Before a gate, `aic-sim experiment
 SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
 shows in minutes, not at the end of a block (its own `--out`: a run without `--resume` moves an
@@ -589,7 +590,7 @@ and `screen.py --gate DIR`. Fixed policies: `planner:always_expand=1`, `always_c
 screen took about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
 
 **Fast exploit check (050)**: `experiments/gate-exploit.json` is the first read for a rules
-item, before `gate.json`: the 12 checks that could still beat thinking, at c2 and c3 under
+item, before `gate.json`: the 13 checks that could still beat thinking, at c2 and c3 under
 the engine, early-stopped, capped at 32 seeds, read with `screen.py --gate DIR`. **468 of 832
 games, 45 min of game time, 8 min on 6 below-normal threads on a loaded box** (r22). Under the
 planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s at c2 and 67 s at
@@ -597,9 +598,14 @@ c3 there (on that loaded box; quiet, a c2 game is about 9 s, `scripts/bench/spee
 At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
 `gate.json`, under the planner, decides.
 
-**Niche and growth gate (046, r22)**: `experiments/gate.json` (`gate-046.json` until 052; a spec
-per revision until then, each in `archive/`) is every 034 check plus 041's four
-fixed policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
+**Calibration and gate (053, r23)**: `experiments/gate.json` is gate-r23: gate-046's checks plus
+`abandon`, 8 seeds a check, early-stopped from 4, with `screen.py --gate DIR`. 8 seeds can't place a win
+rate, so `experiments/band-r23.json` does (planner and engine, 48 seeds a cell, about 5.5 min on 8
+threads). Results: `experiments/results/screen-053-calibration/calibration.md`.
+
+**Niche and growth gate (046, r22)**: gate-046 (`experiments/gate.json` then, `gate-046.json` until
+052; a spec per revision until then, each in `archive/`) was every 034 check plus 041's four fixed
+policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
 `experiments/screen-046-curve.json` is the curve. `python scripts/bench/first_divergence.py OLD NEW`
 says where two runs of one spec first play differently, game by game. Results and timings:
 `experiments/results/screen-046-niche/niche.md`.
@@ -645,6 +651,9 @@ Compare two binaries with
 `prune=3` and `alts=1` save nothing (32 seeds, d2): leave them. `python
 scripts/bench/same_results.py DIR_A DIR_B` compares two experiment output directories,
 timing aside: the check that a speed-up changed no game. `same_play.py` is the wider one.
+
+**`run_sim.ps1` and stderr:** the wrapper sends stderr to `out/NAME.err`, which stays empty until the run
+ends, so the 10 s progress lines don't show. Watch `wc -l DIR/games.jsonl` and `out/NAME.exit` (053).
 
 **Results as they go.** Every finished game is appended to `DIR/games.jsonl` (a header
 line with the spec, engine, rules revision and content hash, then one game per line,

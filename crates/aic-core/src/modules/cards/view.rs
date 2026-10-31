@@ -71,8 +71,6 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .map(|id| {
                 let st = if def(w, id).ability.is_some() {
                     ability_blocked(w, g, s, id).unwrap_or("ready")
-                } else if g.var(&unpowered(s, id)) > 0 {
-                    "unpowered"
                 } else if !g.pile(&under(s, id)).is_empty() {
                     "stacked"
                 } else {
@@ -161,13 +159,12 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             );
         }
     }
-    // Per-seat markers: shown above as seat values, card status
-    // (`unpowered`), card text (tokens) or the draft piles (`picked`).
+    // Per-seat markers: shown above as seat values, card text (tokens) or
+    // the draft piles (`picked`).
     out.bookkeeping(&[
         "cards.picked.",
         "cards.next_discount.",
         "cards.civic_used.",
-        "cards.unpowered.",
         "cards.kept_round.",
         "cards.tokens.",
     ]);

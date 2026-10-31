@@ -89,8 +89,20 @@ fn is_site(w: &World, g: &GameState, h: usize, site: Site) -> bool {
         Site::Coastal => w.map.hexes[h].coastal,
         Site::Industrial => w.map.hexes[h].industrial,
         Site::Stations => g.tokens(h, STATION) > 0,
-        Site::Bases => is_base(w, h),
+        Site::Bases => site_base(w, h),
     }
+}
+
+/// Whether arrivals and escalation land on base hex `h` (053: each country's
+/// first base, its lowest-numbered, at `base_sites_per_country` 1, so what
+/// reaches bases counts countries, not fronts).
+fn site_base(w: &World, h: usize) -> bool {
+    let at = &w.map.hexes[h];
+    is_base(w, h)
+        && (w.int("adversary.base_sites_per_country") == 0
+            || !(0..w.map.hexes.len()).any(|x| {
+                is_base(w, x) && w.map.hexes[x].country == at.country && w.map.hexes[x].number < at.number
+            }))
 }
 
 /// How many ambassadors `twists`' arrivals bring in `scope` (a tally).
@@ -108,14 +120,14 @@ pub fn arrival_count(w: &World, g: &GameState, twists: &[&Op], scope: Option<usi
 }
 
 /// What an escalating card places in its build: `(hex, ambassadors)` for
-/// every military base, in hex order (none at `escalation_ambassadors` 0).
+/// each base it reaches ([`site_base`]), in hex order (none at `escalation_ambassadors` 0).
 pub fn escalation_hexes(w: &World, g: &GameState) -> Vec<(usize, i64)> {
     let n = w.int("adversary.escalation_ambassadors");
     if n <= 0 {
         return Vec::new();
     }
     (0..g.hexes.len())
-        .filter(|&h| is_base(w, h))
+        .filter(|&h| site_base(w, h))
         .map(|h| (h, n))
         .collect()
 }

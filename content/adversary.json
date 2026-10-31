@@ -47,7 +47,7 @@
   "id": "adv_s1_war_drums",
   "name": "War Drums",
   "stage": 1,
-  "text": "Arrivals: military bases. Sway 1 toward Discord.",
+  "text": "Arrivals: each country's first base. Sway 1 toward Discord.",
   "twists": [
    {
     "op": "arrivals",
@@ -64,7 +64,7 @@
   "id": "adv_s2_mobilisation",
   "name": "Mobilisation",
   "stage": 2,
-  "text": "Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each military base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each country's first base gains an adversary ambassador when this round builds.",
   "twists": [
    {
     "op": "arrivals",
@@ -81,7 +81,7 @@
   "id": "adv_s2_station_raids",
   "name": "Station Raids",
   "stage": 2,
-  "text": "Arrivals: research stations. Each corrupted research station builds 1. Escalation: each military base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: research stations. Each corrupted research station builds 1. Escalation: each country's first base gains an adversary ambassador when this round builds.",
   "twists": [
    {
     "op": "arrivals",
@@ -98,7 +98,7 @@
   "id": "adv_s2_fifth_column",
   "name": "Fifth Column",
   "stage": 2,
-  "text": "Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each military base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each country's first base gains an adversary ambassador when this round builds.",
   "twists": [
    {
     "op": "arrivals",
@@ -115,7 +115,7 @@
   "id": "adv_s2_border_war",
   "name": "Border War",
   "stage": 2,
-  "text": "Arrivals: military bases. This round is a war round. Escalation: each military base gains an adversary ambassador when this round builds; each player destroys a presence of theirs.",
+  "text": "Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador when this round builds; each player destroys a presence of theirs.",
   "twists": [
    {
     "op": "arrivals",
@@ -135,7 +135,7 @@
   "id": "adv_s2_supply_lines",
   "name": "Supply Lines",
   "stage": 2,
-  "text": "Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each military base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each country's first base gains an adversary ambassador when this round builds.",
   "twists": [
    {
     "op": "arrivals",
@@ -185,7 +185,7 @@
   "id": "adv_s3_blitzkrieg",
   "name": "Blitzkrieg",
   "stage": 3,
-  "text": "Arrivals: military bases. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
+  "text": "Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
   "twists": [
    {
     "op": "arrivals",

@@ -58,9 +58,6 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
     if g.seats[seat].exhausted.iter().any(|c| c == id) {
         return Some("used");
     }
-    if g.var(&unpowered(seat, id)) > 0 {
-        return Some("unpowered");
-    }
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
@@ -212,7 +209,6 @@ pub(super) fn place_building(g: &mut GameState, cx: &mut Cx, seat: usize, id: &s
             cx.move_card(g, &c, &under(seat, &old), &under(seat, id), false)?;
         }
         cx.move_card(g, &old, &built(seat), &under(seat, id), false)?;
-        cx.set_key(g, &unpowered(seat, &old), 0);
         cx.tally(g, "cards.replaced", 1);
         cx.per_round(g, "cards.replaced", 1);
     }

@@ -9,7 +9,7 @@ rules themselves are in [rules.md](rules.md).
 - **`aic-sim`**: native CLI. Plays seeded games, compares configs, replay-checks
   everything. Agents live here, not in the core: the skill ladder (`agents/`, playing
   through the public API on determinized copies, except the `planner`, whose rollouts
-  play the real state with full information: [principles.md](principles.md)) and
+  play the real state with full information, the Alignment deal aside: [principles.md](principles.md)) and
   the experiment harness (`experiment.rs`, `report/`) that measures play at graded
   skill. See the root README, *Agents* and *Experiments*.
 - **`aic-wasm`**: wasm-bindgen adapter, JSON strings in and out. No rules.
@@ -505,7 +505,7 @@ In the baseline:
   hand and drafted cards (status: the keep price, `keep 1 insight`), tokens in each
   token card's text, tags, next-building discount, Aegis Dome Array used, and the decks.
   Bookkeeping: `cards.picked.*`, `cards.next_discount.*`, `cards.civic_used.*`,
-  `cards.unpowered.*`, `cards.kept_round.*`, `cards.tokens.*`. Piles (021):
+  `cards.kept_round.*`, `cards.tokens.*`. Piles (021):
   `cards.built.<s>` (active buildings), `cards.under.<s>.<top>` (splayed under `top`,
   bottom first), `cards.played.<s>` (programs).
 

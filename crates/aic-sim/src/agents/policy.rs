@@ -76,6 +76,11 @@ pub struct Forced {
     /// and lands them on bases and factories, each worth Unity when it produces,
     /// before anything else; the rest of its play is the agent's.
     pub unity_farm: bool,
+    /// Exploit check (053): give up the last country: never counter a threat
+    /// on it and never pick a hex in it while another pick is open, losses
+    /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
+    /// this should lose ground.
+    pub abandon: bool,
     /// Keep by plan (off: the wrapped agent's heuristic decides keeps).
     pub plan_keep: bool,
     /// Rounds the keep plan looks at: this round's action phase and the
@@ -130,6 +135,7 @@ impl Forced {
             turtle,
             free_only,
             unity_farm,
+            abandon,
             plan_keep,
             plan_rounds: _,
             plan_reserve: _,
@@ -160,6 +166,7 @@ impl Forced {
             || *turtle
             || *free_only
             || *unity_farm
+            || *abandon
             || *plan_keep
     }
 
@@ -255,9 +262,14 @@ impl Policy {
     }
 
     /// Whether `a` is an action the forced behaviour rules out.
-    fn ruled_out(&self, world: &World, a: &Action) -> bool {
+    fn ruled_out(&self, world: &World, g: &GameState, a: &Action) -> bool {
         let f = &self.forced;
         match a {
+            Action::Pay { threat, .. } if f.abandon && on_given_up(world, g, threat) => true,
+            Action::Choose { option, target, .. } if f.abandon => {
+                on_given_up(world, g, option)
+                    || (!losing_pick(g) && target.and_then(|t| world.map.find(t)).is_some_and(|h| given_up(world, h)))
+            }
             Action::Tier { tier: 2, .. } => f.tier1_only,
             Action::Power { .. } => f.no_powers || f.free_only,
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
@@ -384,7 +396,7 @@ impl Agent for Policy {
             }
         }
         let keep: Vec<usize> = (0..legal.len())
-            .filter(|&i| !self.ruled_out(&world, &legal[i]))
+            .filter(|&i| !self.ruled_out(&world, g, &legal[i]))
             .collect();
         if keep.is_empty() || keep.len() == legal.len() {
             return self.inner.choose(rules, g, legal);
@@ -392,6 +404,25 @@ impl Agent for Policy {
         let sub: Vec<Action> = keep.iter().map(|&i| legal[i].clone()).collect();
         keep[self.inner.choose(rules, g, &sub)]
     }
+}
+
+/// Whether hex `h` is in the country the abandon check gives up: the last.
+fn given_up(w: &World, h: usize) -> bool {
+    w.map.hexes[h].country as usize + 1 == w.map.countries.len()
+}
+
+/// Whether the open choice picks what the team loses: there the check may
+/// spend the country it gave up.
+fn losing_pick(g: &GameState) -> bool {
+    g.pending.as_ref().is_some_and(|p| {
+        ["destroy", "lose", "sacrifice", "goes on"].iter().any(|w| p.ask.prompt.contains(w))
+    })
+}
+
+/// Whether `threat` sits on the country the abandon check gives up.
+fn on_given_up(w: &World, g: &GameState, threat: &str) -> bool {
+    let last = w.map.countries.len() - 1;
+    threats::active(g).iter().any(|(t, c)| t == threat && *c == Some(last))
 }
 
 /// Whether hex `h` pays Unity for a player ambassador when it produces and

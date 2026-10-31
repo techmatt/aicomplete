@@ -136,6 +136,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Draw { count } => cards::draw(g, cx, seat, *count)?,
         Op::GainPerTokens { resource, kind, per, max } => resources::gain_per_tokens(g, cx, seat, *resource, *kind, *per, *max),
         Op::CashOut { kind, resource, max } => resources::cash_out(g, cx, seat, *kind, *resource, *max),
+        Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
         Op::NextRoundInsight { amount } => economy::add_bonus_insight(g, cx, *amount),
         Op::NextBuildingDiscount { amount } => {

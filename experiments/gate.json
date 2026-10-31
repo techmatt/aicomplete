@@ -1,6 +1,6 @@
 {
-  "name": "gate",
-  "note": "The r22 gate at d2 against the planner, 2 and 3 countries, early-stopped, capped at 32 seeds: every 034 check and 041's four fixed policies.",
+  "name": "gate-r23",
+  "note": "The r23 gate at d2 against the planner, 2 and 3 countries: every check of gate-046 (retired, 053) plus abandon, 8 seeds a check, early-stopped from 4. Run on fresh seeds. 8 seeds can't place a win rate: experiments/band-r23.json does that.",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "c2", "set": []},
@@ -17,9 +17,10 @@
     "planner:keep_all=1", "planner:tier1_only=1", "planner:no_presence=1",
     "planner:only_tag=1", "planner:only_tag=2", "planner:only_tag=3",
     "planner:only_tag=4", "planner:only_tag=5", "planner:only_tag=6",
-    "planner:events_only=1", "planner:ignore_threats=1", "planner:turtle=1", "planner:free_only=1"
+    "planner:events_only=1", "planner:ignore_threats=1", "planner:turtle=1", "planner:free_only=1",
+    "planner:abandon=1"
   ],
-  "games": 32,
+  "games": 8,
   "records": 0,
-  "gate": {"z": 2.0, "min_games": 8, "every": 4}
+  "gate": {"z": 2.0, "min_games": 4, "every": 2}
 }

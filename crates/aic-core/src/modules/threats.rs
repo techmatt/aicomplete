@@ -5,7 +5,7 @@
 //! country) and `off` (no threats).
 
 use crate::action::Action;
-use crate::content::{Op, Resource, Side, Spot, ThreatDef};
+use crate::content::{Op, Resource, Spot, ThreatDef};
 use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
@@ -435,7 +435,7 @@ impl Module for Threats {
             cx.count(g, "executed", 1);
             let source = if d.tier == 1 { "threat1" } else { "threat2" };
             effects::run(g, cx, &d.effects, &mut effects::Ctx::threat(scope).named(source))?;
-            alignment::sway(g, cx, Side::Discord, w.int("alignment.threat_discord"));
+            alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
             clear(g, cx, &t, scope);
         }
         Ok(())

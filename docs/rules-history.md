@@ -13,6 +13,31 @@ Delay prints a clock, not Jam's minus on a threat (D19). rules.md says a shield 
 stays as its hardening token when the presence goes (D17). Unused `AiBoard.unity` and `CardDef.upkeep`
 are gone, with the Unity-a-round column and the building-upkeep rule: no board or card used them.
 
+**Revision 23 (053): calibrated at d2, pressure per country.** Matt's rulings of 2026-10-31. (The
+prompt's number; the constant was 22, so it held.) The planner sits at 60-75% at d2 at both sizes on
+fresh seeds: one rule plus an agent fix. The agent fix did most of the pushing up: 96 / 54 to 67 / 38
+on 24 seeds with no rule changed, so ruling 2's general push added no lever (each one tried left the
+band). Screen: `experiments/results/screen-053-calibration/calibration.md`.
+
+| What | Was | Now | Status |
+|---|---|---|---|
+| Arrivals at military bases, Escalation | every base: 1 a country at 2 countries, 2 at 3 and 4 | each country's first base, its lowest-numbered (`base_sites_per_country` 1) | candidate |
+| War Drums, Border War, Blitzkrieg; every Escalation | "military bases" | "each country's first base" (text) | candidate |
+| Dominance gate | gate-046 | gate-r23 (`experiments/gate.json`): gate-046's checks plus abandon; 8 seeds a check | gate-046 retired |
+| Failure mix target | each clock under about 60% of losses | under about 80% (`docs/principles.md`) | candidate |
+
+Tried and dropped, all on top of bases per country unless marked: a country sways once for its bases
+(alone, 42 at c3); Discord bucket 7 or 8 at c3 (no bases rule: 54 / 75, but it fixes c3 with the cause
+left in); 3 and 5 (58 / 46 and softened steps); tier-2 and tier-1 Discord steps taking 1 presence
+instead of 2 (82 / 68: all three clocks live, c2 out of the band); those with `extra_threats` 2 (50 /
+46); with `escalation_ambassadors` 2 (83 / 54); with `project_discord_per` 1 (75 / 71); that last on
+its own (70 / 62, 56 seeds: inside the band, and the first number to try if more push is wanted).
+
+Agents, no rules change: D20, which Alignment cards a game dealt is hidden from every agent, the
+planner's lines included (`hide_alignment_deal`). The `abandon` check. Stats, no rules change: Discord
+Sway is tallied by source (`alignment.discord_from.*`). 052's clamp on `niche_jobs` is what this item
+asked for there.
+
 **Revision 22 (046): one standard placement, a Science niche, a better Develop.** Matt's rulings on
 041 and 042 (2026-10-30). (The prompt called this r21; 044 took that number.) The round cap's quiet
 backstop is **locked**: 0 cap losses is fine and it has no share target; all else is a candidate.

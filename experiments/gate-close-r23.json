@@ -1,0 +1,13 @@
+{
+  "name": "gate-close-r23",
+  "note": "The gate's close calls at 48 seeds: the checks that sat level or ahead of the planner at gate-r23's 8. Read beside experiments/band-r23.json on the same seeds.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner:always_consolidate=1", "planner:never_remove=1", "planner:never_tag=2", "planner:never_tag=3", "planner:no_powers=1", "planner:tier2_rush=1"],
+  "games": 48,
+  "records": 0
+}

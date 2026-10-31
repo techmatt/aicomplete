@@ -559,7 +559,7 @@ mod tests {
         let longest = crate::vocab::RESOURCES.iter().map(|r| r.name()).max_by_key(|n| n.len()).unwrap();
         let ids = c.cards.iter().map(|x| &x.id).chain(c.threats.iter().map(|x| &x.id));
         for id in ids.chain(c.projects.iter().map(|x| &x.id)) {
-            KeyBuf::new("cards.unpowered.").num(3).text(".").text(id);
+            KeyBuf::new("cards.tokens.").num(3).text(".").text(id);
             KeyBuf::new("threats.paid.").text(id).text(".").num(3).text(".").text(longest);
         }
     }

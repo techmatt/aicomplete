@@ -159,7 +159,7 @@ Player ambassadors move only through cards and the standard action.
    every country gains `arrivals` adversary ambassadors, whatever the board holds (below).
    Each corrupted city gains `city_build` (027: was 2, arrivals took over as the steady source; 024: was 1; 018: was 2) adversary ambassadors, and each factory
    next to (adjacent to) a corrupted city gains `factory_build` (018: was 1). The card's twists
-   add more. A stage-II card's **Escalation** then gives each military base
+   add more. A stage-II card's **Escalation** then gives each country's first base (below)
    `escalation_ambassadors`. Ongoing **projects** act (below). Last, each **node**
    makes `node_compute` (027: was 3, arrivals make nodes quickly; 024: was 1) **adversary compute**, onto the projects; a node holding a
    player ambassador makes none (the ambassador stays).
@@ -283,14 +283,14 @@ face up a round ahead (peek cards show more). Each card's twists change its roun
 | Probing Strikes | 1 | Arrivals: coastal cities. The Militarist tests the lines: it builds and spreads as usual. |  |
 | Factory Drive | 1 | Arrivals: industrial zones. Factories next to clean cities build 1 too. |  |
 | Long Patrols | 1 | Arrivals: research stations. Spread reaches 1 hex further. |  |
-| War Drums | 1 | Arrivals: military bases. Sway 1 toward Discord. |  |
-| Mobilisation | 2 | Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each military base gains an adversary ambassador when this round builds. | yes |
-| Station Raids | 2 | Arrivals: research stations. Each corrupted research station builds 1. Escalation: each military base gains an adversary ambassador when this round builds. | yes |
-| Fifth Column | 2 | Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each military base gains an adversary ambassador when this round builds. | yes |
-| Border War | 2 | Arrivals: military bases. This round is a war round. Escalation: each military base gains an adversary ambassador when this round builds; each player destroys a presence of theirs. | yes |
-| Supply Lines | 2 | Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each military base gains an adversary ambassador when this round builds. | yes |
+| War Drums | 1 | Arrivals: each country's first base. Sway 1 toward Discord. |  |
+| Mobilisation | 2 | Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
+| Station Raids | 2 | Arrivals: research stations. Each corrupted research station builds 1. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
+| Fifth Column | 2 | Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
+| Border War | 2 | Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador when this round builds; each player destroys a presence of theirs. | yes |
+| Supply Lines | 2 | Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
 | Total Mobilisation | 3 | Arrivals: industrial zones. Each corrupted city builds 1 more, and factories next to clean cities build 1 too; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
-| Blitzkrieg | 3 | Arrivals: military bases. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
+| Blitzkrieg | 3 | Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
 | Occupation | 3 | Arrivals: research stations. Cities corrupt at 1 fewer ambassador, and each corrupted research station builds 1; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
 | Iron Doctrine | 3 | Arrivals: coastal cities. This round is a war round; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
 <!-- /generated -->
@@ -298,12 +298,26 @@ face up a round ahead (peek cards show more). Each card's twists change its roun
 **Arrivals: the explore step that never stops (027).** The site types are **coastal
 cities**, **industrial zones** (built on or not: an ambassador may stand on an empty zone,
 the one exception to "ambassadors sit on pieces"), **research stations** (whoever owns
-them) and **military bases**. A coastal city is one next to ocean or printed coastal on
+them) and **each country's first base**. A coastal city is one next to ocean or printed coastal on
 its piece (`coast` in `content/map.json`): every piece has two coastal cities. Coastal Republic gets
 both from its ocean, Northern Union prints one more, Highland and Delta print both. Next round's card is face up, so its site
 type is visible a round ahead. Each stage's cards spread the types. **Default:** an
 out-of-turn "the adversary builds now" brings the card's arrivals too, in its scope: one
 rule for a build.
+
+**A country's first base (053, candidate; `base_sites_per_country`):** its lowest-numbered military
+base. Arrivals and Escalation reach only that one, so what reaches bases counts countries, not
+fronts: a country has one front at 2 countries and two at 3 and 4, so counting every base gave a
+3-country board twice the pressure per country and made base Sway the whole of the Discord gap
+between the sizes. The count is fixed by the printed board, so it can't feed back. A base's other
+rules are unchanged: an ambassador that spreads onto a second base still diverts it, and a threat
+that lands on bases here (Total war) lands on all of them.
+
+**For new players.** An adversary card may name military bases, and stage II cards send an extra
+ambassador to them. Either way it lands on one base in each country, the lowest-numbered. A base with
+an ambassador on it swings the world toward Discord when it next produces, so guard your first base.
+**What resisted this:** "first base" is a new term for a printed number, it only means anything at 3
+and 4 countries, and an ambassador can still spread onto the second base.
 
 **The supply is a cap (027).** A placement the supply can't make doesn't happen; running out
 no longer loses.
@@ -328,6 +342,11 @@ last round): a quiet backstop nobody plans around.
 Since 017 the difficulty is only the configured level: Discord tips no longer raise it
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
+
+**The calibration point (053, r23, planner, fresh seeds, 48 a cell, ±7):** d2 is 71 at 2 countries,
+62 at 3; the other difficulties are not re-measured (the rules changed only base arrivals, and agents
+no longer know the Alignment deal, so the earlier curves read high). Target 60-75 at both
+(`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
 **The curve (041, r20, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 83,
 d3 42, d4 25; 3 countries: d0 83, d1 75, d2 50, d3 8, d4 17; at 32 seeds d2 is 88 / 44
@@ -1321,11 +1340,12 @@ edit the source, not the table.
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 5, 2 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | adversary ambassadors in the supply per country |
+| `adversary.base_sites_per_country` | 1 | 0..1 | 1: arrivals and escalation reach only each country's first military base, its lowest-numbered (0: every base) |
 | `adversary.city_build` | 1 | 0..10 | build: ambassadors each corrupted city gains |
 | `adversary.factory_build` | 0 | 0..10 | build: ambassadors each factory next to a corrupted city gains |
 | `adversary.spread_range` | 2 | 1..6 | spread: how far (hexes) a spreading ambassador may travel |
 | `adversary.corrupt_at` | 6 | 1..20 | corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted |
-| `adversary.escalation_ambassadors` | 1 | 0..5 | stage-II escalation: ambassadors each military base gains when the card builds |
+| `adversary.escalation_ambassadors` | 1 | 0..5 | stage-II escalation: ambassadors each base it reaches gains when the card builds |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty 1+: added to every threat's first counter requirement |
 | `adversary.counter_bonus_all` | 0 | 0..10 | difficulty 1+: added to every counter requirement of every threat |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty 1+: extra threats dealt each round in all, one per country in turn |
@@ -1475,7 +1495,7 @@ that matches its intent):
     sacrificed card pays with all its tags, each tag first toward its own requirement;
     the player picks cards one at a time among those that still help.
 51. (021) A token card gains its tokens in upkeep while it is an active building (not
-    splayed, not unpowered); only buildings hold tokens; sacrificing or discarding a card
+    splayed); only buildings hold tokens; sacrificing or discarding a card
     loses its tokens.
 52. (021) The movement add-on's "up to 2 hexes" is hex distance (`Map::distance`, over
     land and sea); the destination must be a piece. Spread moves each ambassador at most

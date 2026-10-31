@@ -37,7 +37,7 @@
 //!
 //! - `planner` (028): the engine, trying a shortlist of alternatives in the
 //!   action phase by rolling each out `horizon` rounds with the engine as
-//!   the policy, on full information ([`planner`]).
+//!   the policy, on full information but for the Alignment deal ([`planner`]).
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, and applies the dominance checks' forced behaviours.
@@ -146,6 +146,7 @@ macro_rules! with_policy_params {
             ("turtle", 0.0, "exploit check (027): no presence beyond setup; only remove, clear, chips, ambassador and hardening actions"),
             ("free_only", 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions"),
             ("unity_farm", 0.0, "exploit check (028): before anything else, buy ambassadors and land them on bases and factories"),
+            ("abandon", 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside"),
             ("rich_spend", 0.0, "exploit check (034): every spare credit on the rich action"),
             ("science_rush", 0.0, "exploit check (034): draft, keep and play Science first, for its discounts"),
             ("always_expand", 0.0, "fixed policy (041): the growth option that places the most presence"),
@@ -420,6 +421,7 @@ impl AgentSpec {
             turtle: on("turtle"),
             free_only: on("free_only"),
             unity_farm: on("unity_farm"),
+            abandon: on("abandon"),
             rich_spend: on("rich_spend"),
             science_rush: on("science_rush"),
             always_expand: on("always_expand"),
@@ -595,6 +597,7 @@ mod tests {
             "engine:turtle=1",
             "engine:free_only=1",
             "engine:unity_farm=1",
+            "engine:abandon=1",
             "engine:keep_none=1",
             "engine:keep_random=1",
             "planner:budget=2,never_tag=2",

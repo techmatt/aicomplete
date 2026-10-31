@@ -324,7 +324,7 @@ pub struct AdversaryCard {
     pub text: String,
     #[serde(default)]
     pub twists: Vec<Op>,
-    /// The Militarist's escalation: each military base gains an adversary
+    /// The Militarist's escalation: each country's first base gains an adversary
     /// ambassador when this card's round builds.
     #[serde(default)]
     pub escalation: bool,

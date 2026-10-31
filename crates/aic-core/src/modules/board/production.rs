@@ -35,7 +35,7 @@ pub(super) fn base_units(g: &mut GameState, cx: &mut Cx) {
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
             adversary::remove(g, cx, h, 1);
             cx.tally(g, "board.bases_diverted", 1);
-            alignment::sway(g, cx, Side::Discord, w.int("board.base_discord"));
+            alignment::discord_from(g, cx, "base", w.int("board.base_discord"));
         } else if let Some(s) = player_ambassador(g, h) {
             cx.add_tokens(g, h, &ambassador(s), -1);
             cx.tally(g, "board.bases_united", 1);
@@ -215,7 +215,7 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         if corrupted(g, h) {
-            alignment::sway(g, cx, Side::Discord, energy * divert);
+            alignment::discord_from(g, cx, "city", energy * divert);
             cx.tally(g, "board.energy_diverted", energy);
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 {
             adversary::remove(g, cx, h, 1);
@@ -333,7 +333,7 @@ pub(super) fn complete_project(g: &mut GameState, cx: &mut Cx, c: usize) {
         cx.set_key(g, &project_key(c, Some(s)), 0);
     }
     let per = w.int("board.project_discord_per");
-    alignment::sway(g, cx, Side::Discord, adv / per);
+    alignment::discord_from(g, cx, "megaproject", adv / per);
     cx.set_key(g, &project_key(c, None), 0);
     cx.set_key(g, &project_done(c), 1);
     cx.tally(g, "board.projects_completed", 1);

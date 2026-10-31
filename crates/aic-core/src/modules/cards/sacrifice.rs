@@ -156,7 +156,6 @@ pub fn sacrifice_for(g: &mut GameState, cx: &mut Cx, seat: usize, cost: &[(TagOr
         given += src.tags.len() as i64;
         for (pile, card) in &src.cards {
             cx.set_key(g, &tokens_key(seat, card), 0);
-            cx.set_key(g, &unpowered(seat, card), 0);
             discard(g, cx, card, pile);
             cx.tally(g, "cards.sacrificed", 1);
         }

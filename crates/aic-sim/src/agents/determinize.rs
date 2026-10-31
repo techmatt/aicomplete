@@ -5,9 +5,12 @@
 //! hides with a guess drawn from its own RNG, consistent with what players
 //! can see:
 //!
-//! - the player-card, threat and Unity/Discord decks: their contents are
-//!   known (every card not seen elsewhere), their order is not, so they are
-//!   shuffled;
+//! - the player-card and threat decks: their contents are known (every card
+//!   not seen elsewhere), their order is not, so they are shuffled;
+//! - the Unity and Discord decks: a game deals a subset of the printed cards
+//!   face down (the Unity deck always, the Discord deck at difficulty 4), so
+//!   each pile is dealt again from the printed cards of its tier not yet
+//!   resolved, at its size ([`redeal_alignment`], D20);
 //! - the adversary deck: its size and the stage of each position are public
 //!   (the stages are stacked), next round's card (`adversary.next`) is face
 //!   up, and the top `adversary.peek` cards are shown (Recon Sweep). Every
@@ -24,10 +27,11 @@
 
 use std::sync::Arc;
 
-use aic_core::modules::adversary;
+use aic_core::content::Side;
+use aic_core::modules::{adversary, alignment};
 use aic_core::{GameState, Key, Rules};
 use rand::seq::SliceRandom;
-use rand::RngCore;
+use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 /// Piles whose order is hidden but whose contents are known.
@@ -41,6 +45,63 @@ pub(crate) const SHUFFLED: [&str; 8] = [
     "alignment.deck.discord.1",
     "alignment.deck.discord.2",
 ];
+
+/// The Alignment piles a game may deal a subset of: (side, tier, pile).
+const DEALT: [(Side, u8, &str); 4] = [
+    (Side::Unity, 1, "alignment.deck.unity.1"),
+    (Side::Unity, 2, "alignment.deck.unity.2"),
+    (Side::Discord, 1, "alignment.deck.discord.1"),
+    (Side::Discord, 2, "alignment.deck.discord.2"),
+];
+
+/// Deals each Alignment pile again from the printed cards of its tier not
+/// yet resolved, at the pile's size (D20): which cards were dealt is face
+/// down. A pile with no such cards to fill it (only a test's) stays.
+fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
+    let w = rules.world();
+    for (side, tier, key) in DEALT {
+        let n = g.pile(key).len();
+        if n == 0 {
+            continue;
+        }
+        let seen = g.pile(&alignment::resolved(side));
+        let mut pool: Vec<Key> = w
+            .content
+            .alignment
+            .iter()
+            .filter(|c| c.side == side && c.tier == tier && !seen.iter().any(|s| s.as_str() == c.id))
+            .map(|c| Key::new(&c.id))
+            .collect();
+        pool.shuffle(rng);
+        if pool.len() >= n {
+            pool.truncate(n);
+            g.piles.insert(key.into(), Arc::new(pool));
+        }
+    }
+}
+
+/// The planner's lines (D20): the table as it is, decks and dice included,
+/// except for which Alignment cards were dealt, a guess fixed by `seed` so a
+/// line repeats. A pending choice's snapshot gets the same piles, under what
+/// its step drew, as in [`guess`].
+pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64) {
+    let original = g.pending.is_some().then(|| g.clone());
+    redeal_alignment(rules, g, &mut ChaCha8Rng::seed_from_u64(seed));
+    let guessed = DEALT.map(|(_, _, key)| g.pile(key).to_vec());
+    let (Some(p), Some(original)) = (g.pending.as_mut().map(Arc::make_mut), &original) else {
+        return;
+    };
+    let snap = Arc::make_mut(&mut p.snapshot);
+    for ((_, _, key), mut pile) in DEALT.into_iter().zip(guessed) {
+        let (was, now) = (snap.pile(key), original.pile(key));
+        if was.len() > now.len() && was.ends_with(now) {
+            pile.splice(0..0, was[..was.len() - now.len()].iter().cloned());
+        } else if was != now {
+            continue;
+        }
+        snap.piles.insert(key.into(), Arc::new(pile));
+    }
+}
 
 /// Replaces the hidden parts of `g` with a sample drawn from `rng`.
 pub fn determinize(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
@@ -58,6 +119,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
             pile.shuffle(rng);
         }
     }
+    redeal_alignment(rules, g, rng);
     resample_adversary_deck(rules, g, rng);
     shuffle_project_stages(rules, g, rng);
     let seeds: Vec<(Key, u64)> = g.rng.keys().map(|k| (*k, rng.next_u64())).collect();
@@ -185,7 +247,6 @@ fn resample_adversary_deck(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rn
 mod tests {
     use super::*;
     use crate::agents::tests::{config_rules, rules};
-    use rand::SeedableRng;
 
     #[test]
     fn keeps_public_information() {
@@ -223,6 +284,10 @@ mod tests {
                             a.iter().map(st).collect::<Vec<_>>(),
                             b.iter().map(st).collect::<Vec<_>>()
                         );
+                    } else if DEALT.iter().any(|(_, _, key)| key == k) {
+                        // Its size is public; which cards were dealt is not.
+                        assert_eq!(a.len(), b.len(), "{k}");
+                        continue;
                     } else if !SHUFFLED.contains(&k.as_str()) {
                         assert_eq!(&a, &b, "{k}");
                     }
@@ -283,6 +348,40 @@ mod tests {
             determinize(&r, &mut gb, &mut ChaCha8Rng::seed_from_u64(5));
             assert_eq!(ga, gb, "seed {seed}");
         }
+    }
+
+    /// D20: the three tier-1 Unity cards a game dealt are hidden: the guess
+    /// reaches printed cards outside the deal, and a table holding a
+    /// different deal gives the same guess.
+    #[test]
+    fn the_unity_deal_is_hidden() {
+        let r = rules(0);
+        let w = r.world();
+        let key = "alignment.deck.unity.1";
+        let g = r.new_game(3);
+        let printed: Vec<Key> = w
+            .content
+            .alignment
+            .iter()
+            .filter(|c| c.side == Side::Unity && c.tier == 1)
+            .map(|c| Key::new(&c.id))
+            .collect();
+        assert!(printed.len() > g.pile(key).len());
+        let outside = printed.iter().find(|id| !g.pile(key).contains(id)).unwrap();
+        let reached = (0..40).any(|s| {
+            let mut h = g.clone();
+            determinize(&r, &mut h, &mut ChaCha8Rng::seed_from_u64(s));
+            h.pile(key).contains(outside)
+        });
+        assert!(reached, "the guess only ever held the dealt cards");
+        let mut other = g.clone();
+        let mut deal = g.pile(key).to_vec();
+        deal[0] = outside.clone();
+        other.piles.insert(key.into(), Arc::new(deal));
+        let (mut ga, mut gb) = (g.clone(), other);
+        hide_alignment_deal(&r, &mut ga, 7);
+        hide_alignment_deal(&r, &mut gb, 7);
+        assert_eq!(ga.pile(key), gb.pile(key));
     }
 
     /// In the middle of a resolution (a pending choice), answering on the

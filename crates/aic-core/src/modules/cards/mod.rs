@@ -152,10 +152,6 @@ pub fn civic_used(seat: usize) -> String {
     format!("cards.civic_used.{seat}")
 }
 
-fn unpowered(seat: usize, card: &str) -> KeyBuf {
-    KeyBuf::new("cards.unpowered.").num(seat).text(".").text(card)
-}
-
 /// Drafted cards `seat` has kept this round.
 pub fn kept_key(seat: usize) -> String {
     format!("cards.kept_round.{seat}")

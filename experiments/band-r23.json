@@ -1,0 +1,13 @@
+{
+  "name": "band-r23",
+  "note": "The r23 calibration read: the planner, and the engine for scale, at d2, 2 and 3 countries, 48 seeds a cell. Fresh seeds only: --seed 5000 for the first read.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "engine"],
+  "games": 48,
+  "records": 0
+}

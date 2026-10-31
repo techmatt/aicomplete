@@ -59,7 +59,8 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     assert_eq!(g.tokens(far, ADV_AMBASSADOR), 1);
 
     // Mobilisation (stage II): corrupted cities build 1 more, and the
-    // escalation puts an ambassador on every military base.
+    // escalation puts an ambassador on each country's first base (at 2
+    // countries, its only one).
     let mut g = g0.clone();
     g.piles
         .insert(NEXT.into(), vec!["adv_s2_mobilisation".into()].into());
@@ -71,6 +72,27 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
         }
     }
     assert_eq!(g.var(STAGE), 2);
+}
+
+/// 053: arrivals and escalation count countries, not fronts: at 3 countries
+/// each has two bases, and only the lowest-numbered gains anything.
+#[test]
+fn arrivals_and_escalation_reach_each_countrys_first_base() {
+    for (sites, first, second) in [(1, 2, 0), (0, 2, 2)] {
+        let set = format!("adversary.base_sites_per_country={sites}");
+        let (rules, mut g) = lab_with(&["adversary.build"], &["countries=3", "adversary.arrivals=1", &set]);
+        let m = &rules.map;
+        g.piles.remove(CURRENT);
+        g.piles.insert(NEXT.into(), vec!["adv_s2_border_war".into()].into());
+        run(&rules, &mut g);
+        for c in 0..3 {
+            let mut bases = hexes_where(m, |h| kind(m, h) == HexKind::Base && m.hexes[h].country == c);
+            bases.sort_by_key(|&h| m.hexes[h].number);
+            assert_eq!(bases.len(), 2);
+            assert_eq!(g.tokens(bases[0], ADV_AMBASSADOR), first);
+            assert_eq!(g.tokens(bases[1], ADV_AMBASSADOR), second);
+        }
+    }
 }
 
 #[test]

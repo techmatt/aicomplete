@@ -236,6 +236,14 @@ pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
     }
 }
 
+/// [`sway`] toward Discord, tallied by where it came from (053).
+pub fn discord_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
+    if n > 0 {
+        cx.tally(g, &format!("alignment.discord_from.{from}"), n);
+    }
+    sway(g, cx, Side::Discord, n);
+}
+
 /// Sway toward Unity for a removed adversary troop (plus the remover's
 /// Unity bonus).
 pub fn for_troop_removed(g: &mut GameState, cx: &mut Cx, seat: Option<usize>) {
@@ -479,7 +487,7 @@ impl Module for Alignment {
         }
         cx.add_key(g, &used_key(s), 1);
         cx.add_resource(g, s, Resource::Antimatter, 1);
-        sway(g, cx, Side::Discord, n);
+        discord_from(g, cx, "antimatter", n);
         cx.count(g, "antimatter_actions", 1);
         Ok(())
     }

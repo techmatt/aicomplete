@@ -51,6 +51,17 @@ and tier-1 cards average about 3 credits with tier 2 about 9.
 - **In between:** win rate falls smoothly with difficulty, a stronger team always does
   better, and the skill gap widens as difficulty rises.
 
+**Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a
+skilled team wins fairly consistently: the `planner` at 60-75% at both 2 and 3 countries, the band
+where a gate can tell a good price from a bad one.
+
+**Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses (was 60%): Discord may be the
+main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
+(046, locked).
+
+**Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
+fixed amount and not the countries still standing, so no loop forms and sizes land in one band.
+
 ## Design lenses for every module
 
 - strategic: situational, never always right
@@ -85,6 +96,8 @@ is simpler and should give similar balance. Where determinization or hidden-info
 handling gets in the way, it may be dropped. The `planner` (028) plays its rollouts on the
 real state; each decision inside them still scores on a guess, because scored on open decks
 the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by printed cost.
+**One exception (053, D20):** no agent knows which Alignment cards a game dealt, rollouts
+included: that knowledge alone was worth 20-30 points at d2.
 
 ## Dominance checks (a standing gate; Matt, 2026-10-29)
 
@@ -120,6 +133,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | Unity farm (028) | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
 | rich-spend, Science rush (034) | `rich_spend=1`, `science_rush=1` | every spare credit on the rich action; drafts, keeps and plays Science first, for its discounts |
 | always-Expand, always-Consolidate, never-Remove, Science board (041) | `always_expand=1`, `always_consolidate=1`, `never_remove=1`, `science_board=1` | the growth option placing the most presence; the one placing none; never clears a corruption marker; the Science rush, board cards first |
+| abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
 
 022 ran the checks under the engine at d0, d2 and d4
 (`experiments/archive/screen-022-dominance.json`, summarised by `scripts/cards/screen_022.py`).
@@ -129,10 +143,11 @@ could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
 summarised by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate.json`: planner only, d2, early-stopped, every 034
-check plus 041's four fixed policies, summarised by `scripts/cards/screen.py --gate`. Its
-predecessors are `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
-`experiments/gate-exploit.json` (050) is its fast first read: the 12 checks that could still beat
+current gate** is `experiments/gate.json` (gate-r23, 053; gate-046 is retired): planner only, d2,
+8 seeds a check early-stopped from 4, every 034 check plus 041's four fixed policies and abandon,
+summarised by `scripts/cards/screen.py --gate`. Its predecessors are
+`experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
+`experiments/gate-exploit.json` (050) is its fast first read: the 13 checks that could still beat
 thinking, under the engine, capped at 32 seeds. It gives a direction; the full gate, under the
 planner, gives the verdict.
 
