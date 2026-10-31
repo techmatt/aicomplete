@@ -160,7 +160,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     };
     let second = tracks[k].0;
     let step = tracks[k].1.cost;
-    let what = format!("uncovers {}{}", ai::uncover_label(tracks[k].1), price_words(&w, g, seat, how, step));
+    let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(&w, g, seat, how, step));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = format!("Seat {seat}: place presence ({what}) on which hex?");
     let Some(j) = cx.choose(seat, &prompt, opts)? else {

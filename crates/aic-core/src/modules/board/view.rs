@@ -138,7 +138,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     for act in STANDARD {
         let price = printed_price(w, act);
         let Price { energy: e, credits: cr, chips } = price;
-        let cost = price.words();
+        let cost = price.label();
         let doc = format!(
             "{}; costs {}",
             std_text(w, act),

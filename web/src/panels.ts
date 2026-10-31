@@ -395,19 +395,14 @@ export function boardDetails(v: View, seatIndex: number): string | null {
 /** "Coastal Republic", or `C<i>` if the view has no name. */
 export const countryName = (v: View, i: number) => v.countries[i]?.name || `C${i}`;
 
-const GROUP_LABEL: Record<string, string> = {
-  'cards.drafted': 'drafted',
-};
-
 export function seatCardsHtml(v: View, seatIndex: number): string {
   const s = v.seats[seatIndex];
   const order = ['cards.packet', 'cards.drafted', 'cards.hand', 'cards.built'];
   const groups = [...s.cards].sort((a, b) => ((order.indexOf(a.key) + 99) % 99) - ((order.indexOf(b.key) + 99) % 99));
   return groups.map((g) => {
-    const label = GROUP_LABEL[g.key] ?? g.label;
     const cls = g.key.replace(/\W/g, '-');
     const body = g.cards.length ? g.cards.map((c) => cardChip(c, `seat:${seatIndex}:${g.key}`, true)).join('') : '<span class="slot">—</span>';
-    return `<div class="row ${cls}"><span class="what" title="${esc(g.key)}">${esc(label)}</span>${body}</div>`;
+    return `<div class="row ${cls}"><span class="what" title="${esc(g.key)}">${esc(g.label)}</span>${body}</div>`;
   }).join('');
 }
 

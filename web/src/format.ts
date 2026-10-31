@@ -54,7 +54,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'choose': {
       const t = withTarget && isHex(a.target) ? ` @${hexKey(a.target)}` : '';
       // An option that is a content id (one word ids too: `sweep`) shows its name.
-      return `${contentIds(contentName(String(a.option ?? 'choose')))}${t}`;
+      // The option is a record key, so it keeps its number; the track step's hover has it.
+      return `${contentIds(contentName(String(a.option ?? 'choose'))).replace('T2 keep -1', 'T2 keep')}${t}`;
     }
     case 'tier':
       return `draft from tier ${a.tier}`;

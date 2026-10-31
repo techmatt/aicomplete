@@ -53,6 +53,8 @@ const PIECES = {
   sway: `${line('M3 12h18M3 8v8M21 8v8', 2.200)}${fill('M9 6.500 16 12l-7 5.500z')}`,
   marker: fill('M12 2 22 12 12 22 2 12zM12 7l-5 5 5 5 5-5z'),
   threat: fill('M12 2 23 21H1zM10.800 9v6.500h2.400V9zm0 7.800v2.400h2.400v-2.400z'),
+  // A delay: the threat waits.
+  clock: `<circle cx="12" cy="12" r="9.500" fill="none" stroke="currentColor" stroke-width="2.400"/>${line('M12 6.500V12l4 2.500', 2.400)}`,
   // A threat struck through: countered.
   counter: `${fill('M12 2 23 21H1z')}${line('M3 3l18 18', 3)}`,
   // The adversary deck, looked at.

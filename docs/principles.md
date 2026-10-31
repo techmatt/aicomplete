@@ -58,7 +58,7 @@ and tier-1 cards average about 3 credits with tier 2 about 9.
 - engine depth
 - fun
 - table cost: tokens moved, upkeep steps
-- scales naturally across 1–5 players
+- scales naturally across 1–4 players
 - rewards adaptation
 - pulls players together
 - readable timing
@@ -132,6 +132,9 @@ rules are judged by play that can plan, and a check is the same fixed rule in bo
 current gate** is `experiments/gate-046.json`: planner only, d2, early-stopped, every 034
 check plus 041's four fixed policies, summarised by `scripts/cards/screen.py --gate`. Its
 predecessors are `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
+`experiments/gate-exploit.json` (050) is its fast first read: the 12 checks that could still beat
+thinking, under the engine, capped at 32 seeds. It gives a direction; the full gate, under the
+planner, gives the verdict.
 
 ## Sanity checks (028)
 

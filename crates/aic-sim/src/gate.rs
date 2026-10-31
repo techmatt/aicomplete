@@ -18,7 +18,7 @@ use std::fmt::Write as _;
 
 use serde::{Deserialize, Serialize};
 
-use crate::experiment::{Cell, GameResult, Spec};
+use crate::experiment::{Cell, FailedGame, GameResult, Spec};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
@@ -128,7 +128,10 @@ pub struct GateState {
     /// the cap (each stopped cell's mean game times the seeds it skipped).
     pub seconds: f64,
     pub seconds_at_cap: f64,
-    /// Every check is decided or at the cap, and every one loses ground.
+    /// Games that panicked: their seeds count for neither side.
+    pub failed: usize,
+    /// Every check is decided or at the cap; every one loses ground, and no
+    /// game panicked.
     pub finished: bool,
     pub passes: bool,
     #[serde(skip)]
@@ -198,10 +201,11 @@ impl GateState {
             self.seconds,
             self.seconds_at_cap,
             100.0 * self.seconds / self.seconds_at_cap.max(1e-9),
-            match (self.finished, self.passes) {
-                (false, _) => "**Not finished.**",
-                (true, true) => "**Passes:** every check loses ground.",
-                (true, false) => "**Does not pass:** see the ✗ rows.",
+            match (self.finished, self.passes, self.failed) {
+                (false, ..) => "**Not finished.**".to_string(),
+                (true, true, _) => "**Passes:** every check loses ground.".to_string(),
+                (true, false, 0) => "**Does not pass:** see the ✗ rows.".to_string(),
+                (true, false, n) => format!("**Does not pass:** {n} game(s) panicked, see *Failed games*."),
             }
         );
         let _ = writeln!(w, "| variant | d | check | games | stopped | win % | gap to its agent | paired se |");
@@ -266,24 +270,27 @@ pub fn check_spec(cells: &[Cell]) -> Result<(), String> {
 }
 
 /// A check's decision, block by block over the seeds both have played in
-/// full: why it stops, and the look it stops at.
+/// full (a seed that panicked is played, and counts for neither): why it
+/// stops, and the look it stops at.
 fn decide(
     gate: &Gate,
-    agent: &BTreeMap<u64, bool>,
-    check: &BTreeMap<u64, bool>,
+    (agent, agent_failed): (&BTreeMap<u64, bool>, &BTreeSet<u64>),
+    (check, check_failed): (&BTreeMap<u64, bool>, &BTreeSet<u64>),
     looks: &[u64],
     cap: u64,
 ) -> Option<(Decided, u64)> {
-    let full = |m: &BTreeMap<u64, bool>, n: u64| (0..n).all(|k| m.contains_key(&k));
+    let full = |m: &BTreeMap<u64, bool>, f: &BTreeSet<u64>, n: u64| {
+        (0..n).all(|k| m.contains_key(&k) || f.contains(&k))
+    };
     let (mut oa, mut oc, mut n) = (0u64, 0u64, 0u64);
     for &look in looks {
-        if !full(check, look) || !full(agent, look) {
+        if !full(check, check_failed, look) || !full(agent, agent_failed, look) {
             break;
         }
         while n < look {
-            match (agent[&n], check[&n]) {
-                (true, false) => oa += 1,
-                (false, true) => oc += 1,
+            match (agent.get(&n), check.get(&n)) {
+                (Some(true), Some(false)) => oa += 1,
+                (Some(false), Some(true)) => oc += 1,
                 _ => {}
             }
             n += 1;
@@ -345,8 +352,18 @@ fn check_row(
 }
 
 /// Every decision so far, rebuilt from `games`.
-pub fn evaluate(gate: &Gate, spec: &Spec, cells: &[Cell], games: &[GameResult]) -> GateState {
+pub fn evaluate(
+    gate: &Gate,
+    spec: &Spec,
+    cells: &[Cell],
+    games: &[GameResult],
+    failed: &[FailedGame],
+) -> GateState {
     let cap = spec.games;
+    let mut lost: Vec<BTreeSet<u64>> = vec![BTreeSet::new(); cells.len()];
+    for f in failed {
+        lost[f.cell].insert(f.seed - spec.first_seed);
+    }
     let mut won: Vec<BTreeMap<u64, bool>> = vec![BTreeMap::new(); cells.len()];
     let mut ms = vec![0.0; cells.len()];
     for g in games {
@@ -362,7 +379,7 @@ pub fn evaluate(gate: &Gate, spec: &Spec, cells: &[Cell], games: &[GameResult]) 
         let Some(a) = agent_of(cells, c) else { continue };
         agents.insert(a);
         checks_of.entry(a).or_default().push(c);
-        let stop = decide(gate, &won[a], &won[c], &looks, cap);
+        let stop = decide(gate, (&won[a], &lost[a]), (&won[c], &lost[c]), &looks, cap);
         if let Some((_, look)) = stop {
             plays[c] = look;
         }
@@ -378,16 +395,17 @@ pub fn evaluate(gate: &Gate, spec: &Spec, cells: &[Cell], games: &[GameResult]) 
         .map(|c| ms[c] / played[c].max(1) as f64 * cap as f64)
         .sum::<f64>()
         / 1000.0;
-    let finished = (0..cells.len()).all(|c| played[c] as u64 >= plays[c]);
+    let finished = (0..cells.len()).all(|c| (played[c] + lost[c].len()) as u64 >= plays[c]);
     GateState {
         gate: gate.clone(),
-        passes: finished && !rows.is_empty() && rows.iter().all(|r| r.loses),
+        passes: finished && failed.is_empty() && !rows.is_empty() && rows.iter().all(|r| r.loses),
         rows,
         plays,
         games: games.len(),
         games_cap: spec.total_games(cells),
         seconds,
         seconds_at_cap,
+        failed: failed.len(),
         finished,
         cap,
         agents,
@@ -415,6 +433,7 @@ mod tests {
             records: 0,
             selection_seeds: None,
             gate: Some(Gate::default()),
+            inject_panic: None,
         }
     }
 
@@ -460,14 +479,14 @@ mod tests {
         let cs = cells(&s).unwrap();
         let g = s.gate.as_ref().unwrap();
         let (agent, lost, level) = (0, 1, 2);
-        assert_eq!(evaluate(g, &s, &cs, &[]).live_at(0), [0, 1, 2]);
+        assert_eq!(evaluate(g, &s, &cs, &[], &[]).live_at(0), [0, 1, 2]);
         let mut games = Vec::new();
         for k in 0..8u64 {
             games.push(game(agent, 100 + k, true));
             games.push(game(lost, 100 + k, false));
             games.push(game(level, 100 + k, true));
         }
-        let st = evaluate(g, &s, &cs, &games);
+        let st = evaluate(g, &s, &cs, &games, &[]);
         assert_eq!(st.live_at(8), [agent, level]);
         assert_eq!(st.plays, [16, 8, 16]);
         assert!(!st.finished);
@@ -476,7 +495,7 @@ mod tests {
             games.push(game(agent, 100 + k, true));
             games.push(game(level, 100 + k, true));
         }
-        let st = evaluate(g, &s, &cs, &games);
+        let st = evaluate(g, &s, &cs, &games, &[]);
         assert!(st.finished);
         assert!(!st.passes, "a level check doesn't lose ground");
         assert!(st.live_at(16).is_empty());
@@ -500,7 +519,32 @@ mod tests {
             games.push(game(0, 100 + k, true));
             games.push(game(1, 100 + k, false));
         }
-        assert_eq!(evaluate(g, &s, &cs, &games).plays, [16, 16]);
+        assert_eq!(evaluate(g, &s, &cs, &games, &[]).plays, [16, 16]);
+    }
+
+    /// One panicked seed neither stalls the check nor counts for a side.
+    #[test]
+    fn a_panicked_seed_counts_for_neither_and_the_gate_finishes_unpassed() {
+        let s = spec(&["planner", "planner:no_counters=1"], 8);
+        let cs = cells(&s).unwrap();
+        let g = s.gate.as_ref().unwrap();
+        let mut games = Vec::new();
+        for k in 0..8u64 {
+            games.push(game(0, 100 + k, true));
+            if k != 3 {
+                games.push(game(1, 100 + k, false));
+            }
+        }
+        let lost: FailedGame = serde_json::from_value(serde_json::json!({
+            "cell": 1, "seed": "103", "config": "c", "variant": "base", "difficulty": 2,
+            "agent": "planner:no_counters=1", "overrides": [], "message": "boom"
+        }))
+        .unwrap();
+        let st = evaluate(g, &s, &cs, &games, &[lost]);
+        assert!(st.finished);
+        assert!(!st.passes, "a panicked game fails the gate");
+        assert_eq!((st.rows[0].games, st.rows[0].only_agent), (7, 7));
+        assert!(st.markdown().contains("1 game(s) panicked"));
     }
 
     #[test]
@@ -515,7 +559,7 @@ mod tests {
     fn agents_come_first_in_a_seed() {
         let s = spec(&["planner:no_counters=1", "planner"], 16);
         let cs = cells(&s).unwrap();
-        let st = evaluate(s.gate.as_ref().unwrap(), &s, &cs, &[]);
+        let st = evaluate(s.gate.as_ref().unwrap(), &s, &cs, &[], &[]);
         assert_eq!(st.order(&cs, &[]), [1, 0]);
     }
 

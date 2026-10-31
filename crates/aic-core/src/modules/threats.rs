@@ -541,7 +541,7 @@ impl Module for Threats {
             let req = requirement(w, g, t);
             let progress: Vec<String> = req
                 .iter()
-                .map(|(r, n)| format!("{}/{}", paid(g, t, *r), r.amount(*n)))
+                .map(|(r, n)| format!("{}/{}", paid(g, t, *r), r.words(*n)))
                 .collect();
             // Who paid what so far (returned if they withdraw), and Jam Signals.
             let mut extra = String::new();
@@ -549,7 +549,7 @@ impl Module for Threats {
                 .flat_map(|s| {
                     req.iter().filter_map(move |(r, _)| {
                         let n = g.var(&paid_key(t, s, *r));
-                        (n > 0).then(|| format!("seat {s} {}", r.amount(n)))
+                        (n > 0).then(|| format!("seat {s} {}", r.words(n)))
                     })
                 })
                 .collect();

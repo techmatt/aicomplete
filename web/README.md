@@ -188,10 +188,10 @@ With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there a
   `Cannot read properties of undefined`; run it again once the build is done. Any
   `.rs` edit under `crates/` counts, tests and `aic-sim` included, so while someone
   else edits the engine, run the e2e against `vite preview` instead.
-- **Gotcha:** `board fills its pane at 1366x768` can fail on a good viewer. It measures the
-  random game e2e just played: the same build read 321 px and 379 px against the 346 it
-  asks for (048), and a fixed record's board goes as low as 277 px at that size. Run it
-  again before reading a layout change into it.
+- `board fills its pane` measures a fixed game, baseline seed 11 played by the first legal
+  action, not the random game: that one moved the same build by 60 px at 1366x768 (048). Its
+  threshold comes from what that game reads. A rules change can move it: remeasure before
+  reading a layout change into a failure.
 - **Gotcha:** stopping a backgrounded `npm run dev` wrapper can leave the `vite`
   process serving the port; `--strictPort` then fails on the next start. Kill the
   process that holds the port.

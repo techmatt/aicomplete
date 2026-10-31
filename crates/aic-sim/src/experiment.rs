@@ -10,9 +10,11 @@
 //! closeness, win probability) use their own RNG and determinize first, like
 //! the agents, and never touch the game being played.
 
+use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Mutex;
+use std::sync::{Mutex, Once};
 use std::time::Instant;
 
 use aic_core::content::Side;
@@ -61,6 +63,18 @@ pub struct Spec {
     /// check's cap.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gate: Option<crate::gate::Gate>,
+    /// Panics in one game: how a test proves a failed game doesn't stop a run.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inject_panic: Option<InjectPanic>,
+}
+
+/// Cell `cell` (grid order) on seed `seed`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InjectPanic {
+    pub cell: usize,
+    #[serde(with = "seed_string")]
+    pub seed: u64,
 }
 
 impl Spec {
@@ -345,6 +359,48 @@ pub struct GameResult {
     pub final_state: Option<Box<GameState>>,
 }
 
+/// A game that panicked (046: one killed a gate 25 minutes in): one line of
+/// `failed.jsonl`, with all it takes to play the game again. It has no result,
+/// so no measure counts it; `--resume` plays it again.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FailedGame {
+    pub cell: usize,
+    #[serde(with = "seed_string")]
+    pub seed: u64,
+    pub config: String,
+    pub variant: String,
+    pub difficulty: i64,
+    pub agent: String,
+    pub overrides: Vec<String>,
+    /// The panic: where, then its message.
+    pub message: String,
+}
+
+impl FailedGame {
+    fn new(cells: &[Cell], cell: usize, seed: u64, message: String) -> FailedGame {
+        let c = &cells[cell];
+        FailedGame {
+            cell,
+            seed,
+            config: c.config_path.clone(),
+            variant: c.variant.clone(),
+            difficulty: c.difficulty,
+            agent: c.agent.label(),
+            overrides: c.overrides.clone(),
+            message,
+        }
+    }
+
+    /// The `aic-sim` line that plays it again.
+    pub fn command(&self) -> String {
+        let sets: String = self.overrides.iter().map(|o| format!(" --set {o}")).collect();
+        format!(
+            "aic-sim run {} --seed {} --games 1 --agent {}{sets}",
+            self.config, self.seed, self.agent
+        )
+    }
+}
+
 /// One card's counts, in one game or summed over games. Every dealt card is
 /// drafted by someone (packets are passed until empty), so how early it goes
 /// is the draft's signal.
@@ -496,6 +552,9 @@ fn win_probability(
 
 /// Plays one game of one cell and measures it.
 pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult {
+    if spec.inject_panic.as_ref().is_some_and(|p| p.cell == ci && p.seed == seed) {
+        panic!("injected panic (the spec's inject_panic)");
+    }
     let cell = &cells[ci];
     let rules = &cell.rules;
     let start = Instant::now();
@@ -674,23 +733,30 @@ fn ms_since(t: Instant) -> f64 {
     t.elapsed().as_secs_f64() * 1000.0
 }
 
+/// Where [`run`] puts what it plays.
+pub struct Sinks<'a> {
+    pub results: &'a Mutex<Vec<GameResult>>,
+    pub failed: &'a Mutex<Vec<FailedGame>>,
+    /// Called with each game, the games finished and the total, under
+    /// `results`' lock.
+    pub on_game: &'a (dyn Fn(&GameResult, usize, usize) + Sync),
+    /// Called with each game that panicked, under `failed`'s lock.
+    pub on_failed: &'a (dyn Fn(&FailedGame) + Sync),
+}
+
 /// Plays every (cell, seed) not already in `results` on `threads` workers,
 /// adding each game to `results` as it finishes and handing it to
-/// `on_game` (with the games finished and the total) under the same lock,
-/// so a caller can stream games to disk and report from `results` while
-/// the run goes on. Work is handed out one game at a time (agents differ a
-/// hundredfold in cost), seed by seed across every cell, the highest ladder
+/// `on_game`, so a caller can stream games to disk and report from `results`
+/// while the run goes on. A game that panics goes to `failed` instead and the
+/// worker takes the next. Work is handed out one game at a time (agents differ
+/// a hundredfold in cost), seed by seed across every cell, the highest ladder
 /// tier first within a seed: a run stopped early has every cell's first
 /// seeds, not some cells whole and others missing. Sort the results by cell
 /// then seed ([`sort`]) and nothing depends on the thread count or order.
 /// With a `gate`, the same but seed block by seed block ([`crate::gate`]).
-pub fn run(
-    spec: &Spec,
-    cells: &[Cell],
-    threads: usize,
-    results: &Mutex<Vec<GameResult>>,
-    on_game: &(dyn Fn(&GameResult, usize, usize) + Sync),
-) {
+pub fn run(spec: &Spec, cells: &[Cell], threads: usize, sinks: &Sinks) {
+    capture_panics();
+    let results = sinks.results;
     let total = spec.total_games(cells);
     let have = |results: &Mutex<Vec<GameResult>>| -> std::collections::BTreeSet<(usize, u64)> {
         let out = results.lock().expect("results lock");
@@ -700,7 +766,8 @@ pub fn run(
         for (from, to) in gate.blocks(spec.games) {
             let (live, order) = {
                 let out = results.lock().expect("results lock");
-                let state = crate::gate::evaluate(gate, spec, cells, &out);
+                let failed = sinks.failed.lock().expect("failed lock");
+                let state = crate::gate::evaluate(gate, spec, cells, &out, &failed);
                 (state.live_at(from), state.order(cells, &out))
             };
             if live.is_empty() {
@@ -712,7 +779,7 @@ pub fn run(
                 .filter(|j| !done.contains(j))
                 .collect();
             jobs.sort_by_key(|&(c, seed)| (seed, order[c]));
-            play_jobs(spec, cells, &jobs, threads, total, results, on_game);
+            play_jobs(spec, cells, &jobs, threads, total, sinks);
         }
         return;
     }
@@ -722,7 +789,25 @@ pub fn run(
         .filter(|j| !done.contains(j))
         .collect();
     jobs.sort_by_key(|&(c, seed)| (seed, std::cmp::Reverse(cells[c].agent.tier())));
-    play_jobs(spec, cells, &jobs, threads, total, results, on_game);
+    play_jobs(spec, cells, &jobs, threads, total, sinks);
+}
+
+thread_local! {
+    /// This thread's last panic, as the hook saw it: `catch_unwind` hands back
+    /// only the message, not where.
+    static LAST_PANIC: RefCell<String> = const { RefCell::new(String::new()) };
+}
+
+/// Keeps each panic's text for [`FailedGame`], on top of the usual hook.
+fn capture_panics() {
+    static ONCE: Once = Once::new();
+    ONCE.call_once(|| {
+        let usual = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |info| {
+            LAST_PANIC.with(|p| *p.borrow_mut() = info.to_string().replace('\n', " "));
+            usual(info);
+        }));
+    });
 }
 
 fn play_jobs(
@@ -731,8 +816,7 @@ fn play_jobs(
     jobs: &[(usize, u64)],
     threads: usize,
     total: usize,
-    results: &Mutex<Vec<GameResult>>,
-    on_game: &(dyn Fn(&GameResult, usize, usize) + Sync),
+    sinks: &Sinks,
 ) {
     let next = AtomicUsize::new(0);
     std::thread::scope(|s| {
@@ -741,10 +825,20 @@ fn play_jobs(
                 loop {
                     let k = next.fetch_add(1, Ordering::Relaxed);
                     let Some(&(c, seed)) = jobs.get(k) else { break };
-                    let res = play_one(spec, cells, c, seed);
-                    let mut out = results.lock().expect("results lock");
-                    on_game(&res, out.len() + 1, total);
-                    out.push(res);
+                    match catch_unwind(AssertUnwindSafe(|| play_one(spec, cells, c, seed))) {
+                        Ok(res) => {
+                            let mut out = sinks.results.lock().expect("results lock");
+                            (sinks.on_game)(&res, out.len() + 1, total);
+                            out.push(res);
+                        }
+                        Err(_) => {
+                            let message = LAST_PANIC.with(|p| p.take());
+                            let f = FailedGame::new(cells, c, seed, message);
+                            let mut out = sinks.failed.lock().expect("failed lock");
+                            (sinks.on_failed)(&f);
+                            out.push(f);
+                        }
+                    }
                 }
                 crate::prof::flush();
             });

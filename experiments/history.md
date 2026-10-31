@@ -159,20 +159,14 @@ read the counters of their revision; the README's *Scripts* says which still run
 
 **Alignment screen (013)**, `experiments/archive/screen-013-alignment.json` (base, `no_am` and
 `off` × d0, d4 × greedy, engine × 32 seeds = 384 games): **45 s** alone on 12 threads
-with `--quick --games 32`. `python scripts/alignment/screen_summary.py DIR` turns its
-`games.jsonl` into the Alignment table (tips per game per side, the round of each tip,
-antimatter actions, cards resolved); committed with the report in
+with `--quick --games 32`. Committed with the report in
 `experiments/results/screen-013-alignment/` (`alignment.md`). Tips by round come from
 the counters `alignment.tip_<side>.rNN`, so `aic-sim run` shows them too.
 
 **Board screen (014)**, `experiments/archive/screen-014-board.json` (`c2` and `c3`, that is 2
 and 3 countries, × d0, d4 × greedy, engine): `aic-sim experiment
-experiments/archive/screen-014-board.json --quick` (16 seeds a cell, 128 games), then `python
-scripts/board/screen_summary.py DIR` reads its `games.jsonl` and `results.json` and
-prints markdown: per cell the win rate, rounds, the round of the first new corruption,
-cities corrupted at the end, destructions per war round, Unity and Discord tips,
-standard actions and how games ended; then adversary ambassadors on the board by round,
-and standard actions by kind. Committed with the report and records in
+experiments/archive/screen-014-board.json --quick` (16 seeds a cell, 128 games). Committed with
+the report and records in
 `experiments/results/screen-014-board/` (`board.md`).
 
 **Endgame screen and gate (027, r16)**: `experiments/archive/screen-027-cards.json` and
@@ -255,11 +249,7 @@ per-round `cards.hand_size`, `.kept`, `.played`, `.insight_after_keep`,
 d0–d4 × random, greedy, engine; 480 games): `aic-sim experiment
 experiments/archive/screen-019-troops.json --quick --out out/screen-019` (**~2 min** wall on 12
 threads with the tuned r10, 107–129 s; 211 s for r10 before tuning, whose games ran to
-the deck's end), then `python scripts/board/screen_019.py out/screen-019`: per cell the win
-rate, rounds and the purge's blockers left; then the troops (built, march steps, moves,
-strikes, destructions by target, absorbed, presence lost), nodes (made, removed, peak; the rounds that ended with only nodes blocking the
-purge) and the strategy-health gate with a pass line per cell (the gate is defined in the
-script's docstring). Counters new in 019: `board.troop_steps`, `.troop_moves`,
+the deck's end). Counters new in 019: `board.troop_steps`, `.troop_moves`,
 `.troop_strikes`, `.troop_destroyed.<presence|station|factory>`, `.troop_absorbed`,
 `adversary.nodes_peak`, `alignment.purge_blocked_by_nodes` (017's `board.troop_advances`,
 `.advance_strikes`, `.advance_destroyed` are gone, and 034 removed the reserve's
@@ -283,11 +273,7 @@ Committed in `experiments/results/screen-018-calibration/` (`calibration.md`).
 
 **Projects screen (017, r8)**, `experiments/archive/screen-017-projects.json` (the same cells):
 `aic-sim experiment experiments/archive/screen-017-projects.json --quick --out out/screen-017`
-(128 games, **~8 s** wall on 12 threads: r8 games are short, ~4 rounds at d0), then
-`python scripts/board/screen_017.py out/screen-017`: per cell the win rate, rounds,
-tips and ends, then per game projects resolved (cheap, big), adversary compute made and
-blocked, Discord and Unity tips, troop advances and strikes, and the round of the first
-project; then standard actions by kind. Committed in
+(128 games, **~8 s** wall on 12 threads: r8 games are short, ~4 rounds at d0). Committed in
 `experiments/results/screen-017-projects/` (`projects.md`). Gotcha: on Windows a
 Python script printing an en dash to a redirected stdout writes cp1252, not UTF-8;
 `screen_017.py` reconfigures stdout to UTF-8.

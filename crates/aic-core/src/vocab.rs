@@ -51,10 +51,21 @@ impl Resource {
 
     /// `n` of this resource in words: "2 chips", "1 chip". Only chips take a
     /// singular so far; the other words print as they are.
+    ///
+    /// An option string is a record key, so what goes into one stays this
+    /// (`1 credits`); text only people read takes [`Resource::words`].
     pub fn amount(self, n: i64) -> String {
         match (self, n) {
             (Resource::Chips, 1) => "1 chip".to_string(),
             _ => format!("{n} {self}"),
+        }
+    }
+
+    /// The same for a label or a doc: `1 credit`.
+    pub fn words(self, n: i64) -> String {
+        match (self, n) {
+            (Resource::Credits, 1) => "1 credit".to_string(),
+            _ => self.amount(n),
         }
     }
 

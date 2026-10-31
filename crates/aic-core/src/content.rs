@@ -265,10 +265,6 @@ pub struct CardDef {
     /// A building's once-a-round ability.
     #[serde(default)]
     pub ability: Option<Ability>,
-    /// A building's upkeep: paid automatically in upkeep if possible;
-    /// otherwise its passives do nothing next round.
-    #[serde(default)]
-    pub upkeep: Vec<Cost>,
     /// A building that takes no building slot.
     #[serde(default)]
     pub slotless: bool,
@@ -414,9 +410,6 @@ pub struct AiBoard {
     /// A building the board starts with in a slot, carrying its built-in tag (021).
     #[serde(default)]
     pub start: Option<String>,
-    /// Sway toward Unity this board adds at the start of every round.
-    #[serde(default)]
-    pub unity: i64,
 }
 
 /// Spend `resource` for `rate` credits each off a card's credit cost: on
@@ -732,10 +725,10 @@ fn check_card(c: &CardDef) -> Result<(), String> {
         return Err(format!("{what}: shields, delays and marker clearing are Science's"));
     }
     if !c.is_building()
-        && (!c.passives.is_empty() || !c.upkeep.is_empty() || c.slotless)
+        && (!c.passives.is_empty() || c.slotless)
     {
         return Err(format!(
-            "card {:?}: only buildings have passives or upkeep",
+            "card {:?}: only buildings have passives",
             c.id
         ));
     }
@@ -759,7 +752,7 @@ fn check_card(c: &CardDef) -> Result<(), String> {
             c.id
         ));
     }
-    for (r, _) in c.upkeep.iter().chain(&c.lowers) {
+    for (r, _) in &c.lowers {
         resource(r, &what)?;
     }
     if let Some(a) = &c.ability {

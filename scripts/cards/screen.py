@@ -1,12 +1,12 @@
 """The one screen summary: a table of named columns over `aic-sim experiment` outputs.
 
     python scripts/cards/screen.py DIR [DIR ...] --columns variant,d,agent,n,win [--sources]
-    python scripts/cards/screen.py DIR [DIR ...] --preset 034
+    python scripts/cards/screen.py DIR [DIR ...] --preset 041
     python scripts/cards/screen.py --gate DIR [DIR ...]
     python scripts/cards/screen.py --list
 
 Each DIR holds results.json and games.jsonl. Without --columns or --preset it prints preset
-034. --sources adds the presence lost by source. --gate prints each check's gap to its own
+041. --sources adds the presence lost by source. --gate prints each check's gap to its own
 agent (`x:...` against `x`), with games per check if results.json has a "gate" key. --list
 prints the columns and presets. Columns on a counter no game has warn on stderr: that 0 is
 not a measurement.
@@ -245,7 +245,7 @@ def main():
     dirs = a.dirs + (a.gate or [])
     if not dirs:
         ap.error('no DIR')
-    spec, src = (a.columns, False) if a.columns else PRESETS[a.preset or '034']
+    spec, src = (a.columns, False) if a.columns else PRESETS[a.preset or '041']
     columns = [k.strip() for k in spec.split(',') if k.strip()]
     unknown = [k for k in columns if k not in COLUMNS]
     if unknown:

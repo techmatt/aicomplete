@@ -640,11 +640,11 @@ Grassroots Funding, Think Tank and New Deal still give income "for the rest of t
 a one-shot card that moves a printed income marker, not a card left in play.
 
 **Steps (017).** A Discord card prints its strength by the Discord tip count (counted
-before this tip): it replaces the difficulty escalation (below). Unity cards have no
-steps.
+before this tip, so "after 3 Discord tips" first fires on the 4th tip): it replaces the
+difficulty escalation (below). Unity cards have no steps.
 
 <!-- generated: alignment -->
-| Card | Side | Tier | Text | Stronger from tip |
+| Card | Side | Tier | Text | Stronger after tips |
 |---|---|---|---|---|
 | Grassroots Funding | unity | 1 | Every player gains 2 credit income for the rest of the game. |  |
 | Open Market | unity | 1 | The next 2 card purchases are free. |  |
@@ -655,12 +655,12 @@ steps.
 | Global Coalition | unity | 2 | Counter every active threat. |  |
 | New Deal | unity | 2 | Every player gains 2 credit income for the rest of the game and 4 credits now. |  |
 | Decommission | unity | 2 | Remove a node anywhere on the board. |  |
-| Incursion | discord | 1 | Deal one extra threat (5+ Discord tips: three, and each player destroys 2 presence of theirs). | 5 |
-| Blight | discord | 1 | In each country, the clean city with the most adversary ambassadors gains 1 more (5+ Discord tips: 3, and each player destroys 2 presence of theirs). | 5 |
-| Propaganda | discord | 1 | Every player loses 4 credits; 2 Sway leaves the Unity bucket (5+ Discord tips: every player loses 8 credits and destroys 2 presence of theirs, and 2 Sway leaves the Unity bucket). | 5 |
-| Offensive | discord | 2 | The adversary spreads now, then all presence on the board's most threatened hex is destroyed (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: it builds, then spreads, and each player destroys 2). | 3, 4 |
-| Two Fronts | discord | 2 | Deal two extra threats (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: three, and each destroys 2). | 3, 4 |
-| Firestorm | discord | 2 | In each country, the clean city with the most adversary ambassadors gains 2 more (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: 3, and each destroys 2). | 3, 4 |
+| Incursion | discord | 1 | Deal one extra threat (after 5 Discord tips: three, and each player destroys 2 presence of theirs). | 5 |
+| Blight | discord | 1 | In each country, the clean city with the most adversary ambassadors gains 1 more (after 5 Discord tips: 3, and each player destroys 2 presence of theirs). | 5 |
+| Propaganda | discord | 1 | Every player loses 4 credits; 2 Sway leaves the Unity bucket (after 5 Discord tips: every player loses 8 credits and destroys 2 presence of theirs, and 2 Sway leaves the Unity bucket). | 5 |
+| Offensive | discord | 2 | The adversary spreads now, then all presence on the board's most threatened hex is destroyed (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: it builds, then spreads, and each player destroys 2). | 3, 4 |
+| Two Fronts | discord | 2 | Deal two extra threats (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: three, and each destroys 2). | 3, 4 |
+| Firestorm | discord | 2 | In each country, the clean city with the most adversary ambassadors gains 2 more (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: 3, and each destroys 2). | 3, 4 |
 <!-- /generated -->
 
 The Unity cards are opposition's old rewards as one-shot cards; the Discord cards are
@@ -880,10 +880,10 @@ start of the round, the rest in upkeep). The board module owns presence and coun
 tokens taken (`board.track.<seat>`); the AI board reads it.
 
 <!-- generated: boards -->
-| Board | Printed income | Starting building | Slots | Track tokens | Second track | Tokens in all | Unity a round |
-|---|---|---|---|---|---|---|---|
-| Builder | 10 credits, 4 insight | Foundry Core (Industry): +1 credit | 4 | 8 | 6 | 14 | 0 |
-| Protector | 9 credits, 4 insight | Sentinel Post (Security): +1 energy | 3 | 8 | 6 | 14 | 0 |
+| Board | Printed income | Starting building | Slots | Track tokens | Second track | Tokens in all |
+|---|---|---|---|---|---|---|
+| Builder | 10 credits, 4 insight | Foundry Core (Industry): +1 credit | 4 | 8 | 6 | 14 |
+| Protector | 9 credits, 4 insight | Sentinel Post (Security): +1 energy | 3 | 8 | 6 | 14 |
 <!-- /generated -->
 
 **One payment path (041, candidate; replaces 034's extras).** Every space prints a **cost** in
@@ -971,6 +971,8 @@ buildings a token can protect, player-owned stations and factories that are not 
 "harden N" is N different buildings, fewer if fewer qualify (022: any building, the same one
 several times). A Science card's shield (041) is the one exception: a hardening token on a hex of
 your presence, which absorbs a destruction there and goes with the token if it is lost another way.
+On your own building a shield is the building's hardening token: a table has one token, so it stays
+when the presence goes, and protects the building.
 
 ## 8. Threats and cards
 
@@ -1154,8 +1156,9 @@ right. `/` is per. OR is written out. `*` is an exception, explained in brackets
 
 **Shapes.** Square tiles are resources, discs are tokens on cards (alone, on this card),
 bare silhouettes are pieces on the board and moving them, ringed circles are tags. A number
-goes before its icon, no number means 1, and a negative always has its minus. The rules
-text says what the icons say, in the same order, and opens with the box's word.
+goes before its icon, no number means 1, and a negative always has its minus. In the dark
+frame a clock is a delay (threats wait a round), a minus on a threat a jam (off one threat's
+counter). The rules text says what the icons say, in the same order, and opens with the box's word.
 
 Card details beyond the card text:
 
@@ -1197,8 +1200,7 @@ Card text says what a card does; how each primitive resolves:
   in reach; only a player-owned, uncorrupted station or factory takes a token, Hardening
   above); **shelter one country** (nothing in it, building or presence, can be destroyed this round); **cut off
   a node** (it makes no compute in the next build).
-- **Upkeep** on a building is paid automatically in upkeep if you can; if not, its
-  effects are off next round. Upkeep conversions likewise.
+- **Upkeep conversions** on a building are paid automatically in upkeep if you can.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all
   (023)** from every visible one; a discard takes one with its compute (if the row is
   then empty, the next row is dealt).

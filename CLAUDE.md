@@ -44,14 +44,18 @@ The standing contract for every executor working in this repo.
 - **Commit to the branch you are on.** Leave nothing uncommitted.
 - **Tests come in two lanes.** `cargo test --workspace` is the fast lane (~4 s once
   built): run it after every change. `cargo test-all` is the full run, the `#[ignore]`d
-  slow lane included (~1.5 min at r22): run it before every commit. A test slower than about a second goes
+  slow lane included (~1.5 min at r22): run it before every commit. Flags follow the alias
+  with no `--`: `cargo test-all --test-threads=2` (the `--` form makes the flag a test-name
+  filter; a guard test refuses it). A test slower than about a second goes
   in the slow lane, with a cheaper fast-lane twin where one makes sense. Details in
   the README's *Build and test*.
 - **Agents stay fast.** After a change to rules, state or agents, run `python
   scripts/bench/speed.py check target/release/aic-sim.exe`: it fails if an agent's ms/game
-  is over 1.3 × `scripts/bench/speed_baseline.json`. On a busy machine a failure proves
-  nothing: run `speed.py pair OLD NEW --only engine` instead, which holds under load. A
-  slowdown you mean to keep: say why in the report and `--update` the baseline.
+  is over 1.3 × `scripts/bench/speed_baseline.json`. It holds within one rules revision:
+  across one it gives no verdict, and `bench/per_decision.py` says what the change cost. On a
+  busy machine a failure proves nothing: run `speed.py pair OLD NEW --only engine` instead,
+  which holds under load. A slowdown you mean to keep: say why in the report and `--update`
+  the baseline.
 - **Compare a lever with base on the same seeds, and confirm on fresh ones.** Pooling new
   seeds with the seeds that picked a winner is not confirmation: report the fresh seeds
   alone.
@@ -65,6 +69,8 @@ The standing contract for every executor working in this repo.
 - **One cargo at a time in a target dir.** Concurrent builds corrupt incremental objects
   here (LNK2019 on anon symbols); `cargo clean -p aic-core -p aic-sim -p aic-wasm` clears
   it. Parallel helpers need their own `CARGO_TARGET_DIR`.
+- **`npm run check` in a fresh worktree needs the wasm built first:** `cd web && npm install &&
+  npm run wasm`. It typechecks against `web/src/wasm/`, which is git-ignored.
 - **LF line endings.** `.gitattributes` sets `* text=auto eol=lf`; don't override it.
 - **Operational facts go into `README.md`**: how to build, run and test, measured run
   times, ports, gotchas. Never leave one only in a report.

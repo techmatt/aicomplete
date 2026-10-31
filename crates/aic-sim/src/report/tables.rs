@@ -141,6 +141,7 @@ pub fn results_json(run: &Run) -> String {
         "spec": run.spec,
         "wall_seconds": run.wall_s,
         "games_played": run.games.len(),
+        "games_failed": run.failed,
         "games_planned": run.planned,
         "games_resumed": run.resumed,
         "threads": run.threads,

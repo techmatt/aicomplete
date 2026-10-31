@@ -74,8 +74,6 @@ Current:
   (a shim for `screen.py --preset 034`), `cards/screen_028.py` (r17), `cards/screen_027.py`
   (r16), `cards/screen_024.py` (r15); `screen_023.py` and `screen_022.py` still read r15; `cards/screen_021.py` (r12) runs, but its
   021 gate is no longer the gate.
-- `board/screen_summary.py` (014), `alignment/screen_summary.py` (013): screen summaries
-  whose counters still exist.
 - `bench/same_results.py` (012): compares two experiment outputs. `--map OLD=NEW` (026)
   renames in the old output first, for a rename that must play the same.
 - `bench/same_play.py` (025): proves a refactor left play unchanged: a matrix of configs,
@@ -85,18 +83,22 @@ Current:
   (042) caps it on a shared machine: ~13 min a run on 4 threads at r20, two at once, and
   `compare` under a minute. Keep a copy of the old binary. Takes `--map` too (026): records are then compared by field, since a renamed
   state's fingerprint moves.
-- `bench/speed.py` (030): games a minute per agent. `pair OLD NEW --out FILE` runs each
-  row on both binaries in turn, so the ratio holds on a busy machine: use it for a before
-  and after. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
+- `bench/speed.py` (030): games a minute per agent. `--threads N` caps the many-thread
+  column of `table` and `pair` (default: leaves 4 hardware threads free). `pair OLD NEW --out
+  FILE` runs each row on both binaries in turn, so the ratio holds on a busy machine: use it
+  for a before and after. An OLD built on another baseline refuses today's config: `git show
+  <rev>:configs/baseline.json > out/old-baseline.json`, then `--old-config
+  out/old-baseline.json`. Across a config or rules change `pair` prints NOT LIKE FOR LIKE: the
+  two play different games, so its ratio is speed times game length. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
   `--only "planner c2"` for a row, and both keep the file's other rows). `compare BEFORE.json AFTER.json` reads two `table`
   files. `check SIM` is
-  the standing check (about a minute, on a quiet machine): fails at 1.3 ×
-  `scripts/bench/speed_baseline.json`, `--update` to move the baseline. Rewritten at r20
-  (042, on a quiet machine): *What r19 and r20 cost* in [experiments/history.md](experiments/history.md) says why it is above r18's. Its planner row is one
-  game on one seed, so a rules change that moves that game's length moves the row: r18
-  to r20 reads 6.7 × there and 1.75 × on 16 seeds. After a rules change read
-  `per_decision.py`, not this. A `--update` compares a run with itself: run a plain
-  `check` after it.
+  the standing check (about 2 min, on a quiet machine, always one thread): fails at 1.3 ×
+  `scripts/bench/speed_baseline.json`, `--update` to move the baseline. *What r19 and r20
+  cost* in [experiments/history.md](experiments/history.md) says why it is above r18's. Its
+  planner row is four seeds (050; one seed read r18 to r20 as 6.7 × against 1.75 × on 16). It
+  holds only within one rules revision: the baseline records its revision, and against
+  another `check` prints NO VERDICT and exits 0. Read `per_decision.py` then, and `--update`.
+  A `--update` compares a run with itself: run a plain `check` after it.
 - `bench/per_decision.py OLD_ROOT NEW_ROOT` (040): rounds, decisions and ms per game and per
   decision on the same seeds, for telling longer games from a slower agent. 6 games is
   too few across rules revisions (042: the same two binaries read 1.73 × on 6 seeds, 1.66 ×
@@ -106,11 +108,8 @@ Current:
   game by game.
 - `tune/` (007-008): `sweep.py`, `log_table.py`, `engine_sweep.py`.
 
-Historical, kept for the record and not expected to run on current rules:
-`board/screen_017.py` reads counters and cards that are gone, `board/screen_019.py` one gone
-card; each warns on stderr. Deleted, nothing under `docs/` or
-`experiments/` cited them: `board/screen_016.py`, `screen_018.py` (`--preset 016`, `018`
-cover what survives). See
+Deleted: `scripts/board/` and `scripts/alignment/` (048 #108; `--preset 016`, `018` cover
+what survives, and git has them for the results docs that cite them). See
 [experiments/history.md](experiments/history.md).
 
 ## Viewer
@@ -124,7 +123,8 @@ The dev server rebuilds the wasm and reloads when `crates/` or `content/` change
 record from `aic-sim --save` with *Open record…* or by dropping the file on the page.
 Details, and the browser check (`npm run e2e`), are in [web/README.md](web/README.md).
 
-- A fresh worktree has no `web/node_modules`: run `npm install` first.
+- A fresh worktree has no `web/node_modules`: run `npm install` first. Nor has it
+  `web/src/wasm/`: `npm run check` needs `npm run wasm` first.
 - `npm run build` (release wasm, typecheck, vite) took 92 s cold; `wasm-pack build
   crates/aic-wasm --target web` plus `node scripts/wasm-smoke.mjs` about 21 s; `npm run
   e2e` against a running dev server about 15 s.
@@ -168,7 +168,8 @@ insight hexagon, requirements, tags, nothing else. Above the art (buildings): wh
 income, *Effect:*, *Action:*. Below the art: what happens once, extra costs first, as
 minus-icons. No box: gain now. Brown box: income. Dark frame: the adversary's pieces or
 projects. Dashed outline: another card or player. A square tile is a resource, a disc a
-token on a card, a bare silhouette a board piece, a ringed circle a tag. The cost group
+token on a card, a bare silhouette a board piece, a ringed circle a tag. In the dark frame a
+clock is a delay, a minus on a threat a jam. The cost group
 follows Race for the Galaxy: a hexagon at about 70% of the octagon, in front of its lower
 right, with a halo in the strip colour; at 0 insight it is omitted.
 
@@ -272,7 +273,7 @@ cargo build --release -p aic-sim                   # ~12 s
 ./target/release/aic-sim docs                      # regenerate the docs built from content and configs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
 node scripts/wasm-smoke.mjs                        # needs the wasm build; checks native = wasm
-node scripts/wasm-parity.mjs [games]               # 020: native = wasm over the variant matrix (aic-sim records replayed in wasm); ~22 s with 2 games a variant and agent
+node scripts/wasm-parity.mjs [games]               # 020: native = wasm over the variant matrix (aic-sim records replayed in wasm); ~22 s with 2 games a variant and agent; rebuilds pkg if older than crates/aic-core, crates/aic-wasm, content/ or configs/
 ```
 
 **Test lanes.** The slow lane is the tests marked `#[ignore = "slow lane: ..."]`: whole
@@ -280,7 +281,10 @@ search-agent games, the greedy experiment grid, and more seeds of the replay che
 whose first seed runs in the fast lane. `test-all` and `test-slow` are cargo aliases
 (`.cargo/config.toml`) for `cargo test --workspace -- --include-ignored` and
 `-- --ignored`; one slow test runs with `cargo test -p aic-sim -- --ignored <name>`.
-Anything after an alias goes to the test binary: `cargo test-all -j 3` stops in about a
+`cargo test-all -- --test-threads=2` is the wrong form: the second `--` turns the flag into a
+test-name filter, every binary runs nothing and passes (045), so `tests/args_guard.rs`, a test
+with no harness that sees the same arguments, fails it. It can't catch a filter that merely
+matches nothing. Anything after an alias goes to the test binary: `cargo test-all -j 3` stops in about a
 second with "Unrecognized option: 'j'", which reads as a very fast pass if you only see
 the background task end, so check the exit code. To cap build jobs use `cargo test
 --workspace -j 3 -- --include-ignored`; `cargo test-all --test-threads=3` caps test
@@ -437,7 +441,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `greedy` | One action at a time: each scored by the heuristic after it, its own choices resolved best-first. A pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2 |
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing presence, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
-| `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) less building upkeep, is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
+| `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
 | `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state (**full information**, Matt, 2026-10-29), so it is the game that follows; each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the engine. **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 6 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring). Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
 
 **Keeping by plan and the dominance checks (022, `agents/policy.rs`).** Greedy and
@@ -504,13 +508,20 @@ check stops if its gap clears `z` standard errors (sign test) or the seeds left 
 its sign back at that noise; an agent runs until its last check stops. The verdict is the
 gap's sign, as in the old `--gate` tables. Decisions come only from finished blocks, so
 the games played don't depend on threads or timing, and `--resume` rebuilds them from
-`games.jsonl`. `report.md`'s *Gate* section and `results.json`'s `gate` give each check's
+`games.jsonl`. A panicked game counts for neither side and fails the gate (*A game that panics*). `report.md`'s *Gate* section and `results.json`'s `gate` give each check's
 games, why it stopped, and the game time against an estimate at the cap. Measured: `python
 scripts/bench/gate_stop_rate.py [z]` simulates the rule; at `z` 2 a level check stops early
 about half the time and about 1% of runs get the sign the cap wouldn't. `experiments/archive/gate-034.json`
 is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h at the cap and
 5.5 h for 034's hand-cut plan, 1h 4m on 4 below-normal threads**, every verdict the same
 (`experiments/results/gate-034-earlystop/gate.md`).
+
+**A game that panics (050).** It fails alone: the run goes on, stderr and `failed.jsonl`
+name its seed, config, overrides and panic, `report.md` lists them under *Failed games* with
+the line that plays it again, `results.json` has `games_failed`, no measure counts it, and the
+run exits 1. `--resume` plays it again. A spec's `"inject_panic": {"cell": 1, "seed": 51}`
+makes one on purpose, for a test. `aic-sim run` and `compare` have no such net: a panic there
+ends the run.
 
 **Tuning sweeps** (`scripts/tune/`, from the repo root): `sweep.py` runs `aic-sim run --json`
 once per variant and agent and prints one row each (win %, rounds, adversary operations,
@@ -534,6 +545,14 @@ and `screen.py --gate DIR`. Fixed policies: `planner:always_expand=1`, `always_c
 screen takes about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
 A cargo build that fails leaves the old exe in `target/release`: a launcher that copies it and
 starts a run must check the build's exit code.
+
+**Fast exploit check (050)**: `experiments/gate-exploit.json` is the first read for a rules
+item, before `gate-046.json`: the 12 checks that could still beat thinking, at c2 and c3 under
+the engine, early-stopped, capped at 32 seeds, read with `screen.py --gate DIR`. **468 of 832
+games, 45 min of game time, 8 min on 6 below-normal threads on a loaded box** (r22). Under the
+planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s at c2 and 67 s at
+c3 there. At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
+gate-046, under the planner, decides.
 
 **Niche and growth gate (046, r22)**: `experiments/gate-046.json` is every 034 check plus 041's four
 fixed policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
@@ -642,6 +661,7 @@ thread count; every game is replay-checked). The spec (`experiments/*.json`):
 | `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set** (011; it was on, every 1). Probe every n-th real choice: 1-ply greedy scores of every option; close when the best two are within `gap` heuristic points (about credits). `--closeness N` sets `every`. |
 | `records` | `4` | Records saved per category. |
 | `gate` | none | `{"z", "min_games", "every"}`: early stopping; `games` becomes each check's cap, see *Gate early-stopping*. |
+| `inject_panic` | none | `{"cell", "seed"}`: that game panics, see *A game that panics*. |
 
 **Expensive measures are opt-in: screen first, probe finalists.** Win-probability
 probes cost about 5× an experiment (007's `tune-after`: 45 minutes probed, 9–12

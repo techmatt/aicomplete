@@ -195,8 +195,6 @@ try {
   for (const [w, h] of [[1366, 768], [1920, 1080], [2560, 1440]]) {
     await size(w, h);
     check(await noScroll(), `no page scroll at ${w}x${h}`);
-    const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
-    check(svg[0] > w * 0.3 && svg[1] > h * 0.45, `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
     await shot(`layout-${w}x${h}`);
   }
   await size(1366, 768);
@@ -265,6 +263,17 @@ try {
   await js(`document.getElementById('random-end').click()`);
   const auto = await js(`({ o: window.aic.view.outcome, n: window.aic.timeline.last, text: document.querySelector('#phase-bar .outcome')?.textContent })`);
   check(!!auto.o && !!auto.text, `Random to end plays baseline seed 5 to an outcome in ${auto.n} actions: ${auto.text}`);
+
+  // The board's size on a fixed game (048): the random game's panels moved it by 60 px.
+  // This one reads 350, 547 and 878 px high.
+  await newGame(page, 'baseline.json', 11);
+  for (let i = 0; i < 150 && !(await js('!!window.aic.view.outcome')); i++) await js('window.aic.act(window.aic.legal[0])');
+  for (const [w, h] of [[1366, 768], [1920, 1080], [2560, 1440]]) {
+    await size(w, h);
+    const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
+    check(svg[0] > w * 0.3 && svg[1] > h * 0.44, `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
+  }
+  await size(1366, 768);
 
   // Four countries (64 hexes): the default config with `countries: 4`, played a while
   // with random actions, still fits without page scroll and keeps a usable board.

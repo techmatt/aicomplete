@@ -17,3 +17,8 @@ mimalloc = { version = "0.1.52", default-features = false }
 [features]
 # Times the search's hot calls; `experiment` prints the split (src/prof.rs).
 profile = []
+
+# Refuses a test run whose flags became a filter: see the file.
+[[test]]
+name = "args_guard"
+harness = false

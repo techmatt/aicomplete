@@ -279,7 +279,7 @@ fn harms_md() -> String {
 
 /// `3 credits, 1 energy`.
 fn costs(c: &[Cost]) -> String {
-    let parts: Vec<String> = c.iter().map(|(r, n)| r.amount(*n)).collect();
+    let parts: Vec<String> = c.iter().map(|(r, n)| r.words(*n)).collect();
     parts.join(", ")
 }
 
@@ -337,7 +337,7 @@ fn alignment_block() -> String {
             ]
         })
         .collect();
-    table(&["Card", "Side", "Tier", "Text", "Stronger from tip"], rows)
+    table(&["Card", "Side", "Tier", "Text", "Stronger after tips"], rows)
 }
 
 fn projects_block() -> String {
@@ -416,13 +416,7 @@ fn tick(r: &Rules, key: &str) -> String {
 /// `+1 credit, +2 chips`. `Resource::amount` keeps "credits" plural, as content
 /// text does; a track space reads better singular.
 fn gains(c: &[Cost]) -> String {
-    let parts: Vec<String> = c
-        .iter()
-        .map(|(r, n)| match (r, n) {
-            (Resource::Credits, 1) => "+1 credit".to_string(),
-            _ => format!("+{}", r.amount(*n)),
-        })
-        .collect();
+    let parts: Vec<String> = c.iter().map(|(r, n)| format!("+{}", r.words(*n))).collect();
     parts.join(", ")
 }
 
@@ -598,7 +592,6 @@ fn boards_block(r: &Rules, c: &Content) -> String {
                 b.presence.len().to_string(),
                 b.presence2.len().to_string(),
                 (b.presence.len() + b.presence2.len()).to_string(),
-                b.unity.to_string(),
             ]
         })
         .collect();
@@ -611,7 +604,6 @@ fn boards_block(r: &Rules, c: &Content) -> String {
             "Track tokens",
             "Second track",
             "Tokens in all",
-            "Unity a round",
         ],
         rows,
     )
@@ -693,7 +685,7 @@ fn powers_block(c: &Content) -> String {
     for b in &c.ais {
         for p in &b.powers {
             let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {}", title(&t.to_string()).replace("Any", "any"))).collect();
-            cost.extend(p.cost.iter().map(|(r, n)| r.amount(*n)));
+            cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
             rows.push(vec![b.name.clone(), p.name.clone(), cost.join(" + "), p.text.clone()]);
         }
     }

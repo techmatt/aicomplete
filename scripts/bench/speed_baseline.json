@@ -1,6 +1,7 @@
 {
+ "rules_revision": 22,
  "random": 6.2,
- "greedy": 275.5,
- "engine": 936.1,
- "planner": 10263.1
+ "greedy": 314.0,
+ "engine": 1104.1,
+ "planner": 8985.5
 }

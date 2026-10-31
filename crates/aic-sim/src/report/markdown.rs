@@ -134,7 +134,7 @@ fn header(md: &Md, w: &mut String) {
     let run = md.run;
     let spec = md.run.spec;
     let _ = writeln!(w, "# Cycle report: {}\n", spec.name);
-    if run.games.len() < run.planned {
+    if run.games.len() + run.failed.len() < run.planned {
         let _ = writeln!(
             w,
             "**Partial: {} of {} games.** The run is still going or was stopped; every \
@@ -148,9 +148,10 @@ fn header(md: &Md, w: &mut String) {
     }
     let _ = writeln!(
         w,
-        "{} games ({} cells × {} seeds, {}..={}) on {} threads in {:.1} s. Engine {}, rules r{}, content {}.\n",
+        "{} games ({} cells × {}{} seeds, {}..={}) on {} threads in {:.1} s. Engine {}, rules r{}, content {}.\n",
         run.games.len(),
         run.cells.len(),
+        if spec.gate.is_some() { "at most " } else { "" },
         spec.games,
         spec.first_seed,
         spec.first_seed + spec.games - 1,
@@ -240,8 +241,35 @@ fn measures(md: &Md, w: &mut String) {
     );
 }
 
+fn failed_games(run: &Run, w: &mut String) {
+    if run.failed.is_empty() {
+        return;
+    }
+    let _ = writeln!(
+        w,
+        "## Failed games\n\n**{} game(s) panicked.** No measure counts them; a gate gives their seeds to neither side. `--resume` plays them again; `failed.jsonl` has them too.\n",
+        run.failed.len()
+    );
+    let _ = writeln!(w, "| variant | d | agent | seed | panic | to play it again |");
+    let _ = writeln!(w, "|---|---|---|---|---|---|");
+    for f in run.failed {
+        let _ = writeln!(
+            w,
+            "| {} | {} | {} | {} | {} | `{}` |",
+            f.variant,
+            f.difficulty,
+            f.agent,
+            f.seed,
+            f.message.replace('|', "/"),
+            f.command()
+        );
+    }
+    let _ = writeln!(w);
+}
+
 fn findings_and_gate(md: &Md, w: &mut String) {
     let run = md.run;
+    failed_games(run, w);
     // Findings first: what a reader needs before the tables.
     let _ = writeln!(w, "## Findings\n");
     for f in findings(run) {

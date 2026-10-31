@@ -7,6 +7,12 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Words only, no revision (050).** Play held (the golden game didn't move). The Discord cards say
+"after 3 Discord tips", which is what the rule always did: the step first fires on the 4th tip (D18).
+Delay prints a clock, not Jam's minus on a threat (D19). rules.md says a shield on your own building
+stays as its hardening token when the presence goes (D17). Unused `AiBoard.unity` and `CardDef.upkeep`
+are gone, with the Unity-a-round column and the building-upkeep rule: no board or card used them.
+
 **Revision 22 (046): one standard placement, a Science niche, a better Develop.** Matt's rulings on
 041 and 042 (2026-10-30). (The prompt called this r21; 044 took that number.) The round cap's quiet
 backstop is **locked**: 0 cap losses is fine and it has no share target; all else is a candidate.

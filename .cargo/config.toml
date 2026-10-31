@@ -1,7 +1,9 @@
 # Test lanes (README "Build and test"): `cargo test --workspace` runs the fast lane;
 # `cargo test-all` runs everything, the slow lane's #[ignore]d tests included.
 # Arguments after an alias go to the test binary: `cargo test-all -j N` fails in a second
-# with "Unrecognized option: 'j'", which reads as a pass. `--test-threads=N` works.
+# with "Unrecognized option: 'j'", which reads as a pass. `cargo test-all --test-threads=N`
+# works. Don't add a `--`: `cargo test-all -- --test-threads=N` makes the flag a test-name
+# filter, so nothing runs (045); crates/aic-sim/tests/args_guard.rs refuses it.
 [alias]
 test-all = "test --workspace -- --include-ignored"
 test-slow = "test --workspace -- --ignored"

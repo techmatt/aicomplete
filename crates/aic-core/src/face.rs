@@ -272,7 +272,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             format!("harden up to {count} hex{} of your presence", if *count == 1 { "" } else { "es" }),
         )),
         Op::DelayThreat { count } => one(clause(
-            adversary(minus(*count, "threat")),
+            adversary(counted(*count, "clock")),
             if *count == 1 {
                 "one threat waits: not executed this round".to_string()
             } else {

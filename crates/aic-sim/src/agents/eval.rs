@@ -860,14 +860,8 @@ impl Eval {
             }
             self.in_play_value(rules, g, s, &mut v);
             // Income (tracks, buildings with income passives, rewards) over
-            // the rounds left, less building upkeep; board production counts
-            // `production` of its own.
-            let mut income = economy::income(&world, g, s);
-            for id in g.pile(&cards::built(s)) {
-                for (r, n) in &cards::def(&world, id).upkeep {
-                    income.add(*r, -n);
-                }
-            }
+            // the rounds left; board production counts `production` of its own.
+            let income = economy::income(&world, g, s);
             for (i, (_, n)) in income.iter().enumerate() {
                 v += w.horizon * left * unit[i] * n as f64;
             }

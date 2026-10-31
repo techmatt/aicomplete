@@ -83,6 +83,15 @@ impl Price {
             .collect()
     }
 
+    /// The same for a label: `1 credit`.
+    pub(super) fn label(self) -> Vec<String> {
+        [(self.energy, Resource::Energy), (self.credits, Resource::Credits), (self.chips, Resource::Chips)]
+            .iter()
+            .filter(|(n, _)| *n > 0)
+            .map(|(n, r)| r.words(*n))
+            .collect()
+    }
+
     pub fn affordable(self, g: &GameState, seat: usize) -> bool {
         g.resource(seat, Resource::Energy) >= self.energy
             && g.resource(seat, Resource::Credits) >= self.credits
@@ -316,7 +325,7 @@ pub(super) fn clear_words(w: &World) -> String {
         reward.push(format!("{unity} Sway toward Unity"));
     }
     if credits > 0 {
-        reward.push(Resource::Credits.amount(credits));
+        reward.push(Resource::Credits.words(credits));
     }
     if reward.is_empty() {
         "clear a corruption marker in reach".into()

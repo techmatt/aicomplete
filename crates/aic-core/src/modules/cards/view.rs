@@ -16,11 +16,11 @@ pub(super) fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &s
         }
         for (r, n) in extra_costs(&w, g, s, d) {
             if n > 0 {
-                bits.push(format!("+{}", r.amount(n)));
+                bits.push(format!("+{}", r.words(n)));
             }
         }
         for (r, n) in &d.lowers {
-            bits.push(format!("-{} income", r.amount(*n)));
+            bits.push(format!("-{} income", r.words(*n)));
         }
         if !d.needs.is_empty() {
             let needs: Vec<String> = d.needs.iter().map(|(t, n)| format!("{n} {t}")).collect();

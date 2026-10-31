@@ -320,7 +320,7 @@ function actionButtons(mine: Action[]): HTMLElement {
 }
 
 /** Button order: answers and decisions first, standard actions, threat counters and gifts next, selling a card and pass last. */
-const TYPE_ORDER = ['choose', 'growth', 'tier', 'draft', 'keep', 'play', 'use', 'standard', 'pay', 'withdraw', 'give', 'antimatter', 'sell'];
+const TYPE_ORDER = ['choose', 'growth', 'tier', 'draft', 'keep', 'play', 'use', 'power', 'standard', 'pay', 'withdraw', 'give', 'antimatter', 'sell'];
 const typeRank = (t: string) => (t === 'pass' ? 99 : TYPE_ORDER.indexOf(t) < 0 ? 50 : TYPE_ORDER.indexOf(t));
 
 function passAll() {

@@ -1,6 +1,6 @@
 //! Alignment and the end of the game: the Alignment track (the Undecided
 //! and the Unity and Discord buckets, fed with Sway), tipping and the Unity
-//! and Discord decks, the +1 Discord antimatter action, and the win and loss
+//! and Discord decks, the antimatter action, and the win and loss
 //! conditions, checked after every action and every automatic phase.
 //!
 //! Replaces human opposition (rules revision 5). Since 017 every card is
@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, board, cards, effects};
+use super::{adversary, board, cards, effects};
 
 const PARAMS: [ParamSpec; 16] = [
     ParamSpec::int("undecided_per_player", 1, 50, "Sway in the Undecided at the start, per player"),
@@ -43,7 +43,7 @@ const PARAMS: [ParamSpec; 16] = [
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "sway",
-        "the round's Sway: the adversary toward Discord, AI boards toward Unity",
+        "the round's Sway: the adversary toward Discord",
     ),
     PhaseSpec::decision(
         "act",
@@ -457,9 +457,6 @@ impl Module for Alignment {
     fn run(&self, _phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         let w = cx.world;
         sway(g, cx, Side::Discord, w.int("alignment.adversary_discord"));
-        for s in 0..g.seats.len() {
-            sway(g, cx, Side::Unity, ai::board(&w, s).unity);
-        }
         Ok(())
     }
 
@@ -574,7 +571,7 @@ impl Module for Alignment {
             "Discord tips",
             dt,
             (dt < tier2).then_some(tier2),
-            "Discord tips so far; Discord cards print stronger steps by this count",
+            "Discord tips so far; a Discord card's stronger steps count the tips before its own: \"after 3\" first fires on the 4th tip",
         );
         let level = bar_level(w, g);
         let mut text = adversary::win_text(level);

@@ -84,24 +84,10 @@ pub fn add_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, card: &str, n: i6
     }
 }
 
-/// Building upkeep for seat `s` (in the economy's upkeep): pay each
-/// building's upkeep if possible (else it is unpowered next round), then
-/// upkeep conversions, then token cards gain their tokens.
+/// Building upkeep for seat `s` (in the economy's upkeep): upkeep
+/// conversions, then token cards gain their tokens.
 pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
-    for id in g.pile(&built(seat)).to_vec() {
-        let d = def(&w, &id);
-        if d.upkeep.is_empty() {
-            continue;
-        }
-        let ok = d.upkeep.iter().all(|(r, n)| g.resource(seat, *r) >= *n);
-        if ok {
-            for (r, n) in &d.upkeep {
-                cx.add_resource(g, seat, *r, -n);
-            }
-        }
-        cx.set_key(g, &unpowered(seat, &id), (!ok) as i64);
-    }
     for p in passives(&w, g, seat) {
         if let Op::ConvertUpkeep {
             from,

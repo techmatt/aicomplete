@@ -499,3 +499,49 @@ fn experiment_killed_partway_leaves_a_partial_report() {
             >= 2
     );
 }
+
+/// 046: a panicking game killed a gate 25 minutes in. One now fails alone: the
+/// gate plays on to its end, lists the game, and exits 1.
+#[test]
+fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
+    let dir = fresh_dir("panic-gate", true);
+    let spec = dir.join("spec.json");
+    std::fs::write(
+        &spec,
+        r#"{"name": "panic-gate", "configs": ["configs/baseline.json"], "difficulties": [2],
+            "agents": ["greedy", "greedy:no_counters=1"], "games": 4, "first_seed": 50, "records": 0,
+            "gate": {"z": 2.0, "min_games": 2, "every": 2},
+            "inject_panic": {"cell": 1, "seed": 51}}"#,
+    )
+    .unwrap();
+    let out = dir.join("out");
+    let run = experiment(&spec, &out, &["--threads", "1"]);
+    let stderr = String::from_utf8_lossy(&run.stderr);
+    assert_eq!(run.status.code(), Some(1), "{stderr}");
+    assert!(stderr.contains("1 game(s) PANICKED"), "{stderr}");
+
+    let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();
+    let f: serde_json::Value = serde_json::from_str(failed.trim()).unwrap();
+    assert_eq!(f["seed"], "51");
+    assert_eq!(f["config"], "configs/baseline.json");
+    assert_eq!(f["agent"], "greedy:no_counters=1");
+    assert!(f["message"].as_str().unwrap().contains("injected panic"), "{f}");
+
+    let report = std::fs::read_to_string(out.join("report.md")).unwrap();
+    assert!(report.contains("## Failed games"), "{report}");
+    assert!(report.contains("1 game(s) panicked, see *Failed games*"), "{report}");
+    assert!(!report.contains("**Partial: "), "a finished run isn't partial: {report}");
+    let results: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap()).unwrap();
+    assert_eq!(results["games_failed"].as_array().unwrap().len(), 1);
+    assert_eq!(results["gate"]["finished"], true);
+    assert_eq!(results["gate"]["passes"], false);
+    let played = std::fs::read_to_string(out.join("games.jsonl")).unwrap().lines().count() - 1;
+    assert_eq!(played, results["games_played"].as_u64().unwrap() as usize);
+
+    // --resume plays it again, and it panics again: listed afresh, not twice.
+    let again = experiment(&spec, &out, &["--threads", "1", "--resume"]);
+    assert_eq!(again.status.code(), Some(1));
+    let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();
+    assert_eq!(failed.lines().count(), 1);
+}

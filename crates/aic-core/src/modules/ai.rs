@@ -110,11 +110,21 @@ pub fn can_place(w: &World, g: &GameState, seat: usize) -> bool {
         || board::track2_taken(g, seat) < board(w, seat).presence2.len()
 }
 
-/// What uncovering a space gives, as a short label (`+1 credits, T2 keep -1`).
+/// What uncovering a space gives, in the words of its option (a record key:
+/// `+1 credits, T2 keep -1`).
 pub fn uncover_label(u: &Uncover) -> String {
     let mut parts: Vec<String> = u.income.iter().map(|(r, n)| format!("+{}", r.amount(*n))).collect();
     if u.keep2 {
         parts.push("T2 keep -1".into());
+    }
+    parts.join(", ")
+}
+
+/// The same for people to read (`+1 credit, T2 keep`; the track step's hover has the rest).
+pub fn uncover_words(u: &Uncover) -> String {
+    let mut parts: Vec<String> = u.income.iter().map(|(r, n)| format!("+{}", r.words(*n))).collect();
+    if u.keep2 {
+        parts.push("T2 keep".into());
     }
     parts.join(", ")
 }
@@ -126,7 +136,7 @@ struct Ai {
 
 fn power_text(p: &crate::content::Power) -> String {
     let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {t}")).collect();
-    cost.extend(p.cost.iter().map(|(r, n)| r.amount(*n)));
+    cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
     format!("Sacrifice {}: {} (once a round)", cost.join(" + "), p.text)
 }
 
@@ -237,8 +247,8 @@ impl Module for Ai {
                         .iter()
                         .map(|(r, n)| TrackMark {
                             key: r.to_string(),
-                            label: format!("+{}", r.amount(*n)),
-                            doc: format!("+{} every round once uncovered", r.amount(*n)),
+                            label: format!("+{}", r.words(*n)),
+                            doc: format!("+{} every round once uncovered", r.words(*n)),
                         })
                         .collect();
                     if u.keep2 {
@@ -252,7 +262,7 @@ impl Module for Ai {
                     if u.cost > 0 {
                         marks.push(TrackMark {
                             key: "cost".into(),
-                            label: format!("pay {}", Resource::Energy.amount(u.cost)),
+                            label: format!("pay {}", Resource::Energy.words(u.cost)),
                             doc: "placing this token costs this much energy on top, unless a card says free (the rich action pays it in credits)".into(),
                         });
                     }

@@ -1,19 +1,44 @@
 // native = wasm across the variants (020): aic-sim plays and saves games in every
 // variant of the core's variant matrix, then the wasm package replays each record
 // (`check_record`) and must reach the saved final fingerprint with no warnings.
-// Usage (after `wasm-pack build crates/aic-wasm --target web` and a release aic-sim):
+// Usage (after a release aic-sim; rebuilds the wasm package itself when it is missing
+// or older than crates/ or content/):
 //   node scripts/wasm-parity.mjs [games per variant, default 3]
 //   AIC_SIM  aic-sim binary (default target/release/aic-sim[.exe])
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = path.join(root, 'crates', 'aic-wasm', 'pkg');
+const wasmFile = path.join(pkg, 'aic_wasm_bg.wasm');
+
+// The newest change under `dir`, in ms since the epoch.
+function newest(dir) {
+  let t = 0;
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.name === 'pkg') continue;
+    const p = path.join(dir, e.name);
+    t = Math.max(t, e.isDirectory() ? newest(p) : statSync(p).mtimeMs);
+  }
+  return t;
+}
+
+// 044: a package older than the content fails every record on the content hash.
+const sources = ['crates/aic-core', 'crates/aic-wasm', 'content', 'configs'].map((d) => path.join(root, d));
+if (!existsSync(wasmFile) || statSync(wasmFile).mtimeMs < Math.max(...sources.map(newest))) {
+  console.log('crates/aic-wasm/pkg is missing or stale: rebuilding it');
+  const built = spawnSync('wasm-pack', ['build', 'crates/aic-wasm', '--target', 'web'],
+    { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' });
+  if (built.status !== 0) {
+    console.error('wasm-pack failed, so this would test a stale package. Fix it, or run: wasm-pack build crates/aic-wasm --target web');
+    process.exit(1);
+  }
+}
 const m = await import(pathToFileURL(path.join(pkg, 'aic_wasm.js')).href);
-await m.default({ module_or_path: readFileSync(path.join(pkg, 'aic_wasm_bg.wasm')) });
+await m.default({ module_or_path: readFileSync(wasmFile) });
 const sim = process.env.AIC_SIM ?? path.join(root, 'target', 'release', process.platform === 'win32' ? 'aic-sim.exe' : 'aic-sim');
 const games = process.argv[2] ?? '3';
 
@@ -29,6 +54,7 @@ const VARIANTS = [
 const out = mkdtempSync(path.join(tmpdir(), 'aic-parity-'));
 let checked = 0;
 let bad = 0;
+let hashes = 0;
 try {
   for (const [i, sets] of VARIANTS.entries()) {
     for (const agent of ['random', 'greedy']) {
@@ -46,7 +72,9 @@ try {
         checked++;
         if (!c.ok || c.warnings.length) {
           bad++;
-          console.log(`FAIL ${sets.join(' ') || 'baseline'} ${agent} ${f}: ${c.error ?? c.warnings.join('; ')}`);
+          const why = c.error ?? c.warnings.join('; ');
+          hashes += why.includes('content hash');
+          console.log(`FAIL ${sets.join(' ') || 'baseline'} ${agent} ${f}: ${why}`);
         }
       }
     }
@@ -55,4 +83,5 @@ try {
   rmSync(out, { recursive: true, force: true });
 }
 console.log(`${checked} records over ${VARIANTS.length} variants replayed in wasm: ${bad ? `${bad} FAILED` : 'native = wasm'}`);
+if (hashes) console.log(`${hashes} failed on the content hash: ${sim} and the wasm package come from different content, so that is a stale build, not a parity bug. Rebuild both: cargo build --release -p aic-sim; wasm-pack build crates/aic-wasm --target web`);
 process.exit(bad ? 1 : 0);

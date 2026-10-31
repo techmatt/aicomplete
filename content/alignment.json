@@ -128,7 +128,7 @@
   "name": "Incursion",
   "side": "discord",
   "tier": 1,
-  "text": "Deal one extra threat (5+ Discord tips: three, and each player destroys 2 presence of theirs).",
+  "text": "Deal one extra threat (after 5 Discord tips: three, and each player destroys 2 presence of theirs).",
   "effects": [
    {
     "op": "deal_threats",
@@ -156,7 +156,7 @@
   "name": "Blight",
   "side": "discord",
   "tier": 1,
-  "text": "In each country, the clean city with the most adversary ambassadors gains 1 more (5+ Discord tips: 3, and each player destroys 2 presence of theirs).",
+  "text": "In each country, the clean city with the most adversary ambassadors gains 1 more (after 5 Discord tips: 3, and each player destroys 2 presence of theirs).",
   "effects": [
    {
     "op": "infiltrate",
@@ -184,7 +184,7 @@
   "name": "Propaganda",
   "side": "discord",
   "tier": 1,
-  "text": "Every player loses 4 credits; 2 Sway leaves the Unity bucket (5+ Discord tips: every player loses 8 credits and destroys 2 presence of theirs, and 2 Sway leaves the Unity bucket).",
+  "text": "Every player loses 4 credits; 2 Sway leaves the Unity bucket (after 5 Discord tips: every player loses 8 credits and destroys 2 presence of theirs, and 2 Sway leaves the Unity bucket).",
   "effects": [
    {
     "op": "players_lose",
@@ -222,7 +222,7 @@
   "name": "Offensive",
   "side": "discord",
   "tier": 2,
-  "text": "The adversary spreads now, then all presence on the board's most threatened hex is destroyed (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: it builds, then spreads, and each player destroys 2).",
+  "text": "The adversary spreads now, then all presence on the board's most threatened hex is destroyed (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: it builds, then spreads, and each player destroys 2).",
   "effects": [
    {
     "op": "adversary_spread"
@@ -269,7 +269,7 @@
   "name": "Two Fronts",
   "side": "discord",
   "tier": 2,
-  "text": "Deal two extra threats (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: three, and each destroys 2).",
+  "text": "Deal two extra threats (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: three, and each destroys 2).",
   "effects": [
    {
     "op": "deal_threats",
@@ -310,7 +310,7 @@
   "name": "Firestorm",
   "side": "discord",
   "tier": 2,
-  "text": "In each country, the clean city with the most adversary ambassadors gains 2 more (3+ Discord tips: also each player destroys 1 presence of theirs; 4+: 3, and each destroys 2).",
+  "text": "In each country, the clean city with the most adversary ambassadors gains 2 more (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: 3, and each destroys 2).",
   "effects": [
    {
     "op": "infiltrate",

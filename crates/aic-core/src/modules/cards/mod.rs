@@ -54,7 +54,7 @@ pub static DEF: ModuleDef = ModuleDef {
     requires: &["ai", "adversary", "alignment", "board"],
     variants: &[VariantDef {
         name: "draft",
-        summary: "Opening deal of 8 (4 kept free); then each round a Terraforming Mars draft, the tier chosen card by card; keeps cost insight",
+        summary: "An opening deal, some kept free; then each round a Terraforming Mars draft, the tier chosen card by card; keeps cost insight",
         params: DRAFT_PARAMS,
         phases: PHASES,
         rng: &["cards"],

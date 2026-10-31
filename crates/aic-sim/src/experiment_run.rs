@@ -2,7 +2,9 @@
 //! the grid, streams every game to `games.jsonl` as it finishes, rewrites the
 //! report from the games so far as it goes, and writes the cycle report.
 
+use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::process::exit;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
 use crate::agents::AgentSpec;
@@ -11,7 +13,7 @@ use crate::report::file_stem;
 use crate::{experiment, gate, prof, report};
 
 /// `aic-sim experiment`: plays the grid and writes the cycle report.
-/// Returns the exit code: 1 if any game failed its replay check.
+/// Returns the exit code: 1 if any game panicked or failed its replay check.
 pub fn run_experiment(path: &str, o: &Options) -> i32 {
     let text = std::fs::read_to_string(path).unwrap_or_else(|e| die(&format!("{path}: {e}")));
     let mut spec: experiment::Spec =
@@ -37,11 +39,15 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     };
     let resumed = prior.len();
     let stream = std::sync::Mutex::new(open_stream(&stream_path, o.resume, &spec, &cells, &prior));
+    // A gate stops its checks early: `games` is each one's cap.
+    let at_most = if spec.gate.is_some() { "at most " } else { "" };
     eprintln!(
-        "{}: {} cells x {} seeds = {total} games on {} threads{}; streaming to {stream_path}",
+        "{}: {} cells x {}{} seeds = {}{total} games on {} threads{}; streaming to {stream_path}",
         spec.name,
         cells.len(),
+        at_most,
         spec.games,
+        at_most,
         o.threads,
         if resumed > 0 {
             format!(" ({resumed} already played)")
@@ -70,44 +76,56 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
             );
         }
     };
+    let failed_path = format!("{dir}/failed.jsonl");
+    // A resumed run plays its failed games again, so only this run's are listed.
+    let _ = std::fs::remove_file(&failed_path);
+    let on_failed = |f: &experiment::FailedGame| {
+        eprintln!("  GAME FAILED, the run goes on: {}: {}", f.command(), f.message);
+        let line = serde_json::to_string(f).expect("a failed game serializes");
+        let wrote = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&failed_path)
+            .and_then(|mut w| std::io::Write::write_all(&mut w, format!("{line}\n").as_bytes()));
+        if let Err(e) = wrote {
+            eprintln!("cannot write {failed_path}: {e}");
+        }
+    };
     let results = std::sync::Mutex::new(prior);
-    let playing = std::sync::atomic::AtomicBool::new(true);
-    let reports = |games: &mut Vec<experiment::GameResult>| {
+    let failed = std::sync::Mutex::new(Vec::new());
+    let reports = |games: &mut Vec<experiment::GameResult>, failed: &[experiment::FailedGame]| {
         experiment::sort(games);
         let wall_s = start.elapsed().as_secs_f64();
         write_reports(
-            &dir, &spec, &cells, games, wall_s, o.threads, total, resumed,
+            &dir, &spec, &cells, games, failed, wall_s, o.threads, total, resumed,
         )
     };
-    std::thread::scope(|s| {
-        // Meanwhile, the report of the games finished so far, every
-        // --report-every seconds.
-        if o.report_every > 0 {
-            s.spawn(|| {
-                let mut since = Instant::now();
-                while playing.load(std::sync::atomic::Ordering::Relaxed) {
-                    std::thread::sleep(std::time::Duration::from_millis(250));
-                    if since.elapsed().as_secs() >= o.report_every {
-                        let mut snap = results.lock().expect("results lock").clone();
-                        // A file held open elsewhere (a CSV in a spreadsheet)
-                        // skips this report; it must not stop the run.
-                        if !snap.is_empty() && snap.len() < total {
-                            if let Err(e) = reports(&mut snap) {
-                                eprintln!("partial report skipped: {e}");
-                            }
-                        }
-                        since = Instant::now();
-                    }
-                }
-            });
+    let sinks = experiment::Sinks {
+        results: &results,
+        failed: &failed,
+        on_game: &on_game,
+        on_failed: &on_failed,
+    };
+    // Meanwhile, the report of the games finished so far.
+    let report_so_far = || {
+        let mut snap = results.lock().expect("results lock").clone();
+        let lost = failed.lock().expect("failed lock").clone();
+        // A file held open elsewhere (a CSV in a spreadsheet) skips this
+        // report; it must not stop the run.
+        if !snap.is_empty() && snap.len() < total {
+            if let Err(e) = reports(&mut snap, &lost) {
+                eprintln!("partial report skipped: {e}");
+            }
         }
-        experiment::run(&spec, &cells, o.threads, &results, &on_game);
-        playing.store(false, std::sync::atomic::Ordering::Relaxed);
+    };
+    while_playing(o.report_every, report_so_far, || {
+        experiment::run(&spec, &cells, o.threads, &sinks)
     });
     let mut games = results.into_inner().expect("results lock");
+    let failed = failed.into_inner().expect("failed lock");
     let wall_s = start.elapsed().as_secs_f64();
     let report_start = Instant::now();
-    let (sums, records) = reports(&mut games).unwrap_or_else(|e| {
+    let (sums, records) = reports(&mut games, &failed).unwrap_or_else(|e| {
         eprintln!("{e}");
         exit(2)
     });
@@ -121,9 +139,45 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     let bad = games.iter().filter(|g| !g.replay_ok).count();
     if bad > 0 {
         eprintln!("REPLAY MISMATCH in {bad} game(s)");
-        return 1;
     }
-    0
+    if !failed.is_empty() {
+        eprintln!("{} game(s) PANICKED: {failed_path}", failed.len());
+        for f in &failed {
+            eprintln!("  {}: {}", f.command(), f.message);
+        }
+    }
+    (bad > 0 || !failed.is_empty()) as i32
+}
+
+/// Runs `play`, and `report` every `every` seconds (0: never) until it ends.
+/// However it ends: a panic out of `play` that left the reporter polling would
+/// keep the process, and its exe, alive with nothing running (046).
+fn while_playing(every: u64, report: impl Fn() + Sync, play: impl FnOnce()) {
+    struct Stop<'a>(&'a AtomicBool);
+    impl Drop for Stop<'_> {
+        fn drop(&mut self) {
+            self.0.store(false, Ordering::Relaxed);
+        }
+    }
+    let playing = AtomicBool::new(true);
+    std::thread::scope(|s| {
+        if every > 0 {
+            s.spawn(|| {
+                let mut since = Instant::now();
+                while playing.load(Ordering::Relaxed) {
+                    std::thread::sleep(std::time::Duration::from_millis(250));
+                    if since.elapsed().as_secs() >= every {
+                        if catch_unwind(AssertUnwindSafe(&report)).is_err() {
+                            eprintln!("partial report skipped: it panicked");
+                        }
+                        since = Instant::now();
+                    }
+                }
+            });
+        }
+        let _stop = Stop(&playing);
+        play();
+    });
 }
 
 /// What the command line overrides in the spec.
@@ -261,6 +315,7 @@ fn write_reports(
     spec: &experiment::Spec,
     cells: &[experiment::Cell],
     games: &[experiment::GameResult],
+    failed: &[experiment::FailedGame],
     wall_s: f64,
     threads: usize,
     planned: usize,
@@ -270,7 +325,7 @@ fn write_reports(
     let groups = report::groups(cells, &sums, games);
     let cards = report::card_table(cells, games);
     // A gate's stopped checks are finished, not missing.
-    let gate = spec.gate.as_ref().map(|g| gate::evaluate(g, spec, cells, games));
+    let gate = spec.gate.as_ref().map(|g| gate::evaluate(g, spec, cells, games, failed));
     let planned = gate.as_ref().map_or(planned, |g| g.planned());
     let h2h = report::head_to_head(cells, games);
     let variants = report::variant_diffs(spec, cells, games);
@@ -282,6 +337,7 @@ fn write_reports(
         spec,
         cells,
         games,
+        failed,
         sums: &sums,
         groups: &groups,
         cards: &cards,
@@ -347,5 +403,21 @@ fn print_timing(games: &[experiment::GameResult], wall_s: f64, report_s: f64) {
             allocs as f64 / n / 1e3,
             bytes as f64 / n / 1e6
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_panic_out_of_play_stops_the_reporter() {
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let died = catch_unwind(|| while_playing(1, || {}, || panic!("a worker died"))).is_err();
+            tx.send(died).unwrap();
+        });
+        let died = rx.recv_timeout(std::time::Duration::from_secs(10));
+        assert_eq!(died, Ok(true), "the panic comes out, and the reporter doesn't hold the process");
     }
 }

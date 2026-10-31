@@ -17,7 +17,7 @@ mod tables;
 
 use std::collections::BTreeMap;
 
-use crate::experiment::{CardCounts, Cell, GameResult, Spec};
+use crate::experiment::{CardCounts, Cell, FailedGame, GameResult, Spec};
 
 pub use markdown::markdown;
 pub use records::{file_stem, prune_records, save_records, write_whole, SavedRecord};
@@ -34,6 +34,8 @@ pub struct Run<'a> {
     pub spec: &'a Spec,
     pub cells: &'a [Cell],
     pub games: &'a [GameResult],
+    /// Games that panicked: in no measure.
+    pub failed: &'a [FailedGame],
     pub sums: &'a [CellSummary],
     pub groups: &'a [GroupSummary],
     pub cards: &'a BTreeMap<String, BTreeMap<String, CardCounts>>,
