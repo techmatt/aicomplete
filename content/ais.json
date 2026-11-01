@@ -2,10 +2,10 @@
  {
   "id": "builder",
   "name": "Builder",
-  "text": "The wide engine: mostly off the board. More building slots, strong credit income.",
+  "text": "The economy AI: plays mostly off the board, with more building slots and strong credit income.",
   "innate": {
    "name": "Economies of scale",
-   "text": "Each building you play costs 1 credit less. Energy pays for buildings, 1 energy a credit.",
+   "text": "Each building you play costs 1 credit less. When you play a building, each energy you pay counts as 1 credit.",
    "passives": [
     {
      "op": "building_discount",
@@ -238,10 +238,10 @@
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The board guardian: lives on the map. Few slots, energy income.",
+  "text": "The defender: plays on the board, with fewer building slots and energy income.",
   "innate": {
    "name": "Bulwark",
-   "text": "You may harden buildings (standard action, 1 energy a token). Energy pays for Security cards, 1 energy a credit.",
+   "text": "Standard action: pay 1 energy to harden 1 building in reach. When you play a Security card, each energy you pay counts as 1 credit.",
    "passives": [
     {
      "op": "harden_action"
@@ -362,7 +362,7 @@
     ]
    },
    {
-    "name": "Consolidate: gain 3 energy and 2 credits; harden 2 buildings in your reach, in one country",
+    "name": "Consolidate: gain 3 energy and 2 credits; harden 2 buildings in reach",
     "effects": [
      {
       "op": "gain",
@@ -376,8 +376,7 @@
      },
      {
       "op": "harden",
-      "count": 2,
-      "where": "any"
+      "count": 2
      }
     ]
    }
@@ -401,12 +400,12 @@
       1
      ]
     ],
-    "text": "remove 3 worth of adversary pieces in a hex in your reach; sway 1 toward Unity",
+    "text": "remove 3 adversary ambassadors or 1 troop from a hex in reach; sway 1 toward Unity",
     "effects": [
      {
       "op": "damage",
-      "amount": 3,
-      "at": "reach"
+      "ambassadors": 3,
+      "troops": 1
      },
      {
       "op": "sway",

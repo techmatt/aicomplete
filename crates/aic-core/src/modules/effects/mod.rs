@@ -4,7 +4,7 @@
 //! stay there; an arm here calls them. Standing ops and the twist-only ops are
 //! read by the rule they change and never resolve.
 
-use crate::content::{Cond, CountryRule, DamageAt, HexKind, Op, Side};
+use crate::content::{HexKind, Op, Side};
 use crate::module::{Cx, Res, World};
 use crate::state::{GameState, Opt};
 use crate::vocab::TokenKind;
@@ -45,8 +45,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 cx.add_resource(g, s, *resource, *amount);
             }
         }
-        Op::GainPerPresence { resource, max } => {
-            let n = presence_count(g, seat).min(*max);
+        Op::GainPerPresence { resource } => {
+            let n = presence_count(g, seat);
             cx.add_resource(g, seat, *resource, n);
         }
         Op::ChoosePlayer => {
@@ -60,8 +60,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 cx.add_resource(g, o, *resource, *amount);
             }
         }
-        Op::Transfer { resource, max, bonus } => resources::transfer(g, cx, ctx, seat, *resource, *max, *bonus)?,
-        Op::Convert { from, to, max, rate } => resources::convert(g, cx, seat, *from, *to, *max, *rate)?,
+        Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
         Op::PlacePresence { count, free } => {
             for _ in 0..*count {
                 if !board::place_presence(g, cx, seat, placing(*free))? {
@@ -73,15 +72,15 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::ClearMarkers { count } => science::clear_markers(g, cx, seat, *count)?,
         Op::ShieldPresence { count } => science::shield_presence(g, cx, seat, *count)?,
         Op::DelayThreat { count } => science::delay_threat(g, cx, seat, *count)?,
-        Op::Damage { amount, at } => removal::damage(g, cx, seat, *amount, *at)?,
-        Op::DamageCountry { amount } => removal::damage_country(g, cx, seat, *amount)?,
+        Op::Damage { ambassadors, troops } => removal::damage(g, cx, seat, *ambassadors, *troops)?,
+        Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
         Op::DestroyAll => removal::destroy_all(g, cx, seat)?,
         Op::RemoveNode => removal::remove_node(g, cx, seat)?,
         Op::RemoveAmbassadorsCountry { unity_per } => removal::remove_ambassadors_country(g, cx, seat, *unity_per)?,
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
         Op::Cleanse { amount, one_country, cities } => removal::cleanse(g, cx, seat, *amount, *one_country, *cities)?,
         Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
-        Op::Harden { count, in_country } => resources::harden(g, cx, seat, *count, *in_country)?,
+        Op::Harden { count } => resources::harden(g, cx, seat, *count)?,
         Op::MoveAmbassadors { max } => ambassadors::move_ambassadors(g, cx, seat, *max)?,
         Op::GainAmbassadors { count } => cx.add_resource(g, seat, Resource::Ambassadors, *count),
         Op::Shelter => {
@@ -134,11 +133,10 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Draw { count } => cards::draw(g, cx, seat, *count)?,
-        Op::GainPerTokens { resource, kind, per, max } => resources::gain_per_tokens(g, cx, seat, *resource, *kind, *per, *max),
-        Op::CashOut { kind, resource, max } => resources::cash_out(g, cx, seat, *kind, *resource, *max),
+        Op::GainPerTokens { resource, kind, per } => resources::gain_per_tokens(g, cx, seat, *resource, *kind, *per),
+        Op::CashOut { kind, resource, rate } => resources::cash_out(g, cx, seat, *kind, *resource, *rate),
         Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
-        Op::NextRoundInsight { amount } => economy::add_bonus_insight(g, cx, *amount),
         Op::NextBuildingDiscount { amount } => {
             cx.add_key(g, &cards::next_discount(seat), *amount)
         }
@@ -157,18 +155,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
         Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
         Op::CutNode => removal::cut_node(g, cx, seat)?,
-        Op::If {
-            cond: c,
-            then,
-            otherwise,
-        } => {
-            let branch = if cond(&w, g, seat, *c) {
-                then
-            } else {
-                otherwise
-            };
-            run(g, cx, branch, ctx)?;
-        }
 
         // Threats and the team: the wordings differ, the rule doesn't.
         Op::Troops { count, each_country, destroy } => team::troops(g, cx, ctx, *count, *each_country, *destroy)?,
@@ -248,7 +234,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         // Read, not resolved; `Content::check` keeps them out of resolving lists.
         Op::Income { .. }
         | Op::IncomePerTag { .. }
-        | Op::IncomeIfTags { .. }
         | Op::BuildingDiscount { .. }
         | Op::HardenAction
         | Op::Slots { .. }

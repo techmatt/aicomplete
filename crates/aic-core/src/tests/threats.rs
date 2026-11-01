@@ -121,7 +121,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     assert!(g
         .pile("threats.discard.1")
         .contains(&Key::new("requisition")));
-    assert_eq!(g.resource(0, Resource::Credits), 6);
+    assert_eq!(g.resource(0, Resource::Credits), 8);
 }
 
 #[test]

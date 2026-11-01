@@ -1,9 +1,31 @@
-# Card pricing: the reasoning (023, rules r14; current rates 055, r24)
+# Card pricing: the reasoning (023, rules r14; current rates 055, r24; card design pass 059, r25)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
+
+## 059's changes (r25): the card design pass
+
+Every card was read against [card-guidelines.md](card-guidelines.md). 91 of 158 player cards changed in
+what they do or cost, 43 in words only. The list is in
+[experiments/results/screen-059-cards/design.md](../experiments/results/screen-059-cards/design.md).
+**Where this list disagrees with the sections below, it wins.** The rates are 055's. What is new:
+
+| thing | rate (credits) | why |
+|---|---|---|
+| a fixed trade | the two sides at 055's rates | replaces every `convert`: nothing to cap, nothing to count |
+| Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
+| per tag, uncapped | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | a rate where a cap used to be |
+| per presence, uncapped | as 055: the track has only 9 spaces | Grid Census 2, Beamed Power Constellation 8 |
+| troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | the card names a kind: one choice, no mix |
+
+**Paper prices are not enough.** A reviewed set with nine reasoned raises (Breakthrough Leak, Grid-Tied
+Smelter, Fusion Startup Stake, Asteroid Salvage Rights, Back-Channel Talks, Joint Fabrication Pact,
+Blackout Script, Blackstart Protocol, Early Warning Drill) won 8 of 24 at c3; the same set with them put
+back won 15. They are back at 055's prices. c3's win rate rests on the cheap cards, as 055 found with
+`needs` against credits. Kinetic Interdiction with troops only, and Total Containment without its
+shelter, cost another 10 of 40; Grid Census at 4 and Beamed at 11 cost 7.
 
 ## 055's changes (r24): the current rates and the first price pass
 

@@ -110,8 +110,6 @@ fn bad_overlays_are_errors_that_name_the_entry() {
         ("ais.*.presence.99=[]", "no list entry"),
         ("cards.telemetry_archive.cost=lots", "invalid type"),
         ("threats.*.tier=9", "tier 1 or 2"),
-        ("cards.turnkey_factory.slotless=true", "slotless"),
-        ("cards.modular_expansion.passives=[]", "slotless"),
     ] {
         let e = match Rules::new(&baseline_with(&[entry])) {
             Err(e) => e,

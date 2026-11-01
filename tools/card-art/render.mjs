@@ -3,7 +3,7 @@
 // web/card/faces.json) into out/cards/<variant>.png at 300 dpi. With no variants named, also
 // the splay, the icon sheet and a check of every card in content. Composed cards are build
 // outputs, never committed. Fails if a font fell back, anything printed leaves the safe
-// zone, a panel overflows or a requirement plate reaches the tags. `--pdf` also writes
+// zone, a panel or title overflows or a requirement plate reaches the tags. `--pdf` also writes
 // out/cards/<variant>.pdf at true size and, with no variants named, all-cards.pdf (every
 // real card at true size, 9 to an A4 page) and splay.pdf.
 import { mkdir } from 'node:fs/promises';
@@ -48,6 +48,8 @@ const inspect = () =>
         if (r.top < b.top - 0.5 || r.bottom > b.bottom + 0.5) bad.push(`${box.className} overflows`);
       }
     }
+    for (const name of document.querySelectorAll('.name'))
+      if (name.firstElementChild.getBoundingClientRect().width > name.getBoundingClientRect().width + 0.5) bad.push(`title ${name.textContent} wider than its plate`);
     const plate = [...document.querySelectorAll('.requirement')].at(-1)?.getBoundingClientRect();
     const tag = document.querySelector('.tag')?.getBoundingClientRect();
     if (plate && tag && plate.right > tag.left) bad.push(`requirement reaches the tags at ${(plate.right / mm).toFixed(1)}`);

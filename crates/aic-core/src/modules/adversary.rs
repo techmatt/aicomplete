@@ -35,7 +35,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("arrivals", 0, 5, "build: ambassadors each site the adversary card names gains, whatever the board holds"),
-    ParamSpec::int("troop_health", 0, 10, "removal a card must spend on an adversary troop (an ambassador takes 1)"),
     ParamSpec::int("node_compute", 0, 5, "adversary compute each node makes a round (none with a player ambassador on it)"),
     ParamSpec::list("project_cards", 0, 20, "adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top"),
     ParamSpec::int("project_row", 1, 6, "adversary projects visible at once; a new row is dealt when all have resolved"),
@@ -95,11 +94,6 @@ const FIRST_CORRUPTION: &str = "adversary.first_corruption";
 /// Set on a node's hex by a hack (021): it makes no compute in the next build.
 pub fn cut_key(h: usize) -> String {
     format!("adversary.cut.{h}")
-}
-
-/// Seat `s` removed an adversary troop this round (card conditions).
-pub fn removed_troop(seat: usize) -> String {
-    format!("adversary.removed_troop.{seat}")
 }
 
 /// Whether the configured difficulty is at least `n` (setup rules).
@@ -299,12 +293,6 @@ impl Module for Adversary {
         }
         cx.set_pile(g, PROJECT_DECK, deck);
         deal_projects(g, cx);
-    }
-
-    fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
-        for s in 0..g.seats.len() {
-            cx.set_key(g, &removed_troop(s), 0);
-        }
     }
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
@@ -552,7 +540,6 @@ impl Module for Adversary {
             PEEK,
             FIRST_CORRUPTION,
             FIRST_PROJECT,
-            "adversary.removed_troop.",
             "adversary.project.",
             "adversary.cut.",
         ]);
@@ -873,6 +860,9 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
     }
     if !corrupted(g, h) {
         cx.add_tokens(g, h, ADV_CUBE, 1);
+        // 059: corruption replaces any marker here, as on a city.
+        let marked = g.tokens(h, MARKER);
+        cx.add_tokens(g, h, MARKER, -marked);
         cx.tally(g, "adversary.stations_flipped", 1);
         cx.note(Some(h), || {
             format!("The station at {} flips to the adversary", hex_name(&w, h))
@@ -973,45 +963,39 @@ pub fn spread(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
     Ok(())
 }
 
-/// Removal cost of an adversary piece: an ambassador 1, a troop `adversary.troop_health`.
-fn cost(w: &World, kind: &str) -> i64 {
-    if kind == TROOP {
-        w.int("adversary.troop_health")
-    } else {
-        1
-    }
+/// Whether a removal of `ambassadors` or `troops` has a piece to take on hex
+/// `h` (F64: a card that names no troop can't touch one).
+pub fn can_damage(g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
+    (ambassadors > 0 && g.tokens(h, ADV_AMBASSADOR) > 0) || (troops > 0 && g.tokens(h, TROOP) > 0)
 }
 
-/// Whether a removal worth `amount` can take a piece on hex `h` (044: a troop
-/// is worth `troop_health`, so "remove 1 worth" can't touch one).
-pub fn can_damage(w: &World, g: &GameState, h: usize, amount: i64) -> bool {
-    [ADV_AMBASSADOR, TROOP].into_iter().any(|k| g.tokens(h, k) > 0 && cost(w, k) <= amount)
-}
-
-/// Removes adversary pieces worth `amount` in hex `h` for seat `seat`,
-/// one at a time; the seat chooses each among those the rest can pay for.
-pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, amount: i64) -> Res {
+/// In hex `h`, removes up to `ambassadors` adversary ambassadors or up to
+/// `troops` troops: one kind, seat `seat`'s choice where the hex holds both.
+pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-    let mut left = amount;
-    loop {
-        let kinds: Vec<&str> = [ADV_AMBASSADOR, TROOP]
-            .into_iter()
-            .filter(|k| g.tokens(h, k) > 0 && cost(&w, k) <= left)
-            .collect();
-        if kinds.is_empty() {
-            return Ok(());
+    let kinds: Vec<(&str, i64)> = [(ADV_AMBASSADOR, ambassadors), (TROOP, troops)]
+        .into_iter()
+        .filter(|(k, n)| *n > 0 && g.tokens(h, k) > 0)
+        .collect();
+    let chosen = match kinds.as_slice() {
+        [] => return Ok(()),
+        [only] => *only,
+        _ => {
+            let opts = kinds
+                .iter()
+                .map(|(k, n)| opt(format!("remove {} {} at {}", (*n).min(g.tokens(h, k)), piece_name(k), hex_name(&w, h))))
+                .collect();
+            let prompt = format!("Seat {seat}: remove which pieces?");
+            let Some(i) = cx.choose(seat, &prompt, opts)? else {
+                return Ok(());
+            };
+            kinds[i]
         }
-        let opts = kinds
-            .iter()
-            .map(|k| opt(format!("remove {} at {}", piece_name(k), hex_name(&w, h))))
-            .collect();
-        let prompt = format!("Seat {seat}: remove which piece ({left} left)?");
-        let Some(i) = cx.choose(seat, &prompt, opts)? else {
-            return Ok(());
-        };
-        left -= cost(&w, kinds[i]);
-        remove_piece(g, cx, Some(seat), h, kinds[i]);
+    };
+    for _ in 0..chosen.1.min(g.tokens(h, chosen.0)) {
+        remove_piece(g, cx, Some(seat), h, chosen.0);
     }
+    Ok(())
 }
 
 /// Removes one adversary piece of `kind` from hex `h`. A removed troop
@@ -1020,9 +1004,6 @@ pub fn remove_piece(g: &mut GameState, cx: &mut Cx, seat: Option<usize>, h: usiz
     if kind == TROOP {
         cx.add_tokens(g, h, TROOP, -1);
         cx.tally(g, "adversary.troops_removed", 1);
-        if let Some(s) = seat {
-            cx.set_key(g, &removed_troop(s), 1);
-        }
         alignment::for_troop_removed(g, cx, seat);
     } else {
         remove(g, cx, h, 1);

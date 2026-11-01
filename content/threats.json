@@ -41,9 +41,9 @@
  },
  {
   "id": "supply_raid",
-  "name": "Supply raid",
+  "name": "Supply Raid",
   "tier": 1,
-  "text": "Each player with presence here loses 6 credits.",
+  "text": "Each player here loses 6 credits.",
   "counter": [
    [
     "credits",
@@ -110,7 +110,7 @@
   "id": "infiltration",
   "name": "Infiltration",
   "tier": 1,
-  "text": "3 adversary ambassadors land on player-owned pieces here (players choose each); the adversary gains 3 compute.",
+  "text": "3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute.",
   "counter": [
    [
     "credits",
@@ -133,7 +133,7 @@
   "id": "agitators",
   "name": "Agitators",
   "tier": 1,
-  "text": "3 adversary ambassadors land on clean cities here (players choose each); each player here destroys a presence of theirs here.",
+  "text": "3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -154,9 +154,9 @@
  },
  {
   "id": "orbital_strike",
-  "name": "Orbital strike",
+  "name": "Orbital Strike",
   "tier": 1,
-  "text": "An adversary troop lands on a factory here (players choose); with no factory, on a city; the adversary gains 3 compute; each player here destroys a presence of theirs here.",
+  "text": "1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -182,7 +182,7 @@
   "id": "defection",
   "name": "Defection",
   "tier": 1,
-  "text": "Each player here loses an ambassador (from supply, else from the board); sway 2 toward Discord; each player here destroys a presence of theirs here.",
+  "text": "Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -208,7 +208,7 @@
   "id": "eviction",
   "name": "Eviction",
   "tier": 1,
-  "text": "Each player here loses a presence here or pays 6 credits (with one presence on the board, pays).",
+  "text": "Each player here pays 6 credits or loses a presence here (never their last).",
   "counter": [
    [
     "credits",
@@ -247,9 +247,9 @@
  },
  {
   "id": "smear_campaign",
-  "name": "Smear campaign",
+  "name": "Smear Campaign",
   "tier": 1,
-  "text": "Each player here gets 2 less insight next round; 2 Sway leaves the Unity bucket.",
+  "text": "Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided.",
   "counter": [
    [
     "credits",
@@ -269,9 +269,9 @@
  },
  {
   "id": "station_seizure",
-  "name": "Station seizure",
+  "name": "Station Seizure",
   "tier": 2,
-  "text": "A research station here that is not corrupted becomes corrupted (players choose); the adversary gains 4 compute; each player here destroys a presence of theirs here.",
+  "text": "An uncorrupted research station here becomes corrupted. The adversary gains 4 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -296,7 +296,7 @@
   "id": "overrun",
   "name": "Overrun",
   "tier": 2,
-  "text": "The city here that is not corrupted (clean or aligned) with the most adversary ambassadors becomes corrupted (ties: lower hex number); each player here destroys a presence of theirs here.",
+  "text": "The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -315,7 +315,7 @@
  },
  {
   "id": "mass_production",
-  "name": "Mass production",
+  "name": "Mass Production",
   "tier": 2,
   "text": "The adversary builds now, here; the adversary gains 4 compute.",
   "counter": [
@@ -336,7 +336,7 @@
  },
  {
   "id": "purge_protocols",
-  "name": "Purge protocols",
+  "name": "Purge Protocols",
   "tier": 2,
   "text": "Each player here discards their most expensive card in hand and loses 3 tokens from their cards.",
   "counter": [
@@ -357,9 +357,9 @@
  },
  {
   "id": "total_war",
-  "name": "Total war",
+  "name": "Total War",
   "tier": 2,
-  "text": "2 adversary troops land on factories here (else cities), each destroying any presence on its hex, and 2 adversary ambassadors on military bases here; the adversary gains 4 compute.",
+  "text": "2 troops land on factories here, or cities if no factories; each destroys all presence on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute.",
   "counter": [
    [
     "credits",
@@ -409,9 +409,9 @@
  },
  {
   "id": "fifth_column",
-  "name": "Fifth column",
+  "name": "Sleeper Cells",
   "tier": 2,
-  "text": "4 adversary ambassadors land on player-owned pieces here (players choose each); the adversary gains 4 compute; each player here destroys a presence of theirs here.",
+  "text": "4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -438,7 +438,7 @@
   "id": "insurrection",
   "name": "Insurrection",
   "tier": 2,
-  "text": "4 adversary ambassadors land on clean cities here (players choose each); sway 2 toward Discord; each player here destroys a presence of theirs here.",
+  "text": "4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their presence here.",
   "counter": [
    [
     "credits",
@@ -466,7 +466,7 @@
   "id": "siege",
   "name": "Siege",
   "tier": 2,
-  "text": "2 adversary troops land on factories here (players choose; with no factory, on cities), and each player here destroys 2 presence of theirs here and loses an ambassador (from supply, else from the board); the adversary gains 3 compute.",
+  "text": "2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their presence here and loses an ambassador. The adversary gains 3 compute.",
   "counter": [
    [
     "credits",
@@ -495,7 +495,7 @@
   "id": "manhunt",
   "name": "Manhunt",
   "tier": 2,
-  "text": "Each player here destroys 2 presence of theirs here.",
+  "text": "Each player here destroys 2 of their presence here.",
   "counter": [
    [
     "credits",

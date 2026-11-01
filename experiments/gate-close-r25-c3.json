@@ -1,0 +1,28 @@
+{
+  "name": "gate-close-r25-c3",
+  "note": "059: the c3 checks level or ahead of the planner at the gate's 8 seeds (--seed 12000), 48 seeds, paired on the fresh band's seeds (--seed 11000).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner:always_consolidate=1",
+    "planner:science_rush=1",
+    "planner:tier2_rush=1",
+    "planner:no_powers=1",
+    "planner:never_tag=1",
+    "planner:never_tag=6"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -121,18 +121,14 @@ pub fn capacity(w: &World, g: &GameState, seat: usize) -> i64 {
 }
 
 /// Active buildings that take a slot (each the top of a stack).
-pub(super) fn slotted(w: &World, g: &GameState, seat: usize) -> Vec<Key> {
-    g.pile(&built(seat))
-        .iter()
-        .filter(|id| !def(w, id).slotless)
-        .cloned()
-        .collect()
+pub(super) fn slotted(g: &GameState, seat: usize) -> Vec<Key> {
+    g.pile(&built(seat)).to_vec()
 }
 
 /// Stacks a building `d` may be built over: tops carrying its `replaces`
 /// tag, or any slotted top.
 pub(super) fn stack_targets(w: &World, g: &GameState, seat: usize, d: &CardDef) -> Vec<Key> {
-    slotted(w, g, seat)
+    slotted(g, seat)
         .into_iter()
         .filter(|top| {
             d.replaces

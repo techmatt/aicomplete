@@ -18,13 +18,6 @@ fn an_op_in_the_wrong_list_fails_to_load() {
     for (op, slot) in bad {
         assert!(check_ops(&[op.clone()], slot, "test").is_err(), "{op:?} in {slot:?}");
     }
-    // Inside an `if` too.
-    let gate = Op::If {
-        cond: crate::content::Cond::RemovedTroop,
-        then: vec![Op::War],
-        otherwise: Vec::new(),
-    };
-    assert!(check_ops(&[gate], Slot::Player, "test").is_err());
 }
 
 #[test]

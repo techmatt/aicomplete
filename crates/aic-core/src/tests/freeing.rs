@@ -67,7 +67,7 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
 }
 
 #[test]
-fn clearing_a_city_takes_the_ambassadors_next_to_it_first() {
+fn clearing_a_city_takes_the_ones_the_player_picks() {
     let (rules, mut g) = lab_actions();
     let (h, n) = city(&rules, &mut g);
     put(&mut g, h, ADV_AMBASSADOR, 2);
@@ -75,7 +75,8 @@ fn clearing_a_city_takes_the_ambassadors_next_to_it_first() {
     play_card(&rules, &mut g, 0, "amnesty_decree");
     pick(&rules, &mut g, h);
     answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(n, ADV_AMBASSADOR), g.tokens(h, ADV_AMBASSADOR)), (0, 2));
+    let left = g.tokens(n, ADV_AMBASSADOR) + g.tokens(h, ADV_AMBASSADOR);
+    assert_eq!(left, 2, "the card takes 2 of the 4, on or next to the city");
     let mut k = g.clone();
     put(&mut k, n, ADV_AMBASSADOR, 3);
     // It needs a Diplomacy tag in play.

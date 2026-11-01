@@ -172,7 +172,7 @@ Player ambassadors move only through cards and the standard action.
    piece without a node (below). **Priority:**
    player-owned hexes, then clean cities, then other pieces; then the nearest; players
    choose among equals. A city that is not corrupted never spreads: it holds its
-   ambassadors. The presence of Aegis Dome Array's owner is skipped. **A surplus with nowhere to
+   ambassadors. **A surplus with nowhere to
    go returns to the supply.**
 3. **Corrupt** (`adversary.corrupt`): a city that is not corrupted holding `corrupt_at`
    (6; 018: was 5) adversary ambassadors becomes corrupted (an aligned city loses its player cube);
@@ -190,7 +190,7 @@ station). A node stays until removed: it makes `node_compute` adversary compute 
 and it counts against the purge until Unity eases it (§5). **Nodes are hard to remove
 (019, candidate, Matt):** there is no standard action for it any more (016–018: a
 standard action, `node_energy` 2–3 energy in reach). Only tier-2 effects remove a node:
-the tier-2 cards **Node Severance** and **Singularity Exploit** (which also drains every
+the tier-2 cards **Node Severance** and **Singularity Exploit** (which also discards a
 project), each removing a node
 within your reach, and the tier-2 Unity card **Decommission** (remove a node
 anywhere, players choose). Removing a node still sways `alignment.node` Unity (§5).
@@ -211,7 +211,7 @@ up at once; when all of them have resolved (or been discarded), the next row is 
   first in the row). When a project holds its cost it **resolves**: a one-shot effect at
   once, or an **ongoing** one that acts in every round's build step from the next round
   on. Choices
-  are the players' (seat 0; a sacrifice, each player's own). With no project left,
+  are the players' (seat 0; Purge the Unaligned's loss, each player's own). With no project left,
   compute is lost.
 - **Cost** is printed per player (**Default**: the prompt's 12–15 and 25–30 compute are
   3-player numbers; a per-player cost keeps the timing at 2 and 4 players). The table prints
@@ -230,23 +230,23 @@ up at once; when all of them have resolved (or been discarded), the next row is 
 | Disinformation | 1 | 5 | once | Sway 4 toward Discord. |
 | Node Swarm | 1 | 5 | once | Every node produces 2 adversary ambassadors on its hex. |
 | Market Crash | 1 | 5 | once | Every player loses 8 credits. |
-| False Flag | 1 | 6 | once | Deal three extra threats. |
-| Infiltration Drive | 1 | 6 | once | In each country, the city that is not corrupted (clean or aligned) with the most adversary ambassadors becomes corrupted. |
+| False Flag | 1 | 6 | once | Deal 3 extra threats. |
+| Infiltration Drive | 1 | 6 | once | In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted. |
 | Rapid Buildout | 1 | 6 | once | The adversary builds now, then spreads. |
-| Purge the Unaligned | 2 | 8 | once | Every player sacrifices an ambassador or a presence; in each country, an adversary troop lands on a factory (with none, a city). |
+| Purge the Unaligned | 2 | 8 | once | Every player loses an ambassador or a presence (never their last presence). In each country, 1 troop lands on a factory, or a city if no factory. |
 | Recruitment Drive | 2 | 9 | ongoing | Ongoing: every round, an extra adversary ambassador at every clean city. |
 | Propaganda Network | 2 | 9 | ongoing | Ongoing: every round, sway 2 toward Discord. |
 | Total Offensive | 2 | 9 | once | The adversary builds and spreads now; sway 2 toward Discord. |
-| Armoured Columns | 2 | 9 | once | In each country, 2 adversary troops land on factories (with none, cities). |
-| Station Coup | 2 | 10 | once | In each country, a research station that is not corrupted becomes corrupted; every node produces an adversary ambassador on its hex. |
+| Armoured Columns | 2 | 9 | once | In each country, 2 troops land on factories, or cities if no factories. |
+| Station Coup | 2 | 10 | once | In each country, an uncorrupted research station becomes corrupted. Every node produces 1 adversary ambassador on its hex. |
 <!-- /generated -->
 
 **Defaults:** compute goes on one point at a time, so a full project resolves before the
-next point lands; a sacrifice is any one of the player's ambassadors (supply or a hex)
-or presence tokens, their pick, never their last presence; a sacrificed presence leaves the
+next point lands; Purge the Unaligned's loss is any one of the player's ambassadors (supply or a hex)
+or presence tokens, their pick, never their last presence; a presence lost this way leaves the
 game, as a destroyed one does (§4). Ongoing projects
 act in the round's build step only, not in an out-of-turn build (Offensive, Rapid
-Buildout, Mass production).
+Buildout, Mass Production).
 
 **Calibration (to r11; 024 doubled the build, below).** Since 018 (`city_build` 1, `factory_build` 0) a corrupted city made
 1 ambassador a round, plus the card's twists. Each producing piece uses one up a round,
@@ -280,19 +280,19 @@ face up a round ahead (peek cards show more). Each card's twists change its roun
 <!-- generated: adversary -->
 | Card | Stage | Twist | Escalation |
 |---|---|---|---|
-| Probing Strikes | 1 | Arrivals: coastal cities. The Militarist tests the lines: it builds and spreads as usual. |  |
-| Factory Drive | 1 | Arrivals: industrial zones. Factories next to clean cities build 1 too. |  |
+| Probing Strikes | 1 | Arrivals: coastal cities. |  |
+| Factory Drive | 1 | Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. |  |
 | Long Patrols | 1 | Arrivals: research stations. Spread reaches 1 hex further. |  |
-| War Drums | 1 | Arrivals: each country's first base. Sway 1 toward Discord. |  |
-| Mobilisation | 2 | Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
-| Station Raids | 2 | Arrivals: research stations. Each corrupted research station builds 1. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
-| Fifth Column | 2 | Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
-| Border War | 2 | Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador when this round builds; each player destroys a presence of theirs. | yes |
-| Supply Lines | 2 | Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each country's first base gains an adversary ambassador when this round builds. | yes |
-| Total Mobilisation | 3 | Arrivals: industrial zones. Each corrupted city builds 1 more, and factories next to clean cities build 1 too; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
-| Blitzkrieg | 3 | Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
-| Occupation | 3 | Arrivals: research stations. Cities corrupt at 1 fewer ambassador, and each corrupted research station builds 1; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
-| Iron Doctrine | 3 | Arrivals: coastal cities. This round is a war round; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket. |  |
+| War Drums | 1 | First, sway 1 toward Discord. Arrivals: each country's first base. |  |
+| Mobilisation | 2 | Arrivals: coastal cities. Each corrupted city gains 1 more adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
+| Station Raids | 2 | Arrivals: research stations. Each corrupted research station gains 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
+| Fifth Column | 2 | Arrivals: coastal cities. Cities corrupt at 1 fewer adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
+| Border War | 2 | First, each player destroys 1 of their presence. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador. | yes |
+| Supply Lines | 2 | Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
+| Total Mobilisation | 3 | First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too. |  |
+| Blitzkrieg | 3 | First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further. |  |
+| Occupation | 3 | First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador. |  |
+| Iron Doctrine | 3 | First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round. |  |
 <!-- /generated -->
 
 **Arrivals: the explore step that never stops (027).** The site types are **coastal
@@ -311,7 +311,7 @@ fronts: a country has one front at 2 countries and two at 3 and 4, so counting e
 3-country board twice the pressure per country and made base Sway the whole of the Discord gap
 between the sizes. The count is fixed by the printed board, so it can't feed back. A base's other
 rules are unchanged: an ambassador that spreads onto a second base still diverts it, and a threat
-that lands on bases here (Total war) lands on all of them.
+that lands on bases here (Total War) lands on all of them.
 
 **For new players.** An adversary card may name military bases, and stage II cards send an extra
 ambassador to them. Either way it lands on one base in each country, the lowest-numbered. A base with
@@ -457,7 +457,7 @@ territory and wait at its bases.
 
 **Adversary troops (019, candidate): the march.** Adversary troops come from adversary
 ambassadors on factories, from adversary-owned factories (production steps), and from
-projects and threats (Armoured Columns, Orbital strike, Total war). They are the
+projects and threats (Armoured Columns, Orbital Strike, Total War). They are the
 adversary's mobile threat to player infrastructure. **Targets:** player-owned research stations and factories, **not presence** (`troop_presence`; 027: the
 march destroyed 20 presence a game once a presence could end the game, and made the march
 the main source; a troop on or next to a presence only stands there). Cities are never targets (corruption is
@@ -484,8 +484,7 @@ march after. **Players see each hit coming:** the view draws each troop's next t
 on the board was there through an action phase except those that arrive between the
 action phase and the march (built in production, placed by an uncountered threat or by
 Armoured Columns in the build): an adversary factory within two hexes of your station or factory
-is a known danger. Cards remove troops (a troop costs `troop_health` of a
-card's removal; an ambassador 1), swaying `alignment.troop` toward Unity.
+is a known danger. Cards remove troops, each card naming how many, swaying `alignment.troop` toward Unity.
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on
 adversary factories (and from some threats and projects), and every round, in the
@@ -512,8 +511,8 @@ places ambassadors, it does not walk them. It replaces two 016–018 rules:
 **Presence destruction (027, 034).** A player with no presence on the board loses the game for
 everyone (§5). **It is a slide, not a cliff (034):** a seat loses tokens a few at a time from
 the middle of the game on, from several sources. Uncountered threats (Eviction offers it as a
-choice; Agitators, Orbital strike and Defection in tier 1 and Station seizure, Overrun, Fifth
-column, Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and
+choice; Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper
+Cells, Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and
 Siege two), a city that becomes corrupted (presence on its hex and, by `corruption_reach`, next
 to it), war that destroys a factory (presence on its hex and, by `war_reach`, next to it), stage-III
 adversary cards (each player destroys two) and Border War (one), Discord cards, and Purge the
@@ -523,13 +522,13 @@ below). A hit is each player's own pick of which token, and it is absorbed as an
 is (below), so a token shielded by an ambassador is a good pick. **While this round's adversary
 card is stage I, a player's last presence can't be destroyed** (candidate, **Early fragility**):
 each player starts with 1, and a war in round 2 would otherwise end the game. Eviction goes
-further: it takes a presence only from a player with 2 or more, at any stage. The **most
-threatened hex** (Offensive's, on the board) is the presence hex with the most adversary
-ambassadors and troops (ties: country, then lower hex number). Sacrifice never offers a last
+further: it takes a presence only from a player with 2 or more, at any stage. Offensive's
+target, on the board, is the presence hex with the most adversary
+ambassadors and troops (ties: country, then lower hex number). Purge the Unaligned never offers a last
 presence. A city that corrupts takes the presence unabsorbed: corruption is not a destruction
 shelters and shields answer.
 
-**A lost presence (034, locked, as in Spirit Island).** A destroyed or sacrificed presence
+**A lost presence (034, locked, as in Spirit Island).** A destroyed presence, or one lost to Purge the Unaligned,
 **leaves the game**: it does not go back on its track, and what it uncovered stays uncovered
 (028's re-cover rule is gone, with 018's destroyed pile). Each lost token is a board location you
 can no longer act from, so getting all your presence out is always a tradeoff.
@@ -659,37 +658,37 @@ Grassroots Funding, Think Tank and New Deal still give income "for the rest of t
 a one-shot card that moves a printed income marker, not a card left in play.
 
 **Steps (017).** A Discord card prints its strength by the Discord tip count (counted
-before this tip, so "after 3 Discord tips" first fires on the 4th tip): it replaces the
+before this tip, so "3+ earlier Discord tips" first fires on the 4th tip): it replaces the
 difficulty escalation (below). Unity cards have no steps.
 
 <!-- generated: alignment -->
 | Card | Side | Tier | Text | Stronger after tips |
 |---|---|---|---|---|
-| Grassroots Funding | unity | 1 | Every player gains 2 credit income for the rest of the game. |  |
-| Open Market | unity | 1 | The next 2 card purchases are free. |  |
+| Grassroots Funding | unity | 1 | Every player gains 2 credits each round for the rest of the game. |  |
+| Open Market | unity | 1 | The next 2 cards any player keeps from the draft are free. |  |
 | Think Tank | unity | 1 | Every player gains 1 insight each round for the rest of the game. |  |
-| Ceasefire | unity | 1 | Counter one active threat. |  |
+| Ceasefire | unity | 1 | Counter an active threat. |  |
 | Civil Defense | unity | 1 | In each country, remove 1 adversary ambassador. |  |
 | Volunteer Corps | unity | 1 | Sway 3 toward Unity. |  |
 | Global Coalition | unity | 2 | Counter every active threat. |  |
-| New Deal | unity | 2 | Every player gains 2 credit income for the rest of the game and 4 credits now. |  |
+| New Deal | unity | 2 | Every player gains 4 credits now, and 2 credits each round for the rest of the game. |  |
 | Decommission | unity | 2 | Remove a node anywhere on the board. |  |
-| Incursion | discord | 1 | Deal one extra threat (after 5 Discord tips: three, and each player destroys 2 presence of theirs). | 5 |
-| Blight | discord | 1 | In each country, the clean city with the most adversary ambassadors gains 1 more (after 5 Discord tips: 3, and each player destroys 2 presence of theirs). | 5 |
-| Propaganda | discord | 1 | Every player loses 4 credits; 2 Sway leaves the Unity bucket (after 5 Discord tips: every player loses 8 credits and destroys 2 presence of theirs, and 2 Sway leaves the Unity bucket). | 5 |
-| Offensive | discord | 2 | The adversary spreads now, then all presence on the board's most threatened hex is destroyed (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: it builds, then spreads, and each player destroys 2). | 3, 4 |
-| Two Fronts | discord | 2 | Deal two extra threats (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: three, and each destroys 2). | 3, 4 |
-| Firestorm | discord | 2 | In each country, the clean city with the most adversary ambassadors gains 2 more (after 3 Discord tips: also each player destroys 1 presence of theirs; after 4: 3, and each destroys 2). | 3, 4 |
+| Incursion | discord | 1 | Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and each player destroys 2 of their presence. | 5 |
+| Blight | discord | 1 | In each country, the clean city with the most adversary ambassadors gains 1 more. 5+ earlier Discord tips: 3 more instead, and each player destroys 2 of their presence. | 5 |
+| Propaganda | discord | 1 | Every player loses 4 credits; move 2 Sway from the Unity bucket to the Undecided. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their presence. | 5 |
+| Offensive | discord | 2 | The adversary spreads, then destroy all presence on the presence hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their presence. 4+ instead: the adversary builds, then spreads, and each player destroys 2. | 3, 4 |
+| Two Fronts | discord | 2 | Deal 2 extra threats. 3+ earlier Discord tips: each player also destroys 1 of their presence. 4+ instead: deal 3, and each player destroys 2. | 3, 4 |
+| Firestorm | discord | 2 | In each country, the clean city with the most adversary ambassadors gains 2 more. 3+ earlier Discord tips: each player also destroys 1 of their presence. 4+ instead: 3 more, and each player destroys 2. | 3, 4 |
 <!-- /generated -->
 
 The Unity cards are opposition's old rewards as one-shot cards; the Discord cards are
 adversary effects the game already has. A threat countered by a card is discarded and
 its partial payments are refunded. **Defaults:**
 
-- Open Market's free purchases are keeps of drafted cards (§8), by any player, used
+- Open Market's free cards are keeps of drafted cards (§8), by any player, used
   before credits.
-- **Unity pulled back (027):** "N Sway leaves the Unity bucket" returns up to N to the
-  Undecided.
+- **Unity pulled back (027):** "Move N Sway from the Unity bucket to the Undecided" returns
+  up to N.
 - Extra threats come from the current tier's deck (no reshuffle out of turn: an empty
   deck deals nothing), one per country in turn from country 0 (`shared_row`: into the
   row), and are countered or execute like any other. One dealt after the round's
@@ -766,8 +765,8 @@ the last-presence rule in stage I; three pieces print `coast`; difficulty 4 shor
 Discord deck (`discord_removed` 1, was the supply). The Discord deck lost Buildup (7 to 6
 cards) and every stage-III card sways 2 toward Discord: at 7 cards with no stage-III sway,
 half the 2-country losses at d2 were deck-outs at round 11. Content: threats Eviction, Embargo,
-Smear campaign and Manhunt are new; Siege and Total war's troops destroy presence; Purge
-protocols strips tokens; Propaganda pulls Unity back; Offensive, and Firestorm at 4+,
+Smear Campaign and Manhunt are new; Siege and Total War's troops destroy presence; Purge
+Protocols strips tokens; Propaganda pulls Unity back; Offensive, and Firestorm at 4+,
 destroy presence. **The printed steps moved (027):** with no reshuffle the draw order is
 fixed, tier 1 at tips 0-1 and 5, tier 2 at tips 2-4, and a tip with 6 already made finds the deck
 empty (a tip sooner at difficulty 4). So a step at 5 on a tier-2 card could never act; tier-1
@@ -825,7 +824,7 @@ game ends it there.
 | Energy (keeps between rounds) | Cities' cubes in production (§6 below); the presence tracks; Power buildings and the starting Sentinel Post; Power programs; growth | Placing presence (every placement pays its track step, §7); Power cards' `energy` cost; powers; hardening; standard actions; buildings at the Builder's rate, Security cards at the Protector's |
 | Chips | Player-owned factories on production steps (`factory_chips` each); the Builder's second presence track; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); sold at `chips_credits` |
 | Antimatter | Each board's last presence-track space; tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action | Tier-2 cards |
-| Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear campaign took | Keeping drafted cards; playing cards (022); giving (expires at the round's end) |
+| Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear Campaign took | Keeping drafted cards; playing cards (022); giving (expires at the round's end) |
 | Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound); the standard action | Moving onto pieces; aligning cities |
 
 **Cities' energy (021).** Each city makes `corp_energy` (a
@@ -971,7 +970,7 @@ power is used; the player chooses the cards one at a time among those that still
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Retool | 2 Industry + 1 any | gain 5 credits and 2 chips |
-| Protector | Lockdown | 2 Security + 1 any | remove 3 worth of adversary pieces in a hex in your reach; sway 1 toward Unity |
+| Protector | Lockdown | 2 Security + 1 any | remove 3 adversary ambassadors or 1 troop from a hex in reach; sway 1 toward Unity |
 <!-- /generated -->
 
 `ai.boards` (`[0, 1]`: Builder, Protector) gives each seat its board; the list repeats
@@ -982,8 +981,8 @@ in a slot (**Default:** one copy each, so a repeated AI's second seat has neithe
 <!-- generated: board_details -->
 | Board | Innate | Discount | Growth options | Unique cards |
 |---|---|---|---|---|
-| Builder | *Economies of scale*: Each building you play costs 1 credit less. Energy pays for buildings, 1 energy a credit. | energy on buildings 1:1 | Expand: place 2 presence, gain 1 credit; Develop: place 1 presence, draw 1 card; Consolidate: gain 4 credits and 2 energy; next building this round costs 2 less | Turnkey Factory, Venture Capital, Modular Expansion |
-| Protector | *Bulwark*: You may harden buildings (standard action, 1 energy a token). Energy pays for Security cards, 1 energy a credit. | energy on Security cards 1:1 | Expand: place 2 presence, gain 1 energy; Develop: place 1 presence, draw 1 card; Consolidate: gain 3 energy and 2 credits; harden 2 buildings in your reach, in one country | Point Defense, Strike Team, Shelter Order |
+| Builder | *Economies of scale*: Each building you play costs 1 credit less. When you play a building, each energy you pay counts as 1 credit. | energy on buildings 1:1 | Expand: place 2 presence, gain 1 credit; Develop: place 1 presence, draw 1 card; Consolidate: gain 4 credits and 2 energy; next building this round costs 2 less | Turnkey Factory, Venture Capital, Modular Expansion |
+| Protector | *Bulwark*: Standard action: pay 1 energy to harden 1 building in reach. When you play a Security card, each energy you pay counts as 1 credit. | energy on Security cards 1:1 | Expand: place 2 presence, gain 1 energy; Develop: place 1 presence, draw 1 card; Consolidate: gain 3 energy and 2 credits; harden 2 buildings in reach | Point Defense, Strike Team, Shelter Order |
 <!-- /generated -->
 
 Hardening (the Protector's growth, the standard action, cards, Point Defense) goes only on
@@ -1003,9 +1002,9 @@ when the presence goes, and protects the building.
   in its text means each player with presence there.
 - Variant **`shared_row`**: threats sit in one row, anyone may pay, and each acts on
   the whole board: an effect per country (Blackout, Sabotage, Overrun, Mass
-  production) hits every country, "each player" is every player, and a placement
-  (Infiltration's, Agitators', Fifth column's and Insurrection's ambassadors, Orbital
-  strike's, Siege's and Total war's troops and ambassadors, Station seizure's station)
+  Production) hits every country, "each player" is every player, and a placement
+  (Infiltration's, Agitators', Sleeper Cells' and Insurrection's ambassadors, Orbital
+  Strike's, Siege's and Total War's troops and ambassadors, Station Seizure's station)
   is that many on the whole board, players
   choosing where. **Default:** the row is still dealt `per_country` threats per
   country, so with more countries there are more threats.
@@ -1042,26 +1041,26 @@ resources, and tier 2 asked for antimatter nobody held, so it mostly executed):
 |---|---|---|---|
 | Requisition | 1 | Each player here discards 2 cards or pays 6 credits. | 4 credits |
 | Commandeer | 1 | Each player here discards 2 cards or pays 4 energy. | 4 credits |
-| Supply raid | 1 | Each player with presence here loses 6 credits. | 5 credits |
+| Supply Raid | 1 | Each player here loses 6 credits. | 5 credits |
 | Blackout | 1 | Cities here produce no energy next round; the adversary gains 3 compute. | 4 credits |
 | Sabotage | 1 | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 5 credits |
-| Infiltration | 1 | 3 adversary ambassadors land on player-owned pieces here (players choose each); the adversary gains 3 compute. | 5 credits |
-| Agitators | 1 | 3 adversary ambassadors land on clean cities here (players choose each); each player here destroys a presence of theirs here. | 5 credits |
-| Orbital strike | 1 | An adversary troop lands on a factory here (players choose); with no factory, on a city; the adversary gains 3 compute; each player here destroys a presence of theirs here. | 6 credits |
-| Defection | 1 | Each player here loses an ambassador (from supply, else from the board); sway 2 toward Discord; each player here destroys a presence of theirs here. | 4 credits |
-| Eviction | 1 | Each player here loses a presence here or pays 6 credits (with one presence on the board, pays). | 5 credits |
+| Infiltration | 1 | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 credits |
+| Agitators | 1 | 3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their presence here. | 5 credits |
+| Orbital Strike | 1 | 1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their presence here. | 6 credits |
+| Defection | 1 | Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their presence here. | 4 credits |
+| Eviction | 1 | Each player here pays 6 credits or loses a presence here (never their last). | 5 credits |
 | Embargo | 1 | No site here can be claimed next round; the adversary gains 3 compute. | 4 credits |
-| Smear campaign | 1 | Each player here gets 2 less insight next round; 2 Sway leaves the Unity bucket. | 4 credits |
-| Station seizure | 2 | A research station here that is not corrupted becomes corrupted (players choose); the adversary gains 4 compute; each player here destroys a presence of theirs here. | 7 credits |
-| Overrun | 2 | The city here that is not corrupted (clean or aligned) with the most adversary ambassadors becomes corrupted (ties: lower hex number); each player here destroys a presence of theirs here. | 8 credits |
-| Mass production | 2 | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
-| Purge protocols | 2 | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 6 credits |
-| Total war | 2 | 2 adversary troops land on factories here (else cities), each destroying any presence on its hex, and 2 adversary ambassadors on military bases here; the adversary gains 4 compute. | 8 credits |
+| Smear Campaign | 1 | Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided. | 4 credits |
+| Station Seizure | 2 | An uncorrupted research station here becomes corrupted. The adversary gains 4 compute. Each player here destroys 1 of their presence here. | 7 credits |
+| Overrun | 2 | The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their presence here. | 8 credits |
+| Mass Production | 2 | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
+| Purge Protocols | 2 | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 6 credits |
+| Total War | 2 | 2 troops land on factories here, or cities if no factories; each destroys all presence on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute. | 8 credits |
 | Conscription | 2 | Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute. | 7 credits |
-| Fifth column | 2 | 4 adversary ambassadors land on player-owned pieces here (players choose each); the adversary gains 4 compute; each player here destroys a presence of theirs here. | 7 credits |
-| Insurrection | 2 | 4 adversary ambassadors land on clean cities here (players choose each); sway 2 toward Discord; each player here destroys a presence of theirs here. | 7 credits |
-| Siege | 2 | 2 adversary troops land on factories here (players choose; with no factory, on cities), and each player here destroys 2 presence of theirs here and loses an ambassador (from supply, else from the board); the adversary gains 3 compute. | 8 credits |
-| Manhunt | 2 | Each player here destroys 2 presence of theirs here. | 8 credits |
+| Sleeper Cells | 2 | 4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their presence here. | 7 credits |
+| Insurrection | 2 | 4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their presence here. | 7 credits |
+| Siege | 2 | 2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their presence here and loses an ambassador. The adversary gains 3 compute. | 8 credits |
+| Manhunt | 2 | Each player here destroys 2 of their presence here. | 8 credits |
 <!-- /generated -->
 
 The four 022 threats (placeholders, candidate) are built from the existing effects:
@@ -1073,8 +1072,9 @@ the threat.
 
 An uncountered threat also sways `threat_discord` Discord. "Pay or discard" is the
 player's choice; with neither possible, the player pays what they have and discards
-their hand (**Default**). Purge protocols compares printed credit costs; on a tie the
-player chooses.
+their hand (**Default**). Purge Protocols compares printed credit costs; on a tie the
+player chooses. A lost ambassador comes from the player's supply, else from the board (their
+pick of hex).
 
 ### Player cards (module `cards`, variant `draft`; [`content/cards.json`](../content/cards.json))
 
@@ -1098,13 +1098,13 @@ The cards config lists which cards are in the game (baseline: all of them).
   is paid at `insight_credits` credits an insight (keeps only). An Open Market free
   purchase is used first. The rest are discarded when the action phase begins.
 - **Playing** a card costs its credits (buildings minus your discounts: Economies of
-  scale, Orbital Mass Driver, the Builder growth's next-building discount, Industry tags; less what you
+  scale, the Builder growth's next-building discount, Industry tags; less what you
   spend at your AI's rate, §6), and any `insight`, `energy`, `chips` and `antimatter`
   it prints, and lowers any income it prints under `lowers` (022: "lower your credit
   income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play (022):** 0 for small programs
   and events, 1 by default (removal events included), 2 for big effects and nearly all
-  tier 2 (the set: 36 / 77 / 37 cards at 0 / 1 / 2); it comes from
+  tier 2 (the set: 34 / 80 / 36 cards at 0 / 1 / 2); it comes from
   the same insight as keeps, and the credit conversion is for keeps only. Its `needs`
   (tags on your cards in play) are checked only when it is played. Each card's price is
   in [cards.md](cards.md); the reasoning is in [card-pricing.md](card-pricing.md).
@@ -1112,9 +1112,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   put a hardening token on a hex of your presence (a shield, which absorbs a destruction there as
   on a building) or make a threat wait a round (a delay: it skips this round's execution, stays
   up, and can be countered next round); the content check
-  refuses any of the three on a card without the tag, an AI board's growth or a power. Five tier-1
-  and three tier-2 cards do it. No card `needs` Science for it but one, Adversarial Inference Sweep (055, candidate:
-  a tier-2 delay, gated against the rush): a team without the tag still has
+  refuses any of the three on a card without the tag, an AI board's growth or a power. Six tier-1
+  and two tier-2 cards do it. No card `needs` Science for it: a team without the tag still has
   the Clear standard action, its counters and the board. Priced in
   [card-pricing.md](card-pricing.md).
 - **Tag discounts (034, candidate; the Terraforming Mars pattern).** Every `science_every`
@@ -1127,23 +1126,22 @@ The cards config lists which cards are in the game (baseline: all of them).
   under them, and programs. Events' tags don't stay.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice
   them). **Events** resolve and are discarded. A program or event (or ability) is only
-  offered when each of its targeted effects has a target (a Harden or a "you may move" counts
+  offered when each of its targeted effects has a target (a Harden or a move counts
   only on a card that does nothing else; 044). A removal's target is a hex with a piece the
-  amount can pay for: "remove 1 worth" can't name a troop's hex. A building's when-built effect
+  card names: "remove 1 adversary ambassador" can't name a hex holding only a troop. A building's when-built effect
   is not checked: with no target it does nothing.
-- **Buildings** go into a slot: your AI board's `ai.slots`, plus Modular Expansion's
-  (slotless). With a slot free you choose a new slot or **build over** one of your
+- **Buildings** go into a slot: your AI board's `ai.slots`, plus Modular Expansion's 2 (it
+  sits in one itself). With a slot free you choose a new slot or **build over** one of your
   buildings; with none free you must build over one. The building underneath is
   **splayed down**: its passives and ability stop, its tags still count, and it is
   sacrificed with the stack. A building with `replaces` (most tier-2 buildings, over
-  their own tag) must be built over one whose top card carries that tag. A building whose
-  upkeep went unpaid is off (no passive, no ability) the next round.
+  their own tag) must be built over one whose top card carries that tag.
 - **Tokens** (021) live on buildings that print a type (`tokens`): Datasets (Science),
   Followers (Diplomacy), Capital (Industry), Agents (Security). An active token building
   gains its `per_round` in upkeep; a covered one holds its tokens but gains none and
   counts for nothing; Actions may cost tokens from their own card; some cards
   (Dataset Scraper, Manifesto Leak, Recruit Operatives) add tokens to a card of a type;
-  Sabotage and Purge protocols make each player lose tokens.
+  Sabotage and Purge Protocols make each player lose tokens.
   Sacrificing or discarding a card loses its tokens.
 - **Actions** (abilities: `ability`, buildings only, 033) are used with `Use` once a round,
   pay their cost, and refresh at the start of a round. **Ongoing abilities live only on
@@ -1172,8 +1170,9 @@ dark frame acts on the adversary's pieces, projects or threats. A dashed outline
 player or another card of yours; no outline is you, or this card.
 
 **Connectors.** `→` is an Action: once a round, pay the left to get the right. A bare `→`
-is free ("Action: once a round, get ..."). `:` is an Effect: when the left happens, get the
-right. `/` is per. OR is written out. `*` is an exception, explained in brackets in the text.
+is free ("Action: get ..."). `:` is an Effect: when the left happens, get the
+right. `/` is per. OR is written out. No card has an exception: every symbol means what it always
+means ([card-guidelines.md](card-guidelines.md)). `→` needs no "once a round": every Action is.
 
 **Shapes.** Square tiles are resources, discs are tokens on cards (alone, on this card),
 bare silhouettes are pieces on the board and moving them, ringed circles are tags. A number
@@ -1191,13 +1190,13 @@ with its cost, insight, tags, kind and text in [cards.md](cards.md) (generated:
 Card text says what a card does; how each primitive resolves:
 
 - **Reach (016):** a card's map target is in your reach (within 1 of your
-  presence) where its text says so; Total Containment's hex and a country sweep are not. A removal (`damage`) takes a hex in reach holding adversary pieces (some
-  cards narrow it to a country where you have presence); a country sweep any country
-  holding them. An ambassador is worth 1, a troop `troop_health`.
-- **Hardening:** any country holding a building a token can protect (022, 020's D10: a
-  player-owned station or factory that is not corrupted), only buildings in reach;
-  choose the country, then a different building for each token.
-- **Factories:** a free industrial zone in reach; the factory is yours (your cube). A
+  presence) where its text says so; Total Containment's hex and a country sweep are not. A removal (`damage`) takes a hex in reach holding adversary pieces;
+  a country sweep any country holding them. A card names the pieces it removes: where it says "2
+  adversary ambassadors or 1 troop" you choose one kind, per hex on a sweep.
+- **Hardening:** a different building in reach for each token, each one a token can protect
+  (022, 020's D10: a player-owned station or factory that is not corrupted).
+- **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is
+  yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto
   pieces (city, base, building or presence), each arriving as in §2; stop at any time.
@@ -1212,33 +1211,30 @@ Card text says what a card does; how each primitive resolves:
   (024; `cities` on the effect; any freeing card did before), and it sways
   `alignment.free_city`.
 - **Clear a city (024, `clear_city`):** remove up to N adversary ambassadors (Liberation
-  Accords: all) around one corrupted city in reach, on it or next to it, the ones next to
-  it first. This is how cards help free a city; moving your ambassadors there is the other
+  Accords: all) around one corrupted city in reach, on it or next to it, your choice which. This is how cards help free a city; moving your ambassadors there is the other
   half.
 - **Card text (033):** generated from the card's ops (*The card grammar*, above), so it says
   everything, extra costs and lowered income included; a long card sets smaller. Terms:
-  **remove N worth** (an ambassador 1, a troop `troop_health`); **harden N buildings** (N different ones
+  **harden N buildings** (N different ones
   in reach; only a player-owned, uncorrupted station or factory takes a token, Hardening
-  above); **shelter one country** (nothing in it, building or presence, can be destroyed this round); **cut off
-  a node** (it makes no compute in the next build).
-- **Upkeep conversions** on a building are paid automatically in upkeep if you can.
+  above); **shelter one country** (nothing in it, building or presence, can be destroyed this round). A bare
+  "ambassador" is yours; "here" on a building is on that card; "you have" counts active buildings'
+  tokens; "Remove N" takes as many as there are, up to N.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all
   (023)** from every visible one; a discard takes one with its compute (if the row is
   then empty, the next row is dealt).
 - **Nodes:** removing a node (tier 2, in reach) is, with Decommission (a Unity card, §5),
   the only way to remove one (§3); cutting one off (a hack) makes it produce no compute
   in the next build.
-- **Draw (023):** take the top cards of the tier-1 deck into your hand, no keep paid
+- **Draw (023):** every draw takes the top cards of the tier-1 deck into your hand, no keep paid
   (the deck reshuffles its discards when empty). Science's card draw.
 - **Count as power (023, `gain_per_tokens`):** gain 1 of a resource per N tokens of a
-  type on your active buildings, up to a cap; the tokens stay.
-- **Cash out (023, `cash_out`):** remove all your tokens of a type from your active
-  buildings (a capped card takes as many as it can, card by card); gain 1 + 2 + ... + n
-  of a resource for the n removed (Industry's Capital: 4 Capital cash out for 10).
+  type on your active buildings; the tokens stay.
+- **Cash out (023, 059, `cash_out`):** remove all your tokens of a type from your active
+  buildings; gain the card's rate of a resource for each.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain,
   the helper paying.
-- **Modular Expansion (Deviation):** it takes no building slot itself, so it is a net +1
-  slot. **Aegis Dome Array's shelter:** automatic, the first destruction of a building or presence each round in a
+- **Aegis Dome Array's shelter:** automatic, the first destruction of a building or presence each round in a
   country where its owner has presence.
 
 History: the placeholder cards as remapped in 014 (data centres became presence in 016).
@@ -1358,7 +1354,6 @@ edit the source, not the table.
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.arrivals` | 1 | 0..5 | build: ambassadors each site the adversary card names gains, whatever the board holds |
-| `adversary.troop_health` | 2 | 0..10 | removal a card must spend on an adversary troop (an ambassador takes 1) |
 | `adversary.node_compute` | 1 | 0..5 | adversary compute each node makes a round (none with a player ambassador on it) |
 | `adversary.project_cards` | 6, 6 | 0..20 | adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top |
 | `adversary.project_row` | 3 | 1..6 | adversary projects visible at once; a new row is dealt when all have resolved |
@@ -1438,7 +1433,7 @@ that matches its intent):
     ends; partial payments refunded when threats execute (Production 5).
 21. The shared threat row is dealt `per_country` threats per country.
 22. The draft passes alternate direction by round (Terraforming Mars).
-23. "Next K purchases" (Open Market) are keeps of drafted cards, by any player.
+23. "The next K cards any player keeps" (Open Market) counts keeps of drafted cards, by any player.
 24. A building with no free slot is built over one of your buildings (your choice), which
     is splayed down under it.
 25. Insight is set at the start of each round (unspent insight is lost); income arrives
@@ -1447,8 +1442,7 @@ that matches its intent):
     tags don't stay.
 27. Unique AI cards return to the box when used up; `ai.boards` repeats for more seats,
     and a repeated AI has no unique cards (one copy each).
-28. Building upkeep is automatic: Arc Furnace Complex and Positron Storage Ring convert
-    whenever you can (no choice is asked).
+28. (Gone with 059: no card converts in upkeep.)
 29. A card that gives from your own stock (`transfer`: Development Loan, Vendor Financing)
     is not offered without another player; other help cards, such as Venture Capital, are
     (their own gain still applies).
@@ -1476,9 +1470,9 @@ that matches its intent):
     march starts, each once, all their steps before the next; seat 0 chooses among
     equally good steps and among targets in reach. (017–018's Discord advance is gone.)
 43. (017, 027) The Undecided starts at `undecided_per_player` a player (017: 3).
-44. (017, 027) A sacrifice (Purge the Unaligned): each player picks any one of their
+44. (017, 027) Purge the Unaligned: each player picks any one of their
     ambassadors (supply or a hex) or presence tokens; a last presence isn't offered, and a
-    sacrificed presence leaves the game.
+    presence lost this way leaves the game.
 45. (020) A threat's round flag (Blackout, Sabotage) lasts to the end of the next round:
     threats execute after production and upkeep, so "this round" never landed. A
     card's flag (Shelter) still lasts to the end of its own round.
@@ -1517,4 +1511,4 @@ that matches its intent):
 
 **Deviations** (from the v0 ruleset's card text, kept from 013):
 
-1. Modular Expansion takes no slot.
+1. Modular Expansion gives 2 slots and sits in one (059; it took no slot before).

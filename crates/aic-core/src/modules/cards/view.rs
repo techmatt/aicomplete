@@ -79,7 +79,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                 card(s, id, st, None)
             })
             .collect();
-        let label = format!("buildings {}/{}", slotted(w, g, s).len(), capacity(w, g, s));
+        let label = format!("buildings {}/{}", slotted(g, s).len(), capacity(w, g, s));
         out.cards(s, "built", &label, row);
         let progs: Vec<CardView> = g
             .pile(&played(s))

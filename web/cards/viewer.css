@@ -52,9 +52,9 @@ main.grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; 
 .trim > .card { position: absolute; left: -3mm; top: -3mm; }
 
 /* A card kind with no frame yet: name, type and text, all from content. */
-.plain { width: 63mm; height: 88mm; border-radius: 3mm; background: #eee9dc; color: #1b1c1f; overflow: hidden; display: flex; flex-direction: column; font-family: var(--font-body, 'Source Serif 4', Georgia, serif); font-weight: var(--body-weight, 400); font-variation-settings: var(--body-variation, normal); box-shadow: 0 1px 6px #0008; border: 1.2mm solid var(--tone); }
+.plain { width: 63mm; height: 88mm; border-radius: 3mm; background: #eee9dc; color: #1b1c1f; overflow: hidden; display: flex; flex-direction: column; font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; box-shadow: 0 1px 6px #0008; border: 1.2mm solid var(--tone); }
 .plain .strip { background: var(--tone); color: #fff; padding: 1.2mm 2mm; display: flex; justify-content: space-between; gap: 2mm; font: 600 7.5pt 'Saira Condensed', sans-serif; text-transform: uppercase; letter-spacing: .03em; }
-.plain h3 { margin: 0; padding: 1.6mm 2mm 1.2mm; font: 700 12pt/1.1 var(--font-title, 'Saira Condensed', sans-serif); font-variation-settings: var(--title-variation, normal); }
+.plain h3 { margin: 0; padding: 1.6mm 2mm 1.2mm; font: 700 12pt/1.1 'Saira Condensed', sans-serif; }
 .plain img { width: 100%; height: 30mm; object-fit: cover; display: block; }
 .plain .body { padding: 1.6mm 2.4mm; font-size: 7.6pt; line-height: 1.24; overflow: hidden; flex: 1; }
 .plain .body p { margin: 0 0 1.1mm; }

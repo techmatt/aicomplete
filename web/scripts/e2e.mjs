@@ -115,7 +115,7 @@ try {
   check(named.boards.every((b) => b && b.length >= 1) && named.rows.length === named.boards.length
     && named.rows.every((r, i) => r.rows === named.boards[i].length && r.current >= 1 && r.current <= r.rows && r.open >= 1 && r.steps > r.open && r.t2 > 0),
     `each seat's AI board drawn with its tracks (${named.rows.map((r) => `${r.rows} tracks, ${r.open}/${r.steps} uncovered`).join('; ')})`);
-  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|adversary\.removed_troop\.|board\.(blackout|sabotage|shelter|project|project_done|track)\.)/;
+  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|board\.(blackout|sabotage|shelter|project|project_done|track)\.)/;
   check(!named.keys.some((k) => bookkeeping.test(k)) && named.raw === 0,
     `no bookkeeping vars among the globals (${named.keys.length} globals)`);
 

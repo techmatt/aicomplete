@@ -29,13 +29,14 @@ pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
     // also gains something is still worth playing ("you may move").
     let only_these = effects.iter().all(|e| matches!(e, Op::Harden { .. } | Op::MoveOne { .. }));
     let one_acts = effects.iter().any(|e| match e {
-        Op::Harden { in_country, .. } => !harden_countries(w, g, seat, *in_country).is_empty(),
+        Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
         Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
         _ => false,
     });
     effects.iter().enumerate().all(|(at, e)| match e {
-        Op::Damage { amount, at } => !damage_hexes(w, g, seat, *amount, *at).is_empty(),
-        Op::DamageCountry { .. } | Op::DestroyAll => any_hex(g, |h| has_adversary(g, h)),
+        Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
+        Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(g, h, *ambassadors, *troops)),
+        Op::DestroyAll => any_hex(g, |h| has_adversary(g, h)),
         Op::RemoveNode => any_hex(g, |h| node_in_reach(w, g, seat, h)),
         Op::CutNode => !cuttable_nodes(w, g, seat).is_empty(),
         Op::Shelter => !unsheltered(w, g).is_empty(),
@@ -74,12 +75,6 @@ pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
         Op::DelayThreat { .. } => !undelayed_threats(g).is_empty(),
         // Giving needs someone to give to (Grant and Venture Capital still pay you).
         Op::Transfer { .. } => g.seats.len() > 1,
-        // 023: the branch that would fire needs its targets (was always true).
-        Op::If {
-            cond: c,
-            then,
-            otherwise,
-        } => feasible(w, g, seat, if cond(w, g, seat, *c) { then } else { otherwise }),
         _ => true,
     })
 }

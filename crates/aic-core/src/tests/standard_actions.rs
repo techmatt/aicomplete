@@ -248,7 +248,7 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
 /// different buildings (fewer if fewer exist).
 #[test]
 fn hardening_goes_on_different_buildings_a_token_can_protect() {
-    use crate::content::{CountryRule, Op};
+    use crate::content::Op;
     use crate::modules::effects;
     let (rules, mut g0) = lab(&[]);
     let m = &rules.map;
@@ -267,7 +267,6 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
     put(&mut g0, adv, ADV_CUBE, 1);
     let harden = [Op::Harden {
         count: 2,
-        in_country: CountryRule::Any,
     }];
     let run = |g: &mut GameState, picks: Vec<crate::state::Pick>| {
         with_cx_picks(&rules, picks, |cx| {
@@ -345,7 +344,6 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
 
 #[test]
 fn card_targets_on_the_map_must_be_in_reach() {
-    use crate::content::DamageAt;
     use crate::modules::effects;
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
@@ -356,7 +354,7 @@ fn card_targets_on_the_map_must_be_in_reach() {
     let far = hexes_where(m, |h| m.distance(h, me) > 2 && kind(m, h) != HexKind::Ocean)[0];
     put(&mut g, near, ADV_AMBASSADOR, 1);
     put(&mut g, far, ADV_AMBASSADOR, 1);
-    assert_eq!(effects::damage_hexes(&w, &g, 0, 1, DamageAt::Reach), vec![near]);
+    assert_eq!(effects::damage_hexes(&w, &g, 0, 1, 0), vec![near]);
 }
 
 #[test]

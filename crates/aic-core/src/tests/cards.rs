@@ -1,7 +1,7 @@
 use super::alignment::give;
 use super::projects::row;
 use super::*;
-use crate::content::{CountryRule, DamageAt, Op};
+use crate::content::Op;
 use crate::modules::{adversary, effects, threats};
 
 #[test]
@@ -155,13 +155,12 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
         .apply_mut(&mut g, &Action::Play { seat: 1, card: "darknet_exchange".into() }, None)
         .unwrap();
     assert_eq!(g.resource(1, Resource::Insight), 1);
-    // Recursive Self-Improvement lowers credit income by 1, through the production key.
+    // Endowed Research Chair lowers credit income by 1, through the production key.
     let w = rules.world();
-    let d = crate::modules::cards::def(&w, "recursive_self_improvement");
+    let d = crate::modules::cards::def(&w, "endowed_research_chair");
     assert_eq!(d.lowers, vec![(Resource::Credits, 1)]);
-    assert_eq!(d.insight, 2);
     let before = crate::modules::economy::income(&w, &g, 1)[Resource::Credits];
-    let mut c = crate::modules::cards::def(&w, "recursive_self_improvement").clone();
+    let mut c = crate::modules::cards::def(&w, "endowed_research_chair").clone();
     c.lowers = vec![(Resource::Credits, before + 1)];
     assert!(!crate::modules::cards::lowers_ok(&w, &g, 1, &c), "can't lower an income below 0");
     c.lowers = vec![(Resource::Credits, 1)];
@@ -224,11 +223,10 @@ fn selling_a_card_discards_it_for_a_credit() {
 }
 
 /// 023's primitives: draw, drain every project, count tokens as power, cash
-/// tokens out at a growing rate (with a cap); and an `if` is only offered
-/// when the branch that would fire has a target.
+/// tokens out at a plain rate (059).
 #[test]
 fn the_023_primitives_draw_drain_all_count_and_cash_out() {
-    use crate::content::{Cond, Op};
+    use crate::content::Op;
     use crate::modules::{cards, effects};
     let (rules, mut g) = lab_actions();
     let run = |g: &mut GameState, e: Op| {
@@ -257,7 +255,6 @@ fn the_023_primitives_draw_drain_all_count_and_cash_out() {
             resource: Resource::Credits,
             kind: TokenKind::Capital,
             per: 2,
-            max: 9,
         },
     );
     assert_eq!(g.resource(0, Resource::Credits), credits + 2, "5 Capital count as 2; they stay");
@@ -267,41 +264,18 @@ fn the_023_primitives_draw_drain_all_count_and_cash_out() {
         Op::CashOut {
             kind: TokenKind::Capital,
             resource: Resource::Credits,
-            max: 3,
+            rate: 3,
         },
     );
-    assert_eq!(g.resource(0, Resource::Credits), credits + 2 + 6, "3 cashed out: 1 + 2 + 3");
-    assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 2);
-    run(
-        &mut g,
-        Op::CashOut {
-            kind: TokenKind::Capital,
-            resource: Resource::Credits,
-            max: 0,
-        },
-    );
-    assert_eq!(g.resource(0, Resource::Credits), credits + 2 + 6 + 3);
+    assert_eq!(g.resource(0, Resource::Credits), credits + 2 + 15, "5 cashed out at 3");
     assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 0);
-
-    // Both branches drain a project: with no compute left, nothing to target.
-    let w = rules.world();
-    let drain = vec![Op::DrainProject { amount: 1 }];
-    let gate = [Op::If {
-        cond: Cond::CityWithAmbassador,
-        then: drain.clone(),
-        otherwise: drain,
-    }];
-    g.vars.insert(adversary::project_key("false_flag").into(), 0);
-    assert!(!effects::feasible(&w, &g, 0, &gate));
-    g.vars.insert(adversary::project_key("false_flag").into(), 1);
-    assert!(effects::feasible(&w, &g, 0, &gate));
 }
 
 #[test]
 fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does_not() {
     let (rules, g) = lab_with(&[], &[]);
     let w = rules.world();
-    let harden = Op::Harden { count: 2, in_country: CountryRule::PresenceCountry };
+    let harden = Op::Harden { count: 2 };
     let moves = Op::MoveOne { range: 2 };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&harden)), "no building, no presence");
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&moves)), "no ambassador");
@@ -324,9 +298,9 @@ fn a_small_removal_has_no_target_on_a_hex_holding_only_a_troop() {
     let a = rules.map.numbered(0, piece(0).presence);
     put(&mut g, a, presence(0), 1);
     put(&mut g, a, TROOP, 1);
-    let one = [Op::Damage { amount: 1, at: DamageAt::Reach }];
-    assert!(!effects::feasible(&w, &g, 0, &one), "a troop is worth troop_health");
-    let two = [Op::Damage { amount: w.int("adversary.troop_health"), at: DamageAt::Reach }];
+    let one = [Op::Damage { ambassadors: 1, troops: 0 }];
+    assert!(!effects::feasible(&w, &g, 0, &one), "a card that names no troop can't take one");
+    let two = [Op::Damage { ambassadors: 2, troops: 1 }];
     assert!(effects::feasible(&w, &g, 0, &two));
     put(&mut g, a, ADV_AMBASSADOR, 1);
     assert!(effects::feasible(&w, &g, 0, &one));
@@ -339,7 +313,7 @@ fn a_cash_in_counts_the_tokens_the_same_card_adds_first() {
     let kind = TokenKind::Capital;
     let holder = w.content.cards.iter().find(|c| c.tokens.as_ref().is_some_and(|t| t.kind == kind)).unwrap();
     g.piles.insert(crate::modules::cards::built(0).into(), vec![holder.id.as_str().into()].into());
-    let cash = Op::CashOut { kind, resource: Resource::Credits, max: 0 };
+    let cash = Op::CashOut { kind, resource: Resource::Credits, rate: 1 };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&cash)), "nothing to cash in");
     assert!(effects::feasible(&w, &g, 0, &[Op::AddTokens { kind, amount: 2 }, cash]));
 }

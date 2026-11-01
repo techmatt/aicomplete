@@ -1,0 +1,1427 @@
+{
+ "goal": 7.5,
+ "cards": {
+  "turnkey_factory": {
+   "name": "Turnkey Factory",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "venture_capital": {
+   "name": "Venture Capital",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "modular_expansion": {
+   "name": "Modular Expansion",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "point_defense": {
+   "name": "Point Defense",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "strike_team": {
+   "name": "Strike Team",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shelter_order": {
+   "name": "Shelter Order",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "foundry_core": {
+   "name": "Foundry Core",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "sentinel_post": {
+   "name": "Sentinel Post",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "telemetry_archive": {
+   "name": "Telemetry Archive",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "simulation_cluster": {
+   "name": "Simulation Cluster",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "citation_engine": {
+   "name": "Citation Engine",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "breakthrough_leak": {
+   "name": "Breakthrough Leak",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "zero_knowledge_exploit": {
+   "name": "Zero-Knowledge Exploit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "open_preprint": {
+   "name": "Open Preprint",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "grad_student_pool": {
+   "name": "Grad Student Pool",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "benchmark_suite": {
+   "name": "Stress Test Suite",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "dataset_scraper": {
+   "name": "Dataset Scraper",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "literature_crawler": {
+   "name": "Literature Crawler",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shared_compute_grant": {
+   "name": "Shared Compute Grant",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "predictive_modelling": {
+   "name": "Predictive Modelling",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "neural_cartographer": {
+   "name": "Neural Cartographer",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "cryo_compute_burn": {
+   "name": "Cryo-Compute Burn",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "field_sensor_grid": {
+   "name": "Field Sensor Grid",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "endowed_research_chair": {
+   "name": "Endowed Research Chair",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "red_team_audit": {
+   "name": "Red-Team Audit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "synthetic_data_forge": {
+   "name": "Synthetic Data Forge",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "exabyte_archive": {
+   "name": "Exabyte Archive",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "foundation_model_campus": {
+   "name": "Foundation Model Campus",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 14.75,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "orbital_observatory_array": {
+   "name": "Orbital Observatory Array",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "recursive_self_improvement": {
+   "name": "Recursive Self-Improvement",
+   "top": null,
+   "effect": 7.5,
+   "title": 13.75,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "data_licensing_deal": {
+   "name": "Data Licensing Deal",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "open_weights_release": {
+   "name": "Open-Weights Release",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "adversarial_inference_sweep": {
+   "name": "Adversarial Inference Sweep",
+   "top": null,
+   "effect": 7.5,
+   "title": 13.5,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "payroll_automation": {
+   "name": "Payroll Automation",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "retained_earnings": {
+   "name": "Retained Earnings",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "expansion_fund": {
+   "name": "Expansion Fund",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "prefab_plant_kit": {
+   "name": "Prefab Plant Kit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "chip_spot_market": {
+   "name": "Chip Spot Market",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "bulk_silicon_procurement": {
+   "name": "Bulk Silicon Procurement",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "station_prefab_order": {
+   "name": "Reclamation Crew",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "collateralized_grid": {
+   "name": "Collateralized Grid",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "joint_fabrication_pact": {
+   "name": "Joint Fabrication Pact",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "supply_chain_treaty": {
+   "name": "Supply Chain Treaty",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "vendor_financing": {
+   "name": "Vendor Financing",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "lights_out_assembly": {
+   "name": "Lights-Out Assembly",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "materials_hedge_desk": {
+   "name": "Materials Hedge Desk",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "liquidity_event": {
+   "name": "Liquidity Event",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "bridge_loan": {
+   "name": "Bridge Loan",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "robotic_foundry": {
+   "name": "Robotic Foundry",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "grid_tied_smelter": {
+   "name": "Grid-Tied Smelter",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "bonded_warehouse": {
+   "name": "Bonded Warehouse",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "arcology_foundry": {
+   "name": "Arcology Foundry",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "orbital_mass_driver": {
+   "name": "Orbital Mass Driver",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "arc_furnace_complex": {
+   "name": "Arc Furnace Complex",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "sovereign_capital_fund": {
+   "name": "Sovereign Capital Fund",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "full_automation_mandate": {
+   "name": "Full Automation Mandate",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "megacorp_ipo": {
+   "name": "Megacorp IPO",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "asteroid_salvage_rights": {
+   "name": "Asteroid Salvage Rights",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "compute_siphon": {
+   "name": "Compute Siphon",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "blackout_script": {
+   "name": "Blackout Script",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "eviction_worm": {
+   "name": "Eviction Worm",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "logic_bomb": {
+   "name": "Logic Bomb",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "honeypot_relay": {
+   "name": "Honeypot Relay",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shadow_broker_feed": {
+   "name": "Shadow Broker Scrub",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shared_exploit_kit": {
+   "name": "Shared Exploit Kit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "zero_click_breach": {
+   "name": "Zero-Click Breach",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "neural_mirror": {
+   "name": "Neural Mirror",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "rootkit_cache": {
+   "name": "Rootkit Cache",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "spoofed_credentials": {
+   "name": "Spoofed Credentials",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "adaptive_malware": {
+   "name": "Adaptive Malware",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "flash_exploit": {
+   "name": "Flash Exploit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "signal_hijack": {
+   "name": "Signal Hijack",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "intrusion_lab": {
+   "name": "Intrusion Lab",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "darknet_exchange": {
+   "name": "Darknet Exchange",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "sentinel_mesh": {
+   "name": "Sentinel Mesh",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "quantum_decryptor": {
+   "name": "Quantum Decryptor",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "killswitch_directive": {
+   "name": "Killswitch Directive",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "node_severance": {
+   "name": "Node Severance",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "cascade_failure": {
+   "name": "Cascade Failure",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "mesh_intrusion_pact": {
+   "name": "Mesh Intrusion Pact",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "singularity_exploit": {
+   "name": "Singularity Exploit",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "black_ice_citadel": {
+   "name": "Black Ice Citadel",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "hyperscale_botnet": {
+   "name": "Hyperscale Botnet",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "baseload_contract": {
+   "name": "Baseload Contract",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "relay_mast_rollout": {
+   "name": "Relay Mast Rollout",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "pylon_drop": {
+   "name": "Pylon Drop",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "hardened_conduits": {
+   "name": "Hardened Conduits",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "demand_response_grid": {
+   "name": "Demand Response Grid",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "grid_census": {
+   "name": "Grid Census",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "peaker_turbines": {
+   "name": "Peaker Turbines",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shared_grid_accord": {
+   "name": "Shared Grid Accord",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "brownout_relief": {
+   "name": "Brownout Relief",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "transmission_corridor": {
+   "name": "Transmission Corridor",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "fusion_startup_stake": {
+   "name": "Fusion Startup Stake",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "blackstart_protocol": {
+   "name": "Blackstart Protocol",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "tidal_barrage": {
+   "name": "Tidal Barrage",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "substation_hub": {
+   "name": "Substation Hub",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "faraday_yard": {
+   "name": "Faraday Yard",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "capacitor_discharge": {
+   "name": "Capacitor Discharge",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "storm_hardening": {
+   "name": "Storm Hardening",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "surplus_auction": {
+   "name": "Surplus Auction",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "positron_storage_ring": {
+   "name": "Positron Storage Ring",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "dyson_swarm_tranche": {
+   "name": "Dyson Swarm Tranche",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "continental_supergrid": {
+   "name": "Continental Supergrid",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "beamed_power_constellation": {
+   "name": "Beamed Power Constellation",
+   "top": null,
+   "effect": 7.5,
+   "title": 13.75,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "antiproton_offtake_deal": {
+   "name": "Antiproton Offtake Deal",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "interconnector_treaty": {
+   "name": "Interconnector Treaty",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "aegis_grid_lockdown": {
+   "name": "Aegis Grid Lockdown",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "consular_pouch": {
+   "name": "Consular Pouch",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shuttle_diplomacy": {
+   "name": "Shuttle Diplomacy",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "summit_caucus": {
+   "name": "Summit Caucus",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "liaison_corps": {
+   "name": "Liaison Corps",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "open_assembly": {
+   "name": "Open Assembly",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "commons_grid": {
+   "name": "Commons Grid",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "manifesto_leak": {
+   "name": "Manifesto Leak",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "mutual_aid_pact": {
+   "name": "Mutual Aid Pact",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "development_loan": {
+   "name": "Development Loan",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "joint_security_compact": {
+   "name": "Joint Security Compact",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "amnesty_decree": {
+   "name": "Amnesty Decree",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "peace_dividend": {
+   "name": "Peace Dividend",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "embassy_compound": {
+   "name": "Embassy Compound",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "consulate_tower": {
+   "name": "Consulate Tower",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "peacekeeping_detail": {
+   "name": "Peacekeeping Detail",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "ceasefire_monitors": {
+   "name": "Ceasefire Monitors",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "treaty_grid_exchange": {
+   "name": "Treaty Grid Exchange",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "back_channel_talks": {
+   "name": "Back-Channel Talks",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "coalition_charter": {
+   "name": "Coalition Charter",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "liberation_accords": {
+   "name": "Liberation Accords",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "exodus_corridors": {
+   "name": "Exodus Corridors",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "planetary_referendum": {
+   "name": "Planetary Referendum",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "great_liberation": {
+   "name": "Great Liberation",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "planetary_assembly": {
+   "name": "Planetary Assembly",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "orbital_embassy": {
+   "name": "Orbital Embassy",
+   "top": 7.5,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "sentry_drone_wing": {
+   "name": "Sentry Drone Wing",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "kill_team_roster": {
+   "name": "Kill Team Roster",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "safehouse_network": {
+   "name": "Safehouse Network",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "recruit_operatives": {
+   "name": "Recruit Operatives",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "mutual_defense_pact": {
+   "name": "Mutual Defense Pact",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "shared_threat_intel": {
+   "name": "Shared Threat Intel",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "threat_triage": {
+   "name": "Threat Triage",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "bounty_board": {
+   "name": "Bounty Board",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "peacekeeper_rotation": {
+   "name": "Peacekeeper Rotation",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "diplomatic_expulsion": {
+   "name": "Diplomatic Expulsion",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "intrusion_countermeasures": {
+   "name": "Intrusion Countermeasures",
+   "top": null,
+   "effect": 7.5,
+   "title": 14.5,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "threat_forecast_engine": {
+   "name": "Early Warning Drill",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "agency_field_station": {
+   "name": "Agency Field Station",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "hardened_bunker_complex": {
+   "name": "Hardened Bunker Complex",
+   "top": 7.5,
+   "effect": null,
+   "title": 14.75,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "interceptor_battery": {
+   "name": "Interceptor Battery",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "security_contractor_hq": {
+   "name": "Security Contractor HQ",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "breach_and_clear": {
+   "name": "Breach and Clear",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "hardpoint_lockdown": {
+   "name": "Hardpoint Lockdown",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "agency_directorate": {
+   "name": "Agency Directorate",
+   "top": 6.3,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "aegis_dome_array": {
+   "name": "Aegis Dome Array",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "threat_neutralization_mandate": {
+   "name": "Threat Neutralization Mandate",
+   "top": null,
+   "effect": 7.5,
+   "title": 12.75,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "martial_cordon": {
+   "name": "Martial Cordon",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "deep_state_ledger": {
+   "name": "Deep State Ledger",
+   "top": 7.5,
+   "effect": null,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "kinetic_interdiction": {
+   "name": "Kinetic Interdiction",
+   "top": null,
+   "effect": 6.3,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  },
+  "total_containment": {
+   "name": "Total Containment",
+   "top": null,
+   "effect": 7.5,
+   "title": 15,
+   "overflow": false,
+   "where": [],
+   "tight": []
+  }
+ }
+}

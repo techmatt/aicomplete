@@ -1,11 +1,12 @@
-/* Bundled fonts only: nothing is fetched at render time. The --font-* properties are unset
-   unless a card asks for a font choice (fonts.css), so these are the defaults. */
+/* Bundled fonts only: nothing is fetched at render time. */
 @font-face { font-family: 'Saira Condensed'; font-weight: 600; src: url('fonts/saira-condensed-latin-600-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Saira Condensed'; font-weight: 700; src: url('fonts/saira-condensed-latin-700-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Source Serif 4'; font-weight: 400; src: url('fonts/source-serif-4-latin-400-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Source Serif 4'; font-weight: 600; src: url('fonts/source-serif-4-latin-600-normal.woff2') format('woff2'); }
 
-.card { position: relative; width: 69mm; height: 94mm; overflow: hidden; background: #333; color: #15181c; --rim-a: #eef1f4; --rim-b: #8d939b; --rim-c: #fbfcfd; }
+/* geometricPrecision: glyph widths scale exactly, so text fitted at true size (fitCards) wraps
+   the same at any zoom, on paper and at any device scale. */
+.card { position: relative; width: 69mm; height: 94mm; overflow: hidden; background: #333; color: #15181c; text-rendering: geometricPrecision; --rim-a: #eef1f4; --rim-b: #8d939b; --rim-c: #fbfcfd; }
 .card.tier-2 { --rim-a: #f3d27a; --rim-b: #8f6a1f; --rim-c: #fff1c2; }
 .card .frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .card .art { position: absolute; display: block; object-fit: cover; object-position: center; }
@@ -43,8 +44,7 @@
 .card .tag { box-shadow: 0 0.3mm 0.6mm 0.2mm rgb(0 0 0 / 40%); border-radius: 50%; }
 .card .tag .medallion { width: 100%; height: 100%; }
 
-.card .name { font-family: var(--font-title, 'Saira Condensed', sans-serif); font-weight: var(--title-weight, 600); font-variation-settings: var(--title-variation, normal); font-size: var(--title-size, 15pt); letter-spacing: var(--title-spacing, 0.02em); line-height: 1; padding-bottom: 0.7mm; box-sizing: border-box; }
-.card .name.long { font-size: var(--title-size-long, 12.500pt); }
+.card .name { font-family: 'Saira Condensed', sans-serif; font-weight: 600; font-size: 15pt; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; padding-bottom: 0.7mm; box-sizing: border-box; }
 
 /* The icons. A tile or disc is the painted blank with its face multiplied to the colour. */
 .card .ico { position: relative; display: inline-block; flex: none; width: 5.600mm; height: 5.600mm; background: center / 100% 100% no-repeat; }
@@ -67,7 +67,8 @@
 .card .fx-per { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 15pt; line-height: 1; }
 .card .fx-word { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 9.500pt; line-height: 1; letter-spacing: 0.04em; }
 .card .fx-line .ico[aria-label='move'] { margin-right: 0.8mm; }
-.card .lasting .fx-line + .fx-line { border-left: 0.3mm solid #b5ad98; padding-left: 3.500mm; }
+.card .lasting .fx-icons { column-gap: 1.800mm; }
+.card .lasting .fx-line + .fx-line { border-left: 0.3mm solid #b5ad98; padding-left: 1.800mm; }
 .card .fx-line svg.arrow { width: 4.200mm; height: 4.200mm; color: #15181c; flex: none; }
 
 /* Boxes. Brown: income. Dark: the adversary's pieces. Dashed: another card or player. */
@@ -77,11 +78,17 @@
 .card .adversary .ico.piece, .card .income .ico.piece { color: currentColor; }
 .card .other { display: flex; align-items: center; gap: 0.7mm; padding: 0.5mm 1.200mm; border: 0.4mm dashed #23262a; border-radius: 1.200mm; }
 
-.card .rules { margin: 0; max-width: 51mm; font-family: var(--font-body, 'Source Serif 4', Georgia, serif); font-weight: var(--body-weight, 400); font-variation-settings: var(--body-variation, normal); font-size: 7.500pt; line-height: 1.220; text-align: center; }
-.card .rules.fit-1 { font-size: 6.900pt; }
-.card .rules.fit-2 { font-size: 6.300pt; }
-.card .rules.fit-3 { font-size: 5.800pt; line-height: 1.150; }
+/* The ladder fitCards walks in card.js, a box at a time; dense, the last step, is further down. */
+.card .rules { margin: 0; max-width: 51mm; font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; font-size: 7.500pt; line-height: 1.220; text-align: center; }
+.card .effect.fit-1 .rules { font-size: 6.900pt; }
+.card .effect.fit-2 .rules { font-size: 6.300pt; }
+.card .effect.fit-3 .rules { font-size: 5.800pt; line-height: 1.150; }
 .card .fx-tag .medallion { width: 5.200mm; height: 5.200mm; }
+.card .effect { gap: 0.5mm; }
+.card .effect .income, .card .effect .adversary { padding: 0 1.200mm; border-width: 0.3mm; }
+.card .effect .other { padding: 0.1mm 1.200mm; }
+.card .kind-building .once .ico, .card.kind-building .once .ico { width: 4.500mm; height: 4.500mm; }
+.card.kind-building .once .fx-num { font-size: 11pt; }
 .card .lasting .ico { width: 4.500mm; height: 4.500mm; }
 .card .lasting .fx-tag .medallion { width: 4.300mm; height: 4.300mm; }
 .card .lasting .fx-num { font-size: 11pt; }

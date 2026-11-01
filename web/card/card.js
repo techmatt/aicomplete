@@ -55,7 +55,7 @@ function requirement(card, x, box) {
 }
 
 const WORD = (w) => () => `<span class="fx-word">${w}</span>`;
-const TEXT = { '→': arrow, '/': () => '<span class="fx-per">/</span>', ':': () => '<span class="fx-num">:</span>', OR: WORD('OR'), ALL: WORD('ALL'), ACT: WORD('ACT'), ELSE: WORD('ELSE'), '*': () => '<span class="fx-num">*</span>' };
+const TEXT = { '→': arrow, '/': () => '<span class="fx-per">/</span>', ':': () => '<span class="fx-num">:</span>', OR: WORD('OR'), ALL: WORD('ALL'), ACT: WORD('ACT') };
 
 /** One part of an icon line: a box of parts, an icon, a connector or a number. */
 function part(p) {
@@ -70,29 +70,97 @@ function part(p) {
 }
 const iconLine = (parts) => `<div class="fx-line" data-safe>${parts.map(part).join('')}</div>`;
 
-/** The rules-text size that fits, largest first: pt, class. */
-const SIZES = [[7.5, 'fit-0'], [6.9, 'fit-1'], [6.3, 'fit-2'], [5.8, 'fit-3']];
-const textClass = (text, [x0, y0, x1, y1], rows, rowMm) => {
-  const room = y1 - y0 - 1.6 - rows * rowMm;
-  for (const [pt, cls] of SIZES) {
-    const perLine = ((x1 - x0 - 3) / (pt * 0.3528)) * 1.95;
-    if (Math.ceil(text.length / perLine) * pt * 0.3528 * 1.22 <= room) return cls;
-  }
-  return `${SIZES.at(-1)[1]} dense`;
-};
-
 /** Icon lines over rules text: the panel below the art, and a building's top box. */
-const effectBox = (cls, box, lines = [], text = '') => {
-  const boxed = lines.some((l) => l.some((p) => typeof p === 'object'));
-  const rowMm = (cls === 'lasting' ? 5 : 6.2) + (boxed ? 1.6 : 0);
-  const width = (l) => l.reduce((n, p) => n + (typeof p === 'object' ? Object.values(p)[0].length * (rowMm + 0.1) + 3 : rowMm + 0.1), 0);
-  const rows = Math.ceil(lines.reduce((n, l) => n + width(l) + 3.5, 0) / (box[2] - box[0] - 3));
-  const fit = text ? textClass(text, box, rows, rowMm) : '';
-  return `<div class="effect ${cls}${fit.endsWith('dense') ? ' dense' : ''}" style="${place(box)}">
+const effectBox = (cls, box, lines = [], text = '') => `<div class="effect ${cls}" style="${place(box)}">
       ${lines.length ? `<div class="fx-icons">${lines.map(iconLine).join('')}</div>` : ''}
-      ${text ? `<p class="rules ${fit}" data-safe>${esc(text)}</p>` : ''}
+      ${text ? `<p class="rules" data-safe>${esc(text)}</p>` : ''}
     </div>`;
-};
+
+/**
+ * Sizes what renderCard left at its defaults, by measuring: run it on anything holding cards,
+ * after they are in the page. A card it never reached prints at the defaults, 7.5 pt text and
+ * a 15 pt title. In the page it is self-contained, so `page.evaluate(fitCards)` and the
+ * function's source both work; running it again changes nothing.
+ *
+ * Each box steps down the ladder alone, largest size first, until its icon rows and text
+ * leave the clearance; a title shrinks until it is one line inside its plate. Measuring is
+ * done on a copy at true size outside `root`, so a card comes out the same at any zoom and
+ * on any page.
+ *
+ * @returns one row per card, in page order: `top` and `effect`, the ladder's pt for that box
+ *          (null: nothing in it); `title`, pt; `overflow`, what breaks its box or plate even
+ *          so; `tight`, the boxes inside it but short of the clearance.
+ */
+export async function fitCards(root = document) {
+  const MM = 96 / 25.4;
+  const CLEARANCE_MM = 1.6;
+  const TITLE_MARGIN_MM = 1;
+  const TITLE_PT = 15;
+  const TITLE_FLOOR_PT = 10.5;
+  const TITLE_STEP_PT = 0.25;
+  const LADDER = [[7.5, ''], [6.9, 'fit-1'], [6.3, 'fit-2'], [5.8, 'fit-3'], [5.4, 'dense']];
+  const FACES = ['600 15pt "Saira Condensed"', '700 15pt "Saira Condensed"', '400 7.5pt "Source Serif 4"'];
+  const EPSILON_PX = 0.01;
+  const OVERFLOW_PX = 0.5; // As render.mjs tolerates: under a pixel is rounding, not a break.
+
+  // A font loads when something first needs it, so `document.fonts.ready` alone can pass
+  // before it has started.
+  if (!FACES.every((f) => document.fonts.check(f))) {
+    await Promise.all(FACES.map((f) => document.fonts.load(f).catch(() => {})));
+    await document.fonts.ready;
+  }
+
+  /** Does what the box holds, gaps included, leave `clear` px of its height, and stay inside its width? */
+  const fits = (box, clear, slack) => {
+    const b = box.getBoundingClientRect();
+    const parts = [...box.querySelectorAll('.fx-line, .rules')].map((e) => e.getBoundingClientRect());
+    if (!parts.length) return true;
+    const high = Math.max(...parts.map((r) => r.bottom)) - Math.min(...parts.map((r) => r.top));
+    return high + clear <= b.height + slack && Math.min(...parts.map((r) => r.left)) >= b.left - slack && Math.max(...parts.map((r) => r.right)) <= b.right + slack;
+  };
+  const step = (box, cls) => {
+    box.classList.remove(...LADDER.map(([, c]) => c).filter(Boolean));
+    if (cls) box.classList.add(cls);
+  };
+
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-300mm;top:0;visibility:hidden;contain:layout style';
+  document.body.append(host);
+  const rows = [];
+  for (const card of root.querySelectorAll('.card')) {
+    const content = card.querySelector(':scope > .content');
+    if (!content) continue; // The icon sheet borrows .card for its look.
+    const copy = card.cloneNode(false);
+    copy.append(content.cloneNode(true));
+    host.replaceChildren(copy);
+    const row = { top: null, effect: null, title: TITLE_PT, overflow: [], tight: [] };
+
+    const boxes = [...content.querySelectorAll('.effect')];
+    [...copy.querySelectorAll('.effect')].forEach((box, i) => {
+      const where = box.classList.contains('lasting') ? 'top' : 'effect';
+      const held = box.childElementCount > 0;
+      let [pt, cls] = LADDER[0];
+      for ([pt, cls] of LADDER) {
+        step(box, cls);
+        if (fits(box, CLEARANCE_MM * MM, EPSILON_PX)) break;
+      }
+      step(boxes[i], cls);
+      if (held) row[where] = pt;
+      if (!fits(box, 0, OVERFLOW_PX)) row.overflow.push(where);
+      else if (!fits(box, CLEARANCE_MM * MM, EPSILON_PX)) row.tight.push(where);
+    });
+
+    const name = copy.querySelector('.name');
+    const room = name.getBoundingClientRect().width - 2 * TITLE_MARGIN_MM * MM;
+    const wide = () => name.firstElementChild.getBoundingClientRect().width > room + EPSILON_PX;
+    for (name.style.fontSize = ''; wide() && row.title > TITLE_FLOOR_PT; name.style.fontSize = `${row.title}pt`) row.title -= TITLE_STEP_PT;
+    content.querySelector('.name').style.fontSize = name.style.fontSize;
+    if (wide()) row.overflow.push('title');
+    rows.push(row);
+  }
+  host.remove();
+  return rows;
+}
 
 /**
  * @param card     content: name, kind, cost, insight, needs, at_most, replaces, tags, and
@@ -103,13 +171,13 @@ const effectBox = (cls, box, lines = [], text = '') => {
  * @param fit      optional measured zones of this frame (art/frames/r3/fit.json), in mm:
  *                 cost, banner, top, art, effect, the guide's where absent; plate, a colour
  * @param artUrl   optional scene for the art window, centre-cropped to it
- * @param fonts    optional font choice, a `.fonts-<name>` block in web/card/fonts.css (which
- *                 the page must load); left out, card.css's fonts. Sizes don't change with it
+ *
+ * Sizes are the defaults until fitCards has run on the card in the page.
  */
-export function renderCard(card, layout, frameUrl, fit = {}, artUrl, fonts) {
+export function renderCard(card, layout, frameUrl, fit = {}, artUrl) {
   const z = { ...layout.common, ...layout.kinds[card.kind], ...fit };
   const reqX = card.insight ? z.insight[2] + 0.5 : z.cost[2] + 2.4;
-  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}${fonts ? ` fonts-${esc(fonts)}` : ''}" style="--strip:${layout.kind_colour[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
+  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}" style="--strip:${layout.kind_colour[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
   <img class="frame" src="${esc(frameUrl)}" alt="">
   ${artUrl ? `<img class="art" src="${esc(artUrl)}" alt="" style="${place(z.art)}">` : ''}
   <div class="content">
@@ -117,7 +185,7 @@ export function renderCard(card, layout, frameUrl, fit = {}, artUrl, fonts) {
     ${insight(card, z.insight)}
     ${requirement(card, reqX, z.requirement)}
     ${tags(card, z.tags)}
-    <div class="name${card.name.length > 26 ? ' long' : ''}" style="${place(z.banner)}"><span data-safe>${esc(card.name)}</span></div>
+    <div class="name" style="${place(z.banner)}"><span data-safe>${esc(card.name)}</span></div>
     ${z.top ? effectBox('lasting', z.top, card.top, card.top_text) : ''}
     ${effectBox('once', z.effect, card.effect, card.text)}
   </div>

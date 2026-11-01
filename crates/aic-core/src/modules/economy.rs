@@ -44,10 +44,6 @@ pub static DEF: ModuleDef = ModuleDef {
     }],
 };
 
-/// Insight every player gains next round (Predictive Modelling, Open-Weights
-/// Release).
-const BONUS_INSIGHT: &str = "economy.bonus_insight";
-
 /// Seat `s`'s printed production of `resource` raised by one-time permanent
 /// gains (021).
 pub fn production_key(seat: usize, resource: Resource) -> KeyBuf {
@@ -57,11 +53,6 @@ pub fn production_key(seat: usize, resource: Resource) -> KeyBuf {
 /// Insight seat `s` loses next round (021: an adversary ambassador on its presence).
 pub fn insight_debt(seat: usize) -> String {
     format!("economy.insight_debt.{seat}")
-}
-
-/// Every player gains `n` more insight next round.
-pub fn add_bonus_insight(g: &mut GameState, cx: &mut Cx, n: i64) {
-    cx.add_key(g, BONUS_INSIGHT, n);
 }
 
 #[derive(Debug)]
@@ -109,18 +100,7 @@ pub fn income(w: &World, g: &GameState, seat: usize) -> PerResource {
                 resource,
                 tag,
                 per,
-                max,
-            } => add(*resource, (tags(*tag) / per).min(*max)),
-            Op::IncomeIfTags {
-                resource,
-                tag,
-                count,
-                amount,
-            } => {
-                if tags(*tag) >= *count {
-                    add(*resource, *amount)
-                }
-            }
+            } => add(*resource, tags(*tag) / per),
             _ => {}
         }
     }
@@ -144,18 +124,16 @@ impl Economy {
 impl Module for Economy {
     fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
-        let bonus = g.var(BONUS_INSIGHT);
         for s in 0..g.seats.len() {
             // Unspent insight is lost.
             let have = g.resource(s, Resource::Insight);
             let debt = g.var(&insight_debt(s));
-            let n = (income(&w, g, s)[Resource::Insight] + bonus - debt).max(0);
+            let n = (income(&w, g, s)[Resource::Insight] - debt).max(0);
             cx.add_resource(g, s, Resource::Insight, n - have);
             if debt > 0 {
                 cx.set_key(g, &insight_debt(s), 0);
             }
         }
-        cx.set_key(g, BONUS_INSIGHT, 0);
     }
 
     fn legal(&self, _phase: usize, g: &GameState, _w: &World, seat: u8, out: &mut Vec<Action>) {
@@ -259,15 +237,6 @@ impl Module for Economy {
                 );
             }
         }
-        out.bookkeeping(&[BONUS_INSIGHT, "economy.production.", "economy.insight_debt."]);
-        if g.var(BONUS_INSIGHT) > 0 {
-            out.global(
-                "bonus_insight",
-                "insight next round",
-                g.var(BONUS_INSIGHT),
-                None,
-                "every player gains this next round",
-            );
-        }
+        out.bookkeeping(&["economy.production.", "economy.insight_debt."]);
     }
 }

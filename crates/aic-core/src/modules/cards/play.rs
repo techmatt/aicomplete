@@ -82,9 +82,7 @@ impl Cards {
         cx.per_round(g, "cards.played", 1);
         if d.is_building() {
             cx.set_key(g, &next_discount(seat), 0);
-            if !d.slotless {
-                place_building(g, cx, seat, id, d)?;
-            }
+            place_building(g, cx, seat, id, d)?;
             cx.move_card(g, id, &hand(seat), &built(seat), false)?;
         } else if d.is_event() {
             discard(g, cx, id, &hand(seat));
@@ -190,7 +188,7 @@ pub(super) fn place_building(g: &mut GameState, cx: &mut Cx, seat: usize, id: &s
     // over one of your buildings: it splays down.
     let targets = stack_targets(&w, g, seat, d);
     let free = d.replaces.is_none()
-        && (slotted(&w, g, seat).len() as i64) < capacity(&w, g, seat);
+        && (slotted(g, seat).len() as i64) < capacity(&w, g, seat);
     let mut opts = Vec::new();
     if free {
         opts.push(opt("a new slot".to_string()));

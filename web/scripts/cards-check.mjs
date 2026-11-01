@@ -74,6 +74,16 @@ try {
     check(data.cards.some((c) => c.kind === k) && (await page.js(`!!document.querySelector('#kinds [data-v="${k}"]')`)), `kind ${k} has a filter and cards`);
   check((await page.js(`document.querySelectorAll('.tile .card').length`)) === data.cards.filter((c) => c.render).length, 'every player card went through the renderer');
   check(await page.js(`[...document.querySelectorAll('.tile .plain h3')].every((h) => h.textContent)`), 'every frameless card has a named face');
+
+  // Fitted: run again it finds nothing left to do, and a card's lines stay put at any zoom.
+  const fit = await page.js(`import('/card/card.js').then((m) => m.fitCards(document.getElementById('cards')))`);
+  const broken = fit.filter((r) => r.overflow.length).length;
+  check(fit.length === data.cards.filter((c) => c.render).length && !broken, `fitted: nothing overflows at the last size or the title floor${broken ? ` (${broken} cards)` : ''}`);
+  check(await page.js(`[...document.querySelectorAll('.tile .card .name')].every((n) => n.firstElementChild.getBoundingClientRect().width <= n.getBoundingClientRect().width)`), 'every title is on one line inside its plate');
+  const zoomed = (z) => page.js(`(() => { document.documentElement.style.setProperty('--zoom', ${z}); return [...document.querySelectorAll('.tile .card .rules')].map((r) => Math.round(r.getBoundingClientRect().height / ${z} * 8)); })()`);
+  const [small, large] = [await zoomed(0.4), await zoomed(1.2)];
+  check(small.every((h, i) => Math.abs(h - large[i]) <= 1), 'rules text wraps the same at any zoom');
+  await page.js(`window.dispatchEvent(new Event('resize'))`);
   await shotTo(page, OUT, 'grid');
   for (const k of ['ai', 'megaproject', 'unity', 'adversary']) await click(page, `#kinds [data-v="${k}"]`);
   await sleep(800);

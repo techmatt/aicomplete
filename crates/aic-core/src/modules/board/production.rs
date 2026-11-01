@@ -145,6 +145,9 @@ pub(super) fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
         cx.add_tokens(g, z, FACTORY, 1);
         if corrupted(g, city) {
             cx.add_tokens(g, z, ADV_CUBE, 1);
+            // 059: corruption replaces any marker here, as on a city.
+            let marked = g.tokens(z, MARKER);
+            cx.add_tokens(g, z, MARKER, -marked);
             cx.tally(g, "board.factories_built.adversary", 1);
         } else if let Some(s) = match cube_owner(g, city) {
             Some(s) => Some(s),

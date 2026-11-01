@@ -95,8 +95,7 @@ pub fn hand(seat: usize) -> KeyBuf {
     KeyBuf::new("cards.hand.").num(seat)
 }
 
-/// Seat `s`'s active buildings: the top card of each slot's stack, and
-/// slotless buildings.
+/// Seat `s`'s active buildings: the top card of each slot's stack.
 pub fn built(seat: usize) -> KeyBuf {
     KeyBuf::new("cards.built.").num(seat)
 }

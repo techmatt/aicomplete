@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use crate::hash::fnv1a64;
 use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
-pub use crate::op::{Cond, CountryRule, DamageAt, Op, RoundFlag, Slot, Spot};
+pub use crate::op::{Op, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
     DiscountOn, PerResource, Resource, Side, Tag, TagOrAny, TokenKind, RESOURCES, TAGS,
 };
@@ -265,9 +265,6 @@ pub struct CardDef {
     /// A building's once-a-round ability.
     #[serde(default)]
     pub ability: Option<Ability>,
-    /// A building that takes no building slot.
-    #[serde(default)]
-    pub slotless: bool,
     /// The AI board this card is unique to.
     #[serde(default)]
     pub unique: Option<String>,
@@ -486,7 +483,7 @@ impl CardDef {
         self.passives.iter().any(|o| {
             matches!(
                 o,
-                Op::Income { .. } | Op::IncomePerTag { .. } | Op::IncomeIfTags { .. }
+                Op::Income { .. } | Op::IncomePerTag { .. }
             )
         })
     }
@@ -701,13 +698,9 @@ fn seat_resource(r: &Resource, what: &str) -> Result<(), String> {
 }
 
 /// Whether `op` does a job only Science cards print (046): a shield, a threat
-/// delay or marker clearing. `if` branches included.
+/// delay or marker clearing.
 fn science_niche(op: &Op) -> bool {
-    match op {
-        Op::ShieldPresence { .. } | Op::DelayThreat { .. } | Op::ClearMarkers { .. } => true,
-        Op::If { then, otherwise, .. } => then.iter().chain(otherwise).any(science_niche),
-        _ => false,
-    }
+    matches!(op, Op::ShieldPresence { .. } | Op::DelayThreat { .. } | Op::ClearMarkers { .. })
 }
 
 fn check_card(c: &CardDef) -> Result<(), String> {
@@ -724,16 +717,11 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     if !c.tags.contains(&Tag::Science) && printed.into_iter().any(science_niche) {
         return Err(format!("{what}: shields, delays and marker clearing are Science's"));
     }
-    if !c.is_building()
-        && (!c.passives.is_empty() || c.slotless)
-    {
+    if !c.is_building() && !c.passives.is_empty() {
         return Err(format!(
             "card {:?}: only buildings have passives",
             c.id
         ));
-    }
-    if c.slotless && !crate::face::prints_an_effect(c) {
-        return Err(format!("{what}: a slotless card needs an effect passive"));
     }
     if !c.text.is_empty() {
         return Err(format!("{what}: card text is generated from its ops, not written"));
@@ -867,7 +855,7 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
 }
 
 /// Checks every op of a content list: it may sit in `slot`, and the
-/// resources it names are ones it can use. `if` branches included.
+/// resources it names are ones it can use.
 pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String> {
     for op in ops {
         if !op.slots().contains(&slot) {
@@ -879,13 +867,18 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::OtherGain { resource: r, .. }
             | Op::Transfer { resource: r, .. }
             | Op::CashOut { resource: r, .. } => seat_resource(r, what)?,
+            Op::Damage { ambassadors, troops } | Op::DamageCountry { ambassadors, troops }
+                if *ambassadors < 0 || *troops < 0 || ambassadors + troops < 1 =>
+            {
+                return Err(format!("{what}: a removal names at least one piece"));
+            }
             Op::GainPerTokens { resource: r, per, .. } => {
                 seat_resource(r, what)?;
                 if *per < 1 {
                     return Err(format!("{what}: gain_per_tokens needs per >= 1"));
                 }
             }
-            Op::Convert { from, to, .. } | Op::ConvertUpkeep { from, to, .. } => {
+            Op::ConvertUpkeep { from, to, .. } => {
                 resource(from, what)?;
                 resource(to, what)?;
             }
@@ -896,8 +889,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::Income { resource: r, .. }
             | Op::Logistics { resource: r, .. }
             | Op::GiveBonus { resource: r, .. }
-            | Op::IncomePerTag { resource: r, .. }
-            | Op::IncomeIfTags { resource: r, .. } => resource(r, what)?,
+            | Op::IncomePerTag { resource: r, .. } => resource(r, what)?,
             Op::TeamIncome { resource: r, .. } => {
                 if !matches!(r, Resource::Credits | Resource::Insight) {
                     return Err(format!("{what}: team_income is credits or insight"));
@@ -907,10 +899,6 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                 if slot != Slot::Team =>
             {
                 return Err(format!("{what}: each_country is for team cards"));
-            }
-            Op::If { then, otherwise, .. } => {
-                check_ops(then, slot, what)?;
-                check_ops(otherwise, slot, what)?;
             }
             _ => {}
         }

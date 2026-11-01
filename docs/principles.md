@@ -31,8 +31,8 @@ and tier-1 cards average about 3 credits with tier 2 about 9.
 - **Credits are the outlier.** 20 to start, 10 / 9 a round from each AI board plus the
   Builder's Foundry Core +1, plus the presence track and Unity income (Grassroots Funding,
   New Deal +2 each): a player sees about 120 to 140 credits over an 11-round game before cards,
-  so totals do reach the hundreds. Card costs run 0–25 (Orbital Mass Driver 25, Arcology
-  Foundry and Dyson Swarm Tranche 16): within "about 50", but the income is not "produce
+  so totals do reach the hundreds. Card costs run 0–18 (Orbital Mass Driver 18, Great
+  Liberation 16): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a megaproject cube pays
   `project_credits` 10; a player ambassador costs `ambassador_credits` 6; chips sell

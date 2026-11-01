@@ -325,10 +325,10 @@ Content is data in `content/`, composed from code primitives:
   the play lowers for good, `[["credits", 1]]`), 1-3 `tags` (`vocab::Tag`), `needs` (tags in play), `effects`
   (ops: on play, or when built), `passives` (ops: a building's standing effects), an
   `ability` (once a round; buildings only; `cost` from the seat, `tokens` from the
-  card), `upkeep`, `replaces` (a tag: built over one of your
+  card), `replaces` (a tag: built over one of your
   buildings whose top card carries it), `tokens` (`{kind, per_round}`, a type from
   `vocab::TokenKind`), `keywords` (words read by nothing yet, not printed; `help` marks
-  a help card), `slotless` and `unique`. A card has no `text`: `aic_core::face` generates
+  a help card) and `unique`. A card has no `text`: `aic_core::face` generates
   its icons and words from these fields, and a new op doesn't compile until it has a face. List the id in the `cards` module's config
   `cards`, then run `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`
   (023). Every op, with where it is printed, is listed in [ops.md](ops.md).
@@ -472,7 +472,7 @@ In the baseline:
 - `adversary` adds its deck as piles (`deck` with any peeked cards, `next` face up,
   `current`, `discard`) and the ambassador supply, stage and difficulty. Its
   bookkeeping: `adversary.peek`, `adversary.first_corruption`,
-  `adversary.removed_troop.<seat>`, `adversary.cut.*`.
+  `adversary.cut.*`.
 - `threats` adds each country's threat (`threats.on`, status = counter progress such as
   `1/2 credits`; the text adds who paid what, any jam and whether it waits), or the shared
   row pile, and the tier dealt this round. Bookkeeping: `threats.paid.*`, `threats.jam.*`,
@@ -497,8 +497,7 @@ In the baseline:
   its cost (`View.standard`, read by the viewer's labels) and each adversary troop's
   next target and how many marches away (`View.arrows`, 019, drawn as arrows); bookkeeping
   `board.<flag>.*`, `board.project.*`, `board.project_done.*`, `board.track.*`, `board.track2.*`, `board.rich.*`, `board.placed.*`.
-- `economy` adds each seat's income per resource and the next round's bonus insight
-  (bookkeeping `economy.bonus_insight`, shown as its own global while >0;
+- `economy` adds each seat's income per resource (bookkeeping
   `economy.production.*`, one-time permanent gains, counted in the income;
   `economy.insight_debt.*`); `cards` adds hand, buildings (`n/slots`; a stacked one's
   text names the cards splayed under it, status `stacked`), programs in play, draft

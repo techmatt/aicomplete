@@ -7,6 +7,26 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 25 (059): the card design pass.** (Bumped from the constant, 24.) Matt's principles
+(2026-10-31), [card-guidelines.md](card-guidelines.md). Every card is exception-free: no face prints a `*`,
+a cap, a footnote or a sum. 91 of 158 player cards changed in what they do or cost, 43 in words; all
+candidates. The list is `experiments/results/screen-059-cards/design.md`, the prices `docs/card-pricing.md`.
+Threats, Unity, Discord, adversary, project and megaproject text was reworded, ops untouched.
+
+| What | Was | Now | Status |
+|---|---|---|---|
+| Removal | "remove N worth" (`adversary.troop_health` 2) | a card names its pieces, "2 adversary ambassadors or 1 troop": one kind (`troop_health` gone) | candidate |
+| Hardening from a card | all in one country | any different buildings in reach | candidate |
+| Cash out | 1 + 2 + ... + n, some capped | a plain rate per token | candidate |
+| Income per tag, per token, per presence | a `max` | no cap | candidate |
+| `convert`, `if`, `income_if_tags`, `next_round_insight`, `slotless`, `transfer`'s bonus, `harden`'s and `damage`'s country rules | ops and fields | gone: fixed trades, plain effects | candidate |
+| Modular Expansion | +1 slot, takes no slot | +2 slots, sits in one | candidate |
+| Aegis Dome Array | spread skips your presence, first destruction saved, Harden Action | first destruction saved only | candidate |
+| Clear a city | next to, then on | on or next to, your pick | candidate |
+| Adversarial Inference Sweep (Matt, #2190) | needs Science (055) | needs Cyber: no card needs Science for its niche | candidate |
+| A site corrupted with a marker on it | the marker stayed | corruption replaces it, as on a city (slow-lane invariant, new content hit it; the golden game didn't move) | fix |
+| Fonts, renderer | character-count text size; 058's picker fonts | measured fit, measured titles; Saira Condensed and Source Serif 4 only | candidate |
+
 **Revision 24 (055): first price pass.** (Bumped from the constant, 23: 054 took none.) Cards only, no
 rule changed. Screen: `experiments/results/screen-055-prices/prices.md`; rates and reasons in
 `docs/card-pricing.md`. Planner 79 / 75 on 160 seeds before, 67 / 65 on fresh seeds after.

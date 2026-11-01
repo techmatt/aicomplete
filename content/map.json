@@ -206,7 +206,7 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 7,
-    "text": "Placeholder: each owned station then makes 2 credits a round.",
+    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
     "benefit": [
      [
       "credits",
@@ -246,7 +246,7 @@
    "project": {
     "name": "Polar Compute Array",
     "cubes": 7,
-    "text": "Placeholder: each owned station then makes 2 credits a round.",
+    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
     "benefit": [
      [
       "credits",
@@ -287,7 +287,7 @@
    "project": {
     "name": "Mountain Fusion Works",
     "cubes": 7,
-    "text": "Placeholder: each owned station then makes 2 credits a round.",
+    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
     "benefit": [
      [
       "credits",
@@ -331,7 +331,7 @@
    "project": {
     "name": "Delta Seawall",
     "cubes": 7,
-    "text": "Placeholder: each owned station then makes 2 credits a round.",
+    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
     "benefit": [
      [
       "credits",

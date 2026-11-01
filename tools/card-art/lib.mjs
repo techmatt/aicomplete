@@ -8,6 +8,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { chromium } from 'playwright-core';
 
+import { fitCards } from '../../web/card/card.js';
+
 export const TOOL = path.dirname(fileURLToPath(import.meta.url));
 export const REPO = path.resolve(TOOL, '..', '..');
 export const CARD = path.join(REPO, 'web', 'card');
@@ -64,8 +66,8 @@ export const SHEET_CSS = '@page{size:210mm 297mm;margin:0}.sheet-page{width:207m
 
 /**
  * A page at print scale for layout `l`. Returns `{ p, show, clip, close }`: `show(body,
- * extra)` sets the page to `body` under card.css plus `extra` and waits for the fonts;
- * `clip` is one card with its bleed.
+ * extra)` sets the page to `body` under card.css plus `extra`, waits for the fonts and fits
+ * every card in it (fitCards, whose rows it returns); `clip` is one card with its bleed.
  */
 export async function cardPage(l, width, height) {
   const browser = await chromium.launch({ channel: 'chrome' });
@@ -79,6 +81,7 @@ export async function cardPage(l, width, height) {
   const show = async (body, extra = '') => {
     await p.setContent(`<!doctype html><html><head><base href="${base}"><style>body{margin:0}${css}${extra}</style></head><body>${body}</body></html>`, { waitUntil: 'load' });
     await p.evaluate(() => document.fonts.ready);
+    return p.evaluate(fitCards);
   };
   const clip = { x: 0, y: 0, width: l.bleed_mm[0] * MM, height: l.bleed_mm[1] * MM };
   return { p, show, clip, close: () => browser.close() };

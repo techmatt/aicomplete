@@ -35,33 +35,6 @@ pub enum Slot {
     Twist,
 }
 
-/// Where a removal effect may land, always within your reach (016).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum DamageAt {
-    /// A hex within your reach (1 of one of your presence).
-    Reach,
-    /// A hex in a country where you have a presence.
-    PresenceCountry,
-}
-
-/// Which country a placement may go to.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CountryRule {
-    Any,
-    PresenceCountry,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Cond {
-    /// You removed an adversary troop this round.
-    RemovedTroop,
-    /// Some clean city holds adversary ambassadors.
-    CityWithAmbassador,
-}
-
 /// Pieces a threat places adversary ambassadors on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -125,10 +98,9 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// 1 of `resource` per presence you have on the board, up to `max`.
+    /// 1 of `resource` per presence you have on the board.
     GainPerPresence {
         resource: Resource,
-        max: i64,
     },
     /// Choose another player for the `other_gain` / `transfer` that follow.
     ChoosePlayer,
@@ -137,19 +109,10 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Give up to `max` of `resource` to the chosen player; they gain
-    /// `bonus` more if you gave any.
+    /// Give up to `max` of `resource` to the chosen player.
     Transfer {
         resource: Resource,
         max: i64,
-        bonus: i64,
-    },
-    /// Convert up to `max` of `from` into `rate` of `to` each.
-    Convert {
-        from: Resource,
-        to: Resource,
-        max: i64,
-        rate: i64,
     },
     /// Place `count` presence off your AI board's tracks, paying each step's
     /// cost unless `free` (041).
@@ -173,15 +136,20 @@ pub enum Op {
     DelayThreat {
         count: i64,
     },
-    /// Remove adversary pieces in one hex, `amount` worth: an ambassador
-    /// costs 1, a troop `adversary.troop_health`.
+    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or
+    /// `troops` troops: one kind, your choice (059; a 0 prints no such choice).
     Damage {
-        amount: i64,
-        at: DamageAt,
+        #[serde(default)]
+        ambassadors: i64,
+        #[serde(default)]
+        troops: i64,
     },
-    /// `amount` worth of removal in each hex of one country holding adversary pieces.
+    /// The same in each hex of one country holding adversary pieces.
     DamageCountry {
-        amount: i64,
+        #[serde(default)]
+        ambassadors: i64,
+        #[serde(default)]
+        troops: i64,
     },
     /// Remove every adversary ambassador and troop in one hex.
     DestroyAll,
@@ -208,11 +176,9 @@ pub enum Op {
     ClearCity {
         max: i64,
     },
-    /// Put `count` hardening tokens on buildings in one country.
+    /// Put `count` hardening tokens on different buildings in reach.
     Harden {
         count: i64,
-        #[serde(rename = "where")]
-        in_country: CountryRule,
     },
     /// Move up to `max` of your ambassadors (from your supply or the board)
     /// onto pieces within your reach, one at a time.
@@ -242,10 +208,6 @@ pub enum Op {
     },
     /// Discard one visible adversary project, with its compute (017).
     DiscardProject,
-    /// Every player gains `amount` insight next round.
-    NextRoundInsight {
-        amount: i64,
-    },
     /// Your next building this round costs `amount` less.
     NextBuildingDiscount {
         amount: i64,
@@ -286,28 +248,18 @@ pub enum Op {
         amount: i64,
     },
     /// "Count as power" (023): 1 of `resource` per `per` tokens of `kind` on
-    /// your active buildings (the tokens stay), up to `max`.
+    /// your active buildings (the tokens stay).
     GainPerTokens {
         resource: Resource,
         kind: TokenKind,
         per: i64,
-        max: i64,
     },
-    /// Cash out (023): remove all your `kind` tokens; gain 1 + 2 + ... + n of
-    /// `resource` for the n removed (a growing rate); with `max` > 0, at most
-    /// `max` tokens, taken card by card.
+    /// Cash out (023, 059): remove all your `kind` tokens; gain `rate` of
+    /// `resource` for each.
     CashOut {
         kind: TokenKind,
         resource: Resource,
-        #[serde(default)]
-        max: i64,
-    },
-    /// The ops of `then` if `cond` holds, else those of `else`.
-    If {
-        cond: Cond,
-        then: Vec<Op>,
-        #[serde(rename = "else")]
-        otherwise: Vec<Op>,
+        rate: i64,
     },
 
     // ---------- instant: players, threats, the team, twists ----------
@@ -453,19 +405,11 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// `1` per `per` of your `tag` tags, up to `max`.
+    /// `1` per `per` of your `tag` tags.
     IncomePerTag {
         resource: Resource,
         tag: Tag,
         per: i64,
-        max: i64,
-    },
-    /// `amount` if you have at least `count` `tag` tags.
-    IncomeIfTags {
-        resource: Resource,
-        tag: Tag,
-        count: i64,
-        amount: i64,
     },
     /// Your buildings cost `amount` credits less.
     BuildingDiscount {
@@ -581,7 +525,6 @@ impl Op {
             | Op::RemoveNodes { .. } => &[Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }
-            | Op::IncomeIfTags { .. }
             | Op::BuildingDiscount { .. }
             | Op::HardenAction
             | Op::Slots { .. }
@@ -603,7 +546,6 @@ impl Op {
             | Op::ChoosePlayer
             | Op::OtherGain { .. }
             | Op::Transfer { .. }
-            | Op::Convert { .. }
             | Op::PlacePresence { .. }
             | Op::ClearMarkers { .. }
             | Op::ShieldPresence { .. }
@@ -624,7 +566,6 @@ impl Op {
             | Op::Jam { .. }
             | Op::DrainProject { .. }
             | Op::DiscardProject
-            | Op::NextRoundInsight { .. }
             | Op::NextBuildingDiscount { .. }
             | Op::Production { .. }
             | Op::AddTokens { .. }
@@ -635,8 +576,7 @@ impl Op {
             | Op::Draw { .. }
             | Op::DrainAll { .. }
             | Op::GainPerTokens { .. }
-            | Op::CashOut { .. }
-            | Op::If { .. } => &[Player],
+            | Op::CashOut { .. } => &[Player],
         }
     }
 }

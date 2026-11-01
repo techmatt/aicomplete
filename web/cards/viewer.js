@@ -1,7 +1,7 @@
 // The card viewer's page: browse, filter, sort and annotate what cards-server.mjs exports.
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
-import { inset, renderCard } from '../card/card.js';
+import { fitCards, inset, renderCard } from '../card/card.js';
 import { esc, plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
@@ -166,6 +166,7 @@ function grid(list) {
   $('cards').innerHTML = list.length
     ? list.map((c) => `<button class="tile" data-id="${esc(c.id)}"><div class="badges">${badges(c)}</div><div class="scaled">${face(c)}</div><div class="tile-stats" style="width:calc(63mm * var(--zoom, .6))">${esc(statLine(c))}</div></button>`).join('')
     : '<div class="empty">No card matches these filters.</div>';
+  fitCards($('cards'));
 }
 
 function table(list) {
@@ -317,6 +318,7 @@ function detail(id) {
       </form>
     </div>
   </div>`;
+  fitCards(dlg);
   if (!dlg.open) dlg.showModal();
   // On the panel, not the comment: the arrow keys step between cards until you click in.
   dlg.querySelector('.detail').focus({ preventScroll: true });
@@ -500,7 +502,6 @@ async function start() {
   wire();
   try {
     load(await call('/api/cards'));
-    await document.fonts.ready;
     controls();
     render();
     window.cardViewer = { ui, get data() { return data; }, render };

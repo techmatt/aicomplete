@@ -202,16 +202,38 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   refuses saves rather than being overwritten.
 - **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser through
   all of the above on a copy under `out/cards-check/`; screenshots land there. Content and
-  real notes aren't touched.
+  real notes aren't touched. It also fails if a card overflows at the last text size or the
+  title floor, a title leaves its plate, or text wraps differently between zooms.
+- **Card rules:** [docs/card-guidelines.md](docs/card-guidelines.md). A building's box above the art
+  and the one below it hold about 80 characters at 7.5 pt under one icon row; a program's or
+  event's about 110. A test refuses any face printing `*` or "worth".
+- **Text sizes:** `npm run cards:fit` (about 2.5 s, no server, no port) puts every player card
+  through the real renderer and `fitCards` in a headless browser and writes
+  `out/card-fit.json`: for each id, `top` and `effect` box sizes in pt (null: nothing in that
+  box), `title` in pt, `overflow` and `where`, and `tight` for a box inside its panel but short
+  of the clearance. It prints the cards below 7.5 pt and exits 1 if anything overflows. It reads
+  content and `web/card/faces.json` as they stand in the working tree, so re-run it after an
+  edit. **7.5 pt is the goal**: a smaller size is the ladder rescuing a card, not a target.
 - Scenes are full-size PNGs of about 3.6 MB, loaded as they scroll in: a fast scroll shows grey
   windows for a second or two.
 
 ## Card art
 
 The card renderer is `web/card/` (`card.js`, `card.css`, `icons.js`, the generated
-`faces.json`, `layout.json`, `containers/`, bundled `fonts/`): `renderCard(card, layout, frameUrl, fit, artUrl, fonts)`
+`faces.json`, `layout.json`, `containers/`, bundled `fonts/`): `renderCard(card, layout, frameUrl, fit, artUrl)`
 turns card content into HTML, in mm, so one template serves print and, later, the web
-client. **Cards are composed live, never pre-baked:** composed cards and print sheets go
+client. Fonts are fixed: Saira Condensed titles and figures, Source Serif 4 body (Matt's pick,
+`picks/card_fonts_r1.json`). **Sizes are measured, not guessed:** `renderCard` leaves 7.5 pt text
+and a 15 pt title, and `await fitCards(root)` sizes the cards in `root` once they are in the
+page. Each box (a building's top box, the effect box below the art) walks the ladder alone,
+largest first, 7.5 / 6.9 / 6.3 / 5.8 pt then `dense` 5.4 (which shrinks its icons too), until
+its icon rows and text leave 1.6 mm of its height. A title stays on one line and shrinks in
+0.25 pt steps until it clears its plate by 1 mm a side, floor 10.5 pt. A caller that forgets gets
+the default sizes, so a long card overflows and a long title runs wide. The viewer calls it
+after drawing the grid or the large view; `show` in `tools/card-art/lib.mjs` calls it, so
+`render`, `scene-picker` and every print get it. In Playwright, `page.evaluate(fitCards)`; it
+loads the fonts itself, and measures a copy at true size, so zoom and device scale don't change
+a card. About 110 ms for all 158. **Cards are composed live, never pre-baked:** composed cards and print sheets go
 to `out/cards/` (git-ignored). Committed: frame templates (`art/frames/`), guides
 (`art/guides/`), sliced containers, fonts. Changing a card's text or numbers changes no
 asset. Picker previews are never committed: they go to the shared
@@ -265,19 +287,12 @@ browser; `npm ci` first):
   (815×1110). With no variants named, also the splay, the icon sheet and a full check of
   every card in content (about 1.5 min: background it); with `--pdf`, `all-cards.pdf`
   (every real card at true size, 9 to an A4 page, 18 pages) and `splay.pdf`. Fails if a font fell back,
-  anything printed leaves the safe zone (x 6–63, y 6–88 mm), a panel overflows or a
+  anything printed leaves the safe zone (x 6–63, y 6–88 mm), a panel or title overflows or a
   requirement plate reaches the tags.
 - `node sheet.mjs <out.png> <images…>`: a one-row inspection sheet.
 - `npm run picker`: writes `picks/card_frames_r3.json` from `out/cards/`, with its images
   in `art-originals/picks/card_frames_r3/`. Stops if that folder isn't reachable (see
   *Originals*).
-- `npm run fonts` (about 45 s; background it): the card font picker. One sheet of the same eight cards per
-  font choice at 300 dpi, trimmed, in `art-originals/picks/card_fonts_r1/`, with counts over every
-  player card, and `picks/card_fonts_r1.json`. `--measure` prints the counts and writes nothing.
-  A choice is `renderCard`'s `fonts` argument, a block in `web/card/fonts.css`, which only this
-  script loads; left out, cards print in `card.css`'s fonts. The text-size ladder in `card.js`
-  (`SIZES`) estimates from character counts and can't see a font, so the counts try each size
-  on the real text. Threats and Discord have no frame, so they show the viewer's plain face.
 - `npm run guides`: six labelled guides plus unlabelled `-blocks` twins, from
   `layout.json`. The twins are what the image tool sees: labels invite text.
 - `npm run gen -- steel-program-1 … --pool=3`: raw frame draws for a new direction: Codex CLI's `$imagegen` on Matt's ChatGPT Plus login, the wordwarriors route
@@ -606,7 +621,7 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
-`experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
+(059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
 the first block and 512 at the cap. Measured, in planner games a minute: 14 on 4 threads
 (034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min), 15 on 8 (r24, the planner since 054). Budget
 40 min, and start it at least 55 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
@@ -840,8 +855,8 @@ nothing extra):
   (every dealt card is drafted by someone, so how early it goes is the signal), kept per
   offer, played per card gained (kept or drawn; per game for unique AI cards, which
   start in hand).
-- **Economy buildings standing**: per game at the end, buildings with a passive `income`,
-  `income_per_tag` or `income_if_tags` (27 of 56 at r19), by the base content even for a
+- **Economy buildings standing**: per game at the end, buildings with a passive `income`
+  or `income_per_tag`, by the base content even for a
   variant that overlays it. Token stores and `convert_upkeep` alone don't count.
 - **Build variety**: distinct end-of-game builds (each seat's AI and buildings) and the
   mean Jaccard distance between two games' building sets, over all games and over wins.

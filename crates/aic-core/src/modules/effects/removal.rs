@@ -2,34 +2,31 @@
 
 use super::*;
 
-pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64, at: DamageAt) -> Res {
+pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-        let hexes = damage_hexes(&w, g, seat, amount, at);
+        let hexes = damage_hexes(&w, g, seat, ambassadors, troops);
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt =
-            format!("Seat {seat}: remove {amount} worth of adversary pieces in which hex?");
+        let prompt = format!("Seat {seat}: remove adversary pieces in which hex?");
         if let Some(i) = cx.choose(seat, &prompt, opts)? {
-            adversary::damage(g, cx, seat, hexes[i], amount)?;
+            adversary::damage(g, cx, seat, hexes[i], ambassadors, troops)?;
         }
     Ok(())
 }
 
-pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64) -> Res {
+pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-        let cs = countries_where(&w, |h| has_adversary(g, h));
+        let cs = countries_where(&w, |h| adversary::can_damage(g, h, ambassadors, troops));
         let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-        let prompt = format!(
-            "Seat {seat}: remove {amount} worth in each adversary hex of which country?"
-        );
+        let prompt = format!("Seat {seat}: remove pieces in each adversary hex of which country?");
         if let Some(i) = cx.choose(seat, &prompt, opts)? {
             let hexes: Vec<usize> = w.map.countries[cs[i]]
                 .hexes
                 .iter()
                 .copied()
-                .filter(|&h| has_adversary(g, h))
+                .filter(|&h| adversary::can_damage(g, h, ambassadors, troops))
                 .collect();
             for h in hexes {
-                adversary::damage(g, cx, seat, h, amount)?;
+                adversary::damage(g, cx, seat, h, ambassadors, troops)?;
             }
         }
     Ok(())
@@ -113,15 +110,30 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
         let prompt = format!("Seat {seat}: clear adversary ambassadors around which corrupted city?");
         if let Some(i) = cx.choose(seat, &prompt, opts)? {
             let city = cities[i];
-            let mut left = if max > 0 { max } else { i64::MAX };
             let mut hexes = w.map.hexes[city].neighbours.to_vec();
             hexes.sort_unstable();
             hexes.push(city);
-            for h in hexes {
-                while left > 0 && g.tokens(h, ADV_AMBASSADOR) > 0 {
-                    adversary::remove_piece(g, cx, Some(seat), h, ADV_AMBASSADOR);
-                    left -= 1;
+            // 059: the card says "on or next to": every one goes at max 0, else the
+            // player picks each while there are more than the card can take.
+            let mut left = if max > 0 { max } else { i64::MAX };
+            while left > 0 {
+                let held: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, ADV_AMBASSADOR) > 0).collect();
+                let count: i64 = held.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
+                if held.is_empty() {
+                    break;
                 }
+                let at = if count <= left || held.len() == 1 {
+                    held[0]
+                } else {
+                    let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
+                    let prompt = format!("Seat {seat}: remove an adversary ambassador from which hex?");
+                    match cx.choose(seat, &prompt, opts)? {
+                        Some(k) => held[k],
+                        None => break,
+                    }
+                };
+                adversary::remove_piece(g, cx, Some(seat), at, ADV_AMBASSADOR);
+                left -= 1;
             }
         }
     Ok(())

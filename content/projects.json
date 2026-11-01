@@ -28,7 +28,7 @@
   "name": "False Flag",
   "stage": 1,
   "cost": 6,
-  "text": "Deal three extra threats.",
+  "text": "Deal 3 extra threats.",
   "effects": [{"op": "deal_threats", "count": 3}]
  },
  {
@@ -36,7 +36,7 @@
   "name": "Infiltration Drive",
   "stage": 1,
   "cost": 6,
-  "text": "In each country, the city that is not corrupted (clean or aligned) with the most adversary ambassadors becomes corrupted.",
+  "text": "In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted.",
   "effects": [{"op": "corrupt_city"}]
  },
  {
@@ -52,7 +52,7 @@
   "name": "Purge the Unaligned",
   "stage": 2,
   "cost": 8,
-  "text": "Every player sacrifices an ambassador or a presence; in each country, an adversary troop lands on a factory (with none, a city).",
+  "text": "Every player loses an ambassador or a presence (never their last presence). In each country, 1 troop lands on a factory, or a city if no factory.",
   "effects": [{"op": "sacrifice"}, {"op": "troops", "count": 1, "each_country": true}]
  },
  {
@@ -86,7 +86,7 @@
   "name": "Armoured Columns",
   "stage": 2,
   "cost": 9,
-  "text": "In each country, 2 adversary troops land on factories (with none, cities).",
+  "text": "In each country, 2 troops land on factories, or cities if no factories.",
   "effects": [{"op": "troops", "count": 2, "each_country": true}]
  },
  {
@@ -94,7 +94,7 @@
   "name": "Station Coup",
   "stage": 2,
   "cost": 10,
-  "text": "In each country, a research station that is not corrupted becomes corrupted; every node produces an adversary ambassador on its hex.",
+  "text": "In each country, an uncorrupted research station becomes corrupted. Every node produces 1 adversary ambassador on its hex.",
   "effects": [{"op": "flip_station", "each_country": true}, {"op": "node_ambassadors", "amount": 1}]
  }
 ]

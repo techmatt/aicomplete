@@ -290,7 +290,7 @@ function playerCard(c, face, keep) {
     cost: c.cost,
     costLabel: `${c.cost} credits`,
     tags: c.tags ?? [],
-    keywords: [...(c.keywords ?? []), ...(c.unique ? [`unique: ${c.unique}`] : []), ...(c.slotless ? ['slotless'] : [])],
+    keywords: [...(c.keywords ?? []), ...(c.unique ? [`unique: ${c.unique}`] : [])],
     text: [face?.top_text, face?.text].filter(Boolean).join(' '),
     sections: [],
     price,

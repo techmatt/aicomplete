@@ -3,7 +3,7 @@
   "id": "adv_s1_probing_strikes",
   "name": "Probing Strikes",
   "stage": 1,
-  "text": "Arrivals: coastal cities. The Militarist tests the lines: it builds and spreads as usual.",
+  "text": "Arrivals: coastal cities.",
   "twists": [
    {
     "op": "arrivals",
@@ -15,7 +15,7 @@
   "id": "adv_s1_factory_drive",
   "name": "Factory Drive",
   "stage": 1,
-  "text": "Arrivals: industrial zones. Factories next to clean cities build 1 too.",
+  "text": "Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -47,7 +47,7 @@
   "id": "adv_s1_war_drums",
   "name": "War Drums",
   "stage": 1,
-  "text": "Arrivals: each country's first base. Sway 1 toward Discord.",
+  "text": "First, sway 1 toward Discord. Arrivals: each country's first base.",
   "twists": [
    {
     "op": "arrivals",
@@ -64,7 +64,7 @@
   "id": "adv_s2_mobilisation",
   "name": "Mobilisation",
   "stage": 2,
-  "text": "Arrivals: coastal cities. Each corrupted city builds 1 more. Escalation: each country's first base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: coastal cities. Each corrupted city gains 1 more adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -81,7 +81,7 @@
   "id": "adv_s2_station_raids",
   "name": "Station Raids",
   "stage": 2,
-  "text": "Arrivals: research stations. Each corrupted research station builds 1. Escalation: each country's first base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: research stations. Each corrupted research station gains 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -98,7 +98,7 @@
   "id": "adv_s2_fifth_column",
   "name": "Fifth Column",
   "stage": 2,
-  "text": "Arrivals: coastal cities. Cities corrupt at 1 fewer ambassador. Escalation: each country's first base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: coastal cities. Cities corrupt at 1 fewer adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -115,7 +115,7 @@
   "id": "adv_s2_border_war",
   "name": "Border War",
   "stage": 2,
-  "text": "Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador when this round builds; each player destroys a presence of theirs.",
+  "text": "First, each player destroys 1 of their presence. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -135,7 +135,7 @@
   "id": "adv_s2_supply_lines",
   "name": "Supply Lines",
   "stage": 2,
-  "text": "Arrivals: industrial zones. Factories next to clean cities build 1 too. Escalation: each country's first base gains an adversary ambassador when this round builds.",
+  "text": "Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -152,7 +152,7 @@
   "id": "adv_s3_total_mobilisation",
   "name": "Total Mobilisation",
   "stage": 3,
-  "text": "Arrivals: industrial zones. Each corrupted city builds 1 more, and factories next to clean cities build 1 too; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too.",
   "twists": [
    {
     "op": "arrivals",
@@ -185,7 +185,7 @@
   "id": "adv_s3_blitzkrieg",
   "name": "Blitzkrieg",
   "stage": 3,
-  "text": "Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further.",
   "twists": [
    {
     "op": "arrivals",
@@ -217,7 +217,7 @@
   "id": "adv_s3_occupation",
   "name": "Occupation",
   "stage": 3,
-  "text": "Arrivals: research stations. Cities corrupt at 1 fewer ambassador, and each corrupted research station builds 1; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -250,7 +250,7 @@
   "id": "adv_s3_iron_doctrine",
   "name": "Iron Doctrine",
   "stage": 3,
-  "text": "Arrivals: coastal cities. This round is a war round; sway 1 toward Discord; each player destroys 2 presence of theirs; 2 Sway leaves the Unity bucket.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round.",
   "twists": [
    {
     "op": "arrivals",

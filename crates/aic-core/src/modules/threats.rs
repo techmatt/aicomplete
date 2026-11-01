@@ -765,7 +765,7 @@ pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usiz
         };
         let tied: Vec<Key> = hand.into_iter().filter(|c| cost(c) == top).collect();
         let opts = tied.iter().map(|c| opt(c.as_str())).collect();
-        let prompt = format!("Purge protocols: seat {s} discards which card?");
+        let prompt = format!("Purge Protocols: seat {s} discards which card?");
         if let Some(i) = cx.choose(s, &prompt, opts)? {
             cards::discard(g, cx, &tied[i], &cards::hand(s));
         }

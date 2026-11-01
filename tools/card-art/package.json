@@ -12,7 +12,6 @@
     "fit": "node fit.mjs",
     "render": "node render.mjs",
     "picker": "node picker.mjs",
-    "fonts": "node fonts.mjs",
     "scene-gen": "node scene-gen.mjs",
     "scene-picker": "node scene-picker.mjs"
   },

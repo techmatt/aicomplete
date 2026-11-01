@@ -270,5 +270,5 @@ screenshot goes to `sweep-out/odd/` (`AIC_SWEEP_OUT`). It counts as one browser 
 | `src/log.ts` | One log entry: a step's action and its events, folded by phase. |
 | `src/main.ts` | Wiring: choice prompt, action buttons, timeline, hover card, record dialog. |
 
-`card/` is the printed card renderer, used by `tools/card-art/` and not yet by the
-viewer: see *Card art* in the root README.
+`card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
+(`cards/`), not yet by this game viewer: see *Card art* in the root README.

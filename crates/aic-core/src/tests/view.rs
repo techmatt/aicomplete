@@ -108,7 +108,6 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
         "adversary.peek",
         "adversary.first_project",
         "adversary.first_corruption",
-        "economy.bonus_insight",
     ];
     let names: Vec<&str> = crate::content()
         .map

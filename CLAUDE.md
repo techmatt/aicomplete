@@ -41,6 +41,8 @@ The standing contract for every executor working in this repo.
   `NOT_TUNABLES` entry in `docs.rs`). Before the report, `git grep` each renamed name and each
   changed number: a diff doesn't show the prose it left stale. One home per rule: a rule's
   number lives in a config or in content, its effect in one `Op` arm or the rule that reads it.
+- Any card work follows [docs/card-guidelines.md](docs/card-guidelines.md): no exceptions and no
+  `*`, plain words, no arithmetic, no caps, text that fits at 7.5 pt (`npm run cards:fit` in `web/`).
 - What content does is one schema, `Op` (`crates/aic-core/src/op.rs`); resources, tags
   and token types are enums (`vocab.rs`). Docs: *The op schema* in docs/architecture.md.
 

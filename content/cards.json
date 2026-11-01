@@ -59,10 +59,9 @@
   "passives": [
    {
     "op": "slots",
-    "amount": 1
+    "amount": 2
    }
   ],
-  "slotless": true,
   "unique": "builder",
   "tags": [
    "industry"
@@ -85,8 +84,7 @@
    "effects": [
     {
      "op": "harden",
-     "count": 2,
-     "where": "presence_country"
+     "count": 2
     }
    ]
   },
@@ -105,8 +103,8 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 3,
-    "at": "reach"
+    "ambassadors": 3,
+    "troops": 1
    }
   ],
   "unique": "protector",
@@ -172,7 +170,7 @@
   "name": "Telemetry Archive",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "science"
@@ -188,9 +186,8 @@
    "tokens": 2,
    "effects": [
     {
-     "op": "gain",
-     "resource": "insight",
-     "amount": 1
+     "op": "delay_threat",
+     "count": 1
     }
    ]
   }
@@ -233,7 +230,7 @@
   "name": "Citation Engine",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "needs": [
    [
@@ -249,8 +246,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "science",
-    "per": 1,
-    "max": 3
+    "per": 2
    }
   ]
  },
@@ -334,7 +330,7 @@
   "name": "Grad Student Pool",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "science"
@@ -346,13 +342,7 @@
    "kind": "datasets",
    "per_round": 1
   },
-  "effects": [
-   {
-    "op": "add_tokens",
-    "kind": "datasets",
-    "amount": 2
-   }
-  ],
+  "effects": [],
   "ability": {
    "tokens": 2,
    "effects": [
@@ -365,7 +355,7 @@
  },
  {
   "id": "benchmark_suite",
-  "name": "Benchmark Suite",
+  "name": "Stress Test Suite",
   "tier": 1,
   "kind": "program",
   "cost": 2,
@@ -402,11 +392,6 @@
     "op": "add_tokens",
     "kind": "datasets",
     "amount": 3
-   },
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 1
    }
   ]
  },
@@ -423,10 +408,6 @@
    {
     "op": "draw",
     "count": 1
-   },
-   {
-    "op": "peek",
-    "count": 1
    }
   ]
  },
@@ -435,7 +416,7 @@
   "name": "Shared Compute Grant",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "science"
@@ -448,14 +429,9 @@
     "op": "choose_player"
    },
    {
-    "op": "transfer",
+    "op": "other_gain",
     "resource": "insight",
-    "max": 2,
-    "bonus": 1
-   },
-   {
-    "op": "move_one",
-    "range": 2
+    "amount": 3
    }
   ]
  },
@@ -515,13 +491,12 @@
   ],
   "effects": [
    {
-    "op": "convert",
-    "from": "energy",
-    "to": "insight",
-    "max": 2,
-    "rate": 1
+    "op": "gain",
+    "resource": "insight",
+    "amount": 2
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "field_sensor_grid",
@@ -538,9 +513,9 @@
     "count": 2
    },
    {
-    "op": "gain_per_presence",
+    "op": "gain",
     "resource": "insight",
-    "max": 1
+    "amount": 1
    }
   ]
  },
@@ -643,9 +618,8 @@
   "name": "Exabyte Archive",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 5,
   "insight": 2,
-  "chips": 1,
   "needs": [
    [
     "science",
@@ -663,22 +637,14 @@
    "kind": "datasets",
    "per_round": 2
   },
-  "effects": [
-   {
-    "op": "add_tokens",
-    "kind": "datasets",
-    "amount": 2
-   }
-  ],
+  "effects": [],
   "ability": {
-   "cost": [],
+   "tokens": 2,
    "effects": [
     {
-     "op": "gain_per_tokens",
+     "op": "gain",
      "resource": "credits",
-     "kind": "datasets",
-     "per": 2,
-     "max": 4
+     "amount": 5
     }
    ]
   }
@@ -688,7 +654,7 @@
   "name": "Foundation Model Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 15,
+  "cost": 8,
   "antimatter": 1,
   "insight": 2,
   "chips": 2,
@@ -703,12 +669,7 @@
    "science",
    "cyber"
   ],
-  "effects": [
-   {
-    "op": "draw",
-    "count": 2
-   }
-  ],
+  "effects": [],
   "passives": [
    {
     "op": "income",
@@ -719,8 +680,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "science",
-    "per": 1,
-    "max": 6
+    "per": 1
    }
   ]
  },
@@ -729,7 +689,7 @@
   "name": "Orbital Observatory Array",
   "tier": 2,
   "kind": "building",
-  "cost": 9,
+  "cost": 8,
   "insight": 2,
   "chips": 1,
   "needs": [
@@ -742,29 +702,20 @@
    "science",
    "cyber"
   ],
-  "keywords": [
-   "tokens"
-  ],
-  "tokens": {
-   "kind": "datasets",
-   "per_round": 1
-  },
   "passives": [
    {
     "op": "income",
     "resource": "insight",
-    "amount": 1
-   },
-   {
-    "op": "income_if_tags",
-    "resource": "insight",
-    "tag": "science",
-    "count": 4,
-    "amount": 1
+    "amount": 2
    }
   ],
   "ability": {
-   "tokens": 2,
+   "cost": [
+    [
+     "credits",
+     3
+    ]
+   ],
    "effects": [
     {
      "op": "draw",
@@ -778,15 +729,9 @@
   "name": "Recursive Self-Improvement",
   "tier": 2,
   "kind": "program",
-  "cost": 10,
+  "cost": 8,
   "antimatter": 1,
   "insight": 2,
-  "lowers": [
-   [
-    "credits",
-    1
-   ]
-  ],
   "needs": [
    [
     "science",
@@ -821,18 +766,10 @@
   ],
   "effects": [
    {
-    "op": "gain_per_tokens",
+    "op": "cash_out",
+    "kind": "datasets",
     "resource": "credits",
-    "kind": "datasets",
-    "per": 1,
-    "max": 8
-   },
-   {
-    "op": "gain_per_tokens",
-    "resource": "insight",
-    "kind": "datasets",
-    "per": 3,
-    "max": 2
+    "rate": 3
    }
   ]
  },
@@ -841,7 +778,7 @@
   "name": "Open-Weights Release",
   "tier": 2,
   "kind": "program",
-  "cost": 4,
+  "cost": 8,
   "insight": 1,
   "tags": [
    "science",
@@ -853,11 +790,7 @@
   "effects": [
    {
     "op": "clear_markers",
-    "count": 2
-   },
-   {
-    "op": "shield_presence",
-    "count": 2
+    "count": 3
    },
    {
     "op": "choose_player"
@@ -874,11 +807,11 @@
   "name": "Adversarial Inference Sweep",
   "tier": 2,
   "kind": "event",
-  "cost": 5,
+  "cost": 2,
   "insight": 1,
   "needs": [
    [
-    "science",
+    "cyber",
     1
    ]
   ],
@@ -898,10 +831,6 @@
    {
     "op": "delay_threat",
     "count": 2
-   },
-   {
-    "op": "draw",
-    "count": 1
    }
   ]
  },
@@ -933,7 +862,7 @@
   "name": "Retained Earnings",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "industry"
@@ -961,7 +890,7 @@
   "name": "Expansion Fund",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "industry"
@@ -973,13 +902,7 @@
    "kind": "capital",
    "per_round": 1
   },
-  "effects": [
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 2
-   }
-  ],
+  "effects": [],
   "ability": {
    "tokens": 3,
    "effects": [
@@ -1023,13 +946,12 @@
   ],
   "effects": [
    {
-    "op": "convert",
-    "from": "chips",
-    "to": "credits",
-    "max": 4,
-    "rate": 2
+    "op": "gain",
+    "resource": "credits",
+    "amount": 6
    }
-  ]
+  ],
+  "chips": 3
  },
  {
   "id": "bulk_silicon_procurement",
@@ -1051,7 +973,7 @@
  },
  {
   "id": "station_prefab_order",
-  "name": "Station Prefab Order",
+  "name": "Reclamation Crew",
   "tier": 1,
   "kind": "program",
   "cost": 3,
@@ -1092,8 +1014,7 @@
     "op": "gain_per_tokens",
     "resource": "energy",
     "kind": "capital",
-    "per": 2,
-    "max": 3
+    "per": 2
    }
   ]
  },
@@ -1103,7 +1024,7 @@
   "tier": 1,
   "kind": "program",
   "cost": 1,
-  "insight": 0,
+  "insight": 1,
   "tags": [
    "industry",
    "power",
@@ -1157,10 +1078,6 @@
     "op": "production",
     "resource": "credits",
     "amount": 1
-   },
-   {
-    "op": "move_one",
-    "range": 2
    }
   ]
  },
@@ -1185,13 +1102,12 @@
    {
     "op": "transfer",
     "resource": "credits",
-    "max": 4,
-    "bonus": 2
+    "max": 4
    },
    {
     "op": "add_tokens",
     "kind": "capital",
-    "amount": 2
+    "amount": 3
    }
   ]
  },
@@ -1232,7 +1148,7 @@
   "name": "Materials Hedge Desk",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "industry"
@@ -1244,7 +1160,8 @@
    {
     "op": "cash_out",
     "kind": "capital",
-    "resource": "chips"
+    "resource": "chips",
+    "rate": 1
    }
   ]
  },
@@ -1266,7 +1183,7 @@
     "op": "cash_out",
     "kind": "capital",
     "resource": "credits",
-    "max": 5
+    "rate": 2
    }
   ]
  },
@@ -1319,26 +1236,19 @@
   "name": "Grid-Tied Smelter",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "industry",
    "power"
   ],
-  "effects": [
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 2
-   }
-  ],
+  "effects": [],
   "passives": [
    {
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "power",
-    "per": 1,
-    "max": 3
+    "per": 1
    }
   ]
  },
@@ -1366,25 +1276,13 @@
     "amount": 2
    }
   ],
-  "passives": [
-   {
-    "op": "income",
-    "resource": "credits",
-    "amount": 1
-   }
-  ],
   "ability": {
    "tokens": 2,
    "effects": [
     {
      "op": "gain",
-     "resource": "energy",
-     "amount": 1
-    },
-    {
-     "op": "gain",
-     "resource": "chips",
-     "amount": 1
+     "resource": "credits",
+     "amount": 3
     }
    ]
   }
@@ -1394,9 +1292,9 @@
   "name": "Arcology Foundry",
   "tier": 2,
   "kind": "building",
-  "cost": 16,
+  "cost": 12,
   "insight": 2,
-  "chips": 3,
+  "chips": 2,
   "needs": [
    [
     "industry",
@@ -1425,10 +1323,10 @@
   "name": "Orbital Mass Driver",
   "tier": 2,
   "kind": "building",
-  "cost": 25,
+  "cost": 18,
   "insight": 2,
   "antimatter": 1,
-  "chips": 4,
+  "chips": 3,
   "needs": [
    [
     "industry",
@@ -1453,10 +1351,6 @@
    {
     "op": "income",
     "resource": "chips",
-    "amount": 2
-   },
-   {
-    "op": "building_discount",
     "amount": 2
    }
   ]
@@ -1485,22 +1379,30 @@
     "op": "income",
     "resource": "chips",
     "amount": 1
-   },
-   {
-    "op": "convert_upkeep",
-    "from": "energy",
-    "amount": 2,
-    "to": "credits",
-    "gain": 6
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "credits",
+     "amount": 6
+    }
+   ]
+  }
  },
  {
   "id": "sovereign_capital_fund",
   "name": "Sovereign Capital Fund",
   "tier": 2,
   "kind": "building",
-  "cost": 7,
+  "cost": 8,
   "insight": 2,
   "needs": [
    [
@@ -1519,7 +1421,7 @@
    "per_round": 2
   },
   "ability": {
-   "tokens": 3,
+   "tokens": 4,
    "effects": [
     {
      "op": "gain",
@@ -1563,7 +1465,7 @@
   "name": "Megacorp IPO",
   "tier": 2,
   "kind": "event",
-  "cost": 3,
+  "cost": 5,
   "insight": 2,
   "tags": [
    "industry"
@@ -1573,15 +1475,10 @@
   ],
   "effects": [
    {
-    "op": "add_tokens",
-    "kind": "capital",
-    "amount": 2
-   },
-   {
     "op": "cash_out",
     "kind": "capital",
     "resource": "credits",
-    "max": 6
+    "rate": 4
    }
   ]
  },
@@ -1678,8 +1575,8 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 2,
-    "at": "reach"
+    "ambassadors": 2,
+    "troops": 1
    }
   ]
  },
@@ -1704,8 +1601,7 @@
    },
    {
     "op": "damage",
-    "amount": 1,
-    "at": "reach"
+    "ambassadors": 1
    }
   ]
  },
@@ -1726,21 +1622,20 @@
    "cost": [
     [
      "credits",
-     2
+     1
     ]
    ],
    "effects": [
     {
      "op": "damage",
-     "amount": 1,
-     "at": "reach"
+     "ambassadors": 1
     }
    ]
   }
  },
  {
   "id": "shadow_broker_feed",
-  "name": "Shadow Broker Feed",
+  "name": "Shadow Broker Scrub",
   "tier": 1,
   "kind": "program",
   "cost": 2,
@@ -1765,7 +1660,7 @@
   "name": "Shared Exploit Kit",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 4,
   "insight": 0,
   "tags": [
    "cyber",
@@ -1787,11 +1682,6 @@
    {
     "op": "other_gain",
     "resource": "insight",
-    "amount": 1
-   },
-   {
-    "op": "gain",
-    "resource": "credits",
     "amount": 1
    }
   ]
@@ -1824,14 +1714,8 @@
   "name": "Neural Mirror",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 7,
   "insight": 1,
-  "lowers": [
-   [
-    "credits",
-    1
-   ]
-  ],
   "tags": [
    "cyber",
    "science"
@@ -1887,13 +1771,7 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 1,
-    "at": "reach"
-   },
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 1
+    "ambassadors": 1
    }
   ]
  },
@@ -1912,21 +1790,12 @@
   ],
   "effects": [
    {
-    "op": "if",
-    "cond": "city_with_ambassador",
-    "then": [
-     {
-      "op": "damage",
-      "amount": 2,
-      "at": "reach"
-     }
-    ],
-    "else": [
-     {
-      "op": "drain_project",
-      "amount": 4
-     }
-    ]
+    "op": "drain_project",
+    "amount": 3
+   },
+   {
+    "op": "jam",
+    "amount": 1
    }
   ]
  },
@@ -1966,12 +1835,9 @@
   ],
   "effects": [
    {
-    "op": "cut_node"
-   },
-   {
     "op": "damage",
-    "amount": 2,
-    "at": "reach"
+    "ambassadors": 3,
+    "troops": 1
    }
   ]
  },
@@ -1980,7 +1846,7 @@
   "name": "Intrusion Lab",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "cyber"
@@ -2018,8 +1884,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "cyber",
-    "per": 2,
-    "max": 3
+    "per": 2
    }
   ]
  },
@@ -2028,7 +1893,7 @@
   "name": "Sentinel Mesh",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "cyber",
@@ -2041,17 +1906,13 @@
    "cost": [
     [
      "energy",
-     2
+     1
     ]
    ],
    "effects": [
     {
-     "op": "cut_node"
-    },
-    {
-     "op": "damage",
-     "amount": 1,
-     "at": "reach"
+     "op": "jam",
+     "amount": 2
     }
    ]
   }
@@ -2075,11 +1936,10 @@
     "amount": 1
    },
    {
-    "op": "income_if_tags",
+    "op": "income_per_tag",
     "resource": "insight",
     "tag": "science",
-    "count": 2,
-    "amount": 1
+    "per": 2
    }
   ]
  },
@@ -2153,7 +2013,7 @@
   "name": "Mesh Intrusion Pact",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
+  "cost": 6,
   "insight": 1,
   "needs": [
    [
@@ -2182,10 +2042,6 @@
     "op": "other_gain",
     "resource": "credits",
     "amount": 2
-   },
-   {
-    "op": "shield_presence",
-    "count": 2
    }
   ]
  },
@@ -2214,8 +2070,7 @@
     "op": "remove_node"
    },
    {
-    "op": "drain_all",
-    "amount": 4
+    "op": "discard_project"
    }
   ]
  },
@@ -2224,7 +2079,7 @@
   "name": "Black Ice Citadel",
   "tier": 2,
   "kind": "building",
-  "cost": 9,
+  "cost": 6,
   "insight": 2,
   "chips": 2,
   "replaces": "cyber",
@@ -2235,13 +2090,6 @@
   "keywords": [
    "hack"
   ],
-  "passives": [
-   {
-    "op": "income",
-    "resource": "credits",
-    "amount": 1
-   }
-  ],
   "ability": {
    "cost": [
     [
@@ -2251,8 +2099,8 @@
    ],
    "effects": [
     {
-     "op": "drain_project",
-     "amount": 4
+     "op": "drain_all",
+     "amount": 2
     }
    ]
   }
@@ -2285,8 +2133,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "cyber",
-    "per": 1,
-    "max": 6
+    "per": 1
    }
   ]
  },
@@ -2295,7 +2142,7 @@
   "name": "Baseload Contract",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "power"
@@ -2361,8 +2208,7 @@
   "effects": [
    {
     "op": "harden",
-    "count": 3,
-    "where": "presence_country"
+    "count": 3
    }
   ]
  },
@@ -2387,7 +2233,7 @@
     {
      "op": "gain",
      "resource": "credits",
-     "amount": 3
+     "amount": 6
     }
    ]
   }
@@ -2397,7 +2243,7 @@
   "name": "Grid Census",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "power"
@@ -2405,8 +2251,7 @@
   "effects": [
    {
     "op": "gain_per_presence",
-    "resource": "energy",
-    "max": 5
+    "resource": "energy"
    }
   ]
  },
@@ -2520,11 +2365,6 @@
     "count": 1
    },
    {
-    "op": "harden",
-    "count": 1,
-    "where": "presence_country"
-   },
-   {
     "op": "move_one",
     "range": 2
    }
@@ -2571,8 +2411,7 @@
    },
    {
     "op": "harden",
-    "count": 1,
-    "where": "any"
+    "count": 1
    }
   ]
  },
@@ -2612,11 +2451,10 @@
     "amount": 1
    },
    {
-    "op": "income_if_tags",
+    "op": "income_per_tag",
     "resource": "credits",
     "tag": "industry",
-    "count": 2,
-    "amount": 1
+    "per": 2
    }
   ]
  },
@@ -2647,8 +2485,7 @@
    "effects": [
     {
      "op": "harden",
-     "count": 2,
-     "where": "presence_country"
+     "count": 2
     }
    ]
   }
@@ -2681,7 +2518,7 @@
   "name": "Storm Hardening",
   "tier": 1,
   "kind": "event",
-  "cost": 1,
+  "cost": 0,
   "energy": 2,
   "insight": 1,
   "tags": [
@@ -2695,8 +2532,7 @@
    },
    {
     "op": "harden",
-    "count": 2,
-    "where": "any"
+    "count": 2
    }
   ]
  },
@@ -2712,18 +2548,17 @@
   ],
   "effects": [
    {
-    "op": "convert",
-    "from": "energy",
-    "to": "chips",
-    "max": 3,
-    "rate": 1
+    "op": "gain",
+    "resource": "chips",
+    "amount": 3
    },
    {
     "op": "gain",
     "resource": "credits",
     "amount": 1
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "positron_storage_ring",
@@ -2731,8 +2566,6 @@
   "tier": 2,
   "kind": "building",
   "cost": 11,
-  "energy": 2,
-  "chips": 1,
   "insight": 2,
   "tags": [
    "power"
@@ -2748,14 +2581,12 @@
    {
     "op": "income",
     "resource": "energy",
-    "amount": 4
+    "amount": 1
    },
    {
-    "op": "convert_upkeep",
-    "from": "energy",
-    "amount": 3,
-    "to": "antimatter",
-    "gain": 1
+    "op": "income",
+    "resource": "antimatter",
+    "amount": 1
    }
   ]
  },
@@ -2764,10 +2595,8 @@
   "name": "Dyson Swarm Tranche",
   "tier": 2,
   "kind": "building",
-  "cost": 16,
+  "cost": 12,
   "antimatter": 1,
-  "energy": 3,
-  "chips": 2,
   "insight": 2,
   "tags": [
    "power",
@@ -2798,8 +2627,7 @@
   "name": "Continental Supergrid",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
-  "chips": 1,
+  "cost": 11,
   "insight": 2,
   "tags": [
    "power",
@@ -2816,11 +2644,7 @@
     "op": "income_per_tag",
     "resource": "energy",
     "tag": "power",
-    "per": 1,
-    "max": 5
-   },
-   {
-    "op": "harden_action"
+    "per": 1
    }
   ]
  },
@@ -2829,7 +2653,7 @@
   "name": "Beamed Power Constellation",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
+  "cost": 8,
   "energy": 0,
   "insight": 2,
   "tags": [
@@ -2849,8 +2673,7 @@
    },
    {
     "op": "gain_per_presence",
-    "resource": "energy",
-    "max": 6
+    "resource": "energy"
    }
   ]
  },
@@ -2859,8 +2682,7 @@
   "name": "Antiproton Offtake Deal",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
-  "energy": 3,
+  "cost": 7,
   "insight": 2,
   "lowers": [
    [
@@ -2890,7 +2712,7 @@
   "name": "Interconnector Treaty",
   "tier": 2,
   "kind": "program",
-  "cost": 6,
+  "cost": 5,
   "energy": 2,
   "insight": 2,
   "tags": [
@@ -2916,19 +2738,9 @@
     "amount": 3
    },
    {
-    "op": "other_gain",
-    "resource": "insight",
-    "amount": 1
-   },
-   {
     "op": "production",
     "resource": "energy",
     "amount": 2
-   },
-   {
-    "op": "place_presence",
-    "count": 1,
-    "free": true
    }
   ]
  },
@@ -2939,7 +2751,6 @@
   "kind": "event",
   "cost": 5,
   "antimatter": 0,
-  "energy": 2,
   "insight": 2,
   "tags": [
    "power",
@@ -2949,11 +2760,6 @@
   "effects": [
    {
     "op": "shelter"
-   },
-   {
-    "op": "harden",
-    "count": 4,
-    "where": "any"
    },
    {
     "op": "place_presence",
@@ -2994,12 +2800,12 @@
   ],
   "effects": [
    {
-    "op": "gain_ambassadors",
-    "count": 1
-   },
-   {
     "op": "move_one",
     "range": 2
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 1
    }
   ]
  },
@@ -3018,12 +2824,12 @@
   ],
   "effects": [
    {
-    "op": "gain_ambassadors",
-    "count": 1
-   },
-   {
     "op": "consolidate",
     "max": 3
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 1
    }
   ]
  },
@@ -3050,11 +2856,7 @@
    "effects": [
     {
      "op": "gain_ambassadors",
-     "count": 1
-    },
-    {
-     "op": "move_one",
-     "range": 2
+     "count": 2
     }
    ]
   }
@@ -3084,11 +2886,6 @@
      "op": "sway",
      "side": "unity",
      "amount": 1
-    },
-    {
-     "op": "harden",
-     "count": 1,
-     "where": "presence_country"
     }
    ]
   }
@@ -3098,7 +2895,7 @@
   "name": "Commons Grid",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -3112,19 +2909,12 @@
    "per_round": 1
   },
   "ability": {
-   "cost": [
-    [
-     "credits",
-     1
-    ]
-   ],
    "effects": [
     {
      "op": "gain_per_tokens",
      "resource": "energy",
      "kind": "followers",
-     "per": 2,
-     "max": 3
+     "per": 2
     }
    ]
   }
@@ -3198,8 +2988,7 @@
    {
     "op": "transfer",
     "resource": "credits",
-    "max": 6,
-    "bonus": 2
+    "max": 6
    },
    {
     "op": "gain_ambassadors",
@@ -3237,8 +3026,7 @@
    },
    {
     "op": "harden",
-    "count": 2,
-    "where": "any"
+    "count": 2
    }
   ]
  },
@@ -3247,7 +3035,7 @@
   "name": "Amnesty Decree",
   "tier": 1,
   "kind": "event",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -3259,10 +3047,6 @@
    {
     "op": "clear_city",
     "max": 2
-   },
-   {
-    "op": "move_one",
-    "range": 2
    }
   ]
  },
@@ -3278,22 +3062,14 @@
   ],
   "effects": [
    {
-    "op": "if",
-    "cond": "city_with_ambassador",
-    "then": [
-     {
-      "op": "sway",
-      "side": "unity",
-      "amount": 2
-     }
-    ],
-    "else": [
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 3
-     }
-    ]
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   },
+   {
+    "op": "gain",
+    "resource": "credits",
+    "amount": 2
    }
   ]
  },
@@ -3321,7 +3097,7 @@
    "cost": [
     [
      "credits",
-     2
+     1
     ]
    ],
    "effects": [
@@ -3353,8 +3129,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "diplomacy",
-    "per": 2,
-    "max": 3
+    "per": 2
    }
   ]
  },
@@ -3375,8 +3150,7 @@
   "effects": [
    {
     "op": "harden",
-    "count": 2,
-    "where": "presence_country"
+    "count": 2
    },
    {
     "op": "move_one",
@@ -3399,8 +3173,7 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 1,
-    "at": "reach"
+    "ambassadors": 1
    },
    {
     "op": "gain_ambassadors",
@@ -3539,11 +3312,11 @@
   ],
   "effects": [
    {
-    "op": "gain_ambassadors",
-    "count": 2
+    "op": "spread_ambassadors"
    },
    {
-    "op": "spread_ambassadors"
+    "op": "gain_ambassadors",
+    "count": 2
    }
   ]
  },
@@ -3589,11 +3362,6 @@
     "amount": 2,
     "one_country": true,
     "cities": true
-   },
-   {
-    "op": "sway",
-    "side": "unity",
-    "amount": 1
    }
   ]
  },
@@ -3602,15 +3370,9 @@
   "name": "Planetary Assembly",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
+  "cost": 14,
   "insight": 2,
   "chips": 1,
-  "lowers": [
-   [
-    "credits",
-    1
-   ]
-  ],
   "needs": [
    [
     "diplomacy",
@@ -3635,10 +3397,6 @@
      "op": "sway",
      "side": "unity",
      "amount": 2
-    },
-    {
-     "op": "gain_ambassadors",
-     "count": 1
     }
    ]
   }
@@ -3648,10 +3406,9 @@
   "name": "Orbital Embassy",
   "tier": 2,
   "kind": "building",
-  "cost": 14,
+  "cost": 10,
   "antimatter": 1,
   "insight": 2,
-  "chips": 2,
   "needs": [
    [
     "diplomacy",
@@ -3704,8 +3461,7 @@
    "effects": [
     {
      "op": "harden",
-     "count": 2,
-     "where": "presence_country"
+     "count": 2
     }
    ]
   }
@@ -3716,7 +3472,6 @@
   "tier": 1,
   "kind": "building",
   "cost": 4,
-  "energy": 1,
   "insight": 1,
   "tags": [
    "security"
@@ -3729,12 +3484,11 @@
    "per_round": 1
   },
   "ability": {
-   "tokens": 3,
+   "tokens": 2,
    "effects": [
     {
      "op": "damage",
-     "amount": 2,
-     "at": "reach"
+     "troops": 1
     }
    ]
   }
@@ -3789,7 +3543,7 @@
   "name": "Mutual Defense Pact",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security",
@@ -3800,9 +3554,7 @@
   ],
   "effects": [
    {
-    "op": "harden",
-    "count": 2,
-    "where": "any"
+    "op": "shelter"
    },
    {
     "op": "choose_player"
@@ -3811,11 +3563,6 @@
     "op": "other_gain",
     "resource": "credits",
     "amount": 2
-   },
-   {
-    "op": "gain",
-    "resource": "energy",
-    "amount": 1
    }
   ]
  },
@@ -3846,11 +3593,6 @@
     "op": "other_gain",
     "resource": "insight",
     "amount": 1
-   },
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 1
    }
   ]
  },
@@ -3859,8 +3601,8 @@
   "name": "Threat Triage",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
-  "insight": 1,
+  "cost": 2,
+  "insight": 0,
   "tags": [
    "security"
   ],
@@ -3876,29 +3618,20 @@
   "name": "Bounty Board",
   "tier": 1,
   "kind": "program",
-  "cost": 0,
-  "insight": 0,
+  "cost": 3,
+  "insight": 1,
   "tags": [
    "security"
   ],
   "effects": [
    {
-    "op": "if",
-    "cond": "removed_troop",
-    "then": [
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 3
-     }
-    ],
-    "else": [
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 1
-     }
-    ]
+    "op": "damage",
+    "troops": 1
+   },
+   {
+    "op": "gain",
+    "resource": "credits",
+    "amount": 1
    }
   ]
  },
@@ -3919,8 +3652,7 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 1,
-    "at": "reach"
+    "ambassadors": 1
    },
    {
     "op": "move_one",
@@ -3933,7 +3665,7 @@
   "name": "Diplomatic Expulsion",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "security",
@@ -3942,8 +3674,7 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 1,
-    "at": "presence_country"
+    "ambassadors": 1
    },
    {
     "op": "sway",
@@ -3979,11 +3710,11 @@
  },
  {
   "id": "threat_forecast_engine",
-  "name": "Threat Forecast Engine",
+  "name": "Early Warning Drill",
   "tier": 1,
   "kind": "program",
   "cost": 2,
-  "insight": 0,
+  "insight": 1,
   "tags": [
    "security",
    "cyber",
@@ -3991,11 +3722,11 @@
   ],
   "effects": [
    {
-    "op": "peek",
+    "op": "delay_threat",
     "count": 1
    },
    {
-    "op": "delay_threat",
+    "op": "shield_presence",
     "count": 1
    }
   ]
@@ -4005,7 +3736,7 @@
   "name": "Agency Field Station",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -4018,19 +3749,12 @@
    "per_round": 1
   },
   "ability": {
-   "cost": [
-    [
-     "energy",
-     1
-    ]
-   ],
    "effects": [
     {
      "op": "gain_per_tokens",
      "resource": "credits",
      "kind": "agents",
-     "per": 2,
-     "max": 3
+     "per": 2
     }
    ]
   }
@@ -4061,7 +3785,7 @@
   "name": "Interceptor Battery",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -4070,14 +3794,13 @@
    "cost": [
     [
      "energy",
-     3
+     2
     ]
    ],
    "effects": [
     {
      "op": "damage",
-     "amount": 2,
-     "at": "reach"
+     "troops": 1
     }
    ]
   }
@@ -4087,7 +3810,7 @@
   "name": "Security Contractor HQ",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security"
@@ -4097,8 +3820,7 @@
     "op": "income_per_tag",
     "resource": "credits",
     "tag": "security",
-    "per": 2,
-    "max": 3
+    "per": 2
    }
   ]
  },
@@ -4107,8 +3829,7 @@
   "name": "Breach and Clear",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
-  "energy": 1,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "security"
@@ -4116,20 +3837,13 @@
   "effects": [
    {
     "op": "damage",
-    "amount": 2,
-    "at": "reach"
+    "ambassadors": 2,
+    "troops": 1
    },
    {
-    "op": "if",
-    "cond": "removed_troop",
-    "then": [
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 2
-     }
-    ],
-    "else": []
+    "op": "gain",
+    "resource": "credits",
+    "amount": 2
    }
   ]
  },
@@ -4148,9 +3862,8 @@
     "op": "shelter"
    },
    {
-    "op": "harden",
-    "count": 2,
-    "where": "presence_country"
+    "op": "damage",
+    "ambassadors": 1
    }
   ]
  },
@@ -4159,8 +3872,7 @@
   "name": "Agency Directorate",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
-  "chips": 2,
+  "cost": 10,
   "insight": 2,
   "tags": [
    "security"
@@ -4184,7 +3896,7 @@
    "effects": [
     {
      "op": "damage_country",
-     "amount": 2
+     "troops": 1
     }
    ]
   }
@@ -4194,9 +3906,7 @@
   "name": "Aegis Dome Array",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
-  "energy": 2,
-  "chips": 1,
+  "cost": 6,
   "insight": 2,
   "tags": [
    "security",
@@ -4211,36 +3921,17 @@
   ],
   "passives": [
    {
-    "op": "spread_shield"
-   },
-   {
     "op": "civic_shelter"
    }
-  ],
-  "ability": {
-   "cost": [
-    [
-     "energy",
-     2
-    ]
-   ],
-   "effects": [
-    {
-     "op": "harden",
-     "count": 2,
-     "where": "presence_country"
-    }
-   ]
-  }
+  ]
  },
  {
   "id": "threat_neutralization_mandate",
   "name": "Threat Neutralization Mandate",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
-  "energy": 2,
-  "insight": 2,
+  "cost": 6,
+  "insight": 1,
   "tags": [
    "security"
   ],
@@ -4280,10 +3971,6 @@
    {
     "op": "remove_ambassadors_country",
     "unity_per": 3
-   },
-   {
-    "op": "move_one",
-    "range": 2
    }
   ]
  },
@@ -4317,8 +4004,7 @@
      "op": "gain_per_tokens",
      "resource": "credits",
      "kind": "agents",
-     "per": 1,
-     "max": 5
+     "per": 1
     }
    ]
   }
@@ -4343,7 +4029,8 @@
   "effects": [
    {
     "op": "damage_country",
-    "amount": 3
+    "ambassadors": 3,
+    "troops": 1
    }
   ]
  },
@@ -4353,7 +4040,6 @@
   "tier": 2,
   "kind": "event",
   "cost": 9,
-  "energy": 2,
   "insight": 2,
   "tags": [
    "security"

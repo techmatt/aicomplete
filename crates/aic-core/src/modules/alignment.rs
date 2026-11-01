@@ -579,7 +579,7 @@ impl Module for Alignment {
             "Discord tips",
             dt,
             (dt < tier2).then_some(tier2),
-            "Discord tips so far; a Discord card's stronger steps count the tips before its own: \"after 3\" first fires on the 4th tip",
+            "Discord tips so far; a Discord card's stronger steps count the tips before its own: \"3+ earlier\" first fires on the 4th tip",
         );
         let level = bar_level(w, g);
         let mut text = adversary::win_text(level);

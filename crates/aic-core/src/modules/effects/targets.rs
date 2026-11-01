@@ -3,16 +3,10 @@
 use super::*;
 
 /// Hexes a removal effect of seat `s` may target: every card's map target
-/// is within the seat's reach (016), and the card may narrow it further.
-pub fn damage_hexes(w: &World, g: &GameState, seat: usize, amount: i64, at: DamageAt) -> Vec<usize> {
+/// is within the seat's reach (016).
+pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, troops: i64) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| adversary::can_damage(w, g, h, amount) && in_reach(w, g, seat, h))
-        .filter(|&h| match at {
-            DamageAt::Reach => true,
-            DamageAt::PresenceCountry => {
-                has_presence_in(w, g, seat, w.map.hexes[h].country as usize)
-            }
-        })
+        .filter(|&h| adversary::can_damage(g, h, ambassadors, troops) && in_reach(w, g, seat, h))
         .collect()
 }
 
@@ -124,20 +118,9 @@ pub(super) fn unsheltered(w: &World, g: &GameState) -> Vec<usize> {
         .collect()
 }
 
-/// Countries where a Harden of seat `seat` has a building a token can protect.
-pub(super) fn harden_countries(w: &World, g: &GameState, seat: usize, rule: CountryRule) -> Vec<usize> {
-    (0..w.map.countries.len())
-        .filter(|&c| match rule {
-            CountryRule::Any => true,
-            CountryRule::PresenceCountry => has_presence_in(w, g, seat, c),
-        })
-        .filter(|&c| {
-            w.map.countries[c]
-                .hexes
-                .iter()
-                .any(|&h| board::hardenable(g, h) && in_reach(w, g, seat, h))
-        })
-        .collect()
+/// Buildings in reach of seat `seat` a Harden's token can protect.
+pub(super) fn harden_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| board::hardenable(g, h) && in_reach(w, g, seat, h)).collect()
 }
 
 /// Seat `seat`'s ambassadors that have a piece within `range` to move to.
@@ -146,13 +129,4 @@ pub(super) fn movable_one(w: &World, g: &GameState, seat: usize, range: i64) -> 
         .into_iter()
         .filter(|&a| any_hex(g, |h| move_one_dest(w, g, a, range, h)))
         .collect()
-}
-
-pub(super) fn cond(w: &World, g: &GameState, seat: usize, c: Cond) -> bool {
-    match c {
-        Cond::RemovedTroop => g.var(&adversary::removed_troop(seat)) > 0,
-        Cond::CityWithAmbassador => any_hex(g, |h| {
-            g.tokens(h, ADV_AMBASSADOR) > 0 && clean_city(w, g, h)
-        }),
-    }
 }
