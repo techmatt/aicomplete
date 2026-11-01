@@ -1,6 +1,6 @@
 """Win rates of an experiment's cells and paired gaps between them (064).
 
-    python scripts/bench/paired.py DIR [DIR ...] [--pair A B]...
+    python scripts/bench/paired.py DIR [DIR ...] [--pair A B]... [--against-base]
 
 Reads each DIR's games.jsonl. A cell is named VARIANT/AGENT; with several DIRs, or to pick out
 one, DIR's folder name goes first: DIR/VARIANT/AGENT. Prints each cell's win %, one SE, mean
@@ -8,14 +8,27 @@ rounds, and how its games ended. `--pair A B` prints B minus A on the seeds both
 of the paired difference; A and B are any text that names one cell. Several --pair lines are also
 pooled, seed by seed, so two sizes read as one 96-seed gap.
 
+`--against-base` reads a sweep: every variant `cN-x` against variant `cN` of the same DIR, agent
+by agent, and each lever `x` pooled over its sizes. The spec names a base per size and a lever per
+size, the same overrides under c2-x and c3-x:
+
+    {"name": "c2", "set": ["countries=2"]},
+    {"name": "c3", "set": ["countries=3"]},
+    {"name": "c2-cost4", "set": ["countries=2", "cards.telemetry_archive.cost=4"]},
+    {"name": "c3-cost4", "set": ["countries=3", "cards.telemetry_archive.cost=4"]}
+
 Cells must come from specs with one config and one difficulty.
 """
 import argparse
 import json
 import math
 import os
+import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import gap  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -41,20 +54,40 @@ def find(cells, text):
     return cells[hits[0]]
 
 
-def gap(pairs):
-    """Mean of paired differences and its SE, in points."""
-    n = len(pairs)
-    if n < 2:
-        return 0.0, 0.0, n
-    mean = sum(pairs) / n
-    var = sum((x - mean) ** 2 for x in pairs) / (n - 1)
-    return 100 * mean, 100 * math.sqrt(var / n), n
+def diffs(base, lever):
+    """lever minus base, won or not, on the seeds both played."""
+    return [lever[s]['won'] - base[s]['won'] for s in base if s in lever]
+
+
+def against_base(cells):
+    """Each `cN-x` cell less `cN`, then each lever pooled over its sizes."""
+    levers = defaultdict(list)
+    for name, games in cells.items():
+        hit = re.fullmatch(r'(.+/)(c\d+)-([^/]+)/([^/]+)', name)
+        if not hit or not games:
+            continue
+        prefix, size, lever, agent = hit.groups()
+        base = cells.get(f'{prefix}{size}/{agent}')
+        if not base:
+            print(f'{name}: no {prefix}{size}/{agent} to read against')
+            continue
+        d = diffs(base, games)
+        levers[f'{prefix}{lever}/{agent}'].append(d)
+        m, se, n = gap(d)
+        print(f'{name} minus {size}: {m:+.1f} ±{se:.1f} on {n} seeds')
+    if not levers:
+        sys.exit('no cN-x variant with its cN')
+    for lever, sizes in levers.items():
+        if len(sizes) > 1:
+            m, se, n = gap([x for d in sizes for x in d])
+            print(f'{lever} pooled: {m:+.1f} ±{se:.1f} on {n} paired seeds')
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('dirs', nargs='+')
     ap.add_argument('--pair', nargs=2, action='append', default=[])
+    ap.add_argument('--against-base', action='store_true', help='every cN-x variant against cN')
     a = ap.parse_args()
     cells = {}
     for d in a.dirs:
@@ -77,14 +110,15 @@ def main():
 
     pooled = []
     for x, y in a.pair:
-        ca, cb = find(cells, x), find(cells, y)
-        diffs = [cb[s]['won'] - ca[s]['won'] for s in ca if s in cb]
-        pooled += diffs
-        m, se, n = gap(diffs)
+        d = diffs(find(cells, x), find(cells, y))
+        pooled += d
+        m, se, n = gap(d)
         print(f'{y} minus {x}: {m:+.1f} ±{se:.1f} on {n} seeds')
     if len(a.pair) > 1:
         m, se, n = gap(pooled)
         print(f'pooled: {m:+.1f} ±{se:.1f} on {n} paired seeds')
+    if a.against_base:
+        against_base(cells)
 
 
 if __name__ == '__main__':

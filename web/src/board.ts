@@ -124,7 +124,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       g.append(p(`M0,${f(-0.6 * s)} V${f(0.65 * s)}`, 'none', 'detail'));
       break;
     case 'corruption':
-      // A corruption marker: a burnt patch with a cross through it, where a presence fell.
+      // A corruption marker: a burned patch with a cross through it, where a presence fell.
       g.append(
         el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: '#e1bee7', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
         el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),

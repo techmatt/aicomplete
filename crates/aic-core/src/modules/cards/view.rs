@@ -101,7 +101,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             .pile(&drafted(s))
             .iter()
             .map(|id| {
-                // 044: an Open Market purchase waives the price the status showed.
+                // 044: an Open Market free keep waives the price the status showed.
                 let (ins, cr) = if alignment::free_purchases(g) > 0 { (0, 0) } else { m.keep_price(w, g, s, id) };
                 let st = match (ins, cr) {
                     (0, 0) => "keep free".to_string(),

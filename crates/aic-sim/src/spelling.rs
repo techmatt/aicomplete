@@ -1,19 +1,28 @@
 //! American English everywhere (docs/card-guidelines.md): `aic-sim docs --check`, so the
 //! fast lane, refuses a British spelling in what the repo says. A stem matches inside
 //! identifiers too (`kind_colour`), any case. `tools/` is not read: its scene ids are file
-//! stems in the shared art store, and `experiments/results/` is a record of its day.
+//! stems in the shared art store, and `experiments/results/` is a record of its day. It
+//! is a list, not a dictionary: a word outside it passes.
 
 use std::fs;
 use std::path::Path;
 
 /// British stems. Whole-enough to miss "organism", "realistic" and "programmer".
-const BRITISH: [&str; 50] = [
+const BRITISH: &[&str] = &[
     "colour", "neighbour", "behaviour", "armour", "favour", "flavour", "harbour", "honour", "labour", "rumour",
     "centre", "metres", "litre", "fibre", "theatre", "defence", "offence", "licence", "pretence", "grey",
     "mobilis", "modelling", "modelled", "labelled", "labelling", "cancelled", "cancelling", "travelled", "bevelled",
     "stylis", "summaris", "organise", "organisation", "recognis", "optimise", "optimisation", "normalise", "prioritis",
     "analogue", "catalogue", "dialogue box", "artefact", "misspelt", "towards", "afterwards", "whilst", "amongst",
     "mould", "manoeuvre", "judgement",
+    "burnt", "learnt", "spelt", "dreamt", "utilis", "authoris", "neutralis", "stabilis", "centralis", "customis",
+    "visualis", "serialis", "randomis", "memoris", "categoris", "synchronis", "tokenis", "digitis", "weaponis",
+    "privatis", "realise", "realisation", "specialise", "characterise", "analysed", "analysing", "paralysed", "paralysing", "catalyse",
+    "programme ", "programmes", "aluminium", "ageing", "skilful", "wilful", "fuelled", "fuelling", "signalled", "signalling",
+    "levelled", "levelling", "dialled", "storey", "draught", "sceptic", "cheque", "plough", "calibre",
+    "sabre", "sombre", "spectre", "lustre", "meagre", "vigour", "valour", "savour", "odour", "humour", "glamour",
+    "tumour", "endeavour", "splendour", "vapour", "rigour", "saviour", "backwards", "upwards",
+    "downwards", "onwards",
 ];
 
 /// Where the repo speaks to a reader: paths from its root.
@@ -88,6 +97,6 @@ mod tests {
 
     #[test]
     fn american_words_pass() {
-        assert!(british("Mobilization, Armored, Modeling; organism, realistic, programmer, center").is_empty());
+        assert!(british("Mobilization, Armored, Modeling; organism, realistic, programmer, center, analyses, checkerboard").is_empty());
     }
 }

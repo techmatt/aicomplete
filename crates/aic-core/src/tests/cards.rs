@@ -1,12 +1,12 @@
 use super::alignment::give;
 use super::projects::row;
 use super::*;
-use crate::content::Op;
+use crate::content::{CardDef, Op, Tag};
 use crate::modules::{adversary, effects, threats};
 
 #[test]
 fn the_ais_spend_their_resource_as_credits_on_cards() {
-    let (rules, mut g) = lab_actions();
+    let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
     for c in ["darknet_exchange", "literature_crawler"] {
         Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|x| x != c);
     }
@@ -134,7 +134,7 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
 #[test]
 fn playing_a_card_pays_its_insight_and_lowers_its_income() {
     // 022: insight to play, shared with keeps; `lowers` cuts an income for good.
-    let (rules, mut g) = lab_actions();
+    let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
     for c in ["darknet_exchange", "recursive_self_improvement"] {
         Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|x| x != c);
         Arc::make_mut(g.piles.get_mut("cards.deck.2").unwrap()).retain(|x| x != c);
@@ -169,7 +169,7 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
 
 #[test]
 fn selling_a_card_discards_it_for_a_credit() {
-    let (rules, mut g) = lab_actions();
+    let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
     for p in ["cards.deck.1", "cards.discard.1"] {
         if let Some(pile) = g.piles.get_mut(p) {
             Arc::make_mut(pile).retain(|c| c != "darknet_exchange");
@@ -226,7 +226,6 @@ fn selling_a_card_discards_it_for_a_credit() {
 /// tokens out at a plain rate (059).
 #[test]
 fn the_023_primitives_draw_drain_all_count_and_cash_out() {
-    use crate::content::Op;
     use crate::modules::{cards, effects};
     let (rules, mut g) = lab_actions();
     let run = |g: &mut GameState, e: Op| {
@@ -326,6 +325,18 @@ fn hand_written_card_text_is_refused() {
     }
     c.cards[0].text = "Gain a thousand credits.".to_string();
     assert!(c.check().unwrap_err().contains("generated"));
+}
+
+#[test]
+fn a_science_niche_card_needing_science_is_refused() {
+    let mut c = content().clone();
+    for card in &mut c.cards {
+        card.text.clear();
+    }
+    let niche = |d: &CardDef| d.effects.iter().any(|o| matches!(o, Op::ClearMarkers { .. }));
+    let card = c.cards.iter_mut().find(|d| niche(d)).unwrap();
+    card.needs = vec![(Tag::Science, 1)];
+    assert!(c.check().unwrap_err().contains("needs no Science"));
 }
 
 #[test]

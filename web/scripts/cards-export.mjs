@@ -187,13 +187,15 @@ function winDeltas(file) {
  * Reasoned prices: any CSV under experiments/results with a `card` or `id` column and a
  * numeric column whose name holds "reason" (card-prices.csv by convention). A rationale
  * column of words beside it is passed over. The last file in path order wins a card. A
- * `revision` column says which rules' costs the prices were reasoned at.
+ * `revision` column says which rules' costs the prices were reasoned at; a `note` on the
+ * first row says what else to know, and both column titles print it.
  */
 function reasonedPrices(results) {
   const out = {};
   const seen = [];
   let revision = null;
-  if (!existsSync(results)) return { prices: out, files: seen, revision };
+  let note = null;
+  if (!existsSync(results)) return { prices: out, files: seen, revision, note };
   for (const f of walk(results).sort()) {
     if (!f.endsWith('.csv') || /[\\/](games|cards)\.csv$/.test(f)) continue;
     const rows = readCsv(f);
@@ -204,9 +206,10 @@ function reasonedPrices(results) {
     if (!idCol || !col) continue;
     seen.push(f);
     revision = rows[0].revision || revision;
+    note = rows[0].note || note;
     for (const row of rows) if (number(row[col])) out[row[idCol]] = Number(row[col]);
   }
-  return { prices: out, files: seen, revision };
+  return { prices: out, files: seen, revision, note };
 }
 
 function buildStats(root) {
@@ -246,11 +249,12 @@ function buildStats(root) {
       // undrafted, so that ratio reads 1000% on a card offered four times.
       { key: 'kept_pct', label: 'Kept %', title: 'keeps per 100 games of this agent: each card is one copy, so about the share of games it was kept in', unit: '%' },
       { key: 'played_pct', label: 'Played %', title: 'played ÷ (kept + drawn), as the screen report has it', unit: '%' },
-      { key: 'win_delta', label: 'Win Δ', title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (the screen records no other per-card outcome)', unit: ' pts' },
+      { key: 'win_delta', label: 'Win Δ', title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (games.jsonl has other per-card outcomes, but committed results dirs do not keep it)', unit: ' pts' },
     );
   }
   const at = reasoned.revision ? ` (r${reasoned.revision})` : '';
-  const stale = reasoned.revision ? `; reasoned at r${reasoned.revision}'s costs, so a card repriced since reads wrong` : '';
+  const caveat = reasoned.note ? `. ${reasoned.note}` : '';
+  const stale = reasoned.revision ? `; reasoned at r${reasoned.revision}'s costs, so a card repriced since reads wrong${caveat}` : caveat;
   if (Object.keys(reasoned.prices).length)
     columns.push(
       { key: 'reasoned', label: `Reasoned${at}`, title: `reasoned price${stale}`, unit: '' },

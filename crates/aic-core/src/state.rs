@@ -105,6 +105,26 @@ pub struct Ask {
     pub seat: u8,
     pub prompt: String,
     pub options: Vec<Opt>,
+    /// What kind of question it is. Written only when not plain, so a plain
+    /// ask's JSON, and with it a state's fingerprint, doesn't carry it.
+    #[serde(default, skip_serializing_if = "AskKind::is_plain")]
+    pub kind: AskKind,
+}
+
+/// What an agent may need to know about an [`Ask`] beyond its words.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AskKind {
+    #[default]
+    Plain,
+    /// Which of your things to lose, or where a loss lands.
+    Loss,
+}
+
+impl AskKind {
+    fn is_plain(&self) -> bool {
+        *self == AskKind::Plain
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

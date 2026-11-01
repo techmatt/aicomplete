@@ -89,7 +89,7 @@ fn is_site(w: &World, g: &GameState, h: usize, site: Site) -> bool {
         Site::Coastal => w.map.hexes[h].coastal,
         Site::Industrial => w.map.hexes[h].industrial,
         Site::Stations => g.tokens(h, STATION) > 0,
-        Site::Bases => site_base(w, h),
+        Site::BaseSites => site_base(w, h),
     }
 }
 

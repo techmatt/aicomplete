@@ -5,20 +5,47 @@ generated from `content/cards.json`. The screen that checked these prices, and t
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
 
+## Current rates (055, r24; 059, r25)
+
+This table is the only home of a current rate; every section below keeps the numbers of its day. The
+sections run newest first, and the cards as they stand are in [cards.md](cards.md).
+
+| thing | rate (credits) | why |
+|---|---|---|
+| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear. **A fit:** 2.5 centers tier 1 on its printed prices (median gap 0). It is not a measure: unspent insight was not read at 055 (last at 021, r12), and `economy.insight_unspent` would settle it. Credits binding is the reasoning, not a result |
+| keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
+| energy | 2 | was 1. Project ceiling 4; a 1-energy standard action does about this much |
+| chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
+| antimatter | 9 | 1 a round costs 8-11 of credits |
+| token held | 1 | spent, it is worth what its action buys |
+| Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | 059: replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
+| drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
+| tag left in play | 1, then 0.5 each | new: discounts, `needs`, powers. Events leave none |
+| Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
+| presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
+| per presence, uncapped | as 055: the track has only 9 spaces | 059: Grid Census 2, Beamed Power Constellation 8 |
+| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 2 for 3 |
+| removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
+| troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | 059: the card names a kind: one choice, no mix |
+| marker cleared | 6, × 0.7 for a target | 1 energy, 1 Sway, a hex back |
+| shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
+| delay 2.5, jam N is N, counter 7 | | |
+| compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
+| cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
+| node removed | 12 | 2 Sway plus its compute and the block on claims |
+| city freed | 25 | 5 Sway plus a city |
+| income, tier 1 / tier 2 | credit 5 / 3, energy 5 / 3.5, chip 4 / 2.5, insight 8 / 6 | about 6 incomes in tier 1, 3 in tier 2. Insight's pair was built at 4, not rebased |
+| a gift to another seat | 0.75 × face | new: they may not need it then |
+| income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2 |
+| repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
+| a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
 ## 059's changes (r25): the card design pass
 
 Every card was read against [card-guidelines.md](card-guidelines.md). 91 of 158 player cards changed in
 what they do or cost, 43 in words only. The list is in
 [experiments/results/screen-059-cards/design.md](../experiments/results/screen-059-cards/design.md).
-**Where this list disagrees with the sections below, it wins.** The rates are 055's. What is new:
-
-| thing | rate (credits) | why |
-|---|---|---|
-| a fixed trade | the two sides at 055's rates | replaces every `convert`: nothing to cap, nothing to count |
-| Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
-| per tag, uncapped | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | a rate where a cap used to be |
-| per presence, uncapped | as 055: the track has only 9 spaces | Grid Census 2, Beamed Power Constellation 8 |
-| troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | the card names a kind: one choice, no mix |
+The rates it added are in *Current rates*.
 
 **Paper prices are not enough.** A reviewed set with nine reasoned raises (Breakthrough Leak, Grid-Tied
 Smelter, Fusion Startup Stake, Asteroid Salvage Rights, Back-Channel Talks, Joint Fabrication Pact,
@@ -27,47 +54,24 @@ back won 15. They are back at 055's prices. c3's win rate rests on the cheap car
 `needs` against credits. Kinetic Interdiction with troops only, and Total Containment without its
 shelter, cost another 10 of 40; Grid Census at 4 and Beamed at 11 cost 7.
 
-## 055's changes (r24): the current rates and the first price pass
+## 055's changes (r24): the first price pass
 
 Priced at d2 with the planner. The list, the measure and every sweep are in
 [experiments/results/screen-055-prices/prices.md](../experiments/results/screen-055-prices/prices.md);
-reasoned prices are in `card-prices.csv` beside it. **Where this table disagrees with the sections
-below, it wins.** The older sections keep the numbers of their day.
-
-| thing | rate (credits) | why |
-|---|---|---|
-| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear; 2.5 centers tier 1 on its printed prices |
-| keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
-| energy | 2 | was 1. Project ceiling 4; a 1-energy standard action does about this much |
-| chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
-| antimatter | 9 | 1 a round costs 8-11 of credits |
-| token held | 1 | spent, it is worth what its action buys |
-| drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
-| tag left in play | 1, then 0.5 each | new: discounts, `needs`, powers. Events leave none |
-| Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card |
-| presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
-| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 2 for 3 |
-| removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
-| marker cleared | 6, × 0.7 for a target | 1 energy, 1 Sway, a hex back |
-| shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
-| delay 2.5, jam N is N, counter 7 | | |
-| compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
-| cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
-| node removed | 12 | 2 Sway plus its compute and the block on claims |
-| city freed | 25 | 5 Sway plus a city |
-| income, tier 1 / tier 2 | credit 5 / 3, energy 5 / 3.5, chip 4 / 2.5, insight 8 / 6 | about 6 incomes in tier 1, 3 in tier 2 |
-| a gift to another seat | 0.75 × face | new: they may not need it then |
-| income per tag | credit income × about 1.2 | new: 1 per 2 tags, max 3, on a committed seat |
-| repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
+reasoned prices are in `card-prices.csv` beside it. The rates it set are in *Current rates*.
 
 **`needs` is the price that separates a rush.** Credits hit the planner and the rush alike: the planner
 drafts tier 2 about two picks in three, and the rush has only half the planner's tier-1 plays, so
 what it lacks is tags in play. Dearer tier-2 credits took the planner down more than the rush (52 / 55
-against 62 / 65, 40 seeds); six `needs` took the rush down 18-20 and the planner 15 at c2, none at c3.
+against 62 / 65, 40 seeds) with the six `needs` in; six `needs` took the rush down 18-20 and the planner 15
+at c2, none at c3 (against the 40-seed base, 80 / 65 and 90 / 78).
 Tier-1 cuts did nothing for either. The Sway cards keep no gate but Great Liberation: all nine gates,
 three of them on Sway cards, took the planner to 46 at c2 (the win clock).
 
-| card | was | now | why |
+Which lever moves which: `needs` the rush, tier-2 credits both and the planner more, tier-1 cuts neither,
+presence payoffs and dearer presence neither gap.
+
+| card | was | r24 | why |
 |---|---|---|---|
 | Great Liberation | 14 cr | 16 cr, needs 1 Diplomacy | both lists: frees a city and more, reasoned 21; +20 against tier 2 |
 | Beamed Power Constellation | 5 cr | 7 cr | both lists: 3 free presence and up to 6 energy, reasoned 15; +14 |
@@ -87,6 +91,7 @@ presence and draws. Field Sensor Grid at 2 insight, Grid Census at 8 energy and 
 8 moved neither gap beyond the noise, nor did dearer presence cards, so neither shipped. Its wins are
 purges (22 of 33 at c2, 30 of 35 at c3, fresh seeds), it loses half the presence, and the bundle that pays for it is the growth rule.
 
+## 046's changes (r22)
 
 Shields, delays and marker clearing are Science's alone (the content check refuses them elsewhere;
 all five cards that carried one already had the tag). The niche was real but thin: five cards in 150,
@@ -95,13 +100,13 @@ each pays back by itself within two rounds of a marker or a threat landing near 
 yardsticks as 041; a marker on a city is also a step of `corrupt_at` 5, so one or two clears take a
 city back out of reach of a Fifth Column round.
 
-| card | was | now | payback |
+| card | was | r22 | payback |
 |---|---|---|---|
 | Field Sensor Grid (T1) | clear 1, up to 1 insight | clear 2, up to 1 insight | 2 cr for up to 2 × (1 energy + 1 Sway) plus 4 credits of insight: the round it is played |
-| Benchmark Suite (T1) | 1 insight, shield 1, 1 Dataset | 1 insight, shield 2 | 2 cr less 4 of insight is free; each hit absorbed saves a token and a marker, about 7 |
+| Benchmark Suite, now Stress Test Suite (T1) | 1 insight, shield 1, 1 Dataset | 1 insight, shield 2 | 2 cr less 4 of insight is free; each hit absorbed saves a token and a marker, about 7 |
 | Predictive Modeling (T1) | 2 cr + 1 insight | 2 cr, 0 insight | half a counter, 2-3 credits, the round it is played: one copy pays back on one threat |
-| Threat Forecast Engine (T1) | peek 2, draw 1 | peek 1, one threat waits | the same at three tags; a second delay answers the round the first comes back |
-| Shadow Broker Feed (T1) | peek 2, draw 1 | clear 1, draw 1 | 2 cr for about 3 of marker and a blind card |
+| Threat Forecast Engine, now Early Warning Drill (T1) | peek 2, draw 1 | peek 1, one threat waits | the same at three tags; a second delay answers the round the first comes back |
+| Shadow Broker Feed, now Shadow Broker Scrub (T1) | peek 2, draw 1 | clear 1, draw 1 | 2 cr for about 3 of marker and a blind card |
 | Mesh Intrusion Pact (T2) | drain all 3, gift, 2 credits | drain all 3, gift, shield 2 | the 2 credits become up to 14 when Discord's presence hits start |
 
 Loop: Science niche, fewer losses, more insight, more Science. Each effect is fixed, the discount
@@ -123,11 +128,11 @@ insight" has no loop to run. Yardsticks: a marker cleared is 1 energy, 1 Sway (a
 hex back; a shield is a token kept (about 4 credits plus its marker); a threat delayed is half a
 counter (2-3 credits: it still has to be answered, or it hits next round); a move is 1 energy.
 
-| card | was | now | why |
+| card | was | r20 | why |
 |---|---|---|---|
 | Field Sensor Grid (T1) | 3 cr, up to 2 insight | 2 cr, clear 1 marker, up to 1 insight | about 3 of marker and 2 of insight; a tag early, when no marker stands |
 | Predictive Modeling (T1) | 2 cr + 1 insight, peek 2, +1 insight next round | peek 1, one threat waits | 2-3 for the delay and 1 for the peek against 6 paid |
-| Benchmark Suite (T1) | 2 cr, 1 insight, 2 Datasets | 2 cr, 1 insight, shield 1, 1 Dataset | the shield replaces a Dataset and a credit's worth of filler at 0 insight, since it only pays if the hex is hit |
+| Benchmark Suite, now Stress Test Suite (T1) | 2 cr, 1 insight, 2 Datasets | 2 cr, 1 insight, shield 1, 1 Dataset | the shield replaces a Dataset and a credit's worth of filler at 0 insight, since it only pays if the hex is hit |
 | Shared Compute Grant (T1) | give 2 insight (+1), draw 1 | give 2 insight (+1), move an ambassador 2 | a move for a draw: cheaper, on the map |
 | Open-Weights Release (T2) | 6 cr + 2 insight, gifts, draw 2, +1 insight | 4 cr + 1 insight, clear 2, shield 2, give 2 insight | the keep (3 insight) is most of the price; about 11 for about 18 when markers stand |
 | Adversarial Inference Sweep (T2) | 7 cr + 2 insight, needs 1 Cyber, drain all 1, draw 2 | 5 cr + 1 insight, drain all 1, 2 threats wait, draw 1 | a swing round's worth of counters put off; the draw shrinks to pay for it |
@@ -147,8 +152,7 @@ print "free": late steps cost 2-4 energy each, and they land when only late step
 Ignoring Science or Industry cost a planning agent nothing: Industry paid over rounds and
 the wins come in rounds 6-8, so its payback had no time to land. As in Terraforming Mars,
 the two tags now pay in the deciding rounds: Science through cheap cards and tag
-requirements, Industry through money up front plus income. Where this list disagrees with
-the sections below, this list wins. These prices are candidates, screened in
+requirements, Industry through money up front plus income. These prices are candidates, screened in
 [034's gate](../experiments/results/screen-034-clocks/clocks.md): ignoring Industry now costs 12
 points at c2 (level at c3), and ignoring Science is still ahead (-16 / -9). 034 also moved the
 ceilings in *The credit budget*: 4 credits for 1 energy, and a token by credits is the rich action,
@@ -162,7 +166,7 @@ is left out: it adds about 4 ÷ value a round.
 
 **Industry: immediate chips or credits plus income.**
 
-| card | was | now | payback |
+| card | was | r19 | payback |
 |---|---|---|---|
 | Payroll Automation | 4 cr, +1 income | 3 cr, +1 income, 2 chips | (3 + 4 − 3) ÷ 1 = 4 (was 8) |
 | Robotic Foundry | 7 cr, 1 chip, insight 2 | 7 cr, 1 chip, insight 1 | 12.5 ÷ 3 = 4.2 (was 5.5), under 4 once the building discount applies |
@@ -179,9 +183,9 @@ already paid fast and are unchanged; so is tier 2, which already repays in 3-4 r
 
 **Science: cheap cards with a small gain now, and requirements that unlock the strong
 ones.** A tag in play comes cheaply from the 0-insight programs (Literature Crawler,
-Benchmark Suite, Cryo-Compute Burn, Field Sensor Grid). Events don't leave a tag.
+Benchmark Suite (now Stress Test Suite), Cryo-Compute Burn, Field Sensor Grid). Events don't leave a tag.
 
-| card | was | now | why |
+| card | was | r19 | why |
 |---|---|---|---|
 | Grad Student Pool | 2 cr | 3 cr, starts with 2 Datasets | a draw at once, then one every 2 rounds; (3 + 4 − 4) ÷ 2 = 1.5 |
 | Simulation Cluster | 5 cr, 1 chip | 3 cr, 1 chip, draw 1 | 3 credits a draw stays; (3 + 1.5 + 4 − 4) ÷ 1 = 4.5 (was 10.5) |
@@ -201,13 +205,13 @@ discounts and any compounding, so the 10% ceiling needs a measured check. Chip S
 pays 2 credits a chip, so Payroll's and the Warehouse's 2 chips are worth up to 4 credits
 to a seat holding it, as Bulk Silicon Procurement's already were.
 
-## 024's changes
+## 024's changes (old rates)
 
 - **Freeing is no longer a card's effect.** A corrupted city frees when one player holds
   `free_city_at` of their ambassadors on it and no adversary ambassador is on or next to it
   (rules.md §2). Cards help meet that: Amnesty Decree (4 cr, clear 2 around a city, a move)
   and Liberation Accords (9 cr, clear them all, 2 ambassadors). Back-Channel Talks and
-  Station Prefab Order now take cubes off stations and factories only. **Great Liberation
+  Station Prefab Order (now Reclamation Crew) now take cubes off stations and factories only. **Great Liberation
   is the one card that frees a city outright** (14 cr, 1 antimatter, tier 2; up to 2 sites
   in a country; was 10 cr, up to 3).
 - **The credit budget.** A round's income is about 12 a seat. A threat counter is a third to
@@ -221,9 +225,7 @@ to a seat holding it, as Bulk Silicon Procurement's already were.
   cards (a free industrial zone in reach, not "an open hex touching a city") and the give
   cards' bonus (only if you gave any).
 
-Prices below are 023's reasoning; where 024 changed a card, the list above wins.
-
-## The yardsticks
+## The yardsticks (023, r14: old rates, see Current rates)
 
 - **The budget.** A board makes 5 insight a round from round 1 (4 printed, +1 on the first
   presence space, uncovered at setup), 6 once the track's 4th space is uncovered, and
@@ -261,12 +263,12 @@ Prices below are 023's reasoning; where 024 changed a card, the list above wins.
 The per-tag reasoning below was written with the cards, one designer per tag, and
 edited after the screen where a card changed.
 
-## Science
+## Science (023, r14: old rates)
 
 Yardsticks: a tier-1 keep costs 1 insight (5 credits when short), so **one drawn tier-1 card ~ 1 insight ~ 3-5 credits** (cheaper than a keep because it is blind, not chosen). Players make 5-6 insight and ~9-10 credits a round over an 8-10 round game. A tier-1 income point costs ~3-4 credits (Payroll Automation 4, Baseload Contract 4).
 
 - **Small draw and filler programs (rounds 1-4).** Literature Crawler (1 cr, 0 insight, draw 1 + peek 1) and Cryo-Compute Burn (energy into insight 1:1) are cheaper than the keep they replace, so they cost 0 insight; their real payoff is the Science tag left in play for Citation Engine, the tier-2 `needs` and AI-board powers.
-- **Insight converters.** Field Sensor Grid (3 cr for up to 2 insight) and Benchmark Suite (2 cr, 1 insight + 2 Datasets) price insight at ~1.5-2 credits, well under the 5:1 keep rate, which is the tag's identity; capped at 2 so they never pay more than half a round's insight.
+- **Insight converters.** Field Sensor Grid (3 cr for up to 2 insight) and Benchmark Suite (now Stress Test Suite; 2 cr, 1 insight + 2 Datasets) price insight at ~1.5-2 credits, well under the 5:1 keep rate, which is the tag's identity; capped at 2 so they never pay more than half a round's insight.
 - **Draw-for-insight cards cost 1 insight.** Breakthrough Leak (draw 3) nets +2 cards; the hacks with a draw rider (Neural Cartographer, Zero-Knowledge Exploit, Red-Team Audit) pay 1 insight because the draw replaces it and the hack is the real effect (Zero-Knowledge Exploit drains only 2, against Flash Exploit's 5).
 - **Help cards** (Open Preprint, Shared Compute Grant, Open-Weights Release): the helper pays credits and insight and draws; the other player gets the insight. Net table gain is +1 insight and a card, so they cost about what a draw costs.
 - **Dataset engines (rounds 2-5).** One Dataset ~ 1 credit. Telemetry Archive and Grad Student Pool yield one insight/card every 2 rounds: they earn their 2-3 credits + 1 insight back in ~4 rounds, so they are round-2-to-4 buys. Synthetic Data Forge (2 a round, 5 cr) is the faster battery. Every Dataset spent is one the tier-2 counters no longer see: that is the tension.
@@ -283,7 +285,7 @@ Tier 2 lands in rounds 5-8, so it pays back in 2-4 rounds or not at all:
 - **Adversarial Inference Sweep** (7 cr, 2 insight): drain_all 1 is a Cyber primitive borrowed at half strength; the draw 2 is the Science half.
 - No keep-discount primitive exists. Predictive Modeling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
 
-## Industry
+## Industry (023, r14: old rates)
 
 Baseline: 20 starting credits, ~9-10 credits and 5-6 insight a round, games of 8-10
 rounds. One permanent +1 credit is worth about (rounds left) credits, so ~8 if played
@@ -297,7 +299,7 @@ credits +2 chips).
 - **Robotic Foundry (7 + 1 chip, insight 2):** +3 credit income is the strongest
   tier-1 income, so it carries the chip cost and the second insight.
 - **Instant gains (Bridge Loan, Bulk Silicon Procurement, Chip Spot Market, Station
-  Prefab Order):** small, any-round tempo cards; insight 0 where the gain is about 3-5
+  Prefab Order, now Reclamation Crew):** small, any-round tempo cards; insight 0 where the gain is about 3-5
   credits' worth. Bridge Loan's 6 credits are paid back by its -1 income in an early
   round and are nearly free in round 8+, which is fine for a cheap tempo card.
 - **Factories (Prefab Plant Kit 3, Expansion Fund 3):** priced at about 2 for the factory
@@ -328,7 +330,7 @@ credits +2 chips).
   1 antimatter) that is equally good in any late round; its cost is the tier-2 keep (3
   insight) plus the play insight.
 
-## Cyber
+## Cyber (023, r14: old rates)
 
 Cyber has no token. Its timing comes from holding a hack until a project is nearly full, so
 the value of a drain is the project it stops, not the raw compute. A cheap project is 15-18
@@ -364,7 +366,7 @@ compute is roughly half to one round of adversary progress: enough to stop a pro
 - **Income cut.** Neural Mirror's permanent +1 insight costs 1 credit income: insight is the
   scarcer resource, so the swap is the reward.
 
-## Power
+## Power (023, r14: old rates)
 
 Anchors: Baseload Contract 4 credits for +1 energy production, Capacitor Discharge 0 for 2 energy and 1 credit, Pylon Drop 1 for 1 presence and 1 energy, and the standard actions: 1 energy to place a presence, 1 energy for each hardening token (Protector only).
 
@@ -380,7 +382,7 @@ Anchors: Baseload Contract 4 credits for +1 energy production, Capacitor Dischar
 - **Not used:** the four new ops. Power has no token, `draw` belongs to Science, and `drain_all` and `cash_out` belong to other tags. `gain_per_presence` already covers Power's version of "count it as power".
 - **Help cards** (Shared Grid Accord, Brownout Relief, Interconnector Treaty): the helper pays and still gets something (credits, a presence, production), and the other player gets more energy than the helper spent. That is the Power-Diplomacy hook.
 
-## Diplomacy
+## Diplomacy (023, r14: old rates)
 
 Baseline: 20 starting credits, ~9-10 credits and 5-6 insight a round, 8-10 rounds. Freeing a corrupted city sways 4 Unity and takes one ambassador once the adversary's around it are cleared; we price 1 ambassador at about 1.5-2 credits, a Move-2 rider at about 1, Consolidate 3 at about 2, 1 Unity at about 1.5-2.
 
@@ -396,7 +398,7 @@ Baseline: 20 starting credits, ~9-10 credits and 5-6 insight a round, 8-10 round
 - **Spread is rare**: only Exodus Corridors (7 credits, plus 2 ambassadors to spread with).
 - No Diplomacy card spends ambassadors as a cost (there is no primitive for it); credits are the extra cost throughout, with chips and needs/replaces on the two tier-2 buildings.
 
-## Security
+## Security (023, r14: old rates)
 
 Yardsticks: troop = 2 removal worth (`adversary.troop_health` 2); Breach and Clear pays 3 credits + 1 energy + 1 insight for 2 worth in reach, jam N takes N credits off a counter, Threat Neutralization Mandate pays 7 credits + 2 energy + 2 insight for a counter. Income ~9-10 credits and 5-6 insight a round; an insight is worth ~5 credits (the keep conversion rate).
 

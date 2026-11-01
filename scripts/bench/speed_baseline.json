@@ -1,5 +1,11 @@
 {
  "rules_revision": 26,
+ "games": {
+  "random": "b4e666851ec6",
+  "greedy": "dd5ff395d0ff",
+  "engine": "189d13eaa36e",
+  "planner": "cb95de40533a"
+ },
  "random": 5.9,
  "greedy": 272.6,
  "engine": 1136.8,

@@ -122,39 +122,14 @@ pub type Param = (&'static str, f64, &'static str);
 /// keeping by plan, and the dominance checks' forced behaviors.
 macro_rules! with_policy_params {
     ($($own:expr),* $(,)?) => {
-        &[
-            $($own,)*
-            ("plan_keep", 1.0, "keep by a sketch of the next rounds (0: the heuristic keeps)"),
-            ("plan_rounds", 4.0, "rounds the keep plan sketches, this one included"),
-            ("plan_reserve", 0.0, "insight the keep plan holds back in each later round for that round's keeps"),
-            ("plan_hand", 0.0, "keep nothing while the hand holds this many cards (0: off)"),
-            ("plan_t2", 1.0, "share of a tier-2 card's value the keep plan counts"),
-            ("plan_credit", 3.0, "what a credit paid for a keep costs the keep plan"),
-            ("plan_niche", 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield"),
-            ("keep_all", 0.0, "dominance check: keep every drafted card"),
-            ("keep_k", 0.0, "dominance check: keep only the k cheapest drafted cards (0: off)"),
-            ("keep_none", 0.0, "sanity check (028): keep no drafted card"),
-            ("keep_random", 0.0, "sanity check (028): keep each drafted card on a coin toss"),
-            ("tier1_only", 0.0, "dominance check: never draft from tier 2"),
-            ("tier2_rush", 0.0, "dominance check: draft from tier 2 whenever the keep is affordable"),
-            ("no_powers", 0.0, "dominance check: never use an AI-board power"),
-            ("no_counters", 0.0, "dominance check: never counter a threat"),
-            ("no_presence", 0.0, "dominance check: place no presence beyond setup"),
-            ("only_tag", 0.0, "dominance check (023): keep and play only this tag (1-6: science, industry, cyber, power, diplomacy, security)"),
-            ("never_tag", 0.0, "dominance check (023): never keep or play this tag (1-6 as only_tag)"),
-            ("events_only", 0.0, "dominance check (023): keep and play only events"),
-            ("ignore_threats", 0.0, "exploit check (027): no counters, no card that counters a threat"),
-            ("turtle", 0.0, "exploit check (027): no presence beyond setup; only remove, clear, chips, ambassador and hardening actions"),
-            ("free_only", 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions"),
-            ("unity_farm", 0.0, "exploit check (028): before anything else, buy ambassadors and land them on bases and factories"),
-            ("abandon", 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside"),
-            ("rich_spend", 0.0, "exploit check (034): every spare credit on the rich action"),
-            ("science_rush", 0.0, "exploit check (034): draft, keep and play Science first, for its discounts"),
-            ("always_expand", 0.0, "fixed policy (041): the growth option that places the most presence"),
-            ("always_consolidate", 0.0, "fixed policy (041): the growth option that places none"),
-            ("never_remove", 0.0, "fixed policy (041): never clear a corruption marker"),
-            ("science_board", 0.0, "fixed policy (041): the Science rush, board cards first"),
-        ]
+        policy::forced_table!(policy_param_rows ($($own),*))
+    };
+}
+
+/// The rows of [`policy::forced_table`] as parameters, after a tier's own.
+macro_rules! policy_param_rows {
+    (($($own:expr),*) $($(#[$doc:meta])* ($name:ident: $ty:ty, $active:literal, $default:expr, $desc:expr))*) => {
+        &[$($own,)* $((stringify!($name), $default, $desc),)*]
     };
 }
 
@@ -404,41 +379,7 @@ impl AgentSpec {
     pub fn forced(&self) -> policy::Forced {
         // An agent without these parameters is never wrapped, so its numbers
         // are read by nothing.
-        let num = |k: &str| self.params.get(k).copied().unwrap_or(0.0);
-        let on = |k: &str| num(k) > 0.0;
-        let tag = |k: &str| TAGS.get((num(k) as usize).wrapping_sub(1)).copied();
-        policy::Forced {
-            keep_all: on("keep_all"),
-            keep_k: num("keep_k") as usize,
-            keep_none: on("keep_none"),
-            keep_random: on("keep_random"),
-            tier1_only: on("tier1_only"),
-            tier2_rush: on("tier2_rush"),
-            no_powers: on("no_powers"),
-            no_counters: on("no_counters"),
-            no_presence: on("no_presence"),
-            only_tag: tag("only_tag"),
-            never_tag: tag("never_tag"),
-            events_only: on("events_only"),
-            ignore_threats: on("ignore_threats"),
-            turtle: on("turtle"),
-            free_only: on("free_only"),
-            unity_farm: on("unity_farm"),
-            abandon: on("abandon"),
-            rich_spend: on("rich_spend"),
-            science_rush: on("science_rush"),
-            always_expand: on("always_expand"),
-            always_consolidate: on("always_consolidate"),
-            never_remove: on("never_remove"),
-            science_board: on("science_board"),
-            plan_keep: on("plan_keep"),
-            plan_rounds: num("plan_rounds") as usize,
-            plan_reserve: num("plan_reserve") as i64,
-            plan_hand: num("plan_hand") as usize,
-            plan_t2: num("plan_t2"),
-            plan_credit: num("plan_credit"),
-            plan_niche: num("plan_niche"),
-        }
+        policy::Forced::read(|k| self.params.get(k).copied().unwrap_or(0.0))
     }
 
     /// A fresh agent for one game: the search agent, wrapped in its keep

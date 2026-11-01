@@ -6,7 +6,7 @@
 //! plays on the real state, decks and dice included, so a line is exactly the
 //! game that would follow. It is not a model of a table; it is a stronger
 //! judge of the rules than a one-step agent. The one exception is D20: which
-//! Alignment cards were dealt is never read. Each decision inside a line is
+//! Alignment cards were dealt, and in what order, is never read. Each decision inside a line is
 //! still the engine's own, scored on a guess: scored on the open decks the
 //! one-step heuristic won 19% against the guessing engine's 59% (c2 d2).
 //!
@@ -155,6 +155,7 @@ impl Planner {
     /// a line repeats.
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let rng = ChaCha8Rng::seed_from_u64(g.seed ^ g.stats.actions as u64);
+        // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
         let inner = Box::new(Greedy::new(self.ev.clone(), rng, self.cfg.samples, 1, self.cfg.choices).pruned(self.cfg.prune).in_rollout());
         Box::new(Policy::new(inner, self.forced.clone()))
     }

@@ -57,7 +57,7 @@ Threats, Unity, Discord, adversary, project and megaproject text was reworded, o
 
 **Revision 24 (055): first price pass.** (Bumped from the constant, 23: 054 took none.) Cards only, no
 rule changed. Screen: `experiments/results/screen-055-prices/prices.md`; rates and reasons in
-`docs/card-pricing.md`. Planner 79 / 75 on 160 seeds before, 67 / 65 on fresh seeds after.
+`docs/card-pricing.md`. Planner 79 / 75 on 160 seeds before, 67 / 65 on 48 fresh seeds after (other seeds, not paired).
 
 | What | Was | Now | Status |
 |---|---|---|---|

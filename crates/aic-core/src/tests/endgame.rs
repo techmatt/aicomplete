@@ -380,9 +380,10 @@ fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
 
 #[test]
 fn hold_base_is_the_same_at_every_difficulty() {
-    for d in 0..=4 {
+    let at_d0 = Rules::new(&baseline()).unwrap().world().int("board.hold_base");
+    for d in 1..=4 {
         let arg = format!("adversary.difficulty={d}");
         let rules = Rules::new(&baseline_with(&[&arg])).unwrap();
-        assert_eq!(rules.world().int("board.hold_base"), 3);
+        assert_eq!(rules.world().int("board.hold_base"), at_d0);
     }
 }

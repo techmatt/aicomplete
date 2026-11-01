@@ -98,18 +98,29 @@ def gate_games(rows):
     return {(r.get('config'), r.get('variant'), r.get('difficulty'), r['check']): r['games'] for r in rows}
 
 
+def gap(pairs):
+    """Mean of paired differences and its SE, in points, and how many."""
+    n = len(pairs)
+    if n < 2:
+        return 0.0, 0.0, n
+    m = sum(pairs) / n
+    var = sum((x - m) ** 2 for x in pairs) / (n - 1)
+    return 100 * m, 100 * math.sqrt(var / n), n
+
+
 def gate(cells, games, rows=None):
-    """Each check's gap to its own agent: `x:...` against `x` (win % points, ± one standard
-    error; X: the check matched or beat it). Both sides are over the seeds both played: a
-    gate stops a check early and its agent runs on. With `rows` (the "gate" key of
-    results.json), a games column too: the row's count, else the games in the file."""
+    """Each check's gap to its own agent: `x:...` against `x`, in the gate's sign, agent minus
+    check (win % points, ± one standard error, and the paired SE seed by seed; X: the check
+    matched or beat it). Both sides are over the seeds both played: a gate stops a check early
+    and its agent runs on. With `rows` (the "gate" key of results.json), a games column too:
+    the row's count, else the games in the file."""
     per = gate_games(rows) if rows is not None else None
     if per is None:
-        print('| variant | check | win % | gap to its agent |')
-        print('|---|---|---|---|')
-    else:
-        print('| variant | check | games | win % | gap to its agent |')
+        print('| variant | check | win % | gap to its agent | paired se |')
         print('|---|---|---|---|---|')
+    else:
+        print('| variant | check | games | win % | gap to its agent | paired se |')
+        print('|---|---|---|---|---|---|')
     by = collections.defaultdict(dict)
     for cell, gs in games.items():
         c = cells[cell]
@@ -129,6 +140,8 @@ def gate(cells, games, rows=None):
             q = sum(g['won'] for g in gs) / len(gs)
             se = math.sqrt(p * (1 - p) / len(base) + q * (1 - q) / len(gs))
             flag = '' if p - q > 0 or ':' not in a else ' X'
+            won = {g['seed']: g['won'] for g in gs}
+            paired = gap([g['won'] - won[g['seed']] for g in base])[1]
             n = '' if per is None else f' {per.get((conf, v, d, a), len(gs))} |'
             name = f'{conf} {v}' if len(configs) > 1 else v
-            print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} |')
+            print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} | {paired:.0f} |')

@@ -391,8 +391,8 @@ and `web/card/faces.json`; `python scripts/cards/cards_doc.py`, which reads the 
 `--check` also refuses a British spelling (`crates/aic-sim/src/spelling.rs`). A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
 `snake_case` name that is neither a tunable nor an op (`NOT_TUNABLES` lists the action names,
 content fields and retired parameters it may also print). Change the source, not the table. A block is a pure function of `Rules` or `Content`
-in `crates/aic-sim/src/docs.rs`, named in `run`; its unit tests there check it moves with
-its source. The round cap is read from a game the engine dealt at each difficulty. Elsewhere
+in `crates/aic-sim/src/docs/blocks.rs`, named in `run` (`run.rs`); its unit tests in
+`tests.rs` beside it check it moves with its source. The round cap is read from a game the engine dealt at each difficulty. Elsewhere
 rules.md names a tunable in backticks rather than repeat its value: history rows and
 calibration paragraphs keep the numbers of their day.
 
@@ -553,7 +553,7 @@ differ.
     kept, played and used (per card), growth picks, threats dealt, countered and
     executed, corruptions (and the round of the first), adversary ambassadors on the
     board per round (`adversary.ambassadors_rNN`), ambassadors and troops removed,
-    buildings destroyed (per war round too), standard actions (`board.std.<act>`),
+    facilities and presence destroyed (per war round too), standard actions (`board.std.<act>`),
     cities aligned and freed, stations and factories owned, megaprojects completed,
     presence placed, nodes made, removed and at their peak per board
     (`adversary.nodes_peak.c<c>`), adversary compute made, factories built per side,

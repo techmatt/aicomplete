@@ -611,7 +611,7 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
             })
             .collect();
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose(0, "Threat: an adversary ambassador goes on which piece?", opts)? else {
+        let Some(i) = cx.choose_loss(0, "Threat: an adversary ambassador goes on which piece?", opts)? else {
             break;
         };
         adversary::place(g, cx, spots[i], 1);
@@ -630,7 +630,7 @@ pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount:
                 .collect();
             let opts = cards.iter().map(|c| opt(c.clone())).collect();
             let prompt = format!("Seat {s}: lose a token from which card?");
-            let Some(i) = cx.choose(s, &prompt, opts)? else {
+            let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
                 break;
             };
             cards::add_tokens(g, cx, s, &cards[i], -1);
@@ -701,7 +701,7 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> 
         let on = ambassador_hexes(g, s);
         let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = format!("Seat {s}: lose the ambassador on which hex?");
-        if let Some(i) = cx.choose(s, &prompt, opts)? {
+        if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
             cx.add_tokens(g, on[i], &k, -1);
         }
     }
@@ -739,7 +739,7 @@ pub fn lose_presence_or(
             o
         }));
         let prompt = format!("Seat {s}: pay {amount} {resource} or lose a presence?");
-        match cx.choose(s, &prompt, opts)? {
+        match cx.choose_loss(s, &prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
             Some(i) => {
                 board::lose_presence(g, cx, mine[i - off], s, source);

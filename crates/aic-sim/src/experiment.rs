@@ -409,6 +409,7 @@ pub struct CardCounts {
     /// Times offered in a draft packet.
     pub offered: u32,
     pub drafted: u32,
+    /// Every keep, the opening deal's included: not a share of `offered`.
     pub kept: u32,
     pub played: u32,
     /// The sum of its pick positions (1 = a seat's first pick of the round).

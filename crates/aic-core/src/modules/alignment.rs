@@ -21,7 +21,7 @@ use crate::view::{CardView, ViewOut};
 use super::common::*;
 use super::{adversary, board, cards, effects};
 
-const PARAMS: [ParamSpec; 16] = [
+const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("undecided_per_player", 1, 50, "Sway in the Undecided at the start, per player"),
     ParamSpec::int("tip_per_player", 1, 50, "the Unity bucket tips when it holds this many Sway per player"),
     ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord bucket tips when it holds this many Sway per player"),
@@ -59,7 +59,7 @@ pub static DEF: ModuleDef = ModuleDef {
         VariantDef {
             name: "tug",
             summary: "Tug of war: Sway with the Undecided empty comes from the opposite bucket",
-            params: &PARAMS,
+            params: PARAMS,
             phases: PHASES,
             rng: &["alignment"],
             uses_cards: false,
@@ -68,7 +68,7 @@ pub static DEF: ModuleDef = ModuleDef {
         VariantDef {
             name: "still",
             summary: "Sway with the Undecided empty does nothing",
-            params: &PARAMS,
+            params: PARAMS,
             phases: PHASES,
             rng: &["alignment"],
             uses_cards: false,
@@ -77,7 +77,7 @@ pub static DEF: ModuleDef = ModuleDef {
         VariantDef {
             name: "off",
             summary: "No Sway moves and nothing tips (for measuring Alignment); winning and losing stay",
-            params: &PARAMS,
+            params: PARAMS,
             phases: PHASES,
             rng: &["alignment"],
             uses_cards: false,
@@ -110,7 +110,7 @@ struct Alignment;
 const UNDECIDED: &str = "alignment.undecided";
 /// Credit income every player has from Unity cards.
 const INCOME_BONUS: &str = "alignment.income_bonus";
-/// Free card purchases left (Unity cards).
+/// Free keeps left (Unity cards).
 const FREE_LEFT: &str = "alignment.free_purchases";
 /// Insight every player gains each round from Unity cards.
 const INSIGHT_BONUS: &str = "alignment.insight_bonus";
@@ -125,12 +125,12 @@ pub fn insight_bonus(g: &GameState) -> i64 {
     g.var(INSIGHT_BONUS)
 }
 
-/// Free card purchases left from Unity cards.
+/// Free keeps left from Unity cards.
 pub fn free_purchases(g: &GameState) -> i64 {
     g.var(FREE_LEFT)
 }
 
-/// Uses up one free card purchase, if any is left; returns whether it did.
+/// Uses up one free keep, if any is left; returns whether it did.
 pub fn take_free_purchase(g: &mut GameState, cx: &mut Cx) -> bool {
     let free = g.var(FREE_LEFT);
     if free <= 0 {
@@ -290,7 +290,7 @@ pub fn add_team_income(g: &mut GameState, cx: &mut Cx, resource: Resource, n: i6
     cx.add_key(g, key, n);
 }
 
-/// The next `n` card purchases are free.
+/// The next `n` keeps from the draft are free.
 pub fn add_free_purchases(g: &mut GameState, cx: &mut Cx, n: i64) {
     cx.add_key(g, FREE_LEFT, n);
 }
@@ -330,7 +330,7 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     opts.extend(ambs.iter().map(|&h| labeled("ambassador", h)));
     opts.extend(pres.iter().map(|&h| labeled("presence", h)));
     let prompt = format!("Seat {s}: sacrifice which ambassador or presence?");
-    let Some(i) = cx.choose(s, &prompt, opts)? else {
+    let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
         return Ok(());
     };
     if i < off {
@@ -626,10 +626,10 @@ impl Module for Alignment {
         if g.var(FREE_LEFT) > 0 {
             out.global(
                 "free_purchases",
-                "free purchases",
+                "free keeps",
                 g.var(FREE_LEFT),
                 None,
-                "card purchases that are free",
+                "draft keeps that are free",
             );
         }
         let show = |id: &str, status: &str| {

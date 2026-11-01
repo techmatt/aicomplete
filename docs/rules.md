@@ -365,9 +365,8 @@ Since 017 the difficulty is only the configured level: Discord tips no longer ra
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
 
-**The calibration point (055, r24, planner, fresh seeds, 48 a cell, ±7):** d2 is 67 at 2 countries,
-65 at 3 (`experiments/results/screen-055-prices/prices.md`). 053's first read at r23 was 71 / 62; the other difficulties are not re-measured (the rules changed only base arrivals, and agents
-no longer know the Alignment deal, so the earlier curves read high). Target 60-75 at both
+**The calibration point (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
+countries, 62 at 3 (75 / 71 and 67 / 52; `experiments/results/screen-064-deals/deals.md`). The other difficulties are not re-measured since r23 (053 changed base arrivals and agents stopped knowing the deal, so the earlier curves read high; 055, 059 and 064 moved cards, `corrupt_at` and `project_discord_per` since). Target 60-75 at both
 (`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
 **The curve (041, r20, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 83,
@@ -1118,7 +1117,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   drafted cards for insight, `keep_tier1` for a tier-1 card and `keep_tier2` for a
   tier-2 card (`keep_tier2_upgraded` with the board's keep upgrade); any insight short
   is paid at `insight_credits` credits an insight (keeps only). An Open Market free
-  purchase is used first. The rest are discarded when the action phase begins.
+  keep is used first. The rest are discarded when the action phase begins.
 - **Playing** a card costs its credits (buildings minus your discounts: Economies of
   scale, the Builder growth's next-building discount, Industry tags; less what you
   spend at your AI's rate, §6), and any `insight`, `energy`, `chips` and `antimatter`

@@ -4,8 +4,9 @@
 
 `cards.csv` has no outcome, so this reads games.jsonl. For each card, in each cell:
 
-    offered, kept, played   share of games, and keep % (games kept / games offered) and
-                            play % (games played / games kept or drawn)
+    offered, kept, played   share of games, and play % (games played / games kept or drawn).
+                            kept includes the opening deal and draws, so it is no share of
+                            the games a card was offered in
     d_kept, d_played        win % of games where the team kept (or drew) / played it, minus
                             win % of games where it didn't
     d_offered               the same for being dealt into a draft packet: nearly random
@@ -75,7 +76,6 @@ def read_cell(games, cards):
         d_k, se_k, _ = delta(games, lambda g: field(g, c, 'kept') + field(g, c, 'drawn') > 0)
         d_p, se_p, _ = delta(games, lambda g: field(g, c, 'played') > 0)
         rows[c] = dict(games=n, offered=100 * offered / n, kept=100 * kept / n, played=100 * played / n,
-                       keep_rate=100 * kept / offered if offered else None,
                        play_rate=100 * played / kept if kept else None,
                        d_offered=d_o, se_offered=se_o, d_kept=d_k, se_kept=se_k, d_played=d_p, se_played=se_p)
     return rows
@@ -137,8 +137,8 @@ def main():
 
     print(f'**{a.agent}**, {", ".join(f"{v} {len(by_variant[v])} games, {100 * sum(g["won"] for g in by_variant[v]) / len(by_variant[v]):.0f}% won" for v in variants)}')
     print('\nBy tier: mean share of games, % (mean placebo d_offered; mean d_kept; mean d_played)\n')
-    print('| variant | tier | offered | kept | played | keep % | play % | d_offered | d_kept | d_played |')
-    print('|---|---|---|---|---|---|---|---|---|---|')
+    print('| variant | tier | offered | kept | played | play % | d_offered | d_kept | d_played |')
+    print('|---|---|---|---|---|---|---|---|---|')
     for v in variants:
         for t in (1, 2):
             rs = [r for c, r in tables[v].items() if tier[c] == t]
@@ -146,7 +146,7 @@ def main():
             def m(k):
                 xs = [r[k] for r in rs if r[k] is not None]
                 return sum(xs) / len(xs) if xs else None
-            print(f"| {v} | {t} | {fmt(m('offered'))} | {fmt(m('kept'))} | {fmt(m('played'))} | {fmt(m('keep_rate'))} | "
+            print(f"| {v} | {t} | {fmt(m('offered'))} | {fmt(m('kept'))} | {fmt(m('played'))} | "
                   f"{fmt(m('play_rate'))} | {fmt(m('d_offered'))} | {fmt(m('d_kept'))} | {fmt(m('d_played'))} |")
 
     def agree(c, k):
@@ -155,16 +155,16 @@ def main():
 
     for k in ('played', 'kept'):
         print(f'\nFlags on {k}: same sign in every size, by pooled z\n')
-        print(f'| card | t | pooled rel | z | ' + ' | '.join(f'{v} rel | {v} keep % | {v} play %' for v in variants) + ' |')
+        print(f'| card | t | pooled rel | z | ' + ' | '.join(f'{v} rel | {v} kept | {v} play %' for v in variants) + ' |')
         print('|---|---|---|---|' + '---|---|---|' * len(variants))
         order = sorted((c for c in tier if pooled[c].get(f'pool_z_{k}') is not None and agree(c, k)),
                        key=lambda c: -abs(pooled[c][f'pool_z_{k}']))
         for c in order[:a.flags]:
-            cols = ' | '.join(f"{fmt(tables[v][c].get(f'rel_{k}'))} | {fmt(tables[v][c]['keep_rate'], 0)} | {fmt(tables[v][c]['play_rate'], 0)}" for v in variants)
+            cols = ' | '.join(f"{fmt(tables[v][c].get(f'rel_{k}'))} | {fmt(tables[v][c]['kept'], 0)} | {fmt(tables[v][c]['play_rate'], 0)}" for v in variants)
             print(f"| {c} | {tier[c]} | {fmt(pooled[c][f'pool_{k}'])} | {fmt(pooled[c][f'pool_z_{k}'])} | {cols} |")
 
     if a.csv:
-        names = ['variant', 'card', 'tier', 'games', 'offered', 'kept', 'played', 'keep_rate', 'play_rate', 'd_offered', 'se_offered',
+        names = ['variant', 'card', 'tier', 'games', 'offered', 'kept', 'played', 'play_rate', 'd_offered', 'se_offered',
                  'd_kept', 'se_kept', 'rel_kept', 'z_kept', 'd_played', 'se_played', 'rel_played', 'z_played']
         with open(a.csv, 'w', newline='', encoding='utf-8') as f:
             w = csv.writer(f, lineterminator='\n')

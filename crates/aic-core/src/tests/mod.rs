@@ -88,6 +88,10 @@ fn lab_config(round: &[&str]) -> Config {
         "board.hold_base=0",
         "board.hold_min=1",
         "board.last_safe_stage=0",
+        "board.project_credits=10",
+        "board.project_discord_per=1",
+        "board.troop_steps=2",
+        "board.troop_spent=1",
         "adversary.arrivals=0",
         // 021: no credits, so no neutral city's energy is bought unasked.
         "ai.start_credits=0",
@@ -123,7 +127,17 @@ fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
 /// Rules playing only the action phase (the lab config), and a game of
 /// them after setup, the board as set up.
 fn lab_actions() -> (Rules, GameState) {
-    let rules = Rules::new(&lab_config(&[ACTIONS])).unwrap();
+    lab_actions_with(&[])
+}
+
+/// `lab_actions` with overrides on top: a test of a mechanic pins the card
+/// numbers it reads, `cards.<id>.cost=N`, so a repricing doesn't break it.
+fn lab_actions_with(sets: &[&str]) -> (Rules, GameState) {
+    let mut c = lab_config(&[ACTIONS]);
+    for o in sets {
+        c.apply_override(o).unwrap();
+    }
+    let rules = Rules::new(&c).unwrap();
     let g = rules.new_game(1);
     (rules, g)
 }
@@ -377,12 +391,16 @@ fn variant_matrix() -> Vec<Config> {
 
 const GOLDEN_REVISION: u32 = 26;
 const GOLDEN_FINGERPRINT: &str = "114c3b35cfdb5b31";
+const GOLDEN_CONTENT_HASH: &str = "78db8b0f25278f85";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).
 /// `scripts/wasm-smoke.mjs` checks the wasm build reaches the same state.
 /// If this fails after an intended rules change, bump `RULES_REVISION`
-/// and update `GOLDEN_REVISION` and both fingerprints.
+/// and update `GOLDEN_REVISION` and both fingerprints. `GOLDEN_CONTENT_HASH`
+/// is there because this game may never pay for a repriced card: it moves on any
+/// edit to `content/`, a name or a space included, so update it (and the one in
+/// wasm-smoke) on its own when play doesn't change.
 #[test]
 fn golden_game() {
     let rules = Rules::new(&baseline()).unwrap();
@@ -400,10 +418,12 @@ fn golden_game() {
         (RULES_REVISION, g.fingerprint().as_str()),
         (GOLDEN_REVISION, GOLDEN_FINGERPRINT)
     );
+    assert_eq!(rules.content_hash, GOLDEN_CONTENT_HASH);
 }
 
 #[test]
 fn wasm_smoke_expects_the_golden_fingerprint() {
     let smoke = include_str!("../../../../scripts/wasm-smoke.mjs");
     assert!(smoke.contains(GOLDEN_FINGERPRINT), "scripts/wasm-smoke.mjs holds another fingerprint");
+    assert!(smoke.contains(GOLDEN_CONTENT_HASH), "scripts/wasm-smoke.mjs holds another content hash");
 }

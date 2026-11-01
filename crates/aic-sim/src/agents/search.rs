@@ -211,7 +211,12 @@ pub struct Greedy {
     history: PhaseHistory,
     /// When above 0: after a decision phase's first full scoring, each seat
     /// keeps only this many actions for the rest of the phase (the planner's
-    /// rollouts, 028: a wide menu's tail rarely comes back).
+    /// rollouts, 028). A dropped action stays out for the whole phase, even
+    /// after the seat's resources change: a card it could pay for but ranked
+    /// below the cut at that scoring stays out even if it becomes the best play
+    /// (one it could not yet pay for was not on the menu, so is not dropped). So
+    /// this is strength, not only speed: at `prune` 6 the line alone won 29% at c3
+    /// against 81% at 12 (054).
     prune: usize,
     /// The actions dropped this phase, once it has been scored.
     dropped: Option<HashSet<Action>>,

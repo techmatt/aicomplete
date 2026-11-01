@@ -13,6 +13,7 @@ and the ratio. Same rules: the same games, so any ratio is the code. Other rules
 games on the same seeds, so read ms/decision, and for an agent that plays forward, ms per
 decision per round left.
 """
+import argparse
 import json
 import os
 import subprocess
@@ -41,15 +42,24 @@ def one(root, agent, games, first, countries):
 
 
 def main():
-    argv = sys.argv[1:]
-
-    def opt(name, default):
-        return type(default)(argv[argv.index(name) + 1]) if name in argv else default
-    old = argv[0]
-    new = argv[1] if len(argv) > 1 and not argv[1].startswith('--') else old
-    agent, games, first = opt('--agent', 'planner'), opt('--games', 6), opt('--first', 1000)
-    old_agent = opt('--old-agent', agent)
-    countries, pairs = opt('--countries', 2), opt('--pairs', 2)
+    ap = argparse.ArgumentParser(allow_abbrev=False, description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('roots', nargs='+', metavar='ROOT', help='OLD_ROOT NEW_ROOT, or one SIM.exe')
+    ap.add_argument('--agent', default='planner')
+    ap.add_argument('--old-agent')
+    ap.add_argument('--games', type=int, default=6)
+    ap.add_argument('--first', type=int, default=1000)
+    ap.add_argument('--countries', type=int, default=2)
+    ap.add_argument('--pairs', type=int, default=2)
+    a = ap.parse_args()
+    if len(a.roots) > 2:
+        ap.error('at most two roots')
+    for root in a.roots:
+        if not os.path.isfile(root if root.endswith('.exe') else os.path.join(root, 'aic-sim.exe')):
+            ap.error(f'{root} is neither a .exe nor a directory holding aic-sim.exe')
+    old, new = a.roots[0], a.roots[-1]
+    agent, games, first, countries, pairs = a.agent, a.games, a.first, a.countries, a.pairs
+    old_agent = a.old_agent or agent
     best = {}
     for _ in range(pairs):
         for side, root in (('old', old), ('new', new)):

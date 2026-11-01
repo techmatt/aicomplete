@@ -117,7 +117,7 @@ pub fn destroy_own_presence(
     }
     let opts = mine.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = format!("Seat {s}: destroy which of your presence?");
-    if let Some(i) = cx.choose(s, &prompt, opts)? {
+    if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
         destroy_piece(g, cx, mine[i], presence(s), cause);
     }
     Ok(())

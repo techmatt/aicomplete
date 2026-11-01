@@ -1,8 +1,8 @@
 # Calibrated at d2, pressure per country (053, r23)
 
 Judged by the `planner`, d2. Fresh seeds from 5000 (never used to pick anything), 48 a cell, are the
-verdict; tuning used seeds 1000-1023 and 2000-2031. Specs: `experiments/band-r23.json`,
-`experiments/gate.json` (gate-r23), `experiments/gate-close-r23.json`. Full gate: `gate.md`.
+verdict; tuning used seeds 1000-1023 and 2000-2031. Specs: `experiments/band.json`,
+`experiments/gate.json` (gate-r23), `experiments/archive/gate-close-r23.json`. Full gate: `gate.md`.
 
 ## Verdict
 
@@ -42,7 +42,9 @@ at c2 and two at c3, so a printed "each military base" is 2 bases at c2 and 6 at
 that c2 had too little pressure; c3 had double on one line.
 
 **A second cause, an agent's:** D20 alone took the planner from 96 / 54 to 67 / 38 on these seeds. The
-guess alone gave 75 / 42, so the planner's lines cost the rest, inside the noise (±10). So c2's 93-100
+guess alone (`redeal_alignment` in `Greedy`: each decision scored on a redealt Alignment deal, the lines
+still on the true one) gave 75 / 42, so hiding the deal from the planner's lines (`hide_alignment_deal`)
+cost the rest, inside the noise (±10). So c2's 93-100
 at r22 was mostly agents knowing which Unity cards were dealt, and the "structural" c2 of 046 was not
 the game's. (052's `niche_jobs` clamp went in before this baseline, and its share isn't split out.)
 

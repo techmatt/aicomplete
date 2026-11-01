@@ -16,7 +16,7 @@ at 7.5 pt on 156 of 158 player cards, against 88 at 055; every title sits on one
 **The gate** (gate-r23, 8 seeds a check, `--seed 12000`): 428 of 512 games, 26 min on 8 threads, 0 panics. Not passed by
 the tool's reading, which fails any check level or ahead on the sign, and for 055's reason: the planner itself read 50 at
 both sizes on those 8 seeds (73 / 65 at 48). So each check level or ahead went to 48 seeds, paired on the band's seeds
-(`experiments/gate-close-r25-c2.json`, `-c3.json`). Gap = planner minus check, ± one SE.
+(`experiments/archive/gate-close-r25-c2.json`, `-c3.json`). Gap = planner minus check, ± one SE.
 
 | check | c2 | c3 | 055 (c2 / c3) |
 |---|---|---|---|
@@ -117,7 +117,7 @@ Unchanged in size. Ops untouched, so no price moved. Old and new text, card by c
 | Dataset Scraper | Rider | Credit cut: Add 3 Datasets to one of your Dataset buildings. | none |
 | Literature Crawler | Rider | Peek cut: Draw 1 card. | none |
 | Shared Compute Grant | Paid to give insight away; move unrelated | Redesign: a plain gift of 3: Another player gains 3 insight. | 2 cr, 1 ins → 1 cr, 1 ins |
-| Predictive Modelling | wordy text | Phrase, in `face.rs`: Look at the next card of the adversary deck. Delay 1 threat one round. | none |
+| Predictive Modeling | wordy text | Phrase, in `face.rs`: Look at the next card of the adversary deck. Delay 1 threat one round. | none |
 | Neural Cartographer | footnote text | Phrase, in `face.rs`: A node in reach makes no compute next build. Draw 1 card. | none |
 | Cryo-Compute Burn | Matt: timing and cap | Fixed trade, once, no cap: Pay 2 energy. Gain 2 insight. | 1 cr, 0 ins → 1 cr, 2 en, 0 ins |
 | Field Sensor Grid | A "max 1" meaning 1 | Gain 1 insight: Clear 2 corruption markers in reach. Gain 1 insight. | none |
@@ -222,7 +222,7 @@ Unchanged in size. Ops untouched, so no price moved. Old and new text, card by c
 | Peacekeeper Rotation | "worth" text | Phrase, in `face.rs`: Remove 1 adversary ambassador in reach. Move 1 ambassador on the board up to 2 hexes. | none |
 | Diplomatic Expulsion | Too close to Peacekeeper Rotation | 1 credit dearer: Remove 1 adversary ambassador in reach. Sway 1 toward Unity. | 2 cr, 0 ins → 3 cr, 0 ins |
 | Intrusion Countermeasures | wordy text | Phrase, in `face.rs`: Remove 3 compute from an adversary project. One threat needs 1 less of each resource. | none |
-| Early Warning Drill (was Threat Forecast Engine) | Same card as Predictive Modelling | Redesign and rename: a delay and a shield: Delay 1 threat one round. Harden 1 of your presence. | 2 cr, 0 ins → 2 cr, 1 ins |
+| Early Warning Drill (was Threat Forecast Engine) | Same card as Predictive Modeling | Redesign and rename: a delay and a shield: Delay 1 threat one round. Harden 1 of your presence. | 2 cr, 0 ins → 2 cr, 1 ins |
 | Agency Field Station | Fee on a small rate | Free Action, cheaper: Each round, 1 Agent here. Action: get 1 credit per 2 Agents you have. | 4 cr, 1 ins → 3 cr, 1 ins |
 | Hardened Bunker Complex | wordy text | Phrase, in `face.rs`: Each round, 1 energy. Effect: you gain the Harden action. | none |
 | Interceptor Battery | Too long | Troop only, 1 energy cheaper: Action: pay 2 energy, remove 1 troop in reach. | 5 cr, 1 ins → 3 cr, 1 ins |

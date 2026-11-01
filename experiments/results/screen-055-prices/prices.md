@@ -2,10 +2,11 @@
 
 Judged by the `planner`, d2. The revision is bumped from the constant, 23 (054 took none). Every price
 is a candidate. Specs: `experiments/screen-055-prices.json`, `experiments/gate.json`,
-`experiments/gate-close-r24-c2.json`, `-c3.json`. Read with `scripts/cards/price_read.py`.
+`experiments/archive/gate-close-r24-c2.json`, `-c3.json`. Read with `scripts/cards/price_read.py`.
 `results.json` and `games.csv` here are the final measure (r24, seeds from 9000, 288 games), for the
-card viewer; `card-prices.csv` is the reasoned price of each of the 150 cards at r23's costs; its `revision` column says
-so and the viewer prints it, since later items moved tier-2 costs.
+card viewer; `card-prices.csv` is the reasoned price of each of the 150 cards at r23's costs; its `revision` and
+`note` columns say so and the viewer prints them, since the prices are floored at 0 (the tables below are not), no
+`needs` is priced, and 63 of the 150 cards have moved a cost side since r23 (33 tier 1, 30 tier 2).
 `price-read-r23.csv` and `price-read-r24.csv` are the per-card tables, before and after.
 
 Seeds, each used once for its purpose: 7000+ baseline and both sweeps (paired), 8000+ a candidate that
@@ -23,7 +24,9 @@ did not ship, **9000+ the verdict, never used to pick anything**, 10000+ the gat
 **The baseline had moved.** 054 read 69 / 71 on 48 seeds. On 160 fresh seeds r23 with 054's planner is
 **79 ±3 / 75 ±3**, above the band at c2. So the pass had room to take the game down, which is why
 `needs` could go in without help. Before, on those seeds: tier-2 rush 86 / 82 (gap -7 ±4, -8 ±4),
-always-Consolidate 79 / 84 (0 ±4, -9 ±4). After, rush 75 / 60.
+always-Consolidate 79 / 84 (0 ±4, -9 ±4). After, on other seeds (9000+, 48), rush 75 / 60. The final
+content was never paired with the base on one seed set: this is a before and after across seed sets, not
+a measured drop.
 
 | fresh, 48 a cell, seeds 9000+ | c2 planner | c3 planner | c2 rush | c3 rush | c2 Consolidate | c3 Consolidate |
 |---|---|---|---|---|---|---|
@@ -33,25 +36,25 @@ always-Consolidate 79 / 84 (0 ±4, -9 ±4). After, rush 75 / 60.
 | losses: Discord / presence / cap | 4 / 11 / 1 | 7 / 10 / 0 | 0 / 12 / 0 | 8 / 11 / 0 | 0 / 13 / 2 | 0 / 8 / 5 |
 | presence lost a game | 14.2 | 22.0 | 12.3 | 22.3 | 9.8 | 11.0 |
 
-Tier-1 and tier-2 cards per game barely moved: planner played 14.9 / 7.3 at c2 and 24.6 / 11.2 at c3,
+Tier-1 and tier-2 cards per game barely moved (across seed sets): planner played 14.9 / 7.3 at c2 and 24.6 / 11.2 at c3,
 from 13.8 / 8.3 and 23.6 / 12.9. Agent time is unchanged (ms a decision 42 and 80 before, 39 and 79
 after): the speed check has nothing to report, and its baseline is re-recorded for r24.
 
 ## What moved the game
 
-Paired on seeds from 7000 against the base; the planner's and the rush's win %, c2 / c3, 40-48 seeds, ±8-10.
+Paired on seeds from 7000 against the base; the planner's and the rush's win %, c2 / c3, 48 seeds for sweep 1, 40 for sweep 2, ±8-10.
 
-**Seed sets (062):** the rows here don't all share seeds. The base row and the 160-seed baseline above are not
-the same set, and the before and after figures above are 7000+ against 9000+, so read a before/after or a
-difference from the base row as across seed sets, not as paired.
+**Seed sets (062):** the base rows and the 160-seed baseline above are not the same read, and the before
+and after figures above are 7000+ against 9000+, so read a before/after as across seed sets, not as paired.
 
 | Lever | planner | rush | |
 |---|---|---|---|
-| Base, those seeds | 77 / 67 | 85 / 77 | |
+| Base, 48 seeds (sweep 1: the next four rows) | 77 / 67 | 85 / 77 | |
 | Dearer tier-2 one-shots (7 cards, +2 to +4) and the confident tier-1 fixes | 65 / 62 | 71 / 62 | down together |
 | Nine `needs`, three on Sway cards | 46 / 62 | 46 / 35 | separates; breaks c2 |
 | Both | 46 / 48 | 27 / 35 | too far |
 | Both, and 15 tier-1 cuts of 1-2 credits | 44 / 44 | 25 / 33 | **the cuts did nothing** |
+| Base, 40 seeds (sweep 2: the next three rows) | 80 / 65 | 90 / 78 | subtract these, not the row above |
 | Six `needs`, none on Sway cards | 65 / 70 | 72 / 58 | **the base of what shipped** |
 | Those, half the price rises, the tier-1 fixes | 52 / 55 | 62 / 65 | price costs the planner more |
 | Those, and presence payoffs (Grid Census 8, Field Sensor 2, Beamed 8) | 48 / 58 | 65 / 60 | no help; not shipped |
@@ -108,21 +111,22 @@ The checks level or ahead at 8 seeds, at 48, paired on the verdict seeds; gap = 
 at 053's reading no check is beaten. Ignoring Industry went from +4 ±9 at c2 (053) to +15 ±9, ignoring Cyber
 from +8 ±9 to +23 ±9. Ignoring Science is +8 ±8. **This does not show the gates made tags matter (062):** the
 comparison crosses 054's planner change, so the planner moved as well as the rules, and the claim first
-written here is unsupported.
+written here is unsupported. Those checks were never read at r23 with 054's planner.
 
 ## The reasoning list
 
 Written before any simulation was read, from the card alone. The value side was priced by tag, then
 cross-checked between tags (40 corrections). **First pass, with insight at 4: 85 of 150 too dear, 37 of
 42 tier 2.** That is a broken rate, not a broken set: unspent insight is lost each round, so credits bind,
-so insight dropped to 2.5, which centres tier 1 exactly (median gap 0.0). **Tier 2 then still reads 8.7
+so insight dropped to 2.5, which centers tier 1 exactly (median gap 0.0). **Tier 2 then still reads 8.7
 dear on paper**, against a measure that says it wins. The disagreement is real and is the biggest single
 finding of the list: rates price a card's whole catalogue, and the agents only play the 15 cheap
 one-shots. A blanket tier-2 reading says nothing; use the outliers within the tier.
 
 Fair is within 2 credits at tier 1 and 3 at tier 2. Tier 1: 22 too cheap, 25 too dear, 61 fair. Tier 2:
 4 too cheap, 32 too dear, 6 fair. Reasoned 0 or less means the non-credit cost alone exceeds the value,
-so credits can't fix it. Value lines are from the first pass; the cost side was rebased. Rates: top of
+so credits can't fix it. Value lines are from the first pass; the cost side was rebased. Insight income stayed at 8 / 6, built at 4, so
+those rows mix two rates. Rates: top of
 [docs/card-pricing.md](../../../docs/card-pricing.md), with the ones that were missing (Sway, tag, gift,
 presence, income per tag).
 
@@ -266,7 +270,7 @@ presence, income per tag).
 
 | card | t | printed | reasoned | reasoning says | measured, against its tier |
 |---|---|---|---|---|---|
-| Predictive Modelling | 1 | 2 + 0 | 2 | fair | -27 (played, z -4.2) |
+| Predictive Modeling | 1 | 2 + 0 | 2 | fair | -27 (played, z -4.2) |
 | Substation Hub | 1 | 5 + 1 | 3 | fair | +21 (played, z 3.2) |
 | Safehouse Network | 1 | 3 + 1 | 4 | fair | -19 (played, z -2.7) |
 | Compute Siphon | 1 | 4 + 1 | 3 | fair | +13 (kept, z 2.6) |
@@ -310,7 +314,7 @@ same, because the rush played it 12 points more than the planner.
 - **Dyson Swarm Tranche, Cascade Failure** (reasoned dear, +13 and +16, on *kept*). Played 0 and 2%: being
   kept in won games is not value. Noise or reverse cause.
 
-**Measured only, reasoned fair:** Predictive Modelling (-27), Safehouse Network (-19), Shuttle Diplomacy
+**Measured only, reasoned fair:** Predictive Modeling (-27), Safehouse Network (-19), Shuttle Diplomacy
 (-13), Shared Threat Intel (-10), against Substation Hub (+21), Compute Siphon (+13), Fusion Startup
 Stake (+13), Tidal Barrage (+12), Endowed Research Chair (+13). Income buildings reading strong on the
 played line is what early, steady income would do; no pattern in the weak ones. Above the expected false

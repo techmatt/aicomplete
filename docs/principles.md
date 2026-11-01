@@ -53,7 +53,9 @@ and tier-1 cards average about 3 credits with tier 2 about 9.
 
 **Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a
 skilled team wins fairly consistently: the `planner` at 60-75% at both 2 and 3 countries, the band
-where a gate can tell a good price from a bad one.
+where a gate can tell a good price from a bad one. A 48-seed band read is ±7 and a paired gap
+±8-10: one rules set read 75 / 71 and 67 / 52 on two fresh 48-seed sets (064), so read a band over
+96 seeds.
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses (was 60%): Discord may be the
 main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
@@ -98,7 +100,7 @@ real state; each decision inside them still scores on a guess, because scored on
 the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by printed cost.
 **One exception (053, D20):** no agent knows which Alignment cards a game dealt, rollouts
 included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
-the mean of four guesses of the deal (`deals`, 054, 064), never read from the table.
+a mean of guesses of the deal, never read from the table (`deals`, README *Agents*).
 
 ## Dominance checks (a standing gate; Matt, 2026-10-29)
 
@@ -144,7 +146,7 @@ could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
 summarized by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate.json` (gate-r23, 053; gate-046 is retired): planner only, d2,
+current gate** is `experiments/gate.json` (gate-053; gate-046 is retired): planner only, d2,
 8 seeds a check early-stopped from 4, every 034 check plus 041's four fixed policies and abandon,
 summarized by `scripts/cards/screen.py --gate`. Its predecessors are
 `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.

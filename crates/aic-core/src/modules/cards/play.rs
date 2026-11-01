@@ -117,7 +117,7 @@ impl Cards {
         if !g.pile(&drafted(s)).contains(card) {
             return Err(Halt::Illegal(format!("{card} was not drafted by seat {s}")));
         }
-        // A Unity card's free purchase first, then the price.
+        // A Unity card's free keep first, then the price.
         let (ins, cr) = self.keep_price(&w, g, s, card);
         if (ins > 0 || cr > 0) && !alignment::take_free_purchase(g, cx) {
             if g.resource(s, Resource::Credits) < cr {

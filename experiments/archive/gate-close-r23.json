@@ -1,6 +1,6 @@
 {
   "name": "gate-close-r23",
-  "note": "The gate's close calls at 48 seeds: the checks that sat level or ahead of the planner at gate-r23's 8. Read beside experiments/band-r23.json on the same seeds.",
+  "note": "The gate's close calls at 48 seeds: the checks that sat level or ahead of the planner at gate-r23's 8. Read beside experiments/band.json on the same seeds.",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "c2", "set": []},

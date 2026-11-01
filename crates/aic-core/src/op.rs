@@ -72,8 +72,10 @@ pub enum Site {
     Industrial,
     /// Research stations, whoever owns them.
     Stations,
-    /// Each country's first military base (`base_sites_per_country`).
-    Bases,
+    /// Each country's first military base, or every base: `base_sites_per_country`.
+    /// A threat's [`Spot::Bases`] is every base in its scope.
+    #[serde(rename = "bases")]
+    BaseSites,
 }
 
 impl RoundFlag {
@@ -362,7 +364,7 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// The next `count` card purchases (keeping a drafted card) are free.
+    /// The next `count` keeps from the draft are free.
     FreePurchases {
         count: i64,
     },

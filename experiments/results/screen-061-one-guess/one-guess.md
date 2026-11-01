@@ -1,6 +1,6 @@
 # One guess or sampled deals (061, no rules change, r25)
 
-Fresh seeds, never used to pick anything: band `--seed 8000` (`experiments/band-061.json`), gate `--seed 13000`.
+Fresh seeds, never used to pick anything: band `--seed 8000` (`experiments/archive/band-061.json`), gate `--seed 13000`.
 The r23 tuning numbers in `screen-054-deals/deals.md` are history: all of this is r25.
 
 ## Verdict: one guess is the default
@@ -16,7 +16,7 @@ The r23 tuning numbers in `screen-054-deals/deals.md` are history: all of this i
 | 054 minus engine, paired | +0 ±9.4 | +25 ±8.7 | | |
 
 One guess is at least as strong, within the noise, and about 0.8 × the time. Both sizes are in 60-75, so
-nothing is re-centred and no rule changed. 75 is the band's top edge, ±6: the next rules item that adds
+nothing is re-centered and no rule changed. 75 is the band's top edge, ±6: the next rules item that adds
 push has room at c3 and little at c2. The prompt's 1.76 × a game was not reproduced on 48 seeds: the two
 differ by 1.25-1.28 × (see *Games a minute*).
 
@@ -51,7 +51,7 @@ difference there is the bar. One guess takes any lead; 054 needs over 60, on the
 `experiments/gate.json`, 8 seeds, `--seed 13000`: 388 of 512 games, 20.5 min on 8 threads, 0 panics. **Not
 passed by the tool's reading**: five checks level, and the planner itself read 88 / 88 on those 8 seeds, so
 level there is a high bar. Those five, and three at +12, went to 48 seeds on the band's seeds
-(`experiments/gate-close-061-c2.json`, `-c3.json`). Gap = planner minus check, ± one SE of the paired
+(`experiments/archive/gate-close-061-c2.json`, `-c3.json`). Gap = planner minus check, ± one SE of the paired
 difference.
 
 | check | c2 | c3 | 059 (c2 / c3) |
@@ -77,7 +77,7 @@ simply better. The fix is price, not agent.
 
 ## Commands
 
-    aic-sim experiment experiments/band-061.json --seed 8000 --threads 8
+    aic-sim experiment experiments/archive/band-061.json --seed 8000 --threads 8
     aic-sim experiment experiments/gate.json --seed 13000 --threads 8
-    aic-sim experiment experiments/gate-close-061-c2.json --seed 8000 --threads 8
-    aic-sim experiment experiments/gate-close-061-c3.json --seed 8000 --threads 8
+    aic-sim experiment experiments/archive/gate-close-061-c2.json --seed 8000 --threads 8
+    aic-sim experiment experiments/archive/gate-close-061-c3.json --seed 8000 --threads 8

@@ -1,0 +1,13 @@
+{
+  "name": "sanity-line",
+  "note": "The check that the planner's rollout policy is still the engine: run after a change to the rollout policy or prune. alts=0 should read near the engine.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine", "planner:alts=0"],
+  "games": 48,
+  "records": 0
+}

@@ -1,6 +1,7 @@
 """Proves a refactor left play unchanged: same games, state by state where it can tell.
 
-    python scripts/bench/same_play.py run SIM DIR [--threads N]   # play the matrix on binary SIM into DIR
+    python scripts/bench/same_play.py run SIM DIR [--root ROOT] [--threads N]
+        # play the matrix on binary SIM into DIR, reading configs/ under ROOT (default: here)
     python scripts/bench/same_play.py compare SIM BASE NEW [--map OLD=NEW]...
         # SIM: the new binary
 
@@ -17,8 +18,13 @@ dominance check under the planner, saving every game. `compare` checks:
 The state's JSON holds the name, so fingerprints move and old records can't replay; each
 record is compared with the new one instead, field by field, hashes and fingerprint aside.
 
-Exits 1 on any difference. Run times are in the README; build the old binary first and
-copy it aside. For experiment specs use `same_results.py`.
+An old binary that refuses today's configs plays the ones it was built with: `mkdir -p out/old &&
+git archive REV configs | tar -x -C out/old`, then `run ... --root out/old`. The config paths
+stay relative, so summaries still compare.
+
+Each difference prints its first differing field or trace line. Exits 1 on any difference. Run
+times are in the README; build the old binary first and copy it aside. For experiment specs use
+`same_results.py`.
 """
 
 import glob
@@ -28,7 +34,7 @@ import re
 import subprocess
 import sys
 
-from same_results import read, take_maps
+from same_results import diff, read, take_maps
 
 CONFIGS = ["baseline", "shared_row"]
 # Fields and trace lines that differ between runs of the same play.
@@ -36,13 +42,18 @@ IGNORED = ("content_hash", "ms_per_game", "paths")
 TRACE_NOISE = ("wall ms/game", "seeds ")
 # `run --threads N`, to leave a shared machine room: results do not depend on it.
 THREADS = []
+# `run --root ROOT`: where the sim runs, so where its relative config paths point.
+ROOT = "."
 # And what a rename moves in a record.
 RENAME_IGNORED = ("config_hash", "final_fingerprint")
+# How much of a difference to print.
+SHOWN = 200
 
 
 def sim_to(f, cmd):
     """Runs `cmd` with stdout to `f`; a refused config or a crash stops the matrix, named."""
-    done = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
+    done = subprocess.run(cmd, cwd=ROOT, stdout=f, stderr=subprocess.PIPE, text=True, encoding="utf-8",
+                          errors="replace")
     if done.returncode != 0:
         sys.exit(f"{' '.join(cmd)}\nfailed: {done.stderr.strip()}")
 
@@ -59,6 +70,7 @@ def play(sim, out, label, agent, games, config, sets):
 
 
 def run(sim, out):
+    out = os.path.abspath(out)
     os.makedirs(out, exist_ok=True)
     for cfg in CONFIGS:
         for c in (1, 2, 3, 4):
@@ -85,6 +97,30 @@ def clean(v, ignored=IGNORED):
     return v
 
 
+def differs(kind, name, a, b):
+    """0 if `a` and `b` match; else 1, printing `name` and the first field that differs."""
+    if a == b:
+        return 0
+    print(f"{kind} differs: {name}")
+    print("  " + diff(a, b)[0][:SHOWN])
+    return 1
+
+
+def trace_differs(name, a, b):
+    """`differs` for two traces' lines: the first pair that differs, from where they part."""
+    if a == b:
+        return 0
+    print("trace differs:", name)
+    for i, (x, y) in enumerate(zip(a, b)):
+        if x != y:
+            at = next((k for k, (p, q) in enumerate(zip(x, y)) if p != q), min(len(x), len(y)))
+            at = max(0, at - 40)
+            print(f"  line {i + 1} from column {at}:\n  - {x[at:at + SHOWN]}\n  + {y[at:at + SHOWN]}")
+            return 1
+    print(f"  {len(a)} lines != {len(b)}")
+    return 1
+
+
 def same_records(records, base, new, maps):
     """The renamed records against the new binary's, by parsed fields."""
     bad = 0
@@ -94,9 +130,9 @@ def same_records(records, base, new, maps):
         if not os.path.exists(g):
             print("record missing:", g)
             bad += 1
-        elif clean(json.loads(read(f, maps)), ignored) != clean(json.loads(read(g)), ignored):
-            print("record differs:", os.path.relpath(f, base))
-            bad += 1
+        else:
+            bad += differs("record", os.path.relpath(f, base), clean(json.loads(read(f, maps)), ignored),
+                           clean(json.loads(read(g)), ignored))
     return bad
 
 
@@ -136,15 +172,12 @@ def compare(sim, base, new, maps=()):
     summaries = sorted(glob.glob(os.path.join(base, "*.json")))
     for f in summaries:
         g = os.path.join(new, os.path.basename(f))
-        if clean(json.loads(read(f, maps)), ignored) != clean(json.loads(read(g)), ignored):
-            print("summary differs:", os.path.basename(f))
-            bad += 1
+        bad += differs("summary", os.path.basename(f), clean(json.loads(read(f, maps)), ignored),
+                       clean(json.loads(read(g)), ignored))
     traces = sorted(glob.glob(os.path.join(base, "*.trace")))
     for f in traces:
         g = os.path.join(new, os.path.basename(f))
-        if trace_lines(read(f, maps), maps) != trace_lines(read(g), maps):
-            print("trace differs:", os.path.basename(f))
-            bad += 1
+        bad += trace_differs(os.path.basename(f), trace_lines(read(f, maps), maps), trace_lines(read(g), maps))
     records = sorted(glob.glob(os.path.join(base, "rec", "*", "*.json")))
     bad += same_records(records, base, new, maps) if maps else replays(sim, records)
     print(f"{len(summaries)} summaries, {len(traces)} traces, {len(records)} records: {bad} difference(s)")
@@ -157,6 +190,10 @@ if __name__ == "__main__":
     if "--threads" in argv:
         i = argv.index("--threads")
         THREADS.extend(argv[i:i + 2])
+        del argv[i:i + 2]
+    if "--root" in argv:
+        i = argv.index("--root")
+        ROOT = argv[i + 1]
         del argv[i:i + 2]
     if argv[:1] == ["run"] and len(argv) == 3:
         run(argv[1], argv[2])

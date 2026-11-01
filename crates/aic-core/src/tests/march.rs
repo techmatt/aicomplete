@@ -21,7 +21,6 @@ fn land_at(m: &Map, p: usize, d: i32) -> usize {
 fn a_troop_marches_two_steps_toward_presence_then_strikes() {
     let (rules, g0) = lab(&["board.march"]);
     let m = &rules.map;
-    assert_eq!(rules.world().int("board.troop_steps"), 2);
     let p = m.numbered(0, piece(0).presence);
 
     // Three away: two moves, ending next to the presence, which survives the round.

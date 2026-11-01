@@ -17,7 +17,7 @@ use crate::key::{FastMap, Key};
 use crate::map::Map;
 use crate::rng::Stream;
 use crate::vocab::Resource;
-use crate::state::{Ask, GameState, Opt, Outcome, Pick};
+use crate::state::{Ask, AskKind, GameState, Opt, Outcome, Pick};
 use crate::view::ViewOut;
 
 /// A module: an id, a one-line summary and its variants. Registered in
@@ -316,6 +316,15 @@ impl<'a> Cx<'a> {
     /// Otherwise returns the answer if it was given, else stops resolution
     /// with `Halt::Ask` (pass it on with `?`).
     pub fn choose(&mut self, seat: usize, prompt: &str, options: Vec<Opt>) -> Res<Option<usize>> {
+        self.ask(seat, prompt, options, AskKind::Plain)
+    }
+
+    /// [`Cx::choose`] for a loss: which of your things goes, or where a loss lands.
+    pub fn choose_loss(&mut self, seat: usize, prompt: &str, options: Vec<Opt>) -> Res<Option<usize>> {
+        self.ask(seat, prompt, options, AskKind::Loss)
+    }
+
+    fn ask(&mut self, seat: usize, prompt: &str, options: Vec<Opt>, kind: AskKind) -> Res<Option<usize>> {
         match options.len() {
             0 => return Ok(None),
             1 => return Ok(Some(0)),
@@ -337,6 +346,7 @@ impl<'a> Cx<'a> {
             seat: seat as u8,
             prompt: prompt.to_string(),
             options,
+            kind,
         };
         if let Some(log) = self.events.as_deref_mut() {
             log.push(Event::Asked {

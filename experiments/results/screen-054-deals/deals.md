@@ -1,7 +1,7 @@
 # The planner samples Unity deals (054, no rules change, r23)
 
 Fresh seeds from 6000 are the verdict (never used to pick anything). Tuning used 1000-1031 and 2000-2031.
-Specs: `experiments/band-r23.json`, `experiments/gate-exploit.json`, `experiments/gate-close-054.json`.
+Specs: `experiments/band.json`, `experiments/gate-exploit.json`, `experiments/archive/gate-close-054.json`.
 
 ## Verdict (fresh, 48 seeds a cell, d2)
 
@@ -34,13 +34,20 @@ At `prune=6` it won 29% at c3 (14 seeds), 81 at 12, 75 at 0 (16 seeds): a droppe
 the whole phase, so the rollout policy was never the engine, and the shortlist was carrying it.
 
 **Retracted (060): "sampling cost about 14 at c3".** No `prune` 12 row here separated `deals` from `lead`:
-every sampled row had a lead and no one-guess row did. 060's scratch 2×2 at r25 (c3, seeds 1000-1031) did:
-`lead` lost the points and sampling gained them. One guess 56 and 41 at `lead` 0 and 60, 4 deals 72 and 59
-(4 deals over 1: +16 ±11 at `lead` 0). The 2×2 is in 060's report; 064 read it on fresh seeds. What this
-section first said: sampling added nothing at c2 and cost about 14 at c3 against one guess (tuning, about
-±6). `deals=4,lead=0,prune=12` was not run here: over the time limit. **The sampled agent shipped
-because the prompt asked for it and the question to Matt went to its default; `planner:deals=1,lead=0` is
-the strongest setting measured and is one spec away.** It has no fresh-seed read.
+every sampled row had a lead and no one-guess row did. 060's scratch 2×2 did (c3, d2, seeds 1000-1031, r25,
+`prune` 12, win %):
+
+| | `lead` 0 | `lead` 60 |
+|---|---|---|
+| one guess | 56 | 41 |
+| 4 deals | 72 | 59 |
+
+4 deals over 1: +16 ±11 at `lead` 0, +19 ±8 at `lead` 60. `lead` 60 over 0: -16 ±11 at one guess, -12 ±12 at
+4 deals. So `lead` lost the points and sampling gained them. That is 32 tuning seeds at r25, so it doesn't
+compare directly with the r23 figure it retracts. 064 read `deals=4,lead=0` on fresh seeds and made it the
+default. What this section first said: sampling added nothing at c2 and cost about 14 at c3 against one
+guess (tuning, about ±6). `deals=4,lead=0,prune=12` was not run here: over the time limit. The sampled agent
+shipped because the prompt asked for it and the question to Matt went to its default.
 
 ## Cost
 

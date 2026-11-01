@@ -16,6 +16,7 @@
 use aic_core::content::{CardDef, Op, Resource, Tag};
 use aic_core::modules::{ai, cards, common, economy, effects, threats};
 use aic_core::module::World;
+use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_equivalent;
@@ -23,153 +24,178 @@ use super::credit_equivalent;
 /// A play's value falls by this share for each round it waits.
 const WAIT: f64 = 0.15;
 
-/// The behavior a dominance check forces (none for thoughtful play).
-#[derive(Debug, Clone)]
-pub struct Forced {
-    /// Keep every drafted card it can afford.
-    pub keep_all: bool,
-    /// Exploit check (034): spend every spare credit on the rich action.
-    pub rich_spend: bool,
-    /// Exploit check (034): draft, keep and play Science first, for its discounts.
-    pub science_rush: bool,
-    /// Fixed policy (041): the growth option that places the most presence.
-    pub always_expand: bool,
-    /// Fixed policy (041): the growth option that places none.
-    pub always_consolidate: bool,
-    /// Fixed policy (041): never clear a corruption marker.
-    pub never_remove: bool,
-    /// Fixed policy (041): the Science rush, board cards first.
-    pub science_board: bool,
-    /// Keep only its `keep_k` cheapest drafted cards (0: off).
-    pub keep_k: usize,
-    /// Sanity check (028): keep no drafted card.
-    pub keep_none: bool,
-    /// Sanity check (028): keep each drafted card on a coin toss.
-    pub keep_random: bool,
-    /// Never draft from tier 2.
-    pub tier1_only: bool,
-    /// Draft from tier 2 whenever it can afford the keep.
-    pub tier2_rush: bool,
-    /// Never use an AI-board power.
-    pub no_powers: bool,
-    /// Never pay toward a threat's counter.
-    pub no_counters: bool,
-    /// Place no presence beyond setup (no standard action, card or growth
-    /// that places one).
-    pub no_presence: bool,
-    /// Mono-tag (023): keep and play only cards carrying this tag.
-    pub only_tag: Option<Tag>,
-    /// Ignore-X (023): never keep or play a card carrying this tag.
-    pub never_tag: Option<Tag>,
-    /// Event-hoarder (023): keep and play only events.
-    pub events_only: bool,
-    /// Exploit check (027): no counter paid and no card that counters a threat.
-    pub ignore_threats: bool,
-    /// Exploit check (027): stay on the setup hex and defend it: no presence,
-    /// only the remove, clear, ambassador, hardening and chips standard actions.
-    pub turtle: bool,
-    /// Exploit check (027): only free cities: Diplomacy cards, the ambassador,
-    /// move, remove, clear and chips standard actions, no counters, no presence,
-    /// no powers.
-    pub free_only: bool,
-    /// Exploit check (028): farm the Unity deck. Every seat buys ambassadors
-    /// and lands them on bases and factories, each worth Unity when it produces,
-    /// before anything else; the rest of its play is the agent's.
-    pub unity_farm: bool,
-    /// Exploit check (053): give up the last country: never counter a threat
-    /// on it and never pick a hex in it while another pick is open, losses
-    /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
-    /// this should lose ground.
-    pub abandon: bool,
-    /// Keep by plan (off: the wrapped agent's heuristic decides keeps).
-    pub plan_keep: bool,
-    /// Rounds the keep plan looks at: this round's action phase and the
-    /// ones after it.
-    pub plan_rounds: usize,
-    /// Insight the keep plan holds back in each later round for that round's
-    /// own keeps (024: the plan spent all of it on plays, so it thought it
-    /// could play twice what it could and kept double what it played).
-    pub plan_reserve: i64,
-    /// The keep plan keeps nothing while the hand holds this many cards
-    /// (024; 0: off). Hands of 8-10 held cards never played: at a table a
-    /// player stops paying for cards they can't use.
-    pub plan_hand: usize,
-    /// Share of a tier-2 card's value the keep plan counts (024): its printed
-    /// cost overstates what the one-step play logic gets from it, and a keep
-    /// costs 2-3 insight.
-    pub plan_t2: f64,
-    /// What a credit paid for a keep costs the plan (024).
-    pub plan_credit: f64,
-    /// What the keep plan adds, in credits, for each marker a card would clear
-    /// threat it would delay and presence it would shield on the table as it
-    /// stands (046: priced at its printed cost, a 2-credit Science card lost
-    /// every keep to a tier-2).
-    pub plan_niche: f64,
+/// One value of a forced behavior, read from its agent parameter.
+trait ForcedValue {
+    fn from_param(x: f64) -> Self;
+    /// Whether this value forces anything.
+    fn is_on(&self) -> bool;
 }
 
-impl Forced {
-    /// Whether anything is forced: keeping by plan or a dominance check. The
-    /// plan's numbers do nothing on their own. Destructured whole so that a
-    /// new field has to be placed here.
-    pub fn is_active(&self) -> bool {
-        let Forced {
-            keep_all,
-            keep_k,
-            rich_spend,
-            science_rush,
-            always_expand,
-            always_consolidate,
-            never_remove,
-            science_board,
-            keep_none,
-            keep_random,
-            tier1_only,
-            tier2_rush,
-            no_powers,
-            no_counters,
-            no_presence,
-            only_tag,
-            never_tag,
-            events_only,
-            ignore_threats,
-            turtle,
-            free_only,
-            unity_farm,
-            abandon,
-            plan_keep,
-            plan_rounds: _,
-            plan_reserve: _,
-            plan_hand: _,
-            plan_t2: _,
-            plan_credit: _,
-            plan_niche: _,
-        } = self;
-        *keep_all
-            || *keep_k > 0
-            || *rich_spend
-            || *science_rush
-            || *always_expand
-            || *always_consolidate
-            || *never_remove
-            || *science_board
-            || *keep_none
-            || *keep_random
-            || *tier1_only
-            || *tier2_rush
-            || *no_powers
-            || *no_counters
-            || *no_presence
-            || only_tag.is_some()
-            || never_tag.is_some()
-            || *events_only
-            || *ignore_threats
-            || *turtle
-            || *free_only
-            || *unity_farm
-            || *abandon
-            || *plan_keep
+impl ForcedValue for bool {
+    fn from_param(x: f64) -> bool {
+        x > 0.0
     }
+    fn is_on(&self) -> bool {
+        *self
+    }
+}
 
+impl ForcedValue for usize {
+    fn from_param(x: f64) -> usize {
+        x as usize
+    }
+    fn is_on(&self) -> bool {
+        *self > 0
+    }
+}
+
+impl ForcedValue for i64 {
+    fn from_param(x: f64) -> i64 {
+        x as i64
+    }
+    fn is_on(&self) -> bool {
+        *self > 0
+    }
+}
+
+impl ForcedValue for f64 {
+    fn from_param(x: f64) -> f64 {
+        x
+    }
+    fn is_on(&self) -> bool {
+        *self > 0.0
+    }
+}
+
+impl ForcedValue for Option<Tag> {
+    fn from_param(x: f64) -> Option<Tag> {
+        super::TAGS.get((x as usize).wrapping_sub(1)).copied()
+    }
+    fn is_on(&self) -> bool {
+        self.is_some()
+    }
+}
+
+/// The one list of keep-plan numbers and forced behaviors: a new check is a row
+/// here and its arm in [`Policy`]. A row is `(name: type, active, default, what it
+/// does)`, `active` saying whether a value on its own makes the agent a [`Policy`]
+/// (a plan's numbers do nothing alone). It makes the [`Forced`] field, the agent
+/// parameter of the same name and the reading of one from the other. The order is
+/// the parameters', which [`super::AgentSpec::label`] prints in: don't reorder rows,
+/// or spec labels move. Hands the rows to `$then!`, after `$args`.
+macro_rules! forced_table {
+    ($then:ident ($($args:tt)*)) => {
+        $then! {
+            ($($args)*)
+            /// Keep by plan (off: the wrapped agent's heuristic decides keeps).
+            (plan_keep: bool, true, 1.0, "keep by a sketch of the next rounds (0: the heuristic keeps)")
+            /// Rounds the keep plan looks at: this round's action phase and the
+            /// ones after it.
+            (plan_rounds: usize, false, 4.0, "rounds the keep plan sketches, this one included")
+            /// Insight the keep plan holds back in each later round for that round's
+            /// own keeps (024: the plan spent all of it on plays, so it thought it
+            /// could play twice what it could and kept double what it played).
+            (plan_reserve: i64, false, 0.0, "insight the keep plan holds back in each later round for that round's keeps")
+            /// The keep plan keeps nothing while the hand holds this many cards
+            /// (024; 0: off). Hands of 8-10 held cards never played: at a table a
+            /// player stops paying for cards they can't use.
+            (plan_hand: usize, false, 0.0, "keep nothing while the hand holds this many cards (0: off)")
+            /// Share of a tier-2 card's value the keep plan counts (024): its printed
+            /// cost overstates what the one-step play logic gets from it, and a keep
+            /// costs 2-3 insight.
+            (plan_t2: f64, false, 1.0, "share of a tier-2 card's value the keep plan counts")
+            /// What a credit paid for a keep costs the plan (024).
+            (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
+            /// What the keep plan adds, in credits, for each marker a card would clear
+            /// threat it would delay and presence it would shield on the table as it
+            /// stands (046: priced at its printed cost, a 2-credit Science card lost
+            /// every keep to a tier-2).
+            (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield")
+            /// Keep every drafted card it can afford.
+            (keep_all: bool, true, 0.0, "dominance check: keep every drafted card")
+            /// Keep only its `keep_k` cheapest drafted cards (0: off).
+            (keep_k: usize, true, 0.0, "dominance check: keep only the k cheapest drafted cards (0: off)")
+            /// Sanity check (028): keep no drafted card.
+            (keep_none: bool, true, 0.0, "sanity check (028): keep no drafted card")
+            /// Sanity check (028): keep each drafted card on a coin toss.
+            (keep_random: bool, true, 0.0, "sanity check (028): keep each drafted card on a coin toss")
+            /// Never draft from tier 2.
+            (tier1_only: bool, true, 0.0, "dominance check: never draft from tier 2")
+            /// Draft from tier 2 whenever it can afford the keep.
+            (tier2_rush: bool, true, 0.0, "dominance check: draft from tier 2 whenever the keep is affordable")
+            /// Never use an AI-board power.
+            (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power")
+            /// Never pay toward a threat's counter.
+            (no_counters: bool, true, 0.0, "dominance check: never counter a threat")
+            /// Place no presence beyond setup (no standard action, card or growth
+            /// that places one).
+            (no_presence: bool, true, 0.0, "dominance check: place no presence beyond setup")
+            /// Mono-tag (023): keep and play only cards carrying this tag.
+            (only_tag: Option<Tag>, true, 0.0, "dominance check (023): keep and play only this tag (1-6: science, industry, cyber, power, diplomacy, security)")
+            /// Ignore-X (023): never keep or play a card carrying this tag.
+            (never_tag: Option<Tag>, true, 0.0, "dominance check (023): never keep or play this tag (1-6 as only_tag)")
+            /// Event-hoarder (023): keep and play only events.
+            (events_only: bool, true, 0.0, "dominance check (023): keep and play only events")
+            /// Exploit check (027): no counter paid and no card that counters a threat.
+            (ignore_threats: bool, true, 0.0, "exploit check (027): no counters, no card that counters a threat")
+            /// Exploit check (027): stay on the setup hex and defend it: no presence,
+            /// only the remove, clear, ambassador, hardening and chips standard actions.
+            (turtle: bool, true, 0.0, "exploit check (027): no presence beyond setup; only remove, clear, chips, ambassador and hardening actions")
+            /// Exploit check (027): only free cities: Diplomacy cards, the ambassador,
+            /// move, remove, clear and chips standard actions, no counters, no presence,
+            /// no powers.
+            (free_only: bool, true, 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions")
+            /// Exploit check (028): farm the Unity deck. Every seat buys ambassadors
+            /// and lands them on bases and factories, each worth Unity when it produces,
+            /// before anything else; the rest of its play is the agent's.
+            (unity_farm: bool, true, 0.0, "exploit check (028): before anything else, buy ambassadors and land them on bases and factories")
+            /// Exploit check (053): give up the last country: never counter a threat
+            /// on it and never pick a hex in it while another pick is open, losses
+            /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
+            /// this should lose ground.
+            (abandon: bool, true, 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside")
+            /// Exploit check (034): spend every spare credit on the rich action.
+            (rich_spend: bool, true, 0.0, "exploit check (034): every spare credit on the rich action")
+            /// Exploit check (034): draft, keep and play Science first, for its discounts.
+            (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
+            /// Fixed policy (041): the growth option that places the most presence.
+            (always_expand: bool, true, 0.0, "fixed policy (041): the growth option that places the most presence")
+            /// Fixed policy (041): the growth option that places none.
+            (always_consolidate: bool, true, 0.0, "fixed policy (041): the growth option that places none")
+            /// Fixed policy (041): never clear a corruption marker.
+            (never_remove: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
+            /// Fixed policy (041): the Science rush, board cards first.
+            (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
+        }
+    };
+}
+pub(crate) use forced_table;
+
+macro_rules! forced_struct {
+    (() $($(#[$doc:meta])* ($name:ident: $ty:ty, $active:literal, $default:expr, $desc:expr))*) => {
+        /// The behavior a dominance check forces (none for thoughtful play).
+        #[derive(Debug, Clone)]
+        pub struct Forced {
+            $($(#[$doc])* pub $name: $ty,)*
+        }
+
+        impl Forced {
+            /// Each field from its agent parameter.
+            pub fn read(num: impl Fn(&str) -> f64) -> Forced {
+                Forced { $($name: ForcedValue::from_param(num(stringify!($name))),)* }
+            }
+
+            /// Whether anything is forced: keeping by plan or a dominance check.
+            pub fn is_active(&self) -> bool {
+                $(($active && self.$name.is_on()))||*
+            }
+        }
+    };
+}
+
+forced_table!(forced_struct());
+
+impl Forced {
     /// Whether this seat places no presence beyond setup.
     fn stays_put(&self) -> bool {
         self.no_presence || self.turtle || self.free_only
@@ -414,9 +440,7 @@ fn given_up(w: &World, h: usize) -> bool {
 /// Whether the open choice picks what the team loses: there the check may
 /// spend the country it gave up.
 fn losing_pick(g: &GameState) -> bool {
-    g.pending.as_ref().is_some_and(|p| {
-        ["destroy", "lose", "sacrifice", "goes on"].iter().any(|w| p.ask.prompt.contains(w))
-    })
+    g.pending.as_ref().is_some_and(|p| p.ask.kind == AskKind::Loss)
 }
 
 /// Whether `threat` sits on the country the abandon check gives up.

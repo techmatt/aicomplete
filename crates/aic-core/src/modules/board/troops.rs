@@ -223,7 +223,7 @@ pub(super) fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool>
         "Adversary troop at {}: which target does it destroy?",
         hex_name(&w, h)
     );
-    let Some(i) = cx.choose(0, &prompt, opts)? else {
+    let Some(i) = cx.choose_loss(0, &prompt, opts)? else {
         return Ok(false);
     };
     let (x, k) = targets[i].clone();

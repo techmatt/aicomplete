@@ -1,6 +1,6 @@
 {
-  "name": "gate-r23",
-  "note": "The r23 gate at d2 against the planner, 2 and 3 countries: every check of gate-046 (retired, 053) plus abandon, 8 seeds a check, early-stopped from 4. Run on fresh seeds. 8 seeds can't place a win rate: experiments/band-r23.json does that.",
+  "name": "gate-053",
+  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-046 (retired, 053) plus abandon, 8 seeds a check, early-stopped from 4. Run on fresh seeds. 8 seeds can't place a win rate: experiments/band.json does that.",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "c2", "set": []},

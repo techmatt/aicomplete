@@ -69,13 +69,16 @@ Current:
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
-  each check against its own agent, with games per check when `results.json` has a `gate`
-  key. `--preset tiers` (052) is cards offered, kept and played per game by tier: run it on the
+  each check against its own agent in one sign, agent minus check, with the paired SE, and games
+  per check when `results.json` has a `gate` key. It reads a close run that holds its planner row
+  too, gate key or not; report.md's agent pairs read the other way, check minus reference. `--preset tiers` (052) is cards offered, kept and played per game by tier: run it on the
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](docs/card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the kept scripts below.
 - `cards/price_read.py` (055): per-card rates and stratified win deltas from games.jsonl
-  (*Experiments*, *Card pricing read*).
+  (*Experiments*, *Card pricing read*). `kept` is a share of games, opening deal and draws
+  included: never a share of offered, which would pass 100. Older price-read CSVs still have
+  the `keep_rate` column this removed (065).
 - `run_sim.ps1 NAME [-NoBuild] ARGS...` (052): builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on
@@ -92,30 +95,42 @@ Current:
   run on 12 threads; every saved game replays on the new binary. `run ... --threads N`
   (042) caps it on a shared machine: ~13 min a run on 4 threads at r20, two at once, and
   `compare` under a minute. Keep a copy of the old binary. Takes `--map` too (026): records are then compared by field, since a renamed
-  state's fingerprint moves.
+  state's fingerprint moves. Each difference prints its first differing field or trace line. An
+  old binary that refuses today's configs plays its own: `mkdir -p out/old && git archive REV
+  configs | tar -x -C out/old`, then `run ... --root out/old` (065).
 - `bench/speed.py` (030): games a minute per agent. `--threads N` caps the many-thread
-  column of `table` and `pair` (default: leaves 4 hardware threads free). `pair OLD NEW --out
+  column of `table` and `pair` (default: leaves 4 hardware threads free). `--games N` sets that
+  column's games in `table`, `pair` and `specs`; each row prints its games and a rough time
+  before it starts. `pair OLD NEW --out
   FILE` runs each row on both binaries in turn, so the ratio holds on a busy machine: use it
   for a before and after. An OLD built on another baseline refuses today's config: `git show
   <rev>:configs/baseline.json > out/old-baseline.json`, then `--old-config
   out/old-baseline.json`. Across a config or rules change `pair` prints NOT LIKE FOR LIKE: the
-  two play different games, so its ratio is speed times game length. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
+  two play different games, so its ratio is speed times game length. A row whose games differ at
+  the same revision and config prints the same warning. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
   `--only "planner c2"` for a row, and both keep the file's other rows). `compare BEFORE.json AFTER.json` reads two `table`
   files. `check SIM` is
   the standing check (about 2 min, on a quiet machine, always one thread): fails at 1.3 ×
   `scripts/bench/speed_baseline.json`, `--update` to move the baseline. *What r19 and r20
   cost* in [experiments/history.md](experiments/history.md) says why it is above r18's. Its
   planner row is four seeds (050; one seed read r18 to r20 as 6.7 × against 1.75 × on 16). It
-  holds only within one rules revision: the baseline records its revision, and against
-  another `check` prints NO VERDICT and exits 0. Read `per_decision.py` then, and `--update`.
+  holds only on the same games: the baseline records its revision and a hash of what each
+  agent's check games came to, from `run --json`. Against another revision, or the same revision
+  with other games (a default, weight or config moved), `check` prints NO VERDICT, says which, and
+  exits 0. Read `per_decision.py` then, and `--update`.
   A `--update` compares a run with itself: run a plain `check` after it.
 - `bench/per_decision.py OLD_ROOT NEW_ROOT` (040): rounds, decisions and ms per game and per
   decision on the same seeds, for telling longer games from a slower agent. 6 games is
   too few across rules revisions (042: the same two binaries read 1.73 × on 6 seeds, 1.66 ×
-  on 16 others); `--games 16` or more.
+  on 16 others); `--games 16` or more. Bad arguments stop it before anything runs: each root is
+  an `.exe` or a directory holding `aic-sim.exe`.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
-- `bench/paired.py DIR... [--pair A B]...` (064): any run's cells with win %, SE, rounds and ends, and
-  paired gaps between any two cells, pooled over several `--pair`s.
+- `bench/paired.py DIR... [--pair A B]... [--against-base]` (064): any run's cells with win %, SE,
+  rounds and ends, and paired gaps between any two cells, pooled over several `--pair`s.
+  `--against-base` (065) reads a price sweep: every variant `cN-x` against `cN`, per agent, and
+  each lever pooled over its sizes. The spec's variants are `c2`, `c3`, `c2-x`, `c3-x`, each with
+  its `countries=N` and the lever's overlay in `set`. report.md's variant section pairs only
+  against the first variant, so it reads a c3 lever against c2.
 - Two agent specs on one binary (061): `bench/speed.py specs SIM A B`, `bench/per_decision.py
   SIM.exe --old-agent A --agent B`, and `bench/first_divergence.py --cells DIR A B` for where two
   cells of one run first play differently.
@@ -183,7 +198,7 @@ cards -- --port 60476`). If the port is taken it says so and exits.
 - **Stats** come from the newest `results.json` of 100 games or more with a per-card `cards`
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
   most plain agents, then most games); the page says which and warns when it is behind the
-  rules. Today that is r16: later items committed reports, not `results.json`. Kept % is keeps per 100 games of the
+  rules. Today that is r24 (`screen-055-prices`): later items committed reports, not `results.json`. Kept % is keeps per 100 games of the
   agent, about the share of games a one-copy card was kept in: the report's kept ÷ offered
   counts draft packets only, while the opening deal is kept undrafted, so it read 1000% on a card
   offered four times. Played % is the report's, played ÷ (kept + drawn). Win Δ comes from `games.csv`, which names only the buildings standing at the end, so it is blank
@@ -200,8 +215,9 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   off. *New* for a card missing from `review/card-seen.json`, until it is opened, noted or
   *Mark all seen* is pressed. The first run seeds that ledger with the whole set, so nothing
   is new until content adds a card.
-- **Pricing lines** are every table row led by the card's full name, then bullets and
-  paragraphs naming it, those that only pass by marked *in passing*. A short form of a name
+- **Pricing lines** are every table row led by the card's full name and every bullet and
+  paragraph naming it, in the doc's order, with those that only pass by marked *in passing*
+  and sorted last. A short form of a name
   ("Mutual Aid") doesn't match, and the doc's older sections keep the numbers of their day.
 - **Leaving a card keeps what was typed:** closing or stepping saves the note. Each save leaves
   the previous file as `review/card-notes.json.bak`. A broken notes file shows on the page and
@@ -363,7 +379,7 @@ cargo test-slow                                    # the slow lane alone: nearly
 cargo build --release -p aic-sim                   # ~12 s
 ./target/release/aic-sim docs                      # regenerate the docs built from content and configs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
-node scripts/wasm-smoke.mjs                        # needs the wasm build; checks native = wasm
+node scripts/wasm-smoke.mjs                        # needs crates/aic-wasm/pkg from the wasm-pack line above (`npm run wasm` writes web/src/wasm/ and doesn't satisfy it); checks native = wasm
 node scripts/wasm-parity.mjs [games]               # 020: native = wasm over the variant matrix (aic-sim records replayed in wasm); ~22 s with 2 games a variant and agent; rebuilds pkg if older than crates/aic-core, crates/aic-wasm, content/ or configs/
 ```
 
@@ -399,7 +415,10 @@ first action" can now pay and withdraw a threat counter forever). If a rules cha
 intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update
 `GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and the
 fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two differ). The fingerprint covers the whole final state, config `name`
-included, so a rename that plays the same moves it with no bump. The revision is recorded with every sim result, so old and new results are
+included, so a rename that plays the same moves it with no bump. The test also pins
+`GOLDEN_CONTENT_HASH`, and wasm-smoke `GOLDEN_CONTENT`: the content hash, over raw bytes. A
+content-only edit (price, name, whitespace) moves it with no fingerprint move and no bump unless
+play changes: update both constants. The revision is recorded with every sim result, so old and new results are
 never mixed up.
 
 **This machine.**
@@ -547,7 +566,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing presence, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
-| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), its value the mean over `deals` guesses of the deal (4 by default since 064, 054: played once to its first tip, then forked; an alternative must lead by `lead` on the first guess, and only then does it and the line it challenges play the others, then lead by `lead` on the mean); each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring), `deals` 4, `lead` 60. Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
+| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), its value the mean over `deals` guesses of the deal (4 by default since 064, 054: played once to its first tip, then forked; an alternative must lead by `lead` on the first guess, and only then does it and the line it challenges play the others, then lead by `lead` on the mean); each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). `redeal_alignment` runs inside `determinize`, so for every caller (Greedy decisions, Beam included), and `hide_alignment_deal` is that call alone on a line's table. It also reorders every pile it redeals: at d2 the Discord deck is fully dealt, so its contents stand but a line sees a guessed order. Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring), `deals` 4, `lead` 0. Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
 
 **Keeping by plan and the dominance checks (022, `agents/policy.rs`).** Greedy and
 engine keep drafted cards by a plan (`plan_keep` 1; 0 lets the heuristic decide keeps,
@@ -610,6 +629,12 @@ A spec has no set shared by its variants and `experiment` refuses `--set`, so a 
 sizes is two variants, each repeating the whole list (`c2x`: the lever; `c3x`: `countries=3` and
 the lever; `experiments/archive/screen-041-tune.json`).
 
+**Bisect a batch, first read on the engine.** When a batch of card changes moves a win rate, bisect
+it by groups as overlays on one binary. A first read of a price lever goes on the engine: about 1.4 s
+a game at c2 and 3.9 s at c3 against the planner's 21 and 70 s, so 400 games take minutes. The planner
+confirms: an engine read is a direction only. 064's `project_discord_per` moved the engine 4 points
+and changed no planner game at c2.
+
 **Gate early-stopping (040).** A spec with `"gate": {"z": 2.0, "min_games": 8, "every": 4}`
 treats `planner:<check>` as a check of `planner` in the same variant and difficulty, and
 `games` as each check's cap. Seeds go in blocks (8, then 4 at a time); after each block a
@@ -627,10 +652,12 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
-(059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
+(059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-053): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
 the first block and 512 at the cap. Measured, in planner games a minute: 14 on 4 threads
 (034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min), 15 on 8 (r24, the planner since 054), 19 on 8 (r25, one guess, 061: 388 of 512 games, 20.5 min), 14.5 on 8 (r26, four deals, 064: 432 of 512 games, 30 min; closing at 48 paired seeds took 6 min for 3 cells at c2). Budget
-30 min, and start it at least 55 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
+30 min for the gate. The 48-seed rerun of close checks can cost more: sum cells × 48 × 21 s (c2) or 70 s
+(c3) ÷ 8 threads, counting the planner row as a cell (064's 6 c3 cells: about 42 min at the cap, some
+stopped early). Start about 80 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
 rate; for a gate that is to the cap, so the most it can take. Before a gate, `aic-sim experiment
 SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
 shows in minutes, not at the end of a block (its own `--out`: a run without `--resume` moves an
@@ -639,11 +666,32 @@ run goes on, and `^time: wall` that an `experiment` finished.
 
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
-that picked the levers.
+that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
+keeping the seeds that picked that revision: r26: 16000 band, 17000 gate and closing, 18000
+`hold_base` 4; picked at r25: 14000, 15000. r25: 1000-1031, 8000, 11000, 12000, 13000. r26 also: 19000, `sanity-line`. Next free: 20000.
 
 **Seeds are noisy at c3.** The same r22 rules at c3 d2 read 56 / 38 / 71 on 16 / 16 / 14 seeds
 (33 on the first 12 of the 38's): about ±15 on any one set. A 16-seed calibration can't separate levers under about
 20 points. Compare on the same seeds, confirm on fresh ones.
+
+**Step sizes at d2 (064, r25).** Engine, seeds 15000, 48 a cell, base 58 / 56: a direction only.
+Levers came in two sizes, under 6 points or over 20, loosely: `hold_base` at c3 and
+`troop_presence` at c2 sit at or between them.
+
+| Lever | c2 | c3 |
+|---|---|---|
+| `project_discord_per` 1 | 54 | 52 |
+| `corrupt_at` 5 | 56 | 52 |
+| `hold_base` 4 | 54 | 46 |
+| `troop_presence` 3 | 38 | 17 |
+| `extra_threats` 2 | 21 | 33 |
+| `adversary_discord` 1 | 17 | 27 |
+| `stage1_removed` 2 | 19 | 27 |
+| `base_sites_per_country` 0 (the wrong size) | | 31 |
+
+Nine other levers read 54-58 / 52-69, noise; their numbers one by one weren't kept. Planner at c2,
+base 71: `project_discord_per` 1 71 (no game changed), `hold_base` 4 69, both 69, those two with
+`corrupt_at` 5 62, `extra_threats` 2 25. More in `experiments/results/screen-064-deals/deals.md`.
 
 **A game that panics (050).** It fails alone: the run goes on, stderr and `failed.jsonl`
 name its seed, config, overrides and panic, `report.md` lists them under *Failed games* with
@@ -654,7 +702,7 @@ ends the run.
 
 **Tuning sweeps** (`scripts/tune/`, from the repo root): `sweep.py` runs `aic-sim run --json`
 once per variant and agent and prints one row each (win %, rounds, adversary operations,
-corruptions and buildings destroyed per game, how games ended), appending every result
+corruptions and facilities and presence destroyed per game, how games ended), appending every result
 to `out/tune/log.jsonl`. `log_table.py TAG...` turns logged rows into a markdown table.
 
 ```sh
@@ -678,7 +726,7 @@ item, before `gate.json`: the 13 checks that could still beat thinking, at c2 an
 the engine, early-stopped, capped at 32 seeds, read with `screen.py --gate DIR`. **468 of 832
 games, 45 min of game time, 8 min on 6 below-normal threads on a loaded box** (r22). Under the
 planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s at c2 and 67 s at
-c3 there (on that loaded box; quiet, a c2 game is about 9 s, `scripts/bench/speed_baseline.json`).
+c3 there (on that loaded box; quiet, a c2 game at r26 is about 14 s, `scripts/bench/speed_baseline.json`).
 At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
 `gate.json`, under the planner, decides.
 
@@ -694,15 +742,16 @@ three sweeps in four hours; one guess (061) is about 0.8 × that, 43 min, so fou
 minute on 8 threads, one guess: 29.6 at c2, 8.8 at c3. The default since 064, four deals, runs 1.5 × as
 long a game (22.7 at c2, 6.9 at c3, from `ms_per_game`), so a sweep costs about what 054's did.
 
-**Calibration and gate (053, r23)**: `experiments/gate.json` is gate-r23: gate-046's checks plus
+**Calibration and gate (053, r23)**: `experiments/gate.json` is gate-053: gate-046's checks plus
 `abandon`, 8 seeds a check, early-stopped from 4, with `screen.py --gate DIR`. 8 seeds can't place a win
-rate, so `experiments/band-r23.json` does (planner and engine, 48 seeds a cell, about 5.5 min on 8
-threads). Results: `experiments/results/screen-053-calibration/calibration.md`.
+rate, so `experiments/band.json` (name `band`) does (planner and engine, 48 seeds a cell, about 5.5 min on 8
+threads). `experiments/sanity-line.json`: run it after a change to the rollout policy or `prune`: the line alone should read near the engine (r26, seeds 19000, 48 a cell: engine 50 / 46, `planner:alts=0` 42 / 42, paired -8 ±9, -4 ±11; 160 s on 8 threads).
+Results: `experiments/results/screen-053-calibration/calibration.md`.
 
 **Niche and growth gate (046, r22)**: gate-046 (`experiments/gate.json` then, `gate-046.json` until
 052; a spec per revision until then, each in `archive/`) was every 034 check plus 041's four fixed
 policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
-`experiments/screen-046-curve.json` is the curve. `python scripts/bench/first_divergence.py OLD NEW`
+`experiments/archive/screen-046-curve.json` is the curve. `python scripts/bench/first_divergence.py OLD NEW`
 says where two runs of one spec first play differently, game by game. Results and timings:
 `experiments/results/screen-046-niche/niche.md`.
 
@@ -744,14 +793,16 @@ Compare two binaries with
 `pair`, not two `table` runs: a test suite elsewhere on the box halved a whole table.
 
 `planner:budget=4` runs 25-29% faster and wins 19 and 28 points fewer at 2 and 3 countries;
-`prune=3` and `alts=1` save nothing (32 seeds, d2): leave them. **`prune` is strength, not only
+`prune=3` and `alts=1` saved no time on 32 seeds at d2 when last measured (030, the planner of that
+day); not remeasured since, and a change to what agents know or to `deals` reopens it. **`prune` is strength, not only
 speed (054):** a dropped action stays out for the whole phase, and at `prune=6` the line alone
 (`planner:alts=0`, the check that the rollout policy is still the engine) won 29% at c3 against 81%
 at 12 and the engine's 78, for about 17% more time. The default `deals=4,lead=0` costs 1.57 × (c2) and
 1.54 × (c3) an action against one guess (`deals=1,lead=0`; 064, 48 seeds, `ms_per_decision` in `results.json`;
 060 read 1.51 ×), and `deals=4,lead=60` about 1.25-1.28 × a game against one guess (061, 48 seeds). `python
 scripts/bench/same_results.py DIR_A DIR_B` compares two experiment output directories,
-timing aside: the check that a speed-up changed no game. `same_play.py` is the wider one.
+timing aside: the check that a speed-up or a late fix changed no game (`games.csv` and
+`results.json`). `same_play.py` is the wider one.
 
 **`run_sim.ps1` and stderr:** the sim writes `out/NAME.err` as it runs (054), so a wait on `panicked` or
 a look at the 10 s progress lines works mid-run. `out/NAME.exit` marks the end.
@@ -781,7 +832,7 @@ Agent parameters come in two kinds: search settings go bare, heuristic weights n
 `w.` prefix (`engine:samples=2`, `engine:w.packet_keep=0.5`). An unprefixed weight is an
 error, not a no-op.
 
-`cards.csv` is split by agent, variant, config and difficulty (columns `agent,variant,config,difficulty,card,...`), so per-lever card numbers no longer need a spec per variant. The card table in `report.md` and `results.json` still pools per agent.
+`cards.csv` is split by agent, variant, config and difficulty (columns `agent,variant,config,difficulty,card,...`), so per-lever card numbers no longer need a spec per variant. The card table in `report.md` and `results.json` still pools per agent. `kept` and `drawn` in `games.jsonl` include the opening deal and `offered` in `cards.csv` doesn't, so kept ÷ offered passes 100%: use share of games (055).
 
 Don't read an agent's keeps as a human's. Up to r3 (007, 009) agents kept nearly every
 drafted card, so a keep-priced lever measured the agent; 022 and 034 made them

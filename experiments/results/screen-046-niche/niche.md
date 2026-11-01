@@ -158,4 +158,4 @@ Against r20 (12 seeds): 100, 100, 83, 42, 25 and 83, 75, 50, 8, 17: the same cur
 The step from d2 to d3 is still the steep one (50 points at c2), and d3-d4 losses are mostly presence (18
 of 25), so the difficulty's stage-III swap is what bites, not Discord. No cap losses in any cell.
 
-`experiments/screen-046-curve.json`, `--quick --games 8`, seed 0.
+`experiments/archive/screen-046-curve.json`, `--quick --games 8`, seed 0.

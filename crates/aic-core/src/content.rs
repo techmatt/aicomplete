@@ -713,9 +713,12 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     if c.tags.is_empty() || c.tags.len() > 3 {
         return Err(format!("card {:?}: 1-3 tags", c.id));
     }
-    let printed = c.effects.iter().chain(c.ability.iter().flat_map(|a| &a.effects));
-    if !c.tags.contains(&Tag::Science) && printed.into_iter().any(science_niche) {
+    let niche = c.effects.iter().chain(c.ability.iter().flat_map(|a| &a.effects)).any(science_niche);
+    if niche && !c.tags.contains(&Tag::Science) {
         return Err(format!("{what}: shields, delays and marker clearing are Science's"));
+    }
+    if niche && c.needs.iter().any(|(t, _)| *t == Tag::Science) {
+        return Err(format!("{what}: a Science niche card needs no Science tag, to stay open to a seat without them"));
     }
     if !c.is_building() && !c.passives.is_empty() {
         return Err(format!(

@@ -118,10 +118,10 @@ those 17000 seeds was not run.
 
 ## Commands
 
-    aic-sim experiment experiments/band-064.json --seed 14000 --threads 8
-    aic-sim experiment experiments/band-064-alts0.json --seed 14000 --threads 8
-    aic-sim experiment experiments/triage-064.json --seed 15000   # and -064b, c, d
-    aic-sim experiment experiments/confirm-064-c2.json --seed 15000 --threads 8
+    aic-sim experiment experiments/archive/band-064.json --seed 14000 --threads 8
+    aic-sim experiment experiments/archive/band-064-alts0.json --seed 14000 --threads 8
+    aic-sim experiment experiments/archive/triage-064.json --seed 15000   # and -064b, c, d
+    aic-sim experiment experiments/archive/confirm-064-c2.json --seed 15000 --threads 8
     aic-sim experiment experiments/band-064-final.json --seed 16000 --threads 8
     aic-sim experiment experiments/gate.json --seed 17000 --threads 8
     aic-sim experiment experiments/gate-close-064-c2.json --seed 17000 --threads 8

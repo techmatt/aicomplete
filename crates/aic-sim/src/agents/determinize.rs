@@ -86,10 +86,22 @@ fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng, turn
     }
 }
 
+/// A snapshot's pile when the step drew before it asked: `was` is the cards it
+/// drew (public now) on top of the state's `now`, so they go back on top of
+/// `guessed`. `None` when the step did no such thing.
+fn drawn_on_top(was: &[Key], now: &[Key], guessed: &[Key]) -> Option<Vec<Key>> {
+    (was.len() > now.len() && was.ends_with(now)).then(|| {
+        let mut pile = was[..was.len() - now.len()].to_vec();
+        pile.extend_from_slice(guessed);
+        pile
+    })
+}
+
 /// The planner's lines (D20): the table as it is, decks and dice included,
-/// except for which Alignment cards were dealt, the `sample`th guess fixed by
-/// `seed` so a line repeats. A pending choice's snapshot gets the same piles,
-/// under what its step drew, as in [`guess`].
+/// except for which Alignment cards were dealt and the order of each dealt pile
+/// (at d2 the Discord deck is dealt whole: its contents stand, its order is a
+/// guess), the `sample`th guess fixed by `seed` so a line repeats. A pending
+/// choice's snapshot gets the same piles, under what its step drew, as in [`guess`].
 pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: usize) {
     let original = g.pending.is_some().then(|| g.clone());
     redeal_alignment(rules, g, &mut ChaCha8Rng::seed_from_u64(seed), sample);
@@ -98,13 +110,13 @@ pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: 
         return;
     };
     let snap = Arc::make_mut(&mut p.snapshot);
-    for ((_, _, key), mut pile) in DEALT.into_iter().zip(guessed) {
+    for ((_, _, key), guess) in DEALT.into_iter().zip(guessed) {
         let (was, now) = (snap.pile(key), original.pile(key));
-        if was.len() > now.len() && was.ends_with(now) {
-            pile.splice(0..0, was[..was.len() - now.len()].iter().cloned());
-        } else if was != now {
-            continue;
-        }
+        let pile = match drawn_on_top(was, now, &guess) {
+            Some(pile) => pile,
+            None if was == now => guess,
+            None => continue,
+        };
         snap.piles.insert(key.into(), Arc::new(pile));
     }
 }
@@ -154,9 +166,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
                     Some(v) => snap.piles.insert(key.into(), v.clone()),
                     None => snap.piles.remove(key),
                 };
-            } else if was.len() > now.len() && was.ends_with(now) {
-                let mut pile = was[..was.len() - now.len()].to_vec();
-                pile.extend(g.piles.get(key).iter().flat_map(|v| v.iter()).cloned());
+            } else if let Some(pile) = drawn_on_top(was, now, g.piles.get(key).map_or(&[], |v| v.as_slice())) {
                 snap.piles.insert(key.into(), Arc::new(pile));
             } else if was.len() > now.len() && was.starts_with(now) {
                 let mut pile = g.piles.get(key).map_or_else(Vec::new, |v| v.to_vec());

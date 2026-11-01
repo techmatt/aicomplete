@@ -22,17 +22,22 @@ design call for Matt, never a quiet exception.
 8. **Fits at the default size.** Rules text prints at 7.5 pt: a smaller card is the exception and
    carries a reason. A building's box above the art holds about 80 characters on two lines; the
    box below the art about the same; a program or event about 110. Cut words, split ideas or
-   simplify the op. Never shrink the type. Measure with `npm run cards:fit` in `web/`.
+   simplify the op. Never shrink the type. Measure with `npm run cards:fit` in `web/`. A box's
+   capacity derives from its height in `art/frames/r3/fit.json` (which overrides `layout.json`),
+   less `CLEARANCE_MM` (`web/card/card.js`) and its icon rows, at about 3.2 mm a line: size and line
+   height are `.rules`, side padding `.effect`, in `web/card/card.css`. The character counts above
+   are guides nothing checks. A kind with no frame (threats, Alignment, adversary and project
+   cards) has no budget yet: it comes with the frame.
 9. **The name says what it does,** and the art matches the name.
 10. **No near-duplicates without a reason.** Same effect at another price or kind is fine only
     when the kind matters (an event leaves no tag; a program stays).
 
 ## House wording
 
-The generator keeps these in one place: use them, and let the rulebook carry the rest. The terms
-(facility, shield, ambassador, troop, in reach, a country you're in, here, Remove N, Draw, you
-have, Action) are defined once, in `HOUSE_TERMS` in `crates/aic-sim/src/docs.rs`, which prints them
-in [rules.md](rules.md)'s *Terms* and in [player-aid.md](player-aid.md).
+Use these, and let the rulebook carry the rest. The terms (facility, shield, ambassador, troop,
+in reach, a country you're in, here, Remove N, Draw, you have, Action) are defined once, in
+`HOUSE_TERMS` in `crates/aic-sim/src/docs/blocks.rs`, which prints them in [rules.md](rules.md)'s
+*Terms* and in [player-aid.md](player-aid.md). `face.rs` prints the phrases as plain strings.
 
 **"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;
 the same token on presence is a "shield". "You gain the Harden action" is the Protector's action,
@@ -43,7 +48,7 @@ not a keyword.
 
 ## Legend
 
-What every mark on the card canvas means. Each means one thing; the sheet is `icons.png` from
+What every mark on a card means. Each means one thing; the sheet is `icons.png` from
 `node tools/card-art/render.mjs`.
 
 | Mark | Means |
@@ -75,4 +80,5 @@ What every mark on the card canvas means. Each means one thing; the sheet is `ic
 
 A price rise on paper needs a screen: 059's nine small raises cost c3 about 30 points. Every price is
 a candidate: reason it in [card-pricing.md](card-pricing.md), and record the change
-in [rules-history.md](rules-history.md).
+in [rules-history.md](rules-history.md). Center a rate sheet on the printed prices before reading
+outliers: an off-center rate makes most of the set read wrong (055: insight at 4, 85 of 150 too dear).
