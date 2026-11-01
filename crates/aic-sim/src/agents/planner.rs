@@ -19,9 +19,10 @@
 //! beat by over `lead`, on the first guess and then on the mean: a guessed
 //! line is a noisy read, and the best of several noisy reads is mostly luck.
 //! Only one past the first test plays the other guesses, so a line
-//! unchallenged plays one. The default is one guess and no `lead` (061):
-//! `deals=4,lead=60` read no stronger on fresh seeds and cost 1.25-1.28 × a
-//! game, so sampling is a spec away, not the shipped play.
+//! unchallenged plays one. The default is four guesses and no `lead` (064):
+//! it led one guess by 12.5 ±5.4 on 96 fresh paired seeds for 1.57 × (c2) and
+//! 1.54 × (c3) an action. `lead` lost points, sampling gained them (060), and
+//! `deals=1,lead=0`, 061's default, is a spec away.
 //!
 //! **Speed.** Because the game is deterministic from a state, the line chosen
 //! at one decision is still valid at the next: the engine's own continuation

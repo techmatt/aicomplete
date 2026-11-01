@@ -191,7 +191,7 @@ fn a_clean_city_holding_corrupt_at_ambassadors_is_corrupted() {
     let (rules, mut g) = lab(&["adversary.corrupt"]);
     let m = &rules.map;
     let n = rules.world().int("adversary.corrupt_at");
-    assert_eq!(n, 6);
+    assert_eq!(n, 5);
     let [a, b, aligned] = [0, 1, 2].map(|i| m.numbered(0, piece(0).cities[i]));
     put(&mut g, a, ADV_AMBASSADOR, n);
     put(&mut g, b, ADV_AMBASSADOR, n - 1);

@@ -1,0 +1,25 @@
+{
+  "name": "triage-064d",
+  "note": "064: triage-064c's steps moved under 6 points, triage-064b's over 20. The middle: the presence clock (c2 feels it most) and the Discord deck's tier. Engine, on triage-064's seeds, --seed 15000.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2-tp3", "set": ["board.troop_presence=3"]},
+    {"name": "c3-tp3", "set": ["countries=3", "board.troop_presence=3"]},
+    {"name": "c2-safe3", "set": ["board.last_safe_stage=3"]},
+    {"name": "c3-safe3", "set": ["countries=3", "board.last_safe_stage=3"]},
+    {"name": "c2-hold4", "set": ["board.hold_base=4"]},
+    {"name": "c3-hold4", "set": ["countries=3", "board.hold_base=4"]},
+    {"name": "c2-dtier1", "set": ["alignment.discord_tier2=1"]},
+    {"name": "c3-dtier1", "set": ["countries=3", "alignment.discord_tier2=1"]},
+    {"name": "c2-s1r2", "set": ["adversary.stage1_removed=2"]},
+    {"name": "c3-s1r2", "set": ["countries=3", "adversary.stage1_removed=2"]},
+    {"name": "c2-leaves2", "set": ["board.free_leaves=2"]},
+    {"name": "c3-leaves2", "set": ["countries=3", "board.free_leaves=2"]},
+    {"name": "c2-pstage3", "set": ["board.presence_stage=3"]},
+    {"name": "c3-pstage3", "set": ["countries=3", "board.presence_stage=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine"],
+  "games": 48,
+  "records": 0
+}

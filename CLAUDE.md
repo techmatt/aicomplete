@@ -62,10 +62,12 @@ The standing contract for every executor working in this repo.
   across one it gives no verdict, and `bench/per_decision.py` says what the change cost. Run
   it after the first screen, not last, while a fix can still be tested. On a busy machine a failure proves nothing: run `speed.py pair OLD NEW --only engine` instead,
   which holds under load. A slowdown you mean to keep: say why in the report and `--update`
-  the baseline.
+  the baseline. Read an agent's cost per action, not per game or round, with `per_decision.py`:
+  longer games inflate the others.
 - **Compare a lever with base on the same seeds, and confirm on fresh ones.** Pooling new
   seeds with the seeds that picked a winner is not confirmation: report the fresh seeds
-  alone.
+  alone. A lever added beside the asked one is screened on and off as a factorial: two changes
+  in one row can't say which did it.
 - **Write scripts with Write, not a Bash heredoc:** heredocs holding Python fail here. This
   box's other traps (6 cores, `wmic`/`tasklist` hangs, kill limits) are in the README's
   *This machine*.

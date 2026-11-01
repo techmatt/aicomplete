@@ -1,0 +1,11 @@
+{
+  "name": "gate-close-064-c3",
+  "note": "064: the c3 checks level with or ahead of the planner in the gate (--seed 17000), paired, on the gate's own seeds, to 48. Early-stopped from 16 to fit the budget: a check clearly behind stops. Its planner row is the gate's base.",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c3", "set": ["countries=3"]}],
+  "difficulties": [2],
+  "agents": ["planner", "planner:always_consolidate=1", "planner:tier2_rush=1", "planner:never_tag=3", "planner:never_tag=6", "planner:science_board=1"],
+  "games": 48,
+  "records": 0,
+  "gate": {"z": 2.0, "min_games": 16, "every": 8}
+}

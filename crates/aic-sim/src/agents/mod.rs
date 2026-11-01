@@ -250,7 +250,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
             ("samples", 1.0, "guesses of the hidden cards averaged per decision"),
             ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
-            ("deals", 1.0, "guesses of the Alignment deal a line's value is averaged over"),
+            ("deals", 4.0, "guesses of the Alignment deal a line's value is averaged over"),
             ("lead", 0.0, "what an alternative must lead the line to beat by, on the first deal and on the mean"),
         ],
     ),

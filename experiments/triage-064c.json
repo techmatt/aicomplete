@@ -1,0 +1,23 @@
+{
+  "name": "triage-064c",
+  "note": "064: extra_threats 2 and adversary_discord 1 are far too big (engine 58 / 56 to about 20 / 30). Smaller pushes, single steps, engine, on triage-064's seeds, --seed 15000.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2-corrupt5", "set": ["adversary.corrupt_at=5"]},
+    {"name": "c3-corrupt5", "set": ["countries=3", "adversary.corrupt_at=5"]},
+    {"name": "c2-unity34", "set": ["alignment.unity_cards=3,4"]},
+    {"name": "c3-unity34", "set": ["countries=3", "alignment.unity_cards=3,4"]},
+    {"name": "c2-free4", "set": ["alignment.free_city=4"]},
+    {"name": "c3-free4", "set": ["countries=3", "alignment.free_city=4"]},
+    {"name": "c2-bunity1", "set": ["board.base_unity=1"]},
+    {"name": "c3-bunity1", "set": ["countries=3", "board.base_unity=1"]},
+    {"name": "c2-tdisc2", "set": ["alignment.threat_discord=2"]},
+    {"name": "c3-tdisc2", "set": ["countries=3", "alignment.threat_discord=2"]},
+    {"name": "c2-credits5", "set": ["board.project_credits=5"]},
+    {"name": "c3-credits5", "set": ["countries=3", "board.project_credits=5"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine"],
+  "games": 48,
+  "records": 0
+}

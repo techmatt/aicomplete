@@ -97,8 +97,8 @@ handling gets in the way, it may be dropped. The `planner` (028) plays its rollo
 real state; each decision inside them still scores on a guess, because scored on open decks
 the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by printed cost.
 **One exception (053, D20):** no agent knows which Alignment cards a game dealt, rollouts
-included: that knowledge alone was worth 20-30 points at d2. The planner plays a line on one
-guess of the deal (061; `deals` averages over several, 054), never read from the table.
+included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
+the mean of four guesses of the deal (`deals`, 054, 064), never read from the table.
 
 ## Dominance checks (a standing gate; Matt, 2026-10-29)
 

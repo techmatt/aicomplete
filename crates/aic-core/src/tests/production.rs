@@ -62,12 +62,12 @@ fn stations_fill_the_megaproject_and_its_completion_pays_out() {
         g.var("alignment.discord"),
     );
     run(&rules, &mut g);
-    // The 7th cube completes it: 10 credits a player cube, 1 Discord per 2 adversary cubes.
+    // The 7th cube completes it: 10 credits a player cube, 1 Discord an adversary cube.
     assert_eq!(
         (g.resource(0, Resource::Credits) - c0, g.resource(1, Resource::Credits) - c1),
         (40, 10)
     );
-    assert_eq!(g.var("alignment.discord") - discord, 1);
+    assert_eq!(g.var("alignment.discord") - discord, 2);
     assert_eq!(g.var(&board::project_done(0)), 1);
     for s in [Some(0), Some(1), None] {
         assert_eq!(g.var(&board::project_key(0, s)), 0);

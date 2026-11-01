@@ -1,0 +1,19 @@
+{
+  "name": "triage-064b",
+  "note": "064: 4 deals at r25 read 81 / 73, so c2 needs more push than c3 and base sites push the wrong size. extra_threats and adversary_discord are flat across sizes, so they bite c2 harder. Engine, on triage-064's seeds, --seed 15000, a factorial with project_discord_per.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2-xt2", "set": ["adversary.extra_threats=2"]},
+    {"name": "c3-xt2", "set": ["countries=3", "adversary.extra_threats=2"]},
+    {"name": "c2-pd1-xt2", "set": ["board.project_discord_per=1", "adversary.extra_threats=2"]},
+    {"name": "c3-pd1-xt2", "set": ["countries=3", "board.project_discord_per=1", "adversary.extra_threats=2"]},
+    {"name": "c2-ad1", "set": ["alignment.adversary_discord=1"]},
+    {"name": "c3-ad1", "set": ["countries=3", "alignment.adversary_discord=1"]},
+    {"name": "c2-pd1-ad1", "set": ["board.project_discord_per=1", "alignment.adversary_discord=1"]},
+    {"name": "c3-pd1-ad1", "set": ["countries=3", "board.project_discord_per=1", "alignment.adversary_discord=1"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine"],
+  "games": 48,
+  "records": 0
+}

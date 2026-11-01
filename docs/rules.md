@@ -133,6 +133,10 @@ nothing. When the card is full it **completes**: each player cube pays its owner
 `project_discord_per`. From then on each owned station in that country produces the
 card's benefit for its owner every round.
 
+**For new players.** A city falls to the adversary at 5 of its ambassadors, so clear a city before it
+reaches 5. When a megaproject completes, every adversary cube on it is 1 Discord, so keep the research
+stations out of the adversary's hands.
+
 ## 2. Ambassadors
 
 **An ambassador sits on a piece. The next time that piece does its normal thing, the
@@ -193,7 +197,7 @@ Player ambassadors move only through cards and the standard action.
    ambassadors. **A surplus with nowhere to
    go returns to the supply.**
 3. **Corrupt** (`adversary.corrupt`): a city that is not corrupted holding `corrupt_at`
-   (6; 018: was 5) adversary ambassadors becomes corrupted (an aligned city loses its player cube);
+   (5; 064: was 6) adversary ambassadors becomes corrupted (an aligned city loses its player cube);
    its ambassadors return to the supply; any player ambassadors waiting there are lost (024,
    any corruption; they would free it in the same step).
 4. **Reveal** (`adversary.reveal`, after `threats.deal`): the top card goes face up as
@@ -636,7 +640,7 @@ Sway for every `momentum_every` tips that side has made, down to 1 per player.
 | Discord | energy diverted (a corrupted city, an ambassador on a city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 of an ambassador's |
 | Discord | an adversary ambassador on a producing base | `base_discord` 1 |
 | Discord | a facility destroyed in war (not by an adversary troop; 018) | `destruction_discord` 0 |
-| Discord | adversary cubes on a completed megaproject | 1 per `project_discord_per` 2 |
+| Discord | adversary cubes on a completed megaproject | 1 per `project_discord_per` 1 |
 | Discord | an uncountered threat, the antimatter action, twists, Discord cards, adversary projects | `threat_discord` 1, `antimatter_discord` 1, card text |
 | Discord | the adversary at the start of every round | `adversary_discord` 0 |
 <!-- /generated -->
@@ -768,7 +772,7 @@ Discord cards' printed steps. What the old escalation did:
 | The "difficulty in play" shown to players | gone: the view shows the configured level |
 
 <!-- generated: game_end -->
-**How the game ends, for new players.** You win by purging the board or by drawing the last Unity card. Pressure comes every round: the face-up adversary card names a kind of site, and every such site gains an adversary ambassador, so you always know where the next wave lands. Ambassadors pile up, pairs become nodes, 6 on a city corrupt it, and corrupted cities and uncountered threats push the Alignment track toward Discord. Each time the track tips, a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Pushing back works the same way in your favor. Mass your ambassadors on a corrupted city to free it, which sways toward Unity, and each Unity tip brings a good card. The Unity deck is small too: a game deals only 6, and drawing the last wins at once. 2 Unity tips and the purge asks only for no nodes and no corrupted cities; 4 and it asks only for no corrupted cities. You also lose if any player has no presence left on the board. Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and a lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most, though games rarely reach it. So there are three different pressures: the Discord deck (politics), your presence (the board) and the cap.
+**How the game ends, for new players.** You win by purging the board or by drawing the last Unity card. Pressure comes every round: the face-up adversary card names a kind of site, and every such site gains an adversary ambassador, so you always know where the next wave lands. Ambassadors pile up, pairs become nodes, 5 on a city corrupt it, and corrupted cities and uncountered threats push the Alignment track toward Discord. Each time the track tips, a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Pushing back works the same way in your favor. Mass your ambassadors on a corrupted city to free it, which sways toward Unity, and each Unity tip brings a good card. The Unity deck is small too: a game deals only 6, and drawing the last wins at once. 2 Unity tips and the purge asks only for no nodes and no corrupted cities; 4 and it asks only for no corrupted cities. You also lose if any player has no presence left on the board. Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and a lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most, though games rarely reach it. So there are three different pressures: the Discord deck (politics), your presence (the board) and the cap.
 <!-- /generated -->
 
 **027's adaptations (each a candidate; the screen is in
@@ -1314,7 +1318,7 @@ edit the source, not the table.
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | megaproject cubes a research station makes a round |
 | `board.project_credits` | 10 | 0..50 | credits each player cube pays when a megaproject completes |
-| `board.project_discord_per` | 2 | 1..10 | adversary cubes per Discord when a megaproject completes |
+| `board.project_discord_per` | 1 | 1..10 | adversary cubes per Discord when a megaproject completes |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy an adversary ambassador on a clean or aligned city diverts |
 | `board.base_discord` | 1 | 0..10 | Discord an adversary ambassador on a producing base sways |
@@ -1360,7 +1364,7 @@ edit the source, not the table.
 | `adversary.city_build` | 1 | 0..10 | build: ambassadors each corrupted city gains |
 | `adversary.factory_build` | 0 | 0..10 | build: ambassadors each factory next to a corrupted city gains |
 | `adversary.spread_range` | 2 | 1..6 | spread: how far (hexes) a spreading ambassador may travel |
-| `adversary.corrupt_at` | 6 | 1..20 | corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted |
+| `adversary.corrupt_at` | 5 | 1..20 | corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted |
 | `adversary.escalation_ambassadors` | 1 | 0..5 | stage-II escalation: ambassadors each base it reaches gains when the card builds |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty 1+: added to every threat's first counter requirement |
 | `adversary.counter_bonus_all` | 0 | 0..10 | difficulty 1+: added to every counter requirement of every threat |

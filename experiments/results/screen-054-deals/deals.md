@@ -33,9 +33,12 @@ Tuning, c2 / c3 win %, each cell 32 seeds; ms is a decision, same run.
 At `prune=6` it won 29% at c3 (14 seeds), 81 at 12, 75 at 0 (16 seeds): a dropped action stays out for
 the whole phase, so the rollout policy was never the engine, and the shortlist was carrying it.
 
-**Sampling added nothing at c2 and cost about 14 at c3 against one guess** (tuning, about ±6). Why isn't
-settled. The likely cause is the two-part `lead` test, which makes switching rare, so more of the play is
-the line's. `deals=4,lead=0,prune=12` was not run: over the time limit. **The sampled agent shipped
+**Retracted (060): "sampling cost about 14 at c3".** No `prune` 12 row here separated `deals` from `lead`:
+every sampled row had a lead and no one-guess row did. 060's scratch 2×2 at r25 (c3, seeds 1000-1031) did:
+`lead` lost the points and sampling gained them. One guess 56 and 41 at `lead` 0 and 60, 4 deals 72 and 59
+(4 deals over 1: +16 ±11 at `lead` 0). The 2×2 is in 060's report; 064 read it on fresh seeds. What this
+section first said: sampling added nothing at c2 and cost about 14 at c3 against one guess (tuning, about
+±6). `deals=4,lead=0,prune=12` was not run here: over the time limit. **The sampled agent shipped
 because the prompt asked for it and the question to Matt went to its default; `planner:deals=1,lead=0` is
 the strongest setting measured and is one spec away.** It has no fresh-seed read.
 

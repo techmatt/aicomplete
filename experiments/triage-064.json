@@ -1,0 +1,17 @@
+{
+  "name": "triage-064",
+  "note": "064: levers for d2 under the engine, paired with base, 48 seeds a cell. Direction only: the engine sits below the planner at c3. sites0 (every base) moves c3, not c2, by construction. Seeds 15000: never the final band's.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]},
+    {"name": "c2-pd1", "set": ["board.project_discord_per=1"]},
+    {"name": "c3-pd1", "set": ["countries=3", "board.project_discord_per=1"]},
+    {"name": "c3-sites0", "set": ["countries=3", "adversary.base_sites_per_country=0"]},
+    {"name": "c3-pd1-sites0", "set": ["countries=3", "board.project_discord_per=1", "adversary.base_sites_per_country=0"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine"],
+  "games": 48,
+  "records": 0
+}

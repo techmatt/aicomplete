@@ -1,0 +1,15 @@
+{
+  "name": "band-064-final",
+  "note": "064: the verdict on the chosen planner at d2: base against project_discord_per 1 + corrupt_at 5, paired, on seeds nothing picked anything on, --seed 16000. r25 configs with the two values set by overlay.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": ["board.project_discord_per=2", "adversary.corrupt_at=6"]},
+    {"name": "c3", "set": ["countries=3", "board.project_discord_per=2", "adversary.corrupt_at=6"]},
+    {"name": "c2-new", "set": ["board.project_discord_per=1", "adversary.corrupt_at=5"]},
+    {"name": "c3-new", "set": ["countries=3", "board.project_discord_per=1", "adversary.corrupt_at=5"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner:deals=4,lead=0"],
+  "games": 48,
+  "records": 0
+}

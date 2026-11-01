@@ -1,0 +1,17 @@
+{
+  "name": "confirm-064-c2",
+  "note": "064: the chosen planner at c2, the size furthest over, on the levers the engine triage left, a factorial of project_discord_per and hold_base, then two bigger pushes. --seed 15000: the seeds that pick a lever, not the verdict.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c2-pd1", "set": ["board.project_discord_per=1"]},
+    {"name": "c2-hold4", "set": ["board.hold_base=4"]},
+    {"name": "c2-pd1-hold4", "set": ["board.project_discord_per=1", "board.hold_base=4"]},
+    {"name": "c2-pd1-hold4-corrupt5", "set": ["board.project_discord_per=1", "board.hold_base=4", "adversary.corrupt_at=5"]},
+    {"name": "c2-xt2", "set": ["adversary.extra_threats=2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner:deals=4,lead=0"],
+  "games": 48,
+  "records": 0
+}

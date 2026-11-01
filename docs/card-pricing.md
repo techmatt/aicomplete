@@ -92,7 +92,7 @@ Shields, delays and marker clearing are Science's alone (the content check refus
 all five cards that carried one already had the tag). The niche was real but thin: five cards in 150,
 kept 1.7-2.5 a game, played 1-1.5, and ignoring Science stayed level. So eight cards now do it, and
 each pays back by itself within two rounds of a marker or a threat landing near a city. Same
-yardsticks as 041; a marker on a city is also a step of `corrupt_at` 6, so one or two clears take a
+yardsticks as 041; a marker on a city is also a step of `corrupt_at` 5, so one or two clears take a
 city back out of reach of a Fifth Column round.
 
 | card | was | now | payback |

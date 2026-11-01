@@ -1,0 +1,10 @@
+{
+  "name": "gate-close-064-c2",
+  "note": "064: the c2 checks level with the planner in the gate (--seed 17000), 48 seeds, paired, on the gate's own seeds; its planner row is the gate's base at 48 seeds.",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c2", "set": []}],
+  "difficulties": [2],
+  "agents": ["planner", "planner:never_remove=1", "planner:no_powers=1"],
+  "games": 48,
+  "records": 0
+}

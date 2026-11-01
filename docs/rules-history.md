@@ -7,6 +7,17 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 26 (064): d2 re-centered for the four-deal planner.** (Bumped from the constant, 25.) The default
+planner is now `deals` 4, `lead` 0 (an agent change, chosen on fresh seeds, r25: 81 / 73 against one guess's
+69 / 60). Matt's standing ruling: push difficulty up where it can go. Measured on seeds 16000, nothing
+picked there: 75 / 71 (base 75 / 77); on the gate's seeds 17000, 67 / 52; the 96 together 71 / 62. See
+`experiments/results/screen-064-deals/deals.md`. Always-Consolidate at c3 still leads the gate (+17.5 ±9.4).
+
+| What | Was | Now | Status |
+|---|---|---|---|
+| `adversary.corrupt_at` | 6 | **5** (018 had raised it from 5) | candidate |
+| `board.project_discord_per` | 2 | **1**: every adversary cube on a completed megaproject is 1 Discord | candidate |
+
 **Still revision 25 (063): card terms and marks.** Matt's rulings on 059's design calls (2026-11-01). Words and
 marks only: no op, number or play changed, so no bump (the constant stays 25). The golden fingerprint moves because
 ids in the state were respelled; `same_play` compared every game field by field.

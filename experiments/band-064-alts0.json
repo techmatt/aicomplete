@@ -1,0 +1,10 @@
+{
+  "name": "band-064-alts0",
+  "note": "064: why no planner beats the engine at c2. The planner's line alone (alts=0: no alternative is rolled out), on the band's seeds, --seed 14000.",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c2", "set": []}],
+  "difficulties": [2],
+  "agents": ["planner:alts=0"],
+  "games": 48,
+  "records": 0
+}

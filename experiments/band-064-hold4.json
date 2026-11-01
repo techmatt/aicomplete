@@ -1,0 +1,13 @@
+{
+  "name": "band-064-hold4",
+  "note": "064: r26 (project_discord_per 1, corrupt_at 5) read 75 / 71 on --seed 16000, c2 on the band's edge. Adding hold_base 4 read 62 at c2 on the picking seeds and took purge wins down: its verdict, on seeds nothing picked anything on, --seed 18000. Adopted if both sizes land in 60-75 and nearer 67 than 75 / 71.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": ["board.hold_base=4"]},
+    {"name": "c3", "set": ["countries=3", "board.hold_base=4"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner"],
+  "games": 48,
+  "records": 0
+}
