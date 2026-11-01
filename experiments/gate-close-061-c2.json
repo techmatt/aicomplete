@@ -1,0 +1,10 @@
+{
+  "name": "gate-close-061-c2",
+  "note": "061: the c2 checks level with or close to the one-guess planner at the gate's 8 seeds (--seed 13000), 48 seeds, paired, on the band's seeds (--seed 8000).",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c2", "set": []}],
+  "difficulties": [2],
+  "agents": ["planner", "planner:tier2_rush=1", "planner:never_tag=2", "planner:no_powers=1"],
+  "games": 48,
+  "records": 0
+}

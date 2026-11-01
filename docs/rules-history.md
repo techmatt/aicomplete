@@ -65,6 +65,10 @@ instead of 2 (82 / 68: all three clocks live, c2 out of the band); those with `e
 46); with `escalation_ambassadors` 2 (83 / 54); with `project_discord_per` 1 (75 / 71); that last on
 its own (70 / 62, 56 seeds: inside the band, and the first number to try if more push is wanted).
 
+Agents, no rules change, 061: the default planner is one guess, `deals` 1, `lead` 0, `prune` 12. 48
+fresh seeds at r25 read 67 / 75 against `deals=4,lead=60`'s 67 / 69, for 0.8 × the time. See
+`experiments/results/screen-061-one-guess/one-guess.md`.
+
 Agents, no rules change, 054: the planner's lines average over 4 sampled Unity deals, an alternative
 must lead by `lead` 60, and rollouts keep `prune` 12 actions (6 crippled them). r23's band was read on
 the old planner: see `experiments/results/screen-054-deals/deals.md`.

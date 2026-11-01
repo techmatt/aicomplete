@@ -1,0 +1,13 @@
+{
+  "name": "band-061",
+  "note": "061: one guess against the 054 planner and the engine, d2, 2 and 3 countries, 48 seeds a cell, paired. Fresh seeds only: --seed 8000 was the verdict.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner:deals=1,lead=0", "planner:deals=4,lead=60", "engine"],
+  "games": 48,
+  "records": 0
+}

@@ -3,7 +3,10 @@
     python scripts/bench/per_decision.py OLD_ROOT NEW_ROOT [--agent planner] [--games 6]
         [--old-agent SPEC] [--first 1000] [--countries 2] [--pairs 2]
 
-Each ROOT is a checkout with `aic-sim.exe` built at ROOT/aic-sim.exe (and configs/). Plays
+    python scripts/bench/per_decision.py SIM.exe --old-agent SPEC_A --agent SPEC_B [...]
+
+Each ROOT is a checkout with `aic-sim.exe` built at ROOT/aic-sim.exe (and configs/); one `.exe`
+path instead compares two agent specs on that binary, from this directory's configs/. Plays
 the same seeds on both, one thread, in turn so a busy machine hits both alike; the best
 of `--pairs` passes. Prints each side's rounds, decisions and ms per game and per decision,
 and the ratio. Same rules: the same games, so any ratio is the code. Other rules: other
@@ -17,7 +20,9 @@ import sys
 
 
 def one(root, agent, games, first, countries):
-    cmd = [os.path.abspath(os.path.join(root, 'aic-sim.exe')), 'run', 'configs/baseline.json',
+    exe = root if root.endswith('.exe') else os.path.join(root, 'aic-sim.exe')
+    root = '.' if root.endswith('.exe') else root
+    cmd = [os.path.abspath(exe), 'run', 'configs/baseline.json',
            '--seed', str(first), '--agent', agent, '--games', str(games), '--threads', '1',
            '--json', '--set', f'countries={countries}', '--set', 'adversary.difficulty=2']
     run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
@@ -40,7 +45,8 @@ def main():
 
     def opt(name, default):
         return type(default)(argv[argv.index(name) + 1]) if name in argv else default
-    old, new = argv[0], argv[1]
+    old = argv[0]
+    new = argv[1] if len(argv) > 1 and not argv[1].startswith('--') else old
     agent, games, first = opt('--agent', 'planner'), opt('--games', 6), opt('--first', 1000)
     old_agent = opt('--old-agent', agent)
     countries, pairs = opt('--countries', 2), opt('--pairs', 2)
@@ -52,6 +58,8 @@ def main():
                 best[side] = r
     a, b = best['old'], best['new']
     print(f'{agent}, c{countries}, d2, {games} games from seed {first}, one thread, best of {pairs}')
+    if old_agent != agent:
+        print(f'old is {old_agent}, new is {agent}')
     print('| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |')
     print('|---|---|---|---|---|---|---|---|')
     for name, r in (('old', a), ('new', b)):

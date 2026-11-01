@@ -1,0 +1,10 @@
+{
+  "name": "gate-close-061-c3",
+  "note": "061: the c3 checks level with or close to the one-guess planner at the gate's 8 seeds (--seed 13000), 48 seeds, paired, on the band's seeds (--seed 8000).",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c3", "set": ["countries=3"]}],
+  "difficulties": [2],
+  "agents": ["planner", "planner:always_consolidate=1", "planner:never_tag=1", "planner:no_powers=1", "planner:always_expand=1", "planner:science_rush=1"],
+  "games": 48,
+  "records": 0
+}

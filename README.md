@@ -113,6 +113,9 @@ Current:
   too few across rules revisions (042: the same two binaries read 1.73 × on 6 seeds, 1.66 ×
   on 16 others); `--games 16` or more.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
+- Two agent specs on one binary (061): `bench/speed.py specs SIM A B`, `bench/per_decision.py
+  SIM.exe --old-agent A --agent B`, and `bench/first_divergence.py --cells DIR A B` for where two
+  cells of one run first play differently.
 - `bench/first_divergence.py OLD NEW` (046): where two runs of one spec first play differently,
   game by game.
 - `tune/` (007-008): `sweep.py`, `log_table.py`, `engine_sweep.py`.
@@ -541,7 +544,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing presence, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (008): income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that (014: 1 won 65% at d0 against 37% with 0 on the checkpoint's map; level within noise at d1–d3 on the map since edited); the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last presence); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price (023), and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1, 046); a card in hand counts by the chance it can be paid for before the end (credits and antimatter, from what the seat has and earns, factory credits included; `w.insight_wait` 1 also queues the hand for insight, but as written it made playing any card look costly and cut wins to 4%, so it is off); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (011, `w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `hand` 1, `hand_cost` 0.2, `built` 1, `built_cost` 0, `risk` 0.1, `ability` 0.5, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `insight_wait` 0, `clock` 30, `packet_keep` 1 (023), `packet_budget` 1 (046) |
-| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), its value the mean over `deals` guesses of the deal (054: played once to its first tip, then forked; an alternative must lead by `lead` on the first guess, and only then does it and the line it challenges play the others, then lead by `lead` on the mean); each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring), `deals` 4, `lead` 60. Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
+| `planner` | 028 (`agents/planner.rs`): the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), its value the mean over `deals` guesses of the deal (1 by default since 061; with more, 054: played once to its first tip, then forked; an alternative must lead by `lead` on the first guess, and only then does it and the line it challenges play the others, then lead by `lead` on the mean); each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins 19% against 59% (it drafts by printed cost). Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring), `deals` 4, `lead` 60. Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. |
 
 **Keeping by plan and the dominance checks (022, `agents/policy.rs`).** Greedy and
 engine keep drafted cards by a plan (`plan_keep` 1; 0 lets the heuristic decide keeps,
@@ -623,8 +626,8 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
 (059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
 the first block and 512 at the cap. Measured, in planner games a minute: 14 on 4 threads
-(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min), 15 on 8 (r24, the planner since 054). Budget
-40 min, and start it at least 55 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
+(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min), 15 on 8 (r24, the planner since 054), 19 on 8 (r25, one guess, 061: 388 of 512 games, 20.5 min). Budget
+30 min, and start it at least 55 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
 rate; for a gate that is to the cap, so the most it can take. Before a gate, `aic-sim experiment
 SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
 shows in minutes, not at the end of a block (its own `--out`: a run without `--resume` moves an
@@ -684,7 +687,8 @@ game, and win deltas stratified on rounds, against the card's tier. `cards.csv` 
 reads games.jsonl. Results: `experiments/results/screen-055-prices/prices.md`, whose `results.json`
 and `games.csv` feed the card viewer. A price sweep is a spec of overlays in `set`; paired against a
 base on the same seeds a 4-lever sweep on two agents at 48 seeds is 54 min, so a price pass gets about
-three sweeps in four hours.
+three sweeps in four hours; one guess (061) is about 0.8 × that, 43 min, so four. Planner games a
+minute on 8 threads, one guess: 29.6 at c2, 8.8 at c3.
 
 **Calibration and gate (053, r23)**: `experiments/gate.json` is gate-r23: gate-046's checks plus
 `abandon`, 8 seeds a check, early-stopped from 4, with `screen.py --gate DIR`. 8 seeds can't place a win
@@ -740,7 +744,7 @@ Compare two binaries with
 speed (054):** a dropped action stays out for the whole phase, and at `prune=6` the line alone
 (`planner:alts=0`, the check that the rollout policy is still the engine) won 29% at c3 against 81%
 at 12 and the engine's 78, for about 17% more time. `planner:deals=4` with `lead=0` costs about 2.4 ×,
-`lead=60` about 1.3-1.5 ×. `python
+`lead=60` about 1.25-1.28 × a game against the one-guess default (061, 48 seeds). `python
 scripts/bench/same_results.py DIR_A DIR_B` compares two experiment output directories,
 timing aside: the check that a speed-up changed no game. `same_play.py` is the wider one.
 

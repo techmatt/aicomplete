@@ -6,6 +6,10 @@
     python scripts/bench/speed.py pair OLD NEW [--old-config FILE] [--out FILE] [--only "AGENT[ cN]"]...
         # the same rows on two binaries in turn: use this for a before and after, because
         # the ratio holds on a busy machine and two `table` runs at different times don't
+    python scripts/bench/speed.py specs SIM SPEC_A SPEC_B [--countries 2,3] [--games N] [--out FILE]
+        # two agent specs on one binary, in turn on the same seeds (planner:deals=1,lead=0 against
+        # planner): games a minute on one thread and on --threads, and B's cost in A's games;
+        # --games sets the --threads column only: four planner runs at c3 on one thread are long
     python scripts/bench/speed.py compare BEFORE.json AFTER.json   # two `table` files
     python scripts/bench/speed.py check SIM                        # about 2 min, see below
     python scripts/bench/speed.py check SIM --update               # after a change meant to cost time
@@ -137,6 +141,26 @@ def pair(old, new, out, only, threads, old_config):
         save(out, rows)
 
 
+def specs(sim, a, b, out, threads, countries, games):
+    """Two specs on one binary, a-b-b-a as `pair`, on the same seeds, so the ratio holds under
+    load. The games differ with the agent: the ratio is whole games, per_decision.py splits it."""
+    rows = saved(out)
+    kind = a.split(":")[0]
+    one, many = next(((x, y) for k, x, y in TABLE if k == kind), (TABLE[-1][1], TABLE[-1][2]))
+    for c in countries:
+        n1, nn = max(1, one * 2 // c // (c - 1)), games or max(threads, many * 2 // c // (c - 1))
+        r = {}
+        for label, n, t in (("1", n1, 1), ("all", nn, threads)):
+            first = timed(sim, a, n, c, t)
+            secs_b = timed(sim, b, n, c, t) + timed(sim, b, n, c, t)
+            secs_a = first + timed(sim, a, n, c, t)
+            r[f"a_{label}"], r[f"b_{label}"] = 120 * n / secs_a, 120 * n / secs_b
+        rows[f"c{c}"] = {"a": a, "b": b, **r}
+        print(f"c{c}: 1 thread {r['a_1']:.1f} to {r['b_1']:.1f} games/min ({r['a_1'] / r['b_1']:.2f} x the time), "
+              f"{threads} threads {r['a_all']:.1f} to {r['b_all']:.1f} ({r['a_all'] / r['b_all']:.2f} x)", flush=True)
+        save(out, rows)
+
+
 def compare(before, after):
     with open(before, encoding="utf-8") as f:
         a = json.load(f)
@@ -193,6 +217,8 @@ if __name__ == "__main__":
     only = take(argv, "--only")
     threads = int((take(argv, "--threads") or [default_threads()])[-1])
     old_config = (take(argv, "--old-config") or [CONFIG])[-1]
+    countries = [int(c) for c in (take(argv, "--countries") or ["2,3"])[-1].split(",")]
+    games = int((take(argv, "--games") or [0])[-1])
     update = "--update" in argv
     argv = [a for a in argv if a != "--update"]
     if threads < 1 or any(a.startswith("--") for a in argv):
@@ -201,6 +227,8 @@ if __name__ == "__main__":
         table(argv[1], out, only, threads)
     elif argv[:1] == ["pair"] and len(argv) == 3:
         pair(argv[1], argv[2], out, only, threads, old_config)
+    elif argv[:1] == ["specs"] and len(argv) == 4:
+        specs(argv[1], argv[2], argv[3], out, threads, countries, games)
     elif argv[:1] == ["compare"] and len(argv) == 3:
         compare(argv[1], argv[2])
     elif argv[:1] == ["check"] and len(argv) == 2:
