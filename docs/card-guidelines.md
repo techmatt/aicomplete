@@ -29,19 +29,49 @@ design call for Matt, never a quiet exception.
 
 ## House wording
 
-The generator keeps these in one place: use them, and let the rulebook carry the rest.
+The generator keeps these in one place: use them, and let the rulebook carry the rest. The terms
+(facility, shield, ambassador, troop, in reach, a country you're in, here, Remove N, Draw, you
+have, Action) are defined once, in `HOUSE_TERMS` in `crates/aic-sim/src/docs.rs`, which prints them
+in [rules.md](rules.md)'s *Terms* and in [player-aid.md](player-aid.md).
 
-| Say | Because |
+**"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;
+the same token on presence is a "shield". "You gain the Harden action" is the Protector's action,
+not a keyword.
+
+**American English.** Content, faces, docs, UI and comments: Mobilization, Armored, Modeling.
+`aic-sim docs --check`, so the fast lane, refuses a British spelling (`crates/aic-sim/src/spelling.rs`).
+
+## Legend
+
+What every mark on the card canvas means. Each means one thing; the sheet is `icons.png` from
+`node tools/card-art/render.mjs`.
+
+| Mark | Means |
 |---|---|
-| "ambassador" alone | yours; the other side's is always "adversary ambassador" |
-| "troop" | troops are always the adversary's |
-| "in reach" | your reach, within 1 of your presence |
-| "a country you're in" | a country where you have presence |
-| "here" on a building | on this card, where its tokens sit |
-| "Draw 1 card" | every draw is from the tier-1 deck |
-| "Remove N" | as many as there are, up to N |
-| "you have", on tags and tokens | on your cards in play; covered buildings hold tokens that don't count |
-| "Action:" | once a round, always |
+| Square tile | a resource (credits, insight, chips, energy, antimatter, compute, cards) |
+| Disc | a token on a card: alone, on this card |
+| Bare silhouette | a piece on the board, or moving one |
+| Ringed circle | a tag |
+| Number before an icon | how many; no number means 1 |
+| Minus before an icon | pay or lose it now, 1 included |
+| `≤`N | up to N, your choice: a give, paid and received at the number you pick |
+| No box | once, now, you or this card |
+| Brown box | income: each round above the art, a track move below it |
+| Dark frame | acts on the adversary's pieces, projects or threats; its numbers are Remove N |
+| Dashed outline | another player |
+| Thin solid outline | counted across your cards, the "you have" box |
+| `→` | an Action: pay the left, get the right. A bare `→` is free |
+| `:` | an Effect: when the left happens, the right |
+| `/` | per |
+| OR, ALL, ACT | written out; ACT is an Action granted |
+| Shield | stops one destruction: alone, a hardening token on a facility; with presence, a shield; with a country, Aegis Dome Array's |
+| Shelter (roof) | a whole country, this round |
+| Presence | place it, paying its track step |
+| Presence with a struck-through coin | place it free |
+| Threat (`!`) | a threat. Counter is the threat struck through |
+| Jam (threat with a down arrow) | one threat needs that much less of each resource |
+| Clock | delay: a threat waits a round |
+| Requirement plates | yellow: at least; red: at most; stacked cards: built over |
 
 A price rise on paper needs a screen: 059's nine small raises cost c3 about 30 points. Every price is
 a candidate: reason it in [card-pricing.md](card-pricing.md), and record the change

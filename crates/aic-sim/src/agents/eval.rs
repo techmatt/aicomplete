@@ -81,7 +81,7 @@ pub struct Weights {
     pub project: f64,
     /// Each player presence on the board (reach, site claims, a share of
     /// city energy; its track income is counted as income).
-    /// Was `data_centre` (still accepted, see [`RENAMED`]).
+    /// Was `data_center` (still accepted, see [`RENAMED`]).
     pub presence: f64,
     /// Each node on the board (a cost: adversary compute, contests presence,
     /// blocks the purge).
@@ -195,7 +195,7 @@ pub struct Weights {
 const RENAMED: [(&str, &str); 3] = [
     ("opp_rate", "unity_rate_start"),
     ("hardware", "chips"),
-    ("data_centre", "presence"),
+    ("data_center", "presence"),
 ];
 
 /// A drafted card's keep price in credits (its tier's insight at
@@ -284,7 +284,7 @@ impl Default for Weights {
             production: 0.0,
             // 008: on, it cut the engine to 4% wins at d4 (96 games): spending
             // insight on one card lowered every other card's chance, so
-            // playing anything looked costly. Off until it is modelled per round.
+            // playing anything looked costly. Off until it is modeled per round.
             insight_wait: 0.0,
             clock: 0.0,
         }
@@ -434,7 +434,7 @@ impl Eval {
             for (s, mask) in near.iter_mut().enumerate().take(g.seats.len()) {
                 if g.tokens(h, common::presence(s)) > 0 {
                     *mask |= 1 << h;
-                    for &n in &hex.neighbours {
+                    for &n in &hex.neighbors {
                         *mask |= 1 << n;
                     }
                 }
@@ -483,7 +483,7 @@ impl Eval {
                     }
                     v += w.corrupted * w.freeing * share;
                     v += (w.ambassador - w.ambassador_board) * on;
-                    let around = world.map.hexes[h].neighbours.iter();
+                    let around = world.map.hexes[h].neighbors.iter();
                     let guards: i64 = around.map(|&n| g.tokens(n, ADV_AMBASSADOR)).sum();
                     v -= w.guard * guards as f64;
                 } else {
@@ -974,7 +974,7 @@ mod tests {
         assert_eq!(w.unity_rate_start, 1.5);
         assert!(w.set("unity_rate_start", 0.5));
         assert_eq!(w.unity_rate_start, 0.5);
-        assert!(w.set("data_centre", 2.5));
+        assert!(w.set("data_center", 2.5));
         assert_eq!(w.presence, 2.5);
     }
 }

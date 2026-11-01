@@ -146,7 +146,7 @@ pub fn next_discount(seat: usize) -> KeyBuf {
     KeyBuf::new("cards.next_discount.").num(seat)
 }
 
-/// Set once seat `s`'s Aegis Dome Array has saved a building this round (module `board`).
+/// Set once seat `s`'s Aegis Dome Array has saved a facility this round (module `board`).
 pub fn civic_used(seat: usize) -> String {
     format!("cards.civic_used.{seat}")
 }

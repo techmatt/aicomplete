@@ -105,8 +105,8 @@ pub struct HexView {
     pub hex: Hex,
     pub country: u8,
     pub piece_pos: [u8; 2],
-    /// Indices of on-board neighbours.
-    pub neighbours: Vec<usize>,
+    /// Indices of on-board neighbors.
+    pub neighbors: Vec<usize>,
     /// The printed hex number (1-16 on its piece), for tie-breaks.
     pub number: u8,
     /// What the hex is: `city`, `base`, `open` or `ocean`.
@@ -135,8 +135,8 @@ pub struct CountryView {
     pub name: String,
     /// The seat that plays this country (one seat per country).
     pub seat: u8,
-    /// Display colour from `content/map.json`.
-    pub colour: String,
+    /// Display color from `content/map.json`.
+    pub color: String,
     pub hexes: Vec<usize>,
     /// Token totals over the country's hexes (`tokens.<kind>`), then what
     /// modules add.
@@ -459,7 +459,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
             hex: cell.hex,
             country: cell.country,
             piece_pos: cell.piece_pos,
-            neighbours: cell.neighbours.clone(),
+            neighbors: cell.neighbors.clone(),
             number: cell.number,
             kind: cell.kind.name(),
             facing: cell.facing,
@@ -497,7 +497,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
                 index: c as u8,
                 name: content.map.countries[c].name.clone(),
                 seat: c as u8,
-                colour: geo.colour.clone(),
+                color: geo.color.clone(),
                 hexes: geo.hexes.clone(),
                 values: totals
                     .into_iter()

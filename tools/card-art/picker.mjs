@@ -47,7 +47,7 @@ await writeFile(
     {
       name: NAME,
       title: 'Card frames, round 3: one master frame, six variants',
-      intro: 'Every frame is steel-event-3 with its enamel recoloured in code, tier 2 gilded, buildings split: borders and bevels are the same pixels. Each card is a real card from content; only the faces (icons and box-worded rules text) are written for this round. Art windows are empty on purpose. These images show the full bleed: the outer steel or gold band sits inside the 3 mm the guillotine cuts away, so the splay, which is trimmed, is what a cut card looks like. Use the notes for what to change.',
+      intro: 'Every frame is steel-event-3 with its enamel recolored in code, tier 2 gilded, buildings split: borders and bevels are the same pixels. Each card is a real card from content; only the faces (icons and box-worded rules text) are written for this round. Art windows are empty on purpose. These images show the full bleed: the outer steel or gold band sits inside the 3 mm the guillotine cuts away, so the splay, which is trimmed, is what a cut card looks like. Use the notes for what to change.',
       rows,
     },
     null,

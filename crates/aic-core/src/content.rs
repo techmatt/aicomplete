@@ -107,9 +107,9 @@ pub struct LayoutDef {
 pub struct PiecePlacement {
     pub anchor: Hex,
     pub axes: [Dir; 2],
-    /// Display colour from the reference images; the core never reads it.
+    /// Display color from the reference images; the core never reads it.
     #[serde(default)]
-    pub colour: String,
+    pub color: String,
 }
 
 /// What a hex is. Cities, open land and ocean are printed on the piece; a

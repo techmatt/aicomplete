@@ -241,7 +241,7 @@
   "text": "The defender: plays on the board, with fewer building slots and energy income.",
   "innate": {
    "name": "Bulwark",
-   "text": "Standard action: pay 1 energy to harden 1 building in reach. When you play a Security card, each energy you pay counts as 1 credit.",
+   "text": "Standard action: pay 1 energy to harden 1 facility in reach. When you play a Security card, each energy you pay counts as 1 credit.",
    "passives": [
     {
      "op": "harden_action"
@@ -362,7 +362,7 @@
     ]
    },
    {
-    "name": "Consolidate: gain 3 energy and 2 credits; harden 2 buildings in reach",
+    "name": "Consolidate: gain 3 energy and 2 credits; harden 2 facilities in reach",
     "effects": [
      {
       "op": "gain",

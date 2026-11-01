@@ -22,7 +22,7 @@ point). Finals ran on fresh seeds 100000+ (200 games per cell for random and gre
   ended on the corruption pool, in rounds 2–7.
 - **The adversary snowballs:** about 8 → 13 → 27 → 44 pieces over rounds 1–3. Every
   drone hex becomes an outpost at the next build, and every outpost seeds explore on its
-  neighbours. Players destroyed 0–3 pieces a game.
+  neighbors. Players destroyed 0–3 pieces a game.
 - **Credits were the players' bottleneck.** Keeping drafted cards at 3 each ate the
   starting 12 credits in round 1, leaving nothing to play them with. (Greedy keeps nearly
   everything it drafts: its hand value ignores affordability. Humans would keep less, so
@@ -127,7 +127,7 @@ Greedy, 96 games per cell, seeds 200000+ (`results/variants-modules`,
 | opposition `off` | 91.7 | 63.5 | **The reward doesn't matter:** all four rewards are within noise of none |
 | threats `shared_row` | 75.0 | 21.9 | Every threat acts in every country: far harder; would need its own numbers |
 | threats `off` | 99.0 | 97.9 | **Threats carry the difficulty:** without them d4 is as easy as d0 |
-| cards `off` | 0.0 | 0.0 | Cards are the whole of the players' offence |
+| cards `off` | 0.0 | 0.0 | Cards are the whole of the players' offense |
 | spread `clusters` | 1.0 | 0.0 | Lost on population by round 4 (95 of 96); untuned |
 | spread `assets` | 4.2 | 0.0 | Lost on the pool by round 2. Its pool (3 per country) is its asset cap; `pool_reduction` 4 emptied it at d4, so assets keeps 1 |
 

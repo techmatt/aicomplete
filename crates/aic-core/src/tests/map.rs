@@ -32,7 +32,7 @@ fn every_layout_builds_and_every_piece_follows_the_design() {
                 assert!(map.hexes[h].industrial);
                 assert!(
                     map.hexes[h]
-                        .neighbours
+                        .neighbors
                         .iter()
                         .any(|&x| map.hexes[x].country as usize == c
                             && kind(&map, x) == HexKind::City),
@@ -52,14 +52,14 @@ fn every_layout_builds_and_every_piece_follows_the_design() {
             }
             for &o in &p.ocean {
                 assert!(
-                    map.hexes[at(o)].neighbours.len() < 6,
+                    map.hexes[at(o)].neighbors.len() < 6,
                     "country {c}: ocean #{o} is inland with {n} countries"
                 );
             }
             let start = at(p.presence);
             assert!(
                 map.hexes[start]
-                    .neighbours
+                    .neighbors
                     .iter()
                     .any(|&x| kind(&map, x) == HexKind::City),
                 "country {c}: the starting presence touches no city"
@@ -96,7 +96,7 @@ fn every_front_has_a_base_on_each_side_and_every_country_a_front() {
                     );
                 }
                 assert!(cell
-                    .neighbours
+                    .neighbors
                     .iter()
                     .any(|&x| map.hexes[x].country == other && land(x)));
             }
@@ -109,7 +109,7 @@ fn every_front_has_a_base_on_each_side_and_every_country_a_front() {
                 map.hexes[h].country == a
                     && land(h)
                     && map.hexes[h]
-                        .neighbours
+                        .neighbors
                         .iter()
                         .any(|&x| map.hexes[x].country == b && land(x))
             });
@@ -137,10 +137,10 @@ fn every_front_has_a_base_on_each_side_and_every_country_a_front() {
 }
 
 #[test]
-fn four_countries_make_a_ring_without_the_centre_pairs() {
+fn four_countries_make_a_ring_without_the_center_pairs() {
     let map = Map::build(crate::content(), 4).unwrap();
     let pairs: Vec<[u8; 2]> = map.fronts.iter().map(|f| f.countries).collect();
-    // Bottom 0, right 1, top 2, left 3: top-bottom and left-right only touch at the centre.
+    // Bottom 0, right 1, top 2, left 3: top-bottom and left-right only touch at the center.
     assert!(
         !pairs.contains(&[0, 2]) && !pairs.contains(&[1, 3]),
         "{pairs:?}"
@@ -159,7 +159,7 @@ fn an_ocean_edge_is_not_a_front() {
         .iter()
         .filter(|&&h| {
             map.hexes[h]
-                .neighbours
+                .neighbors
                 .iter()
                 .any(|&x| map.hexes[x].country == 0)
         })

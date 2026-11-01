@@ -120,7 +120,7 @@
   "effects": [
    {
     "op": "ambassadors",
-    "at": "player_buildings",
+    "at": "player_pieces",
     "count": 3
    },
    {
@@ -421,7 +421,7 @@
   "effects": [
    {
     "op": "ambassadors",
-    "at": "player_buildings",
+    "at": "player_pieces",
     "count": 4
    },
    {

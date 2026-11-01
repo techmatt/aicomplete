@@ -9,7 +9,7 @@ const fill = (d) => `<path d="${d}" fill="currentColor"/>`;
 
 const EYE = `${line('M2.5 12 Q12 2.5 21.5 12 Q12 21.5 2.5 12Z')}<circle cx="12" cy="12" r="3.6" fill="currentColor"/>`;
 
-// A square tile: its face colour, its glyph.
+// A square tile: its face color, its glyph.
 const RESOURCES = {
   credits: ['#d8a31a', `<circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2.4"/>${line('M14.8 9.2 Q12 7.6 10 9.2 Q8.6 10.9 11 12 Q15.4 13.2 13.8 15.2 Q11.6 16.8 9 15', 1.9)}`],
   insight: ['#7a48b8', EYE],
@@ -33,6 +33,8 @@ const AMBASSADOR = '<circle cx="12" cy="6" r="4.2" fill="currentColor"/><path d=
 const PIECES = {
   ambassador: AMBASSADOR,
   presence: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
+  // A placement that pays no track step: the presence, a coin struck through at its shoulder.
+  free_presence: `<g transform="translate(-2.500 2.500) scale(.84)">${fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z')}</g><circle cx="17.500" cy="6.500" r="5.200" fill="#efeadc" stroke="currentColor" stroke-width="1.800"/>${line('M13.800 10.200l7.400-7.400', 1.800)}`,
   factory: fill('M3 22V10l6 4v-4l6 4V3h6v19z'),
   // Moving a piece: the silhouette with an arrow.
   move: `<g transform="translate(-3.500 2) scale(.84)">${AMBASSADOR}</g>${line('M14.500 12h8M19 8l3.500 4-3.500 4', 2.4)}`,
@@ -53,6 +55,8 @@ const PIECES = {
   sway: `${line('M3 12h18M3 8v8M21 8v8', 2.200)}${fill('M9 6.500 16 12l-7 5.500z')}`,
   marker: fill('M12 2 22 12 12 22 2 12zM12 7l-5 5 5 5 5-5z'),
   threat: fill('M12 2 23 21H1zM10.800 9v6.500h2.400V9zm0 7.800v2.400h2.400v-2.400z'),
+  // A jam: the threat with its cost pressed down, needing less of each resource.
+  jam: `${line('M12 2.500 22.500 20.500H1.500z', 2.200)}${line('M12 7.500v8M8.500 12.500l3.500 3.500 3.500-3.500', 2.200)}`,
   // A delay: the threat waits.
   clock: `<circle cx="12" cy="12" r="9.500" fill="none" stroke="currentColor" stroke-width="2.400"/>${line('M12 6.500V12l4 2.500', 2.400)}`,
   // A threat struck through: countered.

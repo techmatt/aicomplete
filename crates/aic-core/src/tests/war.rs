@@ -134,10 +134,10 @@ fn bases_hold_at_most_three_units() {
 fn adversary_troops_strike_buildings_next_to_them() {
     let (rules, mut g0) = lab(&["board.march"]);
     let m = &rules.map;
-    let (city, n) = city_with_lonely_neighbours(m);
+    let (city, n) = city_with_lonely_neighbors(m);
     let at = n[0];
     let next: Vec<usize> = m.hexes[at]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .filter(|&x| x != city && kind(m, x) != HexKind::Ocean)
@@ -193,10 +193,10 @@ fn a_troop_that_strikes_is_used_up_and_one_with_no_target_stays() {
     let (rules, mut g0) = lab(&["board.march"]);
     let m = &rules.map;
     assert_eq!(rules.world().int("board.troop_spent"), 1);
-    let (city, n) = city_with_lonely_neighbours(m);
+    let (city, n) = city_with_lonely_neighbors(m);
     let at = n[0];
     let target = m.hexes[at]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&x| x != city && kind(m, x) != HexKind::Ocean)

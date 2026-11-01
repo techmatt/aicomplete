@@ -23,7 +23,7 @@ pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let w = cx.world;
     if g.tokens(h, ADV_AMBASSADOR) > 0 {
         adversary::remove(g, cx, h, 1);
-        cx.tally(g, "board.cancelled", 1);
+        cx.tally(g, "board.canceled", 1);
         return;
     }
     if has_building(g, h) && !corrupted(g, h) && cube_owner(g, h).is_none() && can_claim(&w, g, seat, h) {
@@ -65,7 +65,7 @@ pub fn guarded(w: &World, g: &GameState, h: usize) -> bool {
 pub fn hold(w: &World, g: &GameState, h: usize) -> i64 {
     let near: i64 = g.tokens(h, ADV_AMBASSADOR)
         + w.map.hexes[h]
-            .neighbours
+            .neighbors
             .iter()
             .map(|&x| g.tokens(x, ADV_AMBASSADOR))
             .sum::<i64>();

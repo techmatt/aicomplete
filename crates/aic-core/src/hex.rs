@@ -38,13 +38,13 @@ impl Hex {
         Hex::new(self.q * k, self.r * k)
     }
 
-    pub fn neighbour(self, d: Dir) -> Hex {
+    pub fn neighbor(self, d: Dir) -> Hex {
         self.add(d.offset())
     }
 
-    /// Neighbours in [`Dir::ALL`] order, so iteration order is fixed.
-    pub fn neighbours(self) -> [Hex; 6] {
-        Dir::ALL.map(|d| self.neighbour(d))
+    /// Neighbors in [`Dir::ALL`] order, so iteration order is fixed.
+    pub fn neighbors(self) -> [Hex; 6] {
+        Dir::ALL.map(|d| self.neighbor(d))
     }
 
     pub fn distance(self, o: Hex) -> i32 {

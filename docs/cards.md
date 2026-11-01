@@ -50,11 +50,11 @@ config's card list.
 | Literature Crawler | 1 | program | 1 cr | 0 | science | Draw 1 card. |
 | Neural Cartographer | 1 | program | 2 cr | 1 | science, cyber | A node in reach makes no compute next build. Draw 1 card. |
 | Open Preprint | 1 | event (help) | 1 cr | 0 | science | Another player gains 1 insight. Draw 1 card. |
-| Predictive Modelling | 1 | program | 2 cr | 0 | science | Look at the next card of the adversary deck. Delay 1 threat one round. |
+| Predictive Modeling | 1 | program | 2 cr | 0 | science | Look at the next card of the adversary deck. Delay 1 threat one round. |
 | Red-Team Audit | 1 | program | 3 cr | 1 | science, cyber, security | One threat needs 1 less of each resource. Draw 1 card. |
 | Shared Compute Grant | 1 | program (help) | 1 cr | 1 | science | Another player gains 3 insight. |
 | Simulation Cluster | 1 | building | 3 cr; 1 ch | 1 | science, cyber | Action: pay 3 credits, draw 1 card. Pay 1 chip. Draw 1 card. |
-| Stress Test Suite | 1 | program | 2 cr | 0 | science | Gain 1 insight. Harden 2 of your presence. |
+| Stress Test Suite | 1 | program | 2 cr | 0 | science | Gain 1 insight. Shield 2 of your presence. |
 | Synthetic Data Forge | 1 | building | 4 cr; needs 1 science | 1 | science | Each round, 2 Datasets here. Action: pay 4 Datasets, get 2 insight. |
 | Telemetry Archive | 1 | building | 2 cr | 1 | science | Each round, 1 Dataset here. Action: pay 2 Datasets, delay 1 threat one round. |
 | Zero-Knowledge Exploit | 1 | event | 2 cr | 1 | science, cyber | Remove 2 compute from an adversary project. Draw 1 card. |
@@ -131,19 +131,19 @@ config's card list.
 | card | tier | kind | cost | insight | tags | effect |
 |---|---|---|---|---|---|---|
 | Baseload Contract | 1 | program | 3 cr | 1 | power | Raise your energy income by 1. |
-| Blackstart Protocol | 1 | program | 1 cr | 0 | power | Gain 2 energy. Harden 1 building in reach. |
+| Blackstart Protocol | 1 | program | 1 cr | 0 | power | Gain 2 energy. Harden 1 facility in reach. |
 | Brownout Relief | 1 | program (help) | 2 cr | 1 | power, diplomacy | Another player gains 2 energy and 1 insight. Place 1 presence. |
 | Capacitor Discharge | 1 | event | 0 cr | 0 | power | Gain 2 energy and 1 credit. |
 | Demand Response Grid | 1 | building | 3 cr | 1 | power | Action: pay 2 energy, get 6 credits. |
-| Faraday Yard | 1 | building | 5 cr | 1 | power | Each round, 1 energy. Action: pay 1 energy, harden 2 buildings in reach. |
+| Faraday Yard | 1 | building | 5 cr | 1 | power | Each round, 1 energy. Action: pay 1 energy, harden 2 facilities in reach. |
 | Fusion Startup Stake | 1 | program | 6 cr | 1 | power | Raise your energy income by 1. Raise your credit income by 1. |
 | Grid Census | 1 | program | 2 cr | 1 | power | Gain 1 energy per presence you have on the board. |
-| Hardened Conduits | 1 | program | 0 cr; 1 en | 0 | power | Pay 1 energy. Harden 3 buildings in reach. |
+| Hardened Conduits | 1 | program | 0 cr; 1 en | 0 | power | Pay 1 energy. Harden 3 facilities in reach. |
 | Peaker Turbines | 1 | program | 5 cr; -1 credits income | 1 | power, industry | Lower your credit income by 1. Raise your energy income by 2. |
 | Pylon Drop | 1 | program | 1 cr | 0 | power | Gain 1 energy. Place 1 presence. |
 | Relay Mast Rollout | 1 | program | 2 cr | 1 | power | Place 2 presence. |
 | Shared Grid Accord | 1 | program (help) | 0 cr; 2 en | 0 | power, diplomacy | Pay 2 energy. Another player gains 3 energy. Gain 2 credits. |
-| Storm Hardening | 1 | event | 0 cr; 2 en | 1 | power, diplomacy, security | Pay 2 energy. Shelter one country this round. Harden 2 buildings in reach. |
+| Storm Hardening | 1 | event | 0 cr; 2 en | 1 | power, diplomacy, security | Pay 2 energy. Shelter one country this round. Harden 2 facilities in reach. |
 | Substation Hub | 1 | building | 5 cr | 1 | power, industry | Each round, 1 energy, plus 1 credit per 2 Industry tags you have. |
 | Surplus Auction | 1 | event | 0 cr; 2 en | 0 | power | Pay 2 energy. Gain 3 chips and 1 credit. |
 | Tidal Barrage | 1 | building | 5 cr | 1 | power | Each round, 2 energy. |
@@ -168,13 +168,13 @@ config's card list.
 | Consulate Tower | 1 | building | 5 cr | 1 | diplomacy | Each round, 1 credit per 2 Diplomacy tags you have. Gain 1 ambassador. |
 | Development Loan | 1 | program (help) | 0 cr | 1 | diplomacy | Give another player up to 6 credits. Gain 1 ambassador. |
 | Embassy Compound | 1 | building | 5 cr | 1 | diplomacy, security | Action: pay 1 credit, move 1 ambassador on the board up to 2 hexes. Gain 2 ambassadors. |
-| Joint Security Compact | 1 | program (help) | 3 cr | 1 | diplomacy, security | Another player gains 2 energy and 1 insight. Harden 2 buildings in reach. |
+| Joint Security Compact | 1 | program (help) | 3 cr | 1 | diplomacy, security | Another player gains 2 energy and 1 insight. Harden 2 facilities in reach. |
 | Liaison Corps | 1 | building | 3 cr | 1 | diplomacy | Each round, 1 Follower here. Action: pay 2 Followers, get 2 ambassadors. |
 | Manifesto Leak | 1 | event | 1 cr | 0 | diplomacy | Add 3 Followers to one of your Follower buildings. |
 | Mutual Aid Pact | 1 | program (help) | 3 cr | 0 | diplomacy | Another player gains 4 credits. Gain 1 ambassador. |
 | Open Assembly | 1 | building | 2 cr | 1 | diplomacy, security | Each round, 1 Follower here. Action: pay 2 Followers, sway 1 toward Unity. |
 | Peace Dividend | 1 | program | 3 cr | 0 | diplomacy | Sway 1 toward Unity. Gain 2 credits. |
-| Peacekeeping Detail | 1 | program | 2 cr | 0 | diplomacy, security | Harden 2 buildings in reach. Move 1 ambassador on the board up to 2 hexes. |
+| Peacekeeping Detail | 1 | program | 2 cr | 0 | diplomacy, security | Harden 2 facilities in reach. Move 1 ambassador on the board up to 2 hexes. |
 | Shuttle Diplomacy | 1 | program | 2 cr | 0 | diplomacy | Move 1 ambassador on the board up to 2 hexes. Gain 1 ambassador. |
 | Summit Caucus | 1 | program | 3 cr | 1 | diplomacy | Move up to 3 ambassadors in reach onto one piece. Gain 1 ambassador. |
 | Treaty Grid Exchange | 1 | building | 6 cr | 1 | diplomacy, power, industry | Each round, 1 energy and 1 credit. |
@@ -194,7 +194,7 @@ config's card list.
 | Bounty Board | 1 | program | 3 cr | 1 | security | Remove 1 troop in reach. Gain 1 credit. |
 | Breach and Clear | 1 | event | 4 cr | 1 | security | Remove 2 adversary ambassadors or 1 troop from a hex in reach. Gain 2 credits. |
 | Diplomatic Expulsion | 1 | program | 3 cr | 0 | security, diplomacy | Remove 1 adversary ambassador in reach. Sway 1 toward Unity. |
-| Early Warning Drill | 1 | program | 2 cr | 1 | security, cyber, science | Delay 1 threat one round. Harden 1 of your presence. |
+| Early Warning Drill | 1 | program | 2 cr | 1 | security, cyber, science | Delay 1 threat one round. Shield 1 of your presence. |
 | Hardened Bunker Complex | 1 | building | 5 cr | 1 | security | Each round, 1 energy. Effect: you gain the Harden action. |
 | Hardpoint Lockdown | 1 | event | 3 cr | 0 | security | Shelter one country this round. Remove 1 adversary ambassador in reach. |
 | Interceptor Battery | 1 | building | 3 cr | 1 | security | Action: pay 2 energy, remove 1 troop in reach. |
@@ -205,7 +205,7 @@ config's card list.
 | Recruit Operatives | 1 | program | 1 cr | 0 | security | Add 3 Agents to one of your Agent buildings. |
 | Safehouse Network | 1 | building | 3 cr | 1 | security, diplomacy | Each round, 1 Agent here. Action: pay 2 Agents, shelter one country this round. |
 | Security Contractor HQ | 1 | building | 2 cr | 1 | security | Each round, 1 credit per 2 Security tags you have. |
-| Sentry Drone Wing | 1 | building | 3 cr | 1 | security | Each round, 1 Agent here. Action: pay 2 Agents, harden 2 buildings in reach. |
+| Sentry Drone Wing | 1 | building | 3 cr | 1 | security | Each round, 1 Agent here. Action: pay 2 Agents, harden 2 facilities in reach. |
 | Shared Threat Intel | 1 | program (help) | 2 cr | 0 | security, cyber | One threat needs 1 less of each resource. Another player gains 1 insight. |
 | Threat Triage | 1 | program | 2 cr | 0 | security | One threat needs 2 less of each resource. |
 | Aegis Dome Array | 2 | building | 6 cr; needs 1 security | 2 | security, diplomacy, power | Effect: each round, stop the first destruction in a country you're in. |
@@ -224,7 +224,7 @@ config's card list.
 | Modular Expansion | - | building | 4 cr | 1 | industry | Effect: you have 2 more building slots. |
 | Turnkey Factory | - | building | 3 cr | 1 | industry | Each round, 1 credit. Build a factory in reach. |
 | Venture Capital | - | program | 0 cr | 0 | industry | Gain 5 credits. Another player gains 2 credits. |
-| Point Defense | - | building | 3 cr | 1 | security | Action: pay 1 energy, harden 2 buildings in reach. |
+| Point Defense | - | building | 3 cr | 1 | security | Action: pay 1 energy, harden 2 facilities in reach. |
 | Sentinel Post | - | building | 0 cr | 0 | security | Each round, 1 energy. |
 | Shelter Order | - | event | 0 cr | 0 | security, diplomacy | Shelter one country this round. |
 | Strike Team | - | event | 1 cr | 1 | security | Remove 3 adversary ambassadors or 1 troop from a hex in reach. |

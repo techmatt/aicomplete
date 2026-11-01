@@ -49,7 +49,7 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
             };
             if destroy_piece(g, cx, h, FACTORY, Cause::War) {
                 destroyed += 1;
-                // War that destroys a building takes the presence on its hex
+                // War that destroys a facility takes the presence on its hex
                 // (027) and, by `war_reach`, around it (034).
                 for x in within(&w, h, w.int("board.war_reach")) {
                     if let Some(s) = presence_owner(g, x) {
@@ -160,7 +160,7 @@ pub(super) fn land_distances(w: &World, sources: impl Iterator<Item = usize>) ->
     }
     while let Some(h) = queue.pop_front() {
         let d = dist[h].unwrap_or(0);
-        for &n in &w.map.hexes[h].neighbours {
+        for &n in &w.map.hexes[h].neighbors {
             if dist[n].is_none() && !is_ocean(w, n) {
                 dist[n] = Some(d + 1);
                 queue.push_back(n);
@@ -184,7 +184,7 @@ pub fn troop_steps_from(w: &World, g: &GameState, at: usize) -> Vec<usize> {
         return Vec::new();
     };
     w.map.hexes[at]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .filter(|&n| !is_ocean(w, n) && gaps[n].is_some_and(|x| x < d))

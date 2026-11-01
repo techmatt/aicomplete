@@ -1,8 +1,8 @@
 // `npm run scene-picker`, after `npm run scene-gen`: everything below the raw draws, and
 // picks/<picker>.json. Nothing it writes but the manifest is committed. Runs at
 // below-normal priority, Chrome with it, one image at a time: the box is shared.
-// Each draw is centre-cut to the program window's shape, <id>.png beside raw/; building
-// windows centre-crop that again. Then its two sample cards (scenes.json) at 300 dpi in
+// Each draw is center-cut to the program window's shape, <id>.png beside raw/; building
+// windows center-crop that again. Then its two sample cards (scenes.json) at 300 dpi in
 // cards/, the same cards at true size in cards.pdf (9 to an A4 page), and one preview per
 // draw, scene over cards, in art-originals/picks/<picker>/. Reads and writes the originals
 // folder (lib.mjs). Stops, before any work, if that folder isn't reachable or a draw is
@@ -111,7 +111,7 @@ await writeFile(
     {
       name: NAME,
       title: `Card scenes, batch ${s.round.slice(1)}`,
-      intro: `Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its centre. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window${frameless ? ', and adversary, Discord and Unity cards have no frame yet, so their scenes sit on the nearest fit by name' : ''}. For true size, print art-originals/scenes/${s.round}/cards.pdf at 100%. Use the notes for what to change.`,
+      intro: `Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window${frameless ? ', and adversary, Discord and Unity cards have no frame yet, so their scenes sit on the nearest fit by name' : ''}. For true size, print art-originals/scenes/${s.round}/cards.pdf at 100%. Use the notes for what to change.`,
       rows,
     },
     null,

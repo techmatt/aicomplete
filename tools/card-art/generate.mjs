@@ -36,10 +36,10 @@ const framePrompt = (dir, kind) =>
     ...IMAGE_PREAMBLE,
     'Image shape: portrait, width to height 69:94, the attached guide\'s shape.',
     '',
-    p.frame.replace('{top}', kind === 'building' ? p.top : '').replace('{kind}', p.kinds[kind].colour) + p.directions[dir].style,
+    p.frame.replace('{top}', kind === 'building' ? p.top : '').replace('{kind}', p.kinds[kind].color) + p.directions[dir].style,
   ].join('\n');
 
-/** Crop centred to the bleed's shape, then scale: the kept original is untouched. */
+/** Crop centered to the bleed's shape, then scale: the kept original is untouched. */
 async function cut(src, id) {
   const m = await sharp(src).metadata();
   const want = W / H;

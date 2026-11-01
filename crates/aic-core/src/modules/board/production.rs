@@ -298,7 +298,7 @@ pub(super) fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
         let Some(s) = presence_owner(g, h) else {
             continue;
         };
-        // (020: a Sabotage flag used to skip the leak here, a data-centre-era
+        // (020: a Sabotage flag used to skip the leak here, a data-center-era
         // leftover the rules don't have; once F1 let the flag reach production
         // it would have helped the players.)
         if g.tokens(h, ADV_AMBASSADOR) == 0 {

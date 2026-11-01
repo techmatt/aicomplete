@@ -155,7 +155,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                 "Aegis Dome Array used",
                 1,
                 None,
-                "your Aegis Dome Array has saved a building this round",
+                "your Aegis Dome Array has saved a facility this round",
             );
         }
     }

@@ -137,7 +137,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     let m = &rules.map;
     let discord = |g: &GameState| g.var("alignment.discord") - g0.var("alignment.discord");
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
-    let (city, lonely) = city_with_lonely_neighbours(m);
+    let (city, lonely) = city_with_lonely_neighbors(m);
     let open = lonely[0];
 
     // A corrupted city's energy goes to the adversary: 1 Discord a unit.
@@ -233,7 +233,7 @@ fn a_player_ambassador_absorbs_a_destruction() {
     let (rules, mut g) = lab(&["board.march"]);
     let m = &rules.map;
     let at = m.numbered(0, piece(0).factories[0]);
-    for h in std::iter::once(at).chain(m.hexes[at].neighbours.iter().copied()) {
+    for h in std::iter::once(at).chain(m.hexes[at].neighbors.iter().copied()) {
         assert!(g.hexes[h].tokens.is_empty());
     }
     put(&mut g, at, FACTORY, 1);

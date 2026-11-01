@@ -68,11 +68,11 @@ try {
              links: document.querySelectorAll('#board .front-link').length, edges: document.querySelectorAll('#board .front-edge').length };
   })()`);
   check(board.n > 0 && JSON.stringify(board.keys) === JSON.stringify(board.want), `board has ${board.n} hexes with data-hex="q,r"`);
-  check(board.labels === board.countries && board.borders > 0, `${board.countries} countries labelled, ${board.borders} border edges`);
+  check(board.labels === board.countries && board.borders > 0, `${board.countries} countries labeled, ${board.borders} border edges`);
   check(board.kinds === 4 && board.fills === board.kinds, `hexes filled by kind (${board.fills} fills for ${board.kinds} kinds: city, base, open, ocean)`);
   check(board.bases > 0 && board.pennants === board.bases, `${board.pennants} military bases marked with the country they face`);
   check(board.fronts > 0 && board.links === board.fronts && board.edges > 0, `${board.links} fronts linked base to base, ${board.edges} front edges`);
-  // Tokens: one glyph per stack, owner cubes and presence in their owner's colour.
+  // Tokens: one glyph per stack, owner cubes and presence in their owner's color.
   const toks = await js(`(() => {
     const v = window.aic.view;
     const stacks = v.hexes.reduce((n, h) => n + h.tokens.length, 0);
@@ -82,7 +82,7 @@ try {
              adv: fill('cube:adversary'), presence0: fill('presence:0'), presence1: fill('presence:1') };
   })()`);
   check(toks.stacks > 0 && toks.drawn === toks.stacks, `${toks.drawn} token stacks drawn (${toks.kinds.join(', ')})`);
-  check(!!toks.adv && !!toks.presence0 && !!toks.presence1 && toks.presence0 !== toks.presence1 && toks.adv !== toks.presence0, `owner colours differ: adversary ${toks.adv}, seat 0 ${toks.presence0}, seat 1 ${toks.presence1}`);
+  check(!!toks.adv && !!toks.presence0 && !!toks.presence1 && toks.presence0 !== toks.presence1 && toks.adv !== toks.presence0, `owner colors differ: adversary ${toks.adv}, seat 0 ${toks.presence0}, seat 1 ${toks.presence1}`);
   const panels = await js(`({ pipeline: document.querySelectorAll('#pipeline .slot-box').length, alignment: document.querySelectorAll('#status .alignment .tug .bar').length,
                              undecided: !!document.querySelector('#status .alignment .undecided'),
                              next: document.querySelector('#pipeline .slot-box.next .acard .atext')?.textContent ?? '',
@@ -172,7 +172,7 @@ try {
       if (tgt.length) { tgt[Math.floor(Math.random() * tgt.length)].dispatchEvent(new MouseEvent('click', { bubbles: true })); return 'hex'; }
       const bs = [...document.querySelectorAll('#seats .actions button, #seats .pass-all')];
       if (!bs.length) return '';
-      // Favour plays over passes so games reach the cards.
+      // Favor plays over passes so games reach the cards.
       const plays = bs.filter((b) => !b.classList.contains('pass') && !b.classList.contains('pass-all'));
       const pool = plays.length && Math.random() < 0.7 ? plays : bs;
       pool[Math.floor(Math.random() * pool.length)].click();

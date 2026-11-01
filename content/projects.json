@@ -82,8 +82,8 @@
   "effects": [{"op": "adversary_build"}, {"op": "adversary_spread"}, {"op": "sway", "side": "discord", "amount": 2}]
  },
  {
-  "id": "armoured_columns",
-  "name": "Armoured Columns",
+  "id": "armored_columns",
+  "name": "Armored Columns",
   "stage": 2,
   "cost": 9,
   "text": "In each country, 2 troops land on factories, or cities if no factories.",

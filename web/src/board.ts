@@ -1,7 +1,7 @@
 // The SVG board, drawn from the engine's generic view: every hex of every country piece
 // (pointy-top axial, `data-hex="q,r"`), filled by what it is (city, military base, open
-// land, ocean), with a band in the country's colour along each country border, the
-// printed hex number, an industrial-zone mark, a pennant in the facing country's colour
+// land, ocean), with a band in the country's color along each country border, the
+// printed hex number, an industrial-zone mark, a pennant in the facing country's color
 // on each military base, the printed fronts (the land edges between two countries with
 // bases facing each other, and a dashed link between the two bases), and each token
 // stack drawn as a small glyph with its count. Knows no
@@ -9,7 +9,7 @@
 // plain counters.
 
 import type { HexView, Token, View } from './engine';
-import { ADVERSARY_COLOUR, contentIds, hexKey, kindFill, strong, tokenColour } from './format';
+import { ADVERSARY_COLOR, contentIds, hexKey, kindFill, strong, tokenColor } from './format';
 
 const SQRT3 = Math.sqrt(3);
 const NS = 'http://www.w3.org/2000/svg';
@@ -21,7 +21,7 @@ export interface Marks {
   changed: Set<string>;
 }
 
-const centre = (q: number, r: number): [number, number] => [SQRT3 * (q + r / 2), 1.5 * r];
+const center = (q: number, r: number): [number, number] => [SQRT3 * (q + r / 2), 1.5 * r];
 
 const corner = (x: number, y: number, k: number, s: number): [number, number] => {
   const a = (Math.PI / 180) * (60 * k - 30);
@@ -31,7 +31,7 @@ const corner = (x: number, y: number, k: number, s: number): [number, number] =>
 const corners = (x: number, y: number, s = 0.97) =>
   Array.from({ length: 6 }, (_, k) => corner(x, y, k, s).map((v) => v.toFixed(3)).join(',')).join(' ');
 
-/** Axial neighbour across the edge from corner k to corner k + 1. */
+/** Axial neighbor across the edge from corner k to corner k + 1. */
 const EDGE: [number, number][] = [[1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]];
 
 function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, text?: string) {
@@ -43,26 +43,26 @@ function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, 
 
 const f = (n: number) => n.toFixed(3);
 
-/** Colours a glyph may need besides its kind's own: a seat's, the hex's country's. */
+/** Colors a glyph may need besides its kind's own: a seat's, the hex's country's. */
 interface Paint {
   seat: (seat: number) => string;
   country: string;
 }
 
-/** The owner colour of `kind:owner` tokens: the adversary's, or the seat's. */
-const ownerColour = (arg: string | undefined, paint: Paint, fallback: string) =>
-  arg === 'adversary' ? ADVERSARY_COLOUR : arg !== undefined ? paint.seat(Number(arg)) : fallback;
+/** The owner color of `kind:owner` tokens: the adversary's, or the seat's. */
+const ownerColor = (arg: string | undefined, paint: Paint, fallback: string) =>
+  arg === 'adversary' ? ADVERSARY_COLOR : arg !== undefined ? paint.seat(Number(arg)) : fallback;
 
-/** A glyph for one token kind, centred on 0,0 with half-size `s`. */
+/** A glyph for one token kind, centered on 0,0 with half-size `s`. */
 function glyph(kind: string, s: number, paint: Paint): SVGElement {
   const g = el('g', {});
   const [base, arg] = kind.split(':');
-  const c = tokenColour(kind);
+  const c = tokenColor(kind);
   const p = (d: string, fill: string, cls = 'glyph') => el('path', { d, fill, class: cls });
   switch (base) {
     case 'cube': {
       // An owner cube, drawn in perspective: the top face lighter.
-      const col = ownerColour(arg, paint, c);
+      const col = ownerColor(arg, paint, c);
       const h = 0.87 * s;
       g.append(
         p(`M0,${f(-s)} L${f(h)},${f(-0.5 * s)} V${f(0.5 * s)} L0,${f(s)} L${f(-h)},${f(0.5 * s)} V${f(-0.5 * s)} Z`, col),
@@ -72,7 +72,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       break;
     }
     case 'ambassador': {
-      const col = ownerColour(arg, paint, c);
+      const col = ownerColor(arg, paint, c);
       g.append(
         el('circle', { cx: 0, cy: f(-0.5 * s), r: f(0.38 * s), fill: col, class: 'glyph' }),
         p(`M${f(-0.75 * s)},${f(0.95 * s)} Q${f(-0.75 * s)},${f(-0.05 * s)} 0,${f(-0.05 * s)} Q${f(0.75 * s)},${f(-0.05 * s)} ${f(0.75 * s)},${f(0.95 * s)} Z`, col),
@@ -91,8 +91,8 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       );
       break;
     case 'presence': {
-      // A player's presence: a server rack in the seat's colour.
-      const col = ownerColour(arg, paint, c);
+      // A player's presence: a server rack in the seat's color.
+      const col = ownerColor(arg, paint, c);
       g.append(el('rect', { x: f(-0.7 * s), y: f(-0.95 * s), width: f(1.4 * s), height: f(1.9 * s), rx: f(0.15 * s), fill: col, class: 'glyph' }));
       for (const yy of [-0.5, 0, 0.5]) {
         g.append(el('line', { x1: f(-0.45 * s), x2: f(0.2 * s), y1: f(yy * s), y2: f(yy * s), class: 'detail' }));
@@ -103,7 +103,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
     case 'node':
       // An adversary node: a diamond with a core.
       g.append(
-        p(`M0,${f(-s)} L${f(0.8 * s)},0 L0,${f(s)} L${f(-0.8 * s)},0 Z`, ADVERSARY_COLOUR),
+        p(`M0,${f(-s)} L${f(0.8 * s)},0 L0,${f(s)} L${f(-0.8 * s)},0 Z`, ADVERSARY_COLOR),
         el('circle', { cx: 0, cy: 0, r: f(0.28 * s), fill: '#ffcdd2' }),
       );
       break;
@@ -112,7 +112,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       g.append(p(`M0,${f(-s)} L${f(0.85 * s)},${f(0.8 * s)} L0,${f(0.35 * s)} L${f(-0.85 * s)},${f(0.8 * s)} Z`, c));
       break;
     case 'unit':
-      // Corp units at a base: rank chevrons in the base's country's colour.
+      // Corp units at a base: rank chevrons in the base's country's color.
       g.append(
         p(`M${f(-0.9 * s)},${f(-0.15 * s)} L0,${f(-0.85 * s)} L${f(0.9 * s)},${f(-0.15 * s)} V${f(0.25 * s)} L0,${f(-0.45 * s)} L${f(-0.9 * s)},${f(0.25 * s)} Z`, paint.country),
         p(`M${f(-0.9 * s)},${f(0.45 * s)} L0,${f(-0.25 * s)} L${f(0.9 * s)},${f(0.45 * s)} V${f(0.85 * s)} L0,${f(0.15 * s)} L${f(-0.9 * s)},${f(0.85 * s)} Z`, paint.country),
@@ -126,8 +126,8 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
     case 'corruption':
       // A corruption marker: a burnt patch with a cross through it, where a presence fell.
       g.append(
-        el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: '#e1bee7', stroke: ADVERSARY_COLOUR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
-        el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOUR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
+        el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: '#e1bee7', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
+        el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
       );
       break;
     default:
@@ -136,7 +136,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
   return g;
 }
 
-/** Glyph scale per kind: owner cubes and buildings a little larger than pawns. */
+/** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
 const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, presence: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, node: 1, corruption: 0.95 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its nodes, a corruption marker. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'node' || kind === 'corruption' || kind.endsWith(':adversary');
@@ -146,7 +146,7 @@ const rank = (k: string) => {
   return i < 0 ? ORDER.length : i;
 };
 
-/** Players' pieces and buildings on the upper row, the adversary's on the lower one. */
+/** Players' pieces and facilities on the upper row, the adversary's on the lower one. */
 function rows(tokens: Token[]): Token[][] {
   const sorted = [...tokens].sort((a, b) => rank(a.kind) - rank(b.kind) || a.kind.localeCompare(b.kind));
   const top = sorted.filter((t) => !isAdversary(t.kind));
@@ -178,12 +178,12 @@ function drawTokens(layer: SVGGElement, h: HexView, x: number, y: number, paint:
   });
 }
 
-/** A military base's pennant, in the colour of the country across its front. */
-function pennant(x: number, y: number, colour: string): SVGElement {
+/** A military base's pennant, in the color of the country across its front. */
+function pennant(x: number, y: number, color: string): SVGElement {
   const g = el('g', { class: 'base-mark', transform: `translate(${f(x)} ${f(y)})` });
   g.append(
     el('path', { d: 'M0,0.17 V-0.17', class: 'pole' }),
-    el('path', { d: 'M0,-0.17 L0.2,-0.1 L0,-0.03 Z', fill: colour, class: 'flag' }),
+    el('path', { d: 'M0,-0.17 L0.2,-0.1 L0,-0.03 Z', fill: color, class: 'flag' }),
   );
   return g;
 }
@@ -209,7 +209,7 @@ function arrowLayer(view: View, pts: number[][]): SVGElement {
   const layer = el('g', { class: 'arrows' });
   for (const a of view.arrows ?? []) {
     // From the troop (low on its hex, where the adversary's row sits) toward the
-    // target's centre, stopping short of it; the head follows the drawn shaft.
+    // target's center, stopping short of it; the head follows the drawn shaft.
     const [ax, ay] = [pts[a.from][0], pts[a.from][1] + 0.3];
     const [bx, by] = pts[a.to];
     const len = Math.hypot(bx - ax, by - ay);
@@ -235,7 +235,7 @@ function arrowLayer(view: View, pts: number[][]): SVGElement {
 export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
   svg.replaceChildren();
   if (!view.hexes.length) return;
-  const pts = view.hexes.map((h) => centre(h.hex[0], h.hex[1]));
+  const pts = view.hexes.map((h) => center(h.hex[0], h.hex[1]));
   const xs = pts.map((p) => p[0]);
   const ys = pts.map((p) => p[1]);
   const pad = 1.15;
@@ -244,8 +244,8 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
   const at = new Map(view.hexes.map((h) => [hexKey(h.hex), h]));
-  const countryColour = (c: number) => strong(view.countries[c]?.colour ?? '#888888');
-  const seatColour = (seat: number) => countryColour(view.seats[seat]?.country ?? seat);
+  const countryColor = (c: number) => strong(view.countries[c]?.color ?? '#888888');
+  const seatColor = (seat: number) => countryColor(view.seats[seat]?.country ?? seat);
   const war = view.globals.find((g) => g.key === 'board.war')?.value === 1;
   // The printed fronts: pairs of countries with a base facing each other.
   const fronts = new Set(view.hexes.filter((h) => h.kind === 'base' && h.facing !== undefined).map((h) => `${h.country}-${h.facing}`));
@@ -271,12 +271,12 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
       g.append(el('circle', { cx: f(x), cy: f(y + 0.62), r: 0.13, class: 'zone-mark' }));
       g.append(el('title', {}, 'industrial zone: cities build factories here'));
     }
-    if (h.kind === 'base' && h.facing !== undefined) g.append(pennant(x + 0.42, y - 0.42, countryColour(h.facing)));
+    if (h.kind === 'base' && h.facing !== undefined) g.append(pennant(x + 0.42, y - 0.42, countryColor(h.facing)));
     hexLayer.append(g);
 
-    // A band in the country's colour along every edge that leaves the country; a land
+    // A band in the country's color along every edge that leaves the country; a land
     // edge into another country's land is a front, drawn over it.
-    const band = countryColour(h.country);
+    const band = countryColor(h.country);
     EDGE.forEach(([dq, dr], k) => {
       const n = at.get(`${h.hex[0] + dq},${h.hex[1] + dr}`);
       if (n && n.country === h.country) return;
@@ -295,22 +295,22 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
       markLayer.append(el('polygon', { points: corners(x, y, 0.86), class: marks.targets.has(key) ? 'mark target' : 'mark changed' }));
     }
 
-    drawTokens(tokenLayer, h, x, y, { seat: seatColour, country: band });
+    drawTokens(tokenLayer, h, x, y, { seat: seatColor, country: band });
   });
 
   frontLayer.append(...frontLinks(view, pts));
 
-  // Country labels at each piece's centre, under the tokens and not catching the mouse.
+  // Country labels at each piece's center, under the tokens and not catching the mouse.
   for (const c of view.countries) {
     const cp = c.hexes.map((i) => pts[i]);
     const cx = cp.reduce((s, p) => s + p[0], 0) / cp.length;
     const cy = cp.reduce((s, p) => s + p[1], 0) / cp.length;
     const g = el('g', { class: 'country-label', 'data-country': c.index });
-    // The piece's printed name, a word per line, centred on the piece.
+    // The piece's printed name, a word per line, centered on the piece.
     const words = (c.name || `C${c.index}`).split(/\s+/);
     words.forEach((w, i) => {
       const dy = (i - (words.length - 1) / 2) * 0.62;
-      g.append(el('text', { x: f(cx), y: f(cy + dy), fill: strong(c.colour) }, w));
+      g.append(el('text', { x: f(cx), y: f(cy + dy), fill: strong(c.color) }, w));
     });
     labelLayer.append(g);
   }

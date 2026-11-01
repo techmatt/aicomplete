@@ -7,6 +7,23 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Still revision 25 (063): card terms and marks.** Matt's rulings on 059's design calls (2026-11-01). Words and
+marks only: no op, number or play changed, so no bump (the constant stays 25). The golden fingerprint moves because
+ids in the state were respelled; `same_play` compared every game field by field.
+
+| What | Was | Now | Status |
+|---|---|---|---|
+| Facility | "building" also meant a station or factory | **facility**; a building is always a card | candidate |
+| Harden | a facility or a hex of presence | a facility only; on presence it is a **shield**. "Harden action" stays, no keyword | candidate |
+| House words | in the guidelines and a rules paragraph | once, `HOUSE_TERMS`: rules.md's *Terms* and `docs/player-aid.md` | candidate |
+| Jam mark | a minus on the threat in the dark frame | its own mark, a threat with a down arrow | candidate |
+| Free placement | the presence mark | its own mark, presence with a struck-through coin | candidate |
+| "Up to N" gives | `−4` and 4 in the dashed box | `−≤4` and `≤4`: `≤`N is up to N | candidate |
+| Dashed box | another player, or your tokens | another player; a thin solid box counts across your cards | candidate |
+| Shelter mark | a whole country, and Aegis Dome Array's one stop | a whole country; Aegis Dome Array prints the shield mark and a country | candidate |
+| Bounty card | 059's suggestion | none for now | decided |
+| Spelling | mixed | American everywhere, ids included (Mobilization, Armored, Modeling); `aic-sim docs --check` refuses British spellings | locked |
+
 **Revision 25 (059): the card design pass.** (Bumped from the constant, 24.) Matt's principles
 (2026-10-31), [card-guidelines.md](card-guidelines.md). Every card is exception-free: no face prints a `*`,
 a cap, a footnote or a sum. 91 of 158 player cards changed in what they do or cost, 43 in words; all
@@ -89,7 +106,7 @@ backstop is **locked**: 0 cap losses is fine and it has no share target; all els
 | Shields, threat delays, marker clearing on cards | any card, by custom | Science only, refused at load (no card needed moving; `needs` unchanged, no tag mandatory) | candidate |
 | Field Sensor Grid | clear 1 | clear 2 | candidate |
 | Benchmark Suite | 1 insight, shield 1, 1 Dataset | 1 insight, shield 2 | candidate |
-| Predictive Modelling | 1 insight to play | 0 | candidate |
+| Predictive Modeling | 1 insight to play | 0 | candidate |
 | Threat Forecast Engine | peek 2, draw 1 | peek 1, one threat waits | candidate |
 | Shadow Broker Feed | peek 2, draw 1 | clear 1, draw 1 | candidate |
 | Mesh Intrusion Pact | gain 2 credits | shield 2 instead | candidate |
@@ -216,7 +233,7 @@ between keeping and playing, and 020's deferred calls, below; on 021's revision 
 **card primitives and the resource model**; on 020's revision 11: five bug fixes from the bug hunt; on 019's revision 10: adversary troops **march**
 toward player infrastructure and nodes are **hard to remove**, below; on 018's revision 9,
 the structural fixes and the calibration; on 017's revision 8): the 014 board model with player
-**presence** in place of data centres, the adversary's pieces as a readable **ladder**
+**presence** in place of data centers, the adversary's pieces as a readable **ladder**
 (ambassadors, nodes, troops, corrupted cities and stations), **factories** that grow
 from cities on printed industrial zones and make a new resource, **hardware**, a printed
 **production/war clock**, and the **purge** win eased by Unity. 017 gives adversary
@@ -349,7 +366,7 @@ nodes became hard to remove (results: `experiments/results/screen-019-troops/`).
 | An uncountered Blackout or Sabotage hits the **next** round's production and upkeep (§8) | "this round": threats execute after production and upkeep, so the flag was cleared before anything read it and both threats did nothing but their compute | fix (020) |
 | The move standard action is never offered onto the hex the seat's only ambassador already holds (§6) | offered; it charged the energy and moved nothing | fix (020) |
 | An adversary ambassador leaks a presence's compute only when the presence is alone on its hex (§2) | the leak took any adversary ambassador on a presence hex: a presence on a corrupted city stopped its spread for good, and one on a clean city or base ate the ambassadors gathering there | fix (020; the code's own comment said "with no other piece") |
-| Sabotage only stops upkeep compute (§8) | it also skipped the leak in its country, a data-centre-era leftover that became reachable with the first fix | fix (020) |
+| Sabotage only stops upkeep compute (§8) | it also skipped the leak in its country, a data-center-era leftover that became reachable with the first fix | fix (020) |
 | Purge the Unaligned's sacrifice offers the seat's own presence tokens (§3, Defaults 44) | it offered the free hexes where the seat could place one, so a "sacrificed presence" removed nothing | fix (020) |
 
 **Status (018).** Every 018 change is a **candidate**. Matt's structural fixes
@@ -395,7 +412,7 @@ sways Unity. The project deck is **near-locked** (Matt, 2026-10-29). Everything 
 | The Undecided smaller than twice a tip (3 a player against a tip of 2 a player) | candidate |
 | Unity for freeing a corrupted city (2) and for removing a node (1) | candidate |
 
-**Status (016).** Matt marked one decision **locked**: data centres are player
+**Status (016).** Matt marked one decision **locked**: data centers are player
 presence, placed with energy next to presence you already have (§1), and an
 adversary-owned factory, or one holding an adversary ambassador, makes an adversary
 troop (§4). Everything else 016 added is a **candidate**: the presence track and its
@@ -404,7 +421,7 @@ the clock, the purge easing.
 
 | 016 rule | Status |
 |---|---|
-| Presence replaces data centres; 1 energy, next to your presence, 1 per hex | **locked** |
+| Presence replaces data centers; 1 energy, next to your presence, 1 per hex | **locked** |
 | A factory that is adversary-owned or holds an adversary ambassador makes an adversary troop | **locked** |
 | Presence track (6 tokens, 1 on the board) and its uncovers | candidate |
 | Reach (card and standard-action map targets within 1 of your presence) | candidate |
@@ -423,7 +440,7 @@ Gone with 017: ongoing Alignment cards (Volunteer Corps and Propaganda are one-s
 the Discord escalation of the difficulty in play (`adversary.escalation`,
 `alignment.discord_escalate`; replaced by `alignment.discord_tier2`), and the
 `Stats.adversary_ops` / `setup_ops` fields (now the generic per-round counter
-`adversary.ops`). Gone with 016: data centres and their compute, the AI boards' two tracks, the player
+`adversary.ops`). Gone with 016: data centers and their compute, the AI boards' two tracks, the player
 "build a factory" standard action, the `overflow` adversary variant (nodes replace it),
 the fixed war rounds (`board.war`; the clock replaces them) and the unused per-country
 card strip. Gone with 014: population, processors, drones, outposts, foundries, uplinks,

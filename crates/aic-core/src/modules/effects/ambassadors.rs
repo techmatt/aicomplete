@@ -58,7 +58,7 @@ pub(super) fn spread_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize) ->
         }
         for a in each {
             let dest: Vec<usize> = w.map.hexes[a]
-                .neighbours
+                .neighbors
                 .iter()
                 .copied()
                 .filter(|&h| has_piece(&w, g, h))

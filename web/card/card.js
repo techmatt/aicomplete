@@ -29,7 +29,7 @@ function tags(card, [, y0, x1, y1]) {
   return shown.map((t, i) => `<div class="tag" style="${place([x1 - d - (shown.length - 1 - i) * (d + 1), y0, x1 - (shown.length - 1 - i) * (d + 1), y1])}" data-safe>${tagMedallion(t)}</div>`).join('');
 }
 
-/** The insight cost: a hexagon in front of the octagon, 0 omits it. Its rim matches the octagon's; the halo is the strip colour. */
+/** The insight cost: a hexagon in front of the octagon, 0 omits it. Its rim matches the octagon's; the halo is the strip color. */
 function insight(card, box) {
   if (!card.insight) return '';
   const pts = '26 3 74 3 97 43.300 74 83.600 26 83.600 3 43.300';
@@ -62,10 +62,11 @@ function part(p) {
   if (p.income) return `<span class="income">${p.income.map(part).join('')}</span>`;
   if (p.adversary) return `<span class="adversary">${p.adversary.map(part).join('')}</span>`;
   if (p.other) return `<span class="other">${p.other.map(part).join('')}</span>`;
+  if (p.yours) return `<span class="yours">${p.yours.map(part).join('')}</span>`;
   if (TEXT[p]) return TEXT[p]();
   if (isTag(p)) return `<span class="fx-tag">${tagMedallion(p.slice(1))}</span>`;
   if (isIcon(p)) return icon(p);
-  if (/^[−+]?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
+  if (/^[−+]?≤?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
   throw new Error(`no icon or number ${p}`);
 }
 const iconLine = (parts) => `<div class="fx-line" data-safe>${parts.map(part).join('')}</div>`;
@@ -169,15 +170,15 @@ export async function fitCards(root = document) {
  * @param layout   web/card/layout.json, through inset()
  * @param frameUrl the frame for this kind and tier
  * @param fit      optional measured zones of this frame (art/frames/r3/fit.json), in mm:
- *                 cost, banner, top, art, effect, the guide's where absent; plate, a colour
- * @param artUrl   optional scene for the art window, centre-cropped to it
+ *                 cost, banner, top, art, effect, the guide's where absent; plate, a color
+ * @param artUrl   optional scene for the art window, center-cropped to it
  *
  * Sizes are the defaults until fitCards has run on the card in the page.
  */
 export function renderCard(card, layout, frameUrl, fit = {}, artUrl) {
   const z = { ...layout.common, ...layout.kinds[card.kind], ...fit };
   const reqX = card.insight ? z.insight[2] + 0.5 : z.cost[2] + 2.4;
-  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}" style="--strip:${layout.kind_colour[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
+  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}" style="--strip:${layout.kind_color[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
   <img class="frame" src="${esc(frameUrl)}" alt="">
   ${artUrl ? `<img class="art" src="${esc(artUrl)}" alt="" style="${place(z.art)}">` : ''}
   <div class="content">

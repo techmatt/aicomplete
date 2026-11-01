@@ -175,10 +175,10 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Move => "move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Align => "align a clean city you can claim (1 ambassador)",
-        StandardAction::Harden => "harden a building in reach (Harden passive)",
+        StandardAction::Harden => "harden a facility in reach (Harden passive)",
         StandardAction::Chips => "sell 1 chip for credits",
         StandardAction::PresenceBuy => "the rich action: place a presence next to yours; steep, and rises with each use a round",
-        StandardAction::HardenBuy => "standard project: harden a building in reach",
+        StandardAction::HardenBuy => "standard project: harden a facility in reach",
         StandardAction::Energy => "standard project: gain 1 energy",
         StandardAction::Drain => "standard project: remove compute from an adversary project",
     };

@@ -41,7 +41,7 @@
 //!   it averages ([`planner`]).
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
-//! their keeps, and applies the dominance checks' forced behaviours.
+//! their keeps, and applies the dominance checks' forced behaviors.
 //!
 //! An agent is named by a spec, `kind[:key=value,...]`: `greedy`,
 //! `beam:width=4`, `rollout:rollouts=8,horizon=3`, and `w.<weight>=V` to
@@ -119,7 +119,7 @@ pub struct AgentSpec {
 pub type Param = (&'static str, f64, &'static str);
 
 /// A tier's own parameters, then the ones `greedy`, `engine` and `planner` share (022):
-/// keeping by plan, and the dominance checks' forced behaviours.
+/// keeping by plan, and the dominance checks' forced behaviors.
 macro_rules! with_policy_params {
     ($($own:expr),* $(,)?) => {
         &[
@@ -400,7 +400,7 @@ impl AgentSpec {
         w
     }
 
-    /// The forced behaviours (022): keeping by plan and the dominance checks.
+    /// The forced behaviors (022): keeping by plan and the dominance checks.
     pub fn forced(&self) -> policy::Forced {
         // An agent without these parameters is never wrapped, so its numbers
         // are read by nothing.
@@ -442,7 +442,7 @@ impl AgentSpec {
     }
 
     /// A fresh agent for one game: the search agent, wrapped in its keep
-    /// policy and forced behaviours when it has any (022).
+    /// policy and forced behaviors when it has any (022).
     pub fn build(&self, rules: &Rules, game_seed: u64) -> Box<dyn Agent + Send> {
         let inner = self.build_search(rules, game_seed);
         let forced = self.forced();

@@ -1,6 +1,6 @@
 //! The game's closed word lists as Rust enums: resources, tags, token types
 //! and the Alignment sides. Content, actions and the state name them in JSON
-//! by their snake_case word; everything else uses the enum, so a misspelt
+//! by their snake_case word; everything else uses the enum, so a misspelled
 //! resource or tag can't compile (or load).
 
 use std::fmt;

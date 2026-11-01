@@ -40,7 +40,7 @@ pub fn presence_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .filter(|&h| {
             free(h)
                 && w.map.hexes[h]
-                    .neighbours
+                    .neighbors
                     .iter()
                     .any(|&x| g.tokens(x, &mine) > 0)
         })

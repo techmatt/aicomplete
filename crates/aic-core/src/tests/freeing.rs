@@ -10,7 +10,7 @@ fn city(rules: &Rules, g: &mut GameState) -> (usize, usize) {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(g, h, ADV_CUBE, 1);
     put(g, h, &presence(0), 1);
-    let n = rules.map.hexes[h].neighbours[0];
+    let n = rules.map.hexes[h].neighbors[0];
     (h, n)
 }
 

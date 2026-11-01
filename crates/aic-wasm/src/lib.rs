@@ -62,8 +62,8 @@ pub fn resolve_config(config_json: &str) -> Result<String, JsValue> {
 }
 
 /// The board for a config: hexes (axial `[q, r]`, country, piece position,
-/// neighbours, printed number, kind, and for a military base the country it
-/// faces), countries (hex indices, colour) and fronts (the two
+/// neighbors, printed number, kind, and for a military base the country it
+/// faces), countries (hex indices, color) and fronts (the two
 /// countries and their bases). `state.hexes[i]` is `hexes[i]`.
 #[wasm_bindgen]
 pub fn board(config_json: &str) -> Result<String, JsValue> {

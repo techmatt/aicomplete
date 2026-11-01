@@ -46,11 +46,11 @@
 
 .card .name { font-family: 'Saira Condensed', sans-serif; font-weight: 600; font-size: 15pt; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; padding-bottom: 0.7mm; box-sizing: border-box; }
 
-/* The icons. A tile or disc is the painted blank with its face multiplied to the colour. */
+/* The icons. A tile or disc is the painted blank with its face multiplied to the color. */
 .card .ico { position: relative; display: inline-block; flex: none; width: 5.600mm; height: 5.600mm; background: center / 100% 100% no-repeat; }
 .card .ico.tile { background-image: url('containers/tile.png'); color: #fff; }
 .card .ico.disc { background-image: url('containers/disc.png'); color: #fff; }
-/* A disc's rim takes the colour too: only a tag has a bare metal ring. */
+/* A disc's rim takes the color too: only a tag has a bare metal ring. */
 .card .ico.tile::before, .card .ico.disc::before { content: ''; position: absolute; background: var(--c); mix-blend-mode: multiply; }
 .card .ico.tile::before { inset: 8%; border-radius: 8%; }
 .card .ico.disc::before { inset: 0; border-radius: 50%; }
@@ -76,7 +76,9 @@
 .card .income { border-image-source: url('containers/income.png'); border-image-slice: 15% 5% fill; color: #fff6e2; }
 .card .adversary { border-image-source: url('containers/adversary.png'); border-image-slice: 15% 5% fill; color: #f2f4f6; }
 .card .adversary .ico.piece, .card .income .ico.piece { color: currentColor; }
-.card .other { display: flex; align-items: center; gap: 0.7mm; padding: 0.5mm 1.200mm; border: 0.4mm dashed #23262a; border-radius: 1.200mm; }
+.card .other, .card .yours { display: flex; align-items: center; gap: 0.7mm; padding: 0.5mm 1.200mm; border-radius: 1.200mm; }
+.card .other { border: 0.4mm dashed #23262a; }
+.card .yours { border: 0.25mm solid #23262a; }
 
 /* The ladder fitCards walks in card.js, a box at a time; dense, the last step, is further down. */
 .card .rules { margin: 0; max-width: 51mm; font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; font-size: 7.500pt; line-height: 1.220; text-align: center; }
@@ -86,7 +88,7 @@
 .card .fx-tag .medallion { width: 5.200mm; height: 5.200mm; }
 .card .effect { gap: 0.5mm; }
 .card .effect .income, .card .effect .adversary { padding: 0 1.200mm; border-width: 0.3mm; }
-.card .effect .other { padding: 0.1mm 1.200mm; }
+.card .effect .other, .card .effect .yours { padding: 0.1mm 1.200mm; }
 .card .kind-building .once .ico, .card.kind-building .once .ico { width: 4.500mm; height: 4.500mm; }
 .card.kind-building .once .fx-num { font-size: 11pt; }
 .card .lasting .ico { width: 4.500mm; height: 4.500mm; }

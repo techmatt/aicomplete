@@ -65,7 +65,7 @@ fn a_new_row_is_dealt_when_all_three_have_resolved() {
             "station_coup",
             "recruitment_drive",
             "total_offensive",
-            "armoured_columns",
+            "armored_columns",
         ]
         .map(Key::new)
         .to_vec()
@@ -79,7 +79,7 @@ fn a_new_row_is_dealt_when_all_three_have_resolved() {
         g.pile(PROJECTS),
         ["station_coup", "recruitment_drive", "total_offensive"]
     );
-    assert_eq!(g.pile(PROJECT_DECK), ["armoured_columns"]);
+    assert_eq!(g.pile(PROJECT_DECK), ["armored_columns"]);
     // The 13th point went onto the cheapest of the new row (Recruitment
     // Drive, 20).
     assert_eq!(g.var(&adversary::project_key("recruitment_drive")), 1);
@@ -190,7 +190,7 @@ fn node_takedown_removes_a_node_in_reach() {
     let far = (0..m.hexes.len())
         .find(|&h| m.distance(p, h) >= 3 && g.hexes[h].tokens.is_empty())
         .unwrap();
-    let near = m.hexes[p].neighbours[0];
+    let near = m.hexes[p].neighbors[0];
     put(&mut g, far, NODE, 1);
     g.piles.insert("cards.hand.0".into(), vec!["node_severance".into()].into());
     set_res(&mut g, 0, Resource::Credits, 30);

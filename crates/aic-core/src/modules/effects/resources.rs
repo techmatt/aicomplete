@@ -53,12 +53,12 @@ pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
 
 pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
     let w = cx.world;
-        // 022: only buildings a token can protect, each at most once ("harden 2
-        // buildings" is two buildings; fewer if fewer exist).
+        // 022: only facilities a token can protect, each at most once ("harden 2
+        // facilities" is two facilities; fewer if fewer exist).
         let mut hexes = harden_hexes(&w, g, seat);
         for k in 0..count {
             let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = format!("Seat {seat}: hardening {} of {count} on which building?", k + 1);
+            let prompt = format!("Seat {seat}: hardening {} of {count} on which facility?", k + 1);
             let Some(j) = cx.choose(seat, &prompt, opts)? else {
                 break;
             };

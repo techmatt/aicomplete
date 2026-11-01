@@ -23,5 +23,5 @@
       "effect": [4.7, 72.0, 64.4, 87.3]
     }
   },
-  "kind_colour": { "program": "#0a6a38", "building": "#e0680a", "event": "#071660" }
+  "kind_color": { "program": "#0a6a38", "building": "#e0680a", "event": "#071660" }
 }

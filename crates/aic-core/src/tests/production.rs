@@ -4,7 +4,7 @@ use crate::modules::board;
 #[test]
 fn cities_power_the_player_with_the_most_presence_next_to_them() {
     let (rules, g0) = lab(&["board.produce"]);
-    let (city, n) = city_with_lonely_neighbours(&rules.map);
+    let (city, n) = city_with_lonely_neighbors(&rules.map);
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
 
     // 021: a neutral city's cube is lost unless a player with presence next
@@ -73,7 +73,7 @@ fn stations_fill_the_megaproject_and_its_completion_pays_out() {
         assert_eq!(g.var(&board::project_key(0, s)), 0);
     }
     assert_eq!(g.var(&board::project_key(1, None)), 1);
-    // Afterwards the owned station makes the project's benefit.
+    // Afterward the owned station makes the project's benefit.
     run(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Credits) - c0, 42);
     assert_eq!(g.var(&board::project_key(0, Some(0))), 0);

@@ -10,7 +10,7 @@ fn land_at(m: &Map, p: usize, d: i32) -> usize {
             m.distance(p, h) == d
                 && kind(m, h) != HexKind::Ocean
                 && m.hexes[h]
-                    .neighbours
+                    .neighbors
                     .iter()
                     .any(|&n| kind(m, n) != HexKind::Ocean && m.distance(p, n) == d - 1)
         })
@@ -158,7 +158,7 @@ fn with_troop_spent_off_a_troop_strikes_on_both_steps() {
     let m = &rules.map;
     let p = m.numbered(0, piece(0).presence);
     let q = m.hexes[p]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| kind(m, h) != HexKind::Ocean)
@@ -185,9 +185,9 @@ fn troops_walk_around_ocean_rather_than_stall() {
         .find(|&(t, p)| {
             land(p)
                 && m.distance(t, p) >= 3
-                && m.hexes[t].neighbours.iter().any(|&n| land(n))
+                && m.hexes[t].neighbors.iter().any(|&n| land(n))
                 && !m.hexes[t]
-                    .neighbours
+                    .neighbors
                     .iter()
                     .any(|&n| land(n) && m.distance(n, p) < m.distance(t, p))
         })

@@ -78,6 +78,8 @@ The standing contract for every executor working in this repo.
   it. Parallel helpers need their own `CARGO_TARGET_DIR`.
 - **`npm run check` in a fresh worktree needs the wasm built first:** `cd web && npm install &&
   npm run wasm`. It typechecks against `web/src/wasm/`, which is git-ignored.
+- **American English everywhere:** content, faces, docs, UI, comments and names. `aic-sim docs
+  --check` refuses a British spelling (`crates/aic-sim/src/spelling.rs`).
 - **LF line endings.** `.gitattributes` sets `* text=auto eol=lf`; don't override it.
 - **Cleanups never delete `review/`.** It is git-ignored and holds Matt's card notes
   (`review/card-notes.json`): nothing regenerates them.

@@ -951,7 +951,7 @@
         "pick_sum": 237,
         "played": 0
       },
-      "predictive_modelling": {
+      "predictive_modeling": {
         "drafted": 22,
         "drawn": 9,
         "kept": 33,
@@ -2193,7 +2193,7 @@
         "pick_sum": 165,
         "played": 1
       },
-      "predictive_modelling": {
+      "predictive_modeling": {
         "drafted": 34,
         "drawn": 3,
         "kept": 44,
@@ -3435,7 +3435,7 @@
         "pick_sum": 330,
         "played": 0
       },
-      "predictive_modelling": {
+      "predictive_modeling": {
         "drafted": 0,
         "drawn": 7,
         "kept": 11,

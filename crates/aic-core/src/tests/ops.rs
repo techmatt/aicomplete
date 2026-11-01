@@ -31,7 +31,7 @@ fn ops_check_the_resources_they_name() {
 }
 
 #[test]
-fn a_misspelt_word_does_not_load() {
+fn a_misspelled_word_does_not_load() {
     assert!(serde_json::from_str::<Op>(r#"{"op":"gain","resource":"credit","amount":1}"#).is_err());
     assert!(serde_json::from_str::<Tag>(r#""sciense""#).is_err());
     assert!(serde_json::from_str::<TokenKind>(r#""tokens""#).is_err());

@@ -12,10 +12,10 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     let m = &rules.map;
     let city = m.numbered(0, piece(0).corrupted[0]);
     put(&mut g0, city, ADV_CUBE, 1);
-    let next_to_city = |h: usize, c: usize| m.hexes[h].neighbours.contains(&c);
+    let next_to_city = |h: usize, c: usize| m.hexes[h].neighbors.contains(&c);
     let clean_city_next = |h: usize| {
         m.hexes[h]
-            .neighbours
+            .neighbors
             .iter()
             .any(|&x| kind(m, x) == HexKind::City && x != city)
     };
@@ -58,12 +58,12 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     );
     assert_eq!(g.tokens(far, ADV_AMBASSADOR), 1);
 
-    // Mobilisation (stage II): corrupted cities build 1 more, and the
+    // Mobilization (stage II): corrupted cities build 1 more, and the
     // escalation puts an ambassador on each country's first base (at 2
     // countries, its only one).
     let mut g = g0.clone();
     g.piles
-        .insert(NEXT.into(), vec!["adv_s2_mobilisation".into()].into());
+        .insert(NEXT.into(), vec!["adv_s2_mobilization".into()].into());
     run(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_AMBASSADOR), 3);
     for f in &m.fronts {
@@ -143,7 +143,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 2);
     let next: Vec<usize> = m.hexes[city]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .filter(|&h| land(h) && kind(m, h) == HexKind::Open)
@@ -259,7 +259,7 @@ fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
         .find(|&h| m.distance(h, city) > 2)
         .unwrap();
     corrupt_cities_except(m, &mut g, &[far]);
-    // The neighbour is a corrupted city holding one ambassador: a piece, not a clean city.
+    // The neighbor is a corrupted city holding one ambassador: a piece, not a clean city.
     put(&mut g, city, ADV_AMBASSADOR, 2);
     put(&mut g, target, ADV_AMBASSADOR, 1);
     // Keep the other pieces in range out of the way (each holds an ambassador and a node).

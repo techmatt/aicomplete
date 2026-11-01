@@ -40,7 +40,7 @@ pub enum Slot {
 #[serde(rename_all = "snake_case")]
 pub enum Spot {
     /// Player-owned pieces: presence, aligned cities, owned stations and factories.
-    PlayerBuildings,
+    PlayerPieces,
     CleanCities,
     Factories,
     Bases,
@@ -176,7 +176,7 @@ pub enum Op {
     ClearCity {
         max: i64,
     },
-    /// Put `count` hardening tokens on different buildings in reach.
+    /// Put `count` hardening tokens on different facilities in reach.
     Harden {
         count: i64,
     },
@@ -189,7 +189,7 @@ pub enum Op {
     GainAmbassadors {
         count: i64,
     },
-    /// In one country, buildings and presence can't be destroyed this round.
+    /// In one country, facilities and presence can't be destroyed this round.
     Shelter,
     /// The next `count` adversary cards are shown.
     Peek {
@@ -437,7 +437,7 @@ pub enum Op {
     },
     /// The adversary's spread places no ambassador on hexes holding your presence.
     SpreadShield,
-    /// Once a round, prevent the first building or presence destruction in a country
+    /// Once a round, prevent the first facility or presence destruction in a country
     /// where you have a presence.
     CivicShelter,
     /// While you have this building, cards discarded from hand that carry

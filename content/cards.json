@@ -436,8 +436,8 @@
   ]
  },
  {
-  "id": "predictive_modelling",
-  "name": "Predictive Modelling",
+  "id": "predictive_modeling",
+  "name": "Predictive Modeling",
   "tier": 1,
   "kind": "program",
   "cost": 2,

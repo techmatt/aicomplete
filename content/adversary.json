@@ -61,8 +61,8 @@
   ]
  },
  {
-  "id": "adv_s2_mobilisation",
-  "name": "Mobilisation",
+  "id": "adv_s2_mobilization",
+  "name": "Mobilization",
   "stage": 2,
   "text": "Arrivals: coastal cities. Each corrupted city gains 1 more adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
@@ -149,8 +149,8 @@
   "escalation": true
  },
  {
-  "id": "adv_s3_total_mobilisation",
-  "name": "Total Mobilisation",
+  "id": "adv_s3_total_mobilization",
+  "name": "Total Mobilization",
   "stage": 3,
   "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too.",
   "twists": [

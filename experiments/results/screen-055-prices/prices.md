@@ -4,7 +4,8 @@ Judged by the `planner`, d2. The revision is bumped from the constant, 23 (054 t
 is a candidate. Specs: `experiments/screen-055-prices.json`, `experiments/gate.json`,
 `experiments/gate-close-r24-c2.json`, `-c3.json`. Read with `scripts/cards/price_read.py`.
 `results.json` and `games.csv` here are the final measure (r24, seeds from 9000, 288 games), for the
-card viewer; `card-prices.csv` is the reasoned price of each of the 150 cards at r23's costs.
+card viewer; `card-prices.csv` is the reasoned price of each of the 150 cards at r23's costs; its `revision` column says
+so and the viewer prints it, since later items moved tier-2 costs.
 `price-read-r23.csv` and `price-read-r24.csv` are the per-card tables, before and after.
 
 Seeds, each used once for its purpose: 7000+ baseline and both sweeps (paired), 8000+ a candidate that
@@ -39,6 +40,10 @@ after): the speed check has nothing to report, and its baseline is re-recorded f
 ## What moved the game
 
 Paired on seeds from 7000 against the base; the planner's and the rush's win %, c2 / c3, 40-48 seeds, ±8-10.
+
+**Seed sets (062):** the rows here don't all share seeds. The base row and the 160-seed baseline above are not
+the same set, and the before and after figures above are 7000+ against 9000+, so read a before/after or a
+difference from the base row as across seed sets, not as paired.
 
 | Lever | planner | rush | |
 |---|---|---|---|
@@ -100,9 +105,10 @@ The checks level or ahead at 8 seeds, at 48, paired on the verdict seeds; gap = 
 
 **Three checks stay level at 48 seeds:** tier-2-rush and always-Consolidate (above) and no-powers (-6 ±8,
 -4 ±8), which is AI-board work, out of scope, and level at 053 too. **None is ahead beyond one SE**, and
-at 053's reading no check is beaten. **The gates made tags matter:** ignoring Industry went from +4 ±9 at
-c2 (053) to +15 ±9, ignoring Cyber from +8 ±9 to +23 ±9, a side effect nobody asked for. Ignoring Science
-is +8 ±8.
+at 053's reading no check is beaten. Ignoring Industry went from +4 ±9 at c2 (053) to +15 ±9, ignoring Cyber
+from +8 ±9 to +23 ±9. Ignoring Science is +8 ±8. **This does not show the gates made tags matter (062):** the
+comparison crosses 054's planner change, so the planner moved as well as the rules, and the claim first
+written here is unsupported.
 
 ## The reasoning list
 

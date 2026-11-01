@@ -52,7 +52,7 @@ pub use view::View;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Bump on **any** change to how the rules play out (module behaviour,
+/// Bump on **any** change to how the rules play out (module behavior,
 /// engine loop, RNG use), so results from different rules are never
 /// mistaken for the same experiment. Recorded with every result. The
 /// `golden_game` test fails until it is bumped and the golden fingerprint

@@ -123,7 +123,7 @@ pub fn destroy_own_presence(
     Ok(())
 }
 
-/// Uses a seat's `CivicShelter` passive (Aegis Dome Array) for a building or
+/// Uses a seat's `CivicShelter` passive (Aegis Dome Array) for a facility or
 /// presence destruction in `country`, if one applies.
 pub(super) fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
     let w = cx.world;
@@ -140,8 +140,8 @@ pub(super) fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> b
 }
 
 /// Whether a hardening token on hex `h` can protect something: a
-/// player-owned building that is not corrupted (what troops strike; 022:
-/// hardening went on any building, the adversary's too, where nothing used it).
+/// player-owned facility that is not corrupted (what troops strike; 022:
+/// hardening went on any facility, the adversary's too, where nothing used it).
 pub fn hardenable(g: &GameState, h: usize) -> bool {
     has_building(g, h) && cube_owner(g, h).is_some() && !corrupted(g, h)
 }

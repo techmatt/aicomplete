@@ -227,7 +227,7 @@ fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
 fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
-    let (city, next) = city_with_lonely_neighbours(m);
+    let (city, next) = city_with_lonely_neighbors(m);
     put(&mut g, next[0], &presence(0), 1);
     set_res(&mut g, 0, Resource::Energy, 2);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
@@ -243,7 +243,7 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
     assert!(!standard_offered(&rules, &g, 0).contains("align"));
 }
 
-/// 022 (D10): hardening goes only on buildings a token can protect (a
+/// 022 (D10): hardening goes only on facilities a token can protect (a
 /// player-owned one, not the adversary's), and "harden 2" is two
 /// different buildings (fewer if fewer exist).
 #[test]
@@ -255,7 +255,7 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
     let me = m.numbered(0, piece(0).presence);
     put(&mut g0, me, &presence(0), 1);
     let near: Vec<usize> = m.hexes[me]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .filter(|&h| kind(m, h) != HexKind::Ocean && m.hexes[h].country == 0)
@@ -310,7 +310,7 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
     let start = presence_of(&g, 0)[0];
     // A seat 1 presence next to it blocks that hex (one presence a hex).
     let blocked = rules.map.hexes[start]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| kind(&rules.map, h) != HexKind::Ocean)
@@ -350,7 +350,7 @@ fn card_targets_on_the_map_must_be_in_reach() {
     let m = &rules.map;
     let me = m.numbered(0, piece(0).presence);
     put(&mut g, me, &presence(0), 1);
-    let near = m.hexes[me].neighbours[0];
+    let near = m.hexes[me].neighbors[0];
     let far = hexes_where(m, |h| m.distance(h, me) > 2 && kind(m, h) != HexKind::Ocean)[0];
     put(&mut g, near, ADV_AMBASSADOR, 1);
     put(&mut g, far, ADV_AMBASSADOR, 1);
@@ -363,7 +363,7 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     let m = &rules.map;
     let station = m.numbered(0, piece(0).stations[0]);
     let next = m.hexes[station]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| kind(m, h) == HexKind::Open)
@@ -396,7 +396,7 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     let mut g = g0.clone();
     put(&mut g, next, &presence(0), 1);
     let node_far = m.hexes[next]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| m.distance(h, station) == 2)
@@ -409,7 +409,7 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     let mut g = g0.clone();
     put(&mut g, next, &presence(0), 1);
     let node_near = m.hexes[station]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| h != next && kind(m, h) != HexKind::Ocean)
@@ -430,7 +430,7 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     assert!(!board::can_claim(&rules.world(), &g, 0, station));
 
     // Aligning a city: likewise.
-    let (city, lonely) = city_with_lonely_neighbours(m);
+    let (city, lonely) = city_with_lonely_neighbors(m);
     let mut g = g0.clone();
     put(&mut g, lonely[0], &presence(0), 1);
     set_res(&mut g, 0, Resource::Energy, 2);
@@ -438,7 +438,7 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     assert!(standard_offered(&rules, &g, 0).contains("align"));
     // A node next to the presence, two from the city: still offered.
     let far = m.hexes[lonely[0]]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| m.distance(h, city) == 2)

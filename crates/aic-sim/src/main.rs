@@ -6,6 +6,7 @@
 mod agents;
 mod cli;
 mod docs;
+mod spelling;
 mod experiment;
 mod experiment_run;
 mod gate;

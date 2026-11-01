@@ -24,7 +24,7 @@ const scenePrompt = (scene) =>
     ...IMAGE_PREAMBLE,
     'Image shape: landscape, 3:2.',
     '',
-    `${s.preamble} ${s.emphasis} ${s.lighting} ${s.framing} ${scene.subject} The tag colour is ${s.tags[scene.tag].accent}.`,
+    `${s.preamble} ${s.emphasis} ${s.lighting} ${s.framing} ${scene.subject} The tag color is ${s.tags[scene.tag].accent}.`,
   ].join('\n');
 
 await drawAll(ids, pool, 'scene-gen', {

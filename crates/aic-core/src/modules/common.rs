@@ -3,7 +3,7 @@
 //! the board.
 //!
 //! Terms used throughout (see `docs/rules.md`):
-//! - **adjacent**: a neighbouring hex on the board (across country borders too);
+//! - **adjacent**: a neighboring hex on the board (across country borders too);
 //! - **next to X**: holding X, or adjacent to a hex holding X;
 //! - **reach**: a seat's reach is every hex within 1 of one of its presence.
 //! - **presence**: a player's tokens on the board (one per hex), placed off
@@ -24,7 +24,7 @@ pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
 pub const TROOP: &str = "troop";
 /// Corp units waiting at a military base (the base's country's corp).
 pub const UNIT: &str = "unit";
-/// A hardening token: absorbs one destruction of a building or presence on its hex.
+/// A hardening token: absorbs one destruction of a facility or presence on its hex.
 pub const HARDEN: &str = "harden";
 /// An adversary node: persistent, makes adversary compute, blocks claims next to it.
 pub const NODE: &str = "node";
@@ -124,18 +124,18 @@ pub fn has_adversary(g: &GameState, h: usize) -> bool {
     g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, TROOP) > 0
 }
 
-/// Hex `h`, and with `range` 1 its neighbours.
+/// Hex `h`, and with `range` 1 its neighbors.
 pub fn within(w: &World, h: usize, range: i64) -> Vec<usize> {
     let mut hexes = vec![h];
     if range > 0 {
-        hexes.extend(w.map.hexes[h].neighbours.iter().copied());
+        hexes.extend(w.map.hexes[h].neighbors.iter().copied());
     }
     hexes
 }
 
 /// Whether hex `h` holds, or is adjacent to a hex holding, something `pred` accepts.
 pub fn next_to(w: &World, h: usize, pred: impl Fn(usize) -> bool) -> bool {
-    pred(h) || w.map.hexes[h].neighbours.iter().any(|&n| pred(n))
+    pred(h) || w.map.hexes[h].neighbors.iter().any(|&n| pred(n))
 }
 
 /// Hexes of country `c`, or of the whole board for `None`, in board order.

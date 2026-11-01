@@ -172,17 +172,17 @@ fn corrupt_cities_except(m: &Map, g: &mut GameState, keep: &[usize]) {
     }
 }
 
-/// A city with at least three open neighbours that touch no other city.
-fn city_with_lonely_neighbours(m: &Map) -> (usize, Vec<usize>) {
+/// A city with at least three open neighbors that touch no other city.
+fn city_with_lonely_neighbors(m: &Map) -> (usize, Vec<usize>) {
     for c in cities(m) {
         let lonely: Vec<usize> = m.hexes[c]
-            .neighbours
+            .neighbors
             .iter()
             .copied()
             .filter(|&n| kind(m, n) == HexKind::Open)
             .filter(|&n| {
                 m.hexes[n]
-                    .neighbours
+                    .neighbors
                     .iter()
                     .all(|&x| x == c || kind(m, x) != HexKind::City)
             })
@@ -191,7 +191,7 @@ fn city_with_lonely_neighbours(m: &Map) -> (usize, Vec<usize>) {
             return (c, lonely);
         }
     }
-    panic!("no city with three lonely neighbours");
+    panic!("no city with three lonely neighbors");
 }
 
 fn piece(c: usize) -> &'static content::CountryPiece {
@@ -216,7 +216,7 @@ fn answer(rules: &Rules, g: &mut GameState, i: usize) {
         .unwrap();
 }
 
-/// Answers the open choice with the option labelled `label`.
+/// Answers the open choice with the option labeled `label`.
 fn answer_with(rules: &Rules, g: &mut GameState, label: &str) {
     let p = g.pending.as_ref().expect("a choice");
     let i = p.ask.options.iter().position(|o| o.option == label);
@@ -376,7 +376,7 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 25;
-const GOLDEN_FINGERPRINT: &str = "a6a33983adec0d15";
+const GOLDEN_FINGERPRINT: &str = "7aef90d4ab282039";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

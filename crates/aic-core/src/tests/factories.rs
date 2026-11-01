@@ -75,7 +75,7 @@ fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_fr
     let m = &rules.map;
     let at = |n: u8| m.numbered(0, n);
     // Country 0 (see above): city 6 builds first; zone 2 is taken, so its
-    // own neighbourhood has no free zone.
+    // own neighborhood has no free zone.
     put(&mut g0, at(2), STATION, 1);
     put(&mut g0, at(6), ADV_CUBE, 1);
     let adv = Some("cube:adversary".to_string());
@@ -270,7 +270,7 @@ fn a_troop_at_a_base_absorbs_a_strike_next_to_it() {
     let m = &rules.map;
     let [b0, _] = m.fronts[0].bases;
     let next = m.hexes[b0]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .find(|&h| kind(m, h) == HexKind::Open)

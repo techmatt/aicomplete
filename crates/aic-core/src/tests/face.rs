@@ -54,3 +54,29 @@ fn a_removal_says_which_pieces() {
     assert_eq!(face_of("spoofed_credentials").text, "Remove 1 adversary ambassador in reach.");
     assert!(face_of("agency_directorate").top_text.contains("remove 1 troop per hex of a country"));
 }
+
+/// 063: a facility is a station or factory; a building is always a card.
+#[test]
+fn harden_says_facility_and_a_shield_says_shield() {
+    assert_eq!(face_of("hardened_conduits").text, "Pay 1 energy. Harden 3 facilities in reach.");
+    assert_eq!(face_of("blackstart_protocol").text, "Gain 2 energy. Harden 1 facility in reach.");
+    assert_eq!(face_of("benchmark_suite").text, "Gain 1 insight. Shield 2 of your presence.");
+}
+
+/// 063: one mark, one reading.
+#[test]
+fn each_mark_has_one_reading() {
+    let json = |id: &str| serde_json::to_string(&face_of(id)).unwrap();
+    assert!(json("sentinel_mesh").contains(r#""−2","jam""#));
+    assert!(json("beamed_power_constellation").contains(r#""3","free_presence""#));
+    assert!(json("vendor_financing").contains(r#""−≤4","credits",{"other":["≤4","credits"]}"#));
+    // Dashed is another player; the solid box counts across your cards.
+    assert!(json("commons_grid").contains(r#"{"yours":["2","followers"]}"#));
+    assert!(json("aegis_dome_array").contains(r#"["harden","country"]"#));
+    for c in &content().cards {
+        let all = serde_json::to_string(&crate::face::card_face(c)).unwrap();
+        for token in ["datasets", "capital", "followers", "agents"] {
+            assert!(!all.contains(&format!("{{\"other\":[\"{token}\"")), "{}: tokens in the other's box", c.id);
+        }
+    }
+}

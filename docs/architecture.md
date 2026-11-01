@@ -291,7 +291,7 @@ other. Order matters the way it does at a table where the team talks it through.
 ### Adding a variant
 
 1. In the module's file, add a `VariantDef` to its `DEF.variants`, with a build function
-   and a `Module` impl. Shared behaviour can be one struct with an option, as
+   and a `Module` impl. Shared behavior can be one struct with an option, as
    `threats::Threats` (`shared`) does (`alignment::Alignment` reads its variant where it matters).
 2. Add its parameters to a config in `configs/` and run
    `aic-sim compare configs/old.json configs/new.json`, or sweep it in place with
@@ -347,13 +347,13 @@ Content is data in `content/`, composed from code primitives:
   bucket tips) and `steps` (017: from `at` tips of its side, other `effects`).
   Cards are one-shot; there is no `ongoing` field.
 - **Country pieces** (`map.json`, `countries`): cities, the order cities start
-  corrupted in (`corrupted`), ocean, setup buildings (research stations, factories),
+  corrupted in (`corrupted`), ocean, setup facilities (research stations, factories),
   the starting presence spot (`presence`), the printed industrial zones (`industry`), and the
   corp's megaproject card.
 
 Ids are unique across all content, and actions refer to content by id, so reordering a
 file does not break action logs. Tags, resources and token types are Rust enums
-(`vocab.rs`), so a misspelt one fails to load. `Content::check` validates the rest when
+(`vocab.rs`), so a misspelled one fails to load. `Content::check` validates the rest when
 content loads: references, and that every op sits in a list its [`Op::slots`] allows.
 
 ### The op schema
@@ -383,11 +383,12 @@ a shared-row threat one place on the whole board).
 [rules.md](rules.md) (threats, adversary deck, Alignment cards, projects, tunables; the
 country pieces, the round cap per difficulty, the difficulty levers, the AI boards, presence
 tracks and powers, standard actions, Sway sources, the purge thresholds, the two
-new-player paragraphs and the game's end), all of [ops.md](ops.md) and [harms.md](harms.md),
+new-player paragraphs and the game's end), all of [ops.md](ops.md), [harms.md](harms.md) and
+[player-aid.md](player-aid.md),
 and `web/card/faces.json`; `python scripts/cards/cards_doc.py`, which reads the faces, writes
 [cards.md](cards.md). `aic-sim docs` also fails on a broken harm distribution check
 (`harm_failures`).
-A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
+`--check` also refuses a British spelling (`crates/aic-sim/src/spelling.rs`). A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
 `snake_case` name that is neither a tunable nor an op (`NOT_TUNABLES` lists the action names,
 content fields and retired parameters it may also print). Change the source, not the table. A block is a pure function of `Rules` or `Content`
 in `crates/aic-sim/src/docs.rs`, named in `run`; its unit tests there check it moves with
@@ -402,10 +403,10 @@ country count (1–4), and the four printed country pieces. A placed piece cover
 `anchor + i·axes[0] + j·axes[1]` for `i, j` in `0..4`:
 
 - `Map::build` derives hexes in country-then-piece order, so `state.hexes[i]` is
-  `map.hexes[i]`. It also derives neighbours (in `Dir::ALL` order), each country's hex
+  `map.hexes[i]`. It also derives neighbors (in `Dir::ALL` order), each country's hex
   list, and each hex's printed number (`i·4 + j + 1`) and kind (city, open, ocean) from
   the country's piece (country *c* uses piece *c*). It then reads the fronts each layout
-  prints (`fronts` in `map.json`; pieces touching only at the centre are not fronts) and
+  prints (`fronts` in `map.json`; pieces touching only at the center are not fronts) and
   puts a military base on each side of each (`Map::fronts`, `Cell::facing`): bases depend
   on the layout, so they are derived, not printed.
 - Geometry is not in the state. UIs get it from `board(config)` in wasm.
@@ -420,8 +421,8 @@ web viewer draws only these:
 
 | Part | Holds | Filled by the engine |
 |---|---|---|
-| `hexes[i]` | `hex` `[q, r]`, `country`, `piece_pos`, `neighbours`, `number`, `kind` (`city`, `base`, `open`, `ocean`), `industrial` (a printed industrial zone), `facing` (a base's rival country), `tokens` (`{kind, count}`) | every token stack on every hex |
-| `countries[c]` | `name` (the printed piece's, `content/map.json`), `seat`, `colour`, `hexes`, `values`, `cards` (card groups, such as its threat) | `name`; `tokens.<kind>` totals over the country |
+| `hexes[i]` | `hex` `[q, r]`, `country`, `piece_pos`, `neighbors`, `number`, `kind` (`city`, `base`, `open`, `ocean`), `industrial` (a printed industrial zone), `facing` (a base's rival country), `tokens` (`{kind, count}`) | every token stack on every hex |
+| `countries[c]` | `name` (the printed piece's, `content/map.json`), `seat`, `color`, `hexes`, `values`, `cards` (card groups, such as its threat) | `name`; `tokens.<kind>` totals over the country |
 | `seats[s]` | `passed`, `values`, `cards` (card groups), `board` (a player board, or `null`) | `resource.<name>` per resource; exhausted cards no module shows, as group `engine.exhausted` |
 | `globals` | `values` of the whole game | every `vars` track no module declares bookkeeping, by its key |
 | `piles` | `{key, label, owner, count, visible}` | none: modules add them |
@@ -445,7 +446,7 @@ printed on a step; the viewer styles keys `tier2` and `antimatter` and shows any
 label as-is. `cards` are the board's own cards, `status` saying where each is now.
 
 **How a module exposes its state.** Most of it needs nothing. Tokens it places,
-resources it gives and `vars` it sets all appear by default, labelled by their keys. A
+resources it gives and `vars` it sets all appear by default, labeled by their keys. A
 module implements `Module::view(&self, g, w, out)` only to add what the engine can't
 derive:
 
@@ -520,12 +521,12 @@ The view is display data:
 Tests in `crates/aic-core/src/tests/view.rs` check it.
 
 **What the client assumes.** It draws hexes from `[q, r]` by kind, with the
-country colour, and draws token kinds it knows with their own glyph and any other kind
+country color, and draws token kinds it knows with their own glyph and any other kind
 as a counter. It offers actions as `legal_actions` lists them, grouped per seat:
 
 - An open choice with hex targets (`Action::Choose`) arms a hex pick. Only `Choose` has a
   target today; a new action with one would need the viewer taught to pick it.
-- Every other action is its own button, labelled from its fields.
+- Every other action is its own button, labeled from its fields.
 
 A new `Action` variant with new fields therefore shows up as a button with no client
 change. A hex-valued field under another name still gets a button per action, but no

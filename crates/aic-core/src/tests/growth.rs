@@ -52,7 +52,7 @@ fn up_to_two_markers_can_stop_after_one() {
     let (rules, mut g) = lab_with(&[], &[]);
     let w = rules.world();
     let c = rules.map.numbered(0, piece(0).presence);
-    let n: Vec<usize> = w.map.hexes[c].neighbours.iter().copied().filter(|&h| !crate::modules::common::is_ocean(&w, h)).take(2).collect();
+    let n: Vec<usize> = w.map.hexes[c].neighbors.iter().copied().filter(|&h| !crate::modules::common::is_ocean(&w, h)).take(2).collect();
     put(&mut g, c, presence(0), 1);
     for &h in &n {
         put(&mut g, h, MARKER, 1);
@@ -116,7 +116,7 @@ fn clearing_a_marker_costs_its_energy_and_pays_its_reward() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).presence);
-    let marked = w.map.hexes[a].neighbours.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
+    let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, marked, MARKER, 1);
     assert!(!board::presence_hexes(&w, &g, 0).contains(&marked), "no presence on a marker");
     set_res(&mut g, 0, Resource::Energy, w.int("board.clear_energy"));

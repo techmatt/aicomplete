@@ -242,7 +242,7 @@ function renderSeats() {
     const box = document.createElement('div');
     box.className = `seat${seat.passed && !choosing ? ' passed' : ''}${mine.length ? ' active' : ''}`;
     box.dataset.seat = String(seat.index);
-    box.style.setProperty('--tint', strong(country?.colour ?? '#cccccc'));
+    box.style.setProperty('--tint', strong(country?.color ?? '#cccccc'));
     const status = v.outcome ? '' : choosing ? 'deciding' : mine.length ? 'to act' : seat.passed ? 'passed' : waiting ? 'waiting' : '';
     const ai = seat.board;
     box.innerHTML = `
@@ -305,7 +305,7 @@ function actionButtons(mine: Action[]): HTMLElement {
       }
       continue;
     }
-    // Anything else is one button per action, labelled in full.
+    // Anything else is one button per action, labeled in full.
     for (const a of acts) {
       const b = document.createElement('button');
       b.type = 'button';

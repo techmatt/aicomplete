@@ -6,7 +6,7 @@
 // pile falls back to a generic chip so nothing goes unshown.
 
 import { content, param, type CardView, type Config, type PileView, type Value, type View } from './engine';
-import { ADVERSARY_COLOUR, escapeHtml, extraCosts, KINDS, strong } from './format';
+import { ADVERSARY_COLOR, escapeHtml, extraCosts, KINDS, strong } from './format';
 
 const esc = escapeHtml;
 
@@ -122,7 +122,7 @@ function lossesHtml(v: View, config: Config): string[] {
     const least = Math.min(...(counts as number[]));
     loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no presence on the board loses the game (early on, nothing destroys a last presence)"><span class="label">presence gone</span> <b>${least}</b></span>`);
   }
-  // Unlabelled `vars` (source "engine") are folded under the piles: see `varsHtml`.
+  // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
   // The clock's step is a name, not a count: "clock: war" (020: it read "war 2").
   const clockChip = (x: Value) => `<span class="value" data-value="${esc(x.key)}" data-scope="global"><span class="label">clock</span> <b>${esc(x.label)}</b></span>`;
   const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => (x.key === 'board.clock' ? clockChip(x) : valueChip(x, 'global')));
@@ -256,15 +256,15 @@ function megaprojectHtml(v: View, c: View['countries'][number]): string {
   const name = total.label.replace(/^megaproject:\s*/, '');
   const max = total.max ?? 0;
   const done = !!findValue(c.values, 'board.project.done');
-  const owners: { label: string; n: number; colour: string; key: string }[] = [];
+  const owners: { label: string; n: number; color: string; key: string }[] = [];
   const adv = findValue(c.values, 'board.project.adversary');
-  if (adv) owners.push({ label: 'adversary', n: adv.value, colour: ADVERSARY_COLOUR, key: adv.key });
+  if (adv) owners.push({ label: 'adversary', n: adv.value, color: ADVERSARY_COLOR, key: adv.key });
   for (const s of v.seats) {
     const x = findValue(c.values, `board.project.${s.index}`);
-    if (x) owners.push({ label: `seat ${s.index}`, n: x.value, colour: strong(v.countries[s.country]?.colour ?? '#888888'), key: x.key });
+    if (x) owners.push({ label: `seat ${s.index}`, n: x.value, color: strong(v.countries[s.country]?.color ?? '#888888'), key: x.key });
   }
   const cells: string[] = [];
-  for (const o of owners) for (let i = 0; i < o.n && cells.length < max; i++) cells.push(`<span class="pc" style="background:${o.colour}" title="${esc(o.label)}"></span>`);
+  for (const o of owners) for (let i = 0; i < o.n && cells.length < max; i++) cells.push(`<span class="pc" style="background:${o.color}" title="${esc(o.label)}"></span>`);
   while (cells.length < max) cells.push(`<span class="pc${done ? ' done' : ''}"></span>`);
   const by = done ? '<b class="pdone">completed</b>' : owners.filter((o) => o.n).map((o) => `<span data-value="${esc(o.key)}" data-scope="country:${c.index}">${esc(o.label)} ${o.n}</span>`).join(' · ');
   return `<div class="project${done ? ' done' : ''}" data-value="${esc(total.key)}" data-scope="country:${c.index}"><b title="megaproject">◆ ${esc(name)}</b><span class="cubes">${cells.join('')}</span><small>${total.value}/${max}${by ? ` · ${by}` : ''}</small></div>`;
@@ -293,7 +293,7 @@ export function countriesHtml(v: View): string {
       ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`)).join('')
       : `<div class="row"><span class="what">${esc(g.label)}</span>${g.cards.map((x) => cardChip(x, `country:${c.index}:${g.key}`)).join('')}</div>`).join('');
     const project = megaprojectHtml(v, c);
-    return `<div class="country" data-country="${c.index}" style="--tint:${strong(c.colour)};--soft:${c.colour}">
+    return `<div class="country" data-country="${c.index}" style="--tint:${strong(c.color)};--soft:${c.color}">
       <div class="chead"><b title="country ${c.index}">${esc(countryName(v, c.index))}</b>${seat ? ` seat ${seat.index}${ai ? ` · ${esc(ai)}` : ''}` : ''} ${counts}${flags}</div>
       ${project}
       ${groups || (project ? '' : '<div class="none">no threat</div>')}</div>`;
@@ -305,13 +305,13 @@ export function countriesHtml(v: View): string {
   return boxes.join('');
 }
 
-/** The board's key: hex kinds, the base pennant, fronts, and whose colour is whose. */
+/** The board's key: hex kinds, the base pennant, fronts, and whose color is whose. */
 export function legendHtml(): string {
   const t = Object.values(KINDS).map((x) => `<span class="kind" style="background:${x.fill}">${x.label}</span>`).join('');
   const flag = `<svg viewBox="-0.05 -0.2 0.3 0.4" width="0.9em" height="1.2em" style="vertical-align:middle"><g class="base-mark">
     <path d="M0,0.17 V-0.17" class="pole"/><path d="M0,-0.17 L0.2,-0.1 L0,-0.03 Z" class="flag" fill="#888"/></g></svg>`;
   const front = `<svg viewBox="0 -0.1 0.6 0.2" width="1.8em" height="0.8em" style="vertical-align:middle"><g class="fronts"><line x1="0" y1="0" x2="0.6" y2="0" class="front-link"/></g></svg>`;
-  return `${t}<span class="lg">${flag} base: flag in the colour of the country it faces</span><span class="lg">${front} front between two bases</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOUR}"></span> adversary · seat colour = its country's</span>`;
+  return `${t}<span class="lg">${flag} base: flag in the color of the country it faces</span><span class="lg">${front} front between two bases</span><span class="lg"><span class="sw" style="background:${ADVERSARY_COLOR}"></span> adversary · seat color = its country's</span>`;
 }
 
 // ---------- seat panels ----------
@@ -410,12 +410,12 @@ export function seatCardsHtml(v: View, seatIndex: number): string {
  * Game-wide `vars` tracks that no module labels (source "engine"), folded away under
  * the piles. Modules keep their per-seat and per-card bookkeeping out of the globals
  * (`ViewOut::bookkeeping` in view.rs), so in the baseline this is normally empty; a new module's
- * unlabelled track shows here.
+ * unlabeled track shows here.
  */
 export function varsHtml(v: View, open: boolean): string {
   const raw = v.globals.filter((x) => x.source === 'engine' && !DRAWN_GLOBALS.has(x.key));
   if (!raw.length) return '';
-  return `<details id="vars"${open ? ' open' : ''}><summary>Unlabelled tracks (${raw.length} raw vars)</summary><div class="values">${raw.map((x) => valueChip(x, 'global', x.label, false)).join('')}</div></details>`;
+  return `<details id="vars"${open ? ' open' : ''}><summary>Unlabeled tracks (${raw.length} raw vars)</summary><div class="values">${raw.map((x) => valueChip(x, 'global', x.label, false)).join('')}</div></details>`;
 }
 
 // ---------- other piles ----------

@@ -36,7 +36,7 @@ use view::*;
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "board",
-    summary: "Country pieces, cities, buildings, bases and fronts; production, war, ambassadors, standard actions",
+    summary: "Country pieces, cities, facilities, bases and fronts; production, war, ambassadors, standard actions",
     requires: &["adversary", "ai", "alignment"],
     variants: &[VariantDef {
         name: "corps",
@@ -62,7 +62,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last presence (0: never safe)"),
             ParamSpec::int("hold_min", 1, 10, "player ambassadors that free a corrupted city, at the least"),
             ParamSpec::int("free_leaves", 0, 5, "adversary ambassadors left on a city as it frees (the piece ladder)"),
-            ParamSpec::int("destruction_discord", 0, 5, "Discord each building destroyed in war sways"),
+            ParamSpec::int("destruction_discord", 0, 5, "Discord each facility destroyed in war sways"),
             ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
             ParamSpec::int("troop_steps", 0, 5, "steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest"),
             ParamSpec::int("troop_presence", 0, 4, "adversary troops strike presence from this stage of adversary card on (0: always, 4: never)"),
@@ -126,7 +126,7 @@ pub fn flagged(g: &GameState, f: RoundFlag, country: usize) -> bool {
     g.var(&flag(f, country)) > 0
 }
 
-/// Shelters `country`'s buildings and presence for the rest of the round.
+/// Shelters `country`'s facilities and presence for the rest of the round.
 pub fn shelter(g: &mut GameState, cx: &mut Cx, country: usize) {
     cx.set_key(g, &flag(RoundFlag::Shelter, country), 1);
 }

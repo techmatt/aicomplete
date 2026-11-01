@@ -104,10 +104,10 @@ guess of the deal (061; `deals` averages over several, 054), never read from the
 
 > Balance should require thought, not an obvious heuristic dominating.
 
-Each check is a fixed, simple policy: the planner with one behaviour forced
+Each check is a fixed, simple policy: the planner with one behavior forced
 (`planner:<check>=1` in an experiment spec; `crates/aic-sim/src/agents/policy.rs`). The
 strategy-health gate runs them beside the planner at d2, early-stopped
-(`experiments/gate.json`, summarised by `scripts/cards/screen.py --gate`).
+(`experiments/gate.json`, summarized by `scripts/cards/screen.py --gate`).
 
 - **Healthy:** every check loses ground to the planner at d2. Report each check's gap
   (planner win % minus the check's) with its noise.
@@ -137,16 +137,16 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
 
 022 ran the checks under the engine at d0, d2 and d4
-(`experiments/archive/screen-022-dominance.json`, summarised by `scripts/cards/screen_022.py`).
+(`experiments/archive/screen-022-dominance.json`, summarized by `scripts/cards/screen_022.py`).
 **Since 023 the gate runs at d2 only, 32 seeds a cell** (`experiments/archive/screen-023-dominance.json`
-with `--quick --games 32`, summarised by `scripts/cards/screen_023.py`): 022's d4 half
+with `--quick --games 32`, summarized by `scripts/cards/screen_023.py`): 022's d4 half
 could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise. **Since
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
-summarised by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
+summarized by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
 current gate** is `experiments/gate.json` (gate-r23, 053; gate-046 is retired): planner only, d2,
 8 seeds a check early-stopped from 4, every 034 check plus 041's four fixed policies and abandon,
-summarised by `scripts/cards/screen.py --gate`. Its predecessors are
+summarized by `scripts/cards/screen.py --gate`. Its predecessors are
 `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
 `experiments/gate-exploit.json` (050) is its fast first read: the 13 checks that could still beat
 thinking, under the engine, capped at 32 seeds. It gives a direction; the full gate, under the

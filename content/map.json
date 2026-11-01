@@ -15,7 +15,7 @@
       "E",
       "SE"
      ],
-     "colour": "#efe4b0"
+     "color": "#efe4b0"
     }
    ],
    "fronts": []
@@ -32,7 +32,7 @@
       "E",
       "SE"
      ],
-     "colour": "#efe4b0"
+     "color": "#efe4b0"
     },
     {
      "anchor": [
@@ -43,7 +43,7 @@
       "SW",
       "SE"
      ],
-     "colour": "#ffaec9"
+     "color": "#ffaec9"
     }
    ],
    "fronts": [
@@ -65,7 +65,7 @@
       "E",
       "SE"
      ],
-     "colour": "#efe4b0"
+     "color": "#efe4b0"
     },
     {
      "anchor": [
@@ -76,7 +76,7 @@
       "SW",
       "SE"
      ],
-     "colour": "#ffaec9"
+     "color": "#ffaec9"
     },
     {
      "anchor": [
@@ -87,7 +87,7 @@
       "E",
       "SW"
      ],
-     "colour": "#99d9ea"
+     "color": "#99d9ea"
     }
    ],
    "fronts": [
@@ -117,7 +117,7 @@
       "E",
       "SE"
      ],
-     "colour": "#efe4b0"
+     "color": "#efe4b0"
     },
     {
      "anchor": [
@@ -128,7 +128,7 @@
       "SW",
       "SE"
      ],
-     "colour": "#ffaec9"
+     "color": "#ffaec9"
     },
     {
      "anchor": [
@@ -139,7 +139,7 @@
       "NE",
       "SE"
      ],
-     "colour": "#99d9ea"
+     "color": "#99d9ea"
     },
     {
      "anchor": [
@@ -150,7 +150,7 @@
       "E",
       "SE"
      ],
-     "colour": "#b5e61d"
+     "color": "#b5e61d"
     }
    ],
    "fronts": [

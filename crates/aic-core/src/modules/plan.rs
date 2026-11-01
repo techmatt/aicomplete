@@ -64,7 +64,7 @@ pub fn build_plan(
         }
         if g.tokens(h, FACTORY) > 0 {
             let adj =
-                |pred: &dyn Fn(usize) -> bool| w.map.hexes[h].neighbours.iter().any(|&x| pred(x));
+                |pred: &dyn Fn(usize) -> bool| w.map.hexes[h].neighbors.iter().any(|&x| pred(x));
             if adj(&|x| corrupted_city(w, g, x)) {
                 n += factory;
             }

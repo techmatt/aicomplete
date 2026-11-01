@@ -5,7 +5,7 @@
 //   split:    buildings only. Restack the inside of the frame row by row, so master rows
 //             also make a divider above the art. The outer border is not touched.
 //   gold:     tier 2 only. Tint the steel to gold, leaving enamel and plates.
-//   recolour: remap the enamel, found by hue, through the kind's colour ramp.
+//   recolor: remap the enamel, found by hue, through the kind's color ramp.
 //   inset:    scale the frame in so its steel lands inside the trim (layout.json's
 //             inset_mm, 0.5 mm inside it), and fill the bleed by mirroring the frame's edge.
 import path from 'node:path';
@@ -69,7 +69,7 @@ function split(src) {
   return out;
 }
 
-/** The ramp through colour stops, by value. */
+/** The ramp through color stops, by value. */
 function ramp(stops, v) {
   let i = 1;
   while (i < stops.length - 1 && v > stops[i][0]) i++;
@@ -81,7 +81,7 @@ function ramp(stops, v) {
 function plates(kind) {
   const mask = new Uint8Array(W * H);
   for (const [x0, y0, x1, y1] of [...cfg.plates.common, ...cfg.plates[kind]]) for (let y = y0; y < y1; y++) mask.fill(1, y * W + x0, y * W + x1);
-  const { centre: [cx, cy], radius: r } = cfg.octagon;
+  const { center: [cx, cy], radius: r } = cfg.octagon;
   for (let y = cy - r; y <= cy + r; y++) {
     for (let x = cx - r; x <= cx + r; x++) if (Math.abs(x - cx) + Math.abs(y - cy) <= r * cfg.octagon.diamond) mask[y * W + x] = 1;
   }
@@ -101,7 +101,7 @@ function gild(src, kind) {
   return out;
 }
 
-function recolour(src, stops) {
+function recolor(src, stops) {
   if (!stops) return src;
   const out = Buffer.from(src);
   for (let p = 0; p < W * H; p++) {
@@ -134,7 +134,7 @@ for (const kind of Object.keys(l.kinds)) {
   for (const tier of [1, 2]) {
     let px = kind === 'building' ? split(base) : Buffer.from(base);
     if (tier === 2) px = gild(px, kind);
-    px = recolour(px, cfg.ramps[kind]);
+    px = recolor(px, cfg.ramps[kind]);
     await (await inset(px))
       .jpeg({ quality: 92, mozjpeg: true, chromaSubsampling: '4:4:4' })
       .toFile(path.join(dir, `${kind}-t${tier}.jpg`));

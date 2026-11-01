@@ -356,7 +356,7 @@ fn agent_pairs(md: &Md, w: &mut String) {
     let run = md.run;
     if !run.agent_pairs.is_empty() {
         let _ = writeln!(w, "## Agents paired, per variant\n");
-        let _ = writeln!(w, "A against B on the same seeds. An agent labelled `x:...` is a check against `x`; a bare agent is paired with the next bare agent listed. A minus B: the win-rate difference ± the standard error of the per-seed difference; p: exact two-sided sign test on the seeds only one of them won.\n");
+        let _ = writeln!(w, "A against B on the same seeds. An agent labeled `x:...` is a check against `x`; a bare agent is paired with the next bare agent listed. A minus B: the win-rate difference ± the standard error of the per-seed difference; p: exact two-sided sign test on the seeds only one of them won.\n");
         let _ = writeln!(w, "| variant | d | A | B | games | A win % | B win % | both / only A / only B / neither | A minus B (pts ± se) | p |");
         let _ = writeln!(w, "|---|---|---|---|---|---|---|---|---|---|");
         for x in run.agent_pairs {

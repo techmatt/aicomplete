@@ -56,7 +56,7 @@ Corrections, checked against the data in 032; the text below is left as written:
   cards" was never measured.
 - **Keep cost:** the Builder holds 12-16 credits after round 1, and agents then kept
   nearly everything they drafted, so `keep_cost` 3's collapse probably measures agent
-  behaviour, and "next to a cliff" is overstated.
+  behavior, and "next to a cliff" is overstated.
 - **Longer deck:** "builds for rounds it doesn't survive" is a guess.
 - **`pool_reduction` 6:** the 69.8 is on the first 96 seeds, where greedy wins 77; there
   5 (79.2) is closer to today's rate. Greedy is not a non-building team under half cost:

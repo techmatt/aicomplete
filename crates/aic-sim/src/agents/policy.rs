@@ -1,11 +1,11 @@
-//! Keeping by plan, and the forced behaviours of the dominance checks (022).
+//! Keeping by plan, and the forced behaviors of the dominance checks (022).
 //!
 //! [`Policy`] wraps a greedy, engine or planner agent. At keep time it sketches the
 //! seat's next rounds ([`plan_keeps`]) and keeps a drafted card only if the
 //! card lands in that plan and the plan is worth more with it than without
 //! it (the keep's insight would otherwise pay for plays this round). The
 //! dominance checks ([`Forced`]) are fixed policies, mostly the engine with
-//! one behaviour forced: they must lose to thoughtful play
+//! one behavior forced: they must lose to thoughtful play
 //! (`docs/principles.md`, *Dominance checks*).
 //!
 //! The plan is simple and deterministic, and reads only the public state
@@ -23,7 +23,7 @@ use super::credit_equivalent;
 /// A play's value falls by this share for each round it waits.
 const WAIT: f64 = 0.15;
 
-/// The behaviour a dominance check forces (none for thoughtful play).
+/// The behavior a dominance check forces (none for thoughtful play).
 #[derive(Debug, Clone)]
 pub struct Forced {
     /// Keep every drafted card it can afford.
@@ -261,7 +261,7 @@ impl Policy {
         set
     }
 
-    /// Whether `a` is an action the forced behaviour rules out.
+    /// Whether `a` is an action the forced behavior rules out.
     fn ruled_out(&self, world: &World, g: &GameState, a: &Action) -> bool {
         let f = &self.forced;
         match a {

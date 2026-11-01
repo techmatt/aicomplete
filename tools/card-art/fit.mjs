@@ -3,9 +3,9 @@
 // was painted, so its zones sit a little off the guide; every variant derives from it, so
 // all of them should measure alike, and this prints where one doesn't. It seeds from
 // layout.json's zones, inset as derive.mjs insets the frames. Each zone is light inside a
-// darker rim: flood from the guide's centre over the lightly blurred image (texture would
+// darker rim: flood from the guide's center over the lightly blurred image (texture would
 // stop it), take the bounding box. When no threshold gives a box of about the right size,
-// the guide's stays. Also records the octagon's inside colour, so the plates the renderer
+// the guide's stays. Also records the octagon's inside color, so the plates the renderer
 // draws match it.
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';

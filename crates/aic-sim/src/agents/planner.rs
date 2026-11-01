@@ -150,7 +150,7 @@ impl Planner {
     }
 
     /// A fresh rollout policy: the engine with this planner's forced
-    /// behaviours, guessing from a seed of the state's own actions count, so
+    /// behaviors, guessing from a seed of the state's own actions count, so
     /// a line repeats.
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let rng = ChaCha8Rng::seed_from_u64(g.seed ^ g.stats.actions as u64);
@@ -245,7 +245,7 @@ impl Planner {
     }
 
     /// Moves the line on to `state`, dropping it if the table is not the one
-    /// it expected (a forced behaviour outside the planner took another move).
+    /// it expected (a forced behavior outside the planner took another move).
     fn sync(&mut self, rules: &Rules, state: &GameState) {
         prof::time(Part::Sync, || {
             let Some(l) = &mut self.line else { return };

@@ -28,8 +28,8 @@ pub struct Cell {
     pub country: u8,
     /// Position on its piece: steps along the piece's first and second axis.
     pub piece_pos: [u8; 2],
-    /// Indices of on-board neighbours, in `Dir::ALL` order.
-    pub neighbours: Vec<usize>,
+    /// Indices of on-board neighbors, in `Dir::ALL` order.
+    pub neighbors: Vec<usize>,
     /// The printed hex number on its piece (1-16), for tie-breaks.
     pub number: u8,
     pub kind: HexKind,
@@ -53,7 +53,7 @@ pub struct Front {
 pub struct CountryGeo {
     /// Hex indices of this country, in piece order.
     pub hexes: Vec<usize>,
-    pub colour: String,
+    pub color: String,
 }
 
 impl Map {
@@ -86,7 +86,7 @@ impl Map {
                         hex,
                         country: c as u8,
                         piece_pos: [i as u8, j as u8],
-                        neighbours: Vec::new(),
+                        neighbors: Vec::new(),
                         number,
                         kind: design.kind_at(number),
                         facing: None,
@@ -97,19 +97,19 @@ impl Map {
             }
             geo.push(CountryGeo {
                 hexes: mine,
-                colour: p.colour.clone(),
+                color: p.color.clone(),
             });
         }
         for cell in hexes.iter_mut() {
-            cell.neighbours = cell
+            cell.neighbors = cell
                 .hex
-                .neighbours()
+                .neighbors()
                 .iter()
                 .filter_map(|n| index.get(n).copied())
                 .collect();
         }
         for i in 0..hexes.len() {
-            let near_ocean = hexes[i].neighbours.iter().any(|&n| hexes[n].kind == HexKind::Ocean);
+            let near_ocean = hexes[i].neighbors.iter().any(|&n| hexes[n].kind == HexKind::Ocean);
             if hexes[i].kind == HexKind::City && near_ocean {
                 hexes[i].coastal = true;
             }
@@ -132,9 +132,9 @@ impl Map {
         self.countries[c].hexes[n as usize - 1]
     }
 
-    /// Whether two hexes are adjacent (neighbours on the board).
+    /// Whether two hexes are adjacent (neighbors on the board).
     pub fn adjacent(&self, a: usize, b: usize) -> bool {
-        self.hexes[a].neighbours.contains(&b)
+        self.hexes[a].neighbors.contains(&b)
     }
 
     /// Hex distance between two hexes.
@@ -179,7 +179,7 @@ fn place_bases(
                 .filter(|&h| hexes[h].kind == HexKind::Open && !busy(hexes[h].number))
                 .filter(|&h| {
                     hexes[h]
-                        .neighbours
+                        .neighbors
                         .iter()
                         .any(|&x| hexes[x].country as usize == o && land(x))
                 })

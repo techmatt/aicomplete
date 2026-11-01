@@ -46,21 +46,21 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   (`Northern Union #13`) and cards by name. *Pass every seat* passes
   all the seats still to act. *Random action* (R) and *Random to end* are for quick
   debugging.
-- **Reading the board:** hexes are filled by what they are (`kind`: city grey, military
+- **Reading the board:** hexes are filled by what they are (`kind`: city gray, military
   base khaki, open land pale green, ocean blue; key at the bottom left), with a band in
-  the country's colour along each country border and the printed hex number on top.
-  A military base carries a pennant in the colour of the country across its front
+  the country's color along each country border and the printed hex number on top.
+  A military base carries a pennant in the color of the country across its front
   (`facing`). Industrial zones carry a dashed brown ring low on the hex. Fronts are
   drawn in dark red: a dashed line along each printed front (the land edges between two
-  countries whose bases face each other; pieces touching only at the centre get none)
+  countries whose bases face each other; pieces touching only at the center get none)
   and a dashed link between the two bases; on a war step (`board.war` = 1) they turn
   solid bright red and pulse, and the adversary row
-  shows a **war round** badge. Each seat's colour is its country's.
-  Players' pieces sit on the upper row of a hex: owner cube in the seat's colour (an
+  shows a **war round** badge. Each seat's color is its country's.
+  Players' pieces sit on the upper row of a hex: owner cube in the seat's color (an
   aligned city or owned station), research station (teal dome), factory (brown),
-  presence (server rack in the seat's colour), hardening token (grey shield), corp
-  troops at a base (chevrons in the base country's colour) and player ambassadors (pawn
-  in the seat's colour). The adversary's sit on the lower row, in purple: its owner cube
+  presence (server rack in the seat's color), hardening token (gray shield), corp
+  troops at a base (chevrons in the base country's color) and player ambassadors (pawn
+  in the seat's color). The adversary's sit on the lower row, in purple: its owner cube
   (a corrupted city, station or factory), its ambassadors (pawn), corruption markers
   (a crossed lilac and purple disc), its nodes (diamond) and its troops (dark
   spearhead). The clock's step (`board.clock`), adversary compute
@@ -77,7 +77,7 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   the second line, all of it on hover; ongoing ones, the resolved count and the deck)); the countries strip with each country's name, its
   cities (clean, aligned, corrupted), adversary pieces and corp units, its megaproject
   card (one box per cube place, filled by owner: purple for the adversary, the seat's
-  colour for a player; "completed" once done), its round flags (blackout, sabotage,
+  color for a player; "completed" once done), its round flags (blackout, sabotage,
   shelter, embargo), its threat and counter progress (or the shared threat row; a threat that executes next
   round dims and says **waits**, and a jam shows its amount). Country names
   (the printed pieces', from the view's `countries[].name`) also label the board and the
@@ -85,9 +85,9 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
 - **Actions:** besides cards, threats and gifts, each seat panel offers the board's
   standard actions (`standard`: place presence, build a research station, remove an
   adversary ambassador, clear a corruption marker, move an ambassador, gain an
-  ambassador, align a city, harden a building, sell a chip, the rich action (a presence
+  ambassador, align a city, harden a facility, sell a chip, the rich action (a presence
   at a steep price that rises with each use a round) and the standard projects: harden
-  a building, gain 1 energy, remove compute from an adversary project) labelled with the words and costs the rules publish
+  a facility, gain 1 energy, remove compute from an adversary project) labeled with the words and costs the rules publish
   in the view (`standard`), a *power* button for each AI-board power, the *antimatter*
   action, and one *sell* button per card in hand. A standard action that needs a hex
   asks for it next, as a hex pick.
@@ -98,7 +98,7 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   `seats[].board` shape, not from AI-specific keys.
 - **Globals** hold only game-wide tracks: modules keep per-seat and per-card
   bookkeeping out of them (`ViewOut::bookkeeping`). A `vars` track no module labels is
-  folded under *Unlabelled tracks* below the piles; in the baseline there are none.
+  folded under *Unlabeled tracks* below the piles; in the baseline there are none.
 - **Undo** (Ctrl+Z) drops the last action. Every state is a replay of config + seed +
   actions, so undo never has to reverse anything.
 - **Timeline:** ⏮ ◀ ▶ ⏭, the slider, ← → Home End, and Space to auto-play. The menu by
@@ -114,7 +114,7 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   have an amber outline.
 - **Log phases:** a step that runs through phases (the adversary's whole turn after the
   last pass, a new round) lists its events in one folded group per phase, headed by the
-  phase name with its event and hex counts; phases with no events show as a grey line.
+  phase name with its event and hex counts; phases with no events show as a gray line.
   Hovering a group's heading outlines the hexes that phase changed; clicking it unfolds
   the group without moving the timeline. A step that stays in one phase lists its events
   flat.
@@ -147,7 +147,7 @@ rules revision) and the saved outcome and final fingerprint. The engine writes i
 over the DevTools protocol, with no extra packages. Point it at the dev server with
 `AIC_URL` (default `http://localhost:5173/`), and at a browser with `AIC_BROWSER` if it
 isn't at the usual path. It checks the board drawing (fills by hex kind, borders, base
-pennants, fronts, every token stack drawn, owner colours distinct), the adversary row
+pennants, fronts, every token stack drawn, owner colors distinct), the adversary row
 with the face-up next card's text and the ambassador supply, the megaproject cards,
 Alignment track and threats, country names, each seat's AI board with two tracks, and
 that no bookkeeping var is among the globals, then plays a baseline game (seed 1) to
@@ -264,7 +264,7 @@ screenshot goes to `sweep-out/odd/` (`AIC_SWEEP_OUT`). It counts as one browser 
 | `src/engine.ts` | Typed wrapper over the wasm API: view, record and event shapes. |
 | `src/session.ts` | `Timeline`: config + seed + actions with every replayed state, cursor, undo, localStorage. |
 | `src/board.ts` | SVG hex board drawn from the view: hex kinds, borders, base pennants, fronts, token glyphs. |
-| `src/format.ts` | Labels for actions (content names for cards, threats, growth options; standard actions with costs) and events; hex-kind and token colours. |
+| `src/format.ts` | Labels for actions (content names for cards, threats, growth options; standard actions with costs) and events; hex-kind and token colors. |
 | `src/panels.ts` | Alignment track, adversary row, countries strip (megaprojects, threats), seat panel contents, piles. |
 | `src/hover.ts` | Hover card text for hexes, tokens, piles, values and cards. |
 | `src/log.ts` | One log entry: a step's action and its events, folded by phase. |

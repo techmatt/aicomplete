@@ -29,7 +29,7 @@ def games(d):
 
 def cell_pairs(argv):
     """Both forms as {(label, seed): (actions, actions)}: `--cells DIR A B` is two cells of one
-    run (two agents on the same seeds), labelled by cell A."""
+    run (two agents on the same seeds), labeled by cell A."""
     if argv[0] == '--cells':
         d, a, b = games(argv[1]), int(argv[2]), int(argv[3])
         return {(a, s): (acts, d[(b, s)]) for (c, s), acts in d.items() if c == a and (b, s) in d}

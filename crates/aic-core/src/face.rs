@@ -26,7 +26,10 @@ pub enum Part {
     Word(String),
     Income { income: Vec<Part> },
     Adversary { adversary: Vec<Part> },
+    /// Dashed: another player's.
     Other { other: Vec<Part> },
+    /// Thin solid: counted across your cards.
+    Yours { yours: Vec<Part> },
 }
 
 /// What a card prints: icon lines, rules text, above and below the art.
@@ -251,11 +254,17 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             share: Share::Theirs,
         }),
         Op::Transfer { resource, max } => one(clause(
-            { let mut p = minus(*max, icon(*resource)); p.push(Part::Other { other: counted(*max, icon(*resource)) }); p },
+            {
+                // ≤: the giver chooses how much, up to the number, on both sides.
+                let given = vec![Part::Word(format!("\u{2264}{max}")), w(icon(*resource))];
+                let mut p = vec![Part::Word(format!("\u{2212}\u{2264}{max}")), w(icon(*resource))];
+                p.push(Part::Other { other: given });
+                p
+            },
             format!("give another player up to {}", amount(*resource, *max)),
         )),
         Op::PlacePresence { count, free } => one(clause(
-            counted(*count, "presence"),
+            counted(*count, if *free { "free_presence" } else { "presence" }),
             format!("place {count} presence{}", if *free { " free" } else { "" }),
         )),
         Op::ClearMarkers { count } => one(clause(
@@ -264,7 +273,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::ShieldPresence { count } => one(clause(
             { let mut p = counted(*count, "harden"); p.push(w("presence")); p },
-            format!("harden {count} of your presence"),
+            format!("shield {count} of your presence"),
         )),
         Op::DelayThreat { count } => one(clause(
             adversary(counted(*count, "clock")),
@@ -325,7 +334,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         }
         Op::Harden { count } => {
             let icons = counted(*count, "harden");
-            one(clause(icons, format!("harden {} in reach", plural(*count, "building"))))
+            let what = if *count == 1 { "1 facility".to_string() } else { format!("{count} facilities") };
+            one(clause(icons, format!("harden {what} in reach")))
         }
         Op::MoveAmbassadors { max } => one(clause(
             vec![Part::Word(max.to_string()), w("move")],
@@ -344,7 +354,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(counted(*count, "peek"), say))
         }
         Op::Jam { amount: n } => one(clause(
-            adversary(minus(*n, "threat")),
+            adversary(minus(*n, "jam")),
             format!("one threat needs {n} less of each resource"),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
@@ -373,7 +383,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             ))
         }
         Op::AddTokens { kind, amount: n } => one(clause(
-            vec![Part::Other { other: counted(*n, kind.name()) }],
+            vec![Part::Yours { yours: counted(*n, kind.name()) }],
             format!("add {n} {} to one of your {} buildings", token(*kind, *n), token(*kind, 1)),
         )),
         Op::CutNode => one(clause(
@@ -398,14 +408,14 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         }
         Op::GainPerTokens { resource, kind, per } => {
             let mut icons = vec![w(icon(*resource)), w("/")];
-            icons.push(Part::Other { other: counted(*per, kind.name()) });
+            icons.push(Part::Yours { yours: counted(*per, kind.name()) });
             one(clause(
                 icons,
                 format!("{gain} 1 {} {} you have", noun(*resource, 1), per_tokens(*kind, *per)),
             ))
         }
         Op::CashOut { kind, resource, rate } => {
-            let mut icons = vec![Part::Other { other: vec![w("ALL"), w(kind.name())] }];
+            let mut icons = vec![Part::Yours { yours: vec![w("ALL"), w(kind.name())] }];
             icons.push(w("/"));
             icons.extend(counted(*rate, icon(*resource)));
             one(clause(
@@ -528,11 +538,12 @@ fn standing(op: &Op) -> Standing {
             format!("when you give insight, the receiver also gains {}", amount(*resource, *n)),
         ),
         Op::SpreadShield => effect(
-            { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("shelter"), w("presence")]); p },
+            { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("harden"), w("presence")]); p },
             "when the adversary spreads, it skips your presence".to_string(),
         ),
+        // The shield stops one destruction; the roof is a whole country for the round.
         Op::CivicShelter => effect(
-            vec![w("building"), w(":"), w("shelter")],
+            vec![w("harden"), w("country")],
             "each round, stop the first destruction in a country you're in".to_string(),
         ),
         Op::TagsFromHand { tag: t } => effect(

@@ -23,13 +23,13 @@ A rough, complete ruleset for the first playable game: Militarist against Builde
 | --- | --- | --- |
 | Population | 6 | 1 on each Urban hex, 1 on 2 Industrial hexes |
 | Factory | 2 | Industrial hexes next to population |
-| Data centre | 2 | Network hexes |
+| Data center | 2 | Network hexes |
 | Drone (adversary) | 2 | 1 on each uplink |
 | Outpost (adversary) | 1 | On one uplink |
 
 **Shared supply:** a corruption pool of 2 per country + 2.
 
-**Each player starts with:** their AI board; 1 processor on a data centre in their starting country (only where their pieces begin; no rule refers to it afterwards); 12 credits and no other resources; their AI's 3 unique cards in hand. There is no opening draft; round 1 drafts normally.
+**Each player starts with:** their AI board; 1 processor on a data center in their starting country (only where their pieces begin; no rule refers to it afterward); 12 credits and no other resources; their AI's 3 unique cards in hand. There is no opening draft; round 1 drafts normally.
 
 **Opening:** before round 1, reveal the first adversary card and resolve its explore, so the first threats are already on the board.
 
@@ -50,9 +50,9 @@ Every step applies to **each country**, to every hex of the named terrain:
 
 - **Explore:** each such hex that is an uplink, or is next to an outpost or foundry, gains 1 drone.
 - **Build:** each such hex holding any adversary piece gains a foundry if it has more outposts than foundries, otherwise an outpost.
-- **Ravage:** each such hex holding adversary pieces takes damage equal to their total, minus any defense tokens there. Damage destroys population (2 health each) and then factories and data centres (3 health each); **players choose the order** of what is lost. If the damage is 2 or more, add 1 corruption to the hex from the pool. If the hex already had corruption, it **cascades**: add 1 more to an adjacent hex of the players' choice.
+- **Ravage:** each such hex holding adversary pieces takes damage equal to their total, minus any defense tokens there. Damage destroys population (2 health each) and then factories and data centers (3 health each); **players choose the order** of what is lost. If the damage is 2 or more, add 1 corruption to the hex from the pool. If the hex already had corruption, it **cascades**: add 1 more to an adjacent hex of the players' choice.
 
-**Corruption** stays until removed. Factories and data centres on a corrupted hex produce nothing. Players lose if the pool runs out.
+**Corruption** stays until removed. Factories and data centers on a corrupted hex produce nothing. Players lose if the pool runs out.
 
 **Militarist innate rules:**
 
@@ -94,12 +94,12 @@ Every **4 opposition per player** fills one level, up to level 3. Reaching a lev
 | Resource | Comes from | Spent on |
 | --- | --- | --- |
 | Credits | Credit income (AI track + buildings); each working factory pays 1 to every player with a processor in its country | Keeping drafted cards (3 each); card costs; some counters |
-| Compute | 1 per processor on a working data centre; some buildings | Cyber cards; draw (3 compute → 1 card); some counters |
+| Compute | 1 per processor on a working data center; some buildings | Cyber cards; draw (3 compute → 1 card); some counters |
 | Energy | Energy income (AI track + buildings); growth | Building abilities; defense; some counters |
 | Antimatter | Tier-2 cards; late track slots | Tier-2 cards; countering tier-2 threats |
 | Insight | Insight income from the AI track, each round; unspent insight is lost | Card plays: most cost 1, some 0, some 2. Give 1 to another player = +1 card play for them |
 
-A factory works if it is uncorrupted and next to at least one population. A data centre works if it is uncorrupted.
+A factory works if it is uncorrupted and next to at least one population. A data center works if it is uncorrupted.
 
 **Damage and defense.** A player dealing damage to a hex assigns it among the adversary pieces there. Destroyed pieces return to supply and score opposition. A **defense** token on a hex prevents 1 ravage damage; defense tokens are removed at the end of the round.
 
@@ -116,7 +116,7 @@ Uncountered threats are discarded after they execute. When the tier-1 draft deck
 
 ## 5. Builder and Protector
 
-**Processors and tracks.** Each AI board has two tracks, covered by processors at the start. Placing a processor takes it from the left end of either track, uncovering the next value; a track's current value is its highest uncovered one. A processor goes on any hex within 1 of one of your processors, or on any data centre in a country where you already have one. Processors on working data centres produce compute.
+**Processors and tracks.** Each AI board has two tracks, covered by processors at the start. Placing a processor takes it from the left end of either track, uncovering the next value; a track's current value is its highest uncovered one. A processor goes on any hex within 1 of one of your processors, or on any data center in a country where you already have one. Processors on working data centers produce compute.
 
 ### Builder: the wide engine
 
@@ -160,7 +160,7 @@ Each threat sits on one country. Its effect applies to that country only, where 
 | Blockade | Factories next to adversary pieces produce nothing this round | 2 compute |
 | Forward base | One drone on each country's lowest-numbered occupied uplink becomes an outpost | 3 energy |
 | Panic | In each country, 1 population next to adversary pieces flees to an adjacent hex without them (players choose); with nowhere to go, it is lost | 1 insight |
-| Sabotage | Processors on data centres next to adversary pieces produce nothing this round | 2 compute + 1 energy |
+| Sabotage | Processors on data centers next to adversary pieces produce nothing this round | 2 compute + 1 energy |
 | Fortify | Each foundry gains 1 defense this round | 3 credits |
 | Requisition | Each player discards 1 card or pays 3 credits | 1 insight |
 | Patrol | Each hex with a drone and population loses 1 population | 2 energy + 2 credits |
@@ -178,7 +178,7 @@ Each threat sits on one country. Its effect applies to that country only, where 
 
 ## 7. Player cards
 
-**Tags for v0**, each with a flavour: **Economy** (credits, factories), **Cyber** (compute, processors, information), **Power** (energy), **Unity** (population, helping others), **Discord** (damage, opposition). Power replaces Space and Insight from the candidate list for now. Cost is in credits; *I* is the insight cost of playing the card.
+**Tags for v0**, each with a flavor: **Economy** (credits, factories), **Cyber** (compute, processors, information), **Power** (energy), **Unity** (population, helping others), **Discord** (damage, opposition). Power replaces Space and Insight from the candidate list for now. Cost is in credits; *I* is the insight cost of playing the card.
 
 **Tier 1:**
 

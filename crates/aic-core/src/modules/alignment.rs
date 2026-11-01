@@ -317,7 +317,7 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     // free hexes where it could place one, so a sacrificed presence removed nothing).
     let pres: Vec<usize> = presence_of(g, s);
     let pres = if pres.len() < 2 { Vec::new() } else { pres };
-    let labelled = |what: &str, h: usize| {
+    let labeled = |what: &str, h: usize| {
         let mut o = hex_opt(&w, h);
         o.option = format!("{what} at {}", o.option);
         o
@@ -327,8 +327,8 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
         opts.push(opt("an ambassador from your supply"));
     }
     let off = opts.len();
-    opts.extend(ambs.iter().map(|&h| labelled("ambassador", h)));
-    opts.extend(pres.iter().map(|&h| labelled("presence", h)));
+    opts.extend(ambs.iter().map(|&h| labeled("ambassador", h)));
+    opts.extend(pres.iter().map(|&h| labeled("presence", h)));
     let prompt = format!("Seat {s}: sacrifice which ambassador or presence?");
     let Some(i) = cx.choose(s, &prompt, opts)? else {
         return Ok(());

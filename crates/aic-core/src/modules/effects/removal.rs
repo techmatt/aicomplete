@@ -110,7 +110,7 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
         let prompt = format!("Seat {seat}: clear adversary ambassadors around which corrupted city?");
         if let Some(i) = cx.choose(seat, &prompt, opts)? {
             let city = cities[i];
-            let mut hexes = w.map.hexes[city].neighbours.to_vec();
+            let mut hexes = w.map.hexes[city].neighbors.to_vec();
             hexes.sort_unstable();
             hexes.push(city);
             // 059: the card says "on or next to": every one goes at max 0, else the

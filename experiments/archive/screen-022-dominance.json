@@ -1,6 +1,6 @@
 {
   "name": "screen-022-dominance",
-  "note": "022 dominance checks (r13): the engine against seven fixed policies (the engine with one behaviour forced) at d0, d2 and d4, 2 and 3 countries. Each check should lose ground to the engine at d2 and above, and none match it at d4.",
+  "note": "022 dominance checks (r13): the engine against seven fixed policies (the engine with one behavior forced) at d0, d2 and d4, 2 and 3 countries. Each check should lose ground to the engine at d2 and above, and none match it at d4.",
   "configs": [
     "configs/baseline.json"
   ],

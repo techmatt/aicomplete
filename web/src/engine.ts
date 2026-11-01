@@ -10,7 +10,7 @@ export type Hex = [number, number];
 
 /**
  * An engine action. The client never builds one: it only sends back actions that
- * `legalActions` returned. Known fields are typed for labelling; any other field a
+ * `legalActions` returned. Known fields are typed for labeling; any other field a
  * future action carries is kept and shown as-is.
  */
 export interface Action {
@@ -69,7 +69,7 @@ export interface HexView {
   hex: Hex;
   country: number;
   piece_pos: [number, number];
-  neighbours: number[];
+  neighbors: number[];
   /** The printed hex number (1-16 on its piece). */
   number: number;
   /** What the hex is: `city`, `base` (a military base), `open` or `ocean`. */
@@ -85,7 +85,7 @@ export interface CountryView {
   /** The printed country piece's name (content/map.json). */
   name: string;
   seat: number;
-  colour: string;
+  color: string;
   hexes: number[];
   values: Value[];
   cards: CardGroup[];

@@ -2,7 +2,7 @@
 // Board-track and board-name hovers live with their drawing in panels.ts.
 
 import type { Action, CardView, View } from './engine';
-import { actionLabel, contentIds, escapeHtml, hexKey, isHex, kindName, strong, tokenColour, tokenName, type LabelContext } from './format';
+import { actionLabel, contentIds, escapeHtml, hexKey, isHex, kindName, strong, tokenColor, tokenName, type LabelContext } from './format';
 import { boardDetails, countryName, trackStepDetails } from './panels';
 
 function tokenDetails(token: string, hex: string, shown: View): string {
@@ -13,17 +13,17 @@ function tokenDetails(token: string, hex: string, shown: View): string {
 
 function hexDetails(hex: string, index: number, shown: View, legal: Action[], cx: LabelContext): string {
   const h = shown.hexes[index];
-  // A seat's piece in its seat's colour, as the board draws it (020: grey).
+  // A seat's piece in its seat's color, as the board draws it (020: gray).
   const dot = (k: string) => {
     const seat = /:(\d+)$/.exec(k)?.[1];
-    const c = seat !== undefined ? shown.countries[shown.seats[Number(seat)]?.country ?? -1]?.colour : undefined;
-    return c ? strong(c) : tokenColour(k);
+    const c = seat !== undefined ? shown.countries[shown.seats[Number(seat)]?.country ?? -1]?.color : undefined;
+    return c ? strong(c) : tokenColor(k);
   };
   const toks = h.tokens.map((x) => `<span class="dot" style="background:${dot(x.kind)}"></span>${escapeHtml(tokenName(x.kind))} × ${x.count}`).join('<br>') || 'no tokens';
   const here = legal.filter((a) => isHex(a.target) && hexKey(a.target) === hex).map((a) => escapeHtml(actionLabel(a, true, true, cx)));
   const facing = h.facing !== undefined ? ` · <b>front</b> facing ${escapeHtml(countryName(shown, h.facing))}` : '';
   const arrows = (shown.arrows ?? []).filter((a) => a.from === h.index || a.to === h.index).map((a) => escapeHtml(contentIds(a.doc)));
-  return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}${facing}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbours.length} neighbours<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;
+  return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}${facing}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbors.length} neighbors<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;
 }
 
 function pileDetails(key: string, shown: View): string | null {

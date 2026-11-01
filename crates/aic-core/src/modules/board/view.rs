@@ -6,7 +6,7 @@ pub(super) fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with presence here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Shelter => "Sheltered: buildings and presence here can't be destroyed this round",
+        RoundFlag::Shelter => "Sheltered: facilities and presence here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
     }
 }

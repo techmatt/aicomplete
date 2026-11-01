@@ -36,7 +36,7 @@ below, it wins.** The older sections keep the numbers of their day.
 
 | thing | rate (credits) | why |
 |---|---|---|
-| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear; 2.5 centres tier 1 on its printed prices |
+| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear; 2.5 centers tier 1 on its printed prices |
 | keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
 | energy | 2 | was 1. Project ceiling 4; a 1-energy standard action does about this much |
 | chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
@@ -99,7 +99,7 @@ city back out of reach of a Fifth Column round.
 |---|---|---|---|
 | Field Sensor Grid (T1) | clear 1, up to 1 insight | clear 2, up to 1 insight | 2 cr for up to 2 × (1 energy + 1 Sway) plus 4 credits of insight: the round it is played |
 | Benchmark Suite (T1) | 1 insight, shield 1, 1 Dataset | 1 insight, shield 2 | 2 cr less 4 of insight is free; each hit absorbed saves a token and a marker, about 7 |
-| Predictive Modelling (T1) | 2 cr + 1 insight | 2 cr, 0 insight | half a counter, 2-3 credits, the round it is played: one copy pays back on one threat |
+| Predictive Modeling (T1) | 2 cr + 1 insight | 2 cr, 0 insight | half a counter, 2-3 credits, the round it is played: one copy pays back on one threat |
 | Threat Forecast Engine (T1) | peek 2, draw 1 | peek 1, one threat waits | the same at three tags; a second delay answers the round the first comes back |
 | Shadow Broker Feed (T1) | peek 2, draw 1 | clear 1, draw 1 | 2 cr for about 3 of marker and a blind card |
 | Mesh Intrusion Pact (T2) | drain all 3, gift, 2 credits | drain all 3, gift, shield 2 | the 2 credits become up to 14 when Discord's presence hits start |
@@ -126,7 +126,7 @@ counter (2-3 credits: it still has to be answered, or it hits next round); a mov
 | card | was | now | why |
 |---|---|---|---|
 | Field Sensor Grid (T1) | 3 cr, up to 2 insight | 2 cr, clear 1 marker, up to 1 insight | about 3 of marker and 2 of insight; a tag early, when no marker stands |
-| Predictive Modelling (T1) | 2 cr + 1 insight, peek 2, +1 insight next round | peek 1, one threat waits | 2-3 for the delay and 1 for the peek against 6 paid |
+| Predictive Modeling (T1) | 2 cr + 1 insight, peek 2, +1 insight next round | peek 1, one threat waits | 2-3 for the delay and 1 for the peek against 6 paid |
 | Benchmark Suite (T1) | 2 cr, 1 insight, 2 Datasets | 2 cr, 1 insight, shield 1, 1 Dataset | the shield replaces a Dataset and a credit's worth of filler at 0 insight, since it only pays if the hex is hit |
 | Shared Compute Grant (T1) | give 2 insight (+1), draw 1 | give 2 insight (+1), move an ambassador 2 | a move for a draw: cheaper, on the map |
 | Open-Weights Release (T2) | 6 cr + 2 insight, gifts, draw 2, +1 insight | 4 cr + 1 insight, clear 2, shield 2, give 2 insight | the keep (3 insight) is most of the price; about 11 for about 18 when markers stand |
@@ -281,7 +281,7 @@ Tier 2 lands in rounds 5-8, so it pays back in 2-4 rounds or not at all:
 - **Data Licensing Deal** (0 cr, 1 insight): one-shot cash-out of a Dataset pile, up to 8 credits + 2 insight, kept tokens. Cheap because its value is entirely what you already built; the tier-2 keep (3 insight) is its real price.
 - **Ultimates carry antimatter (1 each)**: Recursive Self-Improvement (10 cr, -1 credit income, +2 insight production, draw 3) and Foundation Model Campus (15 cr, 2 chips, needs 3 Science: +2 insight income, +1 credit per Science tag max 6, draw 2). From round 6 each must return ~10 insight-equivalents in 3 rounds to beat their keep + play cost, hence numbers above any tier-1 rate.
 - **Adversarial Inference Sweep** (7 cr, 2 insight): drain_all 1 is a Cyber primitive borrowed at half strength; the draw 2 is the Science half.
-- No keep-discount primitive exists. Predictive Modelling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
+- No keep-discount primitive exists. Predictive Modeling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
 
 ## Industry
 

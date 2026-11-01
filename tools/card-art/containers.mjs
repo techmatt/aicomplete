@@ -2,7 +2,7 @@
 // with Codex's image tool, the master frame as style reference, into the originals folder
 // (card-frames-r3/containers.png). Without it, slices the kept sheet into
 // web/card/containers/*.png, keying out its flat background. A tile comes in one neutral
-// steel-and-enamel blank; card.css colours it by resource, so the sheet is painted once.
+// steel-and-enamel blank; card.css colors it by resource, so the sheet is painted once.
 import { copyFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 

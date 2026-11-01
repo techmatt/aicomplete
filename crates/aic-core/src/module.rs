@@ -1,7 +1,7 @@
 //! The module framework. A game is a set of modules, each in one variant;
 //! each variant declares its tunable parameters, the phases it contributes
 //! to the round, and the RNG purposes it draws from, and builds a [`Module`]
-//! (its typed, resolved parameters plus behaviour) from config.
+//! (its typed, resolved parameters plus behavior) from config.
 //!
 //! See `docs/architecture.md` for how to add a module or a variant.
 
@@ -163,7 +163,7 @@ impl From<&str> for Halt {
 
 pub type Res<T = ()> = Result<T, Halt>;
 
-/// Behaviour of a built module. Phase arguments are indices into the
+/// Behavior of a built module. Phase arguments are indices into the
 /// variant's `phases`. Every method is deterministic: randomness only via
 /// [`Cx::rng`], and only from purposes the variant declared, or
 /// [`Cx::deck_rng`] for a card deck's reshuffle.

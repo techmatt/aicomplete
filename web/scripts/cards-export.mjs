@@ -186,12 +186,14 @@ function winDeltas(file) {
 /**
  * Reasoned prices: any CSV under experiments/results with a `card` or `id` column and a
  * numeric column whose name holds "reason" (card-prices.csv by convention). A rationale
- * column of words beside it is passed over. The last file in path order wins a card.
+ * column of words beside it is passed over. The last file in path order wins a card. A
+ * `revision` column says which rules' costs the prices were reasoned at.
  */
 function reasonedPrices(results) {
   const out = {};
   const seen = [];
-  if (!existsSync(results)) return { prices: out, files: seen };
+  let revision = null;
+  if (!existsSync(results)) return { prices: out, files: seen, revision };
   for (const f of walk(results).sort()) {
     if (!f.endsWith('.csv') || /[\\/](games|cards)\.csv$/.test(f)) continue;
     const rows = readCsv(f);
@@ -201,9 +203,10 @@ function reasonedPrices(results) {
     const col = head.find((h) => /reason/i.test(h) && rows.some((r) => number(r[h])) && rows.every((r) => !r[h] || number(r[h])));
     if (!idCol || !col) continue;
     seen.push(f);
+    revision = rows[0].revision || revision;
     for (const row of rows) if (number(row[col])) out[row[idCol]] = Number(row[col]);
   }
-  return { prices: out, files: seen };
+  return { prices: out, files: seen, revision };
 }
 
 function buildStats(root) {
@@ -246,10 +249,12 @@ function buildStats(root) {
       { key: 'win_delta', label: 'Win Δ', title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (the screen records no other per-card outcome)', unit: ' pts' },
     );
   }
+  const at = reasoned.revision ? ` (r${reasoned.revision})` : '';
+  const stale = reasoned.revision ? `; reasoned at r${reasoned.revision}'s costs, so a card repriced since reads wrong` : '';
   if (Object.keys(reasoned.prices).length)
     columns.push(
-      { key: 'reasoned', label: 'Reasoned', title: 'reasoned price', unit: '' },
-      { key: 'price_gap', label: 'Printed − reasoned', title: 'printed credits minus the reasoned price: above 0 is dear, below 0 cheap', unit: '' },
+      { key: 'reasoned', label: `Reasoned${at}`, title: `reasoned price${stale}`, unit: '' },
+      { key: 'price_gap', label: `Printed − reasoned${at}`, title: `printed credits minus the reasoned price: above 0 is dear, below 0 cheap${stale}`, unit: '' },
     );
   return {
     source,

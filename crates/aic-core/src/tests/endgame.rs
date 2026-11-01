@@ -126,7 +126,7 @@ fn every_piece_prints_two_coastal_cities() {
 fn the_hold_counts_any_players_and_the_adversary_on_or_next_to_it() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    let n = rules.map.hexes[h].neighbours[0];
+    let n = rules.map.hexes[h].neighbors[0];
     put(&mut g, h, ADV_CUBE, 1);
     let w = rules.world();
     assert_eq!(board::hold(&w, &g, h), 3);
@@ -295,7 +295,7 @@ fn a_city_that_corrupts_destroys_presence_on_it_and_leaves_no_marker() {
 fn corruption_reach_takes_presence_around_the_city() {
     let (rules, mut g) = lab_with(&[], &["board.corruption_reach=1"]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    let n = rules.map.hexes[h].neighbours[0];
+    let n = rules.map.hexes[h].neighbors[0];
     let far = rules.map.numbered(1, piece(1).cities[0]);
     put(&mut g, n, &presence(0), 1);
     put(&mut g, far, &presence(0), 1);
@@ -309,7 +309,7 @@ fn a_lost_presence_leaves_the_game_and_its_income_stays() {
     use crate::modules::ai;
     let (rules, mut g) = lab_with(&[], &[]);
     let (a, b) = (rules.map.numbered(0, piece(0).presence), rules.map.numbered(0, piece(0).cities[0]));
-    let c = rules.map.hexes[a].neighbours[0];
+    let c = rules.map.hexes[a].neighbors[0];
     presence_on_track(&mut g, 0, &[a, b, c]);
     let w = rules.world();
     let income = ai::track_income(&w, &g, 0);
@@ -323,7 +323,7 @@ fn a_lost_presence_leaves_the_game_and_its_income_stays() {
 fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
     let (rules, mut g) = lab_with(&[], &[]);
     let a = rules.map.numbered(0, piece(0).presence);
-    let n = rules.map.hexes[a].neighbours[0];
+    let n = rules.map.hexes[a].neighbors[0];
     put(&mut g, a, presence(0), 1);
     put(&mut g, n, presence(1), 1);
     put(&mut g, n, NODE, 1);

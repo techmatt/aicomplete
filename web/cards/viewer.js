@@ -360,7 +360,7 @@ async function closeDetail() {
 
 async function step(by) {
   if (!(await keepNote())) return;
-  // A save can drop the card from a review filter: its neighbours are then either side of
+  // A save can drop the card from a review filter: its neighbors are then either side of
   // where it stood, and the next one has moved into its place.
   const here = ui.shown.indexOf(ui.open);
   const n = ui.shown.length;

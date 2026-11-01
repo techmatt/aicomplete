@@ -587,7 +587,7 @@ impl Module for Threats {
             "threat tier",
             adversary::threat_tier(w, g) as i64,
             Some(2),
-            // 020: it was labelled "dealt next round start", one round late at
+            // 020: it was labeled "dealt next round start", one round late at
             // the switch to stage II.
             "the tier of threats dealt this round: 2 once this round's adversary card is stage II (at difficulty 4, sooner)",
         );
@@ -604,7 +604,7 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
             .iter()
             .copied()
             .filter(|&h| match at {
-                Spot::PlayerBuildings => player_owned(g, h),
+                Spot::PlayerPieces => player_owned(g, h),
                 Spot::CleanCities => clean_city(&w, g, h),
                 Spot::Factories => g.tokens(h, FACTORY) > 0,
                 Spot::Bases => is_base(&w, h),

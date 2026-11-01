@@ -199,7 +199,7 @@ const PAGE_LIB = String.raw`(() => {
         if (!el.closest('code, pre, #data') && /\bC\d+ #\d+/.test(t)) add('raw-id', label(el) + ' (engine hex name)');
       }
     }
-    // Buttons: each one on screen must be the element under its own centre (not covered).
+    // Buttons: each one on screen must be the element under its own center (not covered).
     const buttons = [...document.querySelectorAll('button')].filter((b) => vis(b) && !b.closest('dialog'));
     for (const b of buttons) {
       const r = b.getBoundingClientRect();
@@ -231,7 +231,7 @@ const PAGE_LIB = String.raw`(() => {
       if (tok.count > 0 && !document.querySelector('#board [data-hex="' + h.hex.join(',') + '"][data-token="' + tok.kind + '"]'))
         add('token-missing', tok.kind + ' x' + tok.count + ' on hex ' + h.hex.join(','));
     }
-    // 044: every token has its own glyph and name (r19's marker fell to a hashed-colour disc).
+    // 044: every token has its own glyph and name (r19's marker fell to a hashed-color disc).
     for (const h of aic.view.hexes) for (const tok of h.tokens)
       if (!TOKENS.has(tok.kind.split(':')[0])) add('token-unknown', tok.kind + ' has no glyph');
     // Arrows (019) point between hexes that exist.

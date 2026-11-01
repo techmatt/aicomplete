@@ -8,7 +8,7 @@
 
 ## Goal
 
-Replace the board with Matt's redesigned model: cities, research stations, factories, military bases and data centres, with ambassadors as the adversary's main pressure. When done, Matt can play a full game in the viewer on the new board, to a win or a loss.
+Replace the board with Matt's redesigned model: cities, research stations, factories, military bases and data centers, with ambassadors as the adversary's main pressure. When done, Matt can play a full game in the viewer on the new board, to a win or a loss.
 
 **Locked** marks Matt's decisions. **Candidate** marks starting points: make each one a tunable or a variant, never hard code. Every number below is a starting calibration reasoned for an 8–10 round game; simulation adjusts it later.
 
@@ -21,8 +21,8 @@ Population, processors, drones, outposts, foundries, uplinks, typed land (Urban,
 ## Board
 
 - **Locked:** population is implicit, and people live in cities. Each country is still a 16-hex piece.
-- **Candidate hex types:** city, military base, open and ocean. Buildings (factory, research station, data centre) go on open hexes, one per hex.
-- **Candidate adjacency rules:** a factory must touch a city; a data centre must touch one of your own. Nothing builds on ocean, and an ocean edge between two countries is not a front.
+- **Candidate hex types:** city, military base, open and ocean. Buildings (factory, research station, data center) go on open hexes, one per hex.
+- **Candidate adjacency rules:** a factory must touch a city; a data center must touch one of your own. Nothing builds on ocean, and an ocean edge between two countries is not a front.
 - **Owner cubes, locked:** cities and research stations carry one. A city or station with no cube is clean; an adversary cube means corrupted; a player cube means aligned or owned.
 - **Setup per country (candidate):**
   - 3 cities, 1 of them corrupted;
@@ -32,34 +32,34 @@ Population, processors, drones, outposts, foundries, uplinks, typed land (Urban,
   - 0–2 ocean hexes on the outer edge, to vary the pieces.
 
   Design the layouts so every country has at least one front at 2–3 players.
-- **Each player starts with** 2 data centres, 1 player ambassador, 25 credits, and their AI board's credit production. Credit production starts at about 8 (candidate).
+- **Each player starts with** 2 data centers, 1 player ambassador, 25 credits, and their AI board's credit production. Credit production starts at about 8 (candidate).
 
 ## Production and economy
 
 - **Cities, locked:** each clean city makes 1 energy a round; a corrupted one makes it for the adversary.
-  - Candidate: a clean city's energy goes to the player with the most data centres next to it, players choosing on a tie.
+  - Candidate: a clean city's energy goes to the player with the most data centers next to it, players choosing on a tie.
   - Candidate: an aligned city gives its owner +1 more.
   - Candidate: aligning a clean city costs 2 energy and 1 player ambassador.
-- **Data centres, locked:** player presence. Each makes 1 compute. You act within 1 hex of your data centres.
-  - Placing one takes it from your AI board's track, uncovering values the way processors did. Map the old processor tracks onto data centres.
-- **Research stations, locked:** each makes one megaproject cube a round in its owner's colour, onto its country's megaproject card. Neutral stations make nothing.
+- **Data centers, locked:** player presence. Each makes 1 compute. You act within 1 hex of your data centers.
+  - Placing one takes it from your AI board's track, uncovering values the way processors did. Map the old processor tracks onto data centers.
+- **Research stations, locked:** each makes one megaproject cube a round in its owner's color, onto its country's megaproject card. Neutral stations make nothing.
   - A player ambassador turns a neutral station into an owned one.
   - When a project completes, each cube on it pays its owner. Candidates: 10 credits a cube to players; adversary cubes become Discord, at 1 Sway per 2 cubes.
-  - Afterwards, owned stations keep producing the benefit printed on that project.
+  - Afterward, owned stations keep producing the benefit printed on that project.
   - Candidate: one placeholder project per corp, 7 cubes. Reasoning: about 2 stations a country make 1–2 cubes a round, so a project completes around round 4–5.
 - **Anything diverted to the adversary** (energy, compute) sways Discord, 1 per unit, unless it has a direct use like megaproject cubes. Candidate.
 - **Credits, locked shape:**
   - credit production on each AI board, raised by cards;
   - resources act as discounts at AI-specific rates: compute for Cyber cards, energy for buildings;
   - standard conversions, including selling a card for 1 credit;
-  - each AI's money source is part of its flavour.
+  - each AI's money source is part of its flavor.
 
   For A, wire the mechanisms in and keep today's numbers where they exist.
 - **Standard actions, locked:** they exist but are deliberately poorly priced. Cards are always the better way, and standard actions are a luck hedge. Candidate prices, at roughly double a card's rate:
 
   | Action | Cost |
   |---|---|
-  | Place a data centre | 2 energy + 4 credits |
+  | Place a data center | 2 energy + 4 credits |
   | Build a factory or research station | 2 energy + 8 credits |
   | Remove an adversary ambassador within reach | 2 energy |
   | Move a player ambassador | 1 energy |
@@ -75,8 +75,8 @@ Population, processors, drones, outposts, foundries, uplinks, typed land (Urban,
 - On a factory, when it builds a unit: the unit is adversary-owned. Locked.
 - On a military base, when the base produces: 3 Discord, and the ambassador is consumed. It does not start a war. Locked; the 3 is a candidate.
 - On a city: that round's energy goes to the adversary. Candidate.
-- On a station: that round's cube is adversary-coloured. Candidate.
-- On a data centre: its compute goes to the adversary. Candidate.
+- On a station: that round's cube is adversary-colored. Candidate.
+- On a data center: its compute goes to the adversary. Candidate.
 
 **Player ambassadors** (they move only through cards and the standard action):
 - Turn a neutral station into an owned one. Locked.
@@ -96,7 +96,7 @@ Population, processors, drones, outposts, foundries, uplinks, typed land (Urban,
 
 Calibration: one corrupted city plus its factories makes about 2–3 ambassadors a round per country. If about half reach a clean city and players remove some, the first new corruption comes around rounds 5–6, and the supply then doubles.
 
-**The adversary deck, locked:** it is the clock and the stager, and it flavours the adversary.
+**The adversary deck, locked:** it is the clock and the stager, and it flavors the adversary.
 - About 10 cards in stages I/II/III (3/4/3). The next round's card is face up a round ahead, as Spirit Island's pipeline telegraphed.
 - Each card adds a twist to that round's build or spread, for example "build also targets factories next to clean cities". Stage II carries the Militarist's escalation.
 - Draft the cards as candidates, and list them in the report.
@@ -106,7 +106,7 @@ Calibration: one corrupted city plus its factories makes about 2–3 ambassadors
 **Corp troops, locked:**
 - There are no player troops. Troops belong to the megacorp of their territory, and they fight on fronts.
 - Each base produces 1 unit a round.
-- **On a war round,** the units on either side of a front cancel 1-for-1. The surplus crosses, acts at once and is used up: each destroys the rival factory nearest that base, or a data centre if there is no factory.
+- **On a war round,** the units on either side of a front cancel 1-for-1. The surplus crosses, acts at once and is used up: each destroys the rival factory nearest that base, or a data center if there is no factory.
 - **At peace,** units wait at the base, capped at 3. This is open with Matt; it's a placeholder.
 
 **Adversary troops,** candidate: they come from ambassadors on factories. They stay on the board, and in production each destroys one adjacent player building (players choose; hardening absorbs first).
@@ -137,7 +137,7 @@ Locked for now:
    1. corps produce at bases (ambassadors divert units);
    2. front battles on war rounds;
    3. adversary troops strike;
-   4. cities, stations and data centres produce (ambassadors divert);
+   4. cities, stations and data centers produce (ambassadors divert);
    5. credit income;
    6. uncountered threats execute.
 5. **Upkeep:** tips and the checks below.
@@ -159,7 +159,7 @@ Placeholders.
 
 ## Also
 
-- **Placeholders:** carry today's cards, AI unique cards and AI boards over. Remap anything that names a removed piece, or cut it, and list each change in the report. Builder and Protector keep their identities: data centres replace processors on their tracks, and growth options are remapped (a processor becomes a data centre; defense becomes hardening or an ambassador).
+- **Placeholders:** carry today's cards, AI unique cards and AI boards over. Remap anything that names a removed piece, or cut it, and list each change in the report. Builder and Protector keep their identities: data centers replace processors on their tracks, and growth options are remapped (a processor becomes a data center; defense becomes hardening or an ambassador).
 - **Agents:** greedy and engine learn the new board on the `--quick` path. Deep agents only need to keep working.
 - **Viewer:** shows hex types, owner cubes, buildings, both kinds of ambassador, corp and adversary troops, fronts and war rounds, megaproject cards with their cubes, the face-up deck card, and the supply.
 - **Quick screen:** run `--quick` at 2 and 3 countries, d0 and d4. Report:

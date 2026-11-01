@@ -83,7 +83,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
         };
         let win = |g: &GroupSummary| g.skill_gap;
         let survival = |g: &GroupSummary| g.skill_gap_survival;
-        // Say when it blends several configs or variants (020: unlabelled).
+        // Say when it blends several configs or variants (020: unlabeled).
         let slices = run.groups.iter().filter(|g| g.difficulty == lo).count();
         let over = if slices > 1 { format!(" (mean over {slices} configs/variants)") } else { String::new() };
         f.push(format!(
@@ -96,7 +96,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
     }
     let tops: Vec<&CellSummary> = sums.iter().filter(|s| strongest(s)).collect();
     // One line per config and variant, named like the other findings (020: it took
-    // the first cell at each difficulty, the first slice only, unlabelled).
+    // the first cell at each difficulty, the first slice only, unlabeled).
     let mut slices: Vec<(&str, &str)> = Vec::new();
     for s in &tops {
         if !slices.contains(&(s.config.as_str(), s.variant.as_str())) {

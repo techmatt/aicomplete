@@ -295,7 +295,7 @@ pub(super) fn agent_order(cells: &[Cell]) -> Vec<&AgentSpec> {
     out
 }
 
-/// The greedy agent the others are compared with: the one labelled exactly
+/// The greedy agent the others are compared with: the one labeled exactly
 /// `greedy`, else the first of kind greedy.
 fn greedy_reference(cells: &[Cell]) -> Option<String> {
     let agents = agent_order(cells);

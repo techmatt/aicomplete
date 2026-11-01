@@ -516,7 +516,7 @@ impl Module for Adversary {
         let done = g.pile(PROJECTS_DONE);
         out.pile(
             "projects_done",
-            // A discarded project (Zero-Day Wipe) goes here too (020: labelled "resolved").
+            // A discarded project (Zero-Day Wipe) goes here too (020: labeled "resolved").
             "Adversary projects resolved or discarded",
             None,
             done.len(),
@@ -711,7 +711,7 @@ fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
     if let Some(s) = player_ambassador(g, h) {
         cx.add_tokens(g, h, &ambassador(s), -1);
         cx.add_key(g, SUPPLY, 1);
-        cx.tally(g, "adversary.cancelled", 1);
+        cx.tally(g, "adversary.canceled", 1);
         return;
     }
     if spreading

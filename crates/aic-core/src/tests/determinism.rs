@@ -114,7 +114,7 @@ fn spread_choice() -> (Rules, GameState) {
     put(&mut g, city, ADV_AMBASSADOR, 2);
     // Two presence next to it: equals, so the players choose.
     let next: Vec<usize> = m.hexes[city]
-        .neighbours
+        .neighbors
         .iter()
         .copied()
         .filter(|&h| kind(m, h) == HexKind::Open)

@@ -1,4 +1,4 @@
-// Labels and colours for engine data. Generic: any action, event or token kind gets a
+// Labels and colors for engine data. Generic: any action, event or token kind gets a
 // readable label without code here; known action types, card ids, threat ids, growth
 // options and the board's standard actions get their content names (and costs).
 
@@ -115,7 +115,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
 /**
  * "seat 1: play Turnkey Factory". The seat is left out with `withSeat` false, and the
  * target with `withTarget` false (a choice's label, before its hex is picked).
- * Unknown action types are labelled from their fields.
+ * Unknown action types are labeled from their fields.
  */
 export function actionLabel(a: Action, withSeat: boolean, withTarget: boolean, cx: LabelContext): string {
   let body = known(a, withTarget, cx);
@@ -184,7 +184,7 @@ export function choiceKey(a: Action): string {
   return JSON.stringify(rest);
 }
 
-// ---------- colours ----------
+// ---------- colors ----------
 
 /** Hex fills by what the hex is (`HexView.kind`): distinct, light enough for tokens on top. */
 export const KINDS: Record<string, { fill: string; label: string }> = {
@@ -196,7 +196,7 @@ export const KINDS: Record<string, { fill: string; label: string }> = {
 export const kindFill = (k: string) => KINDS[k]?.fill ?? '#e4e0d8';
 export const kindName = (k: string) => KINDS[k]?.label ?? words(k);
 
-/** A `#rrggbb` colour pushed to a saturated, mid-dark version of its hue (for borders). */
+/** A `#rrggbb` color pushed to a saturated, mid-dark version of its hue (for borders). */
 export function strong(hex: string): string {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex);
   if (!m) return hex;
@@ -212,17 +212,17 @@ export function strong(hex: string): string {
   return `hsl(${Math.round((h * 60 + 360) % 360)} 70% 42%)`;
 }
 
-/** The adversary's colour: its owner cubes, its ambassadors, its cubes on megaprojects. */
-export const ADVERSARY_COLOUR = '#5b1a8c';
+/** The adversary's color: its owner cubes, its ambassadors, its cubes on megaprojects. */
+export const ADVERSARY_COLOR = '#5b1a8c';
 
-// Token colours: chosen colours for the kinds the board draws, every other kind
+// Token colors: chosen colors for the kinds the board draws, every other kind
 // hashed to a hue. Seat-owned kinds (`cube:<seat>`, `presence:<seat>`, `ambassador:<seat>`) are
-// drawn in the seat's colour on the board; this is their fallback.
+// drawn in the seat's color on the board; this is their fallback.
 const KNOWN: Record<string, string> = {
-  'cube:adversary': ADVERSARY_COLOUR,
-  'ambassador:adversary': ADVERSARY_COLOUR,
-  node: ADVERSARY_COLOUR,
-  corruption: ADVERSARY_COLOUR,
+  'cube:adversary': ADVERSARY_COLOR,
+  'ambassador:adversary': ADVERSARY_COLOR,
+  node: ADVERSARY_COLOR,
+  corruption: ADVERSARY_COLOR,
   troop: '#2a0d3d',
   factory: '#7a5230',
   station: '#00796b',
@@ -230,7 +230,7 @@ const KNOWN: Record<string, string> = {
   harden: '#607d8b',
 };
 
-export function tokenColour(kind: string): string {
+export function tokenColor(kind: string): string {
   if (KNOWN[kind]) return KNOWN[kind];
   if (/^(cube|presence|ambassador):\d+$/.test(kind)) return '#37474f';
   let h = 0;
