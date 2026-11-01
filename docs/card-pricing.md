@@ -1,11 +1,70 @@
-# Card pricing: the reasoning (023, rules r14)
+# Card pricing: the reasoning (023, rules r14; current rates 055, r24)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
 
-## 046's changes (r22)
+## 055's changes (r24): the current rates and the first price pass
+
+Priced at d2 with the planner. The list, the measure and every sweep are in
+[experiments/results/screen-055-prices/prices.md](../experiments/results/screen-055-prices/prices.md);
+reasoned prices are in `card-prices.csv` beside it. **Where this table disagrees with the sections
+below, it wins.** The older sections keep the numbers of their day.
+
+| thing | rate (credits) | why |
+|---|---|---|
+| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear; 2.5 centres tier 1 on its printed prices |
+| keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
+| energy | 2 | was 1. Project ceiling 4; a 1-energy standard action does about this much |
+| chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
+| antimatter | 9 | 1 a round costs 8-11 of credits |
+| token held | 1 | spent, it is worth what its action buys |
+| drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
+| tag left in play | 1, then 0.5 each | new: discounts, `needs`, powers. Events leave none |
+| Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card |
+| presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
+| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 2 for 3 |
+| removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
+| marker cleared | 6, × 0.7 for a target | 1 energy, 1 Sway, a hex back |
+| shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
+| delay 2.5, jam N is N, counter 7 | | |
+| compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
+| cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
+| node removed | 12 | 2 Sway plus its compute and the block on claims |
+| city freed | 25 | 5 Sway plus a city |
+| income, tier 1 / tier 2 | credit 5 / 3, energy 5 / 3.5, chip 4 / 2.5, insight 8 / 6 | about 6 incomes in tier 1, 3 in tier 2 |
+| a gift to another seat | 0.75 × face | new: they may not need it then |
+| income per tag | credit income × about 1.2 | new: 1 per 2 tags, max 3, on a committed seat |
+| repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
+
+**`needs` is the price that separates a rush.** Credits hit the planner and the rush alike: the planner
+drafts tier 2 about two picks in three, and the rush has only half the planner's tier-1 plays, so
+what it lacks is tags in play. Dearer tier-2 credits took the planner down more than the rush (52 / 55
+against 62 / 65, 40 seeds); six `needs` took the rush down 18-20 and the planner 15 at c2, none at c3.
+Tier-1 cuts did nothing for either. The Sway cards keep no gate but Great Liberation: all nine gates,
+three of them on Sway cards, took the planner to 46 at c2 (the win clock).
+
+| card | was | now | why |
+|---|---|---|---|
+| Great Liberation | 14 cr | 16 cr, needs 1 Diplomacy | both lists: frees a city and more, reasoned 21; +20 against tier 2 |
+| Beamed Power Constellation | 5 cr | 7 cr | both lists: 3 free presence and up to 6 energy, reasoned 15; +14 |
+| Peace Dividend | 2 cr | 3 cr | 2 Sway at 0 insight, reasoned 6; +9 (z 1.8) |
+| Darknet Exchange | 4 cr | 2 cr | both lists: 1 credit per 2 tags, below Payroll Automation; reasoned 1 |
+| Security Contractor HQ | 4 cr | 3 cr | the same text as Darknet Exchange; reasoned 1 |
+| Rootkit Cache | Action 2 cr | Action 1 cr | both lists: at `node_compute` 1 a cut was worth less than its 2 |
+| Kinetic Interdiction | no needs | needs 1 Security | the rush's one-shot: played 59-90% |
+| Node Severance | no needs | needs 1 Cyber | the same |
+| Singularity Exploit | no needs | needs 1 Cyber | the same |
+| Exodus Corridors | no needs | needs 1 Diplomacy | the same |
+| Mesh Intrusion Pact | no needs | needs 1 Cyber | the same; the rush played it 19 points more |
+| Adversarial Inference Sweep | no needs | needs 1 Science | the same; 12 points more |
+
+**Always-Consolidate is not answered by price.** It was to be answered through cards that pay off
+presence and draws. Field Sensor Grid at 2 insight, Grid Census at 8 energy and Beamed Power at
+8 moved neither gap beyond the noise, nor did dearer presence cards, so neither shipped. Its wins are
+purges (22 of 33 at c2, 30 of 35 at c3, fresh seeds), it loses half the presence, and the bundle that pays for it is the growth rule.
+
 
 Shields, delays and marker clearing are Science's alone (the content check refuses them elsewhere;
 all five cards that carried one already had the tag). The niche was real but thin: five cards in 150,

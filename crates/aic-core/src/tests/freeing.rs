@@ -58,6 +58,8 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
     assert!(!plays.iter().any(|a| matches!(a, Action::Play { card, .. } if card == "back_channel_talks")));
     // The ultimate frees it.
     let mut k = g.clone();
+    // It needs a Diplomacy tag in play.
+    Arc::make_mut(k.piles.entry(crate::modules::cards::played(0)).or_default()).push("consular_pouch".into());
     play_card(&rules, &mut k, 0, "great_liberation");
     pick(&rules, &mut k, h);
     answer_all(&rules, &mut k);

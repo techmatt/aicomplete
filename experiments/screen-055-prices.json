@@ -1,0 +1,13 @@
+{
+  "name": "screen-055-prices",
+  "note": "055's card measure: the planner and the two structural checks, paired, at d2, 2 and 3 countries. Run on fresh seeds (--seed 7000 for the first read), then read with scripts/cards/price_read.py.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "planner:tier2_rush=1", "planner:always_consolidate=1"],
+  "games": 160,
+  "records": 0
+}

@@ -73,6 +73,8 @@ Current:
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](docs/card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the kept scripts below.
+- `cards/price_read.py` (055): per-card rates and stratified win deltas from games.jsonl
+  (*Experiments*, *Card pricing read*).
 - `run_sim.ps1 NAME [-NoBuild] ARGS...` (052): builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on
@@ -606,8 +608,8 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
 `experiments/gate.json` (gate-r23): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
 the first block and 512 at the cap. Measured, in planner games a minute: 14 on 4 threads
-(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min). Budget
-30 min, and start it at least 45 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
+(034), 23 on a shared 12 (r19), 25 on 8 (r22, 046), 25 on 8 (r23: 444 of 512 games, 18 min), 15 on 8 (r24, the planner since 054). Budget
+40 min, and start it at least 55 min before a hard stop with the rules frozen. Every 10 s stderr prints the games done and the time left at that
 rate; for a gate that is to the cap, so the most it can take. Before a gate, `aic-sim experiment
 SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
 shows in minutes, not at the end of a block (its own `--out`: a run without `--resume` moves an
@@ -658,6 +660,16 @@ planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s 
 c3 there (on that loaded box; quiet, a c2 game is about 9 s, `scripts/bench/speed_baseline.json`).
 At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
 `gate.json`, under the planner, decides.
+
+**Card pricing read (055, r24)**: `experiments/screen-055-prices.json` (planner, tier-2 rush and
+always-Consolidate, paired, c2 and c3, 160 seeds: 960 games, 63 min on 8 threads, **about 15 planner
+games a minute** since 054's deals; `--games 48`: 288 games, 19 min), read with `python
+scripts/cards/price_read.py DIR [--agent planner] [--csv OUT]`. It gives offered, kept and played per
+game, and win deltas stratified on rounds, against the card's tier. `cards.csv` has no outcome, so it
+reads games.jsonl. Results: `experiments/results/screen-055-prices/prices.md`, whose `results.json`
+and `games.csv` feed the card viewer. A price sweep is a spec of overlays in `set`; paired against a
+base on the same seeds a 4-lever sweep on two agents at 48 seeds is 54 min, so a price pass gets about
+three sweeps in four hours.
 
 **Calibration and gate (053, r23)**: `experiments/gate.json` is gate-r23: gate-046's checks plus
 `abandon`, 8 seeds a check, early-stopped from 4, with `screen.py --gate DIR`. 8 seeds can't place a win

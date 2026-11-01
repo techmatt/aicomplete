@@ -196,6 +196,8 @@ fn node_takedown_removes_a_node_in_reach() {
     set_res(&mut g, 0, Resource::Credits, 30);
     set_res(&mut g, 0, Resource::Insight, 5);
     set_res(&mut g, 0, Resource::Antimatter, 2);
+    // It needs a Cyber tag in play.
+    Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("flash_exploit".into());
     let play = Action::Play {
         seat: 0,
         card: "node_severance".into(),

@@ -218,12 +218,15 @@ fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<Stri
                 };
                 let before = g.clone();
                 rules.apply_mut(&mut g, &a, None).unwrap();
+                // Answering "stop" to a "you may" is the player's own choice, not a use that paid for nothing.
+                let mut declined = false;
                 while g.pending.is_some() && !g.is_over() {
                     let legal = rules.legal_actions(&g);
                     let c = legal[agent.choose(&rules, &g, &legal)].clone();
+                    declined |= matches!(&c, Action::Choose { option, .. } if option == "stop");
                     rules.apply_mut(&mut g, &c, None).unwrap();
                 }
-                if let Some((s, what)) = watched {
+                if let (false, Some((s, what))) = (declined, watched) {
                     // A program, a building and a card's own tags are worth something
                     // in play: only an event or a use has to do something.
                     let lasts = matches!(&a, Action::Play { card, .. } if rules.world().content.card_index(card).is_some_and(|i| rules.world().content.cards[i].kind != content::CardKind::Event));

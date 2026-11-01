@@ -1,0 +1,10 @@
+{
+  "name": "gate-close-r24-c3",
+  "note": "055: the c3 checks that sat level or ahead of the planner at the gate's 8 seeds (--seed 10000), 48 seeds, paired on the freeze read's seeds (--seed 9000). Tier-2 rush and always-Consolidate are in that read.",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c3", "set": ["countries=3"]}],
+  "difficulties": [2],
+  "agents": ["planner:always_expand=1", "planner:never_tag=3", "planner:no_powers=1"],
+  "games": 48,
+  "records": 0
+}

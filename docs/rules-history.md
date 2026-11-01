@@ -7,6 +7,18 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 24 (055): first price pass.** (Bumped from the constant, 23: 054 took none.) Cards only, no
+rule changed. Screen: `experiments/results/screen-055-prices/prices.md`; rates and reasons in
+`docs/card-pricing.md`. Planner 79 / 75 on 160 seeds before, 67 / 65 on fresh seeds after.
+
+| What | Was | Now | Status |
+|---|---|---|---|
+| Great Liberation | 14 credits | 16, needs 1 Diplomacy | candidate |
+| Beamed Power Constellation, Peace Dividend | 5, 2 credits | 7, 3 | candidate |
+| Darknet Exchange, Security Contractor HQ | 4, 4 credits | 2, 3 | candidate |
+| Rootkit Cache's Action | 2 credits | 1 | candidate |
+| Kinetic Interdiction, Node Severance, Singularity Exploit, Exodus Corridors, Mesh Intrusion Pact, Adversarial Inference Sweep | no needs | needs 1 of Security, Cyber, Cyber, Diplomacy, Cyber, Science | candidate |
+
 **Words only, no revision (050).** Play held (the golden game didn't move). The Discord cards say
 "after 3 Discord tips", which is what the rule always did: the step first fires on the 4th tip (D18).
 Delay prints a clock, not Jam's minus on a threat (D19). rules.md says a shield on your own building

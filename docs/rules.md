@@ -343,8 +343,8 @@ Since 017 the difficulty is only the configured level: Discord tips no longer ra
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
 
-**The calibration point (053, r23, planner, fresh seeds, 48 a cell, ±7):** d2 is 71 at 2 countries,
-62 at 3; the other difficulties are not re-measured (the rules changed only base arrivals, and agents
+**The calibration point (055, r24, planner, fresh seeds, 48 a cell, ±7):** d2 is 67 at 2 countries,
+65 at 3 (`experiments/results/screen-055-prices/prices.md`). 053's first read at r23 was 71 / 62; the other difficulties are not re-measured (the rules changed only base arrivals, and agents
 no longer know the Alignment deal, so the earlier curves read high). Target 60-75 at both
 (`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
@@ -1113,7 +1113,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   on a building) or make a threat wait a round (a delay: it skips this round's execution, stays
   up, and can be countered next round); the content check
   refuses any of the three on a card without the tag, an AI board's growth or a power. Five tier-1
-  and three tier-2 cards do it. No card `needs` Science for it: a team without the tag still has
+  and three tier-2 cards do it. No card `needs` Science for it but one, Adversarial Inference Sweep (055, candidate:
+  a tier-2 delay, gated against the rush): a team without the tag still has
   the Clear standard action, its counters and the board. Priced in
   [card-pricing.md](card-pricing.md).
 - **Tag discounts (034, candidate; the Terraforming Mars pattern).** Every `science_every`

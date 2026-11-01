@@ -1,0 +1,10 @@
+{
+  "name": "gate-close-r24-c2",
+  "note": "055: the c2 checks that sat level or ahead of the planner at the gate's 8 seeds (--seed 10000), 48 seeds, paired on the freeze read's seeds (--seed 9000). Tier-2 rush and always-Consolidate are in that read.",
+  "configs": ["configs/baseline.json"],
+  "variants": [{"name": "c2", "set": []}],
+  "difficulties": [2],
+  "agents": ["planner:keep_k=2", "planner:never_tag=1", "planner:never_tag=2", "planner:never_tag=3", "planner:never_tag=6", "planner:no_powers=1", "planner:science_board=1", "planner:unity_farm=1"],
+  "games": 48,
+  "records": 0
+}

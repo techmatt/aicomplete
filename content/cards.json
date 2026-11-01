@@ -876,6 +876,12 @@
   "kind": "event",
   "cost": 5,
   "insight": 1,
+  "needs": [
+   [
+    "science",
+    1
+   ]
+  ],
   "tags": [
    "science",
    "cyber",
@@ -1855,7 +1861,7 @@
    "cost": [
     [
      "credits",
-     2
+     1
     ]
    ],
    "effects": [
@@ -2002,7 +2008,7 @@
   "name": "Darknet Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber"
@@ -2103,6 +2109,12 @@
   "kind": "event",
   "cost": 6,
   "insight": 2,
+  "needs": [
+   [
+    "cyber",
+    1
+   ]
+  ],
   "tags": [
    "cyber",
    "security"
@@ -2143,6 +2155,12 @@
   "kind": "program",
   "cost": 7,
   "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    1
+   ]
+  ],
   "tags": [
    "cyber",
    "science",
@@ -2179,6 +2197,12 @@
   "cost": 14,
   "antimatter": 1,
   "insight": 2,
+  "needs": [
+   [
+    "cyber",
+    1
+   ]
+  ],
   "tags": [
    "cyber"
   ],
@@ -2805,7 +2829,7 @@
   "name": "Beamed Power Constellation",
   "tier": 2,
   "kind": "program",
-  "cost": 5,
+  "cost": 7,
   "energy": 0,
   "insight": 2,
   "tags": [
@@ -3247,7 +3271,7 @@
   "name": "Peace Dividend",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -3500,6 +3524,12 @@
   "kind": "program",
   "cost": 7,
   "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
   "tags": [
    "diplomacy",
    "security"
@@ -3541,9 +3571,15 @@
   "name": "Great Liberation",
   "tier": 2,
   "kind": "event",
-  "cost": 14,
+  "cost": 16,
   "antimatter": 1,
   "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
   "tags": [
    "diplomacy"
   ],
@@ -4051,7 +4087,7 @@
   "name": "Security Contractor HQ",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -4295,6 +4331,12 @@
   "cost": 6,
   "antimatter": 1,
   "insight": 2,
+  "needs": [
+   [
+    "security",
+    1
+   ]
+  ],
   "tags": [
    "security"
   ],

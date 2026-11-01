@@ -32,8 +32,8 @@ fn the_ais_spend_their_resource_as_credits_on_cards() {
     // Not on a program: with no credits only the building is playable.
     set_res(&mut g, 0, Resource::Credits, 0);
     assert_eq!(plays(&g, 0), ["darknet_exchange"]);
-    // 021: Darknet Exchange (023; was Fab Line) costs 4, 3 after Economies of scale; with 1 credit at
-    // least 2 energy go in.
+    // 021: Darknet Exchange (023; was Fab Line) costs 2, 1 after Economies of scale (the floor, 055);
+    // with 1 credit energy is optional.
     set_res(&mut g, 0, Resource::Credits, 1);
     let energy = g.resource(0, Resource::Energy);
     rules
@@ -48,11 +48,11 @@ fn the_ais_spend_their_resource_as_credits_on_cards() {
         .unwrap();
     let p = g.pending.as_ref().expect("a discount choice");
     let opts: Vec<&str> = p.ask.options.iter().map(|o| o.option.as_str()).collect();
-    assert_eq!(opts, ["spend 2 energy", "spend 3 energy"]);
-    answer_with(&rules, &mut g, "spend 3 energy");
+    assert_eq!(opts, ["spend 0 energy", "spend 1 energy"]);
+    answer_with(&rules, &mut g, "spend 1 energy");
     // 021: a new slot, or over the Builder's starting Foundry Core.
     answer_with(&rules, &mut g, "a new slot");
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (energy - 3, 1));
+    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (energy - 1, 1));
     assert!(g.pile("cards.built.0").contains(&Key::new("darknet_exchange")));
 }
 
