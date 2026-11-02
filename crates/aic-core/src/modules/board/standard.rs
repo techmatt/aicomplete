@@ -11,7 +11,6 @@ pub enum StandardAction {
     Move,
     Ambassador,
     Align,
-    Harden,
     /// 066: the Harden action a card grants, paid in chips.
     HardenChips,
     Chips,
@@ -21,14 +20,13 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 11] = [
+pub const STANDARD: [StandardAction; 10] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
     StandardAction::Move,
     StandardAction::Ambassador,
     StandardAction::Align,
-    StandardAction::Harden,
     StandardAction::HardenChips,
     StandardAction::Chips,
     StandardAction::HardenBuy,
@@ -45,7 +43,6 @@ impl StandardAction {
             StandardAction::Move => "move",
             StandardAction::Ambassador => "ambassador",
             StandardAction::Align => "align",
-            StandardAction::Harden => "harden",
             StandardAction::HardenChips => "harden_chips",
             StandardAction::Chips => "chips",
             StandardAction::HardenBuy => "harden_buy",
@@ -107,18 +104,16 @@ impl Price {
 /// in its home domain).
 pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
     let i = |k: &str| w.int(&format!("board.{k}"));
-    let energy = |energy| Price { energy, ..Price::default() };
     let credits = |credits| Price { credits, ..Price::default() };
     let chips = |chips| Price { chips, ..Price::default() };
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
     match act {
-        StandardAction::Station => Price { energy: i("build_energy"), chips: i("station_chips"), ..Price::default() },
+        StandardAction::Station => chips(i("station_chips")),
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
         StandardAction::Clear => credits(i("clear_cost")),
         StandardAction::Move => credits(i("move_credits")),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         StandardAction::Align => ambassadors(1),
-        StandardAction::Harden => energy(i("harden_energy")),
         StandardAction::HardenChips => chips(i("harden_chips")),
         StandardAction::Chips => chips(1),
         StandardAction::HardenBuy => credits(i("harden_credits")),
@@ -145,11 +140,10 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         // 044: Clear's words say what its reward is.
         StandardAction::Clear => return clear_words(w),
         StandardAction::Station => "build a research station in reach (yours)",
-        StandardAction::Remove => return format!("remove up to {} adversary ambassadors from a hex in reach", w.int("board.remove_count")),
+        StandardAction::Remove => return format!("move an ambassador from your supply onto a hex in reach: it removes up to {} adversary ambassadors there and stays", w.int("board.remove_count")),
         StandardAction::Move => "move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Align => "align a clean city you can claim",
-        StandardAction::Harden => "Bulwark: harden a facility in reach",
         StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
         StandardAction::Chips => "sell 1 chip for credits",
         StandardAction::HardenBuy => "standard project: harden a facility in reach",
@@ -182,15 +176,8 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             .collect()
         }
         StandardAction::Align => all.filter(|&h| clean_city(w, g, h) && can_claim(w, g, seat, h)).collect(),
-        StandardAction::Harden | StandardAction::HardenChips => {
-            let grants = |p: &Op| matches!(p, Op::HardenAction);
-            let bulwark = ai::board(w, seat).innate.passives.iter().any(grants);
-            let open = match act {
-                StandardAction::Harden => bulwark,
-                // 066: a card's grant; the passives list holds the innate too.
-                _ => cards::passives(w, g, seat).into_iter().filter(|p| grants(p)).count() > bulwark as usize,
-            };
-            if open {
+        StandardAction::HardenChips => {
+            if cards::has_passive(w, g, seat, |p| matches!(p, Op::HardenAction)) {
                 all.filter(|&h| reach(h) && hardenable(g, h)).collect()
             } else {
                 Vec::new()
@@ -247,10 +234,13 @@ pub(super) fn std_resolve(
         }
         StandardAction::Remove => {
             if let Some(h) = on_hex(cx)? {
-                // 066: one ambassador spent clears up to `remove_count` from the hex.
+                // 066: one ambassador clears up to `remove_count` from the hex.
                 for _ in 0..w.int("board.remove_count").min(g.tokens(h, ADV_AMBASSADOR)) {
                     adversary::remove_piece(g, cx, Some(s), h, ADV_AMBASSADOR);
                 }
+                // 068: it left the supply for the hex and stays there: a
+                // position. It evicted them, so it arrives with no cancel.
+                cx.add_tokens(g, h, &ambassador(s), w.int("board.remove_ambassadors"));
             }
         }
         StandardAction::Clear => {
@@ -269,7 +259,7 @@ pub(super) fn std_resolve(
                 cx.tally(g, "board.cities_aligned", 1);
             }
         }
-        StandardAction::Harden | StandardAction::HardenChips | StandardAction::HardenBuy => {
+        StandardAction::HardenChips | StandardAction::HardenBuy => {
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, HARDEN, 1);
             }

@@ -103,6 +103,8 @@ export interface BoardView {
   name: string;
   text?: string;
   innate?: { name: string; text?: string };
+  /** Tags printed on the board: they count for what a card requires (068). */
+  tags?: string[];
   tracks: TrackView[];
   slots?: number;
   /** Cards belonging to the board, `status` saying where each is now. */

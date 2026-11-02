@@ -286,6 +286,7 @@ def main():
         cells, games = s.load(d)
         if a.gate is not None:
             s.gate(cells, games, gate_rows(d))
+            s.unspent(cells, games)
         else:
             warn_gone(columns, games)
             table(columns, cells, games)

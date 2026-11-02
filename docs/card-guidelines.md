@@ -40,8 +40,8 @@ in reach, a country you're in, here, Remove N, Draw, you have, Action) are defin
 *Terms* and in [player-aid.md](player-aid.md). `face.rs` prints the phrases as plain strings.
 
 **"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;
-the same token on presence is a "shield". "You gain the Harden action" is the standard action Bulwark gives the
-Protector for energy; on a card it is paid in chips (`harden_chips`, 066). It is not a keyword.
+the same token on presence is a "shield". "You gain the Harden action" is a standard action a card grants, paid in
+chips (`harden_chips`, 066); the Protector's Bulwark is a power, paid in energy (068). It is not a keyword.
 
 **American English.** Content, faces, docs, UI and comments: Mobilization, Armored, Modeling.
 `aic-sim docs --check`, so the fast lane, refuses a British spelling (`crates/aic-sim/src/spelling.rs`).

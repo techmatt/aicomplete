@@ -5,7 +5,6 @@ use aic_core::config::ParamValue;
 use aic_core::content::{content, AiBoard, Content, Cost, Op, Resource, Uncover};
 use aic_core::modules::adversary;
 use aic_core::rules::Tunable;
-use aic_core::vocab::DiscountOn;
 use aic_core::Rules;
 
 use super::table;
@@ -314,6 +313,15 @@ fn start_building(c: &Content, b: &AiBoard) -> String {
     format!("{} ({}): {}", card.name, tags.join(", "), gains(&income))
 }
 
+/// The board's starting credits, as [`board_slots`] reads its slots.
+fn board_start_credits(r: &Rules, board: usize) -> String {
+    let credits = list(r, "ai.start_credits");
+    list(r, "ai.boards")
+        .iter()
+        .position(|&b| b as usize == board)
+        .map_or(String::new(), |seat| credits[seat % credits.len()].to_string())
+}
+
 /// What each AI board prints before its tracks.
 pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
     let rows = c
@@ -326,8 +334,10 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
             vec![
                 b.name.clone(),
                 costs(&printed),
+                board_start_credits(r, i),
                 start_building(c, b),
                 board_slots(r, i),
+                b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
                 b.presence.len().to_string(),
                 b.presence2.len().to_string(),
                 (b.presence.len() + b.presence2.len()).to_string(),
@@ -338,10 +348,12 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         &[
             "Board",
             "Printed income",
+            "Starting credits",
             "Starting building",
             "Slots",
-            "Track tokens",
-            "Second track",
+            "Printed tags",
+            "Economy track",
+            "Card-play track",
             "Tokens in all",
         ],
         rows,
@@ -360,24 +372,15 @@ pub(super) fn board_details_block(c: &Content) -> String {
         .ais
         .iter()
         .map(|b| {
-            let discounts: Vec<String> = b
-                .discounts
-                .iter()
-                .map(|d| match d.tag {
-                    DiscountOn::Building => format!("{} on buildings {}:1", d.resource, d.rate),
-                    DiscountOn::Tag(t) => format!("{} on {} cards {}:1", d.resource, title(t.name()), d.rate),
-                })
-                .collect();
             let cards: Vec<String> = b.cards.iter().map(name).collect();
             vec![
                 b.name.clone(),
                 format!("*{}*: {}", b.innate.name, b.innate.text),
-                discounts.join(", "),
                 cards.join(", "),
             ]
         })
         .collect();
-    table(&["Board", "Innate", "Discount", "Unique cards"], rows)
+    table(&["Board", "Special rule", "Unique cards"], rows)
 }
 
 /// One space of a presence track.
@@ -385,6 +388,14 @@ pub(super) fn space(u: &Uncover) -> String {
     let mut parts = vec![gains(&u.income)];
     if u.keep2 {
         parts.push("**keep upgrade**".to_string());
+    }
+    parts.extend(u.tags.iter().map(|t| format!("{} tag", title(t.name()))));
+    if let Some(c) = &u.capstone {
+        parts.push(format!("**{}** (capstone): {}", c.name, c.text));
+    }
+    let mut parts: Vec<String> = parts.into_iter().filter(|p| !p.is_empty()).collect();
+    if parts.is_empty() {
+        parts.push("nothing".to_string());
     }
     let mut out = parts.join(", ");
     if u.cost != 0 {
@@ -435,13 +446,13 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     let rows: Vec<[String; 3]> = vec![
         [
             "Build a research station".to_string(),
-            format!("{} + {} chips", t("board.build_energy"), t("board.station_chips")),
+            format!("{} chips", t("board.station_chips")),
             "on an open hex in reach that is not an industrial zone; it is yours (your cube)".to_string(),
         ],
         [
             "Remove adversary ambassadors".to_string(),
-            format!("{} of your ambassadors", t("board.remove_ambassadors")),
-            format!("up to {} from one hex in reach", t("board.remove_count")),
+            format!("{} of your ambassadors, from your supply", t("board.remove_ambassadors")),
+            format!("it goes onto one hex in reach, removes up to {} there and stays", t("board.remove_count")),
         ],
         [
             "Clear a corruption marker".to_string(),
@@ -468,14 +479,9 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "in reach, with a site claim: your cube on it".to_string(),
         ],
         [
-            "Harden a facility (Bulwark)".to_string(),
-            format!("{} energy a token", t("board.harden_energy")),
-            "a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too)".to_string(),
-        ],
-        [
             "Harden a facility (a card grants it, `harden_chips`)".to_string(),
             format!("{} chips a token", t("board.harden_chips")),
-            "as above".to_string(),
+            "a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too)".to_string(),
         ],
         [
             "Sell chips".to_string(),

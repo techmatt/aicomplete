@@ -8,12 +8,12 @@
 //! says, so the forecast in [`next_build`] can't drift from the rule. The
 //! troops' forecast is `board::troop_plan`.
 
-use crate::content::Op;
+use crate::content::{Op, RoundFlag};
 use crate::op::Site;
 use crate::module::World;
 use crate::state::GameState;
 
-use super::adversary;
+use super::{adversary, board};
 use super::common::{clean_city, corrupted, corrupted_city, is_base, scope_hexes, FACTORY, STATION};
 
 /// What the adversary's build step places with `twists` in force, in country
@@ -75,12 +75,17 @@ pub fn build_plan(
         if g.tokens(h, STATION) > 0 && corrupted(g, h) {
             n += stations;
         }
-        n += arrivals * sites.iter().filter(|&&s| is_site(w, g, h, s)).count() as i64;
+        n += landing(w, g, h) * arrivals * sites.iter().filter(|&&s| is_site(w, g, h, s)).count() as i64;
         if n > 0 {
             plan.push((h, n));
         }
     }
     plan
+}
+
+/// 1 if arrivals land on hex `h`, 0 in a cordoned country (068).
+fn landing(w: &World, g: &GameState, h: usize) -> i64 {
+    !board::flagged(g, RoundFlag::Cordon, w.map.hexes[h].country as usize) as i64
 }
 
 /// Whether hex `h` is a site of type `site`.
@@ -115,7 +120,7 @@ pub fn arrival_count(w: &World, g: &GameState, twists: &[&Op], scope: Option<usi
             Op::Arrivals { site } => Some(*site),
             _ => None,
         })
-        .map(|s| per * hexes.iter().filter(|&&h| is_site(w, g, h, s)).count() as i64)
+        .map(|s| per * hexes.iter().filter(|&&h| is_site(w, g, h, s)).map(|h| landing(w, g, *h)).sum::<i64>())
         .sum()
 }
 

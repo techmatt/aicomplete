@@ -66,17 +66,6 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     // Removing a node is no standard action (019: only tier-2 effects remove nodes).
     put(&mut g, d, NODE, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("node"));
-    // Only the Protector (seat 1) may harden, and only a building it can
-    // protect (022: a player-owned one; none at setup).
-    assert!(!standard_offered(&rules, &g, 1).contains("harden"));
-    let p1 = presence_of(&g, 1)[0];
-    put(&mut g, p1, STATION, 1);
-    put(&mut g, p1, &cube(1), 1);
-    assert!(standard_offered(&rules, &g, 1).contains("harden"));
-    assert!(!standard_offered(&rules, &g, 0).contains("harden"));
-    assert!(rules
-        .apply_mut(&mut g.clone(), &std_act(0, "harden"), None)
-        .is_err());
     assert!(rules
         .apply_mut(&mut g.clone(), &std_act(0, "factory"), None)
         .is_err());
@@ -90,7 +79,7 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     let station = v.standard.iter().find(|x| x.act == "station").unwrap();
     assert_eq!(
         (station.energy, station.credits, station.chips),
-        (2, 0, 2)
+        (0, 0, 2)
     );
 }
 
@@ -114,7 +103,7 @@ fn standard_actions_cost_what_the_config_says() {
     act(&rules, &mut g, std_act(0, "station"));
     assert_eq!(
         (spent(&g, 0), total(&g, STATION) - total(&g0, STATION)),
-        ((2, 0, 2), 1)
+        ((0, 0, 2), 1)
     );
     assert_eq!(total(&g, &cube(0)), 2, "the bound city's and the station's");
 
@@ -143,13 +132,6 @@ fn standard_actions_cost_what_the_config_says() {
         ((0, 0, 0), 0, supply + 1, 0)
     );
 
-    let mut g = g0.clone();
-    let p1 = presence_of(&g, 1)[0];
-    put(&mut g, p1, STATION, 1);
-    put(&mut g, p1, &cube(1), 1);
-    act(&rules, &mut g, std_act(1, "harden"));
-    // 021: Bulwark's hardening costs energy.
-    assert_eq!((spent(&g, 1), total(&g, HARDEN)), ((1, 0, 0), 1));
 }
 
 #[test]
@@ -163,7 +145,6 @@ fn a_card_s_harden_action_costs_chips() {
     assert!(!standard_offered(&rules, &g, 0).contains("harden_chips"));
     g.piles.insert(crate::modules::cards::built(0).into(), Arc::new(vec![crate::key::Key::new("hardened_bunker_complex")]));
     assert!(standard_offered(&rules, &g, 0).contains("harden_chips"));
-    assert!(!standard_offered(&rules, &g, 0).contains("harden"));
     act(&rules, &mut g, std_act(0, "harden_chips"));
     assert_eq!((g.resource(0, Resource::Chips), total(&g, HARDEN)), (0, 1));
 }
@@ -325,8 +306,10 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
         (2, 2, false)
     );
     place(&rules, &mut g);
-    // The 3rd: the tier-2 keep upgrade (021: no tier-2 gate).
-    assert_eq!((board::track_taken(&g, 0), ai::keep2(&w, &g, 0)), (3, true));
+    // The keep upgrade is the card-play track's second space (068).
+    assert_eq!((board::track_taken(&g, 0), ai::keep2(&w, &g, 0)), (3, false));
+    g.vars.insert(board::track2_key(0).into(), 2);
+    assert!(ai::keep2(&w, &g, 0));
     assert_eq!(presence_of(&g, 0).len(), 3);
     // The tracks run out after their last spaces (021: both of them).
     g.vars

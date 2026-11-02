@@ -389,7 +389,7 @@ export function boardDetails(v: View, seatIndex: number): string | null {
   const b = v.seats[seatIndex]?.board;
   if (!b) return null;
   const cards = b.cards.map((c) => `${esc(c.name)} <small>(${esc(c.status)})</small>`).join('<br>');
-  return `<b>${esc(b.name)}</b> <code>${esc(b.id)}</code>${b.text ? `<br>${esc(b.text)}` : ''}${b.innate ? `<hr><b>${esc(b.innate.name)}</b>${b.innate.text ? `: ${esc(b.innate.text)}` : ''}` : ''}${b.slots !== undefined ? `<br>${b.slots} slots printed` : ''}${cards ? `<hr>board cards:<br>${cards}` : ''}<br><small><code>${esc(b.key)}</code> · from ${esc(b.source)}</small>`;
+  return `<b>${esc(b.name)}</b> <code>${esc(b.id)}</code>${b.text ? `<br>${esc(b.text)}` : ''}${b.innate ? `<hr><b>${esc(b.innate.name)}</b>${b.innate.text ? `: ${esc(b.innate.text)}` : ''}` : ''}${b.slots !== undefined ? `<br>${b.slots} slots printed` : ''}${b.tags?.length ? `<br>printed tags: ${esc(b.tags.join(', '))}` : ''}${cards ? `<hr>board cards:<br>${cards}` : ''}<br><small><code>${esc(b.key)}</code> · from ${esc(b.source)}</small>`;
 }
 
 /** "Coastal Republic", or `C<i>` if the view has no name. */

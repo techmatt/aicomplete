@@ -62,6 +62,8 @@ pub struct CellSummary {
     /// Corrupted and aligned cities at the end, per game.
     pub cities_corrupted_mean: f64,
     pub cities_aligned_mean: f64,
+    /// Mean left at game end, per seat, in [`crate::experiment::UNSPENT`] order (068).
+    pub unspent: Vec<Vec<f64>>,
     /// Mean win probability at the start of round r (index r-1), with the
     /// number of games that reached it.
     pub winprob_by_round: Vec<(f64, usize)>,
@@ -147,6 +149,18 @@ fn buildings(sig: &str) -> BTreeSet<String> {
             b.split('+')
                 .filter(|x| !x.is_empty())
                 .map(move |x| format!("{ai}:{x}"))
+        })
+        .collect()
+}
+
+/// Mean of each seat's unspent resources over games (seats as in the games).
+fn unspent_means<'a>(games: impl Iterator<Item = &'a [Vec<i64>]> + Clone) -> Vec<Vec<f64>> {
+    let seats = games.clone().map(<[_]>::len).max().unwrap_or(0);
+    (0..seats)
+        .map(|s| {
+            (0..crate::experiment::UNSPENT.len())
+                .map(|r| mean(games.clone().filter_map(|g| g.get(s)?.get(r)).map(|&n| n as f64)).unwrap_or(0.0))
+                .collect()
         })
         .collect()
 }
@@ -733,6 +747,7 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                 .unwrap_or(0.0),
                 cities_aligned_mean: mean(gs.iter().map(|g| g.margin.cities_aligned_end as f64))
                     .unwrap_or(0.0),
+                unspent: unspent_means(gs.iter().map(|g| g.margin.unspent.as_slice())),
                 winprob_by_round,
                 uncertain_share: mean(
                     checkpoints

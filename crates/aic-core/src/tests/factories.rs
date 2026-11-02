@@ -248,10 +248,10 @@ fn an_adversary_factory_makes_adversary_troops() {
     assert_eq!((g.tokens(f, TROOP), g.tokens(b0, UNIT)), (1, 1));
 }
 
-/// 022 (D1): a player ambassador on an adversary-owned factory is used up
-/// for `factory_unity` Unity, and the factory still makes its troop.
+/// 022 (D1): a player ambassador on an adversary-owned factory sways
+/// `factory_unity` Unity, and the factory still makes its troop. 068: it stays.
 #[test]
-fn a_player_ambassador_on_an_adversary_factory_is_used_up_for_unity() {
+fn a_player_ambassador_on_an_adversary_factory_sways_unity_and_stays() {
     let (rules, mut g) = lab(&["board.bases"]);
     let m = &rules.map;
     let f = m.numbered(0, piece(0).factories[0]);
@@ -260,7 +260,7 @@ fn a_player_ambassador_on_an_adversary_factory_is_used_up_for_unity() {
     put(&mut g, f, &ambassador(0), 1);
     let unity = g.var("alignment.unity");
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f, TROOP), g.tokens(f, &ambassador(0))), (1, 0));
+    assert_eq!((g.tokens(f, TROOP), g.tokens(f, &ambassador(0))), (1, 1));
     assert_eq!(g.var("alignment.unity") - unity, 1);
 }
 

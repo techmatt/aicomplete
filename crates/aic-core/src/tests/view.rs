@@ -93,7 +93,7 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
                 .unwrap_or_else(|| panic!("{k} missing"))
         };
         assert_eq!(value("board.presence").value, 1);
-        assert_eq!(value("board.presence_track").value, 7);
+        assert_eq!(value("board.presence_track").value, 6);
         assert_eq!(
             value("resource.ambassadors").value,
             g.resource(s.index as usize, Resource::Ambassadors)

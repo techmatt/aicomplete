@@ -1,0 +1,13 @@
+{
+  "name": "screen-068",
+  "note": "r28 first read: engine and planner at d2, 2 and 3 countries. Spec for calibration screens; run with --seed and --games.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine", "planner"],
+  "games": 48,
+  "records": 0
+}

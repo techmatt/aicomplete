@@ -19,7 +19,7 @@ Design intent lives in [principles.md](principles.md); the engine in
 [architecture.md](architecture.md). **Keep this current with every rules change.**
 
 <!-- generated: new_players -->
-**For new players.** In the first round you are dealt 8 cards and keep 4 free (more at 5 credits each). From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-4 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers.
+**For new players.** In the first round you are dealt 8 cards and keep 4 free (more at 5 credits each). From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers.
 
 **Presence, for new players.** There is no growth step. In the action phase you place presence with your board's two presence powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 presence; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 1 energy and one city bound to you, which makes energy every round.
 <!-- /generated -->
@@ -148,17 +148,20 @@ stations out of the adversary's hands.
 ## 2. Ambassadors
 
 **An ambassador sits on a piece. The next time that piece does its normal thing, the
-ambassador redirects it to its own side and is removed.** Adversary ambassadors return
-to the adversary's supply; a player ambassador that is used up is gone (**Default**: a
-player regains ambassadors with the standard action or cards).
+ambassador redirects it to its own side.** An adversary ambassador is then used up and returns to
+the adversary's supply, unless it stands on a lone presence. **A player ambassador is consumed for a
+permanent change and stays for a position (068, candidate, Matt):** aligning a city, claiming a site and
+freeing a city consume it (no card spends one today); evicting, standing on a base, factory,
+station or node, and moving leave it on the board. A consumed ambassador is gone: new ones come
+from cards, Followers and the standard project.
 
 | On | Adversary ambassador | Player ambassador |
 |---|---|---|
 | City | that round's energy is diverted (no Discord at `ambassador_discord` 0, below) | waits; a corrupted city frees the moment player ambassadors on it, from any players, reach its **hold** (below) (checked after every action and automatic phase; a card frees a city outright only if it is a tier-2 ultimate, §8) |
-| Research station | that round's cube is the adversary's (owned or corrupted station) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used) |
-| Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too (028: it sat there forever) | on a neutral factory the player can claim: the factory becomes the player's; otherwise on a production step it is used up for `factory_unity` Unity and no troop is made, except that an adversary-owned factory still makes its adversary troop (022; it sat there forever) |
-| Presence | if the presence is alone on its hex (020: on a city, base, station or factory the ambassador is that piece's), in production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; used up (021: it leaked 1 compute and swayed Discord) | waits (defense, below) |
-| Military base | on a production step, `base_discord` (027: was 3) Discord instead of a troop | on a production step, `base_unity` Unity instead of a troop |
+| Research station | that round's cube is the adversary's (owned or corrupted station) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays (068) |
+| Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too (028: it sat there forever) | on a neutral factory the player can claim: the factory becomes the player's; otherwise each production step it sways `factory_unity` Unity and no corp troop is made, except that an adversary-owned factory still makes its adversary troop (022); it stays (068) |
+| Presence | if the presence is alone on its hex (020: on a city, base, station or factory the ambassador is that piece's), each production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; it stays until removed (068; 021: used up) | waits (defense, below) |
+| Military base | on a production step, `base_discord` (027: was 3) Discord instead of a troop | on a production step, `base_unity` Unity instead of a troop; it stays (068) |
 
 - **Freeing takes a push (027, candidate; 024: `free_city_at` with no adversary ambassador
   adjacent).** A corrupted city's **hold** is `hold_base`, plus 1 for each adversary
@@ -170,7 +173,11 @@ player regains ambassadors with the standard action or cards).
   waiting there are canceled by the next build as any others, so a hold is normally met
   in one action phase: gather ambassadors in your supply, clear around the city, land them.
 - **Opposing ambassadors cancel.** When an ambassador arrives on a piece holding one of
-  the other side, both are removed (the adversary's to its supply), with no Unity.
+  the other side, both are removed (the adversary's to its supply), with no Unity. **Two arrivals
+  don't cancel (068):** the ambassador the Remove action moves evicts what stands there and stays. Any other
+  move onto adversary ambassadors cancels one, consuming the mover: moved ambassadors don't evict, or one
+  ambassador at 1 credit a hop would clear the board. An adversary ambassador arriving on a standing player
+  ambassador cancels it, so a position is held only until the next arrival.
 - **Defense:** a player ambassador on a facility's hex is used up instead of the
   facility when it would be destroyed.
 - **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit; one
@@ -178,7 +185,17 @@ player regains ambassadors with the standard action or cards).
   (0; 027: was 1, so arrivals on cities alone ran the Discord deck out by round 6).
 - A neutral station's normal thing is nothing, so an adversary ambassador waits there.
 
-Player ambassadors move only through cards and the standard action.
+Player ambassadors move only through cards and the standard actions (Move, Remove).
+
+**For new players.** Ambassadors you spend change the board for good: aligning a city, claiming a station or factory,
+freeing a city. Ambassadors you place hold a position: one that evicts adversary ambassadors from a piece stays on it, and on a
+base, factory or node it keeps working every round. The next adversary ambassador to land there cancels it, so a position
+lasts until the adversary answers it.
+
+**Evicting is capped by supply (068):** Remove takes the ambassador from your supply, never from the board, so each eviction
+needs a new ambassador; that, and pieces filling up, are the caps on the loop. **Default:** adversary ambassadors can stand with no piece
+under them (on an empty industrial zone; on a hex whose presence was lost), so an evicting ambassador can too: it does nothing there
+until a piece comes or it moves. An adversary ambassador left on a hex by a lost presence stays until removed.
 
 ## 3. The adversary (module `adversary`, variant `militarist`)
 
@@ -199,7 +216,7 @@ Player ambassadors move only through cards and the standard action.
    piece or is player-owned (presence, an aligned city, an owned station or factory);
    it is not ocean, and it holds no adversary ambassador unless it is a city that isn't
    corrupted, clean or aligned (which collects any number; 028: aligned cities too), or a
-   piece without a node (below). **Priority:**
+   piece without a node (below); a hex holding presence of a seat with `spread_shield` (a card's Effect, or the Sanctuary capstone) is no destination. **Priority:**
    player-owned hexes, then clean cities, then other pieces; then the nearest; players
    choose among equals. A city that is not corrupted never spreads: it holds its
    ambassadors. **A surplus with nowhere to
@@ -373,10 +390,13 @@ Since 017 the difficulty is only the configured level: Discord tips no longer ra
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
 
-**The calibration point (066, r27, planner, fresh seeds 20200 and 20300, 96 a cell, ±5):** d2 is 59 at 2
+**The calibration point (068, r28, planner, fresh seeds 22100, 96 a cell, ±5):** d2 is 73 at 2 countries, 75 at 3
+(`experiments/results/screen-068-boards/boards.md`).
+
+**The calibration point before it (066, r27, planner, fresh seeds 20200 and 20300, 96 a cell, ±5):** d2 is 59 at 2
 countries, 61 at 3 (`experiments/results/screen-066-presence/presence.md`).
 
-**The calibration point before it (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
+**The one before that (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
 countries, 62 at 3 (75 / 71 and 67 / 52; `experiments/results/screen-064-deals/deals.md`). The other difficulties are not re-measured since r23 (053 changed base arrivals and agents stopped knowing the deal, so the earlier curves read high; 055, 059 and 064 moved cards, `corrupt_at` and `project_discord_per` since). Target 60-75 at both
 (`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
@@ -467,9 +487,9 @@ presence track, stations, upkeep, the adversary troops' march) is unchanged.
   bases** (Matt, 016: at every front base, not just the nearest), so at 3 and 4
   countries a factory makes 2. An adversary-owned factory, or one holding an adversary
   ambassador (used up), makes an adversary troop on its hex instead (**locked**). A
-  player ambassador on a factory is used up instead and sways `factory_unity` Unity; on
-  an adversary-owned factory it is used up for the Unity and the troop is still made
-  (022: it was never used up there).
+  player ambassador on a factory sways `factory_unity` Unity and no corp troop is made; on
+  an adversary-owned factory it sways the Unity and the troop is still made
+  (022). Either way it stays (068).
 - **Chips**: each player-owned factory makes `factory_chips`
   chip for its owner on each production step.
 
@@ -504,12 +524,18 @@ when the march starts. A step is one of:
   equally good steps (several targets equally near, or several ways toward one), the
   players choose: a choice among bad options, as with Spirit Island's blight.
 
+**Wall (068, candidate, Matt).** Adversary troops can't enter a hex with the Protector's presence: a march goes around it,
+and a landing skips it. A troop can still strike a target on or next to its own hex, so a wall stops the walk, not the strike:
+a facility under a wall falls only to a troop already next to it. A troop already standing on a hex when the Protector places
+there leaves as it likes. **Default:** a landing enters a hex, so it counts; a troop made by a factory on its own hex doesn't
+enter. With no open way to a target a troop stays where it is.
+
 So a troop moves twice, or moves then destroys, or destroys at once. **A troop that
 strikes is used up** (018, `troop_spent`), whether the target is destroyed or the hit
 absorbed, as an ambassador is used up when it acts. With no target on the board a troop
 stays where it is. Troops cross borders and never enter ocean; "nearest" and "toward" count
 the walk over land (017–018 counted hexes with ocean included, which stranded a troop
-facing a bay in the board's edge). A troop
+facing a bay in the board's edge), walking around walls (above). A troop
 two hexes from a target hits it in the next march; three or four hexes away, in the
 march after. **Players see each hit coming:** the view draws each troop's next target
 (the nearest; the arrow is solid when the hit lands in the next march), and every troop
@@ -525,7 +551,7 @@ that piece and leaves the board; otherwise it walks one hex toward the nearest s
 a troop two hexes from your piece hits it next round, and one three or four hexes away a
 round later; the arrows on the board show where each troop is heading. Troops never
 attack cities. To stop a hit, remove the troop with a card, keep a corp troop at a
-military base next to the target, harden the target or stand an ambassador on it. Troops don't hit presence.
+military base next to the target, harden the target, stand an ambassador on it, or put the Protector's presence in its way. Troops don't hit presence.
 
 **This is the game's one movement rule** (an exception to "no movement rules"): spread
 places ambassadors, it does not walk them. It replaces two 016–018 rules:
@@ -583,7 +609,7 @@ strike (in the march) sways nothing (018, Matt; 016–017 swayed for every destr
 which with the advance made each Discord tip feed the next). A destruction is absorbed, in this order, by a
 shelter on the country, a corp troop at a base next to it (adversary strikes
 only), a hardening token on the hex, a player ambassador on the hex, or Aegis Dome
-Array (once a round, for its owner's countries). A destroyed presence leaves the game (above). A destroyed station or factory takes its cube with it.
+Array or the Aegis Doctrine capstone (once a round, for their owner's countries). A destroyed presence leaves the game (above). A destroyed station or factory takes its cube with it.
 
 ### The jobs of the old data center
 
@@ -844,6 +870,13 @@ Seven Diplomacy cards make more ambassadors, repriced ([card-pricing.md](card-pr
 `ambassador_credits` stayed at 6 (Matt, 2462: a standard project is the exception to most builds): at 2 it
 closed the gap too, on a route the design refuses, and the screens that used it are recorded as that.
 
+**068's adaptations (each a candidate; the screen is in
+`experiments/results/screen-068-boards/boards.md`).** As designed, with 066's 30 / 38 starting credits and the ambassador project at 6, the planner
+won 100 / 100 in 7 rounds on 32 seeds: ambassadors that stay ended corruption (0 corruptions, 15-21 ambassadors bought). What simulation moved:
+`ambassador_credits` 9 (the strongest lever; 6 or more is the design's floor), starting credits 15 / 25 (Builder lower, Protector higher: c3 seats two Builders, so the gap also levels the sizes), step costs to 5, track
+contents, Followers at 2 and 3 for an ambassador, Mint 3 credits. `Op::Income` prints ambassadors. Rejected: all 126 cards 1 credit dearer at `ambassador_credits` 8 (no fall in
+unspent credits, 24 seeds); 12 / 16 credits with more track insight (credits ended 2 lower, wins fell to 48 / 56).
+
 **Winning:** the purge, or drawing the last Unity card (027: it replaces `unity_win`, 8
 tips).
 
@@ -866,11 +899,11 @@ game ends it there.
 | Resource | Comes from | Spent on |
 |---|---|---|
 | Credits | Credit production on the AI board (§7), the presence track, cards and Unity cards, in upkeep; megaprojects; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters (024: every counter) |
-| Energy (keeps between rounds) | Cities' cubes in production (§6 below); the presence tracks; Power buildings and the starting Sentinel Post; Power programs; `ai.start_energy` at the start | The presence powers and every track step (§7); Power cards' `energy` cost; Bulwark's hardening; building a research station; buildings at the Builder's rate, Security cards at the Protector's |
-| Chips | Player-owned factories on production steps (`factory_chips` each); the Builder's second presence track; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
-| Antimatter | Each board's last presence-track space; tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action | Tier-2 cards |
+| Energy (keeps between rounds) | Cities' cubes in production (§6 below); the presence tracks; Power buildings and the starting Sentinel Post; Power programs; `ai.start_energy` at the start | The presence powers and every track step (§7); Power cards' `energy` cost; Bulwark's hardening |
+| Chips | Player-owned factories on production steps (`factory_chips` each); the Builder's tracks and its Mint and Scrap; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
+| Antimatter | Tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action | Tier-2 cards |
 | Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear Campaign took | Keeping drafted cards; playing cards (022); giving (expires at the round's end) |
-| Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound); the standard action | Moving onto pieces; aligning cities; removing adversary ambassadors (`remove_ambassadors`) |
+| Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound), Followers through a card's Action, income on Orbital Embassy; the standard project | Moving onto pieces and evicting (they stay, §2); aligning cities, claiming sites, freeing cities (consumed) |
 
 **Cities' energy (021).** Each city makes `corp_energy` (a
 megacorp parameter, more for a richer corp) energy cubes a round. An aligned city's go free
@@ -880,21 +913,14 @@ with presence on or next to it (players choose who, or nobody); otherwise they a
 corrupted city's go to the adversary (Discord). A Blackout stops a country's cities in the
 production after the threat executes (020).
 
-**Discounts (AI-specific rates).** When a player plays a card, they may spend their AI's
-resource for credits, at the rate its board prints, §7 (021: the Protector's was compute on
-Cyber cards) (`discounts` in
-[`content/ais.json`](../content/ais.json)). Players choose how much (at least enough to
-afford it).
-
 **Each resource is paid in its home domain (066, principle accepted):** energy for presence and
 Power, credits for the market, chips for facilities, ambassadors for influence, insight for the
-turn, tags for powers. Building a research station still costs `build_energy` as well: the rule was
-not on 066's list.
+turn, tags for powers. 068 finished it: a research station costs chips alone.
 
 **Standard actions and projects** (`board.act`, in the action phase) exist but are
 deliberately poorly priced: cards are always the better way, and they are a luck hedge. **The gain-an-ambassador
 project stays dear on purpose (066, Matt):** standard projects are the exception to most builds, so
-ambassadors come from Diplomacy cards and buildings, and one spent removes up to `remove_count`.
+ambassadors come from Diplomacy cards, Followers and buildings, and one placed evicts up to `remove_count` and stays.
 The **standard projects** (024, candidate, Matt) are the credit sink, as in Terraforming
 Mars: poor but useful rates, no limit a round.
 Every map target is in the player's reach. The view publishes each action with its cost
@@ -903,14 +929,13 @@ Every map target is in the player's reach. The view publishes each action with i
 <!-- generated: standard_actions -->
 | Action | Cost | What |
 |---|---|---|
-| Build a research station | `build_energy` 2 + `station_chips` 2 chips | on an open hex in reach that is not an industrial zone; it is yours (your cube) |
-| Remove adversary ambassadors | `remove_ambassadors` 1 of your ambassadors | up to `remove_count` 3 from one hex in reach |
+| Build a research station | `station_chips` 2 chips | on an open hex in reach that is not an industrial zone; it is yours (your cube) |
+| Remove adversary ambassadors | `remove_ambassadors` 1 of your ambassadors, from your supply | it goes onto one hex in reach, removes up to `remove_count` 3 there and stays |
 | Clear a corruption marker | `clear_cost` 2 credits | in reach (041): sway `clear_unity` 1 toward Unity, gain `clear_credits` 0 credits |
 | Move a player ambassador | `move_credits` 1 credit | from your supply or the board onto a piece in reach (not the hex it comes from, 020) |
-| Gain a player ambassador | `ambassador_credits` 6 | into your supply; a standard project too |
+| Gain a player ambassador | `ambassador_credits` 9 | into your supply; a standard project too |
 | Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it |
-| Harden a facility (Bulwark) | `harden_energy` 1 energy a token | a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too) |
-| Harden a facility (a card grants it, `harden_chips`) | `harden_chips` 1 chips a token | as above |
+| Harden a facility (a card grants it, `harden_chips`) | `harden_chips` 1 chips a token | a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too) |
 | Sell chips | 1 chip | gain `chips_credits` 1 (021: replaces buying chips) |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Project: harden (`harden_buy`) | `harden_credits` 3 credits | any player: a hardening token on a player-owned station or factory in reach |
@@ -940,18 +965,37 @@ There is no "build a factory" standard action: cities build factories.
 
 ## 7. AI boards (module `ai`; [`content/ais.json`](../content/ais.json))
 
-Each AI board has a printed **income**, a **presence track**, a
-starting building, building slots (`ai.slots`, a config list in seat order) and its **powers**. The first token starts on the board, so its space is
-uncovered from setup; placing presence takes the next token off the track and uncovers
+Each AI board has a **special rule**, a printed **income**, **printed tags**, two **presence tracks** (economy and
+card-play), a starting building, building slots (`ai.slots`, a config list in seat order; boards default to 3), starting
+credits (`ai.start_credits`, a config list in the same order) and its **powers**. The first token starts on the economy track, so its first
+space is uncovered from setup; placing presence takes the next token off a track and uncovers
 what is printed under it. Uncovered values add to the income every round (insight at the
 start of the round, the rest in upkeep). The board module owns presence and counts the
 tokens taken (`board.track.<seat>`); the AI board reads it.
 
+**The Builder, for new players.** Your special rule is Breadth: five building slots where other boards have three, so your engine
+is wider. You're rich in chips and credits and short of energy. Each round you may turn credits into a chip with Mint. Late in the
+game, sacrifice cards you have finished with: an Industry card pays out chips, a Power card energy, and three tags play a building
+from your hand for no credits.
+
+**The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your presence, so where you stand
+is a barrier. You spend energy to harden facilities with Bulwark, and you're short of credits, so you start with more. Late in the game,
+sacrifice cards you have finished with: a Security card pays out credits or clears a corruption marker, and three tags shelter a whole
+country for the round.
+
+**Printed and revealed tags (068, candidate).** Tags printed on a board and tags a track space reveals count for what a card
+requires, exactly as tags on your cards do. They count for nothing else: no tag discount, no income per tag, and they can't be
+sacrificed.
+
+**Capstones (068, candidate).** Each track ends in a capstone, a standing rule once its space is uncovered, as a card's Effect is
+while it is in play. Late spaces cost more energy, so a capstone is what a seat pushes on for; the
+reachable date is about round 8 at 1-2 placements a round.
+
 <!-- generated: boards -->
-| Board | Printed income | Starting building | Slots | Track tokens | Second track | Tokens in all |
-|---|---|---|---|---|---|---|
-| Builder | 10 credits, 4 insight | Foundry Core (Industry): +1 credit | 4 | 8 | 6 | 14 |
-| Protector | 9 credits, 4 insight | Sentinel Post (Security): +1 energy | 3 | 8 | 6 | 14 |
+| Board | Printed income | Starting credits | Starting building | Slots | Printed tags | Economy track | Card-play track | Tokens in all |
+|---|---|---|---|---|---|---|---|---|
+| Builder | 10 credits, 4 insight | 15 | Foundry Core (Industry): +1 credit | 5 | Industry | 7 | 7 | 14 |
+| Protector | 9 credits, 4 insight | 25 | Sentinel Post (Security): +1 energy | 3 | Security | 7 | 7 | 14 |
 <!-- /generated -->
 
 **One payment path (041, locked).** Every space prints a **cost** in energy, the last ones more.
@@ -959,9 +1003,9 @@ Every placement pays it, on top of what a presence power costs; a card pays only
 card that prints "free" pays nothing (three tier-2 cards). Only tracks whose next step you can pay
 are offered, and a placement you can't pay doesn't happen.
 
-**What resisted a new-player summary (066):** the price of a placement is two numbers, the power's and
-the space's; Harden has two prices, Bulwark's energy and a card's chips; and "bound" is a new word for a
-city that is otherwise only aligned.
+**What resisted a new-player summary (066, 068):** the price of a placement is two numbers, the power's and
+the space's; Harden has two prices, Bulwark's energy and a card's chips; "bound" is a new word for a
+city that is otherwise only aligned; and Wall has a tail no one-line summary carries: it stops entering, not a strike from next door.
 
 **Presence powers (066, candidate; replaces growth).** There is no growth phase. Presence comes from
 the board's two **presence powers**, used in the action phase, each once a round, so the powers place 0-2 presence a
@@ -977,35 +1021,41 @@ cap, the rich action and the buy-energy project are gone (rules-history, 066).
 |---|---|---|
 | 1 (on the board at setup) | +1 insight | +1 insight |
 | 2 | +2 credits | +1 energy, +1 credit |
-| 3 | +2 credits, **keep upgrade** | +1 energy, +1 credit, **keep upgrade** |
-| 4 | +1 insight, +1 credit | +1 insight, +1 credit |
-| 5 | +2 credits (cost 1) | +2 credits (cost 1) |
-| 6 | +1 energy (cost 2) | +1 credit (cost 2) |
-| 7 | +1 credit (cost 2) | +1 energy (cost 2) |
-| 8 | +1 antimatter (cost 3) | +1 antimatter (cost 3) |
+| 3 | +1 credit | +2 credits |
+| 4 | +2 credits, Power tag (cost 1) | +2 credits, Diplomacy tag (cost 1) |
+| 5 | nothing (cost 2) | +2 credits (cost 2) |
+| 6 | +1 credit (cost 3) | +1 credit (cost 3) |
+| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags you have. (cost 5) | **Sanctuary** (capstone): When the adversary spreads, it skips your presence. (cost 5) |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` (§8).
 
 **021:** spaces 1-2 gave compute (gone with player compute); the tier-2 unlock on space 3
-became the keep upgrade; the last space gives antimatter ("production unlocks only at the
-end of a board's track").
+became the keep upgrade; the last space gave antimatter until 068, when capstones took that place: agents ended games with 2-5 antimatter unspent.
 
-**Second presence track (021, placeholder; 034: 6 tokens).** Each board has a second track
-(`presence2`), none on the board at setup. Placing presence takes the next token from the
-track the player chooses (asked when both have tokens). Real track contents and powers come
-with the AI-board rework.
+**The card-play track (021; 068: draft candidates, reasoning in `experiments/results/screen-068-boards/boards.md`).** The second track,
+none on the board at setup. Placing presence takes the next token from the
+track the player chooses (asked when both have tokens).
 
 <!-- generated: presence_track2 -->
 | Space | Builder | Protector |
 |---|---|---|
-| 1 | +1 credit | +1 energy |
-| 2 | +1 chip | +1 credit |
+| 1 | +1 insight | +1 insight |
+| 2 | **keep upgrade**, Industry tag | **keep upgrade**, Security tag |
 | 3 | +1 insight (cost 1) | +1 insight (cost 1) |
-| 4 | +1 credit (cost 2) | +1 credit (cost 2) |
-| 5 | +1 chip (cost 3) | +1 energy (cost 3) |
-| 6 | +1 credit (cost 4) | +1 credit (cost 4) |
+| 4 | +1 credit, Science tag (cost 2) | +1 credit, Cyber tag (cost 2) |
+| 5 | +1 insight (cost 2) | +1 insight (cost 2) |
+| 6 | Cyber tag (cost 3) | Diplomacy tag (cost 3) |
+| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Each round, stop the first destruction in a country you're in. (cost 5) |
 <!-- /generated -->
+
+**Loops and caps (068).** Credits → chips → buildings → income → credits runs once a round and in 5 slots at most. Rush Build takes 3 tags out and puts a
+building with 1-3 tags in, so tags fall with each use, once a round. Followers → ambassadors → alignment → city energy → presence is capped by building count and the
+Followers each ambassador costs. Evicting ambassadors stay on the map, capped by the supply, and the next arrival there cancels one. Wall has no loop, but it takes
+troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
+
+**Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards, so each payoff is priced to be worth the card: 2 chips,
+2 energy, 3 credits, a marker with its Sway; 3 tags buy a building or a sheltered country.
 
 **Powers (locked: tag costs are sacrifices).** A power's cost names tags (`any` for any
 tag) and optional other resources; in the table a tag in the cost is a sacrifice, and thresholds
@@ -1019,14 +1069,18 @@ power is used; the player chooses the cards one at a time among those that still
 <!-- generated: powers -->
 | Board | Power | Cost | Effect |
 |---|---|---|---|
-| Builder | Retool | 2 Industry + 1 any | gain 5 credits and 2 chips |
+| Builder | Mint | 3 credits | gain 1 chip |
 | Builder | Deploy | 1 energy | place 1 presence |
 | Builder | Buy In | 1 energy + 6 credits | place 1 presence |
 | Builder | Scrap | 1 Industry | gain 2 chips |
-| Protector | Lockdown | 2 Security + 1 any | remove 3 adversary ambassadors or 1 troop from a hex in reach; sway 1 toward Unity |
+| Builder | Overcharge | 1 Power | gain 2 energy |
+| Builder | Rush Build | 2 Industry + 1 any | play a building from your hand, paying no credits |
+| Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Deploy | 1 energy | place 1 presence |
 | Protector | Accord | 1 Diplomacy + 1 energy | place 1 presence |
 | Protector | Stand Down | 1 Security | gain 3 credits |
+| Protector | Recovery | 1 Security | clear a corruption marker in reach |
+| Protector | Shelter | 2 Security + 1 any | in one country this round, no presence or facility can be destroyed |
 <!-- /generated -->
 
 `ai.boards` (`[0, 1]`: Builder, Protector) gives each seat its board; the list repeats
@@ -1035,10 +1089,10 @@ cards config lists; baseline: all) start in its player's hand, and its starting 
 in a slot (**Default:** one copy each, so a repeated AI's second seat has neither).
 
 <!-- generated: board_details -->
-| Board | Innate | Discount | Unique cards |
-|---|---|---|---|
-| Builder | *Economies of scale*: Each building you play costs 1 credit less. When you play a building, each energy you pay counts as 1 credit. | energy on buildings 1:1 | Turnkey Factory, Venture Capital, Modular Expansion |
-| Protector | *Bulwark*: Standard action: pay 1 energy to harden 1 facility in reach. When you play a Security card, each energy you pay counts as 1 credit. | energy on Security cards 1:1 | Point Defense, Strike Team, Shelter Order |
+| Board | Special rule | Unique cards |
+|---|---|---|
+| Builder | *Breadth*: You have 5 building slots; boards have 3. | Turnkey Factory, Venture Capital, Modular Expansion |
+| Protector | *Wall*: Adversary troops can't enter a hex with your presence. | Point Defense, Strike Team, Shelter Order |
 <!-- /generated -->
 
 Hardening (the standard actions, cards, Point Defense) goes only on
@@ -1153,22 +1207,21 @@ The cards config lists which cards are in the game (baseline: all of them).
   tier-2 card (`keep_tier2_upgraded` with the board's keep upgrade); any insight short
   is paid at `insight_credits` credits an insight (keeps only). An Open Market free
   keep is used first. The rest are discarded when the action phase begins.
-- **Playing** a card costs its credits (buildings minus your discounts: Economies of
-  scale, Industry tags; less what you
-  spend at your AI's rate, §6), and any `insight`, `energy`, `chips` and `antimatter`
+- **Playing** a card costs its credits (buildings minus your discounts: Industry tags,
+  building Effects, Master Plan), and any `insight`, `energy`, `chips` and `antimatter`
   it prints, and lowers any income it prints under `lowers` (022: "lower your credit
   income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play (022):** 0 for small programs
   and events, 1 by default (removal events included), 2 for big effects and nearly all
   tier 2 (the set: 34 / 80 / 36 cards at 0 / 1 / 2); it comes from
   the same insight as keeps, and the credit conversion is for keeps only. Its `needs`
-  (tags on your cards in play) are checked only when it is played. Each card's price is
+  (tags on your cards in play, your board's printed tags and those its tracks revealed, §7) are checked only when it is played. Each card's price is
   in [cards.md](cards.md); the reasoning is in [card-pricing.md](card-pricing.md).
-- **Science owns a niche (041, 046, candidate).** Only Science cards clear corruption markers,
+- **Science owns a niche (041, 046, candidate).** Among cards, only Science cards clear corruption markers,
   put a hardening token on a hex of your presence (a shield, which absorbs a destruction there as
   on a facility) or make a threat wait a round (a delay: it skips this round's execution, stays
   up, and can be countered next round); the content check
-  refuses any of the three on a card without the tag or on a power. Six tier-1
+  refuses any of the three on a card without the tag or on a power, save the Protector's Recovery, which clears a marker (068). Six tier-1
   and two tier-2 cards do it. No card `needs` Science for it: a team without the tag still has
   the Clear standard action, its counters and the board. Priced in
   [card-pricing.md](card-pricing.md).
@@ -1291,6 +1344,10 @@ Card text says what a card does; how each primitive resolves:
   buildings; gain the card's rate of a resource for each.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain,
   the helper paying.
+- **Cordon (068, `cordon`):** in one country, no arrivals land in the next round's build (an out-of-turn build before it brings none either); the rest of a build goes on. Hardpoint Lockdown prints it:
+  a Security card that does an ambassador's job.
+- **Play a building, paying no credits (068, `free_building`):** the Builder's Rush Build. Its tags are sacrificed first, so a building
+  that needed those tags or the sacrificed stack can't then be played; its other costs and requirements stand.
 - **Aegis Dome Array's shelter:** automatic, the first destruction of a facility or presence each round in a
   country where its owner has presence.
 
@@ -1369,18 +1426,16 @@ edit the source, not the table.
 | `board.presence_marker` | 1 | 0..1 | 1: a destroyed presence leaves a corruption marker on its hex |
 | `board.corruption_reach` | 1 | 0..1 | a city that corrupts destroys presence within this many hexes of it |
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys presence within this many hexes of it |
-| `board.build_energy` | 2 | 0..20 | standard action: energy to build a research station |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner on a production step |
 | `board.chips_credits` | 1 | 0..50 | standard action: credits for selling 1 chip |
-| `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors spent to remove an adversary ambassador within reach |
+| `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there |
 | `board.remove_count` | 3 | 1..3 | standard action: adversary ambassadors one removal takes off its hex, at most |
 | `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
 | `board.clear_unity` | 1 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
 | `board.move_credits` | 1 | 0..20 | standard action: credits to move a player ambassador |
-| `board.ambassador_credits` | 6 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
-| `board.harden_energy` | 1 | 1..20 | standard action (Bulwark): energy a hardening token (at least 1: free, it has no limit) |
+| `board.ambassador_credits` | 9 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.harden_chips` | 1 | 1..20 | standard action a card grants: chips a hardening token (at least 1: free, it has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
 | `board.harden_credits` | 3 | 1..50 | standard project: credits for a hardening token |
@@ -1428,9 +1483,9 @@ edit the source, not the table.
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `economy.give_insight` | 1 | 0..10 | insight the receiver gains for 1 given |
 | `ai.boards` | 0, 1 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
-| `ai.start_credits` | 38 | 0..100 | credits each player starts with |
+| `ai.start_credits` | 15, 25 | 0..100 | credits each seat's AI board starts with, in the order of boards; the list repeats |
 | `ai.start_energy` | 1 | 0..20 | energy each player starts with |
-| `ai.slots` | 4, 3 | 1..10 | building slots of each seat's AI board, in the order of boards; the list repeats |
+| `ai.slots` | 5, 3 | 1..10 | building slots of each seat's AI board, in the order of boards; the list repeats |
 | `cards.deal` | 4 | 0..10 | cards each player drafts from each round after the first, choosing each one's tier |
 | `cards.opening_deal` | 8 | 0..20 | cards dealt to each player in round 1 (the opening) |
 | `cards.opening_free` | 4 | 0..20 | opening cards each player keeps free |

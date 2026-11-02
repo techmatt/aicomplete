@@ -3,7 +3,7 @@
 //! production, starting resources and powers.
 
 use crate::action::Action;
-use crate::content::{AiBoard, Op, Resource, Uncover};
+use crate::content::{AiBoard, Innate, Op, Resource, Tag, Uncover};
 use crate::key::Key;
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
@@ -22,7 +22,7 @@ pub static DEF: ModuleDef = ModuleDef {
         summary: "Each seat plays an AI board from content/ais.json",
         params: &[
             ParamSpec::list("boards", 0, 99, "AI board (index into content/ais.json) of each seat; the list repeats for more seats"),
-            ParamSpec::int("start_credits", 0, 100, "credits each player starts with"),
+            ParamSpec::list("start_credits", 0, 100, "credits each seat's AI board starts with, in the order of boards; the list repeats"),
             ParamSpec::int("start_energy", 0, 20, "energy each player starts with"),
             ParamSpec::list("slots", 1, 10, "building slots of each seat's AI board, in the order of boards; the list repeats"),
         ],
@@ -63,14 +63,36 @@ pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64
     out
 }
 
+/// Spaces seat `s` has uncovered on both tracks.
+fn uncovered_spaces<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Uncover> {
+    let b = board(w, seat);
+    b.presence[..uncovered(w, g, seat)].iter().chain(&b.presence2[..uncovered2(w, g, seat)])
+}
+
+/// The capstones seat `s` has uncovered (068): a track's last space, so a
+/// hot path needn't walk the tracks.
+pub fn capstones<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Innate> {
+    let b = board(w, seat);
+    let end = |t: &'w [Uncover], up: usize| t.last().filter(|_| up >= t.len()).and_then(|u| u.capstone.as_ref());
+    end(&b.presence, uncovered(w, g, seat)).into_iter().chain(end(&b.presence2, uncovered2(w, g, seat)))
+}
+
+/// The tags printed on seat `s`'s board and those its tracks have revealed
+/// (068): they count for what a card requires.
+pub fn board_tags<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Tag> {
+    board(w, seat).tags.iter().chain(uncovered_spaces(w, g, seat).flat_map(|u| &u.tags))
+}
+
 /// Whether seat `s` has uncovered its board's keep upgrade (021: tier-2
 /// keeps cost `cards.keep_tier2_upgraded`).
 pub fn keep2(w: &World, g: &GameState, seat: usize) -> bool {
-    let b = board(w, seat);
-    b.presence[..uncovered(w, g, seat)]
-        .iter()
-        .chain(&b.presence2[..uncovered2(w, g, seat)])
-        .any(|u| u.keep2)
+    uncovered_spaces(w, g, seat).any(|u| u.keep2)
+}
+
+/// Credits seat `s`'s AI board starts with (`ai.start_credits`, 068).
+pub fn start_credits(w: &World, seat: usize) -> i64 {
+    let list = w.list("ai.start_credits");
+    list[seat % list.len()]
 }
 
 /// Building slots of seat `s`'s AI board (`ai.slots`, 021).
@@ -82,6 +104,17 @@ pub fn slots(w: &World, seat: usize) -> i64 {
 /// Whether power `k` of seat `s`'s board places presence.
 pub fn power_places(w: &World, seat: usize, k: usize) -> bool {
     board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::PlacePresence { .. })))
+}
+
+/// Whether power `k` of seat `s`'s board plays a building for free (068).
+pub fn power_builds(w: &World, seat: usize, k: usize) -> bool {
+    board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)))
+}
+
+/// Whether power `k` of seat `s`'s board sacrifices more than one tag: its
+/// sacrifice prompts come before what it does (068).
+pub fn power_sacrifices_many(w: &World, seat: usize, k: usize) -> bool {
+    board(w, seat).powers.get(k).is_some_and(|p| p.tags.iter().map(|(_, n)| n).sum::<i64>() > 1)
 }
 
 /// Set once seat `s` has used power `k` this round.
@@ -127,6 +160,10 @@ pub fn uncover_label(u: &Uncover) -> String {
     if u.keep2 {
         parts.push("T2 keep -1".into());
     }
+    parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if let Some(c) = &u.capstone {
+        parts.push(format!("capstone {}", c.name));
+    }
     parts.join(", ")
 }
 
@@ -136,12 +173,15 @@ pub fn uncover_words(u: &Uncover) -> String {
     if u.keep2 {
         parts.push("T2 keep".into());
     }
+    parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if let Some(c) = &u.capstone {
+        parts.push(format!("capstone: {}", c.name));
+    }
     parts.join(", ")
 }
 
 #[derive(Debug)]
 struct Ai {
-    start_credits: i64,
     start_energy: i64,
 }
 
@@ -178,7 +218,6 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
         ));
     }
     Ok(Box::new(Ai {
-        start_credits: b.int("start_credits")?,
         start_energy: b.int("start_energy")?,
     }))
 }
@@ -186,7 +225,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
 impl Module for Ai {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         for s in 0..g.seats.len() {
-            cx.add_resource(g, s, Resource::Credits, self.start_credits);
+            cx.add_resource(g, s, Resource::Credits, start_credits(&cx.world, s));
             cx.add_resource(g, s, Resource::Energy, self.start_energy);
         }
     }
@@ -232,6 +271,7 @@ impl Module for Ai {
         cx.set_key(g, &power_used(s, k), 1);
         cards::sacrifice_for(g, cx, s, &p.tags)?;
         cx.count(g, &format!("power.{}.{k}", board(&w, s).id), 1);
+        cx.per_round(g, &format!("ai.power.{}.{k}", board(&w, s).id), 1);
         cx.tally(g, "ai.powers_used", 1);
         cx.per_round(g, "ai.powers_used", 1);
         effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s))
@@ -263,6 +303,20 @@ impl Module for Ai {
                             doc: "uncovering this lowers a tier-2 keep (cards.keep_tier2_upgraded insight)".into(),
                         });
                     }
+                    for t in &u.tags {
+                        marks.push(TrackMark {
+                            key: t.to_string(),
+                            label: format!("{t} tag"),
+                            doc: "this tag counts for what a card requires once uncovered".into(),
+                        });
+                    }
+                    if let Some(c) = &u.capstone {
+                        marks.push(TrackMark {
+                            key: "capstone".into(),
+                            label: c.name.clone(),
+                            doc: format!("capstone: {}", c.text),
+                        });
+                    }
                     // 044: the step's printed cost reached no client.
                     if u.cost > 0 {
                         marks.push(TrackMark {
@@ -283,9 +337,9 @@ impl Module for Ai {
         for s in 0..g.seats.len() {
             let b = board(w, s);
             let up = uncovered(w, g, s);
-            let mut tracks = vec![track_view("presence track", &b.presence, up)];
+            let mut tracks = vec![track_view("economy track", &b.presence, up)];
             if !b.presence2.is_empty() {
-                tracks.push(track_view("second presence track", &b.presence2, uncovered2(w, g, s)));
+                tracks.push(track_view("card-play track", &b.presence2, uncovered2(w, g, s)));
             }
             let (hand, built) = (cards::hand(s), cards::built(s));
             let mut unique: Vec<CardView> = b
@@ -348,6 +402,7 @@ impl Module for Ai {
                         name: b.innate.name.clone(),
                         text: b.innate.text.clone(),
                     }),
+                    tags: b.tags.iter().map(|t| t.to_string()).collect(),
                     tracks,
                     slots: Some(slots(w, s)),
                     cards: unique,

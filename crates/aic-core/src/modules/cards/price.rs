@@ -1,4 +1,4 @@
-//! What a card costs a seat: tag discounts, floors and the AI's resource discount.
+//! What a card costs a seat: tag discounts and floors.
 
 use super::*;
 
@@ -124,45 +124,6 @@ pub(super) fn extra_costs_at(d: &CardDef, insight: i64) -> [(Resource, i64); 4] 
 /// A card's costs beyond credits, for seat `s`.
 pub(super) fn extra_costs(w: &World, g: &GameState, seat: usize, d: &CardDef) -> [(Resource, i64); 4] {
     extra_costs_at(d, play_insight(w, g, seat, d))
-}
-
-/// The AI's resource discount on card `d` for seat `s`: (resource, credits
-/// per unit, most units worth spending), if the AI has one that applies and
-/// the seat holds some of it (beyond what the card itself needs).
-pub fn discount_room(
-    w: &World,
-    g: &GameState,
-    seat: usize,
-    d: &CardDef,
-) -> Option<(Resource, i64, i64)> {
-    discount_room_at(w, g, seat, d, &prices(w, g, seat))
-}
-
-/// [`discount_room`] with the seat's [`Prices`] already known.
-pub fn discount_room_at(
-    w: &World,
-    g: &GameState,
-    seat: usize,
-    d: &CardDef,
-    prices: &Prices,
-) -> Option<(Resource, i64, i64)> {
-    let cost = prices.credits(d);
-    ai::board(w, seat).discounts.iter().find_map(|x| {
-        let applies = match x.tag {
-            DiscountOn::Building => d.is_building(),
-            DiscountOn::Tag(t) => d.tags.contains(&t),
-        };
-        let reserved = extra_costs_at(d, prices.insight(d))
-            .iter()
-            .find(|&&(r, _)| r == x.resource)
-            .map_or(0, |&(_, n)| n);
-        let have = g.resource(seat, x.resource) - reserved;
-        if !applies || have <= 0 || x.rate <= 0 || cost <= 0 {
-            return None;
-        }
-        let most = ((cost + x.rate - 1) / x.rate).min(have);
-        Some((x.resource, x.rate, most))
-    })
 }
 
 /// Credits to play a card: buildings get the seat's discounts.

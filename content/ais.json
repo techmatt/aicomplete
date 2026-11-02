@@ -2,25 +2,13 @@
  {
   "id": "builder",
   "name": "Builder",
-  "text": "The economy AI: plays mostly off the board, with more building slots and strong credit income.",
+  "text": "The economy AI: plays mostly off the board, with the most building slots.",
   "innate": {
-   "name": "Economies of scale",
-   "text": "Each building you play costs 1 credit less. When you play a building, each energy you pay counts as 1 credit.",
-   "passives": [
-    {
-     "op": "building_discount",
-     "amount": 1
-    }
-   ]
+   "name": "Breadth",
+   "text": "You have 5 building slots; boards have 3.",
+   "passives": []
   },
   "credits": 10,
-  "discounts": [
-   {
-    "resource": "energy",
-    "tag": "building",
-    "rate": 1
-   }
-  ],
   "income": [
    [
     "insight",
@@ -48,19 +36,6 @@
     "income": [
      [
       "credits",
-      2
-     ]
-    ],
-    "keep2": true
-   },
-   {
-    "income": [
-     [
-      "insight",
-      1
-     ],
-     [
-      "credits",
       1
      ]
     ]
@@ -72,15 +47,13 @@
       2
      ]
     ],
-    "cost": 1
+    "cost": 1,
+    "tags": [
+     "power"
+    ]
    },
    {
-    "income": [
-     [
-      "energy",
-      1
-     ]
-    ],
+    "income": [],
     "cost": 2
    },
    {
@@ -90,16 +63,23 @@
       1
      ]
     ],
-    "cost": 2
+    "cost": 3
    },
    {
-    "income": [
-     [
-      "antimatter",
-      1
+    "income": [],
+    "cost": 5,
+    "capstone": {
+     "name": "Full Capacity",
+     "text": "1 chip each round per 2 Industry tags you have.",
+     "passives": [
+      {
+       "op": "income_per_tag",
+       "resource": "chips",
+       "tag": "industry",
+       "per": 2
+      }
      ]
-    ],
-    "cost": 3
+    }
    }
   ],
   "cards": [
@@ -110,28 +90,20 @@
   "start": "foundry_core",
   "powers": [
    {
-    "name": "Retool",
-    "tags": [
+    "name": "Mint",
+    "tags": [],
+    "cost": [
      [
-      "industry",
-      2
-     ],
-     [
-      "any",
-      1
+      "credits",
+      3
      ]
     ],
-    "text": "gain 5 credits and 2 chips",
+    "text": "gain 1 chip",
     "effects": [
      {
       "op": "gain",
-      "resource": "credits",
-      "amount": 5
-     },
-     {
-      "op": "gain",
       "resource": "chips",
-      "amount": 2
+      "amount": 1
      }
     ]
    },
@@ -189,23 +161,58 @@
       "amount": 2
      }
     ]
+   },
+   {
+    "name": "Overcharge",
+    "tags": [
+     [
+      "power",
+      1
+     ]
+    ],
+    "text": "gain 2 energy",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "energy",
+      "amount": 2
+     }
+    ]
+   },
+   {
+    "name": "Rush Build",
+    "tags": [
+     [
+      "industry",
+      2
+     ],
+     [
+      "any",
+      1
+     ]
+    ],
+    "text": "play a building from your hand, paying no credits",
+    "effects": [
+     {
+      "op": "free_building"
+     }
+    ]
    }
   ],
   "presence2": [
    {
     "income": [
      [
-      "credits",
+      "insight",
       1
      ]
     ]
    },
    {
-    "income": [
-     [
-      "chips",
-      1
-     ]
+    "income": [],
+    "keep2": true,
+    "tags": [
+     "industry"
     ]
    },
    {
@@ -224,49 +231,65 @@
       1
      ]
     ],
+    "cost": 2,
+    "tags": [
+     "science"
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
     "cost": 2
    },
    {
-    "income": [
-     [
-      "chips",
-      1
-     ]
-    ],
-    "cost": 3
+    "income": [],
+    "cost": 3,
+    "tags": [
+     "cyber"
+    ]
    },
    {
     "income": [
      [
-      "credits",
+      "insight",
       1
      ]
     ],
-    "cost": 4
+    "cost": 5,
+    "capstone": {
+     "name": "Master Plan",
+     "text": "Your buildings cost 2 credits less.",
+     "passives": [
+      {
+       "op": "building_discount",
+       "amount": 2
+      }
+     ]
+    }
    }
+  ],
+  "tags": [
+   "industry"
   ]
  },
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The defender: plays on the board, with fewer building slots and energy income.",
+  "text": "The defender: plays on the board; troops stop at its presence.",
   "innate": {
-   "name": "Bulwark",
-   "text": "Standard action: pay 1 energy to harden 1 facility in reach. When you play a Security card, each energy you pay counts as 1 credit.",
+   "name": "Wall",
+   "text": "Adversary troops can't enter a hex with your presence.",
    "passives": [
     {
-     "op": "harden_action"
+     "op": "wall"
     }
    ]
   },
   "credits": 9,
-  "discounts": [
-   {
-    "resource": "energy",
-    "tag": "security",
-    "rate": 1
-   }
-  ],
   "income": [
    [
     "insight",
@@ -297,25 +320,8 @@
    {
     "income": [
      [
-      "energy",
-      1
-     ],
-     [
       "credits",
-      1
-     ]
-    ],
-    "keep2": true
-   },
-   {
-    "income": [
-     [
-      "insight",
-      1
-     ],
-     [
-      "credits",
-      1
+      2
      ]
     ]
    },
@@ -326,7 +332,19 @@
       2
      ]
     ],
-    "cost": 1
+    "cost": 1,
+    "tags": [
+     "diplomacy"
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      2
+     ]
+    ],
+    "cost": 2
    },
    {
     "income": [
@@ -335,25 +353,20 @@
       1
      ]
     ],
-    "cost": 2
-   },
-   {
-    "income": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "cost": 2
-   },
-   {
-    "income": [
-     [
-      "antimatter",
-      1
-     ]
-    ],
     "cost": 3
+   },
+   {
+    "income": [],
+    "cost": 5,
+    "capstone": {
+     "name": "Sanctuary",
+     "text": "When the adversary spreads, it skips your presence.",
+     "passives": [
+      {
+       "op": "spread_shield"
+      }
+     ]
+    }
    }
   ],
   "cards": [
@@ -364,28 +377,19 @@
   "start": "sentinel_post",
   "powers": [
    {
-    "name": "Lockdown",
-    "tags": [
+    "name": "Bulwark",
+    "tags": [],
+    "cost": [
      [
-      "security",
-      2
-     ],
-     [
-      "any",
+      "energy",
       1
      ]
     ],
-    "text": "remove 3 adversary ambassadors or 1 troop from a hex in reach; sway 1 toward Unity",
+    "text": "harden 1 facility in reach",
     "effects": [
      {
-      "op": "damage",
-      "ambassadors": 3,
-      "troops": 1
-     },
-     {
-      "op": "sway",
-      "side": "unity",
-      "amount": 1
+      "op": "harden",
+      "count": 1
      }
     ]
    },
@@ -444,23 +448,57 @@
       "amount": 3
      }
     ]
+   },
+   {
+    "name": "Recovery",
+    "tags": [
+     [
+      "security",
+      1
+     ]
+    ],
+    "text": "clear a corruption marker in reach",
+    "effects": [
+     {
+      "op": "clear_markers",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Shelter",
+    "tags": [
+     [
+      "security",
+      2
+     ],
+     [
+      "any",
+      1
+     ]
+    ],
+    "text": "in one country this round, no presence or facility can be destroyed",
+    "effects": [
+     {
+      "op": "shelter"
+     }
+    ]
    }
   ],
   "presence2": [
    {
     "income": [
      [
-      "energy",
+      "insight",
       1
      ]
     ]
    },
    {
-    "income": [
-     [
-      "credits",
-      1
-     ]
+    "income": [],
+    "keep2": true,
+    "tags": [
+     "security"
     ]
    },
    {
@@ -479,26 +517,48 @@
       1
      ]
     ],
+    "cost": 2,
+    "tags": [
+     "cyber"
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
     "cost": 2
    },
    {
-    "income": [
-     [
-      "energy",
-      1
-     ]
-    ],
-    "cost": 3
+    "income": [],
+    "cost": 3,
+    "tags": [
+     "diplomacy"
+    ]
    },
    {
     "income": [
      [
-      "credits",
+      "insight",
       1
      ]
     ],
-    "cost": 4
+    "cost": 5,
+    "capstone": {
+     "name": "Aegis Doctrine",
+     "text": "Each round, stop the first destruction in a country you're in.",
+     "passives": [
+      {
+       "op": "civic_shelter"
+      }
+     ]
+    }
    }
+  ],
+  "tags": [
+   "security"
   ]
  }
 ]

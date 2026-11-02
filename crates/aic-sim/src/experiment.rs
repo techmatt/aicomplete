@@ -17,8 +17,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Mutex, Once};
 use std::time::Instant;
 
-use aic_core::content::Side;
-use aic_core::modules::{adversary, alignment, cards, common};
+use aic_core::content::{Resource, Side};
+use aic_core::modules::{adversary, alignment, board, cards, common};
 use aic_core::{replay, Action, Config, GameState, Outcome, Rules, Stats};
 use serde::{Deserialize, Serialize};
 
@@ -452,7 +452,36 @@ pub struct Margin {
     /// Nodes and adversary troops on the board at the end (018).
     pub nodes_end: i64,
     pub troops_end: i64,
+    /// What each seat left unspent, in [`UNSPENT`] order (068): [`left_unspent`].
+    #[serde(default)]
+    pub unspent: Vec<Vec<i64>>,
 }
+
+/// What seat `s` left unspent, in [`UNSPENT`] order: what it held when its last
+/// action phase ended (production and upkeep pay after that, and a seat can't
+/// have spent what it was just paid), or now if the game ended in one.
+fn left_unspent(g: &GameState, s: usize) -> Vec<i64> {
+    let in_actions = g.config.round.get(g.phase).is_some_and(|p| p.contains("cards.play"));
+    UNSPENT
+        .iter()
+        .map(|r| {
+            let at_end = g.stats.per_round.get(format!("left.{s}.{r}").as_str()).and_then(|v| v.last().copied());
+            match at_end {
+                Some(n) if !in_actions => n,
+                _ => g.resource(s, *r),
+            }
+        })
+        .collect()
+}
+
+/// The resources the unspent measure reads (068). Insight is not one: what a
+/// round leaves of it is lost.
+pub const UNSPENT: [Resource; 5] = board::LEFT;
+
+/// A seat's mean left at game end above this flags the resource as ending high
+/// (068, in [`UNSPENT`] order): about a round's income of each, so a seat
+/// ending there left a round's worth of play on the table. `docs/principles.md`.
+pub const UNSPENT_HIGH: [f64; 5] = [12.0, 4.0, 4.0, 2.0, 3.0];
 
 fn margin(rules: &Rules, g: &GameState) -> Margin {
     let w = rules.world();
@@ -479,6 +508,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
         unity_tips: g.var(alignment::tips_key(Side::Unity)),
         nodes_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::NODE)).sum(),
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),
+        unspent: (0..g.seats.len()).map(|s| left_unspent(g, s)).collect(),
     }
 }
 

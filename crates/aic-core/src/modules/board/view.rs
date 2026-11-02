@@ -8,6 +8,7 @@ pub(super) fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Sabotage => "Sabotage: while this is up, players with presence here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Shelter => "Sheltered: facilities and presence here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
+        RoundFlag::Cordon => "Cordon: no arrivals land here in the next build",
     }
 }
 
@@ -172,10 +173,10 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         out.seat(
             s,
             "presence_track",
-            "presence left on track 1",
+            "presence left on the economy track",
             left as i64,
             None,
-            "presence tokens still on your AI board's first track (the second shows on the board)",
+            "presence tokens still on your AI board's economy track (the card-play track shows on the board)",
         );
     }
 }

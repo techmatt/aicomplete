@@ -96,19 +96,25 @@ pub struct Scoring {
     pub choices: usize,
     /// `choices` for a power that places presence.
     pub placing_choices: usize,
+    /// `choices` for a power with several sacrifices before its effect (068).
+    pub sacrificing_choices: usize,
 }
 
 impl Scoring {
     /// At the top level of a decision: a presence power at [`full_placing`].
     pub fn decision(samples: usize, depth: usize, choices: usize) -> Self {
-        Scoring { samples, depth, choices, placing_choices: full_placing(choices) }
+        let placing_choices = full_placing(choices);
+        Scoring { samples, depth, choices, placing_choices, sacrificing_choices: placing_choices + SACRIFICE_PROMPTS }
     }
 
     /// Inside a rollout: a presence power at no more levels than it asks (046,
     /// 066: a sacrifice, a track and a hex; short of a level, the action reads
     /// as paying and placing nothing, so a rollout never takes it).
     pub fn in_rollout(self) -> Self {
-        Scoring { placing_choices: self.choices.max(PLACING_PROMPTS), ..self }
+        // 068: not the expensive powers' full depth: three sacrifices, a card and a
+        // slot, scored for every action of a rollout, doubled the planner's cost.
+        let placing_choices = self.choices.max(PLACING_PROMPTS);
+        Scoring { placing_choices, sacrificing_choices: placing_choices, ..self }
     }
 }
 
@@ -122,7 +128,7 @@ pub fn greedy_scores(
     legal: &[Action],
     how: Scoring,
 ) -> Vec<f64> {
-    let Scoring { samples, depth, choices, placing_choices } = how;
+    let Scoring { samples, depth, choices, placing_choices, sacrificing_choices } = how;
     let world = rules.world();
     let mut scores = vec![0.0; legal.len()];
     let n = samples.max(1);
@@ -145,6 +151,7 @@ pub fn greedy_scores(
             scores[i] += match a {
                 Action::Pass { .. } => stay,
                 _ => match step(rules, base, a) {
+                    Some(c) if sacrifices_many(&world, a) => lookahead(rules, ev, &c, depth - 1, sacrificing_choices),
                     Some(c) if places(&world, a) => lookahead(rules, ev, &c, depth - 1, placing_choices),
                     Some(c) => lookahead(rules, ev, &c, depth - 1, choices),
                     None => f64::NEG_INFINITY,
@@ -162,6 +169,17 @@ const PLACING_PROMPTS: usize = 3;
 /// Whether `a` is a power that places presence.
 fn places(world: &World, a: &Action) -> bool {
     matches!(a, Action::Power { seat, power } if ai::power_places(world, *seat as usize, *power as usize))
+}
+
+/// The prompts an expensive power adds to a placement's (068): up to two more
+/// sacrifices, with what it does (a building and its slot, or a country) the
+/// placement's two.
+const SACRIFICE_PROMPTS: usize = 2;
+
+/// Whether `a` is a power with several sacrifice prompts before its effect:
+/// short of them it reads as losing the cards for nothing.
+fn sacrifices_many(world: &World, a: &Action) -> bool {
+    matches!(a, Action::Power { seat, power } if ai::power_sacrifices_many(world, *seat as usize, *power as usize))
 }
 
 /// Levels a presence power's choices are scored at, top level (041, 066): a

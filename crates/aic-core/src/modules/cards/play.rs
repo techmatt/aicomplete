@@ -15,16 +15,23 @@ impl Cards {
     }
 }
 
+/// Whether seat `s` meets what `d` requires.
+fn requirements_met(w: &World, g: &GameState, seat: usize, d: &CardDef) -> bool {
+    if d.needs.is_empty() {
+        return true;
+    }
+    let have = required_tags(w, g, seat);
+    d.needs.iter().all(|(t, n)| have[*t as usize] >= *n)
+}
+
 /// Why a card can't be played now, or `None` if it can.
 pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option<&'static str> {
     let d = def(w, id);
-    if d.needs.iter().any(|(t, n)| tags(w, g, seat, *t) < *n) {
+    if !requirements_met(w, g, seat, d) {
         return Some("needs tags");
     }
     let p = prices(w, g, seat);
-    if g.resource(seat, Resource::Credits)
-        + discount_room_at(w, g, seat, d, &p).map_or(0, |(_, rate, k)| rate * k)
-        < p.credits(d)
+    if g.resource(seat, Resource::Credits) < p.credits(d)
         || extra_costs_at(d, p.insight(d)).iter().any(|&(r, n)| g.resource(seat, r) < n)
         || !lowers_ok(w, g, seat, d)
     {
@@ -37,6 +44,44 @@ pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option
         return Some("no target");
     }
     None
+}
+
+/// Buildings in seat `s`'s hand it could play paying no credits (068): every
+/// other cost and requirement stands.
+pub fn free_buildings(w: &World, g: &GameState, seat: usize) -> Vec<Key> {
+    let p = prices(w, g, seat);
+    g.pile(&hand(seat))
+        .iter()
+        .filter(|id| {
+            let d = def(w, id);
+            d.is_building()
+                && requirements_met(w, g, seat, d)
+                && extra_costs_at(d, p.insight(d)).iter().all(|&(r, n)| g.resource(seat, r) >= n)
+                && lowers_ok(w, g, seat, d)
+                && (d.replaces.is_none() || !stack_targets(w, g, seat, d).is_empty())
+        })
+        .cloned()
+        .collect()
+}
+
+pub fn free_building_exists(w: &World, g: &GameState, seat: usize) -> bool {
+    !free_buildings(w, g, seat).is_empty()
+}
+
+/// Seat `s` plays a building from its hand, paying no credits (068).
+pub fn play_free_building(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+    let w = cx.world;
+    let ids = free_buildings(&w, g, seat);
+    let opts = ids.iter().map(|id| opt(id.to_string())).collect();
+    let prompt = format!("Seat {seat}: play which building, paying no credits?");
+    let Some(i) = cx.choose(seat, &prompt, opts)? else {
+        return Ok(());
+    };
+    let id = ids[i].clone();
+    let d = def(&w, &id);
+    pay_card_extras(g, cx, seat, d);
+    cx.tally(g, "cards.free_built", 1);
+    enter_play(g, cx, seat, &id, d)
 }
 
 /// Whether seat `s` has the income card `d` lowers (022): each `lowers`
@@ -78,17 +123,7 @@ impl Cards {
         }
         let d = def(&w, id);
         pay_for_card(g, cx, seat, id, d)?;
-        cx.count(g, &format!("played.{id}"), 1);
-        cx.per_round(g, "cards.played", 1);
-        if d.is_building() {
-            place_building(g, cx, seat, id, d)?;
-            cx.move_card(g, id, &hand(seat), &built(seat), false)?;
-        } else if d.is_event() {
-            discard(g, cx, id, &hand(seat));
-        } else {
-            cx.move_card(g, id, &hand(seat), &played(seat), false)?;
-        }
-        effects::run(g, cx, &d.effects, &mut effects::Ctx::seat(seat))
+        enter_play(g, cx, seat, id, d)
     }
 
     /// Card by card: the chosen tier's top card joins the hand.
@@ -143,26 +178,31 @@ impl Cards {
     }
 }
 
-pub(super) fn pay_for_card(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) -> Res {
-    let w = cx.world;
-    let mut credits = play_cost(&w, g, seat, d);
-    if let Some((resource, rate, most)) = discount_room(&w, g, seat, d) {
-        // Spend the AI's resource for credits: at least enough to afford it.
-        let short = (credits - g.resource(seat, Resource::Credits)).max(0);
-        let least = (short + rate - 1) / rate;
-        let opts = (least..=most)
-            .map(|k| opt(format!("spend {}", resource.amount(k))))
-            .collect();
-        let prompt =
-            format!("Seat {seat}: spend how much {resource} at {rate} credit each on {id}?");
-        let k = least + cx.choose(seat, &prompt, opts)?.unwrap_or(0) as i64;
-        if k > 0 {
-            cx.add_resource(g, seat, resource, -k);
-            credits = (credits - k * rate).max(0);
-            cx.tally(g, "cards.discount_used", k);
-        }
+/// A paid card leaves the hand and resolves.
+fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) -> Res {
+    cx.count(g, &format!("played.{id}"), 1);
+    cx.per_round(g, "cards.played", 1);
+    if d.is_building() {
+        place_building(g, cx, seat, id, d)?;
+        cx.move_card(g, id, &hand(seat), &built(seat), false)?;
+    } else if d.is_event() {
+        discard(g, cx, id, &hand(seat));
+    } else {
+        cx.move_card(g, id, &hand(seat), &played(seat), false)?;
     }
-    cx.add_resource(g, seat, Resource::Credits, -credits);
+    effects::run(g, cx, &d.effects, &mut effects::Ctx::seat(seat))
+}
+
+pub(super) fn pay_for_card(g: &mut GameState, cx: &mut Cx, seat: usize, _id: &str, d: &CardDef) -> Res {
+    let w = cx.world;
+    cx.add_resource(g, seat, Resource::Credits, -play_cost(&w, g, seat, d));
+    pay_card_extras(g, cx, seat, d);
+    Ok(())
+}
+
+/// A card's costs beyond credits, and the income it lowers.
+fn pay_card_extras(g: &mut GameState, cx: &mut Cx, seat: usize, d: &CardDef) {
+    let w = cx.world;
     let [insight, energy, chips, antimatter] = extra_costs(&w, g, seat, d);
     for (r, n) in [antimatter, energy, chips, insight] {
         cx.add_resource(g, seat, r, -n);
@@ -177,7 +217,6 @@ pub(super) fn pay_for_card(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str
     if d.chips > 0 {
         cx.tally(g, "board.chips_spent", d.chips);
     }
-    Ok(())
 }
 
 /// Where a building goes: a new slot, or over one of yours.

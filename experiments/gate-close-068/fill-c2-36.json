@@ -1,0 +1,32 @@
+{
+ "name": "fill-c2-36",
+ "note": "gate close (068): c2, seeds 23036+12",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2",
+   "set": []
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:tier2_rush=1"
+ ],
+ "first_seed": "23036",
+ "games": 12,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}

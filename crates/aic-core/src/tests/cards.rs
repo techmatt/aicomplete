@@ -5,58 +5,6 @@ use crate::content::{CardDef, Op, Tag};
 use crate::modules::{adversary, effects, threats};
 
 #[test]
-fn the_ais_spend_their_resource_as_credits_on_cards() {
-    let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
-    for c in ["darknet_exchange", "literature_crawler"] {
-        Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|x| x != c);
-    }
-    // The Builder (seat 0): energy on buildings, 1 credit each, after
-    // Economies of scale takes 1 off.
-    g.piles.insert(
-        "cards.hand.0".into(),
-        vec!["darknet_exchange".into(), "literature_crawler".into()].into(),
-    );
-    set_res(&mut g, 0, Resource::Credits, 3);
-    set_res(&mut g, 0, Resource::Energy, 10);
-    set_res(&mut g, 0, Resource::Insight, 1);
-    let plays = |g: &GameState, seat: u8| -> Vec<Key> {
-        rules
-            .legal_actions(g)
-            .into_iter()
-            .filter_map(|a| match a {
-                Action::Play { seat: s, card } if s == seat => Some(card),
-                _ => None,
-            })
-            .collect()
-    };
-    // Not on a program: with no credits only the building is playable.
-    set_res(&mut g, 0, Resource::Credits, 0);
-    assert_eq!(plays(&g, 0), ["darknet_exchange"]);
-    // 021: Darknet Exchange (023; was Fab Line) costs 2, 1 after Economies of scale (the floor, 055);
-    // with 1 credit energy is optional.
-    set_res(&mut g, 0, Resource::Credits, 1);
-    let energy = g.resource(0, Resource::Energy);
-    rules
-        .apply_mut(
-            &mut g,
-            &Action::Play {
-                seat: 0,
-                card: "darknet_exchange".into(),
-            },
-            None,
-        )
-        .unwrap();
-    let p = g.pending.as_ref().expect("a discount choice");
-    let opts: Vec<&str> = p.ask.options.iter().map(|o| o.option.as_str()).collect();
-    assert_eq!(opts, ["spend 0 energy", "spend 1 energy"]);
-    answer_with(&rules, &mut g, "spend 1 energy");
-    // 021: a new slot, or over the Builder's starting Foundry Core.
-    answer_with(&rules, &mut g, "a new slot");
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(0, Resource::Credits)), (energy - 1, 1));
-    assert!(g.pile("cards.built.0").contains(&Key::new("darknet_exchange")));
-}
-
-#[test]
 fn growth_and_draft_picks_cannot_be_passed() {
     let rules = Rules::new(&baseline()).unwrap();
     let mut g = rules.new_game(2);
@@ -388,7 +336,6 @@ fn prices_worked_out_once_match_each_cards_own() {
         for d in &w.content.cards {
             assert_eq!(p.insight(d), cards::play_insight(&w, &g, 0, d), "{}", d.id);
             assert_eq!(p.credits(d), cards::play_cost(&w, &g, 0, d), "{}", d.id);
-            assert_eq!(cards::discount_room_at(&w, &g, 0, d, &p), cards::discount_room(&w, &g, 0, d), "{}", d.id);
         }
         let counts = cards::tag_counts(&w, &g, 0);
         for t in TAGS {

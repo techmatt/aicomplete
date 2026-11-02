@@ -28,14 +28,14 @@ The standards every module and every rules change is judged against.
 played should sit near credit income ÷ insight income: about 11 credits ÷ 5 insight ≈ 2,
 and tier-1 cards average about 3 credits with tier 2 about 9.
 
-- **Credits are the outlier.** 38 to start (066: standing in for Consolidate's bundle), 10 / 9 a round from each AI board plus the
+- **Credits are the outlier.** 15 / 25 to start (068: `ai.start_credits`, the Builder lower, the Protector higher), 10 / 9 a round from each AI board plus the
   Builder's Foundry Core +1, plus the presence track and Unity income (Grassroots Funding,
   New Deal +2 each): a player sees about 120 to 140 credits over an 11-round game before cards,
   so totals do reach the hundreds. Card costs run 0–18 (Orbital Mass Driver 18, Great
   Liberation 16): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a megaproject cube pays
-  `project_credits` 10; a player ambassador costs `ambassador_credits` 6 (066: it pays for removals); chips sell
+  `project_credits` 10; a player ambassador costs `ambassador_credits` (066: it pays for removals; 068: dearer, since it stays); chips sell
   for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
 - **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
   20–40 at 4: the top of the range, still under 50. A node makes 1.
@@ -64,6 +64,18 @@ main cause, and the presence clock stays live. The round cap is a quiet backstop
 **Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
 fixed amount and not the countries still standing, so no loop forms and sizes land in one band.
 
+## Scarcity (Matt, 2026-11-01)
+
+**Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it with weaker
+credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
+
+**Unspent resources (068).** Resources left when a seat's last action phase ended (production and upkeep pay after that, and a seat
+can't spend what it was just paid), per seat and per resource, under each agent: `report.md`'s *Unspent
+resources* (in *Strategy health*), `results.json`'s `unspent`, and the readout of `scripts/cards/screen.py --gate`. Insight isn't
+one: what a round leaves of it is lost anyway. **A resource ends high** when a seat's mean passes about a round's income of it:
+credits 12, chips 4, energy 4, antimatter 2, ambassadors 3 (`UNSPENT_HIGH`, `crates/aic-sim/src/experiment.rs`). Games end at
+different rounds, so read the flag on the planner, whose games run longest toward a win, before a fixed policy's.
+
 ## Design lenses for every module
 
 - strategic: situational, never always right
@@ -88,6 +100,7 @@ fixed amount and not the countries still standing, so no loop forms and sizes la
 - win probability by round (uncertain into the late game) and margin of victory (mostly
   narrow);
 - game length (8–10 rounds) and adversary operations per round (low);
+- resources unspent at game end, per seat and resource (*Scarcity*, above);
 - help and counter usage;
 - luck share (most outcome variance comes from decisions, not the shuffle).
 
@@ -138,6 +151,10 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | always-max-presence, never-second-presence (066) | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
 | never-Remove, Science board (041) | `never_remove=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
 | abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
+| never-sacrifice (068) | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
+| ambassador mass (068) | `ambassador_mass=1` | buys every ambassador it can, before anything else |
+| free-build rush (068) | `free_build_rush=1` | the Builder's Rush Build at every chance |
+| wall turtle (068) | `wall_turtle=1` | the Protector places presence only with a troop on the board, on the hex nearest one |
 
 022 ran the checks under the engine at d0, d2 and d4
 (`experiments/archive/screen-022-dominance.json`, summarized by `scripts/cards/screen_022.py`).
@@ -147,9 +164,9 @@ could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
 summarized by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate.json` (gate-053; gate-046 is retired): planner only, d2,
-8 seeds a check early-stopped from 4, every 034 check plus 041's four fixed policies and abandon,
-summarized by `scripts/cards/screen.py --gate`. Its predecessors are
+current gate** is `experiments/gate.json` (gate-068; gate-046 is retired): planner only, d2,
+48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit, summarized by
+`scripts/cards/screen.py --gate`. Its predecessors are
 `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
 `experiments/gate-exploit.json` (050) is its fast first read: the 13 checks that could still beat
 thinking, under the engine, capped at 32 seeds. It gives a direction; the full gate, under the

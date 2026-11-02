@@ -1,0 +1,43 @@
+{
+ "name": "next-c3",
+ "note": "gate close (068): c3, seeds 23048+48",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c3",
+   "set": [
+    "countries=3"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner",
+  "planner:never_sacrifice=1",
+  "planner:free_build_rush=1",
+  "planner:always_max_presence=1",
+  "planner:never_second_presence=1",
+  "planner:never_remove=1",
+  "planner:science_board=1",
+  "planner:science_rush=1",
+  "planner:tier2_rush=1",
+  "planner:no_powers=1"
+ ],
+ "first_seed": "23048",
+ "games": 48,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}

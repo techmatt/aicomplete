@@ -1,0 +1,34 @@
+{
+ "name": "fill-c3-32",
+ "note": "gate close (068): c3, seeds 23032+16",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c3",
+   "set": [
+    "countries=3"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:science_rush=1"
+ ],
+ "first_seed": "23032",
+ "games": 16,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}

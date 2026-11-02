@@ -6,6 +6,7 @@ use super::*;
 /// active buildings.
 pub fn passives<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<&'w Op> {
     let mut out: Vec<&'w Op> = ai::board(w, seat).innate.passives.iter().collect();
+    out.extend(ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()));
     for id in g.pile(&built(seat)) {
         out.extend(def(w, id).passives.iter());
     }
@@ -31,6 +32,16 @@ pub fn in_play(g: &GameState, seat: usize) -> Vec<Key> {
 /// Seat `s`'s tags of one kind, over every card it has in play (021).
 pub fn tags(w: &World, g: &GameState, seat: usize, tag: Tag) -> i64 {
     tag_counts(w, g, seat)[tag as usize]
+}
+
+/// Tags that count for what a card requires: those of seat `s`'s cards, its
+/// board's printed tags and those its tracks have revealed (068).
+pub fn required_tags(w: &World, g: &GameState, seat: usize) -> [i64; TAGS.len()] {
+    let mut out = tag_counts(w, g, seat);
+    for t in ai::board_tags(w, g, seat) {
+        out[*t as usize] += 1;
+    }
+    out
 }
 
 /// Seat `s`'s tags of every kind, indexed by `Tag as usize`: one pass over its

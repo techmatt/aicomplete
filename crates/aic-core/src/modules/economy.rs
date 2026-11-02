@@ -81,6 +81,18 @@ fn upkeep_income(w: &World, g: &GameState, seat: usize) -> PerResource {
     inc
 }
 
+/// Ambassadors seat `s` gains a round (068): `Op::Income` prints them, though
+/// they sit in no income array, being pieces rather than a player resource.
+pub fn ambassador_income(w: &World, g: &GameState, seat: usize) -> i64 {
+    cards::passives(w, g, seat)
+        .iter()
+        .map(|p| match p {
+            Op::Income { resource: Resource::Ambassadors, amount } => *amount,
+            _ => 0,
+        })
+        .sum()
+}
+
 /// Seat `s`'s income per resource from its AI board, tracks, buildings and
 /// Unity cards (not the board's production).
 pub fn income(w: &World, g: &GameState, seat: usize) -> PerResource {
@@ -95,7 +107,7 @@ pub fn income(w: &World, g: &GameState, seat: usize) -> PerResource {
     let mut tags = |tag: Tag| counts.get_or_insert_with(|| cards::tag_counts(w, g, seat))[tag as usize];
     for p in cards::passives(w, g, seat) {
         match p {
-            Op::Income { resource, amount } => add(*resource, *amount),
+            Op::Income { resource, amount } if *resource != Resource::Ambassadors => add(*resource, *amount),
             Op::IncomePerTag {
                 resource,
                 tag,
@@ -184,6 +196,7 @@ impl Module for Economy {
                     cx.add_resource(g, s, r, n);
                 }
             }
+            cx.add_resource(g, s, Resource::Ambassadors, ambassador_income(&w, g, s));
             cx.count(g, "credits_income", inc[Resource::Credits]);
             cards::upkeep(g, cx, s);
         }

@@ -345,6 +345,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![w("shelter"), w("country")],
             "shelter one country this round",
         )),
+        Op::Cordon => one(clause(
+            adversary(vec![w("ambassador"), w("country"), w("clock")]),
+            "in one country, no arrivals land next round",
+        )),
         Op::Peek { count } => {
             let say = if *count == 1 {
                 "look at the next card of the adversary deck".to_string()
@@ -468,6 +472,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::GiveBonus { .. }
         | Op::SpreadShield
         | Op::CivicShelter
+        | Op::Wall
+        | Op::FreeBuilding
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::CityBuild { .. }

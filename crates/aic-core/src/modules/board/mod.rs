@@ -29,6 +29,7 @@ mod view;
 pub use ambassadors::*;
 pub use destroy::*;
 pub use presence::*;
+pub use production::LEFT;
 use production::*;
 pub use standard::*;
 pub use troops::*;
@@ -69,18 +70,16 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("presence_marker", 0, 1, "1: a destroyed presence leaves a corruption marker on its hex"),
             ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys presence within this many hexes of it"),
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys presence within this many hexes of it"),
-            ParamSpec::int("build_energy", 0, 20, "standard action: energy to build a research station"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner on a production step"),
             ParamSpec::int("chips_credits", 0, 50, "standard action: credits for selling 1 chip"),
-            ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors spent to remove an adversary ambassador within reach"),
+            ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there"),
             ParamSpec::int("remove_count", 1, 3, "standard action: adversary ambassadors one removal takes off its hex, at most"),
             ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
             ParamSpec::int("clear_unity", 0, 5, "Sway toward Unity for clearing a corruption marker"),
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
             ParamSpec::int("move_credits", 0, 20, "standard action: credits to move a player ambassador"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
-            ParamSpec::int("harden_energy", 1, 20, "standard action (Bulwark): energy a hardening token (at least 1: free, it has no limit)"),
             ParamSpec::int("harden_chips", 1, 20, "standard action a card grants: chips a hardening token (at least 1: free, it has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
@@ -103,8 +102,8 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 4] =
-    [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo];
+pub const FLAGS: [RoundFlag; 5] =
+    [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo, RoundFlag::Cordon];
 
 /// The var key of a country flag.
 pub fn flag(f: RoundFlag, country: usize) -> String {

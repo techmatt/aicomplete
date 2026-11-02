@@ -50,7 +50,7 @@ replay), `module.rs` (the module framework: `ModuleDef`, `VariantDef`, `Module`,
 fingerprints), `driver.rs` (`play`/`replay` with an `Agent`, `PlayedGame`), `view.rs`
 (the generic view clients draw), `record.rs` (`SavedGame`, the game record format), `tests/` (`mod.rs`: helpers,
 `variant_matrix`, `golden_game`; one file per area: config, map, setup, adversary,
-plan, ambassadors, production, war, march, factories, standard_actions, freeing, threats,
+plan, ambassadors, boards, production, war, march, factories, standard_actions, freeing, threats,
 alignment, cards, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`
 (020): checks after every action of random games).
 `modules/board/`: `mod.rs` (the module, its phases), `presence`, `ambassadors`, `production`,
@@ -70,7 +70,7 @@ Current:
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
   each check against its own agent in one sign, agent minus check, with the paired SE, and games
-  per check when `results.json` has a `gate` key. It reads a close run that holds its planner row
+  per check when `results.json` has a `gate` key, then the unspent-resources readout (068). It reads a close run that holds its planner row
   too, gate key or not; report.md's agent pairs read the other way, check minus reference. `--preset tiers` (052) is cards offered, kept and played per game by tier: run it on the
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](docs/card-pricing.md)) and a tier-1 change may never show.
@@ -125,6 +125,7 @@ Current:
   on 16 others); `--games 16` or more. Bad arguments stop it before anything runs: each root is
   an `.exe` or a directory holding `aic-sim.exe`.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
+- `bench/gate_close.py` (068): `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs that carry them on to the cap, reusing their games; `read` merges the runs.
 - `bench/paired.py DIR... [--pair A B]... [--against-base]` (064): any run's cells with win %, SE,
   rounds and ends, and paired gaps between any two cells, pooled over several `--pair`s.
   `--against-base` (065) reads a price sweep: every variant `cN-x` against `cN`, per agent, and
@@ -553,7 +554,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   its next tip, the bar level, and each visible adversary project's fill as a share of
   its cost, `project` 30, 017); the players' board (presence
   4, nodes −25 (022, 020's D9: was −6, and agents made nodes when an equal free choice existed), owned factories 4 (an adversary-owned one −4), chips 2, cities/bases/stations in reach 0.5, owned stations 5 (a corrupted one −5),
-  megaproject cubes 2 (adversary's −1), factories 0.5, hardening 1, player ambassadors
+  megaproject cubes 2 (adversary's −1), factories 0.5, hardening 1, a track's progress toward its capstone (`capstone` 16 × the square of the share uncovered, 068), player ambassadors
   5 in supply (018: was 3, below their 6-credit cost, so agents never bought one) / 2.5 on the board, and toward freeing a corrupted city `freeing` 2 ×
   `corrupted` × a share of the hold: gathered ambassadors, then, once enough are at hand, a climbing bonus for landing them, 027), corruption markers (`marker` 1 each, against), shields (`shield` 3); track income, resources, cards in hand and
   built; unpaid threats (one that waits counts `threat_waits` 0.5). Every weight is a parameter: `w.<name>=V` in an agent spec. The
@@ -579,7 +580,7 @@ point 3, plus 1; cost: what this seat pays, its building discount off), and keep
 drafted card, best ratio first, only if the plan with it is worth more than without it
 (a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and presence it would shield adds `plan_niche` 3 to the card's value). The dominance checks are the same agents with
 one behavior forced: `keep_all=1`, `keep_k=2`, `tier1_only=1`, `tier2_rush=1`,
-`no_powers=1`, `no_counters=1`, `no_presence=1` (`docs/principles.md`, *Dominance
+`no_powers=1`, `no_counters=1`, `no_presence=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1` (`docs/principles.md`, *Dominance
 checks*).
 
 The keep plan also charges credits paid for keeps (`plan_credit` 3), skips cards it can't
@@ -654,8 +655,14 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 `experiments/band.json` (`--seed 20300`) are the 96-seed band: on 8 threads about 17 min for the four
 cells and 14 for the two. `scripts/cards/screen.py --gate DIR` reads the gate; `experiments/gate-close-066-c2.json`
 and `-c3.json` close its level checks on the gate's own seeds. Overlays reach every number of 066's calibration
-(`ais.builder.powers.2.cost=...`, `cards.liaison_corps.ability.tokens=1`), so a screen needs no build; a
-card can't print ambassador income, though: `Op::Income` takes player resources, and an ambassador isn't one.
+(`ais.builder.powers.2.cost=...`, `cards.liaison_corps.ability.tokens=1`), so a screen needs no build. `Op::Income` prints
+ambassadors since 068 (`economy::ambassador_income`: they sit in no income array).
+
+**The band and gate at r28 (068).** `experiments/band.json` runs 96 seeds a cell (Matt: two sets of 48): `--seed S --games 96`, about 20 min on 8
+threads. `experiments/gate.json` (gate-068) has 28 checks, `never_tag` dropped, early-stopped from 12 seeds at 2 SE, capped at 48: 1,320 of 2,784 games, 95 min on 8 threads;
+`scripts/bench/gate_close.py plan` picks the checks within 2 SE by gap against paired SE, whatever stopped them, and writes `experiments/gate-close-068/`: fill to 48, then the next 48 seeds with no early stop; `read` merges the runs (18 rows: 86 min, c2 22 min of it). `screen.py --gate DIR` reads either and prints the unspent readout. A
+planner game costs about 28 s at c2 and 70 s at c3 on 8 threads (r28: 1.4-1.6 × r27 a decision: six powers a board and ambassadors on the map lengthen every rollout
+decision; the engine alone, 4.5 × a game at one thread, `speed_baseline.json` moved), so a gate at its cap is about 4.2 h. `cargo build --profile fast -p aic-sim` (3 min 12 s) pays that back: 068's gate ran on it.
 
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
@@ -674,8 +681,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r26: 16000 band, 17000 gate and closing, 18000
-`hold_base` 4; picked at r25: 14000, 15000. r25: 1000-1031, 8000, 11000, 12000, 13000. r26 also: 19000, `sanity-line`. Next free: 20000.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700. r27 picked at: 18000-19100, 20200, 20300, 21000. Next free: 24000.
 
 **Seeds are noisy at c3.** The same r22 rules at c3 d2 read 56 / 38 / 71 on 16 / 16 / 14 seeds
 (33 on the first 12 of the 38's): about ±15 on any one set. A 16-seed calibration can't separate levers under about
@@ -930,6 +936,9 @@ nothing extra):
 - **Win probability by round** from the playouts; checkpoints that are uncertain
   (0.1 < p < 0.9); early lock-in (the result was decided, p ≤ 0.05 or ≥ 0.95 to the end,
   by round 2).
+- **Unspent resources** (068): each seat's credits, chips, energy, antimatter and ambassadors when its last action phase ended (`left.<seat>.<resource>` in
+  `per_round`, read by `margin.unspent`): *Unspent resources* in `report.md`, `unspent` in `results.json`, the `--gate` readout. The flag is `UNSPENT_HIGH`
+  (`crates/aic-sim/src/experiment.rs`, `scripts/screens.py`).
 - **Margin**: on a win, adversary cards left (deck plus the face-up card: rounds to
   spare) and the adversary's ambassador supply left; on a loss, the adversary pieces over
   the current bar (`margin.level` is the bar level and `margin.unity_tips` the Unity tip

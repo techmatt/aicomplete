@@ -164,6 +164,14 @@ macro_rules! forced_table {
             (always_max_presence: bool, true, 0.0, "fixed policy (066): use both presence powers whenever affordable")
             /// Fixed policy (066): never the board's second presence power.
             (never_second_presence: bool, true, 0.0, "fixed policy (066): never use the board's second presence power")
+            /// Fixed policy (068): no power that sacrifices.
+            (never_sacrifice: bool, true, 0.0, "fixed policy (068): never use a power that sacrifices")
+            /// Fixed policy (068): buy every ambassador it can.
+            (ambassador_mass: bool, true, 0.0, "fixed policy (068): before anything else, buy every ambassador it can afford")
+            /// Fixed policy (068): the Builder's expensive power at every chance.
+            (free_build_rush: bool, true, 0.0, "fixed policy (068): the Builder's free-building power at every chance")
+            /// Fixed policy (068): a seat with Wall places presence only to block troops.
+            (wall_turtle: bool, true, 0.0, "fixed policy (068): a seat with Wall places presence only with a troop on the board, on the hex nearest one")
         }
     };
 }
@@ -297,11 +305,15 @@ impl Policy {
             Action::Tier { tier: 2, .. } => f.tier1_only,
             Action::Power { seat, power } => {
                 let (s, k) = (*seat as usize, *power as usize);
-                if ai::power_places(world, s, k) {
-                    f.stays_put() || (f.never_second_presence && second_presence(world, s, k))
-                } else {
-                    f.no_powers || f.free_only
-                }
+                let sacrifices = !ai::board(world, s).powers[k].tags.is_empty();
+                (f.never_sacrifice && sacrifices)
+                    || if ai::power_places(world, s, k) {
+                        f.stays_put()
+                            || (f.never_second_presence && second_presence(world, s, k))
+                            || (f.wall_turtle && has_wall(world, g, s) && !troops_up(g))
+                    } else {
+                        f.no_powers || f.free_only
+                    }
             }
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
@@ -309,14 +321,46 @@ impl Policy {
                     || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden" | "harden_chips" | "harden_buy" | "chips"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move" | "chips"))
             }
-            Action::Play { card, .. } => {
+            Action::Play { card, seat } => {
                 let d = cards::def(world, card);
-                (f.stays_put() && places_presence(&d.effects)) || !f.allows(d)
+                let walls = f.wall_turtle && has_wall(world, g, *seat as usize) && !troops_up(g);
+                ((f.stays_put() || walls) && places_presence(&d.effects)) || !f.allows(d)
             }
             Action::Keep { card, .. } => !f.allows(cards::def(world, card)),
             _ => false,
         }
     }
+}
+
+/// Whether seat `s` has the Wall rule.
+fn has_wall(w: &World, g: &GameState, s: usize) -> bool {
+    cards::has_passive(w, g, s, |p| matches!(p, Op::Wall))
+}
+
+/// Whether an adversary troop stands on the board.
+fn troops_up(g: &GameState) -> bool {
+    (0..g.hexes.len()).any(|h| g.tokens(h, common::TROOP) > 0)
+}
+
+/// The wall turtle's hex (068): of a presence prompt's hexes, the one nearest a
+/// troop but not on it, where a wall blocks nothing.
+fn wall_hex(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
+    let p = g.pending.as_ref()?;
+    if !p.ask.prompt.contains("place presence") {
+        return None;
+    }
+    let troops: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, common::TROOP) > 0).collect();
+    let gap = |t: &aic_core::hex::Hex| {
+        let h = w.map.find(*t)?;
+        troops.iter().map(|&x| w.map.distance(h, x)).filter(|&d| d > 0).min()
+    };
+    (0..legal.len())
+        .filter_map(|i| match &legal[i] {
+            Action::Choose { seat, target: Some(t), .. } if has_wall(w, g, *seat as usize) => gap(t).map(|d| (d, i)),
+            _ => None,
+        })
+        .min()
+        .map(|(_, i)| i)
 }
 
 fn places_presence(effects: &[Op]) -> bool {
@@ -378,6 +422,23 @@ impl Agent for Policy {
         }
         if self.forced.unity_farm {
             if let Some(i) = farm(&world, g, legal) {
+                return i;
+            }
+        }
+        if self.forced.ambassador_mass && !pending {
+            if let Some(i) = legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == "ambassador")) {
+                return i;
+            }
+        }
+        if self.forced.free_build_rush && !pending {
+            if let Some(i) = legal.iter().position(
+                |a| matches!(a, Action::Power { seat, power } if ai::power_builds(&world, *seat as usize, *power as usize)),
+            ) {
+                return i;
+            }
+        }
+        if self.forced.wall_turtle {
+            if let Some(i) = wall_hex(&world, g, legal) {
                 return i;
             }
         }
@@ -645,6 +706,7 @@ fn plan(
     let mut planned: Vec<Key> = Vec::new();
     let mut total = 0.0;
     let mut b = now;
+    let needs = cards::required_tags(w, g, s);
     for round in 0..rounds.max(1) {
         if round > 0 {
             // Credits, chips, energy and antimatter carry over; insight resets.
@@ -670,7 +732,7 @@ fn plan(
                 && cards::lowers_ok(w, g, s, d)
                 && replaceable(w, g, s, d)
                 && (d.is_building() || effects::feasible(w, g, s, &d.effects))
-                && d.needs.iter().all(|(t, n)| cards::tags(w, g, s, *t) >= *n);
+                && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
             if fits {
                 b.credits -= credits;
                 b.insight -= cards::play_insight(w, g, s, d);
@@ -708,12 +770,12 @@ mod tests {
             let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
             Action::Power { seat: 0, power: k as u8 }
         };
-        let (deploy, buy, retool) = (by_name("Deploy"), by_name("Buy In"), by_name("Retool"));
+        let (deploy, buy, scrap) = (by_name("Deploy"), by_name("Buy In"), by_name("Scrap"));
         let no_powers = forced("no_powers");
-        assert!(no_powers.ruled_out(&w, &g, &retool) && !no_powers.ruled_out(&w, &g, &deploy));
+        assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &deploy));
         let no_presence = forced("no_presence");
         assert!(no_presence.ruled_out(&w, &g, &deploy) && no_presence.ruled_out(&w, &g, &buy));
-        assert!(!no_presence.ruled_out(&w, &g, &retool));
+        assert!(!no_presence.ruled_out(&w, &g, &scrap));
         let never_second = forced("never_second_presence");
         assert!(never_second.ruled_out(&w, &g, &buy) && !never_second.ruled_out(&w, &g, &deploy));
     }

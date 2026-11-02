@@ -10,7 +10,7 @@ fn a_face_opens_with_its_boxes_word() {
     assert_eq!(f.top_text, "Each round, 2 Datasets here. Action: pay 4 Datasets, get 2 insight.");
     assert_eq!(f.text, "");
     let f = face_of("orbital_embassy");
-    assert_eq!(f.top_text, "Each round, 4 credits and 1 insight. Action: pay 1 credit, get 2 ambassadors.");
+    assert_eq!(f.top_text, "Each round, 1 ambassador, 2 credits and 1 insight.");
     assert_eq!(f.text, "Pay 1 antimatter. Gain 2 ambassadors.");
 }
 

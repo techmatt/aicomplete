@@ -7,6 +7,39 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 28 (068): Builder and Protector boards, ambassadors that stay, scarcity.** (Bumped from the constant, 27.) Design: Matt,
+2026-11-01. The band: planner, d2, fresh seeds 22100, 96 a cell: **73 ±4.5 / 75 ±4.4** (target 60-75), on the frozen build. The gate: planner, seeds 23000, no check ahead of the planner by more than 1 SE: 18 rows within 2 SE at 96 paired seeds, the other 38 clearly behind early, `never_tag` dropped. Credits and energy end high; the cause is in the results. Reasoning, tracks and the screens: `experiments/results/screen-068-boards/boards.md`. Every row is a **candidate** unless marked.
+
+| Rule | Status |
+|---|---|
+| Builder: Breadth, 5 building slots (boards default to 3); `ai.slots` 5, 3 | candidate (Matt) |
+| Protector: Wall, adversary troops can't enter a hex with its presence | candidate (Matt) |
+| Wall's reach: marches and landings; a strike from next door stands; a troop already on the hex walks off; a factory's own troop isn't entering | candidate, 068's call |
+| Conversions in the power menu: Mint 3 credits for 1 chip; Bulwark 1 energy, harden 1 facility | candidate (Matt; Mint's rate, simulation) |
+| New cheap powers: Overcharge (1 Power, 2 energy), Recovery (1 Security, clear a marker in reach, for its reward) | candidate (Matt) |
+| New expensive powers: Rush Build (2 Industry + 1 any: a building from hand, no credits, other costs paid), Shelter (2 Security + 1 any: one country this round) | candidate (Matt) |
+| Sacrifice tags are costs paid first; a tag sacrificed for Rush Build no longer counts for the building's requirement | candidate, 068's call |
+| Two tracks per board, economy and card-play, 7 spaces each, each ending in a capstone | candidate (Matt); contents are draft candidates |
+| Capstones: Full Capacity, Master Plan (Builder); Sanctuary, Aegis Doctrine (Protector) | draft candidates |
+| Printed and revealed tags count for card requirements only | candidate (Matt; "only" is 068's call) |
+| Late track spaces: step costs to 5; no antimatter on the tracks | candidate; one payment path stays **locked** |
+| An ambassador is consumed for a permanent change and stays for a position | candidate (Matt) |
+| Remove: an ambassador from the supply goes onto the hex, evicts up to `remove_count` and stays | candidate (Matt; supply only is 068's call) |
+| Player ambassadors on bases, factories and corrupted stations stay; on a corrupted station the round's cube is theirs | candidate (Matt; factories and the cube are 068's call) |
+| An adversary ambassador on a lone presence stays until removed | candidate (Matt) |
+| A Move or card move onto adversary ambassadors still cancels 1 for 1, consuming the mover | candidate, 068's call |
+| An adversary arrival still cancels a standing player ambassador | candidate, 068's call |
+| Research stations cost chips alone | candidate (Matt) |
+| `ai.start_credits` 15 / 25, per board | candidate (Matt: Builder lower, Protector higher) |
+| `ambassador_credits` 9 | candidate, simulation (Matt: 6 or more) |
+| Followers: Liaison Corps 2 for an ambassador, Open Assembly 3 for one | candidate, simulation |
+| `Op::Income` prints ambassadors (Orbital Embassy) | candidate |
+| Hardpoint Lockdown cordons a country: no arrivals there next round | candidate |
+| Unspent-resources measure and its flag (`docs/principles.md`) | candidate |
+
+Gone: Economies of scale and every AI credit discount (`discounts` in `content/ais.json`, `Discount`, `DiscountOn`, `discount_room`); Retool; Bulwark's Security-card
+clause and its standard action (`harden_energy`); Lockdown; `build_energy`. Science's niche keeps marker clearing among cards; a power may print it now (Recovery).
+
 **Revision 27 (066): presence powers replace growth.** (Bumped from the constant, 26.) Design: Matt, 2026-11-01. The
 band: planner, d2, fresh seeds 20200 and 20300, 96 a cell: **59 ±5 / 61 ±5** (target 60-75: c2 just under, no lever added for it), on the frozen build;
 `experiments/results/screen-066-presence/presence.md`. The gate: no check ahead of the planner by more than 1 SE; 96 paired

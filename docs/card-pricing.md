@@ -24,7 +24,8 @@ sections run newest first, and the cards as they stand are in [cards.md](cards.m
 | Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
 | presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
 | per presence, uncapped | as 055: the track has only 9 spaces | 059: Grid Census 2, Beamed Power Constellation 8 |
-| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 3 for 5 (066) |
+| ambassador | 4; a move up to 2 hexes 1.5 | 068: it stays for a position, so worth more; project ceiling `ambassador_credits`, Consular Pouch 2 for 5 |
+| Follower | 1.5, at 2 for an ambassador; a building earns its first ambassador about round 4 | 068: Liaison Corps 2 for 1; Open Assembly, cheaper and two tags, 3 for 1 |
 | removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
 | troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | 059: the card names a kind: one choice, no mix |
 | marker cleared | 6, × 0.7 for a target | 2 credits (066), 1 Sway, a hex back |
@@ -284,6 +285,20 @@ Tier 2 lands in rounds 5-8, so it pays back in 2-4 rounds or not at all:
 - **Ultimates carry antimatter (1 each)**: Recursive Self-Improvement (10 cr, -1 credit income, +2 insight production, draw 3) and Foundation Model Campus (15 cr, 2 chips, needs 3 Science: +2 insight income, +1 credit per Science tag max 6, draw 2). From round 6 each must return ~10 insight-equivalents in 3 rounds to beat their keep + play cost, hence numbers above any tier-1 rate.
 - **Adversarial Inference Sweep** (7 cr, 2 insight): drain_all 1 is a Cyber primitive borrowed at half strength; the draw 2 is the Science half.
 - No keep-discount primitive exists. Predictive Modeling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
+
+## 068's changes (r28)
+
+Ambassadors now stay when they evict, so one is worth more than the 066 rate and the cards that hand them out pay less per ambassador. Each is a candidate.
+
+| Card | Was | Now | Why |
+|---|---|---|---|
+| Consular Pouch | 5 credits, gain 3 ambassadors | 5 credits, gain 2 | 4 worth each less a little to get it played |
+| Liaison Corps | Action: 1 Follower, 1 ambassador | Action: 2 Followers, 1 ambassador | one a round undercut the project from round 2; at 2 the first arrives about round 4 |
+| Open Assembly | 2 credits; Action: 2 Followers, 1 Sway | 3 credits; Action: 3 Followers, 1 ambassador | the slow, cheap Follower building; two tags, so 1 Follower slower than Liaison Corps |
+| Orbital Embassy | +4 credits, +1 insight; Action: 1 credit, 2 ambassadors | +1 ambassador, +2 credits, +1 insight a round | weaker credit engine; prints ambassador income (`Op::Income` extended) |
+| Hardpoint Lockdown | 3 credits; shelter one country, remove 1 adversary ambassador | 4 credits; shelter one country, cordon one country | a Security card blocks arrivals; a cordon stops 2 arrivals or more a country, about 5 worth |
+
+Cyber already expels without an ambassador (Spoofed Credentials, Eviction Worm, Signal Hijack, Honeypot Relay), so no Cyber card changed.
 
 ## Industry (023, r14: old rates)
 

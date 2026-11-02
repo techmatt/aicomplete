@@ -8,7 +8,7 @@
 use std::collections::BTreeMap;
 
 use crate::action::Action;
-use crate::content::{CardDef, DiscountOn, Op, Tag, TagOrAny, TokenKind, TAGS};
+use crate::content::{CardDef, Op, Tag, TagOrAny, TokenKind, TAGS};
 use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,

@@ -95,7 +95,7 @@ variant. Abridged:
     { "module": "threats", "variant": "countries", "params": { "per_country": 1 } },
     { "module": "alignment", "variant": "tug", "params": { "undecided_per_player": 4, "tip_per_player": 2, ... } },
     { "module": "economy", "variant": "standard", "params": { ... } },
-    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "start_credits": 20 } },
+    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "start_credits": [15, 25] } },
     { "module": "cards", "variant": "draft", "params": { "deal": 4, ... }, "cards": ["telemetry_archive", ...] }
   ],
   "round": ["alignment.sway", "adversary.build", "adversary.spread", "adversary.corrupt",
@@ -337,8 +337,8 @@ Content is data in `content/`, composed from code primitives:
 - **Adversary cards** (`adversary.json`): stage, text, `twists` (ops), escalation.
 - **Adversary projects** (`projects.json`, 017): `stage` (1 cheap, 2 big), `cost` per
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
-- **AI boards** (`ais.json`): credit production, resource `discounts`, innate
-  passives, the two presence tracks (`presence` and `presence2`: for each space, `income` what it uncovers,
+- **AI boards** (`ais.json`): credit production, innate
+  passives, printed `tags` (they count for requirements only), the two presence tracks (`presence`, the economy track, and `presence2`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
   `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, powers (costs and lists of ops), unique cards, a
   `start` building and `powers` (021: `{name, text, tags, cost, effects}`; `tags` may
   name `any`). Slots are a config list, `ai.slots`.

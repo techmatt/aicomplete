@@ -17,7 +17,7 @@ use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
 pub use crate::op::{Op, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
-    DiscountOn, PerResource, Resource, Side, Tag, TagOrAny, TokenKind, RESOURCES, TAGS,
+    PerResource, Resource, Side, Tag, TagOrAny, TokenKind, RESOURCES, TAGS,
 };
 
 const MAP_JSON: &str = include_str!("../../../content/map.json");
@@ -385,9 +385,6 @@ pub struct AiBoard {
     pub innate: Innate,
     /// Credit production every round, before cards raise it.
     pub credits: i64,
-    /// Resources this AI may spend as credits on some cards.
-    #[serde(default)]
-    pub discounts: Vec<Discount>,
     /// Income every round before the presence track adds to it.
     #[serde(default)]
     pub income: Vec<Cost>,
@@ -406,16 +403,10 @@ pub struct AiBoard {
     /// A building the board starts with in a slot, carrying its built-in tag (021).
     #[serde(default)]
     pub start: Option<String>,
-}
-
-/// Spend `resource` for `rate` credits each off a card's credit cost: on
-/// cards tagged `tag`, or on any building for `tag` "building".
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Discount {
-    pub resource: Resource,
-    pub tag: DiscountOn,
-    pub rate: i64,
+    /// Tags printed on the board (068): they count for what a card requires,
+    /// not for discounts or sacrifices.
+    #[serde(default)]
+    pub tags: Vec<Tag>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -441,6 +432,13 @@ pub struct Uncover {
     /// Energy every placement pays for this step (041; a card can say free).
     #[serde(default)]
     pub cost: i64,
+    /// Tags this space reveals (068): as a board's printed tags, they count
+    /// for what a card requires.
+    #[serde(default)]
+    pub tags: Vec<Tag>,
+    /// The track's end (068): a standing rule once uncovered.
+    #[serde(default)]
+    pub capstone: Option<Innate>,
 }
 
 /// An AI-board power (021). `tags` is the tag cost (`"any"` for any tag), paid
@@ -586,11 +584,11 @@ impl Content {
         {
             resource(r, &what)?;
         }
-        for d in &b.discounts {
-            resource(&d.resource, &what)?;
-        }
-        if b.powers.iter().flat_map(|p| &p.effects).any(science_niche) {
-            return Err(format!("{what}: shields, delays and marker clearing are Science's"));
+        // 068: among cards marker clearing stays Science's, but the Protector's
+        // cheap power prints it too.
+        let not_clearing = |op: &&Op| !matches!(op, Op::ClearMarkers { .. });
+        if b.powers.iter().flat_map(|p| &p.effects).filter(not_clearing).any(science_niche) {
+            return Err(format!("{what}: shields and delays are Science's"));
         }
         for p in &b.powers {
             check_ops(&p.effects, Slot::Player, &what)?;
@@ -610,6 +608,11 @@ impl Content {
             }
         }
         check_ops(&b.innate.passives, Slot::Standing, &what)?;
+        for u in b.presence.iter().chain(&b.presence2) {
+            if let Some(c) = &u.capstone {
+                check_ops(&c.passives, Slot::Standing, &what)?;
+            }
+        }
         Ok(())
     }
 
@@ -876,10 +879,11 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::PlayersLose { resource: r, .. }
             | Op::LosePresenceOr { resource: r, .. }
             | Op::Requisition { resource: r, .. }
-            | Op::Income { resource: r, .. }
             | Op::Logistics { resource: r, .. }
             | Op::GiveBonus { resource: r, .. }
             | Op::IncomePerTag { resource: r, .. } => resource(r, what)?,
+            // 068: income can print ambassadors, as effects do.
+            Op::Income { resource: r, .. } => seat_resource(r, what)?,
             Op::TeamIncome { resource: r, .. } => {
                 if !matches!(r, Resource::Credits | Resource::Insight) {
                     return Err(format!("{what}: team_income is credits or insight"));

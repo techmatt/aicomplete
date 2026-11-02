@@ -38,7 +38,6 @@
         "presence_marker": 1,
         "corruption_reach": 1,
         "war_reach": 0,
-        "build_energy": 2,
         "station_chips": 2,
         "factory_chips": 1,
         "chips_credits": 1,
@@ -48,13 +47,12 @@
         "clear_unity": 1,
         "clear_credits": 0,
         "move_credits": 1,
-        "ambassador_credits": 6,
+        "ambassador_credits": 9,
         "sell_credits": 1,
         "corp_energy": [
           1
         ],
         "city_energy_credits": 2,
-        "harden_energy": 1,
         "harden_chips": 1,
         "harden_credits": 3,
         "drain_credits": 5,
@@ -148,10 +146,13 @@
           0,
           1
         ],
-        "start_credits": 38,
+        "start_credits": [
+          15,
+          25
+        ],
         "start_energy": 1,
         "slots": [
-          4,
+          5,
           3
         ]
       }

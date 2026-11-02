@@ -4,7 +4,7 @@
 //! adversary ambassadors and troops, which cards, threats and Alignment use,
 //! and the board conditions for winning and losing.
 
-use crate::content::{AdversaryCard, Op, ProjectCard};
+use crate::content::{AdversaryCard, Op, ProjectCard, RoundFlag};
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World};
 use crate::rng::shuffle;
@@ -347,6 +347,10 @@ impl Module for Adversary {
                     if g.is_over() {
                         return Ok(());
                     }
+                }
+                // 068: a cordon stopped this build's arrivals, and is done.
+                for c in 0..w.map.countries.len() {
+                    cx.set_key(g, &board::flag(RoundFlag::Cordon, c), 0);
                 }
                 // Nodes make compute, except under a player ambassador.
                 let per = w.int("adversary.node_compute");
@@ -826,13 +830,16 @@ pub fn land_troops(
 ) -> Res {
     let w = cx.world;
     for _ in 0..count {
+        // 068: a landing enters its hex, so a Wall stops it too.
+        let open = |h: &usize| !board::walled(&w, g, *h);
         let mut spots: Vec<usize> = hexes
             .iter()
             .copied()
+            .filter(open)
             .filter(|&h| g.tokens(h, FACTORY) > 0)
             .collect();
         if spots.is_empty() {
-            spots = hexes.iter().copied().filter(|&h| is_city(&w, h)).collect();
+            spots = hexes.iter().copied().filter(open).filter(|&h| is_city(&w, h)).collect();
         }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         let Some(i) = cx.choose(0, prompt, opts)? else {

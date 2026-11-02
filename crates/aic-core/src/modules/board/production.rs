@@ -2,6 +2,10 @@
 
 use super::*;
 
+/// The resources a seat is measured on at the end of each action phase (068).
+pub const LEFT: [Resource; 5] =
+    [Resource::Credits, Resource::Chips, Resource::Energy, Resource::Antimatter, Resource::Ambassadors];
+
 pub(super) fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
     let w = cx.world;
     if g.tokens(base, UNIT) < w.int("board.unit_cap") {
@@ -12,11 +16,18 @@ pub(super) fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
 
 /// Production step 1, on a production step of the clock: bases, then
 /// factories, make their corp's units (a factory 1 at each of its corp's
-/// bases); an ambassador on the piece diverts it and is removed; an
-/// adversary-owned factory makes an adversary troop. Player-owned factories
+/// bases); an adversary ambassador on the piece diverts it and is removed, a
+/// player's diverts it and stays (068: a position); an adversary-owned factory
+/// makes an adversary troop. Player-owned factories
 /// make chips. Then the cities grow factories.
 pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
+    // 068: what each seat left unspent, the measure's: not a rule.
+    for s in 0..g.seats.len() {
+        for r in LEFT {
+            cx.per_round(g, &format!("left.{s}.{r}"), g.resource(s, r));
+        }
+    }
     if !production_round(&w, g) {
         return Ok(());
     }
@@ -25,7 +36,8 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     grow_factories(g, cx)
 }
 
-/// Bases make their corp's units, or their ambassador is used up.
+/// Bases make their corp's units, or an ambassador diverts them: the adversary's
+/// is used up, a player's stays (068).
 pub(super) fn base_units(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     for h in 0..g.hexes.len() {
@@ -36,8 +48,7 @@ pub(super) fn base_units(g: &mut GameState, cx: &mut Cx) {
             adversary::remove(g, cx, h, 1);
             cx.tally(g, "board.bases_diverted", 1);
             alignment::discord_from(g, cx, "base", w.int("board.base_discord"));
-        } else if let Some(s) = player_ambassador(g, h) {
-            cx.add_tokens(g, h, &ambassador(s), -1);
+        } else if player_ambassador(g, h).is_some() {
             cx.tally(g, "board.bases_united", 1);
             alignment::sway(g, cx, Side::Unity, w.int("board.base_unity"));
         } else {
@@ -66,10 +77,9 @@ pub(super) fn factory_output(g: &mut GameState, cx: &mut Cx) {
             // 028: an adversary-owned factory uses its ambassador up too.
             if g.tokens(h, ADV_AMBASSADOR) > 0 {
                 adversary::remove(g, cx, h, 1);
-            } else if let Some(s) = player_ambassador(g, h) {
+            } else if player_ambassador(g, h).is_some() {
                 // 022 (D1): a player ambassador on an adversary-owned factory
-                // is used up for Unity; the troop is still made (locked).
-                cx.add_tokens(g, h, &ambassador(s), -1);
+                // sways Unity; the troop is still made (locked). 068: it stays.
                 alignment::sway(g, cx, Side::Unity, w.int("board.factory_unity"));
             }
             for _ in 0..per {
@@ -82,8 +92,7 @@ pub(super) fn factory_output(g: &mut GameState, cx: &mut Cx) {
                     hex_name(&w, h)
                 )
             });
-        } else if let Some(s) = player_ambassador(g, h) {
-            cx.add_tokens(g, h, &ambassador(s), -1);
+        } else if player_ambassador(g, h).is_some() {
             alignment::sway(g, cx, Side::Unity, w.int("board.factory_unity"));
         } else {
             let c = w.map.hexes[h].country;
@@ -269,7 +278,9 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) {
             adversary::remove(g, cx, h, 1);
             Some(None)
         } else if corrupted(g, h) {
-            Some(None)
+            // 068: a player ambassador on a corrupted station diverts its cube
+            // to that player, and stays.
+            Some(player_ambassador(g, h))
         } else {
             owner.map(Some)
         };
@@ -291,7 +302,7 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) {
 
 /// An adversary ambassador on a presence (with no other piece to divert)
 /// costs its owner 1 insight next round and adds 1 compute to the cheapest
-/// adversary project; it is used up (021: it leaked the owner's compute).
+/// adversary project; it stays until removed (068; 021: it was used up).
 pub(super) fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for h in 0..g.hexes.len() {
@@ -311,7 +322,6 @@ pub(super) fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
         if is_city(&w, h) || is_base(&w, h) || has_building(g, h) {
             continue;
         }
-        adversary::remove(g, cx, h, 1);
         cx.add_key(g, &economy::insight_debt(s), 1);
         cx.tally(g, "board.presence_drained", 1);
         adversary::gain_compute(g, cx, 1)?;

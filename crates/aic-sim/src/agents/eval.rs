@@ -121,6 +121,9 @@ pub struct Weights {
     pub guard: f64,
     /// Each point of per-round income (AI tracks).
     pub income: f64,
+    /// A track's capstone (068): the square of the share of the track
+    /// uncovered, so the last steps count most.
+    pub capstone: f64,
     pub credits: f64,
     /// 024: credits a seat holds beyond `credit_cap` are worth `credit_idle`
     /// each: a stockpile buys nothing this round, so spending wins.
@@ -257,6 +260,7 @@ impl Default for Weights {
             freeing: 2.0,
             guard: 3.0,
             income: 3.0,
+            capstone: 16.0,
             credits: 0.6,
             credit_cap: 12.0,
             credit_idle: 0.15,
@@ -806,6 +810,10 @@ impl Eval {
     fn in_play_value(&self, rules: &Rules, g: &GameState, s: usize, v: &mut f64) {
         let world = rules.world();
         *v += self.w.program * g.pile(&cards::played(s)).len() as f64;
+        let b = ai::board(&world, s);
+        let share = |taken: usize, len: usize| if len == 0 { 0.0 } else { (taken as f64 / len as f64).powi(2) };
+        *v += self.w.capstone
+            * (share(board::track_taken(g, s), b.presence.len()) + share(board::track2_taken(g, s), b.presence2.len()));
         for id in cards::token_cards(&world, g, s, None) {
             *v += self.w.token * g.var(&cards::tokens_key(s, &id)) as f64;
         }
@@ -900,14 +908,7 @@ impl Eval {
                     0
                 };
                 for (have, need, earn) in [
-                    // The AI's discount: energy or compute spent as credits.
-                    (
-                        res(Resource::Credits)
-                            + cards::discount_room_at(&world, g, s, d, &prices)
-                                .map_or(0, |(_, rate, k)| rate * k),
-                        prices.credits(d),
-                        earn_credits,
-                    ),
+                    (res(Resource::Credits), prices.credits(d), earn_credits),
                     (
                         res(Resource::Antimatter),
                         d.antimatter,

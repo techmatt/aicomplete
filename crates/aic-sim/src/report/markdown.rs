@@ -6,6 +6,8 @@ use std::fmt::Write as _;
 
 use aic_core::content_hash;
 
+use crate::experiment::{UNSPENT, UNSPENT_HIGH};
+
 use super::findings::findings;
 use super::records::CATEGORIES;
 use super::stats::{agent_order, time_split, CellSummary, Paired};
@@ -632,6 +634,41 @@ fn build_variety(md: &Md, w: &mut String) {
     }
 }
 
+/// Resources left at game end (068): per cell and seat, each mean with a `!`
+/// if it passes [`UNSPENT_HIGH`], and the flagged ones in a line.
+fn unspent(md: &Md, w: &mut String) {
+    let sums = md.run.sums;
+    if sums.iter().all(|s| s.unspent.is_empty()) {
+        return;
+    }
+    let names: Vec<String> = UNSPENT.iter().map(|r| r.name().to_string()).collect();
+    let high: Vec<String> = names.iter().zip(UNSPENT_HIGH).map(|(n, h)| format!("{n} {h}")).collect();
+    let _ = writeln!(w, "\n## Unspent resources\n");
+    let _ = writeln!(w, "Mean left at game end, per seat ({}). `!`: over the flag, a seat's mean above {}.\n", names.join(" / "), high.join(", "));
+    let _ = writeln!(w, "| cell | agent | seat 0 | seat 1 | seat 2 |");
+    let _ = writeln!(w, "|---|---|---|---|---|");
+    let mut flagged = 0;
+    for s in sums {
+        let seats: Vec<String> = s
+            .unspent
+            .iter()
+            .map(|seat| {
+                let parts: Vec<String> = seat
+                    .iter()
+                    .zip(UNSPENT_HIGH)
+                    .map(|(x, h)| {
+                        flagged += (*x > h) as usize;
+                        format!("{x:.1}{}", if *x > h { "!" } else { "" })
+                    })
+                    .collect();
+                parts.join(" / ")
+            })
+            .collect();
+        let _ = writeln!(w, "| {} d{} | {} | {} |", s.variant, s.difficulty, s.agent, seats.join(" | "));
+    }
+    let _ = writeln!(w, "\n{flagged} seat means over the flag.");
+}
+
 fn strategy_health(md: &Md, w: &mut String) {
     let run = md.run;
     let spec = md.run.spec;
@@ -686,6 +723,7 @@ fn strategy_health(md: &Md, w: &mut String) {
         }
         let _ = writeln!(w);
     }
+    unspent(md, w);
 }
 
 fn card_rates(md: &Md, w: &mut String) {

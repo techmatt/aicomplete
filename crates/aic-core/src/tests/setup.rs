@@ -63,7 +63,7 @@ fn setup_places_the_printed_pieces() {
             want.sort();
             assert_eq!(have, want, "seat {s}");
             assert_eq!(g.resource(s, Resource::Ambassadors), 1);
-            assert_eq!(g.resource(s, Resource::Credits), rules.world().int("ai.start_credits"));
+            assert_eq!(g.resource(s, Resource::Credits), crate::modules::ai::start_credits(&rules.world(), s));
         }
         assert_eq!(
             total(&g, ADV_AMBASSADOR) + total(&g, TROOP) + total(&g, UNIT),

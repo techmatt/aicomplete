@@ -163,7 +163,6 @@ fn tunables_list_every_module_parameter() {
         "alignment.tip_per_player",
         "alignment.discord_tip_per_player",
         "economy.give_insight",
-        "ai.start_credits",
         "cards.keep_tier1",
     ] {
         assert_eq!(find(k).kind, "int", "{k}");
@@ -199,7 +198,7 @@ fn off_switches_and_degenerate_values() {
     let mut g0 = off.new_game(1);
     set_res(&mut g0, 0, Resource::Insight, 2);
     assert!(!gives(&off, &g0));
-    for bad in ["board.ambassador_credits=0", "board.harden_energy=0"] {
+    for bad in ["board.ambassador_credits=0"] {
         let mut c = baseline();
         assert!(c.apply_override(bad).is_err() || Rules::new(&c).is_err(), "{bad}");
     }

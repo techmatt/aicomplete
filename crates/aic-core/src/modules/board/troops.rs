@@ -97,6 +97,9 @@ pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
                 let Some(to) = step_toward(g, cx, at)? else {
                     break;
                 };
+                if w.map.hexes[at].neighbors.iter().any(|&n| walled(&w, g, n)) {
+                    cx.tally(g, "board.wall_steps", 1);
+                }
                 cx.add_tokens(g, at, TROOP, -1);
                 cx.add_tokens(g, to, TROOP, 1);
                 cx.per_round(g, adversary::OPS, 1);
@@ -146,10 +149,35 @@ pub(super) fn has_troop_target(w: &World, g: &GameState, h: usize) -> bool {
     next_to(w, h, |x| is_troop_target(w, g, x))
 }
 
+/// Whether seat `s` has Wall: an innate, so no card's passives need reading.
+fn has_wall(w: &World, seat: usize) -> bool {
+    ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Wall))
+}
+
+/// Whether hex `h` holds presence of a seat with Wall (068): adversary troops
+/// can't enter it.
+pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
+    presence_owner(g, h).is_some_and(|s| has_wall(w, s))
+}
+
+/// The hexes adversary troops can't enter now, as a mask.
+fn wall_mask(w: &World, g: &GameState) -> Vec<bool> {
+    let mut mask = vec![false; g.hexes.len()];
+    for s in (0..g.seats.len()).filter(|&s| has_wall(w, s)) {
+        let k = presence(s);
+        for (h, m) in mask.iter_mut().enumerate() {
+            *m |= g.tokens(h, k) > 0;
+        }
+    }
+    mask
+}
+
 /// Walking distance over land from the nearest of `sources`, for every hex
 /// (`None`: no land path). Troops never enter ocean, and some pieces print
-/// ocean between hexes, so straight-line distance would strand a troop.
-pub(super) fn land_distances(w: &World, sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
+/// ocean between hexes, so straight-line distance would strand a troop. Nor
+/// do they enter a walled hex, though one can be a source: a target behind a
+/// Wall is struck from the hex next to it.
+pub(super) fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
     let mut dist: Vec<Option<u32>> = vec![None; w.map.hexes.len()];
     let mut queue = std::collections::VecDeque::new();
     for h in sources {
@@ -161,7 +189,7 @@ pub(super) fn land_distances(w: &World, sources: impl Iterator<Item = usize>) ->
     while let Some(h) = queue.pop_front() {
         let d = dist[h].unwrap_or(0);
         for &n in &w.map.hexes[h].neighbors {
-            if dist[n].is_none() && !is_ocean(w, n) {
+            if dist[n].is_none() && !is_ocean(w, n) && !walls[n] {
                 dist[n] = Some(d + 1);
                 queue.push_back(n);
             }
@@ -173,21 +201,24 @@ pub(super) fn land_distances(w: &World, sources: impl Iterator<Item = usize>) ->
 /// Walking distance from the nearest troop target, for every hex (`None`
 /// with no target reachable over land).
 pub(super) fn target_gaps(w: &World, g: &GameState) -> Vec<Option<u32>> {
-    land_distances(w, (0..g.hexes.len()).filter(|&h| is_troop_target(w, g, h)))
+    land_distances(w, &wall_mask(w, g), (0..g.hexes.len()).filter(|&h| is_troop_target(w, g, h)))
 }
 
 /// The land hexes next to `at` that bring a troop closer to the nearest
-/// target, in hex order.
+/// target, in hex order, none of them walled (068).
 pub fn troop_steps_from(w: &World, g: &GameState, at: usize) -> Vec<usize> {
     let gaps = target_gaps(w, g);
-    let Some(d) = gaps[at] else {
+    // A walled hex has no distance of its own unless it holds a target: a troop
+    // standing on one (it was there first, or a factory made it) walks off.
+    let open = w.map.hexes[at].neighbors.iter().filter_map(|&n| gaps[n]).min().map(|d| d + 1);
+    let Some(d) = gaps[at].or(open) else {
         return Vec::new();
     };
     w.map.hexes[at]
         .neighbors
         .iter()
         .copied()
-        .filter(|&n| !is_ocean(w, n) && gaps[n].is_some_and(|x| x < d))
+        .filter(|&n| !is_ocean(w, n) && !walled(w, g, n) && gaps[n].is_some_and(|x| x < d))
         .collect()
 }
 
@@ -249,12 +280,22 @@ pub fn troop_plan(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
     if w.int("board.troop_steps") <= 0 {
         return None;
     }
-    let from = land_distances(w, std::iter::once(h));
+    // The walk from the troop's side: a walled target ends a walk, so it is
+    // measured as one step past the nearest open hex next to it.
+    let walls = wall_mask(w, g);
+    let from = land_distances(w, &walls, std::iter::once(h));
+    let reach = |x: usize| -> Option<u32> {
+        if !walls[x] || x == h {
+            from[x]
+        } else {
+            w.map.hexes[x].neighbors.iter().filter_map(|&n| from[n]).min().map(|d| d + 1)
+        }
+    };
     let target = (0..g.hexes.len())
-        .filter(|&x| is_troop_target(w, g, x) && from[x].is_some())
-        .min_by_key(|&x| (from[x], w.map.hexes[x].country, w.map.hexes[x].number))?;
+        .filter(|&x| is_troop_target(w, g, x) && reach(x).is_some())
+        .min_by_key(|&x| (reach(x), w.map.hexes[x].country, w.map.hexes[x].number))?;
     let steps = w.int("board.troop_steps");
     // Moves until the target is on or next to the troop, then the strike.
-    let moves = (from[target].unwrap_or(0) as i64 - 1).max(0);
+    let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0);
     Some((target, (moves + 1 + steps - 1) / steps))
 }

@@ -96,13 +96,13 @@ fn ambassadors_divert_bases_and_factories() {
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (3, 0));
 
-    // A player ambassador on a base: no unit, 2 Unity.
+    // A player ambassador on a base: no unit, 2 Unity, and it stays (068).
     let mut g = g0.clone();
     put(&mut g, base, &ambassador(0), 1);
     run(&rules, &mut g);
     assert_eq!(
         (g.tokens(base, UNIT), g.tokens(base, &ambassador(0))),
-        (1, 0)
+        (1, 1)
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 2));
 
@@ -126,7 +126,7 @@ fn ambassadors_divert_bases_and_factories() {
     run(&rules, &mut g);
     assert_eq!(
         (g.tokens(factory, &ambassador(1)), g.tokens(base, UNIT)),
-        (0, 1)
+        (1, 1)
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 1));
 }
@@ -162,7 +162,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     );
 
     // 021: an adversary ambassador on a presence costs its owner 1 insight
-    // next round and adds 1 compute to the cheapest project; it is used up.
+    // next round and adds 1 compute to the cheapest project; it stays (068).
     let mut g = g0.clone();
     let d = m.numbered(0, piece(0).presence);
     put(&mut g, d, &presence(0), 1);
@@ -175,7 +175,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
             g.var("adversary.compute") - made,
             g.tokens(d, ADV_AMBASSADOR)
         ),
-        (1, 1, 0)
+        (1, 1, 1)
     );
 
     // 020: only a lone presence leaks. On a corrupted city the ambassador is

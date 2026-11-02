@@ -168,7 +168,14 @@ try {
     if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {
       shots.add('powers');
       const powers = await js(`[...document.querySelectorAll('#seats ul.powers')].map((u) => u.textContent).join(' | ')`);
-      for (const name of ['Deploy', 'Buy In', 'Scrap', 'Retool', 'Accord', 'Stand Down', 'Lockdown']) check(powers.includes(name), `the seat panels show ${name}`);
+      for (const name of ['Mint', 'Deploy', 'Buy In', 'Scrap', 'Overcharge', 'Rush Build', 'Bulwark', 'Accord', 'Stand Down', 'Recovery', 'Shelter']) check(powers.includes(name), `the seat panels show ${name}`);
+      // 068: both boards' special rules, printed tags and tracks, capstones at the ends.
+      const boards = await js(`({ innate: [...document.querySelectorAll('#seats .innate')].map((e) => e.textContent).join(' | '),
+        tracks: [...document.querySelectorAll('#seats .track-row .label')].map((e) => e.textContent).join(' | '),
+        capstones: [...document.querySelectorAll('#seats .mark.m-capstone')].map((e) => e.textContent).join(' | ') })`);
+      for (const name of ['Breadth', 'Wall', 'industry tag', 'security tag']) check(boards.innate.includes(name), `the seat panels show ${name}`);
+      check(boards.tracks.includes('economy track') && boards.tracks.includes('card-play track'), `both tracks are labeled (${boards.tracks})`);
+      for (const name of ['Full Capacity', 'Master Plan', 'Sanctuary', 'Aegis Doctrine']) check(boards.capstones.includes(name), `the tracks end in ${name}`);
       check(!/growth/i.test(await js(`document.querySelector('#phase-bar').textContent`)), 'no growth step in the round bar');
     }
     if (st.phase === 'cards.draft' && !shots.has('draft')) { shots.add('draft'); await shot('play-draft-1366'); }
@@ -179,6 +186,9 @@ try {
       if (!bs.length) return '';
       // Favor plays over passes so games reach the cards.
       const plays = bs.filter((b) => !b.classList.contains('pass') && !b.classList.contains('pass-all'));
+      // 068: take every eviction on offer, checked after the game.
+      const evict = plays.find((b) => b.dataset.action?.includes('"remove"'));
+      if (evict) { evict.click(); return 'button'; }
       const pool = plays.length && Math.random() < 0.7 ? plays : bs;
       pool[Math.floor(Math.random() * pool.length)].click();
       return 'button';
@@ -191,6 +201,22 @@ try {
   check(!!end.outcome && end.legal === 0, `played to the end in ${clicks} clicks, ${end.n} actions: ${end.text}`);
   const played = await js(`window.aic.timeline.actions.filter((a) => a.type !== 'pass').length`);
   check(played > 0, `${played} non-pass actions taken through the UI`);
+  // 068: an evicting ambassador stays on the hex: step to just after each eviction.
+  const evictions = await js(`(() => {
+    const t = window.aic.timeline;
+    const out = [];
+    t.actions.forEach((a, i) => {
+      if (a.type !== 'choose' || !a.target) return;
+      const before = t.actions[i - 1];
+      if (before?.type !== 'standard' || before.act !== 'remove') return;
+      window.aic.seek(i + 1);
+      const h = window.aic.view.hexes.find((x) => JSON.stringify(x.hex) === JSON.stringify(a.target));
+      out.push(h.tokens.some((k) => k.kind === 'ambassador:' + a.seat) || JSON.stringify([a, h.tokens]));
+    });
+    window.aic.seek(t.last);
+    return out;
+  })()`);
+  check(evictions.every((x) => x === true), `evicting leaves the ambassador on the piece (${evictions.filter((x) => x === true).length}/${evictions.length}) ${evictions.find((x) => x !== true) ?? ''}`);
   check(armedAtOnce === hexChoices, `hex choices highlight their hexes at once (${armedAtOnce}/${hexChoices})`);
   check(seen.standard.size > 0 && seen.sell > 0, `standard actions offered as buttons (${[...seen.standard].join(', ')}) and selling a card`);
   check(seen.war === 0 || seen.warShown === seen.war, `war rounds marked on the adversary row and fronts (${seen.warShown}/${seen.war} war-round steps)`);

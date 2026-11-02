@@ -2781,7 +2781,7 @@
   "effects": [
    {
     "op": "gain_ambassadors",
-    "count": 3
+    "count": 2
    }
   ]
  },
@@ -2852,7 +2852,7 @@
    "per_round": 1
   },
   "ability": {
-   "tokens": 1,
+   "tokens": 2,
    "effects": [
     {
      "op": "gain_ambassadors",
@@ -2866,7 +2866,7 @@
   "name": "Open Assembly",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2880,12 +2880,11 @@
    "per_round": 1
   },
   "ability": {
-   "tokens": 2,
+   "tokens": 3,
    "effects": [
     {
-     "op": "sway",
-     "side": "unity",
-     "amount": 1
+     "op": "gain_ambassadors",
+     "count": 1
     }
    ]
   }
@@ -3443,29 +3442,20 @@
   "passives": [
    {
     "op": "income",
+    "resource": "ambassadors",
+    "amount": 1
+   },
+   {
+    "op": "income",
     "resource": "credits",
-    "amount": 4
+    "amount": 2
    },
    {
     "op": "income",
     "resource": "insight",
     "amount": 1
    }
-  ],
-  "ability": {
-   "cost": [
-    [
-     "credits",
-     1
-    ]
-   ],
-   "effects": [
-    {
-     "op": "gain_ambassadors",
-     "count": 2
-    }
-   ]
-  }
+  ]
  },
  {
   "id": "sentry_drone_wing",
@@ -3880,7 +3870,7 @@
   "name": "Hardpoint Lockdown",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
+  "cost": 4,
   "insight": 0,
   "tags": [
    "security"
@@ -3890,8 +3880,7 @@
     "op": "shelter"
    },
    {
-    "op": "damage",
-    "ambassadors": 1
+    "op": "cordon"
    }
   ]
  },

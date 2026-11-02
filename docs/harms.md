@@ -32,7 +32,7 @@ One row per harm, one column per kind of source. A number is how many printed ca
 - **build and spread, adversary pieces placed:** cities build; surplus spreads; two meeting make a node.
 - **build and spread, projects advanced (compute):** each node makes compute.
 - **build and spread, actions or claims blocked:** a node blocks site claims next to it.
-- **build and spread, insight lost:** an ambassador on a lone presence drains insight.
+- **build and spread, insight lost:** an ambassador on a lone presence drains insight every round until removed.
 - **build and spread, ambassadors lost:** a build or spread cancels a player ambassador there.
 - **corruption, presence destroyed:** presence on or next to a city that corrupts is destroyed.
 - **corruption, ambassadors lost:** player ambassadors on it are lost.
@@ -40,4 +40,4 @@ One row per harm, one column per kind of source. A number is how many printed ca
 - **corruption, Discord sway:** its energy sways Discord each round.
 - **war, presence destroyed:** a destroyed factory takes the presence on its hex.
 - **war, facilities destroyed or seized:** surplus troops destroy factories.
-- **march, facilities destroyed or seized:** a troop strikes player-owned facilities.
+- **march, facilities destroyed or seized:** a troop strikes player-owned facilities; it can't enter a hex with the Protector's presence.

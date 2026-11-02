@@ -216,43 +216,6 @@ impl From<TagOrAny> for String {
     }
 }
 
-/// What an AI board's resource discount applies to: cards with a tag, or
-/// any building (`"building"`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "String", into = "String")]
-pub enum DiscountOn {
-    Building,
-    Tag(Tag),
-}
-
-impl fmt::Display for DiscountOn {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            DiscountOn::Building => f.write_str("building"),
-            DiscountOn::Tag(t) => t.fmt(f),
-        }
-    }
-}
-
-impl TryFrom<String> for DiscountOn {
-    type Error = String;
-    fn try_from(s: String) -> Result<DiscountOn, String> {
-        if s == "building" {
-            return Ok(DiscountOn::Building);
-        }
-        TAGS.iter()
-            .find(|t| t.name() == s)
-            .map(|t| DiscountOn::Tag(*t))
-            .ok_or_else(|| format!("unknown discount target {s:?}"))
-    }
-}
-
-impl From<DiscountOn> for String {
-    fn from(t: DiscountOn) -> String {
-        t.to_string()
-    }
-}
-
 /// One amount per player resource (incomes), indexed by [`Resource`]. A
 /// resource that is not a player resource reads 0.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

@@ -4,7 +4,7 @@
 //! stay there; an arm here calls them. Standing ops and the twist-only ops are
 //! read by the rule they change and never resolve.
 
-use crate::content::{HexKind, Op, Side};
+use crate::content::{HexKind, Op, RoundFlag, Side};
 use crate::module::{Cx, Res, World};
 use crate::state::{GameState, Opt};
 use crate::vocab::TokenKind;
@@ -91,6 +91,16 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 board::shelter(g, cx, cs[i]);
             }
         }
+        Op::Cordon => {
+            let cs: Vec<usize> = (0..w.map.countries.len()).filter(|&c| !board::flagged(g, RoundFlag::Cordon, c)).collect();
+            let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
+            let prompt = format!("Seat {seat}: cordon which country?");
+            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+                // Up through the next round's build: cleanup counts it down.
+                cx.set_key(g, &board::flag(RoundFlag::Cordon, cs[i]), 2);
+            }
+        }
+        Op::FreeBuilding => cards::play_free_building(g, cx, seat)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
         Op::Jam { amount } => {
             let active = threats::active(g);
@@ -239,6 +249,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::GiveBonus { .. }
         | Op::SpreadShield
         | Op::CivicShelter
+        | Op::Wall
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::CityBuild { .. }

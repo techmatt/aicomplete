@@ -3,7 +3,7 @@
 
 use super::*;
 use crate::content::{check_ops, Op, Slot, Tag, TagOrAny, RESOURCES, TAGS};
-use crate::vocab::{DiscountOn, TokenKind};
+use crate::vocab::TokenKind;
 
 #[test]
 fn an_op_in_the_wrong_list_fails_to_load() {
@@ -36,7 +36,6 @@ fn a_misspelled_word_does_not_load() {
     assert!(serde_json::from_str::<Tag>(r#""sciense""#).is_err());
     assert!(serde_json::from_str::<TokenKind>(r#""tokens""#).is_err());
     assert!(serde_json::from_str::<TagOrAny>(r#""all""#).is_err());
-    assert!(serde_json::from_str::<DiscountOn>(r#""buildings""#).is_err());
 }
 
 /// `Seat::resources` serializes in `Ord` order: the fingerprint depends on it

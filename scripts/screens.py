@@ -108,6 +108,30 @@ def gap(pairs):
     return 100 * m, 100 * math.sqrt(var / n), n
 
 
+# 068: in the order of `UNSPENT` in crates/aic-sim/src/experiment.rs, each with `UNSPENT_HIGH`.
+UNSPENT = (('credits', 12), ('chips', 4), ('energy', 4), ('antimatter', 2), ('ambassadors', 3))
+
+
+def unspent(cells, games):
+    """Resources left at game end: each cell's mean per seat by resource, ! over the flag
+    (docs/principles.md, *Unspent resources*). Says which cells flag and how many means."""
+    print()
+    print('| variant | check | seat | ' + ' | '.join(n for n, _ in UNSPENT) + ' |')
+    print('|---|---|---|' + '---|' * len(UNSPENT))
+    flagged = collections.Counter()
+    for cell, gs in sorted(games.items()):
+        c = cells[cell]
+        rows = [g['margin'].get('unspent', []) for g in gs]
+        for seat in range(max((len(r) for r in rows), default=0)):
+            means = [sum(r[seat][k] for r in rows if len(r) > seat) / len(rows) for k in range(len(UNSPENT))]
+            marks = []
+            for (name, high), m in zip(UNSPENT, means):
+                marks.append(f'{m:.1f}{"!" if m > high else ""}')
+                flagged[name] += m > high
+            print(f"| {c['variant']} d{c['difficulty']} | {c['agent']} | {seat} | " + ' | '.join(marks) + ' |')
+    print(f'\nFlagged seat means: {dict(flagged) or "none"}.')
+
+
 def gate(cells, games, rows=None):
     """Each check's gap to its own agent: `x:...` against `x`, in the gate's sign, agent minus
     check (win % points, ± one standard error, and the paired SE seed by seed; X: the check

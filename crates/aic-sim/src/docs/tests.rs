@@ -48,7 +48,7 @@ fn a_config_change_changes_its_block() {
         ("cards.keep_tier2=5", new_players_block),
         ("adversary.corrupt_at=7", game_end_block),
         ("adversary.stage_cards=3,5,2", round_cap_block),
-        ("ai.slots=5,3", |r| boards_block(r, content())),
+        ("ai.slots=4,3", |r| boards_block(r, content())),
     ];
     for (o, block) in blocks {
         assert_ne!(block(&base), block(&baseline(&[o])), "{o}");
@@ -62,7 +62,7 @@ fn a_content_change_changes_its_block() {
     let mut c = base.clone();
     c.ais[0].presence[1].income[0].1 += 1;
     c.ais[1].presence2[2].cost += 1;
-    c.ais[1].powers[0].tags[0].1 += 1;
+    c.ais[1].powers[3].tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
     assert_ne!(presence_track_block(base), presence_track_block(&c));
@@ -93,6 +93,8 @@ fn a_track_space_prints_income_upgrade_and_cost() {
         income: vec![(Resource::Credits, 2), (Resource::Chips, 1)],
         keep2: true,
         cost: 3,
+        tags: vec![],
+        capstone: None,
     };
     assert_eq!(space(&u), "+2 credits, +1 chip, **keep upgrade** (cost 3)");
 }

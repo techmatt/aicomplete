@@ -60,6 +60,8 @@ pub enum RoundFlag {
     Shelter,
     /// Sites in the country can't be claimed (027).
     Embargo,
+    /// Arrivals don't land in the country in the next build (068).
+    Cordon,
 }
 
 /// A site type an adversary card's arrivals land on (027).
@@ -85,6 +87,7 @@ impl RoundFlag {
             RoundFlag::Sabotage => "sabotage",
             RoundFlag::Shelter => "shelter",
             RoundFlag::Embargo => "embargo",
+            RoundFlag::Cordon => "cordon",
         }
     }
 }
@@ -193,6 +196,12 @@ pub enum Op {
     },
     /// In one country, facilities and presence can't be destroyed this round.
     Shelter,
+    /// In one country, no arrivals land in the next build (068: a Security
+    /// card does an ambassador's job).
+    Cordon,
+    /// Play a building from your hand paying no credits; its other costs and
+    /// its requirements stand (068: the Builder's expensive power).
+    FreeBuilding,
     /// The next `count` adversary cards are shown.
     Peek {
         count: i64,
@@ -413,8 +422,7 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
-    /// You may use the Harden standard action: on a card, `harden_chips`; as
-    /// Bulwark, an AI board's innate, `harden_energy`.
+    /// You may use the Harden standard action, paid at `harden_chips`.
     HardenAction,
     /// `amount` more building slots.
     Slots {
@@ -439,6 +447,8 @@ pub enum Op {
     /// Once a round, prevent the first facility or presence destruction in a country
     /// where you have a presence.
     CivicShelter,
+    /// Adversary troops can't enter a hex holding your presence (068: Wall).
+    Wall,
     /// While you have this building, cards discarded from hand that carry
     /// `tag` (or any tag, `"any"`) count as those tags for AI-board powers (021).
     TagsFromHand {
@@ -532,6 +542,7 @@ impl Op {
             | Op::GiveBonus { .. }
             | Op::SpreadShield
             | Op::CivicShelter
+            | Op::Wall
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
             Op::CityBuild { .. }
@@ -561,6 +572,8 @@ impl Op {
             | Op::MoveAmbassadors { .. }
             | Op::GainAmbassadors { .. }
             | Op::Shelter
+            | Op::Cordon
+            | Op::FreeBuilding
             | Op::Peek { .. }
             | Op::Jam { .. }
             | Op::DrainProject { .. }

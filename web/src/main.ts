@@ -247,7 +247,7 @@ function renderSeats() {
     const ai = seat.board;
     box.innerHTML = `
       <h3><span class="swatch"></span>Seat ${seat.index}${ai ? ` · <span class="board-name" data-board-seat="${seat.index}">${escapeHtml(ai.name)}</span>` : ''} <small title="country ${seat.country}">${escapeHtml(countryName(v, seat.country))}</small><span class="status">${status}</span></h3>
-      ${ai?.innate ? `<div class="innate" title="${escapeHtml(ai.text ?? '')}"><b>${escapeHtml(ai.innate.name)}:</b> ${escapeHtml(ai.innate.text ?? '')}</div>` : ''}
+      ${ai?.innate ? `<div class="innate" title="${escapeHtml(ai.text ?? '')}"><b>${escapeHtml(ai.innate.name)}:</b> ${escapeHtml(ai.innate.text ?? '')}${ai.tags?.length ? ` <span class="board-tags" title="printed tags: they count for what a card requires">${ai.tags.map(escapeHtml).join(', ')} tag</span>` : ''}</div>` : ''}
       ${powersHtml(ai?.cards ?? [])}
       ${seatValuesHtml(v, seat.index)}
       ${seatCardsHtml(v, seat.index)}`;
