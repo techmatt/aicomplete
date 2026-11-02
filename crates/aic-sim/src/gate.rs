@@ -14,7 +14,6 @@
 //! which are played).
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::fmt::Write as _;
 
 use serde::{Deserialize, Serialize};
 
@@ -31,7 +30,7 @@ pub struct Gate {
     pub every: u64,
 }
 
-/// `z` 2 over about 7 looks: see *Experiments* in the README for what that
+/// `z` 2 over about 7 looks: see docs/experiments.md for what that
 /// costs in flipped verdicts.
 impl Default for Gate {
     fn default() -> Self {
@@ -135,7 +134,7 @@ pub struct GateState {
     pub finished: bool,
     pub passes: bool,
     #[serde(skip)]
-    cap: u64,
+    pub cap: u64,
     #[serde(skip)]
     agents: BTreeSet<usize>,
 }
@@ -180,61 +179,6 @@ impl GateState {
     /// Games the run plays as things stand, for "partial" in the report.
     pub fn planned(&self) -> usize {
         self.plays.iter().map(|&n| n as usize).sum()
-    }
-
-    /// `report.md`'s section.
-    pub fn markdown(&self) -> String {
-        let mut w = String::new();
-        let g = &self.gate;
-        let _ = writeln!(w, "\n## Gate\n");
-        let _ = writeln!(
-            w,
-            "Each check against its own agent on the same seeds; gap: the agent's win % minus the check's, ± one standard error (unpaired, as the gate tables have it). The verdict is the gap's sign at the cap of {} seeds. A check stops, looking at {} seeds and every {} after, once the gap clears {} standard errors (sign test) or the seeds left can't turn it back at that noise.\n",
-            self.cap, g.min_games, g.every, g.z
-        );
-        let _ = writeln!(
-            w,
-            "{} of {} games ({:.0}%), {:.0} s of game time of about {:.0} s at the cap ({:.0}%). {}\n",
-            self.games,
-            self.games_cap,
-            100.0 * self.games as f64 / self.games_cap.max(1) as f64,
-            self.seconds,
-            self.seconds_at_cap,
-            100.0 * self.seconds / self.seconds_at_cap.max(1e-9),
-            match (self.finished, self.passes, self.failed) {
-                (false, ..) => "**Not finished.**".to_string(),
-                (true, true, _) => "**Passes:** every check loses ground.".to_string(),
-                (true, false, 0) => "**Does not pass:** see the ✗ rows.".to_string(),
-                (true, false, n) => format!("**Does not pass:** {n} game(s) panicked, see *Failed games*."),
-            }
-        );
-        let _ = writeln!(w, "| variant | d | check | games | stopped | win % | gap to its agent | paired se |");
-        let _ = writeln!(w, "|---|---|---|---|---|---|---|---|");
-        // 044: with several configs, rows of one check differ only by config.
-        let several = self.rows.iter().any(|r| r.config != self.rows[0].config);
-        for r in &self.rows {
-            let variant = if several { format!("{} ({})", r.variant, r.config) } else { r.variant.clone() };
-            let stop = match r.decided {
-                Some(Decided::ClearsNoise) => "clears the noise",
-                Some(Decided::SignSettled) => "sign settled",
-                None if r.games < r.cap => "running",
-                None => "cap",
-            };
-            let _ = writeln!(
-                w,
-                "| {} | {} | {} | {} | {stop} | {:.0} | {:+.0} ±{:.0}{} | {:.0} |",
-                variant,
-                r.difficulty,
-                r.check,
-                r.games,
-                100.0 * r.check_win_rate,
-                100.0 * r.gap + 0.0,
-                100.0 * r.se,
-                if r.loses { "" } else { " ✗" },
-                100.0 * r.paired_se
-            );
-        }
-        w
     }
 }
 
@@ -325,7 +269,6 @@ fn check_row(
         _ => (x, y),
     });
     let gap = p - q;
-    let var = ((oa + oc) as f64 - nf * gap * gap) / (nf - 1.0).max(1.0);
     CheckRow {
         config: cells[c].config_path.clone(),
         variant: cells[c].variant.clone(),
@@ -344,7 +287,7 @@ fn check_row(
         only_check: oc,
         gap,
         se: ((p * (1.0 - p) + q * (1.0 - q)) / nf).sqrt(),
-        paired_se: (var.max(0.0) / nf).sqrt(),
+        paired_se: crate::report::paired_se((oa + oc) as f64, gap, nf),
         loses: gap > 0.0,
         ms: ms[c],
         ms_at_cap: ms[c] / nf * cap as f64,
@@ -544,7 +487,7 @@ mod tests {
         assert!(st.finished);
         assert!(!st.passes, "a panicked game fails the gate");
         assert_eq!((st.rows[0].games, st.rows[0].only_agent), (7, 7));
-        assert!(st.markdown().contains("1 game(s) panicked"));
+        assert!(crate::report::gate_section(&st).contains("1 game(s) panicked"));
     }
 
     #[test]

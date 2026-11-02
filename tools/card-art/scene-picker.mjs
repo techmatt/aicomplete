@@ -15,7 +15,7 @@ import { pathToFileURL } from 'node:url';
 
 import sharp from 'sharp';
 
-import { CARD, FRAMES, REPO, SHEET_CSS, TOOL, cardPage, frameOf, frameUrl, layout, pickerOriginals, readJson } from './lib.mjs';
+import { FRAMES, REPO, SHEET_CSS, TOOL, cardPage, centerBox, frameOf, frameUrl, layout, loadCards, pickerOriginals, readJson, sheetPages } from './lib.mjs';
 import { inset, renderCard } from '../../web/card/card.js';
 
 os.setPriority(os.constants.priority.PRIORITY_BELOW_NORMAL);
@@ -33,24 +33,21 @@ await mkdir(images, { recursive: true });
 
 const l = inset(await layout());
 const fits = await readJson(path.join(FRAMES, 'fit.json'));
-const cards = Object.fromEntries((await readJson(path.join(REPO, 'content', 'cards.json'))).map((c) => [c.id, c]));
-const faces = await readJson(path.join(CARD, 'faces.json'));
+const { cards, faced } = await loadCards();
 
 // The tier-1 program window, every draw's one shape.
 const [wx0, wy0, wx1, wy1] = fits['program-t1'].art;
 const SHAPE = (wx1 - wx0) / (wy1 - wy0);
 async function cut(id) {
   const src = path.join(dir, 'raw', `${id}.png`);
-  const m = await sharp(src).metadata();
-  const cw = Math.min(m.width, Math.round(m.height * SHAPE));
-  const ch = Math.min(m.height, Math.round(m.width / SHAPE));
-  await sharp(src).extract({ left: Math.floor((m.width - cw) / 2), top: Math.floor((m.height - ch) / 2), width: cw, height: ch }).png().toFile(path.join(dir, `${id}.png`));
-  return { width: cw, height: ch };
+  const box = centerBox(await sharp(src).metadata(), SHAPE);
+  await sharp(src).extract(box).png().toFile(path.join(dir, `${id}.png`));
+  return box;
 }
 
 const { p, show, clip, close } = await cardPage(l, 800, 1000);
 const face = (cardId, id) => {
-  const card = { ...cards[cardId], ...faces[cardId] };
+  const card = faced(cardId);
   const frame = frameOf(card);
   return renderCard(card, l, frameUrl(frame), fits[frame], pathToFileURL(path.join(dir, `${id}.png`)).href);
 };
@@ -96,12 +93,8 @@ for (const [id, pair] of Object.entries(s.batch)) {
   });
 }
 
-const sheets = [];
-for (let i = 0; i < all.length; i += 9) sheets.push(all.slice(i, i + 9));
-await show(
-  sheets.map((row) => `<section class="sheet-page">${row.join('')}</section>`).join(''),
-  SHEET_CSS,
-);
+const { body, pages } = sheetPages(all);
+await show(body, SHEET_CSS);
 await p.pdf({ path: path.join(dir, 'cards.pdf'), printBackground: true, preferCSSPageSize: true });
 await close();
 
@@ -118,4 +111,4 @@ await writeFile(
     1,
   )}\n`,
 );
-console.log(`scene-picker: ${rows.length} rows in picks/${NAME}.json, ${all.length} cards, ${sheets.length} pdf pages`);
+console.log(`scene-picker: ${rows.length} rows in picks/${NAME}.json, ${all.length} cards, ${pages} pdf pages`);

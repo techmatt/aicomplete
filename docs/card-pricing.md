@@ -1,14 +1,14 @@
-# Card pricing: the reasoning (023, rules r14; current rates 055, r24; card design pass 059, r25)
+# Card pricing: the reasoning (023, rules r14; current rates to r29)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
 
-## Current rates (055, r24; 059, r25)
+## Current rates (to r29)
 
-This table is the only home of a current rate; every section below keeps the numbers of its day. The
-sections run newest first, and the cards as they stand are in [cards.md](cards.md).
+This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
+dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
 
 | thing | rate (credits) | why |
 |---|---|---|
@@ -31,6 +31,8 @@ sections run newest first, and the cards as they stand are in [cards.md](cards.m
 | marker cleared | 6, × 0.7 for a target | 2 credits (066), 1 Sway, a hex back |
 | shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
 | delay 2.5, jam N is N, counter 7 | | |
+| typed jam of N | about 0.7 N | 070: it needs a threat of its type that you may counter |
+| automatic counter | by its hits, not its N | 070: see *070's changes* |
 | compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
 | cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
 | node removed | 12 | 2 Sway plus its compute and the block on claims |
@@ -48,6 +50,24 @@ why each moved. **A typed jam of N is worth about 0.7 N:** it needs a threat of 
 you may counter, and a counter card is worth what it saves. **An automatic counter is priced by
 its hits, not its N:** a type is about a quarter of the deck and a country sees about 1.3
 threats a round, so it fires about 0.3 times a round: at 9 and 12 credits it was kept and never played.
+
+## 068's changes (r28)
+
+Ambassadors now stay when they evict, so one is worth more than the 066 rate and the cards that hand them out pay less per ambassador. Each is a candidate.
+
+| Card | Was | Now | Why |
+|---|---|---|---|
+| Consular Pouch | 5 credits, gain 3 ambassadors | 5 credits, gain 2 | 4 worth each less a little to get it played |
+| Liaison Corps | Action: 1 Follower, 1 ambassador | Action: 2 Followers, 1 ambassador | one a round undercut the project from round 2; at 2 the first arrives about round 4 |
+| Open Assembly | 2 credits; Action: 2 Followers, 1 Sway | 3 credits; Action: 3 Followers, 1 ambassador | the slow, cheap Follower building; two tags, so 1 Follower slower than Liaison Corps |
+| Orbital Embassy | +4 credits, +1 insight; Action: 1 credit, 2 ambassadors | +1 ambassador, +2 credits, +1 insight a round | weaker credit engine; prints ambassador income (`Op::Income` extended) |
+| Hardpoint Lockdown | 3 credits; shelter one country, remove 1 adversary ambassador | 4 credits; shelter one country, cordon one country | a Security card blocks arrivals; a cordon stops 2 arrivals or more a country, about 5 worth |
+
+Cyber already expels without an ambassador (Spoofed Credentials, Eviction Worm, Signal Hijack, Honeypot Relay), so no Cyber card changed.
+
+## 066's changes (r27)
+
+066, r27: 38 starting credits and the Consolidate bundle gone. Seven Diplomacy cards were raised and repriced at 2 credits an extra ambassador, the cards' rate of 3 less a little to get them played: Consular Pouch 3 ambassadors for 5, Shuttle Diplomacy 2 for 4, Ceasefire Monitors 2 for 5, Summit Caucus 2 for 5, Consulate Tower an Action of 1 credit for 1 ambassador at 7, Liaison Corps 1 Follower for 1 ambassador at 5, Orbital Embassy an Action of 1 credit for 2. All candidates, reasoned; the screen can't tell them from noise, since each is played under once every two games..
 
 ## 059's changes (r25): the card design pass
 
@@ -294,23 +314,7 @@ Tier 2 lands in rounds 5-8, so it pays back in 2-4 rounds or not at all:
 - **Adversarial Inference Sweep** (7 cr, 2 insight): drain_all 1 is a Cyber primitive borrowed at half strength; the draw 2 is the Science half.
 - No keep-discount primitive exists. Predictive Modeling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
 
-## 068's changes (r28)
-
-Ambassadors now stay when they evict, so one is worth more than the 066 rate and the cards that hand them out pay less per ambassador. Each is a candidate.
-
-| Card | Was | Now | Why |
-|---|---|---|---|
-| Consular Pouch | 5 credits, gain 3 ambassadors | 5 credits, gain 2 | 4 worth each less a little to get it played |
-| Liaison Corps | Action: 1 Follower, 1 ambassador | Action: 2 Followers, 1 ambassador | one a round undercut the project from round 2; at 2 the first arrives about round 4 |
-| Open Assembly | 2 credits; Action: 2 Followers, 1 Sway | 3 credits; Action: 3 Followers, 1 ambassador | the slow, cheap Follower building; two tags, so 1 Follower slower than Liaison Corps |
-| Orbital Embassy | +4 credits, +1 insight; Action: 1 credit, 2 ambassadors | +1 ambassador, +2 credits, +1 insight a round | weaker credit engine; prints ambassador income (`Op::Income` extended) |
-| Hardpoint Lockdown | 3 credits; shelter one country, remove 1 adversary ambassador | 4 credits; shelter one country, cordon one country | a Security card blocks arrivals; a cordon stops 2 arrivals or more a country, about 5 worth |
-
-Cyber already expels without an ambassador (Spoofed Credentials, Eviction Worm, Signal Hijack, Honeypot Relay), so no Cyber card changed.
-
 ## Industry (023, r14: old rates)
-
-(066, r27: 38 starting credits and the Consolidate bundle gone. Seven Diplomacy cards were raised and repriced at 2 credits an extra ambassador, the cards' rate of 3 less a little to get them played: Consular Pouch 3 ambassadors for 5, Shuttle Diplomacy 2 for 4, Ceasefire Monitors 2 for 5, Summit Caucus 2 for 5, Consulate Tower an Action of 1 credit for 1 ambassador at 7, Liaison Corps 1 Follower for 1 ambassador at 5, Orbital Embassy an Action of 1 credit for 2. All candidates, reasoned; the screen can't tell them from noise, since each is played under once every two games.)
 
 Baseline: 20 starting credits, ~9-10 credits and 5-6 insight a round, games of 8-10
 rounds. One permanent +1 credit is worth about (rounds left) credits, so ~8 if played

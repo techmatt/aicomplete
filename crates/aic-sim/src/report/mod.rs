@@ -19,11 +19,13 @@ use std::collections::BTreeMap;
 
 use crate::experiment::{CardCounts, Cell, FailedGame, GameResult, Spec};
 
+#[cfg(test)]
+pub use markdown::gate_section;
 pub use markdown::markdown;
 pub use records::{file_stem, prune_records, save_records, write_whole, SavedRecord};
 pub use stats::{
-    agent_pairs, card_table, fresh_confirmation, groups, head_to_head, summarize, time_split,
-    top_agent, variant_diffs, AgentPair, CellSummary, FreshRow, GroupSummary, HeadToHead,
+    agent_pairs, card_table, fresh_confirmation, groups, head_to_head, paired_se, summarize,
+    time_split, top_agent, variant_diffs, AgentPair, CellSummary, FreshRow, GroupSummary, HeadToHead,
     VariantDiff,
 };
 pub use tables::{cards_csv, games_csv, results_json};

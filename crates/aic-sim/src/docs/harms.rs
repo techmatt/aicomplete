@@ -65,6 +65,13 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter a hex with the Protector's presence"),
 ];
 
+/// Columns of [`SOURCES`] that read content, for [`harm_marks`].
+const DISCORD_CARDS: usize = 2;
+const ADVERSARY_TWISTS: usize = 3;
+const ADVERSARY_PROJECTS: usize = 4;
+/// The first columns: the threats, by tier.
+const THREAT_TIERS: usize = 2;
+
 /// Rows of [`HARMS`], for [`op_harms`].
 const PRESENCE_DESTROYED: usize = 0;
 const CREDITS_LOST: usize = 1;
@@ -72,7 +79,7 @@ const CARDS_DISCARDED: usize = 2;
 const INSIGHT_LOST: usize = 3;
 const AMBASSADORS_LOST: usize = 4;
 const TOKENS_STRIPPED: usize = 5;
-const BUILDINGS_DESTROYED: usize = 6;
+const FACILITIES_DESTROYED: usize = 6;
 const BLACKED_OUT: usize = 7;
 const PIECES_PLACED: usize = 8;
 const PROJECTS_ADVANCED: usize = 9;
@@ -91,7 +98,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseInsight { .. } => vec![INSIGHT_LOST],
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
-        Op::FlipStation { .. } => vec![BUILDINGS_DESTROYED],
+        Op::FlipStation { .. } => vec![FACILITIES_DESTROYED],
         Op::Flag { name } => match name.name() {
             "embargo" => vec![BLOCKED],
             _ => vec![BLACKED_OUT],
@@ -172,13 +179,13 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         for s in &a.steps {
             all.extend(s.effects.iter().cloned());
         }
-        add(2, &all);
+        add(DISCORD_CARDS, &all);
     }
     for a in &c.adversary {
-        add(3, &a.twists);
+        add(ADVERSARY_TWISTS, &a.twists);
     }
     for p in &c.projects {
-        add(4, &p.effects);
+        add(ADVERSARY_PROJECTS, &p.effects);
     }
     let mut out: BTreeMap<(usize, usize), Mark> =
         counts.into_iter().map(|(k, n)| (k, Mark::Count(n))).collect();
@@ -200,21 +207,21 @@ pub fn harm_failures() -> Vec<String> {
             bad.push(format!("{name}: in {n} kind(s) of source, needs 2"));
         }
     }
-    for s in 0..2 {
+    for (s, source) in SOURCES.iter().enumerate().take(THREAT_TIERS) {
         let n = (0..HARMS.len()).filter(|&h| marks.contains_key(&(h, s))).count();
         if n < 5 {
-            bad.push(format!("{}: {n} kinds of harm, needs 5", SOURCES[s]));
+            bad.push(format!("{source}: {n} kinds of harm, needs 5"));
         }
     }
     let all: usize = (0..SOURCES.len())
         .filter_map(|s| marks.get(&(PRESENCE_DESTROYED, s)))
         .map(|m| m.weight())
         .sum();
-    for s in 0..SOURCES.len() {
+    for (s, source) in SOURCES.iter().enumerate() {
         if let Some(m) = marks.get(&(PRESENCE_DESTROYED, s)) {
             let n = m.weight();
             if 2 * n > all + 1 {
-                bad.push(format!("{}: {n} of {all} printed presence destructions", SOURCES[s]));
+                bad.push(format!("{source}: {n} of {all} printed presence destructions"));
             }
         }
     }

@@ -10,21 +10,17 @@ A last line a killed run cut short is dropped. An agent change meant to touch on
 should print `same` for an agent with no rollouts, and `power` first wherever it first bites.
 """
 import collections
-import json
+import os
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import stream  # noqa: E402
 
 
 def games(d):
-    out = {}
-    with open(f'{d}/games.jsonl', encoding='utf-8') as f:
-        for line in f:
-            try:
-                g = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if 'seed' in g:
-                out[(g['cell'], g['seed'])] = g['actions']
-    return out
+    lines = stream(d)
+    next(lines)
+    return {(g['cell'], g['seed']): g['actions'] for g in lines}
 
 
 def cell_pairs(argv):

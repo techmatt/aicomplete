@@ -9,9 +9,9 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { CARD, FRAMES, MM, OUT, REPO, SHEET_CSS, TOOL, cardPage, frameOf, frameUrl, layout, readJson } from './lib.mjs';
+import { FRAMES, MM, OUT, SHEET_CSS, TOOL, cardPage, frameOf, frameUrl, layout, loadCards, readJson, sheetPages } from './lib.mjs';
 import { inset, renderCard } from '../../web/card/card.js';
-import { icon, stacked, tagMedallion } from '../../web/card/icons.js';
+import { ICON_NAMES, icon, stacked, tagMedallion } from '../../web/card/icons.js';
 
 const argv = process.argv.slice(2);
 const pdf = argv.includes('--pdf');
@@ -20,9 +20,7 @@ const samples = await readJson(path.join(TOOL, 'samples.json'));
 const ids = named.length ? named : Object.keys(samples.variants);
 const l = inset(await layout());
 const fits = await readJson(path.join(FRAMES, 'fit.json'));
-const cards = Object.fromEntries((await readJson(path.join(REPO, 'content', 'cards.json'))).map((c) => [c.id, c]));
-const faces = await readJson(path.join(CARD, 'faces.json'));
-const faced = (id) => ({ ...cards[id], ...faces[id] });
+const { cards, faced } = await loadCards();
 await mkdir(OUT, { recursive: true });
 
 const { p, show, clip, close } = await cardPage(l, 700, 900);
@@ -94,19 +92,15 @@ if (!named.length) {
   // Every real card at true size: 9 to an A4 page, bleeds touching, in content order.
   if (pdf) {
     const all = Object.values(cards);
-    const pages = [];
-    for (let i = 0; i < all.length; i += 9) pages.push(all.slice(i, i + 9));
-    const body = pages
-      .map((row) => `<section class="sheet-page">${row.map((c) => renderCard(faced(c.id), l, frameUrl(frameOf(c)), fits[frameOf(c)])).join('')}</section>`)
-      .join('');
+    const { body, pages } = sheetPages(all.map((c) => renderCard(faced(c.id), l, frameUrl(frameOf(c)), fits[frameOf(c)])));
     await show(body, SHEET_CSS);
     await p.pdf({ path: path.join(OUT, 'all-cards.pdf'), printBackground: true, preferCSSPageSize: true });
-    console.log(`render: all-cards.pdf, ${all.length} cards on ${pages.length} pages`);
+    console.log(`render: all-cards.pdf, ${all.length} cards on ${pages} pages`);
   }
 
   // Every icon, for review.
   const set = (names) => names.map((n) => `<div class="cell">${n.startsWith('#') ? tagMedallion(n.slice(1)) : icon(n)}<small>${n.replace('#', '')}</small></div>`).join('');
-  const sheet = `<div class="card sheet" style="--strip:#333;height:auto;width:120mm;background:#efeadc"><div class="row">${set(['credits', 'insight', 'chips', 'energy', 'antimatter', 'compute', 'cards', 'datasets', 'capital', 'followers', 'agents', 'ambassador', 'presence', 'free_presence', 'factory', 'move', 'harden', 'shelter', 'country', 'project', 'hex', 'troop', 'node', 'cube', 'city', 'building', 'slot', 'sway', 'threat', 'jam', 'marker', 'counter', 'peek', '#science', '#power', '#cyber', '#diplomacy', '#industry', '#security'])}</div>
+  const sheet = `<div class="card sheet" style="--strip:#333;height:auto;width:120mm;background:#efeadc"><div class="row">${set(ICON_NAMES)}</div>
     <div class="row">${['<span class="income">', '<span class="adversary">', '<span class="other">', '<span class="yours">'].map((o) => `<div class="fx-line">${o}<span class="fx-num">2</span>${icon('credits')}</span></div>`).join('')}</div>
     <div class="row plates"><div class="requirement at-least"><span class="fx-num">2</span>${tagMedallion('power')}</div><div class="requirement at-most"><span class="fx-num">1</span>${tagMedallion('cyber')}</div><div class="requirement replaces">${stacked()}${tagMedallion('science')}</div></div></div>`;
   await show(sheet, '.sheet .row{display:flex;flex-wrap:wrap;gap:2mm;padding:2mm}.cell{width:17mm;display:flex;flex-direction:column;align-items:center;gap:.5mm}.cell small{font:6pt sans-serif}.cell .medallion{width:6.2mm;height:6.2mm}.plates>div{height:5.2mm}');

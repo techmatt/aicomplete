@@ -45,7 +45,8 @@
 //!
 //! An agent is named by a spec, `kind[:key=value,...]`: `greedy`,
 //! `beam:width=4`, `rollout:rollouts=8,horizon=3`, and `w.<weight>=V` to
-//! change a heuristic weight (see [`eval::Weights`]).
+//! change a heuristic weight (see [`eval::Weights`]). `sweep` is a planner
+//! profile, not a rung.
 
 pub mod determinize;
 pub mod eval;
@@ -237,6 +238,11 @@ pub const LADDER: &[(&str, &[Param])] = &[
 /// 1.5 x faster, and card rankings hold (`experiments/results/screen-069-speed`).
 const SWEEP: &str = "deals=1,lead=0";
 
+/// A kind's place on the [`LADDER`].
+fn rung(kind: &str) -> Option<usize> {
+    LADDER.iter().position(|(k, _)| *k == kind)
+}
+
 impl AgentSpec {
     pub fn parse(spec: &str) -> Result<AgentSpec, String> {
         let (kind, rest) = spec.split_once(':').unwrap_or((spec, ""));
@@ -247,13 +253,14 @@ impl AgentSpec {
         } else {
             (kind, rest)
         };
-        let Some((_, known)) = LADDER.iter().find(|(k, _)| *k == kind) else {
+        let Some(rung) = rung(kind) else {
             let names: Vec<&str> = LADDER.iter().map(|(k, _)| *k).collect();
             return Err(format!(
                 "unknown agent {kind:?}; known: {}",
                 names.join(", ")
             ));
         };
+        let known = LADDER[rung].1;
         let mut params: BTreeMap<String, f64> =
             known.iter().map(|(k, v, _)| (k.to_string(), *v)).collect();
         let mut weights = BTreeMap::new();
@@ -273,7 +280,8 @@ impl AgentSpec {
                 if v < 0.0 || !v.is_finite() {
                     return Err(format!("agent {spec:?}: {k} must be >= 0"));
                 }
-                // Played as at least 1: say so rather than label a cell "0" (020).
+                // Must be at least 1, so `build_search` plays the number as given: say
+                // so rather than label a cell "0" (020).
                 // (`engine`'s width and candidates 0 mean "no beam" and "no rollouts",
                 // so those two only for beam and rollout.)
                 let at_least_one = (k == "horizon" && kind == "planner")
@@ -331,10 +339,7 @@ impl AgentSpec {
     /// The canonical spec: the kind, then every parameter that differs from
     /// its default, then weights.
     pub fn label(&self) -> String {
-        let known = LADDER
-            .iter()
-            .find(|(k, _)| *k == self.kind)
-            .map_or(&[][..], |l| l.1);
+        let known = LADDER[self.tier()].1;
         let mut parts: Vec<String> = known
             .iter()
             .filter(|(k, d, _)| self.params[*k] != *d)
@@ -350,10 +355,7 @@ impl AgentSpec {
 
     /// Position on the ladder (0 = random).
     pub fn tier(&self) -> usize {
-        LADDER
-            .iter()
-            .position(|(k, _)| *k == self.kind)
-            .unwrap_or(0)
+        rung(&self.kind).expect("agent kind is checked in parse")
     }
 
     /// A shallow agent: one action at a time on one guess (random, greedy
@@ -407,22 +409,24 @@ impl AgentSpec {
     }
 
     fn build_search(&self, rules: &Rules, game_seed: u64) -> Box<dyn Agent + Send> {
+        if self.kind == "random" {
+            return Box::new(RandomAgent::new(game_seed));
+        }
         let rng = agent_rng(game_seed, &self.kind);
         let ev = eval::Eval::new(rules, self.weights());
         match self.kind.as_str() {
-            "random" => Box::new(RandomAgent::new(game_seed)),
             "greedy" => Box::new(Greedy::new(
                 ev,
                 rng,
-                self.p("samples").max(1),
-                self.p("depth").max(1),
+                self.p("samples"),
+                self.p("depth"),
                 self.p("choices"),
             )),
             "beam" => Box::new(Beam::new(
                 ev,
                 rng,
-                self.p("width").max(1),
-                self.p("depth").max(1),
+                self.p("width"),
+                self.p("depth"),
                 self.p("branch"),
                 self.p("choices"),
                 None,
@@ -430,52 +434,51 @@ impl AgentSpec {
             "rollout" => Box::new(Beam::new(
                 ev,
                 rng,
-                self.p("width").max(1),
-                self.p("depth").max(1),
+                self.p("width"),
+                self.p("depth"),
                 self.p("branch"),
                 self.p("choices"),
                 Some(search::RolloutCfg {
-                    candidates: self.p("candidates").max(1),
-                    rollouts: self.p("rollouts").max(1),
+                    candidates: self.p("candidates"),
+                    rollouts: self.p("rollouts"),
                     horizon: self.p("horizon"),
                 }),
             )),
             "engine" if self.p("width") == 0 => Box::new(Greedy::new(
                 ev,
                 rng,
-                self.p("samples").max(1),
+                self.p("samples"),
                 1,
                 self.p("choices"),
             )),
             "engine" => Box::new(Beam::new(
                 ev,
                 rng,
-                self.p("width").max(1),
-                self.p("depth").max(1),
+                self.p("width"),
+                self.p("depth"),
                 self.p("branch"),
                 self.p("choices"),
                 (self.p("candidates") > 0).then(|| search::RolloutCfg {
                     candidates: self.p("candidates"),
-                    rollouts: self.p("rollouts").max(1),
+                    rollouts: self.p("rollouts"),
                     horizon: self.p("horizon"),
                 }),
             )),
             "planner" => Box::new(planner::Planner::new(
-                rules,
-                self.weights(),
+                ev,
                 self.forced(),
                 rng,
                 planner::PlannerCfg {
-                    horizon: self.p("horizon").max(1) as u32,
+                    horizon: self.p("horizon") as u32,
                     alts: self.p("alts"),
                     budget: self.p("budget"),
                     margin: self.params["margin"],
                     choices: self.p("choices"),
-                    samples: self.p("samples").max(1),
+                    samples: self.p("samples"),
                     prune: self.p("prune"),
                     powers: self.p("powers"),
                     answers: self.p("answers"),
-                    deals: self.p("deals").max(1),
+                    deals: self.p("deals"),
                     lead: self.params["lead"],
                 },
             )),
@@ -513,6 +516,11 @@ mod tests {
 
     /// Rules for `configs/<name>.json` at `difficulty`.
     pub(crate) fn config_rules(name: &str, difficulty: i64) -> Rules {
+        config_rules_with(name, difficulty, &[])
+    }
+
+    /// [`config_rules`] with `overrides` on top.
+    pub(crate) fn config_rules_with(name: &str, difficulty: i64, overrides: &[&str]) -> Rules {
         let text = std::fs::read_to_string(format!(
             "{}/../../configs/{name}.json",
             env!("CARGO_MANIFEST_DIR")
@@ -521,6 +529,9 @@ mod tests {
         let mut c = Config::from_json(&text).unwrap();
         c.apply_override(&format!("adversary.difficulty={difficulty}"))
             .unwrap();
+        for o in overrides {
+            c.apply_override(o).unwrap();
+        }
         Rules::new(&c).unwrap()
     }
 
@@ -716,12 +727,11 @@ mod tests {
     /// be short of its Unity target when the deck runs out; nothing while it
     /// is on course.
     #[test]
-    fn deck_clock_penalises_a_team_behind_the_deck() {
+    fn deck_clock_penalizes_a_team_behind_the_deck() {
         let r = rules(0);
         let mut g = r.new_game(1);
         let value = |clock: f64, g: &aic_core::GameState| {
-            let mut w = eval::Weights::default();
-            w.clock = clock;
+            let w = eval::Weights { clock, ..Default::default() };
             eval::Eval::new(&r, w).value(&r, g)
         };
         // Round 4, one Unity tip (4 Sway: 1 a round), 6 tips (24 Sway) for the

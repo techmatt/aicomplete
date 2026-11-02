@@ -1,15 +1,8 @@
 use super::*;
-use crate::modules::common::{presence, NODE};
 use crate::modules::{adversary, alignment};
 
 /// This file's Unity tips come at 1, 1 and 2 cards.
 const EASE: &str = "alignment.unity_ease=1,1,2";
-
-/// Gives 1 insight from seat 0 to seat 1: an action, so the end checks run.
-pub(super) fn give(rules: &Rules, g: &mut GameState) {
-    set_res(g, 0, Resource::Insight, 1);
-    act(rules, g, Action::Give { seat: 0, to: 1 });
-}
 
 /// No corrupted city and no node left (ambassadors and troops stay).
 fn uncorrupt_cities(rules: &Rules, g: &mut GameState) {
@@ -52,7 +45,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
 
 #[test]
 fn bar_levels_follow_the_unity_tips() {
-    let rules = Rules::new(&baseline_with(&["alignment.unity_ease=1,1,2"])).unwrap();
+    let rules = Rules::new(&baseline_with(&[EASE])).unwrap();
     let w = rules.world();
     let mut g = rules.new_game(1);
     // 019: `unity_ease` 1, 1, 2: ambassadors and troops at 1 tip, nodes at 2.
@@ -192,14 +185,14 @@ fn a_discord_tip_no_longer_moves_troops() {
     let t = (0..m.hexes.len())
         .find(|&h| m.distance(p, h) == 3 && kind(m, h) != content::HexKind::Ocean)
         .unwrap();
-    put(&mut g, p, &presence(0), 1);
+    put(&mut g, p, presence(0), 1);
     put(&mut g, t, TROOP, 1);
     next_alignment_card(&mut g, Side::Discord, "propaganda");
     fill_bucket(&rules, &mut g, Side::Discord);
     give(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.var("alignment.discord_tips"), 1);
-    assert_eq!((g.tokens(t, TROOP), g.tokens(p, &presence(0))), (1, 1));
+    assert_eq!((g.tokens(t, TROOP), g.tokens(p, presence(0))), (1, 1));
 }
 
 #[test]
@@ -224,37 +217,5 @@ fn alignment_cards_are_one_shot() {
     // The ongoing field is gone from the format: content with it is rejected.
     let bad = r#"[{"id":"x","name":"X","side":"unity","tier":1,"ongoing":true,"text":"","effects":[{"op":"build"}]}]"#;
     assert!(serde_json::from_str::<Vec<content::AlignmentCard>>(bad).is_err());
-}
-
-#[test]
-fn freeing_a_city_and_removing_a_node_sway_unity() {
-    let (rules, mut g) = lab(&[]);
-    let m = &rules.map;
-    let city = m.numbered(0, piece(0).cities[0]);
-    put(&mut g, city, ADV_CUBE, 1);
-    put(&mut g, city, &presence(0), 1);
-    set_res(&mut g, 0, Resource::Ambassadors, 1);
-    set_res(&mut g, 0, Resource::Credits, 10);
-    rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
-    answer_hex(&rules, &mut g, city);
-    answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(city, ADV_CUBE), 0);
-    assert_eq!(g.var("alignment.unity"), 5);
-    // No standard action removes a node (019); the Decommission Unity card does.
-    put(&mut g, city, NODE, 1);
-    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "node"), None).is_err());
-    with_cx(&rules, |cx| {
-        crate::modules::effects::run(
-            &mut g,
-            cx,
-            &[content::Op::RemoveNodes { count: 1 }],
-            &mut crate::modules::effects::Ctx::team(),
-        )
-    })
-    .unwrap();
-    assert_eq!(g.tokens(city, NODE), 0);
-    // Freeing a city sways 5 (034; 024: 4), removing a node 2 (the bucket tips
-    // only once an action or phase finishes, so it holds both here).
-    assert_eq!(g.var("alignment.unity"), 7);
 }
 

@@ -140,16 +140,17 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
 }
 
 /// Whether hex `h` holds anything an adversary troop targets.
-pub(super) fn is_troop_target(w: &World, g: &GameState, h: usize) -> bool {
+fn is_troop_target(w: &World, g: &GameState, h: usize) -> bool {
     !troop_targets_on(w, g, h).is_empty()
 }
 
 /// Whether an adversary troop at `h` has a target on or next to it.
-pub(super) fn has_troop_target(w: &World, g: &GameState, h: usize) -> bool {
+fn has_troop_target(w: &World, g: &GameState, h: usize) -> bool {
     next_to(w, h, |x| is_troop_target(w, g, x))
 }
 
-/// Whether seat `s` has Wall: an innate, so no card's passives need reading.
+/// Whether seat `s` has Wall: `Content::check` keeps it to innates, so no
+/// card's passives need reading.
 fn has_wall(w: &World, seat: usize) -> bool {
     ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Wall))
 }
@@ -177,7 +178,7 @@ fn wall_mask(w: &World, g: &GameState) -> Vec<bool> {
 /// ocean between hexes, so straight-line distance would strand a troop. Nor
 /// do they enter a walled hex, though one can be a source: a target behind a
 /// Wall is struck from the hex next to it.
-pub(super) fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
+fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize>) -> Vec<Option<u32>> {
     let mut dist: Vec<Option<u32>> = vec![None; w.map.hexes.len()];
     let mut queue = std::collections::VecDeque::new();
     for h in sources {
@@ -200,7 +201,7 @@ pub(super) fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<I
 
 /// Walking distance from the nearest troop target, for every hex (`None`
 /// with no target reachable over land).
-pub(super) fn target_gaps(w: &World, g: &GameState) -> Vec<Option<u32>> {
+fn target_gaps(w: &World, g: &GameState) -> Vec<Option<u32>> {
     land_distances(w, &wall_mask(w, g), (0..g.hexes.len()).filter(|&h| is_troop_target(w, g, h)))
 }
 
@@ -224,7 +225,7 @@ pub fn troop_steps_from(w: &World, g: &GameState, at: usize) -> Vec<usize> {
 
 /// One move of the adversary troop at `at` toward the nearest target
 /// (players choose among equally good steps). `None`: nowhere to go.
-pub(super) fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Option<usize>> {
+fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Option<usize>> {
     let w = cx.world;
     let steps = troop_steps_from(&w, g, at);
     let opts = steps.iter().map(|&h| hex_opt(&w, h)).collect();
@@ -238,7 +239,7 @@ pub(super) fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Opti
 /// One adversary troop at `h` strikes a target on or next to its hex
 /// (players choose): it is destroyed or the hit absorbed, and the troop is
 /// used up (`troop_spent`). Returns false when it had no target.
-pub(super) fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
+fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     let w = cx.world;
     let mut targets: Vec<(usize, String)> = Vec::new();
     for x in within(&w, h, 1) {
@@ -297,5 +298,5 @@ pub fn troop_plan(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
     let steps = w.int("board.troop_steps");
     // Moves until the target is on or next to the troop, then the strike.
     let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0);
-    Some((target, (moves + 1 + steps - 1) / steps))
+    Some((target, (moves + steps) / steps))
 }

@@ -4,9 +4,9 @@ use crate::content::{content, content_hash, overlaid};
 const CARD: &str = "telemetry_archive";
 
 /// Takes the middle legal action: never only passes, so costs matter.
-struct First;
+struct Middle;
 
-impl crate::Agent for First {
+impl crate::Agent for Middle {
     fn choose(&mut self, _: &Rules, _: &GameState, legal: &[Action]) -> usize {
         legal.len() / 2
     }
@@ -57,7 +57,7 @@ fn a_parameter_is_still_a_parameter() {
 #[test]
 fn a_record_of_an_overlaid_game_replays_from_itself() {
     let r = Rules::new(&baseline_with(&["cards.*.cost=1", "ais.*.presence.4.cost=2"])).unwrap();
-    let mut agent = First;
+    let mut agent = Middle;
     let (g, rec) = crate::play(&r, 7, &mut agent, 300);
     let saved = crate::SavedGame::new(&r, 7, rec.actions.clone(), &g, "overlay");
     assert_eq!(saved.content_hash, r.content_hash);
@@ -71,7 +71,7 @@ fn a_record_of_an_overlaid_game_replays_from_itself() {
 fn overlays_change_how_a_game_plays() {
     let play = |sets: &[&str]| {
         let r = Rules::new(&baseline_with(sets)).unwrap();
-        let mut agent = First;
+        let mut agent = Middle;
         crate::play(&r, 7, &mut agent, 300).1.options_total
     };
     assert_ne!(play(&[]), play(&["cards.*.cost=0"]));

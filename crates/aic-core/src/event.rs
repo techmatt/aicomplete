@@ -1,12 +1,12 @@
 //! Typed events emitted while applying actions: the event log, for UIs to
 //! animate and for traces.
 
-use crate::vocab::Resource;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::hex::Hex;
+use crate::vocab::Resource;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Event {
     RoundStarted {

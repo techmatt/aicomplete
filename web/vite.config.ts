@@ -59,5 +59,4 @@ export default defineConfig({
     // configs/ and content/ live beside web/.
     fs: { allow: [repo] },
   },
-  build: { outDir: 'dist', emptyOutDir: true },
 });

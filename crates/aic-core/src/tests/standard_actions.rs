@@ -1,8 +1,6 @@
-use super::freeing::pick;
 use super::*;
-use crate::modules::adversary::{self, PROJECTS};
+use crate::modules::adversary;
 use crate::modules::board;
-use crate::modules::common::NODE;
 
 fn standard_offered(rules: &Rules, g: &GameState, seat: u8) -> BTreeSet<String> {
     rules
@@ -15,18 +13,13 @@ fn standard_offered(rules: &Rules, g: &GameState, seat: u8) -> BTreeSet<String> 
         .collect()
 }
 
-/// The baseline at its action phase after setup. Every seat has room to
-/// grow at setup: free open hexes next to its starting presence.
-fn actions_with_room() -> (Rules, GameState) {
-    let (rules, g) = lab_actions();
-    let w = rules.world();
+/// Every seat can afford every standard action.
+fn rich(g: &mut GameState) {
     for s in 0..2 {
-        assert!(
-            modules::board::presence_hexes(&w, &g, s).len() >= 2,
-            "seat {s} has no room to grow at setup"
-        );
+        set_res(g, s, Resource::Energy, 20);
+        set_res(g, s, Resource::Credits, 50);
+        set_res(g, s, Resource::Chips, 5);
     }
-    (rules, g)
 }
 
 #[test]
@@ -38,19 +31,15 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         set_res(&mut g, s, Resource::Chips, 0);
         assert!(standard_offered(&rules, &g, s as u8).is_empty(), "seat {s}");
     }
-    // 1 credit: moving an ambassador.
-    set_res(&mut g, 0, Resource::Credits, 1);
+    // Just the credits to move an ambassador.
+    set_res(&mut g, 0, Resource::Credits, rules.world().int("board.move_credits"));
     assert_eq!(standard_offered(&rules, &g, 0), ["move".to_string()].into());
     // No ambassadors: no moving.
     set_res(&mut g, 0, Resource::Ambassadors, 0);
     assert!(standard_offered(&rules, &g, 0).is_empty());
     set_res(&mut g, 0, Resource::Ambassadors, 1);
 
-    for s in 0..2 {
-        set_res(&mut g, s, Resource::Energy, 20);
-        set_res(&mut g, s, Resource::Credits, 50);
-        set_res(&mut g, s, Resource::Chips, 5);
-    }
+    rich(&mut g);
     let o0 = standard_offered(&rules, &g, 0);
     for a in ["station", "move", "ambassador", "chips"] {
         assert!(o0.contains(a), "{a}: {o0:?}");
@@ -79,18 +68,15 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
     let station = v.standard.iter().find(|x| x.act == "station").unwrap();
     assert_eq!(
         (station.energy, station.credits, station.chips),
-        (0, 0, 2)
+        (0, 0, rules.world().int("board.station_chips"))
     );
 }
 
 #[test]
 fn standard_actions_cost_what_the_config_says() {
     let (rules, mut g0) = actions_with_room();
-    for s in 0..2 {
-        set_res(&mut g0, s, Resource::Energy, 20);
-        set_res(&mut g0, s, Resource::Credits, 50);
-        set_res(&mut g0, s, Resource::Chips, 5);
-    }
+    let w = rules.world();
+    rich(&mut g0);
     let spent = |g: &GameState, s: usize| {
         (
             g0.resource(s, Resource::Energy) - g.resource(s, Resource::Energy),
@@ -103,9 +89,9 @@ fn standard_actions_cost_what_the_config_says() {
     act(&rules, &mut g, std_act(0, "station"));
     assert_eq!(
         (spent(&g, 0), total(&g, STATION) - total(&g0, STATION)),
-        ((0, 0, 2), 1)
+        ((0, 0, w.int("board.station_chips")), 1)
     );
-    assert_eq!(total(&g, &cube(0)), 2, "the bound city's and the station's");
+    assert_eq!(total(&g, cube(0)), 2, "the bound city's and the station's");
 
     let mut g = g0.clone();
     act(&rules, &mut g, std_act(0, "chips"));
@@ -114,12 +100,12 @@ fn standard_actions_cost_what_the_config_says() {
 
     let mut g = g0.clone();
     act(&rules, &mut g, std_act(0, "ambassador"));
-    let price = rules.world().int("board.ambassador_credits");
+    let price = w.int("board.ambassador_credits");
     assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, price, 0), 2));
 
     let mut g = g0.clone();
     act(&rules, &mut g, std_act(0, "move"));
-    assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, 1, 0), 0));
+    assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, w.int("board.move_credits"), 0), 0));
 
     let mut g = g0.clone();
     let d = presence_of(&g, 0)[0];
@@ -139,11 +125,11 @@ fn a_card_s_harden_action_costs_chips() {
     let (rules, mut g) = actions_with_room();
     let p = presence_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
-    put(&mut g, p, &cube(0), 1);
+    put(&mut g, p, cube(0), 1);
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Chips, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("harden_chips"));
-    g.piles.insert(crate::modules::cards::built(0).into(), Arc::new(vec![crate::key::Key::new("hardened_bunker_complex")]));
+    set_pile(&mut g, &crate::modules::cards::built(0), &["hardened_bunker_complex"]);
     assert!(standard_offered(&rules, &g, 0).contains("harden_chips"));
     act(&rules, &mut g, std_act(0, "harden_chips"));
     assert_eq!((g.resource(0, Resource::Chips), total(&g, HARDEN)), (0, 1));
@@ -158,13 +144,13 @@ fn standard_projects_turn_credits_into_hardening_and_drains() {
     // Any player may harden with credits (the Builder has no Harden passive).
     let p = presence_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
-    put(&mut g, p, &cube(0), 1);
+    put(&mut g, p, cube(0), 1);
     rules.apply_mut(&mut g, &std_act(0, "harden_buy"), None).unwrap();
     pick(&rules, &mut g, p);
     assert_eq!(g.tokens(p, HARDEN), 1);
 
     // A drain needs compute on a project.
-    g.piles.insert(PROJECTS.into(), vec!["market_crash".into()].into());
+    set_pile(&mut g, PROJECTS, &["market_crash"]);
     assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "drain"), None).is_err());
     g.vars.insert(adversary::project_key("market_crash").into(), 5);
     rules.apply_mut(&mut g, &std_act(0, "drain"), None).unwrap();
@@ -173,15 +159,15 @@ fn standard_projects_turn_credits_into_hardening_and_drains() {
 }
 
 /// 020: moving the seat's only ambassador onto the hex it already holds was
-/// offered, charged the energy and moved nothing.
+/// offered, charged for and moved nothing.
 #[test]
 fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
     for p in hexes_where(m, |h| kind(m, h) != HexKind::Ocean) {
         let mut g = g0.clone();
-        put(&mut g, p, &presence(0), 1);
-        put(&mut g, p, &ambassador(0), 1);
+        put(&mut g, p, presence(0), 1);
+        put(&mut g, p, ambassador(0), 1);
         set_res(&mut g, 0, Resource::Ambassadors, 0);
         set_res(&mut g, 0, Resource::Credits, 3);
         if !rules.legal_actions(&g).contains(&std_act(0, "move")) {
@@ -194,7 +180,7 @@ fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
                 "hex {p}: {:?}",
                 pc.ask.options
             ),
-            None => assert_eq!(g.tokens(p, &ambassador(0)), 0, "hex {p}: paid and moved nothing"),
+            None => assert_eq!(g.tokens(p, ambassador(0)), 0, "hex {p}: paid and moved nothing"),
         }
     }
 }
@@ -204,11 +190,11 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let (city, next) = city_with_lonely_neighbors(m);
-    put(&mut g, next[0], &presence(0), 1);
+    put(&mut g, next[0], presence(0), 1);
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     act(&rules, &mut g, std_act(0, "align"));
-    assert_eq!(g.tokens(city, &cube(0)), 1);
+    assert_eq!(g.tokens(city, cube(0)), 1);
     assert_eq!(g.resource(0, Resource::Ambassadors), 0);
     // A corrupted or aligned city can't be aligned.
     set_res(&mut g, 0, Resource::Ambassadors, 1);
@@ -221,11 +207,10 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
 #[test]
 fn hardening_goes_on_different_buildings_a_token_can_protect() {
     use crate::content::Op;
-    use crate::modules::effects;
     let (rules, mut g0) = lab(&[]);
     let m = &rules.map;
     let me = m.numbered(0, piece(0).presence);
-    put(&mut g0, me, &presence(0), 1);
+    put(&mut g0, me, presence(0), 1);
     let near: Vec<usize> = m.hexes[me]
         .neighbors
         .iter()
@@ -234,91 +219,27 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
         .collect();
     let (a, b, adv) = (near[0], near[1], near[2]);
     put(&mut g0, a, STATION, 1);
-    put(&mut g0, a, &cube(0), 1);
+    put(&mut g0, a, cube(0), 1);
     put(&mut g0, adv, FACTORY, 1);
     put(&mut g0, adv, ADV_CUBE, 1);
     let harden = [Op::Harden {
         count: 2,
     }];
-    let run = |g: &mut GameState, picks: Vec<crate::state::Pick>| {
-        with_cx_picks(&rules, picks, |cx| {
-            effects::run(g, cx, &harden, &mut effects::Ctx::seat(0))
-        })
-        .unwrap();
-    };
     // One building it can protect: one token, not two on it, none on the
     // adversary's factory.
     let mut g = g0.clone();
-    run(&mut g, Vec::new());
+    run_ops(&rules, &mut g, &harden);
     assert_eq!((g.tokens(a, HARDEN), g.tokens(adv, HARDEN)), (1, 0));
     // Two: one token each.
     let mut g = g0.clone();
     put(&mut g, b, FACTORY, 1);
-    put(&mut g, b, &cube(0), 1);
+    put(&mut g, b, cube(0), 1);
     let o = modules::common::hex_opt(&rules.world(), b);
-    run(&mut g, vec![crate::state::Pick { option: o.option, target: o.target }]);
+    run_ops_with(&rules, &mut g, vec![crate::state::Pick { option: o.option, target: o.target }], &harden);
     assert_eq!((g.tokens(a, HARDEN), g.tokens(b, HARDEN)), (1, 1));
 }
 
-// ---------- presence, reach and site claims ----------
-
-#[test]
-fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
-    use crate::modules::ai;
-    let (rules, mut g) = actions_with_room();
-    let w = rules.world();
-    let credit_income = |g: &GameState| {
-        ai::track_income(&w, g, 0)
-            .iter()
-            .filter(|(r, _)| *r == Resource::Credits)
-            .map(|(_, n)| n)
-            .sum::<i64>()
-    };
-    assert_eq!(
-        (board::track_taken(&g, 0), credit_income(&g), ai::keep2(&w, &g, 0)),
-        (1, 0, false)
-    );
-    set_res(&mut g, 0, Resource::Energy, 5);
-    let start = presence_of(&g, 0)[0];
-    // A seat 1 presence next to it blocks that hex (one presence a hex).
-    let blocked = rules.map.hexes[start]
-        .neighbors
-        .iter()
-        .copied()
-        .find(|&h| kind(&rules.map, h) != HexKind::Ocean)
-        .unwrap();
-    put(&mut g, blocked, &presence(1), 1);
-    let hexes = board::presence_hexes(&w, &g, 0);
-    assert!(!hexes.contains(&blocked));
-    assert!(hexes
-        .iter()
-        .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, &presence(0)) == 0));
-    // Deploy, which refreshes here: a test of the track, not of its limit.
-    let deploy = Action::Power { seat: 0, power: 1 };
-    let place = |rules: &Rules, g: &mut GameState| {
-        g.vars.insert("ai.power_used.0.1".into(), 0);
-        act(rules, g, deploy.clone());
-    };
-    place(&rules, &mut g);
-    // The 2nd space (the Builder's): +2 credits a round.
-    assert_eq!(
-        (board::track_taken(&g, 0), credit_income(&g), ai::keep2(&w, &g, 0)),
-        (2, 2, false)
-    );
-    place(&rules, &mut g);
-    // The keep upgrade is the card-play track's second space (068).
-    assert_eq!((board::track_taken(&g, 0), ai::keep2(&w, &g, 0)), (3, false));
-    g.vars.insert(board::track2_key(0).into(), 2);
-    assert!(ai::keep2(&w, &g, 0));
-    assert_eq!(presence_of(&g, 0).len(), 3);
-    // The tracks run out after their last spaces (021: both of them).
-    g.vars
-        .insert(board::track_key(0).into(), ai::board(&w, 0).presence.len() as i64);
-    assert!(ai::can_place(&w, &g, 0));
-    g.vars
-        .insert(board::track2_key(0).into(), ai::board(&w, 0).presence2.len() as i64);
-    assert!(!ai::can_place(&w, &g, 0));
-}
+// ---------- reach and site claims ----------
 
 #[test]
 fn card_targets_on_the_map_must_be_in_reach() {
@@ -327,7 +248,7 @@ fn card_targets_on_the_map_must_be_in_reach() {
     let w = rules.world();
     let m = &rules.map;
     let me = m.numbered(0, piece(0).presence);
-    put(&mut g, me, &presence(0), 1);
+    put(&mut g, me, presence(0), 1);
     let near = m.hexes[me].neighbors[0];
     let far = hexes_where(m, |h| m.distance(h, me) > 2 && kind(m, h) != HexKind::Ocean)[0];
     put(&mut g, near, ADV_AMBASSADOR, 1);
@@ -354,25 +275,25 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     let away = hexes_where(m, |h| {
         m.distance(h, station) == 2 && kind(m, h) == HexKind::Open
     })[0];
-    put(&mut g, away, &presence(0), 1);
+    put(&mut g, away, presence(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(
         (
-            g.tokens(station, &cube(0)),
-            g.tokens(station, &ambassador(0))
+            g.tokens(station, cube(0)),
+            g.tokens(station, ambassador(0))
         ),
         (0, 1)
     );
 
     // Presence next to it: claimed.
     let mut g = g0.clone();
-    put(&mut g, next, &presence(0), 1);
+    put(&mut g, next, presence(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
-    assert_eq!(g.tokens(station, &cube(0)), 1);
+    assert_eq!(g.tokens(station, cube(0)), 1);
 
     // A node next to the presence but not the site does not block it.
     let mut g = g0.clone();
-    put(&mut g, next, &presence(0), 1);
+    put(&mut g, next, presence(0), 1);
     let node_far = m.hexes[next]
         .neighbors
         .iter()
@@ -381,11 +302,11 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
         .unwrap();
     put(&mut g, node_far, NODE, 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
-    assert_eq!(g.tokens(station, &cube(0)), 1);
+    assert_eq!(g.tokens(station, cube(0)), 1);
 
     // A node next to the site blocks it, wherever the presence is.
     let mut g = g0.clone();
-    put(&mut g, next, &presence(0), 1);
+    put(&mut g, next, presence(0), 1);
     let node_near = m.hexes[station]
         .neighbors
         .iter()
@@ -396,21 +317,21 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(
         (
-            g.tokens(station, &cube(0)),
-            g.tokens(station, &ambassador(0))
+            g.tokens(station, cube(0)),
+            g.tokens(station, ambassador(0))
         ),
         (0, 1)
     );
     // So does a node on the site itself.
     let mut g = g0.clone();
-    put(&mut g, next, &presence(0), 1);
+    put(&mut g, next, presence(0), 1);
     put(&mut g, station, NODE, 1);
     assert!(!board::can_claim(&rules.world(), &g, 0, station));
 
     // Aligning a city: likewise.
     let (city, lonely) = city_with_lonely_neighbors(m);
     let mut g = g0.clone();
-    put(&mut g, lonely[0], &presence(0), 1);
+    put(&mut g, lonely[0], presence(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     assert!(standard_offered(&rules, &g, 0).contains("align"));
     // A node next to the presence, two from the city: still offered.
@@ -428,23 +349,3 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     assert!(!standard_offered(&rules, &g, 0).contains("align"));
 }
 
-#[test]
-fn a_track_s_last_steps_cost_more() {
-    use crate::modules::ai;
-    let (rules, mut g) = lab_with(&[], &[]);
-    let w = rules.world();
-    let b = ai::board(&w, 0);
-    let a = rules.map.numbered(0, piece(0).presence);
-    put(&mut g, a, presence(0), 1);
-    // Both tracks down to their last steps.
-    g.vars.insert(board::track_key(0).into(), b.presence.len() as i64 - 1);
-    g.vars.insert(board::track2_key(0).into(), b.presence2.len() as i64 - 1);
-    let extra = b.presence.last().unwrap().cost.min(b.presence2.last().unwrap().cost);
-    assert!(extra > 0);
-    let deploy = Action::Power { seat: 0, power: 1 };
-    set_res(&mut g, 0, Resource::Energy, extra);
-    assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the power's 1 energy too");
-    set_res(&mut g, 0, Resource::Energy, extra + 1);
-    act(&rules, &mut g, deploy);
-    assert_eq!(g.resource(0, Resource::Energy), 0);
-}

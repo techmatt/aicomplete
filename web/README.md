@@ -19,11 +19,13 @@ npm run wasm                    # only rebuild web/src/wasm/ from crates/aic-was
 npm run check                   # typecheck
 npm run build                   # wasm + typecheck + static site in web/dist/
 npm run e2e [-- <record.json>] # browser check, dev server must be running (see below)
+npm run e2e:sources            # the threat-source check, the same way
 ```
 
 - **The wasm build step:** `scripts/build-wasm.mjs` runs `wasm-pack build
   crates/aic-wasm --target web --release` into `web/src/wasm/`, which is git-ignored.
-  It takes about 20 s cold and 9 s warm. Set `AIC_WASM_PROFILE=dev` for an unoptimized
+  It takes about 20 s cold and 9 s warm, over 60 s under load: background it there
+  (74 s cold in a fresh target dir, measured at 073). Set `AIC_WASM_PROFILE=dev` for an unoptimized
   build.
 - **Engine changes while the dev server runs:** editing anything under `crates/` or
   `content/` rebuilds the wasm and reloads the page. Editing or adding a file in
@@ -78,7 +80,7 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   cities (clean, aligned, corrupted), adversary pieces and corp units, its megaproject
   card (one box per cube place, filled by owner: purple for the adversary, the seat's
   color for a player; "completed" once done), its round flags (blackout, sabotage,
-  shelter, embargo), its threat and counter progress (or the shared threat row; a threat that executes next
+  shelter, embargo, cordon), its threat and counter progress (or the shared threat row; a threat that executes next
   round dims and says **waits**, and a jam shows its amount). Country names
   (the printed pieces', from the view's `countries[].name`) also label the board and the
   hover text.
@@ -91,9 +93,9 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   action, and one *sell* button per card in hand. A standard action that needs a hex
   asks for it next, as a hex pick.
 - **Seat panels:** the AI board's name (hover it for its text, innate rule, slots and
-  unique cards), resources with income, then the board's two presence tracks with every printed space: solid spaces are uncovered, dashed ones still under presence, the boxed
+  unique cards), resources with income, then the board's economy and card-play tracks with every printed space: solid spaces are uncovered, dashed ones still under presence, the boxed
   one is the last uncovered, and each space's marks say what it adds (its income, such as
-  **+1 energy**, a green **T2 keep** where it lowers a tier-2 keep, and **pay N energy** where a placement pays its printed cost). Hover a step for its details. This is drawn from the generic
+  **+1 energy**, a green **T2 keep** where it lowers a tier-2 keep, a tag it adds such as **industry tag**, the capstone's name at a track's end, and **pay N energy** where a placement pays its printed cost). Hover a step for its details. This is drawn from the generic
   `seats[].board` shape, not from AI-specific keys.
 - **Globals** hold only game-wide tracks: modules keep per-seat and per-card
   bookkeeping out of them (`ViewOut::bookkeeping`). A `vars` track no module labels is
@@ -176,6 +178,11 @@ Screenshots go to `web/e2e-out/` (git-ignored): the start, draft, first
 choice, mid-game and end of the game, the layouts, four countries and the shared row.
 With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there as
 `viewer-mid.png` and `viewer-end.png`. A run takes about 15 s (12-20 s measured).
+
+`npm run e2e:sources` (`scripts/e2e-sources.mjs`, 070) plays first legal actions until a
+face-up threat refuses a seat, then checks the threat's source badge, its sources marked on
+the map, the refusal on the card and the engine's refusal of a forged payment. Same `AIC_URL`;
+screenshot `web/e2e-out/threat-sources.png`.
 
 - **Against a built site:** `npm run build`, then `npx vite preview --port <p>
   --strictPort` serves `web/dist/` with no engine watcher, so the run can't be reloaded
@@ -270,4 +277,92 @@ screenshot goes to `sweep-out/odd/` (`AIC_SWEEP_OUT`). It counts as one browser 
 | `src/main.ts` | Wiring: choice prompt, action buttons, timeline, hover card, record dialog. |
 
 `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
-(`cards/`), not yet by this game viewer: see *Card art* in the root README.
+(`cards/`), not yet by this game viewer: see [tools/card-art/README.md](../tools/card-art/README.md).
+
+## Viewer notes
+
+- A fresh worktree has no `web/node_modules`: run `npm install` first. Nor has it
+  `web/src/wasm/`: `npm run check` needs `npm run wasm` first.
+- `npm run build` (release wasm, typecheck, vite) took 92 s cold; `wasm-pack build
+  crates/aic-wasm --target web` plus `node scripts/wasm-smoke.mjs` about 21 s; `npm run
+  e2e` against a running dev server about 15 s.
+- On a fixed port: `npx vite --port $PORT --strictPort` from `web/`, then
+  `AIC_URL=http://localhost:$PORT/ npm run e2e`. At 073 it fails two board-size checks at 1366x768 (725x333 against 338, and the 4-country page): the board shrank earlier and the thresholds were left for a decision.
+- While Rust or content files are being edited, the dev server rebuilds the wasm and
+  reloads mid-run, which breaks e2e (`Cannot read properties of undefined (reading
+  'view')`). Check against a snapshot instead: `node scripts/build-wasm.mjs && npx vite
+  build && npx vite preview --port $PORT --strictPort`.
+- A backgrounded `npx vite preview` outlives its tool-runner wrapper when that is stopped at
+  its time limit, so the port stays taken: stop the `node` process that holds it.
+- **The sweep** (020, the bug hunt's checker): `npm run sweep -- --quick` from `web/` (with
+  `AIC_URL`; needs a release `aic-sim`) plays and watches games and checks the page at the
+  moments that matter. Cases, times and gotchas:
+  [The sweep](#the-sweep).
+- `web/scripts/shots-017.mjs`, `shots-019.mjs` and `shots-021.mjs` save the viewer shots of
+  their items; how to run them is in [experiments/history.md](../experiments/history.md).
+
+## Card viewer
+
+```sh
+cd web && npm run cards                            # exports, then serves http://localhost:5180/cards.html until stopped
+```
+
+Conductor's button runs that command in the main checkout and opens that URL: keep the
+command, port and path as they are. It needs no `npm install`, wasm or cargo: plain Node over
+the checkout it runs in. The export takes about 0.4 s. `--port N` serves elsewhere (`npm run
+cards -- --port 60476`). If the port is taken it says so and exits.
+
+- **Every card in content:** programs, buildings, events, threats, Unity, Discord, adversary
+  cards, projects, megaprojects and AI boards. Player cards go through `web/card/card.js` with
+  their scene from `art-originals/` (no art folder, no scene, nothing else lost); a kind with
+  no frame gets a plain face drawn from the same export. The scene is the one
+  `tools/card-art/scenes.json` wrote for that card, its only link to a card. Country pieces are
+  map, not cards, and are not shown.
+- **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
+  `web/card/faces.json`, `configs/baseline.json`, `docs/card-pricing.md` and
+  `experiments/results/`. It never runs `aic-sim docs`: faces are as committed, so a card
+  edited without it shows its old text (the fast lane stops that reaching `main`). **Rebuild**
+  on the page exports again without a restart, about 0.1 s.
+- **Stats** come from the newest `results.json` of 100 games or more with a per-card `cards`
+  table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
+  most plain agents, then most games); the page says which and warns when it is behind the
+  rules. Today that is r24 (`screen-055-prices`): later items committed reports, not `results.json`. Kept % is keeps per 100 games of the
+  agent, about the share of games a one-copy card was kept in: the report's kept ÷ offered
+  counts draft packets only, while the opening deal is kept undrafted, so it read 1000% on a card
+  offered four times. Played % is the report's, played ÷ (kept + drawn). Win Δ comes from `games.csv`, which names only the buildings standing at the end, so it is blank
+  for other cards and a correlation for buildings. A CSV under `experiments/results/` with a
+  `card` (or `id`) column and a column with `reason` in its name, `card-prices.csv` by
+  convention, adds the reasoned price and printed minus reasoned; a `revision` column prints in their labels, as the rules whose costs they were reasoned at. No results: no columns.
+- **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
+  cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is empty or
+  one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the card's text when
+  the note was saved; `hash` is a SHA-256 prefix of the card's content row and face, key order
+  aside (`contentHash` in the export). A planner reads this file directly; a note counts as
+  stale when its `hash` differs from that card's in `out/cards-export.json`.
+- **Badges:** *changed since your note* when the hash moved; saving the note again takes it
+  off. *New* for a card missing from `review/card-seen.json`, until it is opened, noted or
+  *Mark all seen* is pressed. The first run seeds that ledger with the whole set, so nothing
+  is new until content adds a card.
+- **Pricing lines** are every table row led by the card's full name and every bullet and
+  paragraph naming it, in the doc's order, with those that only pass by marked *in passing*
+  and sorted last. A short form of a name
+  ("Mutual Aid") doesn't match, and the doc's older sections keep the numbers of their day.
+- **Leaving a card keeps what was typed:** closing or stepping saves the note. Each save leaves
+  the previous file as `review/card-notes.json.bak`. A broken notes file shows on the page and
+  refuses saves rather than being overwritten.
+- **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser through
+  all of the above on a copy under `out/cards-check/`; screenshots land there. Content and
+  real notes aren't touched. It also fails if a card overflows at the last text size or the
+  title floor, a title leaves its plate, or text wraps differently between zooms.
+- **Card rules:** [docs/card-guidelines.md](../docs/card-guidelines.md). A building's box above the art
+  and the one below it hold about 80 characters at 7.5 pt under one icon row; a program's or
+  event's about 110. A test refuses any face printing `*` or "worth".
+- **Text sizes:** `npm run cards:fit` (about 2.5 s, no server, no port) puts every player card
+  through the real renderer and `fitCards` in a headless browser and writes
+  `out/card-fit.json`: for each id, `top` and `effect` box sizes in pt (null: nothing in that
+  box), `title` in pt, `overflow` and `where`, and `tight` for a box inside its panel but short
+  of the clearance. It prints the cards below 7.5 pt and exits 1 if anything overflows. It reads
+  content and `web/card/faces.json` as they stand in the working tree, so re-run it after an
+  edit. **7.5 pt is the goal**: a smaller size is the ladder rescuing a card, not a target.
+- Scenes are full-size PNGs of about 3.6 MB, loaded as they scroll in: a fast scroll shows gray
+  windows for a second or two.

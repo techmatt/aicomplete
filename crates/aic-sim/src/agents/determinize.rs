@@ -40,10 +40,10 @@ pub(crate) const SHUFFLED: [&str; 8] = [
     "cards.deck.2",
     "threats.deck.1",
     "threats.deck.2",
-    "alignment.deck.unity.1",
-    "alignment.deck.unity.2",
-    "alignment.deck.discord.1",
-    "alignment.deck.discord.2",
+    DEALT[0].2,
+    DEALT[1].2,
+    DEALT[2].2,
+    DEALT[3].2,
 ];
 
 /// The Alignment piles a game may deal a subset of: (side, tier, pile).
@@ -121,6 +121,14 @@ pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: 
     }
 }
 
+/// Puts `g`'s RNG streams on `seeds`.
+fn reseed(g: &mut GameState, seeds: &[(Key, u64)]) {
+    for (purpose, seed) in seeds {
+        g.rng
+            .insert(*purpose, Arc::new(aic_core::rng::Stream::new(*seed, purpose)));
+    }
+}
+
 /// Replaces the hidden parts of `g` with a sample drawn from `rng`.
 pub fn determinize(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
     crate::prof::time(crate::prof::Part::Determinize, || guess(rules, g, rng))
@@ -141,10 +149,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
     resample_adversary_deck(rules, g, rng);
     shuffle_project_stages(rules, g, rng);
     let seeds: Vec<(Key, u64)> = g.rng.keys().map(|k| (*k, rng.next_u64())).collect();
-    for (purpose, seed) in &seeds {
-        g.rng
-            .insert(*purpose, Arc::new(aic_core::rng::Stream::new(*seed, purpose)));
-    }
+    reseed(g, &seeds);
     if let (Some(p), Some(original)) = (g.pending.as_mut().map(Arc::make_mut), &original) {
         let snap = Arc::make_mut(&mut p.snapshot);
         // Usually the step that asked has not drawn, so its snapshot's
@@ -153,7 +158,6 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
         // cards (now public) on top of the state's, and gets them on top of
         // the same guess, so replaying draws them again. A pile the step
         // drew to the bottom and reshuffled keeps its (drawn) order.
-        // Set when the step drew a pile to the bottom and reshuffled it.
         let mut drawn_out = false;
         for key in SHUFFLED
             .iter()
@@ -190,10 +194,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
         // reshuffled order (rare: a step that empties a deck and draws
         // again); every other case gets the guessed streams.
         if !drawn_out {
-            for (purpose, seed) in &seeds {
-                snap.rng
-                    .insert(*purpose, Arc::new(aic_core::rng::Stream::new(*seed, purpose)));
-            }
+            reseed(snap, &seeds);
         }
     }
 }
@@ -254,7 +255,7 @@ fn resample_adversary_deck(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rn
     for id in &deck[peek..] {
         let s = stage(id) as usize;
         // The pool always has a card: the true one is in it.
-        out.push(pools[s - 1].pop().unwrap_or_else(|| id.clone()));
+        out.push(pools[s - 1].pop().unwrap_or(*id));
     }
     g.piles.insert(adversary::DECK.into(), Arc::new(out));
 }
@@ -327,7 +328,7 @@ mod tests {
             // Swap a hidden adversary card for an unseen one of its stage.
             let w = r.world();
             let st = |id: &str| w.content.adversary[w.content.adversary_index(id).unwrap()].stage;
-            let last = a.pile(adversary::DECK).last().unwrap().clone();
+            let last = *a.pile(adversary::DECK).last().unwrap();
             let all: Vec<Key> = a.piles.values().flat_map(|p| p.iter()).cloned().collect();
             let other = w
                 .content
@@ -348,7 +349,7 @@ mod tests {
                 }
                 if let (Some(other), Some(deck)) = (&other, g.piles.get_mut(adversary::DECK)) {
                     for id in Arc::make_mut(deck).iter_mut().filter(|id| **id == last) {
-                        *id = other.clone();
+                        *id = *other;
                     }
                 }
             };
@@ -392,7 +393,7 @@ mod tests {
         assert!(reached, "the guess only ever held the dealt cards");
         let mut other = g.clone();
         let mut deal = g.pile(key).to_vec();
-        deal[0] = outside.clone();
+        deal[0] = *outside;
         other.piles.insert(key.into(), Arc::new(deal));
         let (mut ga, mut gb) = (g.clone(), other);
         hide_alignment_deal(&r, &mut ga, 7, 0);
@@ -418,7 +419,7 @@ mod tests {
             hide_alignment_deal(&r, &mut a, 7, sample);
             hide_alignment_deal(&r, &mut b, 7, sample);
             assert_eq!(a.pile(key), b.pile(key), "sample {sample} read the table's deal");
-            tops.push(a.pile(key)[0].clone());
+            tops.push(a.pile(key)[0]);
         }
         tops.sort();
         tops.dedup();
@@ -450,16 +451,8 @@ mod tests {
     #[ignore = "slow lane: the pending-choice guess check at 3 countries"]
     fn pending_choices_replay_on_the_guess_three_countries() {
         for d in [0, 4] {
-            let text = std::fs::read_to_string(format!(
-                "{}/../../configs/baseline.json",
-                env!("CARGO_MANIFEST_DIR")
-            ))
-            .unwrap();
-            let mut c = aic_core::Config::from_json(&text).unwrap();
-            c.apply_override(&format!("adversary.difficulty={d}"))
-                .unwrap();
-            c.apply_override("countries=3").unwrap();
-            pending_choices_replay(&Rules::new(&c).unwrap(), 0..30);
+            let r = crate::agents::tests::config_rules_with("baseline", d, &["countries=3"]);
+            pending_choices_replay(&r, 0..30);
         }
     }
 

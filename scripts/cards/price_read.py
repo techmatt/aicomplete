@@ -21,15 +21,12 @@ These are correlations: confirm a fix with a paired overlay sweep.
 import argparse
 import collections
 import csv
-import json
 import math
 import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import screens as s  # noqa: E402
-
-CONTENT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'content')
 
 
 def strata(g):
@@ -107,9 +104,7 @@ def main():
     ap.add_argument('--flags', type=int, default=20)
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
-    with open(os.path.join(CONTENT, 'cards.json'), encoding='utf-8') as f:
-        content = [c for c in json.load(f) if c['tier'] in (1, 2)]
-    tier = {c['id']: c['tier'] for c in content}
+    tier = {c['id']: c['tier'] for c in s.content('cards') if c['tier'] in (1, 2)}
     cells, games = s.load(a.dir)
     by_variant = {}
     for cid, c in cells.items():

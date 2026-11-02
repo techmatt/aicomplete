@@ -6,7 +6,7 @@
 // pile falls back to a generic chip so nothing goes unshown.
 
 import { content, param, type CardView, type Config, type PileView, type Value, type View } from './engine';
-import { ADVERSARY_COLOR, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
+import { ADVERSARY_COLOR, countryName, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
 
 const esc = escapeHtml;
 
@@ -25,6 +25,8 @@ const DRAWN_PILES = new Set([
 ]);
 
 const findValue = (vs: Value[], key: string) => vs.find((v) => v.key === key);
+/** A key's place in `order`; a key not in it sorts after every one that is. */
+const orderRank = (order: string[]) => (key: string) => (order.indexOf(key) + 99) % 99;
 const pile = (v: View, key: string) => v.piles.find((p) => p.key === key);
 
 /** A value chip; `near` marks a value close to its max (where that is a warning). */
@@ -49,6 +51,17 @@ function cardChip(c: CardView, where: string, printed = false): string {
   const rules = (c.text ?? '').replace(/^\[[^\]]*\]\s*/, '');
   const text = printed && rules ? `<span class="ctext">${esc(rules)}</span>` : '';
   return `<span class="card${printed ? ' printed' : ''} ${esc(c.status.replace(/\s+/g, '-'))}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${status}${text}</span>`;
+}
+
+/** "1/2 energy, 0/3 credits" → bars. */
+function progressBars(status: string): string {
+  return status.split(',').map((part) => {
+    const m = /(\d+)\s*\/\s*(\d+)\s*(.*)/.exec(part.trim());
+    if (!m) return part.trim() ? `<span class="prog">${esc(part.trim())}</span>` : '';
+    const [have, need] = [Number(m[1]), Number(m[2])];
+    const pct = need ? Math.min(100, (100 * have) / need) : 100;
+    return `<span class="prog${have >= need ? ' done' : ''}"><span class="fill" style="width:${pct}%"></span><span class="ptext">${have}/${need} ${esc(m[3])}</span></span>`;
+  }).join('');
 }
 
 /** Adversary pieces on the board, by kind. */
@@ -145,7 +158,7 @@ export function statusHtml(v: View, config: Config): string {
 
 /** An adversary card face under the box's title: name, stage, escalation mark, then its printed text. */
 function adversaryCard(c: CardView, where: string, title: string): string {
-  const def = content.adversary?.find((a) => a.id === c.id);
+  const def = content.adversary.find((a) => a.id === c.id);
   // The view's text starts "stage n: "; the stage is drawn as a chip instead.
   const text = def?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
   const stage = def ? `<span class="stage">stage ${def.stage}</span>` : '';
@@ -226,22 +239,11 @@ function projectsHtml(v: View): string {
 
 // ---------- countries strip: threats ----------
 
-/** "1/2 energy, 0/3 credits" → bars. */
-function progressBars(status: string): string {
-  return status.split(',').map((part) => {
-    const m = /(\d+)\s*\/\s*(\d+)\s*(.*)/.exec(part.trim());
-    if (!m) return part.trim() ? `<span class="prog">${esc(part.trim())}</span>` : '';
-    const [have, need] = [Number(m[1]), Number(m[2])];
-    const pct = need ? Math.min(100, (100 * have) / need) : 100;
-    return `<span class="prog${have >= need ? ' done' : ''}"><span class="fill" style="width:${pct}%"></span><span class="ptext">${have}/${need} ${esc(m[3])}</span></span>`;
-  }).join('');
-}
-
 /** 070: a threat's source type, its hexes (hover marks them) and who is refused. */
 function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
-  const s = v.threat_sources?.find((x) => x.threat === id);
+  const s = v.threat_sources.find((x) => x.threat === id);
   if (!s) return { badge: '', hexes: '' };
-  const hexes = s.hexes.map((i) => { return hexKey(v.hexes[i].hex); }).join(' ');
+  const hexes = s.hexes.map((i) => hexKey(v.hexes[i].hex)).join(' ');
   const refused = v.seats.filter((x) => !s.seats.includes(x.index)).map((x) => x.index);
   const none = s.seats.length === 0;
   const says = none ? 'no one can counter: no source in reach'
@@ -254,13 +256,13 @@ function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
   };
 }
 
-function threatCard(c: CardView, where: string, v?: View): string {
+function threatCard(c: CardView, where: string, v: View): string {
   const effect = (c.text ?? '').replace(/\s*Counter:.*$/, '');
   // 044: a waiting or jammed threat must look it, not only in the hover.
   const waits = /Waits: /.test(c.text ?? '') ? '<span class="waits">waits</span>' : '';
   const jam = (c.text ?? '').match(/Jammed: needs (\d+) less/);
   const jammed = jam ? `<span class="jam">-${esc(jam[1])}</span>` : '';
-  const src = v ? sourceBadge(v, c.id) : { badge: '', hexes: '' };
+  const src = sourceBadge(v, c.id);
   return `<div class="threat${waits ? ' waiting' : ''}" data-card="${esc(c.id)}" data-where="${where}"${src.hexes ? ` data-hexes="${src.hexes}"` : ''}><span class="tname"><b>${esc(c.name)}</b>${src.badge}${waits}${jammed}${progressBars(c.status)}</span><span class="ttext">${esc(effect)}</span></div>`;
 }
 
@@ -318,7 +320,7 @@ export function countriesHtml(v: View): string {
   });
   const row = pile(v, 'threats.row');
   if (row) {
-    boxes.push(`<div class="country shared" style="--tint:#555;--soft:#eee"><div class="chead"><b>${esc(row.label)}</b></div>${row.visible.map((x) => threatCard(x, `pile:${row.key}`)).join('') || '<div class="none">none</div>'}</div>`);
+    boxes.push(`<div class="country shared" style="--tint:#555;--soft:#eee"><div class="chead"><b>${esc(row.label)}</b></div>${row.visible.map((x) => threatCard(x, `pile:${row.key}`, v)).join('') || '<div class="none">none</div>'}</div>`);
   }
   return boxes.join('');
 }
@@ -348,8 +350,8 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const r = x.key.startsWith('economy.income.') ? x.key.slice('economy.income.'.length) : null;
     if (r && x.value !== 0) names.add(r);
   }
-  const order = ['credits', 'energy', 'insight', 'chips', 'antimatter', 'ambassadors'];
-  const sorted = [...names].sort((a, b) => (order.indexOf(a) + 99) % 99 - (order.indexOf(b) + 99) % 99 || a.localeCompare(b));
+  const rank = orderRank(['credits', 'energy', 'insight', 'chips', 'antimatter', 'ambassadors']);
+  const sorted = [...names].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
   const resHtml = sorted.map((r) => {
     const have = findValue(s.values, `resource.${r}`);
     const inc = findValue(s.values, `economy.income.${r}`);
@@ -373,7 +375,7 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
 /**
  * The seat's player board (`SeatView.board`): one row per track, every printed step
  * left to right. Uncovered steps are solid, covered ones dashed, the step in effect
- * is boxed; marks (`tier2`, `antimatter`, any other) sit under the step's value.
+ * is boxed; marks (`TrackMark`) sit under the step's value.
  */
 function boardHtml(v: View, seatIndex: number): string {
   const b = v.seats[seatIndex].board;
@@ -385,7 +387,7 @@ function boardHtml(v: View, seatIndex: number): string {
       const marks = (st.marks ?? []).map((m) => `<span class="mark m-${esc(m.key)}" title="${esc(m.doc ?? m.key)}">${esc(m.label)}</span>`).join('');
       return `<span class="${cls}" data-track="${seatIndex}:${ti}:${i}"><b>${st.value}</b>${marks}</span>`;
     }).join('');
-    return `<div class="track-row"><span class="label" title="${esc(t.label)}">${esc(t.resource || t.label)}</span>${steps}</div>`;
+    return `<div class="track-row"><span class="label" title="${esc(t.label)}">${esc(t.label)}</span>${steps}</div>`;
   }).join('');
   return `<div class="board" data-board="${seatIndex}">${tracks}</div>`;
 }
@@ -410,13 +412,10 @@ export function boardDetails(v: View, seatIndex: number): string | null {
   return `<b>${esc(b.name)}</b> <code>${esc(b.id)}</code>${b.text ? `<br>${esc(b.text)}` : ''}${b.innate ? `<hr><b>${esc(b.innate.name)}</b>${b.innate.text ? `: ${esc(b.innate.text)}` : ''}` : ''}${b.slots !== undefined ? `<br>${b.slots} slots printed` : ''}${b.tags?.length ? `<br>printed tags: ${esc(b.tags.join(', '))}` : ''}${cards ? `<hr>board cards:<br>${cards}` : ''}<br><small><code>${esc(b.key)}</code> · from ${esc(b.source)}</small>`;
 }
 
-/** "Coastal Republic", or `C<i>` if the view has no name. */
-export const countryName = (v: View, i: number) => v.countries[i]?.name || `C${i}`;
-
 export function seatCardsHtml(v: View, seatIndex: number): string {
   const s = v.seats[seatIndex];
-  const order = ['cards.packet', 'cards.drafted', 'cards.hand', 'cards.built'];
-  const groups = [...s.cards].sort((a, b) => ((order.indexOf(a.key) + 99) % 99) - ((order.indexOf(b.key) + 99) % 99));
+  const rank = orderRank(['cards.packet', 'cards.drafted', 'cards.hand', 'cards.built']);
+  const groups = [...s.cards].sort((a, b) => rank(a.key) - rank(b.key));
   return groups.map((g) => {
     const cls = g.key.replace(/\W/g, '-');
     const body = g.cards.length ? g.cards.map((c) => cardChip(c, `seat:${seatIndex}:${g.key}`, true)).join('') : '<span class="slot">—</span>';

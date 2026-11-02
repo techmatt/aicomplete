@@ -1,8 +1,9 @@
 //! The adversary (014, 016, 017): its deck (the clock and the stager), its
 //! ambassadors (build, spread, corrupt), nodes, adversary compute and the
-//! project deck it fills, the ambassador supply and the difficulty levels. Also the shared rules for placing and removing
-//! adversary ambassadors and troops, which cards, threats and Alignment use,
-//! and the board conditions for winning and losing.
+//! project deck it fills, the ambassador supply and the difficulty levels.
+//! Also the shared rules for placing and removing adversary ambassadors and
+//! troops, which cards, threats and Alignment use, and the board conditions
+//! for winning and losing.
 
 use crate::content::{AdversaryCard, Op, ProjectCard, RoundFlag};
 use crate::key::{Key, KeyBuf};
@@ -118,8 +119,19 @@ pub fn projects_with_compute(g: &GameState) -> Vec<Key> {
     ids
 }
 
+/// Seat `seat` picks a project holding compute, and `amount` drains from it.
+pub fn choose_drain(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64) -> Res {
+    let ids = projects_with_compute(g);
+    let opts = ids.iter().map(|p| opt(*p)).collect();
+    let prompt = format!("Seat {seat}: remove compute from which adversary project?");
+    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+        drain_project(g, cx, &ids[i], amount);
+    }
+    Ok(())
+}
+
 fn project<'w>(w: &World<'w>, id: &str) -> &'w ProjectCard {
-    &w.content.projects[w.content.project_index(id).expect("project in content")]
+    w.content.project(id)
 }
 
 /// Compute that fills project `id`: its printed cost per player.
@@ -154,10 +166,7 @@ pub fn threat_tier(w: &World, g: &GameState) -> u8 {
 }
 
 pub(super) fn card<'w>(w: &World<'w>, id: &str) -> &'w AdversaryCard {
-    &w.content.adversary[w
-        .content
-        .adversary_index(id)
-        .expect("adversary card in content")]
+    w.content.adversary_card(id)
 }
 
 fn card_text(c: &AdversaryCard) -> String {
@@ -683,7 +692,7 @@ fn reveal(g: &mut GameState, cx: &mut Cx) {
 /// corrupted stations.
 pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) {
     let w = cx.world;
-    // One source for the rule: the plan agents forecast with is the build.
+    // One source for the rule: the plan is the build.
     let on = twists(&w, g);
     cx.tally(g, "adversary.arrivals", super::plan::arrival_count(&w, g, &on, scope));
     for (h, n) in super::plan::build_plan(&w, g, &on, scope) {
@@ -713,7 +722,7 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
 fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
     let w = cx.world;
     if let Some(s) = player_ambassador(g, h) {
-        cx.add_tokens(g, h, &ambassador(s), -1);
+        cx.add_tokens(g, h, ambassador(s), -1);
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
         return;
@@ -746,8 +755,8 @@ pub fn remove_node(g: &mut GameState, cx: &mut Cx, h: usize) {
 }
 
 /// Nodes on `hexes`, or on the whole board for `None`.
-pub fn node_count(g: &GameState, c: Option<&[usize]>) -> i64 {
-    match c {
+pub fn node_count(g: &GameState, hexes: Option<&[usize]>) -> i64 {
+    match hexes {
         Some(hexes) => hexes.iter().map(|&h| g.tokens(h, NODE)).sum(),
         None => (0..g.hexes.len()).map(|h| g.tokens(h, NODE)).sum(),
     }
@@ -781,27 +790,37 @@ pub fn place_troop(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.add_tokens(g, h, TROOP, 1);
 }
 
+/// Any player cube on hex `h` comes off and the adversary's goes on.
+fn take_for_adversary(g: &mut GameState, cx: &mut Cx, h: usize) {
+    if let Some(s) = cube_owner(g, h) {
+        cx.add_tokens(g, h, cube(s), -1);
+    }
+    cx.add_tokens(g, h, ADV_CUBE, 1);
+}
+
+/// Every corruption marker on hex `h` comes off: corruption replaces them.
+pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
+    let marked = g.tokens(h, MARKER);
+    cx.add_tokens(g, h, MARKER, -marked);
+}
+
 /// City `h` is corrupted: the adversary's cube goes on (a player cube
 /// comes off), its adversary ambassadors return to the supply, and any
 /// presence on it is destroyed (027).
 pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
-    if let Some(s) = cube_owner(g, h) {
-        cx.add_tokens(g, h, &cube(s), -1);
-    }
-    cx.add_tokens(g, h, ADV_CUBE, 1);
+    take_for_adversary(g, cx, h);
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
     // 024: player ambassadors waiting here are lost, or they would free the
     // city in the same step (and pay Unity for an adversary attack).
     for s in 0..g.seats.len() {
         let k = ambassador(s);
-        let mine = g.tokens(h, &k);
-        cx.add_tokens(g, h, &k, -mine);
+        let mine = g.tokens(h, k);
+        cx.add_tokens(g, h, k, -mine);
     }
     // The city's corruption replaces any marker on it.
-    let marked = g.tokens(h, MARKER);
-    cx.add_tokens(g, h, MARKER, -marked);
+    clear_markers_on(g, cx, h);
     // 034: by `corruption_reach`, presence around the city goes too.
     for x in within(&w, h, w.int("board.corruption_reach")) {
         if let Some(s) = presence_owner(g, x) {
@@ -850,8 +869,8 @@ pub fn land_troops(
         cx.tally(g, tally, 1);
         if let Some(source) = destroy {
             for s in 0..g.seats.len() {
-                if g.tokens(spots[i], &presence(s)) > 0 {
-                    board::destroy_piece(g, cx, spots[i], &presence(s), board::Cause::Effect(source));
+                if g.tokens(spots[i], presence(s)) > 0 {
+                    board::destroy_piece(g, cx, spots[i], presence(s), board::Cause::Effect(source));
                 }
             }
         }
@@ -859,34 +878,24 @@ pub fn land_troops(
     Ok(())
 }
 
-/// Research station `h` flips to the adversary.
+/// Research station `h`, not yet corrupted, flips to the adversary.
 pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
-    if let Some(s) = cube_owner(g, h) {
-        cx.add_tokens(g, h, &cube(s), -1);
-    }
-    if !corrupted(g, h) {
-        cx.add_tokens(g, h, ADV_CUBE, 1);
-        // 059: corruption replaces any marker here, as on a city.
-        let marked = g.tokens(h, MARKER);
-        cx.add_tokens(g, h, MARKER, -marked);
-        cx.tally(g, "adversary.stations_flipped", 1);
-        cx.note(Some(h), || {
-            format!("The station at {} flips to the adversary", hex_name(&w, h))
-        });
-    }
+    take_for_adversary(g, cx, h);
+    // 059: corruption replaces any marker here, as on a city.
+    clear_markers_on(g, cx, h);
+    cx.tally(g, "adversary.stations_flipped", 1);
+    cx.note(Some(h), || {
+        format!("The station at {} flips to the adversary", hex_name(&w, h))
+    });
 }
 
 /// Factory `h` becomes the adversary's (070: a threat's target): any player
 /// cube comes off, its cube goes on, and it replaces any marker.
 pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
-    if let Some(s) = cube_owner(g, h) {
-        cx.add_tokens(g, h, &cube(s), -1);
-    }
-    cx.add_tokens(g, h, ADV_CUBE, 1);
-    let marked = g.tokens(h, MARKER);
-    cx.add_tokens(g, h, MARKER, -marked);
+    take_for_adversary(g, cx, h);
+    clear_markers_on(g, cx, h);
     cx.tally(g, "adversary.factories_seized", 1);
     cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
 }
@@ -915,7 +924,7 @@ fn destinations(w: &World, g: &GameState, from: usize, range: i32) -> Vec<usize>
         if !has_piece(w, g, h) {
             continue;
         }
-        if shields.iter().any(|&s| g.tokens(h, &presence(s)) > 0) {
+        if shields.iter().any(|&s| g.tokens(h, presence(s)) > 0) {
             continue;
         }
         let city = collecting_city(w, g, h);

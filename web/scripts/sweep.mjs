@@ -19,14 +19,13 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { openPage } from './cdp.mjs';
+import { openPage, viewerUrl as url } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repo = resolve(web, '..');
 const args = process.argv.slice(2);
 const quick = args.includes('--quick');
 const only = args.flatMap((a, i) => (args[i - 1] === '--case' ? [a] : []));
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
 const out = resolve(process.env.AIC_SWEEP_OUT ?? join(web, 'sweep-out'));
 const games = Number(process.env.AIC_SWEEP_SEEDS ?? (quick ? 1 : 3));
 const sim = process.env.AIC_SIM ?? join(repo, 'target', 'release', process.platform === 'win32' ? 'aic-sim.exe' : 'aic-sim');
@@ -311,7 +310,7 @@ const t0 = Date.now();
 try {
   await page.size(...SIZES[0]);
   await page.send('Page.navigate', { url });
-  await page.until('window.aic && window.aic.view && window.aic.play', 'the viewer to start (is it built with the sweep hooks?)', 30000);
+  await page.until('window.aic && window.aic.view && window.aic.play', 'the viewer to start', 30000);
   await page.js('localStorage.clear()');
   await page.js(PAGE_LIB);
   for (const c of cases) {

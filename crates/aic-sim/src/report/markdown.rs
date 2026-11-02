@@ -7,6 +7,7 @@ use std::fmt::Write as _;
 use aic_core::content_hash;
 
 use crate::experiment::{UNSPENT, UNSPENT_HIGH};
+use crate::gate::{Decided, GateState};
 
 use super::findings::findings;
 use super::records::CATEGORIES;
@@ -228,7 +229,7 @@ fn measures(md: &Md, w: &mut String) {
     if spec.winprob.games == 0 || spec.closeness.every == 0 {
         let _ = writeln!(
             w,
-            "- Off measures are opt-in (README, *Experiments*): screen without them, then rerun the finalists with `--variants A,B --winprob N --closeness N`."
+            "- Off measures are opt-in (docs/experiments.md): screen without them, then rerun the finalists with `--variants A,B --winprob N --closeness N`."
         );
     }
     let bad: usize = sums.iter().map(|s| s.games - s.replay_ok).sum();
@@ -279,7 +280,7 @@ fn findings_and_gate(md: &Md, w: &mut String) {
     }
 
     if let Some(g) = run.gate {
-        let _ = write!(w, "{}", g.markdown());
+        let _ = write!(w, "{}", gate_section(g));
     }
 }
 
@@ -645,11 +646,14 @@ fn unspent(md: &Md, w: &mut String) {
     let high: Vec<String> = names.iter().zip(UNSPENT_HIGH).map(|(n, h)| format!("{n} {h}")).collect();
     let _ = writeln!(w, "\n## Unspent resources\n");
     let _ = writeln!(w, "Mean left at game end, per seat ({}). `!`: over the flag, a seat's mean above {}.\n", names.join(" / "), high.join(", "));
-    let _ = writeln!(w, "| cell | agent | seat 0 | seat 1 | seat 2 |");
-    let _ = writeln!(w, "|---|---|---|---|---|");
+    // Seats follow the config's countries, which can differ between cells.
+    let most = sums.iter().map(|s| s.unspent.len()).max().unwrap_or(0);
+    let seat_heads: String = (0..most).map(|i| format!(" seat {i} |")).collect();
+    let _ = writeln!(w, "| cell | agent |{seat_heads}");
+    let _ = writeln!(w, "|---|---|{}", "---|".repeat(most));
     let mut flagged = 0;
     for s in sums {
-        let seats: Vec<String> = s
+        let mut seats: Vec<String> = s
             .unspent
             .iter()
             .map(|seat| {
@@ -664,9 +668,11 @@ fn unspent(md: &Md, w: &mut String) {
                 parts.join(" / ")
             })
             .collect();
-        let _ = writeln!(w, "| {} d{} | {} | {} |", s.variant, s.difficulty, s.agent, seats.join(" | "));
+        seats.resize(most, String::new());
+        let cell = md.prefix(&s.config, &s.variant);
+        let _ = writeln!(w, "| {cell}d{} | {} | {} |", s.difficulty, s.agent, seats.join(" | "));
     }
-    let _ = writeln!(w, "\n{flagged} seat means over the flag.");
+    let _ = writeln!(w, "\n{flagged} seat means over the flag.\n");
 }
 
 fn strategy_health(md: &Md, w: &mut String) {
@@ -729,9 +735,8 @@ fn strategy_health(md: &Md, w: &mut String) {
 fn card_rates(md: &Md, w: &mut String) {
     let run = md.run;
     let _ = writeln!(w, "## Pick and play rates per card\n");
-    let _ = writeln!(w, "Over all cells of each agent. Offered: in a draft packet (each round's deal). Every dealt card is drafted by someone (packets pass until empty), so pick is the mean pick position, 1 = a seat's first pick of the round (lower = wanted sooner). Keep: kept (bought) per offer. Play: played per card gained (kept or drawn; unique AI cards start in hand, so their plays are per game). Per variant, config and difficulty in `cards.csv`.\n");
-    let labels: Vec<&String> = run.cards.keys().collect();
-    let mut order: Vec<&String> = labels.clone();
+    let _ = writeln!(w, "Over all cells of each agent. Offered: in a draft packet (each round's deal). Every dealt card is drafted by someone (packets pass until empty), so pick is the mean pick position, 1 = a seat's first pick of the round (lower = wanted sooner). Keep: keeps per offer; keeps count the opening deal and offers don't, so it can pass 100%. Play: played per card gained (kept or drawn; unique AI cards start in hand, so their plays are per game). Per variant, config and difficulty in `cards.csv`.\n");
+    let mut order: Vec<&String> = run.cards.keys().collect();
     order.sort_by_key(|l| {
         run.cells
             .iter()
@@ -741,7 +746,7 @@ fn card_rates(md: &Md, w: &mut String) {
     let mut head = String::from("| card |");
     let mut sep = String::from("|---|");
     for l in &order {
-        let _ = write!(head, " {l}: pick (offered) / keep / play |");
+        let _ = write!(head, " {l}: pick (offered) / keeps per offer / play |");
         sep.push_str("---|");
     }
     let _ = writeln!(w, "{head}\n{sep}");
@@ -843,4 +848,59 @@ fn saved_records(md: &Md, w: &mut String) {
             let _ = writeln!(w);
         }
     }
+}
+
+/// The gate's section.
+pub fn gate_section(s: &GateState) -> String {
+    let mut w = String::new();
+    let g = &s.gate;
+    let _ = writeln!(w, "\n## Gate\n");
+    let _ = writeln!(
+        w,
+        "Each check against its own agent on the same seeds; gap: the agent's win % minus the check's, ± one standard error (unpaired, as the gate tables have it). The verdict is the gap's sign at the cap of {} seeds. A check stops, looking at {} seeds and every {} after, once the gap clears {} standard errors (sign test) or the seeds left can't turn it back at that noise.\n",
+        s.cap, g.min_games, g.every, g.z
+    );
+    let _ = writeln!(
+        w,
+        "{} of {} games ({:.0}%), {:.0} s of game time of about {:.0} s at the cap ({:.0}%). {}\n",
+        s.games,
+        s.games_cap,
+        100.0 * s.games as f64 / s.games_cap.max(1) as f64,
+        s.seconds,
+        s.seconds_at_cap,
+        100.0 * s.seconds / s.seconds_at_cap.max(1e-9),
+        match (s.finished, s.passes, s.failed) {
+            (false, ..) => "**Not finished.**".to_string(),
+            (true, true, _) => "**Passes:** every check loses ground.".to_string(),
+            (true, false, 0) => "**Does not pass:** see the ✗ rows.".to_string(),
+            (true, false, n) => format!("**Does not pass:** {n} game(s) panicked, see *Failed games*."),
+        }
+    );
+    let _ = writeln!(w, "| variant | d | check | games | stopped | win % | gap to its agent | paired se |");
+    let _ = writeln!(w, "|---|---|---|---|---|---|---|---|");
+    // 044: with several configs, rows of one check differ only by config.
+    let several = s.rows.iter().any(|r| r.config != s.rows[0].config);
+    for r in &s.rows {
+        let variant = if several { format!("{} ({})", r.variant, r.config) } else { r.variant.clone() };
+        let stop = match r.decided {
+            Some(Decided::ClearsNoise) => "clears the noise",
+            Some(Decided::SignSettled) => "sign settled",
+            None if r.games < r.cap => "running",
+            None => "cap",
+        };
+        let _ = writeln!(
+            w,
+            "| {} | {} | {} | {} | {stop} | {:.0} | {:+.0} ±{:.0}{} | {:.0} |",
+            variant,
+            r.difficulty,
+            r.check,
+            r.games,
+            100.0 * r.check_win_rate,
+            100.0 * r.gap + 0.0,
+            100.0 * r.se,
+            if r.loses { "" } else { " ✗" },
+            100.0 * r.paired_se
+        );
+    }
+    w
 }

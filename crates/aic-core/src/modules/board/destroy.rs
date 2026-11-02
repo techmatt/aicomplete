@@ -63,7 +63,7 @@ pub fn destroy_piece(
         return false;
     }
     if let Some(s) = player_ambassador(g, h) {
-        cx.add_tokens(g, h, &ambassador(s), -1);
+        cx.add_tokens(g, h, ambassador(s), -1);
         cx.tally(g, "board.ambassador_shield", 1);
         return false;
     }
@@ -80,7 +80,7 @@ pub fn destroy_piece(
     }
     if kind == STATION || kind == FACTORY {
         if let Some(s) = cube_owner(g, h) {
-            cx.add_tokens(g, h, &cube(s), -1);
+            cx.add_tokens(g, h, cube(s), -1);
         }
     }
     if kind == FACTORY {
@@ -125,7 +125,7 @@ pub fn destroy_own_presence(
 
 /// Uses a seat's `CivicShelter` passive (Aegis Dome Array) for a facility or
 /// presence destruction in `country`, if one applies.
-pub(super) fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
+fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
     let w = cx.world;
     for s in 0..g.seats.len() {
         if g.var(&cards::civic_used(s)) == 0

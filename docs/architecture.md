@@ -11,7 +11,7 @@ rules themselves are in [rules.md](rules.md).
   through the public API on determinized copies, except the `planner`, whose rollouts
   play the real state with full information, the Alignment deal aside: [principles.md](principles.md)) and
   the experiment harness (`experiment.rs`, `report/`) that measures play at graded
-  skill. See the root README, *Agents* and *Experiments*.
+  skill. See [agents.md](agents.md) and [experiments.md](experiments.md).
 - **`aic-wasm`**: wasm-bindgen adapter, JSON strings in and out. No rules.
 - **`web/`**: the browser viewer (Vite + TypeScript) on `aic-wasm`. It draws the
   [generic view](#the-generic-view) and offers only `legal_actions`; see
@@ -26,7 +26,8 @@ rules themselves are in [rules.md](rules.md).
   only from per-purpose streams in `GameState::rng`:
   - Each variant declares its purposes (`VariantDef::rng`). `Cx::rng` panics if a
     module draws from a purpose it did not declare, and two modules may not declare the
-    same one.
+    same one. A rule reached from another module's step draws through a named accessor
+    instead: `Cx::deck_rng` and `Cx::threat_rng` (a Discord card's extra threats).
   - A stream is keyed by the game seed and a hash of the purpose name, so adding,
     removing or reordering modules never shifts another module's numbers.
 - **Fixed-width draws**: `Stream` exposes only `below(n)`, written out on `u32`. rand samples `usize` from a `u64` on 64-bit targets and from a `u32` on
@@ -95,7 +96,7 @@ variant. Abridged:
     { "module": "threats", "variant": "countries", "params": { "per_country": 1 } },
     { "module": "alignment", "variant": "tug", "params": { "undecided_per_player": 4, "tip_per_player": 2, ... } },
     { "module": "economy", "variant": "standard", "params": { ... } },
-    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "start_credits": [15, 25] } },
+    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "slots": [5, 3], "start_credits": [15, 25], ... } },
     { "module": "cards", "variant": "draft", "params": { "deal": 4, ... }, "cards": ["telemetry_archive", ...] }
   ],
   "round": ["alignment.sway", "adversary.build", "adversary.spread", "adversary.corrupt",
@@ -206,10 +207,11 @@ A rule that depends on another module's *variant* reads `World::variant("<module
 places or removes adversary ambassadors goes through `adversary::place`, `remove`,
 `remove_piece`, `build_all`, `spread`, `corrupt_city` and `corrupt_station`, so the supply,
 cancellation and node-making hold everywhere; `build_all` places what
-`plan::build_plan` reads. Buildings and
+`plan::build_plan` reads. Facilities and
 presence are destroyed through `board::destroy_piece` (except that corruption, sacrifice, Eviction and war's factory-hex hit call `board::lose_presence`, unabsorbed), which applies Shelter
 Order, a base's troop (adversary strikes), hardening, a player ambassador's defense and
-Aegis Dome Array (`Op::CivicShelter`), and sways the Discord. Presence lives in the board module
+Aegis Dome Array or the Aegis Doctrine capstone (`Op::CivicShelter`), and sways the Discord. An adversary piece leaves the board through `adversary::remove`, `remove_piece`, `damage`, `destroy_all`, `remove_node`, `remove_nodes`,
+`remove_all_in_country`, `pushback`, `cleanse` (effects), `board::liberate` and `free_cities`. Presence lives in the board module
 (`board::place_presence`, `board::track_taken`); AI boards read their track through
 it.
 
@@ -244,10 +246,11 @@ consistent:
 - `move_card` (between piles, or to and from the box), `set_pile` (a shuffle);
 - `exhaust`, `refresh` (cards; the owning module refreshes its own cards);
 - `set_key` / `add_key` (any track by full key);
-- `choose` (players choose, below), `note` (a log line);
+- `choose` (players choose, below), `choose_loss` (a choice that loses a piece), `note` (a log line);
+- `peak`, `level` (read a counter or track);
 - `per_round` (a per-round counter by full key; `adversary.ops` is one), `count`
   (this module's counter), `tally` (any counter by full key);
-- `rng(purpose)`;
+- `rng(purpose)`, `deck_rng`, `threat_rng`;
 - `end`.
 
 ### Choices ("players choose")
@@ -327,10 +330,10 @@ Content is data in `content/`, composed from code primitives:
   `ability` (once a round; buildings only; `cost` from the seat, `tokens` from the
   card), `replaces` (a tag: built over one of your
   buildings whose top card carries it), `tokens` (`{kind, per_round}`, a type from
-  `vocab::TokenKind`), `keywords` (words read by nothing yet, not printed; `help` marks
+  `vocab::TokenKind`), `keywords` (read by `scripts/cards/cards_doc.py` and the card viewer, not by the core, not printed; `help` marks
   a help card) and `unique`. A card has no `text`: `aic_core::face` generates
   its icons and words from these fields, and a new op doesn't compile until it has a face. List the id in the `cards` module's config
-  `cards`, then run `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`
+  `cards`, run `python scripts/configs/shared_row.py`, then `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`
   (023). Every op, with where it is printed, is listed in [ops.md](ops.md).
 - **Threats** (`threats.json`): `counter` costs and `effects` (ops, with `Spot`s naming
   the pieces they hit).
@@ -339,9 +342,10 @@ Content is data in `content/`, composed from code primitives:
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
 - **AI boards** (`ais.json`): credit production, innate
   passives, printed `tags` (they count for requirements only), the two presence tracks (`presence`, the economy track, and `presence2`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
-  `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, powers (costs and lists of ops), unique cards, a
-  `start` building and `powers` (021: `{name, text, tags, cost, effects}`; `tags` may
-  name `any`). Slots are a config list, `ai.slots`.
+  `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, unique cards, a
+  `start` building; `powers` are `{name, text, tags, cost, effects}` (021; `tags` may
+  name `any`). Slots and starting credits are config lists read by seat, `ai.slots` and
+  `ai.start_credits`: a tunable lives in a config, so a board's sheet spans both files.
 - **Alignment cards** (`alignment.json`, the Unity and Discord decks): `side` (`unity`
   or `discord`), `tier` (1 or 2), `text`, `effects` (ops: resolved when its side's
   bucket tips) and `steps` (017: from `at` tips of its side, other `effects`).
@@ -425,9 +429,10 @@ web viewer draws only these:
 | `countries[c]` | `name` (the printed piece's, `content/map.json`), `seat`, `color`, `hexes`, `values`, `cards` (card groups, such as its threat) | `name`; `tokens.<kind>` totals over the country |
 | `seats[s]` | `passed`, `values`, `cards` (card groups), `board` (a player board, or `null`) | `resource.<name>` per resource; exhausted cards no module shows, as group `engine.exhausted` |
 | `globals` | `values` of the whole game | every `vars` track no module declares bookkeeping, by its key |
-| `piles` | `{key, label, owner, count, visible}` | none: modules add them |
+| `piles` | `{key, label, owner, count, visible, source}` | none: modules add them |
 | `standard` | `{act, energy, credits, chips, ambassadors, doc}`: the standard actions with their costs | none: modules add them |
 | `arrows` | `{kind, from, to, count, rounds, doc}`: where pieces are heading | none: modules add them |
+| `threat_sources` | each threat's source hexes | the threats module |
 | `choice` | `{seat, prompt}` of the open choice | when `pending` is set |
 | `round`, `phase`, `round_order`, `outcome` | where the game is | always |
 
@@ -439,10 +444,10 @@ cost?}`. `status` is a short word the module chooses; the viewer styles `ready`,
 
 A **board** is a printed player sheet, in a shape that doesn't name any game's boards:
 `{key, source, id, name, text?, innate? {name, text?}, tracks, slots?, cards}`. A
-**track** is `{label, resource?, steps, uncovered, current}`: `steps` are every printed
+**track** is `{label, steps, uncovered, current}`: `steps` are every printed
 step left to right, each `{value, marks?}`; the leftmost `uncovered` steps show and the
 step at `current` is in effect. A **mark** `{key, label, doc?}` is something extra
-printed on a step; the viewer styles keys `tier2` and `antimatter` and shows any other
+printed on a step; the viewer styles key `tier2` and shows any other
 label as-is. `cards` are the board's own cards, `status` saying where each is now.
 
 **How a module exposes its state.** Most of it needs nothing. Tokens it places,
@@ -477,7 +482,7 @@ In the baseline:
 - `threats` adds each country's threat (`threats.on`, status = counter progress such as
   `1/2 credits`; the text adds who paid what, any jam and whether it waits), or the shared
   row pile, and the tier dealt this round. Bookkeeping: `threats.paid.*`, `threats.jam.*`,
-  `threats.late.*`.
+  `threats.late.*`, `threats.target.*`, `threats.made.*`.
 - `alignment` adds the Undecided, both buckets (each against the size it tips at), both
   tip counts (against the next threshold), the bar level with its win condition, and
   corrupted cities against all cities; piles for both decks (counts only), each side's
@@ -497,14 +502,14 @@ In the baseline:
   on its track, and ambassadors on the board; it publishes every standard action with
   its cost (`View.standard`, read by the viewer's labels) and each adversary troop's
   next target and how many marches away (`View.arrows`, 019, drawn as arrows); bookkeeping
-  `board.<flag>.*`, `board.project.*`, `board.project_done.*`, `board.track.*`, `board.track2.*`, `board.rich.*`, `board.placed.*`.
+  `board.<flag>.*`, `board.project.*`, `board.project_done.*`, `board.track.*`, `board.track2.*`.
 - `economy` adds each seat's income per resource (bookkeeping
   `economy.production.*`, one-time permanent gains, counted in the income;
   `economy.insight_debt.*`); `cards` adds hand, buildings (`n/slots`; a stacked one's
   text names the cards splayed under it, status `stacked`), programs in play, draft
   hand and drafted cards (status: the keep price, `keep 1 insight`), tokens in each
-  token card's text, tags, next-building discount, Aegis Dome Array used, and the decks.
-  Bookkeeping: `cards.picked.*`, `cards.next_discount.*`, `cards.civic_used.*`,
+  token card's text, tags, Aegis Dome Array used, and the decks.
+  Bookkeeping: `cards.picked.*`, `cards.civic_used.*`,
   `cards.kept_round.*`, `cards.tokens.*`. Piles (021):
   `cards.built.<s>` (active buildings), `cards.under.<s>.<top>` (splayed under `top`,
   bottom first), `cards.played.<s>` (programs).
@@ -543,7 +548,8 @@ differ.
 
 - **Event log**: `Event`s from `apply` and `new_game_logged`, for UIs and the sim's
   `--trace`. Hot loops pass `None` to skip building it.
-- **Counters** in `GameState::stats`, deterministic and replayed:
+- **Counters** in `GameState::stats`, deterministic and replayed, and in the state's fingerprint,
+  so adding or renaming one moves the golden even when play doesn't:
   - `per_round["<module>.<name>"][r]`: per-round counters, entry 0 setup, entry `r`
     round `r` (017). `adversary.ops` counts adversary operations (a proxy for table
     time; the sim's records keep it as `adversary_ops` and `setup_ops`),
@@ -585,3 +591,22 @@ Left out on purpose until something needs them:
   (config + seed + actions) are the durable format.
 - **Snapshots cost**: every action and automatic phase clones the state first (the
   snapshot a choice replays from). Fine at today's speeds; a hot spot if sims need more.
+
+## Core source map
+
+Core source map: `rules.rs` (config compilation, round/phase loop, apply, choice
+replay), `module.rs` (the module framework: `ModuleDef`, `VariantDef`, `Module`, `Cx`,
+`World`), `config.rs`,
+`content.rs`, `op.rs` (the one effect schema), `vocab.rs` (`Resource`, `Tag`, `TokenKind`, `Side`), `key.rs` (interned names, `FlatMap`), `face.rs` (card icons and text from ops), `map.rs` + `hex.rs` (axial hexes), `state.rs`, `action.rs`, `event.rs`,
+`rng.rs`, `hash.rs` (FNV-1a: config and content hashes, RNG stream ids, state
+fingerprints), `driver.rs` (`play`/`replay` with an `Agent`, `PlayedGame`), `view.rs`
+(the generic view clients draw), `record.rs` (`SavedGame`, the game record format), `tests/` (`mod.rs`: helpers,
+`variant_matrix`, `golden_game`; one file per area: config, map, setup, adversary,
+plan, ambassadors, boards, production, war, march, factories, standard_actions, freeing, threats,
+threat_sources, alignment, cards, science, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`
+(020): checks after every action of random games).
+`modules/threats/`: `mod.rs` (the module), `sources`, `ops`. `modules/board/`: `mod.rs` (the module, its phases), `presence`, `ambassadors`, `production`,
+`standard`, `troops`, `destroy`, `view`. `modules/cards/`: `mod.rs`, `deck`, `play`, `price`,
+`sacrifice`, `tableau`, `view`. `modules/effects/`: `mod.rs` (`run`, the one dispatching match),
+`ctx`, `feasible`, `targets`, and the arm bodies by topic: `resources`, `ambassadors`,
+`removal`, `science`, `team`.

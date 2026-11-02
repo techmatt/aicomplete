@@ -171,3 +171,16 @@ fn an_ocean_edge_is_not_a_front() {
     // A printed front with no land border has nowhere to put its bases.
     assert!(Map::build(&content, 2).is_err());
 }
+
+#[test]
+fn every_piece_prints_two_coastal_cities() {
+    let (rules, _) = action_only(&["countries=4"]);
+    for c in 0..4 {
+        let n = rules.map.countries[c]
+            .hexes
+            .iter()
+            .filter(|&&h| rules.map.hexes[h].coastal)
+            .count();
+        assert_eq!(n, 2, "country {c}");
+    }
+}

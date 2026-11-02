@@ -1,7 +1,7 @@
 # Screen 068: Builder and Protector boards, ambassadors that stay, scarcity (r28)
 
 Planner at d2 unless a line says otherwise, `deals` 4, `lead` 0. Specs: `experiments/screen-068.json`, `experiments/band.json`,
-`experiments/gate.json`, `experiments/gate-close-068.json`. Screen seeds 21000-21700; band 22000 (rules before the last lever) and 22100; gate 23000.
+`experiments/gate.json`, `experiments/gate-close-068/`. Screen seeds 21000-21700; band 22000 (rules before the last lever) and 22100; gate 23000.
 Numbers are a win % at 24-48 seeds, ±7-11 a cell, unless a line says more.
 
 ## The boards
@@ -35,7 +35,7 @@ Each space's income is income a round once uncovered; `cost` is the energy every
 **Reasoning.**
 
 - *Two tracks, one choice each placement.* Economy pays credits now; card-play pays insight and keeps, which is what turns credits into plays. Insight limited plays in every screen (2-3 cards a round for the team), so the card-play track is the one that spends the other.
-- *Printed tags are the board's identity; revealed tags open the card-play track's tier-2 cards* (a third of cards with `needs` want one tag): Power on the Builder's economy track feeds Overcharge's cards, Diplomacy on the Protector's feeds Accord's. They count for `needs` only, so a seat can't sacrifice or discount with them.
+- *Printed tags are the board's identity; revealed tags open the card-play track's tier-2 cards* (about two in three cards with `needs` want one tag: 26 of 38 at r29): Power on the Builder's economy track feeds Overcharge's cards, Diplomacy on the Protector's feeds Accord's. They count for `needs` only, so a seat can't sacrifice or discount with them.
 - *Energy is the brake.* Step costs run to 5 (sum 11 on a track) so a capstone is a target, not a by-product. At 066's costs a seat filled a track by round 6; at these the first capstones land in rounds 8-10 and a game sees about 1.3, against the design's "around round 8 at 1-2 placements a round". The Builder's space 5 is blank: its chips left over at 4-6 a seat, and the +1 chip there was cut.
 - *Capstones use standing rules that already exist,* so a player knows them from cards. Full Capacity turns the tags a Builder hasn't sacrificed into chips; Master Plan is the wide board's discount; Sanctuary and Aegis Doctrine extend Wall's idea, keeping ground once held. No capstone adds income in credits, which scarcity rules out. Antimatter left the tracks: agents ended with 2-5 they never spent.
 - *The Protector carries more starting credits and more track credits, the Builder fewer.* That is also what balances the sizes: c3 seats two Builders and one Protector, so moving credits toward the Protector lifts c2 and lowers c3 (14 / 26 read 79 / 60; 16 / 24 read 67 / 78; 15 / 25 was frozen between them).

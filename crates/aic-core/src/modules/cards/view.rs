@@ -3,54 +3,56 @@
 use super::*;
 
 /// One card as a seat sees it, its status and costs in its text.
-pub(super) fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: Option<i64>) -> CardView {
-        let d = def(w, id);
-        let mut bits = vec![format!("{:?}", d.kind).to_lowercase()];
-        if d.tier > 0 {
-            bits.push(format!("tier {}", d.tier));
-        } else {
-            bits.push("unique".into());
+fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: Option<i64>) -> CardView {
+    let d = def(w, id);
+    let mut bits = vec![format!("{:?}", d.kind).to_lowercase()];
+    if d.tier > 0 {
+        bits.push(format!("tier {}", d.tier));
+    } else {
+        bits.push("unique".into());
+    }
+    if !d.tags.is_empty() {
+        bits.push(d.tags.iter().map(|t| t.name()).collect::<Vec<_>>().join("/"));
+    }
+    // A discard is no seat's: it shows its printed insight.
+    let insight = if status == "discarded" { d.insight } else { play_insight(w, g, s, d) };
+    for (r, n) in extra_costs_at(d, insight) {
+        if n > 0 {
+            bits.push(format!("+{}", r.words(n)));
         }
-        if !d.tags.is_empty() {
-            bits.push(d.tags.iter().map(|t| t.name()).collect::<Vec<_>>().join("/"));
+    }
+    for (r, n) in &d.lowers {
+        bits.push(format!("-{} income", r.words(*n)));
+    }
+    if !d.needs.is_empty() {
+        let needs: Vec<String> = d.needs.iter().map(|(t, n)| format!("{n} {t}")).collect();
+        bits.push(format!("needs {}", needs.join(", ")));
+    }
+    if let Some(t) = &d.replaces {
+        bits.push(format!("built over a {t} building"));
+    }
+    let mut text = format!("[{}] {}", bits.join(", "), d.text);
+    let mut name = d.name.clone();
+    if let Some(t) = &d.tokens {
+        let n = g.var(&tokens_key(s, id));
+        text.push_str(&format!(" ({n} {} on it)", t.kind));
+        // The count on the card itself, as tokens sit on a printed card.
+        if n > 0 && status != "discarded" && status != "draft" {
+            name = format!("{} · {n} {}", d.name, t.kind);
         }
-        for (r, n) in extra_costs(&w, g, s, d) {
-            if n > 0 {
-                bits.push(format!("+{}", r.words(n)));
-            }
-        }
-        for (r, n) in &d.lowers {
-            bits.push(format!("-{} income", r.words(*n)));
-        }
-        if !d.needs.is_empty() {
-            let needs: Vec<String> = d.needs.iter().map(|(t, n)| format!("{n} {t}")).collect();
-            bits.push(format!("needs {}", needs.join(", ")));
-        }
-        if let Some(t) = &d.replaces {
-            bits.push(format!("built over a {t} building"));
-        }
-        let mut text = format!("[{}] {}", bits.join(", "), d.text);
-        let mut name = d.name.clone();
-        if let Some(t) = &d.tokens {
-            let n = g.var(&tokens_key(s, id));
-            text.push_str(&format!(" ({n} {} on it)", t.kind));
-            // The count on the card itself, as tokens sit on a printed card.
-            if n > 0 && status != "discarded" && status != "draft" {
-                name = format!("{} · {n} {}", d.name, t.kind);
-            }
-        }
-        let under_ids = g.pile(&under(s, id));
-        if !under_ids.is_empty() {
-            let names: Vec<&str> = under_ids.iter().map(|c| def(w, c).name.as_str()).collect();
-            text.push_str(&format!(" Splayed under it: {}.", names.join(", ")));
-        }
-        CardView {
-            id: id.to_string(),
-            name,
-            text,
-            status: status.to_string(),
-            cost,
-        }
+    }
+    let under_ids = g.pile(&under(s, id));
+    if !under_ids.is_empty() {
+        let names: Vec<&str> = under_ids.iter().map(|c| def(w, c).name.as_str()).collect();
+        text.push_str(&format!(" Splayed under it: {}.", names.join(", ")));
+    }
+    CardView {
+        id: id.to_string(),
+        name,
+        text,
+        status: status.to_string(),
+        cost,
+    }
 }
 
 pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut) {
@@ -124,7 +126,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             None,
             "building slots (AI board + expansions)",
         );
-        for tag in crate::content::TAGS {
+        for tag in TAGS {
             let n = tags(w, g, s, tag);
             if n > 0 {
                 out.seat(

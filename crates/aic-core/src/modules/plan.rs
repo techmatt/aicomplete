@@ -1,6 +1,6 @@
-//! Read-only forecasts of rules steps, for agents and clients: what a step
-//! would do on the current table, without doing it. Not a module: no
-//! phases, no state. Everything here reads public information only.
+//! Read-only forecasts of rules steps: what a step would do on the current
+//! table, without doing it. Not a module: no phases, no state. Everything here
+//! reads public information only.
 //!
 //! The adversary's build step lives here (015's deferred call 9: the agents'
 //! heuristic used to copy it): `adversary::build_all` places what
@@ -14,7 +14,15 @@ use crate::module::World;
 use crate::state::GameState;
 
 use super::{adversary, board};
-use super::common::{clean_city, corrupted, corrupted_city, is_base, scope_hexes, FACTORY, STATION};
+use super::common::{clean_city, corrupted_city, corrupted_station, is_base, scope_hexes, FACTORY, STATION};
+
+/// The sites `twists`' arrivals name, one per arrivals twist.
+fn arrival_sites<'t>(twists: &'t [&'t Op]) -> impl Iterator<Item = Site> + 't {
+    twists.iter().filter_map(|t| match t {
+        Op::Arrivals { site } => Some(*site),
+        _ => None,
+    })
+}
 
 /// What the adversary's build step places with `twists` in force, in country
 /// `scope` or everywhere: `(hex, ambassadors)` for every hex that gains any,
@@ -49,13 +57,7 @@ pub fn build_plan(
     });
     let factory = w.int("adversary.factory_build");
     let arrivals = w.int("adversary.arrivals");
-    let sites: Vec<Site> = twists
-        .iter()
-        .filter_map(|t| match t {
-            Op::Arrivals { site } => Some(*site),
-            _ => None,
-        })
-        .collect();
+    let sites: Vec<Site> = arrival_sites(twists).collect();
     let mut plan = Vec::new();
     for h in scope_hexes(w, scope) {
         let mut n = 0;
@@ -72,7 +74,7 @@ pub fn build_plan(
                 n += clean;
             }
         }
-        if g.tokens(h, STATION) > 0 && corrupted(g, h) {
+        if corrupted_station(g, h) {
             n += stations;
         }
         n += landing(w, g, h) * arrivals * sites.iter().filter(|&&s| is_site(w, g, h, s)).count() as i64;
@@ -114,12 +116,7 @@ fn site_base(w: &World, h: usize) -> bool {
 pub fn arrival_count(w: &World, g: &GameState, twists: &[&Op], scope: Option<usize>) -> i64 {
     let per = w.int("adversary.arrivals");
     let hexes = scope_hexes(w, scope);
-    twists
-        .iter()
-        .filter_map(|t| match t {
-            Op::Arrivals { site } => Some(*site),
-            _ => None,
-        })
+    arrival_sites(twists)
         .map(|s| per * hexes.iter().filter(|&&h| is_site(w, g, h, s)).map(|h| landing(w, g, *h)).sum::<i64>())
         .sum()
 }

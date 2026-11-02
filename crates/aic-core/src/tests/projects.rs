@@ -1,15 +1,8 @@
 //! 017: the adversary project deck, compute and its counterplay, and (019)
 //! tier-2 node removal.
 
-use super::threats::{deal, threat_lab};
 use super::*;
-use crate::modules::adversary::{self, PROJECTS, PROJECTS_DONE, PROJECTS_ONGOING, PROJECT_DECK};
-use crate::modules::common::{presence, presence_of, NODE};
-
-pub(super) fn row(g: &mut GameState, ids: &[&str]) {
-    g.piles
-        .insert(PROJECTS.into(), ids.iter().map(|s| Key::new(s)).collect::<Vec<_>>().into());
-}
+use crate::modules::adversary::{self, PROJECTS_DONE, PROJECTS_ONGOING, PROJECT_DECK};
 
 #[test]
 fn setup_deals_three_cheap_projects_from_a_staged_deck() {
@@ -93,10 +86,8 @@ fn a_new_row_is_dealt_when_all_three_have_resolved() {
 #[test]
 fn an_ongoing_project_acts_in_the_build() {
     let (rules, mut g) = lab(&["adversary.build"]);
-    g.piles
-        .insert(PROJECTS_ONGOING.into(), vec!["recruitment_drive".into()].into());
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_probing_strikes".into()].into());
+    set_pile(&mut g, PROJECTS_ONGOING, &["recruitment_drive"]);
+    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
     run(&rules, &mut g);
     // Every clean city (lab: all of them) gains an adversary ambassador.
     assert_eq!(total(&g, ADV_AMBASSADOR), cities(&rules.map).len() as i64);
@@ -112,13 +103,12 @@ fn a_player_ambassador_on_a_node_stops_its_compute_and_stays() {
     );
     put(&mut g, a, NODE, 1);
     put(&mut g, b, NODE, 1);
-    put(&mut g, a, &ambassador(0), 1);
+    put(&mut g, a, ambassador(0), 1);
     let before = g.var(adversary::COMPUTE);
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_probing_strikes".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), before + 3);
-    assert_eq!(g.tokens(a, &ambassador(0)), 1);
+    assert_eq!(g.tokens(a, ambassador(0)), 1);
     assert_eq!(g.stats.counters["adversary.compute_blocked"], 3);
 }
 
@@ -152,13 +142,8 @@ fn security_cards_drain_or_discard_a_project() {
     let (rules, mut g) = lab_actions();
     row(&mut g, &["false_flag", "disinformation"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 6);
-    g.piles.insert(
-        "cards.hand.0".into(),
-        vec!["flash_exploit".into(), "killswitch_directive".into()].into(),
-    );
-    set_res(&mut g, 0, Resource::Credits, 30);
-    set_res(&mut g, 0, Resource::Insight, 5);
-    set_res(&mut g, 0, Resource::Antimatter, 2);
+    set_pile(&mut g, "cards.hand.0", &["flash_exploit", "killswitch_directive"]);
+    fund(&mut g, 0);
     act(
         &rules,
         &mut g,
@@ -192,10 +177,8 @@ fn node_takedown_removes_a_node_in_reach() {
         .unwrap();
     let near = m.hexes[p].neighbors[0];
     put(&mut g, far, NODE, 1);
-    g.piles.insert("cards.hand.0".into(), vec!["node_severance".into()].into());
-    set_res(&mut g, 0, Resource::Credits, 30);
-    set_res(&mut g, 0, Resource::Insight, 5);
-    set_res(&mut g, 0, Resource::Antimatter, 2);
+    set_pile(&mut g, "cards.hand.0", &["node_severance"]);
+    fund(&mut g, 0);
     // It needs a Cyber tag in play.
     Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("flash_exploit".into());
     let play = Action::Play {
@@ -211,14 +194,14 @@ fn node_takedown_removes_a_node_in_reach() {
     assert_eq!(g.stats.counters["adversary.nodes_removed"], 1);
 }
 
-/// 020: a sacrificed presence comes off the board (the options listed the free
-/// hexes where a presence could go, so picking one removed nothing).
+/// A project that sacrifices presence takes each seat's ambassador instead of
+/// its last presence (020, 027).
 #[test]
 fn purge_the_unaligned_never_takes_a_last_presence() {
     let (rules, mut g) = lab(&[]);
     let homes = [0, 1].map(|c| rules.map.numbered(c, piece(c).presence));
     for (s, &h) in homes.iter().enumerate() {
-        put(&mut g, h, &presence(s), 1);
+        put(&mut g, h, presence(s), 1);
         set_res(&mut g, s, Resource::Ambassadors, 1);
     }
     // One factory a country, so its troop asks nothing (024).
@@ -230,6 +213,6 @@ fn purge_the_unaligned_never_takes_a_last_presence() {
     // A last presence is never offered (027): each seat's ambassador goes.
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, cost)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["purge_the_unaligned"]);
-    assert_eq!((total(&g, &presence(0)), total(&g, &presence(1))), (1, 1));
+    assert_eq!((total(&g, presence(0)), total(&g, presence(1))), (1, 1));
     assert_eq!(g.stats.counters["alignment.sacrificed_ambassadors"], 2);
 }

@@ -31,8 +31,7 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     let supply = g0.var(SUPPLY);
 
     let mut g = g0.clone();
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_probing_strikes".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
     run(&rules, &mut g);
     assert_eq!(
         (
@@ -49,8 +48,7 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
 
     // Factory Drive: factories next to clean cities build too.
     let mut g = g0.clone();
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_factory_drive".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s1_factory_drive"]);
     run(&rules, &mut g);
     assert_eq!(
         g.tokens(near, ADV_AMBASSADOR),
@@ -62,8 +60,7 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     // escalation puts an ambassador on each country's first base (at 2
     // countries, its only one).
     let mut g = g0.clone();
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s2_mobilization".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s2_mobilization"]);
     run(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_AMBASSADOR), 3);
     for f in &m.fronts {
@@ -83,7 +80,7 @@ fn arrivals_and_escalation_reach_each_countrys_first_base() {
         let (rules, mut g) = lab_with(&["adversary.build"], &["countries=3", "adversary.arrivals=1", &set]);
         let m = &rules.map;
         g.piles.remove(CURRENT);
-        g.piles.insert(NEXT.into(), vec!["adv_s2_border_war".into()].into());
+        set_pile(&mut g, NEXT, &["adv_s2_border_war"]);
         run(&rules, &mut g);
         for c in 0..3 {
             let mut bases = hexes_where(m, |h| kind(m, h) == HexKind::Base && m.hexes[h].country == c);
@@ -109,7 +106,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
     let owned = hexes_where(m, |h| {
         m.distance(h, city) == 2 && kind(m, h) == HexKind::Open
     })[0];
-    put(&mut g, owned, &presence(0), 1);
+    put(&mut g, owned, presence(0), 1);
     run(&rules, &mut g);
     assert!(g.pending.is_none());
     assert_eq!(
@@ -151,7 +148,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
         .collect();
     assert_eq!(next.len(), 2);
     for &h in &next {
-        put(&mut g, h, &presence(0), 1);
+        put(&mut g, h, presence(0), 1);
     }
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a spread choice");
@@ -195,7 +192,7 @@ fn a_clean_city_holding_corrupt_at_ambassadors_is_corrupted() {
     put(&mut g, a, ADV_AMBASSADOR, n);
     put(&mut g, b, ADV_AMBASSADOR, n - 1);
     put(&mut g, aligned, ADV_AMBASSADOR, n);
-    put(&mut g, aligned, &cube(0), 1);
+    put(&mut g, aligned, cube(0), 1);
     let supply = g.var(SUPPLY);
     run(&rules, &mut g);
     // Their ambassadors go back to the supply; an aligned city loses its cube.
@@ -205,7 +202,7 @@ fn a_clean_city_holding_corrupt_at_ambassadors_is_corrupted() {
         (0, n - 1)
     );
     assert_eq!(
-        (g.tokens(aligned, ADV_CUBE), g.tokens(aligned, &cube(0))),
+        (g.tokens(aligned, ADV_CUBE), g.tokens(aligned, cube(0))),
         (1, 0)
     );
     assert_eq!(g.var(SUPPLY), supply + 2 * n);
@@ -223,7 +220,7 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
         put(&mut g, h, ADV_CUBE, 1);
         if h != city {
             put(&mut g, h, ADV_AMBASSADOR, 1);
-            put(&mut g, h, crate::modules::common::NODE, 1);
+            put(&mut g, h, NODE, 1);
         }
     }
     let bases_near = hexes_where(m, |h| {
@@ -231,7 +228,7 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
     });
     for &b in &bases_near {
         put(&mut g, b, ADV_AMBASSADOR, 1);
-        put(&mut g, b, crate::modules::common::NODE, 1);
+        put(&mut g, b, NODE, 1);
     }
     put(&mut g, city, ADV_AMBASSADOR, 3);
     let supply = g.var(SUPPLY);
@@ -243,35 +240,30 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
     assert_eq!(g.var(SUPPLY), supply + 2);
 }
 
-#[test]
-fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
-    use crate::modules::common::NODE;
+/// A spread lab whose only way out is the neighboring city it returns: a
+/// corrupted city holding one ambassador, a piece, not a clean city. The other
+/// pieces in range hold an ambassador and a node each, out of the way.
+fn spread_to_neighbor() -> (Rules, GameState, usize) {
     let (rules, mut g) = lab(&["adversary.spread"]);
     let m = &rules.map;
     let city = m.numbered(0, piece(0).corrupted[0]);
-    let target = cities(m)
-        .into_iter()
-        .find(|&h| m.adjacent(h, city))
-        .expect("a city next to it");
-    let far = cities(m)
-        .into_iter()
-        .find(|&h| m.distance(h, city) > 2)
-        .unwrap();
+    let target = cities(m).into_iter().find(|&h| m.adjacent(h, city)).expect("a city next to it");
+    let far = cities(m).into_iter().find(|&h| m.distance(h, city) > 2).unwrap();
     corrupt_cities_except(m, &mut g, &[far]);
-    // The neighbor is a corrupted city holding one ambassador: a piece, not a clean city.
     put(&mut g, city, ADV_AMBASSADOR, 2);
     put(&mut g, target, ADV_AMBASSADOR, 1);
-    // Keep the other pieces in range out of the way (each holds an ambassador and a node).
     for h in 0..m.hexes.len() {
-        if h != city
-            && h != target
-            && m.distance(h, city) <= 2
-            && (kind(m, h) == HexKind::City || kind(m, h) == HexKind::Base)
-        {
+        if h != city && h != target && m.distance(h, city) <= 2 && (kind(m, h) == HexKind::City || kind(m, h) == HexKind::Base) {
             put(&mut g, h, ADV_AMBASSADOR, 1);
             put(&mut g, h, NODE, 1);
         }
     }
+    (rules, g, target)
+}
+
+#[test]
+fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
+    let (rules, mut g, target) = spread_to_neighbor();
     let supply = g.var(SUPPLY);
     run(&rules, &mut g);
     assert!(g.pending.is_none());
@@ -289,7 +281,6 @@ fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
 
 #[test]
 fn nodes_start_on_the_stations_and_make_adversary_compute() {
-    use crate::modules::common::NODE;
     let rules = Rules::new(&lab_config(&["adversary.build", ACTIONS])).unwrap();
     let mut g = rules.new_game(1);
     let m = &rules.map;
@@ -299,12 +290,11 @@ fn nodes_start_on_the_stations_and_make_adversary_compute() {
     assert_eq!(total(&g, NODE), 2);
     // Round 1's build has run: 3 compute a node (024).
     assert_eq!(g.var(adversary::COMPUTE), 6);
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_probing_strikes".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), 12);
     put(&mut g, m.numbered(0, piece(0).stations[0]), NODE, 0);
-    g.piles.insert(NEXT.into(), vec!["adv_s1_war_drums".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s1_war_drums"]);
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), 15);
 }
@@ -320,8 +310,7 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
     let mut g = rules.new_game(1);
     // The last card is face up: its round plays, the one after is lost.
     g.piles.remove(DECK);
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s3_occupation".into()].into());
+    set_pile(&mut g, NEXT, &["adv_s3_occupation"]);
     run(&rules, &mut g);
     assert!(!g.is_over());
     assert_eq!(g.pile(CURRENT), ["adv_s3_occupation"]);
@@ -343,13 +332,10 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
 /// card's, the one about to become this round's; after it, the current card's.
 #[test]
 fn twists_before_the_build_step_are_the_face_up_cards() {
-    use crate::content::Op;
     let (rules, mut g) = lab(&["alignment.sway", "adversary.build"]);
     let w = rules.world();
-    g.piles
-        .insert(CURRENT.into(), vec!["adv_s1_probing_strikes".into()].into());
-    g.piles
-        .insert(NEXT.into(), vec!["adv_s1_long_patrols".into()].into());
+    set_pile(&mut g, CURRENT, &["adv_s1_probing_strikes"]);
+    set_pile(&mut g, NEXT, &["adv_s1_long_patrols"]);
     let reach = |g: &GameState| {
         adversary::twists(&w, g)
             .iter()
@@ -363,7 +349,7 @@ fn twists_before_the_build_step_are_the_face_up_cards() {
 
 #[test]
 fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
-    let (rules, mut g) = lab_with(&["adversary.build"], &[]);
+    let (rules, mut g) = lab(&["adversary.build"]);
     let w = rules.world();
     let card = w.content.adversary.iter().find(|c| c.stage == 3).unwrap();
     let pull = card.twists.iter().find_map(|t| match t {
@@ -383,42 +369,33 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
 /// and no node forms on it.
 #[test]
 fn an_aligned_city_collects_ambassadors_and_never_forms_a_node() {
-    use crate::modules::common::{cube, NODE};
-    let (rules, mut g) = lab(&["adversary.spread"]);
-    let m = &rules.map;
-    let city = m.numbered(0, piece(0).corrupted[0]);
-    let target = cities(m)
-        .into_iter()
-        .find(|&h| m.adjacent(h, city))
-        .expect("a city next to it");
-    let far = cities(m)
-        .into_iter()
-        .find(|&h| m.distance(h, city) > 2)
-        .unwrap();
-    corrupt_cities_except(m, &mut g, &[far, target]);
+    let (rules, mut g, target) = spread_to_neighbor();
     put(&mut g, target, ADV_CUBE, 0);
     put(&mut g, target, cube(0), 1);
-    put(&mut g, city, ADV_AMBASSADOR, 2);
-    put(&mut g, target, ADV_AMBASSADOR, 1);
-    for h in 0..m.hexes.len() {
-        if h != city && h != target && m.distance(h, city) <= 2 && (kind(m, h) == HexKind::City || kind(m, h) == HexKind::Base) {
-            put(&mut g, h, ADV_AMBASSADOR, 1);
-            put(&mut g, h, NODE, 1);
-        }
-    }
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(target, NODE), g.tokens(target, ADV_AMBASSADOR)), (0, 2));
 }
 
 #[test]
-fn the_cap_holds_at_eleven_through_d2_with_a_harder_end() {
-    let count = |d: i64| {
-        let arg = format!("adversary.difficulty={d}");
-        let (_, g) = lab_with(&[], &[&arg]);
-        g.pile(DECK).len() + g.pile(NEXT).len()
-    };
-    assert_eq!(count(0), 11);
-    assert_eq!(count(2), 11);
-    assert_eq!(count(3), 10);
+fn each_stage_spreads_the_site_types() {
+    use crate::op::{Op, Site};
+    for stage in 1..=3u8 {
+        let mut seen: Vec<String> = Vec::new();
+        for a in content().adversary.iter().filter(|a| a.stage == stage) {
+            let sites: Vec<&Site> = a
+                .twists
+                .iter()
+                .filter_map(|t| match t {
+                    Op::Arrivals { site } => Some(site),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(sites.len(), 1, "{} names one site", a.id);
+            seen.push(format!("{:?}", sites[0]));
+        }
+        seen.sort();
+        seen.dedup();
+        assert_eq!(seen.len(), 4, "stage {stage}: {seen:?}");
+    }
 }

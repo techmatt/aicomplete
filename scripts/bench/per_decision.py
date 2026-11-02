@@ -5,8 +5,8 @@
 
     python scripts/bench/per_decision.py SIM.exe --old-agent SPEC_A --agent SPEC_B [...]
 
-Each ROOT is a checkout with `aic-sim.exe` built at ROOT/aic-sim.exe (and configs/); one `.exe`
-path instead compares two agent specs on that binary, from this directory's configs/. Plays
+Each ROOT is a directory holding `aic-sim.exe` and the configs/ it plays; one `.exe` path
+instead compares two agent specs on that binary, from this directory's configs/. Plays
 the same seeds on both, one thread, in turn so a busy machine hits both alike; the best
 of `--pairs` passes. Prints each side's rounds, decisions and ms per game and per decision,
 and the ratio. Same rules: the same games, so any ratio is the code. Other rules: other
@@ -20,9 +20,13 @@ import subprocess
 import sys
 
 
+def sim(root):
+    """The binary a ROOT names, and the directory to run it in."""
+    return (root, '.') if root.endswith('.exe') else (os.path.join(root, 'aic-sim.exe'), root)
+
+
 def one(root, agent, games, first, countries):
-    exe = root if root.endswith('.exe') else os.path.join(root, 'aic-sim.exe')
-    root = '.' if root.endswith('.exe') else root
+    exe, root = sim(root)
     cmd = [os.path.abspath(exe), 'run', 'configs/baseline.json',
            '--seed', str(first), '--agent', agent, '--games', str(games), '--threads', '1',
            '--json', '--set', f'countries={countries}', '--set', 'adversary.difficulty=2']
@@ -55,7 +59,7 @@ def main():
     if len(a.roots) > 2:
         ap.error('at most two roots')
     for root in a.roots:
-        if not os.path.isfile(root if root.endswith('.exe') else os.path.join(root, 'aic-sim.exe')):
+        if not os.path.isfile(sim(root)[0]):
             ap.error(f'{root} is neither a .exe nor a directory holding aic-sim.exe')
     old, new = a.roots[0], a.roots[-1]
     agent, games, first, countries, pairs = a.agent, a.games, a.first, a.countries, a.pairs
@@ -66,16 +70,16 @@ def main():
             r = one(root, old_agent if side == 'old' else agent, games, first, countries)
             if side not in best or r['ms'] < best[side]['ms']:
                 best[side] = r
-    a, b = best['old'], best['new']
+    before, after = best['old'], best['new']
     print(f'{agent}, c{countries}, d2, {games} games from seed {first}, one thread, best of {pairs}')
     if old_agent != agent:
         print(f'old is {old_agent}, new is {agent}')
     print('| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |')
     print('|---|---|---|---|---|---|---|---|')
-    for name, r in (('old', a), ('new', b)):
+    for name, r in (('old', before), ('new', after)):
         print(f"| {name} | r{r['rules']} | {r['wins']} | {r['rounds']:.2f} | {r['decisions']:.0f} "
               f"| {r['options']:.2f} | {r['ms']:.0f} | {r['ms'] / r['decisions']:.1f} |")
-    ratio = lambda f: f(b) / f(a)
+    ratio = lambda f: f(after) / f(before)
     print(f"| new / old | | | {ratio(lambda r: r['rounds']):.2f} | {ratio(lambda r: r['decisions']):.2f} "
           f"| {ratio(lambda r: r['options']):.2f} | {ratio(lambda r: r['ms']):.2f} "
           f"| {ratio(lambda r: r['ms'] / r['decisions']):.2f} |")

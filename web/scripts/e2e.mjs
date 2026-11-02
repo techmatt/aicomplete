@@ -12,21 +12,16 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { newGame, openPage, sleep } from './cdp.mjs';
+import { checker, newGame, openPage, sleep, viewerUrl as url } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
 const recordPath = process.argv[2];
 const out = join(web, 'e2e-out');
 mkdirSync(out, { recursive: true });
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;
-let failures = 0;
-const check = (ok, what) => {
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`);
-  if (!ok) failures++;
-};
+const { check, failed } = checker();
 
 /** Reloads the page and waits for the new document's viewer (not the old one's) and `expr`. */
 async function reload(expr, what) {
@@ -110,12 +105,12 @@ try {
   })()`);
   check(named.names.every((n) => n && named.label.includes(n.split(' ')[0]) && named.strip.includes(n)),
     `countries named on the board and strip (${named.names.join(', ')})`);
-  // 021: a board has two tracks (presence and the second presence track); at the start
+  // 021: a board has two tracks (economy and card-play); at the start
   // only the first has an uncovered (and current) step.
   check(named.boards.every((b) => b && b.length >= 1) && named.rows.length === named.boards.length
     && named.rows.every((r, i) => r.rows === named.boards[i].length && r.current >= 1 && r.current <= r.rows && r.open >= 1 && r.steps > r.open && r.t2 > 0),
     `each seat's AI board drawn with its tracks (${named.rows.map((r) => `${r.rows} tracks, ${r.open}/${r.steps} uncovered`).join('; ')})`);
-  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|board\.(blackout|sabotage|shelter|project|project_done|track)\.)/;
+  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|board\.(blackout|sabotage|shelter|embargo|cordon|project|project_done|track|track2|rich|placed)\.)/;
   check(!named.keys.some((k) => bookkeeping.test(k)) && named.raw === 0,
     `no bookkeeping vars among the globals (${named.keys.length} globals)`);
 
@@ -368,9 +363,9 @@ try {
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
 } catch (e) {
   console.error(e);
-  failures++;
+  check(false, 'the run stopped');
 } finally {
   await page.close();
 }
-console.log(failures ? `e2e FAILED (${failures})` : 'e2e ok');
-process.exit(failures ? 1 : 0);
+console.log(failed() ? `e2e FAILED (${failed()})` : 'e2e ok');
+process.exit(failed() ? 1 : 0);

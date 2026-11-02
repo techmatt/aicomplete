@@ -8,12 +8,11 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { ART, OUT, REPO, TOOL, pickerOriginals, readJson } from './lib.mjs';
+import { FRAMES, OUT, REPO, TOOL, loadCards, pickerOriginals, readJson } from './lib.mjs';
 
 const NAME = 'card_frames_r3';
 const samples = await readJson(path.join(TOOL, 'samples.json'));
-const cards = Object.fromEntries((await readJson(path.join(REPO, 'content', 'cards.json'))).map((c) => [c.id, c]));
-const framesDir = path.join(ART, 'frames', 'r3');
+const { cards } = await loadCards();
 const images = path.join(pickerOriginals('picker'), 'picks', NAME);
 await mkdir(images, { recursive: true });
 const url = (f) => `../art-originals/picks/${NAME}/${f}`;
@@ -26,7 +25,7 @@ const preview = (name, width) => sharp(path.join(OUT, `${name}.png`)).resize(wid
 const rows = [];
 for (const [v, id] of Object.entries(samples.variants)) {
   await preview(v, 600);
-  await copyFile(path.join(framesDir, `${v}.jpg`), path.join(images, `${v}-frame.jpg`));
+  await copyFile(path.join(FRAMES, `${v}.jpg`), path.join(images, `${v}-frame.jpg`));
   rows.push({
     id: v,
     label: `${label(v)}: ${cards[id].name}`,

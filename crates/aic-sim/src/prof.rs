@@ -37,7 +37,7 @@ pub enum Part {
     ScoreOther,
 }
 
-#[cfg_attr(not(feature = "profile"), allow(dead_code))]
+#[cfg(feature = "profile")]
 pub const PARTS: [&str; 16] = [
     "apply", "apply_mut", "clone", "legal", "eval", "determinize", "line", "sync", "policy", "top",
     "extend", "score_power", "score_play", "score_standard", "score_choose", "score_other",

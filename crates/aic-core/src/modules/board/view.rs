@@ -2,7 +2,7 @@
 
 use super::*;
 
-pub(super) fn flag_doc(f: RoundFlag) -> &'static str {
+fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Sabotage => "Sabotage: while this is up, players with presence here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
@@ -18,7 +18,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         .map(|f| format!("board.{}.", f.name()))
         .collect();
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
-    keys.extend(["board.project.", "board.project_done.", "board.track.", "board.track2.", "board.rich.", "board.placed."]);
+    keys.extend(["board.project.", "board.project_done.", "board.track.", "board.track2."]);
     out.bookkeeping(&keys);
     for c in 0..w.map.countries.len() {
         for f in FLAGS {

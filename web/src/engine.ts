@@ -90,11 +90,11 @@ export interface CountryView {
   values: Value[];
   cards: CardGroup[];
 }
-/** Something printed on a track step; known keys: `tier2`, `antimatter`. */
+/** Something printed on a track step; keys: a resource, `tier2`, a tag, `capstone`, `cost`. */
 export interface TrackMark { key: string; label: string; doc?: string }
 export interface TrackStep { value: number; marks?: TrackMark[] }
 /** A printed track: the leftmost `uncovered` steps show, `current` is in effect. */
-export interface TrackView { label: string; resource?: string; steps: TrackStep[]; uncovered: number; current: number }
+export interface TrackView { label: string; steps: TrackStep[]; uncovered: number; current: number }
 /** A player board, whatever module shows it. */
 export interface BoardView {
   key: string;
@@ -138,9 +138,9 @@ export interface View {
   /** The open choice, if the rules are waiting for one. */
   choice: ChoiceView | null;
   /** Where pieces are heading (019: each adversary troop's next target). */
-  arrows?: ArrowView[];
+  arrows: ArrowView[];
   /** Each face-up threat's source type, its source hexes and who may pay (070). */
-  threat_sources?: ThreatSourceView[];
+  threat_sources: ThreatSourceView[];
 }
 /** What feeds a threat: hex indexes of its sources, and the seats that may counter it. */
 export interface ThreatSourceView { threat: string; source: string; hexes: number[]; target?: number | null; seats: number[] }
@@ -245,7 +245,7 @@ export function checkRecord(text: string): { ok: boolean; warnings?: string[]; e
 }
 
 export const cardName = (id: string) => content.cards.find((c) => c.id === id)?.name ?? id;
-export const threatName = (id: string) => content.threats?.find((t) => t.id === id)?.name ?? id;
+export const threatName = (id: string) => content.threats.find((t) => t.id === id)?.name ?? id;
 
 /** A config parameter of a module, if the config has that module. */
 export function param(config: Config, module: string, name: string): number | number[] | undefined {
@@ -256,5 +256,5 @@ export function param(config: Config, module: string, name: string): number | nu
 export function aiBoard(config: Config, seat: number): AiBoardDef | undefined {
   const boards = param(config, 'ai', 'boards');
   if (!Array.isArray(boards) || !boards.length) return undefined;
-  return content.ais?.[boards[seat % boards.length]];
+  return content.ais[boards[seat % boards.length]];
 }

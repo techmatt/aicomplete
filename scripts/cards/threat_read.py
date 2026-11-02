@@ -3,20 +3,21 @@ dealt, countered by source type, paid abroad or by ambassador alone, sources mad
 typed counters and capstones played.
 
     python scripts/cards/threat_read.py DIR [DIR ...] [--cards]
+
+Each DIR's spec has one config and one difficulty.
 """
 import argparse
-import json
+import os
 import sys
 from collections import defaultdict
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from screens import cell_names, content, stream  # noqa: E402
 
 
 def typed_and_capstones():
     typed, cap = [], []
-    for c in json.loads((ROOT / 'content/cards.json').read_text(encoding='utf-8')):
+    for c in content('cards'):
         ops = c.get('effects', []) + c.get('ability', {}).get('effects', [])
         if any(o['op'] == 'jam' and 'source' in o for o in ops):
             typed.append(c['id'])
@@ -27,24 +28,14 @@ def typed_and_capstones():
 
 
 def read(d):
-    head, cells = None, defaultdict(list)
-    with open(Path(d) / 'games.jsonl', encoding='utf-8') as f:
-        for line in f:
-            g = json.loads(line)
-            if head is None:
-                head = g
-                continue
-            g.pop('actions', None)
-            cells[g.get('cell', 0)].append(g)
-    return head, cells
-
-
-def label(head, cell, games):
-    spec = (head or {}).get('cells') or []
-    if isinstance(cell, int) and cell < len(spec):
-        c = spec[cell]
-        return f"{c.get('variant', '?')} {c.get('agent', '?')}" if isinstance(c, dict) else str(c)
-    return str(cell)
+    """The cell names, and {cell id: games} without the action lists."""
+    lines = stream(d)
+    names = cell_names(next(lines)['spec'])
+    cells = defaultdict(list)
+    for g in lines:
+        g.pop('actions', None)
+        cells[g['cell']].append(g)
+    return names, cells
 
 
 def main():
@@ -59,15 +50,15 @@ def main():
             ('byamb', 'threats.paid_by_ambassador'), ('made', 'threats.sources_made'), ('clean', 'threats.rounds_all_countered'),
             ('typed', 'threats.typed_counters'), ('auto', 'threats.auto_countered')]
     print('| cell | n | win | ' + ' | '.join(k for k, _ in keys) + ' | typed played | capstones played |')
-    print('|---|' * 1 + '---|' * (len(keys) + 4))
+    print('|' + '---|' * (len(keys) + 5))
     for d in a.dirs:
-        head, cells = read(d)
+        names, cells = read(d)
         for cell, gs in cells.items():
             n = len(gs)
-            cnt = lambda k: sum(g.get('counters', {}).get(k, 0) for g in gs) / n
+            cnt = lambda k: sum(g['counters'].get(k, 0) for g in gs) / n
             pl = lambda ids: sum(cnt(f'cards.played.{i}') for i in ids)
-            won = sum(1 for g in gs if g.get('won') or g.get('outcome', {}).get('win')) / n * 100
-            print(f"| {label(head, cell, gs)} | {n} | {won:.0f} | " + ' | '.join(f'{cnt(k):.1f}' for _, k in keys)
+            won = sum(g['won'] for g in gs) / n * 100
+            print(f"| {' '.join(names[cell])} | {n} | {won:.0f} | " + ' | '.join(f'{cnt(k):.1f}' for _, k in keys)
                   + f' | {pl(typed):.2f} | {pl(cap):.2f} |')
             if a.cards:
                 for i in typed + cap:

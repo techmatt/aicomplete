@@ -61,9 +61,9 @@ impl Stream {
         }
     }
 
-    /// Stream id (the purpose hash) and position, for tests and checks.
-    pub fn position(&self) -> (u64, u128) {
-        (self.0.get_stream(), self.0.get_word_pos())
+    /// Stream id (the purpose hash), for `Rules::check_state`.
+    pub fn stream_id(&self) -> u64 {
+        self.0.get_stream()
     }
 }
 

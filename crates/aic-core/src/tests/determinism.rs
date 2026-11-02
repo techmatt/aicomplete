@@ -66,7 +66,7 @@ fn random_games_replay_in_every_variant(seeds: std::ops::Range<u64>, json_every:
             }
             // The slow, JSON-shaped path agrees with the hot path, and a
             // state survives serialization at any point (mid-choice too).
-            let mut s = new_game(&config, seed).unwrap();
+            let mut s = Rules::new(&config).unwrap().new_game(seed);
             for (k, a) in actions.iter().enumerate() {
                 if k % 5 == 0 {
                     s = serde_json::from_str(&s.to_json()).unwrap();
@@ -121,7 +121,7 @@ fn spread_choice() -> (Rules, GameState) {
         .take(2)
         .collect();
     for h in next {
-        put(&mut g, h, &presence(0), 1);
+        put(&mut g, h, presence(0), 1);
     }
     run(&rules, &mut g);
     assert!(g.pending.is_some());
@@ -156,17 +156,17 @@ fn malformed_and_mismatched_states_are_errors_not_panics() {
     assert!(rules.check_state(&bad).is_err());
 
     let config = baseline();
-    let mut g = new_game(&config, 1).unwrap();
+    let mut g = Rules::new(&config).unwrap().new_game(1);
     g.rng.clear();
     assert!(legal_actions(&g).err().unwrap().contains("RNG streams"));
-    let mut g = new_game(&config, 1).unwrap();
+    let mut g = Rules::new(&config).unwrap().new_game(1);
     g.seats.pop();
     assert!(apply(&g, &Action::Pass { seat: 0 }).is_err());
-    let mut g = new_game(&config, 1).unwrap();
+    let mut g = Rules::new(&config).unwrap().new_game(1);
     g.hexes.pop();
     assert!(view(&g).is_err());
     let other = Rules::new(&baseline_with(&["countries=3"])).unwrap();
-    assert!(other.check_state(&new_game(&config, 1).unwrap()).is_err());
+    assert!(other.check_state(&Rules::new(&config).unwrap().new_game(1)).is_err());
 }
 
 #[test]
@@ -212,7 +212,7 @@ fn saved_games_round_trip_and_replay_to_the_saved_state() {
 
 /// 020: a hand-written record's seed may be a number; a bad one names the seed.
 #[test]
-fn a_hand_written_record_seed() {
+fn a_hand_written_record_s_seed_may_be_a_number() {
     let rec = |seed: &str| format!(r#"{{"config": {BASELINE}, "seed": {seed}, "actions": []}}"#);
     assert!(SavedGame::from_json(&rec("5")).is_ok());
     assert!(SavedGame::from_json(&rec("\"5\"")).is_ok());

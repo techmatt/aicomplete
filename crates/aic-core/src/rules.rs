@@ -321,6 +321,8 @@ impl Rules {
             round: 0,
             phase: self.round.len(),
             seats: vec![seat; n],
+            // One empty hex shared until written: copy on write, as `state.rs` says.
+            #[allow(clippy::rc_clone_in_vec_init)]
             hexes: vec![Arc::new(HexState::default()); self.map.hexes.len()],
             vars: Table::default(),
             piles: Table::default(),
@@ -360,7 +362,7 @@ impl Rules {
             ));
         }
         for (p, s) in &g.rng {
-            if s.position().0 != fnv1a64(p.as_bytes()) {
+            if s.stream_id() != fnv1a64(p.as_bytes()) {
                 return Err(format!("RNG stream {p:?} has the wrong stream id"));
             }
         }

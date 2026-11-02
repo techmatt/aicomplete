@@ -1,5 +1,7 @@
 //! What an op can act on: the one home of each target filter, for `feasible` and `one`.
 
+use crate::key::Key;
+
 use super::*;
 
 /// Hexes a removal effect of seat `s` may target: every card's map target
@@ -14,7 +16,7 @@ pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, tro
 /// ultimates only) a corrupted city: a cleanse target.
 pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool) -> bool {
     corrupted(g, h)
-        && ((cities && w.map.hexes[h].kind == HexKind::City && !threats::shielded(w, g, h, ThreatSource::Influence))
+        && ((cities && is_city(w, h) && !threats::shielded(w, g, h, ThreatSource::Influence))
             || (g.tokens(h, STATION) > 0 && !threats::shielded(w, g, h, ThreatSource::Cyber))
             || (g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
 }
@@ -52,14 +54,6 @@ pub(super) fn movable_ambassadors(g: &GameState, seat: usize) -> i64 {
     g.resource(seat, Resource::Ambassadors) + board::ambassadors_on_board(g, seat)
 }
 
-/// Moves one of seat `s`'s ambassadors from hex `from` onto hex `to` (021:
-/// movement keywords); it arrives as in rules.md §2.
-pub(super) fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) {
-    cx.add_tokens(g, from, &ambassador(seat), -1);
-    board::place_ambassador(g, cx, seat, to);
-    cx.tally(g, "effects.ambassador_moves", 1);
-}
-
 /// A node in seat `seat`'s reach.
 pub(super) fn node_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     g.tokens(h, NODE) > 0 && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Cyber)
@@ -72,7 +66,7 @@ pub(super) fn marker_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -
 
 /// Seat `seat`'s presence with no hardening token on it.
 pub fn shieldable(g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, &presence(seat)) > 0 && g.tokens(h, HARDEN) == 0
+    g.tokens(h, presence(seat)) > 0 && g.tokens(h, HARDEN) == 0
 }
 
 /// A piece an ambassador on hex `a` can move to with `range`.
@@ -88,20 +82,10 @@ pub(super) fn pieces_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usiz
 }
 
 /// Active threats not already delayed this round.
-pub(super) fn undelayed_threats(g: &GameState) -> Vec<(crate::key::Key, Option<usize>)> {
+pub(super) fn undelayed_threats(g: &GameState) -> Vec<(Key, Option<usize>)> {
     let mut active = threats::active(g);
     active.retain(|(t, _)| !threats::waits(g, t));
     active
-}
-
-/// Asks `seat` to pick among `opts`, "stop" added unless this is the `first`
-/// pick of an "up to N". `None`: no pick, or stop.
-pub(super) fn pick_or_stop(cx: &mut Cx, seat: usize, prompt: &str, mut opts: Vec<Opt>, first: bool) -> Res<Option<usize>> {
-    let n = opts.len();
-    if !first {
-        opts.push(opt("stop"));
-    }
-    Ok(cx.choose(seat, prompt, opts)?.filter(|&i| i < n))
 }
 
 /// Nodes in seat `seat`'s reach not already cut off (044: a second cut did nothing).
@@ -114,7 +98,7 @@ pub(super) fn cuttable_nodes(w: &World, g: &GameState, seat: usize) -> Vec<usize
 /// Countries with no Shelter up (044: a second one did nothing).
 pub(super) fn unsheltered(w: &World, g: &GameState) -> Vec<usize> {
     (0..w.map.countries.len())
-        .filter(|&c| !board::flagged(g, crate::op::RoundFlag::Shelter, c))
+        .filter(|&c| !board::flagged(g, RoundFlag::Shelter, c))
         .collect()
 }
 

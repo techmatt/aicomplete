@@ -6,7 +6,7 @@ use super::*;
 pub const LEFT: [Resource; 5] =
     [Resource::Credits, Resource::Chips, Resource::Energy, Resource::Antimatter, Resource::Ambassadors];
 
-pub(super) fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
+fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
     let w = cx.world;
     if g.tokens(base, UNIT) < w.int("board.unit_cap") {
         cx.add_tokens(g, base, UNIT, 1);
@@ -38,7 +38,7 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
 
 /// Bases make their corp's units, or an ambassador diverts them: the adversary's
 /// is used up, a player's stays (068).
-pub(super) fn base_units(g: &mut GameState, cx: &mut Cx) {
+fn base_units(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     for h in 0..g.hexes.len() {
         if !is_base(&w, h) {
@@ -58,7 +58,7 @@ pub(super) fn base_units(g: &mut GameState, cx: &mut Cx) {
 }
 
 /// Factories make chips for their owners, then units or an adversary troop.
-pub(super) fn factory_output(g: &mut GameState, cx: &mut Cx) {
+fn factory_output(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     let per = w.int("board.factory_units");
     let chips = w.int("board.factory_chips");
@@ -116,7 +116,7 @@ pub(super) fn factory_output(g: &mut GameState, cx: &mut Cx) {
 /// aligned city's its owner's, and a clean city's goes to the player with
 /// the most presence next to the zone (players choose on a tie), neutral if
 /// none.
-pub(super) fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
+fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for city in 0..g.hexes.len() {
         if !is_city(&w, city) {
@@ -155,14 +155,13 @@ pub(super) fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
         if corrupted(g, city) {
             cx.add_tokens(g, z, ADV_CUBE, 1);
             // 059: corruption replaces any marker here, as on a city.
-            let marked = g.tokens(z, MARKER);
-            cx.add_tokens(g, z, MARKER, -marked);
+            adversary::clear_markers_on(g, cx, z);
             cx.tally(g, "board.factories_built.adversary", 1);
         } else if let Some(s) = match cube_owner(g, city) {
             Some(s) => Some(s),
             None => zone_owner(g, cx, z)?,
         } {
-            cx.add_tokens(g, z, &cube(s), 1);
+            cx.add_tokens(g, z, cube(s), 1);
             cx.tally(g, "board.factories_built.player", 1);
         } else {
             cx.tally(g, "board.factories_built.neutral", 1);
@@ -180,11 +179,11 @@ pub(super) fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
 
 /// Who takes a clean city's new factory on zone `z`: the player with the
 /// most presence next to it (players choose on a tie), none if nobody has any.
-pub(super) fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
+fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
     let w = cx.world;
     let hexes = within(&w, z, 1);
     let near: Vec<usize> = (0..g.seats.len())
-        .map(|s| hexes.iter().filter(|&&x| g.tokens(x, &presence(s)) > 0).count())
+        .map(|s| hexes.iter().filter(|&&x| g.tokens(x, presence(s)) > 0).count())
         .collect();
     let most = near.iter().copied().max().unwrap_or(0);
     if most == 0 {
@@ -303,7 +302,7 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) {
 /// An adversary ambassador on a presence (with no other piece to divert)
 /// costs its owner 1 insight next round and adds 1 compute to the cheapest
 /// adversary project; it stays until removed (068; 021: it was used up).
-pub(super) fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
+fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for h in 0..g.hexes.len() {
         let Some(s) = presence_owner(g, h) else {
@@ -331,7 +330,7 @@ pub(super) fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
 
 /// Completes country `c`'s megaproject if it is full: each player cube pays
 /// its owner, adversary cubes become Discord.
-pub(super) fn complete_project(g: &mut GameState, cx: &mut Cx, c: usize) {
+fn complete_project(g: &mut GameState, cx: &mut Cx, c: usize) {
     let w = cx.world;
     let p = &w.content.map.countries[c].megaproject;
     let adv = g.var(&project_key(c, None));

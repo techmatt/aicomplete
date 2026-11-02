@@ -8,13 +8,13 @@ import {
   type Action, type CardView, type View,
 } from './engine';
 import {
-  actionLabel, choiceKey, contentIds, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
+  actionLabel, choiceKey, contentIds, countryName, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
   type LabelContext,
 } from './format';
 import { details } from './hover';
 import { logEntry } from './log';
 import {
-  countriesHtml, countryName, legendHtml, pilesHtml, pipelineHtml, seatCardsHtml, seatValuesHtml,
+  countriesHtml, legendHtml, pilesHtml, pipelineHtml, seatCardsHtml, seatValuesHtml,
   statusHtml, varsHtml,
 } from './panels';
 import { Timeline, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
@@ -177,7 +177,7 @@ function render() {
     for (const e of f.events) for (const h of hexesIn(e)) changed.add(hexKey(h));
     for (const h of hexesIn(f.action)) changed.add(hexKey(h));
   }
-  const sources = new Set((shown.threat_sources ?? []).flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
+  const sources = new Set(shown.threat_sources.flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
   renderBoard(ui.board, shown, { targets, changed, sources });
   renderPrompt(targets.size);
   ui.status.innerHTML = statusHtml(shown, f.snap.state.config);
@@ -269,7 +269,7 @@ function renderSeats() {
 /** A board's powers, always shown: a button appears only when one can be used. */
 function powersHtml(cards: CardView[]): string {
   const rows = cards.filter((c) => c.id.includes('.power.')).map((c) =>
-    `<li class="${c.status === 'ready' ? 'ready' : ''}"><b>${escapeHtml(c.name)}:</b> ${escapeHtml(c.text ?? '')} <small>${escapeHtml(c.status ?? '')}</small></li>`);
+    `<li class="${c.status === 'ready' ? 'ready' : ''}"><b>${escapeHtml(c.name)}:</b> ${escapeHtml(c.text ?? '')} <small>${escapeHtml(c.status)}</small></li>`);
   return rows.length ? `<ul class="powers">${rows.join('')}</ul>` : '';
 }
 

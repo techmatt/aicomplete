@@ -1,23 +1,6 @@
-use super::presence_powers::{at_step, run_ops};
 use super::*;
 use crate::content::RoundFlag;
 use crate::modules::{board, threats};
-
-pub(super) fn threat_lab() -> (Rules, GameState) {
-    let rules = Rules::new(&lab_config(&[ACTIONS, "threats.execute"])).unwrap();
-    let g = rules.new_game(3);
-    (rules, g)
-}
-
-/// Puts `threat` on country `c` (out of its deck).
-pub(super) fn deal(g: &mut GameState, threat: &str, c: usize) {
-    for t in [1, 2] {
-        if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
-            Arc::make_mut(p).retain(|x| x != threat);
-        }
-    }
-    Arc::make_mut(g.piles.entry(format!("threats.on.{c}")).or_default()).push(threat.into());
-}
 
 #[test]
 fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
@@ -26,7 +9,7 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
     deal(&mut g, "blackout", 1);
     // 070: a source each, on the seat's own presence.
     for s in 0..2 {
-        put(&mut g, rules.map.numbered(s, piece(s).presence), crate::modules::common::NODE, 1);
+        put(&mut g, rules.map.numbered(s, piece(s).presence), NODE, 1);
     }
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 6);
@@ -96,7 +79,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     // Blackout needs 4 credits (024); with 2 paid, Threat Triage (023; was
     // Jam Signals) takes it to 2: countered at once.
     deal(&mut g, "blackout", 0);
-    put(&mut g, rules.map.numbered(0, piece(0).presence), crate::modules::common::NODE, 1);
+    put(&mut g, rules.map.numbered(0, piece(0).presence), NODE, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
     rules
         .apply_mut(
@@ -111,8 +94,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
         )
         .unwrap();
     Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|c| c != "threat_triage");
-    g.piles
-        .insert("cards.hand.0".into(), vec!["threat_triage".into()].into());
+    set_pile(&mut g, "cards.hand.0", &["threat_triage"]);
     set_res(&mut g, 0, Resource::Insight, 1);
     act(
         &rules,
@@ -154,10 +136,7 @@ fn difficulty_1_raises_the_counters_and_deals_more_threats() {
     assert_eq!(req(&r0, &g0), credits(6));
     assert_eq!(req(&r1, &g1), credits(8));
     // Every deal is dealt (070: nothing is set aside for lack of a source).
-    let drawn = |g: &GameState| {
-        let n = |k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
-        n("threats.dealt") + n("threats.set_aside")
-    };
+    let drawn = |g: &GameState| g.stats.counters.get("threats.dealt").copied().unwrap_or(0);
     assert_eq!(drawn(&g0), 2);
     // One extra a round, one country after the other.
     assert_eq!(drawn(&g1), 3);
@@ -193,8 +172,8 @@ fn blackout_and_sabotage_last_into_the_next_rounds_production() {
         .into_iter()
         .find(|&h| rules.map.hexes[h].country == 0 && g.tokens(h, ADV_CUBE) == 0)
         .unwrap();
-    put(&mut g, city, &cube(0), 1);
-    put(&mut twin, city, &cube(0), 1);
+    put(&mut g, city, cube(0), 1);
+    put(&mut twin, city, cube(0), 1);
     let before = |g: &GameState| (0..2).map(|s| g.resource(s, Resource::Energy)).collect::<Vec<_>>();
     let (b, bt) = (before(&g), before(&twin));
     pass_round(&rules, &mut g);
@@ -225,12 +204,12 @@ fn a_threat_dealt_after_the_counter_phase_executes_next_round() {
     g.phase = 1;
     with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 1));
     g.phase = 0;
-    let late = g.pile("threats.on.0")[0].clone();
+    let late = g.pile("threats.on.0")[0];
     assert_eq!(g.var(&format!("threats.late.{late}")), 1);
     pass_round(&rules, &mut g);
     assert_eq!(g.round, 2);
     assert_eq!(g.stats.counters["threats.executed"], 1);
-    assert_eq!(g.pile("threats.on.0"), [late.clone()]);
+    assert_eq!(g.pile("threats.on.0"), [late]);
     pass_round(&rules, &mut g);
     assert_eq!(g.stats.counters["threats.executed"], 2);
     assert!(g.pile("threats.on.0").is_empty());
@@ -247,17 +226,16 @@ fn the_tier_2_deck_covers_four_countries_and_a_short_deal_is_counted() {
     let most = 4 * w.int("threats.per_country") + w.int("adversary.extra_threats");
     assert!(tier2 > most, "{tier2} tier-2 threats for a deal of {most}");
     let (rules, mut g) = threat_lab();
-    g.piles.insert("threats.deck.1".into(), vec!["smear_campaign".into()].into());
+    set_pile(&mut g, "threats.deck.1", &["smear_campaign"]);
     with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 3));
     assert_eq!(g.stats.counters["threats.short"], 2);
 }
 
 #[test]
 fn a_seat_that_lost_its_presence_there_can_take_back_a_payment() {
-    let (rules, mut g) = lab_with(&[], &[]);
+    let (rules, mut g) = lab(&[]);
     let t = rules.world().content.threats[0].id.clone();
-    let on = format!("threats.on.{}", 0);
-    g.piles.insert(on.as_str().into(), vec![t.as_str().into()].into());
+    set_pile(&mut g, "threats.on.0", &[t.as_str()]);
     g.vars.insert(format!("threats.paid.{t}.0.credits").as_str().into(), 1);
     let legal = rules.legal_actions(&g);
     assert!(legal.iter().any(|a| matches!(a, Action::Withdraw { seat: 0, .. })), "{legal:?}");
@@ -265,19 +243,13 @@ fn a_seat_that_lost_its_presence_there_can_take_back_a_payment() {
 }
 
 #[test]
-fn a_delayed_threat_skips_this_round_and_a_shield_absorbs_a_destruction() {
+fn a_delayed_threat_skips_this_round() {
     let (rules, mut g) = at_step(&[], 1);
-    let a = rules.map.numbered(0, piece(0).presence);
     deal(&mut g, "smear_campaign", 0);
-    let t = threats::active(&g)[0].0.clone();
+    let t = threats::active(&g)[0].0;
     assert!(!threats::waits(&g, &t));
     run_ops(&rules, &mut g, &[content::Op::DelayThreat { count: 1 }]);
     assert!(threats::waits(&g, &t));
     g.round += 1;
     assert!(!threats::waits(&g, &t), "it comes back next round");
-    run_ops(&rules, &mut g, &[content::Op::ShieldPresence { count: 1 }]);
-    assert_eq!(g.tokens(a, HARDEN), 1);
-    let kept = with_cx(&rules, |cx| board::destroy_piece(&mut g, cx, a, &presence(0), board::Cause::Troop));
-    assert!(!kept, "absorbed");
-    assert_eq!(g.tokens(a, &presence(0)), 1);
 }

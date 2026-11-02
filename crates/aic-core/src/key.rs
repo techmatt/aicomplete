@@ -44,11 +44,11 @@ impl Hasher for Fnv {
     /// so the hash's value shows nowhere.
     fn write(&mut self, bytes: &[u8]) {
         let mut h = if self.0 == 0 { FNV_OFFSET } else { self.0 };
-        let mut words = bytes.chunks_exact(8);
-        for w in &mut words {
-            h = (h ^ u64::from_le_bytes(w.try_into().expect("eight bytes"))).wrapping_mul(FNV_PRIME);
+        let (words, rest) = bytes.as_chunks::<8>();
+        for w in words {
+            h = (h ^ u64::from_le_bytes(*w)).wrapping_mul(FNV_PRIME);
         }
-        for b in words.remainder() {
+        for b in rest {
             h = (h ^ *b as u64).wrapping_mul(FNV_PRIME);
         }
         self.0 = h;
@@ -106,12 +106,6 @@ impl Key {
 impl Deref for Key {
     type Target = str;
     fn deref(&self) -> &str {
-        self.0
-    }
-}
-
-impl AsRef<str> for Key {
-    fn as_ref(&self) -> &str {
         self.0
     }
 }
@@ -175,12 +169,6 @@ impl From<&String> for Key {
 impl From<String> for Key {
     fn from(s: String) -> Key {
         Key::new(&s)
-    }
-}
-
-impl From<&Key> for Key {
-    fn from(k: &Key) -> Key {
-        *k
     }
 }
 
@@ -302,12 +290,6 @@ impl From<KeyBuf> for String {
 
 impl From<KeyBuf> for Key {
     fn from(k: KeyBuf) -> Key {
-        Key::new(k.as_str())
-    }
-}
-
-impl From<&KeyBuf> for Key {
-    fn from(k: &KeyBuf) -> Key {
         Key::new(k.as_str())
     }
 }

@@ -1,8 +1,7 @@
 //! Threats: dealt each round, countered by pooled payments, executed in
 //! `threats.execute`, after production and upkeep, if still uncountered.
-//! Variants: `countries`
-//! (each threat sits on a country), `shared_row` (one row for every
-//! country) and `off` (no threats).
+//! Variants: `countries` (each threat sits on a country), `shared_row` (one
+//! row for every country) and `off` (no threats).
 
 use crate::action::Action;
 use crate::content::{Op, Resource, Spot, ThreatDef, ThreatSource};
@@ -16,6 +15,12 @@ use crate::view::{CardView, ThreatSourceView, ViewOut};
 
 use super::common::*;
 use super::{adversary, alignment, board, cards, effects};
+
+mod ops;
+mod sources;
+
+pub use ops::*;
+pub use sources::*;
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("per_country", 0, 5, "threats dealt each round per country"),
@@ -107,7 +112,7 @@ pub fn paid_prefix(threat: &str) -> KeyBuf {
 }
 
 fn paid_key(threat: &str, seat: usize, resource: Resource) -> KeyBuf {
-    KeyBuf::new("threats.paid.").text(threat).text(".").num(seat).text(".").text(resource.name())
+    paid_prefix(threat).num(seat).text(".").text(resource.name())
 }
 
 /// The hex plus 1 a threat dealt with no source named as its target (070).
@@ -142,7 +147,6 @@ pub fn waits(g: &GameState, threat: &str) -> bool {
     g.var(&late_key(threat)) == g.round as i64
 }
 
-
 /// `threat` waits: it skips this round's execution and stays up, to be
 /// countered next round (041).
 pub fn delay(g: &mut GameState, cx: &mut Cx, threat: &str) {
@@ -151,14 +155,14 @@ pub fn delay(g: &mut GameState, cx: &mut Cx, threat: &str) {
 }
 
 fn def<'w>(w: &World<'w>, id: &str) -> &'w ThreatDef {
-    &w.content.threats[w.content.threat_index(id).expect("threat in content")]
+    w.content.threat(id)
 }
 
 /// Active threats in execution order, each with its scope (its country, or
 /// `None` for a shared-row threat).
 pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
     let mut out: Vec<(Key, Option<usize>)> =
-        g.pile(ROW).iter().map(|t| (t.clone(), None)).collect();
+        g.pile(ROW).iter().map(|t| (*t, None)).collect();
     let mut on: Vec<(usize, &std::sync::Arc<Vec<Key>>)> = g
         .piles
         .from_key("threats.on.")
@@ -167,84 +171,13 @@ pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
         .collect();
     on.sort_by_key(|(c, _)| *c);
     for (c, pile) in on {
-        out.extend(pile.iter().map(|t| (t.clone(), Some(c))));
+        out.extend(pile.iter().map(|t| (*t, Some(c))));
     }
     out
 }
 
 fn pile_of(scope: Option<usize>) -> String {
     scope.map_or(ROW.to_string(), on)
-}
-
-/// Where a threat dealt for country `c` goes: the shared row, or on `c`.
-fn deal_pile(shared: bool, c: usize) -> String {
-    if shared {
-        ROW.to_string()
-    } else {
-        on(c)
-    }
-}
-
-/// Whether hex `h` holds an adversary piece of type `source` (070).
-pub fn is_source(w: &World, g: &GameState, h: usize, source: ThreatSource) -> bool {
-    match source {
-        ThreatSource::Influence => corrupted_city(w, g, h),
-        ThreatSource::Cyber => g.tokens(h, NODE) > 0 || (g.tokens(h, STATION) > 0 && corrupted(g, h)),
-        ThreatSource::Economic => g.tokens(h, FACTORY) > 0 && corrupted(g, h),
-        ThreatSource::Military => g.tokens(h, TROOP) > 0,
-    }
-}
-
-/// The sources of type `source` in country `c`, in hex order.
-pub fn sources(w: &World, g: &GameState, c: usize, source: ThreatSource) -> Vec<usize> {
-    w.map.countries[c].hexes.iter().copied().filter(|&h| is_source(w, g, h, source)).collect()
-}
-
-/// The source type `threat` prints.
-pub fn source_of(w: &World, threat: &str) -> ThreatSource {
-    def(w, threat).source
-}
-
-/// The hex `threat` named as its target when dealt with no source, if any.
-pub fn target(g: &GameState, threat: &str) -> Option<usize> {
-    let v = g.var(&target_key(threat));
-    (v > 0).then(|| v as usize - 1)
-}
-
-/// What `threat` in country `c` counts as its sources: the adversary's pieces
-/// of its type there, and the target it named.
-pub fn threat_sources(w: &World, g: &GameState, threat: &str, c: usize) -> Vec<usize> {
-    let mut hexes = sources(w, g, c, source_of(w, threat));
-    if let Some(h) = target(g, threat) {
-        if !hexes.contains(&h) {
-            hexes.push(h);
-        }
-    }
-    hexes
-}
-
-/// Whether seat `s` may counter `threat` in `scope`: one of its sources in
-/// reach, or its ambassador on one (070). A shared-row threat is anyone's.
-pub fn may_counter(w: &World, g: &GameState, s: usize, threat: &str, scope: Option<usize>) -> bool {
-    let Some(c) = scope else {
-        return true;
-    };
-    let k = ambassador(s);
-    let open = |h: usize| g.tokens(h, &k) > 0 || in_reach(w, g, s, h);
-    let source = source_of(w, threat);
-    target(g, threat).is_some_and(open)
-        || w.map.countries[c].hexes.iter().any(|&h| is_source(w, g, h, source) && open(h))
-}
-
-/// The active threats seat `s` may counter, of type `source` if given.
-pub fn counterable(w: &World, g: &GameState, s: usize, source: Option<ThreatSource>) -> Vec<Key> {
-    active(g)
-        .into_iter()
-        .filter(|(t, scope)| {
-            source.is_none_or(|x| x == source_of(w, t)) && may_counter(w, g, s, t, *scope)
-        })
-        .map(|(t, _)| t)
-        .collect()
 }
 
 /// An empty `tier` deck is refilled from its shuffled discard (070: extra
@@ -261,103 +194,18 @@ fn refill(g: &mut GameState, cx: &mut Cx, tier: u8) {
     }
 }
 
-/// Whether a face-up threat of `source` in `h`'s country holds the adversary's
-/// pieces of that type there (070: they can't be destroyed or freed until it
-/// is countered). A shared-row threat has no country and holds nothing.
-pub fn shielded(w: &World, g: &GameState, h: usize, source: ThreatSource) -> bool {
-    g.pile(&on(w.map.hexes[h].country as usize)).iter().any(|t| def(w, t).source == source)
-}
-
-/// What a threat with no source in country `c` names (070): the lowest clean
-/// piece of its type, neutral before player-owned; for a factory or station
-/// with none to take, the lowest site one would be built on; for troops the
-/// lowest base a Wall leaves open, else the lowest base. `None`: nothing to name.
-fn pick_target(w: &World, g: &GameState, c: usize, source: ThreatSource) -> Option<usize> {
-    let hexes = &w.map.countries[c].hexes;
-    let lowest = |f: &dyn Fn(usize) -> bool| hexes.iter().copied().filter(|&h| f(h)).min();
-    let clean = |kind: &str| {
-        let on = |h: usize| g.tokens(h, kind) > 0 && !corrupted(g, h);
-        lowest(&|h| on(h) && cube_owner(g, h).is_none()).or_else(|| lowest(&on))
-    };
-    match source {
-        ThreatSource::Influence => lowest(&|h| clean_city(w, g, h)).or_else(|| lowest(&|h| collecting_city(w, g, h))),
-        ThreatSource::Cyber => clean(STATION).or_else(|| lowest(&|h| buildable(w, g, h) && !w.map.hexes[h].industrial)),
-        ThreatSource::Economic => clean(FACTORY).or_else(|| lowest(&|h| w.map.hexes[h].industrial && !has_building(g, h))),
-        ThreatSource::Military => lowest(&|h| is_base(w, h) && !board::walled(w, g, h)).or_else(|| lowest(&|h| is_base(w, h))),
-    }
-}
-
-/// An uncountered threat's target becomes its source, before its own effect:
-/// the city or piece is corrupted, built first if it must be, or the troop
-/// lands. One a country a round; a Wall stops the landing.
-fn make_source(g: &mut GameState, cx: &mut Cx, c: usize, source: ThreatSource, h: usize) {
-    let w = cx.world;
-    let switched_off = match w.int("threats.uncreated") {
-        1 => source == ThreatSource::Influence,
-        2 => source == ThreatSource::Cyber,
-        3 => source == ThreatSource::Economic,
-        4 => source == ThreatSource::Military,
-        _ => false,
-    };
-    if switched_off || g.var(&made_key(c)) == g.round as i64 {
-        return;
-    }
-    match source {
-        ThreatSource::Influence => {
-            if corrupted(g, h) {
-                return;
-            }
-            adversary::corrupt_city(g, cx, h);
-        }
-        ThreatSource::Cyber => {
-            if g.tokens(h, STATION) == 0 {
-                if !buildable(&w, g, h) {
-                    return;
-                }
-                cx.add_tokens(g, h, STATION, 1);
-            }
-            if corrupted(g, h) {
-                return;
-            }
-            adversary::corrupt_station(g, cx, h);
-        }
-        ThreatSource::Economic => {
-            if g.tokens(h, FACTORY) == 0 {
-                if has_building(g, h) {
-                    return;
-                }
-                cx.add_tokens(g, h, FACTORY, 1);
-            }
-            if corrupted(g, h) {
-                return;
-            }
-            adversary::corrupt_factory(g, cx, h);
-        }
-        ThreatSource::Military => {
-            if board::walled(&w, g, h) {
-                return;
-            }
-            adversary::place_troop(g, cx, h);
-        }
-    }
-    cx.set_key(g, &made_key(c), g.round as i64);
-    cx.tally(g, "threats.sources_made", 1);
-    cx.note(None, || format!("{} source appears in {}", source.a_word(), country_name(&w, c)));
-}
-
-/// Deals the top threat of the `tier` deck onto `to` (`country`: the country
-/// it needs a source in, `None` on the shared row), counted under
-/// `threats.dealt` whichever module is running. False if the deck is empty
-/// (no reshuffle here: the caller refills first if it may, and counts what
-/// it could not deal under `threats.short`). A threat with no source in its
-/// country names a target (070): its source while it is up. A threat dealt after the counter phase is stamped with the round:
-/// it executes next round, not this one.
-fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, to: &str, country: Option<usize>) -> bool {
+/// Deals the top threat of the `tier` deck into `scope` (the country it needs
+/// a source in, `None` on the shared row), counted under `threats.dealt`
+/// whichever module is running. False if the deck is empty. A threat with no
+/// source in its country names a target (070): its source while it is up. A
+/// threat dealt after the counter phase is stamped with the round: it executes
+/// next round, not this one.
+fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, scope: Option<usize>) -> bool {
     let Some(id) = g.pile(&deck(tier)).first().cloned() else {
         return false;
     };
     let w = cx.world;
-    if let Some(c) = country {
+    if let Some(c) = scope {
         let source = def(&w, &id).source;
         if sources(&w, g, c, source).is_empty() {
             if let Some(h) = pick_target(&w, g, c, source) {
@@ -365,12 +213,24 @@ fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, to: &str, country: Option<usiz
             }
         }
     }
-    cx.move_card(g, &id, &deck(tier), to, false).unwrap();
+    cx.move_card(g, &id, &deck(tier), &pile_of(scope), false).unwrap();
     cx.tally(g, "threats.dealt", 1);
     if after_counter(g) {
         cx.set_key(g, &late_key(&id), g.round as i64);
     }
     true
+}
+
+/// Refills the `tier` deck if it may and deals one threat into `scope`. False
+/// if none is left: `left` count under `threats.short` (022: a short deal is
+/// counted, not silent).
+fn deal_or_short(g: &mut GameState, cx: &mut Cx, tier: u8, scope: Option<usize>, left: i64) -> bool {
+    refill(g, cx, tier);
+    let dealt = deal(g, cx, tier, scope);
+    if !dealt {
+        cx.tally(g, "threats.short", left);
+    }
+    dealt
 }
 
 /// Whether the threats variant in play deals to the shared row (`None`:
@@ -475,9 +335,7 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     let n = n.max(0);
     for k in 0..n {
         let c = k as usize % countries;
-        refill(g, cx, tier);
-        if !deal(g, cx, tier, &deal_pile(shared, c), (!shared).then_some(c)) {
-            cx.tally(g, "threats.short", n - k);
+        if !deal_or_short(g, cx, tier, (!shared).then_some(c), n - k) {
             return;
         }
     }
@@ -569,13 +427,6 @@ fn build_shared(b: &Build) -> Result<Box<dyn Module>, String> {
     }))
 }
 
-impl Threats {
-    fn can_pay(&self, w: &World, g: &GameState, seat: usize, threat: &str, scope: Option<usize>) -> bool {
-        may_counter(w, g, seat, threat, scope)
-    }
-
-}
-
 impl Module for Threats {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
@@ -609,10 +460,7 @@ impl Module for Threats {
                 let more = (0..extra).filter(|k| (first + k) % n == c).count() as i64;
                 let want = self.per_country + more;
                 for k in 0..want {
-                    refill(g, cx, tier);
-                    if !deal(g, cx, tier, &deal_pile(self.shared, c), (!self.shared).then_some(c)) {
-                        // 022: a short deal is counted, not silent.
-                        cx.tally(g, "threats.short", want - k);
+                    if !deal_or_short(g, cx, tier, (!self.shared).then_some(c), want - k) {
                         break;
                     }
                 }
@@ -660,12 +508,12 @@ impl Module for Threats {
         g: &GameState,
         w: &World,
         seat: u8,
-        out: &mut Vec<crate::Action>,
+        out: &mut Vec<Action>,
     ) {
         let s = seat as usize;
         for (t, scope) in active(g) {
             // 044: a seat that lost its presence there can't pay, but can take back.
-            let can_pay = self.can_pay(w, g, s, &t, scope);
+            let can_pay = may_counter(w, g, s, &t, scope);
             for (r, need) in requirement(w, g, &t) {
                 let have = g.resource(s, r);
                 let left = need - paid(g, &t, r);
@@ -678,16 +526,16 @@ impl Module for Threats {
                 for &amount in amounts {
                     out.push(Action::Pay {
                         seat,
-                        threat: t.clone(),
-                        resource: r.clone(),
+                        threat: t,
+                        resource: r,
                         amount,
                     });
                 }
                 if g.var(&paid_key(&t, s, r)) > 0 {
                     out.push(Action::Withdraw {
                         seat,
-                        threat: t.clone(),
-                        resource: r.clone(),
+                        threat: t,
+                        resource: r,
                     });
                 }
             }
@@ -711,7 +559,7 @@ impl Module for Threats {
                 let Some((_, scope)) = active(g).into_iter().find(|(t, _)| t == threat) else {
                     return Err(Halt::Illegal(format!("no active threat {threat}")));
                 };
-                if !self.can_pay(&w, g, s, threat, scope) {
+                if !may_counter(&w, g, s, threat, scope) {
                     return Err("only a player with one of its sources in reach, or an ambassador on one, can pay".into());
                 }
                 let req = requirement(&w, g, threat);
@@ -823,183 +671,4 @@ impl Module for Threats {
             "the tier of threats dealt this round: 2 once this round's adversary card is stage II (at difficulty 4, sooner)",
         );
     }
-}
-
-/// `count` adversary ambassadors from the supply, each onto a piece of kind
-/// `at` in `scope` (players choose each).
-pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, at: Spot, count: i64) -> Res {
-    let w = cx.world;
-    let hexes = scope_hexes(&w, scope);
-    for _ in 0..count {
-        let spots: Vec<usize> = hexes
-            .iter()
-            .copied()
-            .filter(|&h| match at {
-                Spot::PlayerPieces => player_owned(g, h),
-                Spot::CleanCities => clean_city(&w, g, h),
-                Spot::Factories => g.tokens(h, FACTORY) > 0,
-                Spot::Bases => is_base(&w, h),
-            })
-            .collect();
-        let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose_loss(0, "Threat: an adversary ambassador goes on which piece?", opts)? else {
-            break;
-        };
-        adversary::place(g, cx, spots[i], 1);
-    }
-    Ok(())
-}
-
-/// Each player in `scope` loses `amount` tokens off their cards, their choice.
-pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount: i64) -> Res {
-    let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
-        for _ in 0..amount {
-            let cards: Vec<Key> = cards::token_cards(&w, g, s, None)
-                .into_iter()
-                .filter(|c| g.var(&cards::tokens_key(s, c)) > 0)
-                .collect();
-            let opts = cards.iter().map(|c| opt(c.clone())).collect();
-            let prompt = format!("Seat {s}: lose a token from which card?");
-            let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
-                break;
-            };
-            cards::add_tokens(g, cx, s, &cards[i], -1);
-            cx.tally(g, "threats.tokens_lost", 1);
-        }
-    }
-    Ok(())
-}
-
-/// Each player in `scope` discards `n` cards or pays `amount` `resource`
-/// (their choice); with neither possible, what they have and their hand.
-pub fn requisition(
-    g: &mut GameState,
-    cx: &mut Cx,
-    scope: Option<usize>,
-    resource: Resource,
-    amount: i64,
-    n: i64,
-) -> Res {
-    let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
-        let mut opts = Vec::new();
-        let can_pay = g.resource(s, resource) >= amount;
-        if can_pay {
-            opts.push(opt(format!("pay {}", resource.amount(amount))));
-        }
-        if g.pile(&cards::hand(s)).len() as i64 >= n {
-            opts.push(opt(format!("discard {n} cards")));
-        }
-        let prompt = format!("Seat {s}: pay {} or discard {n} cards?", resource.amount(amount));
-        match cx.choose(s, &prompt, opts)? {
-            Some(0) if can_pay => {
-                cx.add_resource(g, s, resource, -amount);
-            }
-            Some(_) => {
-                for k in 0..n {
-                    let hand = g.pile(&cards::hand(s)).to_vec();
-                    let opts = hand.iter().map(|c| opt(c.clone())).collect();
-                    let prompt = format!("Seat {s}: discard which card ({} of {n})?", k + 1);
-                    if let Some(j) = cx.choose(s, &prompt, opts)? {
-                        cards::discard(g, cx, &hand[j], &cards::hand(s));
-                    }
-                }
-            }
-            None => {
-                // Neither possible: pay what you have and discard your hand.
-                let k = g.resource(s, resource);
-                cx.add_resource(g, s, resource, -k);
-                for c in g.pile(&cards::hand(s)).to_vec() {
-                    cards::discard(g, cx, &c, &cards::hand(s));
-                }
-            }
-        }
-    }
-    Ok(())
-}
-
-/// Each player in `scope` loses a player ambassador: from their supply, else
-/// one of theirs on the board (their choice).
-pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
-    let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
-        if g.resource(s, Resource::Ambassadors) > 0 {
-            cx.add_resource(g, s, Resource::Ambassadors, -1);
-            continue;
-        }
-        let k = ambassador(s);
-        let on = ambassador_hexes(g, s);
-        let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {s}: lose the ambassador on which hex?");
-        if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
-            cx.add_tokens(g, on[i], &k, -1);
-        }
-    }
-    Ok(())
-}
-
-/// Each player in `scope` loses a presence in `scope` or pays `amount`
-/// `resource` (their choice). Losing one needs 2 or more on the board (027:
-/// this never takes a last presence); with neither possible, what they have.
-pub fn lose_presence_or(
-    g: &mut GameState,
-    cx: &mut Cx,
-    scope: Option<usize>,
-    resource: Resource,
-    amount: i64,
-    source: &'static str,
-) -> Res {
-    let w = cx.world;
-    let hexes = scope_hexes(&w, scope);
-    for s in seats_in_scope(&w, g, scope) {
-        let mine: Vec<usize> = if presence_count(g, s) >= 2 {
-            hexes.iter().copied().filter(|&h| g.tokens(h, &presence(s)) > 0).collect()
-        } else {
-            Vec::new()
-        };
-        let mut opts = Vec::new();
-        let can_pay = g.resource(s, resource) >= amount;
-        if can_pay {
-            opts.push(opt(format!("pay {amount} {resource}")));
-        }
-        let off = opts.len();
-        opts.extend(mine.iter().map(|&h| {
-            let mut o = hex_opt(&w, h);
-            o.option = format!("lose presence at {}", o.option);
-            o
-        }));
-        let prompt = format!("Seat {s}: pay {amount} {resource} or lose a presence?");
-        match cx.choose_loss(s, &prompt, opts)? {
-            Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
-            Some(i) => {
-                board::lose_presence(g, cx, mine[i - off], s, source);
-            }
-            None => {
-                let k = g.resource(s, resource);
-                cx.add_resource(g, s, resource, -k);
-            }
-        }
-    }
-    Ok(())
-}
-
-/// Each player in `scope` discards their dearest card in hand (their choice
-/// on a tie).
-pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
-    let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
-        let hand = g.pile(&cards::hand(s)).to_vec();
-        let cost = |id: &str| cards::list_cost(&w, id);
-        let Some(top) = hand.iter().map(|c| cost(c)).max() else {
-            continue;
-        };
-        let tied: Vec<Key> = hand.into_iter().filter(|c| cost(c) == top).collect();
-        let opts = tied.iter().map(|c| opt(c.as_str())).collect();
-        let prompt = format!("Purge Protocols: seat {s} discards which card?");
-        if let Some(i) = cx.choose(s, &prompt, opts)? {
-            cards::discard(g, cx, &tied[i], &cards::hand(s));
-        }
-    }
-    Ok(())
 }

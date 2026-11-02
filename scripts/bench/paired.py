@@ -20,7 +20,6 @@ size, the same overrides under c2-x and c3-x:
 Cells must come from specs with one config and one difficulty.
 """
 import argparse
-import json
 import math
 import os
 import re
@@ -28,22 +27,18 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import gap  # noqa: E402
+from screens import cell_names, gap, stream  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8')
 
 
 def load(d):
     """{cell name: {seed: game}}, in the spec's order."""
-    with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
-        spec = json.loads(f.readline())['spec']
-        games = [json.loads(line) for line in f if line.strip()]
-    assert len(spec['configs']) == 1 and len(spec['difficulties']) == 1, d
-    names = [f"{v['name']}/{a}" for v in spec['variants'] for a in spec['agents']]
+    lines = stream(d)
+    names = [f'{v}/{a}' for v, a in cell_names(next(lines)['spec'])]
     cells = {n: {} for n in names}
-    for g in games:
-        if 'cell' in g:
-            cells[names[g['cell']]][g['seed']] = g
+    for g in lines:
+        cells[names[g['cell']]][g['seed']] = g
     return cells
 
 

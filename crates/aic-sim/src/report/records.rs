@@ -64,7 +64,6 @@ pub fn save_records(
     let ranks = measured_rank(cells, sums);
     let rank = |c: &Cell| ranks.get(&c.agent.label()).copied();
     let top_rank = ranks.values().copied().max();
-    let weakest_rank = Some(0);
     let mut picked: Vec<(String, usize, String)> = Vec::new();
     let mut taken = BTreeSet::new();
     let mut take =
@@ -153,7 +152,7 @@ pub fn save_records(
     for (i, g) in games.iter().enumerate().filter(|(_, g)| g.won) {
         let c = &cells[g.cell];
         let low = g.winprob.iter().copied().fold(f64::INFINITY, f64::min);
-        let why = if rank(c) == weakest_rank && weakest_rank < top_rank {
+        let why = if rank(c) == Some(0) && Some(0) < top_rank {
             Some((
                 0,
                 format!("won by the weakest agent as measured ({})", c.agent.label()),

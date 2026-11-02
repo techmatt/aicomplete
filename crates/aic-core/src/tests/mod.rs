@@ -4,12 +4,11 @@ use std::sync::Arc;
 use rand::{RngCore, SeedableRng};
 
 use super::*;
-use crate::content::{Resource, Side, TokenKind};
-use crate::content::HexKind;
-use crate::modules::adversary::{CURRENT, DECK, NEXT, STAGE, SUPPLY};
+use crate::content::{HexKind, Resource, Side, TokenKind};
+use crate::modules::adversary::{CURRENT, DECK, NEXT, PROJECTS, STAGE, SUPPLY};
 use crate::modules::common::{
     ambassador, cube, presence, presence_of, ADV_AMBASSADOR, ADV_CUBE, FACTORY,
-    HARDEN, STATION, TROOP, UNIT,
+    HARDEN, NODE, STATION, TROOP, UNIT,
 };
 
 mod adversary;
@@ -19,19 +18,20 @@ mod boards;
 mod cards;
 mod config;
 mod determinism;
+mod endgame;
 mod face;
 mod factories;
 mod freeing;
-mod presence_powers;
 mod invariants;
 mod map;
 mod march;
 mod ops;
 mod overlay;
 mod plan;
+mod presence_powers;
 mod production;
 mod projects;
-mod endgame;
+mod science;
 mod setup;
 mod standard_actions;
 mod threat_sources;
@@ -144,6 +144,20 @@ fn lab_actions_with(sets: &[&str]) -> (Rules, GameState) {
     (rules, g)
 }
 
+/// The lab at its action phase after setup, where every seat has room to
+/// grow: free open hexes next to its starting presence.
+fn actions_with_room() -> (Rules, GameState) {
+    let (rules, g) = lab_actions();
+    let w = rules.world();
+    for s in 0..2 {
+        assert!(
+            crate::modules::board::presence_hexes(&w, &g, s).len() >= 2,
+            "seat {s} has no room to grow at setup"
+        );
+    }
+    (rules, g)
+}
+
 /// Runs the round's phases again from the first, up to the next decision
 /// (or the first choice).
 fn run(rules: &Rules, g: &mut GameState) {
@@ -177,6 +191,11 @@ fn kind(m: &Map, h: usize) -> HexKind {
 
 fn cities(m: &Map) -> Vec<usize> {
     hexes_where(m, |h| kind(m, h) == HexKind::City)
+}
+
+/// Makes pile `pile` exactly `cards`.
+fn set_pile(g: &mut GameState, pile: &str, cards: &[&str]) {
+    g.piles.insert(pile.into(), Arc::new(cards.iter().map(|c| Key::new(c)).collect()));
 }
 
 /// Corrupts every city but `keep`.
@@ -264,6 +283,18 @@ fn act(rules: &Rules, g: &mut GameState, a: Action) {
     answer_all(rules, g);
 }
 
+/// Where the power called `name` sits on seat `seat`'s board.
+fn power_index(rules: &Rules, seat: usize, name: &str) -> usize {
+    let w = rules.world();
+    let found = modules::ai::board(&w, seat).powers.iter().position(|p| p.name == name);
+    found.unwrap_or_else(|| panic!("seat {seat} has no power {name:?}"))
+}
+
+/// The power called `name` on seat `seat`'s board, as that seat's action.
+fn power(rules: &Rules, seat: usize, name: &str) -> Action {
+    Action::Power { seat: seat as u8, power: power_index(rules, seat, name) as u8 }
+}
+
 fn std_act(seat: u8, act: &str) -> Action {
     Action::Standard {
         seat,
@@ -279,13 +310,64 @@ fn pass_round(rules: &Rules, g: &mut GameState) {
     answer_all(rules, g);
 }
 
+/// Gives 1 insight from seat 0 to seat 1: an action, so the end checks run.
+fn give(rules: &Rules, g: &mut GameState) {
+    set_res(g, 0, Resource::Insight, 1);
+    act(rules, g, Action::Give { seat: 0, to: 1 });
+}
+
+/// A lab with seat 0's presence on the board and both tracks at `taken` steps.
+fn at_step(sets: &[&str], taken: i64) -> (Rules, GameState) {
+    let (rules, mut g) = lab_with(&[], sets);
+    let a = rules.map.numbered(0, piece(0).presence);
+    put(&mut g, a, presence(0), 1);
+    g.vars.insert(crate::modules::board::track_key(0).into(), taken);
+    g.vars.insert(crate::modules::board::track2_key(0).into(), taken);
+    (rules, g)
+}
+
+/// The cheaper of seat 0's two tracks at `taken` steps.
+fn step_cost(w: &module::World, taken: usize) -> i64 {
+    let b = modules::ai::board(w, 0);
+    b.presence[taken].cost.min(b.presence2[taken].cost)
+}
+
+fn threat_lab() -> (Rules, GameState) {
+    let rules = Rules::new(&lab_config(&[ACTIONS, "threats.execute"])).unwrap();
+    let g = rules.new_game(3);
+    (rules, g)
+}
+
+/// Puts `threat` on country `c` (out of its deck).
+fn deal(g: &mut GameState, threat: &str, c: usize) {
+    for t in [1, 2] {
+        if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
+            Arc::make_mut(p).retain(|x| x != threat);
+        }
+    }
+    Arc::make_mut(g.piles.entry(format!("threats.on.{c}")).or_default()).push(threat.into());
+}
+
+fn row(g: &mut GameState, ids: &[&str]) {
+    set_pile(g, PROJECTS, ids);
+}
+
+/// Seat `seat` with the means to play any card.
+fn fund(g: &mut GameState, seat: usize) {
+    set_res(g, seat, Resource::Credits, 30);
+    set_res(g, seat, Resource::Insight, 5);
+    set_res(g, seat, Resource::Antimatter, 2);
+}
+
+/// The programs carrying `tag`, in content order.
+fn programs<'a>(w: &'a module::World, tag: content::Tag) -> impl Iterator<Item = &'a content::CardDef> {
+    w.content.cards.iter().filter(move |c| c.tags.contains(&tag) && !c.is_building() && !c.is_event())
+}
+
 /// Stacks `side`'s Alignment deck: `card` is drawn next, whatever the tier.
 fn next_alignment_card(g: &mut GameState, side: Side, card: &str) {
     for tier in [1, 2] {
-        g.piles.insert(
-            format!("alignment.deck.{}.{tier}", side.name()).into(),
-            vec![card.into()].into(),
-        );
+        set_pile(g, &format!("alignment.deck.{}.{tier}", side.name()), &[card]);
     }
 }
 
@@ -318,6 +400,23 @@ fn with_cx_picks<T>(
         choices: &mut choices,
     };
     f(&mut cx)
+}
+
+/// Runs `ops` for seat 0, its choices answered by `picks`.
+fn run_ops_with(rules: &Rules, g: &mut GameState, picks: Vec<crate::state::Pick>, ops: &[content::Op]) {
+    with_cx_picks(rules, picks, |cx| modules::effects::run(g, cx, ops, &mut modules::effects::Ctx::seat(0))).unwrap();
+}
+
+/// Runs `ops` for seat 0 on a crafted state: they may ask nothing.
+fn run_ops(rules: &Rules, g: &mut GameState, ops: &[content::Op]) {
+    run_ops_with(rules, g, Vec::new(), ops);
+}
+
+/// Answers a hex choice, if it was asked (a single option is taken for you).
+fn pick(rules: &Rules, g: &mut GameState, h: usize) {
+    if g.pending.is_some() {
+        answer_hex(rules, g, h);
+    }
 }
 
 /// Passes (else plays the first legal action) until `phase` is the current

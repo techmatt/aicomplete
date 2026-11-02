@@ -190,9 +190,11 @@ pub struct Scoring {
 }
 
 impl Scoring {
-    /// At the top level of a decision: a presence power at [`full_placing`].
+    /// At the top level of a decision: a presence power at twice `choices`
+    /// (041, 066): a track and a hex, after up to two sacrifices. 046: not inside
+    /// rollouts, at about 3.7 evaluations a decision.
     pub fn decision(samples: usize, depth: usize, choices: usize) -> Self {
-        let placing_choices = full_placing(choices);
+        let placing_choices = choices * 2;
         Scoring {
             samples,
             depth,
@@ -309,13 +311,6 @@ fn sacrifices_many(world: &World, a: &Action) -> bool {
     matches!(a, Action::Power { seat, power } if ai::power_sacrifices_many(world, *seat as usize, *power as usize))
 }
 
-/// Levels a presence power's choices are scored at, top level (041, 066): a
-/// track and a hex, after up to two sacrifices. 046: not inside rollouts, at
-/// about 3.7 evaluations a decision.
-fn full_placing(choices: usize) -> usize {
-    choices * 2
-}
-
 /// The best-scoring action; ties go to a pass (doing nothing is never worse
 /// than a move that changes nothing), then to the first.
 pub fn pick(legal: &[Action], scores: &[f64]) -> usize {
@@ -410,7 +405,7 @@ impl Greedy {
         self
     }
 
-    /// As a rollout's policy: a presence power at plain `choices` (046).
+    /// As a rollout's policy: see [`Scoring::in_rollout`].
     pub fn in_rollout(mut self) -> Self {
         self.how = self.how.in_rollout();
         self

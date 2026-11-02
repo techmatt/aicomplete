@@ -1,7 +1,8 @@
 # CLAUDE.md
 
-The standing contract for every executor working in this repo. How to build, run and test
-is in the [README](README.md).
+The standing contract for every executor working in this repo. How to build and test is in
+the [README](README.md), which also lists the page for each area: the simulator, agents,
+experiments, speed, scripts, web, card art.
 
 ## What this repo is
 
@@ -41,6 +42,8 @@ is in the [README](README.md).
 - **Before the report**, `git grep` each renamed name and each changed number, and reread the
   rules.md section a new mechanic touches. A diff doesn't show the prose it left stale, and a
   sentence saying something never happens has nothing to grep.
+- **Adding or removing a card** edits `configs/baseline.json`, then run `python
+  scripts/configs/shared_row.py`; a core test fails until you do.
 - **Any card work** follows [docs/card-guidelines.md](docs/card-guidelines.md) (`npm run
   cards:fit` in `web/` checks the fit). A display rename keeps the card's id: notes,
   `scenes.json` and records key on it. An id changes only to fix a spelling `docs --check`
@@ -52,7 +55,8 @@ is in the [README](README.md).
 - **Two test lanes.** Run `cargo test --workspace`, the fast lane, after every change, and
   `cargo test-all`, the full run, before every commit. Flags follow the alias with no `--`:
   `cargo test-all --test-threads=2`. A test slower than about a second goes in the slow lane,
-  with a cheaper fast-lane twin where one makes sense. See README, *Build and test*.
+  with a cheaper fast-lane twin where one makes sense. See README, *Build and test*. Leave
+  `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt.
 - **Agents stay fast.** After a change to rules, state or agents, run `python
   scripts/bench/speed.py check target/release/aic-sim.exe`, after the first screen, not last,
   while a fix can still be tested. It fails over 1.3 × the baseline and gives no verdict across
@@ -70,14 +74,18 @@ is in the [README](README.md).
   process (the `cargo`, `node` or test binary), never on a launcher wrapper that returns before
   the work is done.
 - **One cargo at a time in a target dir.** Parallel helpers need their own `CARGO_TARGET_DIR`.
-- **Write scripts with Write, not a Bash heredoc.** This box's traps are in README, *This machine*.
+- **Write scripts with Write, not a Bash heredoc:** quoting breaks it, and a long one fails on
+  size. A file a script writes passes `encoding='utf-8', newline='\n'`. This box's traps are in
+  README, *This machine*.
 - **Times are local, 12-hour clock** (2:45pm), in reports, docs and progress lines.
 - **American English everywhere:** content, faces, docs, UI, comments and names.
 - **LF line endings.** `.gitattributes` sets `* text=auto eol=lf`; don't override it.
 - **Cleanups never delete `review/`.** It is git-ignored and holds Matt's card notes: nothing
   regenerates them.
-- **Operational facts go into `README.md`:** how to build, run and test, measured run times,
-  ports, gotchas. Never leave one only in a report.
+- **Operational facts go in the page for their area:** build, test and this machine in
+  `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's flags in
+  `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes to
+  `experiments/history.md`.
 
 ## Report
 

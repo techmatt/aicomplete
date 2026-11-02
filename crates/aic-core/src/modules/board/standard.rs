@@ -140,7 +140,11 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         // 044: Clear's words say what its reward is.
         StandardAction::Clear => return clear_words(w),
         StandardAction::Station => "build a research station in reach (yours)",
-        StandardAction::Remove => return format!("move an ambassador from your supply onto a hex in reach: it removes up to {} adversary ambassadors there and stays", w.int("board.remove_count")),
+        StandardAction::Remove => {
+            let n = w.int("board.remove_ambassadors");
+            let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
+            return format!("move {who} from your supply onto a hex in reach: it removes up to {} adversary ambassadors there and stays", w.int("board.remove_count"));
+        }
         StandardAction::Move => "move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Align => "align a clean city you can claim",
@@ -169,7 +173,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             let supply = g.resource(seat, Resource::Ambassadors) > 0;
             let on_board = ambassadors_on_board(g, seat);
             all.filter(|&h| {
-                (supply || on_board > g.tokens(h, &ambassador(seat)))
+                (supply || on_board > g.tokens(h, ambassador(seat)))
                     && reach(h)
                     && has_piece(w, g, h)
             })
@@ -218,29 +222,22 @@ pub(super) fn std_resolve(
             cx.add_resource(g, s, Resource::Credits, w.int("board.chips_credits"));
             cx.tally(g, "board.chips_sold", 1);
         }
-        StandardAction::Drain => {
-            let ids = adversary::projects_with_compute(g);
-            let opts = ids.iter().map(|p| opt(p.clone())).collect();
-            let prompt = format!("Seat {s}: remove compute from which adversary project?");
-            if let Some(i) = cx.choose(s, &prompt, opts)? {
-                adversary::drain_project(g, cx, &ids[i], w.int("board.drain_amount"));
-            }
-        }
+        StandardAction::Drain => adversary::choose_drain(g, cx, s, w.int("board.drain_amount"))?,
         StandardAction::Station => {
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, STATION, 1);
-                cx.add_tokens(g, h, &cube(s), 1);
+                cx.add_tokens(g, h, cube(s), 1);
             }
         }
         StandardAction::Remove => {
             if let Some(h) = on_hex(cx)? {
-                // 066: one ambassador clears up to `remove_count` from the hex.
+                // 066: `remove_ambassadors` clear up to `remove_count` from the hex.
                 for _ in 0..w.int("board.remove_count").min(g.tokens(h, ADV_AMBASSADOR)) {
                     adversary::remove_piece(g, cx, Some(s), h, ADV_AMBASSADOR);
                 }
                 // 068: it left the supply for the hex and stays there: a
                 // position. It evicted them, so it arrives with no cancel.
-                cx.add_tokens(g, h, &ambassador(s), w.int("board.remove_ambassadors"));
+                cx.add_tokens(g, h, ambassador(s), w.int("board.remove_ambassadors"));
             }
         }
         StandardAction::Clear => {
@@ -255,7 +252,7 @@ pub(super) fn std_resolve(
         }
         StandardAction::Align => {
             if let Some(h) = on_hex(cx)? {
-                cx.add_tokens(g, h, &cube(s), 1);
+                cx.add_tokens(g, h, cube(s), 1);
                 cx.tally(g, "board.cities_aligned", 1);
             }
         }
@@ -269,7 +266,7 @@ pub(super) fn std_resolve(
 }
 
 /// Clear's words with its reward (the configs' `clear_unity`, `clear_credits`).
-pub(super) fn clear_words(w: &World) -> String {
+fn clear_words(w: &World) -> String {
     let (unity, credits) = (w.int("board.clear_unity"), w.int("board.clear_credits"));
     let mut reward = Vec::new();
     if unity > 0 {

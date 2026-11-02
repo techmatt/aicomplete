@@ -38,7 +38,11 @@ Remove-Item "out/$Name.exit" -ErrorAction SilentlyContinue
 # priority, and the marker can't be missed by whoever waits, whatever way the sim ends.
 # Start-Process hands the sim the files themselves: `2>` in the wrapper would hold its
 # stderr back until it exits, and a wait on `panicked` must fire mid-run.
-$list = ($SimArgs | ForEach-Object { '"' + ($_ -replace "'", "''") + '"' }) -join ' '
+# -ArgumentList is the raw command line: a `"` in an arg goes as `\"`, a backslash before it or
+# at the end of the arg doubles. Doubling `'` is for the single-quoted string in $script.
+$list = ($SimArgs | ForEach-Object {
+    '"' + ($_ -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1' -replace "'", "''") + '"'
+}) -join ' '
 $script = "`$p = Start-Process -FilePath './$exe' -ArgumentList '$list' -NoNewWindow -PassThru " +
           "-RedirectStandardOutput 'out/$Name.out' -RedirectStandardError 'out/$Name.err'; " +
           "`$null = `$p.Handle; `$p.WaitForExit(); Set-Content 'out/$Name.exit' `$p.ExitCode"

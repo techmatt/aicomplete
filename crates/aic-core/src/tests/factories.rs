@@ -34,7 +34,7 @@ fn cities_grow_factories_that_take_their_owner() {
 
     // An aligned city's factory is its owner's.
     let mut gg = g0.clone();
-    put(&mut gg, c6, &cube(1), 1);
+    put(&mut gg, c6, cube(1), 1);
     run(&rules, &mut gg);
     answer_all(&rules, &mut gg);
     assert_eq!(zones(&gg)[0], (1, Some("cube:1".into())));
@@ -112,7 +112,7 @@ fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_fr
     assert_ne!(zone(&g, 13).1, adv);
     // A player ambassador no longer repels it.
     let mut g = g0.clone();
-    put(&mut g, at(8), &ambassador(0), 1);
+    put(&mut g, at(8), ambassador(0), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(zone(&g, 8), (1, adv));
@@ -141,10 +141,10 @@ fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
     // Seat 1 next to 2; seat 1 on 11 against seat 0 on 10 (next to it), a
     // tie the players settle; seat 0 on 9 and 10, both next to 13.
     let mut g = g0.clone();
-    put(&mut g, at(1), &presence(1), 1);
-    put(&mut g, at(11), &presence(1), 1);
-    put(&mut g, at(9), &presence(0), 1);
-    put(&mut g, at(10), &presence(0), 1);
+    put(&mut g, at(1), presence(1), 1);
+    put(&mut g, at(11), presence(1), 1);
+    put(&mut g, at(9), presence(0), 1);
+    put(&mut g, at(10), presence(0), 1);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a tie to settle");
     assert!(
@@ -169,8 +169,8 @@ fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
 
     // An aligned city's factory stays its owner's, whatever presence is near.
     let mut g = g0.clone();
-    put(&mut g, at(6), &cube(0), 1);
-    put(&mut g, at(1), &presence(1), 1);
+    put(&mut g, at(6), cube(0), 1);
+    put(&mut g, at(1), presence(1), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(owners(&g)[0], c(0));
@@ -182,7 +182,7 @@ fn player_factories_make_chips_on_production_steps_only() {
     let m = &rules.map;
     let f = m.numbered(0, piece(0).factories[0]);
     put(&mut g0, f, FACTORY, 1);
-    put(&mut g0, f, &cube(0), 1);
+    put(&mut g0, f, cube(0), 1);
     // Every zone taken, so nothing grows.
     for c in 0..2 {
         for &z in &piece(c).industry {
@@ -257,40 +257,11 @@ fn a_player_ambassador_on_an_adversary_factory_sways_unity_and_stays() {
     let f = m.numbered(0, piece(0).factories[0]);
     put(&mut g, f, FACTORY, 1);
     put(&mut g, f, ADV_CUBE, 1);
-    put(&mut g, f, &ambassador(0), 1);
+    put(&mut g, f, ambassador(0), 1);
     let unity = g.var("alignment.unity");
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f, TROOP), g.tokens(f, &ambassador(0))), (1, 1));
+    assert_eq!((g.tokens(f, TROOP), g.tokens(f, ambassador(0))), (1, 1));
     assert_eq!(g.var("alignment.unity") - unity, 1);
-}
-
-#[test]
-fn a_troop_at_a_base_absorbs_a_strike_next_to_it() {
-    let (rules, mut g) = lab(&["board.march"]);
-    let m = &rules.map;
-    let [b0, _] = m.fronts[0].bases;
-    let next = m.hexes[b0]
-        .neighbors
-        .iter()
-        .copied()
-        .find(|&h| kind(m, h) == HexKind::Open)
-        .unwrap();
-    put(&mut g, next, FACTORY, 1);
-    put(&mut g, next, &cube(0), 1);
-    put(&mut g, next, TROOP, 1);
-    put(&mut g, b0, UNIT, 1);
-    let discord = g.var("alignment.discord");
-    run(&rules, &mut g);
-    answer_all(&rules, &mut g);
-    assert_eq!(
-        (
-            g.tokens(next, FACTORY),
-            g.tokens(b0, UNIT),
-            g.var("alignment.discord")
-        ),
-        (1, 0, discord)
-    );
-    assert_eq!(g.stats.counters["board.base_absorbed"], 1);
 }
 
 /// 028: an adversary-owned factory's ambassador is used up making its troop.

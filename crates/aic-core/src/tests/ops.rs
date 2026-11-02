@@ -16,7 +16,7 @@ fn an_op_in_the_wrong_list_fails_to_load() {
         (Op::Compute { amount: 1 }, Slot::Twist),
     ];
     for (op, slot) in bad {
-        assert!(check_ops(&[op.clone()], slot, "test").is_err(), "{op:?} in {slot:?}");
+        assert!(check_ops(std::slice::from_ref(&op), slot, "test").is_err(), "{op:?} in {slot:?}");
     }
 }
 

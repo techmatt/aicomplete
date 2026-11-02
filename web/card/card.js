@@ -2,10 +2,15 @@
 // PDF at true size), the web client later (scale it with CSS).
 // Needs card.css. Geometry comes from layout.json; the icon set is in icons.js. The frame
 // holds the fixed structure only: what changes card by card is drawn here. Where a thing
-// sits is what it is: see README, Card art.
+// sits is what it is: see tools/card-art/README.md.
 import { arrow, eye, icon, isIcon, isTag, stacked, tagMedallion } from './icons.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/** Tier 2 and up print gilded; tier 0 (unique) and 1 share a frame. */
+export const tierOf = (tier) => (tier >= 2 ? 2 : 1);
+/** The frame variant a card prints on. */
+export const frameOf = (card) => `${card.kind}-t${tierOf(card.tier)}`;
 
 const place = ([x0, y0, x1, y1]) => `left:${x0}mm;top:${y0}mm;width:${(x1 - x0).toFixed(2)}mm;height:${(y1 - y0).toFixed(2)}mm`;
 
@@ -33,7 +38,7 @@ function tags(card, [, y0, x1, y1]) {
 function insight(card, box) {
   if (!card.insight) return '';
   const pts = '26 3 74 3 97 43.300 74 83.600 26 83.600 3 43.300';
-  const rim = `rim-t${card.tier >= 2 ? 2 : 1}`; // by tier: a page of cards shares one id space
+  const rim = `rim-t${tierOf(card.tier)}`; // by tier: a page of cards shares one id space
   return `<div class="insight" style="${place(box)}">
       <svg class="hexagon" viewBox="-4 -4 108 95"><defs><linearGradient id="${rim}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rim-a)"/><stop offset=".45" stop-color="var(--rim-b)"/><stop offset=".6" stop-color="var(--rim-c)"/><stop offset="1" stop-color="var(--rim-a)"/></linearGradient></defs>
         <polygon points="${pts}" class="halo"/><polygon points="${pts}" class="edge"/><polygon points="${pts}" class="rim" stroke="url(#${rim})"/><polygon points="${pts}" class="face"/></svg>
@@ -178,7 +183,7 @@ export async function fitCards(root = document) {
 export function renderCard(card, layout, frameUrl, fit = {}, artUrl) {
   const z = { ...layout.common, ...layout.kinds[card.kind], ...fit };
   const reqX = card.insight ? z.insight[2] + 0.5 : z.cost[2] + 2.4;
-  return `<article class="card kind-${esc(card.kind)} tier-${card.tier >= 2 ? 2 : 1}" style="--strip:${layout.kind_color[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
+  return `<article class="card kind-${esc(card.kind)} tier-${tierOf(card.tier)}" style="--strip:${layout.kind_color[card.kind]}${fit.plate ? `;--plate:${esc(fit.plate)}` : ''}">
   <img class="frame" src="${esc(frameUrl)}" alt="">
   ${artUrl ? `<img class="art" src="${esc(artUrl)}" alt="" style="${place(z.art)}">` : ''}
   <div class="content">

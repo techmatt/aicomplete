@@ -92,7 +92,7 @@ seeds for the five closest, 48 for the rest, `never_tag` left at 8. Every row is
 | No growth phase: presence comes from presence powers, each once a round, 0-2 a round from powers | candidate (Matt) |
 | Placements pay the printed step: one payment path, `board::place_presence` | **locked** |
 | Every board's Deploy: 1 energy for 1 presence | candidate (Matt) |
-| Builder's Buy In: 1 energy + 6 credits (the design's 10 read 54 / 58 against 67 / 62 on the same 48 seeds, 20200, where 6 sat above the band's floor at both sizes; 3-4 credits ran higher at c3 on 25 seeds, far from a steep price) | candidate, simulation |
+| Builder's Buy In: 1 energy + 6 credits (the design's 10 read 54 / 58 against 67 / 62 on the same 48 seeds, 20200, where 6 sat above the band's floor at both sizes; 3-4 credits ran higher at c3 on 25 seeds, far from a steep price, while at c2 the same screen read 36 and 75: noise) | candidate, simulation |
 | Protector's Accord: 1 energy + sacrifice 1 Diplomacy (the design's 2 went unused, 0.1 a game) | candidate, simulation |
 | Tag costs on powers are sacrifices; no thresholds on them | **locked** |
 | Cheap powers: Scrap (1 Industry for 2 chips), Stand Down (1 Security for 3 credits) | candidate (Matt) |
@@ -565,3 +565,82 @@ card strip. Gone with 014: population, processors, drones, outposts, foundries, 
 typed land, defense tokens, the corruption pool, the explore → build → ravage pipeline.
 Results and records from revisions 1–6 stay in `experiments/results/` as history; they
 do not replay.
+
+## Older curves (moved from rules.md in 073)
+
+**The curve (041, r20, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 83,
+d3 42, d4 25; 3 countries: d0 83, d1 75, d2 50, d3 8, d4 17; at 32 seeds d2 is 88 / 44
+(`experiments/results/screen-041-growth/growth.md`).
+
+**The curve (034, r19, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 67,
+d3 17, d4 17; 3 countries: d0 100, d1 58, d2 42, d3 0, d4 0; at 32 seeds d2 is 66 / 38
+(`experiments/results/screen-034-clocks/clocks.md`).
+
+**The curve (028 quick screen, r17, 16 games a cell, engine / greedy, %).** 2 countries:
+d0 50 / 12, d1 44 / 12, d2 44 / 12, d3 6 / 0, d4 19 / 6; 3 countries: d0 75 / 0, d1 56 / 0,
+d2 12 / 0, d3 6 / 0, d4 0 / 0; random 0 everywhere. A hold of 3 is set for the planner (66 / 69
+at d2, 32 seeds): one-step agents fall well short of "skilled play wins" at d0, and the curve
+under the planner is not measured (`experiments/results/screen-028-rollout/rollout.md`).
+
+**The curve (027 quick screen, r16, 16 games a cell, engine / greedy, %).** 2 countries:
+d0 81 / 25, d1 38 / 25, d2 56 / 31, d3 56 / 12, d4 25 / 12; 3 countries: d0 88 / 56,
+d1 69 / 44, d2 50 / 19, d3 19 / 0, d4 12 / 0; random 0 everywhere; with noise of about ±12
+points, c2's d1 below d2 and d3 is within it. Engine win rounds run from 4 to 11 with no gate
+(`experiments/results/screen-027-endgame/endgame.md`).
+
+**The curve (024 quick screen, r15, 16 games a cell, engine / greedy, %).** 2 countries:
+d0 94 / 62, d1 81 / 69, d2 69 / 31, d3 38 / 19, d4 38 / 25; 3 countries: d0 94 / 81,
+d1 100 / 81, d2 81 / 75, d3 38 / 31, d4 19 / 6; random 0 everywhere; earliest win round 6
+in every cell (`experiments/results/screen-024-adversary/adversary.md`). r14's lower numbers
+were partly the agent's keep plan (fixed in 024), so the two curves aren't one game made
+harder.
+
+**The curve (021 quick screen, r12, 16 games a cell, engine / greedy, %).** 2 countries:
+d0 100 / 88, d1 100 / 81, d2 94 / 88, d3 75 / 75, d4 19 / 19; 3 countries: d0 88 / 69,
+d1 94 / 50, d2 81 / 31, d3 75 / 31, d4 31 / 6; random 0 everywhere
+(`experiments/results/screen-021-cards/cards.md`, with r11's and the untuned r12's).
+The skill gap between engine and greedy widened at 3 countries: greedy keeps every card
+it drafts and plays few.
+
+**The curve (019 quick screen, r10, 16 games a cell, engine / greedy, %).** 2 countries:
+d0 100 / 88, d1 88 / 94, d2 81 / 94, d3 62 / 56, d4 25 / 38; 3 countries: d0 100 / 88,
+d1 81 / 81, d2 88 / 69, d3 62 / 56, d4 69 / 50; random 0 everywhere. With 16 games a
+cell the noise is about ±12 points, so c3 engine's d4 above d3 and greedy above engine
+at c2 d1–d2 are within it. Levers: d1 two extra threats a round; d2 the 10-round deck;
+d3 corrupted cities build 2; d4 the supply 4 smaller.
+`experiments/results/screen-019-troops/troops.md` (018's r9 curve:
+`experiments/results/screen-018-calibration/calibration.md`).
+
+**Why this ladder (014; the supply loss it rests on was retired in 027).** At 014 the supply
+loss bounded everything: one corrupted city made about 3 ambassadors a round per country
+against a supply of 10, so anything that doubled the build (a second corrupted city) starved
+the supply within two rounds. The
+corrupted-city-per-country and smaller-supply levels the prompt suggested were first
+tried as levels 3 and 4 (second city, supply 7 per country): every game ended in round 1
+or 2, before a decision mattered. Levels 3 and 4 were rebuilt from the milder options;
+the curve is not tuned (014 quick screen: greedy 100 / 88 / 25 / 0 / 0 % at d0–d3, 16
+games each).
+
+## The 014 card remap (moved from rules.md in 073)
+
+History: the placeholder cards as remapped in 014 (data centers became presence in 016).
+023 replaced every card in this table except the AI-unique ones (Turnkey Factory, Point
+Defense, Shelter Order, Strike Team); it is kept as a record of the old set.
+
+| Card | Was | Now |
+|---|---|---|
+| Server Farm, Fork Process | place a processor | place a data center |
+| Data Mining | compute per processor | compute per data center (max 4) |
+| Firewall Node | explore skips your processors | spread skips your data centers |
+| Watchtower Net, Precision Strike, Sweep, Orbital Lance, Strike Team | damage | remove adversary pieces worth N (ambassador 1, troop 2); Watchtower in a country with your data center, Strike Team in reach |
+| Purge Protocol | destroy every adversary piece in a hex | remove every adversary ambassador and troop in a hex |
+| Swarm Override | remove every drone in a country | remove every adversary ambassador in a country (1 Unity per 2) |
+| Emergency Fab, Turnkey Factory | build a factory on Industrial land | build a factory on an empty open hex touching a city |
+| Rebuild / Reconstruction | return 1 / 3 corruption | take the adversary cube off 1 / **2** corrupted cities or stations (one country) |
+| Shore Up / Point Defense / Protector growth | defense tokens | hardening tokens (3 / 2 / 2) |
+| Evacuate | move 3 population | move up to 3 of your ambassadors onto pieces in reach |
+| Shelter Order, Civic Shelter | population protected | facilities protected |
+| Scavenge | if you destroyed a foundry | if you removed an adversary troop |
+| Rally | 2 Unity if population and adversary share a hex | gain 1 ambassador; 2 Unity if a clean city holds adversary ambassadors |
+| Recruitment Hub | (giving bonus) | also gain 2 ambassadors when built |
+| Unity Network | +1 Unity per outpost/foundry destroyed | +1 Unity per adversary troop removed |

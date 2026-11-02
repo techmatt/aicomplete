@@ -92,7 +92,7 @@ pub static DEF: ModuleDef = ModuleDef {
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
             PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, and one on a lone presence drains its owner's insight into adversary compute"),
-            PhaseSpec::auto("cleanup", "remove the round's country flags"),
+            PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
         uses_cards: false,
@@ -186,11 +186,11 @@ impl Module for Board {
             let c = home_country(&w, s);
             let n = w.content.map.countries[c].presence;
             let start = w.map.numbered(c, n);
-            cx.add_tokens(g, start, &presence(s), 1);
+            cx.add_tokens(g, start, presence(s), 1);
             cx.set_key(g, &track_key(s), 1);
             cx.add_resource(g, s, Resource::Ambassadors, w.int("board.start_ambassadors"));
             if let Some(h) = bound_city(&w, g, c, start) {
-                cx.add_tokens(g, h, &cube(s), 1);
+                cx.add_tokens(g, h, cube(s), 1);
             }
         }
     }
@@ -211,7 +211,7 @@ impl Module for Board {
         for id in g.pile(&cards::hand(s)) {
             out.push(Action::Sell {
                 seat,
-                card: id.clone(),
+                card: *id,
             });
         }
     }

@@ -14,8 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 export const REPO = resolve(here, '..', '..');
 
-const readJson = (f) => JSON.parse(readFileSync(f, 'utf8').replace(/^﻿/, ''));
-const has = (o, k) => o != null && Object.hasOwn(o, k);
+const readJson = (f) => JSON.parse(readFileSync(f, 'utf8').replace(/^\uFEFF/, ''));
 
 /** Key order is not content: a reformatted file must not badge every card. */
 function stable(v) {
@@ -119,7 +118,7 @@ function csvRows(text) {
 
 function readCsv(file) {
   const [head, ...rows] = csvRows(readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
-  return (rows ?? []).map((row) => Object.fromEntries((head ?? []).map((h, i) => [h, row[i]])));
+  return rows.map((row) => Object.fromEntries((head ?? []).map((h, i) => [h, row[i]])));
 }
 
 const LADDER = ['planner', 'rollout', 'beam', 'engine', 'greedy', 'random'];
@@ -332,9 +331,10 @@ function threat(t) {
   return frameless('threat', t, {
     tier: t.tier,
     tierLabel: TIER(t.tier),
+    keywords: [`source: ${t.source}`],
     cost: credits || t.counter.reduce((n, [, a]) => n + a, 0),
     costLabel: `counter: ${costs(t.counter)}`,
-    price: [['Counter', costs(t.counter)]],
+    price: [['Counter', costs(t.counter)], ['Source', t.source]],
     ops: { effects: t.effects },
   });
 }
@@ -380,28 +380,32 @@ function megaproject(country, i) {
   });
 }
 
-function aiBoard(b) {
-  const track = (l) => l.map((u) => [costs(u.income), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade'].filter(Boolean).join('; ') || '—').join(' · ');
+function aiBoard(b, cardName) {
+  const step = (u) => [costs(u.income), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
+  const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
+  const capstones = [...b.presence, ...(b.presence2 ?? [])].flatMap((u) => u.capstone ?? []);
   return frameless('ai', b, {
     tier: null,
     tierLabel: 'AI board',
+    tags: b.tags ?? [],
     price: [
       ['Credits a round', b.credits],
       ...(b.income?.length ? [['Income', costs(b.income)]] : []),
-      ...(b.discounts ?? []).map((d) => ['Discount', `${d.resource} for ${d.tag}, ${d.rate} credits each`]),
       ...(b.powers ?? []).map((p) => [`Power: ${p.name}`, [p.tags.map(([t, n]) => `sacrifice ${n} ${t}`).join(', '), costs(p.cost)].filter(Boolean).join('; ')]),
     ],
     sections: [
       { head: `Innate: ${b.innate.name}`, text: b.innate.text ?? '' },
       ...(b.powers ?? []).map((p) => ({ head: `Power: ${p.name}`, text: p.text ?? '' })),
-      { head: 'Presence track', text: track(b.presence) },
-      ...(b.presence2?.length ? [{ head: 'Second presence track', text: track(b.presence2) }] : []),
-      ...(b.start ? [{ head: 'Starts with', text: b.start }] : []),
-      ...(b.cards?.length ? [{ head: 'Unique cards', text: b.cards.join(', ') }] : []),
+      { head: 'Economy track', text: track(b.presence) },
+      ...(b.presence2?.length ? [{ head: 'Card-play track', text: track(b.presence2) }] : []),
+      ...capstones.map((c) => ({ head: `Capstone: ${c.name}`, text: c.text })),
+      ...(b.start ? [{ head: 'Starts with', text: cardName(b.start) }] : []),
+      ...(b.cards?.length ? [{ head: 'Unique cards', text: b.cards.map(cardName).join(', ') }] : []),
     ],
     ops: {
       innate: b.innate.passives,
       ...Object.fromEntries((b.powers ?? []).map((p) => [`power: ${p.name}`, p.effects])),
+      ...Object.fromEntries(capstones.map((c) => [`capstone: ${c.name}`, c.passives])),
     },
   });
 }
@@ -427,6 +431,7 @@ export function exportCards(root = REPO) {
   const keep = mod?.params ?? {};
   const players = content('cards');
   const map = content('map');
+  const cardName = (id) => players.find((c) => c.id === id)?.name ?? id;
 
   const cards = [
     ...players.map((c) => playerCard(c, faces[c.id], keep)),
@@ -435,7 +440,7 @@ export function exportCards(root = REPO) {
     ...content('adversary').map(adversary),
     ...content('projects').map(project),
     ...map.countries.map(megaproject),
-    ...content('ais').map(aiBoard),
+    ...content('ais').map((b) => aiBoard(b, cardName)),
   ];
 
   for (const c of players) if (!faces[c.id]) warnings.push(`${c.id} has no face in web/card/faces.json: run aic-sim docs`);
@@ -447,7 +452,7 @@ export function exportCards(root = REPO) {
   const stats = buildStats(root);
 
   const out = cards.map(({ hashParts, ...c }) => {
-    const isPlayer = has(c, 'render');
+    const isPlayer = !!c.render;
     const reasoned = stats.reasoned[c.id];
     return {
       ...c,

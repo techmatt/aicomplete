@@ -266,13 +266,12 @@ impl Policy {
         } else if self.forced.keep_all {
             drafted
         } else if self.forced.science_rush || self.forced.science_board || self.forced.capstone_rush {
-            let world = rules.world();
             let mut set = plan_keeps(&world, g, s, &self.forced);
-            for id in g.pile(&cards::drafted(s)) {
+            for id in &drafted {
                 let d = cards::def(&world, id);
                 let rush = if self.forced.capstone_rush { is_capstone(d) } else { d.tags.contains(&Tag::Science) };
                 if rush && !set.contains(id) {
-                    set.push(id.clone());
+                    set.push(*id);
                 }
             }
             set
@@ -326,7 +325,7 @@ impl Policy {
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
                 (f.never_remove && act == "clear")
-                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden" | "harden_chips" | "harden_buy" | "chips"))
+                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy" | "chips"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move" | "chips"))
             }
             Action::Play { card, seat } => {
@@ -379,6 +378,20 @@ fn places_presence(effects: &[Op]) -> bool {
 /// after the board's first that does.
 fn second_presence(w: &World, s: usize, k: usize) -> bool {
     (0..k).any(|j| ai::power_places(w, s, j))
+}
+
+/// The first draft, keep or play of a card `pick` wants.
+fn first_card(legal: &[Action], pick: impl Fn(&Key) -> bool) -> Option<usize> {
+    legal.iter().position(|a| {
+        matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if pick(card))
+    })
+}
+
+/// The first power `pick` wants, by seat and power.
+fn first_power(legal: &[Action], pick: impl Fn(usize, usize) -> bool) -> Option<usize> {
+    legal
+        .iter()
+        .position(|a| matches!(a, Action::Power { seat, power } if pick(*seat as usize, *power as usize)))
 }
 
 /// Whether a card acts on the board the way 041's Science does.
@@ -439,9 +452,7 @@ impl Agent for Policy {
             }
         }
         if self.forced.free_build_rush && !pending {
-            if let Some(i) = legal.iter().position(
-                |a| matches!(a, Action::Power { seat, power } if ai::power_builds(&world, *seat as usize, *power as usize)),
-            ) {
+            if let Some(i) = first_power(legal, |s, k| ai::power_builds(&world, s, k)) {
                 return i;
             }
         }
@@ -451,17 +462,12 @@ impl Agent for Policy {
             }
         }
         if self.forced.always_max_presence && !pending {
-            if let Some(i) = legal.iter().position(
-                |a| matches!(a, Action::Power { seat, power } if ai::power_places(&world, *seat as usize, *power as usize)),
-            ) {
+            if let Some(i) = first_power(legal, |s, k| ai::power_places(&world, s, k)) {
                 return i;
             }
         }
         if self.forced.science_rush && !pending {
-            let science = |id: &Key| cards::def(&world, id).tags.contains(&Tag::Science);
-            if let Some(i) = legal.iter().position(|a| {
-                matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if science(card))
-            }) {
+            if let Some(i) = first_card(legal, |id| cards::def(&world, id).tags.contains(&Tag::Science)) {
                 return i;
             }
         }
@@ -471,18 +477,13 @@ impl Agent for Policy {
                 d.tags.contains(&Tag::Science) && (!board || acts_on_board(d))
             };
             for board in [true, false] {
-                if let Some(i) = legal.iter().position(|a| {
-                    matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if science(card, board))
-                }) {
+                if let Some(i) = first_card(legal, |id| science(id, board)) {
                     return i;
                 }
             }
         }
         if self.forced.capstone_rush && !pending {
-            let cap = |id: &Key| is_capstone(cards::def(&world, id));
-            if let Some(i) = legal.iter().position(|a| {
-                matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if cap(card))
-            }) {
+            if let Some(i) = first_card(legal, |id| is_capstone(cards::def(&world, id))) {
                 return i;
             }
         }
@@ -505,9 +506,14 @@ impl Agent for Policy {
     }
 }
 
-/// Whether hex `h` is in the country the abandon check gives up: the last.
+/// The country the abandon check gives up.
+fn last_country(w: &World) -> usize {
+    w.map.countries.len() - 1
+}
+
+/// Whether hex `h` is in the country the abandon check gives up.
 fn given_up(w: &World, h: usize) -> bool {
-    w.map.hexes[h].country as usize + 1 == w.map.countries.len()
+    w.map.hexes[h].country as usize == last_country(w)
 }
 
 /// Whether the open choice picks what the team loses: there the check may
@@ -521,20 +527,9 @@ fn abroad(w: &World, g: &GameState, s: usize, threat: &str) -> bool {
     threats::active(g).iter().any(|(t, c)| t == threat && c.is_some_and(|c| c != common::home_country(w, s)))
 }
 
-/// A tier-2 capstone (070): a tier-2 building whose standing effect ends an
-/// engine: income per tag, an automatic counter or project drain.
-pub(crate) fn is_capstone(d: &CardDef) -> bool {
-    d.tier == 2
-        && d.kind == CardKind::Building
-        && d.passives
-            .iter()
-            .any(|p| matches!(p, Op::IncomePerTag { .. } | Op::AutoCounter { .. } | Op::ProjectDrain { .. }))
-}
-
 /// Whether `threat` sits on the country the abandon check gives up.
 fn on_given_up(w: &World, g: &GameState, threat: &str) -> bool {
-    let last = w.map.countries.len() - 1;
-    threats::active(g).iter().any(|(t, c)| t == threat && *c == Some(last))
+    threats::active(g).iter().any(|(t, c)| t == threat && *c == Some(last_country(w)))
 }
 
 /// Whether hex `h` pays Unity for a player ambassador when it produces and
@@ -549,14 +544,13 @@ fn farm_site(w: &World, g: &GameState, h: usize) -> bool {
 /// farm site in reach, or buy one to send.
 fn farm(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     if let Some(p) = &g.pending {
-        let hex = |t: &aic_core::hex::Hex| (0..g.hexes.len()).find(|&h| w.map.hexes[h].hex == *t);
         if p.ask.prompt.contains("move which ambassador") {
             return legal.iter().position(|a| matches!(a, Action::Choose { option, .. } if option == "from your supply"));
         }
         return p.ask.prompt.contains(": move on which hex").then(|| {
             legal.iter().position(|a| {
                 matches!(a, Action::Choose { target: Some(t), .. }
-                    if hex(t).is_some_and(|h| farm_site(w, g, h)))
+                    if w.map.find(*t).is_some_and(|h| farm_site(w, g, h)))
             })
         })?;
     }
@@ -605,19 +599,12 @@ struct Budget {
 /// the plan with it is worth more than the plan without it.
 pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced) -> Vec<Key> {
     let mut drafted = g.pile(&cards::drafted(s)).to_vec();
-    let order = |ids: &mut Vec<Key>| {
-        ids.sort_by(|a, b| {
-            ratio(w, g, s, b, f)
-                .total_cmp(&ratio(w, g, s, a, f))
-                .then_with(|| a.cmp(b))
-        })
-    };
-    order(&mut drafted);
+    by_ratio(w, g, s, f, &mut drafted);
     let mut kept: Vec<Key> = Vec::new();
     let mut best = plan_value(w, g, s, &kept, f);
     for c in drafted {
         let mut with = kept.clone();
-        with.push(c.clone());
+        with.push(c);
         let Some(v) = plan_value_checked(w, g, s, &with, &c, f) else {
             continue;
         };
@@ -673,6 +660,16 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
         + capstone_jobs(d)
 }
 
+/// A tier-2 capstone (070): a tier-2 building whose standing effect ends an
+/// engine: income per tag, an automatic counter or project drain.
+fn is_capstone(d: &CardDef) -> bool {
+    d.tier == 2
+        && d.kind == CardKind::Building
+        && d.passives
+            .iter()
+            .any(|p| matches!(p, Op::IncomePerTag { .. } | Op::AutoCounter { .. } | Op::ProjectDrain { .. }))
+}
+
 /// 070: what a capstone's standing effect is worth to the keep plan, in
 /// `plan_niche` jobs: its printed price undersells a card that pays every round.
 fn capstone_jobs(d: &CardDef) -> i64 {
@@ -714,6 +711,15 @@ fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced) -> f64 {
     value(w, g, s, d, f) / (1 + spend(w, g, s, d)) as f64
 }
 
+/// `ids`, best value per cost first.
+fn by_ratio(w: &World, g: &GameState, s: usize, f: &Forced, ids: &mut [Key]) {
+    ids.sort_by(|a, b| {
+        ratio(w, g, s, b, f)
+            .total_cmp(&ratio(w, g, s, a, f))
+            .then_with(|| a.cmp(b))
+    })
+}
+
 /// The plan with `kept` bought now: its value, and the cards it plays.
 /// `None` if the keeps can't be paid.
 fn plan(
@@ -736,11 +742,9 @@ fn plan(
     };
     // Pay the keeps: insight first, the shortfall in credits.
     let rate = w.int("cards.insight_credits");
-    let mut count = g.var(&cards::kept_key(s));
     let mut paid = 0;
-    for id in kept {
+    for (count, id) in (g.var(&cards::kept_key(s))..).zip(kept) {
         let (ins, cr) = cards::keep_need(w, g, s, cards::def(w, id).tier, count);
-        count += 1;
         let from_insight = ins.min(now.insight);
         now.insight -= from_insight;
         paid += cr + (ins - from_insight) * rate;
@@ -751,11 +755,7 @@ fn plan(
     }
     let mut pool: Vec<Key> = g.pile(&cards::hand(s)).to_vec();
     pool.extend(kept.iter().cloned());
-    pool.sort_by(|a, b| {
-        ratio(w, g, s, b, f)
-            .total_cmp(&ratio(w, g, s, a, f))
-            .then_with(|| a.cmp(b))
-    });
+    by_ratio(w, g, s, f, &mut pool);
     let mut planned: Vec<Key> = Vec::new();
     let mut total = 0.0;
     let mut b = now;
@@ -794,7 +794,7 @@ fn plan(
                 b.antimatter -= d.antimatter;
                 let share = if d.tier == 2 { f.plan_t2 } else { 1.0 };
                 total += share * value(w, g, s, d, f) * (1.0 - WAIT * round as f64).max(0.1);
-                planned.push(id.clone());
+                planned.push(*id);
             }
         }
     }
@@ -808,7 +808,7 @@ mod tests {
     use super::*;
     use std::sync::Arc;
 
-    /// A fixed policy with one parameter on, over the plain planner's numbers.
+    /// A fixed policy with one parameter on and all else 0.
     fn forced(name: &str) -> Policy {
         let f = Forced::read(|k| f64::from(k == name));
         Policy::new(Box::new(crate::agents::tests::First), f)

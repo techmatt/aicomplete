@@ -74,6 +74,9 @@ const TAGS = {
   security: ['#ec6a5c', fill('M12 1.500 3.500 4.500v7c0 5.500 3.500 9 8.500 11 5-2 8.500-5.500 8.500-11v-7z')],
 };
 
+/** Every icon's name, tags as `#tag`: the render script's review sheet shows them all. */
+export const ICON_NAMES = [...Object.keys(RESOURCES), ...Object.keys(TOKENS), ...Object.keys(PIECES), ...Object.keys(TAGS).map((t) => `#${t}`)];
+
 /** Is this word in a card's icon line an icon, rather than a number or connector? */
 export const isIcon = (name) => name in RESOURCES || name in TOKENS || name in PIECES;
 /** A tag in a count, written `#science` in an icon line. */

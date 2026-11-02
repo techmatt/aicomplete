@@ -4,29 +4,56 @@ table uses, the presence-source line and the dominance gate. `cards/screen.py` i
 summary; a script one folder down puts scripts/ on `sys.path` to import this.
 """
 import collections
+import functools
 import json
 import math
+import os
 import re
 import sys
+
+CONTENT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'content')
 
 # A per-round counter's suffix (`.r07`).
 ROUND = re.compile(r'\.r\d\d$')
 
 
-def load(d):
-    """(cells by id, games by cell), without the games' action lists. A last line a
-    killed run cut short is dropped."""
-    cells = {c['cell']: c for c in json.load(open(f'{d}/results.json', encoding='utf-8'))['cells']}
-    games = collections.defaultdict(list)
+@functools.lru_cache(maxsize=None)
+def content(name):
+    """content/NAME.json, parsed. Shared: copy before changing it."""
+    with open(os.path.join(CONTENT, f'{name}.json'), encoding='utf-8') as f:
+        return json.load(f)
+
+
+def stream(d):
+    """DIR/games.jsonl line by line: its header first, then each game. A live run or one a
+    kill cut short can end in half a line: that line is dropped. Needs no results.json."""
     with open(f'{d}/games.jsonl', encoding='utf-8') as f:
-        next(f)
+        yield json.loads(f.readline())
         for line in f:
             try:
-                g = json.loads(line)
+                yield json.loads(line)
             except json.JSONDecodeError:
                 continue
-            g.pop('actions', None)
-            games[g['cell']].append(g)
+
+
+def cell_names(spec):
+    """(variant, agent) of each cell, by cell id: the order of `cells` in
+    crates/aic-sim/src/experiment.rs, which is why a spec here has one config and difficulty."""
+    assert len(spec['configs']) == 1 and len(spec['difficulties']) == 1, \
+        f"{spec['name']}: needs one config and one difficulty"
+    return [(v['name'], a) for v in spec['variants'] for a in spec['agents']]
+
+
+def load(d):
+    """(cells by id, games by cell), without the games' action lists."""
+    with open(f'{d}/results.json', encoding='utf-8') as f:
+        cells = {c['cell']: c for c in json.load(f)['cells']}
+    games = collections.defaultdict(list)
+    lines = stream(d)
+    next(lines)
+    for g in lines:
+        g.pop('actions', None)
+        games[g['cell']].append(g)
     return cells, games
 
 
@@ -108,12 +135,13 @@ def gap(pairs):
     return 100 * m, 100 * math.sqrt(var / n), n
 
 
-# 068: in the order of `UNSPENT` in crates/aic-sim/src/experiment.rs, each with `UNSPENT_HIGH`.
+# 068: in the order of `board::LEFT`, which `UNSPENT` in crates/aic-sim/src/experiment.rs takes,
+# each with `UNSPENT_HIGH` there.
 UNSPENT = (('credits', 12), ('chips', 4), ('energy', 4), ('antimatter', 2), ('ambassadors', 3))
 
 
 def unspent(cells, games):
-    """Resources left at game end: each cell's mean per seat by resource, ! over the flag
+    """Resources a seat held after its last action phase: each cell's mean by seat, ! over the flag
     (docs/principles.md, *Unspent resources*). Says which cells flag and how many means."""
     print()
     print('| variant | check | seat | ' + ' | '.join(n for n, _ in UNSPENT) + ' |')

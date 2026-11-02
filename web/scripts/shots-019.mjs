@@ -9,17 +9,10 @@
 //                             a base troop, hardening or an ambassador absorbed the hit)
 // Drives the page with cdp.mjs (headless Edge or Chrome, no extra packages).
 
-import { mkdirSync } from 'node:fs';
-import { newGame, openPage, shotTo } from './cdp.mjs';
+import { newGame, shotsPage, viewerUrl as url } from './cdp.mjs';
 
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
-const outDir = process.env.AIC_SHOTS;
-if (!outDir) throw new Error('set AIC_SHOTS to the folder for the screenshots');
-mkdirSync(outDir, { recursive: true });
-
-const page = await openPage();
+const { page, shot } = await shotsPage();
 const { send, js, until } = page;
-const shot = (name) => shotTo(page, outDir, name);
 
 // The troops, their arrows and the presence on the board now.
 const STATE = `(() => {

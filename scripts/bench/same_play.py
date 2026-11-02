@@ -23,7 +23,7 @@ git archive REV configs | tar -x -C out/old`, then `run ... --root out/old`. The
 stay relative, so summaries still compare.
 
 Each difference prints its first differing field or trace line. Exits 1 on any difference. Run
-times are in the README; build the old binary first and copy it aside. For experiment specs use
+times are in docs/scripts.md; build the old binary first and copy it aside. For experiment specs use
 `same_results.py`.
 """
 

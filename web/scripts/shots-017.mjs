@@ -5,17 +5,10 @@
 //   viewer-projects-r<n>.png  a later round (4+), a project part-filled and at least one resolved
 // Drives the page with cdp.mjs (headless Edge or Chrome, no extra packages).
 
-import { mkdirSync } from 'node:fs';
-import { newGame, openPage, shotTo } from './cdp.mjs';
+import { newGame, shotsPage, viewerUrl as url } from './cdp.mjs';
 
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
-const outDir = process.env.AIC_SHOTS;
-if (!outDir) throw new Error('set AIC_SHOTS to the folder for the screenshots');
-mkdirSync(outDir, { recursive: true });
-
-const page = await openPage();
+const { page, shot } = await shotsPage();
 const { send, js, until } = page;
-const shot = (name) => shotTo(page, outDir, name);
 
 // What the project row shows now: each visible project's fill, the resolved count, the board size.
 const STATE = `(() => {

@@ -40,7 +40,8 @@ fn the_round_cap_comes_from_the_engines_deal() {
 #[test]
 fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
-    let blocks: [(&str, fn(&Rules) -> String); 8] = [
+    type Block = fn(&Rules) -> String;
+    let blocks: [(&str, Block); 8] = [
         ("adversary.build_bonus=2", difficulty_block),
         ("board.remove_count=2", standard_actions_block),
         ("board.base_unity=3", sway_sources_block),
@@ -62,7 +63,7 @@ fn a_content_change_changes_its_block() {
     let mut c = base.clone();
     c.ais[0].presence[1].income[0].1 += 1;
     c.ais[1].presence2[2].cost += 1;
-    c.ais[1].powers[3].tags[0].1 += 1;
+    c.ais[1].powers.iter_mut().find(|p| p.name == "Stand Down").unwrap().tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
     assert_ne!(presence_track_block(base), presence_track_block(&c));

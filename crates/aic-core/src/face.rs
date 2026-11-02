@@ -11,8 +11,8 @@
 //!
 //! A new one-shot op fails to compile here until it has its face: that match
 //! has no wildcard. `standing` has one, so a new standing op panics at content
-//! load until it has a face. Ops no card can print ([`Op::slots`]) panic:
-//! `Content::check` rejects them first.
+//! load until it has a face. Ops no card can print ([`Op::slots`], and `Wall`,
+//! which only an innate may hold) panic: `Content::check` rejects them first.
 
 use serde::Serialize;
 
@@ -144,9 +144,13 @@ fn token(kind: TokenKind, n: i64) -> &'static str {
     }
 }
 
+/// A lowercase word with its capital.
+fn title(word: &str) -> String {
+    word[..1].to_uppercase() + &word[1..]
+}
+
 fn tag(t: Tag) -> String {
-    let name = t.name();
-    name[..1].to_uppercase() + &name[1..]
+    title(t.name())
 }
 
 fn hash(t: Tag) -> Part {
@@ -405,10 +409,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![Part::Word(max.to_string()), w("move")],
             format!("move up to {max} ambassadors in reach onto one piece"),
         )),
-        Op::Draw { count } => {
-            let cards = if *count == 1 { "card" } else { "cards" };
-            one(clause(counted(*count, "cards"), format!("draw {count} {cards}")))
-        }
+        Op::Draw { count } => one(clause(
+            counted(*count, "cards"),
+            format!("draw {}", plural(*count, "card")),
+        )),
         Op::GainPerTokens { resource, kind, per } => {
             let mut icons = vec![w(icon(*resource)), w("/")];
             icons.push(Part::Yours { yours: counted(*per, kind.name()) });
@@ -431,13 +435,14 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 ),
             ))
         }
-        Op::Sway { side, amount: n } => {
-            let name = side.name();
-            one(clause(
-                counted(*n, "sway"),
-                format!("sway {n} toward {}{}", name[..1].to_uppercase(), &name[1..]),
-            ))
-        }
+        Op::Sway { side, amount: n } => one(clause(
+            counted(*n, "sway"),
+            format!("sway {n} toward {}", title(side.name())),
+        )),
+        Op::FreeBuilding => one(clause(
+            vec![w("building"), w("free")],
+            "play a building from your hand, paying no credits",
+        )),
         Op::Troops { .. }
         | Op::FlipStation { .. }
         | Op::CorruptCity
@@ -479,7 +484,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::SpreadShield
         | Op::CivicShelter
         | Op::Wall
-        | Op::FreeBuilding
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::CityBuild { .. }
@@ -530,7 +534,7 @@ fn standing(op: &Op) -> Standing {
         ),
         Op::Slots { amount: n } => effect(
             vec![Part::Word(format!("+{n}")), w("slot")],
-            format!("you have {n} more building slot{}", if *n == 1 { "" } else { "s" }),
+            format!("you have {}", plural(*n, "more building slot")),
         ),
         Op::Logistics { resource, amount: n } => effect(
             { let mut p = vec![w("threat"), w(":")]; p.extend(counted(*n, icon(*resource))); p },
@@ -565,7 +569,7 @@ fn standing(op: &Op) -> Standing {
             vec![w("cards"), w(":"), w("ACT")],
             format!("when you pay a power's tags, cards you discard from hand count for their {t} tags"),
         ),
-        other => panic!("{other:?} is not a standing op: Content::check rejects it"),
+        other => panic!("{other:?} has no standing face: Content::check rejects it"),
     }
 }
 

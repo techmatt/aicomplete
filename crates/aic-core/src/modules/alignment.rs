@@ -175,10 +175,7 @@ fn used_key(seat: usize) -> String {
 }
 
 fn card<'w>(w: &World<'w>, id: &str) -> &'w AlignmentCard {
-    &w.content.alignment[w
-        .content
-        .alignment_index(id)
-        .expect("alignment card in content")]
+    w.content.alignment_card(id)
 }
 
 /// Sway a side's bucket holds before it tips (Momentum applied).
@@ -274,8 +271,8 @@ pub fn for_node_removed(g: &mut GameState, cx: &mut Cx) {
 }
 
 /// Whether the adversary's presence is under the bar for `level`. The
-/// level-0 bar (no adversary pieces) counts only once a card of stage
-/// `clear_win_stage` has been revealed (the stages are stacked and public).
+/// level-0 bar (no adversary pieces) counts only once this round's adversary
+/// card is of stage `clear_win_stage` (the stages are stacked and public).
 fn purge_won(w: &World, g: &GameState, level: i64) -> bool {
     if level == 0 && g.var(adversary::STAGE) < w.int("alignment.clear_win_stage") {
         return false;
@@ -317,18 +314,13 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     // free hexes where it could place one, so a sacrificed presence removed nothing).
     let pres: Vec<usize> = presence_of(g, s);
     let pres = if pres.len() < 2 { Vec::new() } else { pres };
-    let labeled = |what: &str, h: usize| {
-        let mut o = hex_opt(&w, h);
-        o.option = format!("{what} at {}", o.option);
-        o
-    };
     let mut opts = Vec::new();
     if g.resource(s, Resource::Ambassadors) > 0 {
         opts.push(opt("an ambassador from your supply"));
     }
     let off = opts.len();
-    opts.extend(ambs.iter().map(|&h| labeled("ambassador", h)));
-    opts.extend(pres.iter().map(|&h| labeled("presence", h)));
+    opts.extend(ambs.iter().map(|&h| labeled_hex_opt(&w, "ambassador", h)));
+    opts.extend(pres.iter().map(|&h| labeled_hex_opt(&w, "presence", h)));
     let prompt = format!("Seat {s}: sacrifice which ambassador or presence?");
     let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
         return Ok(());
@@ -337,7 +329,7 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
         cx.add_resource(g, s, Resource::Ambassadors, -1);
         cx.tally(g, "alignment.sacrificed_ambassadors", 1);
     } else if i - off < ambs.len() {
-        cx.add_tokens(g, ambs[i - off], &k, -1);
+        cx.add_tokens(g, ambs[i - off], k, -1);
         cx.tally(g, "alignment.sacrificed_ambassadors", 1);
     } else {
         board::lose_presence(g, cx, pres[i - off - ambs.len()], s, "project");
@@ -346,69 +338,65 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     Ok(())
 }
 
-impl Alignment {
-    /// Draws the next card of `side`: the stronger tier once the side's tip
-    /// count has reached its first threshold, else tier 1; the other tier
-    /// if that deck is empty. Neither deck ever reshuffles (027): they are
-    /// the game's clocks.
-    fn draw(&self, g: &GameState, w: &World, side: Side, tips: i64) -> Option<(Key, String)> {
-        let first = match side {
-            Side::Unity => w.list("alignment.unity_ease")[0],
-            Side::Discord => w.int("alignment.discord_tier2"),
-        };
-        let want: u8 = if tips >= first { 2 } else { 1 };
-        for tier in [want, 3 - want] {
-            if let Some(id) = g.pile(&deck(side, tier)).first().cloned() {
-                return Some((id, deck(side, tier).to_string()));
-            }
+/// Draws the next card of `side`: the stronger tier once the side's tip
+/// count has reached its first threshold, else tier 1; the other tier
+/// if that deck is empty. Neither deck ever reshuffles (027): they are
+/// the game's clocks.
+fn draw(g: &GameState, w: &World, side: Side, tips: i64) -> Option<(Key, String)> {
+    let first = match side {
+        Side::Unity => w.list("alignment.unity_ease")[0],
+        Side::Discord => w.int("alignment.discord_tier2"),
+    };
+    let want: u8 = if tips >= first { 2 } else { 1 };
+    for tier in [want, 3 - want] {
+        if let Some(id) = g.pile(&deck(side, tier)).first().cloned() {
+            return Some((id, deck(side, tier).to_string()));
         }
-        None
     }
+    None
+}
 
-    /// A bucket tips: one card of its side resolves (at the strength step
-    /// its side's tip count has reached), the side's tip count goes up by
-    /// one, and the bucket's Sway returns to the Undecided.
-    fn tip(&self, g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
-        let w = cx.world;
-        let round = g.round;
-        cx.note(None, || format!("The {} bucket tips", side.name()));
-        let before = g.var(tips_key(side));
-        let back = g.var(bucket(side));
-        cx.set_key(g, bucket(side), 0);
-        cx.add_key(g, UNDECIDED, back);
-        cx.set_key(g, tips_key(side), before + 1);
-        cx.tally(g, &format!("alignment.tips_{}", side.name()), 1);
-        cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
-        let Some((id, from)) = self.draw(g, &w, side, before) else {
-            // Discord tips with no card left: the players lose (locked, 027).
-            if side == Side::Discord {
-                cx.end(g, false, "discord_deck", "a Discord tip found the Discord deck empty".into());
-            }
-            return Ok(());
-        };
-        {
-            let c = card(&w, &id);
-            cx.move_card(g, &id, &from, &resolved(side), true).unwrap();
-            // Drawing the last Unity card wins outright (027); it needn't act.
-            if side == Side::Unity && cards_left(g, side) == 0 {
-                cx.end(g, true, "unity_deck", "the last Unity card was drawn".into());
-                return Ok(());
-            }
-            cx.note(None, || {
-                format!("{} ({}) resolves: {}", c.name, side.name(), c.text)
-            });
-            let effects = c
-                .steps
-                .iter()
-                .rev()
-                .find(|st| before >= st.at)
-                .map_or(&c.effects, |st| &st.effects);
-            let source = if side == Side::Discord { "discord" } else { "unity" };
-            effects::run(g, cx, effects, &mut effects::Ctx::team().named(source))?;
-            cx.tally(g, &format!("alignment.card.{id}"), 1);
+/// A bucket tips: one card of its side resolves (at the strength step
+/// its side's tip count has reached), the side's tip count goes up by
+/// one, and the bucket's Sway returns to the Undecided.
+fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
+    let w = cx.world;
+    let round = g.round;
+    cx.note(None, || format!("The {} bucket tips", side.name()));
+    let before = g.var(tips_key(side));
+    let back = g.var(bucket(side));
+    cx.set_key(g, bucket(side), 0);
+    cx.add_key(g, UNDECIDED, back);
+    cx.set_key(g, tips_key(side), before + 1);
+    cx.tally(g, &format!("alignment.tips_{}", side.name()), 1);
+    cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
+    let Some((id, from)) = draw(g, &w, side, before) else {
+        // Discord tips with no card left: the players lose (locked, 027).
+        if side == Side::Discord {
+            cx.end(g, false, "discord_deck", "a Discord tip found the Discord deck empty".into());
         }
-        Ok(())
+        return Ok(());
+    };
+    let c = card(&w, &id);
+    cx.move_card(g, &id, &from, &resolved(side), true).unwrap();
+    // Drawing the last Unity card wins outright (027); it needn't act.
+    if side == Side::Unity && cards_left(g, side) == 0 {
+        cx.end(g, true, "unity_deck", "the last Unity card was drawn".into());
+        return Ok(());
     }
+    cx.note(None, || {
+        format!("{} ({}) resolves: {}", c.name, side.name(), c.text)
+    });
+    let effects = c
+        .steps
+        .iter()
+        .rev()
+        .find(|st| before >= st.at)
+        .map_or(&c.effects, |st| &st.effects);
+    let source = if side == Side::Discord { "discord" } else { "unity" };
+    effects::run(g, cx, effects, &mut effects::Ctx::team().named(source))?;
+    cx.tally(g, &format!("alignment.card.{id}"), 1);
+    Ok(())
 }
 
 /// Whether the antimatter action exists in this game (uses aside).
@@ -503,7 +491,7 @@ impl Module for Alignment {
         'tips: for _ in 0..tips {
             for side in [Side::Discord, Side::Unity] {
                 if g.var(bucket(side)) >= capacity(&w, g, side) {
-                    self.tip(g, cx, side)?;
+                    tip(g, cx, side)?;
                     if g.is_over() {
                         return Ok(());
                     }

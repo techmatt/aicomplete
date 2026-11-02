@@ -1,11 +1,10 @@
 // The card viewer's page: browse, filter, sort and annotate what cards-server.mjs exports.
 // Player cards go through the one renderer; every other kind is a plain face drawn from the
 // same export. No card words live here: only labels of the page itself.
-import { fitCards, inset, renderCard } from '../card/card.js';
+import { fitCards, frameOf, inset, renderCard } from '../card/card.js';
 import { esc, plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
-const FLAGS = ['ok', 'too cheap', 'too dear', 'rework', 'unclear text'];
 const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];
 const LABEL = { ai: 'AI board', noted: 'has a note', unnoted: 'no note', changed: 'changed since note' };
 const label = (k) => LABEL[k] ?? k;
@@ -22,7 +21,7 @@ const FILTERS_KEY = 'aic-cards-filters-hidden';
 
 let data = null;
 let layout = null;
-const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), keywords: new Set(), reviews: new Set(), sort: 'kind', desc: false, shown: [], open: null };
+const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), keywords: new Set(), reviews: new Set(), sort: 'kind', desc: false, shown: [], open: null, index: 0 };
 
 // Storage can be refused (private windows, a locked-down profile): the page works without it.
 const stored = (key) => {
@@ -44,6 +43,7 @@ const store = (key, value) => {
 function load(next) {
   data = next;
   layout = inset(data.layout);
+  for (const f of data.flags) REVIEW[f] = (c) => noteOf(c)?.flag === f;
 }
 
 async function call(path, body) {
@@ -69,7 +69,7 @@ const REVIEW = {
   unnoted: (c) => !noteOf(c),
   changed: isChanged,
   new: isNew,
-  ...Object.fromEntries(FLAGS.map((f) => [f, (c) => noteOf(c)?.flag === f])),
+  // Then one per note flag: load() adds them from the server's list.
 };
 
 function badges(c) {
@@ -93,23 +93,21 @@ const fmt = (v, col) => (v == null ? '' : `${col.key === 'win_delta' && v > 0 ? 
 
 // ---------- faces ----------
 
-const frameOf = (c) => `${c.kind}-t${c.tier >= 2 ? 2 : 1}`;
-
-function printed(c, scene = true) {
+function printed(c) {
   const f = frameOf(c);
-  const art = scene && c.scene ? `/scene/${c.scene}.png` : undefined;
+  const art = c.scene ? `/scene/${c.scene}.png` : undefined;
   const html = renderCard(c.render, layout, `/art/frames/r3/${f}.jpg`, data.fits[f], art);
   return `<div class="trim">${html.replaceAll('<img ', '<img loading="lazy" decoding="async" ')}</div>`;
 }
 
-const plain = (c, scene = true) => plainFace(c, label(c.kind), scene && c.scene ? `/scene/${c.scene}.png` : undefined);
+const plain = (c) => plainFace(c, label(c.kind), c.scene ? `/scene/${c.scene}.png` : undefined);
 
 function face(c) {
   if (!c.render) return plain(c);
   try {
     return printed(c);
   } catch (e) {
-    return plain({ ...c, text: `${c.text} [renderer: ${e.message}]`, sections: [], tierLabel: c.tierLabel });
+    return plain({ ...c, text: `${c.text} [renderer: ${e.message}]`, sections: [] });
   }
 }
 
@@ -228,10 +226,10 @@ function chips(el, values, set, count) {
   el.innerHTML = values.map((v) => `<button class="chip ${set.has(v) ? 'on' : ''}" data-v="${esc(v)}">${esc(label(v))} <small>${count(v)}</small></button>`).join('');
 }
 
-function setSelect(el, options, keep = true) {
+function setSelect(el, options) {
   const was = el.value;
   el.innerHTML = options.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('');
-  if (keep && options.some(([v]) => v === was)) el.value = was;
+  if (options.some(([v]) => v === was)) el.value = was;
 }
 
 function controls() {
@@ -303,7 +301,7 @@ function detail(id) {
       <div class="top"><div><h2>${esc(c.name)}</h2><div class="sub">${esc(label(c.kind))} · ${esc(c.tierLabel)}${c.costLabel ? ` · ${esc(c.costLabel)}` : ''} · <code>${esc(c.id)}</code></div></div>
         <div class="nav"><button data-go="-1" title="Previous (←)">←</button><button data-go="1" title="Next (→)">→</button><button data-close title="Close (Esc)">✕</button></div></div>
       ${c.text ? `<h4>Text</h4><div>${esc(c.text)}</div>` : ''}
-      ${c.sections.length ? c.sections.map((s) => `<h4>${esc(s.head)}</h4><div>${esc(s.text)}</div>`).join('') : ''}
+      ${c.sections.map((s) => `<h4>${esc(s.head)}</h4><div>${esc(s.text)}</div>`).join('')}
       ${c.tags.length || c.keywords.length ? `<h4>Tags and keywords</h4><div>${esc([...c.tags, ...c.keywords].join(', '))}</div>` : ''}
       ${c.price.length ? `<h4>Price inputs</h4><dl>${c.price.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       ${statsBlock(c)}
@@ -312,7 +310,7 @@ function detail(id) {
       <form class="note" id="note">
         <h4>Your note</h4>
         ${isChanged(c) ? `<div class="was"><b>Changed since your note.</b> The text then: ${esc(n.text || '(none)')}</div>` : ''}
-        <div class="flags">${FLAGS.map((f) => `<button type="button" class="chip ${n?.flag === f ? 'on' : ''}" data-flag="${esc(f)}">${esc(f)}</button>`).join('')}</div>
+        <div class="flags">${data.flags.map((f) => `<button type="button" class="chip ${n?.flag === f ? 'on' : ''}" data-flag="${esc(f)}">${esc(f)}</button>`).join('')}</div>
         <textarea id="comment" placeholder="Comment">${esc(n?.comment)}</textarea>
         <div class="row"><button type="submit">Save</button><span>Ctrl+Enter saves. A note with no flag and no comment is removed.</span><span id="saved"></span></div>
       </form>
@@ -329,11 +327,13 @@ function detail(id) {
   }
 }
 
+/** What the open card's note form holds. */
+const formNote = () => ({ flag: $('detail').querySelector('[data-flag].on')?.dataset.flag ?? '', comment: $('comment').value.trim() });
+
 /** What the form holds, when it differs from the saved note. */
 function unsaved() {
   if (!ui.open || !$('comment')) return null;
-  const flag = $('detail').querySelector('[data-flag].on')?.dataset.flag ?? '';
-  const comment = $('comment').value.trim();
+  const { flag, comment } = formNote();
   const n = data.notes[ui.open];
   return flag === (n?.flag ?? '') && comment === (n?.comment ?? '') ? null : { flag, comment };
 }
@@ -371,11 +371,9 @@ async function step(by) {
 
 async function saveNote() {
   const id = ui.open;
-  const flag = $('detail').querySelector('[data-flag].on')?.dataset.flag ?? '';
-  const comment = $('comment').value;
   const top = $('detail').querySelector('.detail').scrollTop;
   try {
-    load(await call('/api/notes', { id, flag, comment }));
+    load(await call('/api/notes', { id, ...formNote() }));
     render();
     if (ui.open === id) {
       detail(id);
@@ -504,7 +502,7 @@ async function start() {
     load(await call('/api/cards'));
     controls();
     render();
-    window.cardViewer = { ui, get data() { return data; }, render };
+    window.cardViewer = { get data() { return data; } };
   } catch (e) {
     status(`Could not load the cards: ${e.message}`, true);
   }

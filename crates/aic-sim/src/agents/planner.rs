@@ -45,7 +45,7 @@ use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
 use super::determinize::hide_alignment_deal;
-use super::eval::{Eval, Weights};
+use super::eval::Eval;
 use super::policy::{Forced, Policy};
 use super::search::{draw_guesses, pick, score_guesses, Greedy, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
@@ -143,9 +143,9 @@ fn idea(a: &Action) -> Option<String> {
 }
 
 impl Planner {
-    pub fn new(rules: &Rules, weights: Weights, forced: Forced, rng: ChaCha8Rng, cfg: PlannerCfg) -> Self {
+    pub fn new(ev: Eval, forced: Forced, rng: ChaCha8Rng, cfg: PlannerCfg) -> Self {
         Planner {
-            ev: Eval::new(rules, weights),
+            ev,
             forced,
             rng,
             cfg,
@@ -341,9 +341,11 @@ impl Agent for Planner {
         };
         let stop = state.round + self.cfg.horizon;
         let mut best = self.incumbent(rules, state, legal, stop);
+        let mut fallback = None;
         if searched_phase(state) && self.cfg.alts > 0 && self.spent.1 < self.cfg.budget {
             let scores = scored(self);
             let engine = pick(legal, &scores);
+            fallback = Some(engine);
             let mut order: Vec<usize> = (0..legal.len()).filter(|&i| scores[i].is_finite()).collect();
             order.sort_by(|&x, &y| scores[y].total_cmp(&scores[x]));
             let top = scores[engine];
@@ -364,15 +366,10 @@ impl Agent for Planner {
                     best = self.better(rules, l, best);
                 }
             }
-            let i = best.actions.get(best.next).and_then(|a| legal.iter().position(|b| b == a));
-            self.line = Some(best);
-            let i = i.unwrap_or(engine);
-            self.history.push(&legal[i]);
-            return i;
         }
         let i = best.actions.get(best.next).and_then(|a| legal.iter().position(|b| b == a));
         self.line = Some(best);
-        let i = i.unwrap_or_else(|| pick(legal, &scored(self)));
+        let i = i.or(fallback).unwrap_or_else(|| pick(legal, &scored(self)));
         self.history.push(&legal[i]);
         i
     }

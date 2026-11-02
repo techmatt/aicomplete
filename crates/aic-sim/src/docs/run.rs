@@ -11,7 +11,7 @@ use aic_core::Rules;
 use super::blocks::*;
 use super::harms::{harm_failures, harms_md};
 use super::table;
-use crate::cli::{die, load, rules, Options};
+use crate::cli::{fail, load, rules, Options};
 
 const BASELINE: &str = "configs/baseline.json";
 const RULES_MD: &str = "docs/rules.md";
@@ -126,6 +126,9 @@ fn op_uses() -> BTreeMap<String, usize> {
     }
     for b in &c.ais {
         add(&b.innate.passives, &mut out);
+        for c in b.presence.iter().chain(&b.presence2).filter_map(|u| u.capstone.as_ref()) {
+            add(&c.passives, &mut out);
+        }
         for p in &b.powers {
             add(&p.effects, &mut out);
         }
@@ -173,32 +176,28 @@ fn faces_json() -> String {
             format!(" {}: {face}", serde_json::to_string(&c.id).expect("an id is JSON"))
         })
         .collect();
-    format!("{{
-{}
-}}
-", rows.join(",
-"))
+    format!("{{\n{}\n}}\n", rows.join(",\n"))
 }
 
 const OPEN: &str = "<!-- generated: ";
 const CLOSE: &str = "<!-- /generated -->";
 
-/// `text` with every generated block replaced by what `block` says; panics
-/// (dies) on an unknown name.
+/// `text` with every generated block replaced by what `block` says; stops the
+/// run on an unknown name.
 fn fill(text: &str, block: &dyn Fn(&str) -> Option<String>) -> String {
     let mut out = String::new();
     let mut rest = text;
     while let Some(i) = rest.find(OPEN) {
         let after = &rest[i + OPEN.len()..];
         let Some(end) = after.find(" -->") else {
-            die("docs: unclosed generated marker")
+            fail("docs: unclosed generated marker")
         };
         let name = &after[..end];
         let Some(body) = block(name) else {
-            die(&format!("docs: unknown generated block {name:?}"))
+            fail(&format!("docs: unknown generated block {name:?}"))
         };
         let Some(close) = after.find(CLOSE) else {
-            die(&format!("docs: block {name:?} has no {CLOSE}"))
+            fail(&format!("docs: block {name:?} has no {CLOSE}"))
         };
         out.push_str(&rest[..i]);
         out.push_str(&format!("{OPEN}{name} -->\n{body}{CLOSE}"));
@@ -266,7 +265,7 @@ pub(super) fn unknown_params(text: &str, r: &Rules, ops: &[String]) -> Vec<Strin
 /// Regenerates the docs, or with `--check` reports what is stale.
 pub fn run(o: &Options) {
     let r = rules(BASELINE, &load(BASELINE, &[]));
-    let src = fs::read_to_string(OP_SOURCE).unwrap_or_else(|e| die(&format!("{OP_SOURCE}: {e}")));
+    let src = fs::read_to_string(OP_SOURCE).unwrap_or_else(|e| fail(&format!("{OP_SOURCE}: {e}")));
     let block = |name: &str| match name {
         "house_terms" => Some(house_terms()),
         "threats" => Some(threats_block()),
@@ -289,7 +288,7 @@ pub fn run(o: &Options) {
         "game_end" => Some(game_end_block(&r)),
         _ => None,
     };
-    let old = fs::read_to_string(RULES_MD).unwrap_or_else(|e| die(&format!("{RULES_MD}: {e}")));
+    let old = fs::read_to_string(RULES_MD).unwrap_or_else(|e| fail(&format!("{RULES_MD}: {e}")));
     let on_disk = |path: &str| fs::read_to_string(path).unwrap_or_default();
     // Path, what it should hold, what it holds.
     let files = [
@@ -323,6 +322,9 @@ pub fn run(o: &Options) {
         return;
     }
     for (path, new, _) in stale {
-        fs::write(path, new).unwrap_or_else(|e| die(&format!("{path}: {e}")));
+        fs::write(path, new).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
+    }
+    if !failures.is_empty() || !spelled.is_empty() {
+        exit(1);
     }
 }

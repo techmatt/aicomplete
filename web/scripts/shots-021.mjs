@@ -7,20 +7,13 @@
 //   viewer-021-3-passed.png   the draft after a pick: hands passed to the next seat
 //   viewer-021-4-stacked.png  a building built over another (status "stacked")
 //   viewer-021-5-tokens.png   a token card with 2 or more tokens on it
-//   viewer-021-6-power.png    an AI-board power used this round (paid by sacrificing tags)
+//   viewer-021-6-power.png    an AI-board power used this round (paid in resources, or by sacrificing tags)
 // Drives the page with cdp.mjs (headless Edge or Chrome, no extra packages).
 
-import { mkdirSync } from 'node:fs';
-import { newGame, openPage, shotTo } from './cdp.mjs';
+import { newGame, shotsPage, viewerUrl as url } from './cdp.mjs';
 
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
-const outDir = process.env.AIC_SHOTS;
-if (!outDir) throw new Error('set AIC_SHOTS to the folder for the screenshots');
-mkdirSync(outDir, { recursive: true });
-
-const page = await openPage();
+const { page, shot } = await shotsPage();
 const { send, js, until } = page;
-const shot = (name) => shotTo(page, outDir, name);
 
 // What the 021 scenes need, read off the view.
 const STATE = `(() => {

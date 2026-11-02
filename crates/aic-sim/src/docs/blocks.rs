@@ -8,7 +8,7 @@ use aic_core::rules::Tunable;
 use aic_core::Rules;
 
 use super::table;
-use crate::cli::die;
+use crate::cli::fail;
 
 /// The words cards lean on, once: rules.md's *Terms* and the player aid print these.
 pub const HOUSE_TERMS: [(&str, &str); 13] = [
@@ -128,13 +128,13 @@ fn tunable(r: &Rules, key: &str) -> Tunable {
     r.tunables()
         .into_iter()
         .find(|t| t.key == key)
-        .unwrap_or_else(|| die(&format!("docs: no tunable {key}")))
+        .unwrap_or_else(|| fail(&format!("docs: no tunable {key}")))
 }
 
 fn int(r: &Rules, key: &str) -> i64 {
     match tunable(r, key).value {
         ParamValue::Int(n) => n,
-        ParamValue::List(_) => die(&format!("docs: {key} is a list")),
+        ParamValue::List(_) => fail(&format!("docs: {key} is a list")),
     }
 }
 
@@ -216,14 +216,14 @@ fn dealt(r: &Rules, difficulty: i64) -> [usize; 3] {
     let mut config = (*r.config).clone();
     config
         .apply_override(&format!("adversary.difficulty={difficulty}"))
-        .unwrap_or_else(|e| die(&format!("docs: {e}")));
-    let level = Rules::new(&config).unwrap_or_else(|e| die(&format!("docs: difficulty {difficulty}: {e}")));
+        .unwrap_or_else(|e| fail(&format!("docs: {e}")));
+    let level = Rules::new(&config).unwrap_or_else(|e| fail(&format!("docs: difficulty {difficulty}: {e}")));
     let g = level.new_game(1);
     let mut out = [0; 3];
     for pile in [adversary::DECK, adversary::NEXT, adversary::CURRENT, adversary::DISCARD] {
         for id in g.pile(pile) {
             let card = content().adversary.iter().find(|c| c.id == id.as_ref());
-            let stage = card.unwrap_or_else(|| die("docs: an adversary card not in content")).stage;
+            let stage = card.unwrap_or_else(|| fail("docs: an adversary card not in content")).stage;
             out[stage as usize - 1] += 1;
         }
     }
@@ -285,14 +285,14 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     table(&["Level", "Adds", "Tunable"], rows)
 }
 
-/// `(board, its slots)`: slots are per seat in `ai.boards` order; a board no
-/// seat plays has none.
-fn board_slots(r: &Rules, board: usize) -> String {
-    let slots = list(r, "ai.slots");
+/// What `key`, a list per seat in `ai.boards` order, gives `board`; a board no
+/// seat plays has nothing.
+fn per_board(r: &Rules, key: &str, board: usize) -> String {
+    let values = list(r, key);
     list(r, "ai.boards")
         .iter()
         .position(|b| *b == board as i64)
-        .map_or(String::new(), |seat| slots[seat % slots.len()].to_string())
+        .map_or(String::new(), |seat| values[seat % values.len()].to_string())
 }
 
 /// `Foundry Core (Industry): +1 credit`.
@@ -301,7 +301,7 @@ fn start_building(c: &Content, b: &AiBoard) -> String {
         return String::new();
     };
     let Some(card) = c.cards.iter().find(|d| d.id == *id) else {
-        die(&format!("docs: no card {id}"))
+        fail(&format!("docs: no card {id}"))
     };
     let tags: Vec<String> = card.tags.iter().map(|t| title(t.name())).collect();
     let income: Vec<Cost> = card
@@ -313,15 +313,6 @@ fn start_building(c: &Content, b: &AiBoard) -> String {
         })
         .collect();
     format!("{} ({}): {}", card.name, tags.join(", "), gains(&income))
-}
-
-/// The board's starting credits, as [`board_slots`] reads its slots.
-fn board_start_credits(r: &Rules, board: usize) -> String {
-    let credits = list(r, "ai.start_credits");
-    list(r, "ai.boards")
-        .iter()
-        .position(|&b| b as usize == board)
-        .map_or(String::new(), |seat| credits[seat % credits.len()].to_string())
 }
 
 /// What each AI board prints before its tracks.
@@ -336,9 +327,9 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
             vec![
                 b.name.clone(),
                 costs(&printed),
-                board_start_credits(r, i),
+                per_board(r, "ai.start_credits", i),
                 start_building(c, b),
-                board_slots(r, i),
+                per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
                 b.presence.len().to_string(),
                 b.presence2.len().to_string(),
@@ -368,7 +359,7 @@ pub(super) fn board_details_block(c: &Content) -> String {
         c.cards
             .iter()
             .find(|d| d.id == *id)
-            .map_or_else(|| die(&format!("docs: no card {id}")), |d| d.name.clone())
+            .map_or_else(|| fail(&format!("docs: no card {id}")), |d| d.name.clone())
     };
     let rows = c
         .ais
@@ -609,7 +600,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          presence with your board's two presence powers, each once a round, so 0, 1 or 2 tokens a \
          round from them, and cards can add more. Every board has 1 energy for 1 presence; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \
-         start with 1 energy and one city bound to you, which makes energy every round.\n",
+         start with {} energy and one city bound to you, which makes energy every round.\n",
         n("cards.opening_deal"),
         n("cards.opening_free"),
         n("cards.opening_keep_credits"),
@@ -618,6 +609,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
         n("cards.keep_tier2"),
         range(&insight),
         range(&slots),
+        n("ai.start_energy"),
     )
 }
 

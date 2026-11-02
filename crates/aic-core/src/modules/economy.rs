@@ -106,7 +106,7 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
     add(Resource::Credits, ai::board(w, seat).credits);
     ai::each_track_income(w, g, seat, &mut add);
     cards::each_passive(w, g, seat, |p| match p {
-        Op::Income { resource, amount } if *resource != Resource::Ambassadors => add(*resource, *amount),
+        Op::Income { resource, amount } => add(*resource, *amount),
         Op::IncomePerTag {
             resource,
             tag,

@@ -424,3 +424,71 @@ against the engine's 1.3 s and 4.5 s. A 32-seed d2 screen at both sizes with bot
 (`experiments/archive/screen-028.json`, 128 games) takes **about 2.5 min** on 12 threads: 153 s and
 27 min of thread time, against 352 s and 60 min before 030, on the same busy machine.
 `budget` 8 with `prune` 0 cost twice that and won no more within noise (028).
+
+## Recipes of r20 to r28 (moved from the README in 073)
+
+Per-revision recipes that were in the README's *Experiments*. Paths and rates are as they were then; specs of past revisions are now in `experiments/archive/`.
+
+**The band and gate at r27 (066).** `experiments/band-066.json` (`--seed 20200`, with Buy In at 10) and
+`experiments/band.json` (`--seed 20300`) are the 96-seed band: on 8 threads about 17 min for the four
+cells and 14 for the two. `scripts/cards/screen.py --gate DIR` reads the gate; `experiments/gate-close-066-c2.json`
+and `-c3.json` close its level checks on the gate's own seeds. Overlays reach every number of 066's calibration
+(`ais.builder.powers.2.cost=...`, `cards.liaison_corps.ability.tokens=1`), so a screen needs no build. `Op::Income` prints
+ambassadors since 068 (`economy::ambassador_income`: they sit in no income array).
+
+**The band and gate at r28 (068).** `experiments/band.json` runs 96 seeds a cell (Matt: two sets of 48): `--seed S --games 96`, about 20 min on 8
+threads. `experiments/gate.json` (gate-068) has 28 checks, `never_tag` dropped, early-stopped from 12 seeds at 2 SE, capped at 48: 1,320 of 2,784 games, 95 min on 8 threads;
+`scripts/bench/gate_close.py plan` picks the checks within 2 SE by gap against paired SE, whatever stopped them, and writes `experiments/gate-close-068/`: fill to 48, then the next 48 seeds with no early stop; `read` merges the runs (18 rows: 86 min, c2 22 min of it). `screen.py --gate DIR` reads either and prints the unspent readout. A
+planner game costs about 16 s at c2 and 31 s at c3 on 8 threads since 069 (31 s and 56 s before it), so a gate at its cap is about 2.2 h (4.2 h before), and at 068's early-stop share about 50 min. `cargo build --profile fast -p aic-sim` (3 min 12 s) pays that back: rates here are on it.
+
+**Step sizes at d2 (064, r25).** Engine, seeds 15000, 48 a cell, base 58 / 56: a direction only.
+Levers came in two sizes, under 6 points or over 20, loosely: `hold_base` at c3 and
+`troop_presence` at c2 sit at or between them.
+
+| Lever | c2 | c3 |
+|---|---|---|
+| `project_discord_per` 1 | 54 | 52 |
+| `corrupt_at` 5 | 56 | 52 |
+| `hold_base` 4 | 54 | 46 |
+| `troop_presence` 3 | 38 | 17 |
+| `extra_threats` 2 | 21 | 33 |
+| `adversary_discord` 1 | 17 | 27 |
+| `stage1_removed` 2 | 19 | 27 |
+| `base_sites_per_country` 0 (the wrong size) | | 31 |
+
+Nine other levers read 54-58 / 52-69, noise; their numbers one by one weren't kept. Planner at c2,
+base 71: `project_discord_per` 1 71 (no game changed), `hold_base` 4 69, both 69, those two with
+`corrupt_at` 5 62, `extra_threats` 2 25. More in `experiments/results/screen-064-deals/deals.md`.
+
+**Growth screen and gate (041, r20)**: `experiments/archive/screen-041.json` (planner, d2, `c2`, `c3`) and
+`experiments/archive/gate-041.json` (early-stopped), with `python scripts/cards/screen.py DIR --preset 041`
+and `screen.py --gate DIR`. Fixed policies then: `planner:always_expand=1`, `always_consolidate=1` (gone with growth, 066),
+`never_remove=1`, `science_board=1`. A planner game at r20 d2 was about 28 s of thread time; a 16-seed
+screen took about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
+
+**Fast exploit check (050)**: `experiments/archive/gate-exploit.json` was the first read for a rules
+item, before `gate.json`; today's binary refuses it (`always_expand` went in 066): the 13 checks that could still beat thinking, at c2 and c3 under
+the engine, early-stopped, capped at 32 seeds, read with `screen.py --gate DIR`. **468 of 832
+games, 45 min of game time, 8 min on 6 below-normal threads on a loaded box** (r22). Under the
+planner the same grid is over 20 min even at 12 seeds: a planner game cost 19 s at c2 and 67 s at
+c3 there (on that loaded box; quiet, a c2 game at r26 was about 14 s).
+At r22 the engine wins 83 / 31, so both sizes can separate. A direction, not a verdict:
+`gate.json`, under the planner, decides.
+
+**Calibration and gate (053, r23)**: `experiments/gate.json` is gate-053: gate-046's checks plus
+`abandon`, 8 seeds a check, early-stopped from 4, with `screen.py --gate DIR`. 8 seeds can't place a win rate: `experiments/band.json` did (48 seeds a cell, about 5.5 min on 8 threads). Results: `experiments/results/screen-053-calibration/calibration.md`.
+
+**Niche and growth gate (046, r22)**: gate-046 (`experiments/gate.json` then, `gate-046.json` until
+052; a spec per revision until then, git has them) was every 034 check plus 041's four fixed
+policies, early-stopped at 32 seeds, with `screen.py --gate DIR` and `--preset 041`;
+`experiments/archive/screen-046-curve.json` is the curve. `python scripts/bench/first_divergence.py OLD NEW`
+says where two runs of one spec first play differently, game by game. Results and timings:
+`experiments/results/screen-046-niche/niche.md`.
+
+**Clocks screen and gate (034, r19)**: `experiments/archive/screen-034.json` (planner, d2, `c2`, `c3`) and
+`experiments/archive/screen-034-dominance.json` (028's checks, `rich_spend` (gone, 066) and `science_rush`, under the
+planner), with `--quick --games 32`, then `python scripts/cards/screen.py DIR --preset 034` and `screen.py --gate DIR`.
+`--quick` drops an agent with `samples` above 1: leave it off for those. A run needs its own binary
+and config copied aside (`out/`) if you rebuild while it runs. Results and timings:
+`experiments/results/screen-034-clocks/clocks.md`. At r19 the gate took 45 min for 1,024 planner games on a shared 12-thread machine. The 028 specs are in `experiments/archive/`. `experiments/archive/screen-028-draft.json` is the drafting sanity check. Results and
+timings: `experiments/results/screen-028-rollout/rollout.md`.

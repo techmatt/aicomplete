@@ -392,68 +392,19 @@ Since 017 the difficulty is only the configured level: Discord tips no longer ra
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
 
-**The calibration point (068, r28, planner, fresh seeds 22100, 96 a cell, ±5):** d2 is 73 at 2 countries, 75 at 3
+**The calibration point (070, r29, planner, frozen-build seeds pooled, 288 a cell, ±2.9):** d2 is 53.5 at 2 countries, 50 at 3: under the 60-75 target by about 7-10 points ([rules-history.md](rules-history.md), revision 29).
+
+**The one before it (068, r28, planner, fresh seeds 22100, 96 a cell, ±5):** d2 is 73 at 2 countries, 75 at 3
 (`experiments/results/screen-068-boards/boards.md`).
 
-**The calibration point before it (066, r27, planner, fresh seeds 20200 and 20300, 96 a cell, ±5):** d2 is 59 at 2
+**The one before that (066, r27, planner, fresh seeds 20200 and 20300, 96 a cell, ±5):** d2 is 59 at 2
 countries, 61 at 3 (`experiments/results/screen-066-presence/presence.md`).
 
-**The one before that (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
+**Before it (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
 countries, 62 at 3 (75 / 71 and 67 / 52; `experiments/results/screen-064-deals/deals.md`). The other difficulties are not re-measured since r23 (053 changed base arrivals and agents stopped knowing the deal, so the earlier curves read high; 055, 059 and 064 moved cards, `corrupt_at` and `project_discord_per` since). Target 60-75 at both
 (`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
-**The curve (041, r20, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 83,
-d3 42, d4 25; 3 countries: d0 83, d1 75, d2 50, d3 8, d4 17; at 32 seeds d2 is 88 / 44
-(`experiments/results/screen-041-growth/growth.md`).
-
-**The curve (034, r19, planner, 12 seeds a cell, %, ±14).** 2 countries: d0 100, d1 100, d2 67,
-d3 17, d4 17; 3 countries: d0 100, d1 58, d2 42, d3 0, d4 0; at 32 seeds d2 is 66 / 38
-(`experiments/results/screen-034-clocks/clocks.md`).
-
-**The curve (028 quick screen, r17, 16 games a cell, engine / greedy, %).** 2 countries:
-d0 50 / 12, d1 44 / 12, d2 44 / 12, d3 6 / 0, d4 19 / 6; 3 countries: d0 75 / 0, d1 56 / 0,
-d2 12 / 0, d3 6 / 0, d4 0 / 0; random 0 everywhere. A hold of 3 is set for the planner (66 / 69
-at d2, 32 seeds): one-step agents fall well short of "skilled play wins" at d0, and the curve
-under the planner is not measured (`experiments/results/screen-028-rollout/rollout.md`).
-
-**The curve (027 quick screen, r16, 16 games a cell, engine / greedy, %).** 2 countries:
-d0 81 / 25, d1 38 / 25, d2 56 / 31, d3 56 / 12, d4 25 / 12; 3 countries: d0 88 / 56,
-d1 69 / 44, d2 50 / 19, d3 19 / 0, d4 12 / 0; random 0 everywhere; with noise of about ±12
-points, c2's d1 below d2 and d3 is within it. Engine win rounds run from 4 to 11 with no gate
-(`experiments/results/screen-027-endgame/endgame.md`).
-
-**The curve (024 quick screen, r15, 16 games a cell, engine / greedy, %).** 2 countries:
-d0 94 / 62, d1 81 / 69, d2 69 / 31, d3 38 / 19, d4 38 / 25; 3 countries: d0 94 / 81,
-d1 100 / 81, d2 81 / 75, d3 38 / 31, d4 19 / 6; random 0 everywhere; earliest win round 6
-in every cell (`experiments/results/screen-024-adversary/adversary.md`). r14's lower numbers
-were partly the agent's keep plan (fixed in 024), so the two curves aren't one game made
-harder.
-
-**The curve (021 quick screen, r12, 16 games a cell, engine / greedy, %).** 2 countries:
-d0 100 / 88, d1 100 / 81, d2 94 / 88, d3 75 / 75, d4 19 / 19; 3 countries: d0 88 / 69,
-d1 94 / 50, d2 81 / 31, d3 75 / 31, d4 31 / 6; random 0 everywhere
-(`experiments/results/screen-021-cards/cards.md`, with r11's and the untuned r12's).
-The skill gap between engine and greedy widened at 3 countries: greedy keeps every card
-it drafts and plays few.
-
-**The curve (019 quick screen, r10, 16 games a cell, engine / greedy, %).** 2 countries:
-d0 100 / 88, d1 88 / 94, d2 81 / 94, d3 62 / 56, d4 25 / 38; 3 countries: d0 100 / 88,
-d1 81 / 81, d2 88 / 69, d3 62 / 56, d4 69 / 50; random 0 everywhere. With 16 games a
-cell the noise is about ±12 points, so c3 engine's d4 above d3 and greedy above engine
-at c2 d1–d2 are within it. Levers: d1 two extra threats a round; d2 the 10-round deck;
-d3 corrupted cities build 2; d4 the supply 4 smaller.
-`experiments/results/screen-019-troops/troops.md` (018's r9 curve:
-`experiments/results/screen-018-calibration/calibration.md`).
-
-**Why this ladder (014; the supply loss it rests on was retired in 027).** At 014 the supply
-loss bounded everything: one corrupted city made about 3 ambassadors a round per country
-against a supply of 10, so anything that doubled the build (a second corrupted city) starved
-the supply within two rounds. The
-corrupted-city-per-country and smaller-supply levels the prompt suggested were first
-tried as levels 3 and 4 (second city, supply 7 per country): every game ended in round 1
-or 2, before a decision mattered. Levels 3 and 4 were rebuilt from the milder options;
-the curve is not tuned (014 quick screen: greedy 100 / 88 / 25 / 0 / 0 % at d0–d3, 16
-games each).
+Earlier curves (r10 to r20) and why this ladder: [rules-history.md](rules-history.md), *Older curves*.
 
 ## 4. Factories, the clock, war and troops
 
@@ -868,9 +819,8 @@ spent clears up to 3 from a hex, Matt: the removal stays a single tradeoff); `ai
 fourth spaces, and on the Protector's second and third); Buy In 6 credits, not the design's 10 (54 / 58 at
 10 against 67 / 62 at 6 on the same 48 seeds); Accord 1 Diplomacy, not 2 (the planner used it 0.1 times a game at 2, 2 at 1,
 with no effect on wins: 7 Diplomacy tags a game reach the table, but a sacrifice of two cards doesn't pay).
-Seven Diplomacy cards make more ambassadors, repriced ([card-pricing.md](card-pricing.md)).
-`ambassador_credits` stayed at 6 (Matt, 2462: a standard project is the exception to most builds): at 2 it
-closed the gap too, on a route the design refuses, and the screens that used it are recorded as that.
+Seven Diplomacy cards make more ambassadors, repriced ([card-pricing.md](card-pricing.md)). A 2-credit
+ambassador closed the gap too, on a route the design refuses (Matt, 2462: a standard project is the exception to most builds).
 
 **068's adaptations (each a candidate; the screen is in
 `experiments/results/screen-068-boards/boards.md`).** As designed, with 066's 30 / 38 starting credits and the ambassador project at 6, the planner
@@ -1262,12 +1212,12 @@ The cards config lists which cards are in the game (baseline: all of them).
   is paid at `insight_credits` credits an insight (keeps only). An Open Market free
   keep is used first. The rest are discarded when the action phase begins.
 - **Playing** a card costs its credits (buildings minus your discounts: Industry tags,
-  building Effects, Master Plan), and any `insight`, `energy`, `chips` and `antimatter`
+  Master Plan), and any `insight`, `energy`, `chips` and `antimatter`
   it prints, and lowers any income it prints under `lowers` (022: "lower your credit
   income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play (022):** 0 for small programs
   and events, 1 by default (removal events included), 2 for big effects and nearly all
-  tier 2 (the set: 34 / 80 / 36 cards at 0 / 1 / 2); it comes from
+  tier 2 (the draft set: 38 / 89 / 35 cards at 0 / 1 / 2); it comes from
   the same insight as keeps, and the credit conversion is for keeps only. Its `needs`
   (tags on your cards in play, your board's printed tags and those its tracks revealed, §7) are checked only when it is played. Each card's price is
   in [cards.md](cards.md); the reasoning is in [card-pricing.md](card-pricing.md).
@@ -1354,9 +1304,9 @@ country for the round. A presence with a struck-through coin is placed free. The
 
 Card details beyond the card text:
 
-The card set (023): 150 cards in the draft decks, 108 tier 1 and 42 tier 2, about 50%
-programs, 34% buildings and 16% events (033 moved the engines onto buildings), each tag
-primary on 25; every card is listed
+The card set (023, grown by 068 and 070): 170 cards, 162 in the draft decks and 8 unique to the AI boards.
+The decks hold 120 tier 1 and 42 tier 2, 49% programs, 37% buildings and 14% events (033 moved
+the engines onto buildings), each tag primary on 25 to 29; every card is listed
 with its cost, insight, tags, kind and text in [cards.md](cards.md) (generated:
 `aic-sim docs`, then `python scripts/cards/cards_doc.py`), and priced in [card-pricing.md](card-pricing.md).
 Card text says what a card does; how each primitive resolves:
@@ -1411,28 +1361,6 @@ Card text says what a card does; how each primitive resolves:
   that needed those tags or the sacrificed stack can't then be played; its other costs and requirements stand.
 - **Aegis Dome Array's shelter:** automatic, the first destruction of a facility or presence each round in a
   country where its owner has presence.
-
-History: the placeholder cards as remapped in 014 (data centers became presence in 016).
-023 replaced every card in this table except the AI-unique ones (Turnkey Factory, Point
-Defense, Shelter Order, Strike Team); it is kept as a record of the old set.
-
-| Card | Was | Now |
-|---|---|---|
-| Server Farm, Fork Process | place a processor | place a data center |
-| Data Mining | compute per processor | compute per data center (max 4) |
-| Firewall Node | explore skips your processors | spread skips your data centers |
-| Watchtower Net, Precision Strike, Sweep, Orbital Lance, Strike Team | damage | remove adversary pieces worth N (ambassador 1, troop 2); Watchtower in a country with your data center, Strike Team in reach |
-| Purge Protocol | destroy every adversary piece in a hex | remove every adversary ambassador and troop in a hex |
-| Swarm Override | remove every drone in a country | remove every adversary ambassador in a country (1 Unity per 2) |
-| Emergency Fab, Turnkey Factory | build a factory on Industrial land | build a factory on an empty open hex touching a city |
-| Rebuild / Reconstruction | return 1 / 3 corruption | take the adversary cube off 1 / **2** corrupted cities or stations (one country) |
-| Shore Up / Point Defense / Protector growth | defense tokens | hardening tokens (3 / 2 / 2) |
-| Evacuate | move 3 population | move up to 3 of your ambassadors onto pieces in reach |
-| Shelter Order, Civic Shelter | population protected | facilities protected |
-| Scavenge | if you destroyed a foundry | if you removed an adversary troop |
-| Rally | 2 Unity if population and adversary share a hex | gain 1 ambassador; 2 Unity if a clean city holds adversary ambassadors |
-| Recruitment Hub | (giving bonus) | also gain 2 ambassadors when built |
-| Unity Network | +1 Unity per outpost/foundry destroyed | +1 Unity per adversary troop removed |
 
 ## 9. Off-variants
 
@@ -1592,8 +1520,8 @@ that matches its intent):
 17. (013, 017) Alignment: a tip draws the stronger tier when the side's tip count
     *before* the tip has reached its threshold; the antimatter action is once a round
     per player. (017: no ongoing cards and no Discord escalation.)
-18. Discord cards: extra threats come from the current tier, without a reshuffle, one
-    per country in turn from country 0; Blight and Firestorm ties go to the lower hex
+18. Discord cards: extra threats come from the current tier, reshuffling an empty deck
+    (070), one per country in turn from country 0; Blight and Firestorm ties go to the lower hex
     number; Offensive acts at once with this round's card (before the build
     step, the face-up card: 022).
 19. (011) Difficulty 1's extra threat goes to the countries in turn by round number
@@ -1667,8 +1595,8 @@ that matches its intent):
     once, in hex order.
 53. (022) A threat dealt after the round's counter phase executes next round, not this
     one (at a table: it goes beside the row until then).
-54. (022) A player ambassador on an adversary-owned factory is used up for
-    `factory_unity` Unity on a production step; the factory still makes its troop.
+54. (022, 068) A player ambassador on an adversary-owned factory sways
+    `factory_unity` Unity on a production step and stays; the factory still makes its troop.
 55. (022) Hardening goes only on player-owned stations and factories that are not
     corrupted (what a troop strikes), one token a facility per effect; a Science card's
     shield (041) is that token on a hex of your presence (§7).
@@ -1676,8 +1604,8 @@ that matches its intent):
 56. (024, 027) Freeing is checked with the win and the tips, after every action and
     automatic phase; the hold's worth of ambassadors are used up, lower seats first.
 57. (024, 027) "On or next to" counts the city's own hex too.
-58. (024) Clear a city takes the ambassadors next to the city first, lowest hex first, then
-    the ones on it (no choice is asked: it is what a player would choose).
+58. (024, 059) Clear a city asks which hex for each ambassador while more stand than the card
+    takes; with no more than that, all go.
 
 **Deviations** (from the v0 ruleset's card text, kept from 013):
 

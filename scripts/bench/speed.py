@@ -45,7 +45,7 @@ import time
 CONFIG = "configs/baseline.json"
 SEED = "1000"
 # Agent, then games on one thread and on every thread. Enough to fill 10-60 s each;
-# rollout takes minutes, see the README.
+# rollout takes minutes, see docs/scripts.md.
 TABLE = [
     ("random", 400, 4000),
     ("greedy", 16, 200),
@@ -102,6 +102,12 @@ def plays(sim, config=CONFIG):
     return int(m.group(2)), m.group(1)
 
 
+def games_for(one, many, c, threads, games=0):
+    """Games on one thread and on `threads`, from a TABLE row: three countries take about three
+    times as long, so fewer games, a like wait. `games`, if set, is the games on `threads`."""
+    return max(1, one * 2 // c // (c - 1)), games or max(threads, many * 2 // c // (c - 1))
+
+
 def rows_to_run(only, threads, games=0):
     """Each (agent, countries, games on one thread, games on `threads`) `only` lets through.
     `games`, if set, is the games on `threads`."""
@@ -109,8 +115,7 @@ def rows_to_run(only, threads, games=0):
         for c in (2, 3):
             if only and agent not in only and f"{agent} c{c}" not in only:
                 continue
-            # Three countries take about three times as long: fewer games, a like wait.
-            yield agent, c, max(1, one * 2 // c // (c - 1)), games or max(threads, many * 2 // c // (c - 1))
+            yield (agent, c, *games_for(one, many, c, threads, games))
 
 
 def saved(out):
@@ -123,7 +128,7 @@ def saved(out):
 
 def save(out, rows):
     if out:
-        with open(out, "w", encoding="utf-8") as f:
+        with open(out, "w", encoding="utf-8", newline="\n") as f:
             json.dump(rows, f, indent=1)
 
 
@@ -185,7 +190,7 @@ def specs(sim, a, b, out, threads, countries, games):
     kind = a.split(":")[0]
     one, many = next(((x, y) for k, x, y in TABLE if k == kind), (TABLE[-1][1], TABLE[-1][2]))
     for c in countries:
-        n1, nn = max(1, one * 2 // c // (c - 1)), games or max(threads, many * 2 // c // (c - 1))
+        n1, nn = games_for(one, many, c, threads, games)
         announce(f"c{c}", kind, c, n1, nn, threads, 4)
         r = {}
         for label, n, t in (("1", n1, 1), ("all", nn, threads)):

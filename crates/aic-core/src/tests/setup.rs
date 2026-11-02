@@ -3,13 +3,13 @@ use super::*;
 #[test]
 fn setup_places_the_printed_pieces() {
     // Difficulty 4's second corrupted city is a tunable, 0 in the baseline.
-    let cases: [(i64, usize, usize, i64, &str); 4] = [
-        (0, 1, 10, 48, ""),
-        (3, 1, 9, 48, ""),
-        (4, 1, 9, 48, ""),
-        (4, 2, 9, 48, "adversary.extra_corrupted=1"),
+    let cases: [(i64, usize, usize, &str); 4] = [
+        (0, 1, 10, ""),
+        (3, 1, 9, ""),
+        (4, 1, 9, ""),
+        (4, 2, 9, "adversary.extra_corrupted=1"),
     ];
-    for (d, corrupt, deck, supply, set) in cases {
+    for (d, corrupt, deck, set) in cases {
         let level = format!("adversary.difficulty={d}");
         let mut sets = vec![level.as_str()];
         if !set.is_empty() {
@@ -51,17 +51,12 @@ fn setup_places_the_printed_pieces() {
                 && g.hexes[h].tokens.keys().any(|k| k.starts_with("cube:")))
             .is_empty());
             assert_eq!(
-                nums(&|h| g.tokens(h, crate::modules::common::NODE) > 0),
+                nums(&|h| g.tokens(h, NODE) > 0),
                 p.stations.iter().copied().collect()
             );
         }
         for s in 0..2 {
-            let want: Vec<usize> = vec![m.numbered(s, piece(s).presence)];
-            let mut have = presence_of(&g, s);
-            have.sort();
-            let mut want = want;
-            want.sort();
-            assert_eq!(have, want, "seat {s}");
+            assert_eq!(presence_of(&g, s), [m.numbered(s, piece(s).presence)], "seat {s}");
             assert_eq!(g.resource(s, Resource::Ambassadors), 1);
             assert_eq!(g.resource(s, Resource::Credits), crate::modules::ai::start_credits(&rules.world(), s));
         }
@@ -69,7 +64,7 @@ fn setup_places_the_printed_pieces() {
             total(&g, ADV_AMBASSADOR) + total(&g, TROOP) + total(&g, UNIT),
             0
         );
-        assert_eq!(g.var(SUPPLY), supply, "d{d}");
+        assert_eq!(g.var(SUPPLY), 48, "d{d}");
         // The next adversary card is face up, from stage I.
         let next = g.pile(NEXT);
         assert_eq!(next.len(), 1);
@@ -77,4 +72,48 @@ fn setup_places_the_printed_pieces() {
         assert_eq!(g.pile(DECK).len(), deck, "d{d}");
         assert!(g.pile(CURRENT).is_empty());
     }
+}
+
+#[test]
+fn each_seat_starts_with_a_bound_clean_city_at_every_size_and_difficulty() {
+    use crate::modules::common::{cube, cube_owner, corrupted, is_city};
+    for countries in 1..=4 {
+        for sets in [vec![], vec!["adversary.difficulty=4", "adversary.extra_corrupted=1"]] {
+            let mut c = baseline();
+            c.apply_override(&format!("countries={countries}")).unwrap();
+            for s in &sets {
+                c.apply_override(s).unwrap();
+            }
+            let rules = Rules::new(&c).unwrap();
+            let g = rules.new_game(1);
+            let w = rules.world();
+            for s in 0..g.seats.len() {
+                let bound: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, cube(s)) > 0).collect();
+                assert_eq!(bound.len(), 1, "seat {s}, {countries} countries");
+                let h = bound[0];
+                assert!(is_city(&w, h) && !corrupted(&g, h) && cube_owner(&g, h) == Some(s));
+                let c = crate::modules::common::home_country(&w, s);
+                let start = w.map.numbered(c, w.content.map.countries[c].presence);
+                let nearest = w.content.map.countries[c].cities.iter().map(|&n| w.map.numbered(c, n));
+                let clean_or_bound = nearest.filter(|&x| !corrupted(&g, x));
+                let best = clean_or_bound.map(|x| w.map.distance(start, x)).min().unwrap();
+                assert_eq!(w.map.distance(start, h), best, "the nearest");
+            }
+        }
+    }
+}
+
+#[test]
+fn start_energy_lets_a_seat_deploy_in_round_1() {
+    let rules = Rules::new(&baseline()).unwrap();
+    let g = rules.new_game(1);
+    assert_eq!(g.resource(0, Resource::Energy), rules.world().int("ai.start_energy"));
+    assert!(rules.world().int("ai.start_energy") >= 1);
+}
+
+#[test]
+fn starting_credits_lean_to_the_protector() {
+    let rules = Rules::new(&baseline()).unwrap();
+    let g = rules.new_game(1);
+    assert!(g.resource(0, Resource::Credits) < g.resource(1, Resource::Credits));
 }

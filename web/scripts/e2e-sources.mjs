@@ -1,26 +1,21 @@
-// 070: threat sources in a real browser. Plays the first legal actions until a face-up threat
+// `npm run e2e:sources` (070): threat sources in a real browser. Plays the first legal actions until a face-up threat
 // refuses a seat, then checks the threat's source badge, its sources marked on the map, the
 // refusal on the card, and the engine's refusal of a forged payment. Needs the viewer running.
-//   AIC_URL=http://localhost:PORT/ node scripts/e2e-sources.mjs
+//   AIC_URL  viewer URL (default http://localhost:5173/)
 // Screenshot: web/e2e-out/threat-sources.png.
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openPage } from './cdp.mjs';
+import { checker, openPage, viewerUrl as url } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
 const out = join(web, 'e2e-out');
 mkdirSync(out, { recursive: true });
 
 const page = await openPage();
-const { send, js, until, size } = page;
-let failures = 0;
-const check = (ok, what) => {
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`);
-  if (!ok) failures++;
-};
+const { send, js, until, size, consoleErrors } = page;
+const { check, failed } = checker();
 
 try {
   await size(1366, 768);
@@ -54,13 +49,17 @@ try {
     check(dom.says.includes("can't counter") || dom.says.includes('no one can counter'), `the card says who is refused: "${dom.says}"`);
     check(dom.marks > 0, `${dom.marks} sources marked on the map`);
     check(dom.hexes.length > 0, 'hovering the card highlights its sources');
-    const seatHasMoney = 1;
-    await js(`window.aic.act({ type: 'pay', seat: ${found.seat}, threat: '${found.threat}', resource: 'credits', amount: ${seatHasMoney} })`).catch(() => {});
+    await js(`window.aic.act({ type: 'pay', seat: ${found.seat}, threat: '${found.threat}', resource: 'credits', amount: 1 })`);
     const err = await js('window.aic.error');
     check(!!err && /sources in reach/.test(err), `a forged payment is refused: "${err}"`);
     writeFileSync(join(out, 'threat-sources.png'), await page.shot());
   }
+  check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
+} catch (e) {
+  console.error(e);
+  check(false, 'the run stopped');
 } finally {
   await page.close();
 }
-process.exit(failures ? 1 : 0);
+console.log(failed() ? `e2e:sources FAILED (${failed()})` : 'e2e:sources ok');
+process.exit(failed() ? 1 : 0);

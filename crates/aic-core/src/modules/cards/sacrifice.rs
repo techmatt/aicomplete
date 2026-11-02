@@ -2,8 +2,6 @@
 
 use super::*;
 
-// ---------- sacrifices for AI-board powers (021) ----------
-
 /// Something a seat can sacrifice to pay a power's tags: a program in its
 /// play area, a whole building stack (named by its top), or (with a
 /// `tags_from_hand` building) a card in hand.
@@ -22,7 +20,7 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
     for id in g.pile(&played(seat)) {
         out.push(Source {
             label: format!("program {id}"),
-            cards: vec![(played(seat).to_string(), id.clone())],
+            cards: vec![(played(seat).to_string(), *id)],
             tags: def(w, id).tags.clone(),
         });
     }
@@ -30,9 +28,9 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
         let mut cards: Vec<(String, Key)> = g
             .pile(&under(seat, top))
             .iter()
-            .map(|c| (under(seat, top).to_string(), c.clone()))
+            .map(|c| (under(seat, top).to_string(), *c))
             .collect();
-        cards.push((built(seat).to_string(), top.clone()));
+        cards.push((built(seat).to_string(), *top));
         let tags = cards
             .iter()
             .flat_map(|(_, c)| def(w, c).tags.iter().copied())
@@ -61,7 +59,7 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
             if !tags.is_empty() {
                 out.push(Source {
                     label: format!("hand {id}"),
-                    cards: vec![(hand(seat).to_string(), id.clone())],
+                    cards: vec![(hand(seat).to_string(), *id)],
                     tags,
                 });
             }

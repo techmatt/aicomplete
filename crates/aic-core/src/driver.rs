@@ -2,8 +2,6 @@
 //! needs: the action list (for replay), decision counts, the outcome and
 //! the config/content hashes. Agents themselves live outside the core.
 
-use serde::{Deserialize, Serialize};
-
 use crate::action::Action;
 use crate::rules::Rules;
 use crate::state::{GameState, Outcome, Stats};
@@ -14,9 +12,8 @@ pub trait Agent {
     fn choose(&mut self, rules: &Rules, state: &GameState, legal: &[Action]) -> usize;
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PlayedGame {
-    #[serde(with = "crate::rng::as_string")]
     pub seed: u64,
     /// Hash of the resolved config (see `Config::hash`).
     pub config_hash: String,

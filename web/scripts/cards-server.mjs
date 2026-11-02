@@ -3,12 +3,13 @@
 //   --port N    another port (the fixed one is what conductor's button opens)
 //   --root DIR  read content and keep notes in another tree (scripts/cards-check.mjs)
 // Notes live in <root>/review/card-notes.json, git-ignored; review/card-seen.json is the
-// ledger behind the "new" badge. See README, Card viewer.
+// ledger behind the "new" badge. See web/README.md, Card viewer.
 
 import { closeSync, copyFileSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 
+import { originalsDir } from '../card/originals.mjs';
 import { REPO, exportCards } from './cards-export.mjs';
 
 const arg = (name) => {
@@ -18,7 +19,6 @@ const arg = (name) => {
 const PORT = Number(arg('--port') ?? 5180);
 const ROOT = resolve(arg('--root') ?? REPO);
 const WEB = join(REPO, 'web');
-const DRIVE_ORIGINALS = 'C:\\Code\\gdrive-sync\\aicomplete\\art-originals';
 const NOTES = join(ROOT, 'review', 'card-notes.json');
 const SEEN = join(ROOT, 'review', 'card-seen.json');
 const FLAGS = ['ok', 'too cheap', 'too dear', 'rework', 'unclear text'];
@@ -85,7 +85,7 @@ function state() {
       return {};
     }
   };
-  return { ...data, exported, notes: read(NOTES), seen: read(SEEN), warnings };
+  return { ...data, exported, flags: FLAGS, notes: read(NOTES), seen: read(SEEN), warnings };
 }
 
 function saveNote({ id, flag = '', comment = '' }) {
@@ -113,7 +113,7 @@ function markSeen(ids) {
 
 function sceneFile(id) {
   if (!/^[a-z0-9_-]+$/.test(id)) return null;
-  const base = process.env.AIC_ART_ORIGINALS ?? (existsSync(join(REPO, 'art-originals')) ? join(REPO, 'art-originals') : DRIVE_ORIGINALS);
+  const base = originalsDir(REPO);
   for (const round of SCENE_ROUNDS) {
     const f = join(base, 'scenes', round, `${id}.png`);
     if (existsSync(f)) return f;

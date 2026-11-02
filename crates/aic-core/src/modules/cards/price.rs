@@ -32,12 +32,12 @@ pub fn list_cost(w: &World, id: &str) -> i64 {
     def(w, id).cost
 }
 
-pub(super) const SCIENCE_EVERY: &str = "cards.science_every";
+const SCIENCE_EVERY: &str = "cards.science_every";
 
-pub(super) const INDUSTRY_EVERY: &str = "cards.industry_every";
+const INDUSTRY_EVERY: &str = "cards.industry_every";
 
 /// One off per `every` tags on a seat's cards, of which it has `count` (0: off).
-pub(super) fn per_tags(w: &World, count: i64, every: &str) -> i64 {
+fn per_tags(w: &World, count: i64, every: &str) -> i64 {
     if w.variant("cards") != Some("draft") {
         return 0;
     }
@@ -49,7 +49,7 @@ pub(super) fn per_tags(w: &World, count: i64, every: &str) -> i64 {
 
 /// An insight cost `need` after seat `s`'s Science tags (034): never below
 /// `cards.discount_floor`, and a cost under the floor stays as printed.
-pub(super) fn science_off(w: &World, g: &GameState, seat: usize, need: i64) -> i64 {
+fn science_off(w: &World, g: &GameState, seat: usize, need: i64) -> i64 {
     floored(need, per_tags(w, tags(w, g, seat, Tag::Science), SCIENCE_EVERY), discount_floor(w))
 }
 
@@ -64,7 +64,7 @@ pub(super) fn discount_floor(w: &World) -> i64 {
 }
 
 /// `cost` less `off`, never below `floor`: a cost under the floor stays as printed.
-pub(super) fn floored(cost: i64, off: i64, floor: i64) -> i64 {
+fn floored(cost: i64, off: i64, floor: i64) -> i64 {
     (cost - off).max(cost.min(floor))
 }
 
@@ -114,8 +114,8 @@ impl Prices {
     }
 }
 
-/// A card's costs beyond credits, in the order its text prints them, with
-/// its insight cost for the seat already known.
+/// A card's costs beyond credits, in the order the view lists them, with its
+/// insight cost for the seat already known.
 pub(super) fn extra_costs_at(d: &CardDef, insight: i64) -> [(Resource, i64); 4] {
     [
         (Resource::Insight, insight),
@@ -138,9 +138,8 @@ pub fn play_cost(w: &World, g: &GameState, seat: usize, d: &CardDef) -> i64 {
     prices(w, g, seat).credits(d)
 }
 
-/// The credits seat `s`'s buildings cost less now before tags: its passives
-/// and a one-off discount.
-pub(super) fn passive_discount(w: &World, g: &GameState, seat: usize) -> i64 {
+/// The credits seat `s`'s passives take off its buildings, before tags.
+fn passive_discount(w: &World, g: &GameState, seat: usize) -> i64 {
     let mut off = 0;
     each_passive(w, g, seat, |p| {
         if let Op::BuildingDiscount { amount } = p {

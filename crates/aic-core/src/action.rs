@@ -31,7 +31,7 @@ pub enum Action {
     Play { seat: u8, card: Key },
     /// Use a building's once-a-round ability (module `cards`).
     Use { seat: u8, card: Key },
-    /// Use an AI-board power, paid by sacrificing played cards' tags (module `ai`, 021).
+    /// Use an AI-board power, paid by its printed cost and tags (module `ai`, 021).
     Power { seat: u8, power: u8 },
     /// Put `amount` of a resource on a threat's counter (module `threats`).
     Pay {

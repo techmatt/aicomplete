@@ -1,11 +1,9 @@
-use super::alignment::give;
-use super::projects::row;
 use super::*;
-use crate::content::{CardDef, Op, Tag};
-use crate::modules::{adversary, effects, threats};
+use crate::content::{CardDef, Op, Tag, TAGS};
+use crate::modules::{adversary, cards, effects, threats};
 
 #[test]
-fn growth_and_draft_picks_cannot_be_passed() {
+fn draft_picks_cannot_be_passed() {
     let rules = Rules::new(&baseline()).unwrap();
     let mut g = rules.new_game(2);
     // 021: round 1 is the opening (no draft); pass through its action phase.
@@ -32,7 +30,7 @@ fn every_card_is_unique_in_every_game() {
             let mut seen = BTreeSet::new();
             for (k, pile) in &g.piles {
                 for id in pile.iter() {
-                    assert!(seen.insert(id.clone()), "{id} twice (in {k})");
+                    assert!(seen.insert(*id), "{id} twice (in {k})");
                 }
             }
         }
@@ -80,7 +78,7 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
         Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|x| x != c);
         Arc::make_mut(g.piles.get_mut("cards.deck.2").unwrap()).retain(|x| x != c);
     }
-    g.piles.insert("cards.hand.1".into(), vec!["darknet_exchange".into()].into());
+    set_pile(&mut g, "cards.hand.1", &["darknet_exchange"]);
     set_res(&mut g, 1, Resource::Credits, 20);
     let playable = |g: &GameState| {
         rules
@@ -98,14 +96,14 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
     assert_eq!(g.resource(1, Resource::Insight), 1);
     // Endowed Research Chair lowers credit income by 1, through the production key.
     let w = rules.world();
-    let d = crate::modules::cards::def(&w, "endowed_research_chair");
+    let d = cards::def(&w, "endowed_research_chair");
     assert_eq!(d.lowers, vec![(Resource::Credits, 1)]);
     let before = crate::modules::economy::income(&w, &g, 1)[Resource::Credits];
-    let mut c = crate::modules::cards::def(&w, "endowed_research_chair").clone();
+    let mut c = cards::def(&w, "endowed_research_chair").clone();
     c.lowers = vec![(Resource::Credits, before + 1)];
-    assert!(!crate::modules::cards::lowers_ok(&w, &g, 1, &c), "can't lower an income below 0");
+    assert!(!cards::lowers_ok(&w, &g, 1, &c), "can't lower an income below 0");
     c.lowers = vec![(Resource::Credits, 1)];
-    assert!(crate::modules::cards::lowers_ok(&w, &g, 1, &c));
+    assert!(cards::lowers_ok(&w, &g, 1, &c));
 }
 
 #[test]
@@ -116,10 +114,7 @@ fn selling_a_card_discards_it_for_a_credit() {
             Arc::make_mut(pile).retain(|c| c != "darknet_exchange");
         }
     }
-    g.piles.insert(
-        "cards.hand.0".into(),
-        vec!["turnkey_factory".into(), "darknet_exchange".into()].into(),
-    );
+    set_pile(&mut g, "cards.hand.0", &["turnkey_factory", "darknet_exchange"]);
     let sells: Vec<Action> = rules
         .legal_actions(&g)
         .into_iter()
@@ -167,53 +162,35 @@ fn selling_a_card_discards_it_for_a_credit() {
 /// tokens out at a plain rate (059).
 #[test]
 fn the_023_primitives_draw_drain_all_count_and_cash_out() {
-    use crate::modules::{cards, effects};
     let (rules, mut g) = lab_actions();
-    let run = |g: &mut GameState, e: Op| {
-        with_cx(&rules, |cx| effects::run(g, cx, &[e], &mut effects::Ctx::seat(0))).unwrap()
-    };
     let hand = g.pile("cards.hand.0").len();
     let deck = g.pile("cards.deck.1").len();
-    run(&mut g, Op::Draw { count: 2 });
+    run_ops(&rules, &mut g, &[Op::Draw { count: 2 }]);
     assert_eq!(g.pile("cards.hand.0").len(), hand + 2);
     assert_eq!(g.pile("cards.deck.1").len(), deck - 2);
 
     row(&mut g, &["false_flag", "disinformation"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 6);
     g.vars.insert(adversary::project_key("disinformation").into(), 3);
-    run(&mut g, Op::DrainAll { amount: 4 });
+    run_ops(&rules, &mut g, &[Op::DrainAll { amount: 4 }]);
     assert_eq!(g.var(&adversary::project_key("false_flag")), 2);
     assert_eq!(g.var(&adversary::project_key("disinformation")), 0);
 
     // Retained Earnings holds Capital.
-    g.piles.insert("cards.built.0".into(), vec!["retained_earnings".into()].into());
+    set_pile(&mut g, "cards.built.0", &["retained_earnings"]);
     g.vars.insert(cards::tokens_key(0, "retained_earnings").into(), 5);
     let credits = g.resource(0, Resource::Credits);
-    run(
-        &mut g,
-        Op::GainPerTokens {
-            resource: Resource::Credits,
-            kind: TokenKind::Capital,
-            per: 2,
-        },
-    );
+    run_ops(&rules, &mut g, &[Op::GainPerTokens { resource: Resource::Credits, kind: TokenKind::Capital, per: 2 }]);
     assert_eq!(g.resource(0, Resource::Credits), credits + 2, "5 Capital count as 2; they stay");
     assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 5);
-    run(
-        &mut g,
-        Op::CashOut {
-            kind: TokenKind::Capital,
-            resource: Resource::Credits,
-            rate: 3,
-        },
-    );
+    run_ops(&rules, &mut g, &[Op::CashOut { kind: TokenKind::Capital, resource: Resource::Credits, rate: 3 }]);
     assert_eq!(g.resource(0, Resource::Credits), credits + 2 + 15, "5 cashed out at 3");
     assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 0);
 }
 
 #[test]
 fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does_not() {
-    let (rules, g) = lab_with(&[], &[]);
+    let (rules, g) = lab(&[]);
     let w = rules.world();
     let harden = Op::Harden { count: 2 };
     let moves = Op::MoveOne { range: 2 };
@@ -224,7 +201,7 @@ fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does
     let mut with_one = g.clone();
     let c = rules.map.numbered(0, piece(0).presence);
     let far = rules.map.numbered(0, piece(0).corrupted[0]);
-    put(&mut with_one, c, crate::modules::common::ambassador(0), 1);
+    put(&mut with_one, c, ambassador(0), 1);
     put(&mut with_one, far, presence(1), 1);
     assert!(effects::feasible(&w, &with_one, 0, &[harden.clone(), Op::MoveOne { range: 20 }]));
     let gain = Op::Gain { resource: Resource::Credits, amount: 1 };
@@ -233,7 +210,7 @@ fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does
 
 #[test]
 fn a_small_removal_has_no_target_on_a_hex_holding_only_a_troop() {
-    let (rules, mut g) = lab_with(&[], &[]);
+    let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let a = rules.map.numbered(0, piece(0).presence);
     put(&mut g, a, presence(0), 1);
@@ -248,14 +225,32 @@ fn a_small_removal_has_no_target_on_a_hex_holding_only_a_troop() {
 
 #[test]
 fn a_cash_in_counts_the_tokens_the_same_card_adds_first() {
-    let (rules, mut g) = lab_with(&[], &[]);
+    let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let kind = TokenKind::Capital;
     let holder = w.content.cards.iter().find(|c| c.tokens.as_ref().is_some_and(|t| t.kind == kind)).unwrap();
-    g.piles.insert(crate::modules::cards::built(0).into(), vec![holder.id.as_str().into()].into());
+    g.piles.insert(cards::built(0).into(), vec![holder.id.as_str().into()].into());
     let cash = Op::CashOut { kind, resource: Resource::Credits, rate: 1 };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&cash)), "nothing to cash in");
     assert!(effects::feasible(&w, &g, 0, &[Op::AddTokens { kind, amount: 2 }, cash]));
+}
+
+#[test]
+fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered() {
+    let (rules, mut g) = at_step(&[], 5);
+    let w = rules.world();
+    let step = step_cost(&w, 5);
+    set_res(&mut g, 0, Resource::Energy, 0);
+    let gains = [
+        Op::Gain { resource: Resource::Energy, amount: step },
+        Op::PlacePresence { count: 1, free: false },
+    ];
+    assert!(effects::feasible(&w, &g, 0, &gains));
+    let delay = [Op::DelayThreat { count: 1 }];
+    deal(&mut g, "smear_campaign", 0);
+    assert!(effects::feasible(&w, &g, 0, &delay));
+    run_ops(&rules, &mut g, &delay);
+    assert!(!effects::feasible(&w, &g, 0, &delay), "every threat already waits");
 }
 
 #[test]
@@ -294,44 +289,40 @@ fn only_a_building_keeps_an_action() {
 
 #[test]
 fn science_tags_discount_insight_to_a_floor_of_one() {
-    use crate::modules::cards;
     let (rules, mut g) = lab_with(&[], &["cards.science_every=2"]);
     let w = rules.world();
     let two = w.content.cards.iter().find(|c| c.insight == 2).unwrap();
     let one = w.content.cards.iter().find(|c| c.insight == 1).unwrap();
     assert_eq!(cards::play_insight(&w, &g, 0, two), 2);
-    let science: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == crate::content::Tag::Science).count() == 1 && c.tier == 1).take(4).map(|c| crate::key::Key::new(&c.id)).collect();
-    g.piles.insert(cards::played(0).into(), std::sync::Arc::new(science));
+    let science: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == Tag::Science).count() == 1 && c.tier == 1).take(4).map(|c| Key::new(&c.id)).collect();
+    g.piles.insert(cards::played(0).into(), Arc::new(science));
     assert_eq!(cards::play_insight(&w, &g, 0, two), 1, "4 tags: 2 off, stopped at the floor");
     assert_eq!(cards::play_insight(&w, &g, 0, one), 1, "1 stays 1");
 }
 
 #[test]
 fn industry_tags_discount_buildings_to_a_floor_of_one() {
-    use crate::modules::cards;
     let (rules, mut g) = lab_with(&[], &["cards.industry_every=2"]);
     let w = rules.world();
     let d = w.content.cards.iter().find(|c| c.is_building() && c.cost >= 3 && c.tier == 1).unwrap();
     let before = cards::play_cost(&w, &g, 1, d);
-    let industry: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == crate::content::Tag::Industry).count() == 1 && c.tier == 1 && !c.is_building()).take(2).map(|c| crate::key::Key::new(&c.id)).collect();
-    g.piles.insert(cards::played(1).into(), std::sync::Arc::new(industry));
+    let industry: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == Tag::Industry).count() == 1 && c.tier == 1 && !c.is_building()).take(2).map(|c| Key::new(&c.id)).collect();
+    g.piles.insert(cards::played(1).into(), Arc::new(industry));
     assert_eq!(cards::play_cost(&w, &g, 1, d), before - 1);
-    let many: Vec<_> = w.content.cards.iter().filter(|c| c.tags.contains(&crate::content::Tag::Industry) && !c.is_building() && !c.is_event()).map(|c| crate::key::Key::new(&c.id)).collect();
-    g.piles.insert(cards::played(1).into(), std::sync::Arc::new(many));
+    let many: Vec<_> = programs(&w, Tag::Industry).map(|c| Key::new(&c.id)).collect();
+    g.piles.insert(cards::played(1).into(), Arc::new(many));
     assert_eq!(cards::play_cost(&w, &g, 1, d), w.int("cards.discount_floor"), "the floor");
 }
 
 /// 042: what the heuristic reads must be what the rules charge.
 #[test]
 fn prices_worked_out_once_match_each_cards_own() {
-    use crate::content::{Resource, TAGS};
-    use crate::modules::cards;
     let (rules, mut g) = lab_with(&[], &["cards.science_every=2", "cards.industry_every=2"]);
     let w = rules.world();
-    let tagged: Vec<_> = w.content.cards.iter().filter(|c| !c.tags.is_empty()).take(12).map(|c| crate::key::Key::new(&c.id)).collect();
+    let tagged: Vec<_> = w.content.cards.iter().filter(|c| !c.tags.is_empty()).take(12).map(|c| Key::new(&c.id)).collect();
     for held in [0, 4, tagged.len()] {
-        g.piles.insert(cards::played(0).into(), std::sync::Arc::new(tagged[..held].to_vec()));
-        g.seats[0].resources.insert(Resource::Energy, 3);
+        g.piles.insert(cards::played(0).into(), Arc::new(tagged[..held].to_vec()));
+        set_res(&mut g, 0, Resource::Energy, 3);
         let p = cards::prices(&w, &g, 0);
         for d in &w.content.cards {
             assert_eq!(p.insight(d), cards::play_insight(&w, &g, 0, d), "{}", d.id);

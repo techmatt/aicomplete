@@ -26,7 +26,8 @@ options:
   --set-a K=V       override for config A only (repeatable)
   --set-b K=V       override for config B only (repeatable)
   --agent SPEC      the team agent: random (default), greedy, beam, rollout, engine,
-                    planner, with budget parameters as kind:key=value,... (see README)
+                    planner, sweep (a planner profile), with budget parameters as
+                    kind:key=value,... (see docs/agents.md)
   --max-actions N   per-game action cap; a capped game is a timeout (default 100000)
   --threads N       worker threads (default: all cores); results do not depend on it
   --json            print the summary as JSON instead of a table
@@ -149,8 +150,16 @@ pub struct Options {
     pub report_every: u64,
 }
 
+/// A bad command line: the message, then the usage.
 pub fn die(msg: &str) -> ! {
     eprintln!("{msg}\n\n{USAGE}");
+    exit(2)
+}
+
+/// Anything else that stops a run (a missing file, a bad spec): the usage
+/// would only bury the message.
+pub fn fail(msg: &str) -> ! {
+    eprintln!("{msg}");
     exit(2)
 }
 
@@ -299,18 +308,23 @@ impl Options {
     pub fn last_seed(&self) -> u64 {
         self.seed + (self.games - 1)
     }
+
+    /// Whether `seed` is one of those played.
+    pub fn in_range(&self, seed: u64) -> bool {
+        (self.seed..=self.last_seed()).contains(&seed)
+    }
 }
 
 pub fn load(path: &str, overrides: &[&String]) -> Config {
-    let text = std::fs::read_to_string(path).unwrap_or_else(|e| die(&format!("{path}: {e}")));
-    let mut c = Config::from_json(&text).unwrap_or_else(|e| die(&format!("{path}: {e}")));
+    let text = std::fs::read_to_string(path).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
+    let mut c = Config::from_json(&text).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     for o in overrides {
         c.apply_override(o)
-            .unwrap_or_else(|e| die(&format!("{path}: {e}")));
+            .unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     }
     c
 }
 
 pub fn rules(path: &str, c: &Config) -> Rules {
-    Rules::new(c).unwrap_or_else(|e| die(&format!("{path}: invalid config: {e}")))
+    Rules::new(c).unwrap_or_else(|e| fail(&format!("{path}: invalid config: {e}")))
 }

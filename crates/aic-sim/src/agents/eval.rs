@@ -6,7 +6,7 @@
 //! standard actions that do more.
 //!
 //! The board (014): cities are clean, aligned (a player cube) or corrupted
-//! (the adversary's cube; every city corrupted loses). Adversary ambassadors
+//! (the adversary's cube). Adversary ambassadors
 //! gather on clean cities until `adversary.corrupt_at` corrupts them, divert
 //! the production of the pieces they sit on (a factory builds a troop),
 //! and come out of a supply that caps them.
@@ -43,11 +43,11 @@ pub struct Weights {
     pub win: f64,
     /// Added per adversary card left (deck and face-up) on a win (a wider margin).
     pub win_margin: f64,
-    /// Each corrupted city (it builds ambassadors, diverts its energy to
-    /// Discord, and every city corrupted loses).
+    /// Each corrupted city (it builds ambassadors and diverts its energy to
+    /// Discord).
     pub corrupted: f64,
     /// A seat down to its last presence (027: a player with none loses);
-    /// half that with two.
+    /// a share of that with two, three or four.
     pub presence_danger: f64,
     /// Each aligned city (a player cube: extra energy for its owner).
     pub aligned: f64,
@@ -212,11 +212,9 @@ const RENAMED: [(&str, &str); 3] = [
 /// `INSIGHT_COST`), for valuing the draft packet (023).
 fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
     let key = if tier == 2 { "cards.keep_tier2" } else { "cards.keep_tier1" };
-    match world.params.get(key) {
-        Some(aic_core::config::ParamValue::Int(v)) => (INSIGHT_COST * v) as f64,
-        _ => 0.0,
-    }
+    (INSIGHT_COST * world.int(key)) as f64
 }
+
 /// Flat mode: a point of track income is worth this many of the resource's
 /// own points for antimatter and insight (1 for the rest), times `income`.
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
@@ -549,11 +547,11 @@ impl Eval {
     /// Each seat's reach as a bit per hex (a board has at most 4 × 16 hexes),
     /// worked out once a position: `in_reach` per hex was a tenth of the
     /// search's time (028).
-    fn reach_masks(&self, rules: &Rules, g: &GameState, t: &[HexTokens]) -> [u64; 4] {
+    fn reach_masks(&self, rules: &Rules, t: &[HexTokens]) -> [u64; 4] {
         let world = rules.world();
         let mut near = [0u64; 4];
         for (h, hex) in world.map.hexes.iter().enumerate() {
-            for (s, mask) in near.iter_mut().enumerate().take(g.seats.len()) {
+            for (s, mask) in near.iter_mut().enumerate().take(self.seats) {
                 if t[h].presence[s] > 0 {
                     *mask |= 1 << h;
                     for &n in &hex.neighbors {
@@ -581,8 +579,8 @@ impl Eval {
         let mut corrupted = 0i64;
         let mut reach = 0i64;
         let tokens = self.keys.read(g);
-        let near = self.reach_masks(rules, g, &tokens);
-        let seats = g.seats.len();
+        let near = self.reach_masks(rules, &tokens);
+        let seats = self.seats;
         let mut pieces = 0i64;
         let level = alignment::bar_level(&world, g);
         for h in 0..g.hexes.len() {
@@ -684,9 +682,6 @@ impl Eval {
                 _ => {}
             }
         }
-        if self.seats == 0 {
-            thin = 0;
-        }
         v += w.reach * reach as f64;
         // The Discord deck: the tip that finds it empty loses.
         let discord_left = alignment::cards_left(g, Side::Discord) as i64;
@@ -728,7 +723,7 @@ impl Eval {
         // their games) do not depend on horizon mode.
         let unpaid = self.unpaid_threats(rules, g);
         if w.horizon > 0.0 {
-            self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left, &mut v);
+            v += self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left);
         } else {
             self.flat_value(rules, g, &mut v);
         }
@@ -760,7 +755,7 @@ impl Eval {
                 .map(|(_, &n)| n)
                 .sum();
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
-            let open = (0..g.seats.len()).any(|s| threats::may_counter(&world, g, s, &t, scope));
+            let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, scope));
             let stranded = if open { 1.0 } else { w.threat_stranded };
             out.push(waits * stranded * (1.0 - (paid as f64 / req as f64).min(1.0)));
         }
@@ -811,7 +806,7 @@ impl Eval {
     /// Unity so far, in Sway (each tip counts a full bucket at the base
     /// size), and the Sway the target (the outright Unity win) needs.
     fn unity_progress(&self, g: &GameState) -> (f64, f64) {
-        let per = (self.tip_per_player * g.seats.len() as i64) as f64;
+        let per = (self.tip_per_player * self.seats as i64) as f64;
         let tips = g.var(alignment::tips_key(Side::Unity)) as f64;
         let points = tips * per + g.var(alignment::bucket(Side::Unity)) as f64;
         (points, self.target_tips as f64 * per)
@@ -945,7 +940,7 @@ impl Eval {
 
     /// What the board makes each seat a round if production came now: the
     /// energy of its aligned cities, less what adversary ambassadors divert.
-    fn board_production(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens]) -> Vec<i64> {
+    fn board_production(&self, rules: &Rules, tokens: &[HexTokens]) -> Vec<i64> {
         let world = rules.world();
         let mut out = vec![0; self.seats];
         for (h, t) in tokens.iter().enumerate() {
@@ -953,8 +948,7 @@ impl Eval {
                 continue;
             }
             if common::is_city(&world, h) {
-                let owner = (0..g.seats.len()).find(|&s| t.cube[s] > 0);
-                if let Some(s) = owner.filter(|&s| s < self.seats) {
+                if let Some(s) = (0..self.seats).find(|&s| t.cube[s] > 0) {
                     out[s] += self.city_energy + self.aligned_bonus;
                 }
             }
@@ -971,13 +965,12 @@ impl Eval {
         unpaid: &[f64],
         thin: i64,
         discord_left: i64,
-        out: &mut f64,
-    ) {
+    ) -> f64 {
         let w = &self.w;
         let world = rules.world();
         let left = self.rounds_left(rules, g, unpaid, thin, discord_left);
         let prod = if w.production != 0.0 {
-            self.board_production(rules, g, tokens)
+            self.board_production(rules, tokens)
         } else {
             vec![0; self.seats]
         };
@@ -990,7 +983,7 @@ impl Eval {
         // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
         let unit = [w.credits, w.credits, w.energy, w.antimatter, w.insight];
         let mut v = 0.0;
-        for s in 0..self.seats {
+        for (s, made) in prod.iter().enumerate() {
             let res = |k: Resource| g.resource(s, k);
             // Insight is reset each round, so what is held now only counts this round.
             for (i, r) in RESOURCES.iter().enumerate() {
@@ -1008,7 +1001,7 @@ impl Eval {
             for (i, (_, n)) in income.iter().enumerate() {
                 v += w.horizon * left * unit[i] * n as f64;
             }
-            v += w.horizon * w.production * left * w.energy * prod[s] as f64;
+            v += w.horizon * w.production * left * w.energy * *made as f64;
             for id in g.pile(&cards::built(s)) {
                 let (d, cost) = self.fact(&world, id);
                 v += w.built + w.built_cost * cost;
@@ -1063,7 +1056,7 @@ impl Eval {
                 }
                 p * (w.hand + w.hand_cost * cost)
             };
-            let mut cards: Vec<f64> = g.pile(&cards::hand(s)).iter().map(|id| play(id)).collect();
+            let mut cards: Vec<f64> = g.pile(&cards::hand(s)).iter().map(&mut play).collect();
             let mut picks = Vec::new();
             for id in g.pile(&cards::drafted(s)) {
                 picks.push((w.drafted * play(id), cards::def(&world, id).tier));
@@ -1076,7 +1069,7 @@ impl Eval {
             self.keepable(&world, g, s, picks, &mut cards);
             v += Self::capped(&mut cards, w.hand_cap);
         }
-        *out += v;
+        v
     }
 }
 

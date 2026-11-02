@@ -12,7 +12,7 @@ pub fn can_claim(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
 
 pub fn ambassadors_on_board(g: &GameState, seat: usize) -> i64 {
     let k = ambassador(seat);
-    (0..g.hexes.len()).map(|h| g.tokens(h, &k)).sum()
+    (0..g.hexes.len()).map(|h| g.tokens(h, k)).sum()
 }
 
 /// Seat `s`'s player ambassador arrives on hex `h`: it cancels an
@@ -27,30 +27,19 @@ pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
         return;
     }
     if has_building(g, h) && !corrupted(g, h) && cube_owner(g, h).is_none() && can_claim(&w, g, seat, h) {
-        cx.add_tokens(g, h, &cube(seat), 1);
-        let what = if g.tokens(h, STATION) > 0 {
-            "station"
+        cx.add_tokens(g, h, cube(seat), 1);
+        let (what, tally) = if g.tokens(h, STATION) > 0 {
+            ("station", "board.stations_owned")
         } else {
-            "factory"
+            ("factory", "board.factories_owned")
         };
-        cx.tally(
-            g,
-            &format!(
-                "board.{}_owned",
-                if what == "station" {
-                    "stations"
-                } else {
-                    "factories"
-                }
-            ),
-            1,
-        );
+        cx.tally(g, tally, 1);
         cx.note(Some(h), || {
             format!("Seat {seat} takes the {what} at {}", hex_name(&w, h))
         });
         return;
     }
-    cx.add_tokens(g, h, &ambassador(seat), 1);
+    cx.add_tokens(g, h, ambassador(seat), 1);
 }
 
 /// Whether an adversary ambassador stands on hex `h` or an adjacent hex
@@ -74,7 +63,7 @@ pub fn hold(w: &World, g: &GameState, h: usize) -> i64 {
 
 /// Player ambassadors on hex `h`, from all seats.
 pub fn ambassadors_on(g: &GameState, h: usize) -> i64 {
-    (0..g.seats.len()).map(|s| g.tokens(h, &ambassador(s))).sum()
+    (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum()
 }
 
 /// City `h` frees: the adversary's cube comes off, Unity sways, and it drops
@@ -105,8 +94,8 @@ pub(super) fn free_cities(g: &mut GameState, cx: &mut Cx) {
         }
         let mut left = need;
         for s in 0..g.seats.len() {
-            let k = g.tokens(h, &ambassador(s)).min(left);
-            cx.add_tokens(g, h, &ambassador(s), -k);
+            let k = g.tokens(h, ambassador(s)).min(left);
+            cx.add_tokens(g, h, ambassador(s), -k);
             left -= k;
         }
         liberate(g, cx, h);
@@ -136,7 +125,7 @@ pub fn move_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -
     if i < off {
         cx.add_resource(g, seat, Resource::Ambassadors, -1);
     } else {
-        cx.add_tokens(g, from[i - off], &k, -1);
+        cx.add_tokens(g, from[i - off], k, -1);
     }
     place_ambassador(g, cx, seat, to);
     Ok(())

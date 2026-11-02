@@ -2,8 +2,8 @@
 // Board-track and board-name hovers live with their drawing in panels.ts.
 
 import type { Action, CardView, View } from './engine';
-import { actionLabel, contentIds, escapeHtml, hexKey, isHex, kindName, strong, tokenColor, tokenName, type LabelContext } from './format';
-import { boardDetails, countryName, trackStepDetails } from './panels';
+import { actionLabel, contentIds, countryName, escapeHtml, hexKey, isHex, kindName, strong, tokenColor, tokenName, type LabelContext } from './format';
+import { boardDetails, trackStepDetails } from './panels';
 
 function tokenDetails(token: string, hex: string, shown: View): string {
   const h = shown.hexes.find((x) => hexKey(x.hex) === hex);
@@ -22,7 +22,7 @@ function hexDetails(hex: string, index: number, shown: View, legal: Action[], cx
   const toks = h.tokens.map((x) => `<span class="dot" style="background:${dot(x.kind)}"></span>${escapeHtml(tokenName(x.kind))} × ${x.count}`).join('<br>') || 'no tokens';
   const here = legal.filter((a) => isHex(a.target) && hexKey(a.target) === hex).map((a) => escapeHtml(actionLabel(a, true, true, cx)));
   const facing = h.facing !== undefined ? ` · <b>front</b> facing ${escapeHtml(countryName(shown, h.facing))}` : '';
-  const arrows = (shown.arrows ?? []).filter((a) => a.from === h.index || a.to === h.index).map((a) => escapeHtml(contentIds(a.doc)));
+  const arrows = shown.arrows.filter((a) => a.from === h.index || a.to === h.index).map((a) => escapeHtml(contentIds(a.doc)));
   return `<b>${escapeHtml(countryName(shown, h.country))} #${h.number}</b> · ${escapeHtml(kindName(h.kind))}${facing}<br>hex ${hex} · index ${h.index} · piece position ${h.piece_pos.join(',')} · ${h.neighbors.length} neighbors<hr>${toks}${arrows.length ? `<hr>${arrows.join('<br>')}` : ''}${here.length ? `<hr>legal here:<br>${here.join('<br>')}` : ''}`;
 }
 
@@ -47,12 +47,12 @@ function cardDetails(id: string, where: string | undefined, shown: View): string
   // in the place the chip was drawn from.
   const [kind, a, ...rest] = (where ?? '').split(':');
   const key = rest.join(':');
-  const pool: (CardView | null)[] =
+  const pool: CardView[] =
     kind === 'seat' ? shown.seats[Number(a)]?.cards.find((g) => g.key === key)?.cards ?? []
     : kind === 'country' ? shown.countries[Number(a)]?.cards.find((g) => g.key === key)?.cards ?? []
     : kind === 'pile' ? shown.piles.find((p) => p.key === [a, ...rest].join(':'))?.visible ?? []
     : [];
-  const c = pool.find((x) => x?.id === id);
+  const c = pool.find((x) => x.id === id);
   if (!c) return null;
   return `<b>${escapeHtml(c.name)}</b> <code>${escapeHtml(c.id)}</code>${c.cost !== undefined ? ` · cost ${c.cost}` : ''}<br>${escapeHtml(c.status)}${c.text ? `<br>${escapeHtml(c.text)}` : ''}<br><small>${escapeHtml(where ?? '')}</small>`;
 }

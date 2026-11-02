@@ -12,7 +12,7 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { ART, FRAMES, IMAGE_PREAMBLE, ORIGINALS, TOOL, drawAll, layout, parsePool, readJson, runCodex } from './lib.mjs';
+import { ART, FRAMES, IMAGE_PREAMBLE, ORIGINALS, TOOL, centerBox, drawAll, layout, parsePool, readJson, runCodex } from './lib.mjs';
 
 const argv = process.argv.slice(2);
 const pool = parsePool(argv, 'gen');
@@ -26,7 +26,7 @@ for (const id of ids) {
 const l = await layout();
 const [W, H] = l.print_px;
 const origDir = path.join(ORIGINALS, 'card-frames-r3');
-const printDir = path.join(ORIGINALS, 'card-frames-r3', 'frames');
+const printDir = path.join(origDir, 'frames');
 const webDir = FRAMES;
 await mkdir(printDir, { recursive: true });
 await mkdir(webDir, { recursive: true });
@@ -42,10 +42,7 @@ const framePrompt = (dir, kind) =>
 /** Crop centered to the bleed's shape, then scale: the kept original is untouched. */
 async function cut(src, id) {
   const m = await sharp(src).metadata();
-  const want = W / H;
-  const cw = Math.min(m.width, Math.round(m.height * want));
-  const ch = Math.min(m.height, Math.round(m.width / want));
-  const img = sharp(src).extract({ left: Math.floor((m.width - cw) / 2), top: Math.floor((m.height - ch) / 2), width: cw, height: ch }).resize(W, H, { kernel: 'lanczos3' });
+  const img = sharp(src).extract(centerBox(m, W / H)).resize(W, H, { kernel: 'lanczos3' });
   await img.clone().png().toFile(path.join(printDir, `${id}.png`));
   await img.clone().jpeg({ quality: 88, mozjpeg: true }).toFile(path.join(webDir, `${id}.jpg`));
   return { w: m.width, h: m.height };

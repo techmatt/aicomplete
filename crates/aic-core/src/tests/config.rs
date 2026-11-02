@@ -1,8 +1,9 @@
 use super::*;
+use crate::config::{ModuleConfig, ParamValue};
 use crate::modules::board;
 
 #[test]
-fn the_shared_row_config_differs_only_in_the_threat_variant() {
+fn config_diff_names_a_changed_variant() {
     let a = Rules::new(&baseline()).unwrap();
     let b = Rules::new(&Config::from_json(SHARED_ROW).unwrap()).unwrap();
     assert_eq!(
@@ -34,6 +35,27 @@ fn the_shared_row_config_is_the_baseline_with_the_shared_row_threats() {
     );
 }
 
+/// 016: `requires` lists only the modules whose parameters a module reads, so
+/// the optional ones can be switched off whole.
+#[test]
+fn optional_modules_switch_off_whole() {
+    for o in ["threats=off", "cards=off", "economy=off"] {
+        let mut c = baseline();
+        c.apply_override(o).unwrap();
+        let r = Rules::new(&c).unwrap_or_else(|e| panic!("{o}: {e}"));
+        let mut g = r.new_game(3);
+        let mut legal = Vec::new();
+        for _ in 0..400 {
+            if g.is_over() {
+                break;
+            }
+            r.legal_actions_into(&g, &mut legal);
+            let a = legal[0].clone();
+            r.apply_mut(&mut g, &a, None).unwrap();
+        }
+    }
+}
+
 #[test]
 fn bad_configs_are_rejected_with_a_reason() {
     let cases: &[(&str, &str)] = &[
@@ -51,23 +73,6 @@ fn bad_configs_are_rejected_with_a_reason() {
         ("alignment=off", "needs module alignment"),
         ("board=off", "needs module board"),
     ];
-    // 016: `requires` lists only the modules whose parameters a module reads,
-    // so the optional ones can be switched off whole.
-    for o in ["threats=off", "cards=off", "economy=off"] {
-        let mut c = baseline();
-        c.apply_override(o).unwrap();
-        let r = Rules::new(&c).unwrap_or_else(|e| panic!("{o}: {e}"));
-        let mut g = r.new_game(3);
-        let mut legal = Vec::new();
-        for _ in 0..400 {
-            if g.is_over() {
-                break;
-            }
-            r.legal_actions_into(&g, &mut legal);
-            let a = legal[0].clone();
-            r.apply_mut(&mut g, &a, None).unwrap();
-        }
-    }
     for (o, want) in cases {
         let mut c = baseline();
         c.apply_override(o).unwrap();
@@ -198,10 +203,8 @@ fn off_switches_and_degenerate_values() {
     let mut g0 = off.new_game(1);
     set_res(&mut g0, 0, Resource::Insight, 2);
     assert!(!gives(&off, &g0));
-    for bad in ["board.ambassador_credits=0"] {
-        let mut c = baseline();
-        assert!(c.apply_override(bad).is_err() || Rules::new(&c).is_err(), "{bad}");
-    }
+    let mut c = baseline();
+    assert!(c.apply_override("board.ambassador_credits=0").is_err() || Rules::new(&c).is_err());
     let mut c = baseline();
     c.apply_override("alignment.undecided_per_player=1").unwrap();
     assert!(Rules::new(&c).is_err());

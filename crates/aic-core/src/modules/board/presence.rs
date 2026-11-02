@@ -1,5 +1,7 @@
 //! Presence: the two tracks, what a placement costs and pays, and losing a presence.
 
+use crate::content::Uncover;
+
 use super::*;
 
 /// Presence tokens seat `s` has taken off its AI board's track (the
@@ -21,9 +23,9 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
     g.var(&track2_key(seat)).max(0) as usize
 }
 
-/// Where seat `s` may place presence: a land hex holding no presence,
-/// adjacent to one of its own (with none left, any such hex in its home
-/// country).
+/// Where seat `s` may place presence: a land hex holding no presence and no
+/// corruption marker, adjacent to one of its own (with none left, any such
+/// hex in its home country).
 pub fn presence_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let mine = presence(seat);
     let free = |h: usize| !is_ocean(w, h) && presence_owner(g, h).is_none() && g.tokens(h, MARKER) == 0;
@@ -42,7 +44,7 @@ pub fn presence_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
                 && w.map.hexes[h]
                     .neighbors
                     .iter()
-                    .any(|&x| g.tokens(x, &mine) > 0)
+                    .any(|&x| g.tokens(x, mine) > 0)
         })
         .collect()
 }
@@ -61,7 +63,7 @@ pub(super) fn bound_city(w: &World, g: &GameState, c: usize, start: usize) -> Op
 
 /// The cheapest next step's printed cost (034: printed on the track, each
 /// track's last steps cost more), or `None` with both tracks empty.
-pub(super) fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64> {
+fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64> {
     let b = ai::board(w, seat);
     let first = b.presence.get(track_taken(g, seat)).map(|u| u.cost);
     let second = b.presence2.get(track2_taken(g, seat)).map(|u| u.cost);
@@ -79,7 +81,7 @@ pub enum Placing {
 }
 
 /// What a placement pays on a step printing `step`.
-pub fn placing_price(how: Placing, step: i64) -> Price {
+fn placing_price(how: Placing, step: i64) -> Price {
     match how {
         Placing::Step => Price { energy: step, ..Price::default() },
         Placing::Free => Price::default(),
@@ -88,7 +90,7 @@ pub fn placing_price(how: Placing, step: i64) -> Price {
 
 /// What a placement pays, for its prompt: ", costs 3 energy", or nothing if
 /// free (044: every prompt printed the bare step cost, whatever was charged).
-pub(super) fn price_words(how: Placing, step: i64) -> String {
+fn price_words(how: Placing, step: i64) -> String {
     let parts = placing_price(how, step).words();
     if parts.is_empty() {
         String::new()
@@ -118,8 +120,8 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
-    let can_pay = |u: &crate::content::Uncover| placing_price(how, u.cost).affordable(g, seat);
-    let mut tracks: Vec<(bool, &crate::content::Uncover)> = Vec::new();
+    let can_pay = |u: &Uncover| placing_price(how, u.cost).affordable(g, seat);
+    let mut tracks: Vec<(bool, &Uncover)> = Vec::new();
     if let Some(u) = b.presence.get(t1).filter(|u| can_pay(u)) {
         tracks.push((false, u));
     }
@@ -156,7 +158,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     } else {
         cx.add_key(g, &track_key(seat), 1);
     }
-    cx.add_tokens(g, hexes[j], &presence(seat), 1);
+    cx.add_tokens(g, hexes[j], presence(seat), 1);
     cx.tally(g, "board.presence_placed", 1);
     cx.per_round(g, "board.presence_placed", 1);
     if capstone {
@@ -183,7 +185,7 @@ pub fn lose_presence(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source:
         cx.tally(g, "board.last_presence_safe", 1);
         return false;
     }
-    cx.add_tokens(g, h, &presence(s), -1);
+    cx.add_tokens(g, h, presence(s), -1);
     // 041: a shield on the hex goes with the token it shielded.
     if !hardenable(g, h) {
         let shields = g.tokens(h, HARDEN);

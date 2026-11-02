@@ -66,10 +66,7 @@ impl Map {
         let mut index = BTreeMap::new();
         let mut geo = Vec::new();
         for (c, p) in layout.pieces.iter().enumerate() {
-            let design =
-                content.map.countries.get(c).ok_or_else(|| {
-                    format!("no country piece for country {c} (content/map.json)")
-                })?;
+            let design = &content.map.countries[c];
             let (a, b) = (p.axes[0].offset(), p.axes[1].offset());
             let mut mine = Vec::new();
             for i in 0..size {

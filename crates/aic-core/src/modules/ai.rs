@@ -3,7 +3,7 @@
 //! production, starting resources and powers.
 
 use crate::action::Action;
-use crate::content::{AiBoard, Innate, Op, Resource, Tag, Uncover};
+use crate::content::{AiBoard, Innate, Op, Power, Resource, Tag, Uncover};
 use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
@@ -57,7 +57,7 @@ fn uncovered2(w: &World, g: &GameState, seat: usize) -> usize {
 pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64)> {
     let b = board(w, seat);
     let mut out: Vec<(Resource, i64)> = b.income.clone();
-    for u in b.presence[..uncovered(w, g, seat)].iter().chain(&b.presence2[..uncovered2(w, g, seat)]) {
+    for u in uncovered_spaces(w, g, seat) {
         out.extend(u.income.iter().cloned());
     }
     out
@@ -67,7 +67,7 @@ pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64
 pub fn each_track_income(w: &World, g: &GameState, seat: usize, mut f: impl FnMut(Resource, i64)) {
     let b = board(w, seat);
     b.income.iter().for_each(|(r, n)| f(*r, *n));
-    for u in b.presence[..uncovered(w, g, seat)].iter().chain(&b.presence2[..uncovered2(w, g, seat)]) {
+    for u in uncovered_spaces(w, g, seat) {
         u.income.iter().for_each(|(r, n)| f(*r, *n));
     }
 }
@@ -127,7 +127,7 @@ pub fn power_sacrifices_many(w: &World, seat: usize, k: usize) -> bool {
 }
 
 /// Set once seat `s` has used power `k` this round.
-fn power_used(seat: usize, k: usize) -> KeyBuf {
+pub(crate) fn power_used(seat: usize, k: usize) -> KeyBuf {
     KeyBuf::new("ai.power_used.").num(seat).text(".").num(k)
 }
 
@@ -195,7 +195,7 @@ struct Ai {
 }
 
 /// What a power costs, in words: `pay 1 energy, sacrifice 2 diplomacy`.
-pub fn power_cost(p: &crate::content::Power) -> String {
+fn power_cost(p: &Power) -> String {
     let mut cost = Vec::new();
     if !p.cost.is_empty() {
         let paid: Vec<String> = p.cost.iter().map(|(r, n)| r.words(*n)).collect();
@@ -208,7 +208,7 @@ pub fn power_cost(p: &crate::content::Power) -> String {
     cost.join(", ")
 }
 
-fn power_text(p: &crate::content::Power) -> String {
+fn power_text(p: &Power) -> String {
     let cost = power_cost(p);
     let mut first = cost.chars();
     let cost: String = first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect());
@@ -292,9 +292,8 @@ impl Module for Ai {
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {
         // Powers used show as their status on the board below.
         out.bookkeeping(&["ai.power_used."]);
-        let track_view = |label: &str, steps: &[crate::content::Uncover], up: usize| TrackView {
+        let track_view = |label: &str, steps: &[Uncover], up: usize| TrackView {
             label: label.into(),
-            resource: String::new(),
             steps: steps
                 .iter()
                 .enumerate()
@@ -386,7 +385,7 @@ impl Module for Ai {
                         id: id.clone(),
                         name,
                         text,
-                        status: status.into(),
+                        status,
                         cost: None,
                     }
                 })

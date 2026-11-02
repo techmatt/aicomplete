@@ -6,6 +6,9 @@ import { aiBoard, cardName, content, param, threatName, type Action, type Config
 
 export const hexKey = (h: Hex) => `${h[0]},${h[1]}`;
 
+/** "Coastal Republic", or `C<i>` if the view has no name. */
+export const countryName = (v: View, i: number) => v.countries[i]?.name || `C${i}`;
+
 export const isHex = (v: unknown): v is Hex =>
   Array.isArray(v) && v.length === 2 && v.every((x) => Number.isInteger(x));
 
@@ -42,7 +45,7 @@ export function extraCosts(text: string | undefined): string[] {
 
 /** " (5 credits + 1 insight)", or nothing for a free card. */
 function playPrice(credits: number | undefined, extra: string[]): string {
-  const parts = [credits ? `${credits} credits` : '', ...extra].filter(Boolean);
+  const parts = [credits ? amount(credits, 'credits') : '', ...extra].filter(Boolean);
   return parts.length ? ` (${parts.join(' + ')})` : '';
 }
 
@@ -71,7 +74,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'use':
       return `use ${card}`;
     case 'power': {
-      // 021: an AI-board power, paid by sacrificing played cards' tags.
+      // 021: an AI-board power, paid in resources or by sacrificing played cards' tags.
       const p = aiBoard(cx.config, a.seat)?.powers?.[Number(a.power)];
       if (!p) return `power: power ${a.power}`;
       const paid = (p.cost ?? []).map(([r, n]) => amount(n, r));
@@ -93,7 +96,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     }
     case 'standard': {
       // The rules publish each standard action's words and cost in the view.
-      const s = cx.view?.standard?.find((x) => x.act === String(a.act));
+      const s = cx.view?.standard.find((x) => x.act === String(a.act));
       if (!s) return `standard: ${words(String(a.act))}`;
       const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
@@ -102,7 +105,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     }
     case 'sell': {
       const n = param(cx.config, 'board', 'sell_credits');
-      return `sell ${card}${typeof n === 'number' ? ` (+${n} credits)` : ''}`;
+      return `sell ${card}${typeof n === 'number' ? ` (+${amount(n, 'credits')})` : ''}`;
     }
   }
   return null;

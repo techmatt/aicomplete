@@ -1,7 +1,7 @@
 //! Simulation CLI: plays seeded games for one or two configs with a
 //! selectable team agent (random by default), prints win rate, game length
 //! and counters side by side, and replay-checks every game; runs experiment
-//! grids into a cycle report. See README.md for usage.
+//! grids into a cycle report. See docs/simulator.md for usage.
 
 mod agents;
 mod cli;
@@ -10,9 +10,9 @@ mod spelling;
 mod experiment;
 mod experiment_run;
 mod gate;
+mod play;
 mod prof;
 mod report;
-mod sweep;
 
 use std::process::exit;
 
@@ -38,8 +38,8 @@ fn main() {
         ),
         "show" => show(&o),
         "docs" => docs::run(&o),
-        "run" | "compare" => sweep::run(&o),
-        "replay" => sweep::replay_all(&o),
+        "run" | "compare" => play::run(&o),
+        "replay" => play::replay_all(&o),
         "experiment" => exit(experiment_run::run_experiment(&o.paths[0], &o)),
         other => unreachable!("command {other} is checked in parse_args"),
     }

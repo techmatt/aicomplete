@@ -82,7 +82,7 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
         Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),
         Op::ShieldPresence { .. } => any_hex(g, |h| shieldable(g, seat, h)),
         Op::DelayThreat { .. } => !undelayed_threats(g).is_empty(),
-        // Giving needs someone to give to (Grant and Venture Capital still pay you).
+        // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).
         Op::Transfer { .. } => g.seats.len() > 1,
         _ => true,
     })

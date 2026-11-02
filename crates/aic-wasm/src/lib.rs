@@ -62,9 +62,9 @@ pub fn resolve_config(config_json: &str) -> Result<String, JsValue> {
 }
 
 /// The board for a config: hexes (axial `[q, r]`, country, piece position,
-/// neighbors, printed number, kind, and for a military base the country it
-/// faces), countries (hex indices, color) and fronts (the two
-/// countries and their bases). `state.hexes[i]` is `hexes[i]`.
+/// neighbors, printed number, kind, whether industrial or coastal, and for a
+/// military base the country it faces), countries (hex indices, color) and
+/// fronts (the two countries and their bases). `state.hexes[i]` is `hexes[i]`.
 #[wasm_bindgen]
 pub fn board(config_json: &str) -> Result<String, JsValue> {
     Ok(to_json(&rules(config_json)?.map))
@@ -97,7 +97,7 @@ pub fn start(config_json: &str, seed: &str) -> Result<Applied, JsValue> {
 }
 
 /// The generic view of a state (`aic_core::View`): tokens on hexes,
-/// per-seat and per-country values, card groups, slots, piles, globals.
+/// per-seat and per-country values, card groups, boards, piles, globals.
 #[wasm_bindgen]
 pub fn view(state_json: &str) -> Result<String, JsValue> {
     let state: GameState = parse("state", state_json)?;

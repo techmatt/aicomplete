@@ -1,6 +1,6 @@
 {
- "name": "off",
- "note": "070 screen",
+ "name": "screen-070-creation-off",
+ "note": "The creation-off read at r29 (070): the planner at d2 on base, then each of the four source types making nothing when uncountered (threats.uncreated 1-4), 2 and 3 countries, 48 games a cell.",
  "configs": [
   "configs/baseline.json"
  ],

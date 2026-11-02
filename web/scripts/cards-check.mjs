@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { REPO } from './cards-export.mjs';
-import { openPage, shotTo, sleep } from './cdp.mjs';
+import { checker, openPage, shotTo, sleep } from './cdp.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const at = process.argv.indexOf('--port');
@@ -26,11 +26,7 @@ for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/layout.j
   cpSync(join(REPO, p), join(ROOT, p), { recursive: true });
 }
 
-let failed = 0;
-const check = (ok, what) => {
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`);
-  if (!ok) failed++;
-};
+const { check, failed } = checker();
 
 async function serve() {
   const p = spawn(process.execPath, [join(here, 'cards-server.mjs'), '--port', String(PORT), '--root', ROOT], { stdio: ['ignore', 'pipe', 'inherit'] });
@@ -213,5 +209,5 @@ try {
   await stop(server);
 }
 check(existsSync(join(ROOT, 'out', 'cards-export.json')), 'the export is on disk');
-console.log(failed ? `cards:check: ${failed} failed` : 'cards:check: all good');
-process.exit(failed ? 1 : 0);
+console.log(failed() ? `cards:check: ${failed()} failed` : 'cards:check: all good');
+process.exit(failed() ? 1 : 0);

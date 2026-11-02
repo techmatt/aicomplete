@@ -12,7 +12,7 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { ART, layout } from './lib.mjs';
+import { FRAMES, layout } from './lib.mjs';
 import { inset } from '../../web/card/card.js';
 
 const l = inset(await layout());
@@ -64,7 +64,7 @@ const hex = (data, W, [x, y]) => {
   return `#${[0, 1, 2].map((k) => data[i + k].toString(16).padStart(2, '0')).join('')}`;
 };
 
-const dir = path.join(ART, 'frames', 'r3');
+const dir = FRAMES;
 const out = {};
 const frames = Object.keys(l.kinds).sort().flatMap((k) => [`${k}-t1`, `${k}-t2`]);
 for (const id of frames) {

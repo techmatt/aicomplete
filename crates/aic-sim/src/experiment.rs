@@ -1,7 +1,7 @@
 //! The experiment harness: configs × variants × difficulties × agents over a
 //! seed range, played on every core, with the measures of
 //! `docs/principles.md` gathered per game. `report/` aggregates and writes
-//! them out. See README.md ("Experiments") for the spec format.
+//! them out. See docs/experiments.md for the spec format.
 //!
 //! A game's measures are read from the public state, the actions taken and
 //! the engine's stats (`g.stats`: counters and per-round tallies): card offers
@@ -303,9 +303,9 @@ pub fn cells(spec: &Spec) -> Result<Vec<Cell>, String> {
     Ok(out)
 }
 
-fn first_repeat<'a>(names: impl Iterator<Item = &'a str>) -> Option<&'a str> {
+fn first_repeat<'a>(mut names: impl Iterator<Item = &'a str>) -> Option<&'a str> {
     let mut seen = std::collections::BTreeSet::new();
-    names.into_iter().find(|n| !seen.insert(*n))
+    names.find(|n| !seen.insert(*n))
 }
 
 /// Everything measured in one game; one line of `games.jsonl`.
@@ -372,12 +372,15 @@ pub struct FailedGame {
     pub difficulty: i64,
     pub agent: String,
     pub overrides: Vec<String>,
+    /// The spec's cap, for [`FailedGame::command`]; 0 in a list written before it.
+    #[serde(default)]
+    pub max_actions: usize,
     /// The panic: where, then its message.
     pub message: String,
 }
 
 impl FailedGame {
-    fn new(cells: &[Cell], cell: usize, seed: u64, message: String) -> FailedGame {
+    fn new(spec: &Spec, cells: &[Cell], cell: usize, seed: u64, message: String) -> FailedGame {
         let c = &cells[cell];
         FailedGame {
             cell,
@@ -387,6 +390,7 @@ impl FailedGame {
             difficulty: c.difficulty,
             agent: c.agent.label(),
             overrides: c.overrides.clone(),
+            max_actions: spec.max_actions,
             message,
         }
     }
@@ -394,8 +398,12 @@ impl FailedGame {
     /// The `aic-sim` line that plays it again.
     pub fn command(&self) -> String {
         let sets: String = self.overrides.iter().map(|o| format!(" --set {o}")).collect();
+        let cap = match self.max_actions {
+            0 => String::new(),
+            n => format!(" --max-actions {n}"),
+        };
         format!(
-            "aic-sim run {} --seed {} --games 1 --agent {}{sets}",
+            "aic-sim run {} --seed {} --games 1 --agent {}{cap}{sets}",
             self.config, self.seed, self.agent
         )
     }
@@ -715,7 +723,7 @@ fn apply_counting_draws(r: &mut GameResult, rules: &Rules, g: &mut GameState, a:
         .map(|s| g.pile(&cards::hand(s)).to_vec())
         .collect();
     if let Action::Keep { seat, card } = a {
-        hands[*seat as usize].push(card.clone());
+        hands[*seat as usize].push(*card);
     }
     rules.apply_mut(g, a, None).expect("a legal action applies");
     for (s, mut before) in hands.into_iter().enumerate() {
@@ -865,7 +873,7 @@ fn play_jobs(
                         }
                         Err(_) => {
                             let message = LAST_PANIC.with(|p| p.take());
-                            let f = FailedGame::new(cells, c, seed, message);
+                            let f = FailedGame::new(spec, cells, c, seed, message);
                             let mut out = sinks.failed.lock().expect("failed lock");
                             (sinks.on_failed)(&f);
                             out.push(f);
@@ -994,4 +1002,36 @@ pub fn read_stream(path: &str, spec: &Spec, cells: &[Cell]) -> Result<Vec<GameRe
     let mut seen = std::collections::BTreeSet::new();
     games.retain(|g| seen.insert((g.cell, g.seed)));
     Ok(games)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::{Path, PathBuf};
+
+    fn json_in(dir: &Path) -> Vec<PathBuf> {
+        let files = std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path());
+        files.filter(|p| p.extension().is_some_and(|e| e == "json")).collect()
+    }
+
+    /// 066: a spec names parameters and weights only `AgentSpec::parse` checks,
+    /// so a rename strands a spec that nothing plays until someone runs it.
+    #[test]
+    fn every_live_spec_loads_and_its_agents_parse() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../experiments");
+        let mut files = json_in(&root);
+        for e in std::fs::read_dir(&root).unwrap().map(|e| e.unwrap().path()) {
+            if e.file_name().is_some_and(|n| n.to_string_lossy().starts_with("gate-close-")) {
+                files.extend(json_in(&e));
+            }
+        }
+        assert!(files.len() > 10, "{root:?}: {} specs", files.len());
+        for f in files {
+            let text = std::fs::read_to_string(&f).unwrap();
+            let spec: Spec = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{f:?}: {e}"));
+            for a in &spec.agents {
+                AgentSpec::parse(a).unwrap_or_else(|e| panic!("{f:?}: {e}"));
+            }
+        }
+    }
 }

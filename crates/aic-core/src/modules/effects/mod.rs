@@ -4,7 +4,7 @@
 //! stay there; an arm here calls them. Standing ops and the twist-only ops are
 //! read by the rule they change and never resolve.
 
-use crate::content::{HexKind, Op, RoundFlag, Side};
+use crate::content::{Op, RoundFlag, Side};
 use crate::module::{Cx, Res, World};
 use crate::state::{GameState, Opt};
 use crate::vocab::TokenKind;
@@ -34,6 +34,16 @@ pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
         }
     }
     Ok(())
+}
+
+/// Asks `seat` to pick among `opts`, "stop" added unless this is the `first`
+/// pick of an "up to N". `None`: no pick, or stop.
+fn pick_or_stop(cx: &mut Cx, seat: usize, prompt: &str, mut opts: Vec<Opt>, first: bool) -> Res<Option<usize>> {
+    let n = opts.len();
+    if !first {
+        opts.push(opt("stop"));
+    }
+    Ok(cx.choose(seat, prompt, opts)?.filter(|&i| i < n))
 }
 
 fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
@@ -104,7 +114,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Peek { count } => adversary::peek(g, cx, *count),
         Op::Jam { amount, source } => {
             let active = threats::counterable(&w, g, seat, *source);
-            let opts = active.iter().map(|t| opt(t.clone())).collect();
+            let opts = active.iter().map(|t| opt(*t)).collect();
             let prompt = format!("Seat {seat}: jam which threat?");
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
                 threats::jam(g, cx, &active[i], *amount);
@@ -119,7 +129,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 Source::Seat(_) => threats::counterable(&w, g, seat, None),
                 _ => threats::active(g).into_iter().map(|(t, _)| t).collect(),
             };
-            let opts = active.iter().map(|t| opt(t.clone())).collect();
+            let opts = active.iter().map(|t| opt(*t)).collect();
             let prompt = match ctx.source {
                 Source::Seat(_) => format!("Seat {seat}: counter which threat?"),
                 _ => "Unity: counter which threat?".to_string(),
@@ -128,17 +138,10 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 threats::counter(g, cx, &active[i]);
             }
         }
-        Op::DrainProject { amount } => {
-            let ids = adversary::projects_with_compute(g);
-            let opts = ids.iter().map(|p| opt(p.clone())).collect();
-            let prompt = format!("Seat {seat}: remove compute from which adversary project?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
-                adversary::drain_project(g, cx, &ids[i], *amount);
-            }
-        }
+        Op::DrainProject { amount } => adversary::choose_drain(g, cx, seat, *amount)?,
         Op::DiscardProject => {
             let ids = adversary::projects(g);
-            let opts = ids.iter().map(|p| opt(p.clone())).collect();
+            let opts = ids.iter().map(|p| opt(*p)).collect();
             let prompt = format!("Seat {seat}: discard which adversary project?");
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
                 adversary::discard_project(g, cx, &ids[i]);
@@ -159,7 +162,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::AddTokens { kind, amount } => {
             let ids = cards::token_cards(&w, g, seat, Some(*kind));
-            let opts = ids.iter().map(|c| opt(c.clone())).collect();
+            let opts = ids.iter().map(|c| opt(*c)).collect();
             let prompt = format!("Seat {seat}: add {amount} {kind} to which card?");
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
                 cards::add_tokens(g, cx, seat, &ids[i], *amount);

@@ -37,17 +37,16 @@ pub mod view;
 pub mod vocab;
 
 pub use action::Action;
-pub use config::{Config, ModuleConfig, ParamValue};
+pub use config::Config;
 pub use content::{content, content_hash, Content};
 pub use driver::{play, replay, Agent, PlayedGame};
 pub use event::Event;
 pub use hash::fnv1a64;
-pub use hex::{Dir, Hex};
-pub use key::{FlatMap, Key, Table};
+pub use key::Key;
 pub use map::Map;
-pub use record::{SavedGame, RECORD_FORMAT};
+pub use record::SavedGame;
 pub use rules::Rules;
-pub use state::{GameState, Outcome, Seat, Stats};
+pub use state::{GameState, Outcome, Stats};
 pub use view::View;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -58,11 +57,6 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// `golden_game` test fails until it is bumped and the golden fingerprint
 /// updated (also in `scripts/wasm-smoke.mjs`).
 pub const RULES_REVISION: u32 = 29;
-
-/// Starts a game: setup, then on to the first decision.
-pub fn new_game(config: &Config, seed: u64) -> Result<GameState, String> {
-    Ok(Rules::new(config)?.new_game(seed))
-}
 
 /// The rules of the config embedded in `state`, checked against it.
 fn rules_for(state: &GameState) -> Result<Rules, String> {

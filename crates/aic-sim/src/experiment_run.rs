@@ -3,29 +3,28 @@
 //! report from the games so far as it goes, and writes the cycle report.
 
 use std::panic::{catch_unwind, AssertUnwindSafe};
-use std::process::exit;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
 use crate::agents::AgentSpec;
-use crate::cli::{die, Options};
+use crate::cli::{fail, Options};
 use crate::report::file_stem;
 use crate::{experiment, gate, prof, report};
 
 /// `aic-sim experiment`: plays the grid and writes the cycle report.
 /// Returns the exit code: 1 if any game panicked or failed its replay check.
 pub fn run_experiment(path: &str, o: &Options) -> i32 {
-    let text = std::fs::read_to_string(path).unwrap_or_else(|e| die(&format!("{path}: {e}")));
+    let text = std::fs::read_to_string(path).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     let mut spec: experiment::Spec =
-        serde_json::from_str(&text).unwrap_or_else(|e| die(&format!("{path}: {e}")));
+        serde_json::from_str(&text).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     apply_flags(&mut spec, o);
-    let cells = experiment::cells(&spec).unwrap_or_else(|e| die(&format!("{path}: {e}")));
+    let cells = experiment::cells(&spec).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     let dir = o
         .out
         .clone()
         .unwrap_or_else(|| format!("out/experiments/{}", file_stem(&spec.name)));
     let dir = dir.trim_end_matches(['/', '\\']).to_string();
-    std::fs::create_dir_all(&dir).unwrap_or_else(|e| die(&format!("--out {dir}: {e}")));
+    std::fs::create_dir_all(&dir).unwrap_or_else(|e| fail(&format!("--out {dir}: {e}")));
     let total = spec.total_games(&cells);
     // Every finished game goes to games.jsonl at once (a header line, then
     // one game per line), so a stopped or killed run keeps what it played;
@@ -33,7 +32,7 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     let stream_path = format!("{dir}/games.jsonl");
     let prior = if o.resume && std::path::Path::new(&stream_path).exists() {
         experiment::read_stream(&stream_path, &spec, &cells)
-            .unwrap_or_else(|e| die(&format!("--resume: {e}")))
+            .unwrap_or_else(|e| fail(&format!("--resume: {e}")))
     } else {
         Vec::new()
     };
@@ -63,8 +62,7 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
             use std::io::Write;
             let mut w = stream.lock().expect("stream lock");
             if let Err(e) = writeln!(w, "{line}").and_then(|_| w.flush()) {
-                eprintln!("cannot write {stream_path}: {e}");
-                exit(2)
+                fail(&format!("cannot write {stream_path}: {e}"))
             }
         }
         let mut l = last.lock().expect("progress lock");
@@ -74,7 +72,8 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
             let played = done.saturating_sub(resumed).max(1) as f64;
             let left = all.saturating_sub(done) as f64 * elapsed / played / 60.0;
             // A gate's `all` is its cap, so for a gate this is the most it can take.
-            eprintln!("  {done}/{all} games, {elapsed:.0} s, about {left:.0} min left at this rate");
+            let bound = if at_most.is_empty() { "about " } else { at_most };
+            eprintln!("  {done}/{all} games, {elapsed:.0} s, {bound}{left:.0} min left at this rate");
         }
     };
     let failed_path = format!("{dir}/failed.jsonl");
@@ -94,7 +93,7 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     };
     let results = std::sync::Mutex::new(prior);
     let failed = std::sync::Mutex::new(Vec::new());
-    let reports = |games: &mut Vec<experiment::GameResult>, failed: &[experiment::FailedGame]| {
+    let reports = |games: &mut [experiment::GameResult], failed: &[experiment::FailedGame]| {
         experiment::sort(games);
         let wall_s = start.elapsed().as_secs_f64();
         write_reports(
@@ -126,10 +125,7 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
     let failed = failed.into_inner().expect("failed lock");
     let wall_s = start.elapsed().as_secs_f64();
     let report_start = Instant::now();
-    let (sums, records) = reports(&mut games, &failed).unwrap_or_else(|e| {
-        eprintln!("{e}");
-        exit(2)
-    });
+    let (sums, records) = reports(&mut games, &failed).unwrap_or_else(|e| fail(&e));
     print_timing(&games, wall_s, report_start.elapsed().as_secs_f64());
     println!(
         "{} games in {wall_s:.1} s; report {dir}/report.md, {} record(s) in {dir}/records",
@@ -200,7 +196,7 @@ fn apply_flags(spec: &mut experiment::Spec, o: &Options) {
     }
     if let Some(keep) = &o.variants {
         experiment::keep_variants(spec, keep)
-            .unwrap_or_else(|e| die(&format!("--variants: {e}")));
+            .unwrap_or_else(|e| fail(&format!("--variants: {e}")));
     }
     if o.quick {
         quick(spec, o);
@@ -257,7 +253,7 @@ fn quick(spec: &mut experiment::Spec, o: &Options) {
         // A spec that doesn't parse is kept, for `cells` to reject as usual.
         .partition(|a| AgentSpec::parse(a).map_or(true, |s| s.shallow()));
     if keep.is_empty() {
-        die("--quick: every agent of the spec searches deep; name a shallow one (greedy, engine)");
+        fail("--quick: every agent of the spec searches deep; name a shallow one (random, greedy, engine, planner)");
     }
     if !drop.is_empty() {
         eprintln!("--quick: dropped deep-search agents {}", drop.join(", "));
@@ -280,12 +276,9 @@ fn open_stream(
     cells: &[experiment::Cell],
     prior: &[experiment::GameResult],
 ) -> std::io::BufWriter<std::fs::File> {
-    let fail = |e: std::io::Error| -> ! {
-        eprintln!("cannot write {path}: {e}");
-        exit(2)
-    };
+    let cannot = |e: std::io::Error| -> ! { fail(&format!("cannot write {path}: {e}")) };
     if !resume && std::fs::metadata(path).is_ok_and(|m| m.len() > 0) {
-        std::fs::rename(path, format!("{path}.bak")).unwrap_or_else(|e| fail(e));
+        std::fs::rename(path, format!("{path}.bak")).unwrap_or_else(|e| cannot(e));
     }
     let mut text = serde_json::to_string(&experiment::StreamHeader::new(spec, cells))
         .expect("header serializes");
@@ -294,14 +287,11 @@ fn open_stream(
         text.push_str(&serde_json::to_string(g).expect("a game result serializes"));
         text.push('\n');
     }
-    report::write_whole(path, &text).unwrap_or_else(|e| {
-        eprintln!("{e}");
-        exit(2)
-    });
+    report::write_whole(path, &text).unwrap_or_else(|e| fail(&e));
     let f = std::fs::OpenOptions::new()
         .append(true)
         .open(path)
-        .unwrap_or_else(|e| fail(e));
+        .unwrap_or_else(|e| cannot(e));
     std::io::BufWriter::new(f)
 }
 

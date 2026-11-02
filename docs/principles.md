@@ -113,7 +113,7 @@ real state; each decision inside them still scores on a guess, because scored on
 the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by printed cost.
 **One exception (053, D20):** no agent knows which Alignment cards a game dealt, rollouts
 included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
-a mean of guesses of the deal, never read from the table (`deals`, README *Agents*).
+a mean of guesses of the deal, never read from the table (`deals`, [agents.md](agents.md)).
 
 ## Dominance checks (a standing gate; Matt, 2026-10-29)
 
@@ -130,7 +130,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
   unnecessary. Fix it when the fix is a number or a content change; otherwise report
   the structural cause.
 - **Early stopping (040):** a spec's `gate` stops a check once its verdict is decided at
-  the stated noise (README, *Gate early-stopping*); a check that stays close runs to the cap.
+  the stated noise ([experiments.md](experiments.md), *Gate early-stopping*); a check that stays close runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
 | Check (since) | Spec | Policy |
@@ -166,13 +166,13 @@ could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise
 028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
 summarized by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
 rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate.json` (gate-068; gate-046 is retired): planner only, d2,
+current gate** is `experiments/gate.json` (gate-070; gate-046 is retired): planner only, d2,
 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit, summarized by
 `scripts/cards/screen.py --gate`. Its predecessors are
 `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
-`experiments/gate-exploit.json` (050) is its fast first read: the 13 checks that could still beat
-thinking, under the engine, capped at 32 seeds. It gives a direction; the full gate, under the
-planner, gives the verdict.
+`experiments/archive/gate-exploit.json` (050) was its fast first read: the 13 checks that could still beat
+thinking, under the engine, capped at 32 seeds. Today's binary refuses it, so no fast first read
+stands now; the full gate, under the planner, gives the verdict.
 
 ## Sanity checks (028)
 
@@ -195,4 +195,4 @@ short runs (`aic-sim experiment --quick`); deep-search agents stay in the code, 
 don't get run time until the rules settle.
 
 The agents (random, greedy, beam, rollout, engine, planner) and how each measure is computed are in the
-README (*Agents*, *Experiments*); `aic-sim experiment` writes them up as a cycle report.
+[agents.md](agents.md) and [experiments.md](experiments.md); `aic-sim experiment` writes them up as a cycle report.

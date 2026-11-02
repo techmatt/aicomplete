@@ -3,22 +3,14 @@
 use super::*;
 use crate::content::Op;
 use crate::modules::adversary;
-use crate::modules::common::{ambassador, presence, ADV_AMBASSADOR};
 
 /// A corrupted city with seat 0's presence on it, and an adjacent land hex.
 fn city(rules: &Rules, g: &mut GameState) -> (usize, usize) {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(g, h, ADV_CUBE, 1);
-    put(g, h, &presence(0), 1);
+    put(g, h, presence(0), 1);
     let n = rules.map.hexes[h].neighbors[0];
     (h, n)
-}
-
-/// Answers a hex choice, if it was asked (a single option is taken for you).
-pub(super) fn pick(rules: &Rules, g: &mut GameState, h: usize) {
-    if g.pending.is_some() {
-        answer_hex(rules, g, h);
-    }
 }
 
 /// Plays `card` for `seat` out of its deck, funded to afford it.
@@ -30,9 +22,7 @@ fn play_card(rules: &Rules, g: &mut GameState, seat: u8, card: &str) {
     }
     Arc::make_mut(g.piles.get_mut(format!("cards.hand.{seat}").as_str()).unwrap()).push(card.into());
     let s = seat as usize;
-    set_res(g, s, Resource::Credits, 30);
-    set_res(g, s, Resource::Insight, 5);
-    set_res(g, s, Resource::Antimatter, 2);
+    fund(g, s);
     rules
         .apply_mut(g, &Action::Play { seat, card: card.into() }, None)
         .unwrap();
@@ -93,10 +83,42 @@ fn clearing_a_city_takes_the_ones_the_player_picks() {
 fn a_corruption_takes_a_waiting_ambassador_with_it() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    put(&mut g, h, &ambassador(0), 1);
+    put(&mut g, h, ambassador(0), 1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
     set_res(&mut g, 0, Resource::Credits, 10);
     rules.apply_mut(&mut g, &std_act(0, "ambassador"), None).unwrap();
     assert_eq!(g.tokens(h, ADV_CUBE), 1);
-    assert_eq!(g.tokens(h, &ambassador(0)), 0);
+    assert_eq!(g.tokens(h, ambassador(0)), 0);
+}
+
+#[test]
+fn freeing_a_city_and_removing_a_node_sway_unity() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let city = m.numbered(0, piece(0).cities[0]);
+    put(&mut g, city, ADV_CUBE, 1);
+    put(&mut g, city, presence(0), 1);
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    set_res(&mut g, 0, Resource::Credits, 10);
+    rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
+    answer_hex(&rules, &mut g, city);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(city, ADV_CUBE), 0);
+    assert_eq!(g.var("alignment.unity"), 5);
+    // No standard action removes a node (019); the Decommission Unity card does.
+    put(&mut g, city, NODE, 1);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "node"), None).is_err());
+    with_cx(&rules, |cx| {
+        crate::modules::effects::run(
+            &mut g,
+            cx,
+            &[content::Op::RemoveNodes { count: 1 }],
+            &mut crate::modules::effects::Ctx::team(),
+        )
+    })
+    .unwrap();
+    assert_eq!(g.tokens(city, NODE), 0);
+    // Freeing a city sways 5 (034; 024: 4), removing a node 2 (the bucket tips
+    // only once an action or phase finishes, so it holds both here).
+    assert_eq!(g.var("alignment.unity"), 7);
 }

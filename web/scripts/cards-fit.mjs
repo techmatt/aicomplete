@@ -11,7 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { fitCards, inset, renderCard } from '../card/card.js';
+import { fitCards, frameOf, inset, renderCard } from '../card/card.js';
 import { REPO, exportCards } from './cards-export.mjs';
 import { openPage } from './cdp.mjs';
 
@@ -24,7 +24,7 @@ const players = data.cards.filter((c) => c.render);
 const layout = inset(data.layout);
 const frameUrl = (f) => pathToFileURL(join(REPO, 'art', 'frames', 'r3', `${f}.jpg`)).href;
 const face = (c) => {
-  const f = `${c.kind}-t${c.tier >= 2 ? 2 : 1}`;
+  const f = frameOf(c);
   return renderCard(c.render, layout, frameUrl(f), data.fits[f]);
 };
 

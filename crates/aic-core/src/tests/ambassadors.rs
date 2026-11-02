@@ -1,5 +1,6 @@
 use super::*;
-use crate::modules::{adversary, board};
+use crate::modules::common::{is_city, is_ocean};
+use crate::modules::{adversary, board, cards, economy};
 
 #[test]
 fn opposing_ambassadors_on_one_piece_cancel_without_unity() {
@@ -15,7 +16,7 @@ fn opposing_ambassadors_on_one_piece_cancel_without_unity() {
     assert_eq!(
         (
             g.tokens(city, ADV_AMBASSADOR),
-            g.tokens(city, &ambassador(0))
+            g.tokens(city, ambassador(0))
         ),
         (0, 0)
     );
@@ -24,13 +25,13 @@ fn opposing_ambassadors_on_one_piece_cancel_without_unity() {
 
     // An adversary ambassador arrives on a player one.
     let mut g = g0.clone();
-    put(&mut g, city, &ambassador(1), 1);
+    put(&mut g, city, ambassador(1), 1);
     let supply = g.var(SUPPLY);
     with_cx(&rules, |cx| adversary::place(&mut g, cx, city, 1));
     assert_eq!(
         (
             g.tokens(city, ADV_AMBASSADOR),
-            g.tokens(city, &ambassador(1))
+            g.tokens(city, ambassador(1))
         ),
         (0, 0)
     );
@@ -47,12 +48,12 @@ fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
     put(&mut g, neutral, STATION, 1);
     put(&mut g, corrupted, STATION, 1);
     put(&mut g, corrupted, ADV_CUBE, 1);
-    put(&mut g, neutral, &presence(0), 1);
+    put(&mut g, neutral, presence(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, neutral));
     assert_eq!(
         (
-            g.tokens(neutral, &cube(0)),
-            g.tokens(neutral, &ambassador(0))
+            g.tokens(neutral, cube(0)),
+            g.tokens(neutral, ambassador(0))
         ),
         (1, 0)
     );
@@ -62,8 +63,8 @@ fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
     });
     assert_eq!(
         (
-            g.tokens(corrupted, &cube(0)),
-            g.tokens(corrupted, &ambassador(0))
+            g.tokens(corrupted, cube(0)),
+            g.tokens(corrupted, ambassador(0))
         ),
         (0, 1)
     );
@@ -98,10 +99,10 @@ fn ambassadors_divert_bases_and_factories() {
 
     // A player ambassador on a base: no unit, 2 Unity, and it stays (068).
     let mut g = g0.clone();
-    put(&mut g, base, &ambassador(0), 1);
+    put(&mut g, base, ambassador(0), 1);
     run(&rules, &mut g);
     assert_eq!(
-        (g.tokens(base, UNIT), g.tokens(base, &ambassador(0))),
+        (g.tokens(base, UNIT), g.tokens(base, ambassador(0))),
         (1, 1)
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 2));
@@ -122,10 +123,10 @@ fn ambassadors_divert_bases_and_factories() {
 
     // A player ambassador on a factory: no unit, 1 Unity.
     let mut g = g0.clone();
-    put(&mut g, factory, &ambassador(1), 1);
+    put(&mut g, factory, ambassador(1), 1);
     run(&rules, &mut g);
     assert_eq!(
-        (g.tokens(factory, &ambassador(1)), g.tokens(base, UNIT)),
+        (g.tokens(factory, ambassador(1)), g.tokens(base, UNIT)),
         (1, 1)
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 1));
@@ -143,14 +144,14 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     // A corrupted city's energy goes to the adversary: 1 Discord a unit.
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
-    put(&mut g, open, &presence(0), 1);
+    put(&mut g, open, presence(0), 1);
     run(&rules, &mut g);
     assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (1, 0));
 
     // So does a clean city's with an adversary ambassador on it (which goes).
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 1);
-    put(&mut g, open, &presence(0), 1);
+    put(&mut g, open, presence(0), 1);
     run(&rules, &mut g);
     assert_eq!(
         (
@@ -165,7 +166,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     // next round and adds 1 compute to the cheapest project; it stays (068).
     let mut g = g0.clone();
     let d = m.numbered(0, piece(0).presence);
-    put(&mut g, d, &presence(0), 1);
+    put(&mut g, d, presence(0), 1);
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let made = g.var("adversary.compute");
     run(&rules, &mut g);
@@ -183,11 +184,11 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, ADV_AMBASSADOR, 1);
-    put(&mut g, city, &presence(0), 1);
+    put(&mut g, city, presence(0), 1);
     let station = m.numbered(0, piece(0).stations[0]);
     put(&mut g, station, STATION, 1);
     put(&mut g, station, ADV_AMBASSADOR, 1);
-    put(&mut g, station, &presence(1), 1);
+    put(&mut g, station, presence(1), 1);
     run(&rules, &mut g);
     assert_eq!(
         (
@@ -207,7 +208,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     for s in [s0, s1, neutral] {
         put(&mut g, s, STATION, 1);
     }
-    put(&mut g, s0, &cube(0), 1);
+    put(&mut g, s0, cube(0), 1);
     put(&mut g, s0, ADV_AMBASSADOR, 1);
     put(&mut g, s1, ADV_CUBE, 1);
     run(&rules, &mut g);
@@ -223,7 +224,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     assert_eq!(g.tokens(s0, ADV_AMBASSADOR), 0);
     let mut g = g0.clone();
     put(&mut g, s0, STATION, 1);
-    put(&mut g, s0, &cube(0), 1);
+    put(&mut g, s0, cube(0), 1);
     run(&rules, &mut g);
     assert_eq!((key(&g, 0, None), key(&g, 0, Some(0))), (0, 1));
 }
@@ -237,16 +238,16 @@ fn a_player_ambassador_absorbs_a_destruction() {
         assert!(g.hexes[h].tokens.is_empty());
     }
     put(&mut g, at, FACTORY, 1);
-    put(&mut g, at, &cube(0), 1);
+    put(&mut g, at, cube(0), 1);
     put(&mut g, at, TROOP, 1);
-    put(&mut g, at, &ambassador(0), 1);
+    put(&mut g, at, ambassador(0), 1);
     let discord = g.var("alignment.discord");
     // The ambassador absorbs the strike; the troop that struck is used up.
     run(&rules, &mut g);
     assert_eq!(
         (
             g.tokens(at, FACTORY),
-            g.tokens(at, &ambassador(0)),
+            g.tokens(at, ambassador(0)),
             g.tokens(at, TROOP)
         ),
         (1, 0, 0)
@@ -257,4 +258,43 @@ fn a_player_ambassador_absorbs_a_destruction() {
     run(&rules, &mut g);
     assert_eq!((g.tokens(at, FACTORY), g.tokens(at, TROOP)), (0, 0));
     assert_eq!(g.var("alignment.discord"), discord);
+}
+
+#[test]
+fn an_evicting_ambassador_stays() {
+    let (rules, mut g) = lab_actions();
+    let d = presence_of(&g, 0)[0];
+    put(&mut g, d, ADV_AMBASSADOR, 2);
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    act(&rules, &mut g, std_act(0, "remove"));
+    assert_eq!((g.tokens(d, ADV_AMBASSADOR), g.tokens(d, ambassador(0))), (0, 1));
+    assert_eq!(g.resource(0, Resource::Ambassadors), 0);
+}
+
+#[test]
+fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_takes_its_cube() {
+    let (rules, mut g) = lab(&["board.bases", "board.produce"]);
+    let w = rules.world();
+    let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
+    put(&mut g, z, FACTORY, 1);
+    put(&mut g, z, ambassador(0), 1);
+    let st = (0..g.hexes.len()).find(|&h| h != z && !is_city(&w, h) && !is_ocean(&w, h)).unwrap();
+    put(&mut g, st, STATION, 1);
+    put(&mut g, st, ADV_CUBE, 1);
+    put(&mut g, st, ambassador(1), 1);
+    let c = w.map.hexes[st].country as usize;
+    let adversary_cubes = g.var(&board::project_key(c, None));
+    run(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!((g.tokens(z, ambassador(0)), g.tokens(st, ambassador(1))), (1, 1));
+    assert_eq!(g.var(&board::project_key(c, Some(1))), w.int("board.station_cubes"));
+    assert_eq!(g.var(&board::project_key(c, None)), adversary_cubes);
+}
+
+#[test]
+fn income_can_print_ambassadors() {
+    let (rules, mut g) = lab_actions();
+    let w = rules.world();
+    set_pile(&mut g, &cards::built(0), &["orbital_embassy"]);
+    assert_eq!(economy::ambassador_income(&w, &g, 0), 1);
 }

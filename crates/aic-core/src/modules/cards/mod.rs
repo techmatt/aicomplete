@@ -18,7 +18,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{ai, alignment, economy, effects};
+use super::{adversary, ai, alignment, economy, effects};
 
 mod deck;
 mod play;
@@ -152,7 +152,7 @@ pub fn kept_key(seat: usize) -> String {
 }
 
 pub fn def<'w>(w: &World<'w>, id: &str) -> &'w CardDef {
-    &w.content.cards[w.content.card_index(id).expect("card in content")]
+    w.content.card(id)
 }
 
 #[derive(Debug)]
@@ -303,7 +303,7 @@ impl Module for Cards {
                     for id in g.pile(&packet(s)) {
                         out.push(Action::Draft {
                             seat,
-                            card: id.clone(),
+                            card: *id,
                         });
                     }
                 }
@@ -315,7 +315,7 @@ impl Module for Cards {
                     if free || g.resource(s, Resource::Credits) >= cr {
                         out.push(Action::Keep {
                             seat,
-                            card: id.clone(),
+                            card: *id,
                         });
                     }
                 }
@@ -325,7 +325,7 @@ impl Module for Cards {
                     if blocked(w, g, s, id).is_none() {
                         out.push(Action::Play {
                             seat,
-                            card: id.clone(),
+                            card: *id,
                         });
                     }
                 }
@@ -333,7 +333,7 @@ impl Module for Cards {
                     if def(w, id).ability.is_some() && ability_blocked(w, g, s, id).is_none() {
                         out.push(Action::Use {
                             seat,
-                            card: id.clone(),
+                            card: *id,
                         });
                     }
                 }
@@ -362,7 +362,7 @@ impl Module for Cards {
             Action::Tier { tier, .. } => self.take_tier(g, cx, s, *tier)?,
             Action::Draft { card, .. } => draft_pick(g, cx, s, card)?,
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
-            Action::Play { card, .. } => self.play(g, cx, s, card)?,
+            Action::Play { card, .. } => play_card(g, cx, s, card)?,
             Action::Use { card, .. } => use_ability(g, cx, s, card)?,
             _ => return Err(Halt::Illegal(format!("not a card action: {a:?}"))),
         }

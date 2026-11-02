@@ -1,5 +1,5 @@
-//! The game's closed word lists as Rust enums: resources, tags, token types
-//! and the Alignment sides. Content, actions and the state name them in JSON
+//! The game's closed word lists as Rust enums: resources, tags, threat source
+//! types, token types and the Alignment sides. Content, actions and the state name them in JSON
 //! by their snake_case word; everything else uses the enum, so a misspelled
 //! resource or tag can't compile (or load).
 
@@ -16,8 +16,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Resource {
-    /// Player ambassadors in the seat's supply (effects give them like a
-    /// resource; never a cost or an income).
+    /// Player ambassadors in the seat's supply (effects and `Op::Income` give
+    /// them like a resource and actions spend them; no card's cost prints them).
     Ambassadors,
     Antimatter,
     Chips,
@@ -74,7 +74,8 @@ impl Resource {
         RESOURCES.iter().position(|r| *r == self)
     }
 
-    /// One of the five [`RESOURCES`]: what costs and incomes may name.
+    /// One of the five [`RESOURCES`]: what printed costs and every income but
+    /// `Op::Income` may name.
     pub fn is_player(self) -> bool {
         self.index().is_some()
     }
@@ -151,12 +152,6 @@ impl ThreatSource {
     }
 }
 
-impl fmt::Display for ThreatSource {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.name())
-    }
-}
-
 /// Token types (021): tokens live only on cards that print their type.
 /// Datasets (Science), Followers (Diplomacy), Capital (Industry), Agents
 /// (Security); a Cyber type is still to come.
@@ -213,7 +208,7 @@ macro_rules! display_by_name {
         }
     )*};
 }
-display_by_name!(Resource, Tag, TokenKind, Side);
+display_by_name!(Resource, Tag, ThreatSource, TokenKind, Side);
 
 /// A tag cost on a power, or a `tags_from_hand` filter: a tag, or `"any"`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]

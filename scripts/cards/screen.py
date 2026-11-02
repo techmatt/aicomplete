@@ -1,14 +1,14 @@
 """The one screen summary: a table of named columns over `aic-sim experiment` outputs.
 
     python scripts/cards/screen.py DIR [DIR ...] --columns variant,d,agent,n,win [--sources]
-    python scripts/cards/screen.py DIR [DIR ...] --preset 041
+    python scripts/cards/screen.py DIR [DIR ...] --preset 041    # or tiers, 034, 028, 018, 016
     python scripts/cards/screen.py --gate DIR [DIR ...]
     python scripts/cards/screen.py --list
 
 Each DIR holds results.json and games.jsonl. Without --columns or --preset it prints preset
 041. --sources adds the presence lost by source. --gate prints each check's gap to its own
-agent (`x:...` against `x`), with games per check if results.json has a "gate" key. --list
-prints the columns and presets. Columns on a counter no game has warn on stderr: that 0 is
+agent (`x:...` against `x`), with games per check if results.json has a "gate" key, then the
+unspent readout (what each seat held after its last action phase). --list prints the columns and presets. Columns on a counter no game has warn on stderr: that 0 is
 not a measurement.
 """
 import argparse
@@ -23,20 +23,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import screens as s  # noqa: E402
 from screens import ROUND, avg, cnt, hist, mean  # noqa: E402
 
-CONTENT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'content')
 
-
-@functools.lru_cache(maxsize=None)
 def ais():
-    with open(os.path.join(CONTENT, 'ais.json'), encoding='utf-8') as f:
-        return json.load(f)
+    return s.content('ais')
 
 
 @functools.lru_cache(maxsize=None)
 def tiers():
     """Each player card's tier."""
-    with open(os.path.join(CONTENT, 'cards.json'), encoding='utf-8') as f:
-        return {c['id']: c['tier'] for c in json.load(f)}
+    return {c['id']: c['tier'] for c in s.content('cards')}
 
 
 def tokens():

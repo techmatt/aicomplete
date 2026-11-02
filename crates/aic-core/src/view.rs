@@ -216,9 +216,6 @@ pub struct InnateView {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct TrackView {
     pub label: String,
-    /// What the track's value is an amount of (a resource), if anything.
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub resource: String,
     pub steps: Vec<TrackStep>,
     /// How many steps, from the left, are uncovered.
     pub uncovered: usize,
@@ -324,12 +321,12 @@ impl ViewOut<'_> {
         }
     }
 
-    /// Publishes a piece's heading (an arrow from hex `from` to hex `to`).
     /// A face-up threat's sources, for the map (070).
     pub fn threat_source(&mut self, t: ThreatSourceView) {
         self.view.threat_sources.push(t);
     }
 
+    /// Publishes a piece's heading (an arrow from hex `from` to hex `to`).
     pub fn arrow(&mut self, kind: &str, from: usize, to: usize, count: i64, rounds: i64, doc: &str) {
         self.view.arrows.push(ArrowView {
             kind: kind.to_string(),

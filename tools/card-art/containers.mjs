@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { ART, CARD, IMAGE_PREAMBLE, ORIGINALS, TOOL, readJson, runCodex } from './lib.mjs';
+import { CARD, FRAMES, IMAGE_PREAMBLE, ORIGINALS, TOOL, readJson, runCodex } from './lib.mjs';
 
 const p = await readJson(path.join(TOOL, 'prompts.json'));
 const origDir = path.join(ORIGINALS, 'card-frames-r3');
@@ -18,7 +18,7 @@ await mkdir(origDir, { recursive: true });
 if (process.argv.includes('--draw')) {
   const run = await runCodex(
     [...IMAGE_PREAMBLE, 'Image shape: landscape, 3:2.', '', p.containers].join('\n'),
-    path.join(ART, 'frames', 'r3', 'master.jpg'),
+    path.join(FRAMES, 'master.jpg'),
   );
   if (!run.image) throw new Error(`containers: no image. ${run.limit ?? run.message ?? ''}`);
   await copyFile(run.image, sheet);

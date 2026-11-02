@@ -8,14 +8,13 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openPage, sleep } from './cdp.mjs';
+import { openPage, sleep, viewerUrl as url } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const opt = (n) => args.flatMap((a, i) => (args[i - 1] === n ? [a] : []))[0];
 const seeds = Number(opt('--seeds') ?? 2);
 const only = opt('--only');
-const url = process.env.AIC_URL ?? 'http://localhost:5173/';
 const out = join(resolve(process.env.AIC_SWEEP_OUT ?? join(web, 'sweep-out')), 'odd');
 mkdirSync(out, { recursive: true });
 

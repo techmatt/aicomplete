@@ -144,6 +144,8 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
         .find(|(l, _)| sums.iter().any(|s| s.agent == **l && strongest(s)))
     {
         // Every dealt card is drafted by someone, so keeping is the choice.
+        // `kept` counts the opening deal and `offered` does not, so this reads
+        // high for a card the deal hands out, and the thresholds are rough.
         let rate = |n: &CardCounts| {
             if n.offered >= 10 {
                 Some(n.kept as f64 / n.offered as f64)
@@ -166,7 +168,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
         dead.sort();
         must.sort();
         f.push(format!(
-            "Cards ({}, offered at least 10 times): kept under 10% of the time: {}; over 90%: {}.",
+            "Cards ({}, offered at least 10 times): keeps per offer (opening deal included) under 10%: {}; over 90%: {}.",
             top.0,
             if dead.is_empty() {
                 "none".into()
@@ -180,12 +182,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
             }
         ));
     }
-    let lw: Vec<f64> = run
-        .groups
-        .iter()
-        .filter_map(|g| g.luck_survival.map(|v| v[0]))
-        .collect();
-    if let Some(l) = mean(lw.iter().copied()) {
+    if let Some(l) = mean(run.groups.iter().filter_map(|g| g.luck_survival.map(|v| v[0]))) {
         f.push(format!("Luck share of survival (seed's share of the variance): {} on average across groups (target: most variance from decisions).", pct(l)));
     }
     if run.spec.winprob.games > 0 {

@@ -1,8 +1,9 @@
 //! American English everywhere (docs/card-guidelines.md): `aic-sim docs --check`, so the
 //! fast lane, refuses a British spelling in what the repo says. A stem matches inside
-//! identifiers too (`kind_colour`), any case. `tools/` is not read: its scene ids are file
-//! stems in the shared art store, and `experiments/results/` is a record of its day. It
-//! is a list, not a dictionary: a word outside it passes.
+//! identifiers too (`kind_colour`), any case. `tools/` is not read but for the card-art
+//! README: its scene ids are file stems in the shared art store. `experiments/results/`
+//! is a record of its day. `scripts/`, `crates/*/tests` and `web/scripts` are not read
+//! either. It is a list, not a dictionary: a word outside it passes.
 
 use std::fs;
 use std::path::Path;
@@ -26,9 +27,11 @@ const BRITISH: &[&str] = &[
 ];
 
 /// Where the repo speaks to a reader: paths from its root.
-const ROOTS: [&str; 13] = [
+const ROOTS: [&str; 15] = [
     "CLAUDE.md",
     "README.md",
+    "web/README.md",
+    "tools/card-art/README.md",
     "content",
     "docs",
     "configs",

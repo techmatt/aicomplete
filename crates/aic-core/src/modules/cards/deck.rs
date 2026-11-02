@@ -27,7 +27,7 @@ pub fn draw(g: &mut GameState, cx: &mut Cx, seat: usize, n: i64) -> Res {
 }
 
 /// The top card of a tier's deck, reshuffling its discards if it is empty.
-pub(super) fn top_of(g: &mut GameState, cx: &mut Cx, tier: u8) -> Option<Key> {
+fn top_of(g: &mut GameState, cx: &mut Cx, tier: u8) -> Option<Key> {
     if g.pile(&deck(tier)).is_empty() {
         let mut cards = g.pile(&discard_pile(tier)).to_vec();
         if cards.is_empty() {

@@ -9,7 +9,7 @@
 // plain counters.
 
 import type { HexView, Token, View } from './engine';
-import { ADVERSARY_COLOR, contentIds, hexKey, kindFill, strong, tokenColor } from './format';
+import { ADVERSARY_COLOR, contentIds, countryName, hexKey, kindFill, strong, tokenColor } from './format';
 
 const SQRT3 = Math.sqrt(3);
 const NS = 'http://www.w3.org/2000/svg';
@@ -209,7 +209,7 @@ function frontLinks(view: View, pts: number[][]): SVGElement[] {
  */
 function arrowLayer(view: View, pts: number[][]): SVGElement {
   const layer = el('g', { class: 'arrows' });
-  for (const a of view.arrows ?? []) {
+  for (const a of view.arrows) {
     // From the troop (low on its hex, where the adversary's row sits) toward the
     // target's center, stopping short of it; the head follows the drawn shaft.
     const [ax, ay] = [pts[a.from][0], pts[a.from][1] + 0.3];
@@ -311,7 +311,7 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
     const cy = cp.reduce((s, p) => s + p[1], 0) / cp.length;
     const g = el('g', { class: 'country-label', 'data-country': c.index });
     // The piece's printed name, a word per line, centered on the piece.
-    const words = (c.name || `C${c.index}`).split(/\s+/);
+    const words = countryName(view, c.index).split(/\s+/);
     words.forEach((w, i) => {
       const dy = (i - (words.length - 1) / 2) * 0.62;
       g.append(el('text', { x: f(cx), y: f(cy + dy), fill: strong(c.color) }, w));

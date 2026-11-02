@@ -39,8 +39,9 @@ const FILES: [&str; 7] = [
     PROJECTS_JSON,
 ];
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+/// Built only by [`Content::parse`], which fills the indexes: it serializes
+/// for clients but is never read back whole.
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Content {
     pub map: MapContent,
     pub cards: Vec<CardDef>,
@@ -468,19 +469,14 @@ impl CardDef {
     }
 
     /// Prints standing income: a passive that pays a resource every round
-    /// while the card stands, flat, per tag or if-tags.
+    /// while the card stands, flat or per tag.
     pub fn pays_income(&self) -> bool {
-        self.passives.iter().any(|o| {
-            matches!(
-                o,
-                Op::Income { .. } | Op::IncomePerTag { .. }
-            )
-        })
+        self.passives.iter().any(|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. }))
     }
 }
 
 impl Content {
-    pub fn parse(files: [&str; 7]) -> Result<Content, String> {
+    pub fn parse(files: [&str; FILES.len()]) -> Result<Content, String> {
         let [map, cards, threats, adversary, ais, alignment, projects] = files;
         fn p<T: for<'de> Deserialize<'de>>(name: &str, s: &str) -> Result<T, String> {
             serde_json::from_str(s).map_err(|e| format!("content/{name}: {e}"))
@@ -564,21 +560,18 @@ impl Content {
     }
 
     fn check_ai_board(&self, b: &AiBoard) -> Result<(), String> {
+        let what = format!("AI board {:?}", b.id);
         if b.presence.is_empty() {
-            return Err(format!("AI board {:?}: a presence track", b.id));
+            return Err(format!("{what}: needs a presence track"));
         }
         for c in &b.cards {
             match self.card_index(c) {
                 Some(i) if self.cards[i].unique.as_deref() == Some(b.id.as_str()) => {}
                 _ => {
-                    return Err(format!(
-                        "AI board {:?}: {c:?} is not a card unique to it",
-                        b.id
-                    ))
+                    return Err(format!("{what}: {c:?} is not a card unique to it"))
                 }
             }
         }
-        let what = format!("AI board {:?}", b.id);
         for (r, _) in b
             .income
             .iter()
@@ -613,6 +606,7 @@ impl Content {
         for u in b.presence.iter().chain(&b.presence2) {
             if let Some(c) = &u.capstone {
                 check_ops(&c.passives, Slot::Standing, &what)?;
+                innate_only(&c.passives, &what)?;
             }
         }
         Ok(())
@@ -664,13 +658,34 @@ impl Content {
         self.adversary_ix.get(id).copied()
     }
 
+    /// The card `id`, which must be in content; the same for the four below.
+    pub fn card(&self, id: &str) -> &CardDef {
+        &self.cards[self.card_index(id).expect("card in content")]
+    }
+
+    pub fn threat(&self, id: &str) -> &ThreatDef {
+        &self.threats[self.threat_index(id).expect("threat in content")]
+    }
+
+    pub fn project(&self, id: &str) -> &ProjectCard {
+        &self.projects[self.project_index(id).expect("project in content")]
+    }
+
+    pub fn alignment_card(&self, id: &str) -> &AlignmentCard {
+        &self.alignment[self.alignment_index(id).expect("alignment card in content")]
+    }
+
+    pub fn adversary_card(&self, id: &str) -> &AdversaryCard {
+        &self.adversary[self.adversary_index(id).expect("adversary card in content")]
+    }
+
     pub fn layout(&self, countries: u8) -> Option<&LayoutDef> {
         self.map.layouts.iter().find(|l| l.countries == countries)
     }
-
 }
 
-/// A cost or income must name a player resource.
+/// A printed cost or a track's income must name a player resource (only
+/// `Op::Income` may also print ambassadors, through [`seat_resource`]).
 fn resource(r: &Resource, what: &str) -> Result<(), String> {
     if r.is_player() {
         Ok(())
@@ -689,6 +704,15 @@ fn seat_resource(r: &Resource, what: &str) -> Result<(), String> {
     }
 }
 
+/// 068: only an innate may hold `Wall`: nothing else is read for it, so
+/// anywhere else it would print and do nothing.
+fn innate_only(passives: &[Op], what: &str) -> Result<(), String> {
+    if passives.iter().any(|o| matches!(o, Op::Wall)) {
+        return Err(format!("{what}: Wall goes on an AI board's innate only"));
+    }
+    Ok(())
+}
+
 /// Whether `op` does a job only Science cards print (046): a shield, a threat
 /// delay or marker clearing.
 fn science_niche(op: &Op) -> bool {
@@ -699,11 +723,12 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     let what = format!("card {:?}", c.id);
     check_ops(&c.effects, Slot::Player, &what)?;
     check_ops(&c.passives, Slot::Standing, &what)?;
+    innate_only(&c.passives, &what)?;
     if let Some(a) = &c.ability {
         check_ops(&a.effects, Slot::Player, &what)?;
     }
     if c.tags.is_empty() || c.tags.len() > 3 {
-        return Err(format!("card {:?}: 1-3 tags", c.id));
+        return Err(format!("{what}: 1-3 tags"));
     }
     let niche = c.effects.iter().chain(c.ability.iter().flat_map(|a| &a.effects)).any(science_niche);
     if niche && !c.tags.contains(&Tag::Science) {
@@ -713,10 +738,7 @@ fn check_card(c: &CardDef) -> Result<(), String> {
         return Err(format!("{what}: a Science niche card needs no Science tag, to stay open to a seat without them"));
     }
     if !c.is_building() && !c.passives.is_empty() {
-        return Err(format!(
-            "card {:?}: only buildings have passives",
-            c.id
-        ));
+        return Err(format!("{what}: only buildings have passives"));
     }
     if !c.text.is_empty() {
         return Err(format!("{what}: card text is generated from its ops, not written"));
@@ -727,13 +749,10 @@ fn check_card(c: &CardDef) -> Result<(), String> {
         ));
     }
     if c.replaces.is_some() && !c.is_building() {
-        return Err(format!("card {:?}: only a building replaces one", c.id));
+        return Err(format!("{what}: only a building replaces one"));
     }
     if c.tier > 2 || (c.tier == 0) != c.unique.is_some() {
-        return Err(format!(
-            "card {:?}: tier 0 exactly for unique cards, else 1 or 2",
-            c.id
-        ));
+        return Err(format!("{what}: tier 0 exactly for unique cards, else 1 or 2"));
     }
     for (r, _) in &c.lowers {
         resource(r, &what)?;
@@ -934,11 +953,10 @@ pub fn is_overlay_key(key: &str) -> bool {
 fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), String> {
     use serde_json::Value;
     let fail = |why: String| format!("content overlay {entry:?}: {why}");
-    let (key, value) = entry
-        .split_once('=')
-        .ok_or_else(|| fail("expected <table>.<id>.<path>=<value>".into()))?;
+    let shape = || fail("expected <table>.<id>.<path>=<value>".into());
+    let (key, value) = entry.split_once('=').ok_or_else(shape)?;
     if !is_overlay_key(key.trim()) {
-        return Err(fail("expected <table>.<id>.<path>=<value>".into()));
+        return Err(shape());
     }
     let mut parts = key.trim().split('.');
     let (table, id) = (parts.next().unwrap_or(""), parts.next().unwrap_or(""));
@@ -949,7 +967,7 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
     let value = value.trim();
     let value: Value =
         serde_json::from_str(value).unwrap_or_else(|_| Value::String(value.to_string()));
-    let ix = OVERLAY_TABLES.iter().find(|(t, _)| *t == table).map_or(0, |t| t.1);
+    let ix = OVERLAY_TABLES.iter().find(|(t, _)| *t == table).expect("is_overlay_key: a table").1;
     let rows = files[ix].as_array_mut().ok_or_else(|| fail("not a list".into()))?;
     let mut hit = false;
     for row in rows {
@@ -1008,7 +1026,7 @@ pub fn overlaid(entries: &[String]) -> Result<(&'static Content, &'static str), 
         apply_entry(&mut files, e)?;
     }
     let text: Vec<String> = files.iter().map(ToString::to_string).collect();
-    let refs: [&str; 7] = std::array::from_fn(|i| text[i].as_str());
+    let refs: [&str; FILES.len()] = std::array::from_fn(|i| text[i].as_str());
     let c = Content::parse(refs).map_err(|e| format!("content overlay {entries:?}: {e}"))?;
     let hash = format!("{:016x}", fnv1a64(format!("{base}\0{}", entries.join("\0")).as_bytes()));
     let b: Built = (Box::leak(Box::new(c)), Box::leak(hash.into_boxed_str()));

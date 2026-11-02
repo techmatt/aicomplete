@@ -281,12 +281,6 @@ pub enum Op {
     },
 
     // ---------- instant: threats and the team ----------
-    /// `count` adversary ambassadors from the supply, each onto a piece of
-    /// kind `at` in scope (players choose each).
-    Ambassadors {
-        at: Spot,
-        count: i64,
-    },
     /// `count` adversary troops, each onto a factory in scope (players
     /// choose), or with no factory onto a city. With `each_country` (team
     /// cards), `count` in each country instead of `count` in all.
@@ -331,6 +325,12 @@ pub enum Op {
     AdversaryBuild,
 
     // ---------- instant: threats ----------
+    /// `count` adversary ambassadors from the supply, each onto a piece of
+    /// kind `at` in scope (players choose each).
+    Ambassadors {
+        at: Spot,
+        count: i64,
+    },
     /// Each player in scope loses a presence in scope, or pays `amount`
     /// `resource` (their choice). Losing it needs 2 or more presence on the
     /// board, so this never takes a last presence (027).
@@ -462,6 +462,8 @@ pub enum Op {
     /// where you have a presence.
     CivicShelter,
     /// Adversary troops can't enter a hex holding your presence (068: Wall).
+    /// An AI board's innate only: `board::walled` reads nothing else, and
+    /// `Content::check` refuses it on a card or a capstone.
     Wall,
     /// While you have this building, cards discarded from hand that carry
     /// `tag` (or any tag, `"any"`) count as those tags for AI-board powers (021).

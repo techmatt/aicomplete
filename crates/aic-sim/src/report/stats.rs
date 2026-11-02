@@ -10,6 +10,13 @@ use aic_core::content::{CardDef, Content};
 use crate::agents::AgentSpec;
 use crate::experiment::{CardCounts, Cell, GameResult, Spec};
 
+/// The standard error of a paired difference `gap` in win rate over `n` seeds,
+/// `split` of them won by one side only.
+pub fn paired_se(split: f64, gap: f64, n: f64) -> f64 {
+    let var = (split - n * gap * gap) / (n - 1.0).max(1.0);
+    (var.max(0.0) / n).sqrt()
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct CellSummary {
     pub cell: usize,
@@ -276,12 +283,7 @@ fn paired_on(games: &[GameResult], a: usize, b: usize, keep: impl Fn(u64) -> boo
     }
     let nf = n.max(1) as f64;
     let diff = (oa as f64 - ob as f64) / nf;
-    let se = if n > 1 {
-        let var = ((oa + ob) as f64 - nf * diff * diff) / (nf - 1.0);
-        (var.max(0.0) / nf).sqrt()
-    } else {
-        0.0
-    };
+    let se = paired_se((oa + ob) as f64, diff, nf);
     Paired {
         games: n,
         a_win_rate: (both + oa) as f64 / nf,
@@ -695,6 +697,7 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
             let ms: f64 = gs.iter().map(|g| g.ms).sum();
             let played: Vec<[u32; 3]> = gs.iter().map(|g| plays(g, c.rules.world().content)).collect();
             let per_game = |k: usize| played.iter().map(|p| p[k] as f64).sum::<f64>() / n;
+            let avg = |f: &dyn Fn(&GameResult) -> f64| gs.iter().map(|g| f(g)).sum::<f64>() / n;
             CellSummary {
                 cell: ci,
                 config: c.config_path.clone(),
@@ -728,10 +731,10 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                     .flat_map(|g| g.adversary_ops.iter().copied())
                     .max()
                     .unwrap_or(0),
-                setup_ops: gs.iter().map(|g| g.setup_ops as f64).sum::<f64>() / n,
-                gives_per_game: gs.iter().map(|g| g.gives as f64).sum::<f64>() / n,
-                pays_per_game: gs.iter().map(|g| g.pays as f64).sum::<f64>() / n,
-                withdraws_per_game: gs.iter().map(|g| g.withdraws as f64).sum::<f64>() / n,
+                setup_ops: avg(&|g| g.setup_ops as f64),
+                gives_per_game: avg(&|g| g.gives as f64),
+                pays_per_game: avg(&|g| g.pays as f64),
+                withdraws_per_game: avg(&|g| g.withdraws as f64),
                 threats_dealt_per_game: dealt,
                 threats_countered_per_game: countered,
                 countered_share: if dealt > 0.0 { countered / dealt } else { 0.0 },
@@ -768,16 +771,8 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                 cards_played_per_game: per_game(0),
                 buildings_played_per_game: per_game(1),
                 tier2_played_per_game: per_game(2),
-                buildings_standing_per_game: gs
-                    .iter()
-                    .map(|g| standing(&g.build) as f64)
-                    .sum::<f64>()
-                    / n,
-                economy_buildings_standing_per_game: gs
-                    .iter()
-                    .map(|g| economy_standing(&g.build, c.rules.world().content) as f64)
-                    .sum::<f64>()
-                    / n,
+                buildings_standing_per_game: avg(&|g| standing(&g.build) as f64),
+                economy_buildings_standing_per_game: avg(&|g| economy_standing(&g.build, c.rules.world().content) as f64),
                 wins_2plus_buildings_played: mean(
                     gs.iter()
                         .zip(&played)
@@ -789,10 +784,10 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                 ),
                 ms_per_game: ms / n,
                 ms_per_decision: ms / decisions.max(1) as f64,
-                agent_ms_per_game: gs.iter().map(|g| g.agent_ms).sum::<f64>() / n,
+                agent_ms_per_game: avg(&|g| g.agent_ms),
                 agent_ms_per_decision: gs.iter().map(|g| g.agent_ms).sum::<f64>()
                     / decisions.max(1) as f64,
-                probe_ms_per_game: gs.iter().map(|g| g.probe_ms).sum::<f64>() / n,
+                probe_ms_per_game: avg(&|g| g.probe_ms),
                 replay_ok: gs.iter().filter(|g| g.replay_ok).count(),
             }
         })
@@ -1066,6 +1061,7 @@ mod tests {
         // Income, income per tag; a slots-only and a token building.
         let sig = "a:turnkey_factory+citation_engine+modular_expansion|b:telemetry_archive+";
         assert_eq!(standing(sig), 4);
+        assert_eq!(standing("builder:a+b|protector:"), 2);
         let c = aic_core::content();
         assert_eq!(economy_standing(sig, c), 2);
         assert_eq!(economy_standing("a:|b:", c), 0);
@@ -1093,6 +1089,5 @@ mod tests {
         // Not a pure removal: other numbers change too.
         assert!(switched_off(&set(&["alignment.variant=off", "x.y=2"])).is_empty());
         assert!(switched_off(&set(&["threats.variant=shared_row"])).is_empty());
-        assert_eq!(standing("builder:a+b|protector:"), 2);
     }
 }

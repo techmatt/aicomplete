@@ -39,7 +39,7 @@ pub fn run(o: &Options) {
         let outside: Vec<String> = o
             .save_seeds
             .iter()
-            .filter(|&&s| s < o.seed || s > o.last_seed())
+            .filter(|&&s| !o.in_range(s))
             .map(|s| s.to_string())
             .collect();
         if !outside.is_empty() {
@@ -146,6 +146,9 @@ fn describe(outcome: Option<&Outcome>, actions: usize) -> String {
     }
 }
 
+/// The `--save-when` words that are no end reason: [`when_match`] reads them.
+const SELECTORS: [&str; 4] = ["all", "win", "loss", "timeout"];
+
 /// Which `--save-when` selector a game matches first, if any.
 fn when_match<'a>(when: &'a [String], outcome: Option<&Outcome>) -> Option<&'a String> {
     when.iter().find(|w| match (w.as_str(), outcome) {
@@ -161,8 +164,7 @@ fn when_match<'a>(when: &'a [String], outcome: Option<&Outcome>) -> Option<&'a S
 /// Writes one side's records into `dir`; exits 2 on any failure.
 fn write_records(dir: &str, side: &Summary, saved: &[SavedGame]) -> Vec<String> {
     let fail = |what: &str, e: std::io::Error| -> ! {
-        eprintln!("--save {dir}: cannot write {what}: {e}");
-        exit(2)
+        crate::cli::fail(&format!("--save {dir}: cannot write {what}: {e}"))
     };
     std::fs::create_dir_all(dir).unwrap_or_else(|e| fail("the directory", e));
     let stem = file_stem(&side.name);
@@ -361,7 +363,7 @@ fn play_seed(
 /// Plays every seed on `--threads` workers, each a run of consecutive seeds.
 fn play_seeds(r: &Rules, rebuilt: &Rules, o: &Options, notes: (&str, &str)) -> (Vec<Played>, Vec<Kept>) {
     let seeds: Vec<u64> = (o.seed..=o.last_seed()).collect();
-    let chunk = seeds.len().div_ceil(o.threads.max(1)).max(1);
+    let chunk = seeds.len().div_ceil(o.threads);
     std::thread::scope(|s| {
         let handles: Vec<_> = seeds
             .chunks(chunk)
@@ -411,12 +413,13 @@ fn warn_unmatched_when(o: &Options, label: &str, played: &[Played]) {
         .filter_map(|p| p.record.outcome.as_ref().map(|o| o.reason.as_str()))
         .collect();
     for w in &o.save_when {
-        if !["all", "win", "loss", "timeout"].contains(&w.as_str()) && !reasons.contains(w.as_str())
+        if !SELECTORS.contains(&w.as_str()) && !reasons.contains(w.as_str())
         {
             let seen: Vec<&str> = reasons.iter().copied().collect();
             eprintln!(
                 // 020: said "known:", as if a reason no game met (unity_deck, deck_empty) were unknown.
-                "warning: --save-when {w:?} matched no game ({label}); a typo? Selectors: all, win, loss, timeout, or an end reason; these games ended by: {}",
+                "warning: --save-when {w:?} matched no game ({label}); a typo? Selectors: {}, or an end reason; these games ended by: {}",
+                SELECTORS.join(", "),
                 seen.join(", ")
             );
         }
@@ -432,7 +435,7 @@ fn save_report(o: &Options, matched: u64) -> SaveReport {
         seeds: o
             .save_seeds
             .iter()
-            .filter(|&&s| s >= o.seed && s <= o.last_seed())
+            .filter(|&&s| o.in_range(s))
             .map(|s| s.to_string())
             .collect(),
         paths: Vec::new(),
@@ -449,7 +452,7 @@ fn summarize(
     elapsed: f64,
     saved: Option<SaveReport>,
 ) -> Summary {
-    let n = played.len().max(1) as f64;
+    let n = played.len() as f64;
     let wins = played
         .iter()
         .filter(|p| p.record.outcome.as_ref().is_some_and(|o| o.won))
@@ -511,7 +514,7 @@ fn summarize(
         overrides: overrides.into_iter().cloned().collect(),
         name: r.config.name.clone(),
         config_hash: r.config_hash.clone(),
-        content_hash: played[0].record.content_hash.clone(),
+        content_hash: r.content_hash.to_string(),
         engine_version: aic_core::VERSION.to_string(),
         config: (*r.config).clone(),
         games: played.len() as u64,

@@ -7,7 +7,7 @@ mod common;
 use std::path::{Path, PathBuf};
 
 use aic_core::SavedGame;
-use common::{fresh_dir, sim};
+use common::{assert_ok, fresh_dir, read_json, sim, spec_in};
 
 /// `aic-sim experiment <spec> --out <out> <extra>`.
 fn experiment(spec: &Path, out: &Path, extra: &[&str]) -> std::process::Output {
@@ -68,7 +68,7 @@ fn results_without_timing(dir: &Path) -> Vec<Vec<String>> {
 }
 
 /// Fast lane: the grid with random only and a closeness probe every fourth
-/// choice (2–4 s; greedy games are seconds each even optimized).
+/// choice (about 1 s; greedy games are seconds each even optimized).
 #[test]
 fn experiment_writes_report_and_records_random() {
     let body = SPEC
@@ -89,8 +89,7 @@ fn experiment_writes_report_and_records() {
 
 fn writes_report_and_records(dir: &str, body: &str, cells: usize) {
     let root = fresh_dir(dir, true);
-    let spec = root.join("spec.json");
-    std::fs::write(&spec, body).unwrap();
+    let spec = spec_in(&root, body);
     // Both runs at once: the one-thread run is the long one.
     let runs = std::thread::scope(|s| {
         ["1", "3"]
@@ -106,11 +105,7 @@ fn writes_report_and_records(dir: &str, body: &str, cells: usize) {
     });
     let mut outs = Vec::new();
     for (out, res) in runs {
-        assert!(
-            res.status.success(),
-            "experiment failed: {}",
-            String::from_utf8_lossy(&res.stderr)
-        );
+        assert_ok(&res);
         for f in ["report.md", "results.json", "games.csv", "cards.csv"] {
             assert!(out.join(f).exists(), "{f} missing");
         }
@@ -125,9 +120,7 @@ fn writes_report_and_records(dir: &str, body: &str, cells: usize) {
         ] {
             assert!(report.contains(section), "report lacks {section}");
         }
-        let results: serde_json::Value =
-            serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap())
-                .unwrap();
+        let results = read_json(out.join("results.json"));
         assert_eq!(results["cells"].as_array().unwrap().len(), cells);
         assert_eq!(results["format"], "aic-experiment/2");
         // 3 games per cell, one row each.
@@ -176,15 +169,10 @@ const VARIANT_SPEC: &str = r#"{
 #[test]
 fn experiment_reports_comparisons() {
     let root = fresh_dir("aic-sim-experiment-variants", true);
-    let spec = root.join("spec.json");
-    std::fs::write(&spec, VARIANT_SPEC).unwrap();
+    let spec = spec_in(&root, VARIANT_SPEC);
     let out = root.join("out");
     let res = experiment(&spec, &out, &[]);
-    assert!(
-        res.status.success(),
-        "experiment failed: {}",
-        String::from_utf8_lossy(&res.stderr)
-    );
+    assert_ok(&res);
     let report = std::fs::read_to_string(out.join("report.md")).unwrap();
     for section in [
         "## Strategy health",
@@ -199,8 +187,7 @@ fn experiment_reports_comparisons() {
     ] {
         assert!(report.contains(section), "report lacks {section}\n{report}");
     }
-    let results: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap()).unwrap();
+    let results = read_json(out.join("results.json"));
     // random against greedy, in each of the two variants.
     let h2h = results["head_to_head"].as_array().unwrap();
     assert_eq!(h2h.len(), 2);
@@ -224,21 +211,16 @@ fn experiment_reports_comparisons() {
 #[test]
 fn experiment_omits_comparisons_that_do_not_apply() {
     let root = fresh_dir("aic-sim-experiment-single", true);
-    let spec = root.join("spec.json");
     let body = VARIANT_SPEC
         .replace(
             r#"{"name": "threats_off", "set": ["threats.variant=off"]}"#,
             r#"{"name": "threats_on", "set": []}"#,
         )
         .replace(r#""random", "greedy""#, r#""random""#);
-    std::fs::write(&spec, body).unwrap();
+    let spec = spec_in(&root, body);
     let out = root.join("out");
     let res = experiment(&spec, &out, &[]);
-    assert!(
-        res.status.success(),
-        "{}",
-        String::from_utf8_lossy(&res.stderr)
-    );
+    assert_ok(&res);
     let report = std::fs::read_to_string(out.join("report.md")).unwrap();
     assert!(report.contains("## Strategy health"));
     assert!(report.contains("## Variants against the base"));
@@ -252,7 +234,6 @@ fn experiment_omits_comparisons_that_do_not_apply() {
 #[test]
 fn experiment_filters_variants_and_turns_probes_on() {
     let root = fresh_dir("aic-sim-experiment-two-stage", true);
-    let spec = root.join("spec.json");
     let body = r#"{
   "name": "two-stage",
   "configs": ["configs/baseline.json"],
@@ -266,20 +247,15 @@ fn experiment_filters_variants_and_turns_probes_on() {
   "winprob": {"games": 0, "rollouts": 1, "agent": "random"},
   "records": 0
 }"#;
-    std::fs::write(&spec, body).unwrap();
+    let spec = spec_in(&root, body);
     let out = root.join("out");
     let res = experiment(
         &spec,
         &out,
         &["--variants", "keep2", "--winprob", "1", "--closeness", "2"],
     );
-    assert!(
-        res.status.success(),
-        "{}",
-        String::from_utf8_lossy(&res.stderr)
-    );
-    let results: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap()).unwrap();
+    assert_ok(&res);
+    let results = read_json(out.join("results.json"));
     let names: Vec<&str> = results["spec"]["variants"]
         .as_array()
         .unwrap()
@@ -291,10 +267,8 @@ fn experiment_filters_variants_and_turns_probes_on() {
     assert_eq!(results["spec"]["closeness"]["every"], 2);
     // Without the flags the spec's defaults hold: both probes off.
     let res = experiment(&spec, &root.join("out2"), &[]);
-    assert!(res.status.success());
-    let results: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(root.join("out2/results.json")).unwrap())
-            .unwrap();
+    assert_ok(&res);
+    let results = read_json(root.join("out2/results.json"));
     assert_eq!(results["spec"]["winprob"]["games"], 0);
     assert_eq!(results["spec"]["closeness"]["every"], 0);
     let report = std::fs::read_to_string(root.join("out2/report.md")).unwrap();
@@ -343,15 +317,10 @@ const STREAM_SPEC: &str = r#"{
 #[test]
 fn experiment_streams_games_and_resumes() {
     let root = fresh_dir("aic-sim-experiment-stream", true);
-    let spec = root.join("spec.json");
-    std::fs::write(&spec, STREAM_SPEC).unwrap();
+    let spec = spec_in(&root, STREAM_SPEC);
     let whole = root.join("whole");
     let res = experiment(&spec, &whole, &[]);
-    assert!(
-        res.status.success(),
-        "{}",
-        String::from_utf8_lossy(&res.stderr)
-    );
+    assert_ok(&res);
     let stream = std::fs::read_to_string(whole.join("games.jsonl")).unwrap();
     let lines: Vec<&str> = stream.lines().collect();
     assert_eq!(lines.len(), 1 + 12, "a header, then one line per game");
@@ -375,8 +344,7 @@ fn experiment_streams_games_and_resumes() {
     assert_eq!(results_without_timing(&whole), results_without_timing(&cut));
     let resumed = std::fs::read_to_string(cut.join("games.jsonl")).unwrap();
     assert_eq!(resumed.lines().count(), 1 + 12);
-    let json: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(cut.join("results.json")).unwrap()).unwrap();
+    let json = read_json(cut.join("results.json"));
     assert_eq!(json["games_resumed"], 5);
     assert_eq!(json["games_played"], json["games_planned"]);
     assert!(!std::fs::read_to_string(cut.join("report.md"))
@@ -403,8 +371,7 @@ fn experiment_streams_games_and_resumes() {
     .unwrap();
     let edited = root.join("edited");
     assert!(experiment(&spec2, &edited, &[]).status.success());
-    let mut c: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(&cfg).unwrap()).unwrap();
+    let mut c = read_json(&cfg);
     c["countries"] = serde_json::json!(3);
     std::fs::write(&cfg, c.to_string()).unwrap();
     let res = experiment(&spec2, &edited, &["--resume"]);
@@ -424,7 +391,6 @@ fn experiment_streams_games_and_resumes() {
 #[test]
 fn experiment_quick_keeps_shallow_agents() {
     let root = fresh_dir("aic-sim-experiment-quick", true);
-    let spec = root.join("spec.json");
     let body = STREAM_SPEC
         .replace(
             r#""agents": ["random"]"#,
@@ -435,7 +401,7 @@ fn experiment_quick_keeps_shallow_agents() {
             r#""games": 40, "winprob": {"games": 2}, "closeness": {"every": 1}"#,
         )
         .replace(r#""difficulties": [0, 4]"#, r#""difficulties": [0]"#);
-    std::fs::write(&spec, body).unwrap();
+    let spec = spec_in(&root, body);
     let out = root.join("out");
     let res = experiment(&spec, &out, &["--quick"]);
     let err = String::from_utf8_lossy(&res.stderr);
@@ -444,8 +410,7 @@ fn experiment_quick_keeps_shallow_agents() {
         err.contains("dropped deep-search agents beam:width=2, greedy:samples=2, engine:width=2"),
         "{err}"
     );
-    let json: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap()).unwrap();
+    let json = read_json(out.join("results.json"));
     assert_eq!(json["spec"]["agents"], serde_json::json!(["random"]));
     assert_eq!(json["spec"]["games"], 16);
     assert_eq!(json["spec"]["winprob"]["games"], 0);
@@ -458,11 +423,10 @@ fn experiment_quick_keeps_shallow_agents() {
 #[ignore = "slow lane: greedy games, killed partway"]
 fn experiment_killed_partway_leaves_a_partial_report() {
     let root = fresh_dir("aic-sim-experiment-killed", true);
-    let spec = root.join("spec.json");
     let body = STREAM_SPEC
         .replace(r#""agents": ["random"]"#, r#""agents": ["greedy"]"#)
         .replace(r#""games": 6"#, r#""games": 200"#);
-    std::fs::write(&spec, body).unwrap();
+    let spec = spec_in(&root, body);
     let out = root.join("out");
     let mut child = sim()
         .arg("experiment")
@@ -505,15 +469,10 @@ fn experiment_killed_partway_leaves_a_partial_report() {
 #[test]
 fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     let dir = fresh_dir("panic-gate", true);
-    let spec = dir.join("spec.json");
-    std::fs::write(
-        &spec,
-        r#"{"name": "panic-gate", "configs": ["configs/baseline.json"], "difficulties": [2],
+    let spec = spec_in(&dir, r#"{"name": "panic-gate", "configs": ["configs/baseline.json"], "difficulties": [2],
             "agents": ["greedy", "greedy:no_counters=1"], "games": 4, "first_seed": 50, "records": 0,
             "gate": {"z": 2.0, "min_games": 2, "every": 2},
-            "inject_panic": {"cell": 1, "seed": 51}}"#,
-    )
-    .unwrap();
+            "inject_panic": {"cell": 1, "seed": 51}}"#);
     let out = dir.join("out");
     let run = experiment(&spec, &out, &["--threads", "1"]);
     let stderr = String::from_utf8_lossy(&run.stderr);
@@ -531,8 +490,7 @@ fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     assert!(report.contains("## Failed games"), "{report}");
     assert!(report.contains("1 game(s) panicked, see *Failed games*"), "{report}");
     assert!(!report.contains("**Partial: "), "a finished run isn't partial: {report}");
-    let results: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(out.join("results.json")).unwrap()).unwrap();
+    let results = read_json(out.join("results.json"));
     assert_eq!(results["games_failed"].as_array().unwrap().len(), 1);
     assert_eq!(results["gate"]["finished"], true);
     assert_eq!(results["gate"]["passes"], false);

@@ -1,13 +1,27 @@
 // A headless Edge or Chrome page driven over the DevTools protocol, with no extra npm
-// packages. Shared by scripts/e2e.mjs, sweep.mjs, odd.mjs and the scripts/shots-*.mjs.
+// packages. Shared by every browser script here: e2e, e2e-sources, sweep, odd, cards-check,
+// cards-fit and the shots-*.
 //   AIC_BROWSER browser executable (default: Edge, then Chrome, at their usual paths)
+//   AIC_URL     the viewer the scripts drive (default http://localhost:5173/)
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export const viewerUrl = process.env.AIC_URL ?? 'http://localhost:5173/';
+
+/** `check(ok, what)` prints a line and counts a failure; `failed()` says how many so far. */
+export function checker() {
+  let failures = 0;
+  const check = (ok, what) => {
+    console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`);
+    if (!ok) failures++;
+  };
+  return { check, failed: () => failures };
+}
 
 /** Starts a game through the viewer's New game form and waits for it. */
 export async function newGame(page, file, seed) {
@@ -20,6 +34,15 @@ export async function newGame(page, file, seed) {
 export async function shotTo(page, dir, name) {
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 });
   writeFileSync(join(dir, `${name}.png`), await page.shot());
+}
+
+/** A shots script's page: `shot(name)` saves into the AIC_SHOTS folder. */
+export async function shotsPage() {
+  const dir = process.env.AIC_SHOTS;
+  if (!dir) throw new Error('set AIC_SHOTS to the folder for the screenshots');
+  mkdirSync(dir, { recursive: true });
+  const page = await openPage();
+  return { page, shot: (name) => shotTo(page, dir, name) };
 }
 
 function browserPath() {

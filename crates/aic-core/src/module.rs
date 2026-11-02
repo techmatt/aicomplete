@@ -16,17 +16,17 @@ use crate::event::Event;
 use crate::key::{FastMap, Key, KeyBuf};
 use crate::map::Map;
 use crate::rng::Stream;
-use crate::vocab::Resource;
 use crate::state::{Ask, AskKind, GameState, Opt, Outcome, Pick};
 use crate::view::ViewOut;
+use crate::vocab::Resource;
 
 /// A module: an id, a one-line summary and its variants. Registered in
 /// `modules::REGISTRY`.
 pub struct ModuleDef {
     pub id: &'static str,
     pub summary: &'static str,
-    /// Modules whose parameters this one reads (through [`World::int`]);
-    /// a config without them is rejected.
+    /// Modules this one reaches into (parameters through [`World::int`],
+    /// tracks, piles); a config without them is rejected.
     pub requires: &'static [&'static str],
     pub variants: &'static [VariantDef],
 }
@@ -166,7 +166,7 @@ pub type Res<T = ()> = Result<T, Halt>;
 /// Behavior of a built module. Phase arguments are indices into the
 /// variant's `phases`. Every method is deterministic: randomness only via
 /// [`Cx::rng`], and only from purposes the variant declared, or
-/// [`Cx::deck_rng`] for a card deck's reshuffle.
+/// [`Cx::deck_rng`] and [`Cx::threat_rng`] for a deck's reshuffle.
 ///
 /// `run`, `act` and `after` may stop for a choice (`Cx::choose` returning
 /// `Err(Halt::Ask)`, passed on with `?`). They are then run again from the
@@ -254,7 +254,6 @@ impl World<'_> {
             None => panic!("parameter {key} is not configured"),
         }
     }
-
 }
 
 /// The answers given so far while resolving one phase or action, and the
@@ -337,7 +336,7 @@ impl<'a> Cx<'a> {
             _ => {}
         }
         let ch = &mut *self.choices;
-        if ch.used < ch.made.len() {
+        if ch.replaying() {
             let p = &ch.made[ch.used];
             let i = options
                 .iter()
@@ -416,10 +415,7 @@ impl<'a> Cx<'a> {
 
     /// Adds to the counter `"<module>.<name>"`.
     pub fn count(&mut self, g: &mut GameState, name: &str, n: i64) {
-        *g.stats
-            .counters
-            .entry(KeyBuf::new(self.module).text(".").text(name).as_str())
-            .or_insert(0) += n;
+        self.tally(g, KeyBuf::new(self.module).text(".").text(name).as_str(), n);
     }
 
     /// Adds to a counter by its full key (shared rules code counting for
@@ -529,13 +525,13 @@ impl<'a> Cx<'a> {
     /// whichever module's phase played it (046: a draw outside `cards.*`
     /// emptied the tier-1 deck and panicked in [`Cx::rng`]).
     pub fn deck_rng<'g>(&self, g: &'g mut GameState) -> &'g mut Stream {
-        Arc::make_mut(g.rng.get_mut("cards").expect("the cards module has a stream"))
+        stream(g, "cards")
     }
 
     /// The threats module's stream, for a threat deck reshuffled in another
     /// module's step (070: Discord cards and projects deal threats).
     pub fn threat_rng<'g>(&self, g: &'g mut GameState) -> &'g mut Stream {
-        Arc::make_mut(g.rng.get_mut("threats").expect("the threats module has a stream"))
+        stream(g, "threats")
     }
 
     /// The stream for one of this variant's declared purposes. Drawing from
@@ -547,7 +543,7 @@ impl<'a> Cx<'a> {
                 self.module
             );
         }
-        Arc::make_mut(g.rng.get_mut(purpose).expect("declared purposes have streams"))
+        stream(g, purpose)
     }
 
     /// Ends the game (first call wins).
@@ -562,6 +558,11 @@ impl<'a> Cx<'a> {
         };
         end_game(g, won, reason, detail, log);
     }
+}
+
+/// The stream of a declared RNG purpose.
+fn stream<'g>(g: &'g mut GameState, purpose: &str) -> &'g mut Stream {
+    Arc::make_mut(g.rng.get_mut(purpose).expect("declared purposes have streams"))
 }
 
 /// Sets the game's outcome and logs its `GameEnded` event to `log`, if any

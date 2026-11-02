@@ -6,7 +6,7 @@
 //! something under it, every token off a track accounted for.
 
 use super::*;
-use crate::modules::common::{corrupted, has_building, presence_owner, HARDEN, MARKER, NODE};
+use crate::modules::common::{corrupted, has_building, presence_owner, MARKER};
 use crate::modules::{ai, board};
 
 /// Random play that mostly acts: a pass only now and then, so games reach the
@@ -47,8 +47,8 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
             }
         }
         for s in 0..g.seats.len() {
-            if g.tokens(h, &presence(s)) > 1 {
-                out.push(format!("hex {h}: {} presence of seat {s}", g.tokens(h, &presence(s))));
+            if g.tokens(h, presence(s)) > 1 {
+                out.push(format!("hex {h}: {} presence of seat {s}", g.tokens(h, presence(s))));
             }
         }
         if g.tokens(h, NODE) > 1 {
@@ -74,7 +74,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
     let out_of_tracks: i64 = (0..g.seats.len())
         .map(|s| (board::track_taken(g, s) + board::track2_taken(g, s)) as i64)
         .sum();
-    let on_board: i64 = (0..g.seats.len()).map(|s| total(g, &presence(s))).sum();
+    let on_board: i64 = (0..g.seats.len()).map(|s| total(g, presence(s))).sum();
     if on_board + lost != out_of_tracks {
         out.push(format!("{on_board} presence on the board + {lost} lost, but {out_of_tracks} off the tracks"));
     }
@@ -86,7 +86,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
         }
         let track = ai::board(&w, s).presence.len() + ai::board(&w, s).presence2.len();
         let taken = board::track_taken(g, s) + board::track2_taken(g, s);
-        let placed = total(g, &presence(s));
+        let placed = total(g, presence(s));
         if taken > track {
             out.push(format!("seat {s}: {taken} presence taken off a track of {track}"));
         }
@@ -180,7 +180,7 @@ fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
 /// outside its own cards changed, a var moved (once-a-round marks and payments
 /// aside) or a resource rose. 044: cards were offered and paid for with no effect.
 fn got_something(before: &GameState, after: &GameState, s: usize, played: bool) -> bool {
-    let spent = |k: &str| k.contains(".used") || k.starts_with("cards.") || k.starts_with("board.rich") || k.starts_with("board.placed");
+    let spent = |k: &str| k.contains(".used") || k.starts_with("ai.power_used") || k.starts_with("cards.");
     let hexes = before.hexes.iter().zip(after.hexes.iter()).any(|(a, b)| a.tokens != b.tokens);
     let vars = before.vars.iter().any(|(k, v)| !spent(k) && after.var(k) != *v)
         || after.vars.iter().any(|(k, v)| !spent(k) && before.var(k) != *v);
@@ -193,7 +193,11 @@ fn got_something(before: &GameState, after: &GameState, s: usize, played: bool) 
     });
     let hand = crate::modules::cards::hand(s);
     let drew = after.pile(&hand).len() + usize::from(played) > before.pile(&hand).len();
-    hexes || vars || piles || rose || drew || after.is_over()
+    // Rush Build: a new building is worth something in play, as in
+    // `paid_for_nothing`, even if it took the place of a sacrificed stack.
+    let built = crate::modules::cards::built(s);
+    let built = after.pile(&built).iter().any(|c| !before.pile(&built).contains(c));
+    hexes || vars || piles || rose || drew || built || after.is_over()
 }
 
 fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<String> {

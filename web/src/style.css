@@ -165,6 +165,18 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .slot-box .peek { font-size: 0.85em; display: block; text-overflow: ellipsis; }
 .acard .atext { color: #444; font-size: 0.92em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .acard .stage { font-size: 0.8em; color: var(--muted); }
+/* 017: the adversary's project row under the adversary cards. */
+/* Each project a two-line box (022, D3): name and compute bar, then the effect text
+   running on and cut at the end of the second line (hover the project for all of it). */
+.projects-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 0.6em; margin-top: 0.2em; font-size: 0.85em; }
+.projects-row .stitle { font-weight: 600; color: #8e1b1b; flex: none; white-space: nowrap; }
+.projects-row .project { flex: 1 1 0; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 1em; line-height: 1.3; height: calc(2.6em + 2px); border: 1px solid #e3cfcf; border-radius: 3px; padding: 0 0.3em; background: #fff; }
+.projects-row .project .tname { display: inline; margin-right: 0.3em; white-space: nowrap; }
+.projects-row .project .tname b { color: #8e1b1b; margin-right: 0.3em; }
+.projects-row .project .prog { min-width: 5.5em; height: 1.2em; vertical-align: -0.25em; }
+.projects-row .project .prog .ptext { line-height: 1.2em; }
+.projects-row .project .ttext { display: inline; color: #444; font-size: 0.92em; }
+.projects-row .agroup, .projects-row .adeck { flex: none; color: var(--muted); white-space: nowrap; }
 .escal, .war-tag { color: var(--warn); font-size: 0.8em; font-weight: bold; }
 .war-round { font-weight: bold; color: #fff; background: var(--warn); border-radius: 3px; padding: 0 0.45em; white-space: nowrap; animation: warpulse 1.6s ease-in-out infinite; }
 @keyframes warpulse { 50% { background: #e2574c; } }
@@ -210,6 +222,7 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .hex:hover .cell { stroke: #222; stroke-width: 0.07; }
 .hex.target, .hex.target * { cursor: pointer; }
 .hex.hl .cell { stroke: #d81b60; stroke-width: 0.14; }
+.hex .zone-mark { fill: none; stroke: #6d4c41; stroke-width: 0.04; stroke-dasharray: 0.05 0.035; }
 .hex .num { font-size: 0.22px; fill: #00000088; font-weight: 600; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
 .borders, .marks, .labels, .fronts { pointer-events: none; }
 .border { stroke-width: 0.13; stroke-linecap: round; }
@@ -222,7 +235,7 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .base-mark .pole { stroke: #333; stroke-width: 0.025; }
 .base-mark .flag { stroke: #fff; stroke-width: 0.015; }
 .mark { fill: none; }
-.mark.source { stroke: #8e1b1b; stroke-width: 0.07; stroke-dasharray: 0.08 0.08; fill: none; }
+.mark.source { stroke: #8e1b1b; stroke-width: 0.07; stroke-dasharray: 0.08 0.08; }
 .mark.changed { stroke: #e0a100; stroke-width: 0.08; stroke-dasharray: 0.15 0.08; }
 .mark.target { stroke: var(--accent); stroke-width: 0.12; fill: #1f6feb22; animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 50% { fill: #1f6feb55; } }
@@ -274,7 +287,6 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .step.current { border: 2px solid var(--accent); }
 .step .mark { font-size: 0.7em; font-weight: 700; border-radius: 2px; padding: 0 0.15em; }
 .step .m-tier2 { color: #fff; background: var(--good); }
-.step .m-antimatter { color: #fff; background: #d63c8f; }
 .step.covered .mark { opacity: 0.6; }
 .row { display: flex; flex-wrap: wrap; gap: 0.25em; align-items: center; margin-top: 0.3em; }
 .what { color: var(--muted); font-size: 0.9em; min-width: 5.5em; }
@@ -372,19 +384,6 @@ pre.tab { font: 0.85em/1.3 ui-monospace, Consolas, monospace; white-space: pre-w
 #record-dialog input { flex: 1; }
 #record-dialog .tools { display: flex; gap: 0.5em; }
 #record-msg { min-height: 1.2em; color: var(--accent); }
-.hex .zone-mark { fill: none; stroke: #6d4c41; stroke-width: 0.04; stroke-dasharray: 0.05 0.035; }
-/* 017: the adversary's project row under the adversary cards. */
-/* Each project a two-line box (022, D3): name and compute bar, then the effect text
-   running on and cut at the end of the second line (hover the project for all of it). */
-.projects-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 0.6em; margin-top: 0.2em; font-size: 0.85em; }
-.projects-row .stitle { font-weight: 600; color: #8e1b1b; flex: none; white-space: nowrap; }
-.projects-row .project { flex: 1 1 0; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 1em; line-height: 1.3; height: calc(2.6em + 2px); border: 1px solid #e3cfcf; border-radius: 3px; padding: 0 0.3em; background: #fff; }
-.projects-row .project .tname { display: inline; margin-right: 0.3em; white-space: nowrap; }
-.projects-row .project .tname b { color: #8e1b1b; margin-right: 0.3em; }
-.projects-row .project .prog { min-width: 5.5em; height: 1.2em; vertical-align: -0.25em; }
-.projects-row .project .prog .ptext { line-height: 1.2em; }
-.projects-row .project .ttext { display: inline; color: #444; font-size: 0.92em; }
-.projects-row .agroup, .projects-row .adeck { flex: none; color: var(--muted); white-space: nowrap; }
 
 /* Short screens (1366x768 and the like): the strips above and below the board take
    tighter lines and the adversary cards one line of text (hover for all of it), so
@@ -392,7 +391,6 @@ pre.tab { font: 0.85em/1.3 ui-monospace, Consolas, monospace; white-space: pre-w
 @media (max-height: 820px) {
   :root { line-height: 1.2; }
   #phase-bar { padding: 0.15em 0.7em; gap: 0.15em 0.8em; }
-  #phase-bar .order { gap: 0.1em; }
   /* Smaller phase chips keep the round order to fewer lines: the two-line project
      boxes (022, D3) take a line from the board. */
   .phase { line-height: 1.15; font-size: 0.76em; padding: 0 0.2em; }

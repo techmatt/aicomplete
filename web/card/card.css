@@ -60,7 +60,7 @@
 .card .medallion { display: block; position: relative; background: url('containers/ring.png') center / 100% 100% no-repeat; color: var(--c); }
 .card .medallion svg.glyph { position: absolute; inset: 20%; width: 60%; height: 60%; }
 
-.card .effect { flex-direction: column; gap: 1mm; padding: 0 1.1mm; box-sizing: border-box; }
+.card .effect { flex-direction: column; gap: 0.5mm; padding: 0 1.1mm; box-sizing: border-box; }
 .card .fx-icons { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 3.500mm; row-gap: 0.6mm; }
 .card .fx-line { display: flex; align-items: center; gap: 0.7mm; }
 .card .fx-num { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 13pt; line-height: 1; }
@@ -86,10 +86,9 @@
 .card .effect.fit-2 .rules { font-size: 6.300pt; }
 .card .effect.fit-3 .rules { font-size: 5.800pt; line-height: 1.150; }
 .card .fx-tag .medallion { width: 5.200mm; height: 5.200mm; }
-.card .effect { gap: 0.5mm; }
 .card .effect .income, .card .effect .adversary { padding: 0 1.200mm; border-width: 0.3mm; }
 .card .effect .other, .card .effect .yours { padding: 0.1mm 1.200mm; }
-.card .kind-building .once .ico, .card.kind-building .once .ico { width: 4.500mm; height: 4.500mm; }
+.card.kind-building .once .ico { width: 4.500mm; height: 4.500mm; }
 .card.kind-building .once .fx-num { font-size: 11pt; }
 .card .lasting .ico { width: 4.500mm; height: 4.500mm; }
 .card .lasting .fx-tag .medallion { width: 4.300mm; height: 4.300mm; }
@@ -97,7 +96,6 @@
 .card .lasting .fx-per { font-size: 12pt; }
 .card .lasting .fx-word { font-size: 8pt; }
 .card .lasting .fx-line svg.arrow { width: 3.400mm; height: 3.400mm; }
-.card .lasting { gap: 0.5mm; }
 .card .effect.dense { gap: 0.2mm; }
 .card .effect.dense .fx-icons { column-gap: 0.800mm; row-gap: 0.1mm; flex-wrap: nowrap; }
 .card .effect.dense .fx-line { gap: 0.3mm; }

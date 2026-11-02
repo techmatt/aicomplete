@@ -60,8 +60,8 @@ credits and the track income pay for: the project is the rule of these builds, n
 
 Target 60-75: c2 just under, no lever added. On the same 48 seeds Buy In at 10 reads 54 / 58 against 67 / 62.
 
-Void reads, kept for the record: 52 / 71 (seed 20000) and 62 / 79 (seed 20100), then 59 / 76 on 80 seeds, on
-`ambassador_credits` 2, before amendment 2462.
+Void reads, kept for the record: 52 / 71 (seed 20000) and 62 / 79 (seed 20100), then 59 / 76 on 80 seeds, a killed run with
+mixed seeds, all on `ambassador_credits` 2, before amendment 2462.
 
 ## Powers, a game (frozen, seed 20300)
 
@@ -81,7 +81,8 @@ the Protector's energy has somewhere to go, and Sentinel Post's +1 energy on top
 second energy that the Builder has to buy; Buy In is used 1.8 a game against Accord's 2.1.
 
 A replay of seed 20300 on the final build (only test code changed after the freeze): same 96 games
-(`bench/same_results.py`). Cost: planner 43.6 ms a decision against r26's 40.9 (1.07), with 15% more decisions.
+(`bench/same_results.py`). Cost, measured on the void build: planner 43.6 ms a decision against r26's 40.9 (1.07), with 15% more
+decisions.
 
 ## The gate (`experiments/gate.json`, seed 21000, 8 seeds a check, early-stopped), then its closes
 

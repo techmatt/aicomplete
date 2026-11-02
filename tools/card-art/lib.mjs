@@ -8,7 +8,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { chromium } from 'playwright-core';
 
-import { fitCards } from '../../web/card/card.js';
+import { fitCards, frameOf } from '../../web/card/card.js';
+import { originalsDir } from '../../web/card/originals.mjs';
 
 export const TOOL = path.dirname(fileURLToPath(import.meta.url));
 export const REPO = path.resolve(TOOL, '..', '..');
@@ -16,9 +17,7 @@ export const CARD = path.join(REPO, 'web', 'card');
 export const ART = path.join(REPO, 'art');
 export const OUT = path.join(REPO, 'out', 'cards');
 export const FRAMES = path.join(ART, 'frames', 'r3');
-const DRIVE_ORIGINALS = 'C:\\Code\\gdrive-sync\\aicomplete\\art-originals';
-// The junction when a checkout has one, else the Drive folder it points at.
-export const ORIGINALS = process.env.AIC_ART_ORIGINALS ?? (existsSync(path.join(REPO, 'art-originals')) ? path.join(REPO, 'art-originals') : DRIVE_ORIGINALS);
+export const ORIGINALS = originalsDir(REPO);
 
 const CODEX_HOME = process.env.CODEX_HOME ?? path.join(os.homedir(), '.codex');
 const TIMEOUT_MS = 6 * 60_000;
@@ -51,6 +50,23 @@ function killTree(child) {
 export const readJson = async (f) => JSON.parse(await readFile(f, 'utf8'));
 export const layout = () => readJson(path.join(CARD, 'layout.json'));
 
+/**
+ * Player cards from content: `cards` by id, and `faced(id)`, a card with its generated face
+ * (web/card/faces.json) merged in.
+ */
+export async function loadCards() {
+  const cards = Object.fromEntries((await readJson(path.join(REPO, 'content', 'cards.json'))).map((c) => [c.id, c]));
+  const faces = await readJson(path.join(CARD, 'faces.json'));
+  return { cards, faced: (id) => ({ ...cards[id], ...faces[id] }) };
+}
+
+/** The largest box of `shape` (width over height) centered in an image of this size. */
+export function centerBox({ width, height }, shape) {
+  const w = Math.min(width, Math.round(height * shape));
+  const h = Math.min(height, Math.round(width / shape));
+  return { left: Math.floor((width - w) / 2), top: Math.floor((height - h) / 2), width: w, height: h };
+}
+
 /** One headless browser (system Chrome), one page, for every render. */
 export async function openPage(width, height) {
   const browser = await chromium.launch({ channel: 'chrome' });
@@ -59,10 +75,16 @@ export async function openPage(width, height) {
 }
 
 export const MM = 96 / 25.4;
-export const frameOf = (card) => `${card.kind}-t${card.tier >= 2 ? 2 : 1}`;
+export { frameOf };
 export const frameUrl = (v) => pathToFileURL(path.join(FRAMES, `${v}.jpg`)).href;
 /** Cards at true size, 9 to an A4 page, bleeds touching: wrap each page in `.sheet-page`. */
 export const SHEET_CSS = '@page{size:210mm 297mm;margin:0}.sheet-page{width:207mm;height:282mm;padding:7.500mm 1.500mm;display:grid;grid-template-columns:repeat(3,69mm);grid-auto-rows:94mm;break-after:page}';
+/** Card HTML laid out in `.sheet-page`s, for SHEET_CSS: `{ body, pages }`, pages being how many. */
+export function sheetPages(faces) {
+  const pages = [];
+  for (let i = 0; i < faces.length; i += 9) pages.push(`<section class="sheet-page">${faces.slice(i, i + 9).join('')}</section>`);
+  return { body: pages.join(''), pages: pages.length };
+}
 
 /**
  * A page at print scale for layout `l`. Returns `{ p, show, clip, close }`: `show(body,

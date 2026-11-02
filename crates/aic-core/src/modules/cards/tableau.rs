@@ -5,11 +5,8 @@ use super::*;
 /// Standing effects that apply to seat `s`: its AI's innate rule and its
 /// active buildings.
 pub fn passives<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<&'w Op> {
-    let mut out: Vec<&'w Op> = ai::board(w, seat).innate.passives.iter().collect();
-    out.extend(ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()));
-    for id in g.pile(&built(seat)) {
-        out.extend(def(w, id).passives.iter());
-    }
+    let mut out = Vec::new();
+    each_passive(w, g, seat, |p| out.push(p));
     out
 }
 
@@ -32,7 +29,7 @@ pub fn in_play(g: &GameState, seat: usize) -> Vec<Key> {
     let mut out = Vec::new();
     for top in g.pile(&built(seat)) {
         out.extend(g.pile(&under(seat, top)).iter().cloned());
-        out.push(top.clone());
+        out.push(*top);
     }
     out.extend(g.pile(&played(seat)).iter().cloned());
     out
@@ -108,8 +105,8 @@ pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
     for p in passives(&w, g, seat) {
         if let Op::ProjectDrain { amount } = p {
-            for id in super::super::adversary::projects(g) {
-                super::super::adversary::drain_project(g, cx, &id, *amount);
+            for id in adversary::projects(g) {
+                adversary::drain_project(g, cx, &id, *amount);
             }
         }
         if let Op::ConvertUpkeep {

@@ -12,9 +12,9 @@ import path from 'node:path';
 
 import sharp from 'sharp';
 
-import { ART, TOOL, layout, readJson } from './lib.mjs';
+import { FRAMES, TOOL, layout, readJson } from './lib.mjs';
 
-const dir = path.join(ART, 'frames', 'r3');
+const dir = FRAMES;
 const master = path.join(dir, 'master.jpg');
 
 const cfg = await readJson(path.join(TOOL, 'derive.json'));
