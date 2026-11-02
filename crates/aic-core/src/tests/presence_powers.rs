@@ -4,7 +4,7 @@
 use super::*;
 use crate::content::Op;
 use crate::modules::common::{hex_opt, is_ocean, presence, HARDEN, MARKER};
-use crate::modules::{ai, alignment, board, effects, threats};
+use crate::modules::{ai, alignment, board, effects};
 use crate::state::Pick;
 
 /// A lab with seat 0's presence on the board and both tracks at `taken` steps.
@@ -116,7 +116,7 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     ];
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [content::Op::DelayThreat { count: 1 }];
-    with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 1));
+    super::threats::deal(&mut g, "smear_campaign", 0);
     assert!(effects::feasible(&w, &g, 0, &delay));
     run_ops(&rules, &mut g, &delay);
     assert!(!effects::feasible(&w, &g, 0, &delay), "every threat already waits");

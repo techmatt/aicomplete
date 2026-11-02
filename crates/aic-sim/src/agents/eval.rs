@@ -98,6 +98,9 @@ pub struct Weights {
     /// A threat that waits this round counts this share (041): it comes back,
     /// but with a counter phase first.
     pub threat_waits: f64,
+    /// 070: an unpaid threat no seat may counter yet counts this much more: the
+    /// pull to put presence or an ambassador on a source.
+    pub threat_stranded: f64,
     /// Each player-owned factory (chips each production step); an
     /// adversary-owned one costs as much.
     pub owned_factory: f64,
@@ -250,6 +253,7 @@ impl Default for Weights {
             marker: 1.0,
             shield: 3.0,
             threat_waits: 0.5,
+            threat_stranded: 1.25,
             owned_factory: 4.0,
             chips: 2.0,
             reach: 0.5,
@@ -740,7 +744,7 @@ impl Eval {
         let world = rules.world();
         let w = &self.w;
         let mut out = Vec::new();
-        for (t, _) in threats::active(g) {
+        for (t, scope) in threats::active(g) {
             let req: i64 = threats::requirement(&world, g, &t)
                 .iter()
                 .map(|(_, n)| n)
@@ -756,7 +760,9 @@ impl Eval {
                 .map(|(_, &n)| n)
                 .sum();
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
-            out.push(waits * (1.0 - (paid as f64 / req as f64).min(1.0)));
+            let open = (0..g.seats.len()).any(|s| threats::may_counter(&world, g, s, &t, scope));
+            let stranded = if open { 1.0 } else { w.threat_stranded };
+            out.push(waits * stranded * (1.0 - (paid as f64 / req as f64).min(1.0)));
         }
         out
     }
@@ -1008,6 +1014,15 @@ impl Eval {
                 v += w.built + w.built_cost * cost;
                 if !d.pays_income() {
                     v += w.ability * left;
+                }
+                // 070: a standing counter or drain saves credits every round.
+                for p in &d.passives {
+                    let saved = match p {
+                        Op::AutoCounter { amount, .. } => 0.5 * *amount as f64,
+                        Op::ProjectDrain { amount } => 2.0 * *amount as f64,
+                        _ => 0.0,
+                    };
+                    v += w.horizon * left * w.credits * saved;
                 }
             }
             // A card in hand is worth its value times the chance of paying

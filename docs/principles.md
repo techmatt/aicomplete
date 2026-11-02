@@ -155,6 +155,8 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | ambassador mass (068) | `ambassador_mass=1` | buys every ambassador it can, before anything else |
 | free-build rush (068) | `free_build_rush=1` | the Builder's Rush Build at every chance |
 | wall turtle (068) | `wall_turtle=1` | the Protector places presence only with a troop on the board, on the hex nearest one |
+| home only (070) | `home_only=1` | counters only threats in its home country |
+| capstone rush (070) | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
 
 022 ran the checks under the engine at d0, d2 and d4
 (`experiments/archive/screen-022-dominance.json`, summarized by `scripts/cards/screen_022.py`).

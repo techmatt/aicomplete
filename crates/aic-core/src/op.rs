@@ -18,7 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::vocab::{Resource, Side, Tag, TagOrAny, TokenKind};
+use crate::vocab::{Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind};
 
 /// The kinds of content list an op can sit in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -206,11 +206,15 @@ pub enum Op {
     Peek {
         count: i64,
     },
-    /// One threat needs `amount` less of each resource.
+    /// One threat the player may counter needs `amount` less of each resource;
+    /// with `source`, one of that type (070: the typed counters).
     Jam {
         amount: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        source: Option<ThreatSource>,
     },
-    /// Counter one active threat (the chooser picks).
+    /// Counter one active threat (the chooser picks): on a player's card, one
+    /// they may counter.
     CounterThreat,
     /// Remove up to `amount` compute from one visible adversary project
     /// (017; the Security cards' primitive).
@@ -433,6 +437,16 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
+    /// In upkeep, `amount` compute comes off each adversary project (070).
+    ProjectDrain {
+        amount: i64,
+    },
+    /// Each threat of `source` in your home country needs `amount` less of each
+    /// resource (070).
+    AutoCounter {
+        source: ThreatSource,
+        amount: i64,
+    },
     /// Extra Sway toward Unity when you remove an adversary troop.
     UnityBonus {
         amount: i64,
@@ -538,6 +552,8 @@ impl Op {
             | Op::HardenAction
             | Op::Slots { .. }
             | Op::Logistics { .. }
+            | Op::ProjectDrain { .. }
+            | Op::AutoCounter { .. }
             | Op::UnityBonus { .. }
             | Op::GiveBonus { .. }
             | Op::SpreadShield

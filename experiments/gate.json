@@ -1,25 +1,62 @@
 {
-  "name": "gate-068",
-  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-066 but never_tag (dropped to fit, 068), plus never_sacrifice, ambassador_mass, free_build_rush and wall_turtle (068). 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with experiments/gate-close-068/. Run on fresh seeds.",
-  "configs": ["configs/baseline.json"],
-  "variants": [
-    {"name": "c2", "set": []},
-    {"name": "c3", "set": ["countries=3"]}
+  "name": "gate-070",
+  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-068 plus home_only and capstone_rush (070); never_counter is the existing no_counters. 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with experiments/gate-close-070/. Run on fresh seeds.",
+  "configs": [
+    "configs/baseline.json"
   ],
-  "difficulties": [2],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    },
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
   "agents": [
     "planner",
-    "planner:never_sacrifice=1", "planner:ambassador_mass=1", "planner:free_build_rush=1", "planner:wall_turtle=1",
-    "planner:always_max_presence=1", "planner:never_second_presence=1", "planner:never_remove=1", "planner:science_board=1",
-    "planner:science_rush=1", "planner:tier2_rush=1",
-    "planner:no_powers=1", "planner:unity_farm=1", "planner:keep_k=2", "planner:no_counters=1",
-    "planner:keep_all=1", "planner:tier1_only=1", "planner:no_presence=1",
-    "planner:only_tag=1", "planner:only_tag=2", "planner:only_tag=3",
-    "planner:only_tag=4", "planner:only_tag=5", "planner:only_tag=6",
-    "planner:events_only=1", "planner:ignore_threats=1", "planner:turtle=1", "planner:free_only=1",
-    "planner:abandon=1"
+    "planner:never_sacrifice=1",
+    "planner:ambassador_mass=1",
+    "planner:free_build_rush=1",
+    "planner:wall_turtle=1",
+    "planner:always_max_presence=1",
+    "planner:never_second_presence=1",
+    "planner:never_remove=1",
+    "planner:science_board=1",
+    "planner:science_rush=1",
+    "planner:tier2_rush=1",
+    "planner:no_powers=1",
+    "planner:unity_farm=1",
+    "planner:keep_k=2",
+    "planner:no_counters=1",
+    "planner:keep_all=1",
+    "planner:tier1_only=1",
+    "planner:no_presence=1",
+    "planner:only_tag=1",
+    "planner:only_tag=2",
+    "planner:only_tag=3",
+    "planner:only_tag=4",
+    "planner:only_tag=5",
+    "planner:only_tag=6",
+    "planner:events_only=1",
+    "planner:ignore_threats=1",
+    "planner:turtle=1",
+    "planner:free_only=1",
+    "planner:abandon=1",
+    "planner:home_only=1",
+    "planner:capstone_rush=1"
   ],
   "games": 48,
-  "gate": {"z": 2.0, "min_games": 12, "every": 4},
+  "gate": {
+    "z": 2.0,
+    "min_games": 12,
+    "every": 4
+  },
   "records": 0
 }

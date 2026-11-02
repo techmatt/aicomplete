@@ -6,7 +6,7 @@
 // pile falls back to a generic chip so nothing goes unshown.
 
 import { content, param, type CardView, type Config, type PileView, type Value, type View } from './engine';
-import { ADVERSARY_COLOR, escapeHtml, extraCosts, KINDS, strong } from './format';
+import { ADVERSARY_COLOR, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
 
 const esc = escapeHtml;
 
@@ -237,13 +237,31 @@ function progressBars(status: string): string {
   }).join('');
 }
 
-function threatCard(c: CardView, where: string): string {
+/** 070: a threat's source type, its hexes (hover marks them) and who is refused. */
+function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
+  const s = v.threat_sources?.find((x) => x.threat === id);
+  if (!s) return { badge: '', hexes: '' };
+  const hexes = s.hexes.map((i) => { return hexKey(v.hexes[i].hex); }).join(' ');
+  const refused = v.seats.filter((x) => !s.seats.includes(x.index)).map((x) => x.index);
+  const none = s.seats.length === 0;
+  const says = none ? 'no one can counter: no source in reach'
+    : refused.length ? `seat ${refused.join(', ')}: no source in reach, can't counter` : '';
+  const made = s.target == null ? '' : ' No source yet: its target becomes one if it goes uncountered.';
+  const title = `${s.source} source: ${s.hexes.length} on the map. Counter with one within 1 of your presence, or your ambassador on one.${made}`;
+  return {
+    badge: `<span class="tsource ${esc(s.source)}" title="${esc(title)}">${esc(s.source)}</span>${says ? `<span class="trefused">${esc(says)}</span>` : ''}`,
+    hexes,
+  };
+}
+
+function threatCard(c: CardView, where: string, v?: View): string {
   const effect = (c.text ?? '').replace(/\s*Counter:.*$/, '');
   // 044: a waiting or jammed threat must look it, not only in the hover.
   const waits = /Waits: /.test(c.text ?? '') ? '<span class="waits">waits</span>' : '';
   const jam = (c.text ?? '').match(/Jammed: needs (\d+) less/);
   const jammed = jam ? `<span class="jam">-${esc(jam[1])}</span>` : '';
-  return `<div class="threat${waits ? ' waiting' : ''}" data-card="${esc(c.id)}" data-where="${where}"><span class="tname"><b>${esc(c.name)}</b>${waits}${jammed}${progressBars(c.status)}</span><span class="ttext">${esc(effect)}</span></div>`;
+  const src = v ? sourceBadge(v, c.id) : { badge: '', hexes: '' };
+  return `<div class="threat${waits ? ' waiting' : ''}" data-card="${esc(c.id)}" data-where="${where}"${src.hexes ? ` data-hexes="${src.hexes}"` : ''}><span class="tname"><b>${esc(c.name)}</b>${src.badge}${waits}${jammed}${progressBars(c.status)}</span><span class="ttext">${esc(effect)}</span></div>`;
 }
 
 /**
@@ -290,7 +308,7 @@ export function countriesHtml(v: View): string {
     const counts = `<span class="counts" title="cities: clean, aligned, corrupted; adversary ambassadors, nodes and troops; corp units at bases">${parts.join(' · ')}</span>`;
     const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project')).map((x) => valueChip(x, `country:${c.index}`)).join('');
     const groups = c.cards.map((g) => g.key === 'threats.on'
-      ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`)).join('')
+      ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`, v)).join('')
       : `<div class="row"><span class="what">${esc(g.label)}</span>${g.cards.map((x) => cardChip(x, `country:${c.index}:${g.key}`)).join('')}</div>`).join('');
     const project = megaprojectHtml(v, c);
     return `<div class="country" data-country="${c.index}" style="--tint:${strong(c.color)};--soft:${c.color}">

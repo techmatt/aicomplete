@@ -88,7 +88,7 @@ pub(super) fn remove_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
         for _ in 0..count {
             let nodes: Vec<usize> = (0..g.hexes.len())
-                .filter(|&h| g.tokens(h, NODE) > 0)
+                .filter(|&h| g.tokens(h, NODE) > 0 && !threats::shielded(&w, g, h, ThreatSource::Cyber))
                 .collect();
             let opts = nodes.iter().map(|&h| hex_opt(&w, h)).collect();
             let Some(i) = cx.choose(0, "Remove the node in which hex?", opts)? else {

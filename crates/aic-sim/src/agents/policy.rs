@@ -13,7 +13,7 @@
 //! chips and energy income; the cards it would play (hand plus the
 //! candidates) in value-per-cost order, filled into each round's budget.
 
-use aic_core::content::{CardDef, Op, Resource, Tag};
+use aic_core::content::{CardDef, CardKind, Op, Resource, Tag};
 use aic_core::modules::{ai, cards, common, economy, effects, threats};
 use aic_core::module::World;
 use aic_core::state::AskKind;
@@ -172,6 +172,10 @@ macro_rules! forced_table {
             (free_build_rush: bool, true, 0.0, "fixed policy (068): the Builder's free-building power at every chance")
             /// Fixed policy (068): a seat with Wall places presence only to block troops.
             (wall_turtle: bool, true, 0.0, "fixed policy (068): a seat with Wall places presence only with a troop on the board, on the hex nearest one")
+            /// Fixed policy (070): pays only threats in its own home country.
+            (home_only: bool, true, 0.0, "fixed policy (070): counter only threats in your home country")
+            /// Fixed policy (070): tier-2 capstones first.
+            (capstone_rush: bool, true, 0.0, "fixed policy (070): tier 2 whenever the keep is affordable, and tier-2 capstones before anything else")
         }
     };
 }
@@ -261,11 +265,13 @@ impl Policy {
             drafted.into_iter().filter(coin).collect()
         } else if self.forced.keep_all {
             drafted
-        } else if self.forced.science_rush || self.forced.science_board {
+        } else if self.forced.science_rush || self.forced.science_board || self.forced.capstone_rush {
             let world = rules.world();
             let mut set = plan_keeps(&world, g, s, &self.forced);
             for id in g.pile(&cards::drafted(s)) {
-                if cards::def(&world, id).tags.contains(&Tag::Science) && !set.contains(id) {
+                let d = cards::def(&world, id);
+                let rush = if self.forced.capstone_rush { is_capstone(d) } else { d.tags.contains(&Tag::Science) };
+                if rush && !set.contains(id) {
                     set.push(id.clone());
                 }
             }
@@ -298,6 +304,8 @@ impl Policy {
         let f = &self.forced;
         match a {
             Action::Pay { threat, .. } if f.abandon && on_given_up(world, g, threat) => true,
+            Action::Pay { seat, threat, .. } if f.home_only && abroad(world, g, *seat as usize, threat) => true,
+            Action::Choose { seat, option, .. } if f.home_only && abroad(world, g, *seat as usize, option) => true,
             Action::Choose { option, target, .. } if f.abandon => {
                 on_given_up(world, g, option)
                     || (!losing_pick(g) && target.and_then(|t| world.map.find(t)).is_some_and(|h| given_up(world, h)))
@@ -470,8 +478,16 @@ impl Agent for Policy {
                 }
             }
         }
+        if self.forced.capstone_rush && !pending {
+            let cap = |id: &Key| is_capstone(cards::def(&world, id));
+            if let Some(i) = legal.iter().position(|a| {
+                matches!(a, Action::Draft { card, .. } | Action::Keep { card, .. } | Action::Play { card, .. } if cap(card))
+            }) {
+                return i;
+            }
+        }
         // Tier-2 rush: tier 2 whenever the keep is affordable.
-        if self.forced.tier2_rush && !pending {
+        if (self.forced.tier2_rush || self.forced.capstone_rush) && !pending {
             if let Some(i) = legal.iter().position(|a| {
                 matches!(a, Action::Tier { seat, tier: 2 } if keep_affordable(&world, g, *seat as usize, 2))
             }) {
@@ -498,6 +514,21 @@ fn given_up(w: &World, h: usize) -> bool {
 /// spend the country it gave up.
 fn losing_pick(g: &GameState) -> bool {
     g.pending.as_ref().is_some_and(|p| p.ask.kind == AskKind::Loss)
+}
+
+/// Whether `threat` is an active threat outside seat `s`'s home country.
+fn abroad(w: &World, g: &GameState, s: usize, threat: &str) -> bool {
+    threats::active(g).iter().any(|(t, c)| t == threat && c.is_some_and(|c| c != common::home_country(w, s)))
+}
+
+/// A tier-2 capstone (070): a tier-2 building whose standing effect ends an
+/// engine: income per tag, an automatic counter or project drain.
+pub(crate) fn is_capstone(d: &CardDef) -> bool {
+    d.tier == 2
+        && d.kind == CardKind::Building
+        && d.passives
+            .iter()
+            .any(|p| matches!(p, Op::IncomePerTag { .. } | Op::AutoCounter { .. } | Op::ProjectDrain { .. }))
 }
 
 /// Whether `threat` sits on the country the abandon check gives up.
@@ -632,6 +663,28 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
             Op::ShieldPresence { count } => {
                 (*count).min((0..g.hexes.len()).filter(|&h| effects::shieldable(g, s, h)).count() as i64)
             }
+            // 070: a typed counter with a threat up it can reach (threats are dealt before keeps).
+            Op::Jam { amount, source: Some(t) } => {
+                if threats::counterable(w, g, s, Some(*t)).is_empty() { 0 } else { (*amount + 1) / 2 }
+            }
+            _ => 0,
+        })
+        .sum::<i64>()
+        + capstone_jobs(d)
+}
+
+/// 070: what a capstone's standing effect is worth to the keep plan, in
+/// `plan_niche` jobs: its printed price undersells a card that pays every round.
+fn capstone_jobs(d: &CardDef) -> i64 {
+    if !is_capstone(d) {
+        return 0;
+    }
+    d.passives
+        .iter()
+        .map(|p| match p {
+            Op::AutoCounter { amount, .. } => *amount,
+            Op::ProjectDrain { amount } => 3 * *amount,
+            Op::IncomePerTag { .. } => 3,
             _ => 0,
         })
         .sum()

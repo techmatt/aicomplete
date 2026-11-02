@@ -6,7 +6,7 @@ and a wasm build for a JS front end sit on top of the core, and neither holds an
 
 - [docs/principles.md](docs/principles.md): design pillars, difficulty targets, lenses,
   measures.
-- [docs/cards.md](docs/cards.md): every player card (158 cards, from 023's set), generated
+- [docs/cards.md](docs/cards.md): every player card (170 cards, from 023's set), generated
   from content and `web/card/faces.json` by `python scripts/cards/cards_doc.py`, after `aic-sim docs` (a fast-lane test fails if it is stale);
   the pricing reasoning is [docs/card-pricing.md](docs/card-pricing.md).
 - [docs/rules.md](docs/rules.md): the rules as implemented, at `RULES_REVISION`, with
@@ -38,7 +38,7 @@ and a wasm build for a JS front end sit on top of the core, and neither holds an
 | `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports. Game records are kept only where they still replay (`screen-014-board/records/`); `payback-009-records/` is r3 history that did not replay: 038 deleted the records and kept its README. `archive/`: specs of past revisions (since 028 every spec not tied to the current one) and those the binary refuses today. [`history.md`](experiments/history.md): past sweeps, recipes and timings. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
 | `content/` | Data embedded at compile time: `map.json` (piece shape, layouts for 1–4 countries, the four printed country pieces with their cities, ocean, setup buildings and megaproject), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. |
-| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: 158 cards, 2 countries, difficulty 0, every number still a candidate (what each revision changed: [docs/rules-history.md](docs/rules-history.md)); `shared_row.json` differs only in the threat variant (and name): it is derived, so after editing the baseline run `python scripts/configs/shared_row.py`; a core test fails until you do. Other country counts and difficulties: `--set countries=N`, `--set adversary.difficulty=N`. Off-variants (rules.md §9): `--set threats.variant=off`, `alignment.variant=off`, `cards.variant=off`. Alignment's options (rules.md §5): `alignment.variant=still`, `alignment.momentum_every=2`, `alignment.antimatter_discord=0`. Optional modules switch off whole (016 trimmed `requires`): `--set threats=off`, `cards=off`, `economy=off`. (021 removed the `cards.variant=free_keep` opt-in: keeps cost insight.) The 013 configs (`v0_untuned`, `clusters`, `assets`) went with the old board. |
+| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: 170 cards, 2 countries, difficulty 0, every number still a candidate (what each revision changed: [docs/rules-history.md](docs/rules-history.md)); `shared_row.json` differs only in the threat variant (and name): it is derived, so after editing the baseline run `python scripts/configs/shared_row.py`; a core test fails until you do. Other country counts and difficulties: `--set countries=N`, `--set adversary.difficulty=N`. Off-variants (rules.md §9): `--set threats.variant=off`, `alignment.variant=off`, `cards.variant=off`. Alignment's options (rules.md §5): `alignment.variant=still`, `alignment.momentum_every=2`, `alignment.antimatter_discord=0`. Optional modules switch off whole (016 trimmed `requires`): `--set threats=off`, `cards=off`, `economy=off`. (021 removed the `cards.variant=free_keep` opt-in: keeps cost insight.) The 013 configs (`v0_untuned`, `clusters`, `assets`) went with the old board. |
 | `scripts/` | See [Scripts](#scripts). |
 | `web/` | Browser viewer (Vite + TS on `aic-wasm`): play any config and seed, watch and step through sim game records, copy bug reports. See [web/README.md](web/README.md). |
 
@@ -75,6 +75,8 @@ Current:
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](docs/card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the kept scripts below.
+- `cards/threat_read.py DIR... [--cards]` (070): per cell, threats dealt, countered by source type, paid abroad or by ambassador
+  alone, sources made, and the typed counters and capstones played: who counters what, from `games.jsonl`.
 - `cards/price_read.py` (055): per-card rates and stratified win deltas from games.jsonl
   (*Experiments*, *Card pricing read*). `kept` is a share of games, opening deal and draws
   included: never a share of offered, which would pass 100. Older price-read CSVs still have
@@ -580,7 +582,7 @@ point 3, plus 1; cost: what this seat pays, its building discount off), and keep
 drafted card, best ratio first, only if the plan with it is worth more than without it
 (a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and presence it would shield adds `plan_niche` 3 to the card's value). The dominance checks are the same agents with
 one behavior forced: `keep_all=1`, `keep_k=2`, `tier1_only=1`, `tier2_rush=1`,
-`no_powers=1`, `no_counters=1`, `no_presence=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1` (`docs/principles.md`, *Dominance
+`no_powers=1`, `no_counters=1`, `no_presence=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1`, `home_only=1`, `capstone_rush=1` (`docs/principles.md`, *Dominance
 checks*).
 
 The keep plan also charges credits paid for keeps (`plan_credit` 3), skips cards it can't
@@ -663,6 +665,10 @@ threads. `experiments/gate.json` (gate-068) has 28 checks, `never_tag` dropped, 
 `scripts/bench/gate_close.py plan` picks the checks within 2 SE by gap against paired SE, whatever stopped them, and writes `experiments/gate-close-068/`: fill to 48, then the next 48 seeds with no early stop; `read` merges the runs (18 rows: 86 min, c2 22 min of it). `screen.py --gate DIR` reads either and prints the unspent readout. A
 planner game costs about 16 s at c2 and 31 s at c3 on 8 threads since 069 (31 s and 56 s before it), so a gate at its cap is about 2.2 h (4.2 h before), and at 068's early-stop share about 50 min. `cargo build --profile fast -p aic-sim` (3 min 12 s) pays that back: rates here are on it.
 
+**The band and gate at r29 (070).** On the fast profile at 8 threads, c2 and c3 run about 24 planner games a minute together (48 games, 117 s): a 96-seed band is 8 min. Content overlays reach a threat's `source` (`threats.manhunt.source="cyber"`) and any card number, so a what-if needs no build; a rule what-if does. **Copy the binary before a run, then rebuild freely; in Git Bash `rm -rf out/x` also removes `out/x.exe`.** `npm run e2e` has a sibling for threat sources: `AIC_URL=http://localhost:PORT/ node web/scripts/e2e-sources.mjs`.
+
+Gate-070: 1,403 of 2,976 games, 48 min on 8 threads; closes 19 rows, 73 min, c3 45 min of it. A 96-seed band took 9 min, and two fresh ones on the same frozen build read 61 / 57 and 46 / 46: one band can sit 10 points off, so read a pool before calling a miss; a planner game runs about 20 s at c2 and 26 s at c3 on 8 threads at r29.
+
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
 (059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-053): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
@@ -677,7 +683,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. Next free: 24500.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. Next free: 25700.
 
 **Seeds are noisy at c3.** The same r22 rules at c3 d2 read 56 / 38 / 71 on 16 / 16 / 14 seeds
 (33 on the first 12 of the 38's): about ±15 on any one set. A 16-seed calibration can't separate levers under about

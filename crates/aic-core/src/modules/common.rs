@@ -12,7 +12,7 @@
 use crate::content::HexKind;
 use crate::module::World;
 use crate::state::{GameState, Opt};
-pub use crate::vocab::Resource;
+pub use crate::vocab::{Resource, ThreatSource};
 
 pub const FACTORY: &str = "factory";
 pub const STATION: &str = "station";

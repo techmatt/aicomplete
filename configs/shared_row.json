@@ -99,7 +99,8 @@
       "module": "threats",
       "variant": "shared_row",
       "params": {
-        "per_country": 1
+        "per_country": 1,
+        "uncreated": 0
       }
     },
     {
@@ -174,6 +175,23 @@
         "discount_floor": 1
       },
       "cards": [
+        "rapid_response",
+        "force_protection_order",
+        "garrison_command",
+        "fact_check_network",
+        "truth_commission",
+        "civic_watch",
+        "incident_response",
+        "threat_hunt",
+        "security_ops_floor",
+        "antitrust_action",
+        "supply_chain_audit",
+        "market_watchdog",
+        "vertical_monopoly",
+        "market_stabilization_board",
+        "sentinel_command",
+        "civic_trust_bureau",
+        "autonomous_defense_grid",
         "telemetry_archive",
         "simulation_cluster",
         "citation_engine",
@@ -221,9 +239,7 @@
         "orbital_mass_driver",
         "arc_furnace_complex",
         "sovereign_capital_fund",
-        "full_automation_mandate",
         "megacorp_ipo",
-        "asteroid_salvage_rights",
         "compute_siphon",
         "blackout_script",
         "eviction_worm",
@@ -244,8 +260,6 @@
         "quantum_decryptor",
         "killswitch_directive",
         "node_severance",
-        "cascade_failure",
-        "mesh_intrusion_pact",
         "singularity_exploit",
         "black_ice_citadel",
         "hyperscale_botnet",
@@ -319,7 +333,6 @@
         "hardpoint_lockdown",
         "agency_directorate",
         "aegis_dome_array",
-        "threat_neutralization_mandate",
         "martial_cordon",
         "deep_state_ledger",
         "kinetic_interdiction",

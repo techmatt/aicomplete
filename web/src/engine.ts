@@ -139,7 +139,11 @@ export interface View {
   choice: ChoiceView | null;
   /** Where pieces are heading (019: each adversary troop's next target). */
   arrows?: ArrowView[];
+  /** Each face-up threat's source type, its source hexes and who may pay (070). */
+  threat_sources?: ThreatSourceView[];
 }
+/** What feeds a threat: hex indexes of its sources, and the seats that may counter it. */
+export interface ThreatSourceView { threat: string; source: string; hexes: number[]; target?: number | null; seats: number[] }
 /** A piece's heading, hex index to hex index; `rounds` 1 means it arrives this coming round. */
 export interface ArrowView { kind: string; from: number; to: number; count: number; rounds: number; doc: string }
 

@@ -115,6 +115,48 @@ impl Tag {
     }
 }
 
+/// A threat's source type (070): which adversary pieces feed it, and so who
+/// may counter it (`threats`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ThreatSource {
+    /// Corrupted cities.
+    Influence,
+    /// Corrupted research stations and nodes.
+    Cyber,
+    /// Adversary factories.
+    Economic,
+    /// Troops.
+    Military,
+}
+
+impl ThreatSource {
+    pub fn name(self) -> &'static str {
+        match self {
+            ThreatSource::Influence => "influence",
+            ThreatSource::Cyber => "cyber",
+            ThreatSource::Economic => "economic",
+            ThreatSource::Military => "military",
+        }
+    }
+
+    /// "a military", "an influence": the word with its article.
+    pub fn a_word(self) -> &'static str {
+        match self {
+            ThreatSource::Influence => "an influence",
+            ThreatSource::Cyber => "a cyber",
+            ThreatSource::Economic => "an economic",
+            ThreatSource::Military => "a military",
+        }
+    }
+}
+
+impl fmt::Display for ThreatSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.name())
+    }
+}
+
 /// Token types (021): tokens live only on cards that print their type.
 /// Datasets (Science), Followers (Diplomacy), Capital (Industry), Agents
 /// (Security); a Cyber type is still to come.

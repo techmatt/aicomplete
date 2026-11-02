@@ -7,6 +7,48 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 29 (070): threat sources, typed counters, tier-2 capstones.** (Bumped from the constant, 28.) Design: Matt, 2026-11-01; the target rule, Matt, 2026-11-02. Everything here is a **candidate**. The band: planner, d2, fresh seeds 25000, 96 a cell, on the frozen build, threat costs as printed: **61 ±5.0 / 57 ±5.0**, then a second fresh set, seeds 25600: **46 ±5.1 / 46 ±5.1**. With the gate's own planner row (53 / 47, 96 seeds) that pools to **53.5 ±2.9 / 50.0 ±2.9** on 288 frozen-build seeds a cell, none of which picked a lever: **the band (60-75) is missed by about 7-10 points.** Threat costs stay as printed. The cause, as far as it is measured: reach. Threats go uncountered 3 a game (r28: 0.3), each a Sway and its harm, and the planner wins by purge 41% of games (r28: 56% on 48). The gate: planner, seeds 25200, gate-070, 62 rows: no check ahead of the planner by more than 1 SE; 19 within 2 SE closed at 96 paired seeds, the nearest c3 `never_second_presence` -1.0 ±7.0 and c2 / c3 `always_max_presence` +3.1 ±6.4; `home_only` +11.5 ±5.1 / +18.8 ±6.0, `capstone_rush` +25 / +19.8, `no_counters` stopped at 12 seeds. Unspent: credits and energy flag on the planner, because a purge ends the game mid-round with that round's income in hand: winners hold 20.5 / 17.8 credits, losers 7.5 / 6.0, under the flag.
+
+**How the target rule came.** Three builds on the same cards. Creation at the deal (the prompt's first text): 36 ±4.9 / 38 ±4.9, purge wins 12 of 192: a threat re-corrupted a freed city before the counter phase, and corrupted cities always count against the purge. A threat with no source set aside: 79 ±4.1 / 81 ±4.0, purge 140 of 192. The target rule: 53.5 / 50 pooled, purge 237 of 576 games, the planner countering every threat in 5.0 rounds of 8.4. Creation by type, off one at a time, 48 paired seeds a cell, c2 / c3 (base 50 / 58, purge 20 / 22): influence 50 / 58, purge 20 / 22; cyber 50 / 58, 20 / 22; economic 50 / 60, 20 / 23; military 52 / 56, 20 / 21. No type's creation costs measurably: the planner lets 0.5 a game happen, most of them troops.
+
+| Rule | Status |
+|---|---|
+| Every threat prints a source type; its sources are all adversary pieces of that type in its country | candidate (Matt) |
+| Sources: influence corrupted cities; cyber corrupted stations and nodes; economic adversary factories; military troops | candidate (Matt) |
+| Who may counter: a source in reach, or their ambassador on one; replaces presence in the country | candidate (Matt) |
+| A player's card that jams or counters reaches only threats they may counter; a Unity reward reaches any | candidate, 070's call |
+| Countering doesn't consume the ambassador | candidate (Matt) |
+| No source when dealt: it names a target, its source while it is up: the lowest clean piece of its type, neutral before player-owned; a site to build on; the lowest base not walled | candidate (Matt, 2026-11-02; neutral first and the Wall are 070's call) |
+| Countered, nothing is created; uncountered, the target becomes a source as the threat executes, before its effect | candidate (Matt, 2026-11-02) |
+| At most one creation a country a round; nothing is set aside for lack of a source; with nothing to name, nobody can pay and it makes nothing | candidate (Matt; the last is 070's call) |
+| `uncreated`: a screen's switch, 0 in play, for the creation-off read | not a rule |
+| A threat whose sources have left can't be paid and still executes | Default (070; question default) |
+| Shield: pieces of its type in its country can't be destroyed or freed while it is face up | candidate (Matt) |
+| Extra threats reshuffle an empty deck as the round's deal does: that, not deck size, made every short deal | candidate, 070's call |
+| Tier-2 threat deck 10 to 12: Asset Freeze, Deepfake Wave (7 credits) | candidate |
+| Typed counters: a jam can name a source type; 12 tier-1 cards | candidate |
+| `project_drain` and `auto_counter`: standing ops on tier-2 capstones | candidate |
+| Retired: Threat Neutralization Mandate, Cascade Failure, Mesh Intrusion Pact, Full Automation Mandate, Asteroid Salvage Rights | candidate |
+| Black Ice Citadel: was an Action, 6 credits, 1 energy, drain 2 from each project; now 7 credits, needs 1 Cyber, standing drain 1 | candidate |
+
+**Source types (24 threats; no text changed).** Influence: Agitators, Defection, Smear Campaign, Overrun, Insurrection, Deepfake Wave. Cyber: Blackout, Sabotage, Infiltration, Station Seizure, Sleeper Cells, Purge Protocols. Economic: Requisition, Commandeer, Supply Raid, Embargo, Mass Production, Conscription, Asset Freeze. Military: Orbital Strike, Eviction, Total War, Siege, Manhunt.
+
+**Typed counters.** Each counts as more than its cost toward its type. Military (Security): Rapid Response 4 for 2 credits, Force Protection Order 5 for 3 and 1 insight, Garrison Command, a building at 3 and 1 insight, Action, 1 energy: 3. The same shape: influence (Diplomacy) Fact-Check Network, Truth Commission, Civic Watch; cyber (Cyber) Incident Response, Threat Hunt, Security Ops Floor; economic (Industry) Antitrust Action, Supply Chain Audit, Market Watchdog. The deck's shape holds: tier 1 is 68 programs, 38 buildings, 14 events (60 / 34 / 14).
+
+| Capstone | Tag | Does | Price | Why |
+|---|---|---|---|---|
+| Foundation Model Campus (kept) | Science | 2 insight; 1 credit per Science tag | 8, antimatter, 2 chips, 2 insight, needs 3 | the existing end of the engine |
+| Vertical Monopoly | Industry | 1 credit per Industry tag | 10, 2 insight, needs 2 | capped by tags, which grow only by cards played |
+| Market Stabilization Board | Industry | economic threats at home need 4 less | 5, 1 insight, needs 1 | at 9-12 it was never played: it fires about 0.3 times a round |
+| Hyperscale Botnet (kept) | Cyber | 1 insight; 1 credit per Cyber tag | 13, 2 insight, 1 chip, needs 2 | the existing end of the engine |
+| Black Ice Citadel (reworked) | Cyber | each upkeep, 1 compute off each project | 7, 2 insight, 1 chip, needs 1 | N 1, so projects finish slowed |
+| Autonomous Defense Grid | Cyber | cyber threats at home need 4 less | 5, 1 insight, needs 1 | as the Board |
+| Continental Supergrid (kept) | Power | 1 energy per Power tag | 11, 2 insight, needs 2 | the existing end of the engine |
+| Civic Trust Bureau | Diplomacy | influence threats at home need 4 less | 5, 1 insight, needs 1 | as the Board |
+| Sentinel Command | Security | military threats at home need 4 less | 5, 1 insight, needs 1 | as the Board |
+
+**Loops.** Income per tag: tags grow only by cards played; 0.07 Vertical Monopoly played a game. Automatic counters: N 4 is under a typical cost, one copy a type at one seat's home holds them to one per country and type, and they save 4.7 credits a game. Project drain: N 1, 0.01 played a game; no project was stopped. **Ambassadors on sources are not learned:** payments by ambassador alone run 0.03 / 0.06 a game for the planner and at most 0.17 for any check (`threats.paid_by_ambassador`, 2,604 games). The standard Move reaches only hexes in reach, where an ambassador adds nothing, so only the five `move_one` cards stretch, and a seat holds about 0.1 ambassadors. A keep-plan bonus for those cards, `plan_stretch` 8, a what-if not shipped: 0.00 / 0.02, wins 30 and 27 of 48 against 31 and 28. Typed counters are little played: 0.27 / 0.31 a game for the planner, 0.33 / 0.48 for the engine; capstones 0.89 / 1.43 and 0.94 / 1.62.
+
 **Revision 28 (068): Builder and Protector boards, ambassadors that stay, scarcity.** (Bumped from the constant, 27.) Design: Matt,
 2026-11-01. The band: planner, d2, fresh seeds 22100, 96 a cell: **73 ±4.5 / 75 ±4.4** (target 60-75), on the frozen build. The gate: planner, seeds 23000, no check ahead of the planner by more than 1 SE: 18 rows within 2 SE at 96 paired seeds, the other 38 clearly behind early, `never_tag` dropped. Credits and energy end high; the cause is in the results. Reasoning, tracks and the screens: `experiments/results/screen-068-boards/boards.md`. Every row is a **candidate** unless marked.
 

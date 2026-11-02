@@ -183,13 +183,19 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .project .pc.done { background: var(--good); }
 .project small { color: var(--muted); }
 .project .pdone { color: var(--good); }
-.threat { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
+.threat { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
 .threat .tname { display: inline; margin-right: 0.4em; }
 .threat .tname b { color: #8e1b1b; margin-right: 0.3em; }
 .threat .ttext { display: inline; color: #444; font-size: 0.92em; }
 .threat .waits { color: #1565c0; font-weight: 600; font-size: 0.85em; margin-right: 0.3em; }
 .threat .jam { color: var(--good); font-weight: 600; font-size: 0.85em; margin-right: 0.3em; }
 .threat.waiting { opacity: 0.7; }
+.threat .tsource { font-size: 0.8em; font-weight: 700; padding: 0 0.35em; margin-right: 0.3em; border-radius: 0.3em; color: #fff; background: #555; }
+.threat .tsource.influence { background: #8e24aa; }
+.threat .tsource.cyber { background: #00838f; }
+.threat .tsource.economic { background: #9e6b00; }
+.threat .tsource.military { background: #b71c1c; }
+.threat .trefused { color: #b71c1c; font-size: 0.85em; margin-right: 0.3em; }
 .prog { min-width: 6.5em; }
 .prog .fill { background: linear-gradient(90deg, #64b5f6, #1565c0); }
 .prog.done .fill { background: linear-gradient(90deg, #66bb6a, #2e7d32); }
@@ -216,6 +222,7 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .base-mark .pole { stroke: #333; stroke-width: 0.025; }
 .base-mark .flag { stroke: #fff; stroke-width: 0.015; }
 .mark { fill: none; }
+.mark.source { stroke: #8e1b1b; stroke-width: 0.07; stroke-dasharray: 0.08 0.08; fill: none; }
 .mark.changed { stroke: #e0a100; stroke-width: 0.08; stroke-dasharray: 0.15 0.08; }
 .mark.target { stroke: var(--accent); stroke-width: 0.12; fill: #1f6feb22; animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 50% { fill: #1f6feb55; } }

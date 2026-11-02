@@ -26,7 +26,7 @@ pub const HARMS: [&str; 14] = [
 
 /// The sources of the ledger, in its column order. The first five read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 10] = [
+pub const SOURCES: [&str; 11] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
@@ -35,13 +35,14 @@ pub const SOURCES: [&str; 10] = [
     "arrivals",
     "build and spread",
     "corruption",
+    "uncountered threats",
     "war",
     "march",
 ];
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 16] = [
+pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("arrivals", "adversary pieces placed", "every matching site gains an ambassador"),
     ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
     ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
@@ -55,6 +56,10 @@ pub const RULE_HARMS: [(&str, &str, &str); 16] = [
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
+    ("uncountered threats", "adversary pieces placed", "a threat with no source that goes uncountered makes its target one: a city, station or factory goes over, or a troop lands at a base; one a country a round"),
+    ("uncountered threats", "presence destroyed", "a city it corrupts takes the presence on and next to it"),
+    ("uncountered threats", "ambassadors lost", "player ambassadors on a city it corrupts are lost"),
+    ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station"),
     ("war", "presence destroyed", "a destroyed factory takes the presence on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
     ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter a hex with the Protector's presence"),

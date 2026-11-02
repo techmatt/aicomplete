@@ -3,6 +3,7 @@
   "id": "requisition",
   "name": "Requisition",
   "tier": 1,
+  "source": "economic",
   "text": "Each player here discards 2 cards or pays 6 credits.",
   "counter": [
    [
@@ -23,6 +24,7 @@
   "id": "commandeer",
   "name": "Commandeer",
   "tier": 1,
+  "source": "economic",
   "text": "Each player here discards 2 cards or pays 4 energy.",
   "counter": [
    [
@@ -43,6 +45,7 @@
   "id": "supply_raid",
   "name": "Supply Raid",
   "tier": 1,
+  "source": "economic",
   "text": "Each player here loses 6 credits.",
   "counter": [
    [
@@ -62,6 +65,7 @@
   "id": "blackout",
   "name": "Blackout",
   "tier": 1,
+  "source": "cyber",
   "text": "Cities here produce no energy next round; the adversary gains 3 compute.",
   "counter": [
    [
@@ -84,6 +88,7 @@
   "id": "sabotage",
   "name": "Sabotage",
   "tier": 1,
+  "source": "cyber",
   "text": "Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute.",
   "counter": [
    [
@@ -110,6 +115,7 @@
   "id": "infiltration",
   "name": "Infiltration",
   "tier": 1,
+  "source": "cyber",
   "text": "3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute.",
   "counter": [
    [
@@ -133,6 +139,7 @@
   "id": "agitators",
   "name": "Agitators",
   "tier": 1,
+  "source": "influence",
   "text": "3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -156,6 +163,7 @@
   "id": "orbital_strike",
   "name": "Orbital Strike",
   "tier": 1,
+  "source": "military",
   "text": "1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -182,6 +190,7 @@
   "id": "defection",
   "name": "Defection",
   "tier": 1,
+  "source": "influence",
   "text": "Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -208,6 +217,7 @@
   "id": "eviction",
   "name": "Eviction",
   "tier": 1,
+  "source": "military",
   "text": "Each player here pays 6 credits or loses a presence here (never their last).",
   "counter": [
    [
@@ -227,6 +237,7 @@
   "id": "embargo",
   "name": "Embargo",
   "tier": 1,
+  "source": "economic",
   "text": "No site here can be claimed next round; the adversary gains 3 compute.",
   "counter": [
    [
@@ -249,6 +260,7 @@
   "id": "smear_campaign",
   "name": "Smear Campaign",
   "tier": 1,
+  "source": "influence",
   "text": "Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided.",
   "counter": [
    [
@@ -271,6 +283,7 @@
   "id": "station_seizure",
   "name": "Station Seizure",
   "tier": 2,
+  "source": "cyber",
   "text": "An uncorrupted research station here becomes corrupted. The adversary gains 4 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -296,6 +309,7 @@
   "id": "overrun",
   "name": "Overrun",
   "tier": 2,
+  "source": "influence",
   "text": "The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -317,6 +331,7 @@
   "id": "mass_production",
   "name": "Mass Production",
   "tier": 2,
+  "source": "economic",
   "text": "The adversary builds now, here; the adversary gains 4 compute.",
   "counter": [
    [
@@ -338,6 +353,7 @@
   "id": "purge_protocols",
   "name": "Purge Protocols",
   "tier": 2,
+  "source": "cyber",
   "text": "Each player here discards their most expensive card in hand and loses 3 tokens from their cards.",
   "counter": [
    [
@@ -359,6 +375,7 @@
   "id": "total_war",
   "name": "Total War",
   "tier": 2,
+  "source": "military",
   "text": "2 troops land on factories here, or cities if no factories; each destroys all presence on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute.",
   "counter": [
    [
@@ -387,6 +404,7 @@
   "id": "conscription",
   "name": "Conscription",
   "tier": 2,
+  "source": "economic",
   "text": "Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute.",
   "counter": [
    [
@@ -411,6 +429,7 @@
   "id": "fifth_column",
   "name": "Sleeper Cells",
   "tier": 2,
+  "source": "cyber",
   "text": "4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -438,6 +457,7 @@
   "id": "insurrection",
   "name": "Insurrection",
   "tier": 2,
+  "source": "influence",
   "text": "4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their presence here.",
   "counter": [
    [
@@ -466,6 +486,7 @@
   "id": "siege",
   "name": "Siege",
   "tier": 2,
+  "source": "military",
   "text": "2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their presence here and loses an ambassador. The adversary gains 3 compute.",
   "counter": [
    [
@@ -495,6 +516,7 @@
   "id": "manhunt",
   "name": "Manhunt",
   "tier": 2,
+  "source": "military",
   "text": "Each player here destroys 2 of their presence here.",
   "counter": [
    [
@@ -506,6 +528,54 @@
    {
     "op": "each_destroy_presence",
     "count": 2
+   }
+  ]
+ },
+ {
+  "id": "asset_freeze",
+  "name": "Asset Freeze",
+  "tier": 2,
+  "source": "economic",
+  "text": "Each player here loses 8 credits. The adversary gains 3 compute.",
+  "counter": [
+   [
+    "credits",
+    7
+   ]
+  ],
+  "effects": [
+   {
+    "op": "players_lose",
+    "resource": "credits",
+    "amount": 8
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ]
+ },
+ {
+  "id": "deepfake_wave",
+  "name": "Deepfake Wave",
+  "tier": 2,
+  "source": "influence",
+  "text": "Sway 3 toward Discord. Each player here gets 2 less insight next round.",
+  "counter": [
+   [
+    "credits",
+    7
+   ]
+  ],
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 3
+   },
+   {
+    "op": "lose_insight",
+    "amount": 2
    }
   ]
  }

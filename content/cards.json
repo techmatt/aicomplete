@@ -1432,35 +1432,6 @@
   }
  },
  {
-  "id": "full_automation_mandate",
-  "name": "Full Automation Mandate",
-  "tier": 2,
-  "kind": "program",
-  "cost": 12,
-  "insight": 1,
-  "needs": [
-   [
-    "industry",
-    2
-   ]
-  ],
-  "tags": [
-   "industry"
-  ],
-  "effects": [
-   {
-    "op": "production",
-    "resource": "credits",
-    "amount": 4
-   },
-   {
-    "op": "production",
-    "resource": "chips",
-    "amount": 1
-   }
-  ]
- },
- {
   "id": "megacorp_ipo",
   "name": "Megacorp IPO",
   "tier": 2,
@@ -1479,40 +1450,6 @@
     "kind": "capital",
     "resource": "credits",
     "rate": 4
-   }
-  ]
- },
- {
-  "id": "asteroid_salvage_rights",
-  "name": "Asteroid Salvage Rights",
-  "tier": 2,
-  "kind": "event",
-  "cost": 5,
-  "insight": 2,
-  "needs": [
-   [
-    "industry",
-    1
-   ]
-  ],
-  "tags": [
-   "industry"
-  ],
-  "effects": [
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 10
-   },
-   {
-    "op": "gain",
-    "resource": "chips",
-    "amount": 4
-   },
-   {
-    "op": "gain",
-    "resource": "antimatter",
-    "amount": 1
    }
   ]
  },
@@ -1989,63 +1926,6 @@
   ]
  },
  {
-  "id": "cascade_failure",
-  "name": "Cascade Failure",
-  "tier": 2,
-  "kind": "program",
-  "cost": 9,
-  "insight": 2,
-  "tags": [
-   "cyber"
-  ],
-  "keywords": [
-   "hack"
-  ],
-  "effects": [
-   {
-    "op": "drain_all",
-    "amount": 5
-   }
-  ]
- },
- {
-  "id": "mesh_intrusion_pact",
-  "name": "Mesh Intrusion Pact",
-  "tier": 2,
-  "kind": "program",
-  "cost": 6,
-  "insight": 1,
-  "needs": [
-   [
-    "cyber",
-    1
-   ]
-  ],
-  "tags": [
-   "cyber",
-   "science",
-   "security"
-  ],
-  "keywords": [
-   "hack",
-   "help"
-  ],
-  "effects": [
-   {
-    "op": "drain_all",
-    "amount": 3
-   },
-   {
-    "op": "choose_player"
-   },
-   {
-    "op": "other_gain",
-    "resource": "credits",
-    "amount": 2
-   }
-  ]
- },
- {
   "id": "singularity_exploit",
   "name": "Singularity Exploit",
   "tier": 2,
@@ -2079,31 +1959,25 @@
   "name": "Black Ice Citadel",
   "tier": 2,
   "kind": "building",
-  "cost": 6,
+  "cost": 7,
   "insight": 2,
-  "chips": 2,
-  "replaces": "cyber",
+  "chips": 1,
   "tags": [
    "cyber",
    "security"
   ],
-  "keywords": [
-   "hack"
-  ],
-  "ability": {
-   "cost": [
-    [
-     "energy",
-     1
-    ]
-   ],
-   "effects": [
-    {
-     "op": "drain_all",
-     "amount": 2
-    }
+  "needs": [
+   [
+    "cyber",
+    1
    ]
-  }
+  ],
+  "passives": [
+   {
+    "op": "project_drain",
+    "amount": 1
+   }
+  ]
  },
  {
   "id": "hyperscale_botnet",
@@ -3943,28 +3817,6 @@
   ]
  },
  {
-  "id": "threat_neutralization_mandate",
-  "name": "Threat Neutralization Mandate",
-  "tier": 2,
-  "kind": "program",
-  "cost": 6,
-  "insight": 1,
-  "tags": [
-   "security"
-  ],
-  "needs": [
-   [
-    "security",
-    1
-   ]
-  ],
-  "effects": [
-   {
-    "op": "counter_threat"
-   }
-  ]
- },
- {
   "id": "martial_cordon",
   "name": "Martial Cordon",
   "tier": 2,
@@ -4074,6 +3926,375 @@
    {
     "op": "shelter"
    }
+  ]
+ },
+ {
+  "id": "rapid_response",
+  "name": "Rapid Response",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "insight": 0,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 4,
+    "source": "military"
+   }
+  ],
+  "tags": [
+   "security"
+  ]
+ },
+ {
+  "id": "force_protection_order",
+  "name": "Force Protection Order",
+  "tier": 1,
+  "kind": "program",
+  "cost": 3,
+  "insight": 1,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "military"
+   }
+  ],
+  "tags": [
+   "security"
+  ]
+ },
+ {
+  "id": "garrison_command",
+  "name": "Garrison Command",
+  "tier": 1,
+  "kind": "building",
+  "cost": 3,
+  "insight": 1,
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 3,
+     "source": "military"
+    }
+   ]
+  },
+  "tags": [
+   "security"
+  ]
+ },
+ {
+  "id": "fact_check_network",
+  "name": "Fact-Check Network",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "insight": 0,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 4,
+    "source": "influence"
+   }
+  ],
+  "tags": [
+   "diplomacy"
+  ]
+ },
+ {
+  "id": "truth_commission",
+  "name": "Truth Commission",
+  "tier": 1,
+  "kind": "program",
+  "cost": 3,
+  "insight": 1,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "influence"
+   }
+  ],
+  "tags": [
+   "diplomacy"
+  ]
+ },
+ {
+  "id": "civic_watch",
+  "name": "Civic Watch",
+  "tier": 1,
+  "kind": "building",
+  "cost": 3,
+  "insight": 1,
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 3,
+     "source": "influence"
+    }
+   ]
+  },
+  "tags": [
+   "diplomacy"
+  ]
+ },
+ {
+  "id": "incident_response",
+  "name": "Incident Response",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "insight": 0,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 4,
+    "source": "cyber"
+   }
+  ],
+  "tags": [
+   "cyber"
+  ]
+ },
+ {
+  "id": "threat_hunt",
+  "name": "Threat Hunt",
+  "tier": 1,
+  "kind": "program",
+  "cost": 3,
+  "insight": 1,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "cyber"
+   }
+  ],
+  "tags": [
+   "cyber"
+  ]
+ },
+ {
+  "id": "security_ops_floor",
+  "name": "Security Ops Floor",
+  "tier": 1,
+  "kind": "building",
+  "cost": 3,
+  "insight": 1,
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 3,
+     "source": "cyber"
+    }
+   ]
+  },
+  "tags": [
+   "cyber"
+  ]
+ },
+ {
+  "id": "antitrust_action",
+  "name": "Antitrust Action",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "insight": 0,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 4,
+    "source": "economic"
+   }
+  ],
+  "tags": [
+   "industry"
+  ]
+ },
+ {
+  "id": "supply_chain_audit",
+  "name": "Supply Chain Audit",
+  "tier": 1,
+  "kind": "program",
+  "cost": 3,
+  "insight": 1,
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "economic"
+   }
+  ],
+  "tags": [
+   "industry"
+  ]
+ },
+ {
+  "id": "market_watchdog",
+  "name": "Market Watchdog",
+  "tier": 1,
+  "kind": "building",
+  "cost": 3,
+  "insight": 1,
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 3,
+     "source": "economic"
+    }
+   ]
+  },
+  "tags": [
+   "industry"
+  ]
+ },
+ {
+  "id": "vertical_monopoly",
+  "name": "Vertical Monopoly",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 2,
+  "needs": [
+   [
+    "industry",
+    2
+   ]
+  ],
+  "passives": [
+   {
+    "op": "income_per_tag",
+    "resource": "credits",
+    "tag": "industry",
+    "per": 1
+   }
+  ],
+  "tags": [
+   "industry"
+  ]
+ },
+ {
+  "id": "market_stabilization_board",
+  "name": "Market Stabilization Board",
+  "tier": 2,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "needs": [
+   [
+    "industry",
+    1
+   ]
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "economic",
+    "amount": 4
+   }
+  ],
+  "tags": [
+   "industry"
+  ]
+ },
+ {
+  "id": "sentinel_command",
+  "name": "Sentinel Command",
+  "tier": 2,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    1
+   ]
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "military",
+    "amount": 4
+   }
+  ],
+  "tags": [
+   "security"
+  ]
+ },
+ {
+  "id": "civic_trust_bureau",
+  "name": "Civic Trust Bureau",
+  "tier": 2,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "influence",
+    "amount": 4
+   }
+  ],
+  "tags": [
+   "diplomacy"
+  ]
+ },
+ {
+  "id": "autonomous_defense_grid",
+  "name": "Autonomous Defense Grid",
+  "tier": 2,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    1
+   ]
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "cyber",
+    "amount": 4
+   }
+  ],
+  "tags": [
+   "cyber"
   ]
  }
 ]

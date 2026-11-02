@@ -1,0 +1,79 @@
+{
+ "name": "off",
+ "note": "070 screen",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2-base",
+   "set": []
+  },
+  {
+   "name": "c3-base",
+   "set": [
+    "countries=3"
+   ]
+  },
+  {
+   "name": "c2-inf",
+   "set": [
+    "threats.uncreated=1"
+   ]
+  },
+  {
+   "name": "c3-inf",
+   "set": [
+    "countries=3",
+    "threats.uncreated=1"
+   ]
+  },
+  {
+   "name": "c2-cyb",
+   "set": [
+    "threats.uncreated=2"
+   ]
+  },
+  {
+   "name": "c3-cyb",
+   "set": [
+    "countries=3",
+    "threats.uncreated=2"
+   ]
+  },
+  {
+   "name": "c2-eco",
+   "set": [
+    "threats.uncreated=3"
+   ]
+  },
+  {
+   "name": "c3-eco",
+   "set": [
+    "countries=3",
+    "threats.uncreated=3"
+   ]
+  },
+  {
+   "name": "c2-mil",
+   "set": [
+    "threats.uncreated=4"
+   ]
+  },
+  {
+   "name": "c3-mil",
+   "set": [
+    "countries=3",
+    "threats.uncreated=4"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner"
+ ],
+ "games": 48,
+ "records": 0
+}

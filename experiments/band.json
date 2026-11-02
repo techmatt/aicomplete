@@ -1,6 +1,6 @@
 {
   "name": "band",
-  "note": "The calibration read: the planner at d2, 2 and 3 countries, 48 seeds a cell. Fresh seeds only: the first read (053) was --seed 5000; 066's were 20200 (band-066.json) and 20300.",
+  "note": "The calibration read: the planner at d2, 2 and 3 countries. 070's band: --seed 25000 --games 96. Fresh seeds only: the first read (053) was --seed 5000; 066's were 20200 (band-066.json) and 20300.",
   "configs": [
     "configs/baseline.json"
   ],

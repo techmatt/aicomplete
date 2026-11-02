@@ -102,23 +102,30 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::FreeBuilding => cards::play_free_building(g, cx, seat)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
-        Op::Jam { amount } => {
-            let active = threats::active(g);
-            let opts = active.iter().map(|(t, _)| opt(t.clone())).collect();
+        Op::Jam { amount, source } => {
+            let active = threats::counterable(&w, g, seat, *source);
+            let opts = active.iter().map(|t| opt(t.clone())).collect();
             let prompt = format!("Seat {seat}: jam which threat?");
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
-                threats::jam(g, cx, &active[i].0, *amount);
+                threats::jam(g, cx, &active[i], *amount);
+                if source.is_some() {
+                    cx.tally(g, "threats.typed_counters", 1);
+                }
             }
         }
         Op::CounterThreat => {
-            let active = threats::active(g);
-            let opts = active.iter().map(|(t, _)| opt(t.clone())).collect();
+            // 070: a player's card reaches what they may counter; a reward any threat.
+            let active: Vec<_> = match ctx.source {
+                Source::Seat(_) => threats::counterable(&w, g, seat, None),
+                _ => threats::active(g).into_iter().map(|(t, _)| t).collect(),
+            };
+            let opts = active.iter().map(|t| opt(t.clone())).collect();
             let prompt = match ctx.source {
                 Source::Seat(_) => format!("Seat {seat}: counter which threat?"),
                 _ => "Unity: counter which threat?".to_string(),
             };
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
-                threats::counter(g, cx, &active[i].0);
+                threats::counter(g, cx, &active[i]);
             }
         }
         Op::DrainProject { amount } => {
@@ -245,6 +252,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::HardenAction
         | Op::Slots { .. }
         | Op::Logistics { .. }
+        | Op::ProjectDrain { .. }
+        | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
         | Op::GiveBonus { .. }
         | Op::SpreadShield

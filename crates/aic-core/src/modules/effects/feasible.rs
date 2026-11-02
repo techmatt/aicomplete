@@ -42,8 +42,8 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
     });
     effects.iter().enumerate().all(|(at, e)| match e {
         Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
-        Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(g, h, *ambassadors, *troops)),
-        Op::DestroyAll => any_hex(g, |h| has_adversary(g, h)),
+        Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(w, g, h, *ambassadors, *troops)),
+        Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(w, g, h)),
         Op::RemoveNode => any_hex(g, |h| node_in_reach(w, g, seat, h)),
         Op::CutNode => !cuttable_nodes(w, g, seat).is_empty(),
         Op::Shelter => !unsheltered(w, g).is_empty(),
@@ -58,7 +58,8 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
             any_hex(g, |h| cleansable(w, g, h, *cities) && in_reach(w, g, seat, h))
         }
         Op::ClearCity { .. } => !guarded_cities(w, g, seat).is_empty(),
-        Op::Jam { .. } | Op::CounterThreat => !threats::active(g).is_empty(),
+        Op::Jam { source, .. } => !threats::counterable(w, g, seat, *source).is_empty(),
+        Op::CounterThreat => !threats::counterable(w, g, seat, None).is_empty(),
         Op::DrainProject { .. } | Op::DrainAll { .. } => !adversary::projects_with_compute(g).is_empty(),
         Op::DiscardProject => !adversary::projects(g).is_empty(),
         // 024: too few to count, nothing to cash in: the card would do nothing.

@@ -17,7 +17,7 @@ use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
 pub use crate::op::{Op, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
-    PerResource, Resource, Side, Tag, TagOrAny, TokenKind, RESOURCES, TAGS,
+    PerResource, Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind, RESOURCES, TAGS,
 };
 
 const MAP_JSON: &str = include_str!("../../../content/map.json");
@@ -304,6 +304,8 @@ pub struct ThreatDef {
     pub text: String,
     /// What countering it costs, in order (difficulty 1 raises the first).
     pub counter: Vec<Cost>,
+    /// The adversary pieces that feed it (070): who may counter, and what it shields.
+    pub source: ThreatSource,
     pub effects: Vec<Op>,
 }
 

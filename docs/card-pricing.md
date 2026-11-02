@@ -41,6 +41,14 @@ sections run newest first, and the cards as they stand are in [cards.md](cards.m
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
 
+## 070's changes (r29): typed counters and capstones
+
+See *Revision 29* in [rules-history.md](rules-history.md) for the numbers that shipped and
+why each moved. **A typed jam of N is worth about 0.7 N:** it needs a threat of its type that
+you may counter, and a counter card is worth what it saves. **An automatic counter is priced by
+its hits, not its N:** a type is about a quarter of the deck and a country sees about 1.3
+threats a round, so it fires about 0.3 times a round: at 9 and 12 credits it was kept and never played.
+
 ## 059's changes (r25): the card design pass
 
 Every card was read against [card-guidelines.md](card-guidelines.md). 91 of 158 player cards changed in

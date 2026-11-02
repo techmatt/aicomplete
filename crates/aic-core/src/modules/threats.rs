@@ -5,24 +5,27 @@
 //! country) and `off` (no threats).
 
 use crate::action::Action;
-use crate::content::{Op, Resource, Spot, ThreatDef};
+use crate::content::{Op, Resource, Spot, ThreatDef, ThreatSource};
 use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
 use crate::rng::shuffle;
 use crate::state::GameState;
-use crate::view::{CardView, ViewOut};
+use crate::view::{CardView, ThreatSourceView, ViewOut};
 
 use super::common::*;
 use super::{adversary, alignment, board, cards, effects};
 
-const PARAMS: &[ParamSpec] = &[ParamSpec::int(
-    "per_country",
-    0,
-    5,
-    "threats dealt each round per country",
-)];
+const PARAMS: &[ParamSpec] = &[
+    ParamSpec::int("per_country", 0, 5, "threats dealt each round per country"),
+    ParamSpec::int(
+        "uncreated",
+        0,
+        4,
+        "a screen's switch: this source type makes nothing when uncountered (1 influence, 2 cyber, 3 economic, 4 military; 0 none)",
+    ),
+];
 
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
@@ -46,7 +49,7 @@ pub static DEF: ModuleDef = ModuleDef {
     variants: &[
         VariantDef {
             name: "countries",
-            summary: "Each threat sits on one country; only players with a presence there may pay",
+            summary: "Each threat sits on one country; only players with one of its sources in reach, or an ambassador on one, may pay",
             params: PARAMS,
             phases: PHASES,
             rng: &["threats"],
@@ -105,6 +108,16 @@ pub fn paid_prefix(threat: &str) -> KeyBuf {
 
 fn paid_key(threat: &str, seat: usize, resource: Resource) -> KeyBuf {
     KeyBuf::new("threats.paid.").text(threat).text(".").num(seat).text(".").text(resource.name())
+}
+
+/// The hex plus 1 a threat dealt with no source named as its target (070).
+fn target_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("threats.target.").text(threat)
+}
+
+/// The last round this country's threats made a source (one a round).
+fn made_key(c: usize) -> KeyBuf {
+    KeyBuf::new("threats.made.").num(c)
 }
 
 fn jam_key(threat: &str) -> KeyBuf {
@@ -172,15 +185,186 @@ fn deal_pile(shared: bool, c: usize) -> String {
     }
 }
 
-/// Deals the top threat of the `tier` deck onto `to`, counted under
+/// Whether hex `h` holds an adversary piece of type `source` (070).
+pub fn is_source(w: &World, g: &GameState, h: usize, source: ThreatSource) -> bool {
+    match source {
+        ThreatSource::Influence => corrupted_city(w, g, h),
+        ThreatSource::Cyber => g.tokens(h, NODE) > 0 || (g.tokens(h, STATION) > 0 && corrupted(g, h)),
+        ThreatSource::Economic => g.tokens(h, FACTORY) > 0 && corrupted(g, h),
+        ThreatSource::Military => g.tokens(h, TROOP) > 0,
+    }
+}
+
+/// The sources of type `source` in country `c`, in hex order.
+pub fn sources(w: &World, g: &GameState, c: usize, source: ThreatSource) -> Vec<usize> {
+    w.map.countries[c].hexes.iter().copied().filter(|&h| is_source(w, g, h, source)).collect()
+}
+
+/// The source type `threat` prints.
+pub fn source_of(w: &World, threat: &str) -> ThreatSource {
+    def(w, threat).source
+}
+
+/// The hex `threat` named as its target when dealt with no source, if any.
+pub fn target(g: &GameState, threat: &str) -> Option<usize> {
+    let v = g.var(&target_key(threat));
+    (v > 0).then(|| v as usize - 1)
+}
+
+/// What `threat` in country `c` counts as its sources: the adversary's pieces
+/// of its type there, and the target it named.
+pub fn threat_sources(w: &World, g: &GameState, threat: &str, c: usize) -> Vec<usize> {
+    let mut hexes = sources(w, g, c, source_of(w, threat));
+    if let Some(h) = target(g, threat) {
+        if !hexes.contains(&h) {
+            hexes.push(h);
+        }
+    }
+    hexes
+}
+
+/// Whether seat `s` may counter `threat` in `scope`: one of its sources in
+/// reach, or its ambassador on one (070). A shared-row threat is anyone's.
+pub fn may_counter(w: &World, g: &GameState, s: usize, threat: &str, scope: Option<usize>) -> bool {
+    let Some(c) = scope else {
+        return true;
+    };
+    let k = ambassador(s);
+    let open = |h: usize| g.tokens(h, &k) > 0 || in_reach(w, g, s, h);
+    let source = source_of(w, threat);
+    target(g, threat).is_some_and(open)
+        || w.map.countries[c].hexes.iter().any(|&h| is_source(w, g, h, source) && open(h))
+}
+
+/// The active threats seat `s` may counter, of type `source` if given.
+pub fn counterable(w: &World, g: &GameState, s: usize, source: Option<ThreatSource>) -> Vec<Key> {
+    active(g)
+        .into_iter()
+        .filter(|(t, scope)| {
+            source.is_none_or(|x| x == source_of(w, t)) && may_counter(w, g, s, t, *scope)
+        })
+        .map(|(t, _)| t)
+        .collect()
+}
+
+/// An empty `tier` deck is refilled from its shuffled discard (070: extra
+/// deals out of turn too: that is what made `threats.short`, not the deck's size).
+fn refill(g: &mut GameState, cx: &mut Cx, tier: u8) {
+    if g.pile(&deck(tier)).is_empty() {
+        let mut cards = g.pile(&discard(tier)).to_vec();
+        if cards.is_empty() {
+            return;
+        }
+        shuffle(&mut cards, cx.threat_rng(g));
+        cx.set_pile(g, &discard(tier), Vec::new());
+        cx.set_pile(g, &deck(tier), cards);
+    }
+}
+
+/// Whether a face-up threat of `source` in `h`'s country holds the adversary's
+/// pieces of that type there (070: they can't be destroyed or freed until it
+/// is countered). A shared-row threat has no country and holds nothing.
+pub fn shielded(w: &World, g: &GameState, h: usize, source: ThreatSource) -> bool {
+    g.pile(&on(w.map.hexes[h].country as usize)).iter().any(|t| def(w, t).source == source)
+}
+
+/// What a threat with no source in country `c` names (070): the lowest clean
+/// piece of its type, neutral before player-owned; for a factory or station
+/// with none to take, the lowest site one would be built on; for troops the
+/// lowest base a Wall leaves open, else the lowest base. `None`: nothing to name.
+fn pick_target(w: &World, g: &GameState, c: usize, source: ThreatSource) -> Option<usize> {
+    let hexes = &w.map.countries[c].hexes;
+    let lowest = |f: &dyn Fn(usize) -> bool| hexes.iter().copied().filter(|&h| f(h)).min();
+    let clean = |kind: &str| {
+        let on = |h: usize| g.tokens(h, kind) > 0 && !corrupted(g, h);
+        lowest(&|h| on(h) && cube_owner(g, h).is_none()).or_else(|| lowest(&on))
+    };
+    match source {
+        ThreatSource::Influence => lowest(&|h| clean_city(w, g, h)).or_else(|| lowest(&|h| collecting_city(w, g, h))),
+        ThreatSource::Cyber => clean(STATION).or_else(|| lowest(&|h| buildable(w, g, h) && !w.map.hexes[h].industrial)),
+        ThreatSource::Economic => clean(FACTORY).or_else(|| lowest(&|h| w.map.hexes[h].industrial && !has_building(g, h))),
+        ThreatSource::Military => lowest(&|h| is_base(w, h) && !board::walled(w, g, h)).or_else(|| lowest(&|h| is_base(w, h))),
+    }
+}
+
+/// An uncountered threat's target becomes its source, before its own effect:
+/// the city or piece is corrupted, built first if it must be, or the troop
+/// lands. One a country a round; a Wall stops the landing.
+fn make_source(g: &mut GameState, cx: &mut Cx, c: usize, source: ThreatSource, h: usize) {
+    let w = cx.world;
+    let switched_off = match w.int("threats.uncreated") {
+        1 => source == ThreatSource::Influence,
+        2 => source == ThreatSource::Cyber,
+        3 => source == ThreatSource::Economic,
+        4 => source == ThreatSource::Military,
+        _ => false,
+    };
+    if switched_off || g.var(&made_key(c)) == g.round as i64 {
+        return;
+    }
+    match source {
+        ThreatSource::Influence => {
+            if corrupted(g, h) {
+                return;
+            }
+            adversary::corrupt_city(g, cx, h);
+        }
+        ThreatSource::Cyber => {
+            if g.tokens(h, STATION) == 0 {
+                if !buildable(&w, g, h) {
+                    return;
+                }
+                cx.add_tokens(g, h, STATION, 1);
+            }
+            if corrupted(g, h) {
+                return;
+            }
+            adversary::corrupt_station(g, cx, h);
+        }
+        ThreatSource::Economic => {
+            if g.tokens(h, FACTORY) == 0 {
+                if has_building(g, h) {
+                    return;
+                }
+                cx.add_tokens(g, h, FACTORY, 1);
+            }
+            if corrupted(g, h) {
+                return;
+            }
+            adversary::corrupt_factory(g, cx, h);
+        }
+        ThreatSource::Military => {
+            if board::walled(&w, g, h) {
+                return;
+            }
+            adversary::place_troop(g, cx, h);
+        }
+    }
+    cx.set_key(g, &made_key(c), g.round as i64);
+    cx.tally(g, "threats.sources_made", 1);
+    cx.note(None, || format!("{} source appears in {}", source.a_word(), country_name(&w, c)));
+}
+
+/// Deals the top threat of the `tier` deck onto `to` (`country`: the country
+/// it needs a source in, `None` on the shared row), counted under
 /// `threats.dealt` whichever module is running. False if the deck is empty
 /// (no reshuffle here: the caller refills first if it may, and counts what
-/// it could not deal under `threats.short`). A threat dealt after the counter
-/// phase is stamped with the round: it executes next round, not this one.
-fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, to: &str) -> bool {
+/// it could not deal under `threats.short`). A threat with no source in its
+/// country names a target (070): its source while it is up. A threat dealt after the counter phase is stamped with the round:
+/// it executes next round, not this one.
+fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, to: &str, country: Option<usize>) -> bool {
     let Some(id) = g.pile(&deck(tier)).first().cloned() else {
         return false;
     };
+    let w = cx.world;
+    if let Some(c) = country {
+        let source = def(&w, &id).source;
+        if sources(&w, g, c, source).is_empty() {
+            if let Some(h) = pick_target(&w, g, c, source) {
+                cx.set_key(g, &target_key(&id), h as i64 + 1);
+            }
+        }
+    }
     cx.move_card(g, &id, &deck(tier), to, false).unwrap();
     cx.tally(g, "threats.dealt", 1);
     if after_counter(g) {
@@ -202,7 +386,7 @@ fn shared_row(w: &World) -> Option<bool> {
 /// What countering `threat` asks for now, resource by resource (difficulty
 /// and Jam Signals applied).
 pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<(Resource, i64)> {
-    let jam = g.var(&jam_key(threat));
+    let jam = g.var(&jam_key(threat)) + standing(w, g, threat);
     let (bonus, all) = if adversary::level(w, 1) {
         (
             w.int("adversary.counter_bonus"),
@@ -249,6 +433,7 @@ fn clear(g: &mut GameState, cx: &mut Cx, threat: &str, scope: Option<usize>) {
     let t = def(&w, threat);
     cx.set_key(g, &jam_key(threat), 0);
     cx.set_key(g, &late_key(threat), 0);
+    cx.set_key(g, &target_key(threat), 0);
     cx.move_card(g, threat, &pile_of(scope), &discard(t.tier), true)
         .expect("active threat");
 }
@@ -261,12 +446,25 @@ pub fn counter(g: &mut GameState, cx: &mut Cx, threat: &str) {
     };
     refund(g, cx, threat);
     clear(g, cx, threat, scope);
+    tally_countered(g, cx, threat);
+}
+
+/// Counted in all and by source type (070: the records read who counters what).
+fn tally_countered(g: &mut GameState, cx: &mut Cx, threat: &str) {
+    let w = cx.world;
     cx.tally(g, "threats.countered", 1);
+    let name = match def(&w, threat).source {
+        ThreatSource::Influence => "threats.countered.influence",
+        ThreatSource::Cyber => "threats.countered.cyber",
+        ThreatSource::Economic => "threats.countered.economic",
+        ThreatSource::Military => "threats.countered.military",
+    };
+    cx.tally(g, name, 1);
 }
 
 /// Deals `n` extra threats of the current tier now, one per country in turn
-/// from country 0 (Discord cards). An empty deck deals nothing (no reshuffle
-/// out of turn). Variant `off`: nothing.
+/// from country 0 (Discord cards). An empty deck reshuffles as the round's
+/// deal does (070). Variant `off`: nothing.
 pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     let w = cx.world;
     let Some(shared) = shared_row(&w) else {
@@ -276,11 +474,28 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     let countries = w.map.countries.len().max(1);
     let n = n.max(0);
     for k in 0..n {
-        if !deal(g, cx, tier, &deal_pile(shared, k as usize % countries)) {
+        let c = k as usize % countries;
+        refill(g, cx, tier);
+        if !deal(g, cx, tier, &deal_pile(shared, c), (!shared).then_some(c)) {
             cx.tally(g, "threats.short", n - k);
             return;
         }
     }
+}
+
+/// What standing counters take off `threat` (070): the Auto Counters of its
+/// type held by the seat whose home country it sits on. Read, not stored, so
+/// a delayed threat isn't cut twice and an extra deal is cut too.
+fn standing(w: &World, g: &GameState, threat: &str) -> i64 {
+    let source = source_of(w, threat);
+    (0..g.seats.len())
+        .filter(|&s| g.pile(&on(home_country(w, s))).iter().any(|t| t == threat))
+        .flat_map(|s| cards::passives(w, g, s))
+        .map(|p| match p {
+            Op::AutoCounter { source: x, amount } if *x == source => *amount,
+            _ => 0,
+        })
+        .sum()
 }
 
 /// Jam Signals: `threat` needs `n` less of each resource.
@@ -317,8 +532,12 @@ fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool {
             cx.set_key(g, &k, 0);
         }
     }
+    let auto = standing(&w, g, threat);
+    if auto > 0 {
+        cx.tally(g, "threats.auto_countered", auto);
+    }
     clear(g, cx, threat, scope);
-    cx.tally(g, "threats.countered", 1);
+    tally_countered(g, cx, threat);
     cx.note(None, || format!("{} is countered", def(&w, threat).name));
     for p in payers {
         for pa in cards::passives(&w, g, p) {
@@ -351,26 +570,10 @@ fn build_shared(b: &Build) -> Result<Box<dyn Module>, String> {
 }
 
 impl Threats {
-    fn can_pay(&self, w: &World, g: &GameState, seat: usize, scope: Option<usize>) -> bool {
-        match scope {
-            Some(c) if !self.shared => has_presence_in(w, g, seat, c),
-            _ => true,
-        }
+    fn can_pay(&self, w: &World, g: &GameState, seat: usize, threat: &str, scope: Option<usize>) -> bool {
+        may_counter(w, g, seat, threat, scope)
     }
 
-    /// An empty `tier` deck is refilled from its shuffled discard (the
-    /// round's deal only; extra deals out of turn don't reshuffle).
-    fn refill(&self, g: &mut GameState, cx: &mut Cx, tier: u8) {
-        if g.pile(&deck(tier)).is_empty() {
-            let mut cards = g.pile(&discard(tier)).to_vec();
-            if cards.is_empty() {
-                return;
-            }
-            shuffle(&mut cards, cx.rng(g, "threats"));
-            cx.set_pile(g, &discard(tier), Vec::new());
-            cx.set_pile(g, &deck(tier), cards);
-        }
-    }
 }
 
 impl Module for Threats {
@@ -406,8 +609,8 @@ impl Module for Threats {
                 let more = (0..extra).filter(|k| (first + k) % n == c).count() as i64;
                 let want = self.per_country + more;
                 for k in 0..want {
-                    self.refill(g, cx, tier);
-                    if !deal(g, cx, tier, &deal_pile(self.shared, c)) {
+                    refill(g, cx, tier);
+                    if !deal(g, cx, tier, &deal_pile(self.shared, c), (!self.shared).then_some(c)) {
                         // 022: a short deal is counted, not silent.
                         cx.tally(g, "threats.short", want - k);
                         break;
@@ -424,20 +627,29 @@ impl Module for Threats {
                 refund(g, cx, &t);
             }
         }
+        let mut executed = 0;
         for (t, scope) in active(g) {
             if waits(g, &t) {
                 continue;
             }
+            executed += 1;
             let d = def(&w, &t);
             cx.note(None, || match scope {
                 Some(c) => format!("Threat {} executes in {}", d.name, country_name(&w, c)),
                 None => format!("Threat {} executes everywhere", d.name),
             });
             cx.count(g, "executed", 1);
+            if let (Some(c), Some(h)) = (scope, target(g, &t)) {
+                make_source(g, cx, c, d.source, h);
+            }
             let source = if d.tier == 1 { "threat1" } else { "threat2" };
             effects::run(g, cx, &d.effects, &mut effects::Ctx::threat(scope).named(source))?;
             alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
             clear(g, cx, &t, scope);
+        }
+        // 070: the records' read of whether a board can stay clean.
+        if executed == 0 {
+            cx.tally(g, "threats.rounds_all_countered", 1);
         }
         Ok(())
     }
@@ -453,7 +665,7 @@ impl Module for Threats {
         let s = seat as usize;
         for (t, scope) in active(g) {
             // 044: a seat that lost its presence there can't pay, but can take back.
-            let can_pay = self.can_pay(w, g, s, scope);
+            let can_pay = self.can_pay(w, g, s, &t, scope);
             for (r, need) in requirement(w, g, &t) {
                 let have = g.resource(s, r);
                 let left = need - paid(g, &t, r);
@@ -499,8 +711,8 @@ impl Module for Threats {
                 let Some((_, scope)) = active(g).into_iter().find(|(t, _)| t == threat) else {
                     return Err(Halt::Illegal(format!("no active threat {threat}")));
                 };
-                if !self.can_pay(&w, g, s, scope) {
-                    return Err("only players with a presence in its country can pay".into());
+                if !self.can_pay(&w, g, s, threat, scope) {
+                    return Err("only a player with one of its sources in reach, or an ambassador on one, can pay".into());
                 }
                 let req = requirement(&w, g, threat);
                 let need = req.iter().find(|(r, _)| r == resource).map(|(_, n)| *n);
@@ -512,6 +724,15 @@ impl Module for Threats {
                     || *amount > need - paid(g, threat, *resource)
                 {
                     return Err("can't pay that much".into());
+                }
+                // 070: for the records: a payer who reaches it only by ambassador.
+                if let Some(c) = scope {
+                    if !threat_sources(&w, g, threat, c).iter().any(|&h| in_reach(&w, g, s, h)) {
+                        cx.tally(g, "threats.paid_by_ambassador", 1);
+                    }
+                    if c != home_country(&w, s) {
+                        cx.tally(g, "threats.paid_abroad", 1);
+                    }
                 }
                 cx.add_resource(g, s, *resource, -amount);
                 cx.add_key(g, &paid_key(threat, s, *resource), *amount);
@@ -536,7 +757,7 @@ impl Module for Threats {
 
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {
         // Payments and jams belong to a threat card: shown in its text.
-        out.bookkeeping(&["threats.paid.", "threats.jam.", "threats.late."]);
+        out.bookkeeping(&["threats.paid.", "threats.jam.", "threats.late.", "threats.target.", "threats.made."]);
         let show = |t: &str| {
             let d = def(w, t);
             let req = requirement(w, g, t);
@@ -580,6 +801,15 @@ impl Module for Threats {
                 let cards: Vec<CardView> = g.pile(&on(c)).iter().map(|t| show(t)).collect();
                 if !cards.is_empty() {
                     out.country_cards(c, "on", "threat", cards);
+                }
+                for t in g.pile(&on(c)).iter() {
+                    out.threat_source(ThreatSourceView {
+                        threat: t.to_string(),
+                        source: source_of(w, t).to_string(),
+                        hexes: threat_sources(w, g, t, c),
+                        target: target(g, t),
+                        seats: (0..g.seats.len()).filter(|&s| may_counter(w, g, s, t, Some(c))).collect(),
+                    });
                 }
             }
         }

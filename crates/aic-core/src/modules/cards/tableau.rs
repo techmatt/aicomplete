@@ -107,6 +107,11 @@ pub fn add_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, card: &str, n: i6
 pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
     for p in passives(&w, g, seat) {
+        if let Op::ProjectDrain { amount } = p {
+            for id in super::super::adversary::projects(g) {
+                super::super::adversary::drain_project(g, cx, &id, *amount);
+            }
+        }
         if let Op::ConvertUpkeep {
             from,
             amount,

@@ -99,7 +99,8 @@ pub(super) fn free_cities(g: &mut GameState, cx: &mut Cx) {
             continue;
         }
         let need = hold(&w, g, h);
-        if ambassadors_on(g, h) < need {
+        // 070: a face-up influence threat here holds the city until it is countered.
+        if ambassadors_on(g, h) < need || threats::shielded(&w, g, h, ThreatSource::Influence) {
             continue;
         }
         let mut left = need;

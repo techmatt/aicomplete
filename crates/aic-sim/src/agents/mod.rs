@@ -573,6 +573,8 @@ mod tests {
             "engine:never_tag=6",
             "engine:events_only=1",
             "engine:ignore_threats=1",
+            "engine:home_only=1",
+            "engine:capstone_rush=1",
             "engine:turtle=1",
             "engine:free_only=1",
             "engine:unity_farm=1",

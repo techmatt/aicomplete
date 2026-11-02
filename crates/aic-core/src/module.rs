@@ -532,6 +532,12 @@ impl<'a> Cx<'a> {
         Arc::make_mut(g.rng.get_mut("cards").expect("the cards module has a stream"))
     }
 
+    /// The threats module's stream, for a threat deck reshuffled in another
+    /// module's step (070: Discord cards and projects deal threats).
+    pub fn threat_rng<'g>(&self, g: &'g mut GameState) -> &'g mut Stream {
+        Arc::make_mut(g.rng.get_mut("threats").expect("the threats module has a stream"))
+    }
+
     /// The stream for one of this variant's declared purposes. Drawing from
     /// any other purpose, even one another module declared, panics.
     pub fn rng<'g>(&self, g: &'g mut GameState, purpose: &str) -> &'g mut Stream {

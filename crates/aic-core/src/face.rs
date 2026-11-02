@@ -357,9 +357,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             };
             one(clause(counted(*count, "peek"), say))
         }
-        Op::Jam { amount: n } => one(clause(
+        Op::Jam { amount: n, source: None } => one(clause(
             adversary(minus(*n, "jam")),
             format!("one threat needs {n} less of each resource"),
+        )),
+        Op::Jam { amount: n, source: Some(s) } => one(clause(
+            adversary(minus(*n, "jam")),
+            format!("counts as {n} credits toward {} threat", s.a_word()),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
         Op::DrainProject { amount: n } => {
@@ -468,6 +472,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::HardenAction
         | Op::Slots { .. }
         | Op::Logistics { .. }
+        | Op::ProjectDrain { .. }
+        | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
         | Op::GiveBonus { .. }
         | Op::SpreadShield
@@ -529,6 +535,14 @@ fn standing(op: &Op) -> Standing {
         Op::Logistics { resource, amount: n } => effect(
             { let mut p = vec![w("threat"), w(":")]; p.extend(counted(*n, icon(*resource))); p },
             format!("when a threat you paid toward is countered, gain {}", amount(*resource, *n)),
+        ),
+        Op::ProjectDrain { amount: n } => effect(
+            { let mut p = adversary(minus(*n, "compute")); p.extend([w("/"), w("project")]); p },
+            format!("each round, remove {n} compute from each adversary project"),
+        ),
+        Op::AutoCounter { source, amount: n } => effect(
+            adversary(minus(*n, "jam")),
+            format!("{source} threats in your home country need {n} less"),
         ),
         Op::UnityBonus { amount: n } => effect(
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },

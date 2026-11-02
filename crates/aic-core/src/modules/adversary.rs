@@ -12,7 +12,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{alignment, board, cards, effects};
+use super::{alignment, board, cards, effects, threats};
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
@@ -877,6 +877,20 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
     }
 }
 
+/// Factory `h` becomes the adversary's (070: a threat's target): any player
+/// cube comes off, its cube goes on, and it replaces any marker.
+pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
+    let w = cx.world;
+    if let Some(s) = cube_owner(g, h) {
+        cx.add_tokens(g, h, &cube(s), -1);
+    }
+    cx.add_tokens(g, h, ADV_CUBE, 1);
+    let marked = g.tokens(h, MARKER);
+    cx.add_tokens(g, h, MARKER, -marked);
+    cx.tally(g, "adversary.factories_seized", 1);
+    cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
+}
+
 /// Where an ambassador spreading from `from` may go: hexes within `range`
 /// holding a piece (never an empty hex), not shielded, and
 /// without an adversary ambassador unless a clean or aligned city (cities
@@ -972,17 +986,29 @@ pub fn spread(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 
 /// Whether a removal of `ambassadors` or `troops` has a piece to take on hex
 /// `h` (F64: a card that names no troop can't touch one).
-pub fn can_damage(g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
-    (ambassadors > 0 && g.tokens(h, ADV_AMBASSADOR) > 0) || (troops > 0 && g.tokens(h, TROOP) > 0)
+pub fn can_damage(w: &World, g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
+    (ambassadors > 0 && g.tokens(h, ADV_AMBASSADOR) > 0)
+        || (troops > 0 && g.tokens(h, TROOP) > 0 && !troops_shielded(w, g, h))
+}
+
+/// A face-up military threat in `h`'s country holds the troops on it (070).
+fn troops_shielded(w: &World, g: &GameState, h: usize) -> bool {
+    threats::shielded(w, g, h, ThreatSource::Military)
+}
+
+/// Whether a "remove everything on the hex" has a piece to take on `h`.
+pub fn can_destroy_all(w: &World, g: &GameState, h: usize) -> bool {
+    can_damage(w, g, h, 1, 1)
 }
 
 /// In hex `h`, removes up to `ambassadors` adversary ambassadors or up to
 /// `troops` troops: one kind, seat `seat`'s choice where the hex holds both.
 pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
+    let shielded = troops_shielded(&w, g, h);
     let kinds: Vec<(&str, i64)> = [(ADV_AMBASSADOR, ambassadors), (TROOP, troops)]
         .into_iter()
-        .filter(|(k, n)| *n > 0 && g.tokens(h, k) > 0)
+        .filter(|(k, n)| *n > 0 && g.tokens(h, k) > 0 && !(shielded && *k == TROOP))
         .collect();
     let chosen = match kinds.as_slice() {
         [] => return Ok(()),
@@ -1020,9 +1046,13 @@ pub fn remove_piece(g: &mut GameState, cx: &mut Cx, seat: Option<usize>, h: usiz
 
 /// Removes every adversary ambassador and troop in hex `h`.
 pub fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+    let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
     for _ in 0..n {
         remove_piece(g, cx, Some(seat), h, ADV_AMBASSADOR);
+    }
+    if troops_shielded(&w, g, h) {
+        return;
     }
     for _ in 0..g.tokens(h, TROOP) {
         remove_piece(g, cx, Some(seat), h, TROOP);

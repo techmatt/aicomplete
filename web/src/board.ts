@@ -19,6 +19,8 @@ export interface Marks {
   targets: Set<string>;
   /** Hexes the events of the shown step touched. */
   changed: Set<string>;
+  /** The hexes of face-up threats' sources (070). */
+  sources?: Set<string>;
 }
 
 const center = (q: number, r: number): [number, number] => [SQRT3 * (q + r / 2), 1.5 * r];
@@ -291,6 +293,8 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
     });
 
     // Highlights sit above the tokens so a target stays visible under a crowd.
+    // 070: a face-up threat's sources stay marked, under any target ring.
+    if (marks.sources?.has(key)) markLayer.append(el('polygon', { points: corners(x, y, 0.72), class: 'mark source' }));
     if (marks.targets.has(key) || marks.changed.has(key)) {
       markLayer.append(el('polygon', { points: corners(x, y, 0.86), class: marks.targets.has(key) ? 'mark target' : 'mark changed' }));
     }

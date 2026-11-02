@@ -6,7 +6,7 @@ use super::*;
 /// is within the seat's reach (016).
 pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, troops: i64) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| adversary::can_damage(g, h, ambassadors, troops) && in_reach(w, g, seat, h))
+        .filter(|&h| adversary::can_damage(w, g, h, ambassadors, troops) && in_reach(w, g, seat, h))
         .collect()
 }
 
@@ -14,9 +14,9 @@ pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, tro
 /// ultimates only) a corrupted city: a cleanse target.
 pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool) -> bool {
     corrupted(g, h)
-        && ((cities && w.map.hexes[h].kind == HexKind::City)
-            || g.tokens(h, STATION) > 0
-            || g.tokens(h, FACTORY) > 0)
+        && ((cities && w.map.hexes[h].kind == HexKind::City && !threats::shielded(w, g, h, ThreatSource::Influence))
+            || (g.tokens(h, STATION) > 0 && !threats::shielded(w, g, h, ThreatSource::Cyber))
+            || (g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
 }
 
 /// Corrupted cities in seat `s`'s reach with an adversary ambassador on or
@@ -62,7 +62,7 @@ pub(super) fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to:
 
 /// A node in seat `seat`'s reach.
 pub(super) fn node_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, NODE) > 0 && in_reach(w, g, seat, h)
+    g.tokens(h, NODE) > 0 && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Cyber)
 }
 
 /// A corruption marker in seat `seat`'s reach.

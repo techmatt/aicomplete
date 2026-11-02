@@ -177,7 +177,8 @@ function render() {
     for (const e of f.events) for (const h of hexesIn(e)) changed.add(hexKey(h));
     for (const h of hexesIn(f.action)) changed.add(hexKey(h));
   }
-  renderBoard(ui.board, shown, { targets, changed });
+  const sources = new Set((shown.threat_sources ?? []).flatMap((s) => s.hexes.map((i) => hexKey(shown.hexes[i].hex))));
+  renderBoard(ui.board, shown, { targets, changed, sources });
   renderPrompt(targets.size);
   ui.status.innerHTML = statusHtml(shown, f.snap.state.config);
   ui.pipeline.innerHTML = pipelineHtml(shown);

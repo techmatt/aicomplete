@@ -24,11 +24,15 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
     let (rules, mut g) = threat_lab();
     deal(&mut g, "sabotage", 0);
     deal(&mut g, "blackout", 1);
+    // 070: a source each, on the seat's own presence.
+    for s in 0..2 {
+        put(&mut g, rules.map.numbered(s, piece(s).presence), crate::modules::common::NODE, 1);
+    }
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 6);
     }
     let legal = rules.legal_actions(&g);
-    // Only players with a presence in the threat's country may pay.
+    // Only players with one of its sources in reach may pay.
     let pays = |seat: u8, t: &str| {
         legal
             .iter()
@@ -89,16 +93,17 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
 #[test]
 fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     let (rules, mut g) = threat_lab();
-    // Requisition needs 4 credits (024); with 2 paid, Threat Triage (023; was
+    // Blackout needs 4 credits (024); with 2 paid, Threat Triage (023; was
     // Jam Signals) takes it to 2: countered at once.
-    deal(&mut g, "requisition", 0);
+    deal(&mut g, "blackout", 0);
+    put(&mut g, rules.map.numbered(0, piece(0).presence), crate::modules::common::NODE, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
     rules
         .apply_mut(
             &mut g,
             &Action::Pay {
                 seat: 0,
-                threat: "requisition".into(),
+                threat: "blackout".into(),
                 resource: Resource::Credits,
                 amount: 2,
             },
@@ -120,7 +125,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     assert!(g.pile("threats.on.0").is_empty());
     assert!(g
         .pile("threats.discard.1")
-        .contains(&Key::new("requisition")));
+        .contains(&Key::new("blackout")));
     assert_eq!(g.resource(0, Resource::Credits), 8);
 }
 
@@ -148,21 +153,20 @@ fn difficulty_1_raises_the_counters_and_deals_more_threats() {
     let credits = |c| vec![(Resource::Credits, c)];
     assert_eq!(req(&r0, &g0), credits(6));
     assert_eq!(req(&r1, &g1), credits(8));
-    let on = |g: &GameState, c: usize| {
-        threats::active(g)
-            .iter()
-            .filter(|(_, at)| *at == Some(c))
-            .count()
+    // Every deal is dealt (070: nothing is set aside for lack of a source).
+    let drawn = |g: &GameState| {
+        let n = |k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
+        n("threats.dealt") + n("threats.set_aside")
     };
-    assert_eq!((on(&g0, 0), on(&g0, 1)), (1, 1));
+    assert_eq!(drawn(&g0), 2);
     // One extra a round, one country after the other.
-    assert_eq!((on(&g1, 0), on(&g1, 1)), (2, 1));
+    assert_eq!(drawn(&g1), 3);
     for s in 0..2 {
         r1.apply_mut(&mut g1, &Action::Pass { seat: s }, None)
             .unwrap();
     }
     assert_eq!(g1.round, 2);
-    assert_eq!((on(&g1, 0), on(&g1, 1)), (3, 3));
+    assert_eq!(drawn(&g1), 6);
 }
 
 /// 020: threats execute after production and upkeep, so a Blackout or
@@ -243,7 +247,7 @@ fn the_tier_2_deck_covers_four_countries_and_a_short_deal_is_counted() {
     let most = 4 * w.int("threats.per_country") + w.int("adversary.extra_threats");
     assert!(tier2 > most, "{tier2} tier-2 threats for a deal of {most}");
     let (rules, mut g) = threat_lab();
-    g.piles.insert("threats.deck.1".into(), vec!["blackout".into()].into());
+    g.piles.insert("threats.deck.1".into(), vec!["smear_campaign".into()].into());
     with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 3));
     assert_eq!(g.stats.counters["threats.short"], 2);
 }
@@ -264,7 +268,7 @@ fn a_seat_that_lost_its_presence_there_can_take_back_a_payment() {
 fn a_delayed_threat_skips_this_round_and_a_shield_absorbs_a_destruction() {
     let (rules, mut g) = at_step(&[], 1);
     let a = rules.map.numbered(0, piece(0).presence);
-    with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 1));
+    deal(&mut g, "smear_campaign", 0);
     let t = threats::active(&g)[0].0.clone();
     assert!(!threats::waits(&g, &t));
     run_ops(&rules, &mut g, &[content::Op::DelayThreat { count: 1 }]);

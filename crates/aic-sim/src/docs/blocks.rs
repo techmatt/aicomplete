@@ -11,13 +11,15 @@ use super::table;
 use crate::cli::die;
 
 /// The words cards lean on, once: rules.md's *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 11] = [
+pub const HOUSE_TERMS: [(&str, &str); 13] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex of your presence"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
     ("Troop", "always the adversary's"),
     ("In reach", "on a hex within 1 of your presence"),
     ("A country you're in", "a country where you have presence"),
+    ("Your home country", "the country you start in"),
+    ("A threat", "on your card: one you may counter, with one of its sources in reach or your ambassador on one"),
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
     ("Draw", "from the tier-1 deck, with no keep to pay"),
@@ -39,9 +41,9 @@ pub(super) fn threats_block() -> String {
     let rows = content()
         .threats
         .iter()
-        .map(|t| vec![t.name.clone(), t.tier.to_string(), t.text.clone(), costs(&t.counter)])
+        .map(|t| vec![t.name.clone(), t.tier.to_string(), t.source.to_string(), t.text.clone(), costs(&t.counter)])
         .collect();
-    table(&["Threat", "Tier", "If not countered", "Counter"], rows)
+    table(&["Threat", "Tier", "Source", "If not countered", "Counter"], rows)
 }
 
 pub(super) fn adversary_block() -> String {

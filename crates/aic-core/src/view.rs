@@ -48,6 +48,22 @@ pub struct View {
     /// Where pieces are heading (019: each adversary troop's next target),
     /// so clients draw it without knowing the rules.
     pub arrows: Vec<ArrowView>,
+    /// Each face-up threat's source type and pieces (070), for the map.
+    pub threat_sources: Vec<ThreatSourceView>,
+}
+
+/// What feeds a face-up threat, and who may counter it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ThreatSourceView {
+    pub threat: String,
+    /// `influence`, `cyber`, `economic` or `military`.
+    pub source: String,
+    /// The hexes of its sources.
+    pub hexes: Vec<usize>,
+    /// The hex it named with no source: it becomes one if it goes uncountered.
+    pub target: Option<usize>,
+    /// The seats that may pay toward it.
+    pub seats: Vec<usize>,
 }
 
 /// A piece's heading: from its hex to the hex it targets.
@@ -309,6 +325,11 @@ impl ViewOut<'_> {
     }
 
     /// Publishes a piece's heading (an arrow from hex `from` to hex `to`).
+    /// A face-up threat's sources, for the map (070).
+    pub fn threat_source(&mut self, t: ThreatSourceView) {
+        self.view.threat_sources.push(t);
+    }
+
     pub fn arrow(&mut self, kind: &str, from: usize, to: usize, count: i64, rounds: i64, doc: &str) {
         self.view.arrows.push(ArrowView {
             kind: kind.to_string(),
@@ -579,6 +600,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
         piles: Vec::new(),
         standard: Vec::new(),
         arrows: Vec::new(),
+        threat_sources: Vec::new(),
         choice: g.pending.as_ref().map(|p| ChoiceView {
             seat: p.ask.seat,
             prompt: p.ask.prompt.clone(),

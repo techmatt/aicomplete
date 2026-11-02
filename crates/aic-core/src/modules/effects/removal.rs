@@ -15,7 +15,7 @@ pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i
 
 pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-        let cs = countries_where(&w, |h| adversary::can_damage(g, h, ambassadors, troops));
+        let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, ambassadors, troops));
         let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
         let prompt = format!("Seat {seat}: remove pieces in each adversary hex of which country?");
         if let Some(i) = cx.choose(seat, &prompt, opts)? {
@@ -23,7 +23,7 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
                 .hexes
                 .iter()
                 .copied()
-                .filter(|&h| adversary::can_damage(g, h, ambassadors, troops))
+                .filter(|&h| adversary::can_damage(&w, g, h, ambassadors, troops))
                 .collect();
             for h in hexes {
                 adversary::damage(g, cx, seat, h, ambassadors, troops)?;
@@ -35,7 +35,7 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
 pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
         let hexes: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| has_adversary(g, h))
+            .filter(|&h| adversary::can_destroy_all(&w, g, h))
             .collect();
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt =
