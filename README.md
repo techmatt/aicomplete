@@ -376,8 +376,8 @@ browser; `npm ci` first):
 
 ```sh
 cargo build --workspace
-cargo test --workspace                             # fast lane: ~4 s once built, ~13 s after an edit in aic-sim (rebuild included); after every change
-cargo test-all                                     # full run, slow lane included: ~1.5 min at r22 on 6 test threads (048), ~2 min with the test build
+cargo test --workspace                             # fast lane: ~8 s once built at r29, ~13 s after an edit in aic-sim (rebuild included, 048); after every change
+cargo test-all                                     # full run, slow lane included: ~40 s at r29 on 6 test threads, ~2 min with a cold test build
 cargo test-slow                                    # the slow lane alone: nearly all of that
 cargo build --release -p aic-sim                   # ~12 s
 ./target/release/aic-sim docs                      # regenerate the docs built from content and configs (--check: report only)
@@ -400,7 +400,7 @@ the background task end, so check the exit code. To cap build jobs use `cargo te
 --workspace -j 3 -- --include-ignored`; `cargo test-all --test-threads=3` caps test
 threads. A new test that takes more than about a second goes in the slow lane, ideally with a
 cheaper fast-lane twin (fewer seeds, fewer actions). Times measured on this 12-thread
-machine with nothing else heavy running (lanes remeasured in 048); the first build of the test profile takes about 40 s.
+machine with nothing else heavy running (lanes remeasured in 071, at r29); the first build of the test profile takes about 80 s.
 
 - The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`;
   debug assertions and overflow checks stay on): unoptimized, the same tests took
@@ -440,6 +440,8 @@ never mixed up.
 - A cargo build that fails leaves the old exe in `target/release`: a launcher that copies it
   and starts a run must check the build's exit code (`scripts/run_sim.ps1` does). Don't edit
   source during a build: it breaks the build or bakes in a mix of old and new.
+- Concurrent builds in one target dir corrupt incremental objects (LNK2019 on anon symbols):
+  `cargo clean -p aic-core -p aic-sim -p aic-wasm` clears it.
 - Two checkouts sharing a `CARGO_TARGET_DIR` share `release/aic-sim.exe` and its fingerprints:
   one read a 0.08 s `Finished` and an old-against-new comparison ran one binary twice (047). Give
   each checkout its own target dir, and `md5sum` both binaries before a `pair` or `same_play`.
