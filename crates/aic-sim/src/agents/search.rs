@@ -6,7 +6,8 @@ use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
-use aic_core::modules::adversary;
+use aic_core::module::World;
+use aic_core::modules::{adversary, ai};
 use aic_core::{Action, Agent, GameState, Rules};
 use rand_chacha::ChaCha8Rng;
 
@@ -93,19 +94,21 @@ pub struct Scoring {
     /// prompts, not effects, so one placement (a track, a hex) takes two, and
     /// a card that places more is judged part of the way.
     pub choices: usize,
-    /// `choices` for a Growth action.
-    pub growth_choices: usize,
+    /// `choices` for a power that places presence.
+    pub placing_choices: usize,
 }
 
 impl Scoring {
-    /// At the top level of a decision: growth at [`full_growth`].
+    /// At the top level of a decision: a presence power at [`full_placing`].
     pub fn decision(samples: usize, depth: usize, choices: usize) -> Self {
-        Scoring { samples, depth, choices, growth_choices: full_growth(choices) }
+        Scoring { samples, depth, choices, placing_choices: full_placing(choices) }
     }
 
-    /// Inside a rollout: growth at plain `choices` (046).
+    /// Inside a rollout: a presence power at no more levels than it asks (046,
+    /// 066: a sacrifice, a track and a hex; short of a level, the action reads
+    /// as paying and placing nothing, so a rollout never takes it).
     pub fn in_rollout(self) -> Self {
-        Scoring { growth_choices: self.choices, ..self }
+        Scoring { placing_choices: self.choices.max(PLACING_PROMPTS), ..self }
     }
 }
 
@@ -119,7 +122,8 @@ pub fn greedy_scores(
     legal: &[Action],
     how: Scoring,
 ) -> Vec<f64> {
-    let Scoring { samples, depth, choices, growth_choices } = how;
+    let Scoring { samples, depth, choices, placing_choices } = how;
+    let world = rules.world();
     let mut scores = vec![0.0; legal.len()];
     let n = samples.max(1);
     for _ in 0..n {
@@ -141,7 +145,7 @@ pub fn greedy_scores(
             scores[i] += match a {
                 Action::Pass { .. } => stay,
                 _ => match step(rules, base, a) {
-                    Some(c) if matches!(a, Action::Growth { .. }) => lookahead(rules, ev, &c, depth - 1, growth_choices),
+                    Some(c) if places(&world, a) => lookahead(rules, ev, &c, depth - 1, placing_choices),
                     Some(c) => lookahead(rules, ev, &c, depth - 1, choices),
                     None => f64::NEG_INFINITY,
                 },
@@ -152,11 +156,18 @@ pub fn greedy_scores(
     scores
 }
 
-/// Levels a Growth action's choices are scored at, top level (041): an option
-/// places up to 2 presence, each a track and a hex: scored at 2 levels, Expand
-/// looked like its first token. 046: not inside rollouts, at about 3.7
-/// evaluations a decision, so a planner decides growth on its top-level score.
-fn full_growth(choices: usize) -> usize {
+/// The prompts of a power that places: a sacrifice's, a track, a hex.
+const PLACING_PROMPTS: usize = 3;
+
+/// Whether `a` is a power that places presence.
+fn places(world: &World, a: &Action) -> bool {
+    matches!(a, Action::Power { seat, power } if ai::power_places(world, *seat as usize, *power as usize))
+}
+
+/// Levels a presence power's choices are scored at, top level (041, 066): a
+/// track and a hex, after up to two sacrifices. 046: not inside rollouts, at
+/// about 3.7 evaluations a decision.
+fn full_placing(choices: usize) -> usize {
     choices * 2
 }
 
@@ -239,7 +250,7 @@ impl Greedy {
         self
     }
 
-    /// As a rollout's policy: growth at plain `choices` (046).
+    /// As a rollout's policy: a presence power at plain `choices` (046).
     pub fn in_rollout(mut self) -> Self {
         self.how = self.how.in_rollout();
         self

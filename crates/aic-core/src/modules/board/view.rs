@@ -137,7 +137,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     }
     for act in STANDARD {
         let price = printed_price(w, act);
-        let Price { energy: e, credits: cr, chips } = price;
+        let Price { energy: e, credits: cr, chips, ambassadors } = price;
         let cost = price.label();
         let doc = format!(
             "{}; costs {}",
@@ -148,26 +148,9 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 cost.join(" + ")
             }
         );
-        out.standard(act.name(), e, cr, chips, &doc);
+        out.standard(act.name(), e, cr, chips, ambassadors, &doc);
     }
     for s in 0..g.seats.len() {
-        // 034: what a presence costs this seat now, rise and step cost in.
-        out.seat(
-            s,
-            "presence_energy_now",
-            "next presence (energy)",
-            seat_price(w, g, s, StandardAction::Presence).energy,
-            None,
-            "the standard action at your cheapest track: printed price plus the step's cost",
-        );
-        out.seat(
-            s,
-            "presence_credits_now",
-            "next rich action (credits)",
-            seat_price(w, g, s, StandardAction::PresenceBuy).credits,
-            None,
-            "printed price, plus its rise this round and the step's cost",
-        );
         out.seat(
             s,
             "ambassadors_board",

@@ -137,17 +137,6 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                 );
             }
         }
-        let nd = g.var(&next_discount(s));
-        if nd > 0 {
-            out.seat(
-                s,
-                "next_discount",
-                "next building -",
-                nd,
-                None,
-                "your next building this round costs this much less",
-            );
-        }
         if g.var(&civic_used(s)) > 0 {
             out.seat(
                 s,
@@ -163,7 +152,6 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
     // the draft piles (`picked`).
     out.bookkeeping(&[
         "cards.picked.",
-        "cards.next_discount.",
         "cards.civic_used.",
         "cards.kept_round.",
         "cards.tokens.",

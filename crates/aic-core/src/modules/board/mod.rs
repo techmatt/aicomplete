@@ -69,31 +69,26 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("presence_marker", 0, 1, "1: a destroyed presence leaves a corruption marker on its hex"),
             ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys presence within this many hexes of it"),
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys presence within this many hexes of it"),
-            ParamSpec::int("presence_energy", 0, 20, "standard action: energy to place a presence, on top of the track step's cost"),
-            ParamSpec::int("presence_action_cap", 0, 5, "standard action: placements a seat may make with it a round (0: no limit; the rich action has its own rise)"),
             ParamSpec::int("build_energy", 0, 20, "standard action: energy to build a research station"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner on a production step"),
             ParamSpec::int("chips_credits", 0, 50, "standard action: credits for selling 1 chip"),
-            ParamSpec::int("remove_energy", 0, 20, "standard action: energy to remove an adversary ambassador within reach"),
-            ParamSpec::int("clear_energy", 0, 20, "standard action: energy to clear a corruption marker within reach"),
+            ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors spent to remove an adversary ambassador within reach"),
+            ParamSpec::int("remove_count", 1, 3, "standard action: adversary ambassadors one removal takes off its hex, at most"),
+            ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
             ParamSpec::int("clear_unity", 0, 5, "Sway toward Unity for clearing a corruption marker"),
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
-            ParamSpec::int("move_energy", 0, 20, "standard action: energy to move a player ambassador"),
+            ParamSpec::int("move_credits", 0, 20, "standard action: credits to move a player ambassador"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
-            ParamSpec::int("harden_energy", 1, 20, "standard action (Harden passive): energy a hardening token (at least 1: free, it has no limit)"),
+            ParamSpec::int("harden_energy", 1, 20, "standard action (Bulwark): energy a hardening token (at least 1: free, it has no limit)"),
+            ParamSpec::int("harden_chips", 1, 20, "standard action a card grants: chips a hardening token (at least 1: free, it has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
-            ParamSpec::int("align_energy", 0, 20, "standard action: energy (and 1 ambassador) to align a clean city"),
-            ParamSpec::int("presence_credits", 1, 50, "the rich action: credits to place a presence, before its rise and the step's cost"),
-            ParamSpec::int("presence_rise", 0, 20, "the rich action: credits more for each earlier use this round"),
-            ParamSpec::int("presence_stage", 1, 3, "the rich action: from this stage of adversary card on"),
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
-            ParamSpec::int("energy_credits", 1, 50, "standard project: credits for 1 energy"),
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: presence, rich presence, station, remove, clear, move, ambassador, align, harden, chips, sell, buy energy, drain"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, harden, chips, sell, drain"),
             PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
@@ -191,16 +186,20 @@ impl Module for Board {
         for s in 0..g.seats.len() {
             let c = home_country(&w, s);
             let n = w.content.map.countries[c].presence;
-            cx.add_tokens(g, w.map.numbered(c, n), &presence(s), 1);
+            let start = w.map.numbered(c, n);
+            cx.add_tokens(g, start, &presence(s), 1);
             cx.set_key(g, &track_key(s), 1);
             cx.add_resource(g, s, Resource::Ambassadors, w.int("board.start_ambassadors"));
+            if let Some(h) = bound_city(&w, g, c, start) {
+                cx.add_tokens(g, h, &cube(s), 1);
+            }
         }
     }
 
     fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
         let s = seat as usize;
         for act in STANDARD {
-            if !seat_price(w, g, s, act).affordable(g, s) {
+            if !printed_price(w, act).affordable(g, s) {
                 continue;
             }
             if !std_targets(w, g, s, act).is_empty() {
@@ -242,13 +241,11 @@ impl Module for Board {
                     return Err(Halt::Illegal("no such standard action".into()));
                 };
                 let targets = std_targets(&w, g, s, act);
-                let price = seat_price(&w, g, s, act);
+                let price = printed_price(&w, act);
                 if !price.affordable(g, s) || targets.is_empty() {
                     return Err("can't take that standard action now".into());
                 }
-                if !act.pays_on_placing() {
-                    price.pay(g, cx, s);
-                }
+                price.pay(g, cx, s);
                 cx.tally(g, &format!("board.std.{}", act.name()), 1);
                 cx.tally(g, "board.std_actions", 1);
                 std_resolve(g, cx, s, act, &targets)
@@ -260,13 +257,6 @@ impl Module for Board {
     fn after(&self, g: &mut GameState, cx: &mut Cx) -> Res {
         free_cities(g, cx);
         Ok(())
-    }
-
-    fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
-        for s in 0..g.seats.len() {
-            cx.set_key(g, &rich_key(s), 0);
-            cx.set_key(g, &placed_key(s), 0);
-        }
     }
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {

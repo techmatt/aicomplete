@@ -398,10 +398,9 @@ pub struct AiBoard {
     /// from the track its player chooses. Its first space is covered at setup.
     #[serde(default)]
     pub presence2: Vec<Uncover>,
-    pub growth: Vec<Growth>,
     /// Unique cards, in hand at the start.
     pub cards: Vec<String>,
-    /// AI-board powers (021, locked: paid by sacrificing tags), each usable once a round.
+    /// AI-board powers (locked: tag costs are sacrifices), each usable once a round.
     #[serde(default)]
     pub powers: Vec<Power>,
     /// A building the board starts with in a slot, carrying its built-in tag (021).
@@ -440,15 +439,13 @@ pub struct Uncover {
     #[serde(default)]
     pub keep2: bool,
     /// Energy every placement pays for this step (041; a card can say free).
-    /// The action adds `board.presence_energy`; the rich action pays it in
-    /// credits.
     #[serde(default)]
     pub cost: i64,
 }
 
-/// An AI-board power (021, locked: paid by sacrificing tags). `tags` is the
-/// tag cost (`"any"` for any tag), paid by discarding played cards that carry
-/// them; `cost` other resources; then `effects`. Once a round.
+/// An AI-board power (021). `tags` is the tag cost (`"any"` for any tag), paid
+/// by discarding played cards that carry them (locked); `cost` other resources;
+/// then `effects`. Once a round.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Power {
@@ -458,13 +455,6 @@ pub struct Power {
     pub tags: Vec<(TagOrAny, i64)>,
     #[serde(default)]
     pub cost: Vec<Cost>,
-    pub effects: Vec<Op>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Growth {
-    pub name: String,
     pub effects: Vec<Op>,
 }
 
@@ -599,10 +589,7 @@ impl Content {
         for d in &b.discounts {
             resource(&d.resource, &what)?;
         }
-        for gr in &b.growth {
-            check_ops(&gr.effects, Slot::Player, &what)?;
-        }
-        if b.growth.iter().map(|g| &g.effects).chain(b.powers.iter().map(|p| &p.effects)).flatten().any(science_niche) {
+        if b.powers.iter().flat_map(|p| &p.effects).any(science_niche) {
             return Err(format!("{what}: shields, delays and marker clearing are Science's"));
         }
         for p in &b.powers {

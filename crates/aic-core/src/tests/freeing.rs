@@ -96,7 +96,7 @@ fn a_corruption_takes_a_waiting_ambassador_with_it() {
     put(&mut g, h, &ambassador(0), 1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
     set_res(&mut g, 0, Resource::Credits, 10);
-    rules.apply_mut(&mut g, &std_act(0, "energy"), None).unwrap();
+    rules.apply_mut(&mut g, &std_act(0, "ambassador"), None).unwrap();
     assert_eq!(g.tokens(h, ADV_CUBE), 1);
     assert_eq!(g.tokens(h, &ambassador(0)), 0);
 }

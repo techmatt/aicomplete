@@ -53,8 +53,7 @@ const ACTION_PHASE: &str = "cards.play+";
 
 /// Whether `state`'s phase is one the planner searches, a pending choice
 /// inside it included. In every other phase it plays the next move of its
-/// line, whatever the top-level score says; a real growth pick moves the line
-/// first (see `choose`).
+/// line, whatever the top-level score says.
 fn searched_phase(state: &GameState) -> bool {
     state.config.round.get(state.phase).is_some_and(|p| p.starts_with(ACTION_PHASE))
 }
@@ -326,13 +325,6 @@ impl Agent for Planner {
         let engine = pick(legal, &scores);
         let stop = state.round + self.cfg.horizon;
         let mut best = self.incumbent(rules, state, legal, stop);
-        // 046: a line's growth was scored shallow, so a real one is the top
-        // level's score, and the line follows it.
-        if matches!(legal[engine], Action::Growth { .. }) && best.actions.get(best.next) != Some(&legal[engine]) {
-            if let Some(l) = self.line_from(rules, state, Some(&legal[engine]), stop) {
-                best = l;
-            }
-        }
         if searched_phase(state) {
             let mut order: Vec<usize> = (0..legal.len()).filter(|&i| scores[i].is_finite()).collect();
             order.sort_by(|&x, &y| scores[y].total_cmp(&scores[x]));

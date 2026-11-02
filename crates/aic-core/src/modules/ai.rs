@@ -1,9 +1,9 @@
 //! AI boards: which AI each seat plays, its presence track (read from the
 //! board module, which owns presence), the keep upgrade, income, credit
-//! production, starting resources and growth.
+//! production, starting resources and powers.
 
 use crate::action::Action;
-use crate::content::{AiBoard, Resource, Uncover};
+use crate::content::{AiBoard, Op, Resource, Uncover};
 use crate::key::Key;
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
@@ -15,7 +15,7 @@ use super::{board, cards, effects};
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "ai",
-    summary: "AI boards: the presence track, growth, income, credit production, starting resources",
+    summary: "AI boards: the presence track, powers, income, credit production, starting resources",
     requires: &["board"],
     variants: &[VariantDef {
         name: "boards",
@@ -23,11 +23,11 @@ pub static DEF: ModuleDef = ModuleDef {
         params: &[
             ParamSpec::list("boards", 0, 99, "AI board (index into content/ais.json) of each seat; the list repeats for more seats"),
             ParamSpec::int("start_credits", 0, 100, "credits each player starts with"),
+            ParamSpec::int("start_energy", 0, 20, "energy each player starts with"),
             ParamSpec::list("slots", 1, 10, "building slots of each seat's AI board, in the order of boards; the list repeats"),
         ],
         phases: &[
-            PhaseSpec::decision("growth", "each player picks one growth option on their board"),
-            PhaseSpec::decision("power", "use AI-board powers, paid by sacrificing played cards' tags (combine with the action phase)"),
+            PhaseSpec::decision("power", "use AI-board powers, each once a round: place presence, or sacrifice played cards' tags (combine with the action phase)"),
         ],
         rng: &[],
         uses_cards: false,
@@ -79,6 +79,11 @@ pub fn slots(w: &World, seat: usize) -> i64 {
     list[seat % list.len()]
 }
 
+/// Whether power `k` of seat `s`'s board places presence.
+pub fn power_places(w: &World, seat: usize, k: usize) -> bool {
+    board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::PlacePresence { .. })))
+}
+
 /// Set once seat `s` has used power `k` this round.
 fn power_used(seat: usize, k: usize) -> String {
     format!("ai.power_used.{seat}.{k}")
@@ -95,10 +100,15 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if p.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
+    // 066: a power that places pays its energy first, and the step after it.
+    let spent: i64 = p.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n).sum();
+    if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, board::Placing::Step, -spent) {
+        return Some("unaffordable");
+    }
     if !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {
         return Some("needs tags");
     }
-    if !effects::feasible(w, g, seat, &p.effects) {
+    if !effects::feasible_after(w, g, seat, &p.effects, spent) {
         return Some("no target");
     }
     None
@@ -132,12 +142,28 @@ pub fn uncover_words(u: &Uncover) -> String {
 #[derive(Debug)]
 struct Ai {
     start_credits: i64,
+    start_energy: i64,
+}
+
+/// What a power costs, in words: `pay 1 energy, sacrifice 2 diplomacy`.
+pub fn power_cost(p: &crate::content::Power) -> String {
+    let mut cost = Vec::new();
+    if !p.cost.is_empty() {
+        let paid: Vec<String> = p.cost.iter().map(|(r, n)| r.words(*n)).collect();
+        cost.push(format!("pay {}", paid.join(" + ")));
+    }
+    if !p.tags.is_empty() {
+        let tags: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {t}")).collect();
+        cost.push(format!("sacrifice {}", tags.join(" + ")));
+    }
+    cost.join(", ")
 }
 
 fn power_text(p: &crate::content::Power) -> String {
-    let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {t}")).collect();
-    cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
-    format!("Sacrifice {}: {} (once a round)", cost.join(" + "), p.text)
+    let cost = power_cost(p);
+    let mut first = cost.chars();
+    let cost: String = first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect());
+    format!("{cost}: {} (once a round)", p.text)
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -153,6 +179,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     }
     Ok(Box::new(Ai {
         start_credits: b.int("start_credits")?,
+        start_energy: b.int("start_energy")?,
     }))
 }
 
@@ -160,6 +187,7 @@ impl Module for Ai {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         for s in 0..g.seats.len() {
             cx.add_resource(g, s, Resource::Credits, self.start_credits);
+            cx.add_resource(g, s, Resource::Energy, self.start_energy);
         }
     }
 
@@ -172,64 +200,41 @@ impl Module for Ai {
         }
     }
 
-    fn legal(&self, phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
-        if phase == 1 {
-            for k in 0..board(w, seat as usize).powers.len() {
-                if power_blocked(w, g, seat as usize, k).is_none() {
-                    out.push(Action::Power { seat, power: k as u8 });
-                }
+    fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
+        for k in 0..board(w, seat as usize).powers.len() {
+            if power_blocked(w, g, seat as usize, k).is_none() {
+                out.push(Action::Power { seat, power: k as u8 });
             }
-            return;
-        }
-        for option in 0..board(w, seat as usize).growth.len() {
-            out.push(Action::Growth {
-                seat,
-                option: option as u8,
-            });
         }
     }
 
-    fn can_pass(&self, phase: usize, _g: &GameState, _seat: u8) -> bool {
-        phase == 1
+    fn can_pass(&self, _phase: usize, _g: &GameState, _seat: u8) -> bool {
+        true
     }
 
-    fn owns(&self, phase: usize, a: &Action) -> bool {
-        matches!(
-            (phase, a),
-            (0, Action::Growth { .. }) | (1, Action::Power { .. })
-        )
+    fn owns(&self, _phase: usize, a: &Action) -> bool {
+        matches!(a, Action::Power { .. })
     }
 
     fn act(&self, _phase: usize, g: &mut GameState, cx: &mut Cx, a: &Action) -> Res {
         let w = cx.world;
-        if let Action::Power { seat, power } = a {
-            let (s, k) = (*seat as usize, *power as usize);
-            if let Some(why) = power_blocked(&w, g, s, k) {
-                return Err(Halt::Illegal(format!("can't use power {k}: {why}")));
-            }
-            let p = &board(&w, s).powers[k];
-            for (r, n) in &p.cost {
-                cx.add_resource(g, s, *r, -n);
-            }
-            cx.set_key(g, &power_used(s, k), 1);
-            cards::sacrifice_for(g, cx, s, &p.tags)?;
-            cx.count(g, &format!("power.{}.{k}", board(&w, s).id), 1);
-            cx.tally(g, "ai.powers_used", 1);
-            cx.per_round(g, "ai.powers_used", 1);
-            return effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s));
-        }
-        let Action::Growth { seat, option } = a else {
-            return Err(Halt::Illegal("not a growth".into()));
+        let Action::Power { seat, power } = a else {
+            return Err(Halt::Illegal("not a power".into()));
         };
-        let s = *seat as usize;
-        let growth = board(&w, s)
-            .growth
-            .get(*option as usize)
-            .ok_or("no such growth option")?;
-        cx.count(g, &format!("growth.{}.{option}", board(&w, s).id), 1);
-        effects::run(g, cx, &growth.effects, &mut effects::Ctx::seat(s))?;
-        g.seats[s].passed = true;
-        Ok(())
+        let (s, k) = (*seat as usize, *power as usize);
+        if let Some(why) = power_blocked(&w, g, s, k) {
+            return Err(Halt::Illegal(format!("can't use power {k}: {why}")));
+        }
+        let p = &board(&w, s).powers[k];
+        for (r, n) in &p.cost {
+            cx.add_resource(g, s, *r, -n);
+        }
+        cx.set_key(g, &power_used(s, k), 1);
+        cards::sacrifice_for(g, cx, s, &p.tags)?;
+        cx.count(g, &format!("power.{}.{k}", board(&w, s).id), 1);
+        cx.tally(g, "ai.powers_used", 1);
+        cx.per_round(g, "ai.powers_used", 1);
+        effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s))
     }
 
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {
@@ -263,7 +268,7 @@ impl Module for Ai {
                         marks.push(TrackMark {
                             key: "cost".into(),
                             label: format!("pay {}", Resource::Energy.words(u.cost)),
-                            doc: "placing this token costs this much energy on top, unless a card says free (the rich action pays it in credits)".into(),
+                            doc: "placing this token costs this much energy on top, unless a card says free".into(),
                         });
                     }
                     TrackStep {

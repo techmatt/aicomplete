@@ -7,6 +7,38 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 27 (066): presence powers replace growth.** (Bumped from the constant, 26.) Design: Matt, 2026-11-01. The
+band: planner, d2, fresh seeds 20200 and 20300, 96 a cell: **59 ±5 / 61 ±5** (target 60-75: c2 just under, no lever added for it), on the frozen build;
+`experiments/results/screen-066-presence/presence.md`. The gate: no check ahead of the planner by more than 1 SE; 96 paired
+seeds for the five closest, 48 for the rest, `never_tag` left at 8. Every row is a **candidate** unless marked.
+
+| Rule | Status |
+|---|---|
+| No growth phase: presence comes from presence powers, each once a round, 0-2 a round from powers | candidate (Matt) |
+| Placements pay the printed step: one payment path, `board::place_presence` | **locked** |
+| Every board's Deploy: 1 energy for 1 presence | candidate (Matt) |
+| Builder's Buy In: 1 energy + 6 credits (the design's 10 read 54 / 58 against 67 / 62 on the same 48 seeds, 20200, where 6 sat above the band's floor at both sizes; 3-4 credits ran higher at c3 on 25 seeds, far from a steep price) | candidate, simulation |
+| Protector's Accord: 1 energy + sacrifice 1 Diplomacy (the design's 2 went unused, 0.1 a game) | candidate, simulation |
+| Tag costs on powers are sacrifices; no thresholds on them | **locked** |
+| Cheap powers: Scrap (1 Industry for 2 chips), Stand Down (1 Security for 3 credits) | candidate (Matt) |
+| Each player starts bound to the clean city nearest their first presence | candidate (Matt) |
+| `ai.start_energy` 1: production comes after the action phase, so a seat at 0 can't place in round 1 | candidate, the prompt's calibration read it in |
+| `ai.start_credits` 38 (was 20): the credit half of Consolidate's bundle | candidate, simulation |
+| Track income: Builder space 3 +2 credits, space 4 +1 credit; Protector spaces 2-4 +1 credit | candidate, simulation |
+| Resource domains: remove spends `remove_ambassadors` 1 ambassador, align its ambassador only, clear `clear_cost` 2 credits, move `move_credits` 1 credit, a card's Harden `harden_chips` 1 chip | candidate (Matt) |
+| `remove_count` 3: one ambassador removes up to 3 from a hex | candidate (Matt) |
+| `ambassador_credits` stays 6 (Matt: standard projects are the exception to most builds) | candidate (Matt) |
+| Consular Pouch 3 for 5, Shuttle Diplomacy 2 for 4, Ceasefire Monitors 2 for 5, Summit Caucus 2 for 5, Consulate Tower an Action (1 credit, 1 ambassador) at 7, Liaison Corps 1 Follower for 1 ambassador at 5, Orbital Embassy an Action (1 credit, 2 ambassadors) | candidate (Matt's route), reasoned: no effect measured |
+
+Gone: Expand, Develop, Consolidate and `ai.growth`; the Place presence standard action and `presence_action_cap`;
+the rich action (`presence_buy`, `presence_credits`, `presence_rise`, `presence_stage`); the buy-energy project
+(`energy_credits`); `presence_energy` (now Deploy's printed cost); `remove_energy`, `clear_energy`, `move_energy`,
+`align_energy`; the op `next_building_discount`, which only the Builder's Consolidate printed. No card named a removed
+mechanic, so none had to adapt: the Bunker's "Harden action" stays and says it is paid in chips. Agents: a presence power
+is scored at `choices` × 2 at the top level and at least 3 prompts in rollouts (short of that it reads as paying and
+placing nothing); `no_powers` no longer rules out the presence powers; `rich_spend`, `always_expand` and
+`always_consolidate` are gone with their mechanics, `always_max_presence` and `never_second_presence` are new.
+
 **Revision 26 (064): d2 re-centered for the four-deal planner.** (Bumped from the constant, 25.) The default
 planner is now `deals` 4, `lead` 0 (an agent change, chosen on fresh seeds, r25: 81 / 73 against one guess's
 69 / 60). Matt's standing ruling: push difficulty up where it can go. Measured on seeds 16000, nothing

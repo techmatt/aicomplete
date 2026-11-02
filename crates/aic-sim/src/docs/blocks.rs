@@ -348,7 +348,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
     )
 }
 
-/// Each board's innate, discount, growth and unique cards.
+/// Each board's innate, discount and unique cards.
 pub(super) fn board_details_block(c: &Content) -> String {
     let name = |id: &String| {
         c.cards
@@ -368,18 +368,16 @@ pub(super) fn board_details_block(c: &Content) -> String {
                     DiscountOn::Tag(t) => format!("{} on {} cards {}:1", d.resource, title(t.name()), d.rate),
                 })
                 .collect();
-            let growth: Vec<String> = b.growth.iter().map(|g| g.name.clone()).collect();
             let cards: Vec<String> = b.cards.iter().map(name).collect();
             vec![
                 b.name.clone(),
                 format!("*{}*: {}", b.innate.name, b.innate.text),
                 discounts.join(", "),
-                growth.join("; "),
                 cards.join(", "),
             ]
         })
         .collect();
-    table(&["Board", "Innate", "Discount", "Growth options", "Unique cards"], rows)
+    table(&["Board", "Innate", "Discount", "Unique cards"], rows)
 }
 
 /// One space of a presence track.
@@ -436,23 +434,18 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     let t = |key: &str| tick(r, key);
     let rows: Vec<[String; 3]> = vec![
         [
-            "Place presence".to_string(),
-            format!("{}, plus the step's printed cost (§7)", t("board.presence_energy")),
-            format!("{} a round (046): the next token off your track (uncovering its space) on a land hex next to your presence, with no corruption marker, 1 presence per hex (**locked**)", t("board.presence_action_cap")),
-        ],
-        [
             "Build a research station".to_string(),
             format!("{} + {} chips", t("board.build_energy"), t("board.station_chips")),
             "on an open hex in reach that is not an industrial zone; it is yours (your cube)".to_string(),
         ],
         [
-            "Remove an adversary ambassador".to_string(),
-            t("board.remove_energy"),
-            "in reach".to_string(),
+            "Remove adversary ambassadors".to_string(),
+            format!("{} of your ambassadors", t("board.remove_ambassadors")),
+            format!("up to {} from one hex in reach", t("board.remove_count")),
         ],
         [
             "Clear a corruption marker".to_string(),
-            t("board.clear_energy"),
+            format!("{} credits", t("board.clear_cost")),
             format!(
                 "in reach (041): sway {} toward Unity, gain {} credits",
                 t("board.clear_unity"),
@@ -461,7 +454,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         ],
         [
             "Move a player ambassador".to_string(),
-            t("board.move_energy"),
+            format!("{} credit", t("board.move_credits")),
             "from your supply or the board onto a piece in reach (not the hex it comes from, 020)".to_string(),
         ],
         [
@@ -471,13 +464,18 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         ],
         [
             "Align a clean city".to_string(),
-            format!("{} + 1 ambassador", t("board.align_energy")),
+            "1 ambassador".to_string(),
             "in reach, with a site claim: your cube on it".to_string(),
         ],
         [
-            "Harden a facility (the Protector; a card can grant it)".to_string(),
+            "Harden a facility (Bulwark)".to_string(),
             format!("{} energy a token", t("board.harden_energy")),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too)".to_string(),
+        ],
+        [
+            "Harden a facility (a card grants it, `harden_chips`)".to_string(),
+            format!("{} chips a token", t("board.harden_chips")),
+            "as above".to_string(),
         ],
         [
             "Sell chips".to_string(),
@@ -490,27 +488,9 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "from your hand".to_string(),
         ],
         [
-            "The rich action (`presence_buy`, 034)".to_string(),
-            format!(
-                "{} credits, + {} for each earlier use by you this round, + {} an energy of the step's printed cost",
-                t("board.presence_credits"),
-                t("board.presence_rise"),
-                t("board.energy_credits")
-            ),
-            format!(
-                "from stage {} (`presence_stage`): as Place presence, no energy. Worse per token than Place presence, worth it only with spare credits (024: a cheap project from round 1)",
-                int(r, "board.presence_stage")
-            ),
-        ],
-        [
             "Project: harden (`harden_buy`)".to_string(),
             format!("{} credits", t("board.harden_credits")),
             "any player: a hardening token on a player-owned station or factory in reach".to_string(),
-        ],
-        [
-            "Project: buy energy (`energy`)".to_string(),
-            format!("{} credits", t("board.energy_credits")),
-            "gain 1 energy".to_string(),
         ],
         [
             "Project: drain (`drain`)".to_string(),
@@ -616,7 +596,12 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you; events are used and discarded. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
-         and once a round you can sacrifice cards with the right tags to use your AI board's power.\n",
+         and you can sacrifice cards with the right tags to use your AI board's powers.\n\n\
+         **Presence, for new players.** There is no growth step. In the action phase you place \
+         presence with your board's two presence powers, each once a round, so 0, 1 or 2 tokens a \
+         round from them, and cards can add more. Every board has 1 energy for 1 presence; the second costs more, in the board's own \
+         currency. Either way you also pay the energy printed on the track space you uncover. You \
+         start with 1 energy and one city bound to you, which makes energy every round.\n",
         n("cards.opening_deal"),
         n("cards.opening_free"),
         n("cards.opening_keep_credits"),

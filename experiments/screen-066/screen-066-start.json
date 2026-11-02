@@ -1,0 +1,140 @@
+{
+ "name": "screen-066-start",
+ "note": "066 (amendment 2462): what the start credits must be with ambassador_credits 6, remove_count 3 and the raised Diplomacy cards. --seed 19000.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2-s30",
+   "set": [
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=30"
+   ]
+  },
+  {
+   "name": "c2-s34",
+   "set": [
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=34"
+   ]
+  },
+  {
+   "name": "c2-s38",
+   "set": [
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=38"
+   ]
+  },
+  {
+   "name": "c3-s30",
+   "set": [
+    "countries=3",
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=30"
+   ]
+  },
+  {
+   "name": "c3-s34",
+   "set": [
+    "countries=3",
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=34"
+   ]
+  },
+  {
+   "name": "c3-s38",
+   "set": [
+    "countries=3",
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}",
+    "ai.start_credits=38"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner"
+ ],
+ "games": 32,
+ "records": 0
+}

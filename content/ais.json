@@ -48,7 +48,7 @@
     "income": [
      [
       "credits",
-      1
+      2
      ]
     ],
     "keep2": true
@@ -57,6 +57,10 @@
     "income": [
      [
       "insight",
+      1
+     ],
+     [
+      "credits",
       1
      ]
     ]
@@ -98,54 +102,6 @@
     "cost": 3
    }
   ],
-  "growth": [
-   {
-    "name": "Expand: place 2 presence, gain 1 credit",
-    "effects": [
-     {
-      "op": "place_presence",
-      "count": 2
-     },
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 1
-     }
-    ]
-   },
-   {
-    "name": "Develop: place 1 presence, draw 1 card",
-    "effects": [
-     {
-      "op": "place_presence",
-      "count": 1
-     },
-     {
-      "op": "draw",
-      "count": 1
-     }
-    ]
-   },
-   {
-    "name": "Consolidate: gain 4 credits and 2 energy; next building this round costs 2 less",
-    "effects": [
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 4
-     },
-     {
-      "op": "gain",
-      "resource": "energy",
-      "amount": 2
-     },
-     {
-      "op": "next_building_discount",
-      "amount": 2
-     }
-    ]
-   }
-  ],
   "cards": [
    "turnkey_factory",
    "venture_capital",
@@ -172,6 +128,61 @@
       "resource": "credits",
       "amount": 5
      },
+     {
+      "op": "gain",
+      "resource": "chips",
+      "amount": 2
+     }
+    ]
+   },
+   {
+    "name": "Deploy",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Buy In",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ],
+     [
+      "credits",
+      6
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Scrap",
+    "tags": [
+     [
+      "industry",
+      1
+     ]
+    ],
+    "text": "gain 2 chips",
+    "effects": [
      {
       "op": "gain",
       "resource": "chips",
@@ -276,6 +287,10 @@
      [
       "energy",
       1
+     ],
+     [
+      "credits",
+      1
      ]
     ]
    },
@@ -283,6 +298,10 @@
     "income": [
      [
       "energy",
+      1
+     ],
+     [
+      "credits",
       1
      ]
     ],
@@ -292,6 +311,10 @@
     "income": [
      [
       "insight",
+      1
+     ],
+     [
+      "credits",
       1
      ]
     ]
@@ -333,54 +356,6 @@
     "cost": 3
    }
   ],
-  "growth": [
-   {
-    "name": "Expand: place 2 presence, gain 1 energy",
-    "effects": [
-     {
-      "op": "place_presence",
-      "count": 2
-     },
-     {
-      "op": "gain",
-      "resource": "energy",
-      "amount": 1
-     }
-    ]
-   },
-   {
-    "name": "Develop: place 1 presence, draw 1 card",
-    "effects": [
-     {
-      "op": "place_presence",
-      "count": 1
-     },
-     {
-      "op": "draw",
-      "count": 1
-     }
-    ]
-   },
-   {
-    "name": "Consolidate: gain 3 energy and 2 credits; harden 2 facilities in reach",
-    "effects": [
-     {
-      "op": "gain",
-      "resource": "energy",
-      "amount": 3
-     },
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 2
-     },
-     {
-      "op": "harden",
-      "count": 2
-     }
-    ]
-   }
-  ],
   "cards": [
    "point_defense",
    "strike_team",
@@ -411,6 +386,62 @@
       "op": "sway",
       "side": "unity",
       "amount": 1
+     }
+    ]
+   },
+   {
+    "name": "Deploy",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Accord",
+    "tags": [
+     [
+      "diplomacy",
+      1
+     ]
+    ],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Stand Down",
+    "tags": [
+     [
+      "security",
+      1
+     ]
+    ],
+    "text": "gain 3 credits",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
      }
     ]
    }

@@ -5,7 +5,7 @@ use super::*;
 /// Who is resolving an op.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Source {
-    /// A player's card, ability, growth option or power: that seat chooses.
+    /// A player's card, ability or power: that seat chooses.
     Seat(usize),
     /// An executing threat: seat 0 chooses for the team, the rest by scope.
     Threat,

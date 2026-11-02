@@ -47,20 +47,16 @@ pub fn presence_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .collect()
 }
 
-/// Seat `s`'s uses of the rich action this round (034).
-pub(super) fn rich_key(seat: usize) -> KeyBuf {
-    KeyBuf::new("board.rich.").num(seat)
-}
-
-/// Seat `s`'s uses of the standard placement this round (046).
-pub fn placed_key(seat: usize) -> KeyBuf {
-    KeyBuf::new("board.placed.").num(seat)
-}
-
-/// Whether seat `s` may still take the standard placement this round.
-pub(super) fn placement_open(w: &World, g: &GameState, seat: usize) -> bool {
-    let cap = w.int("board.presence_action_cap");
-    cap == 0 || g.var(&placed_key(seat)) < cap
+/// The city a seat starts bound to (066): the clean city of country `c` nearest
+/// hex `start`, ties to the lower number. Its energy is the seat's first source.
+pub(super) fn bound_city(w: &World, g: &GameState, c: usize, start: usize) -> Option<usize> {
+    w.content.map.countries[c]
+        .cities
+        .iter()
+        .map(|&n| (w.map.distance(start, w.map.numbered(c, n)), n))
+        .filter(|&(_, n)| clean_city(w, g, w.map.numbered(c, n)))
+        .min()
+        .map(|(_, n)| w.map.numbered(c, n))
 }
 
 /// The cheapest next step's printed cost (034: printed on the track, each
@@ -72,40 +68,28 @@ pub(super) fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64
     first.into_iter().chain(second).min()
 }
 
-/// Who is placing a presence, which sets its price (041: every placement
-/// pays its track step through [`place_presence`] unless a card says free).
+/// How a presence is paid for (041, locked: every placement pays its track
+/// step through [`place_presence`] unless a card says free).
 #[derive(Clone, Copy, PartialEq)]
 pub enum Placing {
-    /// Growth, and a card: the step's cost in energy.
+    /// A presence power or a card: the step's cost in energy.
     Step,
     /// A card that says "free".
     Free,
-    /// The standard action: `board.presence_energy` more.
-    Action,
-    /// The rich action: `board.presence_credits` and its rise, the step at
-    /// `board.energy_credits` credits an energy.
-    Rich,
 }
 
-/// What seat `s` pays to place on a step printing `step`.
-pub fn placing_price(w: &World, g: &GameState, seat: usize, how: Placing, step: i64) -> Price {
+/// What a placement pays on a step printing `step`.
+pub fn placing_price(how: Placing, step: i64) -> Price {
     match how {
         Placing::Step => Price { energy: step, ..Price::default() },
         Placing::Free => Price::default(),
-        Placing::Action => Price { energy: w.int("board.presence_energy") + step, ..Price::default() },
-        Placing::Rich => Price {
-            credits: w.int("board.presence_credits")
-                + g.var(&rich_key(seat)) * w.int("board.presence_rise")
-                + step * w.int("board.energy_credits"),
-            ..Price::default()
-        },
     }
 }
 
 /// What a placement pays, for its prompt: ", costs 3 energy", or nothing if
 /// free (044: every prompt printed the bare step cost, whatever was charged).
-pub(super) fn price_words(w: &World, g: &GameState, seat: usize, how: Placing, step: i64) -> String {
-    let parts = placing_price(w, g, seat, how, step).words();
+pub(super) fn price_words(how: Placing, step: i64) -> String {
+    let parts = placing_price(how, step).words();
     if parts.is_empty() {
         String::new()
     } else {
@@ -114,12 +98,11 @@ pub(super) fn price_words(w: &World, g: &GameState, seat: usize, how: Placing, s
 }
 
 /// Whether seat `s` has a token and can pay its cheapest step `how`, with
-/// `gained` more energy than it holds.
+/// `gained` more energy than it holds (less, when the power placing it pays
+/// energy first).
 pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, how: Placing, gained: i64) -> bool {
     cheapest_step(w, g, seat).is_some_and(|step| {
-        let mut price = placing_price(w, g, seat, how, step);
-        price.energy = (price.energy - gained).max(0);
-        price.affordable(g, seat)
+        g.resource(seat, Resource::Energy) + gained >= placing_price(how, step).energy
     })
 }
 
@@ -135,7 +118,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
-    let can_pay = |u: &crate::content::Uncover| placing_price(&w, g, seat, how, u.cost).affordable(g, seat);
+    let can_pay = |u: &crate::content::Uncover| placing_price(how, u.cost).affordable(g, seat);
     let mut tracks: Vec<(bool, &crate::content::Uncover)> = Vec::new();
     if let Some(u) = b.presence.get(t1).filter(|u| can_pay(u)) {
         tracks.push((false, u));
@@ -150,7 +133,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
                 "track {}: uncovers {}{}",
                 if *two { 2 } else { 1 },
                 ai::uncover_label(u),
-                price_words(&w, g, seat, how, u.cost)
+                price_words(how, u.cost)
             ))
         })
         .collect();
@@ -160,16 +143,13 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     };
     let second = tracks[k].0;
     let step = tracks[k].1.cost;
-    let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(&w, g, seat, how, step));
+    let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = format!("Seat {seat}: place presence ({what}) on which hex?");
     let Some(j) = cx.choose(seat, &prompt, opts)? else {
         return Ok(false);
     };
-    placing_price(&w, g, seat, how, step).pay(g, cx, seat);
-    if how == Placing::Rich {
-        cx.add_key(g, &rich_key(seat), 1);
-    }
+    placing_price(how, step).pay(g, cx, seat);
     if second {
         cx.add_key(g, &track2_key(seat), 1);
     } else {

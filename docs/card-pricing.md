@@ -14,7 +14,7 @@ sections run newest first, and the cards as they stand are in [cards.md](cards.m
 |---|---|---|
 | insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear. **A fit:** 2.5 centers tier 1 on its printed prices (median gap 0). It is not a measure: unspent insight was not read at 055 (last at 021, r12), and `economy.insight_unspent` would settle it. Credits binding is the reasoning, not a result |
 | keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
-| energy | 2 | was 1. Project ceiling 4; a 1-energy standard action does about this much |
+| energy | 2 | was 1. 066: no standard action sells energy or spends it on the map now, so this rests on a presence (1 energy) and on cards; a price pass owes it a look |
 | chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
 | antimatter | 9 | 1 a round costs 8-11 of credits |
 | token held | 1 | spent, it is worth what its action buys |
@@ -24,10 +24,10 @@ sections run newest first, and the cards as they stand are in [cards.md](cards.m
 | Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
 | presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
 | per presence, uncapped | as 055: the track has only 9 spaces | 059: Grid Census 2, Beamed Power Constellation 8 |
-| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 2 for 3 |
+| ambassador | 3; a move up to 2 hexes 1.5 | project ceiling 6, Consular Pouch 3 for 5 (066) |
 | removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
 | troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | 059: the card names a kind: one choice, no mix |
-| marker cleared | 6, × 0.7 for a target | 1 energy, 1 Sway, a hex back |
+| marker cleared | 6, × 0.7 for a target | 2 credits (066), 1 Sway, a hex back |
 | shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
 | delay 2.5, jam N is N, counter 7 | | |
 | compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
@@ -86,7 +86,7 @@ presence payoffs and dearer presence neither gap.
 | Mesh Intrusion Pact | no needs | needs 1 Cyber | the same; the rush played it 19 points more |
 | Adversarial Inference Sweep | no needs | needs 1 Science | the same; 12 points more |
 
-**Always-Consolidate is not answered by price.** It was to be answered through cards that pay off
+**Always-Consolidate was not answered by price (growth is gone since 066).** It was to be answered through cards that pay off
 presence and draws. Field Sensor Grid at 2 insight, Grid Census at 8 energy and Beamed Power at
 8 moved neither gap beyond the noise, nor did dearer presence cards, so neither shipped. Its wins are
 purges (22 of 33 at c2, 30 of 35 at c3, fresh seeds), it loses half the presence, and the bundle that pays for it is the growth rule.
@@ -155,7 +155,7 @@ the two tags now pay in the deciding rounds: Science through cheap cards and tag
 requirements, Industry through money up front plus income. These prices are candidates, screened in
 [034's gate](../experiments/results/screen-034-clocks/clocks.md): ignoring Industry now costs 12
 points at c2 (level at c3), and ignoring Science is still ahead (-16 / -9). 034 also moved the
-ceilings in *The credit budget*: 4 credits for 1 energy, and a token by credits is the rich action,
+ceilings in *The credit budget*: 4 credits for 1 energy (the buy-energy project, gone in 066), and a token by credits was the rich action,
 6 and rising, from stage II.
 
 **The sum.** Value = immediate gain + income × rounds left. Aim: payback in 3-4 rounds
@@ -286,6 +286,8 @@ Tier 2 lands in rounds 5-8, so it pays back in 2-4 rounds or not at all:
 - No keep-discount primitive exists. Predictive Modeling and Open-Weights Release approximated one with `next_round_insight` 1 (every player) until 041 changed them (*041's changes*, above); no card prints it now.
 
 ## Industry (023, r14: old rates)
+
+(066, r27: 38 starting credits and the Consolidate bundle gone. Seven Diplomacy cards were raised and repriced at 2 credits an extra ambassador, the cards' rate of 3 less a little to get them played: Consular Pouch 3 ambassadors for 5, Shuttle Diplomacy 2 for 4, Ceasefire Monitors 2 for 5, Summit Caucus 2 for 5, Consulate Tower an Action of 1 credit for 1 ambassador at 7, Liaison Corps 1 Follower for 1 ambassador at 5, Orbital Embassy an Action of 1 credit for 2. All candidates, reasoned; the screen can't tell them from noise, since each is played under once every two games.)
 
 Baseline: 20 starting credits, ~9-10 credits and 5-6 insight a round, games of 8-10
 rounds. One permanent +1 credit is worth about (rounds left) credits, so ~8 if played

@@ -123,12 +123,12 @@ macro_rules! forced_table {
             (tier1_only: bool, true, 0.0, "dominance check: never draft from tier 2")
             /// Draft from tier 2 whenever it can afford the keep.
             (tier2_rush: bool, true, 0.0, "dominance check: draft from tier 2 whenever the keep is affordable")
-            /// Never use an AI-board power.
-            (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power")
+            /// Never use an AI-board power, the presence powers aside (066: they
+            /// are how anyone places, which `no_presence` checks).
+            (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power but the presence powers")
             /// Never pay toward a threat's counter.
             (no_counters: bool, true, 0.0, "dominance check: never counter a threat")
-            /// Place no presence beyond setup (no standard action, card or growth
-            /// that places one).
+            /// Place no presence beyond setup (no power or card that places one).
             (no_presence: bool, true, 0.0, "dominance check: place no presence beyond setup")
             /// Mono-tag (023): keep and play only cards carrying this tag.
             (only_tag: Option<Tag>, true, 0.0, "dominance check (023): keep and play only this tag (1-6: science, industry, cyber, power, diplomacy, security)")
@@ -154,18 +154,16 @@ macro_rules! forced_table {
             /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
             /// this should lose ground.
             (abandon: bool, true, 0.0, "exploit check (053): give up the last country: no counter on it, no hex in it while another pick is open, losses aside")
-            /// Exploit check (034): spend every spare credit on the rich action.
-            (rich_spend: bool, true, 0.0, "exploit check (034): every spare credit on the rich action")
             /// Exploit check (034): draft, keep and play Science first, for its discounts.
             (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
-            /// Fixed policy (041): the growth option that places the most presence.
-            (always_expand: bool, true, 0.0, "fixed policy (041): the growth option that places the most presence")
-            /// Fixed policy (041): the growth option that places none.
-            (always_consolidate: bool, true, 0.0, "fixed policy (041): the growth option that places none")
             /// Fixed policy (041): never clear a corruption marker.
             (never_remove: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
+            /// Fixed policy (066): both presence powers whenever affordable.
+            (always_max_presence: bool, true, 0.0, "fixed policy (066): use both presence powers whenever affordable")
+            /// Fixed policy (066): never the board's second presence power.
+            (never_second_presence: bool, true, 0.0, "fixed policy (066): never use the board's second presence power")
         }
     };
 }
@@ -297,13 +295,18 @@ impl Policy {
                     || (!losing_pick(g) && target.and_then(|t| world.map.find(t)).is_some_and(|h| given_up(world, h)))
             }
             Action::Tier { tier: 2, .. } => f.tier1_only,
-            Action::Power { .. } => f.no_powers || f.free_only,
+            Action::Power { seat, power } => {
+                let (s, k) = (*seat as usize, *power as usize);
+                if ai::power_places(world, s, k) {
+                    f.stays_put() || (f.never_second_presence && second_presence(world, s, k))
+                } else {
+                    f.no_powers || f.free_only
+                }
+            }
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
-                let presence = act == "presence" || act == "presence_buy";
-                (f.no_presence && presence)
-                    || (f.never_remove && act == "clear")
-                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden" | "harden_buy" | "chips"))
+                (f.never_remove && act == "clear")
+                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden" | "harden_chips" | "harden_buy" | "chips"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move" | "chips"))
             }
             Action::Play { card, .. } => {
@@ -311,28 +314,19 @@ impl Policy {
                 (f.stays_put() && places_presence(&d.effects)) || !f.allows(d)
             }
             Action::Keep { card, .. } => !f.allows(cards::def(world, card)),
-            Action::Growth { seat, option } => {
-                let options = &ai::board(world, *seat as usize).growth;
-                let placed = presence_placed(&options[*option as usize].effects);
-                (f.stays_put() && placed > 0)
-                    || (f.always_consolidate && placed > 0)
-                    || (f.always_expand && placed < options.iter().map(|o| presence_placed(&o.effects)).max().unwrap_or(0))
-            }
             _ => false,
         }
     }
 }
 
 fn places_presence(effects: &[Op]) -> bool {
-    presence_placed(effects) > 0
+    effects.iter().any(|e| matches!(e, Op::PlacePresence { .. }))
 }
 
-/// The presence `effects` place.
-fn presence_placed(effects: &[Op]) -> i64 {
-    effects
-        .iter()
-        .map(|e| if let Op::PlacePresence { count, .. } = e { *count } else { 0 })
-        .sum()
+/// Whether power `k` is seat `s`'s second presence power: one that places,
+/// after the board's first that does.
+fn second_presence(w: &World, s: usize, k: usize) -> bool {
+    (0..k).any(|j| ai::power_places(w, s, j))
 }
 
 /// Whether a card acts on the board the way 041's Science does.
@@ -387,8 +381,10 @@ impl Agent for Policy {
                 return i;
             }
         }
-        if self.forced.rich_spend && !pending {
-            if let Some(i) = legal.iter().position(|a| matches!(a, Action::Standard { act, .. } if act == "presence_buy")) {
+        if self.forced.always_max_presence && !pending {
+            if let Some(i) = legal.iter().position(
+                |a| matches!(a, Action::Power { seat, power } if ai::power_places(&world, *seat as usize, *power as usize)),
+            ) {
                 return i;
             }
         }
@@ -696,6 +692,31 @@ fn plan(
 mod tests {
     use super::*;
     use std::sync::Arc;
+
+    /// A fixed policy with one parameter on, over the plain planner's numbers.
+    fn forced(name: &str) -> Policy {
+        let f = Forced::read(|k| f64::from(k == name));
+        Policy::new(Box::new(crate::agents::tests::First), f)
+    }
+
+    #[test]
+    fn the_presence_checks_rule_out_the_powers_they_name() {
+        let r = crate::agents::tests::rules(0);
+        let g = r.new_game(1);
+        let w = r.world();
+        let by_name = |name: &str| {
+            let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
+            Action::Power { seat: 0, power: k as u8 }
+        };
+        let (deploy, buy, retool) = (by_name("Deploy"), by_name("Buy In"), by_name("Retool"));
+        let no_powers = forced("no_powers");
+        assert!(no_powers.ruled_out(&w, &g, &retool) && !no_powers.ruled_out(&w, &g, &deploy));
+        let no_presence = forced("no_presence");
+        assert!(no_presence.ruled_out(&w, &g, &deploy) && no_presence.ruled_out(&w, &g, &buy));
+        assert!(!no_presence.ruled_out(&w, &g, &retool));
+        let never_second = forced("never_second_presence");
+        assert!(never_second.ruled_out(&w, &g, &buy) && !never_second.ruled_out(&w, &g, &deploy));
+    }
 
     #[test]
     fn a_shield_counts_only_the_presence_it_can_cover() {

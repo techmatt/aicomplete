@@ -5,7 +5,7 @@
 import { renderBoard } from './board';
 import {
   checkRecord, legalActions, load, recordText, resolveConfig, rulesRevision, version, view as engineView,
-  type Action, type View,
+  type Action, type CardView, type View,
 } from './engine';
 import {
   actionLabel, choiceKey, contentIds, escapeHtml, hexKey, hexesIn, isHex, shortPhase, strong,
@@ -248,6 +248,7 @@ function renderSeats() {
     box.innerHTML = `
       <h3><span class="swatch"></span>Seat ${seat.index}${ai ? ` · <span class="board-name" data-board-seat="${seat.index}">${escapeHtml(ai.name)}</span>` : ''} <small title="country ${seat.country}">${escapeHtml(countryName(v, seat.country))}</small><span class="status">${status}</span></h3>
       ${ai?.innate ? `<div class="innate" title="${escapeHtml(ai.text ?? '')}"><b>${escapeHtml(ai.innate.name)}:</b> ${escapeHtml(ai.innate.text ?? '')}</div>` : ''}
+      ${powersHtml(ai?.cards ?? [])}
       ${seatValuesHtml(v, seat.index)}
       ${seatCardsHtml(v, seat.index)}`;
     if (mine.length) box.append(actionButtons(mine));
@@ -262,6 +263,13 @@ function renderSeats() {
     all.onclick = () => passAll();
     ui.seats.append(all);
   }
+}
+
+/** A board's powers, always shown: a button appears only when one can be used. */
+function powersHtml(cards: CardView[]): string {
+  const rows = cards.filter((c) => c.id.includes('.power.')).map((c) =>
+    `<li class="${c.status === 'ready' ? 'ready' : ''}"><b>${escapeHtml(c.name)}:</b> ${escapeHtml(c.text ?? '')} <small>${escapeHtml(c.status ?? '')}</small></li>`);
+  return rows.length ? `<ul class="powers">${rows.join('')}</ul>` : '';
 }
 
 /**
@@ -320,7 +328,7 @@ function actionButtons(mine: Action[]): HTMLElement {
 }
 
 /** Button order: answers and decisions first, standard actions, threat counters and gifts next, selling a card and pass last. */
-const TYPE_ORDER = ['choose', 'growth', 'tier', 'draft', 'keep', 'play', 'use', 'power', 'standard', 'pay', 'withdraw', 'give', 'antimatter', 'sell'];
+const TYPE_ORDER = ['choose', 'tier', 'draft', 'keep', 'play', 'use', 'power', 'standard', 'pay', 'withdraw', 'give', 'antimatter', 'sell'];
 const typeRank = (t: string) => (t === 'pass' ? 99 : TYPE_ORDER.indexOf(t) < 0 ? 50 : TYPE_ORDER.indexOf(t));
 
 function passAll() {

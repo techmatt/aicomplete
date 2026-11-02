@@ -45,15 +45,13 @@ def tokens():
     return len(ai['presence']) + len(ai['presence2'])
 
 
-def growth_key(board, option):
-    return f'ai.growth.{board}.{option}'
+def power_key(board, k):
+    return f'ai.power.{board}.{k}'
 
 
-def growth_keys():
-    """Every board's tally per growth option, by option: boards list their options in the same
-    order (Expand, Develop, Consolidate), a convention of content/ais.json, which nothing checks."""
-    most = max(len(b['growth']) for b in ais())
-    return [[growth_key(b['id'], k) for b in ais() if k < len(b['growth'])] for k in range(most)]
+def power_keys():
+    """Every board's tally per power, as (board, index, name), in content order."""
+    return [(b['id'], k, p['name']) for b in ais() for k, p in enumerate(b['powers'])]
 
 
 def wins(gs):
@@ -127,11 +125,10 @@ def tokens_left(c, gs):
     return f"{avg([tokens() - 1 - cnt(g, 'board.presence_placed') / s.seats(c) for g in gs]):.1f}"
 
 
-@reads(*(k for keys in growth_keys() for k in keys))
-def growth(c, gs):
-    """Share of growth picks by option (Expand, Develop, Consolidate), over every board."""
-    picks = [sum(cnt(g, k) for g in gs for k in keys) for keys in growth_keys()]
-    return ' / '.join(f'{100 * n / max(1, sum(picks)):.0f}' for n in picks)
+@reads(*(power_key(b, k) for b, k, _ in power_keys()))
+def power_uses(c, gs):
+    """Uses a game of each board's powers, in content order."""
+    return ' / '.join(f"{mean(gs, lambda g: cnt(g, power_key(b, k))):.1f}" for b, k, _ in power_keys())
 
 
 def by_tier(field):
@@ -185,12 +182,11 @@ COLUMNS = {
     'loss_ends': ('losses: Discord / presence / deck-out', loss_ends),
     'presence_rounds': ('presence-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'presence')),
     'tokens_left': ('tokens left a seat', tokens_left),
-    'growth': ('growth: Expand / Develop / Consolidate %', growth),
+    'power_uses': ('uses a game of each power (content order)', power_uses),
     'markers': ('markers placed / removed', per_game('board.markers', 'board.markers_removed')),
     'markers_city': ('markers removed from cities', per_game('board.markers_removed_city')),
     'placed_by_round': ('tokens placed a seat by r6 / r10', placed_by_round),
     'delayed': ('threats delayed', per_game('threats.delayed')),
-    'rich_uses': ('rich uses a game', per_game('board.std.presence_buy')),
     'presence_lost': ('presence lost: wins / losses', split('board.presence_lost')),
     'presence_lost_mean': ('presence lost', per_game('board.presence_lost')),
     'presence': ('presence', per_game('board.presence_placed')),
@@ -226,10 +222,10 @@ COLUMNS = {
 
 PRESETS = {
     'tiers': ('variant,d,agent,n,win,offered_tier,kept_tier,played_tier', False),
-    '041': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,tokens_left,growth,markers,'
-            'markers_city,placed_by_round,rich_uses,presence_lost,freed,delayed', True),
+    '041': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,tokens_left,power_uses,markers,'
+            'markers_city,placed_by_round,presence_lost,freed,delayed', True),
     '034': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,presence_rounds,tokens_left,'
-            'rich_uses,presence_lost,freed', True),
+            'presence_lost,freed', True),
     '028': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_split,loss_ends,tips,presence_lost,freed,'
             'bases_united', True),
     '018': ('variant,d,agent,n,win,rounds,left,tips,ends,presence,factories,factories_end,chips,nodes,compute,'

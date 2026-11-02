@@ -183,5 +183,4 @@ pub(super) fn passive_discount(w: &World, g: &GameState, seat: usize) -> i64 {
             _ => 0,
         })
         .sum::<i64>()
-        + g.var(&next_discount(seat))
 }

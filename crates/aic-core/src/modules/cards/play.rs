@@ -81,7 +81,6 @@ impl Cards {
         cx.count(g, &format!("played.{id}"), 1);
         cx.per_round(g, "cards.played", 1);
         if d.is_building() {
-            cx.set_key(g, &next_discount(seat), 0);
             place_building(g, cx, seat, id, d)?;
             cx.move_card(g, id, &hand(seat), &built(seat), false)?;
         } else if d.is_event() {

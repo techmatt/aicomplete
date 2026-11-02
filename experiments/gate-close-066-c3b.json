@@ -1,0 +1,26 @@
+{
+  "name": "gate-close-066-c3b",
+  "note": "066: the second 48 paired seeds (--seed 21048) of the checks not clearly behind the planner after gate-close-066; the first set is --seed 21000.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner",
+    "planner:never_second_presence=1",
+    "planner:no_powers=1",
+    "planner:science_board=1"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -1,0 +1,97 @@
+{
+ "name": "screen-066-factors2",
+ "note": "066: with energy for two placements, how far a removal's price must fall. --seed 18400.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "a3r2S0",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=3",
+    "board.remove_count=2"
+   ]
+  },
+  {
+   "name": "a3r2S1",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=3",
+    "board.remove_count=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "a3r3S0",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=3",
+    "board.remove_count=3"
+   ]
+  },
+  {
+   "name": "a3r3S1",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=3",
+    "board.remove_count=3",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "a2r2S0",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=2",
+    "board.remove_count=2"
+   ]
+  },
+  {
+   "name": "a2r2S1",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=2",
+    "board.remove_count=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "a2r3S0",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=2",
+    "board.remove_count=3"
+   ]
+  },
+  {
+   "name": "a2r3S1",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:deals=4,lead=0"
+ ],
+ "games": 24,
+ "records": 0
+}

@@ -23,7 +23,7 @@ use crate::vocab::{Resource, Side, Tag, TagOrAny, TokenKind};
 /// The kinds of content list an op can sit in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Slot {
-    /// A player's effects: card, ability, growth option, AI-board power.
+    /// A player's effects: card, ability, AI-board power.
     Player,
     /// A threat's effects, in the threat's scope.
     Threat,
@@ -210,10 +210,6 @@ pub enum Op {
     },
     /// Discard one visible adversary project, with its compute (017).
     DiscardProject,
-    /// Your next building this round costs `amount` less.
-    NextBuildingDiscount {
-        amount: i64,
-    },
     /// A one-time permanent gain (021): your printed production of
     /// `resource` rises by `amount` for the rest of the game.
     Production {
@@ -417,7 +413,8 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
-    /// You may use the Harden standard action.
+    /// You may use the Harden standard action: on a card, `harden_chips`; as
+    /// Bulwark, an AI board's innate, `harden_energy`.
     HardenAction,
     /// `amount` more building slots.
     Slots {
@@ -568,7 +565,6 @@ impl Op {
             | Op::Jam { .. }
             | Op::DrainProject { .. }
             | Op::DiscardProject
-            | Op::NextBuildingDiscount { .. }
             | Op::Production { .. }
             | Op::AddTokens { .. }
             | Op::CutNode

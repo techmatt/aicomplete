@@ -1,0 +1,148 @@
+{
+ "name": "screen-066-factors3",
+ "note": "066: from a2 r3 with cheaper second powers: C income on the track and 26 credits to start, E2 more energy, S2 a 3-credit Buy In. --seed 18500.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "base",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "C",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.presence.2.income=[[\"credits\",2]]",
+    "ais.builder.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ais.protector.presence.1.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.2.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ai.start_credits=26"
+   ]
+  },
+  {
+   "name": "E2",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ai.start_energy=3",
+    "ais.builder.presence2.0.income=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "CE2",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.presence.2.income=[[\"credits\",2]]",
+    "ais.builder.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ais.protector.presence.1.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.2.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ai.start_credits=26",
+    "ai.start_energy=3",
+    "ais.builder.presence2.0.income=[[\"energy\",1]]"
+   ]
+  },
+  {
+   "name": "S2",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",3]]"
+   ]
+  },
+  {
+   "name": "CS2",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.presence.2.income=[[\"credits\",2]]",
+    "ais.builder.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ais.protector.presence.1.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.2.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ai.start_credits=26",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",3]]"
+   ]
+  },
+  {
+   "name": "CE2S2",
+   "set": [
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.presence.2.income=[[\"credits\",2]]",
+    "ais.builder.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ais.protector.presence.1.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.2.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ai.start_credits=26",
+    "ai.start_energy=3",
+    "ais.builder.presence2.0.income=[[\"energy\",1]]",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",3]]"
+   ]
+  },
+  {
+   "name": "c3-CE2S2",
+   "set": [
+    "countries=3",
+    "board.ambassador_credits=2",
+    "board.remove_count=3",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]",
+    "ais.builder.presence.2.income=[[\"credits\",2]]",
+    "ais.builder.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ais.protector.presence.1.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.2.income=[[\"energy\",1],[\"credits\",1]]",
+    "ais.protector.presence.3.income=[[\"insight\",1],[\"credits\",1]]",
+    "ai.start_credits=26",
+    "ai.start_energy=3",
+    "ais.builder.presence2.0.income=[[\"energy\",1]]",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",3]]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:deals=4,lead=0"
+ ],
+ "games": 24,
+ "records": 0
+}

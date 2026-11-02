@@ -28,14 +28,14 @@ The standards every module and every rules change is judged against.
 played should sit near credit income ÷ insight income: about 11 credits ÷ 5 insight ≈ 2,
 and tier-1 cards average about 3 credits with tier 2 about 9.
 
-- **Credits are the outlier.** 20 to start, 10 / 9 a round from each AI board plus the
+- **Credits are the outlier.** 38 to start (066: standing in for Consolidate's bundle), 10 / 9 a round from each AI board plus the
   Builder's Foundry Core +1, plus the presence track and Unity income (Grassroots Funding,
   New Deal +2 each): a player sees about 120 to 140 credits over an 11-round game before cards,
   so totals do reach the hundreds. Card costs run 0–18 (Orbital Mass Driver 18, Great
   Liberation 16): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a megaproject cube pays
-  `project_credits` 10; a player ambassador costs `ambassador_credits` 6; chips sell
+  `project_credits` 10; a player ambassador costs `ambassador_credits` 6 (066: it pays for removals); chips sell
   for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
 - **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
   20–40 at 4: the top of the range, still under 50. A node makes 1.
@@ -128,14 +128,15 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | tier-2-rush (022) | `tier2_rush=1` | drafts from tier 2 whenever it can afford the keep |
 | no-powers (022) | `no_powers=1` | never uses an AI-board power |
 | no-counters (022) | `no_counters=1` | never pays toward a threat's counter |
-| no-presence (022) | `no_presence=1` | places no presence beyond setup (no standard action, card or growth that places one) |
+| no-presence (022) | `no_presence=1` | places no presence beyond setup (no power or card that places one) |
 | mono-tag (023), one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt) |
 | ignore-X (023), one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder (023) | `events_only=1` | keeps and plays only events |
 | ignore threats, turtle, free cities only (027) | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
 | Unity farm (028) | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
-| rich-spend, Science rush (034) | `rich_spend=1`, `science_rush=1` | every spare credit on the rich action; drafts, keeps and plays Science first, for its discounts |
-| always-Expand, always-Consolidate, never-Remove, Science board (041) | `always_expand=1`, `always_consolidate=1`, `never_remove=1`, `science_board=1` | the growth option placing the most presence; the one placing none; never clears a corruption marker; the Science rush, board cards first |
+| Science rush (034) | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
+| always-max-presence, never-second-presence (066) | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
+| never-Remove, Science board (041) | `never_remove=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
 | abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
 
 022 ran the checks under the engine at d0, d2 and d4

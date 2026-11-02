@@ -5,6 +5,12 @@ use super::*;
 /// Whether every targeted effect in `effects` has something to act on
 /// (a card is not offered when it would do nothing).
 pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
+    feasible_after(w, g, seat, effects, 0)
+}
+
+/// The same once seat `s` has paid `spent` energy for them (066: a presence
+/// power pays its own energy, then the track step).
+pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64) -> bool {
     // 041: energy the same effects gain first can pay a placement's step.
     let gained: i64 = effects
         .iter()
@@ -13,7 +19,8 @@ pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
             Op::Gain { resource: Resource::Energy, amount } => *amount,
             _ => 0,
         })
-        .sum();
+        .sum::<i64>()
+        - spent;
     // 044: tokens the same effects add first can be cashed in or counted.
     let added = |kind: &TokenKind, upto: usize| -> i64 {
         let has = !cards::token_cards(w, g, seat, Some(*kind)).is_empty();

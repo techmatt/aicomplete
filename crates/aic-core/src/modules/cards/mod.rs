@@ -141,11 +141,6 @@ fn picked_key(seat: usize) -> String {
     format!("cards.picked.{seat}")
 }
 
-/// Credits seat `s`'s next building this round costs less (a one-off discount).
-pub fn next_discount(seat: usize) -> KeyBuf {
-    KeyBuf::new("cards.next_discount.").num(seat)
-}
-
 /// Set once seat `s`'s Aegis Dome Array has saved a facility this round (module `board`).
 pub fn civic_used(seat: usize) -> String {
     format!("cards.civic_used.{seat}")
@@ -234,7 +229,6 @@ impl Module for Cards {
             for id in g.seats[s].exhausted.clone() {
                 cx.refresh(g, s, &id);
             }
-            cx.set_key(g, &next_discount(s), 0);
             cx.set_key(g, &civic_used(s), 0);
             cx.set_key(g, &kept_key(s), 0);
         }

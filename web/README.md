@@ -37,7 +37,7 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
 - **Play:** pick a config (any file in `configs/`; `baseline.json` is the default) and
   a seed, then *New game*. Each seat's panel lists that seat's legal actions. Any seat
   may act in any order during a simultaneous phase, and one person plays every seat.
-  Growth and draft phases offer no pass: pick one of the buttons.
+  Draft phases offer no pass: pick one of the buttons.
 - **Choices:** when the rules wait for a choice, its question shows in the amber bar
   above the board. A choice answered with a hex highlights its hexes at once: click
   one. When two answers name the same hex (a sacrifice: the ambassador or the presence
@@ -83,11 +83,10 @@ npm run e2e [-- <record.json>] # browser check, dev server must be running (see 
   (the printed pieces', from the view's `countries[].name`) also label the board and the
   hover text.
 - **Actions:** besides cards, threats and gifts, each seat panel offers the board's
-  standard actions (`standard`: place presence, build a research station, remove an
-  adversary ambassador, clear a corruption marker, move an ambassador, gain an
-  ambassador, align a city, harden a facility, sell a chip, the rich action (a presence
-  at a steep price that rises with each use a round) and the standard projects: harden
-  a facility, gain 1 energy, remove compute from an adversary project) labeled with the words and costs the rules publish
+  standard actions (`standard`: build a research station, remove adversary
+  ambassadors, clear a corruption marker, move an ambassador, gain an
+  ambassador, align a city, harden a facility, sell a chip and the standard projects: harden
+  a facility, remove compute from an adversary project) labeled with the words and costs the rules publish
   in the view (`standard`), a *power* button for each AI-board power, the *antimatter*
   action, and one *sell* button per card in hand. A standard action that needs a hex
   asks for it next, as a hex pick.
@@ -173,7 +172,7 @@ checks the following:
 - the shared threat row (`configs/shared_row.json`), if that config exists;
 - loading the record and stepping through it, if one was given.
 
-Screenshots go to `web/e2e-out/` (git-ignored): the start, draft, growth, first
+Screenshots go to `web/e2e-out/` (git-ignored): the start, draft, first
 choice, mid-game and end of the game, the layouts, four countries and the shared row.
 With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there as
 `viewer-mid.png` and `viewer-end.png`. A run takes about 15 s (12-20 s measured).
@@ -264,7 +263,7 @@ screenshot goes to `sweep-out/odd/` (`AIC_SWEEP_OUT`). It counts as one browser 
 | `src/engine.ts` | Typed wrapper over the wasm API: view, record and event shapes. |
 | `src/session.ts` | `Timeline`: config + seed + actions with every replayed state, cursor, undo, localStorage. |
 | `src/board.ts` | SVG hex board drawn from the view: hex kinds, borders, base pennants, fronts, token glyphs. |
-| `src/format.ts` | Labels for actions (content names for cards, threats, growth options; standard actions with costs) and events; hex-kind and token colors. |
+| `src/format.ts` | Labels for actions (content names for cards, threats, powers; standard actions with costs) and events; hex-kind and token colors. |
 | `src/panels.ts` | Alignment track, adversary row, countries strip (megaprojects, threats), seat panel contents, piles. |
 | `src/hover.ts` | Hover card text for hexes, tokens, piles, values and cards. |
 | `src/log.ts` | One log entry: a step's action and its events, folded by phase. |

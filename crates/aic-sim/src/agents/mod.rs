@@ -474,6 +474,15 @@ mod tests {
     use super::*;
     use aic_core::{play, replay, Config};
 
+    /// An agent that takes the first legal action.
+    pub(crate) struct First;
+
+    impl aic_core::Agent for First {
+        fn choose(&mut self, _: &Rules, _: &aic_core::GameState, _: &[aic_core::Action]) -> usize {
+            0
+        }
+    }
+
     pub(crate) fn rules(difficulty: i64) -> Rules {
         config_rules("baseline", difficulty)
     }

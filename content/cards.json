@@ -2773,7 +2773,7 @@
   "name": "Consular Pouch",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 5,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2781,7 +2781,7 @@
   "effects": [
    {
     "op": "gain_ambassadors",
-    "count": 2
+    "count": 3
    }
   ]
  },
@@ -2790,7 +2790,7 @@
   "name": "Shuttle Diplomacy",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 4,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2805,7 +2805,7 @@
    },
    {
     "op": "gain_ambassadors",
-    "count": 1
+    "count": 2
    }
   ]
  },
@@ -2814,7 +2814,7 @@
   "name": "Summit Caucus",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -2829,7 +2829,7 @@
    },
    {
     "op": "gain_ambassadors",
-    "count": 1
+    "count": 2
    }
   ]
  },
@@ -2838,7 +2838,7 @@
   "name": "Liaison Corps",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -2852,11 +2852,11 @@
    "per_round": 1
   },
   "ability": {
-   "tokens": 2,
+   "tokens": 1,
    "effects": [
     {
      "op": "gain_ambassadors",
-     "count": 2
+     "count": 1
     }
    ]
   }
@@ -3113,7 +3113,7 @@
   "name": "Consulate Tower",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 7,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -3131,7 +3131,21 @@
     "tag": "diplomacy",
     "per": 2
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "credits",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain_ambassadors",
+     "count": 1
+    }
+   ]
+  }
  },
  {
   "id": "peacekeeping_detail",
@@ -3163,7 +3177,7 @@
   "name": "Ceasefire Monitors",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -3177,7 +3191,7 @@
    },
    {
     "op": "gain_ambassadors",
-    "count": 1
+    "count": 2
    }
   ]
  },
@@ -3437,7 +3451,21 @@
     "resource": "insight",
     "amount": 1
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "credits",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain_ambassadors",
+     "count": 2
+    }
+   ]
+  }
  },
  {
   "id": "sentry_drone_wing",

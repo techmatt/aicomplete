@@ -117,6 +117,7 @@ export interface StandardView {
   energy: number;
   credits: number;
   chips: number;
+  ambassadors: number;
   doc: string;
 }
 
@@ -168,9 +169,8 @@ export interface AiBoardDef {
   text: string;
   slots?: number;
   innate: { name: string; text: string };
-  growth: { name: string }[];
   /** AI-board powers (021). */
-  powers?: { name: string; text?: string; tags: [string, number][] }[];
+  powers?: { name: string; text?: string; tags: [string, number][]; cost?: [string, number][] }[];
 }
 export interface Content { cards: CardDef[]; threats: ThreatDef[]; adversary: AdversaryDef[]; ais: AiBoardDef[] }
 

@@ -4,10 +4,10 @@
     python scripts/bench/first_divergence.py --cells DIR A B   # two cells of one run (061)
 
 Each DIR is an `aic-sim experiment --out` directory on the same spec and seeds. For each game it
-finds the first action that differs and classes it: `growth` (the option picked, or a choice inside
-a growth option), or the kind of action otherwise; `length` is the same actions, one game longer.
-A last line a killed run cut short is dropped. An agent change meant to touch only growth
-should print `same` for an agent with no rollouts, and `growth` first wherever it first bites.
+finds the first action that differs and classes it: `power` (the power used, or a choice inside
+one), or the kind of action otherwise; `length` is the same actions, one game longer.
+A last line a killed run cut short is dropped. An agent change meant to touch only powers
+should print `same` for an agent with no rollouts, and `power` first wherever it first bites.
 """
 import collections
 import json
@@ -48,8 +48,8 @@ def main():
             continue
         k = sorted({a[n]['type'], b[n]['type']})
         last = next((x['type'] for x in reversed(a[:n]) if x['type'] != 'choose'), '')
-        if last == 'growth' and k == ['choose']:
-            k = ['growth']
+        if last == 'power' and k == ['choose']:
+            k = ['power']
         tally[key[0]]['/'.join(k)] += 1
     for cell in sorted(tally):
         print(f'cell {cell}:', dict(tally[cell]))

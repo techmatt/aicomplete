@@ -138,7 +138,7 @@ try {
   await shot('play-start-1366');
 
   // Play the whole game through the UI: random clicks on what the seat panels offer
-  // (any action button: growth and draft phases offer no pass). An open choice answered
+  // (any action button: the draft phases offer no pass). An open choice answered
   // by a hex must highlight its hexes without a click first.
   let clicks = 0;
   let hexChoices = 0;
@@ -165,8 +165,13 @@ try {
     seen.sell += st.sell ? 1 : 0;
     if (st.war) { seen.war++; seen.warShown += st.warShown ? 1 : 0; }
     if (st.round >= 2 && st.phase.includes('cards.play') && !shots.has('mid')) { shots.add('mid'); await shot('play-mid-1366', 'viewer-mid'); }
+    if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {
+      shots.add('powers');
+      const powers = await js(`[...document.querySelectorAll('#seats ul.powers')].map((u) => u.textContent).join(' | ')`);
+      for (const name of ['Deploy', 'Buy In', 'Scrap', 'Retool', 'Accord', 'Stand Down', 'Lockdown']) check(powers.includes(name), `the seat panels show ${name}`);
+      check(!/growth/i.test(await js(`document.querySelector('#phase-bar').textContent`)), 'no growth step in the round bar');
+    }
     if (st.phase === 'cards.draft' && !shots.has('draft')) { shots.add('draft'); await shot('play-draft-1366'); }
-    if (st.phase === 'ai.growth' && !shots.has('growth')) { shots.add('growth'); await shot('play-growth-1366'); }
     const did = await js(`(() => {
       const tgt = document.querySelectorAll('#board .hex.target polygon');
       if (tgt.length) { tgt[Math.floor(Math.random() * tgt.length)].dispatchEvent(new MouseEvent('click', { bubbles: true })); return 'hex'; }

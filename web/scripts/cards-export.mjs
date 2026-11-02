@@ -394,7 +394,6 @@ function aiBoard(b) {
     sections: [
       { head: `Innate: ${b.innate.name}`, text: b.innate.text ?? '' },
       ...(b.powers ?? []).map((p) => ({ head: `Power: ${p.name}`, text: p.text ?? '' })),
-      { head: 'Growth', text: b.growth.map((g) => g.name).join(' · ') },
       { head: 'Presence track', text: track(b.presence) },
       ...(b.presence2?.length ? [{ head: 'Second presence track', text: track(b.presence2) }] : []),
       ...(b.start ? [{ head: 'Starts with', text: b.start }] : []),
@@ -403,7 +402,6 @@ function aiBoard(b) {
     ops: {
       innate: b.innate.passives,
       ...Object.fromEntries((b.powers ?? []).map((p) => [`power: ${p.name}`, p.effects])),
-      ...Object.fromEntries(b.growth.map((g) => [`growth: ${g.name}`, g.effects])),
     },
   });
 }

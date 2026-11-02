@@ -1,6 +1,6 @@
 {
-  "name": "gate-053",
-  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-046 (retired, 053) plus abandon, 8 seeds a check, early-stopped from 4. Run on fresh seeds. 8 seeds can't place a win rate: experiments/band.json does that.",
+  "name": "gate-066",
+  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-053 less the growth and rich-action checks, whose mechanics are gone, plus always-max-presence and never-second-presence (066), 8 seeds a check, early-stopped from 4. Run on fresh seeds. 8 seeds can't place a win rate: experiments/band.json does that.",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "c2", "set": []},
@@ -9,8 +9,8 @@
   "difficulties": [2],
   "agents": [
     "planner",
-    "planner:always_expand=1", "planner:always_consolidate=1", "planner:never_remove=1", "planner:science_board=1",
-    "planner:rich_spend=1", "planner:science_rush=1", "planner:tier2_rush=1",
+    "planner:always_max_presence=1", "planner:never_second_presence=1", "planner:never_remove=1", "planner:science_board=1",
+    "planner:science_rush=1", "planner:tier2_rush=1",
     "planner:never_tag=1", "planner:never_tag=2", "planner:never_tag=3",
     "planner:never_tag=4", "planner:never_tag=5", "planner:never_tag=6",
     "planner:no_powers=1", "planner:unity_farm=1", "planner:keep_k=2", "planner:no_counters=1",

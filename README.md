@@ -51,7 +51,7 @@ fingerprints), `driver.rs` (`play`/`replay` with an `Agent`, `PlayedGame`), `vie
 (the generic view clients draw), `record.rs` (`SavedGame`, the game record format), `tests/` (`mod.rs`: helpers,
 `variant_matrix`, `golden_game`; one file per area: config, map, setup, adversary,
 plan, ambassadors, production, war, march, factories, standard_actions, freeing, threats,
-alignment, cards, face, projects, ops, overlay, growth, endgame, determinism, view; `invariants`
+alignment, cards, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`
 (020): checks after every action of random games).
 `modules/board/`: `mod.rs` (the module, its phases), `presence`, `ambassadors`, `production`,
 `standard`, `troops`, `destroy`, `view`. `modules/cards/`: `mod.rs`, `deck`, `play`, `price`,
@@ -534,12 +534,12 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   don't depend on `--threads`.
 - **Decides at the top level:** outside the action phase (`searched_phase` in `planner.rs`) the
   planner follows its line, so draft and keep decisions are the rollout policy's, not the
-  shortlist's. A prompt inside the action phase is shortlisted like any action there. Growth is
-  the exception (046): scored at `choices` × 2 at the top level, plain `choices` inside
-  rollouts, and the line follows it.
+  shortlist's. A prompt inside the action phase is shortlisted like any action there. A presence power
+  is scored at `choices` × 2 at the top level (a sacrifice's prompts come first), plain `choices`
+  inside rollouts.
 - **`choices` counts prompts, not effects.** One placement is two prompts (a track, then a hex;
   a prompt with one option doesn't count), so `choices` 2 scores one placement. Only
-  `Action::Growth` gets × 2: a card that asks more (Relay Mast Rollout, Aegis Grid Lockdown,
+  a power that places gets × 2: a card that asks more (Relay Mast Rollout, Aegis Grid Lockdown,
   Beamed Power Constellation, Open-Weights Release) is judged part of the way, and beam's
   search doesn't double at all (only its greedy fallback does).
 - **Heuristic** (`agents/eval.rs`, 014 board): win/loss; corrupted cities (`corrupted`
@@ -650,6 +650,13 @@ is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h
 5.5 h for 034's hand-cut plan, 1h 4m on 4 below-normal threads**, every verdict the same
 (`experiments/results/gate-034-earlystop/gate.md`).
 
+**The band and gate at r27 (066).** `experiments/band-066.json` (`--seed 20200`, with Buy In at 10) and
+`experiments/band.json` (`--seed 20300`) are the 96-seed band: on 8 threads about 17 min for the four
+cells and 14 for the two. `scripts/cards/screen.py --gate DIR` reads the gate; `experiments/gate-close-066-c2.json`
+and `-c3.json` close its level checks on the gate's own seeds. Overlays reach every number of 066's calibration
+(`ais.builder.powers.2.cost=...`, `cards.liaison_corps.ability.tokens=1`), so a screen needs no build; a
+card can't print ambassador income, though: `Op::Income` takes player resources, and an ambassador isn't one.
+
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
 `min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
 (059, r25: 428 of 512 games, 26 min on 8 threads; closing level checks at 48 paired seeds took 12 min at c2 and 30 at c3.) `experiments/gate.json` (gate-053): 32 agents × 2 sizes = 64 cells, 8 seeds a check, so 256 games in
@@ -717,7 +724,7 @@ python scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag try1 \
 
 **Growth screen and gate (041, r20)**: `experiments/archive/screen-041.json` (planner, d2, `c2`, `c3`) and
 `experiments/archive/gate-041.json` (early-stopped), with `python scripts/cards/screen.py DIR --preset 041`
-and `screen.py --gate DIR`. Fixed policies: `planner:always_expand=1`, `always_consolidate=1`,
+and `screen.py --gate DIR`. Fixed policies then: `planner:always_expand=1`, `always_consolidate=1` (gone with growth, 066),
 `never_remove=1`, `science_board=1`. A planner game at r20 d2 was about 28 s of thread time; a 16-seed
 screen took about 2 min on 8 threads. Results: `experiments/results/screen-041-growth/growth.md`.
 
@@ -933,7 +940,7 @@ nothing extra):
   `<key>.rNN`, summed over seats, only for keys starting `cards.`, `ai.`, `economy.` or
   `board.presence`: add to the list in `experiment.rs` for another. In the core `cx.count(g,
   "x", n)` writes `<module>.x` and `cx.tally` and `cx.per_round` take the full key, so a
-  growth pick is `ai.growth.builder.0`: a screen column on the bare name prints zeros).
+  power use is `ai.power.builder.0`: a screen column on the bare name prints zeros).
 - **Game length**, ends by reason and round; **adversary operations** per round (mean,
   max) and at setup.
 - **Help and counters**: gifts, payments and withdrawals per game; threats countered of

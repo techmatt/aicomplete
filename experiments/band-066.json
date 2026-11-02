@@ -1,0 +1,15 @@
+{
+  "name": "band-066",
+  "note": "066: the frozen r27 rules at d2, planner, c2 and c3, with Buy In at its frozen 6 and at the design's 10. Run twice, --seed 20200 and --seed 20300, for 96 seeds a cell: fresh, nothing picked on them.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]},
+    {"name": "c2-buy10", "set": ["ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",10]]"]},
+    {"name": "c3-buy10", "set": ["countries=3", "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",10]]"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner"],
+  "games": 48,
+  "records": 0
+}

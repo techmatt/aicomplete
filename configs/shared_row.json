@@ -38,30 +38,25 @@
         "presence_marker": 1,
         "corruption_reach": 1,
         "war_reach": 0,
-        "presence_energy": 1,
-        "presence_action_cap": 1,
         "build_energy": 2,
         "station_chips": 2,
         "factory_chips": 1,
         "chips_credits": 1,
-        "remove_energy": 1,
-        "clear_energy": 1,
+        "remove_ambassadors": 1,
+        "remove_count": 3,
+        "clear_cost": 2,
         "clear_unity": 1,
         "clear_credits": 0,
-        "move_energy": 1,
+        "move_credits": 1,
         "ambassador_credits": 6,
         "sell_credits": 1,
-        "align_energy": 2,
         "corp_energy": [
           1
         ],
         "city_energy_credits": 2,
         "harden_energy": 1,
-        "presence_credits": 6,
-        "presence_rise": 3,
-        "presence_stage": 2,
+        "harden_chips": 1,
         "harden_credits": 3,
-        "energy_credits": 4,
         "drain_credits": 5,
         "drain_amount": 3
       }
@@ -153,7 +148,8 @@
           0,
           1
         ],
-        "start_credits": 20,
+        "start_credits": 38,
+        "start_energy": 1,
         "slots": [
           4,
           3
@@ -350,7 +346,6 @@
     "cards.deal",
     "cards.draft",
     "cards.keep",
-    "ai.growth",
     "cards.play+threats.counter+economy.give+alignment.act+board.act+ai.power",
     "board.bases",
     "board.war",

@@ -1,0 +1,116 @@
+{
+ "name": "screen-066-amb-cards",
+ "note": "066 (amendment 2462): ambassador_credits back at 6, remove_count 3: more ambassadors from Diplomacy cards. G1 raised one-shot gains; G2 buildings' Actions that make an ambassador a round. --seed 18800.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2-base",
+   "set": []
+  },
+  {
+   "name": "c2-G1",
+   "set": [
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5"
+   ]
+  },
+  {
+   "name": "c2-G2",
+   "set": [
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}"
+   ]
+  },
+  {
+   "name": "c2-G1G2",
+   "set": [
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}"
+   ]
+  },
+  {
+   "name": "c3-base",
+   "set": [
+    "countries=3"
+   ]
+  },
+  {
+   "name": "c3-G1",
+   "set": [
+    "countries=3",
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5"
+   ]
+  },
+  {
+   "name": "c3-G2",
+   "set": [
+    "countries=3",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}"
+   ]
+  },
+  {
+   "name": "c3-G1G2",
+   "set": [
+    "countries=3",
+    "cards.consular_pouch.effects.0.count=3",
+    "cards.consular_pouch.cost=5",
+    "cards.shuttle_diplomacy.effects.1.count=2",
+    "cards.shuttle_diplomacy.cost=4",
+    "cards.ceasefire_monitors.effects.1.count=2",
+    "cards.ceasefire_monitors.cost=5",
+    "cards.summit_caucus.effects.1.count=2",
+    "cards.summit_caucus.cost=5",
+    "cards.consulate_tower.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 1}]}",
+    "cards.consulate_tower.cost=7",
+    "cards.liaison_corps.ability.tokens=1",
+    "cards.liaison_corps.ability.effects.0.count=1",
+    "cards.liaison_corps.cost=5",
+    "cards.orbital_embassy.ability={\"cost\": [[\"credits\", 1]], \"effects\": [{\"op\": \"gain_ambassadors\", \"count\": 2}]}"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner"
+ ],
+ "games": 24,
+ "records": 0
+}

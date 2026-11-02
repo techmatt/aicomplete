@@ -1,13 +1,27 @@
 {
   "name": "band",
-  "note": "The calibration read: the planner, and the engine for scale, at d2, 2 and 3 countries, 48 seeds a cell. Fresh seeds only: the first read (053) was --seed 5000.",
-  "configs": ["configs/baseline.json"],
-  "variants": [
-    {"name": "c2", "set": []},
-    {"name": "c3", "set": ["countries=3"]}
+  "note": "The calibration read: the planner at d2, 2 and 3 countries, 48 seeds a cell. Fresh seeds only: the first read (053) was --seed 5000; 066's were 20200 (band-066.json) and 20300.",
+  "configs": [
+    "configs/baseline.json"
   ],
-  "difficulties": [2],
-  "agents": ["planner", "engine"],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    },
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner"
+  ],
   "games": 48,
   "records": 0
 }

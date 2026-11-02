@@ -234,7 +234,7 @@ fn freeing_a_city_and_removing_a_node_sway_unity() {
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, &presence(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
-    set_res(&mut g, 0, Resource::Energy, 10);
+    set_res(&mut g, 0, Resource::Credits, 10);
     rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
     answer_hex(&rules, &mut g, city);
     answer_all(&rules, &mut g);

@@ -1,5 +1,5 @@
 // Labels and colors for engine data. Generic: any action, event or token kind gets a
-// readable label without code here; known action types, card ids, threat ids, growth
+// readable label without code here; known action types, card ids, threat ids, power
 // options and the board's standard actions get their content names (and costs).
 
 import { aiBoard, cardName, content, param, threatName, type Action, type Config, type GameEvent, type Hex, type View } from './engine';
@@ -12,7 +12,8 @@ export const isHex = (v: unknown): v is Hex =>
 const words = (s: string) => s.replace(/_/g, ' ');
 
 /** `n` of a resource: "2 chips", "1 chip" (as `Resource::amount` in the core). */
-const amount = (n: number, what: string) => (what === 'chips' && n === 1 ? '1 chip' : `${n} ${what}`);
+const SINGULAR: Record<string, string> = { chips: 'chip', credits: 'credit', ambassadors: 'ambassador' };
+const amount = (n: number, what: string) => `${n} ${n === 1 ? (SINGULAR[what] ?? what) : what}`;
 
 function field(k: string, v: unknown): string {
   if (isHex(v)) return `@${hexKey(v)}`;
@@ -63,10 +64,6 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       return `draft ${card}`;
     case 'keep':
       return `keep ${card}`;
-    case 'growth': {
-      const g = aiBoard(cx.config, a.seat)?.growth[Number(a.option)];
-      return `growth: ${g ? g.name : `option ${a.option}`}`;
-    }
     case 'play': {
       const c = handCard(cx.view, a.seat, a.card);
       return `play ${card}${playPrice(c?.cost, extraCosts(c?.text))}`;
@@ -76,8 +73,11 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'power': {
       // 021: an AI-board power, paid by sacrificing played cards' tags.
       const p = aiBoard(cx.config, a.seat)?.powers?.[Number(a.power)];
-      const tags = p ? p.tags.map(([t, n]) => `${n} ${t}`).join(' + ') : '';
-      return `power: ${p ? `${p.name} (sacrifice ${tags})` : `power ${a.power}`}`;
+      if (!p) return `power: power ${a.power}`;
+      const paid = (p.cost ?? []).map(([r, n]) => amount(n, r));
+      const tags = p.tags.map(([t, n]) => `${n} ${t}`).join(' + ');
+      const cost = [...paid, ...(tags ? [`sacrifice ${tags}`] : [])].join(', ');
+      return `power: ${p.name} (${cost}): ${p.text ?? ''}`;
     }
     case 'pay':
       return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(String(a.threat))}`;
@@ -95,11 +95,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       // The rules publish each standard action's words and cost in the view.
       const s = cx.view?.standard?.find((x) => x.act === String(a.act));
       if (!s) return `standard: ${words(String(a.act))}`;
-      // 044: a placement's real price is the seat's (step cost, rise), not the printed base.
-      const now = (key: string, base: number) => cx.view?.seats[a.seat]?.values.find((x) => x.key === `board.${key}`)?.value ?? base;
-      const energy = a.act === 'presence' ? now('presence_energy_now', s.energy) : s.energy;
-      const credits = a.act === 'presence_buy' ? now('presence_credits_now', s.credits) : s.credits;
-      const costs = ([[energy, 'energy'], [credits, 'credits'], [s.chips, 'chips']] as const)
+      const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
       return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;

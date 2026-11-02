@@ -1,0 +1,13 @@
+{
+  "name": "screen-066-first",
+  "note": "066: the first r27 read: planner and engine at d2, what they play and at what rate. --seed 18000.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner:deals=4,lead=0", "engine"],
+  "games": 24,
+  "records": 2
+}

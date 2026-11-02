@@ -520,7 +520,7 @@ impl<'a> Cx<'a> {
     }
 
     /// The card decks' stream, for a reshuffle: a draw is an op, so it runs in
-    /// whichever module's phase played it (046: Develop's draw in `ai.growth`
+    /// whichever module's phase played it (046: a draw outside `cards.*`
     /// emptied the tier-1 deck and panicked in [`Cx::rng`]).
     pub fn deck_rng<'g>(&self, g: &'g mut GameState) -> &'g mut Stream {
         Arc::make_mut(g.rng.get_mut("cards").expect("the cards module has a stream"))

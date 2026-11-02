@@ -27,8 +27,6 @@ pub enum Action {
     Draft { seat: u8, card: Key },
     /// Draft: buy a drafted card into your hand (module `cards`).
     Keep { seat: u8, card: Key },
-    /// Pick a growth option of your AI board (module `ai`).
-    Growth { seat: u8, option: u8 },
     /// Play a card from your hand (module `cards`).
     Play { seat: u8, card: Key },
     /// Use a building's once-a-round ability (module `cards`).
@@ -67,7 +65,6 @@ impl Action {
             | Action::Tier { seat, .. }
             | Action::Draft { seat, .. }
             | Action::Keep { seat, .. }
-            | Action::Growth { seat, .. }
             | Action::Play { seat, .. }
             | Action::Use { seat, .. }
             | Action::Power { seat, .. }

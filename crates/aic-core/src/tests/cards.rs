@@ -71,13 +71,6 @@ fn growth_and_draft_picks_cannot_be_passed() {
     assert!(rules
         .apply_mut(&mut g, &Action::Pass { seat: 0 }, None)
         .is_err());
-    advance_to(&rules, &mut g, "ai.growth");
-    let legal = rules.legal_actions(&g);
-    assert!(
-        legal.iter().all(|a| matches!(a, Action::Growth { .. })),
-        "{legal:?}"
-    );
-    assert_eq!(legal.len(), 6);
 }
 
 #[test]
@@ -375,8 +368,9 @@ fn industry_tags_discount_buildings_to_a_floor_of_one() {
     let industry: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == crate::content::Tag::Industry).count() == 1 && c.tier == 1 && !c.is_building()).take(2).map(|c| crate::key::Key::new(&c.id)).collect();
     g.piles.insert(cards::played(1).into(), std::sync::Arc::new(industry));
     assert_eq!(cards::play_cost(&w, &g, 1, d), before - 1);
-    g.vars.insert(cards::next_discount(1).into(), 99);
-    assert_eq!(cards::play_cost(&w, &g, 1, d), 1, "the floor");
+    let many: Vec<_> = w.content.cards.iter().filter(|c| c.tags.contains(&crate::content::Tag::Industry) && !c.is_building() && !c.is_event()).map(|c| crate::key::Key::new(&c.id)).collect();
+    g.piles.insert(cards::played(1).into(), std::sync::Arc::new(many));
+    assert_eq!(cards::play_cost(&w, &g, 1, d), w.int("cards.discount_floor"), "the floor");
 }
 
 /// 042: what the heuristic reads must be what the rules charge.

@@ -100,7 +100,7 @@ variant. Abridged:
   ],
   "round": ["alignment.sway", "adversary.build", "adversary.spread", "adversary.corrupt",
             "board.march", "threats.deal", "adversary.reveal", "cards.tier", "cards.deal",
-            "cards.draft", "cards.keep", "ai.growth",
+            "cards.draft", "cards.keep",
             "cards.play+threats.counter+economy.give+alignment.act+board.act+ai.power",
             "board.bases", "board.war", "board.produce", "economy.upkeep",
             "threats.execute", "board.cleanup"]
@@ -232,7 +232,7 @@ A `Module` implements whichever of these hooks it needs:
 | `run(phase)` | An `Auto` phase is reached. May ask choices. |
 | `begin(phase)` | A `Decision` phase is entered (seats un-passed). May pass seats with nothing to decide. |
 | `legal(phase, seat)` | A `Decision` phase: append the seat's non-pass actions. |
-| `can_pass(phase, seat)` | Whether the engine offers `Pass` (default yes; draft picks and growth say no, and the module passes the seat itself). |
+| `can_pass(phase, seat)` | Whether the engine offers `Pass` (default yes; draft picks say no, and the module passes the seat itself). |
 | `owns(phase, action)` | Whether a non-pass action is this module's (routing in combined phases). |
 | `act(phase, action)` | Validate and apply an owned action. May ask choices. On `Halt::Illegal` the engine restores the state; after the first answered choice, `Illegal` is a bug and panics. |
 | `after` | When an action or automatic phase finishes resolving (after the answer that completes it): standing checks (Alignment tips, win and loss). May ask choices. |
@@ -339,7 +339,7 @@ Content is data in `content/`, composed from code primitives:
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
 - **AI boards** (`ais.json`): credit production, resource `discounts`, innate
   passives, the two presence tracks (`presence` and `presence2`: for each space, `income` what it uncovers,
-  `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, growth options (lists of ops), unique cards, a
+  `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, powers (costs and lists of ops), unique cards, a
   `start` building and `powers` (021: `{name, text, tags, cost, effects}`; `tags` may
   name `any`). Slots are a config list, `ai.slots`.
 - **Alignment cards** (`alignment.json`, the Unity and Discord decks): `side` (`unity`
@@ -426,7 +426,7 @@ web viewer draws only these:
 | `seats[s]` | `passed`, `values`, `cards` (card groups), `board` (a player board, or `null`) | `resource.<name>` per resource; exhausted cards no module shows, as group `engine.exhausted` |
 | `globals` | `values` of the whole game | every `vars` track no module declares bookkeeping, by its key |
 | `piles` | `{key, label, owner, count, visible}` | none: modules add them |
-| `standard` | `{act, energy, credits, chips, doc}`: the standard actions with their costs | none: modules add them |
+| `standard` | `{act, energy, credits, chips, ambassadors, doc}`: the standard actions with their costs | none: modules add them |
 | `arrows` | `{kind, from, to, count, rounds, doc}`: where pieces are heading | none: modules add them |
 | `choice` | `{seat, prompt}` of the open choice | when `pending` is set |
 | `round`, `phase`, `round_order`, `outcome` | where the game is | always |
@@ -458,7 +458,7 @@ derive:
 - `out.country_cards(country, key, label, cards)`: a card group on a country.
 - `out.pile(key, label, owner, count, visible)`: an ordered pile.
 - `out.board(seat, key, board)`: the seat's player board (above).
-- `out.standard(act, energy, credits, chips, doc)`: a standard action and its cost.
+- `out.standard(act, energy, credits, chips, ambassadors, doc)`: a standard action and its cost.
 - `out.arrow(kind, from, to, count, rounds, doc)`: a piece's heading, an arrow between hexes.
 - `out.bookkeeping(&[keys])`: declares `vars` that are the module's bookkeeping, not
   tracks of the whole game: per-seat, per-country or per-card markers. A key ending in
@@ -550,7 +550,7 @@ differ.
     `adversary.compute` and `adversary.compute_blocked` the compute made and blocked;
   - `actions`: player actions applied, answered choices included;
   - `counters["<module>.<name>"]`: anything a module counts. The baseline counts cards
-    kept, played and used (per card), growth picks, threats dealt, countered and
+    kept, played and used (per card), power uses, threats dealt, countered and
     executed, corruptions (and the round of the first), adversary ambassadors on the
     board per round (`adversary.ambassadors_rNN`), ambassadors and troops removed,
     facilities and presence destroyed (per war round too), standard actions (`board.std.<act>`),

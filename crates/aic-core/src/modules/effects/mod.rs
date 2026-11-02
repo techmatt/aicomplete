@@ -137,9 +137,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::CashOut { kind, resource, rate } => resources::cash_out(g, cx, seat, *kind, *resource, *rate),
         Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
-        Op::NextBuildingDiscount { amount } => {
-            cx.add_key(g, &cards::next_discount(seat), *amount)
-        }
         Op::Production { resource, amount } => {
             cx.add_key(g, &economy::production_key(seat, *resource), *amount)
         }

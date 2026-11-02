@@ -42,7 +42,7 @@ fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
     let blocks: [(&str, fn(&Rules) -> String); 8] = [
         ("adversary.build_bonus=2", difficulty_block),
-        ("board.remove_energy=3", standard_actions_block),
+        ("board.remove_count=2", standard_actions_block),
         ("board.base_unity=3", sway_sources_block),
         ("alignment.unity_ease=1,3,5", purge_ease_block),
         ("cards.keep_tier2=5", new_players_block),
@@ -63,7 +63,7 @@ fn a_content_change_changes_its_block() {
     c.ais[0].presence[1].income[0].1 += 1;
     c.ais[1].presence2[2].cost += 1;
     c.ais[1].powers[0].tags[0].1 += 1;
-    c.ais[0].growth[0].name = "Something else".to_string();
+    c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
     assert_ne!(presence_track_block(base), presence_track_block(&c));
     assert_ne!(presence_track2_block(base), presence_track2_block(&c));
@@ -75,7 +75,7 @@ fn a_content_change_changes_its_block() {
 #[test]
 fn check_flags_a_bare_name_that_is_no_tunable() {
     let r = baseline(&[]);
-    assert!(unknown_params("`hold_base`, `presence_buy`", &r, &[]).is_empty());
+    assert!(unknown_params("`hold_base`, `harden_buy`", &r, &[]).is_empty());
     assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
 }
 

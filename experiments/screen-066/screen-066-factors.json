@@ -1,0 +1,80 @@
+{
+ "name": "screen-066-factors",
+ "note": "066: why presence runs out, on c2: R a removal worth more (ambassador 4 credits, remove 2), E energy for two placements a round (Builder's space 2 gives energy, start 2), S cheaper second powers (6 credits; 1 Diplomacy). --seed 18300.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "R0E0S0",
+   "set": []
+  },
+  {
+   "name": "R0E0S1",
+   "set": [
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "R0E1S0",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2"
+   ]
+  },
+  {
+   "name": "R0E1S1",
+   "set": [
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "R1E0S0",
+   "set": [
+    "board.ambassador_credits=4",
+    "board.remove_count=2"
+   ]
+  },
+  {
+   "name": "R1E0S1",
+   "set": [
+    "board.ambassador_credits=4",
+    "board.remove_count=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  },
+  {
+   "name": "R1E1S0",
+   "set": [
+    "board.ambassador_credits=4",
+    "board.remove_count=2",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2"
+   ]
+  },
+  {
+   "name": "R1E1S1",
+   "set": [
+    "board.ambassador_credits=4",
+    "board.remove_count=2",
+    "ais.builder.presence.1.income=[[\"energy\",1]]",
+    "ai.start_energy=2",
+    "ais.builder.powers.2.cost=[[\"energy\",1],[\"credits\",6]]",
+    "ais.protector.powers.2.tags=[[\"diplomacy\",1]]"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:deals=4,lead=0"
+ ],
+ "games": 24,
+ "records": 0
+}

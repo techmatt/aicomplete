@@ -369,11 +369,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(adversary(parts), format!("remove {n} compute from each adversary project")))
         }
         Op::DiscardProject => one(clause(adversary(minus(1, "project")), "discard an adversary project")),
-        Op::NextBuildingDiscount { amount: n } => {
-            let mut icons = vec![w("building"), w(":")];
-            icons.extend(minus(*n, "credits"));
-            one(clause(icons, format!("your next building this round costs {n} less")))
-        }
         Op::Production { resource, amount: n } => {
             let sign = if *n < 0 { format!("\u{2212}{}", -n) } else { format!("+{n}") };
             let verb = if *n < 0 { "lower" } else { "raise" };
@@ -518,8 +513,8 @@ fn standing(op: &Op) -> Standing {
             effect(parts, format!("your buildings cost {} less", amount(Resource::Credits, *n)))
         }
         Op::HardenAction => effect(
-            vec![w("ACT"), w("harden")],
-            "you gain the Harden action".to_string(),
+            vec![w("ACT"), w("harden"), w("chips")],
+            "you gain the Harden action, paid in chips".to_string(),
         ),
         Op::Slots { amount: n } => effect(
             vec![Part::Word(format!("+{n}")), w("slot")],
