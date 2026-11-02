@@ -115,11 +115,14 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
 impl Cards {
     pub(super) fn play(&self, g: &mut GameState, cx: &mut Cx, seat: usize, id: &str) -> Res {
         let w = cx.world;
-        if !g.pile(&hand(seat)).iter().any(|c| c == id) {
-            return Err(Halt::Illegal(format!("{id} is not in seat {seat}'s hand")));
-        }
-        if let Some(why) = blocked(&w, g, seat, id) {
-            return Err(Halt::Illegal(format!("can't play {id}: {why}")));
+        // An answer replays this from a table that passed it.
+        if !cx.replaying() {
+            if !g.pile(&hand(seat)).iter().any(|c| c == id) {
+                return Err(Halt::Illegal(format!("{id} is not in seat {seat}'s hand")));
+            }
+            if let Some(why) = blocked(&w, g, seat, id) {
+                return Err(Halt::Illegal(format!("can't play {id}: {why}")));
+            }
         }
         let d = def(&w, id);
         pay_for_card(g, cx, seat, id, d)?;
@@ -278,11 +281,13 @@ pub(super) fn draft_pick(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) -
 
 pub(super) fn use_ability(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) -> Res {
     let w = cx.world;
-    if !g.pile(&built(s)).contains(card) {
-        return Err(Halt::Illegal(format!("seat {s} has no {card} in play")));
-    }
-    if let Some(why) = ability_blocked(&w, g, s, card) {
-        return Err(Halt::Illegal(format!("can't use {card}: {why}")));
+    if !cx.replaying() {
+        if !g.pile(&built(s)).contains(card) {
+            return Err(Halt::Illegal(format!("seat {s} has no {card} in play")));
+        }
+        if let Some(why) = ability_blocked(&w, g, s, card) {
+            return Err(Halt::Illegal(format!("can't use {card}: {why}")));
+        }
     }
     let ab = def(&w, card).ability.as_ref().ok_or("no ability")?;
     for (r, n) in &ab.cost {

@@ -31,7 +31,9 @@
 //! round. Alternatives are capped by `alts` a decision and `budget` a round,
 //! spent only in the action phase's decisions (the draft and keeps follow the
 //! engine: a rollout over a hand of unknown use says little), and only on
-//! actions the engine's own score keeps within `margin` of its best.
+//! actions the engine's own score keeps within `margin` of its best. The
+//! decision's own scoring waits for a reader: past the budget or outside that
+//! phase, only its guess is drawn (069).
 //!
 //! A dominance check is a [`Policy`] around the planner, with the same
 //! [`Forced`] in its rollouts, so the check's rule holds for the whole line.
@@ -45,7 +47,7 @@ use rand_chacha::ChaCha8Rng;
 use super::determinize::hide_alignment_deal;
 use super::eval::{Eval, Weights};
 use super::policy::{Forced, Policy};
-use super::search::{greedy_scores, pick, Greedy, PhaseHistory, Scoring};
+use super::search::{draw_guesses, pick, score_guesses, Greedy, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
 
 /// The phase the planner searches.
@@ -74,6 +76,10 @@ pub struct PlannerCfg {
     pub samples: usize,
     /// Actions each seat keeps through a phase of a rollout ([`Greedy`]).
     pub prune: usize,
+    /// Powers each seat keeps through a phase of a rollout.
+    pub powers: usize,
+    /// Prompts an answer inside a rollout looks on (at most `choices`).
+    pub answers: usize,
     /// Guesses of the Alignment deal a line's value is averaged over.
     pub deals: usize,
     /// What an alternative must lead the line to beat by.
@@ -155,7 +161,8 @@ impl Planner {
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let rng = ChaCha8Rng::seed_from_u64(g.seed ^ g.stats.actions as u64);
         // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
-        let inner = Box::new(Greedy::new(self.ev.clone(), rng, self.cfg.samples, 1, self.cfg.choices).pruned(self.cfg.prune).in_rollout());
+        let greedy = Greedy::new(self.ev.clone(), rng, self.cfg.samples, 1, self.cfg.choices);
+        let inner = Box::new(greedy.pruned(self.cfg.prune).powers(self.cfg.powers).answers(self.cfg.answers).in_rollout());
         Box::new(Policy::new(inner, self.forced.clone()))
     }
 
@@ -277,17 +284,19 @@ impl Planner {
             return self.line_from(rules, state, None, stop).expect("only an opening move can be refused");
         };
         if l.stop < stop {
-            // Only one that has not forked can fork now.
-            let watch = if l.ends.len() == 1 && l.fork.is_none() { self.watch(l.tips) } else { None };
-            let mut unused = Vec::new();
-            for (k, end) in l.ends.iter_mut().enumerate() {
-                let actions = if k == 0 { &mut l.actions } else { &mut unused };
-                if let Some(f) = self.play_on(rules, end, stop, actions, watch) {
-                    l.fork = Some(f);
+            prof::time(Part::Extend, || {
+                // Only one that has not forked can fork now.
+                let watch = if l.ends.len() == 1 && l.fork.is_none() { self.watch(l.tips) } else { None };
+                let mut unused = Vec::new();
+                for (k, end) in l.ends.iter_mut().enumerate() {
+                    let actions = if k == 0 { &mut l.actions } else { &mut unused };
+                    if let Some(f) = self.play_on(rules, end, stop, actions, watch) {
+                        l.fork = Some(f);
+                    }
+                    l.values[k] = self.ev.value(rules, end);
                 }
-                l.values[k] = self.ev.value(rules, end);
-            }
-            l.stop = stop;
+                l.stop = stop;
+            });
         }
         l
     }
@@ -320,12 +329,21 @@ impl Agent for Planner {
             self.spent = (state.round, 0);
         }
         let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices);
-        let mut scores = greedy_scores(rules, &self.ev, &mut self.rng, state, legal, how);
-        self.history.mask(legal, &mut scores);
-        let engine = pick(legal, &scores);
+        // The guesses are always drawn, so what follows sees the same RNG, but
+        // scoring them waits until something reads the scores: the shortlist,
+        // or a line with no move here. Outside the shortlist that is rare (069).
+        let guesses = draw_guesses(rules, &mut self.rng, state, self.cfg.samples);
+        let scored = |planner: &Planner| {
+            let top = || score_guesses(rules, &planner.ev, state, &guesses, legal, how);
+            let mut scores = prof::time(Part::Top, top);
+            planner.history.mask(legal, &mut scores);
+            scores
+        };
         let stop = state.round + self.cfg.horizon;
         let mut best = self.incumbent(rules, state, legal, stop);
-        if searched_phase(state) {
+        if searched_phase(state) && self.cfg.alts > 0 && self.spent.1 < self.cfg.budget {
+            let scores = scored(self);
+            let engine = pick(legal, &scores);
             let mut order: Vec<usize> = (0..legal.len()).filter(|&i| scores[i].is_finite()).collect();
             order.sort_by(|&x, &y| scores[y].total_cmp(&scores[x]));
             let top = scores[engine];
@@ -346,10 +364,15 @@ impl Agent for Planner {
                     best = self.better(rules, l, best);
                 }
             }
+            let i = best.actions.get(best.next).and_then(|a| legal.iter().position(|b| b == a));
+            self.line = Some(best);
+            let i = i.unwrap_or(engine);
+            self.history.push(&legal[i]);
+            return i;
         }
         let i = best.actions.get(best.next).and_then(|a| legal.iter().position(|b| b == a));
         self.line = Some(best);
-        let i = i.unwrap_or(engine);
+        let i = i.unwrap_or_else(|| pick(legal, &scored(self)));
         self.history.push(&legal[i]);
         i
     }

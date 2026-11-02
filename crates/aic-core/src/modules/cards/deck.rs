@@ -7,7 +7,7 @@ use super::*;
 pub fn discard(g: &mut GameState, cx: &mut Cx, card: &str, from: &str) {
     let w = cx.world;
     let to = match def(&w, card).tier {
-        0 => String::new(),
+        0 => KeyBuf::new(""),
         t => discard_pile(t),
     };
     cx.move_card(g, card, from, &to, true)

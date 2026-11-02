@@ -85,7 +85,11 @@ pub struct Prices {
 }
 
 pub fn prices(w: &World, g: &GameState, seat: usize) -> Prices {
-    let counts = tag_counts(w, g, seat);
+    prices_with(w, g, seat, &tag_counts(w, g, seat))
+}
+
+/// [`prices`], with the seat's [`tag_counts`] already counted.
+pub fn prices_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.len()]) -> Prices {
     Prices {
         insight_off: per_tags(w, counts[Tag::Science as usize], SCIENCE_EVERY),
         building_off: passive_discount(w, g, seat)
@@ -137,11 +141,11 @@ pub fn play_cost(w: &World, g: &GameState, seat: usize, d: &CardDef) -> i64 {
 /// The credits seat `s`'s buildings cost less now before tags: its passives
 /// and a one-off discount.
 pub(super) fn passive_discount(w: &World, g: &GameState, seat: usize) -> i64 {
-    passives(w, g, seat)
-        .iter()
-        .map(|p| match p {
-            Op::BuildingDiscount { amount } => *amount,
-            _ => 0,
-        })
-        .sum::<i64>()
+    let mut off = 0;
+    each_passive(w, g, seat, |p| {
+        if let Op::BuildingDiscount { amount } = p {
+            off += *amount;
+        }
+    });
+    off
 }

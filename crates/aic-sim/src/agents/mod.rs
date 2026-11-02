@@ -225,15 +225,28 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
             ("samples", 1.0, "guesses of the hidden cards averaged per decision"),
             ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
+            ("powers", 6.0, "with prune, powers each seat keeps through a phase of a rollout (069)"),
+            ("answers", 99.0, "prompts an answer looks on inside a rollout, at most choices (069)"),
             ("deals", 4.0, "guesses of the Alignment deal a line's value is averaged over"),
             ("lead", 0.0, "what an alternative must lead the line to beat by, on the first deal and on the mean"),
         ],
     ),
 ];
 
+/// `sweep`: the planner on one guess, for price sweeps, not the default (069):
+/// 1.5 x faster, and card rankings hold (`experiments/results/screen-069-speed`).
+const SWEEP: &str = "deals=1,lead=0";
+
 impl AgentSpec {
     pub fn parse(spec: &str) -> Result<AgentSpec, String> {
         let (kind, rest) = spec.split_once(':').unwrap_or((spec, ""));
+        let swept;
+        let (kind, rest) = if kind == "sweep" {
+            swept = format!("{SWEEP},{rest}");
+            ("planner", swept.as_str())
+        } else {
+            (kind, rest)
+        };
         let Some((_, known)) = LADDER.iter().find(|(k, _)| *k == kind) else {
             let names: Vec<&str> = LADDER.iter().map(|(k, _)| *k).collect();
             return Err(format!(
@@ -460,6 +473,8 @@ impl AgentSpec {
                     choices: self.p("choices"),
                     samples: self.p("samples").max(1),
                     prune: self.p("prune"),
+                    powers: self.p("powers"),
+                    answers: self.p("answers"),
                     deals: self.p("deals").max(1),
                     lead: self.params["lead"],
                 },
@@ -473,6 +488,15 @@ impl AgentSpec {
 mod tests {
     use super::*;
     use aic_core::{play, replay, Config};
+
+    /// `sweep` is the planner at its profile, and takes what the planner takes.
+    #[test]
+    fn sweep_is_a_planner_profile() {
+        let named = |spec: &str| AgentSpec::parse(spec).unwrap().params;
+        assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
+        assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
+        assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
+    }
 
     /// An agent that takes the first legal action.
     pub(crate) struct First;

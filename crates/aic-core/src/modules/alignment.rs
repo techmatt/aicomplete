@@ -10,7 +10,7 @@
 
 use crate::action::Action;
 use crate::content::{AlignmentCard, Op, Resource, Side};
-use crate::key::Key;
+use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
@@ -156,8 +156,8 @@ pub fn tips_key(side: Side) -> &'static str {
     }
 }
 
-fn deck(side: Side, tier: u8) -> String {
-    format!("alignment.deck.{}.{tier}", side.name())
+fn deck(side: Side, tier: u8) -> KeyBuf {
+    KeyBuf::new("alignment.deck.").text(side.name()).text(".").num(tier as usize)
 }
 
 /// A side's resolved one-shot cards (top: the latest).
@@ -359,7 +359,7 @@ impl Alignment {
         let want: u8 = if tips >= first { 2 } else { 1 };
         for tier in [want, 3 - want] {
             if let Some(id) = g.pile(&deck(side, tier)).first().cloned() {
-                return Some((id, deck(side, tier)));
+                return Some((id, deck(side, tier).to_string()));
             }
         }
         None

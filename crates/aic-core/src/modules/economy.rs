@@ -4,7 +4,7 @@
 //! cubes) is the board's production phase.
 
 use crate::action::Action;
-use crate::content::{Op, PerResource, Resource, RoundFlag, Tag, RESOURCES};
+use crate::content::{Op, PerResource, Resource, RoundFlag, RESOURCES, TAGS};
 use crate::key::KeyBuf;
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
@@ -96,28 +96,30 @@ pub fn ambassador_income(w: &World, g: &GameState, seat: usize) -> i64 {
 /// Seat `s`'s income per resource from its AI board, tracks, buildings and
 /// Unity cards (not the board's production).
 pub fn income(w: &World, g: &GameState, seat: usize) -> PerResource {
+    income_with(w, g, seat, &cards::tag_counts(w, g, seat))
+}
+
+/// [`income`], with the seat's [`cards::tag_counts`] already counted.
+pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.len()]) -> PerResource {
     let mut out = PerResource::default();
     let mut add = |r: Resource, n: i64| out.add(r, n);
     add(Resource::Credits, ai::board(w, seat).credits);
-    for (r, n) in ai::track_income(w, g, seat) {
-        add(r, n);
-    }
-    // Counted at the first passive that asks: most of a seat's pay by tag.
-    let mut counts = None;
-    let mut tags = |tag: Tag| counts.get_or_insert_with(|| cards::tag_counts(w, g, seat))[tag as usize];
-    for p in cards::passives(w, g, seat) {
-        match p {
-            Op::Income { resource, amount } if *resource != Resource::Ambassadors => add(*resource, *amount),
-            Op::IncomePerTag {
-                resource,
-                tag,
-                per,
-            } => add(*resource, tags(*tag) / per),
-            _ => {}
+    ai::each_track_income(w, g, seat, &mut add);
+    cards::each_passive(w, g, seat, |p| match p {
+        Op::Income { resource, amount } if *resource != Resource::Ambassadors => add(*resource, *amount),
+        Op::IncomePerTag {
+            resource,
+            tag,
+            per,
+        } => add(*resource, counts[*tag as usize] / per),
+        _ => {}
+    });
+    // A walk of the seat's keys: most seats hold none of them.
+    let prefix = KeyBuf::new("economy.production.").num(seat).text(".");
+    for (k, n) in g.vars.from_key(prefix.as_str()).map_while(|(k, n)| Some((k.strip_prefix(prefix.as_str())?, *n))) {
+        if let Some(r) = RESOURCES.iter().find(|r| r.name() == k) {
+            add(*r, n);
         }
-    }
-    for r in RESOURCES {
-        add(r, g.var(&production_key(seat, r)));
     }
     add(Resource::Credits, alignment::income_bonus(g));
     add(Resource::Insight, alignment::insight_bonus(g));

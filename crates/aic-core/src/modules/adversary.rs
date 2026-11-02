@@ -1094,15 +1094,20 @@ pub fn purge_count(w: &World, g: &GameState, level: i64) -> i64 {
 
 /// What hex `h` adds to [`purge_count`].
 fn counts_against(w: &World, g: &GameState, h: usize, level: i64) -> i64 {
-    let mut n = corrupted_city(w, g, h) as i64;
+    against_bar(corrupted_city(w, g, h), g.tokens(h, NODE), g.tokens(h, ADV_AMBASSADOR), g.tokens(h, TROOP), level)
+}
+
+/// What a hex with these pieces adds to [`purge_count`] at bar `level`.
+pub fn against_bar(corrupted_city: bool, nodes: i64, ambassadors: i64, troops: i64, level: i64) -> i64 {
+    let mut n = corrupted_city as i64;
     if level < 3 {
-        n += g.tokens(h, NODE);
+        n += nodes;
     }
     if level < 1 {
-        n += g.tokens(h, ADV_AMBASSADOR);
+        n += ambassadors;
     }
     if level < 2 {
-        n += g.tokens(h, TROOP);
+        n += troops;
     }
     n
 }

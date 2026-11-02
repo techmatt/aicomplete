@@ -27,8 +27,12 @@ use aic_core::modules::common::{
     self, ADV_AMBASSADOR, ADV_CUBE, FACTORY, HARDEN, STATION, TROOP,
 };
 use aic_core::modules::{adversary, ai, alignment, board, cards, economy, threats};
-use aic_core::{GameState, Rules};
+use aic_core::key::Fnv;
+use aic_core::{GameState, Key, Rules};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::hash::BuildHasherDefault;
+use std::sync::Arc;
 
 use super::policy::list_cost;
 use super::INSIGHT_COST;
@@ -352,6 +356,100 @@ pub struct Eval {
     city_energy: i64,
     aligned_bonus: i64,
     tip_per_player: i64,
+    keys: TokenKeys,
+    /// Each card by its interned id (compared by pointer, never iterated): its
+    /// index in the content and its [`Eval::cost`]. A position asks for a hand's
+    /// worth of each, and an id hashed as text was a tenth of the heuristic (069).
+    facts: Arc<HashMap<usize, (usize, f64), BuildHasherDefault<Fnv>>>,
+}
+
+/// The tokens [`Eval::value`] reads on one hex, read once: asking the state
+/// for each by name was some 800 scans a position (069).
+#[derive(Clone, Copy, Default)]
+struct HexTokens {
+    adv_ambassador: i64,
+    adv_cube: i64,
+    marker: i64,
+    factory: i64,
+    station: i64,
+    harden: i64,
+    troop: i64,
+    node: i64,
+    presence: [i64; 4],
+    cube: [i64; 4],
+    ambassador: [i64; 4],
+}
+
+/// The interned names of [`HexTokens`]' tokens, compared by pointer.
+#[derive(Clone)]
+struct TokenKeys {
+    adv_ambassador: Key,
+    adv_cube: Key,
+    marker: Key,
+    factory: Key,
+    station: Key,
+    harden: Key,
+    troop: Key,
+    node: Key,
+    presence: [Key; 4],
+    cube: [Key; 4],
+    ambassador: [Key; 4],
+}
+
+impl TokenKeys {
+    fn new() -> TokenKeys {
+        let k = Key::new;
+        TokenKeys {
+            adv_ambassador: k(ADV_AMBASSADOR),
+            adv_cube: k(ADV_CUBE),
+            marker: k(common::MARKER),
+            factory: k(FACTORY),
+            station: k(STATION),
+            harden: k(HARDEN),
+            troop: k(TROOP),
+            node: k(common::NODE),
+            presence: std::array::from_fn(|s| k(common::presence(s))),
+            cube: std::array::from_fn(|s| k(common::cube(s))),
+            ambassador: std::array::from_fn(|s| k(common::ambassador(s))),
+        }
+    }
+
+    fn read(&self, g: &GameState) -> Vec<HexTokens> {
+        let at = |keys: &[Key; 4], k: Key| keys.iter().position(|x| *x == k);
+        g.hexes
+            .iter()
+            .map(|hex| {
+                let mut t = HexTokens::default();
+                for (k, n) in hex.tokens.iter() {
+                    let (k, n) = (*k, *n);
+                    if let Some(s) = at(&self.presence, k) {
+                        t.presence[s] = n;
+                    } else if let Some(s) = at(&self.cube, k) {
+                        t.cube[s] = n;
+                    } else if let Some(s) = at(&self.ambassador, k) {
+                        t.ambassador[s] = n;
+                    } else if k == self.adv_ambassador {
+                        t.adv_ambassador = n;
+                    } else if k == self.adv_cube {
+                        t.adv_cube = n;
+                    } else if k == self.marker {
+                        t.marker = n;
+                    } else if k == self.factory {
+                        t.factory = n;
+                    } else if k == self.station {
+                        t.station = n;
+                    } else if k == self.harden {
+                        t.harden = n;
+                    } else if k == self.troop {
+                        t.troop = n;
+                    } else if k == self.node {
+                        t.node = n;
+                    }
+                }
+                t
+            })
+            .collect()
+    }
 }
 
 impl Eval {
@@ -368,7 +466,23 @@ impl Eval {
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
+            keys: TokenKeys::new(),
+            facts: Arc::new(
+                world
+                    .content
+                    .cards
+                    .iter()
+                    .enumerate()
+                    .map(|(i, d)| (Key::new(&d.id).as_str().as_ptr() as usize, (i, Self::cost(d))))
+                    .collect(),
+            ),
         }
+    }
+
+    /// A card in a pile, and its [`Eval::cost`].
+    fn fact<'w>(&self, world: &aic_core::module::World<'w>, id: &Key) -> (&'w CardDef, f64) {
+        let (i, cost) = self.facts[&(id.as_str().as_ptr() as usize)];
+        (&world.content.cards[i], cost)
     }
 
     fn cost(d: &CardDef) -> f64 {
@@ -431,12 +545,12 @@ impl Eval {
     /// Each seat's reach as a bit per hex (a board has at most 4 × 16 hexes),
     /// worked out once a position: `in_reach` per hex was a tenth of the
     /// search's time (028).
-    fn reach_masks(&self, rules: &Rules, g: &GameState) -> [u64; 4] {
+    fn reach_masks(&self, rules: &Rules, g: &GameState, t: &[HexTokens]) -> [u64; 4] {
         let world = rules.world();
         let mut near = [0u64; 4];
         for (h, hex) in world.map.hexes.iter().enumerate() {
             for (s, mask) in near.iter_mut().enumerate().take(g.seats.len()) {
-                if g.tokens(h, common::presence(s)) > 0 {
+                if t[h].presence[s] > 0 {
                     *mask |= 1 << h;
                     for &n in &hex.neighbors {
                         *mask |= 1 << n;
@@ -462,16 +576,23 @@ impl Eval {
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut reach = 0i64;
-        let near = self.reach_masks(rules, g);
+        let tokens = self.keys.read(g);
+        let near = self.reach_masks(rules, g, &tokens);
+        let seats = g.seats.len();
+        let mut pieces = 0i64;
+        let level = alignment::bar_level(&world, g);
         for h in 0..g.hexes.len() {
+            let t = &tokens[h];
             let city = common::is_city(&world, h);
-            let adv = g.tokens(h, ADV_AMBASSADOR);
-            let bad = common::corrupted(g, h);
+            let base = common::is_base(&world, h);
+            let adv = t.adv_ambassador;
+            let bad = t.adv_cube > 0;
+            let owned = t.cube[..seats].iter().any(|&n| n > 0);
             if city {
                 if bad {
                     corrupted += 1;
                     let on = board::ambassadors_on(g, h) as f64;
-                    let held: i64 = (0..g.seats.len())
+                    let held: i64 = (0..seats)
                         .filter(|&s| near[s] >> h & 1 != 0)
                         .map(|s| g.resource(s, Resource::Ambassadors))
                         .sum();
@@ -488,68 +609,66 @@ impl Eval {
                     v += w.corrupted * w.freeing * share;
                     v += (w.ambassador - w.ambassador_board) * on;
                     let around = world.map.hexes[h].neighbors.iter();
-                    let guards: i64 = around.map(|&n| g.tokens(n, ADV_AMBASSADOR)).sum();
+                    let guards: i64 = around.map(|&n| tokens[n].adv_ambassador).sum();
                     v -= w.guard * guards as f64;
                 } else {
-                    if common::cube_owner(g, h).is_some() {
+                    if owned {
                         v += w.aligned;
                     }
                     // 034: a corruption marker counts toward corrupting.
-                    let toward = adv + g.tokens(h, common::MARKER);
+                    let toward = adv + t.marker;
                     let p = (toward as f64 / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                 }
             }
+            let held = t.presence[..seats].iter().any(|&n| n > 0);
             v -= w.adv_ambassador * adv as f64;
             if adv > 0 {
-                let piece = common::player_owned(g, h)
-                    || common::is_base(&world, h)
-                    || g.tokens(h, FACTORY) > 0
-                    || g.tokens(h, STATION) > 0;
+                let piece = held || owned || base || t.factory > 0 || t.station > 0;
                 if piece {
                     v -= w.on_piece * adv as f64;
                 }
-                if g.tokens(h, FACTORY) > 0 {
+                if t.factory > 0 {
                     v -= w.on_factory;
                 }
             }
-            v -= w.troop * g.tokens(h, TROOP) as f64;
-            if g.tokens(h, STATION) > 0 {
+            v -= w.troop * t.troop as f64;
+            if t.station > 0 {
                 if bad {
                     v -= w.station;
-                } else if common::cube_owner(g, h).is_some() {
+                } else if owned {
                     v += w.station;
                 }
             }
-            v += w.factory * g.tokens(h, FACTORY) as f64 + w.harden * g.tokens(h, HARDEN) as f64;
-            if g.tokens(h, FACTORY) > 0 {
+            v += w.factory * t.factory as f64 + w.harden * t.harden as f64;
+            if t.factory > 0 {
                 if bad {
                     v -= w.owned_factory;
-                } else if common::cube_owner(g, h).is_some() {
+                } else if owned {
                     v += w.owned_factory;
                 }
             }
-            v -= w.node * g.tokens(h, common::NODE) as f64;
-            v -= w.marker * g.tokens(h, common::MARKER) as f64;
-            let held = common::presence_owner(g, h).is_some();
-            if held && g.tokens(h, HARDEN) > 0 {
+            v -= w.node * t.node as f64;
+            v -= w.marker * t.marker as f64;
+            if held && t.harden > 0 {
                 v += w.shield;
             }
             if held {
                 v += w.presence;
             }
             for s in 0..self.seats {
-                v += w.ambassador_board * g.tokens(h, &common::ambassador(s)) as f64;
+                v += w.ambassador_board * t.ambassador[s] as f64;
             }
-            let counts = city || common::is_base(&world, h) || g.tokens(h, STATION) > 0;
+            let counts = city || base || t.station > 0;
             if counts && (0..self.seats).any(|s| near[s] >> h & 1 != 0) {
                 reach += 1;
             }
+            pieces += adversary::against_bar(city && bad, t.node, adv, t.troop, level);
         }
         v -= w.corrupted * corrupted as f64;
         let mut thin = i64::MAX;
         for s in 0..self.seats {
-            let count = common::presence_count(g, s);
+            let count = tokens.iter().filter(|t| t.presence[s] > 0).count() as i64;
             thin = thin.min(count);
             match count {
                 ..=1 => v -= w.presence_danger,
@@ -585,8 +704,7 @@ impl Eval {
             v += w.chips * g.resource(s, Resource::Chips) as f64;
         }
         // The win bar: what still stands between the team and a clear board.
-        let level = alignment::bar_level(&world, g);
-        v -= w.blocker * adversary::purge_count(&world, g, level) as f64;
+        v -= w.blocker * pieces as f64;
         // Alignment: tips made, and each bucket's share of its next tip.
         for (side, weight) in [(Side::Unity, w.unity_tip), (Side::Discord, -w.discord_tip)] {
             let cap = alignment::capacity(&world, g, side).max(1) as f64;
@@ -606,7 +724,7 @@ impl Eval {
         // their games) do not depend on horizon mode.
         let unpaid = self.unpaid_threats(rules, g);
         if w.horizon > 0.0 {
-            self.horizon_value(rules, g, &unpaid, thin, discord_left, &mut v);
+            self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left, &mut v);
         } else {
             self.flat_value(rules, g, &mut v);
         }
@@ -821,15 +939,16 @@ impl Eval {
 
     /// What the board makes each seat a round if production came now: the
     /// energy of its aligned cities, less what adversary ambassadors divert.
-    fn board_production(&self, rules: &Rules, g: &GameState) -> Vec<i64> {
+    fn board_production(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens]) -> Vec<i64> {
         let world = rules.world();
         let mut out = vec![0; self.seats];
-        for h in 0..g.hexes.len() {
-            if g.tokens(h, ADV_AMBASSADOR) > 0 || g.tokens(h, ADV_CUBE) > 0 {
+        for (h, t) in tokens.iter().enumerate() {
+            if t.adv_ambassador > 0 || t.adv_cube > 0 {
                 continue;
             }
             if common::is_city(&world, h) {
-                if let Some(s) = common::cube_owner(g, h).filter(|&s| s < self.seats) {
+                let owner = (0..g.seats.len()).find(|&s| t.cube[s] > 0);
+                if let Some(s) = owner.filter(|&s| s < self.seats) {
                     out[s] += self.city_energy + self.aligned_bonus;
                 }
             }
@@ -842,6 +961,7 @@ impl Eval {
         &self,
         rules: &Rules,
         g: &GameState,
+        tokens: &[HexTokens],
         unpaid: &[f64],
         thin: i64,
         discord_left: i64,
@@ -851,7 +971,7 @@ impl Eval {
         let world = rules.world();
         let left = self.rounds_left(rules, g, unpaid, thin, discord_left);
         let prod = if w.production != 0.0 {
-            self.board_production(rules, g)
+            self.board_production(rules, g, tokens)
         } else {
             vec![0; self.seats]
         };
@@ -877,14 +997,15 @@ impl Eval {
             self.in_play_value(rules, g, s, &mut v);
             // Income (tracks, buildings with income passives, rewards) over
             // the rounds left; board production counts `production` of its own.
-            let income = economy::income(&world, g, s);
+            let tags = cards::tag_counts(&world, g, s);
+            let income = economy::income_with(&world, g, s, &tags);
             for (i, (_, n)) in income.iter().enumerate() {
                 v += w.horizon * left * unit[i] * n as f64;
             }
             v += w.horizon * w.production * left * w.energy * prod[s] as f64;
             for id in g.pile(&cards::built(s)) {
-                let d = cards::def(&world, id);
-                v += w.built + w.built_cost * Self::cost(d);
+                let (d, cost) = self.fact(&world, id);
+                v += w.built + w.built_cost * cost;
                 if !d.pays_income() {
                     v += w.ability * left;
                 }
@@ -896,9 +1017,9 @@ impl Eval {
             let earn_credits = income[Resource::Credits];
             let mut insight_queue = 0i64;
             // The same for every card in hand: worked out once.
-            let prices = cards::prices(&world, g, s);
-            let mut play = |id: &str| -> f64 {
-                let d = cards::def(&world, id);
+            let prices = cards::prices_with(&world, g, s, &tags);
+            let mut play = |id: &Key| -> f64 {
+                let (d, cost) = self.fact(&world, id);
                 let mut p = 1.0;
                 // 022: playing costs insight again (shared with keeps).
                 insight_queue += prices.insight(d);
@@ -925,7 +1046,7 @@ impl Eval {
                         p = f64::min(p, (1.0 - rounds / (left + 1.0)).max(0.0));
                     }
                 }
-                p * Self::card_value(w, d)
+                p * (w.hand + w.hand_cost * cost)
             };
             let mut cards: Vec<f64> = g.pile(&cards::hand(s)).iter().map(|id| play(id)).collect();
             let mut picks = Vec::new();
@@ -966,6 +1087,46 @@ mod tests {
         };
         assert_eq!(run(1.0), [3.0, 2.0], "the second tier-2 card is past the budget");
         assert_eq!(run(0.0), [1.0, 3.0, 2.0]);
+    }
+
+    /// The one read of a hex's tokens (069) says what asking by name says, on
+    /// positions from a played game, and adds up to the core's purge count.
+    #[test]
+    fn hex_tokens_read_as_the_state_does() {
+        let r = crate::agents::tests::rules(2);
+        let w = r.world();
+        let keys = TokenKeys::new();
+        let mut g = r.new_game(7);
+        let mut legal = Vec::new();
+        for step in 0..600 {
+            if g.is_over() {
+                break;
+            }
+            let tokens = keys.read(&g);
+            let level = alignment::bar_level(&w, &g);
+            let mut pieces = 0;
+            for (h, t) in tokens.iter().enumerate() {
+                assert_eq!(t.adv_ambassador, g.tokens(h, ADV_AMBASSADOR));
+                assert_eq!(t.adv_cube, g.tokens(h, ADV_CUBE));
+                assert_eq!(t.marker, g.tokens(h, common::MARKER));
+                assert_eq!(t.factory, g.tokens(h, FACTORY));
+                assert_eq!(t.station, g.tokens(h, STATION));
+                assert_eq!(t.harden, g.tokens(h, HARDEN));
+                assert_eq!(t.troop, g.tokens(h, TROOP));
+                assert_eq!(t.node, g.tokens(h, common::NODE));
+                for s in 0..g.seats.len() {
+                    assert_eq!(t.presence[s], g.tokens(h, common::presence(s)));
+                    assert_eq!(t.cube[s], g.tokens(h, common::cube(s)));
+                    assert_eq!(t.ambassador[s], g.tokens(h, common::ambassador(s)));
+                }
+                let city = common::is_city(&w, h) && t.adv_cube > 0;
+                pieces += adversary::against_bar(city, t.node, t.adv_ambassador, t.troop, level);
+            }
+            assert_eq!(pieces, adversary::purge_count(&w, &g, level));
+            r.legal_actions_into(&g, &mut legal);
+            let Some(a) = legal.get(step % legal.len().max(1)) else { break };
+            g = r.apply_to(&g, a, None).expect("a legal action applies");
+        }
     }
 
     #[test]

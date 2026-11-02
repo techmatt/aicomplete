@@ -13,6 +13,15 @@ pub fn passives<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<&'w Op> {
     out
 }
 
+/// Each of [`passives`] in turn, with no list to build.
+pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl FnMut(&'w Op)) {
+    ai::board(w, seat).innate.passives.iter().for_each(&mut f);
+    ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()).for_each(&mut f);
+    for id in g.pile(&built(seat)) {
+        def(w, id).passives.iter().for_each(&mut f);
+    }
+}
+
 pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
     passives(w, g, seat).into_iter().any(f)
 }

@@ -1,0 +1,13 @@
+{
+  "name": "screen-069-cheap",
+  "note": "069: does a cheap planner hold card rankings on a price screen? The planner against deals=1,lead=0, paired, c2 and c3 at d2, read with price_read.py and rank correlations against the planner on two halves of its own seeds. Run with --seed 24400 --games 96.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "planner:deals=1,lead=0"],
+  "games": 96,
+  "records": 0
+}

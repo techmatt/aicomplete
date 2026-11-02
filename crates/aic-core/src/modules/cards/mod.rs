@@ -129,12 +129,12 @@ pub fn drafted(seat: usize) -> KeyBuf {
     KeyBuf::new("cards.drafted.").num(seat)
 }
 
-fn deck(tier: u8) -> String {
-    format!("cards.deck.{tier}")
+fn deck(tier: u8) -> KeyBuf {
+    KeyBuf::new("cards.deck.").num(tier as usize)
 }
 
-fn discard_pile(tier: u8) -> String {
-    format!("cards.discard.{tier}")
+fn discard_pile(tier: u8) -> KeyBuf {
+    KeyBuf::new("cards.discard.").num(tier as usize)
 }
 
 fn picked_key(seat: usize) -> String {

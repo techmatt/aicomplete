@@ -103,18 +103,18 @@ pub fn paid_prefix(threat: &str) -> KeyBuf {
     KeyBuf::new("threats.paid.").text(threat).text(".")
 }
 
-fn paid_key(threat: &str, seat: usize, resource: Resource) -> String {
-    format!("threats.paid.{threat}.{seat}.{resource}")
+fn paid_key(threat: &str, seat: usize, resource: Resource) -> KeyBuf {
+    KeyBuf::new("threats.paid.").text(threat).text(".").num(seat).text(".").text(resource.name())
 }
 
-fn jam_key(threat: &str) -> String {
-    format!("threats.jam.{threat}")
+fn jam_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("threats.jam.").text(threat)
 }
 
 /// The round a threat was dealt in, if it came after that round's counter
 /// phase (it waits beside the row and executes next round, 022).
-fn late_key(threat: &str) -> String {
-    format!("threats.late.{threat}")
+fn late_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("threats.late.").text(threat)
 }
 
 /// Whether the counter phase has passed this round (the current phase is
@@ -148,8 +148,9 @@ pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
         g.pile(ROW).iter().map(|t| (t.clone(), None)).collect();
     let mut on: Vec<(usize, &std::sync::Arc<Vec<Key>>)> = g
         .piles
-        .iter()
-        .filter_map(|(k, v)| Some((k.strip_prefix("threats.on.")?.parse().ok()?, v)))
+        .from_key("threats.on.")
+        .map_while(|(k, v)| Some((k.strip_prefix("threats.on.")?, v)))
+        .filter_map(|(k, v)| Some((k.parse().ok()?, v)))
         .collect();
     on.sort_by_key(|(c, _)| *c);
     for (c, pile) in on {

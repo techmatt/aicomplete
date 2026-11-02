@@ -4,7 +4,7 @@
 
 use crate::action::Action;
 use crate::content::{AiBoard, Innate, Op, Resource, Tag, Uncover};
-use crate::key::Key;
+use crate::key::{Key, KeyBuf};
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
@@ -63,6 +63,15 @@ pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64
     out
 }
 
+/// [`track_income`] a pair at a time, for a caller that only adds them up.
+pub fn each_track_income(w: &World, g: &GameState, seat: usize, mut f: impl FnMut(Resource, i64)) {
+    let b = board(w, seat);
+    b.income.iter().for_each(|(r, n)| f(*r, *n));
+    for u in b.presence[..uncovered(w, g, seat)].iter().chain(&b.presence2[..uncovered2(w, g, seat)]) {
+        u.income.iter().for_each(|(r, n)| f(*r, *n));
+    }
+}
+
 /// Spaces seat `s` has uncovered on both tracks.
 fn uncovered_spaces<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Uncover> {
     let b = board(w, seat);
@@ -118,8 +127,8 @@ pub fn power_sacrifices_many(w: &World, seat: usize, k: usize) -> bool {
 }
 
 /// Set once seat `s` has used power `k` this round.
-fn power_used(seat: usize, k: usize) -> String {
-    format!("ai.power_used.{seat}.{k}")
+fn power_used(seat: usize, k: usize) -> KeyBuf {
+    KeyBuf::new("ai.power_used.").num(seat).text(".").num(k)
 }
 
 /// Why seat `s` can't use its board's power `k` now, or `None` if it can.
@@ -138,7 +147,7 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, board::Placing::Step, -spent) {
         return Some("unaffordable");
     }
-    if !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {
+    if !p.tags.is_empty() && !cards::TagNeed::new(&p.tags).payable(&cards::sources(w, g, seat)) {
         return Some("needs tags");
     }
     if !effects::feasible_after(w, g, seat, &p.effects, spent) {
@@ -261,8 +270,11 @@ impl Module for Ai {
             return Err(Halt::Illegal("not a power".into()));
         };
         let (s, k) = (*seat as usize, *power as usize);
-        if let Some(why) = power_blocked(&w, g, s, k) {
-            return Err(Halt::Illegal(format!("can't use power {k}: {why}")));
+        // An answer replays this from a table that passed it.
+        if !cx.replaying() {
+            if let Some(why) = power_blocked(&w, g, s, k) {
+                return Err(Halt::Illegal(format!("can't use power {k}: {why}")));
+            }
         }
         let p = &board(&w, s).powers[k];
         for (r, n) in &p.cost {

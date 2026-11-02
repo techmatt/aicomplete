@@ -13,7 +13,7 @@ use crate::action::Action;
 use crate::config::ParamValue;
 use crate::content::Content;
 use crate::event::Event;
-use crate::key::{FastMap, Key};
+use crate::key::{FastMap, Key, KeyBuf};
 use crate::map::Map;
 use crate::rng::Stream;
 use crate::vocab::Resource;
@@ -293,6 +293,12 @@ pub struct Cx<'a> {
 }
 
 impl<'a> Cx<'a> {
+    /// Replaying answers already given: at the start of an action, that the
+    /// table passed its checks when it was first played.
+    pub fn replaying(&self) -> bool {
+        self.choices.replaying()
+    }
+
     pub fn emit(&mut self, e: impl FnOnce() -> Event) {
         if self.choices.replaying() {
             return;
@@ -412,7 +418,7 @@ impl<'a> Cx<'a> {
     pub fn count(&mut self, g: &mut GameState, name: &str, n: i64) {
         *g.stats
             .counters
-            .entry(format!("{}.{name}", self.module))
+            .entry(KeyBuf::new(self.module).text(".").text(name).as_str())
             .or_insert(0) += n;
     }
 

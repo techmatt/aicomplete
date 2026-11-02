@@ -33,21 +33,29 @@ use crate::hash::{FNV_OFFSET, FNV_PRIME};
 #[derive(Clone, Copy)]
 pub struct Key(&'static str);
 
-/// FNV-1a for the thread's interner cache and every [`FastMap`]: short keys,
+/// FNV-1a by words for the thread's interner cache and every [`FastMap`]: short keys,
 /// and no DoS to fear.
 #[derive(Default)]
 pub struct Fnv(u64);
 
 impl Hasher for Fnv {
+    /// Eight bytes at a time (069): a lookup by card id hashed some twenty bytes
+    /// one by one, tens of times a position. No [`FastMap`] is ever iterated,
+    /// so the hash's value shows nowhere.
     fn write(&mut self, bytes: &[u8]) {
         let mut h = if self.0 == 0 { FNV_OFFSET } else { self.0 };
-        for b in bytes {
+        let mut words = bytes.chunks_exact(8);
+        for w in &mut words {
+            h = (h ^ u64::from_le_bytes(w.try_into().expect("eight bytes"))).wrapping_mul(FNV_PRIME);
+        }
+        for b in words.remainder() {
             h = (h ^ *b as u64).wrapping_mul(FNV_PRIME);
         }
         self.0 = h;
     }
+    /// Rotated: a multiply leaves its low bits weak, and a table buckets on them.
     fn finish(&self) -> u64 {
-        self.0
+        self.0.rotate_left(26)
     }
 }
 

@@ -1,0 +1,13 @@
+{
+  "name": "screen-069-confirm",
+  "note": "069: fresh seeds for the one row of screen-069-speed that passed at both sizes, answers=1,powers=2, with answers=1 beside it to read powers on and off. Run with --seed 24200 --games 96.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "planner:answers=1", "planner:answers=1,powers=2"],
+  "games": 96,
+  "records": 0
+}

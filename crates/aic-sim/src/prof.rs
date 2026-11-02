@@ -4,7 +4,8 @@
 //! nothing.
 //!
 //! Parts nest: `line` holds the planner's rollouts whole, and the rest of its
-//! time shows up again under `apply`, `apply_mut`, `legal` and `eval`. `clone`
+//! time shows up again under `apply`, `apply_mut`, `legal` and `eval`; `top` and
+//! `extend` are the rest of the planner, and `score_*` an action's whole scoring by kind. `clone`
 //! is timed on a throwaway copy beside each `apply` (030), so `apply` less
 //! `clone` is the rules; that copy adds its own time to the run, and the
 //! timers cost about 50 ns a call.
@@ -24,11 +25,22 @@ pub enum Part {
     Line,
     Sync,
     Policy,
+    /// The planner's own scoring of a decision (`greedy_scores` at the top level).
+    Top,
+    /// A followed line run on to the new stop (`Planner::incumbent`).
+    Extend,
+    /// One legal action's scoring, whole, by its kind (069).
+    ScorePower,
+    ScorePlay,
+    ScoreStandard,
+    ScoreChoose,
+    ScoreOther,
 }
 
 #[cfg_attr(not(feature = "profile"), allow(dead_code))]
-pub const PARTS: [&str; 9] = [
-    "apply", "apply_mut", "clone", "legal", "eval", "determinize", "line", "sync", "policy",
+pub const PARTS: [&str; 16] = [
+    "apply", "apply_mut", "clone", "legal", "eval", "determinize", "line", "sync", "policy", "top",
+    "extend", "score_power", "score_play", "score_standard", "score_choose", "score_other",
 ];
 
 #[cfg(feature = "profile")]
