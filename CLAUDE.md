@@ -15,7 +15,8 @@ experiments, speed, scripts, web, card art.
   the first is **wasm + a JS front-end**.
 - Design is still being gathered. The core implements [docs/rules.md](docs/rules.md), whose
   opening says which content is a placeholder. Don't describe or document code as if it does
-  more than it does.
+  more than it does. **Don't read rules.md whole:** read its section index at the top, then
+  only the sections your task touches.
 
 ## Engine rules
 
@@ -67,7 +68,9 @@ experiments, speed, scripts, web, card art.
   generated docs skips it, the fast lane still runs. Flags follow the alias with no `--`:
   `cargo test-all --test-threads=2`. A test slower than about a second goes in the slow lane,
   with a cheaper fast-lane twin where one makes sense. See README, *Build and test*. Leave
-  `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt.
+  `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt. In a fresh
+  worktree, web's `npm run check` needs `npm run wasm` first; e2e's `board fills its pane`
+  measures a fixed record (seed 11), not the random game (web/README).
 - **Agents stay fast.** After a change to rules, state or agents, run `python
   scripts/bench/speed.py check target/release/aic-sim.exe`, after the first screen, not last,
   while a fix can still be tested. It fails over 1.3 × the baseline and gives no verdict across

@@ -28,10 +28,12 @@ weight or config at the same revision, moves ms/game with game length and `check
 verdict on that agent and names why (read `per_decision.py`). A baseline without these records
 gives no verdict until `--update`.
 
-`pair` plays whole games, so it has the same limit: across a rules revision or a config change
-its ratio mixes speed with game length, and it says so. An OLD that refuses today's config
-takes the one it was built with through `--old-config`. A row whose games came out differently
-on the same revision and config says so too. `same_play.py` is the check that play held.
+`pair` plays whole games, so it has the same limit, and judges it row by row from the same
+`PLAY_FIELDS` hash: a row whose games came out differently on the two binaries prints NOT LIKE
+FOR LIKE (its ratio mixes speed with game length), whatever the revision and config. Across a
+revision or config change (a config-key rename, say) a row whose games match prints like for
+like; `same_results.py --map` is the whole-games check. An OLD that refuses today's config
+takes the one it was built with through `--old-config`. `same_play.py` is the check that play held.
 """
 
 import hashlib
@@ -159,9 +161,11 @@ def pair(old, new, out, only, threads, old_config, games=0):
     busy box moves the rates but not the ratio. Saves after each row, as `table`."""
     rows = saved(out)
     before, after = plays(old, old_config), plays(new)
-    if before != after:
-        print(f"NOT LIKE FOR LIKE: r{before[0]} on {old_config} against r{after[0]} on {CONFIG}. The two play different "
-              "games, so a ratio below is speed times game length. per_decision.py splits them.", flush=True)
+    moved = before != after
+    if moved:
+        print(f"OTHER RULES OR CONFIG: r{before[0]} on {old_config} against r{after[0]} on {CONFIG}. Each row says "
+              "whether its games came out the same on both: one that did is like for like (a rename), one that "
+              "did not is speed times game length. per_decision.py splits them.", flush=True)
     for agent, c, n1, nn in rows_to_run(only, threads, games):
         announce(f"{agent} c{c}", agent, c, n1, nn, threads, 4)
         r = {}
@@ -174,9 +178,13 @@ def pair(old, new, out, only, threads, old_config, games=0):
             same = same and was == now
             r[f"old_{label}"], r[f"new_{label}"] = 120 * n / a, 120 * n / b
         rows[f"{agent} c{c}"] = r
-        if before == after and not same:
-            print(f"NOT LIKE FOR LIKE: {agent} c{c} played other games on the two binaries at the same revision and "
-                  "config, so a default or weight moved. Its ratio is speed times game length.", flush=True)
+        if not same:
+            why = ("at another revision or config" if moved else
+                   "at the same revision and config, so a default or weight moved")
+            print(f"NOT LIKE FOR LIKE: {agent} c{c} played other games on the two binaries {why}. "
+                  "Its ratio is speed times game length.", flush=True)
+        elif moved:
+            print(f"like for like: {agent} c{c} came to the same games on both binaries.", flush=True)
         print(f"{agent} c{c}: 1 thread {r['old_1']:.1f} to {r['new_1']:.1f} ({r['new_1'] / r['old_1']:.2f} x), "
               f"{threads} threads {r['old_all']:.1f} to {r['new_all']:.1f} "
               f"({r['new_all'] / r['old_all']:.2f} x)", flush=True)

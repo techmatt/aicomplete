@@ -6,121 +6,96 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 
 - **No peeking.** Before any search an agent replaces what the printed game hides with
   a guess from its own RNG (`agents/determinize.rs`): the player-card and threat
-  decks are shuffled (contents are public, order is not); the Unity and Discord piles are dealt again
-  from their tier's unresolved printed cards (a game deals a subset face down); each hidden
-  adversary-deck position gets an unseen printed card of its stage (stages are stacked and
-  public; next round's card is face up, and the top cards stay put under Recon Sweep);
-  every RNG stream is reseeded. The guess depends only
-  on the public table and the agent's RNG; a test changes only hidden information and
-  checks that decisions stay the same.
+  decks are shuffled; the Unity and Discord piles are dealt again from their tier's unresolved
+  printed cards; each hidden adversary-deck position gets an unseen card of its stage (the
+  top cards stay put under Recon Sweep); RNG streams are reseeded. A test changes only hidden information
+  and checks that decisions stay the same.
 - **Own randomness.** Each agent's RNG is the game seed on a stream named after the agent
-  kind, apart from every engine stream. Games replay from seed + actions, and results
-  don't depend on `--threads`.
+  kind, apart from every engine stream, so games replay from seed + actions whatever `--threads`.
 - **Decides at the top level:** outside the action phase (`searched_phase` in `planner.rs`) the
-  planner follows its line, so draft and keep decisions are the rollout policy's, not the
-  shortlist's. A prompt inside the action phase is shortlisted like any action there. A node power
-  is scored at `choices` × 2 at the top level, 2 more when a sacrifice's prompts come first, and at
+  planner follows its line, so draft and keeps are the rollout policy's. A node power is scored at
+  `choices` × 2 at the top level, 2 more when a sacrifice's prompts come first, and at
   `choices`, at least 3, inside rollouts (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
 - **`choices` counts prompts, not effects.** One placement is two prompts (a track, then a hex;
-  a prompt with one option doesn't count), so `choices` 2 scores one placement. Only
-  a power that places gets more: a card that asks more (Relay Mast Rollout, Aegis Grid Lockdown,
+  a one-option prompt doesn't count), so `choices` 2 scores one placement. Only a power
+  that places gets more: a card that asks more (Relay Mast Rollout, Aegis Grid Lockdown,
   Beamed Power Constellation, Open-Weights Release) is judged part of the way, and beam's
   search doesn't double at all (only its greedy fallback does).
-- **Heuristic** (`agents/eval.rs`): win/loss; corrupted cities (`corrupted`
-  30), a seat down to its last node (`node_danger` 60; 0.5 of that with two, 0.25 with three, 0.1 with four), aligned cities
-  (`aligned` 8); adversary ambassadors (`adv_ambassador` 3 each, `on_piece` 2 more on a
-  player piece, base or factory, `on_factory` 6 more on a factory), the pressure on cities
-  not yet corrupted (`pressure` 0.7 × `corrupted` × (ambassadors and markers / threshold)², the
-  threshold being `corrupt_at` as the face-up card lowers it), troops (`troop` 12); the
-  Discord deck (`discord_danger` 40 per card short of 3 left: the empty tip loses) and the Unity deck (`unity_deck` 40 the same way: the last card wins); the bar's blockers
-  (`blocker` 2); Alignment (Unity and Discord tips made, each bucket's fill as a share of
-  its next tip, the bar level, and each visible adversary project's fill as a share of
-  its cost, `project` 30); the players' board (node
-  4, botnets −25 (D9: set low enough that agents don't make botnets when an equal free choice exists), owned factories 4 (an adversary-owned one −4), chips 2, cities/bases/stations in reach 0.5, owned stations 5, a seat's third on `station_spare` 1, and in horizon mode `station_round` 1 a round left for a seat's first two (a corrupted one −5),
-  megaproject cubes 2 (adversary's −1, neutral 0), research cubes held `research_cube` 0.3 (low on purpose, under what every converter nets; `research_cube_power` 1.2 for a seat whose board spends cubes on a power, the Researcher's Peer Review, or no card that spends cubes was ever played), insight a Patience seat holds `patience` 1.0 (it carries over, so it keeps its worth at the round's end; others' `insight` 0.5), a player facility on a hex with the Protector's node `wall` 3, twice that with a troop within 4 hexes (no troop can strike it), factories 0.5, hardening 1, a track's progress toward its capstone (`track_capstone` 16 × the square of the share uncovered; the name `capstone` is still accepted), player ambassadors
-  5 in supply (in table mode, the table's row, 4 credits) / 2.5 on the board, and toward liberating a corrupted city by the fallback `freeing` 2 ×
-  `corrupted` × a share of `liberate_at`: gathered ambassadors, then, once enough are at hand, a climbing bonus for landing them; only seats in reach count),
-  each city liberated this game `liberated` 10 (with `w.table` on, folded into the corrupted city it frees), a clean or aligned city one adversary ambassador from corrupting `at_risk` 4 on top of
-  its `pressure`, corruption markers (`marker` 1 each, against), shields (`shield` 3); track income, resources, cards in hand and
-  built; unpaid threats (one that waits counts `threat_waits` 0.5, one that can't be reached `threat_stranded` 1.25). Every weight is a parameter: `w.<name>=V` in an agent spec. The
-  weights are hand-set, not swept.
+- **Heuristic** (`agents/eval.rs`; every weight, its default and what it does is a field of
+  `Weights`, set by `w.<name>=V` in a spec; hand-set, not swept). It scores win/loss;
+  corrupted and aligned cities, the pressure on cities not yet corrupted (squared share of
+  the face-up card's `corrupt_at`) and a city one ambassador from corrupting; a seat's last
+  nodes (`node_danger`); adversary ambassadors, more on a player piece or factory; troops,
+  blockers, markers, shields; the Discord and Unity decks' last three cards (the empty Discord
+  tip loses, the last Unity card wins); Alignment fill and each visible adversary project's;
+  the players' board (pieces, cubes, insight, the Protector's wall, track progress,
+  ambassadors, liberation); income, resources, cards; unpaid threats. Choices that aren't obvious:
+  - botnets −25 (D9): low enough that agents don't make one when an equal free choice exists;
+  - `research_cube` 0.3, under what every converter nets; `research_cube_power` 1.2 for a
+    seat whose board spends cubes on a power (the Researcher's Peer Review);
+  - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
+  - credits beyond `w.credit_cap` (12) a seat are worth `w.credit_idle` (0.15).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
 | `random` | Uniform over legal actions. | none |
 | `greedy` | One action at a time: each scored by the heuristic after it, its own choices resolved best-first. A pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2 |
-| `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round (the end-of-round preview); plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (levels of an action's own choices resolved before scoring it; with 1, placing nodes, which asks a hex, looks worthless and beam stops growing its engine) |
+| `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round; plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 (with 1, placing nodes, which asks a hex, looks worthless and beam stops growing its engine) |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
-| `engine` | The heuristic in **horizon mode**: income (tracks, income buildings, rewards) is worth `w.horizon` × the resource's weight × the rounds left, and board production (aligned cities' energy, less what adversary ambassadors divert) `w.production` of that; the rounds left are the adversary deck's clock (deck plus the face-up card), cut short by when the team is on course to win (Unity Sway still needed for the Unity deck's last card at its rate so far, `w.unity_rate_start`, `w.win_lag`) and discounted by danger (`w.risk` per unit: unpaid threats per country, plus 0.5 with 1 Discord card or none left, plus 0.5 with a seat on its last node); a building without income earns `w.ability` per round left, and a program in play a flat `w.program`; a card dealt into the draft packet counts as drafted less `w.packet_keep` × its keep price, and drafted and packet cards count only as far as the round's insight keeps them, best first (`w.packet_budget` 1); a card in hand counts by the chance it can be paid for before the end (credits, antimatter and research cubes, from what the seat has and earns, factory credits included); the cards, buildings, tokens and supply ambassadors are valued by the value table (*The value table*, below; `w.table=0` uses the flat terms instead); resources fade when fewer than `w.spend_horizon` rounds are left; and the **deck clock** (`w.clock`): a penalty per round the team, at its Unity rate so far, would still be short of the Unity deck's last card (`alignment.unity_cards`) when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam over the round, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `horizon` 1, `table` 0.6, `hand_share` 0.5, `pick_cost` 0, `needs_floor` 0.25, `power_progress` 0.5, `built` 1, `built_cost` 0, `risk` 0.1, `spend_horizon` 2, `unity_rate_start` 2 (`opp_rate` still accepted), `win_lag` 1, `production` 1, `clock` 30, `packet_keep` 0.5 (see *The value table*), `packet_budget` 1; with `table` 0, the flat terms `hand` 1, `hand_cost` 0.2, `ability` 0.5, `token` 0.5, `ambassador` 5, `liberated` 10, `liberate_progress` 20 |
-| `strategist` | The engine with strategies (`engine:strategy=1`): greedy with strategy, no search. Each seat commits at its round-1 keep to one of its board's strategies (*Strategies*, below). **The screens' judge** (*The tiers*, below). | the engine's |
-| `planner` | `agents/planner.rs`: the engine, with a shortlist of alternatives in the action phase each rolled out to the first decision of round `horizon` rounds on, with the engine as the policy, and the best line by the heuristic taken. A line runs on the real state, the Alignment deal aside (**full information**, Matt, 2026-10-29), its value the mean over `deals` guesses of the deal (4 by default: played once to its first tip, then forked; an alternative must lead by `lead` on the first guess, and only then does it and the line it challenges play the others, then lead by `lead` on the mean); each decision inside it is still scored on a guess, because scored on open decks the one-step heuristic wins far less (it drafts by printed cost). `redeal_alignment` runs inside `determinize`, so for every caller (Greedy decisions, Beam included), and `hide_alignment_deal` is that call alone on a line's table. It also reorders every pile it redeals: at d2 the Discord deck is fully dealt, so its contents stand but a line sees a guessed order. Draft and keeps follow the line (*Decides at the top level*). **Speed:** the line being followed is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a phase of a rollout, after the phase's first full scoring), `powers` 6 (with `prune`, powers a seat keeps through that phase: off at 6, a board's count), `answers` 99 (prompts an answer looks on inside a rollout, at most `choices`), `deals` 4, `lead` 0. Its keep and dominance parameters are the engine's: `planner:never_tag=2` holds the check in its rollouts too. `--quick` keeps it. `sweep[:...]` is the planner at `deals=1,lead=0`, for price sweeps. |
+| `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × the resource's weight × the rounds left, board production `w.production` of that; the rounds left are the adversary deck's clock, cut short when the team is on course to win and discounted by danger (`w.risk`); cards, buildings, tokens and supply ambassadors are valued by the value table (`w.table=0`: the flat terms); a card in hand counts by the chance it can be paid for before the end; drafted and packet cards count only as far as the round's insight keeps them; resources fade under `w.spend_horizon` rounds left; the **deck clock** (`w.clock`) charges each round the team, at its Unity rate so far, would still be short of the Unity deck's last card when the deck runs out. Searched like greedy by default; `width` > 0 makes it a beam, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; beam: `depth` 120, `branch` 0, `candidates` 0, `rollouts` 2, `horizon` 1. Weights: `Weights::engine` in `eval.rs` |
+| `strategist` | `engine:strategy=1`: greedy with strategy, no search. **The screens' judge** (*The tiers*). | the engine's |
+| `planner` | The engine, with a shortlist of alternatives in the action phase, each rolled out with the engine as policy to the first decision `horizon` rounds on; the best line by the heuristic is taken. A line runs on the real state but the Alignment deal (**full information**, Matt, 2026-10-29), valued as the mean over `deals` guesses of the deal (played once to its first tip, then forked; an alternative must lead by `lead` on the first guess before it and its rival play the rest, then lead on the mean). Each decision inside a line is still scored on a guess: on open decks the one-step heuristic wins far less (it drafts by printed cost). `hide_alignment_deal` is `determinize`'s `redeal_alignment` alone; it reorders every pile it redeals, so at d2 a line sees the fully dealt Discord deck in a guessed order. **Speed:** the followed line is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a rollout phase after its first full scoring), `powers` 6 (powers kept so; 6, a board's count, is off), `answers` 99 (prompts an answer looks on in a rollout, at most `choices`), `deals` 4, `lead` 0. Keep and dominance parameters are the engine's and hold in its rollouts. `--quick` keeps it. `sweep[:...]` is `planner:deals=1,lead=0`, for price sweeps. |
 
-**Keeping by plan and the dominance checks (`agents/policy.rs`).** Greedy and
-engine keep drafted cards by a plan (`plan_keep` 1; 0 lets the heuristic decide keeps): at its first keep of the round a seat sketches this round's action phase
-and the next three (`plan_rounds` 4; credits, insight, chips, energy and antimatter from what it holds and
-its income; insight resets each round, the rest carries over), fills each round's
-budget with the cards it would play (hand plus the candidates) in value-per-cost order
-(`plan_table` 1: value by the value table at the rounds then left, times the seat's
-strategy multiplier; cost: what this seat pays at the table's rates, its discounts off;
-`plan_table=0` is the flat plan: the printed cost in credits, antimatter 3, insight 2, a
-lowered income point 3, plus 1, and capstone jobs), and keeps each
-drafted card, best ratio first, only if the plan with it is worth more than without it
-(a play waiting a round is worth 15% less; each marker in reach a card would clear, threat it would delay and nodes it would shield adds `plan_niche` 3 to the card's value; a card's `needs` may be met by the tags of the cards the plan plays before it, and a card with no target now may be played from the plan's second round on, at the table's `target_share`, unless it works on a token pile of the seat's own with none standing or planned (`pile_ok`); a card whose `needs` are short now is planned only if it is at most `plan_short` (1) tags short; a building that must go over one of the seat's adds only what it beats the weakest one it could cover by (`plan_cover` 1); liberation is valued by the table's liberation row). The dominance checks are the same agents with
-one behavior forced: `keep_all=1`, `keep_k=2`, `tier1_only=1`, `tier2_rush=1`,
-`no_powers=1`, `no_counters=1`, `no_node=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1`, `home_only=1`, `capstone_rush=1`, `always_buy_cubes=1` (the Researcher's Grant at every chance), `always_liberate=1` (draft and keep every liberate card and play one the first round it is legal: the row that tells a bad price from an agent that won't play the card), `never_clear=1`, `hoard_insight=N` (a Patience seat keeps and plays cards only in every N-th round, the opening's free keeps aside), `never_convert=1` (no converter, and no power that only turns one resource into another); `ignore_threats=1` also refuses an automatic-counter capstone and a building whose Action jams (`docs/principles.md`, *Dominance
-checks*).
+**Keeping by plan (`agents/policy.rs`).** Greedy and engine keep drafted cards by a plan
+(`plan_keep` 1; 0 lets the heuristic keep): at its first keep of the round a seat sketches
+`plan_rounds` (4) rounds from what it holds and earns, fills each round's budget with the
+cards it would play in value-per-cost order (value: the value table at the rounds then left
+times the strategy multiplier; cost: this seat's price at the table's rates; `plan_table=0`
+uses printed costs), and keeps each drafted card, best ratio first, only if the plan is worth
+more with it. A play waiting a round is worth 15% less; `plan_niche` adds for each marker,
+threat or node a card would act on now; `needs` may be met by cards planned earlier, short
+by at most `plan_short` tags; a card with no target now may be planned from the second
+round at `target_share`, unless it works a pile of the seat's own none stands or is planned for (`pile_ok`); a building
+over one of the seat's adds only what it beats the weakest by (`plan_cover`); credits paid
+for keeps cost `plan_credit` each.
 
-The keep plan also charges credits paid for keeps (`plan_credit` 3); `plan_hand` is a probe
-guard and is off. In `agents/eval.rs`, credits beyond `w.credit_cap`
-(12) a seat are worth `w.credit_idle` (0.15).
+**Dominance checks** are the same agents with one behavior forced: each is a row of
+`forced_table!` in `agents/policy.rs`, with its description (`docs/principles.md`,
+*Dominance checks*, lists the gate's). `ignore_threats=1` also refuses an automatic-counter
+capstone and a building whose Action jams; `always_liberate=1` tells a bad liberate price from an agent that won't play the card.
 
 Any agent can use horizon mode (`greedy:w.horizon=1,...`); `engine` only changes the
-defaults. Agent sweeps with strategy health (win %, buildings and tier-2 cards played per
-game, the top buildings) go through `scripts/tune/engine_sweep.py`; it logs to
-`out/tune/engine.jsonl`, and `AIC_SIM` points it at another binary (an absolute Windows
-path; build one with `CARGO_TARGET_DIR=target/alt` to sweep while editing).
+defaults. Agent sweeps with strategy health: `scripts/tune/engine_sweep.py`, logging to
+`out/tune/engine.jsonl`; `AIC_SIM` names another binary (an absolute Windows path;
+build one with `CARGO_TARGET_DIR=target/alt` to sweep while editing).
 
-Spec syntax: `kind[:key=value,...]`, for example `beam:width=12`,
-`rollout:rollouts=8,horizon=3`, `greedy:w.corrupted=40`. `aic-sim run ... --agent SPEC` plays
-any of them; an experiment lists several.
+Spec syntax: `kind[:key=value,...]`, e.g. `greedy:w.corrupted=40`, played by
+`aic-sim run ... --agent SPEC` or an experiment.
 
 ## The value table
 
 `configs/agents/values.json`, read by `agents/value.rs`: one value in credits for each
-resource (credit 1, chip 1.5, energy 2, antimatter 9, insight 2.5, research cube 3,
-ambassador 4), tag left in play (1, then 0.5), token (held 1; fed 3 a Dataset or Capital,
-2.5 a Follower, 2 an Agent) and op. The table is the rates' one home;
-card-pricing.md keeps the method and the rates known to be off. Each op's row says what
-one unit is; `value.rs` matches every op with no catch-all arm, so a new op doesn't compile
-without its arm, and `every_op_has_a_row` fails until its row is in the table. A card is
-worth its ops: what its effects do now, what its standing effects pay a round (income, a
-discount, a shelter rule) times the rounds left, a use of its Action times `uses_share`
-(0.7) of the rounds left (a progressive token card's spend over the uses its cycle of adds
-takes), and its tags. Liberation counts its 25 only while a city is corrupted
-(`no_city_share` 0.4 of it otherwise). **Overrides:** none (the table's `overrides` list is
-empty; each would carry its reason).
+resource, tag left in play, token and op; the table is the rates' one home, and
+card-pricing.md keeps the method and the rates known to be off. `value.rs` matches every op
+with no catch-all arm, so a new op doesn't compile without its arm, and `every_op_has_a_row`
+fails until its row is in the table. A card is worth its ops: what its effects do now, what
+its standing effects pay a round times the rounds left, a use of its Action times
+`uses_share` of the rounds left (a progressive token card's spend over the uses its cycle of
+adds takes), and its tags.
 
-Where the heuristic reads it, in table mode (`w.table` 0.6, a table credit at a credit's
-weight; the `engine`'s default, off for the flat `greedy`):
+Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, off for `greedy`):
 
-- **A card in hand:** `hand_share` (0.5) of its net worth: its value less its play cost at
-  the table's rates, times the chance of paying for it and the progress term. Under 1,
-  because playing it brings the board terms, which see about its whole value: at 1, holding
-  a card would be as good as playing it.
-- **A card to draft or keep** (drafted, or in the packet): its value times the seat's
-  strategy multiplier, less `pick_cost` (0) of its play cost, less its keep (the table's 2.5
-  and 6.5) times `packet_keep` in the packet. The keep plan judges what a seat can pay; with
-  the play cost charged (`w.pick_cost=1`), a tier-2 card, priced at about its value less its
-  keep, reads as worth no more than its keep, and the engine drafts tier 1 only (8-17% a
-  pair on the probe seeds; `experiments/screen-082-probe2.json`).
-- **A building in play:** what it earns a round that income doesn't count (its standing
-  rules, a share of its Action), times the rounds left: replaces the flat `w.ability`.
-- **A token:** what its card's spend pays per token (Popular Uprising's: a city over six
-  Followers), else the held rate: replaces `w.token` and `w.liberate_progress`.
-- **A supply ambassador:** the table's row (`w.table_ambassador` 1 scales it, a probe).
-- **An action** (a card played, an Action used, a board power) is credited what it does
+- **A card in hand:** `hand_share` of its net worth (value less play cost, times the chance
+  of paying and the progress term); under 1, or holding a card would be as good as playing it.
+- **A card to draft or keep:** its value times the strategy multiplier, less `pick_cost` of its
+  play cost, less its keep times `packet_keep` in the packet. `pick_cost` is 0 because the keep
+  plan judges what a seat can pay: at 1 a tier-2 card, priced at about its value less its
+  keep, reads as worth no more than its keep, and the engine drafts tier 1 only.
+- **A building in play:** what it earns a round beyond income, times the rounds left.
+- **A token:** what its card's spend pays per token, else the held rate.
+- **A supply ambassador:** its row.
+- **An action** (a card, an Action, a power) is credited what it does
   that the board terms can't see afterward: a shelter, a cordon, a peek (`Eval::bonus`).
-- **The keep plan:** values by the table at the rounds then left (`plan_table`).
 
 ## Strategies
 
@@ -132,13 +107,11 @@ card's tags, the resources and tokens it pays in or out, its kind and its catego
 card's multiplier is 1 plus the weights it matches, times the **phase schedule** for its
 categories: early (rounds 1-3) income ×1.4 and engine pieces ×1.3; mid (4-6) chain pieces
 (a card with `needs`) ×1.4; late (7 on) capstones ×1.4, liberation ×1.5, purge ×1.4. The
-multiplier reaches what a seat drafts and keeps (the packet and drafted terms, the keep
-plan), not a card in hand: what playing brings is the board's terms, which no strategy
-multiplies, so a multiplied hand made holding a strategy's cards beat playing them. The
-choice is a pure function of the table at that keep, so a game replays, and the planner
-hands it to every rollout's policy (`Planner::policy`).
+multiplier reaches what a seat drafts and keeps, not a card in hand: the board terms playing
+brings aren't multiplied, so a multiplied hand would beat playing it. The choice is a pure
+function of the table at that keep, and the planner hands it to every rollout's policy.
 
-The strategies, as a player would say them (the config's `says`; a test checks they match):
+The strategies as a player says them (the config's `says`; a test requires each line verbatim):
 
 **The Builder**
 
@@ -166,16 +139,13 @@ The strategies, as a player would say them (the config's `says`; a test checks t
 
 - **`needs`:** a card whose `needs` aren't met counts `needs_floor` (0.25) of its worth,
   plus the rest times the square of the share of the tags the seat has toward them, so a
-  chain card, a dear capstone or a liberate card behind a tag gate has value before it is
-  playable, and each tag played toward it adds more than the last.
+  chain card, a dear capstone or a gated liberate card has value before it is playable, and
+  each tag played toward it adds more than the last.
 - **Dear powers:** a board power that sacrifices two tags or more counts `power_progress`
-  (0.5) of one use's worth, times the square of the share of the tags the seat holds toward
-  it; using it is credited what it does (a shelter is unseen by the board terms, so the
-  action is credited it).
-- **Drafting for the neighbor:** a draft hand a seat has taken its card from goes to the next
-  seat, so its cards count for that seat, by that seat's strategy. No card passes hand to
-  hand outside the draft, and a card not kept is discarded, so there is no keeping for the
-  neighbor.
+  (0.5) of one use's worth, times the square of the share of the tags held toward it.
+- **Drafting for the neighbor:** a draft hand a seat has taken from goes to the next seat, so
+  its cards count for that seat, by that seat's strategy. A card not kept is discarded, so
+  there is no keeping for the neighbor.
 
 ## The tiers
 
@@ -185,10 +155,9 @@ The strategies, as a player would say them (the config's `says`; a test checks t
 | Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | 75.0 / 75.0 / 77.1; on fresh seeds 30800 54 / 73 / 79 |
 | Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | 79.2 / 87.5 / 91.7 |
 
-The judge rule (Matt, 2026-11-03): the strategist replaces `sweep` for screens if it reads within about 5 points of it a
-pair on the same seeds. Against `sweep` on the flat terms it read −2.1 / +6.3 / +4.2 over 96 seeds a pair,
-about 11 × faster a game, so it is the judge. `sweep` plays on the table and reads stronger (the strategist
-sits −2.1 ±4.7 and −8.3 ±4.5 pooled under it on the two seed sets): it stays the spot check. A strategy pairing's win rate is the
-balance read: `strategist:strat0=I,strat1=J` fixes them, and `aic-sim strategies CONFIG --agent strategist` prints what
-each seat chooses (seeds 30700: never Capital finance or Datasets, Cubes and stations 2 of 96 Researcher seats; the
-choice reads only the opening's cards). Every table: `experiments/results/screen-082/agents.md`.
+The strategist judges (Matt, 2026-11-03: while within about 5 points of `sweep` a pair on the
+same seeds) at about an eleventh of its time a game; `sweep`, 2-8 points above, is the spot check. A strategy pairing's
+win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them, and `aic-sim
+strategies CONFIG --agent strategist` prints what each seat chooses (seeds 30700: never
+Capital finance or Datasets, Cubes and stations 2 of 96 Researcher seats). All tables:
+`experiments/results/screen-082/agents.md`.

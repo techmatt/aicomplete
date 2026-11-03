@@ -34,11 +34,11 @@ fn setup_deals_three_cheap_projects_from_a_staged_deck() {
 #[test]
 fn compute_fills_the_cheapest_project_which_resolves_when_full() {
     let (rules, mut g) = lab(&[]);
-    // At 2 players: False Flag 12, Disinformation 10, Node Swarm 10.
+    // At 2 players: False Flag 12, Disinformation 10, Botnet Swarm 10.
     row(&mut g, &["false_flag", "disinformation", "node_swarm"]);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
     // Disinformation (the first of the cheapest) filled at 10 and resolved:
-    // 4 toward Discord. The 11th point went onto Node Swarm.
+    // 4 toward Discord. The 11th point went onto Botnet Swarm.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 4);
     assert_eq!(g.var(&adversary::project_key("node_swarm")), 1);

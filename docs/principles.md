@@ -60,7 +60,7 @@ where a gate can tell a good price from a bad one. A 48-seed band read is ±7 an
 Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
 Protector + Researcher), no c3, an engine smoke read first, then the `sweep` profile at 48 seeds a pair on one fresh set;
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
-([experiments.md](experiments.md), *The ballpark read at r34*).
+([experiments.md](experiments.md), *The ballpark read*).
 
 **Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
 measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);

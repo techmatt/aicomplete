@@ -1611,7 +1611,7 @@
  },
  {
   "id": "node_severance",
-  "name": "Node Severance",
+  "name": "Botnet Takedown",
   "tier": 2,
   "kind": "event",
   "cost": 8,

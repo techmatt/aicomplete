@@ -72,9 +72,9 @@ Current:
   FILE` runs each row on both binaries in turn, so the ratio holds on a busy machine: use it
   for a before and after. An OLD built on another baseline refuses today's config: `git show
   <rev>:configs/baseline.json > out/old-baseline.json`, then `--old-config
-  out/old-baseline.json`. Across a config or rules change `pair` prints NOT LIKE FOR LIKE: the
-  two play different games, so its ratio is speed times game length. A row whose games differ at
-  the same revision and config prints the same warning. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
+  out/old-baseline.json`. Each row hashes what its games came to on both binaries: a row whose
+  games differ prints NOT LIKE FOR LIKE (its ratio is speed times game length); across a config or
+  rules change, a row whose games match (a config-key rename) prints like for like. `table SIM --out FILE` is one binary's rates (`rollout` alone takes ~20 min;
   `--only "planner c2"` for a row, and both keep the file's other rows). `compare BEFORE.json AFTER.json` reads two `table`
   files. `check SIM` is
   the standing check (about 2 min, on a quiet machine, always one thread): fails at 1.3 ×
@@ -92,7 +92,9 @@ Current:
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE,
-  rounds and ends, and paired gaps between any two cells, pooled over several `--pair`s.
+  rounds and ends, and paired gaps between any two cells, pooled over several `--pair`s. A
+  `--pair` cell is its exact name (`bp/strategist`, or `DIR/bp/strategist`). `sweep` follows the
+  engine's defaults: against a pre-082 run, name the old ones (`sweep:plan_table=0,w.table=0,w.packet_keep=1`).
   `--against-base` reads a price sweep: every variant `cN-x` against `cN`, per agent, and
   each lever pooled over its sizes. The spec's variants are `c2`, `c3`, `c2-x`, `c3-x`, each with
   its `countries=N` and the lever's overlay in `set`. report.md's variant section pairs only

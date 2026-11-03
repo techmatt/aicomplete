@@ -9,7 +9,7 @@
  },
  {
   "id": "node_swarm",
-  "name": "Node Swarm",
+  "name": "Botnet Swarm",
   "stage": 1,
   "cost": 5,
   "text": "Every botnet produces 2 adversary ambassadors on its hex.",

@@ -5,8 +5,14 @@
 Reads each DIR's games.jsonl. A cell is named VARIANT/AGENT; with several DIRs, or to pick out
 one, DIR's folder name goes first: DIR/VARIANT/AGENT. Prints each cell's win %, one SE, mean
 rounds, and how its games ended. `--pair A B` prints B minus A on the seeds both played, ± one SE
-of the paired difference; A and B are any text that names one cell. Several --pair lines are also
-pooled, seed by seed, so two sizes read as one 96-seed gap.
+of the paired difference. A and B are cell names, matched exactly: VARIANT/AGENT, or
+DIR/VARIANT/AGENT when two DIRs share it (`bp/strategist` does not name
+`bp/strategist:w.packet_keep=0`). Several --pair lines are also pooled, seed by seed, so two
+sizes read as one 96-seed gap.
+
+`sweep` follows the engine's current defaults, so a run from before 082 has other weights under
+the same name: to compare against one, name the old defaults in the new spec, e.g.
+`sweep:plan_table=0,w.table=0,w.packet_keep=1`.
 
 `--against-base` reads a sweep: every variant `cN-x` against variant `cN` of the same DIR, agent
 by agent, and each lever `x` pooled over its sizes. The spec names a base per size and a lever per
@@ -42,8 +48,14 @@ def load(d):
     return cells
 
 
+def matches(names, text):
+    """The cell names `text` names exactly: the whole name, or its end from a `/` on, so
+    `bp/strategist` names `DIR/bp/strategist` but not `DIR/bp/strategist:w.packet_keep=0`."""
+    return [n for n in names if n == text or n.endswith('/' + text)]
+
+
 def find(cells, text):
-    hits = [n for n in cells if n == text] or [n for n in cells if text in n]
+    hits = matches(cells, text)
     if len(hits) != 1:
         sys.exit(f'{text!r} names {len(hits)} cells: {hits[:6]}')
     return cells[hits[0]]
@@ -79,9 +91,12 @@ def against_base(cells):
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('dirs', nargs='+')
-    ap.add_argument('--pair', nargs=2, action='append', default=[])
+    ap.add_argument('--pair', nargs=2, action='append', default=[], metavar=('A', 'B'),
+                    help='B minus A on shared seeds; A and B are exact cell names '
+                         '(VARIANT/AGENT or DIR/VARIANT/AGENT). `sweep` follows the engine defaults: '
+                         'against a pre-082 run name them, e.g. sweep:plan_table=0,w.table=0,w.packet_keep=1')
     ap.add_argument('--against-base', action='store_true', help='every cN-x variant against cN')
     a = ap.parse_args()
     cells = {}
