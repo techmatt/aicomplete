@@ -28,6 +28,9 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
             cx.per_round(g, &format!("left.{s}.{r}"), g.resource(s, r));
         }
         ai::tally_dear_powers(g, cx, s);
+        // 078: the seat's most-held tag on its cards in play, the measure's (tags by round).
+        let top = crate::modules::cards::tag_counts(&w, g, s).into_iter().max().unwrap_or(0);
+        cx.per_round(g, &format!("ai.tag_top.{s}"), top);
         // 074: converters a seat holding cubes left unused, and why: the measure's.
         if g.resource(s, Resource::ResearchCubes) > 0 {
             for c in 0..w.map.countries.len() {

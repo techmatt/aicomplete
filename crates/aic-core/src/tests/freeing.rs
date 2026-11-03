@@ -20,7 +20,7 @@ fn play_card(rules: &Rules, g: &mut GameState, seat: u8, card: &str) {
             Arc::make_mut(p).retain(|c| c != card);
         }
     }
-    Arc::make_mut(g.piles.get_mut(format!("cards.hand.{seat}").as_str()).unwrap()).push(card.into());
+    Arc::make_mut(g.piles.entry(crate::modules::cards::hand(seat as usize)).or_default()).push(card.into());
     let s = seat as usize;
     fund(g, s);
     rules
@@ -41,7 +41,7 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
     for x in others {
         put(&mut g, x, ADV_CUBE, 0);
     }
-    Arc::make_mut(g.piles.get_mut("cards.hand.0").unwrap()).push("back_channel_talks".into());
+    Arc::make_mut(g.piles.entry(crate::modules::cards::hand(0)).or_default()).push("back_channel_talks".into());
     set_res(&mut g, 0, Resource::Credits, 30);
     set_res(&mut g, 0, Resource::Insight, 5);
     let plays = rules.legal_actions(&g);
@@ -87,7 +87,7 @@ fn a_corruption_takes_a_waiting_ambassador_with_it() {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, ambassador(0), 1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    set_res(&mut g, 0, Resource::Credits, 10);
+    set_res(&mut g, 0, Resource::Credits, 30);
     rules.apply_mut(&mut g, &std_act(0, "ambassador"), None).unwrap();
     assert_eq!(g.tokens(h, ADV_CUBE), 1);
     assert_eq!(g.tokens(h, ambassador(0)), 0);

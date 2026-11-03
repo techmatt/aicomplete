@@ -728,7 +728,9 @@ mod tests {
     /// is on course.
     #[test]
     fn deck_clock_penalizes_a_team_behind_the_deck() {
-        let r = rules(0);
+        // 078: at `city_build` 2 the opening stops at a spread choice before
+        // next round's card is revealed; at 1 seed 1's doesn't.
+        let r = config_rules_with("baseline", 0, &["adversary.city_build=1"]);
         let mut g = r.new_game(1);
         let value = |clock: f64, g: &aic_core::GameState| {
             let w = eval::Weights { clock, ..Default::default() };

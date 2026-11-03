@@ -1,0 +1,16 @@
+{
+  "name": "screen-078",
+  "note": "078: the ballpark planner read (Matt's ruling, 2026-11-03): 2 players, the three board pairs, d2, the sweep profile, 48 seeds a cell (about ±7), one fresh seed set; target 45-85 a pair. ai.start_credits and ai.slots are seat-ordered, so each pair restates them. Read with scripts/cards/economy_read.py and board_read.py --powers.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["sweep"],
+  "games": 48,
+  "records": 0
+}

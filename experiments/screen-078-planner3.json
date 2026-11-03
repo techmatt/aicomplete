@@ -1,0 +1,137 @@
+{
+ "name": "screen-078-planner3",
+ "note": "078, MESSAGE #3451: the planner (sweep) on the engine's candidates with the ambassador project at 20-24, Matt's board sizes, 24 seeds: pc city_build 2, pf factory_build 1, p0 neither.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-a24pc",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a20pc",
+   "set": [
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a24p0",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a24pf",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a24pc",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a20pc",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a24p0",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a24pf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a24pc",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a20pc",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a24p0",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a24pf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "sweep"
+ ],
+ "games": 24,
+ "records": 0
+}

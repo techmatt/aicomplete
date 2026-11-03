@@ -62,8 +62,8 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
     let rules = Rules::new(&baseline_with(&["cards.variant=off"])).unwrap();
     let mut g = rules.new_game(4);
     advance_to(&rules, &mut g, ACTIONS);
-    // Only the AIs' unique cards: nothing dealt or drafted.
-    assert!(g.pile("cards.hand.0").len() <= 3);
+    // Nothing dealt or drafted, and no board prints unique cards (078).
+    assert!(g.pile("cards.hand.0").is_empty());
     assert!(rules
         .legal_actions(&g)
         .iter()
@@ -109,12 +109,18 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
 #[test]
 fn selling_a_card_discards_it_for_a_credit() {
     let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
-    for p in ["cards.deck.1", "cards.discard.1"] {
+    let tier2 = "positron_storage_ring";
+    for p in ["cards.deck.1", "cards.discard.1", "cards.deck.2", "cards.discard.2"] {
         if let Some(pile) = g.piles.get_mut(p) {
-            Arc::make_mut(pile).retain(|c| c != "darknet_exchange");
+            Arc::make_mut(pile).retain(|c| c != "darknet_exchange" && c != tier2);
         }
     }
-    set_pile(&mut g, "cards.hand.0", &["turnkey_factory", "darknet_exchange"]);
+    for s in 0..g.seats.len() {
+        if let Some(pile) = g.piles.get_mut(format!("cards.hand.{s}").as_str()) {
+            Arc::make_mut(pile).retain(|c| c != tier2);
+        }
+    }
+    set_pile(&mut g, "cards.hand.0", &[tier2, "darknet_exchange"]);
     let sells: Vec<Action> = rules
         .legal_actions(&g)
         .into_iter()
@@ -135,17 +141,14 @@ fn selling_a_card_discards_it_for_a_credit() {
         &mut g,
         Action::Sell {
             seat: 0,
-            card: "turnkey_factory".into(),
+            card: tier2.into(),
         },
     );
     assert_eq!(g.resource(0, Resource::Credits), credits + 2);
     assert!(g.pile("cards.hand.0").is_empty());
-    // A tier-1 card to its discard pile; an AI's unique card back to the box.
+    // Each card to its own tier's discard pile.
     assert_eq!(g.pile("cards.discard.1")[0], "darknet_exchange");
-    assert!(g
-        .piles
-        .values()
-        .all(|p| !p.contains(&Key::new("turnkey_factory"))));
+    assert_eq!(g.pile("cards.discard.2")[0], tier2);
     assert!(rules
         .apply_mut(
             &mut g,

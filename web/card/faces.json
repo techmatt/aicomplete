@@ -1,12 +1,4 @@
 {
- "turnkey_factory": {"top":[[{"income":["credits"]}]],"top_text":"Each round, 1 credit.","effect":[["factory"]],"text":"Build a factory in reach."},
- "venture_capital": {"top":[],"top_text":"","effect":[["5","credits"],[{"other":["2","credits"]}]],"text":"Gain 5 credits. Another player gains 2 credits."},
- "modular_expansion": {"top":[["+2","slot"]],"top_text":"Effect: you have 2 more building slots.","effect":[],"text":""},
- "point_defense": {"top":[["energy","→","2","harden"]],"top_text":"Action: pay 1 energy, harden 2 facilities in reach.","effect":[],"text":""},
- "strike_team": {"top":[],"top_text":"","effect":[[{"adversary":["−3","ambassador","OR","−1","troop","hex"]}]],"text":"Remove 3 adversary ambassadors or 1 troop from a hex in reach."},
- "shelter_order": {"top":[],"top_text":"","effect":[["shelter","country"]],"text":"Shelter one country this round."},
- "foundry_core": {"top":[[{"income":["credits"]}]],"top_text":"Each round, 1 credit.","effect":[],"text":""},
- "sentinel_post": {"top":[[{"income":["energy"]}]],"top_text":"Each round, 1 energy.","effect":[],"text":""},
  "telemetry_archive": {"top":[["→","+1","datasets"],["OR","datasets","→",{"adversary":["2","clock"]}]],"top_text":"Action: add 1 Dataset here, OR pay 1 Dataset, delay 2 threats one round.","effect":[],"text":""},
  "simulation_cluster": {"top":[["2","energy","→","2","cards"]],"top_text":"Action: pay 2 energy, draw 2 cards.","effect":[],"text":""},
  "citation_engine": {"top":[[{"income":["credits","/","#science"]}]],"top_text":"Each round, 1 credit per Science tag on your cards.","effect":[],"text":""},

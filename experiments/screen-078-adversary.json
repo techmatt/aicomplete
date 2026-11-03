@@ -1,0 +1,521 @@
+{
+ "name": "screen-078-adversary",
+ "note": "078, MESSAGE #3446 (Matt: keep the sizes, raise the ambassador project, make the adversary make ambassadors faster): on the baseline as edited (start 40/46/40, printed 25/21/18, economy track +2-3), a factorial of a: ambassador_credits 9 -> 14, r: arrivals 1 -> 2, c: city_build 1 -> 2, f: factory_build 0 -> 1, on the three 2-player pairs, d2, under the engine. A direction for the planner read. Ran on r33's first baseline (the ambassador project at 9, city_build 1, factory_build 0, before MESSAGE #3451): each variant states them, so it reruns on the final baseline.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-----",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp----f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp---c-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "bp---cf",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp--r--",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "bp--r-f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp--rc-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "bp--rcf",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a---",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14"
+   ]
+  },
+  {
+   "name": "bp-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "bp-a-cf",
+   "set": [
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "bp-ar-f",
+   "set": [
+    "adversary.city_build=1",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-arc-",
+   "set": [
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "bp-arcf",
+   "set": [
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-----",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2"
+   ]
+  },
+  {
+   "name": "br----f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br---c-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "br---cf",
+   "set": [
+    "board.ambassador_credits=9",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br--r--",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "br--r-f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br--rc-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "br--rcf",
+   "set": [
+    "board.ambassador_credits=9",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a---",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14"
+   ]
+  },
+  {
+   "name": "br-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "br-a-cf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "br-ar-f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-arc-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "br-arcf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-----",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2"
+   ]
+  },
+  {
+   "name": "pr----f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr---c-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "pr---cf",
+   "set": [
+    "board.ambassador_credits=9",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr--r--",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "pr--r-f",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.city_build=1",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr--rc-",
+   "set": [
+    "board.ambassador_credits=9",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "pr--rcf",
+   "set": [
+    "board.ambassador_credits=9",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a---",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14"
+   ]
+  },
+  {
+   "name": "pr-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "pr-a-cf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "pr-ar-f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-arc-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "pr-arcf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "engine"
+ ],
+ "games": 32,
+ "records": 0
+}

@@ -1,0 +1,38 @@
+{
+  "name": "screen-078-tier2",
+  "note": "078, MESSAGE #3464: a diagnostic, not adopted: is the tier-2 rush's lead the planner under-drafting tier 2 (an agent item) or tier 2 priced too cheap for the richer boards (a card-price item)? The sweep with the draft's keep price off (w.packet_keep=0: a tier pick no longer pays the keep's insight, as the rush ignores it) and with the per-round keep budget off (w.packet_budget=0), against screen-078's sweep and screen-078-rush on the same seeds (30200), 48 a pair.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "sweep:w.packet_keep=0",
+    "sweep:w.packet_budget=0"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -1,0 +1,37 @@
+{
+  "name": "screen-078-rush",
+  "note": "078: the planner check a richer start feeds (the prompt's loop): sweep:tier2_rush=1 against screen-078's sweep on the same seeds (30200), the three pairs, 48 seeds. Ballpark, no gate (Matt's ruling, 2026-11-03).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "sweep:tier2_rush=1"
+  ],
+  "games": 48,
+  "records": 0
+}

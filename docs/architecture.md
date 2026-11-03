@@ -96,7 +96,7 @@ variant. Abridged:
     { "module": "threats", "variant": "countries", "params": { "per_country": 1 } },
     { "module": "alignment", "variant": "tug", "params": { "undecided_per_player": 4, "tip_per_player": 2, ... } },
     { "module": "economy", "variant": "standard", "params": { ... } },
-    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "slots": [5, 3], "start_credits": [15, 25], ... } },
+    { "module": "ai", "variant": "boards", "params": { "boards": [0, 1], "slots": [5, 3], "start_credits": [40, 46], ... } },
     { "module": "cards", "variant": "draft", "params": { "deal": 4, ... }, "cards": ["telemetry_archive", ...] }
   ],
   "round": ["alignment.sway", "adversary.build", "adversary.spread", "adversary.corrupt",
@@ -117,8 +117,8 @@ variant. Abridged:
   schedule or a table (for schedules, the last entry repeats, via `module::scheduled`).
   A single integer is accepted for a list and normalized to a one-item list.
 - **cards**: content ids, for variants that play cards (`uses_cards`). A card belongs
-  to at most one module. In the baseline the `cards` module lists every player card,
-  AI uniques included; leaving a card out removes it from the game.
+  to at most one module. In the baseline the `cards` module lists every player card
+  (no AI uniques since 078); leaving a card out removes it from the game.
 - **round**: the phase sequence, as `"<module>.<phase>"`:
   - a phase may appear more than once, or not at all;
   - `"a.play+b.build"` combines several modules' **decision** phases into one

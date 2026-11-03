@@ -8,7 +8,7 @@
    "text": "You have 5 building slots; boards have 3.",
    "passives": []
   },
-  "credits": 16,
+  "credits": 25,
   "income": [
    [
     "insight",
@@ -28,15 +28,7 @@
     "income": [
      [
       "credits",
-      2
-     ]
-    ]
-   },
-   {
-    "income": [
-     [
-      "credits",
-      1
+      3
      ]
     ]
    },
@@ -45,6 +37,14 @@
      [
       "credits",
       2
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      3
      ]
     ],
     "cost": 1,
@@ -56,7 +56,7 @@
     "income": [
      [
       "credits",
-      1
+      3
      ]
     ],
     "cost": 2
@@ -65,7 +65,7 @@
     "income": [
      [
       "credits",
-      1
+      3
      ]
     ],
     "cost": 3
@@ -87,12 +87,7 @@
     }
    }
   ],
-  "cards": [
-   "turnkey_factory",
-   "venture_capital",
-   "modular_expansion"
-  ],
-  "start": "foundry_core",
+  "cards": [],
   "powers": [
    {
     "name": "Mint",
@@ -189,7 +184,7 @@
     "tags": [
      [
       "industry",
-      3
+      2
      ]
     ],
     "text": "play a building from your hand, paying no credits",
@@ -220,7 +215,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "cost": 1
@@ -241,7 +236,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "cost": 2
@@ -290,11 +285,15 @@
     }
    ]
   },
-  "credits": 14,
+  "credits": 21,
   "income": [
    [
     "insight",
     4
+   ],
+   [
+    "energy",
+    1
    ]
   ],
   "presence": [
@@ -314,14 +313,6 @@
      ],
      [
       "credits",
-      1
-     ]
-    ]
-   },
-   {
-    "income": [
-     [
-      "credits",
       2
      ]
     ]
@@ -330,7 +321,15 @@
     "income": [
      [
       "credits",
-      2
+      3
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      3
      ]
     ],
     "cost": 1,
@@ -342,7 +341,7 @@
     "income": [
      [
       "credits",
-      2
+      3
      ]
     ],
     "cost": 2
@@ -351,7 +350,7 @@
     "income": [
      [
       "credits",
-      1
+      2
      ]
     ],
     "cost": 3
@@ -370,12 +369,7 @@
     }
    }
   ],
-  "cards": [
-   "point_defense",
-   "strike_team",
-   "shelter_order"
-  ],
-  "start": "sentinel_post",
+  "cards": [],
   "powers": [
    {
     "name": "Bulwark",
@@ -471,7 +465,7 @@
     "tags": [
      [
       "security",
-      3
+      2
      ]
     ],
     "text": "in one country this round, no presence or facility can be destroyed",
@@ -502,7 +496,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "cost": 1
@@ -523,7 +517,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "cost": 2
@@ -571,7 +565,7 @@
     }
    ]
   },
-  "credits": 12,
+  "credits": 18,
   "income": [
    [
     "insight",
@@ -591,7 +585,7 @@
     "income": [
      [
       "credits",
-      2
+      3
      ]
     ]
    },
@@ -607,7 +601,7 @@
     "income": [
      [
       "credits",
-      2
+      3
      ]
     ],
     "cost": 1,
@@ -619,7 +613,7 @@
     "income": [
      [
       "credits",
-      1
+      3
      ]
     ],
     "cost": 2
@@ -628,7 +622,7 @@
     "income": [
      [
       "credits",
-      1
+      3
      ]
     ],
     "cost": 3
@@ -755,7 +749,7 @@
     "tags": [
      [
       "power",
-      3
+      2
      ]
     ],
     "text": "gain 1 antimatter",
@@ -781,7 +775,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ]
    },
@@ -809,7 +803,7 @@
     "income": [
      [
       "insight",
-      1
+      2
      ]
     ],
     "cost": 2

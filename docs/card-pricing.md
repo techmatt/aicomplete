@@ -1,4 +1,4 @@
-# Card pricing: the reasoning (023, rules r14; current rates to r32)
+# Card pricing: the reasoning (023, rules r14; current rates to r33)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
@@ -14,9 +14,11 @@ for cost. **The recipe:** value the effect at *Current rates* (a tag left in pla
 − the keep (2.5 tier 1, 6.5 tier 2) − 2.5 × the insight to play − about 1, so the card beats the plain route it
 replaces (ruling 7). A `needs` chain is the price (ruling 10): needs 3-4 of a tag sits 2-4 under the recipe, needs 6
 about half. **The targets 076 chose:** tier 1 median 6 (most 4-9, a few strong cards at 10-12), tier 2 median 14
-(ultimates 16-21 and 1 antimatter). Six credits is about a third of a round's printed credits after the raise (16 and 14
-on the two-seat boards), so a seat plays one or two tier-1 cards a round beside its standard actions, as Terraforming
-Mars's 10-ish median sits against its income; tier 2 a round's credits. **As built:**
+(ultimates 16-21 and 1 antimatter). Six credits was about a third of a round's printed credits after 076's raise (16 and 14
+on the two-seat boards), so a seat played one or two tier-1 cards a round beside its standard actions, as Terraforming
+Mars's 10-ish median sits against its income; tier 2 a round's credits. **078 (r33) left every price alone** and raised the
+boards (25 / 21 / 18 printed, 40 / 46 / 40 to start, 2-3 a presence on the economy track): six credits is now about a quarter
+of a round's printed credits, and tier 2 about half. **As built:**
 
 | | median r31 | median r32 | at 0-1 credits | at 10 or more |
 |---|---|---|---|---|
@@ -28,14 +30,14 @@ Mars's 10-ish median sits against its income; tier 2 a round's credits. **As bui
 Tier 2 lands under 14 because the chains price their gates (the six needs-3-to-6 tier-2 cards sit at 6-16) and the four
 standing counters share one 8-credit shape; the band was tuned on printed income, not on these prices.
 
-## Current rates (to r32)
+## Current rates (to r33)
 
 This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
 dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
 
 | thing | rate (credits) | why |
 |---|---|---|
-| insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear. **A fit:** 2.5 centers tier 1 on its printed prices (median gap 0). It is not a measure: unspent insight was not read at 055 (last at 021, r12), and `economy.insight_unspent` would settle it. Credits binding is the reasoning, not a result |
+| insight | 2.5 | **078 (r33), measured:** with the scaffold's credits a seat left about 9-10 credits and 2.6 insight a round unspent (the sweep, 2 players, 48 seeds a pair; the Researcher's Patience carries about 10), so neither binds at the margin and the rate stays, a candidate. **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear. **A fit:** 2.5 centers tier 1 on its printed prices (median gap 0). It is not a measure: unspent insight was not read at 055 (last at 021, r12), and `economy.insight_unspent` would settle it. Credits binding is the reasoning, not a result |
 | keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
 | energy | 2 | was 1. 066: no standard action sells energy or spends it on the map now, so this rests on a presence (1 energy) and on cards. **075: measured under 2.** A completion paying 5 energy a cube read 31 / 31 where one paying 3 energy and 4 credits read 40 / 46 (48 seeds, the same corp values): energy past what presence takes is worth little; the Researcher's Fieldwork (1 energy for 3 cards) is the one new sink |
 | chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
@@ -49,7 +51,7 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
 | presence | 4 early, 3 late; +2 if it prints free | new: income track plus a life |
 | per presence, uncapped | as 055: the track has only 9 spaces | 059: Grid Census 2, Beamed Power Constellation 8 |
-| ambassador | 4; a move up to 2 hexes 1.5 | 068: it stays for a position, so worth more; project ceiling `ambassador_credits`, Consular Pouch 2 for 5 |
+| ambassador | 4; a move up to 2 hexes 1.5 | 068: it stays for a position, so worth more; Consular Pouch 2 for 5. The project (`ambassador_credits`) is no ceiling since 078: at 20 it is the dear plain route (Matt), so a card's ambassadors at 4 are the better buy |
 | Follower | 1.5, at 2 for an ambassador; a building earns its first ambassador about round 4 | 068: Liaison Corps 2 for 1; Open Assembly, cheaper and two tags, 3 for 1 |
 | removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
 | troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | 059: the card names a kind: one choice, no mix |
@@ -77,6 +79,24 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | `needs` chain | needs 3-4: 2-4 under the recipe; needs 6: about half | 076 (ruling 10): the requirement is the price |
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
+## 078's changes (r33): a bigger starting economy
+
+No card's price moved (Matt: prices stay as 076 left them). What moved around them, every number a candidate: the boards earn
+about 1.5 × r32's printed credits and start with 40 / 46 / 40, the economy track pays 2-3 credits a presence, the opening deals
+10 with 4 free, the eight AI-unique cards are gone, the gain-an-ambassador project costs 20 and a corrupted city makes 2 adversary
+ambassadors a build. **Throughput, measured** (the sweep, d2, 2 players, fresh seeds 30200, 48 a pair; `scripts/cards/economy_read.py`):
+a seat keeps 18-19 draft cards a game (4 in the opening) and plays 12-14, against 8-9 draft cards played a seat under the engine at
+r32 (seeds 29900, 16 a pair; plus 1-2 unique cards); about 8.5 kept cards a seat are never played. A seat holds 3 of one tag on its
+cards in play by round 5 in 60-93% of games (the Builder and Researcher; the Protector beside the Researcher 23%), against 1-2 late
+rounds at r31-r32. **Kept and never played in more than 10% of games:** Orbital Observatory Array (44%), Hardpoint Lockdown, Inference
+Cluster, Demand Response Grid, Simulation Cluster (37-43%), Agency Directorate, Policy Institute, Quantum Decryptor, Arc Furnace
+Complex (13-20%): Action and token buildings again, as at r31-r32. **Never kept:** Foundation Model Campus, Manifesto Leak, Summit
+Caucus. **The tier-2 rush leads, and it is the agent's draft, not the prices (MESSAGE #3464's diagnostic):** `sweep:tier2_rush=1`
+beat the sweep by 13.2 ±4.9 points pooled (144 paired seeds), 22.9 ±9.1 with the Protector and Researcher. The sweep with the
+draft's keep price off (`w.packet_keep=0`, not adopted) gained 9.7 ±4.4 and drafted the tier-2 cards the rush does (12.7-14.7 kept
+a game against 10.3-11.6), and the rush led it by only 3.5 ±4.3 (Protector + Researcher 10.4 ±6.8, the one hint that tier 2 is
+also cheap there). So the planner under-drafts tier 2 at this income: an agent item (the draft's keep price), not a price item.
 
 ## 076's changes (r32): every card under Matt's rulings
 

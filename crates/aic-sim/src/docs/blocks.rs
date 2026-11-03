@@ -348,7 +348,7 @@ fn start_building(c: &Content, b: &AiBoard) -> String {
 
 /// What each AI board prints before its tracks.
 pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
-    let rows = c
+    let rows: Vec<Vec<String>> = c
         .ais
         .iter()
         .enumerate()
@@ -368,24 +368,30 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
             ]
         })
         .collect();
-    table(
-        &[
-            "Board",
-            "Printed income",
-            "Starting credits",
-            "Starting building",
-            "Slots",
-            "Printed tags",
-            "Economy track",
-            "Card-play track",
-            "Tokens in all",
-        ],
-        rows,
-    )
+    let head = [
+        "Board",
+        "Printed income",
+        "Starting credits",
+        "Starting building",
+        "Slots",
+        "Printed tags",
+        "Economy track",
+        "Card-play track",
+        "Tokens in all",
+    ];
+    // 078: no board starts with a building, so the column shows only if one does.
+    let keep = |k: usize| k != 3 || c.ais.iter().any(|b| b.start.is_some());
+    let head: Vec<&str> = head.iter().enumerate().filter(|(k, _)| keep(*k)).map(|(_, h)| *h).collect();
+    let rows = rows
+        .into_iter()
+        .map(|row: Vec<String>| row.into_iter().enumerate().filter(|(k, _)| keep(*k)).map(|(_, v)| v).collect())
+        .collect();
+    table(&head, rows)
 }
 
 /// Each board's innate, discount and unique cards.
 pub(super) fn board_details_block(c: &Content) -> String {
+    let uniques = c.ais.iter().any(|b| !b.cards.is_empty());
     let name = |id: &String| {
         c.cards
             .iter()
@@ -397,14 +403,19 @@ pub(super) fn board_details_block(c: &Content) -> String {
         .iter()
         .map(|b| {
             let cards: Vec<String> = b.cards.iter().map(name).collect();
-            vec![
-                b.name.clone(),
-                format!("*{}*: {}", b.innate.name, b.innate.text),
-                cards.join(", "),
-            ]
+            let mut row = vec![b.name.clone(), format!("*{}*: {}", b.innate.name, b.innate.text)];
+            if uniques {
+                row.push(cards.join(", "));
+            }
+            row
         })
         .collect();
-    table(&["Board", "Special rule", "Unique cards"], rows)
+    // 078: no board prints unique cards, so the column shows only if one does.
+    if uniques {
+        table(&["Board", "Special rule", "Unique cards"], rows)
+    } else {
+        table(&["Board", "Special rule"], rows)
+    }
 }
 
 /// One space of a presence track.

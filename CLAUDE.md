@@ -28,6 +28,10 @@ experiments, speed, scripts, web, card art.
   rule that reads it.
 - What content does is one schema, `Op` (`crates/aic-core/src/op.rs`); resources, tags and
   token types are enums (`vocab.rs`). See *The op schema* in docs/architecture.md.
+- **A new op, resource or token type** gets its eval term (`crates/aic-sim/src/agents/eval.rs`)
+  in the same change, and a 2-minute engine smoke read (16 seeds; `scripts/cards/play_read.py`
+  for cards kept and never played, `board_read.py --powers` for powers never used) before any
+  band read: 075 lost a whole screen to six cards and Grant that no agent valued.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from a prompt's revision number, which
   is a guess since a bug hunt may have taken it, and say so in the rules-history row and the

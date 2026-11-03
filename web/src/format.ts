@@ -119,7 +119,7 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
 }
 
 /**
- * "seat 1: play Turnkey Factory". The seat is left out with `withSeat` false, and the
+ * "seat 1: play Prefab Plant Kit". The seat is left out with `withSeat` false, and the
  * target with `withTarget` false (a choice's label, before its hex is picked).
  * Unknown action types are labeled from their fields.
  */

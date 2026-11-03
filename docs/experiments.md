@@ -192,9 +192,9 @@ an `engine:samples=2` you meant to compare is easy to lose. It caps seeds at 16 
 **Content levers run on one binary (040).** A variant's `set` (or `--set` on `run` and
 `compare`) takes a content overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes.
-`cards.telemetry_archive.cost=3`, `cards.turnkey_factory.effects=[]`, `corps.horizon.project.after=[]` (075: the map's
+`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.effects=[]`, `corps.horizon.project.after=[]` (075: the map's
 country pieces by lowercase name, the only part of the map an overlay reaches),
-`cards.turnkey_factory.passives.0.amount=2`, `ais.*.presence.4.cost=2`,
+`cards.orbital_embassy.passives.0.amount=2`, `ais.*.presence.4.cost=2`,
 `threats.<id>.counter=[["credits",3]]`. It goes through the same parsing and checks as
 `content/`, so a typo or an illegal op is an error naming the entry. The overlay lands in
 the config (`content`), so the config hash, `content_hash` and every saved record name
@@ -228,6 +228,17 @@ keep-aware, and at r19 greedy, engine and planner keep 58-69% (d0, d2, 8 seeds a
 is still their plan, not a table's.
 
 ## The band and the gate
+
+**The ballpark read at r33 (078; Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
+players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
+`ai.start_credits` and `ai.slots` are seat-ordered, so each pair's variant restates all three: `experiments/screen-078.json`), no c3,
+no gate; the target is 45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`experiments/use-078.json`, 16 seeds, under a minute on 8 threads; read with
+`scripts/cards/economy_read.py`, `play_read.py` and `board_read.py --powers`), then the `sweep` profile, 48 seeds a cell (about ±7):
+144 games, about 4 min on 6 threads (about 9 s a game in thread time). An engine screen of 32 seeds a cell is about 0.7 s a game, so a
+24-cell factorial is under 3 min. **The engine sat only 0-10 points under `sweep` at r33** (screen-078-levels2 against
+screen-078-planner1, the same sizes), so the engine sizes a lever well enough to pick the planner's bracket. Credits feed the purge
+almost directly through the gain-an-ambassador project: a size lever's first read is how many ambassadors the seats bought
+(`board.std.ambassador`). 078's reads: `experiments/results/screen-078/economy.md`.
 
 **The band and gate at r32 (076).** A planner game costs about 15 s at c2 and 40-43 s at c3 in thread time on 8 threads
 (the same per decision as r31: 31-33 ms at c2, 56-61 at c3), so a 96-seed band of both sizes is 9-10 min and a
@@ -284,7 +295,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. r32 (076): screens 29000-29300 (r31's cards on 29000 too), 29400 and 29500 band, 29600 gate and its closes (to 29695), 29696-29743 more seeds of `always_buy_cubes`, 29800 the eval probe; 29400 and 29500 again for the final build's band, 29600 for a stopped gate-row replay (`experiments/gate-076-replay/`). Next free: 29900.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. r32 (076): screens 29000-29300 (r31's cards on 29000 too), 29400 and 29500 band, 29600 gate and its closes (to 29695), 29696-29743 more seeds of `always_buy_cubes`, 29800 the eval probe; 29400 and 29500 again for the final build's band, 29600 for a stopped gate-row replay (`experiments/gate-076-replay/`). r33 (078): 29900 the engine screens and use reads (16-32 seeds), 30000 the full-size planner read, 30100 the planner brackets (24 seeds), 30200 the fresh 48-seed read. Next free: 30300.
 
 ## Reading prices
 

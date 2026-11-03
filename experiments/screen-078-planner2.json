@@ -1,0 +1,173 @@
+{
+ "name": "screen-078-planner2",
+ "note": "078, MESSAGE #3446: the planner (sweep) on the engine factorial's candidates, Matt's sizes, 24 seeds: a ambassador_credits 14 (a12: 12), r arrivals 2, c city_build 2, f factory_build 1. Each variant states the adversary levers it left at r33's first baseline, so it reruns on the final one.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "bp-a-cf",
+   "set": [
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "bp-a12r",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "board.ambassador_credits=12",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "br-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "br-a-cf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "br-a12r",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=12",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "pr-a--f",
+   "set": [
+    "adversary.city_build=1",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a-c-",
+   "set": [
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2"
+   ]
+  },
+  {
+   "name": "pr-a-cf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-ar--",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=14",
+    "adversary.arrivals=2"
+   ]
+  },
+  {
+   "name": "pr-a12r",
+   "set": [
+    "adversary.city_build=1",
+    "adversary.factory_build=0",
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=12",
+    "adversary.arrivals=2"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "sweep"
+ ],
+ "games": 24,
+ "records": 0
+}

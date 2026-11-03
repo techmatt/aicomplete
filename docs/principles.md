@@ -25,14 +25,14 @@ The standards every module and every rules change is judged against.
 > wherever it works, for every resource.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is
-played should sit near credit income ÷ insight income: about 11 credits ÷ 5 insight ≈ 2,
-and tier-1 cards average about 3 credits with tier 2 about 9.
+played should sit near credit income ÷ insight income: at r33 about 25-35 credits ÷ 5-7 insight ≈ 5,
+and tier-1 cards have a median of 6 credits with tier 2 about 12 (076's prices, kept by 078).
 
-- **Credits are the outlier.** 15 / 25 to start (068: `ai.start_credits`, the Builder lower, the Protector higher), 10 / 9 a round from each AI board plus the
-  Builder's Foundry Core +1, plus the presence track and Unity income (Grassroots Funding,
-  New Deal +2 each): a player sees about 120 to 140 credits over an 11-round game before cards,
-  so totals do reach the hundreds. Card costs run 0–18 (Orbital Mass Driver 18, Great
-  Liberation 16): within "about 50", but the income is not "produce
+- **Credits are the outlier.** 40 / 46 / 40 to start (078's scaffold; 068: `ai.start_credits`, the Protector higher), 25 / 21 / 18 a
+  round printed on the Builder, Protector and Researcher (078: about 1.5 × r32's, Foundry Core's +1 folded in), plus 2-3 a
+  presence on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 250 to 350 credits
+  over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–21 (Great Liberation 21, Orbital
+  Mass Driver 20): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a research cube is worth about 3
   credits (074: payouts are per card); a player ambassador costs `ambassador_credits` (066: it pays for removals; 068: dearer, since it stays); chips sell
@@ -57,6 +57,12 @@ where a gate can tell a good price from a bad one. A 48-seed band read is ±7 an
 ±8-10: one rules set read 75 / 71 and 67 / 52 on two fresh 48-seed sets (064), so read a band over
 96 seeds.
 
+**Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone).**
+Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
+Protector + Researcher), no c3, an engine smoke read first, then the `sweep` profile at 48 seeds a pair on one fresh set;
+the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
+([experiments.md](experiments.md), *The ballpark read at r33*).
+
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses (was 60%): Discord may be the
 main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
 (046, locked).
@@ -68,6 +74,11 @@ fixed amount and not the countries still standing, so no loop forms and sizes la
 
 **Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it with weaker
 credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
+
+**The starting-economy scaffold (Matt, 2026-11-03; 078).** Until engines carry the economy, every board starts and earns much more,
+and the economy track is the growing income; it comes down as engines take over, and adds no track. The pressure that keeps credits
+meaningful is on the adversary's side (corrupted cities make 2 ambassadors a round) and on the price of the plain route (the
+ambassador project at 20 credits): bought ambassadors take a big investment, and cards, buildings and powers are the better route.
 
 **Unspent resources (068).** Resources left when a seat's last action phase ended (production and upkeep pay after that, and a seat
 can't spend what it was just paid), per seat and per resource, under each agent: `report.md`'s *Unspent
@@ -142,7 +153,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | no-powers (022) | `no_powers=1` | never uses an AI-board power |
 | no-counters (022) | `no_counters=1` | never pays toward a threat's counter |
 | no-presence (022) | `no_presence=1` | places no presence beyond setup (no power or card that places one) |
-| mono-tag (023), one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt) |
+| mono-tag (023), one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt; none since 078) |
 | ignore-X (023), one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder (023) | `events_only=1` | keeps and plays only events |
 | ignore threats, turtle, free cities only (027) | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |

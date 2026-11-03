@@ -41,7 +41,7 @@ fn rush_build_pays_tags_and_no_credits() {
     assert!(g.pile(&cards::built(0)).contains(&Key::new("liaison_corps")));
     assert_eq!(g.resource(0, Resource::Credits), 0);
     assert!(g.resource(0, Resource::Insight) < 3, "its insight is still paid");
-    assert!(g.pile(&cards::played(0)).is_empty(), "three tags went");
+    assert_eq!(g.pile(&cards::played(0)).len(), 1, "two tags went (078), the third card stays");
 }
 
 #[test]

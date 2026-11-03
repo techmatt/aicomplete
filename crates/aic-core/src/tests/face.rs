@@ -55,7 +55,8 @@ fn no_face_prints_an_exception() {
 /// 059: a removal names its pieces, and a choice of pieces is one kind from one hex.
 #[test]
 fn a_removal_says_which_pieces() {
-    assert_eq!(face_of("strike_team").text, "Remove 3 adversary ambassadors or 1 troop from a hex in reach.");
+    let monitors = face_of("ceasefire_monitors").text;
+    assert!(monitors.starts_with("Remove 3 adversary ambassadors or 1 troop from a hex in reach."), "{monitors}");
     assert_eq!(face_of("bounty_board").text, "Remove 1 troop in reach. Gain 1 credit per Security tag on your cards.");
     // 076 (ruling 6): a printed number in one country, never "per hex".
     assert_eq!(face_of("eviction_worm").text, "Remove 6 adversary ambassadors in one country.");

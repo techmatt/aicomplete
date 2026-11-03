@@ -45,7 +45,7 @@
         "clear_unity": 1,
         "clear_credits": 0,
         "move_credits": 1,
-        "ambassador_credits": 9,
+        "ambassador_credits": 20,
         "sell_credits": 1,
         "corp_energy": [
           1
@@ -69,7 +69,7 @@
         ],
         "supply_per_country": 24,
         "base_sites_per_country": 1,
-        "city_build": 1,
+        "city_build": 2,
         "factory_build": 0,
         "spread_range": 2,
         "corrupt_at": 5,
@@ -147,9 +147,9 @@
           2
         ],
         "start_credits": [
-          15,
-          25,
-          15
+          40,
+          46,
+          40
         ],
         "start_energy": 1,
         "slots": [
@@ -164,7 +164,7 @@
       "variant": "draft",
       "params": {
         "deal": 4,
-        "opening_deal": 8,
+        "opening_deal": 10,
         "opening_free": 4,
         "opening_keep_credits": 5,
         "keep_tier1": 1,
@@ -327,15 +327,7 @@
         "martial_cordon",
         "deep_state_ledger",
         "kinetic_interdiction",
-        "total_containment",
-        "turnkey_factory",
-        "venture_capital",
-        "modular_expansion",
-        "point_defense",
-        "strike_team",
-        "shelter_order",
-        "foundry_core",
-        "sentinel_post"
+        "total_containment"
       ]
     }
   ],

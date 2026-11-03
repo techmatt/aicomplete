@@ -1,0 +1,257 @@
+{
+ "name": "screen-078-adversary2",
+ "note": "078, MESSAGE #3451 (Matt: the ambassador project at 20 or more, the band tuned by the adversary's pace): ambassador_credits 20 and 24 x city_build 1/2 x factory_build 0/1, Matt's board sizes, the three pairs, d2, under the engine.",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "bp-a20p0",
+   "set": [
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a20pc",
+   "set": [
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a20pf",
+   "set": [
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a20pcf",
+   "set": [
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a24p0",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a24pc",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "bp-a24pf",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "bp-a24pcf",
+   "set": [
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a20p0",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a20pc",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a20pf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a20pcf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a24p0",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a24pc",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "br-a24pf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "br-a24pcf",
+   "set": [
+    "ai.boards=0,2",
+    "ai.start_credits=40,40",
+    "ai.slots=5,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a20p0",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a20pc",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a20pf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a20pcf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=20",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a24p0",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a24pc",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=0"
+   ]
+  },
+  {
+   "name": "pr-a24pf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=1",
+    "adversary.factory_build=1"
+   ]
+  },
+  {
+   "name": "pr-a24pcf",
+   "set": [
+    "ai.boards=1,2",
+    "ai.start_credits=46,40",
+    "ai.slots=3,2",
+    "board.ambassador_credits=24",
+    "adversary.city_build=2",
+    "adversary.factory_build=1"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "engine"
+ ],
+ "games": 32,
+ "records": 0
+}
