@@ -10,7 +10,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } fr
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { REPO } from './cards-export.mjs';
+import { exportCards, REPO } from './cards-export.mjs';
 import { checker, openPage, shotTo, sleep } from './cdp.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -70,6 +70,9 @@ try {
     check(data.cards.some((c) => c.kind === k) && (await page.js(`!!document.querySelector('#kinds [data-v="${k}"]')`)), `kind ${k} has a filter and cards`);
   check((await page.js(`document.querySelectorAll('.tile .card').length`)) === data.cards.filter((c) => c.render).length, 'every player card went through the renderer');
   check(await page.js(`[...document.querySelectorAll('.tile .plain h3')].every((h) => h.textContent)`), 'every frameless card has a named face');
+  // The copy's stats are from an older revision, so there is at least that one notice.
+  check(await page.js(`(() => { const n = document.getElementById('notice'); return !n.hidden && !n.open && /^\\d+ warnings?$/.test(n.querySelector('summary').textContent); })()`), 'warnings sit on one collapsed line');
+  check(!(await page.js(`!!document.getElementById('reviews')`)), 'no Review filter row');
 
   // Fitted: run again it finds nothing left to do, and a card's lines stay put at any zoom.
   const fit = await page.js(`import('/card/card.js').then((m) => m.fitCards(document.getElementById('cards')))`);
@@ -176,6 +179,10 @@ try {
   // Stats: a reasoned price, then none at all.
   // 076: reasoned 1.5 over what content prints today, so a repricing doesn't break the check.
   const printed = JSON.parse(readFileSync(join(ROOT, 'content', 'cards.json'), 'utf8')).find((c) => c.id === 'field_sensor_grid').cost;
+  // 084: prices reasoned at an older revision are passed over, unknown ids and all.
+  writeFileSync(join(ROOT, 'experiments', 'results', 'old-prices.csv'), `card,reasoned_price,revision\nfield_sensor_grid,${printed + 9},1\nno_such_card,2,1\n`);
+  const old = exportCards(ROOT);
+  check(!old.stats.columns.some((c) => c.key === 'price_gap') && !old.warnings.some((w) => w.includes('no_such_card')) && old.stats.reasoned_stale.length === 1, 'prices from an older revision: no column, no warning');
   writeFileSync(join(ROOT, 'experiments', 'results', 'card-prices.csv'), `card,reason,reasoned_price\nfield_sensor_grid,"worth more, on\ntwo lines",${printed + 1.5}\n`);
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`[...document.getElementById('sort').options].some((o) => o.value === 'price_gap')`, 'the reasoned column');

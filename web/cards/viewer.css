@@ -20,6 +20,10 @@ button:disabled { opacity: .5; cursor: default; }
 #status.bad, #notice { color: var(--warn); }
 #notice { font-size: 12px; }
 #notice div { padding: 1px 0; }
+#notice summary { list-style: none; cursor: pointer; width: max-content; }
+#notice summary::-webkit-details-marker { display: none; }
+#notice summary::after { content: ' ▸'; }
+#notice[open] summary::after { content: ' ▾'; }
 .filters { display: flex; flex-wrap: wrap; gap: 4px 22px; padding: 2px 0 3px; border-top: 1px solid var(--line); }
 .group { min-width: 0; }
 .group-label { font-size: 10px; line-height: 15px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }

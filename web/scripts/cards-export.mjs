@@ -193,14 +193,17 @@ function winDeltas(file) {
  * numeric column whose name holds "reason" (card-prices.csv by convention). A rationale
  * column of words beside it is passed over. The last file in path order wins a card. A
  * `revision` column says which rules' costs the prices were reasoned at; a `note` on the
- * first row says what else to know, and both column titles print it.
+ * first row says what else to know, and both column titles print it. A file whose
+ * `revision` is older than the rules' is passed over (084): its prices were reasoned at
+ * costs since changed and name cards since cut, so a fresh read brings the column back.
  */
-function reasonedPrices(results) {
+function reasonedPrices(results, rules) {
   const out = {};
   const seen = [];
+  const stale = [];
   let revision = null;
   let note = null;
-  if (!existsSync(results)) return { prices: out, files: seen, revision, note };
+  if (!existsSync(results)) return { prices: out, files: seen, stale, revision, note };
   for (const f of walk(results).sort()) {
     if (!f.endsWith('.csv') || /[\\/](games|cards)\.csv$/.test(f)) continue;
     const rows = readCsv(f);
@@ -209,18 +212,22 @@ function reasonedPrices(results) {
     const number = (v) => v !== undefined && v !== '' && Number.isFinite(Number(v));
     const col = head.find((h) => /reason/i.test(h) && rows.some((r) => number(r[h])) && rows.every((r) => !r[h] || number(r[h])));
     if (!idCol || !col) continue;
+    if (rules && rows[0].revision && Number(rows[0].revision) < rules) {
+      stale.push(f);
+      continue;
+    }
     seen.push(f);
     revision = rows[0].revision || revision;
     note = rows[0].note || note;
     for (const row of rows) if (number(row[col])) out[row[idCol]] = Number(row[col]);
   }
-  return { prices: out, files: seen, revision, note };
+  return { prices: out, files: seen, stale, revision, note };
 }
 
-function buildStats(root) {
+function buildStats(root, rules) {
   const results = join(root, 'experiments', 'results');
   const best = latestScreen([results, join(root, 'out', 'experiments')]);
-  const reasoned = reasonedPrices(results);
+  const reasoned = reasonedPrices(results, rules);
   const columns = [];
   const byAgent = {};
   let source = null;
@@ -273,6 +280,7 @@ function buildStats(root) {
     byAgent,
     reasoned: reasoned.prices,
     reasoned_from: reasoned.files.map((f) => relative(root, f).replace(/\\/g, '/')),
+    reasoned_stale: reasoned.stale.map((f) => relative(root, f).replace(/\\/g, '/')),
   };
 }
 
@@ -458,7 +466,9 @@ export function exportCards(root = REPO) {
   const pricingFile = join(root, 'docs', 'card-pricing.md');
   const entries = existsSync(pricingFile) ? pricingEntries(readFileSync(pricingFile, 'utf8')) : [];
   const scenes = sceneMap(root, warnings);
-  const stats = buildStats(root);
+  const lib = readFileSync(join(root, 'crates', 'aic-core', 'src', 'lib.rs'), 'utf8');
+  const revision = Number(/RULES_REVISION: u32 = (\d+)/.exec(lib)?.[1]) || null;
+  const stats = buildStats(root, revision);
 
   const out = cards.map(({ hashParts, ...c }) => {
     const isPlayer = !!c.render;
@@ -476,16 +486,15 @@ export function exportCards(root = REPO) {
   for (const id of Object.keys(stats.reasoned)) if (!out.some((c) => c.id === id)) warnings.push(`a reasoned price names ${id}, which is no card`);
   for (const c of out) if (c.inDeck === false) c.keywords.push('not in baseline');
 
-  const lib = readFileSync(join(root, 'crates', 'aic-core', 'src', 'lib.rs'), 'utf8');
   const git = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' });
   const data = {
     format: 1,
-    revision: Number(/RULES_REVISION: u32 = (\d+)/.exec(lib)?.[1]) || null,
+    revision,
     commit: git.status === 0 ? git.stdout.trim() : null,
     layout: readJson(join(root, 'web', 'card', 'layout.json')),
     fits: readJson(join(root, 'art', 'frames', 'r3', 'fit.json')),
     cards: out,
-    stats: { source: stats.source, columns: stats.columns, byAgent: stats.byAgent, reasoned_from: stats.reasoned_from },
+    stats: { source: stats.source, columns: stats.columns, byAgent: stats.byAgent, reasoned_from: stats.reasoned_from, reasoned_stale: stats.reasoned_stale },
     warnings,
   };
   const file = join(root, 'out', 'cards-export.json');
@@ -502,5 +511,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   for (const c of data.cards) kinds[c.kind] = (kinds[c.kind] ?? 0) + 1;
   console.log(`cards-export: ${data.cards.length} cards in ${Math.round(performance.now() - t0)} ms`, kinds);
   console.log(`stats: ${data.stats.source ? `${data.stats.source.path}, r${data.stats.source.revision}` : 'none'}`);
+  for (const f of data.stats.reasoned_stale) console.log(`reasoned prices passed over, older than r${data.revision}: ${f}`);
   for (const w of data.warnings) console.warn(`warning: ${w}`);
 }

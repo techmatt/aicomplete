@@ -6,7 +6,7 @@ import { esc, plainFace } from './plain.js';
 
 const $ = (id) => document.getElementById(id);
 const KINDS = ['program', 'building', 'event', 'threat', 'unity', 'discord', 'adversary', 'project', 'megaproject', 'ai'];
-const LABEL = { ai: 'AI board', noted: 'has a note', unnoted: 'no note', changed: 'changed since note' };
+const LABEL = { ai: 'AI board' };
 const label = (k) => LABEL[k] ?? k;
 
 // The grid's sizes in CSS px, for fitting two rows: a printed card's 88 mm at zoom 1, the
@@ -21,7 +21,7 @@ const FILTERS_KEY = 'aic-cards-filters-hidden';
 
 let data = null;
 let layout = null;
-const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), keywords: new Set(), reviews: new Set(), sort: 'kind', desc: false, shown: [], open: null, index: 0 };
+const ui = { kinds: new Set(), tags: new Set(), tiers: new Set(), keywords: new Set(), sort: 'kind', desc: false, shown: [], open: null, index: 0 };
 
 // Storage can be refused (private windows, a locked-down profile): the page works without it.
 const stored = (key) => {
@@ -43,7 +43,6 @@ const store = (key, value) => {
 function load(next) {
   data = next;
   layout = inset(data.layout);
-  for (const f of data.flags) REVIEW[f] = (c) => noteOf(c)?.flag === f;
 }
 
 async function call(path, body) {
@@ -64,13 +63,6 @@ const status = (msg, bad = false) => {
 const noteOf = (c) => data.notes[c.id];
 const isChanged = (c) => noteOf(c) && noteOf(c).hash !== c.hash;
 const isNew = (c) => !data.seen[c.id] && !noteOf(c);
-const REVIEW = {
-  noted: (c) => !!noteOf(c),
-  unnoted: (c) => !noteOf(c),
-  changed: isChanged,
-  new: isNew,
-  // Then one per note flag: load() adds them from the server's list.
-};
 
 function badges(c) {
   const n = noteOf(c);
@@ -121,7 +113,6 @@ function matches(c) {
   const hi = $('cost-max').value;
   if ((lo !== '' || hi !== '') && (c.cost == null || (lo !== '' && c.cost < +lo) || (hi !== '' && c.cost > +hi))) return false;
   if (ui.keywords.size && !c.keywords.some((k) => ui.keywords.has(k))) return false;
-  if (ui.reviews.size && ![...ui.reviews].some((r) => REVIEW[r](c))) return false;
   const q = $('search').value.trim().toLowerCase();
   if (q) {
     const hay = [c.name, c.id, c.text, c.kind, c.tags.join(' '), c.keywords.join(' '), noteOf(c)?.comment, ...c.sections.map((s) => `${s.head} ${s.text}`)].join(' ').toLowerCase();
@@ -202,7 +193,6 @@ function render() {
   $('count').textContent = `${list.length} of ${data.cards.length}`;
   $('dir').textContent = ui.desc ? '↓' : '↑';
   $('zoom-box').hidden = $('view').value !== 'grid';
-  reviewChips();
   filterBar();
   ($('view').value === 'grid' ? grid : table)(list);
   applySize();
@@ -210,15 +200,10 @@ function render() {
 
 /** The collapsed bar still says how many filters are on. */
 function filterBar() {
-  const on = ui.kinds.size + ui.tags.size + ui.tiers.size + ui.keywords.size + ui.reviews.size + ($('cost-min').value !== '' || $('cost-max').value !== '' ? 1 : 0);
+  const on = ui.kinds.size + ui.tags.size + ui.tiers.size + ui.keywords.size + ($('cost-min').value !== '' || $('cost-max').value !== '' ? 1 : 0);
   const hidden = $('filters').hidden;
   $('filters-toggle').textContent = `${hidden ? '▸' : '▾'} Filters${on ? ` (${on})` : ''}`;
   $('filters-toggle').setAttribute('aria-expanded', String(!hidden));
-}
-
-// Its counts move with every note, so it is drawn with the cards, not with the controls.
-function reviewChips() {
-  chips($('reviews'), Object.keys(REVIEW), ui.reviews, (v) => data.cards.filter(REVIEW[v]).length);
 }
 
 function chips(el, values, set, count) {
@@ -256,7 +241,10 @@ function controls() {
   const notes = [...data.warnings];
   if (src && src.revision !== data.revision) notes.unshift(`Stats are from ${src.path} at r${src.revision} (${src.games} games), the newest screen with per-card counts; the rules are r${data.revision}, so they describe older cards.`);
   if (!src) notes.unshift('No screen results with per-card counts in this checkout: the stat columns are off.');
-  $('notice').innerHTML = notes.map((n) => `<div>${esc(n)}</div>`).join('');
+  // One collapsed line, so a list of export warnings never pushes the cards down.
+  $('notice').hidden = !notes.length;
+  $('notice').querySelector('summary').textContent = `${notes.length} ${notes.length === 1 ? 'warning' : 'warnings'}`;
+  $('notice-list').innerHTML = notes.map((n) => `<div>${esc(n)}</div>`).join('');
   document.title = `AI Complete: cards, r${data.revision}`;
   status(`r${data.revision}${data.commit ? ` · ${data.commit}` : ''} · exported ${data.exported}`);
 }
@@ -360,8 +348,8 @@ async function closeDetail() {
 
 async function step(by) {
   if (!(await keepNote())) return;
-  // A save can drop the card from a review filter: its neighbors are then either side of
-  // where it stood, and the next one has moved into its place.
+  // Should the card leave the shown list, its neighbors are either side of where it stood,
+  // and the next one has moved into its place.
   const here = ui.shown.indexOf(ui.open);
   const n = ui.shown.length;
   const i = here >= 0 ? here + by : by > 0 ? ui.index : ui.index - 1;
@@ -400,7 +388,6 @@ function wire() {
   $('tags').onclick = (e) => toggleChip(e, ui.tags);
   $('tiers').onclick = (e) => toggleChip(e, ui.tiers);
   $('keywords').onclick = (e) => toggleChip(e, ui.keywords);
-  $('reviews').onclick = (e) => toggleChip(e, ui.reviews);
   for (const id of ['search', 'cost-min', 'cost-max']) $(id).oninput = render;
   for (const id of ['view', 'agent']) $(id).onchange = render;
   $('zoom').oninput = () => {
@@ -428,7 +415,7 @@ function wire() {
     render();
   };
   $('clear').onclick = () => {
-    for (const s of [ui.kinds, ui.tags, ui.tiers, ui.keywords, ui.reviews]) s.clear();
+    for (const s of [ui.kinds, ui.tags, ui.tiers, ui.keywords]) s.clear();
     for (const id of ['search', 'cost-min', 'cost-max']) $(id).value = '';
     controls();
     render();

@@ -337,7 +337,8 @@ cards -- --port 60476`). If the port is taken it says so and exits.
 - **Stats** come from the newest `results.json` of 100 games or more with a per-card `cards`
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
   most plain agents, then most games); the page says which and warns when it is behind the
-  rules. Today that is r34 (`screen-080`: 083 reran `experiments/screen-080.json` on seeds 30300, the frozen build's own
+  rules. The page's warnings (these and the export's) sit on one collapsed line, *N warnings ▸*,
+  under the filters; it is hidden when there are none. Today that is r34 (`screen-080`: 083 reran `experiments/screen-080.json` on seeds 30300, the frozen build's own
   seeds, which reproduced 080's win rates exactly, and committed its `results.json`, `cards.csv` and `games.csv`; every
   card has a row there). Each stat's label carries its revision, as in *Kept % (r34)*. The default agent is the ladder's
   highest, a profile counting as its base (`planner:deals=1`). An item whose screen should feed the viewer commits its
@@ -348,14 +349,19 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   for other cards and a correlation for buildings. A CSV under `experiments/results/` with a
   `card` (or `id`) column and a column with `reason` in its name, `card-prices.csv` by
   convention, adds the reasoned price and printed minus reasoned; a `revision` column prints in their labels, as the rules whose costs they were reasoned at. No results: no columns.
-  Today the only one is `screen-055-prices/card-prices.csv`, reasoned at r23's costs, before 076 repriced every card:
-  it covers 131 of the 159 cards (the rest are blank) and names 19 cards since cut, which the export warns about.
+  A file whose `revision` is older than `RULES_REVISION` is passed over (084): no columns, no
+  warnings about its ids; the CLI export names it. Today the only one is
+  `screen-055-prices/card-prices.csv`, reasoned at r23's costs before 076 repriced every card and
+  naming 19 cards since cut, so the columns are off until a price read at the current revision
+  commits its own `card-prices.csv`.
 - **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
   cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is empty or
   one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the card's text when
   the note was saved; `hash` is a SHA-256 prefix of the card's content row and face, key order
   aside (`contentHash` in the export). A planner reads this file directly; a note counts as
-  stale when its `hash` differs from that card's in `out/cards-export.json`.
+  stale when its `hash` differs from that card's in `out/cards-export.json`. Matt gives reviews
+  in the planner chat now, so 084 took the *Review* filter row (has a note, no note, changed,
+  new, one per flag) off the page; the note form in the large view and the badges stay.
 - **Badges:** *changed since your note* when the hash moved; saving the note again takes it
   off. *New* for a card missing from `review/card-seen.json`, until it is opened, noted or
   *Mark all seen* is pressed. The first run seeds that ledger with the whole set, so nothing
