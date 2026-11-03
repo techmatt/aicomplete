@@ -146,7 +146,7 @@ variant. Abridged:
     (`threats.variant=off`,
     `alignment.variant=off`, `cards.variant=off`): it keeps the module's phases and
     the parameters other modules read, and does nothing. See rules.md §9.
-  - `cards.<id>.cost=4`, `ais.*.presence.4.cost=2` (`<table>.<id>.<path>=<JSON>`, two
+  - `cards.<id>.cost=4`, `ais.*.node.4.cost=2` (`<table>.<id>.<path>=<JSON>`, two
     dots or more): a **content overlay** entry, kept in the config's `content` list so
     a config still replays a game whole. `Rules::new` applies the list to the embedded
     files through `content::overlaid`, which runs `Content::parse`'s checks and keeps
@@ -206,13 +206,13 @@ A rule that depends on another module's *variant* reads `World::variant("<module
 (none do today). Everything that
 places or removes adversary ambassadors goes through `adversary::place`, `remove`,
 `remove_piece`, `build_all`, `spread`, `corrupt_city` and `corrupt_station`, so the supply,
-cancellation and node-making hold everywhere; `build_all` places what
+cancellation and botnet-making hold everywhere; `build_all` places what
 `plan::build_plan` reads. Facilities and
-presence are destroyed through `board::destroy_piece` (except that corruption, sacrifice, Eviction and war's factory-hex hit call `board::lose_presence`, unabsorbed), which applies Shelter
+node are destroyed through `board::destroy_piece` (except that corruption, sacrifice, Eviction and war's factory-hex hit call `board::lose_node`, unabsorbed), which applies Shelter
 Order, a base's troop (adversary strikes), hardening, a player ambassador's defense and
-Aegis Dome Array or the Aegis Doctrine capstone (`Op::CivicShelter`), and sways the Discord. An adversary piece leaves the board through `adversary::remove`, `remove_piece`, `damage`, `destroy_all`, `remove_node`, `remove_nodes`,
-`remove_all_in_country`, `pushback`, `cleanse` (effects), `board::liberate` and `free_cities`. Presence lives in the board module
-(`board::place_presence`, `board::track_taken`); AI boards read their track through
+Aegis Dome Array or the Aegis Doctrine capstone (`Op::CivicShelter`), and sways the Discord. An adversary piece leaves the board through `adversary::remove`, `remove_piece`, `damage`, `destroy_all`, `remove_botnet`, `remove_botnets`,
+`remove_all_in_country`, `pushback`, `cleanse` (effects), `board::liberate` and `free_cities`. Node lives in the board module
+(`board::place_node`, `board::track_taken`); AI boards read their track through
 it.
 
 Each variant is a `VariantDef` (in `module.rs`), holding:
@@ -339,7 +339,7 @@ Content is data in `content/`, composed from code primitives:
 - **Adversary projects** (`projects.json`): `stage` (1 cheap, 2 big), `cost` per
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
 - **AI boards** (`ais.json`): credit production, innate
-  passives, printed `tags` (they count for requirements only), the two presence tracks (`economy_track`, and `play_track`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
+  passives, printed `tags` (they count for requirements only), the two node tracks (`economy_track`, and `play_track`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
   `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, unique cards, a
   `start` building; `powers` are `{name, text, tags, cost, effects}` (`tags` may
   name `any`). Slots and starting credits are config lists read by seat, `ai.slots` and
@@ -350,7 +350,7 @@ Content is data in `content/`, composed from code primitives:
   Cards are one-shot; there is no `ongoing` field.
 - **Country pieces** (`map.json`, `countries`): cities, the order cities start
   corrupted in (`corrupted`), ocean, setup facilities (research stations, factories),
-  the starting presence spot (`presence`), the printed industrial zones (`industry`), and the
+  the starting node spot (`node`), the printed industrial zones (`industry`), and the
   corp's megaproject card: `name` is the corp's, `flavor` what it does, `neutral_station` its
   neutral station's hex. The card's `player`, `adversary`, `converter.effects` and `after`
   are `Op` lists, in the `Player`, `Team`, `Player` and `Team` slots: `Megaproject::words` prints
@@ -374,7 +374,7 @@ threat or a Discord card prints it. Three kinds:
 - **Standing** ops (a building's `passives`, an AI's `innate`) are read by the rule they
   change, through `cards::passives`, while the card is in force.
 - **Twists** (an adversary card's `twists`) are read through `adversary::twists` while the
-  card is current; its `sway`, `each_destroy_presence` and `pull_unity` resolve once, in
+  card is current; its `sway`, `each_destroy_node` and `pull_unity` resolve once, in
   `adversary.build`, when the card becomes this round's.
 
 `Op::slots` says which lists may print an op, and `Content::check` enforces it, because
@@ -386,7 +386,7 @@ a shared-row threat one place on the whole board).
 
 `aic-sim docs` rewrites the blocks between `<!-- generated: NAME -->` markers in
 [rules.md](rules.md) (threats, adversary deck, Alignment cards, projects, tunables; the
-country pieces, the round cap per difficulty, the difficulty levers, the AI boards, presence
+country pieces, the round cap per difficulty, the difficulty levers, the AI boards, node
 tracks and powers, standard actions, Sway sources, the purge thresholds, the two
 new-player paragraphs and the game's end), all of [ops.md](ops.md), [harms.md](harms.md) and
 [player-aid.md](player-aid.md),
@@ -493,14 +493,14 @@ In the baseline:
   `n/cost compute`), `adversary.projects_ongoing`, `adversary.projects_done` and
   `adversary.project_deck` (count only). Bookkeeping: `adversary.project.*` (each
   visible project's compute), `adversary.first_project`.
-- `ai` adds each seat's board (`ai.board`: name, text, innate rule, the two presence tracks
+- `ai` adds each seat's board (`ai.board`: name, text, innate rule, the two node tracks
   with every step, keep-upgrade (`tier2` key) and resource marks, slots, the AI's unique
   cards and where they are, and its powers with their cost and status, `ready` or why
   not), and credit production. Bookkeeping: `ai.power_used.*`.
 - `board` shows its per-country flags (blackout, sabotage, shelter, embargo) and each country's
   megaproject (cubes by owner, against its size; once completed, the cubes it paid, `project.paid`) as country values,
   each completed card's converter per seat (`converter.<c>`: 1 if usable, else its label says why), the war round and
-  fronts and the clock's step as globals, each seat's presence on the board and left
+  fronts and the clock's step as globals, each seat's node on the board and left
   on its track, and ambassadors on the board; it publishes every standard action with
   its cost (`View.standard`, read by the viewer's labels) and each adversary troop's
   next target and how many marches away (`View.arrows`, drawn as arrows); bookkeeping
@@ -561,12 +561,12 @@ differ.
     kept, played and used (per card), power uses, threats dealt, countered and
     executed, corruptions (and the round of the first), adversary ambassadors on the
     board per round (`adversary.ambassadors_rNN`), ambassadors and troops removed,
-    facilities and presence destroyed (per war round too), standard actions (`board.std.<act>`),
+    facilities and nodes destroyed (per war round too), standard actions (`board.std.<act>`),
     cities aligned and freed, stations and factories owned, megaprojects completed (`board.completed_round.<r>`,
     `board.completed.<c>`), research cubes (`board.cubes_paid.<color>`, `board.cubes_stored`, `board.cubes_converted`,
     `board.cubes_after`), converter uses (`board.converter.<c>`) and those left unused (`board.converter_idle`, `_no_city`, `_unpaid`),
-    presence placed, nodes made, removed and at their peak per board
-    (`adversary.nodes_peak.c<c>`), adversary compute made (`adversary.compute_nodes`, `adversary.compute_corp` of it), factories built per side,
+    node placed, botnets made, removed and at their peak per board
+    (`adversary.botnets_peak.c<c>`), adversary compute made (`adversary.compute_botnets`, `adversary.compute_corp` of it), factories built per side,
     destroyed and owned per side at the end (`board.factories_end.<side>`), chips
     made, sold and spent, Alignment sway, tips (and their rounds, `alignment.tip_<side>.rNN`), cards
     resolved and antimatter actions, insight given and credit income.
@@ -607,9 +607,9 @@ fingerprints), `driver.rs` (`play`/`replay` with an `Agent`, `PlayedGame`), `vie
 (the generic view clients draw), `record.rs` (`SavedGame`, the game record format), `tests/` (`mod.rs`: helpers,
 `variant_matrix`, `golden_game`; one file per area: config, map, setup, adversary,
 plan, ambassadors, boards, production, war, march, factories, standard_actions, freeing, threats,
-threat_sources, alignment, cards, science, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`:
+threat_sources, alignment, cards, science, face, projects, ops, overlay, node_powers, endgame, determinism, view; `invariants`:
 checks after every action of random games).
-`modules/threats/`: `mod.rs` (the module), `sources`, `ops`. `modules/board/`: `mod.rs` (the module, its phases), `presence`, `ambassadors`, `production`,
+`modules/threats/`: `mod.rs` (the module), `sources`, `ops`. `modules/board/`: `mod.rs` (the module, its phases), `node`, `ambassadors`, `production`,
 `standard`, `troops`, `destroy`, `view`. `modules/cards/`: `mod.rs`, `deck`, `play`, `price`,
 `sacrifice`, `tableau`, `view`. `modules/effects/`: `mod.rs` (`run`, the one dispatching match),
 `ctx`, `feasible`, `targets`, and the arm bodies by topic: `resources`, `ambassadors`,

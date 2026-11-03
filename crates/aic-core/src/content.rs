@@ -165,8 +165,8 @@ pub struct CountryPiece {
     pub industry: Vec<u8>,
     /// Industrial zones holding a factory at setup (neutral).
     pub factories: Vec<u8>,
-    /// Where the starting presence of the player who starts here goes.
-    pub presence: u8,
+    /// Where the starting node of the player who starts here goes.
+    pub node: u8,
     /// The corp's megaproject card.
     #[serde(rename = "project")]
     pub megaproject: Megaproject,
@@ -175,7 +175,7 @@ pub struct CountryPiece {
 /// A megaproject card (074), the corp's defining card: research stations fill
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
-/// After that a seat with presence in the country has the `converter` (075;
+/// After that a seat with a node in the country has the `converter` (075;
 /// 074: an aligned city), and each adversary cube made there resolves `after`,
 /// if it prints one (075: none do).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -452,13 +452,13 @@ pub struct AiBoard {
     pub innate: Innate,
     /// Credit production every round, before cards raise it.
     pub credits: i64,
-    /// Income every round before the presence track adds to it.
+    /// Income every round before the node track adds to it.
     #[serde(default)]
     pub income: Vec<Cost>,
-    /// The presence track: one space per presence token. The first token
+    /// The node track: one space per node. The first token
     /// starts on the board, so the first space is uncovered from setup.
     pub economy_track: Vec<Uncover>,
-    /// A second presence track (021): placing presence takes the next token
+    /// A second node track (021): placing nodes takes the next token
     /// from the track its player chooses. Its first space is covered at setup.
     #[serde(default)]
     pub play_track: Vec<Uncover>,
@@ -485,7 +485,7 @@ pub struct Innate {
     pub passives: Vec<Op>,
 }
 
-/// A presence-track space: what placing its token uncovers.
+/// A node-track space: what placing its token uncovers.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Uncover {
@@ -629,7 +629,7 @@ impl Content {
     fn check_ai_board(&self, b: &AiBoard) -> Result<(), String> {
         let what = format!("AI board {:?}", b.id);
         if b.economy_track.is_empty() {
-            return Err(format!("{what}: needs a presence track"));
+            return Err(format!("{what}: needs a node track"));
         }
         for c in &b.cards {
             match self.card_index(c) {
@@ -788,7 +788,7 @@ fn innate_only(passives: &[Op], what: &str) -> Result<(), String> {
 /// Whether `op` does a job only Science cards print (046): a shield, a threat
 /// delay or marker clearing.
 fn science_niche(op: &Op) -> bool {
-    matches!(op, Op::ShieldPresence { .. } | Op::DelayThreat { .. } | Op::ClearMarkers { .. })
+    matches!(op, Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::ClearMarkers { .. })
 }
 
 fn check_card(c: &CardDef) -> Result<(), String> {
@@ -908,7 +908,7 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
 }
 
 fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), String> {
-    let start = vec![p.presence];
+    let start = vec![p.node];
     let neutral = vec![p.neutral_station];
     let lists = [
         &p.cities,
@@ -979,7 +979,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
         }
         match op {
             Op::Gain { resource: r, .. }
-            | Op::GainPerPresence { resource: r, .. }
+            | Op::GainPerNode { resource: r, .. }
             | Op::OtherGain { resource: r, .. }
             | Op::Transfer { resource: r, .. }
             | Op::CashOut { resource: r, .. } => seat_resource(r, what)?,
@@ -1009,7 +1009,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             }
             Op::Production { resource: r, .. }
             | Op::PlayersLose { resource: r, .. }
-            | Op::LosePresenceOr { resource: r, .. }
+            | Op::LoseNodeOr { resource: r, .. }
             | Op::Requisition { resource: r, .. }
             | Op::Logistics { resource: r, .. }
             | Op::GiveBonus { resource: r, .. }
@@ -1059,7 +1059,7 @@ pub fn is_overlay_key(key: &str) -> bool {
 }
 
 /// One overlay entry applied to the parsed content files. `path` walks
-/// object fields and list indexes (`effects.0.amount`, `presence.4.cost`);
+/// object fields and list indexes (`effects.0.amount`, `node.4.cost`);
 /// the last step may add a field the JSON left at its default, and parsing
 /// rejects one the schema doesn't have. `id` may be `*`: every row of the
 /// table. The value is JSON, or a bare word taken as a string.

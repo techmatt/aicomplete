@@ -15,7 +15,7 @@ pub(super) fn nearest(w: &World, from: usize, hexes: impl Iterator<Item = usize>
 
 /// Production step 2, on a war round: on each front the units cancel 1 for
 /// 1; each surplus unit crosses and destroys the rival factory nearest its
-/// base, taking any presence on its hex (027: a presence was the target with
+/// base, taking any node on its hex (027: a node was the target with
 /// no factory left). All units at the front are used up.
 pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
@@ -49,11 +49,11 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
             };
             if destroy_piece(g, cx, h, FACTORY, Cause::War) {
                 destroyed += 1;
-                // War that destroys a facility takes the presence on its hex
+                // War that destroys a facility takes the node on its hex
                 // (027) and, by `war_reach`, around it (034).
                 for x in within(&w, h, w.int("board.war_reach")) {
-                    if let Some(s) = presence_owner(g, x) {
-                        lose_presence(g, cx, x, s, "war");
+                    if let Some(s) = node_owner(g, x) {
+                        lose_node(g, cx, x, s, "war");
                     }
                 }
             }
@@ -123,7 +123,7 @@ pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
 }
 
 /// What an adversary troop may destroy on hex `h`, as token keys: a
-/// presence, and a player-owned research station or factory (019: not
+/// node, and a player-owned research station or factory (019: not
 /// neutral or corrupted ones, and never cities).
 pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String> {
     let mut out = Vec::new();
@@ -139,9 +139,9 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
             out.push(STATION.to_string());
         }
     }
-    if g.var(adversary::STAGE) >= w.int("board.troop_presence") {
-        if let Some(s) = presence_owner(g, h) {
-            out.push(presence(s).to_string());
+    if g.var(adversary::STAGE) >= w.int("board.troop_node") {
+        if let Some(s) = node_owner(g, h) {
+            out.push(node(s).to_string());
         }
     }
     out
@@ -168,17 +168,17 @@ pub fn has_wall(w: &World, seat: usize) -> bool {
     ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Wall))
 }
 
-/// Whether hex `h` holds presence of a seat with Wall (068): adversary troops
+/// Whether hex `h` holds node of a seat with Wall (068): adversary troops
 /// can't enter it.
 pub fn walled(w: &World, g: &GameState, h: usize) -> bool {
-    presence_owner(g, h).is_some_and(|s| has_wall(w, s))
+    node_owner(g, h).is_some_and(|s| has_wall(w, s))
 }
 
 /// The hexes adversary troops can't enter now, as a mask.
 fn wall_mask(w: &World, g: &GameState) -> Vec<bool> {
     let mut mask = vec![false; g.hexes.len()];
     for s in (0..g.seats.len()).filter(|&s| has_wall(w, s)) {
-        let k = presence(s);
+        let k = node(s);
         for (h, m) in mask.iter_mut().enumerate() {
             *m |= g.tokens(h, k) > 0;
         }
@@ -274,7 +274,7 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
     let (x, k) = targets[i].clone();
     cx.tally(g, "board.troop_strikes", 1);
     if destroy_piece(g, cx, x, &k, Cause::Troop) {
-        let kind = if k == FACTORY || k == STATION { k.as_str() } else { "presence" };
+        let kind = if k == FACTORY || k == STATION { k.as_str() } else { "node" };
         cx.tally(g, &format!("board.troop_destroyed.{kind}"), 1);
         cx.tally(g, "board.troop_destroyed", 1);
     } else {

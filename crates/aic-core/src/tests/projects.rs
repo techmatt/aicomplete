@@ -1,5 +1,5 @@
 //! 017: the adversary project deck, compute and its counterplay, and (019)
-//! tier-2 node removal.
+//! tier-2 botnet removal.
 
 use super::*;
 use crate::modules::adversary::{self, PROJECTS_DONE, PROJECTS_ONGOING, PROJECT_DECK};
@@ -94,15 +94,15 @@ fn an_ongoing_project_acts_in_the_build() {
 }
 
 #[test]
-fn a_player_ambassador_on_a_node_stops_its_compute_and_stays() {
+fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let m = &rules.map;
     let (a, b) = (
         m.numbered(0, piece(0).stations[0]),
         m.numbered(1, piece(1).stations[0]),
     );
-    put(&mut g, a, NODE, 1);
-    put(&mut g, b, NODE, 1);
+    put(&mut g, a, BOTNET, 1);
+    put(&mut g, b, BOTNET, 1);
     put(&mut g, a, ambassador(0), 1);
     let before = g.var(adversary::COMPUTE);
     set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
@@ -168,15 +168,15 @@ fn security_cards_drain_or_discard_a_project() {
 }
 
 #[test]
-fn node_takedown_removes_a_node_in_reach() {
+fn botnet_takedown_removes_a_botnet_in_reach() {
     let (rules, mut g) = lab_actions();
     let m = &rules.map;
-    let p = presence_of(&g, 0)[0];
+    let p = node_of(&g, 0)[0];
     let far = (0..m.hexes.len())
         .find(|&h| m.distance(p, h) >= 3 && g.hexes[h].tokens.is_empty())
         .unwrap();
     let near = m.hexes[p].neighbors[0];
-    put(&mut g, far, NODE, 1);
+    put(&mut g, far, BOTNET, 1);
     set_pile(&mut g, "cards.hand.0", &["node_severance"]);
     fund(&mut g, 0);
     // It needs a Cyber tag in play, and (076) a project holding compute for its drain.
@@ -187,23 +187,23 @@ fn node_takedown_removes_a_node_in_reach() {
         seat: 0,
         card: "node_severance".into(),
     };
-    // Only a node within reach.
+    // Only a botnet within reach.
     assert!(!rules.legal_actions(&g).contains(&play));
-    put(&mut g, near, NODE, 1);
+    put(&mut g, near, BOTNET, 1);
     assert!(rules.legal_actions(&g).contains(&play));
     act(&rules, &mut g, play);
-    assert_eq!((g.tokens(near, NODE), g.tokens(far, NODE)), (0, 1));
-    assert_eq!(g.stats.counters["adversary.nodes_removed"], 1);
+    assert_eq!((g.tokens(near, BOTNET), g.tokens(far, BOTNET)), (0, 1));
+    assert_eq!(g.stats.counters["adversary.botnets_removed"], 1);
 }
 
-/// A project that sacrifices presence takes each seat's ambassador instead of
-/// its last presence (020, 027).
+/// A project that sacrifices node takes each seat's ambassador instead of
+/// its last node (020, 027).
 #[test]
-fn purge_the_unaligned_never_takes_a_last_presence() {
+fn purge_the_unaligned_never_takes_a_last_node() {
     let (rules, mut g) = lab(&[]);
-    let homes = [0, 1].map(|c| rules.map.numbered(c, piece(c).presence));
+    let homes = [0, 1].map(|c| rules.map.numbered(c, piece(c).node));
     for (s, &h) in homes.iter().enumerate() {
-        put(&mut g, h, presence(s), 1);
+        put(&mut g, h, node(s), 1);
         set_res(&mut g, s, Resource::Ambassadors, 1);
     }
     // One factory a country, so its troop asks nothing (024).
@@ -212,9 +212,9 @@ fn purge_the_unaligned_never_takes_a_last_presence() {
     }
     row(&mut g, &["purge_the_unaligned"]);
     let cost = adversary::project_cost(&rules.world(), &g, "purge_the_unaligned");
-    // A last presence is never offered (027): each seat's ambassador goes.
+    // A last node is never offered (027): each seat's ambassador goes.
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, cost)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["purge_the_unaligned"]);
-    assert_eq!((total(&g, presence(0)), total(&g, presence(1))), (1, 1));
+    assert_eq!((total(&g, node(0)), total(&g, node(1))), (1, 1));
     assert_eq!(g.stats.counters["alignment.sacrificed_ambassadors"], 2);
 }

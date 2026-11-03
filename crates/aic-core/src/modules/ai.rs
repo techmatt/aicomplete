@@ -1,5 +1,5 @@
-//! AI boards: which AI each seat plays, its presence track (read from the
-//! board module, which owns presence), the keep upgrade, income, credit
+//! AI boards: which AI each seat plays, its nodes track (read from the
+//! board module, which owns nodes), the keep upgrade, income, credit
 //! production, starting resources and powers.
 
 use crate::action::Action;
@@ -15,7 +15,7 @@ use super::{board, cards, effects};
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "ai",
-    summary: "AI boards: the presence track, powers, income, credit production, starting resources",
+    summary: "AI boards: the node track, powers, income, credit production, starting resources",
     requires: &["board"],
     variants: &[VariantDef {
         name: "boards",
@@ -27,7 +27,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::list("slots", 1, 10, "building slots of each seat's AI board, in the order of boards; the list repeats"),
         ],
         phases: &[
-            PhaseSpec::decision("power", "use AI-board powers, each once a round: place presence, or sacrifice played cards' tags (combine with the action phase)"),
+            PhaseSpec::decision("power", "use AI-board powers, each once a round: place nodes, or sacrifice played cards' tags (combine with the action phase)"),
         ],
         rng: &[],
         uses_cards: false,
@@ -41,18 +41,18 @@ pub fn board<'w>(w: &World<'w>, seat: usize) -> &'w AiBoard {
     &w.content.ais[list[seat % list.len()] as usize]
 }
 
-/// Spaces uncovered on seat `s`'s presence track (the board module counts
+/// Spaces uncovered on seat `s`'s node track (the board module counts
 /// the tokens taken off it, the starting one included).
 pub fn uncovered(w: &World, g: &GameState, seat: usize) -> usize {
     board::track_taken(g, seat).clamp(1, board(w, seat).economy_track.len())
 }
 
-/// Spaces uncovered on seat `s`'s second presence track (021; none at setup).
+/// Spaces uncovered on seat `s`'s second node track (021; none at setup).
 fn uncovered2(w: &World, g: &GameState, seat: usize) -> usize {
     board::track2_taken(g, seat).min(board(w, seat).play_track.len())
 }
 
-/// Income from the AI board and its presence track: `(resource, amount)`
+/// Income from the AI board and its nodes track: `(resource, amount)`
 /// pairs (insight sets the round's insight; the rest arrive in upkeep).
 pub fn track_income(w: &World, g: &GameState, seat: usize) -> Vec<(Resource, i64)> {
     let b = board(w, seat);
@@ -110,9 +110,9 @@ pub fn slots(w: &World, seat: usize) -> i64 {
     list[seat % list.len()]
 }
 
-/// Whether power `k` of seat `s`'s board places presence.
+/// Whether power `k` of seat `s`'s board places nodes.
 pub fn power_places(w: &World, seat: usize, k: usize) -> bool {
-    board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::PlacePresence { .. })))
+    board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::PlaceNode { .. })))
 }
 
 /// Whether power `k` of seat `s`'s board plays a building for free (068).
@@ -129,7 +129,7 @@ pub fn power_buys_cube(w: &World, seat: usize, k: usize) -> bool {
 /// (075, a power menu's conversions): it sacrifices nothing and places nothing.
 pub fn power_converts(w: &World, seat: usize, k: usize) -> bool {
     board(w, seat).powers.get(k).is_some_and(|p| {
-        p.tags.is_empty() && !p.cost.is_empty() && !p.effects.iter().any(|e| matches!(e, Op::PlacePresence { .. } | Op::Harden { .. }))
+        p.tags.is_empty() && !p.cost.is_empty() && !p.effects.iter().any(|e| matches!(e, Op::PlaceNode { .. } | Op::Harden { .. }))
     })
 }
 
@@ -190,7 +190,7 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
     }
 }
 
-/// Whether seat `s` has a presence token left on its track.
+/// Whether seat `s` has a node left on its track.
 pub fn can_place(w: &World, g: &GameState, seat: usize) -> bool {
     board::track_taken(g, seat) < board(w, seat).economy_track.len()
         || board::track2_taken(g, seat) < board(w, seat).play_track.len()

@@ -224,12 +224,12 @@ export const NEUTRAL_COLOR = '#9a9a9a';
 export const ADVERSARY_COLOR = '#5b1a8c';
 
 // Token colors: chosen colors for the kinds the board draws, every other kind
-// hashed to a hue. Seat-owned kinds (`cube:<seat>`, `presence:<seat>`, `ambassador:<seat>`) are
+// hashed to a hue. Seat-owned kinds (`cube:<seat>`, `node:<seat>`, `ambassador:<seat>`) are
 // drawn in the seat's color on the board; this is their fallback.
 const KNOWN: Record<string, string> = {
   'cube:adversary': ADVERSARY_COLOR,
   'ambassador:adversary': ADVERSARY_COLOR,
-  node: ADVERSARY_COLOR,
+  botnet: ADVERSARY_COLOR,
   corruption: ADVERSARY_COLOR,
   troop: '#2a0d3d',
   factory: '#7a5230',
@@ -240,7 +240,7 @@ const KNOWN: Record<string, string> = {
 
 export function tokenColor(kind: string): string {
   if (KNOWN[kind]) return KNOWN[kind];
-  if (/^(cube|presence|ambassador):\d+$/.test(kind)) return '#37474f';
+  if (/^(cube|node|ambassador):\d+$/.test(kind)) return '#37474f';
   let h = 0;
   for (const c of kind) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return `hsl(${h % 360} 65% 38%)`;
@@ -248,8 +248,8 @@ export function tokenColor(kind: string): string {
 
 const TOKEN_NAMES: Record<string, string> = {
   cube: 'owner cube',
-  presence: 'presence',
-  node: 'adversary node',
+  node: 'node',
+  botnet: 'botnet',
   corruption: 'corruption marker',
   ambassador: 'ambassador',
   station: 'research station',
@@ -258,7 +258,7 @@ const TOKEN_NAMES: Record<string, string> = {
   harden: 'hardening token',
 };
 
-/** "presence:1" → "presence (seat 1)", "cube:adversary" → "owner cube (adversary)". */
+/** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". */
 export function tokenName(kind: string): string {
   const [base, owner] = kind.split(':');
   const name = TOKEN_NAMES[base] ?? words(base);

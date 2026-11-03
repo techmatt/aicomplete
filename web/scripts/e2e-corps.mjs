@@ -46,7 +46,7 @@ try {
   await until(`window.aic.timeline.last === 0 || ${acting}`, 'the game to start', 10000);
 
   check(await toRound(1), 'reached the first action phase');
-  // Seat 0's starting ambassador claims the neutral station next to its presence.
+  // Seat 0's starting ambassador claims the neutral station next to its node.
   const station = await js(`(() => {
     const v = window.aic.view;
     const h = v.hexes.find((x) => x.country === 0 && x.tokens.some((t) => t.kind === 'station') && !x.tokens.some((t) => t.kind === 'cube:adversary'));
@@ -86,7 +86,7 @@ try {
   check(/research cubes\s*3/.test(shown), `its board shows them: "${shown.trim()}"`);
   const conv = await js(`[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter').length ? [...[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter')].map((e) => [e.className, e.textContent]) : []`);
   check(conv.some(([c]) => c.includes(' usable')), `a usable converter: ${JSON.stringify(conv.find(([c]) => c.includes(' usable')))}`);
-  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no presence')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
+  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no nodes')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
   writeFileSync(join(out, 'corps.png'), await page.shot());
 
   const anti = await resource('antimatter');

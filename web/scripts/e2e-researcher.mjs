@@ -1,7 +1,7 @@
 // `npm run e2e:researcher` (075): the Researcher's board in a real browser. Plays the baseline at
 // 3 countries with `station_cubes` 3, so a card fills in round 2: seat 2, the Researcher, claims
 // Onyx's neutral station and passes its turns. Checks its tracks and powers on the page, Patience's
-// carried insight and the stored research cubes, and spends 3 cubes on its second presence power.
+// carried insight and the stored research cubes, and spends 3 cubes on its second node power.
 // Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
 // Screenshot: web/e2e-out/researcher.png.
@@ -59,7 +59,7 @@ try {
   const innate = await js(`window.aic.view.seats[${SEAT}].board.innate?.name ?? ''`);
   check(innate === 'Patience', 'its special rule is Patience');
 
-  // Seat 2's starting ambassador claims the neutral station next to its presence.
+  // Seat 2's starting ambassador claims the neutral station next to its node.
   const station = await js(`(() => {
     const v = window.aic.view;
     const h = v.hexes.find((x) => x.country === 2 && x.tokens.some((t) => t.kind === 'station') && !x.tokens.some((t) => t.kind === 'cube:adversary'));
@@ -95,7 +95,7 @@ try {
   writeFileSync(join(out, 'researcher.png'), await page.shot());
 
   const k = await js(`window.aic.view.seats[${SEAT}].board.cards.filter((c) => c.id.includes('.power.')).findIndex((c) => c.name === 'Peer Review')`);
-  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the second presence power is on the menu');
+  check(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === ${SEAT} && a.power === ${k})`), 'the second node power is on the menu');
   await js(`window.aic.act({ type: 'power', seat: ${SEAT}, power: ${k} })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
     await js(`window.aic.act(window.aic.legal.filter((a) => a.type === 'choose')[0])`);

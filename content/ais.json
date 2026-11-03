@@ -116,10 +116,10 @@
       1
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]
@@ -137,10 +137,10 @@
       6
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]
@@ -275,10 +275,10 @@
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The defender: plays on the board; troops stop at its presence and can't strike there.",
+  "text": "The defender: plays on the board; troops stop at its nodes and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary troops can't enter or strike a hex with your presence.",
+   "text": "Adversary troops can't enter or strike a hex with your node.",
    "passives": [
     {
      "op": "wall"
@@ -360,7 +360,7 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "When the adversary spreads, it skips your presence.",
+     "text": "When the adversary spreads, it skips your nodes.",
      "passives": [
       {
        "op": "spread_shield"
@@ -397,10 +397,10 @@
       1
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]
@@ -419,10 +419,10 @@
       1
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]
@@ -468,7 +468,7 @@
       2
      ]
     ],
-    "text": "in one country this round, no presence or facility can be destroyed",
+    "text": "in one country this round, no nodes or facility can be destroyed",
     "effects": [
      {
       "op": "shelter"
@@ -671,10 +671,10 @@
       1
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]
@@ -688,10 +688,10 @@
       3
      ]
     ],
-    "text": "place 1 presence",
+    "text": "place 1 node",
     "effects": [
      {
-      "op": "place_presence",
+      "op": "place_node",
       "count": 1
      }
     ]

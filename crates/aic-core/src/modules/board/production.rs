@@ -36,7 +36,7 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
             for c in 0..w.map.countries.len() {
                 match converter_blocked(&w, g, s, c) {
                     None => cx.tally(g, "board.converter_idle", 1),
-                    Some("no presence here") => cx.tally(g, "board.converter_no_city", 1),
+                    Some("no nodes here") => cx.tally(g, "board.converter_no_city", 1),
                     Some("can't pay it") => cx.tally(g, "board.converter_unpaid", 1),
                     Some(_) => {}
                 }
@@ -129,7 +129,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
 /// a free zone next to it, where the players choose (an aligned city's
 /// owner, else seat 0). A corrupted city's factory is the adversary's, an
 /// aligned city's its owner's, and a clean city's goes to the player with
-/// the most presence next to the zone (players choose on a tie), neutral if
+/// the most nodes next to the zone (players choose on a tie), neutral if
 /// none.
 fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
@@ -193,12 +193,12 @@ fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
 }
 
 /// Who takes a clean city's new factory on zone `z`: the player with the
-/// most presence next to it (players choose on a tie), none if nobody has any.
+/// most nodes next to it (players choose on a tie), none if nobody has any.
 fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
     let w = cx.world;
     let hexes = within(&w, z, 1);
     let near: Vec<usize> = (0..g.seats.len())
-        .map(|s| hexes.iter().filter(|&&x| g.tokens(x, presence(s)) > 0).count())
+        .map(|s| hexes.iter().filter(|&&x| g.tokens(x, node(s)) > 0).count())
         .collect();
     let most = near.iter().copied().max().unwrap_or(0);
     if most == 0 {
@@ -216,12 +216,12 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
 /// Production step 3: cities make energy, stations research cubes; an
 /// adversary ambassador on the piece diverts its output and is removed, and
 /// diverted energy sways toward Discord. Then an adversary ambassador on a
-/// lone presence drains 1 of its owner's next insight into adversary compute,
+/// lone node drains 1 of its owner's next insight into adversary compute,
 /// and last full megaprojects complete.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
     city_energy(g, cx)?;
     station_cubes(g, cx)?;
-    presence_leak(g, cx)?;
+    node_leak(g, cx)?;
     complete_projects(g, cx)
 }
 
@@ -253,7 +253,7 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             // An aligned city's cube goes free to the player who aligned it.
             cx.add_resource(g, s, Resource::Energy, energy + w.int("board.aligned_bonus"));
         } else {
-            // A neutral city's cube: a player with presence next to it may buy
+            // A neutral city's cube: a player with a node next to it may buy
             // it (players choose who), otherwise it is lost (021).
             let buyers: Vec<usize> = (0..g.seats.len())
                 .filter(|&s| g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h))
@@ -340,13 +340,13 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// An adversary ambassador on a presence (with no other piece to divert)
+/// An adversary ambassador on a node (with no other piece to divert)
 /// costs its owner 1 insight next round and adds 1 compute to the cheapest
 /// adversary project; it stays until removed (068; 021: it was used up).
-fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
+fn node_leak(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     for h in 0..g.hexes.len() {
-        let Some(s) = presence_owner(g, h) else {
+        let Some(s) = node_owner(g, h) else {
             continue;
         };
         // (020: a Sabotage flag used to skip the leak here, a data-center-era
@@ -355,7 +355,7 @@ fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
         if g.tokens(h, ADV_AMBASSADOR) == 0 {
             continue;
         }
-        // Only a lone presence: on a city, base, station or factory the
+        // Only a lone node: on a city, base, station or factory the
         // ambassador belongs to that piece (020: the leak drained a corrupted
         // city's ambassadors so it never spread, and ate those a clean city or
         // a base was gathering).
@@ -363,7 +363,7 @@ fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         cx.add_key(g, &economy::insight_debt(s), 1);
-        cx.tally(g, "board.presence_drained", 1);
+        cx.tally(g, "board.node_drained", 1);
         adversary::gain_compute(g, cx, 1)?;
     }
     Ok(())

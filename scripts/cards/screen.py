@@ -6,7 +6,7 @@
     python scripts/cards/screen.py --list
 
 Each DIR holds results.json and games.jsonl. Without --columns or --preset it prints preset
-041. --sources adds the presence lost by source. --gate prints each check's gap to its own
+041. --sources adds the node lost by source. --gate prints each check's gap to its own
 agent (`x:...` against `x`), with games per check if results.json has a "gate" key, then the
 unspent readout (what each seat held after its last action phase). --list prints the columns and presets. Columns on a counter no game has warn on stderr: that 0 is
 not a measurement.
@@ -35,7 +35,7 @@ def tiers():
 
 
 def tokens():
-    """Presence tokens on an AI board's two tracks."""
+    """Nodes on an AI board's two tracks."""
     ai = ais()[0]
     return len(ai['economy_track']) + len(ai['play_track'])
 
@@ -102,22 +102,22 @@ def wins_mix(c, gs):
 def loss_mix(c, gs):
     e = ends(gs)
     n = len(losses(gs)) or 1
-    return (f"{e['discord_deck']} / {e['presence']} / {e['deck_empty']} "
-            f"({100 * e['discord_deck'] // n} / {100 * e['presence'] // n} / {100 * e['deck_empty'] // n})")
+    return (f"{e['discord_deck']} / {e['node']} / {e['deck_empty']} "
+            f"({100 * e['discord_deck'] // n} / {100 * e['node'] // n} / {100 * e['deck_empty'] // n})")
 
 
 def loss_ends(c, gs):
     e = ends(gs)
-    return f"{e['discord_deck']} / {e['presence']} / {e['deck_empty']}"
+    return f"{e['discord_deck']} / {e['node']} / {e['deck_empty']}"
 
 
 def ends_text(c, gs):
     return s.ends_text(gs)
 
 
-@reads('board.presence_placed')
+@reads('board.node_placed')
 def tokens_left(c, gs):
-    return f"{avg([tokens() - 1 - cnt(g, 'board.presence_placed') / s.seats(c) for g in gs]):.1f}"
+    return f"{avg([tokens() - 1 - cnt(g, 'board.node_placed') / s.seats(c) for g in gs]):.1f}"
 
 
 @reads(*(power_key(b, k) for b, k, _ in power_keys()))
@@ -136,13 +136,13 @@ def by_tier(field):
     return f
 
 
-@reads('board.presence_placed.r01', 'board.presence_placed.r02')
+@reads('board.node_placed.r01', 'board.node_placed.r02')
 def placed_by_round(c, gs):
     """Tokens on or off the board a seat has taken by rounds 6 and 10, the setup token in."""
     seats = s.seats(c)
     def by(r):
         reached = [g for g in gs if g['rounds'] >= r]
-        n = [1 + sum(cnt(g, f'board.presence_placed.r{k:02}') for k in range(1, r + 1)) / seats for g in reached]
+        n = [1 + sum(cnt(g, f'board.node_placed.r{k:02}') for k in range(1, r + 1)) / seats for g in reached]
         return f'{avg(n):.1f}' if n else '-'
     return f'{by(6)} / {by(10)}'
 
@@ -172,37 +172,37 @@ COLUMNS = {
     'loss_rounds': ('loss rounds', lambda c, gs: hist(g['rounds'] for g in losses(gs))),
     'ends': ('ends', ends_text),
     'wins_mix': ('wins: purge / Unity', wins_mix),
-    'loss_mix': ('losses: Discord / presence / cap (% of losses)', loss_mix),
+    'loss_mix': ('losses: Discord / node / cap (% of losses)', loss_mix),
     'wins_split': ('wins: purge / Unity deck', wins_mix),
-    'loss_ends': ('losses: Discord / presence / deck-out', loss_ends),
-    'presence_rounds': ('presence-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'presence')),
+    'loss_ends': ('losses: Discord / node / deck-out', loss_ends),
+    'node_rounds': ('node-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'node')),
     'tokens_left': ('tokens left a seat', tokens_left),
     'power_uses': ('uses a game of each power (content order)', power_uses),
     'markers': ('markers placed / removed', per_game('board.markers', 'board.markers_removed')),
     'markers_city': ('markers removed from cities', per_game('board.markers_removed_city')),
     'placed_by_round': ('tokens placed a seat by r6 / r10', placed_by_round),
     'delayed': ('threats delayed', per_game('threats.delayed')),
-    'presence_lost': ('presence lost: wins / losses', split('board.presence_lost')),
-    'presence_lost_mean': ('presence lost', per_game('board.presence_lost')),
-    'presence': ('presence', per_game('board.presence_placed')),
+    'node_lost': ('node lost: wins / losses', split('board.node_lost')),
+    'node_lost_mean': ('node lost', per_game('board.node_lost')),
+    'node': ('node', per_game('board.node_placed')),
     'freed': ('freed', per_game('board.cities_freed')),
     'bases_united': ('bases united', per_game('board.bases_united')),
     'tips': ('Unity / Discord tips', per_game('alignment.tips_unity', 'alignment.tips_discord')),
     'arrivals': ('arrivals / removed a round', per_round('adversary.arrivals', 'adversary.ambassadors_removed')),
     'peak_ambassadors': ('peak ambassadors', peak_ambassadors),
-    'nodes_peak': ('nodes peak', per_game('adversary.nodes_peak')),
-    'nodes': ('nodes made / removed', per_game('adversary.nodes_made', 'adversary.nodes_removed')),
+    'botnets_peak': ('botnets peak', per_game('adversary.botnets_peak')),
+    'botnets': ('botnets made / removed', per_game('adversary.botnets_made', 'adversary.botnets_removed')),
     'freed_corruptions': ('freed / corruptions', per_game('board.cities_freed', 'adversary.corruptions')),
     'projects': ('projects', per_game('adversary.projects_resolved')),
     'supply_short': ('supply short', per_game('adversary.supply_short')),
     'compute': ('compute made / blocked', per_game('adversary.compute_made', 'adversary.compute_blocked')),
-    'left': ('left: corrupted / nodes / troops', lambda c, gs: ' / '.join(
-        f"{mean(gs, lambda g: g['margin'].get(k, 0)):.1f}" for k in ('cities_corrupted_end', 'nodes_end', 'troops_end'))),
+    'left': ('left: corrupted / botnets / troops', lambda c, gs: ' / '.join(
+        f"{mean(gs, lambda g: g['margin'].get(k, 0)):.1f}" for k in ('cities_corrupted_end', 'botnets_end', 'troops_end'))),
     'factories': ('factories P / A / N', per_game('board.factories_built.player', 'board.factories_built.adversary', 'board.factories_built.neutral')),
     'factories_end': ('owned at end', per_game('board.factories_end.player')),
     'chips': ('chips made / spent', per_game('board.chips_made', 'board.chips_spent')),
     'troop_strikes': ('steps / moves / strikes', per_game('board.troop_steps', 'board.troop_moves', 'board.troop_strikes')),
-    'troop_destroyed': ('destroyed P / S / F', per_game('board.troop_destroyed.presence', 'board.troop_destroyed.station', 'board.troop_destroyed.factory')),
+    'troop_destroyed': ('destroyed P / S / F', per_game('board.troop_destroyed.node', 'board.troop_destroyed.station', 'board.troop_destroyed.factory')),
     'kept': ('kept', total('cards.kept.')),
     'played': ('played', total('cards.played.')),
     'offered_tier': ('offered: tier 1 / 2', by_tier('offered')),
@@ -218,14 +218,14 @@ COLUMNS = {
 PRESETS = {
     'tiers': ('variant,d,agent,n,win,offered_tier,kept_tier,played_tier', False),
     '041': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,tokens_left,power_uses,markers,'
-            'markers_city,placed_by_round,presence_lost,freed,delayed', True),
-    '034': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,presence_rounds,tokens_left,'
-            'presence_lost,freed', True),
-    '028': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_split,loss_ends,tips,presence_lost,freed,'
+            'markers_city,placed_by_round,node_lost,freed,delayed', True),
+    '034': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,node_rounds,tokens_left,'
+            'node_lost,freed', True),
+    '028': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_split,loss_ends,tips,node_lost,freed,'
             'bases_united', True),
-    '018': ('variant,d,agent,n,win,rounds,left,tips,ends,presence,factories,factories_end,chips,nodes,compute,'
+    '018': ('variant,d,agent,n,win,rounds,left,tips,ends,node,factories,factories_end,chips,botnets,compute,'
             'freed,played', False),
-    '016': ('variant,d,agent,n,win,rounds,tips,ends,presence,nodes,factories,factories_end,chips', False),
+    '016': ('variant,d,agent,n,win,rounds,tips,ends,node,botnets,factories,factories_end,chips', False),
 }
 
 
@@ -257,7 +257,7 @@ def main():
     ap.add_argument('dirs', nargs='*')
     ap.add_argument('--columns', help='comma-separated column names')
     ap.add_argument('--preset', choices=sorted(PRESETS))
-    ap.add_argument('--sources', action='store_true', help='add the presence lost by source')
+    ap.add_argument('--sources', action='store_true', help='add the node lost by source')
     ap.add_argument('--gate', nargs='*', metavar='DIR', help='the gate table of these DIRs')
     ap.add_argument('--list', action='store_true', help='print the columns and presets')
     a = ap.parse_args()

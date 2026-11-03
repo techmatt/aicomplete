@@ -12,7 +12,7 @@ use crate::module::{
 use crate::state::GameState;
 use crate::view::ViewOut;
 
-use super::common::{has_presence_in, seat_opt};
+use super::common::{has_node_in, seat_opt};
 use super::{ai, alignment, board, cards};
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -50,7 +50,7 @@ pub fn production_key(seat: usize, resource: Resource) -> KeyBuf {
     KeyBuf::new("economy.production.").num(seat).text(".").text(resource.name())
 }
 
-/// Insight seat `s` loses next round (021: an adversary ambassador on its presence).
+/// Insight seat `s` loses next round (021: an adversary ambassador on its nodes).
 pub fn insight_debt(seat: usize) -> String {
     format!("economy.insight_debt.{seat}")
 }
@@ -83,14 +83,14 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
 }
 
 /// What the next upkeep pays seat `s`: its `income`, with no energy for a
-/// seat with presence in a country sabotaged then. Once this round's upkeep
+/// seat with a node in a country sabotaged then. Once this round's upkeep
 /// has run, a flag counts only if it outlasts this round's cleanup (2+).
 fn upkeep_income(w: &World, g: &GameState, seat: usize) -> PerResource {
     let mut inc = income(w, g, seat);
     let upkeep_done = g.phase_index("economy.upkeep").is_some_and(|i| g.phase > i);
     let at = if upkeep_done { 2 } else { 1 };
     if (0..w.map.countries.len()).any(|c| {
-        board::flag_level(g, RoundFlag::Sabotage, c) >= at && has_presence_in(w, g, seat, c)
+        board::flag_level(g, RoundFlag::Sabotage, c) >= at && has_node_in(w, g, seat, c)
     }) {
         inc[Resource::Energy] = 0;
     }
@@ -325,7 +325,7 @@ impl Module for Economy {
                     "insight lost next round",
                     debt,
                     None,
-                    "this much less insight next round: from adversary ambassadors on your presence, or a threat",
+                    "this much less insight next round: from adversary ambassadors on your nodes, or a threat",
                 );
             }
         }

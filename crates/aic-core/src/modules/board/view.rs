@@ -5,8 +5,8 @@ use super::*;
 fn flag_doc(f: RoundFlag) -> &'static str {
     match f {
         RoundFlag::Blackout => "Blackout: while this is up, cities here make no energy in production (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Sabotage => "Sabotage: while this is up, players with presence here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Shelter => "Sheltered: facilities and presence here can't be destroyed this round",
+        RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
+        RoundFlag::Shelter => "Sheltered: facilities and nodes here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Cordon => "Cordon: no arrivals land here in the next build",
     }
@@ -166,11 +166,11 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         );
         out.seat(
             s,
-            "presence",
-            "presence on the board",
-            presence_count(g, s),
+            "node",
+            "node on the board",
+            node_count(g, s),
             None,
-            "your presence: you act within 1 of it, and claim sites on or next to it",
+            "your nodes: you act within 1 of it, and claim sites on or next to it",
         );
         // 074: every completed card's converter, usable or not, says why.
         for c in 0..w.map.countries.len() {
@@ -189,18 +189,18 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 &label,
                 blocked.is_none() as i64,
                 None,
-                &format!("{}: once a round, with presence in {}", m.converter.words(), country_name(w, c)),
+                &format!("{}: once a round, with a node in {}", m.converter.words(), country_name(w, c)),
             );
         }
         let b = ai::board(w, s);
         let left = b.economy_track.len().saturating_sub(track_taken(g, s));
         out.seat(
             s,
-            "presence_track",
-            "presence left on the economy track",
+            "node_track",
+            "node left on the economy track",
             left as i64,
             None,
-            "presence tokens still on your AI board's economy track (the card-play track shows on the board)",
+            "nodes still on your AI board's economy track (the card-play track shows on the board)",
         );
     }
 }

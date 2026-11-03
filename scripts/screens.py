@@ -1,6 +1,6 @@
 """What the screen summaries share: reading an `aic-sim experiment` output directory
 (DIR/results.json for the cell labels, DIR/games.jsonl for the games), the helpers every
-table uses, the presence-source line and the dominance gate. `cards/screen.py` is the
+table uses, the node-source line and the dominance gate. `cards/screen.py` is the
 summary; a script one folder down puts scripts/ on `sys.path` to import this.
 """
 import collections
@@ -82,7 +82,7 @@ def hist(rounds):
 
 
 def ends_text(gs):
-    """`win purge 12, loss presence 3`: how the games ended, commonest first."""
+    """`win purge 12, loss node 3`: how the games ended, commonest first."""
     e = collections.Counter(('win ' if g['won'] else 'loss ') + g['reason'] for g in gs)
     return ', '.join(f'{k} {v}' for k, v in e.most_common())
 
@@ -108,15 +108,15 @@ def checked_cnt(games):
 
 
 def sources(games):
-    """The presence lost, by source, over all cells."""
+    """The node lost, by source, over all cells."""
     tot = collections.Counter()
     for gs in games.values():
         for g in gs:
             for k, v in g['counters'].items():
-                if k.startswith('board.presence_lost.'):
+                if k.startswith('board.node_lost.'):
                     tot[k.split('.')[-1]] += v
     n = sum(tot.values()) or 1
-    print('Presence lost by source: ' + ', '.join(f'{k} {v} ({100 * v / n:.0f}%)' for k, v in tot.most_common()))
+    print('Node lost by source: ' + ', '.join(f'{k} {v} ({100 * v / n:.0f}%)' for k, v in tot.most_common()))
 
 
 def gate_games(rows):

@@ -92,8 +92,8 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
         el('circle', { cx: f(0.62 * s), cy: f(-s), r: f(0.12 * s), fill: '#e0f2f1' }),
       );
       break;
-    case 'presence': {
-      // A player's presence: a server rack in the seat's color.
+    case 'node': {
+      // A player's node: a server rack in the seat's color.
       const col = ownerColor(arg, paint, c);
       g.append(el('rect', { x: f(-0.7 * s), y: f(-0.95 * s), width: f(1.4 * s), height: f(1.9 * s), rx: f(0.15 * s), fill: col, class: 'glyph' }));
       for (const yy of [-0.5, 0, 0.5]) {
@@ -102,8 +102,8 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       }
       break;
     }
-    case 'node':
-      // An adversary node: a diamond with a core.
+    case 'botnet':
+      // A botnet: a diamond with a core.
       g.append(
         p(`M0,${f(-s)} L${f(0.8 * s)},0 L0,${f(s)} L${f(-0.8 * s)},0 Z`, ADVERSARY_COLOR),
         el('circle', { cx: 0, cy: 0, r: f(0.28 * s), fill: '#ffcdd2' }),
@@ -126,7 +126,7 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
       g.append(p(`M0,${f(-0.6 * s)} V${f(0.65 * s)}`, 'none', 'detail'));
       break;
     case 'corruption':
-      // A corruption marker: a burned patch with a cross through it, where a presence fell.
+      // A corruption marker: a burned patch with a cross through it, where a node fell.
       g.append(
         el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: '#e1bee7', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.22 * s), class: 'glyph' }),
         el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
@@ -139,10 +139,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, presence: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, node: 1, corruption: 0.95 };
-/** The adversary's tokens: its owner cube, its ambassadors, its troops, its nodes, a corruption marker. */
-const isAdversary = (kind: string) => kind === 'troop' || kind === 'node' || kind === 'corruption' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'presence', 'harden', 'unit', 'ambassador', 'corruption', 'node', 'troop'];
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95 };
+/** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, a corruption marker. */
+const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'corruption' || kind.endsWith(':adversary');
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;

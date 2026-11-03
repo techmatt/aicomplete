@@ -44,7 +44,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
   Draft phases offer no pass: pick one of the buttons.
 - **Choices:** when the rules wait for a choice, its question shows in the amber bar
   above the board. A choice answered with a hex highlights its hexes at once: click
-  one. When two answers name the same hex (a sacrifice: the ambassador or the presence
+  one. When two answers name the same hex (a sacrifice: the ambassador or the node
   there), each also gets its own button (clicking the hex takes the first). Any other answer
   is a button in that seat's panel. Prompts, options and the log name hexes by country
   (`Cintamani #13`) and cards by name. *Pass every seat* passes
@@ -62,18 +62,18 @@ npm run e2e:researcher         # the Researcher's board, the same way
   shows a **war round** badge. Each seat's color is its country's.
   Players' pieces sit on the upper row of a hex: owner cube in the seat's color (an
   aligned city or owned station), research station (teal dome), factory (brown),
-  presence (server rack in the seat's color), hardening token (gray shield), corp
+  node (server rack in the seat's color), hardening token (gray shield), corp
   troops at a base (chevrons in the base country's color) and player ambassadors (pawn
   in the seat's color). The adversary's sit on the lower row, in purple: its owner cube
   (a corrupted city, station or factory), its ambassadors (pawn), corruption markers
-  (a crossed lilac and purple disc), its nodes (diamond) and its troops (dark
+  (a crossed lilac and purple disc), its botnets (diamond) and its troops (dark
   spearhead). The clock's step (`board.clock`), adversary compute
   and each seat's chips show as values. A number by a glyph is its count.
 - **Around the board:** the Alignment track (the Unity bucket, blue, filling leftward
   and the Discord bucket, red, filling rightward on either side of the Undecided; each
   side's tip count with its next threshold; the
   clear-board bar level and its win condition), the Unity and Discord cards resolved so far (hover a chip for its
-  text) with what is left in each deck, and the red **Lose if** group (Discord cards left, adversary cards left, and **presence gone** with the fewest presence of any seat, red at 1); the adversary row
+  text) with what is left in each deck, and the red **Lose if** group (Discord cards left, adversary cards left, and **node gone** with the fewest nodes of any seat, red at 1); the adversary row
   (stage, difficulty, adversary compute, threat tier and fronts, the adversary ambassadors and troops on the board, then deck →
   next round's card, face up → this round's card → discard, each card with its stage,
   text and escalation/war marks; under it the adversary's projects (each visible
@@ -95,7 +95,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
   action, and one *sell* button per card in hand. A standard action that needs a hex
   asks for it next, as a hex pick.
 - **Seat panels:** the AI board's name (hover it for its text, innate rule, slots and
-  unique cards), resources with income, then the board's economy and card-play tracks with every printed space: solid spaces are uncovered, dashed ones still under presence, the boxed
+  unique cards), resources with income, then the board's economy and card-play tracks with every printed space: solid spaces are uncovered, dashed ones still under nodes, the boxed
   one is the last uncovered, and each space's marks say what it adds (its income, such as
   **+1 energy**, a green **T2 keep** where it lowers a tier-2 keep, a tag it adds such as **industry tag**, the capstone's name at a track's end, and **pay N energy** where a placement pays its printed cost). Hover a step for its details. This is drawn from the generic
   `seats[].board` shape, not from AI-specific keys.
@@ -183,7 +183,7 @@ With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there a
 
 `npm run e2e:corps` (`scripts/e2e-corps.mjs`) plays the baseline at `station_cubes` 3, with arrivals, city builds and troop marches off and
 `corrupt_at` 20 so nothing disturbs it: a claimed and a neutral station, a card that overflows in round 2, stored
-cubes, a usable converter beside an unusable one (no presence there), and a use. `research cubes` and the converters show in a seat's panel.
+cubes, a usable converter beside an unusable one (no nodes there), and a use. `research cubes` and the converters show in a seat's panel.
 
 `npm run e2e:researcher` (`scripts/e2e-researcher.mjs`) plays the baseline at 3 countries, `station_cubes` 3, with the same
 quiet board: the Researcher's two tracks with the free station, keep upgrade and both capstones, its seven powers and Patience on
@@ -231,7 +231,7 @@ snapshot while the engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   legal actions at random through the page (choices, hex picks, now and then an undo).
   `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1).
 - **Moments:** a new round, the round-1 phases, each new choice prompt, a war step,
-  the first of each key event (tips, projects, corruption, destruction, nodes, marker
+  the first of each key event (tips, projects, corruption, destruction, botnets, marker
   placed and cleared, hardened, threat waits, stage N), the end. At each: a screenshot
   (at most 14 a game, plus always the end, a stuck game, an error, any failing check,
   and marker and waiting-threat moments) and the checks, at 1366×768 and again
@@ -257,7 +257,7 @@ snapshot while the engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   that outlives it. A sweep spawns `aic-sim`, so don't rebuild it mid-sweep (records from a
   newer engine than the page's wasm load with warnings). Its rules twin is the core test
   `invariants_hold_in_random_games` (every action of random games: no negative piles, no
-  pieces on the ocean, presence accounted for, a legal action until the end).
+  pieces on the ocean, nodes accounted for, a legal action until the end).
 - **Times:** 14 cases, `AIC_SWEEP_SEEDS=1` (1,337 captures): 25 min beside a planner run, `--quick` 6.7 min
   (measured at r21). A step costs 7–30 ms (render included), a capture about 1 s (three sizes).
   Run at most one sweep alongside one browser test lane.

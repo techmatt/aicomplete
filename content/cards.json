@@ -182,7 +182,7 @@
   ],
   "effects": [
    {
-    "op": "shield_presence",
+    "op": "shield_node",
     "count": 3
    }
   ]
@@ -1631,7 +1631,7 @@
   ],
   "effects": [
    {
-    "op": "remove_node"
+    "op": "remove_botnet"
    },
    {
     "op": "drain_project",
@@ -1661,7 +1661,7 @@
   ],
   "effects": [
    {
-    "op": "remove_node"
+    "op": "remove_botnet"
    },
    {
     "op": "discard_project"
@@ -1755,7 +1755,7 @@
   ],
   "effects": [
    {
-    "op": "place_presence",
+    "op": "place_node",
     "count": 3
    }
   ]
@@ -1815,7 +1815,7 @@
   ],
   "effects": [
    {
-    "op": "gain_per_presence",
+    "op": "gain_per_node",
     "resource": "energy"
    }
   ]
@@ -1899,7 +1899,7 @@
     "amount": 3
    },
    {
-    "op": "place_presence",
+    "op": "place_node",
     "count": 1,
     "free": true
    }
@@ -1921,7 +1921,7 @@
   ],
   "effects": [
    {
-    "op": "place_presence",
+    "op": "place_node",
     "count": 2
    },
    {
@@ -2200,12 +2200,12 @@
   ],
   "effects": [
    {
-    "op": "place_presence",
+    "op": "place_node",
     "count": 3,
     "free": true
    },
    {
-    "op": "gain_per_presence",
+    "op": "gain_per_node",
     "resource": "energy"
    }
   ]
@@ -2263,7 +2263,7 @@
     "op": "shelter"
    },
    {
-    "op": "place_presence",
+    "op": "place_node",
     "count": 3,
     "free": true
    }
@@ -3174,7 +3174,7 @@
     "count": 1
    },
    {
-    "op": "shield_presence",
+    "op": "shield_node",
     "count": 2
    }
   ]
@@ -4043,7 +4043,7 @@
    ],
    "effects": [
     {
-     "op": "remove_node"
+     "op": "remove_botnet"
     }
    ]
   }

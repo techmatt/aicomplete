@@ -56,12 +56,12 @@ config's card list.
 | Sample Repository | 1 | building | 8 cr; needs 3 science | 1 | science | Each round, 1 research cube. |
 | Shared Compute Grant | 1 | program (help) | 6 cr | 1 | science | Another player gains 4 insight. Draw 1 card. |
 | Simulation Cluster | 1 | building | 9 cr | 1 | science, cyber | Action: pay 2 energy, draw 2 cards. |
-| Stress Test Suite | 1 | program | 7 cr | 0 | science | Shield 3 of your presence. |
+| Stress Test Suite | 1 | program | 7 cr | 0 | science | Shield 3 of your nodes. |
 | Synthetic Data Forge | 1 | building | 8 cr; needs 2 science | 1 | science | Action: add 1 Dataset here, OR get 1 insight per Dataset here. |
 | Telemetry Archive | 1 | building | 5 cr | 1 | science | Action: add 1 Dataset here, OR pay 1 Dataset, delay 2 threats one round. |
 | Zero-Knowledge Exploit | 1 | event | 6 cr | 1 | science, cyber | Remove 7 compute from an adversary project. Draw 1 card. |
 | Adversarial Inference Sweep | 2 | event | 7 cr; needs 1 cyber | 1 | science, cyber, security | Remove 6 compute from each adversary project. Delay 3 threats one round. |
-| Breakthrough Lab | 2 | building | 10 cr; needs 4 science | 2 | science | Action: pay 2 research cubes, remove a node in reach. |
+| Breakthrough Lab | 2 | building | 10 cr; needs 4 science | 2 | science | Action: pay 2 research cubes, remove a botnet in reach. |
 | Data Licensing Deal | 2 | program | 4 cr | 1 | science | Remove the Datasets from one of your cards for 4 credits each. |
 | Exabyte Archive | 2 | building | 6 cr; needs 3 science; over science | 2 | science | Action: add 2 Datasets here, OR remove the Datasets here for 3 credits each. Add 2 Datasets here. |
 | Forensic Audit | 2 | event | 10 cr | 1 | science | Pay 4 research cubes. Liberate a corrupted city in reach. |
@@ -127,32 +127,32 @@ config's card list.
 | Black Ice Citadel | 2 | building | 7 cr; 1 ch; needs 1 cyber | 2 | cyber, security | Effect: each round, remove 3 compute from each adversary project. Pay 1 chip. |
 | Hyperscale Botnet | 2 | building | 10 cr; 1 ch; needs 4 cyber; over cyber | 2 | cyber | Each round, 2 insight, plus 1 credit per Cyber tag on your cards. Pay 1 chip. |
 | Killswitch Directive | 2 | event | 12 cr | 2 | cyber | Discard an adversary project. |
-| Node Severance | 2 | event | 8 cr; needs 1 cyber | 2 | cyber, security | Remove a node in reach. Remove 8 compute from an adversary project. |
+| Node Severance | 2 | event | 8 cr; needs 1 cyber | 2 | cyber, security | Remove a botnet in reach. Remove 8 compute from an adversary project. |
 | Root Access | 2 | event | 16 cr; needs 2 cyber | 1 | cyber | Liberate a corrupted city in reach. |
-| Singularity Exploit | 2 | program | 18 cr; 1 am; needs 2 cyber | 2 | cyber | Pay 1 antimatter. Remove a node in reach. Discard an adversary project. |
+| Singularity Exploit | 2 | program | 18 cr; 1 am; needs 2 cyber | 2 | cyber | Pay 1 antimatter. Remove a botnet in reach. Discard an adversary project. |
 
 ## Power (24)
 
 | card | tier | kind | cost | insight | tags | effect |
 |---|---|---|---|---|---|---|
 | Baseload Contract | 1 | program | 5 cr | 1 | power | Raise your energy income by 2. |
-| Brownout Relief | 1 | program (help) | 6 cr | 1 | power, diplomacy | Another player gains 3 energy. Place 1 presence free. |
+| Brownout Relief | 1 | program (help) | 6 cr | 1 | power, diplomacy | Another player gains 3 energy. Place 1 node free. |
 | Capacitor Discharge | 1 | event | 3 cr | 0 | power | Gain 1 energy per Power tag on your cards. |
 | Demand Response Grid | 1 | building | 9 cr | 1 | power | Action: pay 3 energy, get 10 credits. |
 | Faraday Yard | 1 | building | 6 cr | 1 | power | Each round, 1 energy. Action: harden 2 facilities in reach. |
 | Fusion Startup Stake | 1 | program | 10 cr | 1 | power | Raise your credit income by 2. Raise your energy income by 1. |
-| Grid Census | 1 | program | 6 cr | 1 | power | Gain 1 energy per presence you have on the board. |
+| Grid Census | 1 | program | 6 cr | 1 | power | Gain 1 energy per node you have on the board. |
 | Hardened Conduits | 1 | program | 2 cr | 0 | power | Harden 3 facilities in reach. |
 | Peaker Turbines | 1 | program | 9 cr | 1 | power, industry | Raise your energy income by 2. Raise your chip income by 1. |
-| Relay Mast Rollout | 1 | program | 7 cr | 1 | power | Place 3 presence. |
+| Relay Mast Rollout | 1 | program | 7 cr | 1 | power | Place 3 nodes. |
 | Shared Grid Accord | 1 | program (help) | 1 cr; 2 en | 1 | power, diplomacy | Pay 2 energy. Another player gains 4 energy. Sway 1 toward Unity. |
 | Storm Hardening | 1 | event | 5 cr | 0 | power, diplomacy, security | Shelter one country this round. Harden 3 facilities in reach. |
 | Substation Hub | 1 | building | 5 cr | 1 | power, industry | Each round, 1 energy, plus 1 credit per 2 Industry tags on your cards. |
 | Surplus Auction | 1 | event | 2 cr; 3 en | 0 | power | Pay 3 energy. Gain 5 chips. |
 | Tidal Barrage | 1 | building | 9 cr; needs 3 power | 1 | power | Each round, 1 energy per Power tag on your cards. |
-| Transmission Corridor | 1 | program | 6 cr | 1 | power, diplomacy | Place 2 presence. Move up to 2 ambassadors onto pieces in reach. |
-| Aegis Grid Lockdown | 2 | event | 9 cr | 1 | power, diplomacy, security | Shelter one country this round. Place 3 presence free. |
-| Beamed Power Constellation | 2 | program | 13 cr; needs 2 power | 2 | power | Place 3 presence free. Gain 1 energy per presence you have on the board. |
+| Transmission Corridor | 1 | program | 6 cr | 1 | power, diplomacy | Place 2 nodes. Move up to 2 ambassadors onto pieces in reach. |
+| Aegis Grid Lockdown | 2 | event | 9 cr | 1 | power, diplomacy, security | Shelter one country this round. Place 3 nodes free. |
+| Beamed Power Constellation | 2 | program | 13 cr; needs 2 power | 2 | power | Place 3 nodes free. Gain 1 energy per node you have on the board. |
 | Continental Supergrid | 2 | building | 12 cr; needs 6 power | 2 | power, diplomacy | Each round, 4 energy, plus 1 credit per Power tag on your cards. |
 | Dyson Swarm Tranche | 2 | building | 18 cr; 1 am; needs 4 power; over power | 2 | power, industry | Each round, 5 energy and 8 credits. Pay 1 antimatter. |
 | Interconnector Treaty | 2 | program (help) | 13 cr; needs 1 power | 2 | power, diplomacy | Another player gains 6 energy. Raise your credit income by 5. |
@@ -201,7 +201,7 @@ config's card list.
 | Bounty Board | 1 | program | 4 cr | 1 | security | Remove 1 troop in reach. Gain 1 credit per Security tag on your cards. |
 | Breach and Clear | 1 | event | 10 cr | 1 | security | Remove 3 troops in one country. |
 | Diplomatic Expulsion | 1 | program | 7 cr | 1 | security, diplomacy | Remove 4 adversary ambassadors in one country. Sway 1 toward Unity. |
-| Early Warning Drill | 1 | program | 6 cr | 1 | security, cyber, science | Delay 1 threat one round. Shield 2 of your presence. |
+| Early Warning Drill | 1 | program | 6 cr | 1 | security, cyber, science | Delay 1 threat one round. Shield 2 of your nodes. |
 | Force Protection Order | 1 | program | 5 cr | 1 | security | Counts as 5 toward a military threat. Remove 1 troop in reach. |
 | Garrison Command | 1 | building | 4 cr | 1 | security | Action: counts as 3 toward a military threat. |
 | Hardened Bunker Complex | 1 | building | 7 cr | 1 | security | Each round, 2 energy. Effect: you gain the Harden action, paid 1 chip. |

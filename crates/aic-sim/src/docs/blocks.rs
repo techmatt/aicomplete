@@ -13,11 +13,11 @@ use crate::cli::fail;
 /// The words cards lean on, once: rules.md's *Terms* and the player aid print these.
 pub const HOUSE_TERMS: [(&str, &str); 13] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
-    ("Shield", "a hardening token on a hex of your presence"),
+    ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
     ("Troop", "always the adversary's"),
-    ("In reach", "on a hex within 1 of your presence"),
-    ("A country you're in", "a country where you have presence"),
+    ("In reach", "on a hex within 1 of your nodes"),
+    ("A country you're in", "a country where you have a node"),
     ("Your home country", "the country you start in"),
     ("A threat", "on your card: one you may counter, with one of its sources in reach or your ambassador on one"),
     ("Here", "on a building: on this card, where its tokens sit"),
@@ -146,7 +146,7 @@ fn list(r: &Rules, key: &str) -> Vec<i64> {
 }
 
 /// A tunable as the tables print it: `` `hold_base` 3 ``, or with its module
-/// where the bare name says little (`` `alignment.node` 2 ``).
+/// where the bare name says little (`` `alignment.botnet` 2 ``).
 fn tick(r: &Rules, key: &str) -> String {
     let name = key.split_once('.').map_or(key, |(_, p)| p);
     let shown = if name.contains('_') && name != "free_city" { name } else { key };
@@ -190,7 +190,7 @@ pub(super) fn countries_block(c: &Content) -> String {
                 numbers(&p.stations),
                 p.neutral_station.to_string(),
                 format!("{} ({})", numbers(&p.industry), numbers(&p.factories)),
-                p.presence.to_string(),
+                p.node.to_string(),
             ]
         })
         .collect();
@@ -200,10 +200,10 @@ pub(super) fn countries_block(c: &Content) -> String {
             "Name",
             "Cities (corrupted first)",
             "Ocean",
-            "Station (node)",
+            "Station (botnet)",
             "Neutral station",
             "Industrial zones (setup factories)",
-            "Starting presence",
+            "Starting node",
         ],
         rows,
     )
@@ -418,7 +418,7 @@ pub(super) fn board_details_block(c: &Content) -> String {
     }
 }
 
-/// One space of a presence track.
+/// One space of a node track.
 pub(super) fn space(u: &Uncover) -> String {
     let mut parts = vec![gains(&u.income)];
     if u.keep2 {
@@ -442,7 +442,7 @@ pub(super) fn space(u: &Uncover) -> String {
     out
 }
 
-/// A presence track of every board, space by space. `first` labels space 1.
+/// A node track of every board, space by space. `first` labels space 1.
 fn track_block(boards: &[AiBoard], track: fn(&AiBoard) -> &[Uncover], first: &str) -> String {
     let spaces = boards.iter().map(|b| track(b).len()).max().unwrap_or(0);
     let rows = (0..spaces)
@@ -458,11 +458,11 @@ fn track_block(boards: &[AiBoard], track: fn(&AiBoard) -> &[Uncover], first: &st
     table(&head, rows)
 }
 
-pub(super) fn presence_track_block(c: &Content) -> String {
+pub(super) fn node_track_block(c: &Content) -> String {
     track_block(&c.ais, |b| &b.economy_track, "1 (on the board at setup)")
 }
 
-pub(super) fn presence_track2_block(c: &Content) -> String {
+pub(super) fn node_track2_block(c: &Content) -> String {
     track_block(&c.ais, |b| &b.play_track, "1")
 }
 
@@ -561,7 +561,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "liberating a corrupted city (§2: a liberate card or the fallback)".to_string(),
             t("alignment.free_city"),
         ],
-        ["Unity".to_string(), "removing a node".to_string(), t("alignment.node")],
+        ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
         [
             "Unity".to_string(),
             "cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards".to_string(),
@@ -606,7 +606,7 @@ pub(super) fn purge_ease_block(r: &Rules) -> String {
     const STEPS: [(&str, &str); 3] = [
         ("first", "adversary ambassadors stop counting"),
         ("second", "adversary troops stop counting"),
-        ("third", "**nodes** stop counting (candidate: with node removal rare, Unity buys the win)"),
+        ("third", "**botnets** stop counting (candidate: with botnet removal rare, Unity buys the win)"),
     ];
     let mut out = String::new();
     for (tips, (which, what)) in list(r, "alignment.unity_ease").iter().zip(STEPS) {
@@ -642,9 +642,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          Programs stay in front of you; events are used and discarded. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
          and you can sacrifice cards with the right tags to use your AI board's powers.\n\n\
-         **Presence, for new players.** There is no growth step. In the action phase you place \
-         presence with your board's two presence powers, each once a round, so 0, 1 or 2 tokens a \
-         round from them, and cards can add more. Every board has 1 energy for 1 presence; the second costs more, in the board's own \
+         **Node, for new players.** There is no growth step. In the action phase you place \
+         nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
+         round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n",
         n("cards.opening_deal"),
@@ -664,28 +664,28 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     let ease = list(r, "alignment.unity_ease");
     let easing = match ease.as_slice() {
         [_, a, b, ..] => format!(
-            "{a} Unity tips and the purge asks only for no nodes and no corrupted cities; {b} and it \
+            "{a} Unity tips and the purge asks only for no botnets and no corrupted cities; {b} and it \
              asks only for no corrupted cities."
         ),
-        [.., a] => format!("{a} Unity tips and the purge asks only for no nodes and no corrupted cities."),
+        [.., a] => format!("{a} Unity tips and the purge asks only for no botnets and no corrupted cities."),
         [] => String::new(),
     };
     format!(
         "**How the game ends, for new players.** You win by purging the board or by drawing the last \
          Unity card. Pressure comes every round: the face-up adversary card names a kind of site, \
          and every such site gains an adversary ambassador, so you always know where the next wave \
-         lands. Ambassadors pile up, pairs become nodes, {} on a city corrupt it, and corrupted \
+         lands. Ambassadors pile up, pairs become botnets, {} on a city corrupt it, and corrupted \
          cities and uncountered threats push the Alignment track toward Discord. Each time the track \
          tips, a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Pushing back works the same way in your favor. Mass your ambassadors on a \
          corrupted city to free it, which sways toward Unity, and each Unity tip brings a good card. \
          The Unity deck is small too: a game deals only {}, and drawing the last wins at once. \
-         {easing} You also lose if any player has no presence left on the board. \
+         {easing} You also lose if any player has no nodes left on the board. \
          Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and \
          a lost token leaves the game and marks its hex, so you can't act from there any more; its income \
          stays. In stage I your last one is safe. The adversary deck is a round cap too, {} rounds at most, \
          though games rarely reach it. So there are three different pressures: the Discord deck (politics), \
-         your presence (the board) and the cap.\n",
+         your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
         list(r, "alignment.unity_cards").iter().sum::<i64>(),
         dealt(r, 0).iter().sum::<usize>(),

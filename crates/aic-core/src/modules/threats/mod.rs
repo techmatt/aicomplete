@@ -506,7 +506,7 @@ impl Module for Threats {
     ) {
         let s = seat as usize;
         for (t, scope) in active(g) {
-            // 044: a seat that lost its presence there can't pay, but can take back.
+            // 044: a seat that lost its nodes there can't pay, but can take back.
             let can_pay = may_counter(w, g, s, &t, scope);
             for (r, need) in requirement(w, g, &t) {
                 let have = g.resource(s, r);

@@ -51,17 +51,17 @@ fn setup_places_the_printed_pieces() {
                 nums(&|h| g.tokens(h, FACTORY) > 0),
                 p.factories.iter().copied().collect()
             );
-            // Setup factories are neutral; each country's station holds a node.
+            // Setup factories are neutral; each country's station holds a botnet.
             assert!(nums(&|h| g.tokens(h, FACTORY) > 0
                 && g.hexes[h].tokens.keys().any(|k| k.starts_with("cube:")))
             .is_empty());
             assert_eq!(
-                nums(&|h| g.tokens(h, NODE) > 0),
+                nums(&|h| g.tokens(h, BOTNET) > 0),
                 p.stations.iter().copied().collect()
             );
         }
         for s in 0..2 {
-            assert_eq!(presence_of(&g, s), [m.numbered(s, piece(s).presence)], "seat {s}");
+            assert_eq!(node_of(&g, s), [m.numbered(s, piece(s).node)], "seat {s}");
             assert_eq!(g.resource(s, Resource::Ambassadors), 1);
             assert_eq!(g.resource(s, Resource::Credits), crate::modules::ai::start_credits(&rules.world(), s));
         }
@@ -98,7 +98,7 @@ fn each_seat_starts_with_a_bound_clean_city_at_every_size_and_difficulty() {
                 let h = bound[0];
                 assert!(is_city(&w, h) && !corrupted(&g, h) && cube_owner(&g, h) == Some(s));
                 let c = crate::modules::common::home_country(&w, s);
-                let start = w.map.numbered(c, w.content.map.countries[c].presence);
+                let start = w.map.numbered(c, w.content.map.countries[c].node);
                 let nearest = w.content.map.countries[c].cities.iter().map(|&n| w.map.numbered(c, n));
                 let clean_or_bound = nearest.filter(|&x| !corrupted(&g, x));
                 let best = clean_or_bound.map(|x| w.map.distance(start, x)).min().unwrap();

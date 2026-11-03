@@ -17,7 +17,7 @@
  ],
  "agents": [
   "planner:free_build_rush=1",
-  "planner:always_max_presence=1",
+  "planner:always_max_node=1",
   "planner:capstone_rush=1"
  ],
  "first_seed": "29640",

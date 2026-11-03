@@ -169,7 +169,7 @@ fn place_bases(
             piece.stations.contains(&num)
                 || piece.neutral_station == num
                 || piece.industry.contains(&num)
-                || piece.presence == num
+                || piece.node == num
         };
         let candidates = |o: usize| -> Vec<usize> {
             geo[c]

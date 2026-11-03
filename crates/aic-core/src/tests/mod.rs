@@ -7,8 +7,8 @@ use super::*;
 use crate::content::{HexKind, Resource, Side, TokenKind};
 use crate::modules::adversary::{CURRENT, DECK, NEXT, PROJECTS, STAGE, SUPPLY};
 use crate::modules::common::{
-    ambassador, cube, presence, presence_of, ADV_AMBASSADOR, ADV_CUBE, FACTORY,
-    HARDEN, NODE, STATION, TROOP, UNIT,
+    ambassador, cube, node, node_of, ADV_AMBASSADOR, ADV_CUBE, FACTORY,
+    HARDEN, BOTNET, STATION, TROOP, UNIT,
 };
 
 mod adversary;
@@ -28,7 +28,7 @@ mod march;
 mod ops;
 mod overlay;
 mod plan;
-mod presence_powers;
+mod node_powers;
 mod production;
 mod projects;
 mod researcher;
@@ -77,14 +77,14 @@ fn lab_config(round: &[&str]) -> Config {
         "alignment.discord_tip_per_player=50",
         "alignment.undecided_per_player=50",
         "alignment.clear_win_stage=3",
-        // The board starts empty: no presence is no loss here.
-        "alignment.presence_loss=0",
+        // The board starts empty: no node is no loss here.
+        "alignment.node_loss=0",
         // Rule tests read these numbers, not the calibration.
         "adversary.city_build=2",
-        "adversary.node_compute=3",
+        "adversary.botnet_compute=3",
         "board.base_discord=3",
         "board.ambassador_discord=1",
-        "board.troop_presence=0",
+        "board.troop_node=0",
         "board.free_leaves=0",
         "board.unit_cap=3",
         "board.destruction_discord=1",
@@ -144,13 +144,13 @@ fn lab_actions_with(sets: &[&str]) -> (Rules, GameState) {
 }
 
 /// The lab at its action phase after setup, where every seat has room to
-/// grow: free open hexes next to its starting presence.
+/// grow: free open hexes next to its starting node.
 fn actions_with_room() -> (Rules, GameState) {
     let (rules, g) = lab_actions();
     let w = rules.world();
     for s in 0..2 {
         assert!(
-            crate::modules::board::presence_hexes(&w, &g, s).len() >= 2,
+            crate::modules::board::node_hexes(&w, &g, s).len() >= 2,
             "seat {s} has no room to grow at setup"
         );
     }
@@ -315,11 +315,11 @@ fn give(rules: &Rules, g: &mut GameState) {
     act(rules, g, Action::Give { seat: 0, to: 1 });
 }
 
-/// A lab with seat 0's presence on the board and both tracks at `taken` steps.
+/// A lab with seat 0's node on the board and both tracks at `taken` steps.
 fn at_step(sets: &[&str], taken: i64) -> (Rules, GameState) {
     let (rules, mut g) = lab_with(&[], sets);
-    let a = rules.map.numbered(0, piece(0).presence);
-    put(&mut g, a, presence(0), 1);
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, node(0), 1);
     g.vars.insert(crate::modules::board::track_key(0).into(), taken);
     g.vars.insert(crate::modules::board::track2_key(0).into(), taken);
     (rules, g)
@@ -490,8 +490,8 @@ fn variant_matrix() -> Vec<Config> {
 // ---------- the golden game ----------
 
 const GOLDEN_REVISION: u32 = 34;
-const GOLDEN_FINGERPRINT: &str = "9424d8d7a0b00847";
-const GOLDEN_CONTENT_HASH: &str = "87229a9e0d536395";
+const GOLDEN_FINGERPRINT: &str = "1b4cd1b7b91201ab";
+const GOLDEN_CONTENT_HASH: &str = "eb2c6633ca0ac94f";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

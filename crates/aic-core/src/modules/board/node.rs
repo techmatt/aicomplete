@@ -1,10 +1,10 @@
-//! Presence: the two tracks, what a placement costs and pays, and losing a presence.
+//! Node: the two tracks, what a placement costs and pays, and losing a node.
 
 use crate::content::Uncover;
 
 use super::*;
 
-/// Presence tokens seat `s` has taken off its AI board's track (the
+/// Nodes seat `s` has taken off its AI board's track (the
 /// starting one included); AI boards read their uncovered spaces from it.
 pub fn track_key(seat: usize) -> KeyBuf {
     KeyBuf::new("board.track.").num(seat)
@@ -14,7 +14,7 @@ pub fn track_taken(g: &GameState, seat: usize) -> usize {
     g.var(&track_key(seat)).max(0) as usize
 }
 
-/// Tokens seat `s` has taken off its board's second presence track (021).
+/// Tokens seat `s` has taken off its board's second node track (021).
 pub fn track2_key(seat: usize) -> KeyBuf {
     KeyBuf::new("board.track2.").num(seat)
 }
@@ -23,13 +23,13 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
     g.var(&track2_key(seat)).max(0) as usize
 }
 
-/// Where seat `s` may place presence: a land hex holding no presence and no
+/// Where seat `s` may place nodes: a land hex holding no nodes and no
 /// corruption marker, adjacent to one of its own (with none left, any such
 /// hex in its home country).
-pub fn presence_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
-    let mine = presence(seat);
-    let free = |h: usize| !is_ocean(w, h) && presence_owner(g, h).is_none() && g.tokens(h, MARKER) == 0;
-    if presence_count(g, seat) == 0 {
+pub fn node_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    let mine = node(seat);
+    let free = |h: usize| !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, MARKER) == 0;
+    if node_count(g, seat) == 0 {
         let c = home_country(w, seat);
         return w.map.countries[c]
             .hexes
@@ -70,11 +70,11 @@ fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64> {
     first.into_iter().chain(second).min()
 }
 
-/// How a presence is paid for (041, locked: every placement pays its track
-/// step through [`place_presence`] unless a card says free).
+/// How a node is paid for (041, locked: every placement pays its track
+/// step through [`place_node`] unless a card says free).
 #[derive(Clone, Copy, PartialEq)]
 pub enum Placing {
-    /// A presence power or a card: the step's cost in energy.
+    /// A node power or a card: the step's cost in energy.
     Step,
     /// A card that says "free".
     Free,
@@ -108,15 +108,15 @@ pub fn can_pay_placement(w: &World, g: &GameState, seat: usize, how: Placing, ga
     })
 }
 
-/// Places one presence for `seat`: the next token off its track (uncovering
-/// the space under it) onto a hex next to its presence, paying `how`; only
+/// Places one node for `seat`: the next token off its track (uncovering
+/// the space under it) onto a hex next to its node, paying `how`; only
 /// tracks whose next step the seat can pay are offered. Returns whether placed.
-pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> Res<bool> {
+pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> Res<bool> {
     let w = cx.world;
     if !ai::can_place(&w, g, seat) {
         return Ok(false);
     }
-    let hexes = presence_hexes(&w, g, seat);
+    let hexes = node_hexes(&w, g, seat);
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
@@ -139,7 +139,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
             ))
         })
         .collect();
-    let prompt = format!("Seat {seat}: take presence off which track?");
+    let prompt = format!("Seat {seat}: take a node off which track?");
     let Some(k) = cx.choose(seat, &prompt, opts)? else {
         return Ok(false);
     };
@@ -149,7 +149,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     let uncovers = tracks[k].1.effects.as_slice();
     let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: place presence ({what}) on which hex?");
+    let prompt = format!("Seat {seat}: place nodes ({what}) on which hex?");
     let Some(j) = cx.choose(seat, &prompt, opts)? else {
         return Ok(false);
     };
@@ -159,46 +159,46 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     } else {
         cx.add_key(g, &track_key(seat), 1);
     }
-    cx.add_tokens(g, hexes[j], presence(seat), 1);
-    cx.tally(g, "board.presence_placed", 1);
-    cx.per_round(g, "board.presence_placed", 1);
+    cx.add_tokens(g, hexes[j], node(seat), 1);
+    cx.tally(g, "board.node_placed", 1);
+    cx.per_round(g, "board.node_placed", 1);
     if capstone {
         cx.tally(g, "board.capstones", 1);
-        cx.per_round(g, "board.presence_capstones", 1);
+        cx.per_round(g, "board.node_capstones", 1);
     }
     effects::run(g, cx, uncovers, &mut effects::Ctx::seat(seat))?;
     Ok(true)
 }
 
-/// Whether seat `s`'s presence is safe as its last (027): while this round's
+/// Whether seat `s`'s node is safe as its last (027): while this round's
 /// adversary card is below `last_safe_stage` (stage II), nothing destroys a
-/// player's last presence.
-pub(super) fn last_presence_safe(w: &World, g: &GameState, s: usize) -> bool {
-    g.var(adversary::STAGE) < w.int("board.last_safe_stage") && presence_count(g, s) <= 1
+/// player's last node.
+pub(super) fn last_node_safe(w: &World, g: &GameState, s: usize) -> bool {
+    g.var(adversary::STAGE) < w.int("board.last_safe_stage") && node_count(g, s) <= 1
 }
 
-/// Seat `s` loses its presence on hex `h`, unless it is safe as their last.
+/// Seat `s` loses its nodes on hex `h`, unless it is safe as their last.
 /// It leaves the game, as in Spirit Island (034: what it uncovered stays
 /// uncovered), and leaves a corruption marker on the hex unless the hex has
 /// corruption already. The tally names `source`. Returns whether it went.
-pub fn lose_presence(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &str) -> bool {
+pub fn lose_node(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &str) -> bool {
     let w = cx.world;
-    if last_presence_safe(&w, g, s) {
-        cx.tally(g, "board.last_presence_safe", 1);
+    if last_node_safe(&w, g, s) {
+        cx.tally(g, "board.last_node_safe", 1);
         return false;
     }
-    cx.add_tokens(g, h, presence(s), -1);
+    cx.add_tokens(g, h, node(s), -1);
     // 041: a shield on the hex goes with the token it shielded.
     if !hardenable(g, h) {
         let shields = g.tokens(h, HARDEN);
         cx.add_tokens(g, h, HARDEN, -shields);
     }
-    let tainted = g.tokens(h, MARKER) > 0 || g.tokens(h, NODE) > 0 || corrupted(g, h);
-    if w.int("board.presence_marker") > 0 && !tainted {
+    let tainted = g.tokens(h, MARKER) > 0 || g.tokens(h, BOTNET) > 0 || corrupted(g, h);
+    if w.int("board.node_marker") > 0 && !tainted {
         cx.add_tokens(g, h, MARKER, 1);
         cx.tally(g, "board.markers", 1);
     }
-    cx.tally(g, "board.presence_lost", 1);
-    cx.tally(g, &format!("board.presence_lost.{source}"), 1);
+    cx.tally(g, "board.node_lost", 1);
+    cx.tally(g, &format!("board.node_lost.{source}"), 1);
     true
 }

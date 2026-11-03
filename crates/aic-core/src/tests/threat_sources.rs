@@ -13,29 +13,29 @@ fn pays(rules: &Rules, g: &GameState, seat: u8, t: &str) -> bool {
         .any(|a| matches!(a, Action::Pay { seat: s, threat, .. } if *s == seat && threat == t))
 }
 
-/// Clears the whole board of every seat's presence, and puts `seat`'s on `at`.
-fn only_presence(g: &mut GameState, seat: usize, at: usize) {
+/// Clears the whole board of every seat's node, and puts `seat`'s on `at`.
+fn only_node(g: &mut GameState, seat: usize, at: usize) {
     for h in 0..g.hexes.len() {
         for s in 0..g.seats.len() {
-            put(g, h, presence(s), 0);
+            put(g, h, node(s), 0);
         }
     }
-    put(g, at, presence(seat), 1);
+    put(g, at, node(seat), 1);
 }
 
 #[test]
 fn a_source_in_reach_or_an_ambassador_on_one_lets_a_seat_pay() {
     let (rules, mut g) = threat_lab();
     let m = &rules.map;
-    let troop = m.numbered(1, piece(1).presence);
-    let far = m.numbered(0, piece(0).presence);
-    only_presence(&mut g, 0, far);
+    let troop = m.numbered(1, piece(1).node);
+    let far = m.numbered(0, piece(0).node);
+    only_node(&mut g, 0, far);
     put(&mut g, troop, TROOP, 1);
     deal(&mut g, "manhunt", 1);
     set_res(&mut g, 0, Resource::Credits, 20);
     set_res(&mut g, 1, Resource::Credits, 20);
     assert!(!pays(&rules, &g, 0, "manhunt"), "no source in reach, no ambassador");
-    assert!(!pays(&rules, &g, 1, "manhunt"), "no presence at all");
+    assert!(!pays(&rules, &g, 1, "manhunt"), "no nodes at all");
 
     put(&mut g, troop, ambassador(0), 1);
     assert!(pays(&rules, &g, 0, "manhunt"), "an ambassador on a source reaches it");
@@ -46,8 +46,8 @@ fn a_source_in_reach_or_an_ambassador_on_one_lets_a_seat_pay() {
     deal(&mut g, "siege", 1);
     put(&mut g, troop, ambassador(0), 0);
     assert!(!pays(&rules, &g, 0, "siege"));
-    put(&mut g, troop, presence(1), 1);
-    assert!(pays(&rules, &g, 1, "siege"), "presence on or next to a source");
+    put(&mut g, troop, node(1), 1);
+    assert!(pays(&rules, &g, 1, "siege"), "node on or next to a source");
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn a_threat_with_no_source_names_a_target_that_is_made_only_if_uncountered() {
     assert!(!corrupted(&g, setup), "nothing is made at the deal");
 
     // In reach of the target, a seat may counter; countered, nothing is made.
-    only_presence(&mut g, 0, setup);
+    only_node(&mut g, 0, setup);
     set_res(&mut g, 0, Resource::Credits, 20);
     assert!(pays(&rules, &g, 0, "supply_raid"));
     act(&rules, &mut g, Action::Pay { seat: 0, threat: "supply_raid".into(), resource: Resource::Credits, amount: 5 });
@@ -108,7 +108,7 @@ fn a_face_up_threat_shields_its_sources_until_it_is_countered() {
     let (rules, mut g) = threat_lab();
     let w = rules.world();
     let city = threats::sources(&w, &g, 0, ThreatSource::Influence)[0];
-    only_presence(&mut g, 0, city);
+    only_node(&mut g, 0, city);
     let hold = crate::modules::board::liberate_at(&w);
     put(&mut g, city, TROOP, 1);
     let troops = Op::Damage { ambassadors: 0, troops: 1 };
@@ -138,8 +138,8 @@ fn a_face_up_threat_shields_its_sources_until_it_is_countered() {
 fn a_typed_jam_reaches_only_its_type_and_only_what_the_seat_may_counter() {
     let (rules, mut g) = threat_lab();
     let w = rules.world();
-    let troop = rules.map.numbered(0, piece(0).presence);
-    only_presence(&mut g, 0, troop);
+    let troop = rules.map.numbered(0, piece(0).node);
+    only_node(&mut g, 0, troop);
     put(&mut g, troop, TROOP, 1);
     deal(&mut g, "manhunt", 0);
     deal(&mut g, "supply_raid", 0);
@@ -153,14 +153,14 @@ fn a_typed_jam_reaches_only_its_type_and_only_what_the_seat_may_counter() {
 }
 
 #[test]
-fn a_cyber_threat_reads_nodes_and_corrupted_stations() {
+fn a_cyber_threat_reads_botnets_and_corrupted_stations() {
     let (rules, mut g) = threat_lab();
     let w = rules.world();
-    let spot = rules.map.numbered(1, piece(1).presence);
-    put(&mut g, spot, NODE, 1);
+    let spot = rules.map.numbered(1, piece(1).node);
+    put(&mut g, spot, BOTNET, 1);
     assert!(threats::sources(&w, &g, 1, ThreatSource::Cyber).contains(&spot));
     let station = rules.map.numbered(0, piece(0).stations[0]);
-    put(&mut g, station, NODE, 0);
+    put(&mut g, station, BOTNET, 0);
     put(&mut g, station, ADV_CUBE, 0);
     put(&mut g, station, STATION, 1);
     assert!(!threats::sources(&w, &g, 0, ThreatSource::Cyber).contains(&station));

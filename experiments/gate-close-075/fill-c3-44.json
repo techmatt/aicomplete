@@ -16,8 +16,8 @@
   2
  ],
  "agents": [
-  "planner:always_max_presence=1",
-  "planner:never_second_presence=1"
+  "planner:always_max_node=1",
+  "planner:never_second_node=1"
  ],
  "first_seed": "28244",
  "games": 4,

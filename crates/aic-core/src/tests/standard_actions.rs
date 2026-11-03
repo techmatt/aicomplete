@@ -49,12 +49,12 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         "{o0:?}"
     );
     assert!(!o0.contains("factory"), "cities build factories now");
-    let d = presence_of(&g, 0)[0];
+    let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     assert!(standard_offered(&rules, &g, 0).contains("remove"));
-    // Removing a node is no standard action (019: only tier-2 effects remove nodes).
-    put(&mut g, d, NODE, 1);
-    assert!(!standard_offered(&rules, &g, 0).contains("node"));
+    // Removing a botnet is no standard action (019: only tier-2 effects remove botnets).
+    put(&mut g, d, BOTNET, 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("botnet"));
     assert!(rules
         .apply_mut(&mut g.clone(), &std_act(0, "factory"), None)
         .is_err());
@@ -108,7 +108,7 @@ fn standard_actions_cost_what_the_config_says() {
     assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, w.int("board.move_credits"), 0), 0));
 
     let mut g = g0.clone();
-    let d = presence_of(&g, 0)[0];
+    let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let supply = g.var(SUPPLY);
     act(&rules, &mut g, std_act(0, "remove"));
@@ -123,7 +123,7 @@ fn standard_actions_cost_what_the_config_says() {
 #[test]
 fn a_card_s_harden_action_costs_chips() {
     let (rules, mut g) = actions_with_room();
-    let p = presence_of(&g, 0)[0];
+    let p = node_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
     put(&mut g, p, cube(0), 1);
     set_res(&mut g, 0, Resource::Energy, 0);
@@ -142,7 +142,7 @@ fn standard_projects_turn_credits_into_hardening_and_drains() {
     set_res(&mut g, 0, Resource::Credits, 40);
 
     // Any player may harden with credits (the Builder has no Harden passive).
-    let p = presence_of(&g, 0)[0];
+    let p = node_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
     put(&mut g, p, cube(0), 1);
     rules.apply_mut(&mut g, &std_act(0, "harden_buy"), None).unwrap();
@@ -166,7 +166,7 @@ fn moving_an_ambassador_never_targets_the_hex_it_already_holds() {
     let m = &rules.map;
     for p in hexes_where(m, |h| kind(m, h) != HexKind::Ocean) {
         let mut g = g0.clone();
-        put(&mut g, p, presence(0), 1);
+        put(&mut g, p, node(0), 1);
         put(&mut g, p, ambassador(0), 1);
         set_res(&mut g, 0, Resource::Ambassadors, 0);
         set_res(&mut g, 0, Resource::Credits, 3);
@@ -190,7 +190,7 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let (city, next) = city_with_lonely_neighbors(m);
-    put(&mut g, next[0], presence(0), 1);
+    put(&mut g, next[0], node(0), 1);
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     act(&rules, &mut g, std_act(0, "align"));
@@ -209,8 +209,8 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
     use crate::content::Op;
     let (rules, mut g0) = lab(&[]);
     let m = &rules.map;
-    let me = m.numbered(0, piece(0).presence);
-    put(&mut g0, me, presence(0), 1);
+    let me = m.numbered(0, piece(0).node);
+    put(&mut g0, me, node(0), 1);
     let near: Vec<usize> = m.hexes[me]
         .neighbors
         .iter()
@@ -247,8 +247,8 @@ fn card_targets_on_the_map_must_be_in_reach() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let m = &rules.map;
-    let me = m.numbered(0, piece(0).presence);
-    put(&mut g, me, presence(0), 1);
+    let me = m.numbered(0, piece(0).node);
+    put(&mut g, me, node(0), 1);
     let near = m.hexes[me].neighbors[0];
     let far = hexes_where(m, |h| m.distance(h, me) > 2 && kind(m, h) != HexKind::Ocean)[0];
     put(&mut g, near, ADV_AMBASSADOR, 1);
@@ -257,7 +257,7 @@ fn card_targets_on_the_map_must_be_in_reach() {
 }
 
 #[test]
-fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
+fn claiming_a_site_needs_node_and_no_botnet_on_or_next_to_it() {
     let (rules, g0) = lab(&[]);
     let m = &rules.map;
     let station = m.numbered(0, piece(0).stations[0]);
@@ -270,12 +270,12 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
     let mut g0 = g0;
     put(&mut g0, station, STATION, 1);
 
-    // Presence two hexes away: the ambassador just waits.
+    // Node two hexes away: the ambassador just waits.
     let mut g = g0.clone();
     let away = hexes_where(m, |h| {
         m.distance(h, station) == 2 && kind(m, h) == HexKind::Open
     })[0];
-    put(&mut g, away, presence(0), 1);
+    put(&mut g, away, node(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(
         (
@@ -285,35 +285,35 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
         (0, 1)
     );
 
-    // Presence next to it: claimed.
+    // Node next to it: claimed.
     let mut g = g0.clone();
-    put(&mut g, next, presence(0), 1);
+    put(&mut g, next, node(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(g.tokens(station, cube(0)), 1);
 
-    // A node next to the presence but not the site does not block it.
+    // A botnet next to the node but not the site does not block it.
     let mut g = g0.clone();
-    put(&mut g, next, presence(0), 1);
-    let node_far = m.hexes[next]
+    put(&mut g, next, node(0), 1);
+    let botnet_far = m.hexes[next]
         .neighbors
         .iter()
         .copied()
         .find(|&h| m.distance(h, station) == 2)
         .unwrap();
-    put(&mut g, node_far, NODE, 1);
+    put(&mut g, botnet_far, BOTNET, 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(g.tokens(station, cube(0)), 1);
 
-    // A node next to the site blocks it, wherever the presence is.
+    // A botnet next to the site blocks it, wherever the node is.
     let mut g = g0.clone();
-    put(&mut g, next, presence(0), 1);
-    let node_near = m.hexes[station]
+    put(&mut g, next, node(0), 1);
+    let botnet_near = m.hexes[station]
         .neighbors
         .iter()
         .copied()
         .find(|&h| h != next && kind(m, h) != HexKind::Ocean)
         .unwrap();
-    put(&mut g, node_near, NODE, 1);
+    put(&mut g, botnet_near, BOTNET, 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, station));
     assert_eq!(
         (
@@ -322,30 +322,30 @@ fn claiming_a_site_needs_presence_and_no_node_on_or_next_to_it() {
         ),
         (0, 1)
     );
-    // So does a node on the site itself.
+    // So does a botnet on the site itself.
     let mut g = g0.clone();
-    put(&mut g, next, presence(0), 1);
-    put(&mut g, station, NODE, 1);
+    put(&mut g, next, node(0), 1);
+    put(&mut g, station, BOTNET, 1);
     assert!(!board::can_claim(&rules.world(), &g, 0, station));
 
     // Aligning a city: likewise.
     let (city, lonely) = city_with_lonely_neighbors(m);
     let mut g = g0.clone();
-    put(&mut g, lonely[0], presence(0), 1);
+    put(&mut g, lonely[0], node(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     assert!(standard_offered(&rules, &g, 0).contains("align"));
-    // A node next to the presence, two from the city: still offered.
+    // A botnet next to the node, two from the city: still offered.
     let far = m.hexes[lonely[0]]
         .neighbors
         .iter()
         .copied()
         .find(|&h| m.distance(h, city) == 2)
         .unwrap();
-    put(&mut g, far, NODE, 1);
+    put(&mut g, far, BOTNET, 1);
     assert!(standard_offered(&rules, &g, 0).contains("align"));
-    // A node next to the city: not.
-    put(&mut g, far, NODE, 0);
-    put(&mut g, lonely[1], NODE, 1);
+    // A botnet next to the city: not.
+    put(&mut g, far, BOTNET, 0);
+    put(&mut g, lonely[1], BOTNET, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("align"));
 }
 

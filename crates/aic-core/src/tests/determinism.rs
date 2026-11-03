@@ -112,7 +112,7 @@ fn spread_choice() -> (Rules, GameState) {
         .unwrap();
     corrupt_cities_except(m, &mut g, &[far]);
     put(&mut g, city, ADV_AMBASSADOR, 2);
-    // Two presence next to it: equals, so the players choose.
+    // Two node next to it: equals, so the players choose.
     let next: Vec<usize> = m.hexes[city]
         .neighbors
         .iter()
@@ -121,7 +121,7 @@ fn spread_choice() -> (Rules, GameState) {
         .take(2)
         .collect();
     for h in next {
-        put(&mut g, h, presence(0), 1);
+        put(&mut g, h, node(0), 1);
     }
     run(&rules, &mut g);
     assert!(g.pending.is_some());

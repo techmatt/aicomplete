@@ -11,7 +11,7 @@ checks at d0, d2, d4). Prints:
 
 - win rates per cell, with the rounds and how games ended;
 - the card economy per game: cards kept / played, insight spent on keeps /
-  on plays, credits left unspent (summed over rounds), presence placed;
+  on plays, credits left unspent (summed over rounds), node placed;
 - by round (rounds 1-6, both seats summed, means over the games that reached
   the round): hand size after keeping, cards kept, cards played, insight on
   keeps, insight on plays, credits unspent; greedy and engine, d0 and d2, c2;
@@ -35,7 +35,7 @@ CHECKS = [
     ('tier2_rush=1', 'tier-2-rush'),
     ('no_powers=1', 'no-powers'),
     ('no_counters=1', 'no-counters'),
-    ('no_presence=1', 'no-presence'),
+    ('no_node=1', 'no-node'),
 ]
 
 
@@ -66,7 +66,7 @@ def wins_table(cells, games):
 
 
 def economy_table(cells, games):
-    print('| variant | d | agent | kept / played | insight: keeps / plays | credits unspent | presence |')
+    print('| variant | d | agent | kept / played | insight: keeps / plays | credits unspent | node |')
     print('|---|---|---|---|---|---|---|')
     for cell in sorted(games, key=lambda c: (cells[c]['variant'], cells[c]['difficulty'], cells[c]['agent'])):
         gs, c = games[cell], cells[cell]
@@ -74,7 +74,7 @@ def economy_table(cells, games):
               f"| {mean(gs, lambda g: total(g, 'cards.kept.')):.1f} / {mean(gs, lambda g: total(g, 'cards.played.')):.1f} "
               f"| {mean(gs, lambda g: cnt(g, 'cards.insight_kept')):.1f} / {mean(gs, lambda g: cnt(g, 'cards.insight_played')):.1f} "
               f"| {mean(gs, lambda g: per_rounds(g, 'economy.credits_unspent')):.1f} "
-              f"| {mean(gs, lambda g: cnt(g, 'board.presence_placed')):.1f} |")
+              f"| {mean(gs, lambda g: cnt(g, 'board.node_placed')):.1f} |")
 
 
 def by_round(cells, games, agents=('greedy', 'engine'), diffs=(0, 2)):

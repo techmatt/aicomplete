@@ -39,7 +39,7 @@ def main():
     ap.add_argument('dirs', nargs='+')
     a = ap.parse_args()
     cells = load(a.dirs)
-    print('| cell | games | win % | purge % | completions | mean round | paid P / A / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | claimed | built | adv after | compute all / nodes / corp / Cintamani after | rounds |')
+    print('| cell | games | win % | purge % | completions | mean round | paid P / A / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | claimed | built | adv after | compute all / botnets / corp / Cintamani after | rounds |')
     print('|---|' + '---|' * 15)
     rounds = collections.Counter()
     for (variant, agent), gs in sorted(cells.items()):
@@ -61,7 +61,7 @@ def main():
               f"| {per('board.cubes_stored'):.1f} | {per('board.cubes_converted'):.1f} | {uses} "
               f"| {per('board.converter_idle'):.2f} / {per('board.converter_no_city'):.2f} / {per('board.converter_unpaid'):.2f} "
               f"| {per('board.stations_owned'):.2f} | {per('board.std.station'):.2f} | {per('board.cubes_after'):.1f} "
-              f"| {per('adversary.compute_made'):.1f} / {per('adversary.compute_nodes'):.1f} / {per('adversary.compute_corp'):.1f} / {per('adversary.compute_every'):.1f} "
+              f"| {per('adversary.compute_made'):.1f} / {per('adversary.compute_botnets'):.1f} / {per('adversary.compute_corp'):.1f} / {per('adversary.compute_every'):.1f} "
               f"| {sum(g.get('rounds', 0) for g in gs) / n:.1f} |")
     print()
     print('Completions by round, all cells: ' + ', '.join(f'{r}: {v}' for r, v in sorted(rounds.items())))

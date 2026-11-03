@@ -8,7 +8,7 @@ use super::table;
 
 /// The harms of the ledger, in its row order.
 pub const HARMS: [&str; 14] = [
-    "presence destroyed",
+    "node destroyed",
     "credits or income lost",
     "cards discarded",
     "insight lost",
@@ -48,22 +48,22 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
     ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
     ("arrivals", "production blacked out", "an ambassador on a city or station diverts it"),
-    ("build and spread", "adversary pieces placed", "cities build; surplus spreads; two meeting make a node"),
-    ("build and spread", "projects advanced (compute)", "each node makes compute"),
-    ("build and spread", "actions or claims blocked", "a node blocks site claims next to it"),
-    ("build and spread", "insight lost", "an ambassador on a lone presence drains insight every round until removed"),
+    ("build and spread", "adversary pieces placed", "cities build; surplus spreads; two meeting make a botnet"),
+    ("build and spread", "projects advanced (compute)", "each botnet makes compute"),
+    ("build and spread", "actions or claims blocked", "a botnet blocks site claims next to it"),
+    ("build and spread", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
     ("build and spread", "ambassadors lost", "a build or spread cancels a player ambassador there"),
-    ("corruption", "presence destroyed", "presence on or next to a city that corrupts is destroyed"),
+    ("corruption", "node destroyed", "a node on or next to a city that corrupts is destroyed"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
     ("uncountered threats", "adversary pieces placed", "a threat with no source that goes uncountered makes its target one: a city, station or factory goes over, or a troop lands at a base; one a country a round"),
-    ("uncountered threats", "presence destroyed", "a city it corrupts takes the presence on and next to it"),
+    ("uncountered threats", "node destroyed", "a city it corrupts takes the nodes on and next to it"),
     ("uncountered threats", "ambassadors lost", "player ambassadors on a city it corrupts are lost"),
     ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station"),
-    ("war", "presence destroyed", "a destroyed factory takes the presence on its hex"),
+    ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
-    ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's presence"),
+    ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's node"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
@@ -75,7 +75,7 @@ const MEGAPROJECTS: usize = 5;
 const THREAT_TIERS: usize = 2;
 
 /// Rows of [`HARMS`], for [`op_harms`].
-const PRESENCE_DESTROYED: usize = 0;
+const NODE_DESTROYED: usize = 0;
 const CREDITS_LOST: usize = 1;
 const CARDS_DISCARDED: usize = 2;
 const INSIGHT_LOST: usize = 3;
@@ -93,8 +93,8 @@ const BLOCKED: usize = 13;
 /// The harms one op does, as rows of [`HARMS`].
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
-        Op::DestroyPresence | Op::EachDestroyPresence { .. } | Op::LosePresenceOr { .. } => vec![PRESENCE_DESTROYED],
-        Op::Sacrifice => vec![PRESENCE_DESTROYED, AMBASSADORS_LOST],
+        Op::DestroyNode | Op::EachDestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
+        Op::Sacrifice => vec![NODE_DESTROYED, AMBASSADORS_LOST],
         Op::PlayersLose { resource: Resource::Credits, .. } => vec![CREDITS_LOST],
         Op::Requisition { .. } | Op::DiscardMostExpensive => vec![CARDS_DISCARDED],
         Op::LoseInsight { .. } => vec![INSIGHT_LOST],
@@ -107,18 +107,18 @@ fn op_harms(op: &Op) -> Vec<usize> {
         },
         Op::Ambassadors { .. }
         | Op::Infiltrate { .. }
-        | Op::NodeAmbassadors { .. }
+        | Op::BotnetAmbassadors { .. }
         | Op::CleanCityAmbassadors { .. }
         | Op::AdversaryBuild
         | Op::AdversarySpread
         | Op::CityBuild { .. }
         | Op::CleanFactories { .. }
         | Op::StationBuild { .. } => vec![PIECES_PLACED],
-        // 044: a corruption takes the presence and ambassadors around the city too.
-        Op::CorruptCity => vec![PIECES_PLACED, PRESENCE_DESTROYED, AMBASSADORS_LOST],
+        // 044: a corruption takes the node and ambassadors around the city too.
+        Op::CorruptCity => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::Troops { destroy, .. } => {
             if *destroy {
-                vec![PIECES_PLACED, PRESENCE_DESTROYED]
+                vec![PIECES_PLACED, NODE_DESTROYED]
             } else {
                 vec![PIECES_PLACED]
             }
@@ -219,14 +219,14 @@ pub fn harm_failures() -> Vec<String> {
         }
     }
     let all: usize = (0..SOURCES.len())
-        .filter_map(|s| marks.get(&(PRESENCE_DESTROYED, s)))
+        .filter_map(|s| marks.get(&(NODE_DESTROYED, s)))
         .map(|m| m.weight())
         .sum();
     for (s, source) in SOURCES.iter().enumerate() {
-        if let Some(m) = marks.get(&(PRESENCE_DESTROYED, s)) {
+        if let Some(m) = marks.get(&(NODE_DESTROYED, s)) {
             let n = m.weight();
             if 2 * n > all + 1 {
-                bad.push(format!("{source}: {n} of {all} printed presence destructions"));
+                bad.push(format!("{source}: {n} of {all} printed node destructions"));
             }
         }
     }
@@ -258,12 +258,12 @@ pub(super) fn harms_md() -> String {
          `RULE_HARMS` or `op_harms`.\n\nOne row per harm, one column per kind of source. A number \
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. `Discord cards` covers both tiers; `march` is the adversary \
-         troops' strikes, which take facilities only at `board.troop_presence` 4. The `yes` cells \
+         troops' strikes, which take facilities only at `board.troop_node` 4. The `yes` cells \
          are true at the baseline's numbers (`board.destruction_discord` and \
          `board.ambassador_discord` are 0, so neither war nor an ambassador on a clean city sways).\n\n{}\n\
          **Checks** (`aic-sim docs --check`, and a fast test): every harm in at least 2 kinds of \
          source; each threat tier at least 5 kinds of harm; no kind of source more than about half \
-         of the printed presence destruction. Measured shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
+         of the printed node destruction. Measured shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
          ## The board's rules\n\n{notes}",
         table(&head, rows)
     )

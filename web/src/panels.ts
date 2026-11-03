@@ -129,11 +129,11 @@ function lossesHtml(v: View, config: Config): string[] {
     const danger = deck.value <= 1 ? ' danger' : '';
     loss.push(`<span class="value${danger}" data-value="${deck.key}" data-scope="global"><span class="label">adversary cards run out</span> <b>${deck.value}</b><small> left</small></span>`);
   }
-  // 044: the third locked loss: a seat's last presence, if this config has it.
-  const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.presence')?.value);
-  if (param(config, 'alignment', 'presence_loss') && counts.every((n) => n !== undefined) && counts.length) {
+  // 044: the third locked loss: a seat's last node, if this config has it.
+  const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.node')?.value);
+  if (param(config, 'alignment', 'node_loss') && counts.every((n) => n !== undefined) && counts.length) {
     const least = Math.min(...(counts as number[]));
-    loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no presence on the board loses the game (early on, nothing destroys a last presence)"><span class="label">presence gone</span> <b>${least}</b></span>`);
+    loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (early on, nothing destroys a last node)"><span class="label">node gone</span> <b>${least}</b></span>`);
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
   // The clock's step is a name, not a count: "clock: war" (020: it read "war 2").
@@ -249,7 +249,7 @@ function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
   const says = none ? 'no one can counter: no source in reach'
     : refused.length ? `seat ${refused.join(', ')}: no source in reach, can't counter` : '';
   const made = s.target == null ? '' : ' No source yet: its target becomes one if it goes uncountered.';
-  const title = `${s.source} source: ${s.hexes.length} on the map. Counter with one within 1 of your presence, or your ambassador on one.${made}`;
+  const title = `${s.source} source: ${s.hexes.length} on the map. Counter with one within 1 of your nodes, or your ambassador on one.${made}`;
   return {
     badge: `<span class="tsource ${esc(s.source)}" title="${esc(title)}">${esc(s.source)}</span>${says ? `<span class="trefused">${esc(says)}</span>` : ''}`,
     hexes,
@@ -307,11 +307,11 @@ export function countriesHtml(v: View): string {
     const some = (n: number, what: string, cls = '') => (n ? [`<span class="${cls}">${n} ${what}</span>`] : []);
     const parts = [
       `cities ${cities.length - corrupted - aligned} clean`, ...some(aligned, 'aligned'), ...some(corrupted, 'corrupted', 'adv'),
-      ...some(tok('ambassador:adversary'), 'amb.', 'adv'), ...some(tok('node'), `node${tok('node') === 1 ? '' : 's'}`, 'adv'),
+      ...some(tok('ambassador:adversary'), 'amb.', 'adv'), ...some(tok('botnet'), `botnet${tok('botnet') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('troop'), `troop${tok('troop') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('unit'), `unit${tok('unit') === 1 ? '' : 's'}`),
     ];
-    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; adversary ambassadors, nodes and troops; corp units at bases">${parts.join(' · ')}</span>`;
+    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; adversary ambassadors, botnets and troops; corp units at bases">${parts.join(' · ')}</span>`;
     const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project')).map((x) => valueChip(x, `country:${c.index}`)).join('');
     const groups = c.cards.map((g) => g.key === 'threats.on'
       ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`, v)).join('')

@@ -48,7 +48,7 @@ fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
     put(&mut g, neutral, STATION, 1);
     put(&mut g, corrupted, STATION, 1);
     put(&mut g, corrupted, ADV_CUBE, 1);
-    put(&mut g, neutral, presence(0), 1);
+    put(&mut g, neutral, node(0), 1);
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, neutral));
     assert_eq!(
         (
@@ -133,7 +133,7 @@ fn ambassadors_divert_bases_and_factories() {
 }
 
 #[test]
-fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
+fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     let (rules, g0) = lab(&["board.produce"]);
     let m = &rules.map;
     let discord = |g: &GameState| g.var("alignment.discord") - g0.var("alignment.discord");
@@ -144,14 +144,14 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     // A corrupted city's energy goes to the adversary: 1 Discord a unit.
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
-    put(&mut g, open, presence(0), 1);
+    put(&mut g, open, node(0), 1);
     run(&rules, &mut g);
     assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (1, 0));
 
     // So does a clean city's with an adversary ambassador on it (which goes).
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 1);
-    put(&mut g, open, presence(0), 1);
+    put(&mut g, open, node(0), 1);
     run(&rules, &mut g);
     assert_eq!(
         (
@@ -162,11 +162,11 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
         (1, 0, 0)
     );
 
-    // 021: an adversary ambassador on a presence costs its owner 1 insight
+    // 021: an adversary ambassador on a node costs its owner 1 insight
     // next round and adds 1 compute to the cheapest project; it stays (068).
     let mut g = g0.clone();
-    let d = m.numbered(0, piece(0).presence);
-    put(&mut g, d, presence(0), 1);
+    let d = m.numbered(0, piece(0).node);
+    put(&mut g, d, node(0), 1);
     put(&mut g, d, ADV_AMBASSADOR, 1);
     let made = g.var("adversary.compute");
     run(&rules, &mut g);
@@ -179,16 +179,16 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
         (1, 1, 1)
     );
 
-    // 020: only a lone presence leaks. On a corrupted city the ambassador is
+    // 020: only a lone node leaks. On a corrupted city the ambassador is
     // the city's (it stays to spread); on a station it takes the cube (074).
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, ADV_AMBASSADOR, 1);
-    put(&mut g, city, presence(0), 1);
+    put(&mut g, city, node(0), 1);
     let station = m.numbered(0, piece(0).stations[0]);
     put(&mut g, station, STATION, 1);
     put(&mut g, station, ADV_AMBASSADOR, 1);
-    put(&mut g, station, presence(1), 1);
+    put(&mut g, station, node(1), 1);
     run(&rules, &mut g);
     assert_eq!(
         (
@@ -263,7 +263,7 @@ fn a_player_ambassador_absorbs_a_destruction() {
 #[test]
 fn an_evicting_ambassador_stays() {
     let (rules, mut g) = lab_actions();
-    let d = presence_of(&g, 0)[0];
+    let d = node_of(&g, 0)[0];
     put(&mut g, d, ADV_AMBASSADOR, 2);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     act(&rules, &mut g, std_act(0, "remove"));

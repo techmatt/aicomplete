@@ -197,15 +197,15 @@ fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does
     let w = rules.world();
     let harden = Op::Harden { count: 2 };
     let moves = Op::MoveOne { range: 2 };
-    assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&harden)), "no building, no presence");
+    assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&harden)), "no building, no nodes");
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&moves)), "no ambassador");
     assert!(!effects::feasible(&w, &g, 0, &[harden.clone(), moves.clone()]));
     // Either one acting is enough: Peacekeeping Detail with an ambassador to move.
     let mut with_one = g.clone();
-    let c = rules.map.numbered(0, piece(0).presence);
+    let c = rules.map.numbered(0, piece(0).node);
     let far = rules.map.numbered(0, piece(0).corrupted[0]);
     put(&mut with_one, c, ambassador(0), 1);
-    put(&mut with_one, far, presence(1), 1);
+    put(&mut with_one, far, node(1), 1);
     assert!(effects::feasible(&w, &with_one, 0, &[harden.clone(), Op::MoveOne { range: 20 }]));
     let gain = Op::Gain { resource: Resource::Credits, amount: 1 };
     assert!(effects::feasible(&w, &g, 0, &[gain, moves]), "a card that also gains is worth playing");
@@ -215,8 +215,8 @@ fn a_card_that_only_hardens_or_moves_needs_a_target_but_one_that_also_gains_does
 fn a_small_removal_has_no_target_on_a_hex_holding_only_a_troop() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
-    let a = rules.map.numbered(0, piece(0).presence);
-    put(&mut g, a, presence(0), 1);
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, node(0), 1);
     put(&mut g, a, TROOP, 1);
     let one = [Op::Damage { ambassadors: 1, troops: 0 }];
     assert!(!effects::feasible(&w, &g, 0, &one), "a card that names no troop can't take one");
@@ -246,7 +246,7 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     set_res(&mut g, 0, Resource::Energy, 0);
     let gains = [
         Op::Gain { resource: Resource::Energy, amount: step },
-        Op::PlacePresence { count: 1, free: false },
+        Op::PlaceNode { count: 1, free: false },
     ];
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [Op::DelayThreat { count: 1 }];

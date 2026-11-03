@@ -1,5 +1,5 @@
 //! The adversary (014, 016, 017): its deck (the clock and the stager), its
-//! ambassadors (build, spread, corrupt), nodes, adversary compute and the
+//! ambassadors (build, spread, corrupt), botnets, adversary compute and the
 //! project deck it fills, the ambassador supply and the difficulty levels.
 //! Also the shared rules for placing and removing adversary ambassadors and
 //! troops, which cards, threats and Alignment use, and the board conditions
@@ -36,22 +36,22 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("arrivals", 0, 5, "build: ambassadors each site the adversary card names gains, whatever the board holds"),
-    ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has presence (pressure for Wall to stop)"),
-    ParamSpec::int("node_compute", 0, 5, "adversary compute each node makes a round (none with a player ambassador on it)"),
+    ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
+    ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::list("project_cards", 0, 20, "adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top"),
     ParamSpec::int("project_row", 1, 6, "adversary projects visible at once; a new row is dealt when all have resolved"),
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the next card becomes this round's; corrupted cities and the factories next to them gain ambassadors; ongoing projects act; nodes make adversary compute onto the projects"),
-    PhaseSpec::auto("spread", "every hex with several adversary ambassadors keeps one and sends the rest to pieces (a second on a piece makes a node)"),
+    PhaseSpec::auto("build", "the next card becomes this round's; corrupted cities and the factories next to them gain ambassadors; ongoing projects act; botnets make adversary compute onto the projects"),
+    PhaseSpec::auto("spread", "every hex with several adversary ambassadors keeps one and sends the rest to pieces (a second on a piece makes a botnet)"),
     PhaseSpec::auto("corrupt", "cities that are not corrupted and hold enough adversary ambassadors are corrupted"),
     PhaseSpec::auto("reveal", "reveal the next adversary card face up, a round ahead"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "adversary",
-    summary: "The adversary deck (the clock), ambassadors (build, spread, corrupt), nodes, the supply, difficulty",
+    summary: "The adversary deck (the clock), ambassadors (build, spread, corrupt), botnets, the supply, difficulty",
     requires: &["board", "alignment"],
     variants: &[
         VariantDef {
@@ -93,7 +93,7 @@ const FIRST_PROJECT: &str = "adversary.first_project";
 /// The round of the first corruption after setup (sim observation).
 const FIRST_CORRUPTION: &str = "adversary.first_corruption";
 
-/// Set on a node's hex by a hack (021): it makes no compute in the next build.
+/// Set on a botnet's hex by a hack (021): it makes no compute in the next build.
 pub fn cut_key(h: usize) -> String {
     format!("adversary.cut.{h}")
 }
@@ -267,10 +267,10 @@ impl Module for Adversary {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
         cx.set_key(g, SUPPLY, start_supply(&w));
-        // Each country starts with a node on its (corrupted) research station.
+        // Each country starts with a botnet on its (corrupted) research station.
         for c in 0..w.map.countries.len() {
             for &n in &w.content.map.countries[c].stations {
-                cx.add_tokens(g, w.map.numbered(c, n), NODE, 1);
+                cx.add_tokens(g, w.map.numbered(c, n), BOTNET, 1);
             }
         }
         let mut deck = Vec::new();
@@ -328,7 +328,7 @@ impl Module for Adversary {
                 for t in &c.twists {
                     match t {
                         // These resolve as they do anywhere (034, 044).
-                        Op::Sway { .. } | Op::EachDestroyPresence { .. } | Op::PullUnity { .. } => {
+                        Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist"))?
                         }
                         // Read where they act: the build, spread, corrupt and arrivals
@@ -363,11 +363,11 @@ impl Module for Adversary {
                 for c in 0..w.map.countries.len() {
                     cx.set_key(g, &board::flag(RoundFlag::Cordon, c), 0);
                 }
-                // Nodes make compute, except under a player ambassador.
-                let per = w.int("adversary.node_compute");
+                // Botnets make compute, except under a player ambassador.
+                let per = w.int("adversary.botnet_compute");
                 let (mut made, mut blocked) = (0, 0);
                 for h in 0..g.hexes.len() {
-                    let n = g.tokens(h, NODE) * per;
+                    let n = g.tokens(h, BOTNET) * per;
                     if n == 0 {
                         continue;
                     }
@@ -386,7 +386,7 @@ impl Module for Adversary {
                     cx.tally(g, "adversary.compute_blocked", blocked);
                     cx.per_round(g, "adversary.compute_blocked", blocked);
                 }
-                cx.tally(g, "adversary.compute_nodes", made);
+                cx.tally(g, "adversary.compute_botnets", made);
                 gain_compute(g, cx, made)?;
             }
             1 => spread(g, cx, None)?,
@@ -408,10 +408,10 @@ impl Module for Adversary {
                 for h in cities {
                     corrupt_city(g, cx, h);
                 }
-                // Nodes at their peak, per board (country).
+                // Botnets at their peak, per board (country).
                 for c in 0..w.map.countries.len() {
-                    let n = node_count(g, Some(&w.map.countries[c].hexes));
-                    cx.peak(g, &format!("adversary.nodes_peak.c{c}"), n);
+                    let n = botnet_count(g, Some(&w.map.countries[c].hexes));
+                    cx.peak(g, &format!("adversary.botnets_peak.c{c}"), n);
                 }
                 let on_board: i64 = (0..g.hexes.len())
                     .map(|h| g.tokens(h, ADV_AMBASSADOR))
@@ -487,8 +487,8 @@ impl Module for Adversary {
             g.var(COMPUTE),
             None,
             &format!(
-                "adversary compute made so far: each node makes {} a round (none under a player ambassador, or in the build after a hack cuts it); it fills the cheapest visible project",
-                w.int("adversary.node_compute")
+                "adversary compute made so far: each botnet makes {} a round (none under a player ambassador, or in the build after a hack cuts it); it fills the cheapest visible project",
+                w.int("adversary.botnet_compute")
             ),
         );
         out.global(
@@ -727,7 +727,7 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) {
 
 /// Troop pressure where the Protector stands (080, candidate): in the round's
 /// build, `wall_troops` adversary troops land in each country where a seat with
-/// Wall has presence, as any landing does (on a factory, else a city, never on
+/// Wall has a node, as any landing does (on a factory, else a city, never on
 /// a walled hex), so Wall has strikes to stop.
 fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
@@ -737,7 +737,7 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
     }
     let walls: Vec<usize> = (0..g.seats.len()).filter(|&s| board::has_wall(&w, s)).collect();
     for c in 0..w.map.countries.len() {
-        if !walls.iter().any(|&s| has_presence_in(&w, g, s, c)) {
+        if !walls.iter().any(|&s| has_node_in(&w, g, s, c)) {
             continue;
         }
         let hexes = w.map.countries[c].hexes.clone();
@@ -763,8 +763,8 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
 /// One adversary ambassador arrives on hex `h` (from the supply or by
 /// spreading): it cancels a player ambassador there (both are removed, no
 /// Unity); spreading onto a piece that already holds one (not a city that
-/// isn't corrupted, clean or aligned, which collects them, and not a node)
-/// makes a node there, and both ambassadors return to the supply.
+/// isn't corrupted, clean or aligned, which collects them, and not a botnet)
+/// makes a botnet there, and both ambassadors return to the supply.
 fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
     let w = cx.world;
     if let Some(s) = player_ambassador(g, h) {
@@ -776,35 +776,35 @@ fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
     if spreading
         && g.tokens(h, ADV_AMBASSADOR) > 0
         && !collecting_city(&w, g, h)
-        && g.tokens(h, NODE) == 0
+        && g.tokens(h, BOTNET) == 0
     {
         remove(g, cx, h, 1);
         cx.add_key(g, SUPPLY, 1);
-        cx.add_tokens(g, h, NODE, 1);
-        cx.tally(g, "adversary.nodes_made", 1);
-        cx.peak(g, "adversary.nodes_peak", node_count(g, None));
-        cx.note(Some(h), || format!("A node forms at {}", hex_name(&w, h)));
+        cx.add_tokens(g, h, BOTNET, 1);
+        cx.tally(g, "adversary.botnets_made", 1);
+        cx.peak(g, "adversary.botnets_peak", botnet_count(g, None));
+        cx.note(Some(h), || format!("A botnet forms at {}", hex_name(&w, h)));
         return;
     }
     cx.add_tokens(g, h, ADV_AMBASSADOR, 1);
 }
 
-/// Removes the node on hex `h` (a card's effect; no standard action does, 019).
-pub fn remove_node(g: &mut GameState, cx: &mut Cx, h: usize) {
-    if g.tokens(h, NODE) > 0 {
-        cx.add_tokens(g, h, NODE, -1);
-        // A node formed here later is a new one: the hack cut this one (028).
+/// Removes the botnet on hex `h` (a card's effect; no standard action does, 019).
+pub fn remove_botnet(g: &mut GameState, cx: &mut Cx, h: usize) {
+    if g.tokens(h, BOTNET) > 0 {
+        cx.add_tokens(g, h, BOTNET, -1);
+        // A botnet formed here later is a new one: the hack cut this one (028).
         cx.set_key(g, &cut_key(h), 0);
-        cx.tally(g, "adversary.nodes_removed", 1);
-        alignment::for_node_removed(g, cx);
+        cx.tally(g, "adversary.botnets_removed", 1);
+        alignment::for_botnet_removed(g, cx);
     }
 }
 
-/// Nodes on `hexes`, or on the whole board for `None`.
-pub fn node_count(g: &GameState, hexes: Option<&[usize]>) -> i64 {
+/// Botnets on `hexes`, or on the whole board for `None`.
+pub fn botnet_count(g: &GameState, hexes: Option<&[usize]>) -> i64 {
     match hexes {
-        Some(hexes) => hexes.iter().map(|&h| g.tokens(h, NODE)).sum(),
-        None => (0..g.hexes.len()).map(|h| g.tokens(h, NODE)).sum(),
+        Some(hexes) => hexes.iter().map(|&h| g.tokens(h, BOTNET)).sum(),
+        None => (0..g.hexes.len()).map(|h| g.tokens(h, BOTNET)).sum(),
     }
 }
 
@@ -852,7 +852,7 @@ pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
 
 /// City `h` is corrupted: the adversary's cube goes on (a player cube
 /// comes off), its adversary ambassadors return to the supply, and any
-/// presence on it is destroyed (027).
+/// node on it is destroyed (027).
 pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
     take_for_adversary(g, cx, h);
@@ -867,10 +867,10 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
     }
     // The city's corruption replaces any marker on it.
     clear_markers_on(g, cx, h);
-    // 034: by `corruption_reach`, presence around the city goes too.
+    // 034: by `corruption_reach`, node around the city goes too.
     for x in within(&w, h, w.int("board.corruption_reach")) {
-        if let Some(s) = presence_owner(g, x) {
-            board::lose_presence(g, cx, x, s, "corruption");
+        if let Some(s) = node_owner(g, x) {
+            board::lose_node(g, cx, x, s, "corruption");
         }
     }
     cx.tally(g, "adversary.corruptions", 1);
@@ -883,7 +883,7 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
 
 /// `count` adversary troops, each onto a factory among `hexes` (players
 /// choose), or with no factory onto a city. With `destroy`, each destroys
-/// the presence on the hex it lands on (027), named for its tally.
+/// the node on the hex it lands on (027), named for its tally.
 pub fn land_troops(
     g: &mut GameState,
     cx: &mut Cx,
@@ -915,8 +915,8 @@ pub fn land_troops(
         cx.tally(g, tally, 1);
         if let Some(source) = destroy {
             for s in 0..g.seats.len() {
-                if g.tokens(spots[i], presence(s)) > 0 {
-                    board::destroy_piece(g, cx, spots[i], presence(s), board::Cause::Effect(source));
+                if g.tokens(spots[i], node(s)) > 0 {
+                    board::destroy_piece(g, cx, spots[i], node(s), board::Cause::Effect(source));
                 }
             }
         }
@@ -949,7 +949,7 @@ pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
 /// Where an ambassador spreading from `from` may go: hexes within `range`
 /// holding a piece (never an empty hex), not shielded, and
 /// without an adversary ambassador unless a clean or aligned city (cities
-/// collect them) or a piece with no node (a second ambassador makes a node).
+/// collect them) or a piece with no botnet (a second ambassador makes a botnet).
 /// Returns the best by priority (player owned, then clean cities, then the
 /// rest), then distance.
 fn destinations(w: &World, g: &GameState, from: usize, range: i32) -> Vec<usize> {
@@ -970,11 +970,11 @@ fn destinations(w: &World, g: &GameState, from: usize, range: i32) -> Vec<usize>
         if !has_piece(w, g, h) {
             continue;
         }
-        if shields.iter().any(|&s| g.tokens(h, presence(s)) > 0) {
+        if shields.iter().any(|&s| g.tokens(h, node(s)) > 0) {
             continue;
         }
         let city = collecting_city(w, g, h);
-        if g.tokens(h, ADV_AMBASSADOR) > 0 && !city && g.tokens(h, NODE) > 0 {
+        if g.tokens(h, ADV_AMBASSADOR) > 0 && !city && g.tokens(h, BOTNET) > 0 {
             continue;
         }
         let tier = if player_owned(g, h) {
@@ -1171,7 +1171,7 @@ pub fn most_infiltrated_city(
 
 /// What still counts against the purge at `level` (the Unity thresholds
 /// reached): corrupted cities always; adversary ambassadors below level 1;
-/// adversary troops below level 2; nodes below level 3 (019; with two
+/// adversary troops below level 2; botnets below level 3 (019; with two
 /// thresholds, always).
 pub fn purge_count(w: &World, g: &GameState, level: i64) -> i64 {
     (0..g.hexes.len()).map(|h| counts_against(w, g, h, level)).sum()
@@ -1179,14 +1179,14 @@ pub fn purge_count(w: &World, g: &GameState, level: i64) -> i64 {
 
 /// What hex `h` adds to [`purge_count`].
 fn counts_against(w: &World, g: &GameState, h: usize, level: i64) -> i64 {
-    against_bar(corrupted_city(w, g, h), g.tokens(h, NODE), g.tokens(h, ADV_AMBASSADOR), g.tokens(h, TROOP), level)
+    against_bar(corrupted_city(w, g, h), g.tokens(h, BOTNET), g.tokens(h, ADV_AMBASSADOR), g.tokens(h, TROOP), level)
 }
 
 /// What a hex with these pieces adds to [`purge_count`] at bar `level`.
-pub fn against_bar(corrupted_city: bool, nodes: i64, ambassadors: i64, troops: i64, level: i64) -> i64 {
+pub fn against_bar(corrupted_city: bool, botnets: i64, ambassadors: i64, troops: i64, level: i64) -> i64 {
     let mut n = corrupted_city as i64;
     if level < 3 {
-        n += nodes;
+        n += botnets;
     }
     if level < 1 {
         n += ambassadors;
@@ -1204,20 +1204,20 @@ pub fn under_bar(w: &World, g: &GameState, level: i64) -> bool {
 
 pub fn win_text(level: i64) -> String {
     match level {
-        0 => "purge: no corrupted city, node, adversary troop or adversary ambassador on the board"
+        0 => "purge: no corrupted city, botnet, adversary troop or adversary ambassador on the board"
             .into(),
         1 => {
-            "purge: no corrupted city, node or adversary troop (ambassadors no longer count)".into()
+            "purge: no corrupted city, botnet or adversary troop (ambassadors no longer count)".into()
         }
-        2 => "purge: no corrupted city or node (ambassadors and troops no longer count)".into(),
-        _ => "purge: no corrupted city (ambassadors, troops and nodes no longer count)".into(),
+        2 => "purge: no corrupted city or botnet (ambassadors and troops no longer count)".into(),
+        _ => "purge: no corrupted city (ambassadors, troops and botnets no longer count)".into(),
     }
 }
 
-/// A board loss, if any: a player with no presence on the board (locked,
+/// A board loss, if any: a player with no nodes on the board (locked,
 /// 027). (The deck running out ends the game in the build step, and the
 /// Discord deck running out in the tip.)
 pub fn loss(g: &GameState) -> Option<(&'static str, String)> {
-    let gone = (0..g.seats.len()).find(|&s| !has_presence(g, s))?;
-    Some(("presence", format!("seat {gone} has no presence left on the board")))
+    let gone = (0..g.seats.len()).find(|&s| !has_node(g, s))?;
+    Some(("node", format!("seat {gone} has no nodes left on the board")))
 }

@@ -41,13 +41,13 @@ fn on_a_war_round_units_cancel_and_the_surplus_destroys_rival_buildings() {
     let m = &rules.map;
     let [b0, b1] = m.fronts[0].bases;
     let [f1, f2] = [0, 1].map(|i| m.numbered(1, piece(1).factories[i]));
-    let d1 = m.numbered(1, piece(1).presence);
-    put(&mut g0, d1, presence(1), 1);
+    let d1 = m.numbered(1, piece(1).node);
+    put(&mut g0, d1, node(1), 1);
     g0.round = 2;
     let discord = |g: &GameState| g.var("alignment.discord") - g0.var("alignment.discord");
     let units = |g: &GameState| (g.tokens(b0, UNIT), g.tokens(b1, UNIT));
 
-    // 3 against 1: two cross, and take both factories (not the presence).
+    // 3 against 1: two cross, and take both factories (not the node).
     let mut g = g0.clone();
     put(&mut g, f1, FACTORY, 1);
     put(&mut g, f2, FACTORY, 1);
@@ -59,20 +59,20 @@ fn on_a_war_round_units_cancel_and_the_surplus_destroys_rival_buildings() {
         (
             g.tokens(f1, FACTORY),
             g.tokens(f2, FACTORY),
-            g.tokens(d1, presence(1))
+            g.tokens(d1, node(1))
         ),
         (0, 0, 1)
     );
     assert_eq!(discord(&g), 2);
 
-    // A destroyed factory takes the presence on its hex (027); a presence
+    // A destroyed factory takes the node on its hex (027); a node
     // elsewhere stays, and a surplus with nothing to hit is spent.
     let mut g = g0.clone();
     put(&mut g, f1, FACTORY, 1);
-    put(&mut g, f1, presence(1), 1);
+    put(&mut g, f1, node(1), 1);
     put(&mut g, b0, UNIT, 3);
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, presence(1)), g.tokens(d1, presence(1))), (0, 0, 1));
+    assert_eq!((g.tokens(f1, FACTORY), g.tokens(f1, node(1)), g.tokens(d1, node(1))), (0, 0, 1));
     assert_eq!((units(&g), discord(&g)), ((0, 0), 1));
 
     // Hardening absorbs one.

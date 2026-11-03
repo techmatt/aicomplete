@@ -443,7 +443,7 @@ impl ViewOut<'_> {
     }
 }
 
-/// A token kind in words, for a label: `presence:0` is "seat 0's presence",
+/// A token kind in words, for a label: `node:0` is "seat 0's node",
 /// `ambassador:adversary` "adversary ambassador" (020: labels were raw keys).
 fn token_words(kind: &str) -> String {
     match kind.split_once(':') {

@@ -19,7 +19,7 @@
     "planner",
     "planner:always_buy_cubes=1",
     "planner:tier2_rush=1",
-    "planner:never_second_presence=1",
+    "planner:never_second_node=1",
     "planner:no_powers=1",
     "planner:never_convert=1",
     "planner:capstone_rush=1"

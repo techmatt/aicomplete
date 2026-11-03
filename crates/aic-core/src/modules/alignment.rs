@@ -28,15 +28,15 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
-    ParamSpec::int("node", 0, 10, "Sway toward Unity for removing a node"),
+    ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
     ParamSpec::int("threat_discord", 0, 10, "Sway toward Discord when a threat executes uncountered"),
     ParamSpec::int("adversary_discord", 0, 10, "Sway toward Discord the adversary adds at the start of every round"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
-    ParamSpec::list("unity_ease", 0, 50, "Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then nodes stop counting (the first also starts the stronger Unity cards)"),
+    ParamSpec::list("unity_ease", 0, 50, "Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards)"),
     ParamSpec::list("unity_cards", 1, 6, "Unity cards a game deals from the printed deck, tier 1 then tier 2 (drawing the last one wins)"),
     ParamSpec::int("discord_tier2", 1, 50, "Discord tip count from which a Discord tip draws the stronger tier"),
-    ParamSpec::int("presence_loss", 0, 1, "1: a player with no presence on the board loses the game for everyone"),
+    ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
 ];
 
@@ -264,13 +264,13 @@ pub fn for_city_freed(g: &mut GameState, cx: &mut Cx) {
     sway(g, cx, Side::Unity, n);
 }
 
-/// Sway toward Unity for a removed node.
-pub fn for_node_removed(g: &mut GameState, cx: &mut Cx) {
-    let n = cx.world.int("alignment.node");
+/// Sway toward Unity for a removed botnet.
+pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
+    let n = cx.world.int("alignment.botnet");
     sway(g, cx, Side::Unity, n);
 }
 
-/// Whether the adversary's presence is under the bar for `level`. The
+/// Whether the adversary's node is under the bar for `level`. The
 /// level-0 bar (no adversary pieces) counts only once this round's adversary
 /// card is of stage `clear_win_stage` (the stages are stacked and public).
 fn purge_won(w: &World, g: &GameState, level: i64) -> bool {
@@ -303,16 +303,16 @@ pub fn pull_unity(g: &mut GameState, cx: &mut Cx, n: i64) {
 }
 
 /// Seat `s` sacrifices one of their ambassadors (from their supply or a
-/// hex) or one of their presence tokens, their choice; with none, nothing.
-/// A last presence is never offered (027); a sacrificed presence leaves the
-/// game, as a destroyed one does ([`board::lose_presence`]).
+/// hex) or one of their nodes, their choice; with none, nothing.
+/// A last node is never offered (027); a sacrificed node leaves the
+/// game, as a destroyed one does ([`board::lose_node`]).
 pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     let w = cx.world;
     let k = ambassador(s);
     let ambs = ambassador_hexes(g, s);
-    // The hexes holding the seat's presence (020: this listed `presence_hexes`, the
-    // free hexes where it could place one, so a sacrificed presence removed nothing).
-    let pres: Vec<usize> = presence_of(g, s);
+    // The hexes holding the seat's node (020: this listed `node_hexes`, the
+    // free hexes where it could place one, so a sacrificed node removed nothing).
+    let pres: Vec<usize> = node_of(g, s);
     let pres = if pres.len() < 2 { Vec::new() } else { pres };
     let mut opts = Vec::new();
     if g.resource(s, Resource::Ambassadors) > 0 {
@@ -320,8 +320,8 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     }
     let off = opts.len();
     opts.extend(ambs.iter().map(|&h| labeled_hex_opt(&w, "ambassador", h)));
-    opts.extend(pres.iter().map(|&h| labeled_hex_opt(&w, "presence", h)));
-    let prompt = format!("Seat {s}: sacrifice which ambassador or presence?");
+    opts.extend(pres.iter().map(|&h| labeled_hex_opt(&w, "node", h)));
+    let prompt = format!("Seat {s}: sacrifice which ambassador or node?");
     let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
         return Ok(());
     };
@@ -332,8 +332,8 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
         cx.add_tokens(g, ambs[i - off], k, -1);
         cx.tally(g, "alignment.sacrificed_ambassadors", 1);
     } else {
-        board::lose_presence(g, cx, pres[i - off - ambs.len()], s, "project");
-        cx.tally(g, "alignment.sacrificed_presence", 1);
+        board::lose_node(g, cx, pres[i - off - ambs.len()], s, "project");
+        cx.tally(g, "alignment.sacrificed_node", 1);
     }
     Ok(())
 }
@@ -495,9 +495,9 @@ impl Module for Alignment {
                     if g.is_over() {
                         return Ok(());
                     }
-                    // 028: a card that takes a last presence loses here, before
+                    // 028: a card that takes a last node loses here, before
                     // a Unity tip can win a game with no player on the board.
-                    if w.int("alignment.presence_loss") > 0 && adversary::loss(g).is_some() {
+                    if w.int("alignment.node_loss") > 0 && adversary::loss(g).is_some() {
                         break;
                     }
                     continue 'tips;
@@ -506,7 +506,7 @@ impl Module for Alignment {
             break;
         }
         // Losses first.
-        if w.int("alignment.presence_loss") > 0 {
+        if w.int("alignment.node_loss") > 0 {
             if let Some((reason, detail)) = adversary::loss(g) {
                 cx.end(g, false, reason, detail);
                 return Ok(());

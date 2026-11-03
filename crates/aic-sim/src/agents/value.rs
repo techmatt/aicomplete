@@ -7,8 +7,8 @@
 //! compile until it has an arm here, and a test fails until it has its row in the
 //! table. A card's value is split by what it depends on ([`Worth`]): what it does
 //! now, what it pays a round (and whether the heuristic's board terms already see
-//! it), per presence, per tag, and what needs a corrupted city. The caller supplies
-//! the table's context ([`Ctx`]: rounds left, presence, tags, a corrupted city).
+//! it), per node, per tag, and what needs a corrupted city. The caller supplies
+//! the table's context ([`Ctx`]: rounds left, node, tags, a corrupted city).
 //!
 //! These are agent numbers, never rules: they change how agents value a card, not
 //! what any card does.
@@ -40,8 +40,8 @@ pub struct Table {
 struct Fast {
     /// By `Resource as usize`.
     res: [f64; 7],
-    presence: f64,
-    presence_late: f64,
+    node: f64,
+    node_late: f64,
     late_rounds: f64,
     no_city_share: f64,
     uses_share: f64,
@@ -95,8 +95,8 @@ pub fn table() -> &'static Table {
         }
         t.fast = Fast {
             res,
-            presence: t.op("place_presence") * t.rate("presence"),
-            presence_late: t.op("place_presence") * t.rate("presence_late"),
+            node: t.op("place_node") * t.rate("node"),
+            node_late: t.op("place_node") * t.rate("node_late"),
             late_rounds: t.rate("late_rounds"),
             no_city_share: t.rate("no_city_share"),
             uses_share: t.rate("uses_share"),
@@ -166,8 +166,8 @@ impl Table {
 pub struct Ctx {
     /// Rounds of income still to come.
     pub left: f64,
-    /// The seat's presence on the board.
-    pub presence: f64,
+    /// The seat's node on the board.
+    pub node: f64,
     /// The seat's tags on its cards in play.
     pub tags: [i64; TAGS.len()],
     /// Whether a city is corrupted (a liberation has a target).
@@ -179,7 +179,7 @@ impl Ctx {
     pub fn typical(t: &Table) -> Ctx {
         Ctx {
             left: t.rate("income_rounds"),
-            presence: t.rate("presence_count"),
+            node: t.rate("node_count"),
             tags: [t.rate("tag_count") as i64; TAGS.len()],
             corrupted: true,
         }
@@ -194,10 +194,10 @@ pub struct Worth {
     /// The part of `now` the heuristic's board terms don't see after the op
     /// resolves (a shelter, a cordon, a peek): credited when the action is taken.
     pub unseen: f64,
-    /// Presence placed (each at `presence`, or `presence_late` near the end).
-    pub presence: f64,
-    /// Now, per presence the seat has.
-    pub per_presence: f64,
+    /// Node placed (each at `node`, or `node_late` near the end).
+    pub node: f64,
+    /// Now, per node the seat has.
+    pub per_node: f64,
     /// Now, per tag the seat has.
     pub per_tag: [f64; TAGS.len()],
     /// Now, only with a corrupted city (else `no_city_share` of it).
@@ -215,8 +215,8 @@ impl std::ops::AddAssign for Worth {
     fn add_assign(&mut self, o: Worth) {
         self.now += o.now;
         self.unseen += o.unseen;
-        self.presence += o.presence;
-        self.per_presence += o.per_presence;
+        self.node += o.node;
+        self.per_node += o.per_node;
         self.city += o.city;
         self.income += o.income;
         self.standing += o.standing;
@@ -248,8 +248,8 @@ impl Worth {
     pub fn scaled(mut self, k: f64) -> Worth {
         self.now *= k;
         self.unseen *= k;
-        self.presence *= k;
-        self.per_presence *= k;
+        self.node *= k;
+        self.per_node *= k;
         self.city *= k;
         self.income *= k;
         self.standing *= k;
@@ -262,10 +262,10 @@ impl Worth {
 
     /// What resolves now, in this context.
     pub fn instant(&self, t: &Table, c: &Ctx) -> f64 {
-        let presence = if c.left <= t.fast.late_rounds { t.fast.presence_late } else { t.fast.presence };
+        let node = if c.left <= t.fast.late_rounds { t.fast.node_late } else { t.fast.node };
         let city = if c.corrupted { 1.0 } else { t.fast.no_city_share };
         let tags: f64 = (0..TAGS.len()).map(|i| self.per_tag[i] * c.tags[i] as f64).sum();
-        self.now + self.presence * presence + self.per_presence * c.presence + self.city * city + tags
+        self.now + self.node * node + self.per_node * c.node + self.city * city + tags
     }
 
     /// What it pays a round, in this context: income and standing.
@@ -290,22 +290,22 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
     let tag_i = |tag: aic_core::content::Tag| tag as usize;
     match op {
         Op::Gain { resource, amount } => Worth::now(row("gain") * r(*resource) * *amount as f64),
-        Op::GainPerPresence { resource } => Worth { per_presence: row("gain_per_presence") * r(*resource), ..Worth::default() },
+        Op::GainPerNode { resource } => Worth { per_node: row("gain_per_node") * r(*resource), ..Worth::default() },
         Op::ChoosePlayer => Worth::now(row("choose_player")),
         Op::OtherGain { resource, amount } => Worth::now(row("other_gain") * r(*resource) * *amount as f64),
         Op::Transfer { resource, max } => Worth::now(row("transfer") * r(*resource) * *max as f64),
-        Op::PlacePresence { count, free } => Worth {
-            presence: *count as f64,
-            now: if *free { t.rate("presence_free") * *count as f64 } else { 0.0 },
+        Op::PlaceNode { count, free } => Worth {
+            node: *count as f64,
+            now: if *free { t.rate("node_free") * *count as f64 } else { 0.0 },
             ..Worth::default()
         },
         Op::ClearMarkers { count } => Worth::now(row("clear_markers") * t.rate("target_share") * *count as f64),
-        Op::ShieldPresence { count } => Worth::now(row("shield_presence") * t.rate("target_share") * *count as f64),
+        Op::ShieldNode { count } => Worth::now(row("shield_node") * t.rate("target_share") * *count as f64),
         Op::DelayThreat { count } => Worth::now(row("delay_threat") * *count as f64),
         Op::Damage { ambassadors, troops } => Worth::now(row("damage") * damage(t, *ambassadors, *troops)),
         Op::DamageCountry { ambassadors, troops } => Worth::now(row("damage_country") * damage(t, *ambassadors, *troops)),
         Op::DestroyAll => Worth::now(row("destroy_all")),
-        Op::RemoveNode => Worth::now(row("remove_node")),
+        Op::RemoveBotnet => Worth::now(row("remove_botnet")),
         Op::RemoveAmbassadorsCountry { unity_per, max } => {
             let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 };
             let sway = if *unity_per > 0 { (n / *unity_per as f64).floor() * t.rate("sway") } else { 0.0 };
@@ -347,7 +347,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DiscardProject => Worth::now(row("discard_project")),
         Op::Production { resource, amount } => Worth::income(row("production") * r(*resource) * *amount as f64),
         Op::AddTokens { kind, amount, .. } => Worth::now(row("add_tokens") * t.feed(*kind) * *amount as f64),
-        Op::CutNode => Worth::unseen(row("cut_node")),
+        Op::CutBotnet => Worth::unseen(row("cut_botnet")),
         Op::MoveOne { .. } => Worth::now(row("move_one")),
         Op::SpreadAmbassadors => Worth::now(row("spread_ambassadors")),
         Op::Consolidate { max } => Worth::now(row("consolidate") * *max as f64),
@@ -368,11 +368,11 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::Troops { count, each_country, destroy } => {
             let n = *count as f64 * if *each_country { t.rate("countries") } else { 1.0 };
-            let lost = if *destroy { row("destroy_presence").abs() } else { 0.0 };
+            let lost = if *destroy { row("destroy_node").abs() } else { 0.0 };
             Worth::now(row("troops") * n - lost * n)
         }
-        Op::DestroyPresence => Worth::now(row("destroy_presence")),
-        Op::EachDestroyPresence { count } => Worth::now(row("each_destroy_presence") * *count as f64),
+        Op::DestroyNode => Worth::now(row("destroy_node")),
+        Op::EachDestroyNode { count } => Worth::now(row("each_destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
         Op::LoseInsight { amount } => Worth::unseen(row("lose_insight") * *amount as f64),
         Op::FlipStation { each_country } => {
@@ -382,8 +382,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::PlayersLose { resource, amount } => Worth::now(row("players_lose") * r(*resource) * *amount as f64),
         Op::AdversaryBuild => Worth::now(row("adversary_build")),
         Op::Ambassadors { count, .. } => Worth::now(row("ambassadors") * *count as f64),
-        Op::LosePresenceOr { resource, amount } => {
-            Worth::now(row("lose_presence_or") * (r(*resource) * *amount as f64).min(t.rate("presence")))
+        Op::LoseNodeOr { resource, amount } => {
+            Worth::now(row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node")))
         }
         Op::Flag { name } => Worth::unseen(match name {
             RoundFlag::Shelter => row("shelter") * t.rate("target_share"),
@@ -406,9 +406,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Infiltrate { amount } => Worth::now(row("infiltrate") * t.rate("countries") * *amount as f64),
         Op::AdversarySpread => Worth::now(row("adversary_spread")),
         Op::Sacrifice => Worth::now(row("sacrifice")),
-        Op::NodeAmbassadors { amount } => Worth::now(row("node_ambassadors") * *amount as f64),
+        Op::BotnetAmbassadors { amount } => Worth::now(row("botnet_ambassadors") * *amount as f64),
         Op::CleanCityAmbassadors { amount } => Worth::now(row("clean_city_ambassadors") * *amount as f64),
-        Op::RemoveNodes { count } => Worth::now(row("remove_nodes") * *count as f64),
+        Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         Op::Income { resource, amount } => Worth::income(row("income") * r(*resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per } => {
             let mut w = Worth::default();
@@ -493,7 +493,7 @@ pub fn ability_worth(t: &Table, a: &Ability) -> Worth {
         }
         let better = match &best {
             None => true,
-            Some(o) => w.now + w.city + w.presence * 3.0 > o.now + o.city + o.presence * 3.0,
+            Some(o) => w.now + w.city + w.node * 3.0 > o.now + o.city + o.node * 3.0,
         };
         if better {
             best = Some(w);

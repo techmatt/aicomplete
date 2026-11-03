@@ -116,10 +116,10 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> 
     Ok(())
 }
 
-/// Each player in `scope` loses a presence in `scope` or pays `amount`
+/// Each player in `scope` loses a node in `scope` or pays `amount`
 /// `resource` (their choice). Losing one needs 2 or more on the board (027:
-/// this never takes a last presence); with neither possible, what they have.
-pub fn lose_presence_or(
+/// this never takes a last node); with neither possible, what they have.
+pub fn lose_node_or(
     g: &mut GameState,
     cx: &mut Cx,
     scope: Option<usize>,
@@ -130,8 +130,8 @@ pub fn lose_presence_or(
     let w = cx.world;
     let hexes = scope_hexes(&w, scope);
     for s in seats_in_scope(&w, g, scope) {
-        let mine: Vec<usize> = if presence_count(g, s) >= 2 {
-            hexes.iter().copied().filter(|&h| g.tokens(h, presence(s)) > 0).collect()
+        let mine: Vec<usize> = if node_count(g, s) >= 2 {
+            hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect()
         } else {
             Vec::new()
         };
@@ -141,12 +141,12 @@ pub fn lose_presence_or(
             opts.push(opt(format!("pay {amount} {resource}")));
         }
         let off = opts.len();
-        opts.extend(mine.iter().map(|&h| labeled_hex_opt(&w, "lose presence", h)));
-        let prompt = format!("Seat {s}: pay {amount} {resource} or lose a presence?");
+        opts.extend(mine.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
+        let prompt = format!("Seat {s}: pay {amount} {resource} or lose a node?");
         match cx.choose_loss(s, &prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
             Some(i) => {
-                board::lose_presence(g, cx, mine[i - off], s, source);
+                board::lose_node(g, cx, mine[i - off], s, source);
             }
             None => {
                 let k = g.resource(s, resource);

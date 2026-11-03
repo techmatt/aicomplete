@@ -7,7 +7,7 @@ use super::*;
 fn is_source(w: &World, g: &GameState, h: usize, source: ThreatSource) -> bool {
     match source {
         ThreatSource::Influence => corrupted_city(w, g, h),
-        ThreatSource::Cyber => g.tokens(h, NODE) > 0 || corrupted_station(g, h),
+        ThreatSource::Cyber => g.tokens(h, BOTNET) > 0 || corrupted_station(g, h),
         ThreatSource::Economic => corrupted_factory(g, h),
         ThreatSource::Military => g.tokens(h, TROOP) > 0,
     }

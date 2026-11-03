@@ -2,22 +2,22 @@ use super::*;
 use crate::modules::{adversary, board};
 
 #[test]
-fn cities_power_the_player_with_the_most_presence_next_to_them() {
+fn cities_power_the_player_with_the_most_node_next_to_them() {
     let (rules, g0) = lab(&["board.produce"]);
     let (city, n) = city_with_lonely_neighbors(&rules.map);
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
 
-    // 021: a neutral city's cube is lost unless a player with presence next
+    // 021: a neutral city's cube is lost unless a player with a node next
     // to it buys it (`city_energy_credits`, 2; players choose who).
     let mut g = g0.clone();
-    put(&mut g, n[0], presence(0), 1);
-    put(&mut g, n[1], presence(1), 1);
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, n[1], node(1), 1);
     run(&rules, &mut g);
     assert!(g.pending.is_none(), "nobody can pay");
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 0));
     let mut g = g0.clone();
-    put(&mut g, n[0], presence(0), 1);
-    put(&mut g, n[1], presence(1), 1);
+    put(&mut g, n[0], node(0), 1);
+    put(&mut g, n[1], node(1), 1);
     set_res(&mut g, 0, Resource::Credits, 5);
     set_res(&mut g, 1, Resource::Credits, 5);
     run(&rules, &mut g);
@@ -27,7 +27,7 @@ fn cities_power_the_player_with_the_most_presence_next_to_them() {
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
     assert_eq!(g.resource(1, Resource::Credits), 3);
     let mut g = g0.clone();
-    put(&mut g, n[0], presence(0), 1);
+    put(&mut g, n[0], node(0), 1);
     set_res(&mut g, 0, Resource::Credits, 5);
     run(&rules, &mut g);
     answer_with(&rules, &mut g, "nobody");
@@ -36,7 +36,7 @@ fn cities_power_the_player_with_the_most_presence_next_to_them() {
     // An aligned city's cube goes free to its owner.
     let mut g = g0.clone();
     put(&mut g, city, cube(1), 1);
-    put(&mut g, n[0], presence(0), 1);
+    put(&mut g, n[0], node(0), 1);
     run(&rules, &mut g);
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
 }
@@ -152,7 +152,7 @@ fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
 }
 
 #[test]
-fn a_converter_needs_presence_in_its_country_and_works_once_a_round() {
+fn a_converter_needs_node_in_its_country_and_works_once_a_round() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let convert = Action::Convert { seat: 0, country: 0 };
@@ -161,15 +161,15 @@ fn a_converter_needs_presence_in_its_country_and_works_once_a_round() {
         cx.add_resource(&mut g, 0, Resource::ResearchCubes, 3);
         cx.add_resource(&mut g, 0, Resource::Energy, 10);
     });
-    // Not complete, then no presence there (075: an aligned city was 074's gate).
+    // Not complete, then no nodes there (075: an aligned city was 074's gate).
     assert!(!offered(&g));
     g.vars.insert(board::project_done(0).into(), 1);
-    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("no presence here"));
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("no nodes here"));
     assert!(rules.apply_mut(&mut g, &convert, None).is_err());
     let city = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, city, cube(0), 1);
     assert!(!offered(&g), "an aligned city is no longer the gate");
-    put(&mut g, city, presence(0), 1);
+    put(&mut g, city, node(0), 1);
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();

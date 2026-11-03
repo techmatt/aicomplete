@@ -4,11 +4,11 @@ use super::*;
 use crate::content::Op;
 use crate::modules::adversary;
 
-/// A corrupted city with seat 0's presence on it, and an adjacent land hex.
+/// A corrupted city with seat 0's node on it, and an adjacent land hex.
 fn city(rules: &Rules, g: &mut GameState) -> (usize, usize) {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(g, h, ADV_CUBE, 1);
-    put(g, h, presence(0), 1);
+    put(g, h, node(0), 1);
     let n = rules.map.hexes[h].neighbors[0];
     (h, n)
 }
@@ -94,12 +94,12 @@ fn a_corruption_takes_a_waiting_ambassador_with_it() {
 }
 
 #[test]
-fn freeing_a_city_and_removing_a_node_sway_unity() {
+fn freeing_a_city_and_removing_a_botnet_sway_unity() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let city = m.numbered(0, piece(0).cities[0]);
     put(&mut g, city, ADV_CUBE, 1);
-    put(&mut g, city, presence(0), 1);
+    put(&mut g, city, node(0), 1);
     set_res(&mut g, 0, Resource::Ambassadors, 1);
     set_res(&mut g, 0, Resource::Credits, 10);
     rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
@@ -107,20 +107,20 @@ fn freeing_a_city_and_removing_a_node_sway_unity() {
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_CUBE), 0);
     assert_eq!(g.var("alignment.unity"), 5);
-    // No standard action removes a node (019); the Decommission Unity card does.
-    put(&mut g, city, NODE, 1);
-    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "node"), None).is_err());
+    // No standard action removes a botnet (019); the Decommission Unity card does.
+    put(&mut g, city, BOTNET, 1);
+    assert!(rules.apply_mut(&mut g.clone(), &std_act(0, "botnet"), None).is_err());
     with_cx(&rules, |cx| {
         crate::modules::effects::run(
             &mut g,
             cx,
-            &[content::Op::RemoveNodes { count: 1 }],
+            &[content::Op::RemoveBotnets { count: 1 }],
             &mut crate::modules::effects::Ctx::team(),
         )
     })
     .unwrap();
-    assert_eq!(g.tokens(city, NODE), 0);
-    // Freeing a city sways 5 (034; 024: 4), removing a node 2 (the bucket tips
+    assert_eq!(g.tokens(city, BOTNET), 0);
+    // Freeing a city sways 5 (034; 024: 4), removing a botnet 2 (the bucket tips
     // only once an action or phase finishes, so it holds both here).
     assert_eq!(g.var("alignment.unity"), 7);
 }

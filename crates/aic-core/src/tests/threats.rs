@@ -7,9 +7,9 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
     let (rules, mut g) = threat_lab();
     deal(&mut g, "sabotage", 0);
     deal(&mut g, "blackout", 1);
-    // 070: a source each, on the seat's own presence.
+    // 070: a source each, on the seat's own node.
     for s in 0..2 {
-        put(&mut g, rules.map.numbered(s, piece(s).presence), NODE, 1);
+        put(&mut g, rules.map.numbered(s, piece(s).node), BOTNET, 1);
     }
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 6);
@@ -80,7 +80,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     // Threat Triage's jam 2 merged away) takes it to 0: countered at once, and
     // the 2 paid come back, as a counter's partial payments do.
     deal(&mut g, "blackout", 0);
-    put(&mut g, rules.map.numbered(0, piece(0).presence), NODE, 1);
+    put(&mut g, rules.map.numbered(0, piece(0).node), BOTNET, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
     rules
         .apply_mut(
@@ -188,7 +188,7 @@ fn blackout_and_sabotage_last_into_the_next_rounds_production() {
     let city_energy = w.list("board.corp_energy")[0] + w.int("board.aligned_bonus");
     assert!(city_energy > 0);
     assert_eq!(gain(&g, &b, 0), gain(&twin, &bt, 0) - city_energy);
-    // 021: round 2's upkeep paid seat 1 (presence in sabotaged country 1) no
+    // 021: round 2's upkeep paid seat 1 (node in sabotaged country 1) no
     // energy; its twin got its energy income.
     let track = crate::modules::economy::income(&w, &twin, 1)[Resource::Energy];
     assert!(track > 0);
@@ -234,14 +234,14 @@ fn the_tier_2_deck_covers_four_countries_and_a_short_deal_is_counted() {
 }
 
 #[test]
-fn a_seat_that_lost_its_presence_there_can_take_back_a_payment() {
+fn a_seat_that_lost_its_node_there_can_take_back_a_payment() {
     let (rules, mut g) = lab(&[]);
     let t = rules.world().content.threats[0].id.clone();
     set_pile(&mut g, "threats.on.0", &[t.as_str()]);
     g.vars.insert(format!("threats.paid.{t}.0.credits").as_str().into(), 1);
     let legal = rules.legal_actions(&g);
     assert!(legal.iter().any(|a| matches!(a, Action::Withdraw { seat: 0, .. })), "{legal:?}");
-    assert!(!legal.iter().any(|a| matches!(a, Action::Pay { seat: 0, .. })), "no presence, no paying");
+    assert!(!legal.iter().any(|a| matches!(a, Action::Pay { seat: 0, .. })), "no nodes, no paying");
 }
 
 #[test]

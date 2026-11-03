@@ -67,17 +67,17 @@ try {
   check(board.kinds === 4 && board.fills === board.kinds, `hexes filled by kind (${board.fills} fills for ${board.kinds} kinds: city, base, open, ocean)`);
   check(board.bases > 0 && board.pennants === board.bases, `${board.pennants} military bases marked with the country they face`);
   check(board.fronts > 0 && board.links === board.fronts && board.edges > 0, `${board.links} fronts linked base to base, ${board.edges} front edges`);
-  // Tokens: one glyph per stack, owner cubes and presence in their owner's color.
+  // Tokens: one glyph per stack, owner cubes and node in their owner's color.
   const toks = await js(`(() => {
     const v = window.aic.view;
     const stacks = v.hexes.reduce((n, h) => n + h.tokens.length, 0);
     const fill = (k) => [...document.querySelectorAll('#board .token[data-token="' + k + '"] .glyph')].map((e) => e.getAttribute('fill'))[0];
     const kinds = [...new Set(v.hexes.flatMap((h) => h.tokens.map((t) => t.kind)))].sort();
     return { stacks, drawn: document.querySelectorAll('#board .token').length, kinds,
-             adv: fill('cube:adversary'), presence0: fill('presence:0'), presence1: fill('presence:1') };
+             adv: fill('cube:adversary'), node0: fill('node:0'), node1: fill('node:1') };
   })()`);
   check(toks.stacks > 0 && toks.drawn === toks.stacks, `${toks.drawn} token stacks drawn (${toks.kinds.join(', ')})`);
-  check(!!toks.adv && !!toks.presence0 && !!toks.presence1 && toks.presence0 !== toks.presence1 && toks.adv !== toks.presence0, `owner colors differ: adversary ${toks.adv}, seat 0 ${toks.presence0}, seat 1 ${toks.presence1}`);
+  check(!!toks.adv && !!toks.node0 && !!toks.node1 && toks.node0 !== toks.node1 && toks.adv !== toks.node0, `owner colors differ: adversary ${toks.adv}, seat 0 ${toks.node0}, seat 1 ${toks.node1}`);
   const panels = await js(`({ pipeline: document.querySelectorAll('#pipeline .slot-box').length, alignment: document.querySelectorAll('#status .alignment .tug .bar').length,
                              undecided: !!document.querySelector('#status .alignment .undecided'),
                              next: document.querySelector('#pipeline .slot-box.next .acard .atext')?.textContent ?? '',

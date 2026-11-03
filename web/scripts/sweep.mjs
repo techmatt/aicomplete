@@ -83,10 +83,10 @@ const PAGE_LIB = String.raw`(() => {
     if (e.type === 'var_changed' && up && /^board\.(blackout|sabotage)\./.test(e.key)) return 'flag: ' + e.key.split('.')[1];
     if (e.type === 'card_moved' && e.to === 'adversary.projects_done') return 'project resolved';
     if (e.type === 'card_moved' && /^alignment\.resolved/.test(e.to)) return 'alignment card';
-    if (e.type === 'tokens_changed' && e.token === 'node') return up ? 'node made' : 'node removed';
+    if (e.type === 'tokens_changed' && e.token === 'botnet') return up ? 'botnet made' : 'botnet removed';
     if (e.type === 'tokens_changed' && e.token === 'cube:adversary' && up) return 'corruption';
     if (e.type === 'tokens_changed' && e.token === 'troop' && up) return 'troop';
-    // 044: r19 and r20's table: markers, shields on presence, delays, the rich action.
+    // 044: r19 and r20's table: markers, shields on nodes, delays, the rich action.
     if (e.type === 'tokens_changed' && e.token === 'corruption') return up ? 'marker placed' : 'marker cleared';
     if (e.type === 'tokens_changed' && e.token === 'harden' && up) return 'hardened';
     if (e.type === 'var_changed' && /^threats\.late\./.test(e.key)) return 'threat waits';
@@ -163,7 +163,7 @@ const PAGE_LIB = String.raw`(() => {
   /** Words on screen that are code, not text: unfilled values and raw ids. */
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
-  const TOKENS = new Set(['cube', 'station', 'factory', 'presence', 'harden', 'unit', 'ambassador', 'corruption', 'node', 'troop']);
+  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'botnet', 'troop']);
 
   function checks() {
     const issues = [];

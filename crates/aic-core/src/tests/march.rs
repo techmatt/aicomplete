@@ -18,14 +18,14 @@ fn land_at(m: &Map, p: usize, d: i32) -> usize {
 }
 
 #[test]
-fn a_troop_marches_two_steps_toward_presence_then_strikes() {
+fn a_troop_marches_two_steps_toward_node_then_strikes() {
     let (rules, g0) = lab(&["board.march"]);
     let m = &rules.map;
-    let p = m.numbered(0, piece(0).presence);
+    let p = m.numbered(0, piece(0).node);
 
-    // Three away: two moves, ending next to the presence, which survives the round.
+    // Three away: two moves, ending next to the node, which survives the round.
     let mut g = g0.clone();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     let t = land_at(m, p, 3);
     put(&mut g, t, TROOP, 1);
     // The view shows where it is heading, two adversary phases out.
@@ -36,7 +36,7 @@ fn a_troop_marches_two_steps_toward_presence_then_strikes() {
     answer_all(&rules, &mut g);
     let at = (0..m.hexes.len()).find(|&h| g.tokens(h, TROOP) > 0).unwrap();
     assert_eq!(m.distance(at, p), 1);
-    assert_eq!(g.tokens(p, presence(0)), 1);
+    assert_eq!(g.tokens(p, node(0)), 1);
     assert_eq!(g.stats.counters["board.troop_moves"], 2);
     let v = rules.view(&g);
     assert_eq!(v.arrows[0].rounds, 1);
@@ -44,18 +44,18 @@ fn a_troop_marches_two_steps_toward_presence_then_strikes() {
     let discord = g.var("alignment.discord");
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(p, presence(0)), total(&g, TROOP)), (0, 0));
-    assert_eq!(g.stats.counters["board.troop_destroyed.presence"], 1);
+    assert_eq!((g.tokens(p, node(0)), total(&g, TROOP)), (0, 0));
+    assert_eq!(g.stats.counters["board.troop_destroyed.node"], 1);
     assert_eq!(g.var("alignment.discord"), discord);
     assert!(rules.view(&g).arrows.is_empty());
 
     // Two away: one move, then it destroys in the same round.
     let mut g = g0.clone();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     put(&mut g, land_at(m, p, 2), TROOP, 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(p, presence(0)), total(&g, TROOP)), (0, 0));
+    assert_eq!((g.tokens(p, node(0)), total(&g, TROOP)), (0, 0));
     assert_eq!(g.stats.counters["board.troop_steps"], 2);
 }
 
@@ -85,14 +85,14 @@ fn equally_near_targets_are_the_players_choice() {
     let (rules, g0) = lab_with(&["board.march"], &["ais.protector.innate.passives=[]"]);
     let m = &rules.map;
     let w = rules.world();
-    // A troop with two presence tokens equally far on foot, each alone
+    // A troop with two nodes equally far on foot, each alone
     // reachable by exactly one best step, the two steps different: with both
     // on the board the players choose between them.
     let land: Vec<usize> = (0..m.hexes.len()).filter(|&h| kind(m, h) != HexKind::Ocean).collect();
     let steps = |t: usize, targets: &[usize]| {
         let mut g = g0.clone();
         for (i, &x) in targets.iter().enumerate() {
-            put(&mut g, x, presence(i), 1);
+            put(&mut g, x, node(i), 1);
         }
         board::troop_steps_from(&w, &g, t)
     };
@@ -110,8 +110,8 @@ fn equally_near_targets_are_the_players_choice() {
         .expect("a troop between two equally near targets");
     let mut g = g0.clone();
     put(&mut g, t, TROOP, 1);
-    put(&mut g, a, presence(0), 1);
-    put(&mut g, b, presence(1), 1);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a step choice");
     assert!(p.ask.prompt.contains("moves to which hex"), "{}", p.ask.prompt);
@@ -126,9 +126,9 @@ fn a_troop_walking_onto_an_unmarched_troop_marches_once_and_so_does_it() {
     let land = |h: usize| kind(m, h) != HexKind::Ocean;
     // Troop A (lower hex number, so it marches first) whose first step is
     // onto troop B's hex; the target 4 hexes from A on foot.
-    let p = m.numbered(0, piece(0).presence);
+    let p = m.numbered(0, piece(0).node);
     let mut g = g0.clone();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     let (a, b) = (0..m.hexes.len())
         .filter(|&a| land(a) && m.distance(a, p) == 4)
         .find_map(|a| {
@@ -141,9 +141,9 @@ fn a_troop_walking_onto_an_unmarched_troop_marches_once_and_so_does_it() {
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     // Each marched exactly 2 steps, no strike: both still on the board, the
-    // presence untouched, one 2 hexes away and one next to it.
+    // node untouched, one 2 hexes away and one next to it.
     assert_eq!(g.stats.counters["board.troop_moves"], 4);
-    assert_eq!((total(&g, TROOP), g.tokens(p, presence(0))), (2, 1));
+    assert_eq!((total(&g, TROOP), g.tokens(p, node(0))), (2, 1));
     let mut gaps: Vec<i32> = (0..m.hexes.len())
         .flat_map(|h| std::iter::repeat_n(m.distance(h, p), g.tokens(h, TROOP) as usize))
         .collect();
@@ -155,7 +155,7 @@ fn a_troop_walking_onto_an_unmarched_troop_marches_once_and_so_does_it() {
 fn with_troop_spent_off_a_troop_strikes_on_both_steps() {
     let (rules, mut g) = lab_with(&["board.march"], &["board.troop_spent=0", "ais.protector.innate.passives=[]"]);
     let m = &rules.map;
-    let p = m.numbered(0, piece(0).presence);
+    let p = m.numbered(0, piece(0).node);
     let q = m.hexes[p]
         .neighbors
         .iter()
@@ -163,12 +163,12 @@ fn with_troop_spent_off_a_troop_strikes_on_both_steps() {
         .find(|&h| kind(m, h) != HexKind::Ocean)
         .unwrap();
     put(&mut g, p, TROOP, 1);
-    put(&mut g, p, presence(0), 1);
-    put(&mut g, q, presence(1), 1);
+    put(&mut g, p, node(0), 1);
+    put(&mut g, q, node(1), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.stats.counters["board.troop_strikes"], 2);
-    assert_eq!((presence_of(&g, 0).len(), presence_of(&g, 1).len(), total(&g, TROOP)), (0, 0, 1));
+    assert_eq!((node_of(&g, 0).len(), node_of(&g, 1).len(), total(&g, TROOP)), (0, 0, 1));
 }
 
 #[test]
@@ -192,7 +192,7 @@ fn troops_walk_around_ocean_rather_than_stall() {
         })
         .expect("a bay between a land hex and a target");
     let mut g = g0.clone();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     put(&mut g, t, TROOP, 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
@@ -201,12 +201,12 @@ fn troops_walk_around_ocean_rather_than_stall() {
 }
 
 #[test]
-fn a_protector_presence_stops_a_marching_troop() {
+fn a_protector_node_stops_a_marching_troop() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let m = &rules.map;
-    let p = m.numbered(0, piece(0).presence);
-    put(&mut g, p, presence(1), 1);
+    let p = m.numbered(0, piece(0).node);
+    put(&mut g, p, node(1), 1);
     assert!(board::walled(&w, &g, p));
     let t = m.hexes[p].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
     put(&mut g, t, TROOP, 1);
@@ -216,10 +216,10 @@ fn a_protector_presence_stops_a_marching_troop() {
     put(&mut g, b, STATION, 1);
     put(&mut g, b, cube(1), 1);
     assert!(!board::troop_steps_from(&w, &g, t).contains(&p));
-    // The Builder's presence is no wall.
+    // The Builder's node is no wall.
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     assert!(!board::walled(&w, &g, p));
 }
 
@@ -227,8 +227,8 @@ fn a_protector_presence_stops_a_marching_troop() {
 fn a_wall_stops_a_strike_on_its_hex() {
     let (rules, mut g) = lab(&["board.march"]);
     let m = &rules.map;
-    let p = m.numbered(0, piece(0).presence);
-    put(&mut g, p, presence(1), 1);
+    let p = m.numbered(0, piece(0).node);
+    put(&mut g, p, node(1), 1);
     put(&mut g, p, STATION, 1);
     put(&mut g, p, cube(1), 1);
     let t = m.hexes[p].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
@@ -244,14 +244,14 @@ fn a_wall_stops_a_strike_on_its_hex() {
 fn a_landing_troop_skips_a_walled_hex() {
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
-    let c = m.numbered(0, piece(0).presence);
+    let c = m.numbered(0, piece(0).node);
     let hexes: Vec<usize> = m.countries[m.hexes[c].country as usize].hexes.clone();
     // Every city but one walled: one spot left, so the landing asks nothing.
     let mut walled: Vec<usize> = cities(m).into_iter().filter(|h| hexes.contains(h)).collect();
     let open = walled.pop().unwrap();
     assert!(!walled.is_empty());
     for &h in &walled {
-        put(&mut g, h, presence(1), 1);
+        put(&mut g, h, node(1), 1);
     }
     with_cx(&rules, |cx| adversary::land_troops(&mut g, cx, &hexes, 1, "land", "test.landed", None)).unwrap();
     assert_eq!(g.tokens(open, TROOP), 1);
@@ -287,7 +287,7 @@ fn adversary_troops_strike_buildings_next_to_them() {
     let mut g = g0.clone();
     put(&mut g, next[0], FACTORY, 1);
     put(&mut g, next[0], cube(0), 1);
-    put(&mut g, next[1], presence(0), 1);
+    put(&mut g, next[1], node(0), 1);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a strike choice");
     assert!(
@@ -300,7 +300,7 @@ fn adversary_troops_strike_buildings_next_to_them() {
         .ask
         .options
         .iter()
-        .find(|o| o.option.starts_with("seat 0's presence"))
+        .find(|o| o.option.starts_with("seat 0's node"))
         .unwrap()
         .option
         .clone();
@@ -308,7 +308,7 @@ fn adversary_troops_strike_buildings_next_to_them() {
     assert_eq!(
         (
             g.tokens(next[0], FACTORY),
-            g.tokens(next[1], presence(0)),
+            g.tokens(next[1], node(0)),
             discord(&g),
             g.tokens(at, TROOP)
         ),

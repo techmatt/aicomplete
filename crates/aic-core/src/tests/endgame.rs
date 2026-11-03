@@ -1,5 +1,5 @@
-//! 027: the two decks as clocks, the presence loss, arrivals, the hold, the
-//! piece ladder and what destroys presence.
+//! 027: the two decks as clocks, the node loss, arrivals, the hold, the
+//! piece ladder and what destroys nodes.
 
 use super::*;
 use crate::content::Op;
@@ -40,14 +40,14 @@ fn drawing_the_last_unity_card_wins_outright() {
 }
 
 #[test]
-fn a_player_with_no_presence_loses_the_game_for_everyone() {
+fn a_player_with_no_node_loses_the_game_for_everyone() {
     let (rules, mut g) = action_only(&[]);
     for h in 0..g.hexes.len() {
-        put(&mut g, h, presence(1), 0);
+        put(&mut g, h, node(1), 0);
     }
     give(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a loss");
-    assert_eq!((o.won, o.reason.as_str()), (false, "presence"));
+    assert_eq!((o.won, o.reason.as_str()), (false, "node"));
 }
 
 #[test]
@@ -93,8 +93,8 @@ fn the_fallback_is_a_flat_count_whatever_the_adversary_holds_nearby() {
     let n = rules.map.hexes[h].neighbors[0];
     put(&mut g, h, ADV_CUBE, 1);
     put(&mut g, n, ADV_AMBASSADOR, 2);
-    put(&mut g, n, presence(0), 1);
-    put(&mut g, n, presence(1), 1);
+    put(&mut g, n, node(0), 1);
+    put(&mut g, n, node(1), 1);
     put(&mut g, h, ambassador(0), 2);
     put(&mut g, h, ambassador(1), 2);
     give(&rules, &mut g);
@@ -110,33 +110,33 @@ fn the_fallback_is_a_flat_count_whatever_the_adversary_holds_nearby() {
 }
 
 #[test]
-fn the_fallback_counts_only_seats_with_presence_on_or_next_to_the_city() {
+fn the_fallback_counts_only_seats_with_node_on_or_next_to_the_city() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, ADV_CUBE, 1);
     put(&mut g, h, ambassador(0), 5);
     give(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 1, "no presence near it");
-    put(&mut g, rules.map.hexes[h].neighbors[0], presence(0), 1);
+    assert_eq!(g.tokens(h, ADV_CUBE), 1, "no nodes near it");
+    put(&mut g, rules.map.hexes[h].neighbors[0], node(0), 1);
     give(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
 }
 
 #[test]
-fn stage_one_never_takes_a_last_presence() {
+fn stage_one_never_takes_a_last_node() {
     let (rules, mut g) = lab_with(&[], &["board.last_safe_stage=2"]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    put(&mut g, h, presence(0), 1);
+    put(&mut g, h, node(0), 1);
     g.vars.insert(STAGE.into(), 1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    assert_eq!(g.tokens(h, presence(0)), 1, "stage I: it stays");
+    assert_eq!(g.tokens(h, node(0)), 1, "stage I: it stays");
     let gone = with_cx(&rules, |cx| {
-        board::destroy_piece(&mut g, cx, h, presence(0), board::Cause::Troop)
+        board::destroy_piece(&mut g, cx, h, node(0), board::Cause::Troop)
     });
     assert!(!gone);
     g.vars.insert(STAGE.into(), 2);
     let gone = with_cx(&rules, |cx| {
-        board::destroy_piece(&mut g, cx, h, presence(0), board::Cause::Troop)
+        board::destroy_piece(&mut g, cx, h, node(0), board::Cause::Troop)
     });
     assert!(gone, "stage II: it goes");
 }
@@ -145,67 +145,67 @@ fn stage_one_never_takes_a_last_presence() {
 fn a_discord_card_takes_the_boards_most_threatened_hex() {
     use crate::modules::effects;
     let (rules, mut g) = lab(&[]);
-    let (a, b) = (rules.map.numbered(0, piece(0).presence), rules.map.numbered(1, piece(1).presence));
-    put(&mut g, a, presence(0), 1);
-    put(&mut g, b, presence(1), 1);
+    let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(1, piece(1).node));
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
     put(&mut g, b, ADV_AMBASSADOR, 2);
     with_cx(&rules, |cx| {
-        effects::run(&mut g, cx, &[Op::DestroyPresence], &mut effects::Ctx::team().named("discord"))
+        effects::run(&mut g, cx, &[Op::DestroyNode], &mut effects::Ctx::team().named("discord"))
     })
     .unwrap();
-    assert_eq!((g.tokens(a, presence(0)), g.tokens(b, presence(1))), (1, 0));
-    assert_eq!(g.stats.counters["board.presence_lost.discord"], 1);
+    assert_eq!((g.tokens(a, node(0)), g.tokens(b, node(1))), (1, 0));
+    assert_eq!(g.stats.counters["board.node_lost.discord"], 1);
 }
 
 #[test]
-fn a_choice_threat_never_takes_a_last_presence() {
+fn a_choice_threat_never_takes_a_last_node() {
     use crate::modules::threats;
     let (rules, mut g) = lab(&[]);
-    let h = rules.map.numbered(0, piece(0).presence);
-    put(&mut g, h, presence(0), 1);
+    let h = rules.map.numbered(0, piece(0).node);
+    put(&mut g, h, node(0), 1);
     set_res(&mut g, 0, Resource::Credits, 2);
-    // No option is left: the player pays what they have and keeps the presence.
+    // No option is left: the player pays what they have and keeps the node.
     with_cx(&rules, |cx| {
-        threats::lose_presence_or(&mut g, cx, Some(0), Resource::Credits, 6, "threat1")
+        threats::lose_node_or(&mut g, cx, Some(0), Resource::Credits, 6, "threat1")
     })
     .unwrap();
-    assert_eq!(g.tokens(h, presence(0)), 1);
+    assert_eq!(g.tokens(h, node(0)), 1);
     assert_eq!(g.resource(0, Resource::Credits), 0);
 }
 
 // 028: rules revision 17.
 
-/// Lands `s`'s presence on `hexes` and counts them on the track.
-fn presence_on_track(g: &mut GameState, s: usize, hexes: &[usize]) {
+/// Lands `s`'s node on `hexes` and counts them on the track.
+fn node_on_track(g: &mut GameState, s: usize, hexes: &[usize]) {
     for &h in hexes {
-        put(g, h, presence(s), 1);
+        put(g, h, node(s), 1);
     }
     g.vars.insert(board::track_key(s).into(), hexes.len() as i64);
 }
 
 #[test]
-fn each_player_destroys_a_presence_of_their_choice_but_not_a_stage_one_last() {
+fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
     use crate::modules::common::hex_name;
     let (rules, mut g) = lab_with(&[], &["board.last_safe_stage=2"]);
-    let (a, b) = (rules.map.numbered(0, piece(0).presence), rules.map.numbered(0, piece(0).cities[0]));
-    let last = rules.map.numbered(1, piece(1).presence);
-    put(&mut g, a, presence(0), 1);
-    put(&mut g, b, presence(0), 1);
-    put(&mut g, last, presence(1), 1);
+    let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(0, piece(0).cities[0]));
+    let last = rules.map.numbered(1, piece(1).node);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(0), 1);
+    put(&mut g, last, node(1), 1);
     g.vars.insert(STAGE.into(), 1);
     let hit = |g: &mut GameState, cx: &mut module::Cx, s: usize, h: usize| {
         let hexes = [h, b];
-        board::destroy_own_presence(g, cx, s, &hexes, board::Cause::Effect("discord")).unwrap();
+        board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect("discord")).unwrap();
     };
     with_cx(&rules, |cx| hit(&mut g, cx, 1, last));
-    assert_eq!(g.tokens(last, presence(1)), 1, "stage I: it stays");
+    assert_eq!(g.tokens(last, node(1)), 1, "stage I: it stays");
     // The player picks which: here the second of seat 0's two.
     let pick = crate::state::Pick { option: hex_name(&rules.world(), b), target: Some(rules.map.hexes[b].hex) };
     with_cx_picks(&rules, vec![pick], |cx| hit(&mut g, cx, 0, a));
-    assert_eq!((g.tokens(a, presence(0)), g.tokens(b, presence(0))), (1, 0));
+    assert_eq!((g.tokens(a, node(0)), g.tokens(b, node(0))), (1, 0));
     g.vars.insert(STAGE.into(), 2);
     with_cx(&rules, |cx| hit(&mut g, cx, 1, last));
-    assert_eq!(g.tokens(last, presence(1)), 0, "stage II: it goes");
+    assert_eq!(g.tokens(last, node(1)), 0, "stage II: it goes");
 }
 
 #[test]
@@ -216,22 +216,22 @@ fn a_game_deals_the_unity_deck_it_is_told_to() {
 }
 
 #[test]
-fn removing_a_node_clears_a_hack_on_its_hex() {
+fn removing_a_botnet_clears_a_hack_on_its_hex() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    put(&mut g, h, NODE, 1);
+    put(&mut g, h, BOTNET, 1);
     g.vars.insert(adversary::cut_key(h).into(), 1);
-    with_cx(&rules, |cx| adversary::remove_node(&mut g, cx, h));
+    with_cx(&rules, |cx| adversary::remove_botnet(&mut g, cx, h));
     assert_eq!(g.var(&adversary::cut_key(h)), 0);
 }
 
-/// A Discord tip that leaves a seat with no presence loses before a Unity tip
+/// A Discord tip that leaves a seat with no nodes loses before a Unity tip
 /// in the same check can draw the last card.
 #[test]
-fn a_lost_last_presence_comes_before_a_unity_tip_in_the_same_check() {
+fn a_lost_last_node_comes_before_a_unity_tip_in_the_same_check() {
     let (rules, mut g) = action_only(&[]);
     for h in 0..g.hexes.len() {
-        put(&mut g, h, presence(1), 0);
+        put(&mut g, h, node(1), 0);
     }
     empty_deck(&mut g, "unity");
     set_pile(&mut g, "alignment.deck.unity.1", &["civil_defense"]);
@@ -239,46 +239,46 @@ fn a_lost_last_presence_comes_before_a_unity_tip_in_the_same_check() {
     fill_bucket(&rules, &mut g, Side::Unity);
     give(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a loss");
-    assert_eq!((o.won, o.reason.as_str()), (false, "presence"));
+    assert_eq!((o.won, o.reason.as_str()), (false, "node"));
 }
 
-// ---------- 034: presence leaves the game, the marker ----------
+// ---------- 034: node leaves the game, the marker ----------
 
 #[test]
-fn a_city_that_corrupts_destroys_presence_on_it_and_leaves_no_marker() {
+fn a_city_that_corrupts_destroys_node_on_it_and_leaves_no_marker() {
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     let far = rules.map.numbered(1, piece(1).cities[0]);
-    put(&mut g, h, presence(0), 1);
-    put(&mut g, far, presence(0), 1);
+    put(&mut g, h, node(0), 1);
+    put(&mut g, far, node(0), 1);
     g.vars.insert(STAGE.into(), 2);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    assert_eq!((g.tokens(h, presence(0)), g.tokens(h, MARKER)), (0, 0), "it has corruption already");
+    assert_eq!((g.tokens(h, node(0)), g.tokens(h, MARKER)), (0, 0), "it has corruption already");
 }
 
 #[test]
-fn corruption_reach_takes_presence_around_the_city() {
+fn corruption_reach_takes_node_around_the_city() {
     let (rules, mut g) = lab_with(&[], &["board.corruption_reach=1"]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     let n = rules.map.hexes[h].neighbors[0];
     let far = rules.map.numbered(1, piece(1).cities[0]);
-    put(&mut g, n, presence(0), 1);
-    put(&mut g, far, presence(0), 1);
+    put(&mut g, n, node(0), 1);
+    put(&mut g, far, node(0), 1);
     g.vars.insert(STAGE.into(), 2);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    assert_eq!((g.tokens(n, presence(0)), g.tokens(n, MARKER)), (0, 1));
+    assert_eq!((g.tokens(n, node(0)), g.tokens(n, MARKER)), (0, 1));
 }
 
 #[test]
-fn a_lost_presence_leaves_the_game_and_its_income_stays() {
+fn a_lost_node_leaves_the_game_and_its_income_stays() {
     use crate::modules::ai;
     let (rules, mut g) = lab(&[]);
-    let (a, b) = (rules.map.numbered(0, piece(0).presence), rules.map.numbered(0, piece(0).cities[0]));
+    let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(0, piece(0).cities[0]));
     let c = rules.map.hexes[a].neighbors[0];
-    presence_on_track(&mut g, 0, &[a, b, c]);
+    node_on_track(&mut g, 0, &[a, b, c]);
     let w = rules.world();
     let income = ai::track_income(&w, &g, 0);
-    with_cx(&rules, |cx| board::lose_presence(&mut g, cx, c, 0, "test"));
+    with_cx(&rules, |cx| board::lose_node(&mut g, cx, c, 0, "test"));
     assert_eq!(board::track_taken(&g, 0), 3, "it does not go back on the track");
     assert_eq!(ai::track_income(&w, &g, 0), income);
     assert_eq!(g.tokens(c, MARKER), 1);
@@ -287,18 +287,18 @@ fn a_lost_presence_leaves_the_game_and_its_income_stays() {
 #[test]
 fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
     let (rules, mut g) = lab(&[]);
-    let a = rules.map.numbered(0, piece(0).presence);
+    let a = rules.map.numbered(0, piece(0).node);
     let n = rules.map.hexes[a].neighbors[0];
-    put(&mut g, a, presence(0), 1);
-    put(&mut g, n, presence(1), 1);
-    put(&mut g, n, NODE, 1);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, n, node(1), 1);
+    put(&mut g, n, BOTNET, 1);
     g.vars.insert(STAGE.into(), 2);
-    with_cx(&rules, |cx| board::lose_presence(&mut g, cx, n, 1, "test"));
-    assert_eq!(g.tokens(n, MARKER), 0, "a node is corruption");
+    with_cx(&rules, |cx| board::lose_node(&mut g, cx, n, 1, "test"));
+    assert_eq!(g.tokens(n, MARKER), 0, "a botnet is corruption");
     put(&mut g, n, MARKER, 1);
     let w = rules.world();
-    assert!(!board::presence_hexes(&w, &g, 0).contains(&n));
-    with_cx(&rules, |cx| board::lose_presence(&mut g, cx, a, 0, "test"));
+    assert!(!board::node_hexes(&w, &g, 0).contains(&n));
+    with_cx(&rules, |cx| board::lose_node(&mut g, cx, a, 0, "test"));
     assert_eq!(g.tokens(a, MARKER), 1);
 }
 
@@ -317,9 +317,9 @@ fn a_marker_counts_toward_corrupting_a_city() {
 fn up_to_two_markers_can_stop_after_one() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
-    let c = rules.map.numbered(0, piece(0).presence);
+    let c = rules.map.numbered(0, piece(0).node);
     let n: Vec<usize> = w.map.hexes[c].neighbors.iter().copied().filter(|&h| !is_ocean(&w, h)).take(2).collect();
-    put(&mut g, c, presence(0), 1);
+    put(&mut g, c, node(0), 1);
     for &h in &n {
         put(&mut g, h, MARKER, 1);
     }
@@ -333,10 +333,10 @@ fn up_to_two_markers_can_stop_after_one() {
 fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
-    let a = rules.map.numbered(0, piece(0).presence);
+    let a = rules.map.numbered(0, piece(0).node);
     let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, marked, MARKER, 1);
-    assert!(!board::presence_hexes(&w, &g, 0).contains(&marked), "no presence on a marker");
+    assert!(!board::node_hexes(&w, &g, 0).contains(&marked), "no nodes on a marker");
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Credits, 5);
     let credits = 5 - w.int("board.clear_cost");

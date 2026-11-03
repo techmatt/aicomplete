@@ -77,7 +77,7 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
 }
 
 #[test]
-fn the_second_presence_pays_cubes_and_no_energy_but_the_step() {
+fn the_second_node_pays_cubes_and_no_energy_but_the_step() {
     let (rules, mut g) = c3();
     set_res(&mut g, 2, Resource::Energy, 0);
     set_res(&mut g, 2, Resource::ResearchCubes, 2);

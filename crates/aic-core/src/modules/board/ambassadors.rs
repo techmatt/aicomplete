@@ -3,10 +3,10 @@
 use super::*;
 
 /// Whether seat `s` can claim the site on hex `h` (align a city, take a
-/// station or factory): its presence is on or next to `h`, and no node is.
+/// station or factory): its node is on or next to `h`, and no botnet is.
 pub fn can_claim(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     in_reach(w, g, seat, h)
-        && !next_to(w, h, |x| g.tokens(x, NODE) > 0)
+        && !next_to(w, h, |x| g.tokens(x, BOTNET) > 0)
         && !flagged(g, RoundFlag::Embargo, w.map.hexes[h].country as usize)
 }
 
@@ -61,7 +61,7 @@ pub fn ambassadors_on(g: &GameState, h: usize) -> i64 {
 }
 
 /// Player ambassadors on hex `h` that count toward liberating it (080): from
-/// seats whose presence is on or next to it.
+/// seats whose node is on or next to it.
 pub fn liberating_ambassadors(w: &World, g: &GameState, h: usize) -> i64 {
     (0..g.seats.len())
         .filter(|&s| in_reach(w, g, s, h))
@@ -83,7 +83,7 @@ pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) {
 }
 
 /// The fallback (080): a corrupted city is liberated the moment
-/// `liberate_at` player ambassadors stand on it from seats with presence on or
+/// `liberate_at` player ambassadors stand on it from seats with a node on or
 /// next to it; that many are used up, lower seats first. Checked after every
 /// action and automatic phase.
 pub(super) fn free_cities(g: &mut GameState, cx: &mut Cx) {

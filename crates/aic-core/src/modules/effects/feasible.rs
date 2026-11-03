@@ -8,7 +8,7 @@ pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
     feasible_after(w, g, seat, effects, 0)
 }
 
-/// The same once seat `s` has paid `spent` energy for them (066: a presence
+/// The same once seat `s` has paid `spent` energy for them (066: a node
 /// power pays its own energy, then the track step).
 pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64) -> bool {
     feasible_on(w, g, seat, effects, spent, None)
@@ -21,7 +21,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
     // 041: energy the same effects gain first can pay a placement's step.
     let gained: i64 = effects
         .iter()
-        .take_while(|e| !matches!(e, Op::PlacePresence { .. }))
+        .take_while(|e| !matches!(e, Op::PlaceNode { .. }))
         .map(|e| match e {
             Op::Gain { resource: Resource::Energy, amount } => *amount,
             _ => 0,
@@ -54,8 +54,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
         Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(w, g, h, *ambassadors, *troops)),
         Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(w, g, h)),
-        Op::RemoveNode => any_hex(g, |h| node_in_reach(w, g, seat, h)),
-        Op::CutNode => !cuttable_nodes(w, g, seat).is_empty(),
+        Op::RemoveBotnet => any_hex(g, |h| botnet_in_reach(w, g, seat, h)),
+        Op::CutBotnet => !cuttable_botnets(w, g, seat).is_empty(),
         Op::Shelter => !unsheltered(w, g).is_empty(),
         Op::FreeBuilding => cards::free_building_exists(w, g, seat),
         Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
@@ -94,12 +94,12 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         }
         Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } => !only_these || one_acts,
         Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
-        Op::PlacePresence { free, .. } => {
+        Op::PlaceNode { free, .. } => {
             board::can_pay_placement(w, g, seat, placing(*free), gained)
-                && !board::presence_hexes(w, g, seat).is_empty()
+                && !board::node_hexes(w, g, seat).is_empty()
         }
         Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),
-        Op::ShieldPresence { .. } => any_hex(g, |h| shieldable(g, seat, h)),
+        Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),
         Op::DelayThreat { .. } => !undelayed_threats(g).is_empty(),
         // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).
         Op::Transfer { .. } => g.seats.len() > 1,

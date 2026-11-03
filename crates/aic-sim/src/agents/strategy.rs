@@ -101,8 +101,8 @@ pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
             Op::Damage { .. }
                 | Op::DamageCountry { .. }
                 | Op::DestroyAll
-                | Op::RemoveNode
-                | Op::RemoveNodes { .. }
+                | Op::RemoveBotnet
+                | Op::RemoveBotnets { .. }
                 | Op::RemoveAmbassadorsCountry { .. }
                 | Op::RemoveTroops { .. }
                 | Op::ClearCity { .. }
@@ -117,7 +117,7 @@ pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
                 | Op::Cordon
                 | Op::Harden { .. }
                 | Op::HardenAction { .. }
-                | Op::ShieldPresence { .. }
+                | Op::ShieldNode { .. }
                 | Op::CivicShelter
                 | Op::SpreadShield
         )
@@ -137,7 +137,7 @@ fn resources(d: &CardDef) -> Vec<Resource> {
         .chain(ability.iter().copied())
         .filter_map(|o| match o {
             Op::Gain { resource, .. }
-            | Op::GainPerPresence { resource }
+            | Op::GainPerNode { resource }
             | Op::Production { resource, .. }
             | Op::Income { resource, .. }
             | Op::IncomePerTag { resource, .. }

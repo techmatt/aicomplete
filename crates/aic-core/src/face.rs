@@ -249,9 +249,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             say: format!("{gain} {}", amount(Resource::Ambassadors, *count)),
             share: Share::Mine,
         }),
-        Op::GainPerPresence { resource } => one(clause(
-            vec![w(icon(*resource)), w("/"), w("presence")],
-            format!("{gain} 1 {} per presence you have on the board", noun(*resource, 1)),
+        Op::GainPerNode { resource } => one(clause(
+            vec![w(icon(*resource)), w("/"), w("node")],
+            format!("{gain} 1 {} per node you have on the board", noun(*resource, 1)),
         )),
         // It only names who the `other_gain` or `transfer` after it reaches.
         Op::ChoosePlayer => Vec::new(),
@@ -270,17 +270,17 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             },
             format!("give another player up to {}", amount(*resource, *max)),
         )),
-        Op::PlacePresence { count, free } => one(clause(
-            counted(*count, if *free { "free_presence" } else { "presence" }),
-            format!("place {count} presence{}", if *free { " free" } else { "" }),
+        Op::PlaceNode { count, free } => one(clause(
+            counted(*count, if *free { "free_node" } else { "node" }),
+            format!("place {}{}", plural(*count, "node"), if *free { " free" } else { "" }),
         )),
         Op::ClearMarkers { count } => one(clause(
             adversary(minus(*count, "marker")),
             format!("clear {} in reach", plural(*count, "corruption marker")),
         )),
-        Op::ShieldPresence { count } => one(clause(
-            { let mut p = counted(*count, "harden"); p.push(w("presence")); p },
-            format!("shield {count} of your presence"),
+        Op::ShieldNode { count } => one(clause(
+            { let mut p = counted(*count, "harden"); p.push(w("node")); p },
+            format!("shield {count} of your nodes"),
         )),
         Op::DelayThreat { count } => one(clause(
             adversary(counted(*count, "clock")),
@@ -304,7 +304,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             adversary(vec![w("ALL"), w("ambassador"), w("troop"), w("hex")]),
             "remove every adversary ambassador and troop in one hex",
         )),
-        Op::RemoveNode => one(clause(adversary(minus(1, "node")), "remove a node in reach")),
+        Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet in reach")),
         Op::RemoveAmbassadorsCountry { unity_per, max } => {
             let (mut icons, what) = if *max > 0 {
                 let mut p = minus(*max, "ambassador");
@@ -434,9 +434,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![Part::Yours { yours: counted(*n, kind.name()) }],
             format!("add {n} {} to one of your {} buildings", token(*kind, *n), token(*kind, 1)),
         )),
-        Op::CutNode => one(clause(
-            adversary(vec![w("node")]),
-            "a node in reach makes no compute next build",
+        Op::CutBotnet => one(clause(
+            adversary(vec![w("botnet")]),
+            "a botnet in reach makes no compute next build",
         )),
         Op::MoveOne { range } => one(clause(
             vec![w("move"), Part::Word(range.to_string()), w("hex")],
@@ -498,8 +498,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::FlipStation { .. }
         | Op::CorruptCity
         | Op::PlayersLose { .. }
-        | Op::DestroyPresence
-        | Op::EachDestroyPresence { .. }
+        | Op::DestroyNode
+        | Op::EachDestroyNode { .. }
         | Op::PullUnity { .. }
         | Op::LoseInsight { .. }
         | Op::AdversaryBuild
@@ -507,7 +507,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::Flag { .. }
         | Op::Requisition { .. }
         | Op::LoseAmbassador
-        | Op::LosePresenceOr { .. }
+        | Op::LoseNodeOr { .. }
         | Op::DiscardMostExpensive
         | Op::Compute { .. }
         | Op::ComputeEvery { .. }
@@ -520,9 +520,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::Infiltrate { .. }
         | Op::AdversarySpread
         | Op::Sacrifice
-        | Op::NodeAmbassadors { .. }
+        | Op::BotnetAmbassadors { .. }
         | Op::CleanCityAmbassadors { .. }
-        | Op::RemoveNodes { .. }
+        | Op::RemoveBotnets { .. }
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }
@@ -612,8 +612,8 @@ fn standing(op: &Op) -> Standing {
             format!("when you give insight, the receiver also gains {}", amount(*resource, *n)),
         ),
         Op::SpreadShield => effect(
-            { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("harden"), w("presence")]); p },
-            "when the adversary spreads, it skips your presence".to_string(),
+            { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("harden"), w("node")]); p },
+            "when the adversary spreads, it skips your nodes".to_string(),
         ),
         // The shield stops one destruction; the roof is a whole country for the round.
         Op::CivicShelter => effect(

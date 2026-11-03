@@ -11,7 +11,7 @@ fn an_op_in_the_wrong_list_fails_to_load() {
         (Op::War, Slot::Player),
         (Op::HardenAction { chips: 1 }, Slot::Threat),
         (Op::Sacrifice, Slot::Player),
-        (Op::CutNode, Slot::Team),
+        (Op::CutBotnet, Slot::Team),
         (Op::Sway { side: crate::content::Side::Unity, amount: 1 }, Slot::Standing),
         (Op::Compute { amount: 1 }, Slot::Twist),
     ];

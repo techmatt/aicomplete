@@ -115,7 +115,7 @@
   "id": "adv_s2_border_war",
   "name": "Border War",
   "stage": 2,
-  "text": "First, each player destroys 1 of their presence. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador.",
+  "text": "First, each player destroys 1 of their nodes. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -125,7 +125,7 @@
     "op": "war"
    },
    {
-    "op": "each_destroy_presence",
+    "op": "each_destroy_node",
     "count": 1
    }
   ],
@@ -152,7 +152,7 @@
   "id": "adv_s3_total_mobilization",
   "name": "Total Mobilization",
   "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too.",
   "twists": [
    {
     "op": "arrivals",
@@ -172,7 +172,7 @@
     "amount": 1
    },
    {
-    "op": "each_destroy_presence",
+    "op": "each_destroy_node",
     "count": 2
    },
    {
@@ -185,7 +185,7 @@
   "id": "adv_s3_blitzkrieg",
   "name": "Blitzkrieg",
   "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further.",
   "twists": [
    {
     "op": "arrivals",
@@ -204,7 +204,7 @@
     "amount": 1
    },
    {
-    "op": "each_destroy_presence",
+    "op": "each_destroy_node",
     "count": 2
    },
    {
@@ -217,7 +217,7 @@
   "id": "adv_s3_occupation",
   "name": "Occupation",
   "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador.",
   "twists": [
    {
     "op": "arrivals",
@@ -237,7 +237,7 @@
     "amount": 1
    },
    {
-    "op": "each_destroy_presence",
+    "op": "each_destroy_node",
     "count": 2
    },
    {
@@ -250,7 +250,7 @@
   "id": "adv_s3_iron_doctrine",
   "name": "Iron Doctrine",
   "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their presence; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round.",
+  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round.",
   "twists": [
    {
     "op": "arrivals",
@@ -265,7 +265,7 @@
     "amount": 1
    },
    {
-    "op": "each_destroy_presence",
+    "op": "each_destroy_node",
     "count": 2
    },
    {

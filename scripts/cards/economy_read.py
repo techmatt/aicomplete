@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The economy and card-throughput read (078): per cell, pooled across DIRs, per seat and game:
-draft cards kept (opening keeps apart) and played, kept and never played, presence placed, credit
+draft cards kept (opening keeps apart) and played, kept and never played, nodes placed, credit
 income a round, credits and insight left unspent a round, and each board's dear power
 (the one costing 2 or more of a tag) used a game with the seat-rounds it lacked the tags. Then the
 tags by round: each seat's most-held tag on its cards in play when the action phase ends
@@ -55,7 +55,7 @@ def main():
             pooled[key].extend(gs)
 
     print('| cell | games | win % | rounds | kept / seat (opening) | played / seat | uniques played / seat '
-          '| kept, never played / seat | presence / seat | credit income / seat-round | credits left / seat-round | insight left / seat-round |')
+          '| kept, never played / seat | node / seat | credit income / seat-round | credits left / seat-round | insight left / seat-round |')
     print('|---|' + '---|' * 11)
     for key, gs in sorted(pooled.items()):
         seats = len(seats_of[key])
@@ -71,7 +71,7 @@ def main():
                 if c.get('kept', 0) > 0 and c.get('played', 0) == 0:
                     idle += c['kept']
         opening = sum(cnt(g, 'cards.kept.r01') for g in gs)
-        presence = sum(cnt(g, 'board.presence_placed') for g in gs)
+        node = sum(cnt(g, 'board.node_placed') for g in gs)
         seat_rounds = sum(g['rounds'] for g in gs) * seats
         income = sum(cnt(g, 'economy.credits_income') for g in gs)
         left = sum(cnt(g, k) for g in gs for k in g['counters'] if k.startswith('economy.credits_unspent.r'))
@@ -80,7 +80,7 @@ def main():
         p = wins / len(gs)
         se = 100 * (p * (1 - p) / len(gs)) ** 0.5
         print(f"| {key[0]} {key[1]} | {len(gs)} | {100 * p:.1f} ±{se:.1f} | {sum(g['rounds'] for g in gs) / len(gs):.1f} "
-              f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {uniq / n:.2f} | {idle / n:.1f} | {presence / n:.1f} "
+              f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {uniq / n:.2f} | {idle / n:.1f} | {node / n:.1f} "
               f"| {income / seat_rounds:.1f} | {left / seat_rounds:.1f} | {insight_left / seat_rounds:.1f} |")
 
     print('\nDear powers (2 or more of one tag; 3 before r33), a game per seat of that board: used, and seat-rounds it '

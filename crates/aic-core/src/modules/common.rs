@@ -5,9 +5,9 @@
 //! Terms used throughout (see `docs/rules.md`):
 //! - **adjacent**: a neighboring hex on the board (across country borders too);
 //! - **next to X**: holding X, or adjacent to a hex holding X;
-//! - **reach**: a seat's reach is every hex within 1 of one of its presence.
-//! - **presence**: a player's tokens on the board (one per hex), placed off
-//!   their AI board's presence track.
+//! - **reach**: a seat's reach is every hex within 1 of one of its nodes.
+//! - **node**: a player's tokens on the board (one per hex), placed off
+//!   their AI board's node track.
 
 use crate::content::HexKind;
 use crate::module::World;
@@ -24,23 +24,23 @@ pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
 pub const TROOP: &str = "troop";
 /// Corp units waiting at a military base (the base's country's corp).
 pub const UNIT: &str = "unit";
-/// A hardening token: absorbs one destruction of a facility or presence on its hex.
+/// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
-/// An adversary node: persistent, makes adversary compute, blocks claims next to it.
-pub const NODE: &str = "node";
-/// A corruption marker (034): what a destroyed presence leaves on its hex.
+/// A botnet: persistent, makes adversary compute, blocks claims next to it.
+pub const BOTNET: &str = "botnet";
+/// A corruption marker (034): what a destroyed node leaves on its hex.
 pub const MARKER: &str = "corruption";
 
 /// Seat keys are tables, not `format!`: the search asks for them on every hex
 /// of every position it scores (028: a tenth of the engine's time). A game has
 /// at most 4 countries, so at most 4 seats.
-const PRESENCE: [&str; 4] = ["presence:0", "presence:1", "presence:2", "presence:3"];
+const NODE: [&str; 4] = ["node:0", "node:1", "node:2", "node:3"];
 const CUBE: [&str; 4] = ["cube:0", "cube:1", "cube:2", "cube:3"];
 const AMBASSADOR: [&str; 4] = ["ambassador:0", "ambassador:1", "ambassador:2", "ambassador:3"];
 
-/// Seat `s`'s presence on a hex.
-pub fn presence(seat: usize) -> &'static str {
-    PRESENCE[seat]
+/// Seat `s`'s node on a hex.
+pub fn node(seat: usize) -> &'static str {
+    NODE[seat]
 }
 
 /// Seat `s`'s owner cube (an aligned city or an owned station or factory).
@@ -99,9 +99,9 @@ pub fn clean_city(w: &World, g: &GameState, h: usize) -> bool {
     is_city(w, h) && !corrupted(g, h) && cube_owner(g, h).is_none()
 }
 
-/// The seat whose presence is on hex `h`, if any.
-pub fn presence_owner(g: &GameState, h: usize) -> Option<usize> {
-    (0..g.seats.len()).find(|&s| g.tokens(h, presence(s)) > 0)
+/// The seat whose node is on hex `h`, if any.
+pub fn node_owner(g: &GameState, h: usize) -> Option<usize> {
+    (0..g.seats.len()).find(|&s| g.tokens(h, node(s)) > 0)
 }
 
 /// Whether hex `h` holds a building (factory, research station).
@@ -114,14 +114,14 @@ pub fn buildable(w: &World, g: &GameState, h: usize) -> bool {
     w.map.hexes[h].kind == HexKind::Open && !has_building(g, h)
 }
 
-/// Whether hex `h` holds a piece an ambassador can sit on (presence included).
+/// Whether hex `h` holds a piece an ambassador can sit on (node included).
 pub fn has_piece(w: &World, g: &GameState, h: usize) -> bool {
-    is_city(w, h) || is_base(w, h) || has_building(g, h) || presence_owner(g, h).is_some()
+    is_city(w, h) || is_base(w, h) || has_building(g, h) || node_owner(g, h).is_some()
 }
 
-/// Player-owned: a presence, or an aligned city or owned station or factory.
+/// Player-owned: a node, or an aligned city or owned station or factory.
 pub fn player_owned(g: &GameState, h: usize) -> bool {
-    presence_owner(g, h).is_some() || cube_owner(g, h).is_some()
+    node_owner(g, h).is_some() || cube_owner(g, h).is_some()
 }
 
 /// A player ambassador's seat on hex `h`, if any (seat order).
@@ -171,9 +171,9 @@ pub fn home_country(w: &World, seat: usize) -> usize {
     seat % w.map.countries.len()
 }
 
-/// Hexes holding seat `s`'s presence, in board order.
-pub fn presence_of(g: &GameState, seat: usize) -> Vec<usize> {
-    let k = presence(seat);
+/// Hexes holding seat `s`'s node, in board order.
+pub fn node_of(g: &GameState, seat: usize) -> Vec<usize> {
+    let k = node(seat);
     (0..g.hexes.len())
         .filter(|&h| g.tokens(h, k) > 0)
         .collect()
@@ -185,46 +185,46 @@ pub fn ambassador_hexes(g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len()).filter(|&h| g.tokens(h, k) > 0).collect()
 }
 
-pub fn presence_count(g: &GameState, seat: usize) -> i64 {
-    let k = presence(seat);
+pub fn node_count(g: &GameState, seat: usize) -> i64 {
+    let k = node(seat);
     (0..g.hexes.len()).filter(|&h| g.tokens(h, k) > 0).count() as i64
 }
 
-/// Whether seat `s` has a presence on the board: [`presence_count`] above 0,
+/// Whether seat `s` has a node on the board: [`node_count`] above 0,
 /// stopping at the first.
-pub fn has_presence(g: &GameState, seat: usize) -> bool {
-    let k = presence(seat);
+pub fn has_node(g: &GameState, seat: usize) -> bool {
+    let k = node(seat);
     (0..g.hexes.len()).any(|h| g.tokens(h, k) > 0)
 }
 
-/// Whether hex `h` is within seat `s`'s reach (1 of one of its presence).
+/// Whether hex `h` is within seat `s`'s reach (1 of one of its nodes).
 pub fn in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    let k = presence(seat);
+    let k = node(seat);
     next_to(w, h, |x| g.tokens(x, k) > 0)
 }
 
-pub fn has_presence_in(w: &World, g: &GameState, seat: usize, country: usize) -> bool {
-    let k = presence(seat);
+pub fn has_node_in(w: &World, g: &GameState, seat: usize, country: usize) -> bool {
+    let k = node(seat);
     w.map.countries[country]
         .hexes
         .iter()
         .any(|&h| g.tokens(h, k) > 0)
 }
 
-/// Seats a threat in `scope` concerns: with a presence in the country,
+/// Seats a threat in `scope` concerns: with a node in the country,
 /// or every seat for the whole board.
 pub fn seats_in_scope(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usize> {
     match scope {
-        Some(c) => (0..g.seats.len()).filter(|&s| has_presence_in(w, g, s, c)).collect(),
+        Some(c) => (0..g.seats.len()).filter(|&s| has_node_in(w, g, s, c)).collect(),
         None => (0..g.seats.len()).collect(),
     }
 }
 
-/// A piece's token key in words, for prompts, options and notes: `presence:2`
-/// is "seat 2's presence", `station` "research station".
+/// A piece's token key in words, for prompts, options and notes: `node:2`
+/// is "seat 2's node", `station` "research station".
 pub fn piece_name(kind: &str) -> String {
     match kind.split_once(':') {
-        Some(("presence", s)) => format!("seat {s}'s presence"),
+        Some(("node", s)) => format!("seat {s}'s node"),
         Some((kind, "adversary")) => format!("adversary {kind}"),
         _ if kind == STATION => "research station".into(),
         _ => kind.replace('_', " "),
@@ -255,7 +255,7 @@ pub fn hex_opt(w: &World, h: usize) -> Opt {
     }
 }
 
-/// [`hex_opt`] with its label led by `what`: "presence at Cintamani #5".
+/// [`hex_opt`] with its label led by `what`: "node at Cintamani #5".
 pub fn labeled_hex_opt(w: &World, what: &str, h: usize) -> Opt {
     let mut o = hex_opt(w, h);
     o.option = format!("{what} at {}", o.option);

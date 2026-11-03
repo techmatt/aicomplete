@@ -4,13 +4,13 @@ use crate::modules::{adversary, alignment};
 /// This file's Unity tips come at 1, 1 and 2 cards.
 const EASE: &str = "alignment.unity_ease=1,1,2";
 
-/// No corrupted city and no node left (ambassadors and troops stay).
+/// No corrupted city and no botnet left (ambassadors and troops stay).
 fn uncorrupt_cities(rules: &Rules, g: &mut GameState) {
     for h in cities(&rules.map) {
         put(g, h, ADV_CUBE, 0);
     }
     for h in 0..rules.map.hexes.len() {
-        put(g, h, NODE, 0);
+        put(g, h, BOTNET, 0);
     }
 }
 
@@ -48,15 +48,15 @@ fn bar_levels_follow_the_unity_tips() {
     let rules = Rules::new(&baseline_with(&[EASE])).unwrap();
     let w = rules.world();
     let mut g = rules.new_game(1);
-    // 019: `unity_ease` 1, 1, 2: ambassadors and troops at 1 tip, nodes at 2.
+    // 019: `unity_ease` 1, 1, 2: ambassadors and troops at 1 tip, botnets at 2.
     for (tips, level) in [(0, 0), (1, 2), (2, 3), (9, 3)] {
         g.vars.insert("alignment.unity_tips".into(), tips);
         assert_eq!(alignment::bar_level(&w, &g), level, "{tips} tips");
     }
-    assert!(adversary::win_text(0).contains("node, adversary troop or adversary ambassador"));
+    assert!(adversary::win_text(0).contains("botnet, adversary troop or adversary ambassador"));
     assert!(adversary::win_text(1).contains("ambassadors no longer count"));
-    assert!(adversary::win_text(2).contains("no corrupted city or node"));
-    assert!(adversary::win_text(3).contains("nodes no longer count"));
+    assert!(adversary::win_text(2).contains("no corrupted city or botnet"));
+    assert!(adversary::win_text(3).contains("botnets no longer count"));
 }
 
 #[test]
@@ -72,9 +72,9 @@ fn the_board_clear_win_and_the_bar_easing() {
         (0, 1, 1, Some(TROOP), false),
         (1, 1, 1, Some(TROOP), true),
         (5, 1, 1, Some(ADV_CUBE), false),
-        (0, 1, 1, Some(NODE), false),
-        (1, 1, 1, Some(NODE), false),
-        (2, 1, 1, Some(NODE), true),
+        (0, 1, 1, Some(BOTNET), false),
+        (1, 1, 1, Some(BOTNET), false),
+        (2, 1, 1, Some(BOTNET), true),
     ];
     for &(tips, rule, stage, piece_left, wins) in cases {
         let (rules, mut g) = action_only(&[EASE, &format!("alignment.clear_win_stage={rule}")]);
@@ -181,18 +181,18 @@ fn a_discord_tip_no_longer_moves_troops() {
     // 019: the march replaced 017's Discord-tip advance.
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
-    let p = m.numbered(0, piece(0).presence);
+    let p = m.numbered(0, piece(0).node);
     let t = (0..m.hexes.len())
         .find(|&h| m.distance(p, h) == 3 && kind(m, h) != content::HexKind::Ocean)
         .unwrap();
-    put(&mut g, p, presence(0), 1);
+    put(&mut g, p, node(0), 1);
     put(&mut g, t, TROOP, 1);
     next_alignment_card(&mut g, Side::Discord, "propaganda");
     fill_bucket(&rules, &mut g, Side::Discord);
     give(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.var("alignment.discord_tips"), 1);
-    assert_eq!((g.tokens(t, TROOP), g.tokens(p, presence(0))), (1, 1));
+    assert_eq!((g.tokens(t, TROOP), g.tokens(p, node(0))), (1, 1));
 }
 
 #[test]

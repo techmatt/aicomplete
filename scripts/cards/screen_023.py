@@ -12,7 +12,7 @@ mono-tag x6, ignore-X x6 and event-hoarder, d2 only, 32 seeds). Prints:
 - win rates per cell, the card economy per game (kept / played, insight on keeps
   / on plays) and the by-round table (022's, from screen_022.py);
 - the strategy-health gate (021's, in screen_021.py's docstring: every greedy and
-  engine cell averages presence placed >= 5, cards played >= 5 and kept >= 8;
+  engine cell averages node placed >= 5, cards played >= 5 and kept >= 8;
   engine at d0 uses some AI power and replaces some building) and the 023 target:
   engine at d0 about 90% or better;
 - per card, over the greedy and engine games: drafted, kept, keep rate (kept /
@@ -57,14 +57,14 @@ def played_ids(g):
 
 
 def health(cells, games):
-    print('| variant | d | agent | win % | presence | played | kept | powers | replaced | gate |')
+    print('| variant | d | agent | win % | node | played | kept | powers | replaced | gate |')
     print('|---|---|---|---|---|---|---|---|---|---|')
     fails = []
     for cell in sorted(games, key=lambda c: (cells[c]['variant'], cells[c]['difficulty'], cells[c]['agent'])):
         gs, c = games[cell], cells[cell]
         if c['agent'] not in ('greedy', 'engine'):
             continue
-        pres = s22.mean(gs, lambda g: s22.cnt(g, 'board.presence_placed'))
+        pres = s22.mean(gs, lambda g: s22.cnt(g, 'board.node_placed'))
         played = s22.mean(gs, lambda g: s22.total(g, 'cards.played.'))
         kept = s22.mean(gs, lambda g: s22.total(g, 'cards.kept.'))
         powers = s22.mean(gs, lambda g: s22.cnt(g, 'ai.powers_used'))
@@ -72,7 +72,7 @@ def health(cells, games):
         win = 100 * sum(g['won'] for g in gs) / len(gs)
         bad = []
         if pres < 5:
-            bad.append('presence')
+            bad.append('node')
         if played < 5:
             bad.append('played')
         if kept < 8:

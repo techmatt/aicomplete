@@ -34,9 +34,9 @@ const TOKENS = {
 const AMBASSADOR = '<circle cx="12" cy="6" r="4.2" fill="currentColor"/><path d="M4 22.500c0-8 3-11.500 8-11.500s8 3.500 8 11.500z" fill="currentColor"/>';
 const PIECES = {
   ambassador: AMBASSADOR,
-  presence: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
-  // A placement that pays no track step: the presence, a coin struck through at its shoulder.
-  free_presence: `<g transform="translate(-2.500 2.500) scale(.84)">${fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z')}</g><circle cx="17.500" cy="6.500" r="5.200" fill="#efeadc" stroke="currentColor" stroke-width="1.800"/>${line('M13.800 10.200l7.400-7.400', 1.800)}`,
+  node: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
+  // A placement that pays no track step: the node, a coin struck through at its shoulder.
+  free_node: `<g transform="translate(-2.500 2.500) scale(.84)">${fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z')}</g><circle cx="17.500" cy="6.500" r="5.200" fill="#efeadc" stroke="currentColor" stroke-width="1.800"/>${line('M13.800 10.200l7.400-7.400', 1.800)}`,
   factory: fill('M3 22V10l6 4v-4l6 4V3h6v19z'),
   // Moving a piece: the silhouette with an arrow.
   move: `<g transform="translate(-3.500 2) scale(.84)">${AMBASSADOR}</g>${line('M14.500 12h8M19 8l3.500 4-3.500 4', 2.4)}`,
@@ -52,7 +52,7 @@ const PIECES = {
   project: `<rect x="3.500" y="4" width="17" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="2.200"/>${fill('M7 8h10v2H7zM7 12h6v2H7z')}`,
   hex: line('M12 2 20.700 7v10L12 22 3.300 17V7z', 2.4),
   troop: fill('M12 2.500 15 7.500h-1.800v2.300l6.800 3.700v3l-6.800-1.800V19l2.300 1.700V22L12 21l-3.500 1v-1.300L10.800 19v-4.300L4 16.500v-3l6.800-3.700V7.500H9z'),
-  node: `<circle cx="12" cy="12" r="4.200" fill="currentColor"/>${line('M12 2.500v5M12 16.500v5M2.500 12h5M16.500 12h5M5.300 5.300l3.500 3.500M15.200 15.200l3.500 3.500M18.700 5.300l-3.500 3.500M8.800 15.200l-3.500 3.500', 1.900)}`,
+  botnet: `<circle cx="12" cy="12" r="4.200" fill="currentColor"/>${line('M12 2.500v5M12 16.500v5M2.500 12h5M16.500 12h5M5.300 5.300l3.500 3.500M15.200 15.200l3.500 3.500M18.700 5.300l-3.500 3.500M8.800 15.200l-3.500 3.500', 1.900)}`,
   cube: fill('M12 2 21 7v10l-9 5-9-5V7zm0 2.300L6 7.600l6 3.300 6-3.300zM5 9.300v6.500l6 3.300v-6.500z'),
   city: fill('M3 22V11h5V6h3V2h3v8h7v12z'),
   building: `<rect x="4" y="3" width="16" height="19" rx="1" fill="currentColor"/><path d="M8 7h3v3H8zM13 7h3v3h-3zM8 12h3v3H8zM13 12h3v3h-3z" fill="#efeadc"/>`,

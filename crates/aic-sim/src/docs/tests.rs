@@ -66,8 +66,8 @@ fn a_content_change_changes_its_block() {
     c.ais[1].powers.iter_mut().find(|p| p.name == "Stand Down").unwrap().tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;
-    assert_ne!(presence_track_block(base), presence_track_block(&c));
-    assert_ne!(presence_track2_block(base), presence_track2_block(&c));
+    assert_ne!(node_track_block(base), node_track_block(&c));
+    assert_ne!(node_track2_block(base), node_track2_block(&c));
     assert_ne!(powers_block(base), powers_block(&c));
     assert_ne!(board_details_block(base), board_details_block(&c));
     assert_ne!(corps_block(base), corps_block(&c));

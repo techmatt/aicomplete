@@ -1,12 +1,12 @@
 //! Invariants checked after every action of many random games (020's bug
-//! hunt): what a printed table can't hold (negative piles, two presence of one
-//! seat on a hex, pieces on the ocean, more presence out than taken off the
+//! hunt): what a printed table can't hold (negative piles, two node of one
+//! seat on a hex, pieces on the ocean, more nodes out than taken off the
 //! track), a game that waits for nobody, a state the rules reject, a view
 //! that can't be drawn. 044 adds r19 and r20's: a marker's hex, a shield with
 //! something under it, every token off a track accounted for.
 
 use super::*;
-use crate::modules::common::{corrupted, has_building, presence_owner, MARKER};
+use crate::modules::common::{corrupted, has_building, node_owner, MARKER};
 use crate::modules::{ai, board};
 
 /// Random play that mostly acts: a pass only now and then, so games reach the
@@ -47,36 +47,36 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
             }
         }
         for s in 0..g.seats.len() {
-            if g.tokens(h, presence(s)) > 1 {
-                out.push(format!("hex {h}: {} presence of seat {s}", g.tokens(h, presence(s))));
+            if g.tokens(h, node(s)) > 1 {
+                out.push(format!("hex {h}: {} node of seat {s}", g.tokens(h, node(s))));
             }
         }
-        if g.tokens(h, NODE) > 1 {
-            out.push(format!("hex {h}: {} nodes", g.tokens(h, NODE)));
+        if g.tokens(h, BOTNET) > 1 {
+            out.push(format!("hex {h}: {} botnets", g.tokens(h, BOTNET)));
         }
         // 044: what a marker and a shield promise (r19, r20).
         let marker = g.tokens(h, MARKER);
         if marker > 1 {
             out.push(format!("hex {h}: {marker} corruption markers"));
         }
-        if marker > 0 && presence_owner(g, h).is_some() {
-            out.push(format!("hex {h}: a marked hex holds presence"));
+        if marker > 0 && node_owner(g, h).is_some() {
+            out.push(format!("hex {h}: a marked hex holds node"));
         }
         if marker > 0 && corrupted(g, h) {
             out.push(format!("hex {h}: a marker on a hex with corruption"));
         }
-        if g.tokens(h, HARDEN) > 0 && presence_owner(g, h).is_none() && !has_building(g, h) {
+        if g.tokens(h, HARDEN) > 0 && node_owner(g, h).is_none() && !has_building(g, h) {
             out.push(format!("hex {h}: a hardening token with nothing under it"));
         }
     }
     // 044: a token off a track is on the board or lost (it leaves the game, r19).
-    let lost = g.stats.counters.get("board.presence_lost").copied().unwrap_or(0);
+    let lost = g.stats.counters.get("board.node_lost").copied().unwrap_or(0);
     let out_of_tracks: i64 = (0..g.seats.len())
         .map(|s| (board::track_taken(g, s) + board::track2_taken(g, s)) as i64)
         .sum();
-    let on_board: i64 = (0..g.seats.len()).map(|s| total(g, presence(s))).sum();
+    let on_board: i64 = (0..g.seats.len()).map(|s| total(g, node(s))).sum();
     if on_board + lost != out_of_tracks {
-        out.push(format!("{on_board} presence on the board + {lost} lost, but {out_of_tracks} off the tracks"));
+        out.push(format!("{on_board} node on the board + {lost} lost, but {out_of_tracks} off the tracks"));
     }
     for (s, seat) in g.seats.iter().enumerate() {
         for (r, &n) in &seat.resources {
@@ -86,12 +86,12 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
         }
         let track = ai::board(&w, s).economy_track.len() + ai::board(&w, s).play_track.len();
         let taken = board::track_taken(g, s) + board::track2_taken(g, s);
-        let placed = total(g, presence(s));
+        let placed = total(g, node(s));
         if taken > track {
-            out.push(format!("seat {s}: {taken} presence taken off a track of {track}"));
+            out.push(format!("seat {s}: {taken} node taken off a track of {track}"));
         }
         if placed > taken as i64 {
-            out.push(format!("seat {s}: {placed} presence on the board but {taken} taken off the track"));
+            out.push(format!("seat {s}: {placed} node on the board but {taken} taken off the track"));
         }
     }
     if g.var(SUPPLY) < 0 {
@@ -100,7 +100,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
     if g.var("adversary.compute") < 0 {
         out.push(format!("adversary compute {}", g.var("adversary.compute")));
     }
-    // Words players read carry no raw token keys (020: "presence:3 at C3 #3").
+    // Words players read carry no raw token keys (020: "node:3 at C3 #3").
     // ... nor the engine's old hex names ("C1 #5"; 020: the piece's name now).
     let index_name = |s: &str| {
         s.match_indices(" #").any(|(i, _)| {
@@ -111,7 +111,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
         })
     };
     let raw_key = |s: &str| {
-        ["presence:", "cube:", "ambassador:"]
+        ["node:", "cube:", "ambassador:"]
             .iter()
             .any(|k| s.contains(k))
             || index_name(s)
@@ -128,7 +128,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
     if v.hexes.len() != g.hexes.len() {
         out.push("view hex count".into());
     }
-    // Labels are words, not keys (020: `presence_reserve`).
+    // Labels are words, not keys (020: `node_reserve`).
     let labels = v
         .globals
         .iter()

@@ -295,7 +295,7 @@ function actionButtons(mine: Action[]): HTMLElement {
       count.dataset.hexes = acts.map((a) => hexKey(a.target!)).join(' ');
       count.dataset.action = JSON.stringify(acts[0]);
       row.append(count);
-      // Two answers on one hex (a sacrifice: the ambassador or the presence there) can't
+      // Two answers on one hex (a sacrifice: the ambassador or the node there) can't
       // both be a click on it: each gets its own button (020: only the first was reachable).
       const perHex = new Map<string, Action[]>();
       for (const a of acts) perHex.set(hexKey(a.target!), [...(perHex.get(hexKey(a.target!)) ?? []), a]);

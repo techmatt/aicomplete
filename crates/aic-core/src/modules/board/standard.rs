@@ -57,7 +57,7 @@ impl StandardAction {
 }
 
 /// What something costs: the one shape every standard action and every
-/// placement of presence is priced in.
+/// placement of node is priced in.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Price {
     pub energy: i64,

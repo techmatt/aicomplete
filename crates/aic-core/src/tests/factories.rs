@@ -17,7 +17,7 @@ fn cities_grow_factories_that_take_their_owner() {
     let zones =
         |g: &GameState| [2, 8, 11, 13].map(|n| (g.tokens(at(n), FACTORY), cube_on(g, at(n))));
 
-    // Clean 6 builds at 2 (its only zone), neutral (no presence near);
+    // Clean 6 builds at 2 (its only zone), neutral (no nodes near);
     // corrupted 7 and 14 at the lowest-numbered free zones, 8 then 11,
     // adversary-owned.
     let mut g = g0.clone();
@@ -119,7 +119,7 @@ fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_fr
 }
 
 #[test]
-fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
+fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
     let (rules, mut g0) = lab(&["board.bases"]);
     let m = &rules.map;
     let at = |n: u8| m.numbered(0, n);
@@ -132,7 +132,7 @@ fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
         })
     };
 
-    // Nobody's presence near: neutral.
+    // Nobody's node near: neutral.
     let mut g = g0.clone();
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
@@ -141,10 +141,10 @@ fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
     // Seat 1 next to 2; seat 1 on 11 against seat 0 on 10 (next to it), a
     // tie the players settle; seat 0 on 9 and 10, both next to 13.
     let mut g = g0.clone();
-    put(&mut g, at(1), presence(1), 1);
-    put(&mut g, at(11), presence(1), 1);
-    put(&mut g, at(9), presence(0), 1);
-    put(&mut g, at(10), presence(0), 1);
+    put(&mut g, at(1), node(1), 1);
+    put(&mut g, at(11), node(1), 1);
+    put(&mut g, at(9), node(0), 1);
+    put(&mut g, at(10), node(0), 1);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a tie to settle");
     assert!(
@@ -167,10 +167,10 @@ fn a_clean_citys_factory_goes_to_the_most_presence_by_its_zone() {
     };
     assert_eq!(built(&g).unwrap_or(0) - built(&g0).unwrap_or(0), 3);
 
-    // An aligned city's factory stays its owner's, whatever presence is near.
+    // An aligned city's factory stays its owner's, whatever node is near.
     let mut g = g0.clone();
     put(&mut g, at(6), cube(0), 1);
-    put(&mut g, at(1), presence(1), 1);
+    put(&mut g, at(1), node(1), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(owners(&g)[0], c(0));

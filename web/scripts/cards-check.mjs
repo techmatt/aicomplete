@@ -186,7 +186,7 @@ try {
   writeFileSync(join(ROOT, 'experiments', 'results', 'card-prices.csv'), `card,reason,reasoned_price\nfield_sensor_grid,"worth more, on\ntwo lines",${printed + 1.5}\n`);
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`[...document.getElementById('sort').options].some((o) => o.value === 'price_gap')`, 'the reasoned column');
-  check(await page.js(`['jam', 'free_presence'].every((m) => document.querySelector('.ico[aria-label="' + m + '"]'))`), 'after Rebuild the grid shows the jam and free-placement marks');
+  check(await page.js(`['jam', 'free_node'].every((m) => document.querySelector('.ico[aria-label="' + m + '"]'))`), 'after Rebuild the grid shows the jam and free-placement marks');
   await page.js(`document.getElementById('view').value = 'table'`);
   await page.js(`document.getElementById('view').onchange()`);
   await shotTo(page, OUT, 'table');

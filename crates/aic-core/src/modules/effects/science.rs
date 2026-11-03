@@ -21,7 +21,7 @@ pub(super) fn clear_markers(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
     Ok(())
 }
 
-pub(super) fn shield_presence(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
+pub(super) fn shield_node(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
     let w = cx.world;
     for k in 0..count {
         let hexes: Vec<usize> = (0..g.hexes.len()).filter(|&h| shieldable(g, seat, h)).collect();
@@ -29,7 +29,7 @@ pub(super) fn shield_presence(g: &mut GameState, cx: &mut Cx, seat: usize, count
             break;
         }
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {seat}: shield your presence on which hex?");
+        let prompt = format!("Seat {seat}: shield your nodes on which hex?");
         let Some(i) = pick_or_stop(cx, seat, &prompt, opts, k == 0)? else {
             break;
         };

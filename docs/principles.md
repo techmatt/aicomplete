@@ -30,7 +30,7 @@ and tier-1 cards have a median of 6 credits with tier 2 about 12.
 
 - **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 25 / 21 / 18 a
   round printed on the Builder, Protector and Researcher (Foundry Core's +1 folded in), plus 2-3 a
-  presence on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 250 to 350 credits
+  node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 250 to 350 credits
   over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–21 (Great Liberation 21, Orbital
   Mass Driver 20): within "about 50", but the income is not "produce
   1".
@@ -38,8 +38,8 @@ and tier-1 cards have a median of 6 credits with tier 2 about 12.
   credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); chips sell
   for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
 - **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
-  20–40 at 4: the top of the range, still under 50. A node makes 1.
-- Within the principle: energy (cities make 1, presence costs 1), chips (a factory
+  20–40 at 4: the top of the range, still under 50. A botnet makes 1.
+- Within the principle: energy (cities make 1, a node costs 1), chips (a factory
   makes 1), insight, antimatter, Sway (tips at 2 a player), the supply (24 a country,
   pieces rather than a currency).
 
@@ -69,7 +69,7 @@ expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the
 `adversary.corruptions` > 0).
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
-main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
+main cause, and the node clock stays live. The round cap is a quiet backstop with no share target
 (locked).
 
 **Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
@@ -157,20 +157,20 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | tier-2-rush | `tier2_rush=1` | drafts from tier 2 whenever it can afford the keep |
 | no-powers | `no_powers=1` | never uses an AI-board power |
 | no-counters | `no_counters=1` | never pays toward a threat's counter |
-| no-presence | `no_presence=1` | places no presence beyond setup (no power or card that places one) |
+| no-node | `no_node=1` | places no nodes beyond setup (no power or card that places one) |
 | mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt; there are none) |
 | ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder | `events_only=1` | keeps and plays only events |
 | ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
 | Unity farm | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
 | Science rush | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
-| always-max-presence, never-second-presence | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
+| always-max-node, never-second-node | `always_max_node=1`, `never_second_node=1` | both node powers whenever affordable; never the board's second |
 | never-Remove, Science board | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
 | abandon | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
 | never-sacrifice | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
 | ambassador mass | `ambassador_mass=1` | buys every ambassador it can, before anything else |
 | free-build rush | `free_build_rush=1` | the Builder's Rush Build at every chance |
-| wall turtle | `wall_turtle=1` | the Protector places presence only with a troop on the board, on the hex nearest one |
+| wall turtle | `wall_turtle=1` | the Protector places nodes only with a troop on the board, on the hex nearest one |
 | home only | `home_only=1` | counters only threats in its home country |
 | capstone rush | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
 

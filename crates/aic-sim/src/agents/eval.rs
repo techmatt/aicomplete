@@ -48,9 +48,9 @@ pub struct Weights {
     /// Each corrupted city (it builds ambassadors and diverts its energy to
     /// Discord).
     pub corrupted: f64,
-    /// A seat down to its last presence (027: a player with none loses);
+    /// A seat down to its last node (027: a player with none loses);
     /// a share of that with two, three or four.
-    pub presence_danger: f64,
+    pub node_danger: f64,
     /// Each aligned city (a player cube: extra energy for its owner).
     pub aligned: f64,
     /// Each adversary ambassador on the board (the bar-0 win needs none).
@@ -85,23 +85,23 @@ pub struct Weights {
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
     pub project: f64,
-    /// Each player presence on the board (reach, site claims, a share of
+    /// Each player node on the board (reach, site claims, a share of
     /// city energy; its track income is counted as income).
     /// Was `data_center` (still accepted, see [`RENAMED`]).
-    pub presence: f64,
-    /// Each node on the board (a cost: adversary compute, contests presence,
-    /// blocks the purge).
     pub node: f64,
+    /// Each botnet on the board (a cost: adversary compute, contests node,
+    /// blocks the purge).
+    pub botnet: f64,
     /// Each corruption marker (041: a hex lost to placement).
     pub marker: f64,
-    /// A hardening token on a presence hex, on top of `harden` (041: it
+    /// A hardening token on a node hex, on top of `harden` (041: it
     /// keeps a token that can't be replaced).
     pub shield: f64,
     /// A threat that waits this round counts this share (041): it comes back,
     /// but with a counter phase first.
     pub threat_waits: f64,
     /// 070: an unpaid threat no seat may counter yet counts this much more: the
-    /// pull to put presence or an ambassador on a source.
+    /// pull to put node or an ambassador on a source.
     pub threat_stranded: f64,
     /// Each player-owned factory (chips each production step); an
     /// adversary-owned one costs as much.
@@ -119,7 +119,7 @@ pub struct Weights {
     /// converter nets by these weights, so a cube held never beats using one.
     pub research_cube: f64,
     /// A research cube held by a seat whose board spends cubes on a power (075:
-    /// the Researcher's second presence takes 3): in place of `research_cube`.
+    /// the Researcher's second node takes 3): in place of `research_cube`.
     pub research_cube_power: f64,
     /// Horizon mode: per round left, each of a seat's first
     /// [`STATIONS_USEFUL`] owned stations (074).
@@ -207,7 +207,7 @@ pub struct Weights {
     /// Horizon mode: rounds a win needs after the Unity target is reached.
     pub win_lag: f64,
     /// Horizon mode: chance of losing per round per unit of danger (an
-    /// unpaid threat per country, a last presence, the Discord deck at its edge);
+    /// unpaid threat per country, a last node, the Discord deck at its edge);
     /// the rounds left are the expected survival over the clock.
     pub risk: f64,
     /// Horizon mode: per round left, a building that pays no income (an
@@ -265,7 +265,7 @@ pub struct Weights {
 const RENAMED: [(&str, &str); 4] = [
     ("opp_rate", "unity_rate_start"),
     ("hardware", "chips"),
-    ("data_center", "presence"),
+    ("data_center", "node"),
     ("capstone", "track_capstone"),
 ];
 
@@ -292,7 +292,7 @@ impl Default for Weights {
             win_margin: 5.0,
             // 014: chosen by hand for the new board, not yet swept.
             corrupted: 30.0,
-            presence_danger: 60.0,
+            node_danger: 60.0,
             aligned: 8.0,
             adv_ambassador: 3.0,
             pressure: 0.7,
@@ -309,10 +309,10 @@ impl Default for Weights {
             level: 10.0,
             // 017: chosen by hand, not swept.
             project: 30.0,
-            presence: 4.0,
-            // 022 (020's D9): a node is permanent since 019; at 6 agents made
-            // nodes answering the spread when an equal free option existed.
-            node: 25.0,
+            node: 4.0,
+            // 022 (020's D9): a botnet is permanent since 019; at 6 agents made
+            // botnets answering the spread when an equal free option existed.
+            botnet: 25.0,
             marker: 1.0,
             shield: 3.0,
             threat_waits: 0.5,
@@ -508,8 +508,8 @@ struct HexTokens {
     station: i64,
     harden: i64,
     troop: i64,
-    node: i64,
-    presence: [i64; 4],
+    botnet: i64,
+    node: [i64; 4],
     cube: [i64; 4],
     ambassador: [i64; 4],
 }
@@ -524,8 +524,8 @@ struct TokenKeys {
     station: Key,
     harden: Key,
     troop: Key,
-    node: Key,
-    presence: [Key; 4],
+    botnet: Key,
+    node: [Key; 4],
     cube: [Key; 4],
     ambassador: [Key; 4],
 }
@@ -541,8 +541,8 @@ impl TokenKeys {
             station: k(STATION),
             harden: k(HARDEN),
             troop: k(TROOP),
-            node: k(common::NODE),
-            presence: std::array::from_fn(|s| k(common::presence(s))),
+            botnet: k(common::BOTNET),
+            node: std::array::from_fn(|s| k(common::node(s))),
             cube: std::array::from_fn(|s| k(common::cube(s))),
             ambassador: std::array::from_fn(|s| k(common::ambassador(s))),
         }
@@ -556,8 +556,8 @@ impl TokenKeys {
                 let mut t = HexTokens::default();
                 for (k, n) in hex.tokens.iter() {
                     let (k, n) = (*k, *n);
-                    if let Some(s) = at(&self.presence, k) {
-                        t.presence[s] = n;
+                    if let Some(s) = at(&self.node, k) {
+                        t.node[s] = n;
                     } else if let Some(s) = at(&self.cube, k) {
                         t.cube[s] = n;
                     } else if let Some(s) = at(&self.ambassador, k) {
@@ -576,8 +576,8 @@ impl TokenKeys {
                         t.harden = n;
                     } else if k == self.troop {
                         t.troop = n;
-                    } else if k == self.node {
-                        t.node = n;
+                    } else if k == self.botnet {
+                        t.botnet = n;
                     }
                 }
                 t
@@ -781,7 +781,7 @@ impl Eval {
         let mut near = [0u64; 4];
         for (h, hex) in world.map.hexes.iter().enumerate() {
             for (s, mask) in near.iter_mut().enumerate().take(self.seats) {
-                if t[h].presence[s] > 0 {
+                if t[h].node[s] > 0 {
                     *mask |= 1 << h;
                     for &n in &hex.neighbors {
                         *mask |= 1 << n;
@@ -823,7 +823,7 @@ impl Eval {
             if city {
                 if bad {
                     corrupted += 1;
-                    // 080: only seats with presence on or next to it count.
+                    // 080: only seats with a node on or next to it count.
                     let on = board::liberating_ambassadors(&world, g, h) as f64;
                     let held: i64 = (0..seats)
                         .filter(|&s| near[s] >> h & 1 != 0)
@@ -854,7 +854,7 @@ impl Eval {
                     }
                 }
             }
-            let held = t.presence[..seats].iter().any(|&n| n > 0);
+            let held = t.node[..seats].iter().any(|&n| n > 0);
             v -= w.adv_ambassador * adv as f64;
             if adv > 0 {
                 let piece = held || owned || base || t.factory > 0 || t.station > 0;
@@ -883,18 +883,18 @@ impl Eval {
                     v += w.owned_factory;
                 }
             }
-            v -= w.node * t.node as f64;
+            v -= w.botnet * t.botnet as f64;
             v -= w.marker * t.marker as f64;
             if held && t.harden > 0 {
                 v += w.shield;
             }
             // 075: a Wall's facility can't be struck.
-            if owned && !bad && (t.station > 0 || t.factory > 0) && self.wall_seat.is_some_and(|s| t.presence[s] > 0) {
+            if owned && !bad && (t.station > 0 || t.factory > 0) && self.wall_seat.is_some_and(|s| t.node[s] > 0) {
                 let near = (0..g.hexes.len()).any(|x| tokens[x].troop > 0 && world.map.distance(h, x) <= WALL_NEAR as i32);
                 v += w.wall * if near { 2.0 } else { 1.0 };
             }
             if held {
-                v += w.presence;
+                v += w.node;
             }
             for s in 0..self.seats {
                 v += w.ambassador_board * t.ambassador[s] as f64;
@@ -903,7 +903,7 @@ impl Eval {
             if counts && (0..self.seats).any(|s| near[s] >> h & 1 != 0) {
                 reach += 1;
             }
-            pieces += adversary::against_bar(city && bad, t.node, adv, t.troop, level);
+            pieces += adversary::against_bar(city && bad, t.botnet, adv, t.troop, level);
         }
         v -= w.corrupted * corrupted as f64;
         // 082: in table mode a liberation counts as the city it frees.
@@ -912,15 +912,15 @@ impl Eval {
         }
         let mut thin = i64::MAX;
         for s in 0..self.seats {
-            let count = tokens.iter().filter(|t| t.presence[s] > 0).count() as i64;
+            let count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
             thin = thin.min(count);
             match count {
-                ..=1 => v -= w.presence_danger,
-                2 => v -= 0.5 * w.presence_danger,
+                ..=1 => v -= w.node_danger,
+                2 => v -= 0.5 * w.node_danger,
                 // 034: a token lost stays lost and a hit takes 2, so the danger
                 // starts sooner.
-                3 => v -= 0.25 * w.presence_danger,
-                4 => v -= 0.1 * w.presence_danger,
+                3 => v -= 0.25 * w.node_danger,
+                4 => v -= 0.1 * w.node_danger,
                 _ => {}
             }
         }
@@ -1009,7 +1009,7 @@ impl Eval {
     /// the team is on course to win (Unity still needed at its rate so far,
     /// plus `win_lag`), then the expected rounds survived at a per-round
     /// loss chance of `risk` per unit of danger (unpaid threats per
-    /// country, a seat's last presence, the Discord deck at its edge).
+    /// country, a seat's last node, the Discord deck at its edge).
     fn rounds_left(
         &self,
         rules: &Rules,
@@ -1275,14 +1275,14 @@ impl Eval {
                     required[*t as usize] += 1;
                 }
                 let income = economy::income_with(&world, g, s, &tags);
-                let presence = tokens.iter().filter(|t| t.presence[s] > 0).count() as f64;
+                let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
                 SeatData {
                     s,
                     tags,
                     required,
                     prices: cards::prices_with(&world, g, s, &tags),
                     income,
-                    ctx: Ctx { left, presence, tags, corrupted },
+                    ctx: Ctx { left, node, tags, corrupted },
                 }
             })
             .collect();
@@ -1513,14 +1513,14 @@ mod tests {
                 assert_eq!(t.station, g.tokens(h, STATION));
                 assert_eq!(t.harden, g.tokens(h, HARDEN));
                 assert_eq!(t.troop, g.tokens(h, TROOP));
-                assert_eq!(t.node, g.tokens(h, common::NODE));
+                assert_eq!(t.botnet, g.tokens(h, common::BOTNET));
                 for s in 0..g.seats.len() {
-                    assert_eq!(t.presence[s], g.tokens(h, common::presence(s)));
+                    assert_eq!(t.node[s], g.tokens(h, common::node(s)));
                     assert_eq!(t.cube[s], g.tokens(h, common::cube(s)));
                     assert_eq!(t.ambassador[s], g.tokens(h, common::ambassador(s)));
                 }
                 let city = common::is_city(&w, h) && t.adv_cube > 0;
-                pieces += adversary::against_bar(city, t.node, t.adv_ambassador, t.troop, level);
+                pieces += adversary::against_bar(city, t.botnet, t.adv_ambassador, t.troop, level);
             }
             assert_eq!(pieces, adversary::purge_count(&w, &g, level));
             r.legal_actions_into(&g, &mut legal);
@@ -1537,6 +1537,6 @@ mod tests {
         assert!(w.set("unity_rate_start", 0.5));
         assert_eq!(w.unity_rate_start, 0.5);
         assert!(w.set("data_center", 2.5));
-        assert_eq!(w.presence, 2.5);
+        assert_eq!(w.node, 2.5);
     }
 }

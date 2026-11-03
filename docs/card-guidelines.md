@@ -20,7 +20,7 @@ never a quiet exception.
    cost, so a card must be worth that (ruling 1: *Surplus Auction*, *Peace Dividend*, *Agency Field Station*). Cut a
    small rider that adds symbols and parsing but no decision ("gain 1 credit"). A conditional extra that creates no
    decision is noise: fold its value into the base number, or cut it. **Fold a near-constant rider into the number**
-   (ruling 3: *Blackout Script*: a node makes 1 compute, so "no compute next build" is one more compute removed).
+   (ruling 3: *Blackout Script*: a botnet makes 1 compute, so "no compute next build" is one more compute removed).
 5. **No circular payments** (ruling 2). Paying credits to gain credits back is netted out, never printed both ways
    (*Peace Dividend*: pay 3, gain 2 credits).
 6. **Clear timing.** Each effect reads as once now (below the art), each round, or as an Action.
@@ -80,7 +80,7 @@ in reach, a country you're in, here, Remove N, Draw, on your cards, Action) are 
 *Terms* and in [player-aid.md](player-aid.md). `face.rs` prints the phrases as plain strings.
 
 **"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;
-the same token on presence is a "shield". "You gain the Harden action" is a standard action a card grants, paid in
+the same token on nodes is a "shield". "You gain the Harden action" is a standard action a card grants, paid in
 chips (the card prints the price); the Protector's Bulwark is a power, paid in energy. It is not a keyword.
 
 **American English.** Content, faces, docs, UI and comments: Mobilization, Armored, Modeling.
@@ -110,10 +110,10 @@ What every mark on a card means. Each means one thing; the sheet is `icons.png` 
 | `:` | an Effect: when the left happens, the right |
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
-| Shield | stops one destruction: alone, a hardening token on a facility; with presence, a shield; with a country, Aegis Dome Array's |
+| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield; with a country, Aegis Dome Array's |
 | Shelter (roof) | a whole country, this round |
-| Presence | place it, paying its track step |
-| Presence with a struck-through coin | place it free |
+| Node | place it, paying its track step |
+| Node with a struck-through coin | place it free |
 | Threat (`!`) | a threat. Counter is the threat struck through |
 | Jam (threat with a down arrow) | one threat needs that much less of each resource |
 | Clock | delay: a threat waits a round |

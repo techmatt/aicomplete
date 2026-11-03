@@ -6,7 +6,7 @@ The endgame screen summary (027, rules r16).
     python scripts/cards/screen_027.py --gate DIR [DIR ...]
 
 Each DIR is an `aic-sim experiment` output. Prints, per cell: win %, win and loss rounds
-as histograms, how games ended, Unity and Discord tips, presence lost (and by source
+as histograms, how games ended, Unity and Discord tips, node lost (and by source
 over all cells), arrivals and removals a round, frees and corruptions.
 
 --gate prints each check's gap to the engine (win % points, ± one standard error) for
@@ -30,7 +30,7 @@ def rate(gs, k, per_round=True):
 
 
 def table(cells, games):
-    print('| variant | d | agent | n | win % | win rounds | loss rounds | ends | Unity / Discord tips | presence lost | arrivals / removed a round | peak ambassadors | nodes peak | freed / corruptions | projects | supply short |')
+    print('| variant | d | agent | n | win % | win rounds | loss rounds | ends | Unity / Discord tips | node lost | arrivals / removed a round | peak ambassadors | botnets peak | freed / corruptions | projects | supply short |')
     print('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     key = lambda c: (cells[c]['variant'], cells[c]['difficulty'], cells[c]['agent'])
     for cell in sorted(games, key=key):
@@ -46,16 +46,16 @@ def table(cells, games):
         print(f"| {c['variant']} | {c['difficulty']} | {c['agent']} | {len(gs)} | {100 * len(wins) / len(gs):.0f} "
               f"| {hist(wins)} | {hist(losses)} | {', '.join(f'{k} {v}' for k, v in ends.most_common())} "
               f"| {rate(gs, 'alignment.tips_unity', False):.1f} / {rate(gs, 'alignment.tips_discord', False):.1f} "
-              f"| {rate(gs, 'board.presence_lost', False):.1f} "
+              f"| {rate(gs, 'board.node_lost', False):.1f} "
               f"| {rate(gs, 'adversary.arrivals'):.1f} / {rate(gs, 'adversary.ambassadors_removed'):.1f} "
-              f"| {peak / len(gs):.0f} | {rate(gs, 'adversary.nodes_peak', False):.1f} "
+              f"| {peak / len(gs):.0f} | {rate(gs, 'adversary.botnets_peak', False):.1f} "
               f"| {rate(gs, 'board.cities_freed', False):.1f} / {rate(gs, 'adversary.corruptions', False):.1f} "
               f"| {rate(gs, 'adversary.projects_resolved', False):.1f} | {rate(gs, 'adversary.supply_short', False):.1f} |")
 
 
 def sources(games):
     s.sources(games)
-    print(f"Last presence saved by the stage-I rule: {sum(g['counters'].get('board.last_presence_safe', 0) for gs in games.values() for g in gs)}")
+    print(f"Last node saved by the stage-I rule: {sum(g['counters'].get('board.last_node_safe', 0) for gs in games.values() for g in gs)}")
 
 
 def gate(cells, games):

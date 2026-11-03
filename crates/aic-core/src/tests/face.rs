@@ -70,7 +70,7 @@ fn a_removal_says_which_pieces() {
 #[test]
 fn harden_says_facility_and_a_shield_says_shield() {
     assert_eq!(face_of("hardened_conduits").text, "Harden 3 facilities in reach.");
-    assert_eq!(face_of("benchmark_suite").text, "Shield 3 of your presence.");
+    assert_eq!(face_of("benchmark_suite").text, "Shield 3 of your nodes.");
 }
 
 /// 063: one mark, one reading.
@@ -78,7 +78,7 @@ fn harden_says_facility_and_a_shield_says_shield() {
 fn each_mark_has_one_reading() {
     let json = |id: &str| serde_json::to_string(&face_of(id)).unwrap();
     assert!(json("sentinel_mesh").contains(r#""−2","jam""#));
-    assert!(json("beamed_power_constellation").contains(r#""3","free_presence""#));
+    assert!(json("beamed_power_constellation").contains(r#""3","free_node""#));
     // Dashed is another player; the solid box is one of your cards (076: never a count across them).
     assert!(json("vendor_financing").contains(r#"{"other":["3","credits"]}"#));
     assert!(json("recruit_operatives").contains(r#"{"yours":["3","agents"]}"#));

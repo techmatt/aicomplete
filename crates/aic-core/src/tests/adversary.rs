@@ -106,7 +106,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
     let owned = hexes_where(m, |h| {
         m.distance(h, city) == 2 && kind(m, h) == HexKind::Open
     })[0];
-    put(&mut g, owned, presence(0), 1);
+    put(&mut g, owned, node(0), 1);
     run(&rules, &mut g);
     assert!(g.pending.is_none());
     assert_eq!(
@@ -136,7 +136,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
     );
     assert_eq!(total(&g, ADV_AMBASSADOR), 3);
 
-    // Among equals the players choose: here two presence next to it.
+    // Among equals the players choose: here two node next to it.
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 2);
     let next: Vec<usize> = m.hexes[city]
@@ -148,7 +148,7 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
         .collect();
     assert_eq!(next.len(), 2);
     for &h in &next {
-        put(&mut g, h, presence(0), 1);
+        put(&mut g, h, node(0), 1);
     }
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("a spread choice");
@@ -214,13 +214,13 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
     let (rules, mut g) = lab(&["adversary.spread"]);
     let m = &rules.map;
     let city = m.numbered(0, piece(0).corrupted[0]);
-    // Every city corrupted and holding an ambassador with a node (not a
-    // destination); no building, presence or base in range: nowhere to go.
+    // Every city corrupted and holding an ambassador with a botnet (not a
+    // destination); no building, node or base in range: nowhere to go.
     for h in cities(m) {
         put(&mut g, h, ADV_CUBE, 1);
         if h != city {
             put(&mut g, h, ADV_AMBASSADOR, 1);
-            put(&mut g, h, NODE, 1);
+            put(&mut g, h, BOTNET, 1);
         }
     }
     let bases_near = hexes_where(m, |h| {
@@ -228,7 +228,7 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
     });
     for &b in &bases_near {
         put(&mut g, b, ADV_AMBASSADOR, 1);
-        put(&mut g, b, NODE, 1);
+        put(&mut g, b, BOTNET, 1);
     }
     put(&mut g, city, ADV_AMBASSADOR, 3);
     let supply = g.var(SUPPLY);
@@ -242,7 +242,7 @@ fn spread_never_targets_an_empty_hex_and_returns_the_surplus() {
 
 /// A spread lab whose only way out is the neighboring city it returns: a
 /// corrupted city holding one ambassador, a piece, not a clean city. The other
-/// pieces in range hold an ambassador and a node each, out of the way.
+/// pieces in range hold an ambassador and a botnet each, out of the way.
 fn spread_to_neighbor() -> (Rules, GameState, usize) {
     let (rules, mut g) = lab(&["adversary.spread"]);
     let m = &rules.map;
@@ -255,20 +255,20 @@ fn spread_to_neighbor() -> (Rules, GameState, usize) {
     for h in 0..m.hexes.len() {
         if h != city && h != target && m.distance(h, city) <= 2 && (kind(m, h) == HexKind::City || kind(m, h) == HexKind::Base) {
             put(&mut g, h, ADV_AMBASSADOR, 1);
-            put(&mut g, h, NODE, 1);
+            put(&mut g, h, BOTNET, 1);
         }
     }
     (rules, g, target)
 }
 
 #[test]
-fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
+fn a_second_ambassador_spreading_onto_a_piece_makes_a_botnet() {
     let (rules, mut g, target) = spread_to_neighbor();
     let supply = g.var(SUPPLY);
     run(&rules, &mut g);
     assert!(g.pending.is_none());
     assert_eq!(
-        (g.tokens(target, NODE), g.tokens(target, ADV_AMBASSADOR)),
+        (g.tokens(target, BOTNET), g.tokens(target, ADV_AMBASSADOR)),
         (1, 0)
     );
     assert_eq!(
@@ -276,24 +276,24 @@ fn a_second_ambassador_spreading_onto_a_piece_makes_a_node() {
         supply + 2,
         "both ambassadors go back to the supply"
     );
-    assert_eq!(g.stats.counters["adversary.nodes_made"], 1);
+    assert_eq!(g.stats.counters["adversary.botnets_made"], 1);
 }
 
 #[test]
-fn nodes_start_on_the_stations_and_make_adversary_compute() {
+fn botnets_start_on_the_stations_and_make_adversary_compute() {
     let rules = Rules::new(&lab_config(&["adversary.build", ACTIONS])).unwrap();
     let mut g = rules.new_game(1);
     let m = &rules.map;
     for c in 0..2 {
-        assert_eq!(g.tokens(m.numbered(c, piece(c).stations[0]), NODE), 1);
+        assert_eq!(g.tokens(m.numbered(c, piece(c).stations[0]), BOTNET), 1);
     }
-    assert_eq!(total(&g, NODE), 2);
-    // Round 1's build has run: 3 compute a node (024).
+    assert_eq!(total(&g, BOTNET), 2);
+    // Round 1's build has run: 3 compute a botnet (024).
     assert_eq!(g.var(adversary::COMPUTE), 6);
     set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), 12);
-    put(&mut g, m.numbered(0, piece(0).stations[0]), NODE, 0);
+    put(&mut g, m.numbered(0, piece(0).stations[0]), BOTNET, 0);
     set_pile(&mut g, NEXT, &["adv_s1_war_drums"]);
     run(&rules, &mut g);
     assert_eq!(g.var(adversary::COMPUTE), 15);
@@ -366,15 +366,15 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
 }
 
 /// 028: an aligned city collects spreading ambassadors as a clean one does,
-/// and no node forms on it.
+/// and no botnet forms on it.
 #[test]
-fn an_aligned_city_collects_ambassadors_and_never_forms_a_node() {
+fn an_aligned_city_collects_ambassadors_and_never_forms_a_botnet() {
     let (rules, mut g, target) = spread_to_neighbor();
     put(&mut g, target, ADV_CUBE, 0);
     put(&mut g, target, cube(0), 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!((g.tokens(target, NODE), g.tokens(target, ADV_AMBASSADOR)), (0, 2));
+    assert_eq!((g.tokens(target, BOTNET), g.tokens(target, ADV_AMBASSADOR)), (0, 2));
 }
 
 #[test]

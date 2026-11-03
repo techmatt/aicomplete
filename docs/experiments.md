@@ -120,7 +120,7 @@ ends the run.
   `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`
   counters; every whole-game counter is in `games.jsonl`. Per-round tables reach it as
   `<key>.rNN`, summed over seats, only for keys starting `cards.`, `ai.`, `economy.` or
-  `board.presence`: add to the list in `experiment.rs` for another. In the core `cx.count(g,
+  `board.node`: add to the list in `experiment.rs` for another. In the core `cx.count(g,
   "x", n)` writes `<module>.x` and `cx.tally` and `cx.per_round` take the full key, so a
   power use is `ai.power.builder.0`: a screen column on the bare name prints zeros).
 - **Game length**, ends by reason and round; **adversary operations** per round (mean,
@@ -302,7 +302,7 @@ a spec of overlays in `set`, paired against a base on the same seeds. How prices
 
 **Tuning sweeps** (`scripts/tune/`, from the repo root): `sweep.py` runs `aic-sim run --json`
 once per variant and agent and prints one row each (win %, rounds, adversary operations,
-corruptions and facilities and presence destroyed per game, how games ended), appending every result
+corruptions and facilities and nodes destroyed per game, how games ended), appending every result
 to `out/tune/log.jsonl`. `log_table.py TAG...` turns logged rows into a markdown table.
 
 ```sh

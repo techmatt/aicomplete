@@ -600,7 +600,7 @@ mod tests {
             "engine:keep_all=1",
             "engine:keep_k=2",
             "engine:tier2_rush=1",
-            "greedy:no_presence=1",
+            "greedy:no_node=1",
             "engine:only_tag=3",
             "engine:never_tag=6",
             "engine:events_only=1",

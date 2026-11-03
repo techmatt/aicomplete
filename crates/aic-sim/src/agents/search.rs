@@ -181,7 +181,7 @@ pub struct Scoring {
     /// prompts, not effects, so one placement (a track, a hex) takes two, and
     /// a card that places more is judged part of the way.
     pub choices: usize,
-    /// `choices` for a power that places presence.
+    /// `choices` for a power that places nodes.
     pub placing_choices: usize,
     /// `choices` for a power with several sacrifices before its effect (068).
     pub sacrificing_choices: usize,
@@ -190,7 +190,7 @@ pub struct Scoring {
 }
 
 impl Scoring {
-    /// At the top level of a decision: a presence power at twice `choices`
+    /// At the top level of a decision: a node power at twice `choices`
     /// (041, 066): a track and a hex, after up to two sacrifices. 046: not inside
     /// rollouts, at about 3.7 evaluations a decision.
     pub fn decision(samples: usize, depth: usize, choices: usize) -> Self {
@@ -205,7 +205,7 @@ impl Scoring {
         }
     }
 
-    /// Inside a rollout: a presence power at no more levels than it asks (046,
+    /// Inside a rollout: a node power at no more levels than it asks (046,
     /// 066: a sacrifice, a track and a hex; short of a level, the action reads
     /// as paying and placing nothing, so a rollout never takes it).
     pub fn in_rollout(self) -> Self {
@@ -295,7 +295,7 @@ pub fn score_guesses(
 /// The prompts of a power that places: a sacrifice's, a track, a hex.
 const PLACING_PROMPTS: usize = 3;
 
-/// Whether `a` is a power that places presence.
+/// Whether `a` is a power that places nodes.
 fn places(world: &World, a: &Action) -> bool {
     matches!(a, Action::Power { seat, power } if ai::power_places(world, *seat as usize, *power as usize))
 }
@@ -506,7 +506,7 @@ pub struct Beam {
 }
 
 /// A sequence in the beam.
-struct Node {
+struct Botnet {
     g: GameState,
     seq: Vec<Action>,
     /// Order-free hash of `seq`: sequences that are reorderings of each
@@ -596,38 +596,38 @@ impl Beam {
     /// Searches the rest of the round from a guess of `state`. Returns the
     /// guess and the finished sequences (reaching the next round or the
     /// end of the game), best first, with their end states and values.
-    fn search(&mut self, rules: &Rules, state: &GameState) -> (GameState, Vec<(f64, Node)>) {
+    fn search(&mut self, rules: &Rules, state: &GameState) -> (GameState, Vec<(f64, Botnet)>) {
         let mut start = state.clone();
         determinize(rules, &mut start, &mut self.rng);
         let round = start.round;
-        let mut beam = vec![Node {
+        let mut beam = vec![Botnet {
             g: start.clone(),
             seq: Vec::new(),
             key: 0,
         }];
-        let mut finished: Vec<(f64, Node)> = Vec::new();
+        let mut finished: Vec<(f64, Botnet)> = Vec::new();
         let mut legal = Vec::new();
         let mut scratch = Vec::new();
         for _ in 0..self.depth {
-            let mut children: Vec<(f64, Node)> = Vec::new();
-            for node in &beam {
-                legal_into(rules, &node.g, &mut legal);
-                let mut kids: Vec<(f64, Node)> = Vec::new();
+            let mut children: Vec<(f64, Botnet)> = Vec::new();
+            for botnet in &beam {
+                legal_into(rules, &botnet.g, &mut legal);
+                let mut kids: Vec<(f64, Botnet)> = Vec::new();
                 for a in &legal {
-                    if undoes(&node.seq, a) {
+                    if undoes(&botnet.seq, a) {
                         continue;
                     }
-                    let Some(c) = step(rules, &node.g, a) else {
+                    let Some(c) = step(rules, &botnet.g, a) else {
                         continue;
                     };
                     // The choices an action asks for are scored best-first,
                     // so an action is not judged by its first open question.
-                    let mut seq = node.seq.clone();
+                    let mut seq = botnet.seq.clone();
                     seq.push(a.clone());
                     let v =
                         settled(rules, &self.ev, &c, self.choices, &mut scratch, &mut Seen::default()) - moves_cost(&seq);
-                    let key = node.key.wrapping_add(action_hash(a));
-                    kids.push((v, Node { g: c, seq, key }));
+                    let key = botnet.key.wrapping_add(action_hash(a));
+                    kids.push((v, Botnet { g: c, seq, key }));
                 }
                 if self.branch > 0 && kids.len() > self.branch {
                     kids.sort_by(|x, y| y.0.total_cmp(&x.0));
@@ -704,11 +704,11 @@ impl Beam {
         let mut best = 0;
         if let Some(cfg) = self.rollout.take() {
             let mut top = f64::NEG_INFINITY;
-            for (i, (value, node)) in finished.iter().enumerate().take(cfg.candidates) {
-                let v = if node.g.is_over() {
+            for (i, (value, botnet)) in finished.iter().enumerate().take(cfg.candidates) {
+                let v = if botnet.g.is_over() {
                     *value
                 } else {
-                    self.playouts(rules, &node.g, &cfg)
+                    self.playouts(rules, &botnet.g, &cfg)
                 };
                 if v > top {
                     top = v;

@@ -1,8 +1,8 @@
-//! The presence tracks, the presence powers (066) and the one payment path (041).
+//! The node tracks, the node powers (066) and the one payment path (041).
 
 use super::*;
 use crate::content::{Op, Tag};
-use crate::modules::common::presence_count;
+use crate::modules::common::node_count;
 use crate::modules::{ai, board, cards, effects};
 
 /// A tier-1 program carrying `tag`.
@@ -17,10 +17,10 @@ fn a_card_pays_the_step_and_a_free_one_does_not() {
     let w = rules.world();
     let step = step_cost(&w, 5);
     assert!(step > 0);
-    let paying = [Op::PlacePresence { count: 1, free: false }];
+    let paying = [Op::PlaceNode { count: 1, free: false }];
     set_res(&mut g, 0, Resource::Energy, step - 1);
     assert!(!effects::feasible(&w, &g, 0, &paying), "the step can't be paid");
-    let free = [Op::PlacePresence { count: 1, free: true }];
+    let free = [Op::PlaceNode { count: 1, free: true }];
     assert!(effects::feasible(&w, &g, 0, &free));
 }
 
@@ -40,9 +40,9 @@ fn a_placements_prompt_names_what_it_charges() {
         let ask = choices.asked.take().expect("two tracks to choose from");
         ask.options.iter().map(|o| o.option.clone()).collect::<Vec<_>>().join(" | ")
     };
-    let free = prompt_for(&[Op::PlacePresence { count: 1, free: true }]);
+    let free = prompt_for(&[Op::PlaceNode { count: 1, free: true }]);
     assert!(!free.contains("costs"), "{free}");
-    let paid = prompt_for(&[Op::PlacePresence { count: 1, free: false }]);
+    let paid = prompt_for(&[Op::PlaceNode { count: 1, free: false }]);
     assert!(paid.contains(&format!("costs {step} energy")), "{paid}");
 }
 
@@ -50,14 +50,14 @@ fn a_placements_prompt_names_what_it_charges() {
 fn every_board_places_for_1_energy_once_a_round() {
     for seat in [0u8, 1] {
         let (rules, mut g) = at_step(&[], 1);
-        let start = rules.map.numbered(seat as usize, piece(seat as usize).presence);
-        put(&mut g, start, presence(seat as usize), 1);
+        let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
+        put(&mut g, start, node(seat as usize), 1);
         let deploy = power(&rules, seat as usize, "Deploy");
         set_res(&mut g, seat as usize, Resource::Energy, 1);
-        let before = presence_count(&g, seat as usize);
+        let before = node_count(&g, seat as usize);
         rules.apply_mut(&mut g, &deploy, None).unwrap();
         answer_all(&rules, &mut g);
-        assert_eq!(presence_count(&g, seat as usize), before + 1);
+        assert_eq!(node_count(&g, seat as usize), before + 1);
         assert_eq!(g.resource(seat as usize, Resource::Energy), 0);
         set_res(&mut g, seat as usize, Resource::Energy, 1);
         assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "once a round");
@@ -65,7 +65,7 @@ fn every_board_places_for_1_energy_once_a_round() {
 }
 
 #[test]
-fn a_presence_power_pays_its_energy_and_then_the_step() {
+fn a_node_power_pays_its_energy_and_then_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
@@ -79,7 +79,7 @@ fn a_presence_power_pays_its_energy_and_then_the_step() {
 }
 
 #[test]
-fn the_builder_s_second_presence_power_takes_its_credits() {
+fn the_builder_s_second_node_power_takes_its_credits() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
     let buy = power(&rules, 0, "Buy In");
@@ -94,11 +94,11 @@ fn the_builder_s_second_presence_power_takes_its_credits() {
 }
 
 #[test]
-fn the_protector_s_second_presence_power_sacrifices_diplomacy() {
+fn the_protector_s_second_node_power_sacrifices_diplomacy() {
     let (rules, mut g) = at_step(&[], 1);
     let w = rules.world();
-    let start = rules.map.numbered(1, piece(1).presence);
-    put(&mut g, start, presence(1), 1);
+    let start = rules.map.numbered(1, piece(1).node);
+    put(&mut g, start, node(1), 1);
     let accord = power(&rules, 1, "Accord");
     set_res(&mut g, 1, Resource::Energy, 1);
     let program = program(&w, Tag::Diplomacy);
@@ -139,7 +139,7 @@ fn tokens_of_a_placement_still_uncover() {
 }
 
 #[test]
-fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
+fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
     let (rules, mut g) = actions_with_room();
     let w = rules.world();
     let credit_income = |g: &GameState| {
@@ -154,20 +154,20 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
         (1, 0, false)
     );
     set_res(&mut g, 0, Resource::Energy, 5);
-    let start = presence_of(&g, 0)[0];
-    // A seat 1 presence next to it blocks that hex (one presence a hex).
+    let start = node_of(&g, 0)[0];
+    // A seat 1 node next to it blocks that hex (one node a hex).
     let blocked = rules.map.hexes[start]
         .neighbors
         .iter()
         .copied()
         .find(|&h| kind(&rules.map, h) != HexKind::Ocean)
         .unwrap();
-    put(&mut g, blocked, presence(1), 1);
-    let hexes = board::presence_hexes(&w, &g, 0);
+    put(&mut g, blocked, node(1), 1);
+    let hexes = board::node_hexes(&w, &g, 0);
     assert!(!hexes.contains(&blocked));
     assert!(hexes
         .iter()
-        .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, presence(0)) == 0));
+        .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
     // Deploy, which refreshes here: a test of the track, not of its limit.
     let place = |rules: &Rules, g: &mut GameState| {
         g.vars.insert(ai::power_used(0, power_index(rules, 0, "Deploy")).into(), 0);
@@ -184,7 +184,7 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
     assert_eq!((board::track_taken(&g, 0), ai::keep2(&w, &g, 0)), (3, false));
     g.vars.insert(board::track2_key(0).into(), 2);
     assert!(ai::keep2(&w, &g, 0));
-    assert_eq!(presence_of(&g, 0).len(), 3);
+    assert_eq!(node_of(&g, 0).len(), 3);
     // The tracks run out after their last spaces (021: both of them).
     g.vars
         .insert(board::track_key(0).into(), ai::board(&w, 0).economy_track.len() as i64);
@@ -199,8 +199,8 @@ fn a_track_s_last_steps_cost_more() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let b = ai::board(&w, 0);
-    let a = rules.map.numbered(0, piece(0).presence);
-    put(&mut g, a, presence(0), 1);
+    let a = rules.map.numbered(0, piece(0).node);
+    put(&mut g, a, node(0), 1);
     // Both tracks down to their last steps.
     g.vars.insert(board::track_key(0).into(), b.economy_track.len() as i64 - 1);
     g.vars.insert(board::track2_key(0).into(), b.play_track.len() as i64 - 1);

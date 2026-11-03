@@ -31,8 +31,8 @@
         "destruction_discord": 0,
         "troop_spent": 1,
         "troop_steps": 2,
-        "troop_presence": 4,
-        "presence_marker": 1,
+        "troop_node": 4,
+        "node_marker": 1,
         "corruption_reach": 1,
         "war_reach": 0,
         "station_chips": 2,
@@ -84,7 +84,7 @@
         "discord_removed": 1,
         "arrivals": 1,
         "wall_troops": 1,
-        "node_compute": 1,
+        "botnet_compute": 1,
         "project_cards": [
           6,
           6
@@ -109,7 +109,7 @@
         "momentum_every": 0,
         "troop": 1,
         "free_city": 5,
-        "node": 2,
+        "botnet": 2,
         "threat_discord": 1,
         "adversary_discord": 0,
         "antimatter_discord": 1,
@@ -124,7 +124,7 @@
           4
         ],
         "discord_tier2": 2,
-        "presence_loss": 1,
+        "node_loss": 1,
         "clear_win_stage": 1
       }
     },

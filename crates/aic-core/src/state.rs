@@ -160,7 +160,7 @@ pub struct Outcome {
     /// The round in which the game ended.
     pub round: u32,
     /// Stable reason code (`"purge"`, `"unity_deck"`, `"deck_empty"`,
-    /// `"discord_deck"`, `"presence"`, `"round_limit"`), for aggregation.
+    /// `"discord_deck"`, `"node"`, `"round_limit"`), for aggregation.
     pub reason: String,
     /// Human-readable detail.
     pub detail: String,

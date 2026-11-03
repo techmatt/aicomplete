@@ -56,8 +56,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 cx.add_resource(g, s, *resource, *amount);
             }
         }
-        Op::GainPerPresence { resource } => {
-            let n = presence_count(g, seat);
+        Op::GainPerNode { resource } => {
+            let n = node_count(g, seat);
             cx.add_resource(g, seat, *resource, n);
         }
         Op::ChoosePlayer => {
@@ -72,21 +72,21 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
-        Op::PlacePresence { count, free } => {
+        Op::PlaceNode { count, free } => {
             for _ in 0..*count {
-                if !board::place_presence(g, cx, seat, placing(*free))? {
+                if !board::place_node(g, cx, seat, placing(*free))? {
                     break;
                 }
             }
         }
         // 044: "up to": after the first, "stop" (as Cleanse does).
         Op::ClearMarkers { count } => science::clear_markers(g, cx, seat, *count)?,
-        Op::ShieldPresence { count } => science::shield_presence(g, cx, seat, *count)?,
+        Op::ShieldNode { count } => science::shield_node(g, cx, seat, *count)?,
         Op::DelayThreat { count } => science::delay_threat(g, cx, seat, *count)?,
         Op::Damage { ambassadors, troops } => removal::damage(g, cx, seat, *ambassadors, *troops)?,
         Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
         Op::DestroyAll => removal::destroy_all(g, cx, seat)?,
-        Op::RemoveNode => removal::remove_node(g, cx, seat)?,
+        Op::RemoveBotnet => removal::remove_botnet(g, cx, seat)?,
         Op::RemoveAmbassadorsCountry { unity_per, max } => {
             removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max)?
         }
@@ -198,7 +198,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::MoveOne { range } => ambassadors::move_one(g, cx, seat, *range)?,
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
         Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
-        Op::CutNode => removal::cut_node(g, cx, seat)?,
+        Op::CutBotnet => removal::cut_botnet(g, cx, seat)?,
 
         // Threats and the team: the wordings differ, the rule doesn't.
         Op::Troops { count, each_country, destroy } => team::troops(g, cx, ctx, *count, *each_country, *destroy)?,
@@ -218,8 +218,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope),
-        Op::DestroyPresence => team::destroy_presence(g, cx, ctx),
-        Op::EachDestroyPresence { count } => team::each_destroy_presence(g, cx, ctx, *count)?,
+        Op::DestroyNode => team::destroy_node(g, cx, ctx),
+        Op::EachDestroyNode { count } => team::each_destroy_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
         Op::LoseInsight { amount } => {
             for s in ctx.seats(&w, g) {
@@ -241,8 +241,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             threats::requisition(g, cx, ctx.scope, *resource, *amount, *n)?
         }
         Op::LoseAmbassador => threats::lose_ambassador(g, cx, ctx.scope)?,
-        Op::LosePresenceOr { resource, amount } => {
-            threats::lose_presence_or(g, cx, ctx.scope, *resource, *amount, ctx.label)?
+        Op::LoseNodeOr { resource, amount } => {
+            threats::lose_node_or(g, cx, ctx.scope, *resource, *amount, ctx.label)?
         }
         Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, ctx.scope)?,
         Op::Compute { amount } => {
@@ -277,9 +277,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 alignment::sacrifice(g, cx, s)?;
             }
         }
-        Op::NodeAmbassadors { amount } => team::node_ambassadors(g, cx, *amount),
+        Op::BotnetAmbassadors { amount } => team::botnet_ambassadors(g, cx, *amount),
         Op::CleanCityAmbassadors { amount } => team::clean_city_ambassadors(g, cx, *amount),
-        Op::RemoveNodes { count } => team::remove_nodes(g, cx, *count)?,
+        Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
 
         // Read, not resolved; `Content::check` keeps them out of resolving lists.
         Op::Income { .. }

@@ -1,5 +1,5 @@
 //! The board (014, 016): the printed country pieces (cities, open land,
-//! ocean, industrial zones; military bases on the fronts), player presence
+//! ocean, industrial zones; military bases on the fronts), player node
 //! (owned here; AI boards read the track through `track_taken`), the setup,
 //! the production/war clock, production (factories grow from cities and
 //! make corp units and chips, front battles on war steps, adversary
@@ -20,7 +20,7 @@ use super::{adversary, ai, alignment, cards, economy, effects, threats};
 
 mod ambassadors;
 mod destroy;
-mod presence;
+mod node;
 mod production;
 mod standard;
 mod troops;
@@ -28,7 +28,7 @@ mod view;
 
 pub use ambassadors::*;
 pub use destroy::*;
-pub use presence::*;
+pub use node::*;
 pub use production::LEFT;
 use production::*;
 pub use standard::*;
@@ -49,7 +49,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("factory_units", 0, 5, "corp units each factory makes on a production step at each of its corp's bases"),
             ParamSpec::list("clock", 0, 3, "the printed round track, per round: 1 production, 2 war, 3 both (the last entry repeats)"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
-            ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with presence next to it"),
+            ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with a node next to it"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a station makes a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
@@ -57,16 +57,16 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
             ParamSpec::int("base_unity", 0, 10, "Unity a player ambassador on a producing base sways"),
             ParamSpec::int("factory_unity", 0, 10, "Unity a player ambassador on a producing factory sways"),
-            ParamSpec::int("liberate_at", 1, 10, "player ambassadors on a corrupted city, from seats with presence on or next to it, that liberate it (the fallback)"),
-            ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last presence (0: never safe)"),
+            ParamSpec::int("liberate_at", 1, 10, "player ambassadors on a corrupted city, from seats with a node on or next to it, that liberate it (the fallback)"),
+            ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe)"),
             ParamSpec::int("free_leaves", 0, 5, "adversary ambassadors left on a city as it frees (the piece ladder)"),
             ParamSpec::int("destruction_discord", 0, 5, "Discord each facility destroyed in war sways"),
             ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
             ParamSpec::int("troop_steps", 0, 5, "steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest"),
-            ParamSpec::int("troop_presence", 0, 4, "adversary troops strike presence from this stage of adversary card on (0: always, 4: never)"),
-            ParamSpec::int("presence_marker", 0, 1, "1: a destroyed presence leaves a corruption marker on its hex"),
-            ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys presence within this many hexes of it"),
-            ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys presence within this many hexes of it"),
+            ParamSpec::int("troop_node", 0, 4, "adversary troops strike nodes from this stage of adversary card on (0: always, 4: never)"),
+            ParamSpec::int("node_marker", 0, 1, "1: a destroyed node leaves a corruption marker on its hex"),
+            ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys nodes within this many hexes of it"),
+            ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner on a production step"),
             ParamSpec::int("chips_credits", 0, 50, "standard action: credits for selling 1 chip"),
@@ -87,7 +87,7 @@ pub static DEF: ModuleDef = ModuleDef {
             PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, one on a lone presence drains its owner's insight into adversary compute; full megaprojects complete"),
+            PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, one on a lone node drains its owner's insight into adversary compute; full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -116,7 +116,7 @@ pub fn flagged(g: &GameState, f: RoundFlag, country: usize) -> bool {
     g.var(&flag(f, country)) > 0
 }
 
-/// Shelters `country`'s facilities and presence for the rest of the round.
+/// Shelters `country`'s facilities and nodes for the rest of the round.
 pub fn shelter(g: &mut GameState, cx: &mut Cx, country: usize) {
     cx.set_key(g, &flag(RoundFlag::Shelter, country), 1);
 }
@@ -197,9 +197,9 @@ impl Module for Board {
         }
         for s in 0..g.seats.len() {
             let c = home_country(&w, s);
-            let n = w.content.map.countries[c].presence;
+            let n = w.content.map.countries[c].node;
             let start = w.map.numbered(c, n);
-            cx.add_tokens(g, start, presence(s), 1);
+            cx.add_tokens(g, start, node(s), 1);
             cx.set_key(g, &track_key(s), 1);
             cx.add_resource(g, s, Resource::Ambassadors, w.int("board.start_ambassadors"));
             if let Some(h) = bound_city(&w, g, c, start) {
@@ -315,9 +315,9 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     if g.var(&project_done(c)) == 0 {
         return Some("the megaproject is not complete");
     }
-    // 075 (Matt): presence in the country, where 074 asked for an aligned city.
-    if !has_presence_in(w, g, s, c) {
-        return Some("no presence here");
+    // 075 (Matt): node in the country, where 074 asked for an aligned city.
+    if !has_node_in(w, g, s, c) {
+        return Some("no nodes here");
     }
     if g.var(&converter_round(c, s)) == g.round as i64 {
         return Some("used this round");
@@ -358,13 +358,13 @@ fn cleanup(g: &mut GameState, cx: &mut Cx) {
             }
         }
     }
-    // Rounds that end with only nodes between the players and the
-    // purge (019: nodes are hard to remove).
+    // Rounds that end with only botnets between the players and the
+    // purge (019: botnets are hard to remove).
     let level = alignment::bar_level(&w, g);
-    let nodes = adversary::node_count(g, None);
-    cx.peak(g, "adversary.nodes_peak", nodes);
-    if level < 3 && nodes > 0 && adversary::purge_count(&w, g, level) == nodes {
-        cx.tally(g, "alignment.purge_blocked_by_nodes", 1);
+    let botnets = adversary::botnet_count(g, None);
+    cx.peak(g, "adversary.botnets_peak", botnets);
+    if level < 3 && botnets > 0 && adversary::purge_count(&w, g, level) == botnets {
+        cx.tally(g, "alignment.purge_blocked_by_botnets", 1);
     }
     // Factories per side, as the game ends (the last round's level).
     let mut sides = [0i64; 3];

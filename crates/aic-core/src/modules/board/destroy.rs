@@ -24,7 +24,7 @@ impl Cause {
     }
 }
 
-/// A piece of `kind` on hex `h` would be destroyed. A presence safe as its
+/// A piece of `kind` on hex `h` would be destroyed. A node safe as its
 /// owner's last stays. A Shelter Order in
 /// its country, a corp unit at a base next to it (adversary strikes only,
 /// [`Cause::Troop`]), a hardening token, a player ambassador on the hex, or an
@@ -40,9 +40,9 @@ pub fn destroy_piece(
 ) -> bool {
     let w = cx.world;
     let c = w.map.hexes[h].country as usize;
-    let owner = (0..g.seats.len()).find(|&s| kind == presence(s));
-    if owner.is_some_and(|s| last_presence_safe(&w, g, s)) {
-        cx.tally(g, "board.last_presence_safe", 1);
+    let owner = (0..g.seats.len()).find(|&s| kind == node(s));
+    if owner.is_some_and(|s| last_node_safe(&w, g, s)) {
+        cx.tally(g, "board.last_node_safe", 1);
         return false;
     }
     let by_troop = cause == Cause::Troop;
@@ -72,7 +72,7 @@ pub fn destroy_piece(
     }
     match owner {
         Some(s) => {
-            lose_presence(g, cx, h, s, cause.name());
+            lose_node(g, cx, h, s, cause.name());
         }
         None => {
             cx.add_tokens(g, h, kind, -1);
@@ -96,10 +96,10 @@ pub fn destroy_piece(
     true
 }
 
-/// Seat `s` destroys one of its presence in `hexes`, its choice (028): a hit
+/// Seat `s` destroys one of its nodes in `hexes`, its choice (028): a hit
 /// on the player, not a hex. Absorbed as any destruction is, so a player may
-/// pick a token it has shielded. Safe as a last presence in stage I.
-pub fn destroy_own_presence(
+/// pick a token it has shielded. Safe as a last node in stage I.
+pub fn destroy_own_node(
     g: &mut GameState,
     cx: &mut Cx,
     s: usize,
@@ -107,29 +107,29 @@ pub fn destroy_own_presence(
     cause: Cause,
 ) -> Res {
     let w = cx.world;
-    let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, presence(s)) > 0).collect();
+    let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect();
     if mine.is_empty() {
         return Ok(());
     }
-    if last_presence_safe(&w, g, s) {
-        cx.tally(g, "board.last_presence_safe", 1);
+    if last_node_safe(&w, g, s) {
+        cx.tally(g, "board.last_node_safe", 1);
         return Ok(());
     }
     let opts = mine.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {s}: destroy which of your presence?");
+    let prompt = format!("Seat {s}: destroy which of your nodes?");
     if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
-        destroy_piece(g, cx, mine[i], presence(s), cause);
+        destroy_piece(g, cx, mine[i], node(s), cause);
     }
     Ok(())
 }
 
 /// Uses a seat's `CivicShelter` passive (Aegis Dome Array) for a facility or
-/// presence destruction in `country`, if one applies.
+/// node destruction in `country`, if one applies.
 fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
     let w = cx.world;
     for s in 0..g.seats.len() {
         if g.var(&cards::civic_used(s)) == 0
-            && has_presence_in(&w, g, s, country)
+            && has_node_in(&w, g, s, country)
             && cards::has_passive(&w, g, s, |p| matches!(p, Op::CivicShelter))
         {
             cx.set_key(g, &cards::civic_used(s), 1);

@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn a_neutral_station_can_be_claimed_at_setup_in_every_layout() {
-    // 074: on its hex, next to the starting presence, with no setup node next
+    // 074: on its hex, next to the starting node, with no setup botnet next
     // to it, across a border too.
     let content = crate::content();
     for n in 1..=4u8 {
@@ -11,10 +11,10 @@ fn a_neutral_station_can_be_claimed_at_setup_in_every_layout() {
             let p = &content.map.countries[c];
             let h = map.numbered(c, p.neutral_station);
             assert_eq!(map.hexes[h].kind, HexKind::Open, "{n} countries, country {c}");
-            assert!(map.adjacent(h, map.numbered(c, p.presence)), "{n} countries, country {c}: in reach");
+            assert!(map.adjacent(h, map.numbered(c, p.node)), "{n} countries, country {c}: in reach");
             for o in 0..n as usize {
                 for &s in &content.map.countries[o].stations {
-                    assert!(!map.adjacent(h, map.numbered(o, s)), "{n} countries, country {c}: next to a node");
+                    assert!(!map.adjacent(h, map.numbered(o, s)), "{n} countries, country {c}: next to a botnet");
                 }
             }
         }
@@ -77,13 +77,13 @@ fn every_layout_builds_and_every_piece_follows_the_design() {
                     "country {c}: ocean #{o} is inland with {n} countries"
                 );
             }
-            let start = at(p.presence);
+            let start = at(p.node);
             assert!(
                 map.hexes[start]
                     .neighbors
                     .iter()
                     .any(|&x| kind(&map, x) == HexKind::City),
-                "country {c}: the starting presence touches no city"
+                "country {c}: the starting node touches no city"
             );
         }
     }
@@ -110,7 +110,7 @@ fn every_front_has_a_base_on_each_side_and_every_country_a_front() {
                     HexKind::Open,
                     "{n} countries: base on a printed city or ocean"
                 );
-                for list in [&p.stations, &p.industry, &vec![p.presence]] {
+                for list in [&p.stations, &p.industry, &vec![p.node]] {
                     assert!(
                         !list.contains(&cell.number),
                         "{n} countries: base on a setup piece or zone"

@@ -37,8 +37,8 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     }
     let corrupted = m.numbered(0, piece(0).corrupted[0]);
     assert!(v.hexes[corrupted].tokens.iter().any(|t| t.kind == ADV_CUBE));
-    let d = m.numbered(1, piece(1).presence);
-    assert!(v.hexes[d].tokens.iter().any(|t| t.kind == presence(1)));
+    let d = m.numbered(1, piece(1).node);
+    assert!(v.hexes[d].tokens.iter().any(|t| t.kind == node(1)));
 
     let global = |k: &str| {
         v.globals
@@ -94,8 +94,8 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
                 .find(|x| x.key == k)
                 .unwrap_or_else(|| panic!("{k} missing"))
         };
-        assert_eq!(value("board.presence").value, 1);
-        assert_eq!(value("board.presence_track").value, 6);
+        assert_eq!(value("board.node").value, 1);
+        assert_eq!(value("board.node_track").value, 6);
         assert_eq!(
             value("resource.ambassadors").value,
             g.resource(s.index as usize, Resource::Ambassadors)
@@ -136,7 +136,7 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
             }
             for s in &v.seats {
                 let b = s.board.as_ref().expect("every seat shows its AI board");
-                // 021: two presence tracks; the second has nothing uncovered at setup.
+                // 021: two node tracks; the second has nothing uncovered at setup.
                 assert_eq!((b.key.as_str(), b.tracks.len()), ("ai.board", 2));
                 for (i, t) in b.tracks.iter().enumerate() {
                     let least = if i == 0 { 1 } else { 0 };

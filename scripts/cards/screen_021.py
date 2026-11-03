@@ -13,7 +13,7 @@ Reads DIR/games.jsonl and DIR/results.json (cell labels) as written by
 `aic-sim experiment` (r12: per-round card counters appear as `<key>.rNN`).
 
 The gate (021): in every greedy and engine cell, per game on average,
-presence placed >= 5, cards played >= 5 and cards kept >= 8 (018-019's gate,
+node placed >= 5, cards played >= 5 and cards kept >= 8 (018-019's gate,
 less chips: a factory's chips now only pay buildings); and in the
 engine cells at d0, some AI power used and some building replaced (the new
 primitives are reachable and used).
@@ -45,23 +45,23 @@ def main(d, short):
         return
     print()
     print('Card economy, per game (means over the cell): cards kept / played (tier 2 dealt); powers used / '
-          'tags sacrificed; buildings replaced; tokens gained / spent; presence placed; gate.')
+          'tags sacrificed; buildings replaced; tokens gained / spent; node placed; gate.')
     print()
-    print('| variant | d | agent | kept / played | tier-2 dealt | powers / tags | replaced | tokens + / - | presence | gate |')
+    print('| variant | d | agent | kept / played | tier-2 dealt | powers / tags | replaced | tokens + / - | node | gate |')
     print('|---|---|---|---|---|---|---|---|---|---|')
     for cell in sorted(games):
         gs, c = games[cell], cells[cell]
         m = lambda k: mean(gs, lambda g: cnt(g, k))
         gate = '–'
         if c['agent'] != 'random':
-            ok = m('board.presence_placed') >= 5 and mean(gs, played) >= 5 and mean(gs, kept) >= 8
+            ok = m('board.node_placed') >= 5 and mean(gs, played) >= 5 and mean(gs, kept) >= 8
             if c['agent'].startswith('engine') and c['difficulty'] == 0:
                 ok = ok and m('ai.powers_used') > 0 and m('cards.replaced') > 0
             gate = 'pass' if ok else 'FAIL'
         print(f"| {c['variant']} | {c['difficulty']} | {c['agent']} | {mean(gs, kept):.1f} / {mean(gs, played):.1f} "
               f"| {m('cards.dealt_tier2'):.1f} | {m('ai.powers_used'):.1f} / {m('ai.tags_sacrificed'):.1f} "
               f"| {m('cards.replaced'):.1f} | {m('cards.tokens_gained'):.1f} / {m('cards.tokens_spent'):.1f} "
-              f"| {m('board.presence_placed'):.1f} | {gate} |")
+              f"| {m('board.node_placed'):.1f} | {gate} |")
     print()
     print('By round (rounds 1-6; both seats summed; means over the games that reached the round): '
           'hand size after keeping, cards kept, cards played, insight / credits left unspent at upkeep, '

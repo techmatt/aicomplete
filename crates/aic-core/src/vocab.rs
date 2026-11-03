@@ -130,7 +130,7 @@ impl Tag {
 pub enum ThreatSource {
     /// Corrupted cities.
     Influence,
-    /// Corrupted research stations and nodes.
+    /// Corrupted research stations and botnets.
     Cyber,
     /// Adversary factories.
     Economic,

@@ -12,8 +12,8 @@
   "name": "Node Swarm",
   "stage": 1,
   "cost": 5,
-  "text": "Every node produces 2 adversary ambassadors on its hex.",
-  "effects": [{"op": "node_ambassadors", "amount": 2}]
+  "text": "Every botnet produces 2 adversary ambassadors on its hex.",
+  "effects": [{"op": "botnet_ambassadors", "amount": 2}]
  },
  {
   "id": "market_crash",
@@ -52,7 +52,7 @@
   "name": "Purge the Unaligned",
   "stage": 2,
   "cost": 8,
-  "text": "Every player loses an ambassador or a presence (never their last presence). In each country, 1 troop lands on a factory, or a city if no factory.",
+  "text": "Every player loses an ambassador or a node (never their last node). In each country, 1 troop lands on a factory, or a city if no factory.",
   "effects": [{"op": "sacrifice"}, {"op": "troops", "count": 1, "each_country": true}]
  },
  {
@@ -94,7 +94,7 @@
   "name": "Station Coup",
   "stage": 2,
   "cost": 10,
-  "text": "In each country, an uncorrupted research station becomes corrupted. Every node produces 1 adversary ambassador on its hex.",
-  "effects": [{"op": "flip_station", "each_country": true}, {"op": "node_ambassadors", "amount": 1}]
+  "text": "In each country, an uncorrupted research station becomes corrupted. Every botnet produces 1 adversary ambassador on its hex.",
+  "effects": [{"op": "flip_station", "each_country": true}, {"op": "botnet_ambassadors", "amount": 1}]
  }
 ]

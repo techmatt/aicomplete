@@ -6,6 +6,10 @@ rule **locked** or a candidate; the reasoning, reads and numbers of a revision a
 item's write-up under `experiments/results/` and in git. Every rules change adds its line
 here in the same commit (CLAUDE.md).
 
+**Names in older rows:** rows through r34 say *presence* for what is now a **node** (a
+player's token) and *node* for what is now a **botnet** (the adversary's). 086 renamed them at
+r34 with play unchanged, so it has no row of its own.
+
 | Rev | Item | What changed | Status |
 |---|---|---|---|
 | 34 | 080 | Liberating cities: a corrupted city is liberated by a liberate card or by `board.liberate_at` ambassadors, both needing presence on or next to it; a liberated city is clean and sways Unity. Seven tier-2 liberate capstones and the `liberate` op; a card may cost research cubes; `adversary.corrupt_at` 4; troop pressure where Wall stands (`adversary.wall_troops`); Grant costs 3. ([screen-080](../experiments/results/screen-080/liberation.md)) | candidate |

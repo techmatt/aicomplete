@@ -104,10 +104,10 @@ macro_rules! forced_table {
             /// What a credit paid for a keep costs the plan (024).
             (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
             /// What the keep plan adds, in credits, for each marker a card would clear
-            /// threat it would delay and presence it would shield on the table as it
+            /// threat it would delay and nodes it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
             /// every keep to a tier-2).
-            (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield")
+            (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and nodes it would shield")
             /// Keep every drafted card it can afford.
             (keep_all: bool, true, 0.0, "dominance check: keep every drafted card")
             /// Keep only its `keep_k` cheapest drafted cards (0: off).
@@ -120,13 +120,13 @@ macro_rules! forced_table {
             (tier1_only: bool, true, 0.0, "dominance check: never draft from tier 2")
             /// Draft from tier 2 whenever it can afford the keep.
             (tier2_rush: bool, true, 0.0, "dominance check: draft from tier 2 whenever the keep is affordable")
-            /// Never use an AI-board power, the presence powers aside (066: they
-            /// are how anyone places, which `no_presence` checks).
-            (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power but the presence powers")
+            /// Never use an AI-board power, the node powers aside (066: they
+            /// are how anyone places, which `no_node` checks).
+            (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power but the node powers")
             /// Never pay toward a threat's counter.
             (no_counters: bool, true, 0.0, "dominance check: never counter a threat")
-            /// Place no presence beyond setup (no power or card that places one).
-            (no_presence: bool, true, 0.0, "dominance check: place no presence beyond setup")
+            /// Place no nodes beyond setup (no power or card that places one).
+            (no_node: bool, true, 0.0, "dominance check: place no nodes beyond setup")
             /// Mono-tag (023): keep and play only cards carrying this tag.
             (only_tag: Option<Tag>, true, 0.0, "dominance check (023): keep and play only this tag (1-6: science, industry, cyber, power, diplomacy, security)")
             /// Ignore-X (023): never keep or play a card carrying this tag.
@@ -135,11 +135,11 @@ macro_rules! forced_table {
             (events_only: bool, true, 0.0, "dominance check (023): keep and play only events")
             /// Exploit check (027): no counter paid and no card that counters a threat.
             (ignore_threats: bool, true, 0.0, "exploit check (027): no counters, no card that counters a threat")
-            /// Exploit check (027): stay on the setup hex and defend it: no presence,
+            /// Exploit check (027): stay on the setup hex and defend it: no nodes,
             /// only the remove, clear, ambassador, hardening and chips standard actions.
-            (turtle: bool, true, 0.0, "exploit check (027): no presence beyond setup; only remove, clear, chips, ambassador and hardening actions")
+            (turtle: bool, true, 0.0, "exploit check (027): no nodes beyond setup; only remove, clear, chips, ambassador and hardening actions")
             /// Exploit check (027): only free cities: Diplomacy cards, the ambassador,
-            /// move, remove, clear and chips standard actions, no counters, no presence,
+            /// move, remove, clear and chips standard actions, no counters, no nodes,
             /// no powers.
             (free_only: bool, true, 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions")
             /// Exploit check (028): farm the Unity deck. Every seat buys ambassadors
@@ -157,10 +157,10 @@ macro_rules! forced_table {
             (never_clear: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
-            /// Fixed policy (066): both presence powers whenever affordable.
-            (always_max_presence: bool, true, 0.0, "fixed policy (066): use both presence powers whenever affordable")
-            /// Fixed policy (066): never the board's second presence power.
-            (never_second_presence: bool, true, 0.0, "fixed policy (066): never use the board's second presence power")
+            /// Fixed policy (066): both node powers whenever affordable.
+            (always_max_node: bool, true, 0.0, "fixed policy (066): use both node powers whenever affordable")
+            /// Fixed policy (066): never the board's second node power.
+            (never_second_node: bool, true, 0.0, "fixed policy (066): never use the board's second node power")
             /// Fixed policy (068): no power that sacrifices.
             (never_sacrifice: bool, true, 0.0, "fixed policy (068): never use a power that sacrifices")
             /// Fixed policy (080): keep every liberate card, play one the first round it is legal.
@@ -169,8 +169,8 @@ macro_rules! forced_table {
             (ambassador_mass: bool, true, 0.0, "fixed policy (068): before anything else, buy every ambassador it can afford")
             /// Fixed policy (068): the Builder's expensive power at every chance.
             (free_build_rush: bool, true, 0.0, "fixed policy (068): the Builder's free-building power at every chance")
-            /// Fixed policy (068): a seat with Wall places presence only to block troops.
-            (wall_turtle: bool, true, 0.0, "fixed policy (068): a seat with Wall places presence only with a troop on the board, on the hex nearest one")
+            /// Fixed policy (068): a seat with Wall places nodes only to block troops.
+            (wall_turtle: bool, true, 0.0, "fixed policy (068): a seat with Wall places nodes only with a troop on the board, on the hex nearest one")
             /// Fixed policy (070): pays only threats in its own home country.
             (home_only: bool, true, 0.0, "fixed policy (070): counter only threats in your home country")
             /// Fixed policy (070): tier-2 capstones first.
@@ -235,9 +235,9 @@ macro_rules! forced_struct {
 forced_table!(forced_struct());
 
 impl Forced {
-    /// Whether this seat places no presence beyond setup.
+    /// Whether this seat places no nodes beyond setup.
     fn stays_put(&self) -> bool {
-        self.no_presence || self.turtle || self.free_only
+        self.no_node || self.turtle || self.free_only
     }
 
     /// Whether seat `s` is holding its insight this round (075): no play, and no
@@ -408,7 +408,7 @@ impl Policy {
                     || (f.never_convert && ai::power_converts(world, s, k))
                     || if ai::power_places(world, s, k) {
                         f.stays_put()
-                            || (f.never_second_presence && second_presence(world, s, k))
+                            || (f.never_second_node && second_node(world, s, k))
                             || (f.wall_turtle && has_wall(world, g, s) && !troops_up(g))
                     } else {
                         f.no_powers || f.free_only
@@ -423,7 +423,7 @@ impl Policy {
             Action::Play { card, seat } => {
                 let d = cards::def(world, card);
                 let walls = f.wall_turtle && has_wall(world, g, *seat as usize) && !troops_up(g);
-                ((f.stays_put() || walls) && places_presence(&d.effects)) || !f.allows(d) || f.hoarding(world, g, *seat as usize, false)
+                ((f.stays_put() || walls) && places_node(&d.effects)) || !f.allows(d) || f.hoarding(world, g, *seat as usize, false)
             }
             Action::Keep { card, seat } => !f.allows(cards::def(world, card)) || f.hoarding(world, g, *seat as usize, true),
             _ => false,
@@ -441,11 +441,11 @@ fn troops_up(g: &GameState) -> bool {
     (0..g.hexes.len()).any(|h| g.tokens(h, common::TROOP) > 0)
 }
 
-/// The wall turtle's hex (068): of a presence prompt's hexes, the one nearest a
+/// The wall turtle's hex (068): of a node prompt's hexes, the one nearest a
 /// troop but not on it, where a wall blocks nothing.
 fn wall_hex(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     let p = g.pending.as_ref()?;
-    if !p.ask.prompt.contains("place presence") {
+    if !p.ask.prompt.contains("place nodes") {
         return None;
     }
     let troops: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, common::TROOP) > 0).collect();
@@ -462,13 +462,13 @@ fn wall_hex(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
         .map(|(_, i)| i)
 }
 
-fn places_presence(effects: &[Op]) -> bool {
-    effects.iter().any(|e| matches!(e, Op::PlacePresence { .. }))
+fn places_node(effects: &[Op]) -> bool {
+    effects.iter().any(|e| matches!(e, Op::PlaceNode { .. }))
 }
 
-/// Whether power `k` is seat `s`'s second presence power: one that places,
+/// Whether power `k` is seat `s`'s second node power: one that places,
 /// after the board's first that does.
-fn second_presence(w: &World, s: usize, k: usize) -> bool {
+fn second_node(w: &World, s: usize, k: usize) -> bool {
     (0..k).any(|j| ai::power_places(w, s, j))
 }
 
@@ -491,7 +491,7 @@ fn acts_on_board(d: &CardDef) -> bool {
     d.effects.iter().any(|e| {
         matches!(
             e,
-            Op::ClearMarkers { .. } | Op::ShieldPresence { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
+            Op::ClearMarkers { .. } | Op::ShieldNode { .. } | Op::DelayThreat { .. } | Op::MoveOne { .. }
         )
     })
 }
@@ -576,7 +576,7 @@ impl Agent for Policy {
                 return i;
             }
         }
-        if self.forced.always_max_presence && !pending {
+        if self.forced.always_max_node && !pending {
             if let Some(i) = first_power(legal, |s, k| ai::power_places(&world, s, k)) {
                 return i;
             }
@@ -787,10 +787,10 @@ pub struct PlanCtx<'a> {
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
-/// seat's presence, whether a city is corrupted.
+/// seat's node, whether a city is corrupted.
 struct PlanTable {
     left: f64,
-    presence: f64,
+    node: f64,
     corrupted: bool,
 }
 
@@ -798,7 +798,7 @@ impl PlanTable {
     fn read(w: &World, g: &GameState, s: usize) -> PlanTable {
         PlanTable {
             left: super::eval::Eval::cards_left(g) as f64,
-            presence: common::presence_count(g, s) as f64,
+            node: common::node_count(g, s) as f64,
             corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
         }
     }
@@ -849,7 +849,7 @@ fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced, pc: 
 }
 
 /// The jobs `d` would do for seat `s` on this table: markers in reach to
-/// clear, threats to delay, presence with no token to shield.
+/// clear, threats to delay, node with no token to shield.
 fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
     d.effects
         .iter()
@@ -861,7 +861,7 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
             Op::DelayThreat { count } => {
                 (*count).min(threats::active(g).iter().filter(|(t, _)| !threats::waits(g, t)).count() as i64)
             }
-            Op::ShieldPresence { count } => {
+            Op::ShieldNode { count } => {
                 (*count).min((0..g.hexes.len()).filter(|&h| effects::shieldable(g, s, h)).count() as i64)
             }
             // 070: a typed counter with a threat up it can reach (threats are dealt before keeps).
@@ -933,7 +933,7 @@ fn value(
         return 1.0 + list_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = value::table();
-    let ctx = Ctx { left: (pt.left - round as f64).max(0.0), presence: pt.presence, tags: *tags, corrupted: pt.corrupted };
+    let ctx = Ctx { left: (pt.left - round as f64).max(0.0), node: pt.node, tags: *tags, corrupted: pt.corrupted };
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
             let i = w.content.card_index(&d.id).unwrap_or(0);
@@ -1117,7 +1117,7 @@ fn pile_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> 
 }
 
 /// 080: a liberate card with no corrupted city in reach now still plans to
-/// play while a city is corrupted: presence can get there.
+/// play while a city is corrupted: node can get there.
 fn liberate_later(w: &World, g: &GameState, d: &CardDef) -> bool {
     is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h))
 }
@@ -1163,7 +1163,7 @@ mod tests {
     }
 
     #[test]
-    fn the_presence_checks_rule_out_the_powers_they_name() {
+    fn the_node_checks_rule_out_the_powers_they_name() {
         let r = crate::agents::tests::rules(0);
         let g = r.new_game(1);
         let w = r.world();
@@ -1174,15 +1174,15 @@ mod tests {
         let (deploy, buy, scrap) = (by_name("Deploy"), by_name("Buy In"), by_name("Scrap"));
         let no_powers = forced("no_powers");
         assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &deploy));
-        let no_presence = forced("no_presence");
-        assert!(no_presence.ruled_out(&w, &g, &deploy) && no_presence.ruled_out(&w, &g, &buy));
-        assert!(!no_presence.ruled_out(&w, &g, &scrap));
-        let never_second = forced("never_second_presence");
+        let no_node = forced("no_node");
+        assert!(no_node.ruled_out(&w, &g, &deploy) && no_node.ruled_out(&w, &g, &buy));
+        assert!(!no_node.ruled_out(&w, &g, &scrap));
+        let never_second = forced("never_second_node");
         assert!(never_second.ruled_out(&w, &g, &buy) && !never_second.ruled_out(&w, &g, &deploy));
     }
 
     #[test]
-    fn a_shield_counts_only_the_presence_it_can_cover() {
+    fn a_shield_counts_only_the_node_it_can_cover() {
         let r = crate::agents::tests::rules(0);
         let mut g = r.new_game(1);
         let w = r.world();

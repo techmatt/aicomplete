@@ -46,15 +46,15 @@ pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     Ok(())
 }
 
-pub(super) fn remove_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     let hexes: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| node_in_reach(&w, g, seat, h))
+        .filter(|&h| botnet_in_reach(&w, g, seat, h))
         .collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: remove the node in which hex?");
+    let prompt = format!("Seat {seat}: remove the botnet in which hex?");
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
-        adversary::remove_node(g, cx, hexes[i]);
+        adversary::remove_botnet(g, cx, hexes[i]);
     }
     Ok(())
 }
@@ -212,14 +212,14 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
     Ok(())
 }
 
-pub(super) fn cut_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+pub(super) fn cut_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
-    let hexes = cuttable_nodes(&w, g, seat);
+    let hexes = cuttable_botnets(&w, g, seat);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: cut off the node in which hex?");
+    let prompt = format!("Seat {seat}: cut off the botnet in which hex?");
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
         cx.set_key(g, &adversary::cut_key(hexes[i]), 1);
-        cx.tally(g, "effects.nodes_cut", 1);
+        cx.tally(g, "effects.botnets_cut", 1);
     }
     Ok(())
 }

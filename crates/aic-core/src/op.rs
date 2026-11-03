@@ -39,7 +39,7 @@ pub enum Slot {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Spot {
-    /// Player-owned pieces: presence, aligned cities, owned stations and factories.
+    /// Player-owned pieces: nodes, aligned cities, owned stations and factories.
     PlayerPieces,
     CleanCities,
     Factories,
@@ -54,9 +54,9 @@ pub enum Spot {
 pub enum RoundFlag {
     /// Cities in the country make no energy.
     Blackout,
-    /// Players with presence in the country make no energy in upkeep (021: was compute).
+    /// Players with a node in the country make no energy in upkeep (021: was compute).
     Sabotage,
-    /// Buildings and presence in the country can't be destroyed.
+    /// Buildings and nodes in the country can't be destroyed.
     Shelter,
     /// Sites in the country can't be claimed (027).
     Embargo,
@@ -103,8 +103,8 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// 1 of `resource` per presence you have on the board.
-    GainPerPresence {
+    /// 1 of `resource` per node you have on the board.
+    GainPerNode {
         resource: Resource,
     },
     /// Choose another player for the `other_gain` / `transfer` that follow.
@@ -119,9 +119,9 @@ pub enum Op {
         resource: Resource,
         max: i64,
     },
-    /// Place `count` presence off your AI board's tracks, paying each step's
+    /// Place `count` nodes off your AI board's tracks, paying each step's
     /// cost unless `free` (041).
-    PlacePresence {
+    PlaceNode {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         free: bool,
@@ -131,9 +131,9 @@ pub enum Op {
     ClearMarkers {
         count: i64,
     },
-    /// A hardening token on up to `count` hexes of your presence, in your
+    /// A hardening token on up to `count` hexes of your nodes, in your
     /// reach (041): it absorbs a destruction there.
-    ShieldPresence {
+    ShieldNode {
         count: i64,
     },
     /// Up to `count` active threats wait: they don't execute this round, and
@@ -158,8 +158,8 @@ pub enum Op {
     },
     /// Remove every adversary ambassador and troop in one hex.
     DestroyAll,
-    /// Remove one node within your reach (019: the tier-2 way to remove a node).
-    RemoveNode,
+    /// Remove one botnet within your reach (019: the tier-2 way to remove a botnet).
+    RemoveBotnet,
     /// Remove up to `max` adversary ambassadors in one country (0: every one);
     /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
     RemoveAmbassadorsCountry {
@@ -210,7 +210,7 @@ pub enum Op {
     GainAmbassadors {
         count: i64,
     },
-    /// In one country, facilities and presence can't be destroyed this round.
+    /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
     /// In one country, no arrivals land in the next build (068: a Security
     /// card does an ambassador's job).
@@ -263,8 +263,8 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         here: bool,
     },
-    /// A hack (021): a node within your reach makes no compute in the next build.
-    CutNode,
+    /// A hack (021): a botnet within your reach makes no compute in the next build.
+    CutBotnet,
     /// Movement add-on (021): move one of your ambassadors on the board up to
     /// `range` hexes onto a piece (or not at all).
     MoveOne {
@@ -331,17 +331,17 @@ pub enum Op {
         count: i64,
         #[serde(default)]
         each_country: bool,
-        /// Each troop also destroys the presence on the hex it lands on (027).
+        /// Each troop also destroys the node on the hex it lands on (027).
         #[serde(default)]
         destroy: bool,
     },
-    /// Every presence on the most threatened hex in scope (the presence hex
+    /// Every node on the most threatened hex in scope (the node hex
     /// with the most adversary ambassadors and troops; ties: the first in
     /// board order) is destroyed, unless absorbed (027).
-    DestroyPresence,
-    /// Each player in scope destroys `count` of their presence in scope, their
-    /// choice, unless absorbed; a last presence is safe in stage I (028).
-    EachDestroyPresence { count: i64 },
+    DestroyNode,
+    /// Each player in scope destroys `count` of their nodes in scope, their
+    /// choice, unless absorbed; a last node is safe in stage I (028).
+    EachDestroyNode { count: i64 },
     /// Up to `amount` Sway leaves the Unity bucket for the Undecided (027).
     PullUnity {
         amount: i64,
@@ -374,10 +374,10 @@ pub enum Op {
         at: Spot,
         count: i64,
     },
-    /// Each player in scope loses a presence in scope, or pays `amount`
-    /// `resource` (their choice). Losing it needs 2 or more presence on the
-    /// board, so this never takes a last presence (027).
-    LosePresenceOr {
+    /// Each player in scope loses a node in scope, or pays `amount`
+    /// `resource` (their choice). Losing it needs 2 or more nodes on the
+    /// board, so this never takes a last node (027).
+    LoseNodeOr {
         resource: Resource,
         amount: i64,
     },
@@ -443,18 +443,18 @@ pub enum Op {
     /// The adversary spreads now.
     AdversarySpread,
     /// Every player sacrifices one of their ambassadors (supply or board)
-    /// or one of their presence tokens (their choice).
+    /// or one of their nodes (their choice).
     Sacrifice,
-    /// Every node makes `amount` adversary ambassadors on its hex.
-    NodeAmbassadors {
+    /// Every botnet makes `amount` adversary ambassadors on its hex.
+    BotnetAmbassadors {
         amount: i64,
     },
     /// Every clean city gains `amount` adversary ambassadors.
     CleanCityAmbassadors {
         amount: i64,
     },
-    /// Remove `count` nodes anywhere on the board, one at a time (players choose).
-    RemoveNodes {
+    /// Remove `count` botnets anywhere on the board, one at a time (players choose).
+    RemoveBotnets {
         count: i64,
     },
 
@@ -507,12 +507,12 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// The adversary's spread places no ambassador on hexes holding your presence.
+    /// The adversary's spread places no ambassador on hexes holding your nodes.
     SpreadShield,
-    /// Once a round, prevent the first facility or presence destruction in a country
-    /// where you have a presence.
+    /// Once a round, prevent the first facility or node destruction in a country
+    /// where you have a node.
     CivicShelter,
-    /// Adversary troops can't enter or strike a hex holding your presence
+    /// Adversary troops can't enter or strike a hex holding your nodes
     /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
     /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
@@ -579,20 +579,20 @@ impl Op {
         match self {
             Op::Sway { .. } => &[Player, Threat, Team, Twist],
             Op::PullUnity { .. } => &[Threat, Team, Twist],
-            Op::EachDestroyPresence { .. } => &[Threat, Team, Twist],
+            Op::EachDestroyNode { .. } => &[Threat, Team, Twist],
             Op::Gain { .. } | Op::CounterThreat => &[Player, Team],
             Op::Troops { .. }
             | Op::FlipStation { .. }
             | Op::CorruptCity
             | Op::PlayersLose { .. }
-            | Op::DestroyPresence
+            | Op::DestroyNode
             | Op::LoseInsight { .. }
             | Op::AdversaryBuild => &[Threat, Team],
             Op::Ambassadors { .. }
             | Op::Flag { .. }
             | Op::Requisition { .. }
             | Op::LoseAmbassador
-            | Op::LosePresenceOr { .. }
+            | Op::LoseNodeOr { .. }
             | Op::DiscardMostExpensive
             | Op::LoseTokens { .. } => &[Threat],
             Op::Compute { .. } => &[Threat, Team],
@@ -604,9 +604,9 @@ impl Op {
             | Op::Infiltrate { .. }
             | Op::AdversarySpread
             | Op::Sacrifice
-            | Op::NodeAmbassadors { .. }
+            | Op::BotnetAmbassadors { .. }
             | Op::CleanCityAmbassadors { .. }
-            | Op::RemoveNodes { .. }
+            | Op::RemoveBotnets { .. }
             | Op::ComputeEvery { .. } => &[Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }
@@ -632,18 +632,18 @@ impl Op {
             | Op::CorruptSooner { .. }
             | Op::Arrivals { .. }
             | Op::War => &[Twist],
-            Op::GainPerPresence { .. }
+            Op::GainPerNode { .. }
             | Op::ChoosePlayer
             | Op::OtherGain { .. }
             | Op::Transfer { .. }
-            | Op::PlacePresence { .. }
+            | Op::PlaceNode { .. }
             | Op::ClearMarkers { .. }
-            | Op::ShieldPresence { .. }
+            | Op::ShieldNode { .. }
             | Op::DelayThreat { .. }
             | Op::Damage { .. }
             | Op::DamageCountry { .. }
             | Op::DestroyAll
-            | Op::RemoveNode
+            | Op::RemoveBotnet
             | Op::RemoveAmbassadorsCountry { .. }
             | Op::RemoveTroops { .. }
             | Op::GainPerTag { .. }
@@ -665,7 +665,7 @@ impl Op {
             | Op::DiscardProject
             | Op::Production { .. }
             | Op::AddTokens { .. }
-            | Op::CutNode
+            | Op::CutBotnet
             | Op::MoveOne { .. }
             | Op::SpreadAmbassadors
             | Op::Consolidate { .. }

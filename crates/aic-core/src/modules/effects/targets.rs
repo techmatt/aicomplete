@@ -75,9 +75,9 @@ pub(super) fn movable_ambassadors(g: &GameState, seat: usize) -> i64 {
     g.resource(seat, Resource::Ambassadors) + board::ambassadors_on_board(g, seat)
 }
 
-/// A node in seat `seat`'s reach.
-pub(super) fn node_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, NODE) > 0 && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Cyber)
+/// A botnet in seat `seat`'s reach.
+pub(super) fn botnet_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    g.tokens(h, BOTNET) > 0 && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Cyber)
 }
 
 /// A corruption marker in seat `seat`'s reach.
@@ -85,9 +85,9 @@ pub(super) fn marker_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -
     g.tokens(h, MARKER) > 0 && in_reach(w, g, seat, h)
 }
 
-/// Seat `seat`'s presence with no hardening token on it.
+/// Seat `seat`'s node with no hardening token on it.
 pub fn shieldable(g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, presence(seat)) > 0 && g.tokens(h, HARDEN) == 0
+    g.tokens(h, node(seat)) > 0 && g.tokens(h, HARDEN) == 0
 }
 
 /// A piece an ambassador on hex `a` can move to with `range`.
@@ -109,10 +109,10 @@ pub(super) fn undelayed_threats(g: &GameState) -> Vec<(Key, Option<usize>)> {
     active
 }
 
-/// Nodes in seat `seat`'s reach not already cut off (044: a second cut did nothing).
-pub(super) fn cuttable_nodes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+/// Botnets in seat `seat`'s reach not already cut off (044: a second cut did nothing).
+pub(super) fn cuttable_botnets(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| g.tokens(h, NODE) > 0 && g.var(&adversary::cut_key(h)) == 0 && in_reach(w, g, seat, h))
+        .filter(|&h| g.tokens(h, BOTNET) > 0 && g.var(&adversary::cut_key(h)) == 0 && in_reach(w, g, seat, h))
         .collect()
 }
 

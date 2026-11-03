@@ -35,41 +35,41 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
     Ok(())
 }
 
-pub(super) fn destroy_presence(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
+pub(super) fn destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
     let w = cx.world;
     let threat = |g: &GameState, h: usize| g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, TROOP);
     // `max_by_key` takes the last of equals: walk from the top.
     let top = scope_hexes(&w, ctx.scope)
         .into_iter()
         .rev()
-        .filter(|&h| presence_owner(g, h).is_some())
+        .filter(|&h| node_owner(g, h).is_some())
         .max_by_key(|&h| threat(g, h));
     if let Some(h) = top {
         for s in 0..g.seats.len() {
-            if g.tokens(h, presence(s)) > 0 {
-                board::destroy_piece(g, cx, h, presence(s), board::Cause::Effect(ctx.label));
+            if g.tokens(h, node(s)) > 0 {
+                board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label));
             }
         }
     }
 }
 
-pub(super) fn each_destroy_presence(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64) -> Res {
+pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64) -> Res {
     let w = cx.world;
     let hexes = scope_hexes(&w, ctx.scope);
     for s in ctx.seats(&w, g) {
         for _ in 0..count {
-            board::destroy_own_presence(g, cx, s, &hexes, board::Cause::Effect(ctx.label))?;
+            board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label))?;
         }
     }
     Ok(())
 }
 
-pub(super) fn node_ambassadors(g: &mut GameState, cx: &mut Cx, amount: i64) {
-    let nodes: Vec<(usize, i64)> = (0..g.hexes.len())
-        .map(|h| (h, g.tokens(h, NODE)))
+pub(super) fn botnet_ambassadors(g: &mut GameState, cx: &mut Cx, amount: i64) {
+    let botnets: Vec<(usize, i64)> = (0..g.hexes.len())
+        .map(|h| (h, g.tokens(h, BOTNET)))
         .filter(|&(_, n)| n > 0)
         .collect();
-    for (h, n) in nodes {
+    for (h, n) in botnets {
         adversary::place(g, cx, h, n * amount);
     }
 }
@@ -84,17 +84,17 @@ pub(super) fn clean_city_ambassadors(g: &mut GameState, cx: &mut Cx, amount: i64
     }
 }
 
-pub(super) fn remove_nodes(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
+pub(super) fn remove_botnets(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
     for _ in 0..count {
-        let nodes: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| g.tokens(h, NODE) > 0 && !threats::shielded(&w, g, h, ThreatSource::Cyber))
+        let botnets: Vec<usize> = (0..g.hexes.len())
+            .filter(|&h| g.tokens(h, BOTNET) > 0 && !threats::shielded(&w, g, h, ThreatSource::Cyber))
             .collect();
-        let opts = nodes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose(0, "Remove the node in which hex?", opts)? else {
+        let opts = botnets.iter().map(|&h| hex_opt(&w, h)).collect();
+        let Some(i) = cx.choose(0, "Remove the botnet in which hex?", opts)? else {
             break;
         };
-        adversary::remove_node(g, cx, nodes[i]);
+        adversary::remove_botnet(g, cx, botnets[i]);
     }
     Ok(())
 }

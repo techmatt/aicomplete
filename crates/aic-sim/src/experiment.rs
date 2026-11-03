@@ -457,8 +457,8 @@ pub struct Margin {
     pub level: i64,
     /// Unity tips.
     pub unity_tips: i64,
-    /// Nodes and adversary troops on the board at the end (018).
-    pub nodes_end: i64,
+    /// Botnets and adversary troops on the board at the end (018).
+    pub botnets_end: i64,
     pub troops_end: i64,
     /// What each seat left unspent, in [`UNSPENT`] order (068): [`left_unspent`].
     #[serde(default)]
@@ -514,7 +514,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
         blockers,
         level,
         unity_tips: g.var(alignment::tips_key(Side::Unity)),
-        nodes_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::NODE)).sum(),
+        botnets_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::BOTNET)).sum(),
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),
         unspent: (0..g.seats.len()).map(|s| left_unspent(g, s)).collect(),
     }
@@ -753,11 +753,11 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
         .map(|i| round_ops.get(i).copied().unwrap_or(0) as u32)
         .collect();
     r.counters = g.stats.counters.iter().map(|(k, v)| (k.to_string(), *v)).collect();
-    // 021: the per-round tables of the card, AI, economy and presence
+    // 021: the per-round tables of the card, AI, economy and node
     // counters, as `<key>.rNN` (summed over seats), for the screen's by-round
     // tables. Others (`adversary.*`) stay out, to keep games.jsonl small.
     for (k, v) in &g.stats.per_round {
-        if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.presence") {
+        if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.node") {
             for (i, n) in v.iter().enumerate().skip(1) {
                 if *n != 0 {
                     r.counters.insert(format!("{k}.r{i:02}"), *n);

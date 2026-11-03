@@ -386,7 +386,7 @@ mod tests {
             "options_total": 1, "forced": 0, "probed": 0, "close": 0, "gap_sum": 0.0,
             "margin": {"deck_left": 0, "supply_left": 0, "supply_start": 0,
                 "cities_corrupted_end": 0, "cities_aligned_end": 0, "blockers": 0, "level": 0,
-                "unity_tips": 0, "nodes_end": 0, "troops_end": 0},
+                "unity_tips": 0, "botnets_end": 0, "troops_end": 0},
             "adversary_ops": [], "setup_ops": 0, "counters": {}, "cards": {}, "gives": 0,
             "pays": 0, "withdraws": 0, "build": "", "winprob": [], "ms": 1000.0, "agent_ms": 0.0,
             "probe_ms": 0.0, "setup_ms": 0.0, "legal_ms": 0.0, "apply_ms": 0.0, "replay_ms": 0.0,
