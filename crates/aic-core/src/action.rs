@@ -55,6 +55,8 @@ pub enum Action {
     Standard { seat: u8, act: String },
     /// Sell a card from your hand (module `board`).
     Sell { seat: u8, card: Key },
+    /// Use a completed megaproject's converter, once a round (module `board`, 074).
+    Convert { seat: u8, country: u8 },
 }
 
 impl Action {
@@ -73,7 +75,8 @@ impl Action {
             | Action::Give { seat, .. }
             | Action::Antimatter { seat }
             | Action::Standard { seat, .. }
-            | Action::Sell { seat, .. } => *seat,
+            | Action::Sell { seat, .. }
+            | Action::Convert { seat, .. } => *seat,
         }
     }
 }

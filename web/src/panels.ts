@@ -6,7 +6,7 @@
 // pile falls back to a generic chip so nothing goes unshown.
 
 import { content, param, type CardView, type Config, type PileView, type Value, type View } from './engine';
-import { ADVERSARY_COLOR, countryName, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
+import { ADVERSARY_COLOR, NEUTRAL_COLOR, countryName, escapeHtml, extraCosts, hexKey, KINDS, strong } from './format';
 
 const esc = escapeHtml;
 
@@ -268,7 +268,8 @@ function threatCard(c: CardView, where: string, v: View): string {
 
 /**
  * A country's megaproject card: its name and a row of cube places, filled left to right
- * by owner (the adversary's, then each seat's), from `board.project*`.
+ * by owner (the adversary's, the neutral stations', then each seat's), from `board.project*`.
+ * A completed card says how many cubes paid, overflow included.
  */
 function megaprojectHtml(v: View, c: View['countries'][number]): string {
   const total = findValue(c.values, 'board.project');
@@ -279,14 +280,17 @@ function megaprojectHtml(v: View, c: View['countries'][number]): string {
   const owners: { label: string; n: number; color: string; key: string }[] = [];
   const adv = findValue(c.values, 'board.project.adversary');
   if (adv) owners.push({ label: 'adversary', n: adv.value, color: ADVERSARY_COLOR, key: adv.key });
+  const neutral = findValue(c.values, 'board.project.neutral');
+  if (neutral) owners.push({ label: 'neutral', n: neutral.value, color: NEUTRAL_COLOR, key: neutral.key });
   for (const s of v.seats) {
     const x = findValue(c.values, `board.project.${s.index}`);
     if (x) owners.push({ label: `seat ${s.index}`, n: x.value, color: strong(v.countries[s.country]?.color ?? '#888888'), key: x.key });
   }
   const cells: string[] = [];
-  for (const o of owners) for (let i = 0; i < o.n && cells.length < max; i++) cells.push(`<span class="pc" style="background:${o.color}" title="${esc(o.label)}"></span>`);
+  for (const o of owners) for (let i = 0; i < o.n; i++) cells.push(`<span class="pc" data-color="${esc(o.label)}" style="background:${o.color}" title="${esc(o.label)}"></span>`);
   while (cells.length < max) cells.push(`<span class="pc${done ? ' done' : ''}"></span>`);
-  const by = done ? '<b class="pdone">completed</b>' : owners.filter((o) => o.n).map((o) => `<span data-value="${esc(o.key)}" data-scope="country:${c.index}">${esc(o.label)} ${o.n}</span>`).join(' · ');
+  const paid = findValue(c.values, 'board.project.paid');
+  const by = done ? `<b class="pdone">completed</b>${paid ? ` · <span class="ppaid" data-value="${esc(paid.key)}" data-scope="country:${c.index}">${paid.value} cubes paid (${esc(paid.label)})</span>` : ''}` : owners.filter((o) => o.n).map((o) => `<span data-value="${esc(o.key)}" data-scope="country:${c.index}">${esc(o.label)} ${o.n}</span>`).join(' · ');
   return `<div class="project${done ? ' done' : ''}" data-value="${esc(total.key)}" data-scope="country:${c.index}"><b title="megaproject">◆ ${esc(name)}</b><span class="cubes">${cells.join('')}</span><small>${total.value}/${max}${by ? ` · ${by}` : ''}</small></div>`;
 }
 
@@ -337,7 +341,7 @@ export function legendHtml(): string {
 // ---------- seat panels ----------
 
 const SEAT_DRAWN = (k: string) =>
-  k.startsWith('resource.') || k.startsWith('economy.income.') || k === 'cards.slots';
+  k.startsWith('resource.') || k.startsWith('economy.income.') || k === 'cards.slots' || k.startsWith('board.converter.');
 
 /** The seat's resources with income, its board's tracks, then other values. */
 export function seatValuesHtml(v: View, seatIndex: number): string {
@@ -350,7 +354,7 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const r = x.key.startsWith('economy.income.') ? x.key.slice('economy.income.'.length) : null;
     if (r && x.value !== 0) names.add(r);
   }
-  const rank = orderRank(['credits', 'energy', 'insight', 'chips', 'antimatter', 'ambassadors']);
+  const rank = orderRank(['credits', 'energy', 'insight', 'chips', 'antimatter', 'research_cubes', 'ambassadors']);
   const sorted = [...names].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
   const resHtml = sorted.map((r) => {
     const have = findValue(s.values, `resource.${r}`);
@@ -369,7 +373,10 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     ai.push(`<span class="value" data-value="cards.slots" data-scope="${scope}"><span class="label">slots</span> <b>${used}<small>/${slots.value}</small></b></span>`);
   }
   const other = s.values.filter((x) => !SEAT_DRAWN(x.key)).map((x) => valueChip(x, scope)).join('');
-  return `<div class="resources">${resHtml}</div>${boardHtml(v, seatIndex)}<div class="values ai">${ai.join('')}${other}</div>`;
+  // 074: every completed card's converter; one this seat can't use says why.
+  const converters = s.values.filter((x) => x.key.startsWith('board.converter.')).map((x) =>
+    `<span class="converter ${x.value ? 'usable' : 'unusable'}" data-value="${esc(x.key)}" data-scope="${scope}">${esc(x.label)}</span>`).join('');
+  return `<div class="resources">${resHtml}</div>${converters ? `<div class="converters">${converters}</div>` : ''}${boardHtml(v, seatIndex)}<div class="values ai">${ai.join('')}${other}</div>`;
 }
 
 /**

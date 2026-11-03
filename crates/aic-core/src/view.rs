@@ -551,7 +551,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
                 .map(|(k, &n)| {
                     engine(
                         format!("resource.{k}"),
-                        k.name(),
+                        &k.name().replace('_', " "),
                         n,
                         "on this seat's board",
                     )

@@ -1,0 +1,105 @@
+// `npm run e2e:corps` (074): research cubes and the megacorps in a real browser. Plays the baseline
+// with `station_cubes` 3 so a card overflows in round 2: seat 0 claims Horizon's neutral station,
+// Cintamani's stays neutral. Checks the cubes by color, the completion with its overflow paid, the
+// stored cubes and a usable converter beside an unusable one. Needs the viewer running.
+//   AIC_URL  viewer URL (default http://localhost:5173/)
+// Screenshot: web/e2e-out/corps.png.
+
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { checker, openPage, viewerUrl as url } from './cdp.mjs';
+
+const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const out = join(web, 'e2e-out');
+mkdirSync(out, { recursive: true });
+
+const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, troop_steps: 0 });
+// Nothing diverts a cube or takes the bound city while the script passes its turns.
+Object.assign(config.modules.find((m) => m.module === 'adversary').params, { arrivals: 0, corrupt_at: 20, city_build: 0 });
+
+const page = await openPage();
+const { send, js, until, size, consoleErrors } = page;
+const { check, failed } = checker();
+
+/** The action phase's menu is up. */
+const acting = `window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
+/** Takes the last legal action (a pass where there is one) until round `n`'s action phase. */
+async function toRound(n) {
+  for (let i = 0; i < 600; i++) {
+    const at = await js(`window.aic.view.round >= ${n} && window.aic.legal.some((a) => a.type === 'standard')`);
+    if (at) return true;
+    if (await js('window.aic.legal.length === 0')) return false;
+    await js('window.aic.act(window.aic.legal[window.aic.legal.length - 1])');
+  }
+  return false;
+}
+const value = (where, key) => `(${where}.values.find((x) => x.key === '${key}'))`;
+const resource = (r) => js(`${value('window.aic.view.seats[0]', `resource.${r}`)}?.value ?? 0`);
+
+try {
+  await size(1366, 768);
+  await send('Page.navigate', { url });
+  await until('window.aic && window.aic.view', 'the viewer to start', 30000);
+  await js(`window.aic.play(${JSON.stringify(JSON.stringify(config))}, '1')`);
+  await until(`window.aic.timeline.last === 0 || ${acting}`, 'the game to start', 10000);
+
+  check(await toRound(1), 'reached the first action phase');
+  // Seat 0's starting ambassador claims the neutral station next to its presence.
+  const station = await js(`(() => {
+    const v = window.aic.view;
+    const h = v.hexes.find((x) => x.country === 0 && x.tokens.some((t) => t.kind === 'station') && !x.tokens.some((t) => t.kind === 'cube:adversary'));
+    return h?.number;
+  })()`);
+  check(station === 10, `Horizon's neutral station stands on hex ${station}`);
+  await js(`window.aic.act({ type: 'standard', seat: 0, act: 'move' })`);
+  for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
+    await js(`(() => {
+      const l = window.aic.legal.filter((a) => a.type === 'choose');
+      window.aic.act(l.find((a) => a.option === 'Horizon #${station}' || a.option === 'from your supply') ?? l[0]);
+    })()`);
+  }
+  const owned = await js(`window.aic.view.hexes.some((h) => h.country === 0 && h.number === ${station} && h.tokens.some((t) => t.kind === 'cube:0'))`);
+  check(owned, 'the ambassador claimed the station');
+
+  check(await toRound(2), 'reached round 2');
+  const colors = await js(`(() => {
+    const cells = [...document.querySelectorAll('#countries .project')].filter((p) => p.querySelector('.cubes'));
+    const count = (p, c) => p.querySelectorAll('.pc[data-color="' + c + '"]').length;
+    return { horizon: [count(cells[0], 'seat 0'), count(cells[0], 'adversary')], cintamani: [count(cells[1], 'neutral'), count(cells[1], 'adversary')] };
+  })()`);
+  check(colors.horizon[0] === 3 && colors.horizon[1] === 3, `Horizon's card shows its cubes by color: ${colors.horizon} (player, adversary)`);
+  check(colors.cintamani[0] === 3 && colors.cintamani[1] === 3, `Cintamani's shows neutral cubes: ${colors.cintamani} (neutral, adversary)`);
+
+  // Round 2 makes 12 cubes on an 8-cube card: every one pays.
+  check(await toRound(3), 'reached round 3');
+  const paid = await js(`[...document.querySelectorAll('#countries .ppaid')].map((e) => e.textContent)`);
+  check(paid.length === 2 && paid[0].startsWith('12 cubes paid') && paid[0].includes('player'), `the card completed with its overflow paid: "${paid[0]}"`);
+  check(await js(`document.querySelectorAll('#countries .project.done').length`) === 2, 'both cards show completed');
+
+  // Round 3 stores 3 cubes on seat 0's board; round 4 can spend them.
+  check(await toRound(4), 'reached round 4');
+  const stored = await resource('research_cubes');
+  check(stored === 3, `seat 0 stores ${stored} research cubes`);
+  const shown = await js(`document.querySelector('.seat .res.r-research_cubes')?.textContent ?? ''`);
+  check(/research cubes\s*3/.test(shown), `its board shows them: "${shown.trim()}"`);
+  const conv = await js(`[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter').length ? [...[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter')].map((e) => [e.className, e.textContent]) : []`);
+  check(conv.some(([c]) => c.includes(' usable')), `a usable converter: ${JSON.stringify(conv.find(([c]) => c.includes(' usable')))}`);
+  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no aligned city')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
+  writeFileSync(join(out, 'corps.png'), await page.shot());
+
+  const anti = await resource('antimatter');
+  check(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`), 'the converter is on the menu');
+  await js(`window.aic.act({ type: 'convert', seat: 0, country: 0 })`);
+  check(await resource('research_cubes') === stored - 1 && await resource('antimatter') === anti + 1, 'using it turns a cube and 2 energy into 1 antimatter');
+  check(!(await js(`window.aic.legal.some((a) => a.type === 'convert' && a.seat === 0 && a.country === 0)`)), 'once a round');
+  check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
+} catch (e) {
+  console.error(e);
+  check(false, 'the run stopped');
+} finally {
+  await page.close();
+}
+console.log(failed() ? `e2e:corps FAILED (${failed()})` : 'e2e:corps ok');
+process.exit(failed() ? 1 : 0);

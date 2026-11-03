@@ -376,7 +376,7 @@ function megaproject(country, i) {
     tierLabel: country.name,
     cost: m.cubes,
     costLabel: `${m.cubes} cubes`,
-    price: [['Cubes', m.cubes], ['Benefit a round', costs(m.benefit)]],
+    price: [['Cubes', m.cubes]],
   });
 }
 

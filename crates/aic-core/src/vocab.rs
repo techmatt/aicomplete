@@ -24,17 +24,21 @@ pub enum Resource {
     Credits,
     Energy,
     Insight,
+    /// 074: stored at the end of production once a country's megaproject is
+    /// done, kept between rounds, spent on converters.
+    ResearchCubes,
 }
 
 /// The player resources, in display order (the order of income arrays, see
 /// [`Resource::index`]). 021: players have no compute; compute is the
 /// adversary's, `adversary.compute`.
-pub const RESOURCES: [Resource; 5] = [
+pub const RESOURCES: [Resource; 6] = [
     Resource::Credits,
     Resource::Chips,
     Resource::Energy,
     Resource::Antimatter,
     Resource::Insight,
+    Resource::ResearchCubes,
 ];
 
 impl Resource {
@@ -46,6 +50,7 @@ impl Resource {
             Resource::Energy => "energy",
             Resource::Chips => "chips",
             Resource::Insight => "insight",
+            Resource::ResearchCubes => "research_cubes",
         }
     }
 
@@ -57,6 +62,8 @@ impl Resource {
     pub fn amount(self, n: i64) -> String {
         match (self, n) {
             (Resource::Chips, 1) => "1 chip".to_string(),
+            (Resource::ResearchCubes, 1) => "1 research cube".to_string(),
+            (Resource::ResearchCubes, _) => format!("{n} research cubes"),
             _ => format!("{n} {self}"),
         }
     }
@@ -74,7 +81,7 @@ impl Resource {
         RESOURCES.iter().position(|r| *r == self)
     }
 
-    /// One of the five [`RESOURCES`]: what printed costs and every income but
+    /// One of the [`RESOURCES`]: what printed costs and every income but
     /// `Op::Income` may name.
     pub fn is_player(self) -> bool {
         self.index().is_some()

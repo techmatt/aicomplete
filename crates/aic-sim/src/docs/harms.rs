@@ -24,14 +24,15 @@ pub const HARMS: [&str; 14] = [
     "actions or claims blocked",
 ];
 
-/// The sources of the ledger, in its column order. The first five read
+/// The sources of the ledger, in its column order. The first six read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 11] = [
+pub const SOURCES: [&str; 12] = [
     "tier-1 threats",
     "tier-2 threats",
     "Discord cards",
     "adversary twists",
     "adversary projects",
+    "megaprojects",
     "arrivals",
     "build and spread",
     "corruption",
@@ -69,6 +70,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
 const DISCORD_CARDS: usize = 2;
 const ADVERSARY_TWISTS: usize = 3;
 const ADVERSARY_PROJECTS: usize = 4;
+const MEGAPROJECTS: usize = 5;
 /// The first columns: the threats, by tier.
 const THREAT_TIERS: usize = 2;
 
@@ -121,7 +123,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
                 vec![PIECES_PLACED]
             }
         }
-        Op::Compute { .. } => vec![PROJECTS_ADVANCED],
+        Op::Compute { .. } | Op::ComputeEvery { .. } => vec![PROJECTS_ADVANCED],
         Op::DealThreats { .. } => vec![EXTRA_THREATS],
         Op::Sway { side, .. } if side.name() == "discord" => vec![DISCORD_SWAY],
         Op::PullUnity { .. } => vec![UNITY_PULLED],
@@ -186,6 +188,9 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
     }
     for p in &c.projects {
         add(ADVERSARY_PROJECTS, &p.effects);
+    }
+    for p in &c.map.countries {
+        add(MEGAPROJECTS, &[&p.megaproject.adversary[..], &p.megaproject.after[..]].concat());
     }
     let mut out: BTreeMap<(usize, usize), Mark> =
         counts.into_iter().map(|(k, n)| (k, Mark::Count(n))).collect();

@@ -189,11 +189,15 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .country .chead > b { color: var(--tint); }
 .country .counts { color: var(--muted); font-size: 0.85em; }
 .country .counts .adv { color: #5b1a8c; }
-.project { display: flex; align-items: center; gap: 0.35em; flex-wrap: wrap; font-size: 0.88em; }
+.project { display: flex; align-items: center; gap: 0.35em; font-size: 0.88em; }
 .project .cubes { display: inline-flex; gap: 1px; }
 .project .pc { width: 0.65em; height: 0.65em; border-radius: 2px; border: 1px solid #0004; background: #f1eee7; }
 .project .pc.done { background: var(--good); }
-.project small { color: var(--muted); }
+.converters { display: flex; flex-wrap: wrap; gap: 0.3em; font-size: 0.85em; }
+.converter { border: 1px solid #0003; border-radius: 3px; padding: 0 0.3em; }
+.converter.usable { border-color: var(--good); color: var(--good); font-weight: 600; }
+.converter.unusable { color: var(--muted); border-style: dashed; }
+.project small { color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .project .pdone { color: var(--good); }
 .threat { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
 .threat .tname { display: inline; margin-right: 0.4em; }

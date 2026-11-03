@@ -173,5 +173,7 @@ never mixed up.
   reason. Background it with a log instead. `npm run wasm` can pass 60 s under load: the same.
 - In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching). Copy a binary
   before a run, then rebuild freely.
+- PowerShell `*>` writes UTF-16 logs, which Git Bash `grep` reads as empty: read them in PowerShell
+  or write with `-Encoding utf8`.
 - A marker from `Start-Process powershell -Command '...; "done" | Out-File'` may never appear
   (070 lost 7 min). End a log with a line from a `-File` script, and wait on that.

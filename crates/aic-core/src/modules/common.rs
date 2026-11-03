@@ -231,7 +231,7 @@ pub fn piece_name(kind: &str) -> String {
     }
 }
 
-/// "Northern Union #5": the printed piece's name and hex number (020: "C1 #5",
+/// "Cintamani #5": the printed piece's name and hex number (020: "C1 #5",
 /// a country index the board never shows).
 pub fn hex_name(w: &World, h: usize) -> String {
     let c = &w.map.hexes[h];
@@ -255,7 +255,7 @@ pub fn hex_opt(w: &World, h: usize) -> Opt {
     }
 }
 
-/// [`hex_opt`] with its label led by `what`: "presence at Northern Union #5".
+/// [`hex_opt`] with its label led by `what`: "presence at Cintamani #5".
 pub fn labeled_hex_opt(w: &World, what: &str, h: usize) -> Opt {
     let mut o = hex_opt(w, h);
     o.option = format!("{what} at {}", o.option);

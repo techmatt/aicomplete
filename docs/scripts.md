@@ -18,6 +18,7 @@ Current:
   `scripts/screens.py` holds what it shares with the kept scripts below, and is the way to read a run from Python: `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`).
 - `cards/threat_read.py DIR... [--cards]` (070): per cell, threats dealt, countered by source type, paid abroad or by ambassador
   alone, sources made, and the typed counters and capstones played: who counters what, from `games.jsonl`.
+- `cards/corp_read.py DIR...` (074): per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source
 - `cards/price_read.py` (055): per-card rates and stratified win deltas from games.jsonl
   ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, opening deal and draws
   included: never a share of offered, which would pass 100. Older price-read CSVs still have

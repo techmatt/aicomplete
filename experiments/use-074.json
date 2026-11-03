@@ -1,0 +1,28 @@
+{
+  "name": "use-074",
+  "note": "074: how the research cubes and corps get used, planner and engine, c2 and c3, d2. The planner cells are the band's (--seed 25700 and 25800); this spec adds the engine.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    },
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine",
+    "planner"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -180,7 +180,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
     );
 
     // 020: only a lone presence leaks. On a corrupted city the ambassador is
-    // the city's (it stays to spread); on a neutral station it waits.
+    // the city's (it stays to spread); on a station it takes the cube (074).
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, ADV_AMBASSADOR, 1);
@@ -197,11 +197,11 @@ fn ambassadors_divert_cities_and_stations_and_leak_presence_compute() {
             g.var("economy.insight_debt.0"),
             g.var("economy.insight_debt.1")
         ),
-        (1, 1, 0, 0)
+        (1, 0, 0, 0)
     );
 
     // An owned station's cube goes to the adversary; a corrupted station's
-    // always does; a neutral one makes none.
+    // always does; a neutral one makes a neutral cube.
     let mut g = g0.clone();
     let [s0, s1] = [0, 1].map(|c| m.numbered(c, piece(c).stations[0]));
     let neutral = m.numbered(0, piece(0).factories[0]);

@@ -2,7 +2,7 @@
 //! and the house terms.
 
 use aic_core::config::ParamValue;
-use aic_core::content::{content, AiBoard, Content, Cost, Op, Resource, Uncover};
+use aic_core::content::{content, AiBoard, Content, Cost, Megaproject, Op, Resource, Uncover};
 use aic_core::modules::adversary;
 use aic_core::rules::Tunable;
 use aic_core::Rules;
@@ -188,9 +188,9 @@ pub(super) fn countries_block(c: &Content) -> String {
                 numbers(&p.cities),
                 numbers(&p.ocean),
                 numbers(&p.stations),
+                p.neutral_station.to_string(),
                 format!("{} ({})", numbers(&p.industry), numbers(&p.factories)),
                 p.presence.to_string(),
-                format!("{}, {} cubes: {}", p.megaproject.name, p.megaproject.cubes, costs(&p.megaproject.benefit)),
             ]
         })
         .collect();
@@ -201,9 +201,40 @@ pub(super) fn countries_block(c: &Content) -> String {
             "Cities (corrupted first)",
             "Ocean",
             "Station (node)",
+            "Neutral station",
             "Industrial zones (setup factories)",
             "Starting presence",
-            "Megaproject (benefit per owned station)",
+        ],
+        rows,
+    )
+}
+
+/// The corps: each piece's megaproject, what it pays and what it prints after.
+pub(super) fn corps_block(c: &Content) -> String {
+    let rows = c
+        .map
+        .countries
+        .iter()
+        .map(|p| {
+            let m = &p.megaproject;
+            vec![
+                format!("{} ({})", p.name, p.flavor),
+                m.name.clone(),
+                m.cubes.to_string(),
+                format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
+                m.converter.words(),
+                Megaproject::words(&m.after),
+            ]
+        })
+        .collect();
+    table(
+        &[
+            "Corp",
+            "Megaproject",
+            "Cubes",
+            "At completion: player cube / adversary cube",
+            "Converter (once a round)",
+            "Each adversary cube after",
         ],
         rows,
     )
@@ -510,6 +541,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             format!("{} / {}", t("board.base_unity"), t("board.factory_unity")),
         ],
         ["Unity".to_string(), "removing an adversary troop".to_string(), t("alignment.troop")],
+        ["Unity".to_string(), "Biomia's converter (074)".to_string(), "1 for 2 research cubes".to_string()],
         [
             "Unity".to_string(),
             "freeing a corrupted city (§2; or a tier-2 ultimate)".to_string(),
@@ -538,8 +570,8 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "adversary cubes on a completed megaproject".to_string(),
-            format!("1 per {}", t("board.project_discord_per")),
+            "adversary cubes on a megaproject as it completes, and after, as its corp's card prints".to_string(),
+            "1 each".to_string(),
         ],
         [
             "Discord".to_string(),

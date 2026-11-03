@@ -142,7 +142,10 @@ impl HexKind {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CountryPiece {
+    /// The corp's name: country = corp, one piece (074).
     pub name: String,
+    /// What the corp does, in a few words.
+    pub flavor: String,
     pub cities: Vec<u8>,
     /// The order cities start corrupted in (an adversary cube): setup
     /// corrupts the first `board.start_corrupted`, difficulty 4
@@ -155,6 +158,9 @@ pub struct CountryPiece {
     pub coast: Vec<u8>,
     /// Research stations at setup (they start corrupted).
     pub stations: Vec<u8>,
+    /// The country's neutral research station at setup (074): open land, no
+    /// industrial zone, no base.
+    pub neutral_station: u8,
     /// Printed industrial zones: open hexes next to a city where factories go.
     pub industry: Vec<u8>,
     /// Industrial zones holding a factory at setup (neutral).
@@ -166,9 +172,11 @@ pub struct CountryPiece {
     pub megaproject: Megaproject,
 }
 
-/// A megaproject card: research stations fill it with cubes; when it holds
-/// `cubes`, it completes and every cube pays its owner. After that, each
-/// owned station in the country produces `benefit` for its owner every round.
+/// A megaproject card (074), the corp's defining card: research stations fill
+/// it with cubes; at the end of production, if it holds `cubes` or more, every
+/// player cube pays `player` to its owner and every adversary cube `adversary`.
+/// After that a seat with an aligned city in the country has the `converter`,
+/// and each adversary cube made there resolves `after`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Megaproject {
@@ -176,7 +184,43 @@ pub struct Megaproject {
     pub cubes: i64,
     #[serde(default)]
     pub text: String,
-    pub benefit: Vec<Cost>,
+    pub player: Vec<Op>,
+    pub adversary: Vec<Op>,
+    pub converter: Converter,
+    pub after: Vec<Op>,
+}
+
+/// What a completed megaproject prints for players (074): once a round, pay
+/// `cost` for `effects`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Converter {
+    pub cost: Vec<Cost>,
+    pub effects: Vec<Op>,
+}
+
+impl Converter {
+    /// In the card's words: "1 research cube + 2 energy → 1 antimatter".
+    pub fn words(&self) -> String {
+        let cost: Vec<String> = self.cost.iter().map(|(r, n)| r.words(*n)).collect();
+        format!("{} → {}", cost.join(" + "), Megaproject::words(&self.effects))
+    }
+}
+
+impl Megaproject {
+    /// What a list of its ops does, in the card's words.
+    pub fn words(ops: &[Op]) -> String {
+        let word = |op: &Op| match op {
+            Op::Gain { resource, amount } => resource.words(*amount),
+            Op::Draw { count: 1 } => "1 drawn card".to_string(),
+            Op::Sway { side: Side::Unity, amount } => format!("{amount} Sway to Unity"),
+            Op::Sway { side: Side::Discord, amount } => format!("{amount} Sway to Discord"),
+            Op::Compute { amount } => format!("{amount} adversary compute"),
+            Op::ComputeEvery { amount } => format!("{amount} adversary compute on every visible project"),
+            other => format!("{other:?}"),
+        };
+        ops.iter().map(word).collect::<Vec<_>>().join(", ")
+    }
 }
 
 impl CountryPiece {
@@ -822,12 +866,14 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
 
 fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), String> {
     let start = vec![p.presence];
+    let neutral = vec![p.neutral_station];
     let lists = [
         &p.cities,
         &p.corrupted,
         &p.ocean,
         &p.coast,
         &p.stations,
+        &neutral,
         &p.industry,
         &start,
     ];
@@ -851,7 +897,7 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
             "country piece {i}: setup factories go on industrial zones"
         ));
     }
-    let built: Vec<u8> = [&p.stations, &p.industry, &start]
+    let built: Vec<u8> = [&p.stations, &neutral, &p.industry, &start]
         .iter()
         .flat_map(|l| l.iter().copied())
         .collect();
@@ -862,8 +908,20 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
             ));
         }
     }
-    for (r, _) in &p.megaproject.benefit {
-        resource(r, &format!("project of country piece {i}"))?;
+    let what = format!("project of country piece {i}");
+    let m = &p.megaproject;
+    if !(6..=10).contains(&m.cubes) || m.player.is_empty() || m.adversary.is_empty() || m.after.is_empty() {
+        return Err(format!("{what}: 6-10 cubes, and a payout for each color and after"));
+    }
+    check_ops(&m.player, Slot::Player, &what)?;
+    check_ops(&m.adversary, Slot::Team, &what)?;
+    check_ops(&m.after, Slot::Team, &what)?;
+    check_ops(&m.converter.effects, Slot::Player, &what)?;
+    if m.converter.cost.is_empty() || m.converter.effects.is_empty() {
+        return Err(format!("{what}: a converter has a cost and an effect"));
+    }
+    for (r, _) in &m.converter.cost {
+        resource(r, &what)?;
     }
     Ok(())
 }

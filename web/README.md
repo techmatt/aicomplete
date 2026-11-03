@@ -20,6 +20,7 @@ npm run check                   # typecheck
 npm run build                   # wasm + typecheck + static site in web/dist/
 npm run e2e [-- <record.json>] # browser check, dev server must be running (see below)
 npm run e2e:sources            # the threat-source check, the same way
+npm run e2e:corps              # research cubes and the corps, the same way
 ```
 
 - **The wasm build step:** `scripts/build-wasm.mjs` runs `wasm-pack build
@@ -45,7 +46,7 @@ npm run e2e:sources            # the threat-source check, the same way
   one. When two answers name the same hex (a sacrifice: the ambassador or the presence
   there), each also gets its own button (clicking the hex takes the first). Any other answer
   is a button in that seat's panel. Prompts, options and the log name hexes by country
-  (`Northern Union #13`) and cards by name. *Pass every seat* passes
+  (`Cintamani #13`) and cards by name. *Pass every seat* passes
   all the seats still to act. *Random action* (R) and *Random to end* are for quick
   debugging.
 - **Reading the board:** hexes are filled by what they are (`kind`: city gray, military
@@ -78,8 +79,8 @@ npm run e2e:sources            # the threat-source check, the same way
   project a two-line box, name and compute bar then its effect text, cut at the end of
   the second line, all of it on hover; ongoing ones, the resolved count and the deck)); the countries strip with each country's name, its
   cities (clean, aligned, corrupted), adversary pieces and corp units, its megaproject
-  card (one box per cube place, filled by owner: purple for the adversary, the seat's
-  color for a player; "completed" once done), its round flags (blackout, sabotage,
+  card (one box per cube, filled by owner: purple for the adversary, gray for a neutral station,
+  the seat's color for a player; "completed" and the cubes that paid once done), its round flags (blackout, sabotage,
   shelter, embargo, cordon), its threat and counter progress (or the shared threat row; a threat that executes next
   round dims and says **waits**, and a jam shows its amount). Country names
   (the printed pieces', from the view's `countries[].name`) also label the board and the
@@ -178,6 +179,10 @@ Screenshots go to `web/e2e-out/` (git-ignored): the start, draft, first
 choice, mid-game and end of the game, the layouts, four countries and the shared row.
 With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there as
 `viewer-mid.png` and `viewer-end.png`. A run takes about 15 s (12-20 s measured).
+
+`npm run e2e:corps` (`scripts/e2e-corps.mjs`, 074) plays the baseline at `station_cubes` 3, with arrivals, city builds and troop marches off and
+`corrupt_at` 20 so nothing disturbs it: a claimed and a neutral station, a card that overflows in round 2, stored
+cubes, a usable converter beside an unusable one, and a use. `research cubes` and the converters show in a seat's panel.
 
 `npm run e2e:sources` (`scripts/e2e-sources.mjs`, 070) plays first legal actions until a
 face-up threat refuses a seat, then checks the threat's source badge, its sources marked on

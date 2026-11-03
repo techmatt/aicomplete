@@ -16,7 +16,7 @@ use crate::state::GameState;
 use crate::view::ViewOut;
 
 use super::common::*;
-use super::{adversary, ai, alignment, cards, economy, threats};
+use super::{adversary, ai, alignment, cards, economy, effects, threats};
 
 mod ambassadors;
 mod destroy;
@@ -51,9 +51,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with presence next to it"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
-            ParamSpec::int("station_cubes", 0, 5, "megaproject cubes a research station makes a round"),
-            ParamSpec::int("project_credits", 0, 50, "credits each player cube pays when a megaproject completes"),
-            ParamSpec::int("project_discord_per", 1, 10,"adversary cubes per Discord when a megaproject completes"),
+            ParamSpec::int("station_cubes", 0, 5, "research cubes a station makes a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy an adversary ambassador on a clean or aligned city diverts"),
             ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
@@ -87,11 +85,11 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, harden, chips, sell, drain"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, harden, chips, sell, drain; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, and one on a lone presence drains its owner's insight into adversary compute"),
+            PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, one on a lone presence drains its owner's insight into adversary compute; full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -134,9 +132,25 @@ pub fn project_key(c: usize, owner: Option<usize>) -> KeyBuf {
     }
 }
 
+/// Neutral cubes on country `c`'s megaproject (074).
+pub fn project_neutral(c: usize) -> KeyBuf {
+    KeyBuf::new("board.project.").num(c).text(".neutral")
+}
+
 /// Set once country `c`'s megaproject has completed.
 pub fn project_done(c: usize) -> KeyBuf {
     KeyBuf::new("board.project_done.").num(c)
+}
+
+/// What country `c`'s completed megaproject paid, cubes by color: `player`,
+/// `adversary`, `neutral`. Only the card shows it (074).
+pub fn project_paid(c: usize, color: &str) -> KeyBuf {
+    KeyBuf::new("board.project_paid.").num(c).text(".").text(color)
+}
+
+/// The last round seat `s` used country `c`'s converter.
+fn converter_round(c: usize, s: usize) -> KeyBuf {
+    KeyBuf::new("board.converter_round.").num(c).text(".").num(s)
 }
 
 /// The clock's step for round `round`: 1 production, 2 war, 3 both.
@@ -178,6 +192,7 @@ impl Module for Board {
                 cx.add_tokens(g, at(n), STATION, 1);
                 cx.add_tokens(g, at(n), ADV_CUBE, 1);
             }
+            cx.add_tokens(g, at(piece.neutral_station), STATION, 1);
             for &n in &piece.factories {
                 cx.add_tokens(g, at(n), FACTORY, 1);
             }
@@ -214,10 +229,15 @@ impl Module for Board {
                 card: *id,
             });
         }
+        for c in 0..w.map.countries.len() {
+            if converter_blocked(w, g, s, c).is_none() {
+                out.push(Action::Convert { seat, country: c as u8 });
+            }
+        }
     }
 
     fn owns(&self, _phase: usize, a: &Action) -> bool {
-        matches!(a, Action::Standard { .. } | Action::Sell { .. })
+        matches!(a, Action::Standard { .. } | Action::Sell { .. } | Action::Convert { .. })
     }
 
     fn act(&self, _phase: usize, g: &mut GameState, cx: &mut Cx, a: &Action) -> Res {
@@ -249,6 +269,19 @@ impl Module for Board {
                 cx.tally(g, "board.std_actions", 1);
                 std_resolve(g, cx, s, act, &targets)
             }
+            Action::Convert { seat, country } => {
+                let (s, c) = (*seat as usize, *country as usize);
+                // An answer replays this from a table that used it.
+                if !cx.replaying() {
+                    if c >= w.map.countries.len() {
+                        return Err(Halt::Illegal("no such country".into()));
+                    }
+                    if let Some(why) = converter_blocked(&w, g, s, c) {
+                        return Err(Halt::Illegal(format!("can't use that converter: {why}")));
+                    }
+                }
+                convert(g, cx, s, c)
+            }
             _ => Err(Halt::Illegal("not a standard action".into())),
         }
     }
@@ -272,6 +305,44 @@ impl Module for Board {
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {
         board_view(g, w, out);
     }
+}
+
+/// Whether seat `s` has an aligned city in country `c` (the bound city counts).
+pub fn aligned_in(w: &World, g: &GameState, s: usize, c: usize) -> bool {
+    w.map.countries[c].hexes.iter().any(|&h| is_city(w, h) && g.tokens(h, cube(s)) > 0)
+}
+
+/// Why seat `s` can't use country `c`'s converter now, if anything stops it.
+pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option<&'static str> {
+    if g.var(&project_done(c)) == 0 {
+        return Some("the megaproject is not complete");
+    }
+    if !aligned_in(w, g, s, c) {
+        return Some("no aligned city here");
+    }
+    if g.var(&converter_round(c, s)) == g.round as i64 {
+        return Some("used this round");
+    }
+    let cost = &w.content.map.countries[c].megaproject.converter.cost;
+    if cost.iter().any(|(r, n)| g.resource(s, *r) < *n) {
+        return Some("can't pay it");
+    }
+    None
+}
+
+/// Seat `s` uses country `c`'s converter: pays, then its printed effects.
+fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
+    let w = cx.world;
+    let m = &w.content.map.countries[c].megaproject;
+    for (r, n) in &m.converter.cost {
+        cx.add_resource(g, s, *r, -n);
+        if *r == Resource::ResearchCubes {
+            cx.tally(g, "board.cubes_converted", *n);
+        }
+    }
+    cx.set_key(g, &converter_round(c, s), g.round as i64);
+    cx.tally(g, &format!("board.converter.{c}"), 1);
+    effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s))
 }
 
 /// The round-end cleanup: flags count down, then the end-of-round tallies.

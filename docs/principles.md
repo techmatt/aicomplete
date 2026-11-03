@@ -34,8 +34,8 @@ and tier-1 cards average about 3 credits with tier 2 about 9.
   so totals do reach the hundreds. Card costs run 0–18 (Orbital Mass Driver 18, Great
   Liberation 16): within "about 50", but the income is not "produce
   1".
-- **Credit sinks priced off that income:** threat counters 4–8; a megaproject cube pays
-  `project_credits` 10; a player ambassador costs `ambassador_credits` (066: it pays for removals; 068: dearer, since it stays); chips sell
+- **Credit sinks priced off that income:** threat counters 4–8; a research cube is worth about 3
+  credits (074: payouts are per card); a player ambassador costs `ambassador_credits` (066: it pays for removals; 068: dearer, since it stays); chips sell
   for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
 - **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
   20–40 at 4: the top of the range, still under 50. A node makes 1.

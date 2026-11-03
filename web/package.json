@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "e2e": "node scripts/e2e.mjs",
     "e2e:sources": "node scripts/e2e-sources.mjs",
+    "e2e:corps": "node scripts/e2e-corps.mjs",
     "sweep": "node scripts/sweep.mjs",
     "odd": "node scripts/odd.mjs",
     "cards": "node scripts/cards-server.mjs",

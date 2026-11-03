@@ -218,7 +218,13 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             threats::lose_presence_or(g, cx, ctx.scope, *resource, *amount, ctx.label)?
         }
         Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, ctx.scope)?,
-        Op::Compute { amount } => adversary::gain_compute(g, cx, *amount)?,
+        Op::Compute { amount } => {
+            if ctx.label == "megaproject" {
+                cx.tally(g, "adversary.compute_corp", *amount);
+            }
+            adversary::gain_compute(g, cx, *amount)?
+        }
+        Op::ComputeEvery { amount } => adversary::compute_every(g, cx, *amount)?,
         Op::LoseTokens { amount } => threats::lose_tokens(g, cx, ctx.scope, *amount)?,
 
         // The team.

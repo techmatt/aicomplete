@@ -228,6 +228,8 @@ is still their plan, not a table's.
 
 ## The band and the gate
 
+**The band at r30 (074).** `experiments/use-074.json` is the band with the engine added, 384 games, about 11 min on 7 threads; its read is `scripts/cards/corp_read.py`. A rule what-if on content needs its own build: the map isn't reachable by a content overlay.
+
 **The band and gate at r29 (070).** On the fast profile at 8 threads, c2 and c3 run about 24 planner games a minute together (48 games, 117 s): a 96-seed band is 8 min. Content overlays reach a threat's `source` (`threats.manhunt.source="cyber"`) and any card number, so a what-if needs no build; a rule what-if does. **Copy the binary before a run, then rebuild freely.** `npm run e2e` has a sibling for threat sources: `npm run e2e:sources`.
 
 Gate-070: 1,403 of 2,976 games, 48 min on 8 threads; closes 19 rows, 73 min, c3 45 min of it. A 96-seed band took 9 min, and two fresh ones on the same frozen build read 61 / 57 and 46 / 46: one band can sit 10 points off, so read a pool before calling a miss; a planner game runs about 20 s at c2 and 26 s at c3 on 8 threads at r29.
@@ -265,7 +267,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. Next free: 25700.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. Next free: 26100.
 
 ## Reading prices
 

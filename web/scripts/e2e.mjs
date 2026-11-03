@@ -110,7 +110,7 @@ try {
   check(named.boards.every((b) => b && b.length >= 1) && named.rows.length === named.boards.length
     && named.rows.every((r, i) => r.rows === named.boards[i].length && r.current >= 1 && r.current <= r.rows && r.open >= 1 && r.steps > r.open && r.t2 > 0),
     `each seat's AI board drawn with its tracks (${named.rows.map((r) => `${r.rows} tracks, ${r.open}/${r.steps} uncovered`).join('; ')})`);
-  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|board\.(blackout|sabotage|shelter|embargo|cordon|project|project_done|track|track2|rich|placed)\.)/;
+  const bookkeeping = /^(ai\.track\.|threats\.paid\.|threats\.jam\.|cards\.(tier|picked|next_discount|civic_used)\.|board\.(blackout|sabotage|shelter|embargo|cordon|project|project_done|project_paid|converter_round|track|track2|rich|placed)\.)/;
   check(!named.keys.some((k) => bookkeeping.test(k)) && named.raw === 0,
     `no bookkeeping vars among the globals (${named.keys.length} globals)`);
 
@@ -291,13 +291,13 @@ try {
   check(!!auto.o && !!auto.text, `Random to end plays baseline seed 5 to an outcome in ${auto.n} actions: ${auto.text}`);
 
   // The board's size on a fixed game (048): the random game's panels moved it by 60 px.
-  // This one reads 350, 547 and 878 px high.
+  // This one read 350, 547 and 878 px high; at r30 the same seed plays another game, 333 at 1366x768.
   await newGame(page, 'baseline.json', 11);
   for (let i = 0; i < 150 && !(await js('!!window.aic.view.outcome')); i++) await js('window.aic.act(window.aic.legal[0])');
   for (const [w, h] of [[1366, 768], [1920, 1080], [2560, 1440]]) {
     await size(w, h);
     const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
-    check(svg[0] > w * 0.3 && svg[1] > h * 0.44, `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
+    check(svg[0] > w * 0.3 && svg[1] > h * 0.43, `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
   }
   await size(1366, 768);
 

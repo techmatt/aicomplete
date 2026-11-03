@@ -175,7 +175,8 @@
  ],
  "countries": [
   {
-   "name": "Coastal Republic",
+   "name": "Horizon",
+   "flavor": "geothermal and tidal energy",
    "cities": [
     7,
     6,
@@ -192,6 +193,7 @@
    "stations": [
     4
    ],
+   "neutral_station": 10,
    "industry": [
     2,
     8,
@@ -205,18 +207,52 @@
    "presence": 9,
    "project": {
     "name": "Tidal Grid",
-    "cubes": 7,
-    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
-    "benefit": [
-     [
-      "credits",
-      2
+    "cubes": 8,
+    "text": "At completion each player cube pays 1 energy, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 1 research cube and 2 energy for 1 antimatter. Each adversary cube then makes 2 adversary compute.",
+    "player": [
+     {
+      "op": "gain",
+      "resource": "energy",
+      "amount": 1
+     }
+    ],
+    "adversary": [
+     {
+      "op": "sway",
+      "side": "discord",
+      "amount": 1
+     }
+    ],
+    "converter": {
+     "cost": [
+      [
+       "research_cubes",
+       1
+      ],
+      [
+       "energy",
+       2
+      ]
+     ],
+     "effects": [
+      {
+       "op": "gain",
+       "resource": "antimatter",
+       "amount": 1
+      }
      ]
+    },
+    "after": [
+     {
+      "op": "compute",
+      "amount": 2
+     }
     ]
    }
   },
   {
-   "name": "Northern Union",
+   "name": "Cintamani",
+   "flavor": "AI and efficiency",
    "cities": [
     10,
     7,
@@ -232,6 +268,7 @@
    "stations": [
     12
    ],
+   "neutral_station": 2,
    "industry": [
     3,
     14,
@@ -245,13 +282,41 @@
    "presence": 6,
    "project": {
     "name": "Polar Compute Array",
-    "cubes": 7,
-    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
-    "benefit": [
-     [
-      "credits",
-      2
+    "cubes": 8,
+    "text": "At completion each player cube pays 3 credits, each adversary cube 1 adversary compute. Afterward, with an aligned city here, once a round: 1 research cube for 1 insight. Each adversary cube then makes 1 adversary compute on every visible project.",
+    "player": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
+     }
+    ],
+    "adversary": [
+     {
+      "op": "compute",
+      "amount": 1
+     }
+    ],
+    "converter": {
+     "cost": [
+      [
+       "research_cubes",
+       1
+      ]
+     ],
+     "effects": [
+      {
+       "op": "gain",
+       "resource": "insight",
+       "amount": 1
+      }
      ]
+    },
+    "after": [
+     {
+      "op": "compute_every",
+      "amount": 1
+     }
     ]
    },
    "coast": [
@@ -259,7 +324,8 @@
    ]
   },
   {
-   "name": "Highland Federation",
+   "name": "Onyx",
+   "flavor": "heavy industry, power plants and processors",
    "cities": [
     7,
     2,
@@ -273,6 +339,7 @@
    "stations": [
     14
    ],
+   "neutral_station": 12,
    "industry": [
     1,
     6,
@@ -286,13 +353,42 @@
    "presence": 11,
    "project": {
     "name": "Mountain Fusion Works",
-    "cubes": 7,
-    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
-    "benefit": [
-     [
-      "credits",
-      2
+    "cubes": 8,
+    "text": "At completion each player cube pays 3 credits, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 1 research cube for 2 chips. Each adversary cube then makes 3 adversary compute.",
+    "player": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
+     }
+    ],
+    "adversary": [
+     {
+      "op": "sway",
+      "side": "discord",
+      "amount": 1
+     }
+    ],
+    "converter": {
+     "cost": [
+      [
+       "research_cubes",
+       1
+      ]
+     ],
+     "effects": [
+      {
+       "op": "gain",
+       "resource": "chips",
+       "amount": 2
+      }
      ]
+    },
+    "after": [
+     {
+      "op": "compute",
+      "amount": 3
+     }
     ]
    },
    "coast": [
@@ -301,7 +397,8 @@
    ]
   },
   {
-   "name": "Delta States",
+   "name": "Biomia",
+   "flavor": "biopunk",
    "cities": [
     11,
     6,
@@ -317,6 +414,7 @@
    "stations": [
     12
    ],
+   "neutral_station": 9,
    "industry": [
     7,
     13,
@@ -330,13 +428,42 @@
    "presence": 5,
    "project": {
     "name": "Delta Seawall",
-    "cubes": 7,
-    "text": "Once complete, each owned station in this country makes 2 credits for its owner each round.",
-    "benefit": [
-     [
-      "credits",
-      2
+    "cubes": 8,
+    "text": "At completion each player cube pays 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 2 research cubes for 1 Sway to Unity. Each adversary cube then sways 1 to Discord.",
+    "player": [
+     {
+      "op": "draw",
+      "count": 1
+     }
+    ],
+    "adversary": [
+     {
+      "op": "sway",
+      "side": "discord",
+      "amount": 1
+     }
+    ],
+    "converter": {
+     "cost": [
+      [
+       "research_cubes",
+       2
+      ]
+     ],
+     "effects": [
+      {
+       "op": "sway",
+       "side": "unity",
+       "amount": 1
+      }
      ]
+    },
+    "after": [
+     {
+      "op": "sway",
+      "side": "discord",
+      "amount": 1
+     }
     ]
    },
    "coast": [

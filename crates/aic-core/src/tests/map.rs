@@ -1,6 +1,27 @@
 use super::*;
 
 #[test]
+fn a_neutral_station_can_be_claimed_at_setup_in_every_layout() {
+    // 074: on its hex, next to the starting presence, with no setup node next
+    // to it, across a border too.
+    let content = crate::content();
+    for n in 1..=4u8 {
+        let map = Map::build(content, n).unwrap();
+        for c in 0..n as usize {
+            let p = &content.map.countries[c];
+            let h = map.numbered(c, p.neutral_station);
+            assert_eq!(map.hexes[h].kind, HexKind::Open, "{n} countries, country {c}");
+            assert!(map.adjacent(h, map.numbered(c, p.presence)), "{n} countries, country {c}: in reach");
+            for o in 0..n as usize {
+                for &s in &content.map.countries[o].stations {
+                    assert!(!map.adjacent(h, map.numbered(o, s)), "{n} countries, country {c}: next to a node");
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn every_layout_builds_and_every_piece_follows_the_design() {
     let content = crate::content();
     for n in 1..=4u8 {

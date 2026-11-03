@@ -36,8 +36,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   (`blocker` 2); Alignment (Unity and Discord tips made, each bucket's fill as a share of
   its next tip, the bar level, and each visible adversary project's fill as a share of
   its cost, `project` 30, 017); the players' board (presence
-  4, nodes −25 (022, 020's D9: was −6, and agents made nodes when an equal free choice existed), owned factories 4 (an adversary-owned one −4), chips 2, cities/bases/stations in reach 0.5, owned stations 5 (a corrupted one −5),
-  megaproject cubes 2 (adversary's −1), factories 0.5, hardening 1, a track's progress toward its capstone (`capstone` 16 × the square of the share uncovered, 068), player ambassadors
+  4, nodes −25 (022, 020's D9: was −6, and agents made nodes when an equal free choice existed), owned factories 4 (an adversary-owned one −4), chips 2, cities/bases/stations in reach 0.5, owned stations 5, a seat's third on `station_spare` 1 (074), and in horizon mode `station_round` 1 a round left for a seat's first two (a corrupted one −5),
+  megaproject cubes 2 (adversary's −1, neutral 0), research cubes held `research_cube` 0.3 (074: low on purpose, under what every converter nets), factories 0.5, hardening 1, a track's progress toward its capstone (`capstone` 16 × the square of the share uncovered, 068), player ambassadors
   5 in supply (018: was 3, below their 6-credit cost, so agents never bought one) / 2.5 on the board, and toward freeing a corrupted city `freeing` 2 ×
   `corrupted` × a share of the hold: gathered ambassadors, then, once enough are at hand, a climbing bonus for landing them, 027), corruption markers (`marker` 1 each, against), shields (`shield` 3); track income, resources, cards in hand and
   built; unpaid threats (one that waits counts `threat_waits` 0.5, one that can't be reached `threat_stranded` 1.25). Every weight is a parameter: `w.<name>=V` in an agent spec. The

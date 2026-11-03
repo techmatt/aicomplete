@@ -41,7 +41,7 @@ pub enum Event {
         from: String,
         to: String,
     },
-    /// A rules step worth a line in the log ("Coastal Republic #7 is corrupted").
+    /// A rules step worth a line in the log ("Horizon #7 is corrupted").
     Note {
         text: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]

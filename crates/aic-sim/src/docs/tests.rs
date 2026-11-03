@@ -70,7 +70,7 @@ fn a_content_change_changes_its_block() {
     assert_ne!(presence_track2_block(base), presence_track2_block(&c));
     assert_ne!(powers_block(base), powers_block(&c));
     assert_ne!(board_details_block(base), board_details_block(&c));
-    assert_ne!(countries_block(base), countries_block(&c));
+    assert_ne!(corps_block(base), corps_block(&c));
 }
 
 #[test]

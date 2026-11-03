@@ -353,7 +353,10 @@ Content is data in `content/`, composed from code primitives:
 - **Country pieces** (`map.json`, `countries`): cities, the order cities start
   corrupted in (`corrupted`), ocean, setup facilities (research stations, factories),
   the starting presence spot (`presence`), the printed industrial zones (`industry`), and the
-  corp's megaproject card.
+  corp's megaproject card: `name` is the corp's, `flavor` what it does, `neutral_station` its
+  neutral station's hex (074). The card's `player`, `adversary`, `converter.effects` and `after`
+  are `Op` lists, in the `Player`, `Team`, `Player` and `Team` slots: `Megaproject::words` prints
+  the ops they use, so a new op there needs its words.
 
 Ids are unique across all content, and actions refer to content by id, so reordering a
 file does not break action logs. Tags, resources and token types are Rust enums
@@ -497,7 +500,8 @@ In the baseline:
   cards and where they are, and its powers with their cost and status, `ready` or why
   not), and credit production. Bookkeeping: `ai.power_used.*`.
 - `board` shows its per-country flags (blackout, sabotage, shelter, embargo) and each country's
-  megaproject (cubes by owner, against its size) as country values, the war round and
+  megaproject (cubes by owner, against its size; once completed, the cubes it paid, `project.paid`) as country values,
+  each completed card's converter per seat (`converter.<c>`: 1 if usable, else its label says why), the war round and
   fronts and the clock's step as globals, each seat's presence on the board and left
   on its track, and ambassadors on the board; it publishes every standard action with
   its cost (`View.standard`, read by the viewer's labels) and each adversary troop's
@@ -560,9 +564,11 @@ differ.
     executed, corruptions (and the round of the first), adversary ambassadors on the
     board per round (`adversary.ambassadors_rNN`), ambassadors and troops removed,
     facilities and presence destroyed (per war round too), standard actions (`board.std.<act>`),
-    cities aligned and freed, stations and factories owned, megaprojects completed,
+    cities aligned and freed, stations and factories owned, megaprojects completed (`board.completed_round.<r>`,
+    `board.completed.<c>`), research cubes (`board.cubes_paid.<color>`, `board.cubes_stored`, `board.cubes_converted`,
+    `board.cubes_after`), converter uses (`board.converter.<c>`) and those left unused (`board.converter_idle`, `_no_city`, `_unpaid`),
     presence placed, nodes made, removed and at their peak per board
-    (`adversary.nodes_peak.c<c>`), adversary compute made, factories built per side,
+    (`adversary.nodes_peak.c<c>`), adversary compute made (`adversary.compute_nodes`, `adversary.compute_corp` of it), factories built per side,
     destroyed and owned per side at the end (`board.factories_end.<side>`), chips
     made, sold and spent, Alignment sway, tips (and their rounds, `alignment.tip_<side>.rNN`), cards
     resolved and antimatter actions, insight given and credit income.

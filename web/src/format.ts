@@ -6,7 +6,7 @@ import { aiBoard, cardName, content, param, threatName, type Action, type Config
 
 export const hexKey = (h: Hex) => `${h[0]},${h[1]}`;
 
-/** "Coastal Republic", or `C<i>` if the view has no name. */
+/** "Horizon", or `C<i>` if the view has no name. */
 export const countryName = (v: View, i: number) => v.countries[i]?.name || `C${i}`;
 
 export const isHex = (v: unknown): v is Hex =>
@@ -102,6 +102,12 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
       return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;
+    }
+    case 'convert': {
+      const x = cx.view?.seats[Number(a.seat)]?.values.find((y) => y.key === `board.converter.${a.country}`);
+      // The log and the step line have no view: the country still names it.
+      if (!x) return `the converter of country ${a.country}`;
+      return `${x.label}: ${(x.doc ?? '').split(':')[0]}`;
     }
     case 'sell': {
       const n = param(cx.config, 'board', 'sell_credits');
@@ -212,6 +218,8 @@ export function strong(hex: string): string {
 }
 
 /** The adversary's color: its owner cubes, its ambassadors, its cubes on megaprojects. */
+/** Neutral stations' cubes on megaprojects (074). */
+export const NEUTRAL_COLOR = '#9a9a9a';
 export const ADVERSARY_COLOR = '#5b1a8c';
 
 // Token colors: chosen colors for the kinds the board draws, every other kind

@@ -7,6 +7,25 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 30 (074): research cubes and the four corps.** (Bumped from the constant, 29.) Design: Matt, 2026-11-02. Everything here is a **candidate** but the two lines marked locked. The band, read and not tuned: planner, d2, seeds 25700 and 25800, 96 a cell each, pooled to 192, frozen build: **12.5 ±2.4 / 7.3 ±1.9** against r29's 53.5 / 50. Structural causes, by what-ifs that changed one thing each: a player cube pays about 3 where it paid 10, and adversary cubes make compute every round after completion; both undone on other seeds reads close to r29. The card, the converters against *Current rates* and the use: [experiments/results/screen-074-corps/corps.md](../experiments/results/screen-074-corps/corps.md).
+
+| Rule | Was | Status |
+|---|---|---|
+| Country = corp: one piece, one corp; the pieces take the corps' names (Horizon, Cintamani, Onyx, Biomia) | Coastal Republic, Northern Union, Highland Federation, Delta States | **locked** (Matt) |
+| Every board power, sacrifice ones included, is once a round | as it stood | **locked** (Matt) |
+| Setup: one neutral station a country; no player starts with a station | one corrupted station | candidate (Matt) |
+| Neutral stations on hex 10, 2, 12, 9: next to the starting presence, clear of a node and a base in every layout | new | candidate, 074's call (first 5, 5, 12, 9: two stood next to a node at 3 and 4 countries) |
+| Every station makes a research cube, in its owner's color, neutral ones too | neutral made none | candidate (Matt) |
+| An adversary ambassador takes a neutral station's cube too, and is used up | it waited there | candidate: the rule as written, on a station that now produces |
+| Completion is checked once, at the end of the production step, all colors filling the card; every cube pays, overflow included, and is spent | at the cube that filled it, per station | candidate (Matt) |
+| Payouts per card; `project_credits` 10 and `project_discord_per` 1 go | 10 credits a player cube, 1 Discord an adversary cube | candidate (Matt) |
+| After completion: cubes to the owner's board (`research_cubes`, a new resource kept between rounds); the adversary's convert at once | the card's benefit, 2 credits a round per owned station | candidate (Matt) |
+| Converters: once a round per player per card, with an aligned city in the country; `Action::Convert` | new | candidate (Matt) |
+| Megaproject size 8 | 7 | candidate (Matt) |
+| A player ambassador on a corrupted station takes the cube onto their board after completion, as before it onto the card | it took the card's benefit | candidate, 074's call |
+| `compute_every`: 1 compute on every visible project | new op | candidate (Matt) |
+| Eval: `research_cube` 0.3, `station_round` 1, `station_spare` 1 | no such weights; `station` 5 for every owned station | agents, not rules |
+
 **Revision 29 (070): threat sources, typed counters, tier-2 capstones.** (Bumped from the constant, 28.) Design: Matt, 2026-11-01; the target rule, Matt, 2026-11-02. Everything here is a **candidate**. The band: planner, d2, fresh seeds 25000, 96 a cell, on the frozen build, threat costs as printed: **61 ±5.0 / 57 ±5.0**, then a second fresh set, seeds 25600: **46 ±5.1 / 46 ±5.1**. With the gate's own planner row (53 / 47, 96 seeds) that pools to **53.5 ±2.9 / 50.0 ±2.9** on 288 frozen-build seeds a cell, none of which picked a lever: **the band (60-75) is missed by about 7-10 points.** Threat costs stay as printed. The cause, as far as it is measured: reach. Threats go uncountered 3 a game (r28: 0.3), each a Sway and its harm, and the planner wins by purge 41% of games (r28: 56% on 48). The gate: planner, seeds 25200, gate-070, 62 rows: no check ahead of the planner by more than 1 SE; 19 within 2 SE closed at 96 paired seeds, the nearest c3 `never_second_presence` -1.0 ±7.0 and c2 / c3 `always_max_presence` +3.1 ±6.4; `home_only` +11.5 ±5.1 / +18.8 ±6.0, `capstone_rush` +25 / +19.8, `no_counters` stopped at 12 seeds. Unspent: credits and energy flag on the planner, because a purge ends the game mid-round with that round's income in hand: winners hold 20.5 / 17.8 credits, losers 7.5 / 6.0, under the flag.
 
 **How the target rule came.** Three builds on the same cards. Creation at the deal (the prompt's first text): 36 ±4.9 / 38 ±4.9, purge wins 12 of 192: a threat re-corrupted a freed city before the counter phase, and corrupted cities always count against the purge. A threat with no source set aside: 79 ±4.1 / 81 ±4.0, purge 140 of 192. The target rule: 53.5 / 50 pooled, purge 237 of 576 games, the planner countering every threat in 5.0 rounds of 8.4. Creation by type, off one at a time, 48 paired seeds a cell, c2 / c3 (base 50 / 58, purge 20 / 22): influence 50 / 58, purge 20 / 22; cyber 50 / 58, 20 / 22; economic 50 / 60, 20 / 23; military 52 / 56, 20 / 21. No type's creation costs measurably: the planner lets 0.5 a game happen, most of them troops.

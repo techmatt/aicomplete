@@ -1,4 +1,4 @@
-//! Production: units, factories, chips, city energy, station cubes and megaprojects.
+//! Production: units, factories, chips, city energy, research cubes and megaprojects.
 
 use super::*;
 
@@ -26,6 +26,17 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     for s in 0..g.seats.len() {
         for r in LEFT {
             cx.per_round(g, &format!("left.{s}.{r}"), g.resource(s, r));
+        }
+        // 074: converters a seat holding cubes left unused, and why: the measure's.
+        if g.resource(s, Resource::ResearchCubes) > 0 {
+            for c in 0..w.map.countries.len() {
+                match converter_blocked(&w, g, s, c) {
+                    None => cx.tally(g, "board.converter_idle", 1),
+                    Some("no aligned city here") => cx.tally(g, "board.converter_no_city", 1),
+                    Some("can't pay it") => cx.tally(g, "board.converter_unpaid", 1),
+                    Some(_) => {}
+                }
+            }
         }
     }
     if !production_round(&w, g) {
@@ -198,14 +209,16 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
     Ok(cx.choose(0, &prompt, opts)?.map(|i| tied[i]))
 }
 
-/// Production step 3: cities make energy, stations megaproject cubes; an
+/// Production step 3: cities make energy, stations research cubes; an
 /// adversary ambassador on the piece diverts its output and is removed, and
 /// diverted energy sways toward Discord. Then an adversary ambassador on a
-/// lone presence drains 1 of its owner's next insight into adversary compute.
+/// lone presence drains 1 of its owner's next insight into adversary compute,
+/// and last full megaprojects complete.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
     city_energy(g, cx)?;
-    station_cubes(g, cx);
-    presence_leak(g, cx)
+    station_cubes(g, cx)?;
+    presence_leak(g, cx)?;
+    complete_projects(g, cx)
 }
 
 /// Cities make energy: diverted, free to an aligned city's owner, or for sale.
@@ -262,9 +275,19 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// Stations put cubes on their country's megaproject, or pay its benefit once
-/// it is done.
-pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) {
+/// Whose cube a station makes this round.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Color {
+    Seat(usize),
+    Adversary,
+    Neutral,
+}
+
+/// 074: stations make research cubes in their owner's color: onto their
+/// country's megaproject until it completes, then onto their owner's board, or
+/// the adversary's convert at once. An adversary ambassador takes the round's
+/// cube and is used up, on a neutral station too.
+pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let cubes = w.int("board.station_cubes");
     for h in 0..g.hexes.len() {
@@ -272,31 +295,45 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) {
             continue;
         }
         let c = w.map.hexes[h].country as usize;
-        let owner = cube_owner(g, h);
-        let to = if g.tokens(h, ADV_AMBASSADOR) > 0 && (corrupted(g, h) || owner.is_some()) {
+        let color = if g.tokens(h, ADV_AMBASSADOR) > 0 {
             adversary::remove(g, cx, h, 1);
-            Some(None)
+            Color::Adversary
         } else if corrupted(g, h) {
             // 068: a player ambassador on a corrupted station diverts its cube
             // to that player, and stays.
-            Some(player_ambassador(g, h))
+            player_ambassador(g, h).map_or(Color::Adversary, Color::Seat)
         } else {
-            owner.map(Some)
+            cube_owner(g, h).map_or(Color::Neutral, Color::Seat)
         };
-        let Some(to) = to else {
-            continue;
-        };
-        if g.var(&project_done(c)) > 0 {
-            if let Some(s) = to {
-                for (r, n) in &w.content.map.countries[c].megaproject.benefit {
-                    cx.add_resource(g, s, *r, *n);
-                }
-            }
+        if g.var(&project_done(c)) == 0 {
+            let key = match color {
+                Color::Seat(s) => project_key(c, Some(s)),
+                Color::Adversary => project_key(c, None),
+                Color::Neutral => project_neutral(c),
+            };
+            cx.add_key(g, &key, cubes);
             continue;
         }
-        cx.add_key(g, &project_key(c, to), cubes);
-        complete_project(g, cx, c);
+        match color {
+            Color::Seat(s) => {
+                cx.add_resource(g, s, Resource::ResearchCubes, cubes);
+                cx.tally(g, "board.cubes_stored", cubes);
+            }
+            Color::Adversary => {
+                let after = &w.content.map.countries[c].megaproject.after;
+                cx.tally(g, "board.cubes_after", cubes);
+                cx.tally(g, &format!("board.cubes_after.{c}"), cubes);
+                for _ in 0..cubes {
+                    effects::run(g, cx, after, &mut effects::Ctx::team().named("megaproject"))?;
+                }
+                if g.is_over() {
+                    return Ok(());
+                }
+            }
+            Color::Neutral => {}
+        }
     }
+    Ok(())
 }
 
 /// An adversary ambassador on a presence (with no other piece to divert)
@@ -328,26 +365,51 @@ fn presence_leak(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// Completes country `c`'s megaproject if it is full: each player cube pays
-/// its owner, adversary cubes become Discord.
-fn complete_project(g: &mut GameState, cx: &mut Cx, c: usize) {
+/// 074: checked once, at the end of production: a megaproject holding its
+/// cubes or more completes. Every cube on it pays, overflow included, and is
+/// spent: a player cube pays its owner, an adversary cube the adversary, a
+/// neutral cube nothing.
+fn complete_projects(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    let p = &w.content.map.countries[c].megaproject;
-    let adv = g.var(&project_key(c, None));
-    let mine: Vec<i64> = (0..g.seats.len())
-        .map(|s| g.var(&project_key(c, Some(s))))
-        .collect();
-    if adv + mine.iter().sum::<i64>() < p.cubes {
-        return;
+    for c in 0..w.map.countries.len() {
+        if g.var(&project_done(c)) > 0 {
+            continue;
+        }
+        let p = &w.content.map.countries[c].megaproject;
+        let adv = g.var(&project_key(c, None));
+        let neutral = g.var(&project_neutral(c));
+        let mine: Vec<i64> = (0..g.seats.len()).map(|s| g.var(&project_key(c, Some(s)))).collect();
+        let paid: i64 = mine.iter().sum();
+        if adv + neutral + paid < p.cubes {
+            continue;
+        }
+        for s in 0..mine.len() {
+            cx.set_key(g, &project_key(c, Some(s)), 0);
+        }
+        cx.set_key(g, &project_key(c, None), 0);
+        cx.set_key(g, &project_neutral(c), 0);
+        cx.set_key(g, &project_done(c), 1);
+        cx.tally(g, "board.projects_completed", 1);
+        cx.tally(g, &format!("board.completed_round.{}", g.round), 1);
+        cx.tally(g, &format!("board.completed.{c}"), 1);
+        for (color, n) in [("player", paid), ("adversary", adv), ("neutral", neutral)] {
+            cx.tally(g, &format!("board.cubes_paid.{color}"), n);
+            cx.set_key(g, &project_paid(c, color), n);
+        }
+        cx.note(None, || {
+            format!("{} completes: {} cubes pay ({paid} player, {adv} adversary, {neutral} neutral)", p.name, paid + adv + neutral)
+        });
+        for (s, &n) in mine.iter().enumerate() {
+            for _ in 0..n {
+                effects::run(g, cx, &p.player, &mut effects::Ctx::seat(s))?;
+            }
+        }
+        for _ in 0..adv {
+            effects::run(g, cx, &p.adversary, &mut effects::Ctx::team().named("megaproject"))?;
+        }
+        if g.is_over() {
+            return Ok(());
+        }
     }
-    for (s, &n) in mine.iter().enumerate() {
-        cx.add_resource(g, s, Resource::Credits, n * w.int("board.project_credits"));
-        cx.set_key(g, &project_key(c, Some(s)), 0);
-    }
-    let per = w.int("board.project_discord_per");
-    alignment::discord_from(g, cx, "megaproject", adv / per);
-    cx.set_key(g, &project_key(c, None), 0);
-    cx.set_key(g, &project_done(c), 1);
-    cx.tally(g, "board.projects_completed", 1);
-    cx.note(None, || format!("{} completes", p.name));
+    Ok(())
 }

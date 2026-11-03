@@ -384,6 +384,7 @@ impl Module for Adversary {
                     cx.tally(g, "adversary.compute_blocked", blocked);
                     cx.per_round(g, "adversary.compute_blocked", blocked);
                 }
+                cx.tally(g, "adversary.compute_nodes", made);
                 gain_compute(g, cx, made)?;
             }
             1 => spread(g, cx, None)?,
@@ -599,6 +600,28 @@ pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
         };
         cx.add_key(g, &project_key(&id), 1);
         cx.per_round(g, OPS, 1);
+        if g.var(&project_key(&id)) >= project_cost(&w, g, &id) {
+            resolve_project(g, cx, &id)?;
+            if g.is_over() {
+                return Ok(());
+            }
+        }
+    }
+    Ok(())
+}
+
+/// The adversary gains `n` compute on every visible project (074). A project
+/// that fills resolves at once, and one dealt by that gains nothing this time.
+pub fn compute_every(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
+    let w = cx.world;
+    for id in projects(g) {
+        cx.add_key(g, COMPUTE, n);
+        cx.tally(g, "adversary.compute_made", n);
+        cx.tally(g, "adversary.compute_corp", n);
+        cx.tally(g, "adversary.compute_every", n);
+        cx.per_round(g, "adversary.compute", n);
+        cx.per_round(g, OPS, n);
+        cx.add_key(g, &project_key(&id), n);
         if g.var(&project_key(&id)) >= project_cost(&w, g, &id) {
             resolve_project(g, cx, &id)?;
             if g.is_over() {

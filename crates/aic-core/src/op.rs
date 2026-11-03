@@ -360,6 +360,11 @@ pub enum Op {
     Compute {
         amount: i64,
     },
+    /// The adversary gains `amount` compute on every visible project at once
+    /// (074: Cintamani's adversary cubes), counted as compute it made.
+    ComputeEvery {
+        amount: i64,
+    },
     /// Each player in scope loses `amount` tokens from their cards (021;
     /// their choice of card).
     LoseTokens {
@@ -535,8 +540,8 @@ impl Op {
             | Op::LoseAmbassador
             | Op::LosePresenceOr { .. }
             | Op::DiscardMostExpensive
-            | Op::Compute { .. }
             | Op::LoseTokens { .. } => &[Threat],
+            Op::Compute { .. } => &[Threat, Team],
             Op::TeamIncome { .. }
             | Op::FreePurchases { .. }
             | Op::CounterAll
@@ -547,7 +552,8 @@ impl Op {
             | Op::Sacrifice
             | Op::NodeAmbassadors { .. }
             | Op::CleanCityAmbassadors { .. }
-            | Op::RemoveNodes { .. } => &[Team],
+            | Op::RemoveNodes { .. }
+            | Op::ComputeEvery { .. } => &[Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }
             | Op::BuildingDiscount { .. }

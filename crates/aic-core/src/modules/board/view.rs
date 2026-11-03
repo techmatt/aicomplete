@@ -18,7 +18,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         .map(|f| format!("board.{}.", f.name()))
         .collect();
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
-    keys.extend(["board.project.", "board.project_done.", "board.track.", "board.track2."]);
+    keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.track.", "board.track2."]);
     out.bookkeeping(&keys);
     for c in 0..w.map.countries.len() {
         for f in FLAGS {
@@ -29,24 +29,17 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         let p = &w.content.map.countries[c].megaproject;
         let done = g.var(&project_done(c)) > 0;
         let total: i64 = g.var(&project_key(c, None))
+            + g.var(&project_neutral(c))
             + (0..g.seats.len())
                 .map(|s| g.var(&project_key(c, Some(s))))
                 .sum::<i64>();
-        let doc = format!(
-            "{}: {} ({} cubes; each player cube pays {} credits, every {} adversary cubes 1 Discord)",
-            p.name,
-            p.text,
-            p.cubes,
-            w.int("board.project_credits"),
-            w.int("board.project_discord_per")
-        );
         out.country(
             c,
             "project",
             &format!("megaproject: {}", p.name),
             if done { p.cubes } else { total },
             Some(p.cubes),
-            &doc,
+            &format!("{}: {} ({} cubes)", p.name, p.text, p.cubes),
         );
         if !done {
             out.country(
@@ -56,6 +49,14 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 g.var(&project_key(c, None)),
                 None,
                 "adversary cubes on the megaproject",
+            );
+            out.country(
+                c,
+                "project.neutral",
+                "neutral cubes",
+                g.var(&project_neutral(c)),
+                None,
+                "neutral cubes on the megaproject: they fill it and pay nothing",
             );
             for s in 0..g.seats.len() {
                 out.country(
@@ -68,13 +69,16 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 );
             }
         } else {
+            out.country(c, "project.done", "completed", 1, None, &p.text);
+            let paid = |color: &str| g.var(&project_paid(c, color));
+            let (mine, adv, neutral) = (paid("player"), paid("adversary"), paid("neutral"));
             out.country(
                 c,
-                "project.done",
-                "completed",
-                1,
+                "project.paid",
+                &format!("{mine} player, {adv} adversary, {neutral} neutral"),
+                mine + adv + neutral,
                 None,
-                "owned stations here produce the project's benefit",
+                "the cubes on the card when it completed: every one paid, overflow included",
             );
         }
     }
@@ -168,6 +172,26 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             None,
             "your presence: you act within 1 of it, and claim sites on or next to it",
         );
+        // 074: every completed card's converter, usable or not, says why.
+        for c in 0..w.map.countries.len() {
+            if g.var(&project_done(c)) == 0 {
+                continue;
+            }
+            let m = &w.content.map.countries[c].megaproject;
+            let blocked = converter_blocked(w, g, s, c);
+            let label = match blocked {
+                Some(why) => format!("{} converter: {why}", country_name(w, c)),
+                None => format!("{} converter", country_name(w, c)),
+            };
+            out.seat(
+                s,
+                &format!("converter.{c}"),
+                &label,
+                blocked.is_none() as i64,
+                None,
+                &format!("{}: once a round, with an aligned city in {}", m.converter.words(), country_name(w, c)),
+            );
+        }
         let b = ai::board(w, s);
         let left = b.presence.len().saturating_sub(track_taken(g, s));
         out.seat(

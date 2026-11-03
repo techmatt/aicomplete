@@ -88,12 +88,12 @@ hexes next to cities: factories go only there.
 Research stations go on other open hexes, one facility per hex. Nothing builds on ocean.
 
 <!-- generated: countries -->
-| # | Name | Cities (corrupted first) | Ocean | Station (node) | Industrial zones (setup factories) | Starting presence | Megaproject (benefit per owned station) |
+| # | Name | Cities (corrupted first) | Ocean | Station (node) | Neutral station | Industrial zones (setup factories) | Starting presence |
 |---|---|---|---|---|---|---|---|
-| 0 | Coastal Republic | 7, 6, 14 | 3, 12 | 4 | 2, 8, 11, 13 (2, 8) | 9 | Tidal Grid, 7 cubes: 2 credits |
-| 1 | Northern Union | 10, 7, 15 | 4 | 12 | 3, 14, 9, 16 (3, 14) | 6 | Polar Compute Array, 7 cubes: 2 credits |
-| 2 | Highland Federation | 7, 2, 10 | — | 14 | 1, 6, 9, 15 (1, 6) | 11 | Mountain Fusion Works, 7 cubes: 2 credits |
-| 3 | Delta States | 11, 6, 14 | 1 | 12 | 7, 13, 3, 8 (7, 13) | 5 | Delta Seawall, 7 cubes: 2 credits |
+| 0 | Horizon | 7, 6, 14 | 3, 12 | 4 | 10 | 2, 8, 11, 13 (2, 8) | 9 |
+| 1 | Cintamani | 10, 7, 15 | 4 | 12 | 2 | 3, 14, 9, 16 (3, 14) | 6 |
+| 2 | Onyx | 7, 2, 10 | — | 14 | 12 | 1, 6, 9, 15 (1, 6) | 11 |
+| 3 | Biomia | 11, 6, 14 | 1 | 12 | 9 | 7, 13, 3, 8 (7, 13) | 5 |
 <!-- /generated -->
 
 Ocean hexes are on the board's outer edge in every layout the piece appears in; the
@@ -116,7 +116,8 @@ the country count).
 
 - Each country: its first `start_corrupted` cities get an adversary cube (difficulty
   4 with `adversary.extra_corrupted`, more); its research station starts
-  corrupted, with a **node** on it; its two setup factories, **neutral**
+  corrupted, with a **node** on it; its **neutral research station** (074) on its printed hex;
+  its two setup factories, **neutral**
   (**Default**: "a factory takes its city's owner" is for factories cities build; a setup
   factory touching the corrupted city would otherwise start adversary-owned).
 - Each player (seat *s* starts in country *s*): 1 presence on the starting spot (the
@@ -131,21 +132,58 @@ the country count).
 - The adversary's supply: `adversary.supply_per_country` (024: was 14, 018: 10) ambassadors per country.
 - The adversary deck is dealt and its top card revealed face up as round 1's card.
 
-### Megaprojects
+### Research cubes and the corps (074, candidate)
 
-Each country's corp has one megaproject card (content, a placeholder per corp, in the table above;
-reasoning, at 7 cubes: about 2 stations a country make 1–2 cubes a round, so a project
-completes around round 4–5). In production each research station makes
-`station_cubes` cube onto its country's card in its owner's color: an owned
-station the owner's, a corrupted station the adversary's; a neutral station makes
-nothing. When the card is full it **completes**: each player cube pays its owner
-`project_credits` credits; adversary cubes become Discord, 1 Sway per
-`project_discord_per`. From then on each owned station in that country produces the
-card's benefit for its owner every round.
+**Country = corp: one piece, one corp (locked).** Each piece bears its corp's name, and its
+megaproject is the corp's defining card.
 
-**For new players.** A city falls to the adversary at 5 of its ambassadors, so clear a city before it
-reaches 5. When a megaproject completes, every adversary cube on it is 1 Discord, so keep the research
-stations out of the adversary's hands.
+<!-- generated: corps -->
+| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (once a round) | Each adversary cube after |
+|---|---|---|---|---|---|
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 1 energy / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter | 2 adversary compute |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 3 credits / 1 adversary compute | 1 research cube → 1 insight | 1 adversary compute on every visible project |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 3 credits / 1 Sway to Discord | 1 research cube → 2 chips | 3 adversary compute |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity | 1 Sway to Discord |
+<!-- /generated -->
+
+- **Stations.** Every research station makes `station_cubes` research cube a round, in production,
+  in its owner's color: a player's, the adversary's (corrupted), or **neutral**. No player starts
+  with a station: building one (`station_chips`) or claiming the neutral one (an ambassador) is an
+  investment. An adversary ambassador on any station takes that round's cube for the adversary and is
+  used up, on a neutral one too. A player ambassador on a corrupted one takes the cube and stays (§2).
+- **Until completion** a country's cubes go onto its megaproject. Cubes of any color fill it.
+- **Completion** is checked once, at the end of the production step (`board.produce`), before
+  upkeep and threats, so the cubes of a whole round land first. A card holding its size or more completes, and **every cube on it pays, overflow
+  included** (9 cubes on an 8-cube card pay 9 times), and the payout spends them: a player cube pays
+  its owner the card's player payout, an adversary cube the card's adversary payout, a neutral cube
+  nothing. Countries complete in piece order.
+- **After completion** that country's stations put their cubes on their owners' boards: a player
+  stores **research cubes**, kept between rounds. A neutral station's cube is lost. An adversary cube
+  resolves the card's "after" line at once (the *Each adversary cube after* column). Adversary compute
+  goes where it goes everywhere, the cheapest visible project, except Cintamani's, which puts 1 on
+  every visible project.
+- **Converters.** Each completed card prints one converter, in the action phase: any player with an
+  **aligned city in that country** (the bound city counts) may use it once a round. It is
+  once a round per player, per card, and cubes reach a board only after completion, so no converter
+  feeds another within a round. Research cubes and converters are a resource every player reaches
+  eventually, like antimatter: cards and powers may name them later. No card does yet.
+
+**Default (074):** the neutral station stands next to the starting presence, so a player's first
+ambassador can claim it, on a hex that is a base in no layout and has no node next to it in any (a
+test holds this). Two stations a country fill an 8-cube card in round 4; a third speeds it. r30's band
+completes a card in round 3.4 on average: claimed, built and neutral stations all add cubes.
+
+**For new players.** Every research station makes a cube a round: yours, the adversary's or a
+neutral one. A country's cubes fill its corp's megaproject, and when the card fills, at the end of
+production, every cube on it pays, overflow included: yours pay you what the card says, the adversary's
+pay the adversary, neutral ones pay nothing. So claim the neutral station or build one before the
+card fills. After that your stations there put cubes on your board, and if you have an aligned city in
+that country you can spend them on its converter once a round. The adversary's cubes keep paying it
+after completion, so keep the stations out of its hands and your aligned city out of its reach.
+
+**What resisted this summary:** what an adversary cube does differs per card and again before and after completion, so
+it can only say "the card says"; the table above is the rule. A converter's once-a-round is per player per card, which a
+new player reads as once a round.
 
 ## 2. Ambassadors
 
@@ -160,7 +198,7 @@ from cards, Followers and the standard project.
 | On | Adversary ambassador | Player ambassador |
 |---|---|---|
 | City | that round's energy is diverted (no Discord at `ambassador_discord` 0, below) | waits; a corrupted city frees the moment player ambassadors on it, from any players, reach its **hold** (below) (checked after every action and automatic phase; a card frees a city outright only if it is a tier-2 ultimate, §8) |
-| Research station | that round's cube is the adversary's (owned or corrupted station) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays (068) |
+| Research station | that round's cube is the adversary's (on any station, a neutral one too: 074) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays (068) |
 | Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too (028: it sat there forever) | on a neutral factory the player can claim: the factory becomes the player's; otherwise each production step it sways `factory_unity` Unity and no corp troop is made, except that an adversary-owned factory still makes its adversary troop (022); it stays (068) |
 | Presence | if the presence is alone on its hex (020: on a city, base, station or factory the ambassador is that piece's), each production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; it stays until removed (068; 021: used up) | waits (defense, below) |
 | Military base | on a production step, `base_discord` (027: was 3) Discord instead of a troop | on a production step, `base_unity` Unity instead of a troop; it stays (068) |
@@ -185,7 +223,6 @@ from cards, Followers and the standard project.
 - **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit; one
   diverted by an adversary ambassador on a clean or aligned city sways `ambassador_discord`
   (0; 027: was 1, so arrivals on cities alone ran the Discord deck out by round 6).
-- A neutral station's normal thing is nothing, so an adversary ambassador waits there.
 
 Player ambassadors move only through cards and the standard actions (Move, Remove).
 
@@ -255,9 +292,10 @@ up at once; when all of them have resolved (or been discarded), the next row is 
 - **Compute sources:** each node, `node_compute` a round in the build (none under a player
   ambassador); about half the threats carry compute, gained when they execute
   uncountered (§8); and an adversary ambassador draining a lone presence adds 1 in
-  production (§2).
+  production (§2); 074: the corp cards, an adversary cube at Cintamani's completion and
+  after Horizon's, Cintamani's and Onyx's (§1).
 - **Spending:** each compute point goes onto the **cheapest** visible project (ties: the
-  first in the row). When a project holds its cost it **resolves**: a one-shot effect at
+  first in the row), except Cintamani's after line, which puts 1 on every visible project. When a project holds its cost it **resolves**: a one-shot effect at
   once, or an **ongoing** one that acts in every round's build step from the next round
   on. Choices
   are the players' (seat 0; Purge the Unaligned's loss, each player's own). With no project left,
@@ -348,8 +386,8 @@ face up a round ahead (peek cards show more). Each card's twists change its roun
 cities**, **industrial zones** (built on or not: an ambassador may stand on an empty zone,
 the one exception to "ambassadors sit on pieces"), **research stations** (whoever owns
 them) and **each country's first base**. A coastal city is one next to ocean or printed coastal on
-its piece (`coast` in `content/map.json`): every piece has two coastal cities. Coastal Republic gets
-both from its ocean, Northern Union prints one more, Highland and Delta print both. Next round's card is face up, so its site
+its piece (`coast` in `content/map.json`): every piece has two coastal cities. Horizon gets
+both from its ocean, Cintamani prints one more, Onyx and Biomia print both. Next round's card is face up, so its site
 type is visible a round ahead. Each stage's cards spread the types. **Default:** an
 out-of-turn "the adversary builds now" brings the card's arrivals too, in its scope: one
 rule for a build.
@@ -392,7 +430,9 @@ Since 017 the difficulty is only the configured level: Discord tips no longer ra
 (§5). **`hold_base` is the same at every difficulty (034, locked):** difficulty comes from the
 adversary and the decks: Discord deck size, threat strength and the round cap.
 
-**The calibration point (070, r29, planner, frozen-build seeds pooled, 288 a cell, ±2.9):** d2 is 53.5 at 2 countries, 50 at 3: under the 60-75 target by about 7-10 points ([rules-history.md](rules-history.md), revision 29).
+**The read at r30 (074, planner, seeds 25700 and 25800 pooled, 192 a cell):** d2 is 12.5 ±2.4 at 2 countries, 7.3 ±1.9 at 3, far under the 60-75 target and not tuned: 075 tunes with the Researcher in ([rules-history.md](rules-history.md), revision 30).
+
+**The one before it (070, r29, planner, frozen-build seeds pooled, 288 a cell, ±2.9):** d2 is 53.5 at 2 countries, 50 at 3: under the 60-75 target by about 7-10 points ([rules-history.md](rules-history.md), revision 29).
 
 **The one before it (068, r28, planner, fresh seeds 22100, 96 a cell, ±5):** d2 is 73 at 2 countries, 75 at 3
 (`experiments/results/screen-068-boards/boards.md`).
@@ -401,7 +441,7 @@ adversary and the decks: Discord deck size, threat strength and the round cap.
 countries, 61 at 3 (`experiments/results/screen-066-presence/presence.md`).
 
 **Before it (064, r26, planner, two fresh sets, 96 seeds a cell, ±5):** d2 is 71 at 2
-countries, 62 at 3 (75 / 71 and 67 / 52; `experiments/results/screen-064-deals/deals.md`). The other difficulties are not re-measured since r23 (053 changed base arrivals and agents stopped knowing the deal, so the earlier curves read high; 055, 059 and 064 moved cards, `corrupt_at` and `project_discord_per` since). Target 60-75 at both
+countries, 62 at 3 (75 / 71 and 67 / 52; `experiments/results/screen-064-deals/deals.md`). The other difficulties are not re-measured since r23 (053 changed base arrivals and agents stopped knowing the deal, so the earlier curves read high; 055, 059 and 064 moved cards, `corrupt_at` and the megaproject Discord since). Target 60-75 at both
 (`docs/principles.md`; `experiments/results/screen-053-calibration/calibration.md`).
 
 Earlier curves (r10 to r20) and why this ladder: [rules-history.md](rules-history.md), *Older curves*.
@@ -623,13 +663,14 @@ Sway for every `momentum_every` tips that side has made, down to 1 per player.
 |---|---|---|
 | Unity | a player ambassador on a producing base / factory | `base_unity` 2 / `factory_unity` 1 |
 | Unity | removing an adversary troop | `alignment.troop` 1 |
+| Unity | Biomia's converter (074) | 1 for 2 research cubes |
 | Unity | freeing a corrupted city (§2; or a tier-2 ultimate) | `alignment.free_city` 5 |
 | Unity | removing a node | `alignment.node` 2 |
 | Unity | cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards | card text |
 | Discord | energy diverted (a corrupted city, an ambassador on a city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 of an ambassador's |
 | Discord | an adversary ambassador on a producing base | `base_discord` 1 |
 | Discord | a facility destroyed in war (not by an adversary troop; 018) | `destruction_discord` 0 |
-| Discord | adversary cubes on a completed megaproject | 1 per `project_discord_per` 1 |
+| Discord | adversary cubes on a megaproject as it completes, and after, as its corp's card prints | 1 each |
 | Discord | an uncountered threat, the antimatter action, twists, Discord cards, adversary projects | `threat_discord` 1, `antimatter_discord` 1, card text |
 | Discord | the adversary at the start of every round | `adversary_discord` 0 |
 <!-- /generated -->
@@ -850,11 +891,12 @@ game ends it there.
 
 | Resource | Comes from | Spent on |
 |---|---|---|
-| Credits | Credit production on the AI board (§7), the presence track, cards and Unity cards, in upkeep; megaprojects; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters (024: every counter) |
-| Energy (keeps between rounds) | Cities' cubes in production (§6 below); the presence tracks; Power buildings and the starting Sentinel Post; Power programs; `ai.start_energy` at the start | The presence powers and every track step (§7); Power cards' `energy` cost; Bulwark's hardening |
-| Chips | Player-owned factories on production steps (`factory_chips` each); the Builder's tracks and its Mint and Scrap; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
-| Antimatter | Tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action | Tier-2 cards |
-| Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear Campaign took | Keeping drafted cards; playing cards (022); giving (expires at the round's end) |
+| Credits | Credit production on the AI board (§7), the presence track, cards and Unity cards, in upkeep; megaproject payouts; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters (024: every counter) |
+| Energy (keeps between rounds) | Cities' cubes in production (§6 below); Horizon's completion payout; the presence tracks; Power buildings and the starting Sentinel Post; Power programs; `ai.start_energy` at the start | The presence powers and every track step (§7); Power cards' `energy` cost; Bulwark's hardening |
+| Chips | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
+| Antimatter | Tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action; Horizon's converter | Tier-2 cards |
+| Research cubes (keep between rounds, 074) | Your stations, once their country's megaproject is complete | Converters (§1); no card yet |
+| Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear Campaign took; Cintamani's converter adds 1 | Keeping drafted cards; playing cards (022); giving (expires at the round's end) |
 | Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound), Followers through a card's Action, income on Orbital Embassy; the standard project | Moving onto pieces and evicting (they stay, §2); aligning cities, claiming sites, freeing cities (consumed) |
 
 **Cities' energy (021).** Each city makes `corp_energy` (a
@@ -910,7 +952,7 @@ There is no "build a factory" standard action: cities build factories.
 | 12 | `cards.play+threats.counter+economy.give+alignment.act+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (presence comes from them), standard actions, countering threats, giving, antimatter |
 | 13 | `board.bases` | Production 1, on a production step: bases and factories make troops (ambassadors divert), factories make chips, cities grow factories |
 | 14 | `board.war` | Production 2, on a war step: front battles |
-| 15 | `board.produce` | Production 3: cities' energy cubes (neutral ones for sale) and stations (ambassadors divert); ambassadors on presence drain insight |
+| 15 | `board.produce` | Production 3: cities' energy cubes (neutral ones for sale) and stations (ambassadors divert); ambassadors on presence drain insight; full megaprojects complete |
 | 16 | `economy.upkeep` | Production 4: income; building upkeep; token cards gain their tokens |
 | 17 | `threats.execute` | Production 5: partial payments refunded; uncountered threats execute |
 | 18 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |
@@ -1396,9 +1438,7 @@ edit the source, not the table.
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
 | `board.city_energy_credits` | 2 | 0..20 | credits for a neutral city's energy cube, bought by a player with presence next to it |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
-| `board.station_cubes` | 1 | 0..5 | megaproject cubes a research station makes a round |
-| `board.project_credits` | 10 | 0..50 | credits each player cube pays when a megaproject completes |
-| `board.project_discord_per` | 1 | 1..10 | adversary cubes per Discord when a megaproject completes |
+| `board.station_cubes` | 1 | 0..5 | research cubes a station makes a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy an adversary ambassador on a clean or aligned city diverts |
 | `board.base_discord` | 1 | 0..10 | Discord an adversary ambassador on a producing base sways |

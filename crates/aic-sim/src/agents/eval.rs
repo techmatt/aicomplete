@@ -110,8 +110,19 @@ pub struct Weights {
     pub reach: f64,
     /// Each research station a player owns; a corrupted one costs as much.
     pub station: f64,
-    /// Each player cube on a megaproject; an adversary cube costs half.
+    /// Each player cube on a megaproject; an adversary cube costs half, and a
+    /// neutral one nothing (074).
     pub project_cube: f64,
+    /// Each research cube a seat holds (074): low on purpose, under what every
+    /// converter nets by these weights, so a cube held never beats using one.
+    pub research_cube: f64,
+    /// Horizon mode: per round left, each of a seat's first
+    /// [`STATIONS_USEFUL`] owned stations (074).
+    pub station_round: f64,
+    /// An owned station past a seat's first [`STATIONS_USEFUL`] (074), in place
+    /// of `station`: a converter takes a cube or two a round, so more stations
+    /// fill a card sooner and then only stack cubes.
+    pub station_spare: f64,
     pub factory: f64,
     /// Each hardening token.
     pub harden: f64,
@@ -217,6 +228,8 @@ fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
 
 /// Flat mode: a point of track income is worth this many of the resource's
 /// own points for antimatter and insight (1 for the rest), times `income`.
+/// How many of a seat's owned stations the eval counts in full (074).
+const STATIONS_USEFUL: i64 = 2;
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
 
@@ -257,6 +270,9 @@ impl Default for Weights {
             reach: 0.5,
             station: 5.0,
             project_cube: 2.0,
+            research_cube: 0.3,
+            station_round: 1.0,
+            station_spare: 1.0,
             factory: 0.5,
             harden: 1.0,
             // 018: was 3, below the 6 credits (3.6) an ambassador costs, so no
@@ -577,6 +593,7 @@ impl Eval {
         let corrupt_at = self.corrupt_threshold(rules, g);
         let mut v = 0.0;
         let mut corrupted = 0i64;
+        let mut stations = [0i64; 4];
         let mut reach = 0i64;
         let tokens = self.keys.read(g);
         let near = self.reach_masks(rules, &tokens);
@@ -639,7 +656,9 @@ impl Eval {
                 if bad {
                     v -= w.station;
                 } else if owned {
-                    v += w.station;
+                    let s = (0..self.seats).find(|&s| t.cube[s] > 0).unwrap_or(0);
+                    stations[s] += 1;
+                    v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
                 }
             }
             v += w.factory * t.factory as f64 + w.harden * t.harden as f64;
@@ -852,7 +871,8 @@ impl Eval {
             *v += self.credit_value(res(Resource::Credits))
                 + w.energy * res(Resource::Energy)
                 + w.antimatter * res(Resource::Antimatter)
-                + w.insight * res(Resource::Insight);
+                + w.insight * res(Resource::Insight)
+                + w.research_cube * res(Resource::ResearchCubes);
             for (r, n) in ai::track_income(&world, g, s) {
                 let unit = match r {
                     Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
@@ -981,8 +1001,19 @@ impl Eval {
             1.0
         };
         // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
-        let unit = [w.credits, w.credits, w.energy, w.antimatter, w.insight];
+        let unit = [w.credits, w.credits, w.energy, w.antimatter, w.insight, w.research_cube];
         let mut v = 0.0;
+        // 074: an owned station makes a cube a round for the rest of the game.
+        if w.production != 0.0 {
+            let mut owned = [0i64; 4];
+            for t in tokens.iter().filter(|t| t.station > 0 && t.adv_cube == 0) {
+                if let Some(s) = (0..self.seats).find(|&s| t.cube[s] > 0) {
+                    owned[s] += 1;
+                }
+            }
+            let useful: i64 = owned.iter().map(|&n| n.min(STATIONS_USEFUL)).sum();
+            v += w.horizon * w.production * left * w.station_round * useful as f64;
+        }
         for (s, made) in prod.iter().enumerate() {
             let res = |k: Resource| g.resource(s, k);
             // Insight is reset each round, so what is held now only counts this round.

@@ -165,14 +165,15 @@ def gate(cells, games, rows=None):
     check (win % points, ± one standard error, and the paired SE seed by seed; X: the check
     matched or beat it). Both sides are over the seeds both played: a gate stops a check early
     and its agent runs on. With `rows` (the "gate" key of results.json), a games column too:
-    the row's count, else the games in the file."""
+    the row's count, else the games in the file. `close`: a check within 2 paired SEs of its
+    agent, whatever stopped it: the close-out list, not `stopped` or `decided`."""
     per = gate_games(rows) if rows is not None else None
     if per is None:
-        print('| variant | check | win % | gap to its agent | paired se |')
-        print('|---|---|---|---|---|')
-    else:
-        print('| variant | check | games | win % | gap to its agent | paired se |')
+        print('| variant | check | win % | gap to its agent | paired se | close |')
         print('|---|---|---|---|---|---|')
+    else:
+        print('| variant | check | games | win % | gap to its agent | paired se | close |')
+        print('|---|---|---|---|---|---|---|')
     by = collections.defaultdict(dict)
     for cell, gs in games.items():
         c = cells[cell]
@@ -196,4 +197,5 @@ def gate(cells, games, rows=None):
             paired = gap([g['won'] - won[g['seed']] for g in base])[1]
             n = '' if per is None else f' {per.get((conf, v, d, a), len(gs))} |'
             name = f'{conf} {v}' if len(configs) > 1 else v
-            print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} | {paired:.0f} |')
+            close = 'close' if ':' in a and abs(100 * (p - q)) < 2 * max(paired, 1e-9) else ''
+            print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} | {paired:.0f} | {close} |')

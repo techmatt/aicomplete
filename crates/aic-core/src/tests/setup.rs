@@ -37,11 +37,16 @@ fn setup_places_the_printed_pieces() {
                 "d{d} country {c}"
             );
             let stations = nums(&|h| g.tokens(h, STATION) > 0);
-            assert_eq!(stations, p.stations.iter().copied().collect());
-            assert!(
-                nums(&|h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) == 0).is_empty(),
-                "stations start corrupted"
+            let mut printed: Vec<u8> = p.stations.to_vec();
+            printed.push(p.neutral_station);
+            printed.sort();
+            assert_eq!(stations, printed.into_iter().collect());
+            // 074: a corrupted station and a neutral one, no player's.
+            assert_eq!(
+                nums(&|h| g.tokens(h, STATION) > 0 && g.tokens(h, ADV_CUBE) == 0),
+                [p.neutral_station].into_iter().collect()
             );
+            assert!(!p.industry.contains(&p.neutral_station), "not on an industrial zone");
             assert_eq!(
                 nums(&|h| g.tokens(h, FACTORY) > 0),
                 p.factories.iter().copied().collect()

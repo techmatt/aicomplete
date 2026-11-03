@@ -5,7 +5,7 @@ generated from `content/cards.json`. The screen that checked these prices, and t
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
 
-## Current rates (to r29)
+## Current rates (to r30)
 
 This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
 dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
@@ -19,6 +19,7 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | antimatter | 9 | 1 a round costs 8-11 of credits |
 | token held | 1 | spent, it is worth what its action buys |
 | Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | 059: replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
+| research cube | 3 | new (074): a station costs 2 chips and makes about 3 cubes before its card completes. Reasoned, not fitted |
 | drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
 | tag left in play | 1, then 0.5 each | new: discounts, `needs`, powers. Events leave none |
 | Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
@@ -34,6 +35,7 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | typed jam of N | about 0.7 N | 070: it needs a threat of its type that you may counter |
 | automatic counter | by its hits, not its N | 070: see *070's changes* |
 | compute removed | 1.1; every project × 1.5 | project: 3 for 5 |
+| adversary compute made | 1.1 against the players; on every visible project 1.1 a project | new (074): the removal's rate read the other way. **Measured dearer than this:** see *074's changes* |
 | cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
 | node removed | 12 | 2 Sway plus its compute and the block on claims |
 | city freed | 25 | 5 Sway plus a city |
@@ -42,6 +44,28 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2 |
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
+## 074's changes (r30): research cubes and the corps
+
+The corp cards against *Current rates*, in credits, every line a candidate. **Payouts** are a player
+cube, near a cube's 3; **converters** give what they take; **after** is a cube's worth to the adversary.
+
+| Corp | Player cube | Adversary cube | Converter: in → out | Each adversary cube after |
+|---|---|---|---|---|
+| Horizon | 1 energy, 2 | 1 Sway to Discord, 4 | cube + 2 energy, 7 → antimatter, 9 | 2 compute, 2.2 |
+| Cintamani | 3 credits, 3 | 1 compute, 1.1 | cube, 3 → insight, 2.5 | 1 compute on 3 projects, 3.3 |
+| Onyx | 3 credits, 3 | 1 Sway to Discord, 4 | cube, 3 → 2 chips, 3 | 3 compute, 3.3 |
+| Biomia | 1 card, 4 | 1 Sway to Discord, 4 | 2 cubes, 6 → 1 Sway to Unity, 4 | 1 Sway to Discord, 4 |
+
+**More than 1.5× off its neighbors:**
+
+- **Cintamani's adversary cube at completion (1.1 against 4, 3.6×):** by design, the one card that pays no Discord.
+- **Horizon's after line (2.2 against Biomia's 4, 1.8×).** The rest sit within 1.5×: Biomia's converter
+  is exactly at it (6 in, 4 out), Horizon's player cube is 0.67× (the card's "a little under"), Biomia's is
+  1.33×, *over*: at the 4 a drawn card is priced at, it isn't the "a little under" the item reasoned.
+- Horizon's converter pays 2 over (7 in, 9 out), the one that gains, and it sinks the energy 068 saw piling up.
+- Cintamani's turns a cube into insight that is lost at the round's end: a cube kept is worth more unless
+  it is spent that turn.
 
 ## 070's changes (r29): typed counters and capstones
 

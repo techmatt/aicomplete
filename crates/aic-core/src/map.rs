@@ -166,7 +166,10 @@ fn place_bases(
     for c in 0..n {
         let piece = &content.map.countries[c];
         let busy = |num: u8| {
-            piece.stations.contains(&num) || piece.industry.contains(&num) || piece.presence == num
+            piece.stations.contains(&num)
+                || piece.neutral_station == num
+                || piece.industry.contains(&num)
+                || piece.presence == num
         };
         let candidates = |o: usize| -> Vec<usize> {
             geo[c]

@@ -124,6 +124,12 @@ fn op_uses() -> BTreeMap<String, usize> {
     for p in &c.projects {
         add(&p.effects, &mut out);
     }
+    for p in &c.map.countries {
+        let m = &p.megaproject;
+        for ops in [&m.player, &m.adversary, &m.after, &m.converter.effects] {
+            add(ops, &mut out);
+        }
+    }
     for b in &c.ais {
         add(&b.innate.passives, &mut out);
         for c in b.presence.iter().chain(&b.presence2).filter_map(|u| u.capstone.as_ref()) {
@@ -274,6 +280,7 @@ pub fn run(o: &Options) {
         "projects" => Some(projects_block()),
         "tunables" => Some(tunables_block(&r)),
         "countries" => Some(countries_block(content())),
+        "corps" => Some(corps_block(content())),
         "round_cap" => Some(round_cap_block(&r)),
         "difficulty" => Some(difficulty_block(&r)),
         "boards" => Some(boards_block(&r, content())),

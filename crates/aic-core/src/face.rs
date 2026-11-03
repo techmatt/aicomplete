@@ -105,6 +105,7 @@ fn icon(r: Resource) -> &'static str {
         Resource::Credits => "credits",
         Resource::Energy => "energy",
         Resource::Insight => "insight",
+        Resource::ResearchCubes => "research_cubes",
     }
 }
 
@@ -120,6 +121,8 @@ fn noun(r: Resource, n: i64) -> &'static str {
         (Resource::Antimatter, _) => "antimatter",
         (Resource::Energy, _) => "energy",
         (Resource::Insight, _) => "insight",
+        (Resource::ResearchCubes, 1) => "research cube",
+        (Resource::ResearchCubes, _) => "research cubes",
     }
 }
 
@@ -459,6 +462,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::LosePresenceOr { .. }
         | Op::DiscardMostExpensive
         | Op::Compute { .. }
+        | Op::ComputeEvery { .. }
         | Op::LoseTokens { .. }
         | Op::TeamIncome { .. }
         | Op::FreePurchases { .. }
