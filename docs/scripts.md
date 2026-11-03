@@ -22,6 +22,10 @@ Current:
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. AI-unique cards (none since 078) are left out. Seconds.
 - `cards/board_read.py DIR... [--powers] [--cards]` (075): per cell, pooled across DIRs: wins ± SE, the win mix, Patience's carried insight, cubes bought, free stations, the Researcher's second presence, strikes a Wall stopped, troop hits, presence lost and what seats leave unspent; `--powers` every board power a game, `--cards` the six research-cube cards kept, played and used
+- `cards/use_read.py DIR... [--min PCT] [--agents A,B]` (082): per agent and pair, pooled over DIRs: wins, each dear
+  power's uses a game (a board power sacrificing two tags or more), Grant, Action buildings' uses, tokens gained / spent,
+  each liberate card kept / played (Popular Uprising's Action uses); then per agent the draft cards kept in over `--min`
+  percent of games and never played, and those never kept. Seconds.
 - `cards/liberation_read.py DIR... [--cards]` (080): per cell (config, pair, agent): wins ± SE, rounds, cities corrupted a
   game, cities liberated a game (by a card / by the fallback), the share of games with a liberation, Grant uses, strikes a
   Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played (Popular Uprising's

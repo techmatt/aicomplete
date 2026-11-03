@@ -1,0 +1,25 @@
+{
+  "name": "screen-082-probe",
+  "note": "082: which part of the table moves the engine: the table eval alone (plan_table=0), the table keep plan alone (w.table=0), the hand share and the ambassador row, beside the pre-082 engine and the strategist. 2 players, the three pairs, d2, 24 seeds on 30700.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": [
+    "engine",
+    "engine:w.hand_share=1",
+    "engine:w.table_ambassador=2.08",
+    "engine:w.table=0",
+    "engine:plan_table=0",
+    "strategist",
+    "strategist:w.table_ambassador=2.08",
+    "engine:plan_table=0,w.table=0"
+  ],
+  "games": 24,
+  "records": 0
+}

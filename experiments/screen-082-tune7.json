@@ -1,0 +1,16 @@
+{
+  "name": "screen-082-tune7",
+  "note": "082: the hand share (w.hand_share 1 against 0.5) on the frozen build, for the strategist and the engine, seeds 31000, 48 a pair, d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist", "strategist:w.hand_share=1", "engine", "engine:w.hand_share=1"],
+  "games": 48,
+  "records": 0
+}

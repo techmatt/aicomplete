@@ -156,14 +156,14 @@ impl Planner {
     }
 
     /// A fresh rollout policy: the engine with this planner's forced
-    /// behaviors, guessing from a seed of the state's own actions count, so
-    /// a line repeats.
+    /// behaviors and its seats' strategies (082), guessing from a seed of the
+    /// state's own actions count, so a line repeats.
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let rng = ChaCha8Rng::seed_from_u64(g.seed ^ g.stats.actions as u64);
         // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
         let greedy = Greedy::new(self.ev.clone(), rng, self.cfg.samples, 1, self.cfg.choices);
         let inner = Box::new(greedy.pruned(self.cfg.prune).powers(self.cfg.powers).answers(self.cfg.answers).in_rollout());
-        Box::new(Policy::new(inner, self.forced.clone()))
+        Box::new(Policy::new(inner, self.forced.clone()).with_strategies(self.ev.strategies()))
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round
@@ -315,6 +315,13 @@ impl Planner {
         } else {
             best
         }
+    }
+}
+
+impl super::Strategic for Planner {
+    /// 082: the strategies go into its heuristic, and so into every rollout's.
+    fn set_strategies(&mut self, c: super::strategy::Choice) {
+        self.ev.set_strategies(c);
     }
 }
 

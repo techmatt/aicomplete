@@ -229,6 +229,18 @@ is still their plan, not a table's.
 
 ## The band and the gate
 
+**The judge from 082: the strategist.** Screens read with `strategist` (greedy with strategy, `engine:strategy=1`), not
+`sweep`: over 96 seeds a pair it read −2.1 / +6.3 / +4.2 against the sweep before 082 (seeds 30700 and 30800) at about a
+ninth of its time a game (`docs/speed.md`, *The agent tiers at r34*). `sweep` and `planner` take the engine's defaults, so
+since 082 they too play on the value table; the pre-082 judge is `sweep:plan_table=0,w.table=0,w.packet_keep=1`. The sweep
+on the table reads about 2-8 points above the strategist (bp 21 on the fresh set): keep it as the spot check of a verdict
+that matters, and `planner:strategy=1` (86% pooled at d2) as the ceiling. **The 082 read:** `experiments/screen-082.json`
+(eight agents, 1,152 games, 17 min on 6 threads beside another item; four of the agents are planners), `screen-082-d0.json`
+and `-d4.json` (the greedy tiers at the ends of the range, about 1 min each), `screen-082-table-bp/br/pr.json` (each
+strategy pairing fixed with `strat0`, `strat1`: 2,688 strategist games, about 8 min on 6 threads) and
+`screen-082-fresh.json` (`--seed 30800`, three agents, 7.5 min). Read with `python scripts/bench/paired.py DIR` and `python
+scripts/cards/use_read.py DIR`. The tables: `experiments/results/screen-082/agents.md`.
+
 **The ballpark read at r34 (080).** The r33 recipe below, with the liberation reads beside it: `experiments/use-080.json` (the
 engine smoke, engine and `engine:always_liberate=1`, 16-32 seeds, about 20-30 s on 6 threads), then `screen-080.json` (the
 `sweep` planner, `sweep:always_liberate=1` and the engine, 48 seeds a pair, 432 games) and `screen-080-off.json` (the same seeds

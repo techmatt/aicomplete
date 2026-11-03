@@ -1,0 +1,44 @@
+{
+  "name": "screen-082",
+  "note": "082: the three agent tiers per pair at d2 (r34, agents only), 48 seeds on 30700: the engine on the value table (greedy without strategy), the strategist (greedy with strategy), the strategist with no draft keep price (w.packet_keep=0, the row that could disprove the draft fix), the sweep planner before 082 (the screens' judge through 080: the pre-082 heuristic and keep plan, full keep price), the sweep on the table, the sweep with strategies in it and its rollouts and the planner (four deals) with them, beside the engine on its pre-082 terms. Read with scripts/bench/paired.py and scripts/cards/use_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine",
+    "strategist",
+    "strategist:w.packet_keep=0",
+    "sweep:plan_table=0,w.table=0,w.packet_keep=1",
+    "sweep",
+    "sweep:strategy=1",
+    "planner:strategy=1",
+    "engine:plan_table=0,w.table=0,w.packet_keep=1"
+  ],
+  "games": 48,
+  "records": 0
+}

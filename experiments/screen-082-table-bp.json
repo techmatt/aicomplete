@@ -1,0 +1,36 @@
+{
+  "name": "screen-082-table-bp",
+  "note": "082: the strategy table for pair bp: the strategist with each seat's strategy fixed (strat0, strat1: 1-based in the board's menu, configs/agents/strategies.json), d2, 48 seeds on 30700.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist:strat0=1,strat1=1",
+    "strategist:strat0=1,strat1=2",
+    "strategist:strat0=1,strat1=3",
+    "strategist:strat0=1,strat1=4",
+    "strategist:strat0=2,strat1=1",
+    "strategist:strat0=2,strat1=2",
+    "strategist:strat0=2,strat1=3",
+    "strategist:strat0=2,strat1=4",
+    "strategist:strat0=3,strat1=1",
+    "strategist:strat0=3,strat1=2",
+    "strategist:strat0=3,strat1=3",
+    "strategist:strat0=3,strat1=4",
+    "strategist:strat0=4,strat1=1",
+    "strategist:strat0=4,strat1=2",
+    "strategist:strat0=4,strat1=3",
+    "strategist:strat0=4,strat1=4"
+  ],
+  "games": 48,
+  "records": 0
+}

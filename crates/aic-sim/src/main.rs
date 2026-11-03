@@ -41,6 +41,11 @@ fn main() {
         "run" | "compare" => play::run(&o),
         "replay" => play::replay_all(&o),
         "experiment" => exit(experiment_run::run_experiment(&o.paths[0], &o)),
+        "strategies" => {
+            let path = &o.paths[0];
+            let r = rules(path, &load(path, &o.set.iter().collect::<Vec<_>>()));
+            agents::policy::print_choices(&r, &o.agent, o.seed, o.games);
+        }
         other => unreachable!("command {other} is checked in parse_args"),
     }
 }

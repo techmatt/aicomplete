@@ -1367,7 +1367,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Peacekeeping Mission | Security | event | 14 credits, 1 insight, needs 4 Security | your cube goes on the city |
   | Popular Uprising | Followers | building (arrives with 2 Followers) | 10 credits, 1 insight | Action: add 2 Followers here, OR spend 6 here: liberate |
 
-  Each is priced at about 30-40 credits' worth at *Current rates* (card-pricing.md, *080's changes*), well under the
+  Each is priced at about 30-40 credits' worth at the rates (card-pricing.md, *The method*), well under the
   fallback's ~100 and out of reach before mid-game. Great Liberation (Diplomacy, three cleanses in one country,
   cities included) stays. **The draft becomes guessing who will have which engine**, and passing each liberate card
   to the seat that can use it. Loops: each card is one-shot and tier 2, and every route needs presence next to

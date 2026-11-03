@@ -1,0 +1,24 @@
+{
+  "name": "screen-082-probe2",
+  "note": "082: the draft's charge for a card's play cost (w.pick_cost) with and without strategies, beside the engine on its pre-082 eval with the table keep plan. 2 players, the three pairs, d2, 24 seeds on 30700 (the probe's).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": [
+    "engine",
+    "engine:w.pick_cost=0",
+    "engine:w.pick_cost=1",
+    "strategist",
+    "strategist:w.pick_cost=0",
+    "strategist:w.pick_cost=1",
+    "engine:w.pick_cost=0,w.hand_share=0.75"
+  ],
+  "games": 24,
+  "records": 0
+}

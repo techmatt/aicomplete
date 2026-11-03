@@ -1,0 +1,16 @@
+{
+  "name": "screen-082-tune6",
+  "note": "082: the antimatter rule (antimatter_rule: trade spent cards for antimatter when a card in hand needs it) on and off, for the strategist and the engine, seeds 31000, 48 a pair, d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist", "strategist:antimatter_rule=0", "engine", "engine:antimatter_rule=0"],
+  "games": 48,
+  "records": 0
+}

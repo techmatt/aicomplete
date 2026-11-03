@@ -53,6 +53,8 @@ pub mod eval;
 pub mod planner;
 pub mod policy;
 pub mod search;
+pub mod strategy;
+pub mod value;
 
 use std::collections::BTreeMap;
 
@@ -81,6 +83,14 @@ pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> i64 {
         + INSIGHT_COST * d.insight
         + LOWERED_COST * d.lowers.iter().map(|(_, n)| n).sum::<i64>()
 }
+
+/// An agent that can be handed each seat's strategy (082): the search agents a
+/// [`policy::Policy`] wraps.
+pub trait Strategic: Agent {
+    fn set_strategies(&mut self, _c: strategy::Choice) {}
+}
+
+impl Strategic for RandomAgent {}
 
 /// Uniform over legal actions. Seeded per game, so results do not depend on
 /// thread count or game order. A floor, not a model of a weak player.
@@ -239,6 +249,10 @@ pub const LADDER: &[(&str, &[Param])] = &[
 /// 1.5 x faster, and card rankings hold (`experiments/results/screen-069-speed`).
 const SWEEP: &str = "deals=1,lead=0";
 
+/// `strategist` (082): the engine with strategies, one action at a time and no
+/// search: the greedy-with-strategy tier.
+const STRATEGIST: &str = "strategy=1";
+
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
     LADDER.iter().position(|(k, _)| *k == kind)
@@ -251,6 +265,9 @@ impl AgentSpec {
         let (kind, rest) = if kind == "sweep" {
             swept = format!("{SWEEP},{rest}");
             ("planner", swept.as_str())
+        } else if kind == "strategist" {
+            swept = format!("{STRATEGIST},{rest}");
+            ("engine", swept.as_str())
         } else {
             (kind, rest)
         };
@@ -404,12 +421,12 @@ impl AgentSpec {
         let inner = self.build_search(rules, game_seed);
         let forced = self.forced();
         if !forced.is_active() {
-            return inner;
+            return inner as Box<dyn Agent + Send>;
         }
         Box::new(policy::Policy::new(inner, forced))
     }
 
-    fn build_search(&self, rules: &Rules, game_seed: u64) -> Box<dyn Agent + Send> {
+    fn build_search(&self, rules: &Rules, game_seed: u64) -> Box<dyn Strategic + Send> {
         if self.kind == "random" {
             return Box::new(RandomAgent::new(game_seed));
         }
@@ -497,6 +514,7 @@ mod tests {
     #[test]
     fn sweep_is_a_planner_profile() {
         let named = |spec: &str| AgentSpec::parse(spec).unwrap().params;
+        assert_eq!(named("strategist"), named("engine:strategy=1"));
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
@@ -510,6 +528,8 @@ mod tests {
             0
         }
     }
+
+    impl Strategic for First {}
 
     pub(crate) fn rules(difficulty: i64) -> Rules {
         config_rules("baseline", difficulty)
@@ -594,6 +614,11 @@ mod tests {
             "engine:keep_none=1",
             "engine:keep_random=1",
             "planner:budget=2,never_tag=2",
+            // 082: strategies, chosen and fixed, and the pre-082 terms.
+            "engine:strategy=1",
+            "engine:strat0=2,strat1=3",
+            "planner:budget=2,strategy=1",
+            "engine:plan_table=0,w.table=0",
         ] {
             assert_eq!(AgentSpec::parse(spec).unwrap().label(), spec);
             replay_and_repeat(spec, 60, false);
@@ -641,7 +666,7 @@ mod tests {
     fn decisions_ignore_hidden_information() {
         let r = rules(0);
         let mut legal = Vec::new();
-        for spec in ["greedy", "beam:width=2", "engine", "engine:width=2"] {
+        for spec in ["greedy", "beam:width=2", "engine", "engine:width=2", "strategist"] {
             let spec = AgentSpec::parse(spec).unwrap();
             for seed in 0..3 {
                 // Some way into the game, so piles have moved.

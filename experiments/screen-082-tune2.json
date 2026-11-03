@@ -1,0 +1,42 @@
+{
+  "name": "screen-082-tune2",
+  "note": "082: tuning on seeds 31000, 48 a pair, d2: the strategist at the half keep price, with antimatter at the table's row, without the dear-power progress term, and with no keep price (the disproof row), beside the engine and the pre-082 sweep.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.table_antimatter=1",
+    "strategist:w.power_progress=0",
+    "strategist:w.packet_keep=0",
+    "engine",
+    "sweep:plan_table=0,w.table=0,w.packet_keep=1"
+  ],
+  "games": 48,
+  "records": 0
+}

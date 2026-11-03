@@ -1,6 +1,6 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`.
+The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies` (082).
 
 Always run the sim in release.
 
@@ -18,6 +18,7 @@ $S show configs/baseline.json                      # resolved config, hash, ever
 $S modules                                         # registry: modules, variants, params, phases
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
+$S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # 082: each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy
 ```
 
 | Option | Default | Meaning |

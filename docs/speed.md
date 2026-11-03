@@ -43,3 +43,21 @@ at 12 and the engine's 78, for about 17% more time. The default `deals=4,lead=0`
 scripts/bench/same_results.py DIR_A DIR_B` compares two experiment output directories,
 timing aside: the check that a speed-up or a late fix changed no game (`games.csv` and
 `results.json`). `same_play.py` is the wider one.
+
+**The agent tiers at r34 (082).** One thread, a quiet box, c2 (Builder + Protector), d2, from seed 1000, the best of two
+passes of `python scripts/bench/per_decision.py SIM.exe --old-agent A --agent B` (16 games for the greedy rows, 8 for the
+planners; the same seeds within a row pair, so a row's games are the same games):
+
+| agent | ms / decision | ms / game | rounds | decisions / game |
+|---|---|---|---|---|
+| engine before 082 (`engine:plan_table=0,w.table=0,w.packet_keep=1`) | 1.2 | 551 | 7.62 | 463 |
+| engine (greedy, no strategy, on the value table) | 1.4 | 703 | 7.62 | 510 |
+| strategist (greedy with strategy) | 1.8 | 968 | 7.94 | 539 |
+| sweep before 082 (`sweep:plan_table=0,w.table=0,w.packet_keep=1`) | 14.5-15.1 | 6987-7270 | 8.12 | 482 |
+| sweep (on the table) | 11.8 | 4763 | 6.62 | 403 |
+| planner with strategy rollouts (`planner:strategy=1`, 4 deals) | 19.4 | 9706 | 7.62 | 500 |
+
+The table costs the engine 1.16 × a decision (14.9 µs a heuristic call against 13.5, `--features profile`); the
+strategist's games are longer and its hands bigger (1.31 × the engine's decision). The strategist is about 11 × faster a
+game than the sweep before 082 (613 against 6987 ms on 8 shared games). Under load, 6 threads beside another item, the read
+of `experiments/screen-082.json` (1,152 games: four greedy agents and four planners) took 17 min.

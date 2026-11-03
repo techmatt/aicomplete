@@ -1,0 +1,23 @@
+{
+  "name": "screen-082-tune",
+  "note": "082: tuning the strategist on seeds 31000 (away from the read's 30700): the draft's keep price (w.packet_keep 1, 0.5, 0), the dear-power progress term off, beside the engine and the sweep. 2 players, the three pairs, d2, 24 seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": [
+    "strategist",
+    "strategist:w.packet_keep=0.5",
+    "strategist:w.packet_keep=0",
+    "strategist:w.power_progress=0",
+    "engine",
+    "sweep"
+  ],
+  "games": 24,
+  "records": 0
+}

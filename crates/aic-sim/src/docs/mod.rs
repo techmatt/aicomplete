@@ -20,6 +20,13 @@ mod tests;
 
 pub use run::run;
 
+/// Every op's name in `op.rs`'s source, snake_case (082: the value table's
+/// coverage test).
+#[cfg(test)]
+pub(crate) fn op_names(src: &str) -> Vec<String> {
+    run::op_docs(src).into_iter().map(|o| o.name).collect()
+}
+
 /// Escapes a table cell.
 fn cell(s: &str) -> String {
     s.replace('|', "\\|")

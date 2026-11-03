@@ -13,13 +13,18 @@
 //! chips and energy income; the cards it would play (hand plus the
 //! candidates) in value-per-cost order, filled into each round's budget.
 
-use aic_core::content::{CardDef, CardKind, Op, Resource, Tag};
+use std::sync::Arc;
+
+use aic_core::content::{CardDef, CardKind, Op, Resource, Tag, TAGS};
 use aic_core::modules::{ai, cards, common, economy, effects, threats};
 use aic_core::module::World;
 use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
 use super::credit_equivalent;
+use super::strategy::{self, Choice, Mults};
+use super::value::{self, CardValue, Ctx};
+use super::Strategic;
 
 /// A play's value falls by this share for each round it waits.
 const WAIT: f64 = 0.15;
@@ -92,27 +97,16 @@ macro_rules! forced_table {
             /// Rounds the keep plan looks at: this round's action phase and the
             /// ones after it.
             (plan_rounds: usize, false, 4.0, "rounds the keep plan sketches, this one included")
-            /// Insight the keep plan holds back in each later round for that round's
-            /// own keeps (024: the plan spent all of it on plays, so it thought it
-            /// could play twice what it could and kept double what it played).
-            (plan_reserve: i64, false, 0.0, "insight the keep plan holds back in each later round for that round's keeps")
             /// The keep plan keeps nothing while the hand holds this many cards
-            /// (024; 0: off). Hands of 8-10 held cards never played: at a table a
-            /// player stops paying for cards they can't use.
-            (plan_hand: usize, false, 0.0, "keep nothing while the hand holds this many cards (0: off)")
-            /// Share of a tier-2 card's value the keep plan counts (024): its printed
-            /// cost overstates what the one-step play logic gets from it, and a keep
-            /// costs 2-3 insight.
-            (plan_t2: f64, false, 1.0, "share of a tier-2 card's value the keep plan counts")
+            /// (024; 0: off). A probe guard (082): hands of 8-10 held cards never
+            /// played, and at a table a player stops paying for cards they can't use.
+            (plan_hand: usize, false, 0.0, "probe guard: keep nothing while the hand holds this many cards (0: off)")
             /// What a credit paid for a keep costs the plan (024).
             (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
             /// What the keep plan adds, in credits, for each marker a card would clear
             /// threat it would delay and presence it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
             /// every keep to a tier-2).
-            /// 080: credits the keep plan adds to a liberate card while a city is
-            /// corrupted (the draft's keep price on liberate cards, lowered).
-            (plan_liberate: f64, false, 20.0, "credits the keep plan adds to a liberate card while a city is corrupted (080)")
             (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield")
             /// Keep every drafted card it can afford.
             (keep_all: bool, true, 0.0, "dominance check: keep every drafted card")
@@ -188,6 +182,29 @@ macro_rules! forced_table {
             (hoard_insight: usize, true, 0.0, "fixed policy (075): a seat with Patience plays and keeps cards only every n-th round (0: off)")
             /// Fixed policy (075): no converter, and no conversion on a power menu.
             (never_convert: bool, true, 0.0, "fixed policy (075): no converter and no power that only converts a resource")
+            /// 082: the keep plan values cards by the value table (0: printed cost
+            /// plus 1, the niche jobs and capstone jobs, as before 082).
+            (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
+            /// 082: the keep plan plans a card whose `needs` are short now only if it
+            /// is short this many tags at most (a player doesn't keep a card four tags
+            /// away on the hope of drawing them); 99: no limit.
+            (plan_short: usize, false, 1.0, "082: keep plan: plan a card only if its needs are at most this many tags short now (99: no limit)")
+            /// 082: the keep plan counts a building that must go over one of the
+            /// seat's at what it adds over the one it covers (its tags stay).
+            (plan_cover: bool, false, 1.0, "082: keep plan: a building that must go over one of yours adds only what it beats the one it covers by")
+            /// 082, a player's rule, kept as a probe: with a card in hand that needs
+            /// antimatter the seat lacks, and a board power that trades spent cards for
+            /// antimatter, use it. It never fired in 288 games at d2 (seeds 31000): the
+            /// Researcher, whose Particle Run it is, rarely holds two Power cards.
+            (antimatter_rule: bool, true, 0.0, "082, a probe: use a power that trades spent cards for antimatter when a card in hand needs the antimatter (never fired at d2: off)")
+            /// 082: each seat commits to a strategy at its round-1 keep.
+            (strategy: bool, true, 0.0, "082: each seat commits to a strategy at its round-1 keep, from its board and opening 10")
+            /// 082: seat 0's strategy, fixed (1-based in its board's menu; 0: chosen).
+            (strat0: usize, true, 0.0, "082: seat 0's strategy, fixed: 1-based in its board's menu (configs/agents/strategies.json; 0: chosen)")
+            /// 082: seat 1's strategy, fixed.
+            (strat1: usize, true, 0.0, "082: seat 1's strategy, fixed (as strat0)")
+            /// 082: seat 2's strategy, fixed.
+            (strat2: usize, true, 0.0, "082: seat 2's strategy, fixed (as strat0)")
         }
     };
 }
@@ -258,19 +275,51 @@ fn counters_threats(d: &CardDef) -> bool {
 }
 
 pub struct Policy {
-    inner: Box<dyn Agent + Send>,
+    inner: Box<dyn Strategic + Send>,
     forced: Forced,
     /// This round's keep set for a seat: (round, seat, cards).
     keeps: Vec<(u32, usize, Vec<Key>)>,
+    /// 082: each seat's strategy, and whether it has been chosen.
+    strat: Choice,
+    chosen: bool,
+    mults: Option<Arc<Mults>>,
 }
 
 impl Policy {
-    pub fn new(inner: Box<dyn Agent + Send>, forced: Forced) -> Policy {
+    pub fn new(inner: Box<dyn Strategic + Send>, forced: Forced) -> Policy {
         Policy {
             inner,
             forced,
             keeps: Vec::new(),
+            strat: [None; 4],
+            chosen: false,
+            mults: None,
         }
+    }
+
+    /// 082: a rollout's policy, handed the strategies its planner chose (none yet:
+    /// it chooses them itself at the round-1 keep, as the planner's would).
+    pub fn with_strategies(mut self, c: Choice) -> Policy {
+        if c.iter().any(Option::is_some) {
+            self.strat = c;
+            self.chosen = true;
+            self.inner.set_strategies(c);
+        }
+        self
+    }
+
+    /// Whether this policy plays strategies (082).
+    fn strategic(&self) -> bool {
+        self.forced.strategy || self.forced.strat0 > 0 || self.forced.strat1 > 0 || self.forced.strat2 > 0
+    }
+
+    /// 082: each seat's strategy, chosen at the round-1 keep from its board and
+    /// opening deal (a pure function of the table), and handed to the agent inside.
+    fn choose_strategies(&mut self, w: &World, g: &GameState) {
+        let c = opening_choice(w, g, &self.forced);
+        self.strat = c;
+        self.chosen = true;
+        self.inner.set_strategies(c);
     }
 
     /// The cards seat `s` keeps this round, worked out at its first keep
@@ -283,6 +332,11 @@ impl Policy {
         let world = rules.world();
         let drafted = g.pile(&cards::drafted(s)).to_vec();
         let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
+        let strat = self.strat.get(s).copied().flatten();
+        if strat.is_some() && self.mults.is_none() {
+            self.mults = Some(Arc::new(Mults::new(&world)));
+        }
+        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref() };
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -295,7 +349,7 @@ impl Policy {
             || self.forced.capstone_rush
             || self.forced.always_liberate
         {
-            let mut set = plan_keeps(&world, g, s, &self.forced);
+            let mut set = plan_keeps(&world, g, s, &self.forced, &pc);
             for id in &drafted {
                 let d = cards::def(&world, id);
                 let rush = if self.forced.always_liberate {
@@ -322,7 +376,7 @@ impl Policy {
         } else if full {
             Vec::new()
         } else {
-            plan_keeps(&world, g, s, &self.forced)
+            plan_keeps(&world, g, s, &self.forced, &pc)
         };
         let hoards = self.forced.hoarding(&world, g, s, true);
         let set: Vec<Key> = set
@@ -442,11 +496,22 @@ fn acts_on_board(d: &CardDef) -> bool {
     })
 }
 
+impl Strategic for Policy {
+    fn set_strategies(&mut self, c: Choice) {
+        self.strat = c;
+        self.chosen = true;
+        self.inner.set_strategies(c);
+    }
+}
+
 impl Agent for Policy {
     fn choose(&mut self, rules: &Rules, g: &GameState, legal: &[Action]) -> usize {
         let world = rules.world();
         let phase = g.config.round.get(g.phase).map(String::as_str).unwrap_or("");
         let pending = legal.iter().any(|a| matches!(a, Action::Choose { .. }));
+        if !self.chosen && self.strategic() && phase == "cards.keep" && g.round == 1 {
+            self.choose_strategies(&world, g);
+        }
         // Keeping: by plan, or by the forced rule.
         let keeps = phase == "cards.keep"
             && !pending
@@ -482,6 +547,13 @@ impl Agent for Policy {
         if self.forced.unity_farm {
             if let Some(i) = farm(&world, g, legal) {
                 return i;
+            }
+        }
+        if self.forced.antimatter_rule && !pending {
+            if let Some(i) = first_power(legal, |s, k| antimatter_wanted(&world, g, s, k)) {
+                if !self.ruled_out(&world, g, &legal[i]) {
+                    return i;
+                }
             }
         }
         if self.forced.ambassador_mass && !pending {
@@ -552,6 +624,68 @@ impl Agent for Policy {
         let sub: Vec<Action> = keep.iter().map(|&i| legal[i].clone()).collect();
         keep[self.inner.choose(rules, g, &sub)]
     }
+}
+
+/// 082: each seat's strategy on the table at its round-1 keep, from its board and
+/// opening deal, with `f`'s fixed ones (`strat0`..`strat2`) standing.
+pub fn opening_choice(w: &World, g: &GameState, f: &Forced) -> Choice {
+    let t = value::table();
+    let typical = Ctx::typical(t);
+    let worth = |d: &CardDef| CardValue::of(t, d).total(t, &typical) - t.cost(d, d.cost, d.insight, typical.left);
+    let fixed = [f.strat0, f.strat1, f.strat2, 0];
+    let mut c: Choice = [None; 4];
+    for (s, slot) in c.iter_mut().enumerate().take(g.seats.len().min(4)) {
+        *slot = strategy::choose(w, g, s, fixed[s], &worth);
+    }
+    c
+}
+
+/// `aic-sim strategies` (082): each seed's strategies as the agent's seats choose
+/// them at the round-1 keep, as CSV lines `seed,seat,board,strategy`. The agent
+/// plays up to that keep, so the table is the one its game reaches.
+pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: u64) {
+    let w = rules.world();
+    println!("seed,seat,board,strategy");
+    for seed in first..first.saturating_add(games) {
+        let mut g = rules.new_game(seed);
+        let mut agent = spec.build(rules, seed);
+        let mut legal = Vec::new();
+        while !g.is_over() {
+            let phase = g.config.round.get(g.phase).map(String::as_str).unwrap_or("");
+            if phase == "cards.keep" && g.round == 1 {
+                break;
+            }
+            rules.legal_actions_into(&g, &mut legal);
+            if legal.is_empty() {
+                break;
+            }
+            let i = if legal.len() == 1 { 0 } else { agent.choose(rules, &g, &legal) };
+            if rules.apply_mut(&mut g, &legal[i], None).is_err() {
+                break;
+            }
+        }
+        let c = opening_choice(&w, &g, &spec.forced());
+        for (s, k) in c.iter().enumerate().take(g.seats.len()) {
+            let name = k.map_or("none", |k| strategy::strategies().strategies[k as usize].id.as_str());
+            println!("{seed},{s},{},{name}", ai::board(&w, s).id);
+        }
+    }
+}
+
+/// 082's antimatter rule: whether power `k` of seat `s` sacrifices cards for
+/// antimatter while a card in the seat's hand needs antimatter it lacks and is
+/// otherwise within reach (its credits held).
+fn antimatter_wanted(w: &World, g: &GameState, s: usize, k: usize) -> bool {
+    let p = &ai::board(w, s).powers[k];
+    let gains = p.effects.iter().any(|e| matches!(e, Op::Gain { resource: Resource::Antimatter, .. }));
+    if !gains || p.tags.is_empty() {
+        return false;
+    }
+    let have = g.resource(s, Resource::Antimatter);
+    g.pile(&cards::hand(s)).iter().any(|id| {
+        let d = cards::def(w, id);
+        d.antimatter > have && d.antimatter <= have + 1 && g.resource(s, Resource::Credits) >= cards::play_cost(w, g, s, d)
+    })
 }
 
 /// The country the abandon check gives up.
@@ -643,17 +777,46 @@ struct Budget {
     antimatter: i64,
 }
 
+/// What the keep plan values cards by (082): the value table or the printed
+/// cost, and the seat's strategy.
+#[derive(Clone, Copy)]
+pub struct PlanCtx<'a> {
+    pub table: bool,
+    pub strat: Option<u16>,
+    pub mults: Option<&'a Mults>,
+}
+
+/// What a plan's values read once (082): rounds left by the adversary deck, the
+/// seat's presence, whether a city is corrupted.
+struct PlanTable {
+    left: f64,
+    presence: f64,
+    corrupted: bool,
+}
+
+impl PlanTable {
+    fn read(w: &World, g: &GameState, s: usize) -> PlanTable {
+        PlanTable {
+            left: super::eval::Eval::cards_left(g) as f64,
+            presence: common::presence_count(g, s) as f64,
+            corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
+        }
+    }
+}
+
 /// The drafted cards seat `s` keeps: each, best value per cost first, if
 /// the plan with it is worth more than the plan without it.
-pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced) -> Vec<Key> {
+pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
+    let pt = PlanTable::read(w, g, s);
     let mut drafted = g.pile(&cards::drafted(s)).to_vec();
-    by_ratio(w, g, s, f, &mut drafted);
+    let tags = cards::tag_counts(w, g, s);
+    by_ratio(w, g, s, f, pc, &pt, &tags, &mut drafted);
     let mut kept: Vec<Key> = Vec::new();
-    let mut best = plan_value(w, g, s, &kept, f);
+    let mut best = plan_value(w, g, s, &kept, f, pc, &pt);
     for c in drafted {
         let mut with = kept.clone();
         with.push(c);
-        let Some(v) = plan_value_checked(w, g, s, &with, &c, f) else {
+        let Some(v) = plan_value_checked(w, g, s, &with, &c, f, pc, &pt) else {
             continue;
         };
         if v > best + 1e-9 {
@@ -666,6 +829,7 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced) -> Vec<Key> {
 
 /// [`plan_value`] with `kept`, or `None` if the keeps can't be paid or the
 /// new card `c` is not played in the plan.
+#[allow(clippy::too_many_arguments)]
 fn plan_value_checked(
     w: &World,
     g: &GameState,
@@ -673,13 +837,15 @@ fn plan_value_checked(
     kept: &[Key],
     c: &str,
     f: &Forced,
+    pc: &PlanCtx,
+    pt: &PlanTable,
 ) -> Option<f64> {
-    let (v, planned) = plan(w, g, s, kept, f)?;
+    let (v, planned) = plan(w, g, s, kept, f, pc, pt)?;
     planned.iter().any(|p| p == c).then_some(v)
 }
 
-fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced) -> f64 {
-    plan(w, g, s, kept, f).map_or(f64::NEG_INFINITY, |(v, _)| v)
+fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced, pc: &PlanCtx, pt: &PlanTable) -> f64 {
+    plan(w, g, s, kept, f, pc, pt).map_or(f64::NEG_INFINITY, |(v, _)| v)
 }
 
 /// The jobs `d` would do for seat `s` on this table: markers in reach to
@@ -705,12 +871,11 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
             _ => 0,
         })
         .sum::<i64>()
-        + capstone_jobs(d)
 }
 
 /// A tier-2 capstone (070): a tier-2 building whose standing effect ends an
 /// engine: income per tag, an automatic counter or project drain.
-fn is_capstone(d: &CardDef) -> bool {
+pub(crate) fn is_capstone(d: &CardDef) -> bool {
     d.tier == 2
         && d.kind == CardKind::Building
         && d.passives
@@ -720,6 +885,7 @@ fn is_capstone(d: &CardDef) -> bool {
 
 /// 070: what a capstone's standing effect is worth to the keep plan, in
 /// `plan_niche` jobs: its printed price undersells a card that pays every round.
+/// 082: only on printed costs; the table values a standing effect by its rounds.
 fn capstone_jobs(d: &CardDef) -> i64 {
     if !is_capstone(d) {
         return 0;
@@ -745,22 +911,50 @@ pub(crate) fn is_liberate(d: &CardDef) -> bool {
         })
 }
 
-/// 080: a liberate card with no corrupted city in reach now still plans to
-/// play while a city is corrupted: presence can get there.
-fn liberate_later(w: &World, g: &GameState, d: &CardDef) -> bool {
-    is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h))
-}
-
-/// The card's value: its printed cost plus 1 (a play is worth something),
-/// plus the jobs it would do (046), plus `plan_liberate` for a liberate card
-/// while a city is corrupted (080).
-fn value(w: &World, g: &GameState, s: usize, d: &CardDef, f: &Forced) -> f64 {
-    let liberate = if is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)) {
-        f.plan_liberate
-    } else {
-        0.0
+/// The card's value to the plan, played `round` rounds from now with `tags` on
+/// the seat's cards. On printed costs (before 082): its printed cost plus 1, plus
+/// the jobs it would do (046) and a capstone's (070). By the table (082): its
+/// ops' value at the rounds then left, times the seat's strategy multiplier, plus
+/// the jobs it would do now.
+#[allow(clippy::too_many_arguments)]
+fn value(
+    w: &World,
+    g: &GameState,
+    s: usize,
+    d: &CardDef,
+    f: &Forced,
+    pc: &PlanCtx,
+    pt: &PlanTable,
+    round: usize,
+    tags: &[i64; TAGS.len()],
+) -> f64 {
+    let jobs = f.plan_niche * niche_jobs(w, g, s, d) as f64;
+    if !pc.table {
+        return 1.0 + list_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
+    }
+    let t = value::table();
+    let ctx = Ctx { left: (pt.left - round as f64).max(0.0), presence: pt.presence, tags: *tags, corrupted: pt.corrupted };
+    let m = match (pc.strat, pc.mults) {
+        (Some(k), Some(mults)) => {
+            let i = w.content.card_index(&d.id).unwrap_or(0);
+            mults.get(k, i, strategy::phase(g.round + round as u32))
+        }
+        _ => 1.0,
     };
-    1.0 + list_cost(d) as f64 + f.plan_niche * niche_jobs(w, g, s, d) as f64 + liberate
+    // A building that must go over one of the seat's adds only what it beats the
+    // one it covers by (082: kept and never played, it was worth less than that).
+    let covered = match (f.plan_cover, &d.replaces) {
+        (true, Some(tag)) => g
+            .pile(&cards::built(s))
+            .iter()
+            .map(|id| cards::def(w, id))
+            .filter(|b| b.tags.contains(tag))
+            .map(|b| CardValue::of(t, b).total(t, &ctx) - t.tags_value(b))
+            .fold(f64::INFINITY, f64::min),
+        _ => f64::INFINITY,
+    };
+    let covered = if covered.is_finite() { covered.max(0.0) } else { 0.0 };
+    m * CardValue::of(t, d).total(t, &ctx) - covered + jobs
 }
 
 /// Whether a building that must go over one of the seat's can (024: the
@@ -771,35 +965,46 @@ fn replaceable(w: &World, g: &GameState, s: usize, d: &CardDef) -> bool {
     })
 }
 
-/// What seat `s` pays to play `d`: credits after its building discount.
-fn spend(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
-    credit_equivalent(d, cards::play_cost(w, g, s, d))
+/// What seat `s` pays to play `d`: credits after its building discount, its
+/// other costs at fixed rates (before 082) or the table's (082).
+fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
+    if pc.table {
+        value::table().cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left)
+    } else {
+        credit_equivalent(d, cards::play_cost(w, g, s, d)) as f64
+    }
 }
 
-fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced) -> f64 {
+#[allow(clippy::too_many_arguments)]
+fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced, pc: &PlanCtx, pt: &PlanTable, tags: &[i64; TAGS.len()]) -> f64 {
     let d = cards::def(w, id);
-    value(w, g, s, d, f) / (1 + spend(w, g, s, d)) as f64
+    value(w, g, s, d, f, pc, pt, 0, tags) / (1.0 + spend(w, g, s, d, pc, pt))
 }
 
 /// `ids`, best value per cost first.
-fn by_ratio(w: &World, g: &GameState, s: usize, f: &Forced, ids: &mut [Key]) {
-    ids.sort_by(|a, b| {
-        ratio(w, g, s, b, f)
-            .total_cmp(&ratio(w, g, s, a, f))
-            .then_with(|| a.cmp(b))
-    })
+#[allow(clippy::too_many_arguments)]
+fn by_ratio(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx, pt: &PlanTable, tags: &[i64; TAGS.len()], ids: &mut [Key]) {
+    let mut keyed: Vec<(f64, Key)> = ids.iter().map(|id| (ratio(w, g, s, id, f, pc, pt, tags), *id)).collect();
+    keyed.sort_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
+    for (slot, (_, id)) in ids.iter_mut().zip(keyed) {
+        *slot = id;
+    }
 }
 
 /// The plan with `kept` bought now: its value, and the cards it plays.
-/// `None` if the keeps can't be paid.
+/// `None` if the keeps can't be paid. By the table (082), a card's `needs` may be
+/// met by the tags of the cards the plan plays before it, and a card with no
+/// target now may be played in a later round, at the table's target share.
 fn plan(
     w: &World,
     g: &GameState,
     s: usize,
     kept: &[Key],
     f: &Forced,
+    pc: &PlanCtx,
+    pt: &PlanTable,
 ) -> Option<(f64, Vec<Key>)> {
-    let (rounds, reserve) = (f.plan_rounds, f.plan_reserve);
+    let rounds = f.plan_rounds;
     let res = |r: Resource| g.resource(s, r).max(0);
     let income = economy::income(w, g, s);
     let inc = |r: Resource| income[r];
@@ -823,21 +1028,27 @@ fn plan(
             return None;
         }
     }
+    let mut tags = cards::tag_counts(w, g, s);
     let mut pool: Vec<Key> = g.pile(&cards::hand(s)).to_vec();
     pool.extend(kept.iter().cloned());
-    by_ratio(w, g, s, f, &mut pool);
+    by_ratio(w, g, s, f, pc, pt, &tags, &mut pool);
     let mut planned: Vec<Key> = Vec::new();
     let mut total = 0.0;
     let mut b = now;
-    let needs = cards::required_tags(w, g, s);
+    let mut needs = cards::required_tags(w, g, s);
+    let now = needs;
+    let near = |d: &CardDef| {
+        !pc.table || d.needs.iter().map(|(t, n)| (n - now[*t as usize]).max(0)).sum::<i64>() <= f.plan_short as i64
+    };
     let patient = economy::patient(w, s);
+    let share = value::table().rate("target_share");
     for round in 0..rounds.max(1) {
         if round > 0 {
             // Credits, chips, energy and antimatter carry over; insight resets,
             // but under Patience (075).
             b = Budget {
                 credits: b.credits + inc(Resource::Credits),
-                insight: (inc(Resource::Insight) - reserve).max(0) + if patient { b.insight } else { 0 },
+                insight: inc(Resource::Insight).max(0) + if patient { b.insight } else { 0 },
                 chips: b.chips + inc(Resource::Chips),
                 energy: b.energy + inc(Resource::Energy),
                 antimatter: b.antimatter + inc(Resource::Antimatter),
@@ -849,6 +1060,8 @@ fn plan(
             }
             let d = cards::def(w, id);
             let credits = cards::play_cost(w, g, s, d);
+            let target = d.is_building() || effects::feasible(w, g, s, &d.effects);
+            let later = if pc.table { round > 0 && pile_ok(w, g, s, d, &planned) } else { liberate_later(w, g, d) };
             let fits = b.credits >= credits
                 && b.insight >= cards::play_insight(w, g, s, d)
                 && b.chips >= d.chips
@@ -857,7 +1070,8 @@ fn plan(
                 && g.resource(s, Resource::ResearchCubes) >= d.research_cubes
                 && cards::lowers_ok(w, g, s, d)
                 && replaceable(w, g, s, d)
-                && (d.is_building() || effects::feasible(w, g, s, &d.effects) || liberate_later(w, g, d))
+                && (target || later)
+                && near(d)
                 && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
             if fits {
                 b.credits -= credits;
@@ -865,15 +1079,47 @@ fn plan(
                 b.chips -= d.chips;
                 b.energy -= d.energy;
                 b.antimatter -= d.antimatter;
-                let share = if d.tier == 2 { f.plan_t2 } else { 1.0 };
-                total += share * value(w, g, s, d, f) * (1.0 - WAIT * round as f64).max(0.1);
+                let found = if target || !pc.table { 1.0 } else { share };
+                total += found * value(w, g, s, d, f, pc, pt, round, &tags) * (1.0 - WAIT * round as f64).max(0.1);
                 planned.push(*id);
+                if pc.table && !d.is_event() {
+                    // 082: what it leaves in play counts toward later cards' needs.
+                    for t in &d.tags {
+                        needs[*t as usize] += 1;
+                        tags[*t as usize] += 1;
+                    }
+                }
             }
         }
     }
     // 024: credits paid to keep are credits not spent on the board (the
     // opening's 5-credit keeps took all 20 starting credits).
     Some((total - f.plan_credit * paid as f64, planned))
+}
+
+/// 082: whether a card that works on a token pile of the seat's own (a feeder,
+/// a cash-out, a count) has one to work on: a token card of its kind standing or
+/// planned before it. A pile can't arrive from the board, as a target can.
+fn pile_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> bool {
+    let kinds: Vec<aic_core::content::TokenKind> = d
+        .effects
+        .iter()
+        .filter_map(|e| match e {
+            Op::AddTokens { kind, here: false, .. } | Op::CashOut { kind, here: false, .. } => Some(*kind),
+            Op::GainPerTokens { kind, here: false, .. } => Some(*kind),
+            _ => None,
+        })
+        .collect();
+    kinds.iter().all(|k| {
+        !cards::token_cards(w, g, s, Some(*k)).is_empty()
+            || planned.iter().any(|id| cards::def(w, id).tokens.as_ref().is_some_and(|t| t.kind == *k))
+    })
+}
+
+/// 080: a liberate card with no corrupted city in reach now still plans to
+/// play while a city is corrupted: presence can get there.
+fn liberate_later(w: &World, g: &GameState, d: &CardDef) -> bool {
+    is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h))
 }
 
 #[cfg(test)]
@@ -885,6 +1131,35 @@ mod tests {
     fn forced(name: &str) -> Policy {
         let f = Forced::read(|k| f64::from(k == name));
         Policy::new(Box::new(crate::agents::tests::First), f)
+    }
+
+    /// 082: the strategies are chosen at the round-1 keep from each seat's board's
+    /// menu, the same on the same table, a fixed one wins, and a rollout's policy
+    /// handed them doesn't choose again.
+    #[test]
+    fn strategies_are_chosen_at_the_opening_keep() {
+        let r = crate::agents::tests::rules(2);
+        let w = r.world();
+        let mut g = r.new_game(5);
+        while g.config.round[g.phase] != "cards.keep" {
+            let a = r.legal_actions(&g)[0].clone();
+            g = r.apply_to(&g, &a, None).unwrap();
+        }
+        assert_eq!(g.round, 1);
+        let legal = r.legal_actions(&g);
+        let chosen = |name: &str, v: f64| {
+            let mut p = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|k| if k == name { v } else { 0.0 }));
+            p.choose(&r, &g, &legal);
+            p.strat
+        };
+        let a = chosen("strategy", 1.0);
+        assert_eq!(a, chosen("strategy", 1.0));
+        for (s, k) in a.iter().enumerate().take(g.seats.len()) {
+            assert!(strategy::menu(&w, s).contains(&k.unwrap()), "seat {s}");
+        }
+        assert_eq!(chosen("strat0", 2.0)[0], Some(strategy::menu(&w, 0)[1]));
+        let handed = Policy::new(Box::new(crate::agents::tests::First), Forced::read(|_| 0.0)).with_strategies(a);
+        assert!(handed.chosen && handed.strat == a);
     }
 
     #[test]

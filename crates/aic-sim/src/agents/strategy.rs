@@ -1,0 +1,334 @@
+//! 082: strategies. Each seat commits at its round-1 keep, from its board and its
+//! opening 10, to one of its board's hand-written strategies
+//! (`configs/agents/strategies.json`). A strategy is a weight vector over what a
+//! card is (its tags, the resources and tokens it pays in or out, its kind, its
+//! categories) and a phase schedule (early: income and engine pieces; mid: chain
+//! pieces; late: capstones, liberation and purge). A card's multiplier for a seat
+//! is 1 plus the weights it matches, times the schedule's for its categories.
+//!
+//! The choice is a pure function of the table at the round-1 keep, so a game
+//! replays from its seed and actions, and a planner's rollouts are handed the
+//! choice ([`super::planner::Planner`]).
+
+use std::collections::BTreeMap;
+use std::sync::OnceLock;
+
+use aic_core::content::{CardDef, CardKind, Op, Resource, TokenKind};
+use aic_core::module::World;
+use aic_core::modules::{ai, cards};
+use aic_core::GameState;
+use serde::Deserialize;
+
+/// The categories a strategy or the schedule can weight.
+pub const CATEGORIES: [&str; 10] =
+    ["income", "engine", "chain", "capstone", "liberate", "purge", "counter", "defense", "draw", "team"];
+
+#[derive(Debug, Deserialize)]
+pub struct Spec {
+    /// `aic-sim strategies` prints `id`; `name` and `says` are read by the tests
+    /// and the docs check (docs/agents.md prints `says`); play reads the weights.
+    pub id: String,
+    pub board: String,
+    #[allow(dead_code)]
+    pub name: String,
+    #[allow(dead_code)]
+    pub says: String,
+    #[serde(default)]
+    tags: BTreeMap<String, f64>,
+    #[serde(default)]
+    resources: BTreeMap<String, f64>,
+    #[serde(default)]
+    tokens: BTreeMap<String, f64>,
+    #[serde(default)]
+    kinds: BTreeMap<String, f64>,
+    #[serde(default)]
+    categories: BTreeMap<String, f64>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Schedule {
+    early_through: u32,
+    late_from: u32,
+    early: BTreeMap<String, f64>,
+    mid: BTreeMap<String, f64>,
+    late: BTreeMap<String, f64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Strategies {
+    #[allow(dead_code)]
+    note: String,
+    schedule: Schedule,
+    pub strategies: Vec<Spec>,
+}
+
+const SOURCE: &str = include_str!("../../../../configs/agents/strategies.json");
+
+pub fn strategies() -> &'static Strategies {
+    static S: OnceLock<Strategies> = OnceLock::new();
+    S.get_or_init(|| serde_json::from_str(SOURCE).expect("configs/agents/strategies.json parses"))
+}
+
+/// A seat's strategy: its index in [`Strategies::strategies`].
+pub type Choice = [Option<u16>; 4];
+
+/// The phase of round `round`: 0 early, 1 mid, 2 late.
+pub fn phase(round: u32) -> usize {
+    let s = &strategies().schedule;
+    if round <= s.early_through {
+        0
+    } else if round >= s.late_from {
+        2
+    } else {
+        1
+    }
+}
+
+/// Which of [`CATEGORIES`] card `d` falls in.
+pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
+    let mut c = [false; CATEGORIES.len()];
+    let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
+    let all: Vec<&Op> = d.effects.iter().chain(&d.passives).chain(ability.iter().copied()).collect();
+    let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
+    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::BuildingDiscount { .. }));
+    c[1] = d.is_building() && (d.ability.is_some() || d.tokens.is_some() || any(&|o| matches!(o, Op::ConvertUpkeep { .. } | Op::Slots { .. })));
+    c[2] = !d.needs.is_empty();
+    c[3] = super::policy::is_capstone(d) || (d.tier == 2 && d.antimatter > 0);
+    c[4] = super::policy::is_liberate(d);
+    c[5] = any(&|o| {
+        matches!(
+            o,
+            Op::Damage { .. }
+                | Op::DamageCountry { .. }
+                | Op::DestroyAll
+                | Op::RemoveNode
+                | Op::RemoveNodes { .. }
+                | Op::RemoveAmbassadorsCountry { .. }
+                | Op::RemoveTroops { .. }
+                | Op::ClearCity { .. }
+                | Op::Pushback { .. }
+        )
+    });
+    c[6] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));
+    c[7] = any(&|o| {
+        matches!(
+            o,
+            Op::Shelter
+                | Op::Cordon
+                | Op::Harden { .. }
+                | Op::HardenAction { .. }
+                | Op::ShieldPresence { .. }
+                | Op::CivicShelter
+                | Op::SpreadShield
+        )
+    });
+    c[8] = any(&|o| matches!(o, Op::Draw { .. }));
+    c[9] = any(&|o| matches!(o, Op::OtherGain { .. } | Op::SupplyInsight { .. } | Op::Sway { .. } | Op::TeamIncome { .. }));
+    c
+}
+
+/// The resources card `d` pays out or (beyond credits and insight) costs.
+fn resources(d: &CardDef) -> Vec<Resource> {
+    let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
+    let mut out: Vec<Resource> = d
+        .effects
+        .iter()
+        .chain(&d.passives)
+        .chain(ability.iter().copied())
+        .filter_map(|o| match o {
+            Op::Gain { resource, .. }
+            | Op::GainPerPresence { resource }
+            | Op::Production { resource, .. }
+            | Op::Income { resource, .. }
+            | Op::IncomePerTag { resource, .. }
+            | Op::GainPerTokens { resource, .. }
+            | Op::CashOut { resource, .. }
+            | Op::GainPerTag { resource, .. } => Some(*resource),
+            Op::GainAmbassadors { .. } => Some(Resource::Ambassadors),
+            Op::ProjectCube { .. } | Op::BuildStation => Some(Resource::ResearchCubes),
+            _ => None,
+        })
+        .collect();
+    for (r, n) in [
+        (Resource::Energy, d.energy),
+        (Resource::Chips, d.chips),
+        (Resource::Antimatter, d.antimatter),
+        (Resource::ResearchCubes, d.research_cubes),
+    ] {
+        if n > 0 {
+            out.push(r);
+        }
+    }
+    out.sort();
+    out.dedup();
+    out
+}
+
+/// The token kinds card `d` holds or feeds.
+fn token_kinds(d: &CardDef) -> Vec<TokenKind> {
+    let mut out: Vec<TokenKind> = d.tokens.iter().map(|t| t.kind).collect();
+    out.extend(d.effects.iter().filter_map(|o| match o {
+        Op::AddTokens { kind, .. } => Some(*kind),
+        _ => None,
+    }));
+    out.sort();
+    out.dedup();
+    out
+}
+
+fn kind_name(k: CardKind) -> &'static str {
+    match k {
+        CardKind::Building => "building",
+        CardKind::Program => "program",
+        CardKind::Event => "event",
+    }
+}
+
+impl Spec {
+    /// 1 plus the weights card `d` matches.
+    pub fn fit(&self, d: &CardDef) -> f64 {
+        let get = |m: &BTreeMap<String, f64>, k: &str| m.get(k).copied().unwrap_or(0.0);
+        let mut f = 1.0;
+        f += d.tags.iter().map(|t| get(&self.tags, t.name())).sum::<f64>();
+        f += resources(d).iter().map(|r| get(&self.resources, r.name())).sum::<f64>();
+        f += token_kinds(d).iter().map(|k| get(&self.tokens, k.name())).sum::<f64>();
+        f += get(&self.kinds, kind_name(d.kind));
+        let cats = categories(d);
+        f += CATEGORIES.iter().zip(cats).filter(|(_, on)| *on).map(|(c, _)| get(&self.categories, c)).sum::<f64>();
+        f
+    }
+
+    /// Whether every weight names a tag, resource, token kind, kind or category.
+    #[cfg(test)]
+    pub fn check(&self) -> Result<(), String> {
+        let tags: Vec<&str> = aic_core::content::TAGS.iter().map(|t| t.name()).collect();
+        let res = ["credits", "chips", "energy", "antimatter", "insight", "research_cubes", "ambassadors"];
+        let toks = ["datasets", "followers", "capital", "agents"];
+        let kinds = ["building", "program", "event"];
+        for (m, ok) in [
+            (&self.tags, &tags[..]),
+            (&self.resources, &res[..]),
+            (&self.tokens, &toks[..]),
+            (&self.kinds, &kinds[..]),
+            (&self.categories, &CATEGORIES[..]),
+        ] {
+            if let Some(k) = m.keys().find(|k| !ok.contains(&k.as_str())) {
+                return Err(format!("strategy {}: unknown weight {k:?}", self.id));
+            }
+        }
+        Ok(())
+    }
+}
+
+/// The schedule's multiplier for card `d` in phase `p`: the largest of its
+/// categories' (1 with none).
+pub fn schedule(d: &CardDef, p: usize) -> f64 {
+    let s = &strategies().schedule;
+    let m = [&s.early, &s.mid, &s.late][p];
+    let cats = categories(d);
+    let hits: Vec<f64> = CATEGORIES.iter().zip(cats).filter(|(_, on)| *on).filter_map(|(c, _)| m.get(*c).copied()).collect();
+    if hits.is_empty() {
+        1.0
+    } else {
+        hits.iter().copied().fold(f64::NEG_INFINITY, f64::max)
+    }
+}
+
+/// Each strategy's multiplier for each card in each phase, worked out once for a
+/// game's content: `[strategy][card][phase]`.
+#[derive(Debug)]
+pub struct Mults(Vec<Vec<[f64; 3]>>);
+
+impl Mults {
+    pub fn new(w: &World) -> Mults {
+        let list = &strategies().strategies;
+        Mults(
+            list.iter()
+                .map(|s| {
+                    w.content
+                        .cards
+                        .iter()
+                        .map(|d| {
+                            let f = s.fit(d);
+                            [f * schedule(d, 0), f * schedule(d, 1), f * schedule(d, 2)]
+                        })
+                        .collect()
+                })
+                .collect(),
+        )
+    }
+
+    /// Strategy `s`'s multiplier for the card at content index `card` in `phase`.
+    pub fn get(&self, s: u16, card: usize, phase: usize) -> f64 {
+        self.0[s as usize][card][phase]
+    }
+}
+
+/// The strategies open to seat `s`: its board's, in file order.
+pub fn menu(w: &World, s: usize) -> Vec<u16> {
+    let board = &ai::board(w, s).id;
+    strategies().strategies.iter().enumerate().filter(|(_, x)| &x.board == board).map(|(i, _)| i as u16).collect()
+}
+
+/// Seat `s`'s strategy from its board and the cards in front of it (the opening
+/// deal, its hand): the one whose multipliers add most to what the cards are worth.
+/// `fixed` (1-based in the board's menu) overrides the choice.
+pub fn choose(w: &World, g: &GameState, s: usize, fixed: usize, value: &dyn Fn(&CardDef) -> f64) -> Option<u16> {
+    let menu = menu(w, s);
+    if fixed > 0 {
+        return menu.get(fixed - 1).copied().or(menu.first().copied());
+    }
+    let list = &strategies().strategies;
+    let seen: Vec<&CardDef> = g
+        .pile(&cards::drafted(s))
+        .iter()
+        .chain(g.pile(&cards::hand(s)).iter())
+        .map(|id| cards::def(w, id))
+        .collect();
+    let mut best: Option<(f64, u16)> = None;
+    for &k in &menu {
+        let spec = &list[k as usize];
+        let score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d) * schedule(d, phase(g.round)) - 1.0)).sum();
+        if best.is_none_or(|(b, _)| score > b + 1e-9) {
+            best = Some((score, k));
+        }
+    }
+    best.map(|(_, k)| k)
+}
+
+/// The strategy named `id`.
+#[cfg(test)]
+pub fn by_id(id: &str) -> Option<u16> {
+    strategies().strategies.iter().position(|s| s.id == id).map(|i| i as u16)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Every strategy reads, names a board and weights only what exists; every
+    /// board has a menu.
+    #[test]
+    fn strategies_read() {
+        let r = crate::agents::tests::rules(2);
+        let w = r.world();
+        for s in &strategies().strategies {
+            s.check().unwrap();
+            assert!(w.content.ais.iter().any(|b| b.id == s.board), "{}: no board {}", s.id, s.board);
+            assert!(!s.says.is_empty());
+        }
+        for s in 0..3 {
+            assert!(menu(&w, s).len() >= 3, "seat {s}");
+        }
+        // docs/agents.md prints each strategy as a player would say it.
+        let doc = std::fs::read_to_string(format!("{}/../../docs/agents.md", env!("CARGO_MANIFEST_DIR"))).unwrap();
+        for s in &strategies().strategies {
+            let line = format!("- *{}.* {}", s.name, s.says);
+            assert!(doc.contains(&line), "docs/agents.md, *Strategies*, lacks {line:?}");
+        }
+        let m = Mults::new(&w);
+        let payroll = w.content.card_index("payroll_automation").unwrap();
+        let k = by_id("industry_income").unwrap();
+        assert!(m.get(k, payroll, 0) > m.get(by_id("power_grid").unwrap(), payroll, 0));
+    }
+}

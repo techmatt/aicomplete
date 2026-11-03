@@ -22,7 +22,7 @@
 //! be paid for before the game ends; and resources lose their value as the
 //! end nears (nothing is left to buy).
 
-use aic_core::content::{CardDef, Op, Resource, Side, RESOURCES};
+use aic_core::content::{CardDef, Op, Resource, Side, TagOrAny, RESOURCES, TAGS};
 use aic_core::modules::common::{
     self, ADV_AMBASSADOR, ADV_CUBE, FACTORY, HARDEN, STATION, TROOP,
 };
@@ -35,6 +35,8 @@ use std::hash::BuildHasherDefault;
 use std::sync::Arc;
 
 use super::policy::list_cost;
+use super::strategy::{self, Choice, Mults};
+use super::value::{self, CardValue, Ctx, Worth};
 use super::INSIGHT_COST;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -218,9 +220,41 @@ pub struct Weights {
     /// diverted) counts this share of income over the rounds left, on top
     /// of the flat piece weights.
     pub production: f64,
-    /// Horizon mode, when above 0: cards in hand wait their turn for
-    /// insight (each needs the insight of the cards before it too).
-    pub insight_wait: f64,
+    /// 082, horizon mode, when above 0: cards are valued by the value table
+    /// (`agents/value.rs`), at this many heuristic points a table credit. A card in
+    /// hand, drafted or in the packet counts its net worth (its value by its ops,
+    /// times its seat's strategy multiplier, less what it costs to play), a
+    /// building in play what it earns a round that income doesn't count, a token
+    /// what its card's spend pays per token, an ambassador in supply its table row;
+    /// an action is credited what it does that the board terms can't see. 0: the
+    /// hand-written terms before 082 (`hand`, `hand_cost`, `ability`, `token`,
+    /// `ambassador`, `liberated`, `liberate_progress`).
+    pub table: f64,
+    /// 082: the share of a card's net worth it counts in hand (table mode). Under
+    /// 1, so playing a card (its board terms, which see about its whole value)
+    /// beats holding it.
+    pub hand_share: f64,
+    /// 082, a probe: a supply ambassador in table mode is the table's row times this.
+    pub table_ambassador: f64,
+    /// 082, a probe: above 0, antimatter in table mode is the table's row (9
+    /// credits) times this, in place of `antimatter`. At 1 the strategist held its
+    /// antimatter and lost 59 points (31000, 144 games): off.
+    pub table_antimatter: f64,
+    /// 082, a probe: above 0, income (tracks, buildings, rewards) in table mode is
+    /// valued at the table's rates times this, in place of the held resources'.
+    pub table_income: f64,
+    /// 082: the share of its play cost a card still to be drafted or kept counts
+    /// (table mode). The keep plan judges what a seat can pay; charged in full, a
+    /// tier-2 card (priced at about its value less its keep) reads as worth no
+    /// more than its keep, and the engine drafted tier 1 only.
+    pub pick_cost: f64,
+    /// 082, the progress term: a card whose `needs` aren't met counts this share,
+    /// plus the rest times the square of the share of the tags it has.
+    pub needs_floor: f64,
+    /// 082, the progress term: a board power that sacrifices two tags or more
+    /// counts this share of one use, times the square of the share of the tags
+    /// the seat has toward it.
+    pub power_progress: f64,
     /// The deck clock (011), any mode: per round the team's projected win
     /// (Unity still needed at its rate so far, plus `win_lag`) comes
     /// after the adversary deck runs out. 0 = off.
@@ -331,10 +365,15 @@ impl Default for Weights {
             spend_horizon: 2.0,
             // Horizon mode only; the engine turns it on (see `engine`).
             production: 0.0,
-            // 008: on, it cut the engine to 4% wins at d4 (96 games): spending
-            // insight on one card lowered every other card's chance, so
-            // playing anything looked costly. Off until it is modeled per round.
-            insight_wait: 0.0,
+            // 082: off in flat mode; the engine turns it on at the credit's weight.
+            table: 0.0,
+            hand_share: 0.5,
+            table_ambassador: 1.0,
+            table_antimatter: 0.0,
+            table_income: 0.0,
+            pick_cost: 0.0,
+            needs_floor: 0.25,
+            power_progress: 0.5,
             clock: 0.0,
         }
     }
@@ -358,6 +397,12 @@ impl Weights {
             // edited, level within noise at d1-d3 (32 seeds). Energy and
             // compute now come from the board.
             production: 1.0,
+            // 082: cards by the value table, a table credit at a credit's weight.
+            table: 0.6,
+            // 082: half the draft's keep price: at the full price the strategist with
+            // none (w.packet_keep=0) led it by +4.9 ±4.0 (30700) and +12.5 ±5.9
+            // (31000), and 0.5 by +13.9 ±5.3 (31000).
+            packet_keep: 0.5,
             ..Weights::default()
         }
     }
@@ -405,9 +450,51 @@ pub struct Eval {
     cube_power: [bool; 4],
     keys: TokenKeys,
     /// Each card by its interned id (compared by pointer, never iterated): its
-    /// index in the content and its [`Eval::cost`]. A position asks for a hand's
-    /// worth of each, and an id hashed as text was a tenth of the heuristic (069).
-    facts: Arc<HashMap<usize, (usize, f64), BuildHasherDefault<Fnv>>>,
+    /// index in the content, its [`Eval::cost`] and its table value. A position asks
+    /// for a hand's worth of each, and an id hashed as text was a tenth of the
+    /// heuristic (069).
+    facts: Arc<HashMap<usize, Fact, BuildHasherDefault<Fnv>>>,
+    /// 082: each strategy's multiplier for each card and phase.
+    mults: Arc<Mults>,
+    /// 082: each seat's strategy, once chosen (none: every multiplier 1).
+    strat: Choice,
+    /// 082: each seat's board powers: what a use does that the board terms can't
+    /// see, its worth for the progress term, and the tags it sacrifices.
+    powers: Arc<Vec<Vec<PowerFact>>>,
+    /// Each seat's "took a card from this draft hand" var (082: a packet a seat has
+    /// picked from goes to the next seat, so it counts for that seat).
+    picked: [String; 4],
+}
+
+/// One card, read once (see [`Eval::facts`]).
+#[derive(Clone, Copy)]
+struct Fact {
+    index: usize,
+    cost: f64,
+    value: CardValue,
+    /// What a token on it is worth.
+    token: Worth,
+    /// The token kind of a pile of the seat's own it works on, when played (a
+    /// feeder, a cash-out, a count).
+    pile: Option<aic_core::content::TokenKind>,
+}
+
+/// The token kind of a pile of the seat's own card `d` works on when played.
+fn pile_kind(d: &CardDef) -> Option<aic_core::content::TokenKind> {
+    d.effects.iter().find_map(|e| match e {
+        Op::AddTokens { kind, here: false, .. }
+        | Op::CashOut { kind, here: false, .. }
+        | Op::GainPerTokens { kind, here: false, .. } => Some(*kind),
+        _ => None,
+    })
+}
+
+/// One board power, read once.
+#[derive(Clone)]
+struct PowerFact {
+    unseen: f64,
+    worth: f64,
+    tags: Vec<(TagOrAny, i64)>,
 }
 
 /// The tokens [`Eval::value`] reads on one hex, read once: asking the state
@@ -525,16 +612,90 @@ impl Eval {
                     .cards
                     .iter()
                     .enumerate()
-                    .map(|(i, d)| (Key::new(&d.id).as_str().as_ptr() as usize, (i, Self::cost(d))))
+                    .map(|(i, d)| {
+                        let fact = Fact {
+                            index: i,
+                            cost: Self::cost(d),
+                            value: CardValue::of(value::table(), d),
+                            token: value::token_worth(value::table(), d),
+                            pile: if d.is_building() { None } else { pile_kind(d) },
+                        };
+                        (Key::new(&d.id).as_str().as_ptr() as usize, fact)
+                    })
                     .collect(),
             ),
+            mults: Arc::new(Mults::new(&world)),
+            strat: [None; 4],
+            powers: Arc::new(
+                (0..seats)
+                    .map(|s| {
+                        ai::board(&world, s)
+                            .powers
+                            .iter()
+                            .map(|p| {
+                                let wv = value::power_worth(value::table(), p);
+                                PowerFact {
+                                    unseen: wv.unseen,
+                                    worth: wv.instant(value::table(), &Ctx::typical(value::table())),
+                                    tags: p.tags.clone(),
+                                }
+                            })
+                            .collect()
+                    })
+                    .collect(),
+            ),
+            picked: std::array::from_fn(|s| format!("cards.picked.{s}")),
         }
     }
 
-    /// A card in a pile, and its [`Eval::cost`].
-    fn fact<'w>(&self, world: &aic_core::module::World<'w>, id: &Key) -> (&'w CardDef, f64) {
-        let (i, cost) = self.facts[&(id.as_str().as_ptr() as usize)];
-        (&world.content.cards[i], cost)
+    /// 082: each seat's strategy (see `agents/strategy.rs`).
+    pub fn set_strategies(&mut self, c: Choice) {
+        self.strat = c;
+    }
+
+    pub fn strategies(&self) -> Choice {
+        self.strat
+    }
+
+    /// Seat `s`'s strategy multiplier for the card at content index `i` in round
+    /// `round` (1 with no strategy).
+    fn mult(&self, s: usize, i: usize, round: u32) -> f64 {
+        match self.strat.get(s).copied().flatten() {
+            Some(k) => self.mults.get(k, i, strategy::phase(round)),
+            None => 1.0,
+        }
+    }
+
+    /// 082: what action `a` does that the board terms can't see after it (a
+    /// shelter, a cordon, a peek), in heuristic points: credited when it is taken.
+    pub fn bonus(&self, world: &aic_core::module::World, a: &aic_core::Action) -> f64 {
+        if self.w.table <= 0.0 {
+            return 0.0;
+        }
+        let unseen = match a {
+            aic_core::Action::Play { card, .. } => self.fact(world, card).1.value.play.unseen,
+            aic_core::Action::Use { card, .. } => self.fact(world, card).1.value.use_.unseen,
+            aic_core::Action::Power { seat, power } => {
+                self.powers.get(*seat as usize).and_then(|p| p.get(*power as usize)).map_or(0.0, |p| p.unseen)
+            }
+            _ => 0.0,
+        };
+        self.w.table * unseen
+    }
+
+    /// A card in a pile, and what is read once about it.
+    fn fact<'w>(&self, world: &aic_core::module::World<'w>, id: &Key) -> (&'w CardDef, Fact) {
+        let f = self.facts[&(id.as_str().as_ptr() as usize)];
+        (&world.content.cards[f.index], f)
+    }
+
+    /// A supply ambassador's worth: the table's row in table mode (082).
+    fn ambassador_unit(&self) -> f64 {
+        if self.w.table > 0.0 {
+            self.w.table * self.w.table_ambassador * value::table().res(Resource::Ambassadors)
+        } else {
+            self.w.ambassador
+        }
     }
 
     fn cost(d: &CardDef) -> f64 {
@@ -679,7 +840,7 @@ impl Eval {
                         share += 0.75 * (on / need).powi(2);
                     }
                     v += w.corrupted * w.freeing * share;
-                    v += (w.ambassador - w.ambassador_board) * on;
+                    v += (self.ambassador_unit() - w.ambassador_board) * on;
                 } else {
                     if owned {
                         v += w.aligned;
@@ -745,7 +906,10 @@ impl Eval {
             pieces += adversary::against_bar(city && bad, t.node, adv, t.troop, level);
         }
         v -= w.corrupted * corrupted as f64;
-        v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
+        // 082: in table mode a liberation counts as the city it frees.
+        if w.table <= 0.0 {
+            v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
+        }
         let mut thin = i64::MAX;
         for s in 0..self.seats {
             let count = tokens.iter().filter(|t| t.presence[s] > 0).count() as i64;
@@ -777,7 +941,7 @@ impl Eval {
             v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
         }
         for s in 0..self.seats {
-            v += w.ambassador * g.resource(s, Resource::Ambassadors) as f64;
+            v += self.ambassador_unit() * g.resource(s, Resource::Ambassadors) as f64;
             v += w.chips * g.resource(s, Resource::Chips) as f64;
         }
         // The win bar: what still stands between the team and a clear board.
@@ -961,7 +1125,7 @@ impl Eval {
             for id in g.pile(&cards::built(s)) {
                 *v += w.built + w.built_cost * Self::cost(cards::def(&world, id));
             }
-            self.in_play_value(rules, g, s, v);
+            self.in_play_value(rules, g, s, None, v);
         }
     }
 
@@ -1004,14 +1168,23 @@ impl Eval {
     }
 
     /// 021: programs in the play area (their tags pay powers) and tokens on
-    /// cards, at flat weights.
-    fn in_play_value(&self, rules: &Rules, g: &GameState, s: usize, v: &mut f64) {
+    /// cards, at flat weights; with `table` (082), a token at what its card's
+    /// spend pays per token.
+    fn in_play_value(&self, rules: &Rules, g: &GameState, s: usize, table: Option<&Ctx>, v: &mut f64) {
         let world = rules.world();
         *v += self.w.program * g.pile(&cards::played(s)).len() as f64;
         let b = ai::board(&world, s);
         let share = |taken: usize, len: usize| if len == 0 { 0.0 } else { (taken as f64 / len as f64).powi(2) };
         *v += self.w.track_capstone
             * (share(board::track_taken(g, s), b.economy_track.len()) + share(board::track2_taken(g, s), b.play_track.len()));
+        if let Some(c) = table {
+            for id in cards::token_cards(&world, g, s, None) {
+                let k = g.var(&cards::tokens_key(s, &id));
+                let (_, f) = self.fact(&world, &id);
+                *v += self.w.table * k as f64 * f.token.instant(value::table(), c).max(0.0);
+            }
+            return;
+        }
         let corrupted = (0..g.hexes.len()).any(|h| common::corrupted_city(&world, g, h));
         for id in cards::token_cards(&world, g, s, None) {
             let k = g.var(&cards::tokens_key(s, &id));
@@ -1070,7 +1243,13 @@ impl Eval {
             1.0
         };
         // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
-        let unit = [w.credits, w.credits, w.energy, w.antimatter, w.insight, w.research_cube];
+        // 082, a probe: antimatter held and earned at the table's row.
+        let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
+            w.table * w.table_antimatter * value::table().res(Resource::Antimatter)
+        } else {
+            w.antimatter
+        };
+        let unit = [w.credits, w.credits, w.energy, antimatter, w.insight, w.research_cube];
         let mut v = 0.0;
         // 074: an owned station makes a cube a round for the rest of the game.
         if w.production != 0.0 {
@@ -1083,7 +1262,43 @@ impl Eval {
             let useful: i64 = owned.iter().map(|&n| n.min(STATIONS_USEFUL)).sum();
             v += w.horizon * w.production * left * w.station_round * useful as f64;
         }
+        let tbl = value::table();
+        let table = w.table > 0.0;
+        let corrupted = table && (0..g.hexes.len()).any(|h| common::corrupted_city(&world, g, h));
+        // What each seat's cards are judged by, worked out once: the packet a seat
+        // has picked from counts for the seat it goes to (082).
+        let seats: Vec<SeatData> = (0..self.seats)
+            .map(|s| {
+                let tags = cards::tag_counts(&world, g, s);
+                let mut required = tags;
+                for t in ai::board_tags(&world, g, s) {
+                    required[*t as usize] += 1;
+                }
+                let income = economy::income_with(&world, g, s, &tags);
+                let presence = tokens.iter().filter(|t| t.presence[s] > 0).count() as f64;
+                SeatData {
+                    s,
+                    tags,
+                    required,
+                    prices: cards::prices_with(&world, g, s, &tags),
+                    income,
+                    ctx: Ctx { left, presence, tags, corrupted },
+                }
+            })
+            .collect();
+        let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
+        let step = if g.round % 2 == 1 { 1 } else { self.seats - 1 };
+        for s in 0..self.seats {
+            let to = if table && g.var(&self.picked[s]) > 0 { (s + step) % self.seats } else { s };
+            for id in g.pile(&cards::packet(s)) {
+                let tier = cards::def(&world, id).tier;
+                let keep = if table { w.table * tbl.keep(tier) } else { w.hand_cost * keep_insight(&world, tier) };
+                let worth = self.hand_worth(&world, g, &seats[to], left, id, true);
+                packets[to].push((w.drafted * (worth - w.packet_keep * keep).max(0.0), tier));
+            }
+        }
         for (s, made) in prod.iter().enumerate() {
+            let sd = &seats[s];
             let res = |k: Resource| g.resource(s, k);
             // Insight is reset each round, so what is held now only counts this round.
             for (i, r) in RESOURCES.iter().enumerate() {
@@ -1097,19 +1312,30 @@ impl Eval {
                     v += fade * unit[i] * res(*r) as f64;
                 }
             }
-            self.in_play_value(rules, g, s, &mut v);
+            self.in_play_value(rules, g, s, table.then_some(&sd.ctx), &mut v);
             // Income (tracks, buildings with income passives, rewards) over
             // the rounds left; board production counts `production` of its own.
-            let tags = cards::tag_counts(&world, g, s);
-            let income = economy::income_with(&world, g, s, &tags);
+            let income = sd.income;
             for (i, (r, n)) in income.iter().enumerate() {
-                let u = if r == Resource::ResearchCubes { self.cube_unit(s) } else { unit[i] };
+                let u = if table && w.table_income > 0.0 {
+                    // 082, a probe: income at the table's rates.
+                    w.table * w.table_income * tbl.res(r)
+                } else if r == Resource::ResearchCubes {
+                    self.cube_unit(s)
+                } else {
+                    unit[i]
+                };
                 v += w.horizon * left * u * n as f64;
             }
             v += w.horizon * w.production * left * w.energy * *made as f64;
             for id in g.pile(&cards::built(s)) {
-                let (d, cost) = self.fact(&world, id);
-                v += w.built + w.built_cost * cost;
+                let (d, f) = self.fact(&world, id);
+                v += w.built + w.built_cost * f.cost;
+                if table {
+                    // 082: what it earns a round that income doesn't count.
+                    v += w.table * left * f.value.built_round(tbl, &sd.ctx);
+                    continue;
+                }
                 if !d.pays_income() {
                     v += w.ability * left;
                 }
@@ -1123,60 +1349,120 @@ impl Eval {
                     v += w.horizon * left * w.credits * saved;
                 }
             }
-            // A card in hand is worth its value times the chance of paying
-            // for it before the game ends, from what the seat has and earns.
-            // Insight is spent one card at a time: each card waits for the
-            // insight the cards before it in hand take.
-            let earn_credits = income[Resource::Credits];
-            let mut insight_queue = 0i64;
-            // The same for every card in hand: worked out once.
-            let prices = cards::prices_with(&world, g, s, &tags);
-            let mut play = |id: &Key| -> f64 {
-                let (d, cost) = self.fact(&world, id);
-                let mut p = 1.0;
-                // 022: playing costs insight again (shared with keeps).
-                insight_queue += prices.insight(d);
-                let insight_need = if w.insight_wait > 0.0 {
-                    insight_queue
-                } else {
-                    0
-                };
-                for (have, need, earn) in [
-                    (res(Resource::Credits), prices.credits(d), earn_credits),
-                    (
-                        res(Resource::Antimatter),
-                        d.antimatter,
-                        income[Resource::Antimatter],
-                    ),
-                    (res(Resource::ResearchCubes), d.research_cubes, 1),
-                    (res(Resource::Insight), insight_need, income[Resource::Insight]),
-                ] {
-                    let short = need - have;
-                    if short > 0 {
-                        if earn <= 0 {
-                            return 0.0;
-                        }
-                        let rounds = (short as f64 / earn as f64).ceil();
-                        p = f64::min(p, (1.0 - rounds / (left + 1.0)).max(0.0));
-                    }
-                }
-                p * (w.hand + w.hand_cost * cost)
-            };
-            let mut cards: Vec<f64> = g.pile(&cards::hand(s)).iter().map(&mut play).collect();
+            if table {
+                v += self.power_progress(sd);
+            }
+            let mut cards: Vec<f64> =
+                g.pile(&cards::hand(s)).iter().map(|id| self.hand_worth(&world, g, sd, left, id, false)).collect();
             let mut picks = Vec::new();
             for id in g.pile(&cards::drafted(s)) {
-                picks.push((w.drafted * play(id), cards::def(&world, id).tier));
+                picks.push((w.drafted * self.hand_worth(&world, g, sd, left, id, true), cards::def(&world, id).tier));
             }
-            for id in g.pile(&cards::packet(s)) {
-                let tier = cards::def(&world, id).tier;
-                let keep = keep_insight(&world, tier);
-                picks.push((w.drafted * (play(id) - w.hand_cost * w.packet_keep * keep).max(0.0), tier));
-            }
+            picks.append(&mut packets[s]);
             self.keepable(&world, g, s, picks, &mut cards);
             v += Self::capped(&mut cards, w.hand_cap);
         }
         v
     }
+
+    /// A card in seat `sd`'s hand: its worth times the chance of paying for it
+    /// before the game ends, from what the seat has and earns. In table mode
+    /// (082) its worth is its net value by the table, less its cost to play, times
+    /// the progress term for its `needs`; a card still to be drafted or kept
+    /// (`pick`) also counts the seat's strategy multiplier. Not one in hand: what
+    /// playing it brings is the board's terms, which no strategy multiplies, so a
+    /// multiplied hand would make holding a strategy's cards beat playing them.
+    /// Else the flat `hand` + `hand_cost` × its cost.
+    #[allow(clippy::too_many_arguments)]
+    fn hand_worth(&self, world: &aic_core::module::World, g: &GameState, sd: &SeatData, left: f64, id: &Key, pick: bool) -> f64 {
+        let w = &self.w;
+        let s = sd.s;
+        let (d, f) = self.fact(world, id);
+        let res = |k: Resource| g.resource(s, k);
+        let mut p = 1.0;
+        for (have, need, earn) in [
+            (res(Resource::Credits), sd.prices.credits(d), sd.income[Resource::Credits]),
+            (res(Resource::Antimatter), d.antimatter, sd.income[Resource::Antimatter]),
+            (res(Resource::ResearchCubes), d.research_cubes, 1),
+        ] {
+            let short = need - have;
+            if short > 0 {
+                if earn <= 0 {
+                    return 0.0;
+                }
+                let rounds = (short as f64 / earn as f64).ceil();
+                p = f64::min(p, (1.0 - rounds / (left + 1.0)).max(0.0));
+            }
+        }
+        if w.table <= 0.0 {
+            return p * (w.hand + w.hand_cost * f.cost);
+        }
+        let tbl = value::table();
+        let (m, share) = if pick { (self.mult(s, f.index, g.round), w.pick_cost) } else { (1.0, 1.0) };
+        let net = m * f.value.total(tbl, &sd.ctx) - share * tbl.cost(d, sd.prices.credits(d), sd.prices.insight(d), left);
+        // A card that works on a pile of the seat's own with none to work on counts
+        // as a `needs` card with none of its tags.
+        let pile = match f.pile {
+            Some(k) if cards::token_cards(world, g, s, Some(k)).is_empty() => w.needs_floor,
+            _ => 1.0,
+        };
+        p * w.table * w.hand_share * net.max(0.0) * self.needs_factor(d, &sd.required) * pile
+    }
+
+    /// The progress term for a card's `needs` (082): 1 once met, else
+    /// `needs_floor` plus the rest times the square of the share of the tags held.
+    fn needs_factor(&self, d: &CardDef, required: &[i64; TAGS.len()]) -> f64 {
+        if d.needs.is_empty() {
+            return 1.0;
+        }
+        let (mut have, mut need) = (0i64, 0i64);
+        for (t, n) in &d.needs {
+            have += required[*t as usize].min(*n);
+            need += *n;
+        }
+        if have >= need {
+            return 1.0;
+        }
+        let share = have as f64 / need.max(1) as f64;
+        self.w.needs_floor + (1.0 - self.w.needs_floor) * share * share
+    }
+
+    /// The progress term for seat `sd`'s dear powers (082): each power that
+    /// sacrifices two tags or more counts `power_progress` of a use, times the
+    /// square of the share of the tags the seat holds toward it.
+    fn power_progress(&self, sd: &SeatData) -> f64 {
+        let Some(powers) = self.powers.get(sd.s) else { return 0.0 };
+        let all: i64 = sd.tags.iter().sum();
+        let mut v = 0.0;
+        for p in powers {
+            let need: i64 = p.tags.iter().map(|(_, n)| n).sum();
+            if need < 2 || p.worth <= 0.0 {
+                continue;
+            }
+            let have: i64 = p
+                .tags
+                .iter()
+                .map(|(t, n)| match t {
+                    TagOrAny::Is(t) => sd.tags[*t as usize].min(*n),
+                    TagOrAny::Any => all.min(*n),
+                })
+                .sum();
+            let share = have as f64 / need as f64;
+            v += self.w.table * self.w.power_progress * p.worth * share * share;
+        }
+        v
+    }
+}
+
+/// What one seat's cards are judged by in a position (082).
+struct SeatData {
+    s: usize,
+    tags: [i64; TAGS.len()],
+    /// Tags for `needs`: the cards' and the board's.
+    required: [i64; TAGS.len()],
+    prices: cards::Prices,
+    income: aic_core::content::PerResource,
+    ctx: Ctx,
 }
 
 #[cfg(test)]

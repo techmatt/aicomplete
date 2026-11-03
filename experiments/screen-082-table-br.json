@@ -1,0 +1,44 @@
+{
+  "name": "screen-082-table-br",
+  "note": "082: the strategy table for pair br: the strategist with each seat's strategy fixed (strat0, strat1: 1-based in the board's menu, configs/agents/strategies.json), d2, 48 seeds on 30700.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist:strat0=1,strat1=1",
+    "strategist:strat0=1,strat1=2",
+    "strategist:strat0=1,strat1=3",
+    "strategist:strat0=1,strat1=4",
+    "strategist:strat0=1,strat1=5",
+    "strategist:strat0=2,strat1=1",
+    "strategist:strat0=2,strat1=2",
+    "strategist:strat0=2,strat1=3",
+    "strategist:strat0=2,strat1=4",
+    "strategist:strat0=2,strat1=5",
+    "strategist:strat0=3,strat1=1",
+    "strategist:strat0=3,strat1=2",
+    "strategist:strat0=3,strat1=3",
+    "strategist:strat0=3,strat1=4",
+    "strategist:strat0=3,strat1=5",
+    "strategist:strat0=4,strat1=1",
+    "strategist:strat0=4,strat1=2",
+    "strategist:strat0=4,strat1=3",
+    "strategist:strat0=4,strat1=4",
+    "strategist:strat0=4,strat1=5"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -1,0 +1,39 @@
+{
+  "name": "screen-082-tune-d0",
+  "note": "082: the engine (greedy without strategy) at d0 on seeds 31000, 48 a pair, against its 70-85% target, beside the strategist and the pre-082 engine.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "engine",
+    "strategist",
+    "engine:plan_table=0,w.table=0,w.packet_keep=1"
+  ],
+  "games": 48,
+  "records": 0
+}

@@ -16,6 +16,10 @@ usage: aic-sim run <config.json> [options]
        aic-sim replay <record.json>...               check saved game records
        aic-sim docs [--check]                        regenerate docs from content and
                                                      configs (--check: exit 1 if stale)
+       aic-sim strategies <config.json> [--games N] [--seed S] [--set k=v]... [--agent SPEC]
+                                                     each seed's strategies as the agent's
+                                                     seats choose them at the round-1 keep
+                                                     (CSV: seed,seat,board,strategy)
 
 options:
   --games N         games per config (default 200)
@@ -91,6 +95,7 @@ const COMMANDS: &[(&str, usize, usize, &str, &[&str])] = &[
     ("modules", 0, 0, "modules takes no paths", &[]),
     ("replay", 1, usize::MAX, "replay takes one or more game records", &[]),
     ("docs", 0, 0, "docs takes no paths", &["--check"]),
+    ("strategies", 1, 1, "strategies takes one config", &["--games", "--seed", "--set", "--agent"]),
     (
         "experiment",
         1,

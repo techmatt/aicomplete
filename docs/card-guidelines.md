@@ -47,7 +47,7 @@ never a quiet exception.
 12. **Tier is power; costs and effects are big** (ruling 4). Tier 2 is more powerful; some complexity is fine but
     not required. Many tier-1 cards carry strong effects at high prices, tier-2 income is far stronger still, and
     few cards cost 0 credits. **Tier is not a proxy for cost:** a dear tier-1 card is fine. The curve in use is in
-    [card-pricing.md](card-pricing.md), *The cost curve*. (Before 076 tier 1's median was 2-3 credits, 6 of about
+    [card-pricing.md](card-pricing.md), *The method*. (Before 076 tier 1's median was 2-3 credits, 6 of about
     120 at 6 or more, tier 2's 8-10; Terraforming Mars sits nearer 10, with cards like "cost 40, gain 10 income".)
 13. **A card beats the plain route it replaces,** counting its keep and insight (ruling 7). *Threat Hunt*: 3 credits
     and about 2 insight for "counts as 5 credits toward a cyber threat" lost to paying 5 credits. Name the plain

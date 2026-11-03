@@ -285,7 +285,7 @@ pub fn score_guesses(
                     Some(c) => lookahead(rules, ev, &c, depth - 1, choices, &mut seen),
                     None => f64::NEG_INFINITY,
                 },
-            });
+            }) + ev.bonus(&world, a);
         }
     }
     scores.iter_mut().for_each(|s| *s /= n as f64);
@@ -449,6 +449,18 @@ impl Greedy {
             self.dropped = Some(dropped);
         }
         out
+    }
+}
+
+impl super::Strategic for Greedy {
+    fn set_strategies(&mut self, c: super::strategy::Choice) {
+        self.ev.set_strategies(c);
+    }
+}
+
+impl super::Strategic for Beam {
+    fn set_strategies(&mut self, c: super::strategy::Choice) {
+        self.ev.set_strategies(c);
     }
 }
 
