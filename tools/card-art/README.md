@@ -16,7 +16,7 @@ the default sizes, so a long card overflows and a long title runs wide. The view
 after drawing the grid or the large view; `show` in `tools/card-art/lib.mjs` calls it, so
 `render`, `scene-picker` and every print get it. In Playwright, `page.evaluate(fitCards)`; it
 loads the fonts itself, and measures a copy at true size, so zoom and device scale don't change
-a card. About 110 ms for the 158 cards of 045. **Cards are composed live, never pre-baked:** composed cards and print sheets go
+a card. About 110 ms for 158 cards. **Cards are composed live, never pre-baked:** composed cards and print sheets go
 to `out/cards/` (git-ignored). Committed: frame templates (`art/frames/`), guides
 (`art/guides/`), sliced containers, fonts. Changing a card's text or numbers changes no
 asset. Picker previews are never committed: they go to the shared
@@ -89,11 +89,11 @@ browser; `npm ci` first):
   into `art-originals/scenes/<round>/raw/`, the whole of `batch` with no ids named. The pool
   (one scene per real card, grouped by tag) and the one preamble are in
   `tools/card-art/scenes.json`: a scene's `card` is a suggestion, not
-  a binding. The latest, batch 4 (045): 60 draws at 3 at once, 31–103 s each, about 17.5 min, 17% of the
+  a binding. Draws run 42–85 s each at 3 at once: 36 took about 11.5 min, about 10% of the
   window. A style
-  line alone came back as detailed concept art; the `emphasis` line (never a
+  line alone comes back as detailed concept art; the `emphasis` line (never a
   photograph or 3D render, and what to do instead) is what pushes a draw toward illustration.
-  "Near-future setting" alone gave a historical foundry and village: the preamble now
+  "Near-future setting" alone gives a historical foundry and village: the preamble
   says clean modern machinery, clothes and buildings, never historical.
 - `npm run scene-picker`: from the raw draws, each scene cut to the program window's shape
   (`<id>.png`), its two cards from `batch` at 300 dpi (`cards/`), the same at true size
@@ -105,16 +105,11 @@ browser; `npm ci` first):
   drawn are the row ids in `picks/scene_batch_<n>.json`. Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
-- Every one of the 159 deck cards has a suggested scene, drawn (batch 5, 083, made it so). Batch 5
-  drew 36: the 28 deck cards with no drawn scene (070's and 076's new cards, `vertical_monopoly`,
-  080's seven liberate capstones, and six scenes written for 076 but never drawn) and the 8
-  redesigned in 059. 36 draws at 3 at once, 42–85 s each, about 11.5 min, about 10% of the
-  window. A scene whose card was cut (27: 070, 076, 078) or redrawn (those 8) has `was` in place
-  of `card`: drawn, in the pool, suggested for nothing. The viewer serves a scene id from the
-  newest `scenes/b<n>/` that has it. 083 respelled three ids (`armored_conduit_trench`,
-  `grant_check_racks`, `data_license_handover`) by copying the drawn files to the new name;
-  the old files stay for the old pickers. How each batch was chosen, and the first rounds'
-  numbers, are in [experiments/history.md](../../experiments/history.md).
+- Every one of the 159 deck cards has a suggested scene, drawn. A scene whose card was cut or
+  redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. The viewer
+  serves a scene id from the newest `scenes/b<n>/` that has it. Three ids (`armored_conduit_trench`,
+  `grant_check_racks`, `data_license_handover`) were respelled by copying the drawn files to the
+  new name; the old files stay for the old pickers.
 - **Originals:** `art-originals/` is a git-ignored junction to
   `C:\Code\gdrive-sync\aicomplete\art-originals` (`mklink /J art-originals <that path>`).
   The scripts other than the pickers fall back to that path. The pickers stop without the

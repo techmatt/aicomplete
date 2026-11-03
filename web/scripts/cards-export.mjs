@@ -1,6 +1,6 @@
 // The card viewer's export: everything `npm run cards` shows, read from the checkout it runs
 // in, with no build and no cargo. Content is content/*.json, player faces are the generated
-// web/card/faces.json (the fast lane keeps it current), pricing lines are docs/card-pricing.md
+// web/card/faces.json (the fast lane keeps it current), pricing notes are docs/card-pricing-notes.json
 // and stats are the newest screen in experiments/results. Written to out/cards-export.json.
 //   node scripts/cards-export.mjs [--root DIR]
 // Nothing here writes card text: a face or a name that isn't in content isn't on the page.
@@ -30,55 +30,15 @@ export const contentHash = (...parts) => createHash('sha256').update(stable(part
 
 const costs = (list = []) => list.map(([r, n]) => `${n} ${r}`).join(', ');
 
-// ---------- docs/card-pricing.md ----------
+// ---------- docs/card-pricing-notes.json ----------
 
-/** Every table row, bullet and paragraph of the doc, with its section. */
-function pricingEntries(md) {
-  const entries = [];
-  let section = '';
-  let columns = null;
-  let bullet = null;
-  const flush = () => {
-    if (bullet) entries.push(bullet);
-    bullet = null;
-  };
-  const cells = (l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
-  for (const line of md.split(/\r?\n/)) {
-    if (line.startsWith('#')) {
-      flush();
-      columns = null;
-      section = line.replace(/^#+\s*/, '');
-    } else if (line.startsWith('|')) {
-      flush();
-      if (/^\|[\s:|-]+\|?\s*$/.test(line)) continue; // the rule under a header
-      if (columns) entries.push({ section, columns, cells: cells(line) });
-      else columns = cells(line);
-    } else if (/^- /.test(line)) {
-      flush();
-      columns = null;
-      bullet = { section, text: line.slice(2).trim() };
-    } else if (line.trim()) {
-      // A bullet's next line, or a paragraph: both read as one entry.
-      columns = null;
-      if (bullet) bullet.text += ` ${line.trim()}`;
-      else bullet = { section, text: line.trim() };
-    } else {
-      flush();
-      columns = null;
-    }
-  }
-  flush();
-  return entries;
-}
-
-/** The lines about a card, in doc order (the doc puts the newest change first). */
-function pricingFor(name, entries) {
-  const quoted = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const named = new RegExp(`(^|[^\\p{L}\\p{N}])${quoted}($|[^\\p{L}\\p{N}])`, 'u');
-  return entries
-    .filter((e) => (e.cells ? named.test(e.cells[0]) : named.test(e.text)))
-    .map((e) => (e.cells ? e : { section: e.section, text: e.text.replace(/\*\*/g, ''), mention: !e.text.replace(/\*\*/g, '').startsWith(name) }))
-    .sort((a, b) => Boolean(a.mention) - Boolean(b.mention));
+/** The one current pricing line per card id, where one matters: `{ "<card id>": "<line>" }`. */
+function cardNotes(root, warnings) {
+  const f = join(root, 'docs', 'card-pricing-notes.json');
+  if (!existsSync(f)) return {};
+  const notes = readJson(f);
+  for (const [id, line] of Object.entries(notes)) if (typeof line !== 'string') warnings.push(`docs/card-pricing-notes.json: ${id} is not one line`);
+  return notes;
 }
 
 // ---------- stats ----------
@@ -463,8 +423,7 @@ export function exportCards(root = REPO) {
   for (const c of players) if (!faces[c.id]) warnings.push(`${c.id} has no face in web/card/faces.json: run aic-sim docs`);
   for (const id of Object.keys(faces)) if (!players.some((c) => c.id === id)) warnings.push(`faces.json has ${id}, which is no card: run aic-sim docs`);
 
-  const pricingFile = join(root, 'docs', 'card-pricing.md');
-  const entries = existsSync(pricingFile) ? pricingEntries(readFileSync(pricingFile, 'utf8')) : [];
+  const notes = cardNotes(root, warnings);
   const scenes = sceneMap(root, warnings);
   const lib = readFileSync(join(root, 'crates', 'aic-core', 'src', 'lib.rs'), 'utf8');
   const revision = Number(/RULES_REVISION: u32 = (\d+)/.exec(lib)?.[1]) || null;
@@ -478,11 +437,12 @@ export function exportCards(root = REPO) {
       hash: contentHash(...hashParts),
       scene: scenes[c.id] ?? null,
       inDeck: isPlayer ? deck.has(c.id) || c.tier === 0 : null,
-      pricing: isPlayer ? pricingFor(c.name, entries) : [],
+      pricing: isPlayer ? notes[c.id] ?? null : null,
       reasoned: reasoned ?? null,
       priceGap: reasoned == null || c.cost == null ? null : c.cost - reasoned,
     };
   });
+  for (const id of Object.keys(notes)) if (!out.some((c) => c.id === id)) warnings.push(`docs/card-pricing-notes.json names ${id}, which is no card`);
   for (const id of Object.keys(stats.reasoned)) if (!out.some((c) => c.id === id)) warnings.push(`a reasoned price names ${id}, which is no card`);
   for (const c of out) if (c.inDeck === false) c.keywords.push('not in baseline');
 

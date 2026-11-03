@@ -27,7 +27,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
 - **The wasm build step:** `scripts/build-wasm.mjs` runs `wasm-pack build
   crates/aic-wasm --target web --release` into `web/src/wasm/`, which is git-ignored.
   It takes about 20 s cold and 9 s warm, over 60 s under load: background it there
-  (74 s cold in a fresh target dir, measured at 073). Set `AIC_WASM_PROFILE=dev` for an unoptimized
+  (74 s cold in a fresh target dir). Set `AIC_WASM_PROFILE=dev` for an unoptimized
   build.
 - **Engine changes while the dev server runs:** editing anything under `crates/` or
   `content/` rebuilds the wasm and reloads the page. Editing or adding a file in
@@ -76,7 +76,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
   text) with what is left in each deck, and the red **Lose if** group (Discord cards left, adversary cards left, and **presence gone** with the fewest presence of any seat, red at 1); the adversary row
   (stage, difficulty, adversary compute, threat tier and fronts, the adversary ambassadors and troops on the board, then deck →
   next round's card, face up → this round's card → discard, each card with its stage,
-  text and escalation/war marks; under it the adversary's projects (017: each visible
+  text and escalation/war marks; under it the adversary's projects (each visible
   project a two-line box, name and compute bar then its effect text, cut at the end of
   the second line, all of it on hover; ongoing ones, the resolved count and the deck)); the countries strip with each country's name, its
   cities (clean, aligned, corrupted), adversary pieces and corp units, its megaproject
@@ -166,11 +166,11 @@ checks the following:
 - *Random to end* plays a new baseline game (seed 5) to an outcome;
 - hover details;
 - no page scroll at 1366×768, 1920×1080 and 2560×1440;
-- (020) at the end of the played game, the log names hexes in words (no `C1 #13` in
+- at the end of the played game, the log names hexes in words (no `C1 #13` in
   any line) and its action lines and the step label name cards in words (no
   `snake_case` ids), the header shows the rules revision, and stepping through the
   game stays under 100 ms a step;
-- (022) Page Down / Page Up move between round starts, the speed menu offers 1x 4x 16x,
+- Page Down / Page Up move between round starts, the speed menu offers 1x 4x 16x,
   and hovering a phase group's heading in the log outlines exactly its hexes;
 - a 4-country game (64 hexes) still fits at 1366×768 and 1920×1080;
 - the shared threat row (`configs/shared_row.json`), if that config exists;
@@ -181,16 +181,16 @@ choice, mid-game and end of the game, the layouts, four countries and the shared
 With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there as
 `viewer-mid.png` and `viewer-end.png`. A run takes about 15 s (12-20 s measured).
 
-`npm run e2e:corps` (`scripts/e2e-corps.mjs`, 074) plays the baseline at `station_cubes` 3, with arrivals, city builds and troop marches off and
+`npm run e2e:corps` (`scripts/e2e-corps.mjs`) plays the baseline at `station_cubes` 3, with arrivals, city builds and troop marches off and
 `corrupt_at` 20 so nothing disturbs it: a claimed and a neutral station, a card that overflows in round 2, stored
-cubes, a usable converter beside an unusable one (075: no presence there), and a use. `research cubes` and the converters show in a seat's panel.
+cubes, a usable converter beside an unusable one (no presence there), and a use. `research cubes` and the converters show in a seat's panel.
 
-`npm run e2e:researcher` (`scripts/e2e-researcher.mjs`, 075) plays the baseline at 3 countries, `station_cubes` 3, with the same
+`npm run e2e:researcher` (`scripts/e2e-researcher.mjs`) plays the baseline at 3 countries, `station_cubes` 3, with the same
 quiet board: the Researcher's two tracks with the free station, keep upgrade and both capstones, its seven powers and Patience on
 its panel, the insight it carried into round 2 (shown as `+N`, not a reset), the research cubes it stores once Onyx completes,
 and Peer Review spending 3 of them. Screenshot `web/e2e-out/researcher.png`.
 
-`npm run e2e:sources` (`scripts/e2e-sources.mjs`, 070) plays first legal actions until a
+`npm run e2e:sources` (`scripts/e2e-sources.mjs`) plays first legal actions until a
 face-up threat refuses a seat, then checks the threat's source badge, its sources marked on
 the map, the refusal on the card and the engine's refusal of a forged payment. Same `AIC_URL`;
 screenshot `web/e2e-out/threat-sources.png`.
@@ -206,7 +206,7 @@ screenshot `web/e2e-out/threat-sources.png`.
   `.rs` edit under `crates/` counts, tests and `aic-sim` included, so while someone
   else edits the engine, run the e2e against `vite preview` instead.
 - `board fills its pane` measures a fixed game, baseline seed 11 played by the first legal
-  action, not the random game: that one moved the same build by 60 px at 1366x768 (048). Its
+  action, not the random game: that one moved the same build by 60 px at 1366x768. Its
   threshold comes from what that game reads. A rules change can move it: remeasure before
   reading a layout change into a failure.
 - **Gotcha:** stopping a backgrounded `npm run dev` wrapper can leave the `vite`
@@ -215,7 +215,7 @@ screenshot `web/e2e-out/threat-sources.png`.
 
 ## The sweep
 
-`npm run sweep [-- --quick] [-- --case NAME]` (`scripts/sweep.mjs`, 020) plays and
+`npm run sweep [-- --quick] [-- --case NAME]` (`scripts/sweep.mjs`) plays and
 watches many games at test speed and checks the page at the moments that matter. It
 needs a served viewer (`AIC_URL`, default `http://localhost:5173/`; use a `vite preview`
 snapshot while the engine is edited) and a release `aic-sim` (`AIC_SIM`, default
@@ -258,15 +258,13 @@ snapshot while the engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   newer engine than the page's wasm load with warnings). Its rules twin is the core test
   `invariants_hold_in_random_games` (every action of random games: no negative piles, no
   pieces on the ocean, presence accounted for, a legal action until the end).
-- **Times:** 044, 14 cases, `AIC_SWEEP_SEEDS=1` (1,337 captures): 25 min beside a planner run, `--quick` 6.7 min. 020, for the 10 cases then: `--quick` about 4.5 min;
-  the full run with `AIC_SWEEP_SEEDS=2` (10 cases, 40 games, 1,305 captures) 19.5 min,
-  so the default 3 seeds about half an hour.
-  A step costs 7–30 ms (render included), a capture about 1 s (three sizes).
+- **Times:** 14 cases, `AIC_SWEEP_SEEDS=1` (1,337 captures): 25 min beside a planner run, `--quick` 6.7 min
+  (measured at r21). A step costs 7–30 ms (render included), a capture about 1 s (three sizes).
   Run at most one sweep alongside one browser test lane.
 
 ## Odd input
 
-`npm run odd` (`scripts/odd.mjs`, 044) runs twelve scenarios against a served viewer
+`npm run odd` (`scripts/odd.mjs`) runs twelve scenarios against a served viewer
 (`AIC_URL`), a page reload between each: mashing keys and buttons, *Random to end* twice,
 reloading mid-choice, acting after a seek, resizing and switching tabs during autoplay, a
 frozen page, full storage, broken records through the dialog, old and junk sessions, bad
@@ -298,19 +296,19 @@ screenshot goes to `sweep-out/odd/` (`AIC_SWEEP_OUT`). It counts as one browser 
   crates/aic-wasm --target web` plus `node scripts/wasm-smoke.mjs` about 21 s; `npm run
   e2e` against a running dev server about 15 s.
 - On a fixed port: `npx vite --port $PORT --strictPort` from `web/`, then
-  `AIC_URL=http://localhost:$PORT/ npm run e2e`. At 073 it fails two board-size checks at 1366x768 (725x333 against 338, and the 4-country page): the board shrank earlier and the thresholds were left for a decision.
+  `AIC_URL=http://localhost:$PORT/ npm run e2e`. It fails two board-size checks at 1366x768 (725x333 against 338, and the 4-country page): the board shrank and the thresholds are left for a decision.
 - While Rust or content files are being edited, the dev server rebuilds the wasm and
   reloads mid-run, which breaks e2e (`Cannot read properties of undefined (reading
   'view')`). Check against a snapshot instead: `node scripts/build-wasm.mjs && npx vite
   build && npx vite preview --port $PORT --strictPort`.
 - A backgrounded `npx vite preview` outlives its tool-runner wrapper when that is stopped at
   its time limit, so the port stays taken: stop the `node` process that holds it.
-- **The sweep** (020, the bug hunt's checker): `npm run sweep -- --quick` from `web/` (with
+- **The sweep** (the bug hunt's checker): `npm run sweep -- --quick` from `web/` (with
   `AIC_URL`; needs a release `aic-sim`) plays and watches games and checks the page at the
   moments that matter. Cases, times and gotchas:
   [The sweep](#the-sweep).
 - `web/scripts/shots-017.mjs`, `shots-019.mjs` and `shots-021.mjs` save the viewer shots of
-  their items; how to run them is in [experiments/history.md](../experiments/history.md).
+  their items; how to run them is in their items' write-ups and in git.
 
 ## Card viewer
 
@@ -330,7 +328,7 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   `tools/card-art/scenes.json` wrote for that card, its only link to a card. Country pieces are
   map, not cards, and are not shown.
 - **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads `content/`,
-  `web/card/faces.json`, `configs/baseline.json`, `docs/card-pricing.md` and
+  `web/card/faces.json`, `configs/baseline.json`, `docs/card-pricing-notes.json` and
   `experiments/results/`. It never runs `aic-sim docs`: faces are as committed, so a card
   edited without it shows its old text (the fast lane stops that reaching `main`). **Rebuild**
   on the page exports again without a restart, about 0.1 s.
@@ -338,9 +336,7 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
   most plain agents, then most games); the page says which and warns when it is behind the
   rules. The page's warnings (these and the export's) sit on one collapsed line, *N warnings ▸*,
-  under the filters; it is hidden when there are none. Today that is r34 (`screen-080`: 083 reran `experiments/screen-080.json` on seeds 30300, the frozen build's own
-  seeds, which reproduced 080's win rates exactly, and committed its `results.json`, `cards.csv` and `games.csv`; every
-  card has a row there). Each stat's label carries its revision, as in *Kept % (r34)*. The default agent is the ladder's
+  under the filters; it is hidden when there are none. Today that is r34 (`screen-080`, `experiments/screen-080.json` on seeds 30300; every card has a row there). Each stat's label carries its revision, as in *Kept % (r34)*. The default agent is the ladder's
   highest, a profile counting as its base (`planner:deals=1`). An item whose screen should feed the viewer commits its
   `results.json`, not only a report. Kept % is keeps per 100 games of the
   agent, about the share of games a one-copy card was kept in: the report's kept ÷ offered
@@ -349,10 +345,9 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   for other cards and a correlation for buildings. A CSV under `experiments/results/` with a
   `card` (or `id`) column and a column with `reason` in its name, `card-prices.csv` by
   convention, adds the reasoned price and printed minus reasoned; a `revision` column prints in their labels, as the rules whose costs they were reasoned at. No results: no columns.
-  A file whose `revision` is older than `RULES_REVISION` is passed over (084): no columns, no
+  A file whose `revision` is older than `RULES_REVISION` is passed over: no columns, no
   warnings about its ids; the CLI export names it. Today the only one is
-  `screen-055-prices/card-prices.csv`, reasoned at r23's costs before 076 repriced every card and
-  naming 19 cards since cut, so the columns are off until a price read at the current revision
+  `screen-055-prices/card-prices.csv`, reasoned at r23's costs, so the columns are off until a price read at the current revision
   commits its own `card-prices.csv`.
 - **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
   cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is empty or
@@ -360,16 +355,16 @@ cards -- --port 60476`). If the port is taken it says so and exits.
   the note was saved; `hash` is a SHA-256 prefix of the card's content row and face, key order
   aside (`contentHash` in the export). A planner reads this file directly; a note counts as
   stale when its `hash` differs from that card's in `out/cards-export.json`. Matt gives reviews
-  in the planner chat now, so 084 took the *Review* filter row (has a note, no note, changed,
-  new, one per flag) off the page; the note form in the large view and the badges stay.
+  in the planner chat, so the page has no *Review* filter row; the note form in the large view
+  and the badges stay.
 - **Badges:** *changed since your note* when the hash moved; saving the note again takes it
   off. *New* for a card missing from `review/card-seen.json`, until it is opened, noted or
   *Mark all seen* is pressed. The first run seeds that ledger with the whole set, so nothing
   is new until content adds a card.
-- **Pricing lines** are every table row led by the card's full name and every bullet and
-  paragraph naming it, in the doc's order, with those that only pass by marked *in passing*
-  and sorted last. A short form of a name
-  ("Mutual Aid") doesn't match, and the doc's older sections keep the numbers of their day.
+- **Pricing:** a card's one current pricing line, from `docs/card-pricing-notes.json`
+  (`{ "<card id>": "<line>" }`), shown under *Pricing* in the large view; most cards have
+  none. The item that sets a card's price writes or replaces its line; the line says what is
+  true now, never what changed. `aic-sim docs --check` refuses an id that is no player card.
 - **Leaving a card keeps what was typed:** closing or stepping saves the note. Each save leaves
   the previous file as `review/card-notes.json.bak`. A broken notes file shows on the page and
   refuses saves rather than being overwritten.

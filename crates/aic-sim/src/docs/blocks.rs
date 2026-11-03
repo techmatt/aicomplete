@@ -223,7 +223,7 @@ pub(super) fn corps_block(c: &Content) -> String {
                 m.cubes.to_string(),
                 format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
                 m.converter.words(),
-                if m.after.is_empty() { "lost (075)".to_string() } else { Megaproject::words(&m.after) },
+                if m.after.is_empty() { "lost".to_string() } else { Megaproject::words(&m.after) },
             ]
         })
         .collect();
@@ -304,7 +304,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             t(&["adversary.build_bonus", "adversary.stage2_removed"]),
         ),
         (
-            "A still shorter Discord deck (027: was a smaller supply, which does nothing now it is a cap): the removed cards count as tips already made, so every printed step still acts (034); tier-2 threats sooner; optionally more corrupted cities per country at setup",
+            "A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup",
             t(&["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"]),
         ),
     ];
@@ -496,7 +496,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "Clear a corruption marker".to_string(),
             format!("{} credits", t("board.clear_cost")),
             format!(
-                "in reach (041): sway {} toward Unity, gain {} credits",
+                "in reach: sway {} toward Unity, gain {} credits",
                 t("board.clear_unity"),
                 t("board.clear_credits")
             ),
@@ -504,7 +504,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         [
             "Move a player ambassador".to_string(),
             format!("{} credit", t("board.move_credits")),
-            "from your supply or the board onto a piece in reach (not the hex it comes from, 020)".to_string(),
+            "from your supply or the board onto a piece in reach (not the hex it comes from)".to_string(),
         ],
         [
             "Gain a player ambassador".to_string(),
@@ -518,13 +518,13 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         ],
         [
             "Harden a facility (a card grants it: Hardened Bunker Complex)".to_string(),
-            "the chips the card prints a token (080: 1)".to_string(),
-            "a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too)".to_string(),
+            "the chips the card prints a token".to_string(),
+            "a player-owned station or factory in reach that is not corrupted, one a troop can strike".to_string(),
         ],
         [
             "Sell chips".to_string(),
             "1 chip".to_string(),
-            format!("gain {} (021: replaces buying chips)", t("board.chips_credits")),
+            format!("gain {}", t("board.chips_credits")),
         ],
         [
             "Sell a card".to_string(),
@@ -555,7 +555,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             format!("{} / {}", t("board.base_unity"), t("board.factory_unity")),
         ],
         ["Unity".to_string(), "removing an adversary troop".to_string(), t("alignment.troop")],
-        ["Unity".to_string(), "Biomia's converter (074)".to_string(), "1 for 2 research cubes".to_string()],
+        ["Unity".to_string(), "Biomia's converter".to_string(), "1 for 2 research cubes".to_string()],
         [
             "Unity".to_string(),
             "liberating a corrupted city (§2: a liberate card or the fallback)".to_string(),
@@ -579,7 +579,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ["Discord".to_string(), "an adversary ambassador on a producing base".to_string(), t("board.base_discord")],
         [
             "Discord".to_string(),
-            "a facility destroyed in war (not by an adversary troop; 018)".to_string(),
+            "a facility destroyed in war (not by an adversary troop)".to_string(),
             t("board.destruction_discord"),
         ],
         [
@@ -606,7 +606,7 @@ pub(super) fn purge_ease_block(r: &Rules) -> String {
     const STEPS: [(&str, &str); 3] = [
         ("first", "adversary ambassadors stop counting"),
         ("second", "adversary troops stop counting"),
-        ("third", "**nodes** stop counting (019, candidate: with node removal rare, Unity buys the win)"),
+        ("third", "**nodes** stop counting (candidate: with node removal rare, Unity buys the win)"),
     ];
     let mut out = String::new();
     for (tips, (which, what)) in list(r, "alignment.unity_ease").iter().zip(STEPS) {

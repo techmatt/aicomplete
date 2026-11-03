@@ -260,12 +260,8 @@ function opsBlock(c) {
 }
 
 function pricingBlock(c) {
-  if (!c.pricing.length) return '';
-  const line = (p) =>
-    p.cells
-      ? `<div class="pricing"><small>${esc(p.section)}</small>${p.cells.map((v, i) => `${i ? `${esc(p.columns[i] ?? '')}: ` : ''}${esc(v)}`).join(' · ')}</div>`
-      : `<div class="pricing"><small>${esc(p.section)}${p.mention ? ', in passing' : ''}</small>${esc(p.text)}</div>`;
-  return `<h4>From docs/card-pricing.md</h4>${c.pricing.map(line).join('')}`;
+  if (!c.pricing) return '';
+  return `<h4>Pricing</h4><div class="pricing">${esc(c.pricing)}</div>`;
 }
 
 function statsBlock(c) {

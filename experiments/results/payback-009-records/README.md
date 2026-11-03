@@ -4,7 +4,7 @@
 is what they were. Git history has them (last at `ce0ed59`).
 
 All at the tuned baseline (rules r3), 2 countries. Why each is worth a look is in
-[`../../payback-009.md`](../../payback-009.md#records-worth-a-look).
+[`../payback-009/payback-009.md`](../payback-009/payback-009.md#records-worth-a-look).
 
 None of these replay today: rules r4 and later changed the game (r6 is the 014 board).
 The last column is what held on r3.

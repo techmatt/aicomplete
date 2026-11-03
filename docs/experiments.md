@@ -26,7 +26,7 @@ thread count; every game is replay-checked). The spec (`experiments/*.json`; a p
 | `selection_seeds` | none | `{"first": N, "games": M}`: the seeds that picked a winner. Adds the report's *Fresh-seed confirmation*. Part of the spec, so `--resume` refuses a stream started without it. |
 | `max_actions` | `5000` | Per-game cap (`timeout`). |
 | `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability by round: for the first `games` seeds of each cell, `rollouts` playouts by `agent` from a guess of the table at the start of each round. `--winprob N` sets `games`. |
-| `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set** (011; it was on, every 1). Probe every n-th real choice: 1-ply greedy scores of every option; close when the best two are within `gap` heuristic points (about credits). `--closeness N` sets `every`. |
+| `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Probe every n-th real choice: 1-ply greedy scores of every option; close when the best two are within `gap` heuristic points (about credits). `--closeness N` sets `every`. |
 | `records` | `4` | Records saved per category. |
 | `gate` | none | `{"z", "min_games", "every"}`: early stopping; `games` becomes each check's cap, see *Gate early-stopping*. |
 | `inject_panic` | none | `{"cell", "seed"}`: that game panics, see *A game that panics*. |
@@ -49,7 +49,7 @@ spec, every cell's and group's measures, the card table, the records), `games.cs
 row per game; `economy_buildings_standing` follows `buildings_standing`) and `cards.csv`
 (per agent, variant, config, difficulty and card), and `records/`, plus
 `games.jsonl` (`aic-games/2`, written as the games finish; see *Results as they go*).
-Each cell in `results.json` has its `countries` (052), read from the resolved config.
+Each cell in `results.json` has its `countries`, read from the resolved config.
 
 `results.json` and `report.md` also carry **agents paired, per variant** (`agent_pairs`,
 *Agents paired, per variant*; none with a single agent): per config × variant × difficulty, A against B on
@@ -75,10 +75,10 @@ a stopped run has every cell's first seeds.
 
 A results dir's `report.md` and `results.json` exist from the start of a run: wait on `^time:` in stderr or on the process, not on the file.
 
-**`run_sim.ps1` and stderr:** the sim writes `out/NAME.err` as it runs (054), so a wait on `panicked` or
+**`run_sim.ps1` and stderr:** the sim writes `out/NAME.err` as it runs, so a wait on `panicked` or
 a look at the 10 s progress lines works mid-run. `out/NAME.exit` marks the end.
 
-**A game that panics (050).** It fails alone: the run goes on, stderr and `failed.jsonl`
+**A game that panics.** It fails alone: the run goes on, stderr and `failed.jsonl`
 name its seed, config, overrides and panic, `report.md` lists them under *Failed games* with
 the line that plays it again, `results.json` has `games_failed`, no measure counts it, and the
 run exits 1. `--resume` plays it again. A spec's `"inject_panic": {"cell": 1, "seed": 51}`
@@ -109,7 +109,7 @@ ends the run.
 - **Win probability by round** from the playouts; checkpoints that are uncertain
   (0.1 < p < 0.9); early lock-in (the result was decided, p ≤ 0.05 or ≥ 0.95 to the end,
   by round 2).
-- **Unspent resources** (068): each seat's credits, chips, energy, antimatter and ambassadors when its last action phase ended (`unspent.<seat>.<resource>` in
+- **Unspent resources**: each seat's credits, chips, energy, antimatter and ambassadors when its last action phase ended (`unspent.<seat>.<resource>` in
   `per_round`, read by `margin.unspent`): *Unspent resources* in `report.md`, `unspent` in `results.json`, the `--gate` readout. The flag is `UNSPENT_HIGH`
   (`crates/aic-sim/src/experiment.rs`, `scripts/screens.py`).
 - **Margin**: on a win, adversary cards left (deck plus the face-up card: rounds to
@@ -127,18 +127,18 @@ ends the run.
   max) and at setup.
 - **Help and counters**: gifts, payments and withdrawals per game; threats countered of
   those dealt.
-- **Strategy health** (008), per cell × agent: buildings played per game (any card of
+- **Strategy health**, per cell × agent: buildings played per game (any card of
   kind `building`, AI uniques included), tier-2 cards played per game, cards played per
   game, and the share of wins with 2 or more buildings played (and standing at the
   end). A findings line per difficulty says whether the top agent plays buildings and
   tier 2. *Top agent*: the highest win rate at the spec's highest difficulty (ties to
   the later agent).
-- **Head to head against greedy** (008): every agent against plain `greedy` (or the
+- **Head to head against greedy**: every agent against plain `greedy` (or the
   first greedy-kind agent) on the same seeds, per cell: won by both / only the agent /
   only greedy / neither, the win-rate difference ± the standard error of the per-seed
   difference, an exact two-sided sign test on the seeds only one of them won, and a
   verdict (*beats greedy* only when ahead with p < 0.05).
-- **Variants against the base** and **removing a module** (008), when a spec has
+- **Variants against the base** and **removing a module**, when a spec has
   several variants: each variant's win rate against the first (the base), paired on
   seeds; for variants that switch a module off (`<module>=off`,
   `<module>.variant=off`), the base minus the off-variant: what the module is worth.
@@ -148,15 +148,14 @@ ends the run.
   degrees-of-freedom correction. On win/loss and on survival.
 
 The per-cell split (agent, probes, total) is in each report's *Timing* table and in
-`games.csv`. Timings on older rules are in
-[experiments/history.md](../experiments/history.md).
+`games.csv`.
 
 **Saved records** (open in the viewer, or `aic-sim replay`), up to `records` each, with
 the reason in the record's `note`: *close losses* at the top difficulty (fewest pieces
 over the bar, then the longest games); *early lock-ins* (decided by round 2 in games of
 3+ rounds, from the win-probability playouts); *surprising wins* (by the weakest agent,
 after the playouts gave them ≤ 0.25, or below the top agent at the top difficulty).
-"Weakest", "top" and "stronger first" are by **measured** strength (011), not ladder
+"Weakest", "top" and "stronger first" are by **measured** strength, not ladder
 tier: agents ranked by win rate at the top difficulty on the base variant (the same
 reading as the strategy-health *top agent*); equal win rates share a rank, so with all
 agents tied nobody is "weakest".
@@ -166,8 +165,7 @@ a rerun into the same directory replaces them.
 ## Opt-in measures and `--quick`
 
 **Expensive measures are opt-in: screen first, probe finalists.** Win-probability
-probes cost about 5× an experiment (007's `tune-after`: 45 minutes probed, 9–12
-without), and closeness about one greedy decision per probed decision. Both are off
+probes cost about 5× an experiment, and closeness about one greedy decision per probed decision. Both are off
 unless a spec or the command line turns them on. The two-stage pattern:
 
 ```sh
@@ -189,10 +187,10 @@ an `engine:samples=2` you meant to compare is easy to lose. It caps seeds at 16 
 
 ## Content levers
 
-**Content levers run on one binary (040).** A variant's `set` (or `--set` on `run` and
+**Content levers run on one binary.** A variant's `set` (or `--set` on `run` and
 `compare`) takes a content overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes.
-`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.effects=[]`, `corps.horizon.project.after=[]` (075: the map's
+`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.effects=[]`, `corps.horizon.project.after=[]` (the map's
 country pieces by lowercase name, the only part of the map an overlay reaches),
 `cards.orbital_embassy.passives.0.amount=2`, `ais.*.economy_track.4.cost=2`,
 `threats.<id>.counter=[["credits",3]]`. It goes through the same parsing and checks as
@@ -209,112 +207,77 @@ sizes is two variants, each repeating the whole list (`c2x`: the lever; `c3x`: `
 the lever; `experiments/archive/screen-041-tune.json`).
 
 **Bisect a batch, first read on the engine.** When a batch of card changes moves a win rate, bisect
-it by groups as overlays on one binary. A first read of a price lever goes on the engine: about 1.4 s
-a game at c2 and 3.9 s at c3 at r26 against the planner's 21 and 70 s, so 400 games take minutes. Size a sweep from `ms_per_game` in a first screen's `results.json`, not from this line: 068's first rules ran the engine at 4.4 s and 20 s. The planner
-confirms: an engine read is a direction only. 064's `project_discord_per` moved the engine 4 points
-and changed no planner game at c2.
+it by groups as overlays on one binary. A first read of a price lever goes on the engine, many times cheaper a game than
+the planner; size a sweep from `ms_per_game` in a first screen's `results.json`. The planner confirms: an engine read is a
+direction only.
 
 ## Reading noise
 
-**Seeds are noisy.** 24 seeds is about ±10: the same rules read 60 / 75 then 50 / 69 at 068. **At c3:** The same r22 rules at c3 d2 read 56 / 38 / 71 on 16 / 16 / 14 seeds
-(33 on the first 12 of the 38's): about ±15 on any one set. A 16-seed calibration can't separate levers under about
-20 points. Compare on the same seeds, confirm on fresh ones.
+**Seeds are noisy.** 24 seeds is about ±10 and 48 about ±7; one 16-seed set at c3 is about ±15, so a 16-seed read can't
+separate levers under about 20 points. Compare on the same seeds, confirm on fresh ones.
 
-`cards.csv` is split by agent, variant, config and difficulty (columns `agent,variant,config,difficulty,card,...`), so per-lever card numbers no longer need a spec per variant. The card table in `report.md` and `results.json` still pools per agent. `kept` and `drawn` in `games.jsonl` include the opening deal and `offered` in `cards.csv` doesn't, so kept ÷ offered passes 100%: use share of games (055).
+`cards.csv` is split by agent, variant, config and difficulty (columns `agent,variant,config,difficulty,card,...`), so per-lever card numbers need no spec per variant. The card table in `report.md` and `results.json` pools per agent. `kept` and `drawn` in `games.jsonl` include the opening deal and `offered` in `cards.csv` doesn't, so kept ÷ offered passes 100%: use share of games.
 
-Don't read an agent's keeps as a human's. Up to r3 (007, 009) agents kept nearly every
-drafted card, so a keep-priced lever measured the agent; 022 and 034 made them
-keep-aware, and at r19 greedy, engine and planner keep 58-69% (d0, d2, 8 seeds a cell). It
-is still their plan, not a table's.
+Don't read an agent's keeps as a human's: it is their plan, not a table's.
 
 ## The band and the gate
 
-**The judge from 082: the strategist.** Screens read with `strategist` (greedy with strategy, `engine:strategy=1`), not
-`sweep`: over 96 seeds a pair it read −2.1 / +6.3 / +4.2 against the sweep before 082 (seeds 30700 and 30800) at about a
-ninth of its time a game (`docs/speed.md`, *The agent tiers at r34*). `sweep` and `planner` take the engine's defaults, so
-since 082 they too play on the value table; the pre-082 judge is `sweep:plan_table=0,w.table=0,w.packet_keep=1`. The sweep
-on the table reads about 2-8 points above the strategist (bp 21 on the fresh set): keep it as the spot check of a verdict
-that matters, and `planner:strategy=1` (86% pooled at d2) as the ceiling. **The 082 read:** `experiments/screen-082.json`
-(eight agents, 1,152 games, 17 min on 6 threads beside another item; four of the agents are planners), `screen-082-d0.json`
-and `-d4.json` (the greedy tiers at the ends of the range, about 1 min each), `screen-082-table-bp/br/pr.json` (each
-strategy pairing fixed with `strat0`, `strat1`: 2,688 strategist games, about 8 min on 6 threads) and
-`screen-082-fresh.json` (`--seed 30800`, three agents, 7.5 min). Read with `python scripts/bench/paired.py DIR` and `python
-scripts/cards/use_read.py DIR`. The tables: `experiments/results/screen-082/agents.md`.
+**The judge: the strategist.** Screens read with `strategist` (greedy with strategy, `engine:strategy=1`), not `sweep`:
+over 96 seeds a pair it reads within a few points of the sweep at about a ninth of its time a game (`docs/speed.md`).
+`sweep` and `planner` take the engine's defaults, so they too play on the value table; the judge without it is
+`sweep:plan_table=0,w.table=0,w.packet_keep=1`. The sweep on the table reads about 2-8 points above the strategist: keep it
+as the spot check of a verdict that matters, and `planner:strategy=1` as the ceiling. Read a screen with `python
+scripts/bench/paired.py DIR` and `python scripts/cards/use_read.py DIR`. The recipe and its costs: `experiments/screen-082.json`
+(eight agents, 1,152 games, 17 min on 6 threads beside another item; four of the agents are planners),
+`screen-082-d0.json` and `-d4.json` (the greedy tiers at the ends of the range, about 1 min each),
+`screen-082-table-bp/br/pr.json` (each strategy pairing fixed: 2,688 strategist games, about 8 min on 6 threads) and
+`screen-082-fresh.json` (three agents, 7.5 min).
 
-**The ballpark read at r34 (080).** The r33 recipe below, with the liberation reads beside it: `experiments/use-080.json` (the
-engine smoke, engine and `engine:always_liberate=1`, 16-32 seeds, about 20-30 s on 6 threads), then `screen-080.json` (the
-`sweep` planner, `sweep:always_liberate=1` and the engine, 48 seeds a pair, 432 games) and `screen-080-off.json` (the same seeds
-with the seven liberate capstones out of the deck: `experiments/configs/no_liberate.json`, written by
-`scripts/configs/no_liberate.py`; the planner and the engine, 288 games): both together about 9 min on 6 threads with nothing
-beside them (about 13 ms a planner decision). Read every one with `python scripts/cards/liberation_read.py DIR... --cards`:
-cities corrupted (and the share of games with one) and liberated (card / fallback) a game, liberations per won game, each
-liberate card's kept / played, Grant uses, Wall stops. `screen-080-pace.json` (engine, 32 seeds) and `screen-080-pace2.json`
-(sweep, 48) are the pace levers; `screen-080-fresh.json` the fresh confirmation. **The frozen build read** (seeds 30300; the
-fresh set 30500 alone in brackets): the planner 70.8 / 77.1 / 77.1 (70.8 / 77.1 / 83.3) for Builder + Protector, Builder +
-Researcher, Protector + Researcher; with the capstones out 39.6 / 37.5 / 58.3; `always_liberate` 70.8 / 91.7 / 87.5; the engine
-56.2 / 79.2 / 60.4. A new corruption in 67 / 35 / 65% of games (60 / 46 / 56%), and 2.1 liberations a won game (1.9-2.2),
-1.5 of them by a card. `screen-080-next.json` (576 games, about 7 min on 7 threads) is the 2x2 run after the freeze on 30600
-(not adopted). Details and the agent finding: rules-history.md, revision 34; the tables:
-`experiments/results/screen-080/liberation.md`. 083 reran `screen-080.json --seed 30300` on main's r34 build (about 5 min
-on 5 threads beside another item) for the card viewer's per-card stats: it reproduced every win rate above, and its
-`results.json`, `cards.csv`, `games.csv` and `report.md` sit beside `liberation.md` (`games.jsonl`, 17 MB, not kept).
+**The ballpark read (Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two players
+only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
+`ai.start_credits` and `ai.slots` are seat-ordered, so each pair's variant restates all three), no c3, no gate; the target
+is 45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`experiments/use-080.json`, 16-32 seeds,
+about 20-30 s on 6 threads; read with `scripts/cards/economy_read.py`, `play_read.py` and `board_read.py --powers`), then
+`experiments/screen-080.json` (the `sweep` planner, `sweep:always_liberate=1` and the engine, 48 seeds a pair, 432 games)
+and `screen-080-off.json` (the same seeds with the liberate capstones out: `experiments/configs/no_liberate.json`, written by
+`scripts/configs/no_liberate.py`; 288 games): both together about 9 min on 6 threads (about 13 ms a planner decision). Read
+liberation with `python scripts/cards/liberation_read.py DIR... --cards`: cities corrupted and liberated (card / fallback)
+a game, liberations per won game, each liberate card's kept / played, Grant uses, Wall stops. An engine screen of 32 seeds a
+cell is about 0.7 s a game, so a 24-cell factorial is under 3 min, and the engine sits close enough under `sweep` to pick
+the planner's bracket. Credits feed the purge almost directly through the gain-an-ambassador project: a size lever's first
+read is how many ambassadors the seats bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
+`corps.<name>.project.<path>`), so a what-if on printed numbers needs no build; a rule what-if, or one on the map, does.
+**Copy the binary before a run, then rebuild freely.** Who keeps and plays which card: `python scripts/cards/play_read.py
+DIR... [--min 1] [--agents A,B]`; board powers: `scripts/cards/board_read.py DIR... --powers --cards`.
 
-**The ballpark read at r33 (078; Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
-players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
-`ai.start_credits` and `ai.slots` are seat-ordered, so each pair's variant restates all three: `experiments/screen-078.json`), no c3,
-no gate; the target is 45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`experiments/use-078.json`, 16 seeds, under a minute on 8 threads; read with
-`scripts/cards/economy_read.py`, `play_read.py` and `board_read.py --powers`), then the `sweep` profile, 48 seeds a cell (about ±7):
-144 games, about 4 min on 6 threads (about 9 s a game in thread time). An engine screen of 32 seeds a cell is about 0.7 s a game, so a
-24-cell factorial is under 3 min. **The engine sat only 0-10 points under `sweep` at r33** (screen-078-levels2 against
-screen-078-planner1, the same sizes), so the engine sizes a lever well enough to pick the planner's bracket. Credits feed the purge
-almost directly through the gain-an-ambassador project: a size lever's first read is how many ambassadors the seats bought
-(`board.std.ambassador`). 078's reads: `experiments/results/screen-078/economy.md`.
+`experiments/band.json` (name `band`) places a win rate: `--seed S --games 96` (Matt: two sets of 48), planner and engine.
+One band can sit 10 points off another on the same build, so read a pool before calling a miss. Read a band's win mix too
+(how many by purge, how many by the Unity deck) before any rule that touches the board's end state.
+`experiments/gate.json` is a gate: checks and the planner × c2 and c3, early-stopped from 12 seeds at 2 SE, capped at 48.
+`scripts/cards/screen.py --gate DIR` reads it and prints the unspent readout; `scripts/bench/gate_close.py plan` picks the
+rows within 2 SE by gap against paired SE, whatever stopped them, and writes `experiments/gate-close-NNN/`: fill to 48, then
+the next 48 seeds with no early stop. `read` merges the runs; `--min-seeds` keeps 96-seed rows apart from early ones
+(`python scripts/bench/gate_close.py read out/gate out/gatec3 out/close-close/* out/close-closec3/* --min-seeds 96`).
 
-**The band and gate at r32 (076).** A planner game costs about 15 s at c2 and 40-43 s at c3 in thread time on 8 threads
-(the same per decision as r31: 31-33 ms at c2, 56-61 at c3), so a 96-seed band of both sizes is 9-10 min and a
-48-seed income screen of both sizes about 5 min a lever. Income levers are overlays (`ais.builder.credits=16`), so a
-what-if on printed income needs no build; c2 seats Builder and Protector only, so a lever on the Researcher moves c3
-alone. Who keeps and plays which card: `python scripts/cards/play_read.py DIR... [--min 1] [--agents A,B]`.
-**Gate-076 measured:** first pass 66 min (1,336 of 3,072 games at the cap), `gate-075-c3.json` 9 min, the closes 52 min (`experiments/gate-close-076/`, 15 rows) and 10 min (`gate-close-076-c3/`, `always_buy_cubes`): 2 h 17 min in all, on 8 threads. Budget 2.5 h and start it 3 h before a hard stop. Read with `python scripts/bench/gate_close.py read out/gate out/gatec3 out/close-close/* out/close-closec3/* --min-seeds 96`.
+`experiments/sanity-line.json`: run it after a change to the rollout policy or `prune`: the line alone should read near the
+engine.
 
-**The band and gate at r31 (075).** A planner game costs about 20 s at c2 and 51-54 s at c3 in thread time (8.8-9
-rounds; the Researcher's seven powers), so a 96-seed band of both sizes is about 15 min on 8 threads and the gate's
-first pass about 2 h. `experiments/use-075.json` adds the engine to the band's cells; the behavior read
-(`experiments/behave-075.json`: Wall off, Patience off, the dear powers at 2 tags) is about 20 min at 32 seeds. Read both
-with `scripts/cards/board_read.py DIR... --powers --cards`. The corp cards are an overlay now (`corps.<name>.project.<path>`,
-lowercase piece name, `*` for every corp), so a payout what-if needs no build. **Gate-075 measured:** first pass
-89 min (1,436 of 3,072 games at the cap), `gate-075-c3.json` 17 min, closes 92 min for 23 rows: budget 3.5 h and
-start it 4 h before a hard stop.
-
-**The band at r30 (074).** `experiments/use-074.json` is the band with the engine added, 384 games, about 11 min on 7 threads; its read is `scripts/cards/corp_read.py`. A rule what-if on content needs its own build: the map isn't reachable by a content overlay.
-
-**The band and gate at r29 (070).** On the fast profile at 8 threads, c2 and c3 run about 24 planner games a minute together (48 games, 117 s): a 96-seed band is 8 min. Content overlays reach a threat's `source` (`threats.manhunt.source="cyber"`) and any card number, so a what-if needs no build; a rule what-if does. **Copy the binary before a run, then rebuild freely.** `npm run e2e` has a sibling for threat sources: `npm run e2e:sources`.
-
-Gate-070: 1,403 of 2,976 games, 48 min on 8 threads; closes 19 rows, 73 min, c3 45 min of it. A 96-seed band took 9 min, and two fresh ones on the same frozen build read 61 / 57 and 46 / 46: one band can sit 10 points off, so read a pool before calling a miss; a planner game runs about 20 s at c2 and 26 s at c3 on 8 threads at r29.
-
-`experiments/band.json` (name `band`) places a win rate: `--seed S --games 96` (Matt: two sets of 48), planner and engine. `experiments/gate.json` is gate-070: 30 checks and the planner × c2 and c3, early-stopped from 12 seeds at 2 SE, capped at 48. `scripts/cards/screen.py --gate DIR` reads it and prints the unspent readout; `scripts/bench/gate_close.py plan` picks the rows within 2 SE by gap against paired SE, whatever stopped them, and writes `experiments/gate-close-NNN/`: fill to 48, then the next 48 seeds with no early stop. `read` merges the runs; `--min-seeds` keeps 96-seed rows apart from early ones. Read a band's win mix too (how many by purge, how many by the Unity deck) before any rule that touches the board's end state: r28's 75 was 56% purge, and that was the whole story of 070's first band.
-
-`experiments/sanity-line.json`: run it after a change to the rollout policy or `prune`: the line alone should read near the engine (r26, seeds 19000, 48 a cell: engine 50 / 46, `planner:alts=0` 42 / 42, paired -8 ±9, -4 ±11; 160 s on 8 threads).
-
-
-**Gate early-stopping (040).** A spec with `"gate": {"z": 2.0, "min_games": 8, "every": 4}`
+**Gate early-stopping.** A spec with `"gate": {"z": 2.0, "min_games": 8, "every": 4}`
 treats `planner:<check>` as a check of `planner` in the same variant and difficulty, and
 `games` as each check's cap. Seeds go in blocks (8, then 4 at a time); after each block a
 check stops if its gap clears `z` standard errors (sign test; `clears_noise` in `gate.rs`) or the seeds left can't turn
-its sign back at that noise (`sign_settled`: so a stopped row can sit inside 2 SE, and isn't "clearly behind"); an agent runs until its last check stops. The verdict is the
-gap's sign, as in the old `--gate` tables. Decisions come only from finished blocks, so
+its sign back at that noise (`sign_settled`: so a stopped row can sit inside 2 SE, and isn't "clearly behind"); an agent
+runs until its last check stops. The verdict is the gap's sign. Decisions come only from finished blocks, so
 the games played don't depend on threads or timing, and `--resume` rebuilds them from
-`games.jsonl`. A panicked game counts for neither side and fails the gate (*A game that panics*). `report.md`'s *Gate* section and `results.json`'s `gate` give each check's
-games, why it stopped, and the game time against an estimate at the cap. Measured: `python
-scripts/bench/gate_stop_rate.py [z]` simulates the rule; at `z` 2 a level check stops early
-about half the time and about 1% of runs get the sign the cap wouldn't. `experiments/archive/gate-034.json`
-is the 034 gate this way: **872 of 1,728 games, 4.2 h of game time against 7.1 h at the cap and
-5.5 h for 034's hand-cut plan, 1h 4m on 4 below-normal threads**, every verdict the same
-(`experiments/results/gate-034-earlystop/gate.md`).
+`games.jsonl`. A panicked game counts for neither side and fails the gate (*A game that panics*). `report.md`'s *Gate*
+section and `results.json`'s `gate` give each check's games, why it stopped, and the game time against an estimate at the
+cap. `python scripts/bench/gate_stop_rate.py [z]` simulates the rule; at `z` 2 a level check stops early about half the
+time and about 1% of runs get the sign the cap wouldn't.
 
-**Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is
-`min_games` × cells and the cap `games` × cells; early stopping played about half the cap at 034.
-`experiments/gate.json` (gate-070): 31 agents × 2 sizes = 62 cells, 12 seeds a check, so 744 games in the first block and 2,976 at the cap. Measured, in planner games a minute: **30.7 at c2 and 15.6 at c3 on 8 (r28, 069, `--profile fast`; the engine 258 and 124)**; earlier revisions are in [history.md](../experiments/history.md). A run's time on 8 threads is sum over cells of games × 16 s (c2) or 31 s (c3) ÷ 8, counting the planner row as a cell: gate-068, 56 check cells and 2 planner cells of 48 seeds, is 2.2 h at the cap, and at the 47% of the cap 068 played, about 50 min; closing its 18 rows to 96 seeds about 45 min. Budget 1 h for the gate (gate-070 took 48 min). Start about 2 h before a hard stop with the rules frozen.
+**Budgeting a gate.** Cells = agents × variants × difficulties × configs; the first block is `min_games` × cells and the
+cap `games` × cells; early stopping plays about half the cap. A run's time is the sum over cells of games × a game's time
+(from a first screen's `ms_per_game`) ÷ threads, counting the planner row as a cell. The last gate run (r32, 8 threads)
+took 2 h 17 min with its closes: budget 2.5 h and start it 3 h before a hard stop with the rules frozen.
 
 Every 10 s stderr prints the games done and the time left at that rate. For a gate that is to the cap, so the most it can take; `report.md`'s "N of M" is the real total. Before a gate, `aic-sim experiment
 SPEC --games 1 --out out/preflight` plays one seed a cell: a crash, a bad override or a dead agent
@@ -323,24 +286,17 @@ earlier stream aside). In a long gate, watch stderr too: `panicked` means a game
 run goes on, and `^time: wall` that an `experiment` finished.
 
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
-gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
+gate a `--seed` no screen of this revision used, or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. r32 (076): screens 29000-29300 (r31's cards on 29000 too), 29400 and 29500 band, 29600 gate and its closes (to 29695), 29696-29743 more seeds of `always_buy_cubes`, 29800 the eval probe; 29400 and 29500 again for the final build's band, 29600 for a stopped gate-row replay (`experiments/gate-076-replay/`). r33 (078): 29900 the engine screens and use reads (16-32 seeds), 30000 the full-size planner read, 30100 the planner brackets (24 seeds), 30200 the fresh 48-seed read. r34 (080): 30300 the planner reads (the first build, the pace levers, the frozen build; liberation on and off), 30400 the engine smoke and the engine pace screen (16-32 seeds), 30500 the fresh confirmation, 30600 the 2x2 after the freeze (`screen-080-next.json`). Next free: 30700.
+keeping the seeds that picked that revision: r34: 30300 the planner reads (080), 30400 the engine smoke and pace screen,
+30500 the fresh confirmation, 30600 the 2x2 after the freeze (`screen-080-next.json`); 30700 the 082 screens, 30800 their
+fresh confirmation, 31000 082's antimatter read. Next free: 31100.
 
 ## Reading prices
 
-**Card pricing read (055, r24)**: `experiments/archive/screen-055-prices.json`, which today's binary refuses (`always_consolidate` went in 066): read it as a recipe (planner, tier-2 rush and
-always-Consolidate, paired, c2 and c3, 160 seeds: 960 games, 63 min on 8 threads, **about 15 planner
-games a minute** since 054's deals; `--games 48`: 288 games, 19 min), read with `python
-scripts/cards/price_read.py DIR [--agent planner] [--csv OUT]`. It gives offered, kept and played per
-game, and win deltas stratified on rounds, against the card's tier. `cards.csv` has no outcome, so it
-reads games.jsonl. Results: `experiments/results/screen-055-prices/prices.md`, whose `results.json`
-and `games.csv` feed the card viewer. A price sweep is a spec of overlays in `set`; paired against a
-base on the same seeds a 4-lever sweep on two agents at 48 seeds is 54 min, so a price pass gets about
-three sweeps in four hours; one guess (061) is about 0.8 × that, 43 min, so four. Planner games a
-minute on 8 threads, one guess: 29.6 at c2, 8.8 at c3. The default since 064, four deals, runs 1.5 × as
-long a game (22.7 at c2, 6.9 at c3, from `ms_per_game`, r27), so a sweep costs about what 054's did. r28 since 069, `--profile fast`:
-30.7 and 15.6; `sweep` (one guess) about 44 and 24, scaled from 069's screen, so a 4-lever sweep on two agents at 48 seeds is about 26 min and a price pass gets about nine in four hours.
+`python scripts/cards/price_read.py DIR [--agent planner] [--csv OUT]` gives offered, kept and played per game, and win
+deltas stratified on rounds, against the card's tier; `cards.csv` has no outcome, so it reads games.jsonl. A price sweep is
+a spec of overlays in `set`, paired against a base on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 
 ## Tuning sweeps
 
@@ -354,15 +310,7 @@ python scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag try1 \
     --var "base=" --var "supply8=adversary.supply_per_country=8;cards.keep_tier2=2"
 ```
 
-**Past sweeps** (007 tuning, 008 engine agent, 009 payback and its content patches,
-011 proposals), their recipes and timings, and the 012 speed-up are in
-[experiments/history.md](../experiments/history.md). Their write-ups are
-`experiments/tuning-007.md`, `engine-008.md`, `payback-009.md` and `proposals-011.md`.
+## Past runs
 
-## Older specs
-
-**Specs the binary refuses today** (the rules or configs they name are gone) are in
-`experiments/archive/`, listed with why in
-[experiments/history.md](../experiments/history.md). Every spec left in `experiments/`
-runs on the 014 board. Committed results from r5 and earlier are history: their game
-records do not replay.
+Every item's write-up, by item, is indexed in [experiments/history.md](../experiments/history.md). Specs the binary refuses
+today are in `experiments/archive/`; committed results from r5 and earlier do not replay.

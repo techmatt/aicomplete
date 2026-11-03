@@ -1,12 +1,12 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies` (082).
+The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`.
 
 Always run the sim in release.
 
 ```sh
 S=target/release/aic-sim
-$S run configs/baseline.json --games 2000                          # the 014 board, 2 countries, difficulty 0
+$S run configs/baseline.json --games 2000                          # 2 countries, difficulty 0
 for n in 1 2 3 4; do $S run configs/baseline.json --games 500 --set countries=$n; done
 $S compare configs/baseline.json configs/shared_row.json --games 2000  # threat variants
 $S compare configs/baseline.json configs/baseline.json --set-b threats.variant=off  # off-variants
@@ -18,7 +18,7 @@ $S show configs/baseline.json                      # resolved config, hash, ever
 $S modules                                         # registry: modules, variants, params, phases
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
-$S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # 082: each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy
+$S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy
 ```
 
 | Option | Default | Meaning |
@@ -44,7 +44,7 @@ The output shows each config's hash, content hash and engine version, plus an
 - games by end reason and by end round;
 - decisions per game, options per decision, forced decisions %, and max options;
 - adversary ops per round (mean, and the max in any one round), and at setup;
-- every module counter, averaged per game; a `*_round` counter (the round of the first corruption, of the first project) over the games that reached it ("mean where reached"), and a round's own counter (`_rNN`, `.rNN`) over the games that reached that round (020);
+- every module counter, averaged per game; a `*_round` counter (the round of the first corruption, of the first project) over the games that reached it ("mean where reached"), and a round's own counter (`_rNN`, `.rNN`) over the games that reached that round;
 - `replay ok`;
 - `wall ms/game`: the run's wall time over its games, all threads at once (so it falls with `--threads`).
 

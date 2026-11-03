@@ -2,7 +2,7 @@ use aic_core::content::{content, Resource, Uncover};
 use aic_core::{Config, Rules};
 
 use super::blocks::*;
-use super::run::{op_docs, unknown_params};
+use super::run::{card_note_failures, op_docs, unknown_params};
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
 
@@ -99,4 +99,20 @@ fn a_track_space_prints_income_upgrade_and_cost() {
         capstone: None,
     };
     assert_eq!(space(&u), "+2 credits, +1 chip, **keep upgrade** (cost 3)");
+}
+
+#[test]
+fn card_notes_name_cards_one_line_each() {
+    let ids = ["interceptor_battery", "requisition"];
+    assert!(card_note_failures(r#"{"interceptor_battery": "a line"}"#, &ids).is_empty());
+    assert_eq!(card_note_failures(r#"{"no_such_card": "a line"}"#, &ids).len(), 1);
+    assert_eq!(card_note_failures(r#"{"requisition": "two\nlines"}"#, &ids).len(), 1);
+    assert_eq!(card_note_failures("[]", &ids).len(), 1);
+}
+
+#[test]
+fn the_card_notes_on_disk_name_cards() {
+    let text = include_str!("../../../../docs/card-pricing-notes.json");
+    let ids: Vec<&str> = content().cards.iter().map(|c| c.id.as_str()).collect();
+    assert!(card_note_failures(text, &ids).is_empty());
 }

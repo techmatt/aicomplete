@@ -20,6 +20,7 @@ const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
 const FACES_JSON: &str = "web/card/faces.json";
 const PLAYER_AID_MD: &str = "docs/player-aid.md";
+const CARD_NOTES: &str = "docs/card-pricing-notes.json";
 
 fn player_aid_md() -> String {
     format!(
@@ -271,6 +272,25 @@ pub(super) fn unknown_params(text: &str, r: &Rules, ops: &[String]) -> Vec<Strin
     out
 }
 
+/// What is wrong with `docs/card-pricing-notes.json` (the card viewer's one current pricing line per
+/// card id): not an object of strings, or an id that is no player card.
+pub(super) fn card_note_failures(text: &str, ids: &[&str]) -> Vec<String> {
+    let notes: BTreeMap<String, String> = match serde_json::from_str(text) {
+        Ok(n) => n,
+        Err(e) => return vec![format!("{CARD_NOTES}: not an object of card id to one line: {e}")],
+    };
+    let mut out = Vec::new();
+    for (id, line) in &notes {
+        if !ids.contains(&id.as_str()) {
+            out.push(format!("{CARD_NOTES}: {id} is no player card"));
+        }
+        if line.trim().is_empty() || line.contains('\n') {
+            out.push(format!("{CARD_NOTES}: {id} is not one line"));
+        }
+    }
+    out
+}
+
 /// Regenerates the docs, or with `--check` reports what is stale.
 pub fn run(o: &Options) {
     let r = rules(BASELINE, &load(BASELINE, &[]));
@@ -313,7 +333,10 @@ pub fn run(o: &Options) {
     for f in &failures {
         eprintln!("{HARMS_MD}: {f}");
     }
-    let spelled = crate::spelling::failures();
+    let mut spelled = crate::spelling::failures();
+    spelled.extend(crate::current_docs::failures());
+    let ids: Vec<&str> = content().cards.iter().map(|c| c.id.as_str()).collect();
+    spelled.extend(card_note_failures(&on_disk(CARD_NOTES), &ids));
     for s in &spelled {
         eprintln!("{s}");
     }

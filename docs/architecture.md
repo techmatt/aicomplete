@@ -34,7 +34,7 @@ rules themselves are in [rules.md](rules.md).
   wasm32, which made native and browser games differ. Never draw a `usize` through
   rand.
 - **No hash-order leaks**: every map is ordered (a `BTreeMap`, or in the state a
-  `FlatMap`, 030: `key.rs`), and iteration follows seat, piece or `Dir::ALL` order. Never
+  `FlatMap`, `key.rs`), and iteration follows seat, piece or `Dir::ALL` order. Never
   `HashMap`/`HashSet` in anything that reaches the state or results. A state's names are
   `Key`s: interned, one word to copy, ordered and written as their text, so the JSON is
   what `String`s and `BTreeMap`s wrote. The interner is the core's one global: a cache
@@ -118,7 +118,7 @@ variant. Abridged:
   A single integer is accepted for a list and normalized to a one-item list.
 - **cards**: content ids, for variants that play cards (`uses_cards`). A card belongs
   to at most one module. In the baseline the `cards` module lists every player card
-  (no AI uniques since 078); leaving a card out removes it from the game.
+  (there are no AI uniques); leaving a card out removes it from the game.
 - **round**: the phase sequence, as `"<module>.<phase>"`:
   - a phase may appear more than once, or not at all;
   - `"a.play+b.build"` combines several modules' **decision** phases into one
@@ -152,7 +152,7 @@ variant. Abridged:
     files through `content::overlaid`, which runs `Content::parse`'s checks and keeps
     each distinct overlay for the process's life (`Rules` hold `&'static Content`).
     `Rules::content_hash` is the overlaid hash; `aic_core::content_hash()` the embedded
-    one. An empty overlay serializes to nothing, so configs without one hash as before.
+    one. An empty overlay serializes to nothing, so a config without one hashes as if the list did not exist.
     It is an experiment lever: a lever that wins moves into `content/`. Card text follows
     an overlay; written text (threats, projects, adversary, Alignment) and the web
     client's `wasm.content()` don't.
@@ -173,8 +173,8 @@ way of doing it. The difference matters for tuning:
 | A new effect primitive or selector | code: an [`Op`] variant in `op.rs` with its `slots`, and its arm in `effects::run` (`modules/effects/mod.rs`, a long body in a topic file there; a standing or twist op: the rule that reads it) |
 | A new kind of player action | code (`Action`); a structural change |
 
-The modules are `board` (014: pieces, production, war, ambassadors, standard actions),
-`adversary` (014: deck, build, spread, corrupt), `threats`, `alignment` (013), `economy`,
+The modules are `board` (pieces, production, war, ambassadors, standard actions),
+`adversary` (deck, build, spread, corrupt), `threats`, `alignment`, `economy`,
 `ai` and `cards` (`crates/aic-core/src/modules/`; `board`, `cards` and `effects` are
 directories, a `mod.rs` and one file a topic); `common.rs` (board queries, token
 names, reach) and `effects/` (what every instant [`Op`] does) are shared code;
@@ -203,7 +203,7 @@ accepted and play (the config tests assert both). A module's effect is measured 
 `off` variant instead (`threats`, `alignment` and `cards` have one).
 
 A rule that depends on another module's *variant* reads `World::variant("<module>")`
-(none do today: 016 removed the `overflow` variant). Everything that
+(none do today). Everything that
 places or removes adversary ambassadors goes through `adversary::place`, `remove`,
 `remove_piece`, `build_all`, `spread`, `corrupt_city` and `corrupt_station`, so the supply,
 cancellation and node-making hold everywhere; `build_all` places what
@@ -221,8 +221,7 @@ Each variant is a `VariantDef` (in `module.rs`), holding:
 - `phases`: `PhaseSpec { name, kind: Auto | Decision, doc }`, the phases it contributes
   to the round;
 - `rng`: the RNG purposes it draws from;
-- `uses_cards`: whether it plays content cards (021: card costs are plain numbers; the
-  `{"param": ...}` costs that became tunables are gone, 015's call 7);
+- `uses_cards`: whether it plays content cards (card costs are plain numbers);
 - `build`: turns validated params into a `Box<dyn Module>` with typed fields.
 
 A `Module` implements whichever of these hooks it needs:
@@ -287,9 +286,8 @@ module calls `Cx::end`, or as a `round_limit` loss after 1000 rounds.
 pass. One team agent drives every seat, and `legal_actions` lists all seats' actions
 together (seat by seat; within a seat, module by module in the order the round entry
 lists them, then the pass if allowed). In the baseline, seats' actions may depend on
-each other (pooled threat counters, giving insight, the shared board): the placeholder-era rule
-that simultaneous actions commute was dropped, since the ruleset has players help each
-other. Order matters the way it does at a table where the team talks it through.
+each other (pooled threat counters, giving insight, the shared board): simultaneous actions
+need not commute, since the ruleset has players help each other. Order matters the way it does at a table where the team talks it through.
 
 ### Adding a variant
 
@@ -321,40 +319,40 @@ other. Order matters the way it does at a table where the team talks it through.
 
 Content is data in `content/`, composed from code primitives:
 
-- **Player cards** (`cards.json`, 021): a `tier` (1 or 2; 0 for an AI's unique card or
+- **Player cards** (`cards.json`): a `tier` (1 or 2; 0 for an AI's unique card or
   starting building), a `kind` (`building`, `program`: stays in the play area, or
-  `event`: discarded), a credit `cost` and optional `insight` (022: to play, shared
-  with keeps), `energy`, `chips`, `antimatter` and `research_cubes` (080) costs and `lowers` (022: incomes
+  `event`: discarded), a credit `cost` and optional `insight` (to play, shared
+  with keeps), `energy`, `chips`, `antimatter` and `research_cubes` costs and `lowers` (incomes
   the play lowers for good, `[["credits", 1]]`), 1-3 `tags` (`vocab::Tag`), `needs` (tags in play), `effects`
   (ops: on play, or when built), `passives` (ops: a building's standing effects), an
   `ability` (once a round; buildings only; `cost` from the seat, `tokens` from the
-  card; 076: `or`, a second ability, makes it "A, OR B", one use a round), `replaces` (a tag: built over one of your
+  card; `or`, a second ability, makes it "A, OR B", one use a round), `replaces` (a tag: built over one of your
   buildings whose top card carries it), `tokens` (`{kind, per_round}`, a type from
-  `vocab::TokenKind`; 076: `per_round` is 0 on every card, Matt's ruling 12, and "here" in an op names this card), `keywords` (read by `scripts/cards/cards_doc.py` and the card viewer, not by the core, not printed; `help` marks
+  `vocab::TokenKind`; `per_round` is 0 on every card, Matt's ruling 12, and "here" in an op names this card), `keywords` (read by `scripts/cards/cards_doc.py` and the card viewer, not by the core, not printed; `help` marks
   a help card) and `unique`. A card has no `text`: `aic_core::face` generates
   its icons and words from these fields, and a new op doesn't compile until it has a face. List the id in the `cards` module's config
-  `cards`, run `python scripts/configs/shared_row.py`, then `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`
-  (023). Every op, with where it is printed, is listed in [ops.md](ops.md).
+  `cards`, run `python scripts/configs/shared_row.py`, then `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`.
+  Every op, with where it is printed, is listed in [ops.md](ops.md).
 - **Threats** (`threats.json`): `counter` costs and `effects` (ops, with `Spot`s naming
   the pieces they hit).
 - **Adversary cards** (`adversary.json`): stage, text, `twists` (ops), escalation.
-- **Adversary projects** (`projects.json`, 017): `stage` (1 cheap, 2 big), `cost` per
+- **Adversary projects** (`projects.json`): `stage` (1 cheap, 2 big), `cost` per
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
 - **AI boards** (`ais.json`): credit production, innate
-  passives, printed `tags` (they count for requirements only), the two presence tracks (`economy_track`, and `play_track`, the card-play track; `presence` and `presence2` before 080: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
+  passives, printed `tags` (they count for requirements only), the two presence tracks (`economy_track`, and `play_track`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
   `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, unique cards, a
-  `start` building; `powers` are `{name, text, tags, cost, effects}` (021; `tags` may
+  `start` building; `powers` are `{name, text, tags, cost, effects}` (`tags` may
   name `any`). Slots and starting credits are config lists read by seat, `ai.slots` and
   `ai.start_credits`: a tunable lives in a config, so a board's sheet spans both files.
 - **Alignment cards** (`alignment.json`, the Unity and Discord decks): `side` (`unity`
   or `discord`), `tier` (1 or 2), `text`, `effects` (ops: resolved when its side's
-  bucket tips) and `steps` (017: from `at` tips of its side, other `effects`).
+  bucket tips) and `steps` (from `at` tips of its side, other `effects`).
   Cards are one-shot; there is no `ongoing` field.
 - **Country pieces** (`map.json`, `countries`): cities, the order cities start
   corrupted in (`corrupted`), ocean, setup facilities (research stations, factories),
   the starting presence spot (`presence`), the printed industrial zones (`industry`), and the
   corp's megaproject card: `name` is the corp's, `flavor` what it does, `neutral_station` its
-  neutral station's hex (074). The card's `player`, `adversary`, `converter.effects` and `after`
+  neutral station's hex. The card's `player`, `adversary`, `converter.effects` and `after`
   are `Op` lists, in the `Player`, `Team`, `Player` and `Team` slots: `Megaproject::words` prints
   the ops they use, so a new op there needs its words.
 
@@ -395,7 +393,7 @@ new-player paragraphs and the game's end), all of [ops.md](ops.md), [harms.md](h
 and `web/card/faces.json`; `python scripts/cards/cards_doc.py`, which reads the faces, writes
 [cards.md](cards.md). `aic-sim docs` also fails on a broken harm distribution check
 (`harm_failures`).
-`--check` also refuses a British spelling (`crates/aic-sim/src/spelling.rs`). A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
+`--check` also refuses a British spelling (`crates/aic-sim/src/spelling.rs`), a Markdown heading like `## 080's changes` in the current docs (`crates/aic-sim/src/current_docs.rs`: docs state the current game, history goes in the item's write-up), and an id in `docs/card-pricing-notes.json` that is no player card. A fast-lane test fails if any is stale, or if rules.md names a `module.param` or a bare
 `snake_case` name that is neither a tunable nor an op (`NOT_TUNABLES` lists the action names,
 content fields and retired parameters it may also print). Change the source, not the table. A block is a pure function of `Rules` or `Content`
 in `crates/aic-sim/src/docs/blocks.rs`, named in `run` (`run.rs`); its unit tests in
@@ -505,7 +503,7 @@ In the baseline:
   fronts and the clock's step as globals, each seat's presence on the board and left
   on its track, and ambassadors on the board; it publishes every standard action with
   its cost (`View.standard`, read by the viewer's labels) and each adversary troop's
-  next target and how many marches away (`View.arrows`, 019, drawn as arrows); bookkeeping
+  next target and how many marches away (`View.arrows`, drawn as arrows); bookkeeping
   `board.<flag>.*`, `board.project.*`, `board.project_done.*`, `board.track.*`, `board.track2.*`.
 - `economy` adds each seat's income per resource (bookkeeping
   `economy.production.*`, one-time permanent gains, counted in the income;
@@ -514,7 +512,7 @@ In the baseline:
   hand and drafted cards (status: the keep price, `keep 1 insight`), tokens in each
   token card's text, tags, Aegis Dome Array used, and the decks.
   Bookkeeping: `cards.picked.*`, `cards.civic_used.*`,
-  `cards.kept_round.*`, `cards.tokens.*`. Piles (021):
+  `cards.kept_round.*`, `cards.tokens.*`. Piles:
   `cards.built.<s>` (active buildings), `cards.under.<s>.<top>` (splayed under `top`,
   bottom first), `cards.played.<s>` (programs).
 
@@ -555,7 +553,7 @@ differ.
 - **Counters** in `GameState::stats`, deterministic and replayed, and in the state's fingerprint,
   so adding or renaming one moves the golden even when play doesn't:
   - `per_round["<module>.<name>"][r]`: per-round counters, entry 0 setup, entry `r`
-    round `r` (017). `adversary.ops` counts adversary operations (a proxy for table
+    round `r`. `adversary.ops` counts adversary operations (a proxy for table
     time; the sim's records keep it as `adversary_ops` and `setup_ops`),
     `adversary.compute` and `adversary.compute_blocked` the compute made and blocked;
   - `actions`: player actions applied, answered choices included;
@@ -609,8 +607,8 @@ fingerprints), `driver.rs` (`play`/`replay` with an `Agent`, `PlayedGame`), `vie
 (the generic view clients draw), `record.rs` (`SavedGame`, the game record format), `tests/` (`mod.rs`: helpers,
 `variant_matrix`, `golden_game`; one file per area: config, map, setup, adversary,
 plan, ambassadors, boards, production, war, march, factories, standard_actions, freeing, threats,
-threat_sources, alignment, cards, science, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`
-(020): checks after every action of random games).
+threat_sources, alignment, cards, science, face, projects, ops, overlay, presence_powers, endgame, determinism, view; `invariants`:
+checks after every action of random games).
 `modules/threats/`: `mod.rs` (the module), `sources`, `ops`. `modules/board/`: `mod.rs` (the module, its phases), `presence`, `ambassadors`, `production`,
 `standard`, `troops`, `destroy`, `view`. `modules/cards/`: `mod.rs`, `deck`, `play`, `price`,
 `sacrifice`, `tableau`, `view`. `modules/effects/`: `mod.rs` (`run`, the one dispatching match),

@@ -21,7 +21,7 @@ const OUT = join(REPO, 'out', 'cards-check');
 const ROOT = join(OUT, 'root');
 
 rmSync(ROOT, { recursive: true, force: true });
-for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/layout.json', 'art/frames/r3/fit.json', 'docs/card-pricing.md', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
+for (const p of ['content', 'configs', 'web/card/faces.json', 'web/card/layout.json', 'art/frames/r3/fit.json', 'docs/card-pricing-notes.json', 'tools/card-art/scenes.json', 'crates/aic-core/src/lib.rs', 'experiments/results/screen-027-endgame']) {
   mkdirSync(dirname(join(ROOT, p)), { recursive: true });
   cpSync(join(REPO, p), join(ROOT, p), { recursive: true });
 }
@@ -131,9 +131,9 @@ try {
   check(notes().commandeer?.comment === 'typed, never saved', 'leaving a card keeps what was typed');
   check((await fetch(`http://127.0.0.1:${PORT}/cards.html`)).ok, 'served on 127.0.0.1 as well as localhost');
 
-  await click(page, '[data-id="field_sensor_grid"]');
+  await click(page, '[data-id="interceptor_battery"]');
   await page.until(`document.getElementById('detail').open`, 'a player card');
-  check(await page.js(`document.querySelector('.detail').textContent.includes('card-pricing.md')`), 'large view: a pricing line');
+  check(await page.js(`!!document.querySelector('.detail .pricing')`), 'large view: its pricing note (docs/card-pricing-notes.json)');
   check(await page.js(`!!document.querySelector('.detail .card img.art')`), 'large view: scene art');
   await sleep(1500);
   await shotTo(page, OUT, 'detail-card');

@@ -95,8 +95,12 @@ experiments, speed, scripts, web, card art.
   regenerates them.
 - **Operational facts go in the page for their area:** build, test and this machine in
   `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's flags in
-  `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes to
-  `experiments/history.md`.
+  `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes in
+  its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
+- **Docs state the current game.** An item updates the current text in place, never appends an
+  'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a
+  heading like `## 080's changes`. A card's pricing note for the viewer is one current line in
+  `docs/card-pricing-notes.json`, keyed by card id, written by the item that sets the price.
 
 ## Report
 

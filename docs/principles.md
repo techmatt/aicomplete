@@ -25,17 +25,17 @@ The standards every module and every rules change is judged against.
 > wherever it works, for every resource.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is
-played should sit near credit income ÷ insight income: at r33 about 25-35 credits ÷ 5-7 insight ≈ 5,
-and tier-1 cards have a median of 6 credits with tier 2 about 12 (076's prices, kept by 078).
+played should sit near credit income ÷ insight income: about 25-35 credits ÷ 5-7 insight ≈ 5 (read at r33),
+and tier-1 cards have a median of 6 credits with tier 2 about 12.
 
-- **Credits are the outlier.** 40 / 46 / 40 to start (078's scaffold; 068: `ai.start_credits`, the Protector higher), 25 / 21 / 18 a
-  round printed on the Builder, Protector and Researcher (078: about 1.5 × r32's, Foundry Core's +1 folded in), plus 2-3 a
+- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 25 / 21 / 18 a
+  round printed on the Builder, Protector and Researcher (Foundry Core's +1 folded in), plus 2-3 a
   presence on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 250 to 350 credits
   over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–21 (Great Liberation 21, Orbital
   Mass Driver 20): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a research cube is worth about 3
-  credits (074: payouts are per card); a player ambassador costs `ambassador_credits` (066: it pays for removals; 068: dearer, since it stays); chips sell
+  credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); chips sell
   for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
 - **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
   20–40 at 4: the top of the range, still under 50. A node makes 1.
@@ -54,8 +54,7 @@ and tier-1 cards have a median of 6 credits with tier 2 about 12 (076's prices, 
 **Calibration point (Matt, 2026-10-31): medium difficulty.** At d2 winning takes real skill and a
 skilled team wins fairly consistently: the `planner` at 60-75% at both 2 and 3 countries, the band
 where a gate can tell a good price from a bad one. A 48-seed band read is ±7 and a paired gap
-±8-10: one rules set read 75 / 71 and 67 / 52 on two fresh 48-seed sets (064), so read a band over
-96 seeds.
+±8-10, so read a band over 96 seeds.
 
 **Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone).**
 Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
@@ -69,9 +68,9 @@ at d2 the adversary corrupts at least one new city in most games, and a won game
 expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the share of games with a new corruption is
 `adversary.corruptions` > 0).
 
-**Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses (was 60%): Discord may be the
+**Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
 main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
-(046, locked).
+(locked).
 
 **Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
 fixed amount and not the countries still standing, so no loop forms and sizes land in one band.
@@ -81,12 +80,12 @@ fixed amount and not the countries still standing, so no loop forms and sizes la
 **Every resource stays scarce, credits most of all.** A seat ending with a pile unspent is a balance fault. Fix it with weaker
 credit engines, dearer cards or keeps, or lower starting credits; never by cheapening a standard project.
 
-**The starting-economy scaffold (Matt, 2026-11-03; 078).** Until engines carry the economy, every board starts and earns much more,
+**The starting-economy scaffold (Matt, 2026-11-03).** Until engines carry the economy, every board starts and earns much more,
 and the economy track is the growing income; it comes down as engines take over, and adds no track. The pressure that keeps credits
 meaningful is on the adversary's side (corrupted cities make 2 ambassadors a round) and on the price of the plain route (the
 ambassador project at 20 credits): bought ambassadors take a big investment, and cards, buildings and powers are the better route.
 
-**Unspent resources (068).** Resources left when a seat's last action phase ended (production and upkeep pay after that, and a seat
+**Unspent resources.** Resources left when a seat's last action phase ended (production and upkeep pay after that, and a seat
 can't spend what it was just paid), per seat and per resource, under each agent: `report.md`'s *Unspent
 resources* (in *Strategy health*), `results.json`'s `unspent`, and the readout of `scripts/cards/screen.py --gate`. Insight isn't
 one: what a round leaves of it is lost anyway. **A resource ends high** when a seat's mean passes about a round's income of it:
@@ -125,10 +124,10 @@ Agents get no help the printed game couldn't give players. **Information (Matt,
 2026-10-29):** for the foreseeable future agents may play with full information (deck
 orders and other hidden state revealed, one agent for the whole team, deterministic): it
 is simpler and should give similar balance. Where determinization or hidden-information
-handling gets in the way, it may be dropped. The `planner` (028) plays its rollouts on the
+handling gets in the way, it may be dropped. The `planner` plays its rollouts on the
 real state; each decision inside them still scores on a guess, because scored on open decks
-the one-step heuristic wins far less (19% against 59%, c2 d2): it drafts by printed cost.
-**One exception (053, D20):** no agent knows which Alignment cards a game dealt, rollouts
+the one-step heuristic wins far less: it drafts by printed cost.
+**One exception (D20):** no agent knows which Alignment cards a game dealt, rollouts
 included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
 a mean of guesses of the deal, never read from the table (`deals`, [agents.md](agents.md)).
 
@@ -146,53 +145,43 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 - **When one doesn't lose:** the check names a rule or price that makes thinking
   unnecessary. Fix it when the fix is a number or a content change; otherwise report
   the structural cause.
-- **Early stopping (040):** a spec's `gate` stops a check once its verdict is decided at
+- **Early stopping:** a spec's `gate` stops a check once its verdict is decided at
   the stated noise ([experiments.md](experiments.md), *Gate early-stopping*); a check that stays close runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
-| Check (since) | Spec | Policy |
+| Check | Spec | Policy |
 |---|---|---|
-| keep-all (022) | `keep_all=1` | keeps every drafted card it can afford |
-| keep-cheapest-k (022) | `keep_k=2` | keeps only its k cheapest drafted cards (k = 2) |
-| tier-1-only (022) | `tier1_only=1` | never drafts from tier 2 |
-| tier-2-rush (022) | `tier2_rush=1` | drafts from tier 2 whenever it can afford the keep |
-| no-powers (022) | `no_powers=1` | never uses an AI-board power |
-| no-counters (022) | `no_counters=1` | never pays toward a threat's counter |
-| no-presence (022) | `no_presence=1` | places no presence beyond setup (no power or card that places one) |
-| mono-tag (023), one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt; none since 078) |
-| ignore-X (023), one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
-| event-hoarder (023) | `events_only=1` | keeps and plays only events |
-| ignore threats, turtle, free cities only (027) | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
-| Unity farm (028) | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
-| Science rush (034) | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
-| always-max-presence, never-second-presence (066) | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
-| never-Remove, Science board (041) | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
-| abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
-| never-sacrifice (068) | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
-| ambassador mass (068) | `ambassador_mass=1` | buys every ambassador it can, before anything else |
-| free-build rush (068) | `free_build_rush=1` | the Builder's Rush Build at every chance |
-| wall turtle (068) | `wall_turtle=1` | the Protector places presence only with a troop on the board, on the hex nearest one |
-| home only (070) | `home_only=1` | counters only threats in its home country |
-| capstone rush (070) | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
+| keep-all | `keep_all=1` | keeps every drafted card it can afford |
+| keep-cheapest-k | `keep_k=2` | keeps only its k cheapest drafted cards (k = 2) |
+| tier-1-only | `tier1_only=1` | never drafts from tier 2 |
+| tier-2-rush | `tier2_rush=1` | drafts from tier 2 whenever it can afford the keep |
+| no-powers | `no_powers=1` | never uses an AI-board power |
+| no-counters | `no_counters=1` | never pays toward a threat's counter |
+| no-presence | `no_presence=1` | places no presence beyond setup (no power or card that places one) |
+| mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt; there are none) |
+| ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
+| event-hoarder | `events_only=1` | keeps and plays only events |
+| ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
+| Unity farm | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
+| Science rush | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
+| always-max-presence, never-second-presence | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
+| never-Remove, Science board | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
+| abandon | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
+| never-sacrifice | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
+| ambassador mass | `ambassador_mass=1` | buys every ambassador it can, before anything else |
+| free-build rush | `free_build_rush=1` | the Builder's Rush Build at every chance |
+| wall turtle | `wall_turtle=1` | the Protector places presence only with a troop on the board, on the hex nearest one |
+| home only | `home_only=1` | counters only threats in its home country |
+| capstone rush | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
 
-022 ran the checks under the engine at d0, d2 and d4
-(`experiments/archive/screen-022-dominance.json`, summarized by `scripts/cards/screen_022.py`).
-**Since 023 the gate runs at d2 only, 32 seeds a cell** (`experiments/archive/screen-023-dominance.json`
-with `--quick --games 32`, summarized by `scripts/cards/screen_023.py`): 022's d4 half
-could not pass while d4 is not winnable, and 16 seeds left gaps inside the noise. **Since
-028 it runs under the engine and the planner** (`experiments/archive/screen-028-dominance.json`,
-summarized by `scripts/cards/screen_028.py --gate`), each check against its own agent: the
-rules are judged by play that can plan, and a check is the same fixed rule in both. **The
-current gate** is `experiments/gate.json` (gate-070; gate-046 is retired): planner only, d2,
-48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit, summarized by
-`scripts/cards/screen.py --gate`. Its predecessors are
-`experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
-`experiments/gate-exploit.json` (050; rebuilt at r31 in 075, the archived one refused) is its fast first read:
-the fixed strategies most likely to beat thinking, under the engine, capped at 32 seeds. A direction; the full
-gate, under the planner, gives the verdict. 075 adds `experiments/gate-075-c3.json`: the Researcher's own checks,
-at 3 countries only.
+**The gate** is `experiments/gate.json` (named gate-075: every check of gate-070 plus `never_convert`): planner
+only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,
+summarized by `scripts/cards/screen.py --gate`. The rules are judged by play that can plan.
+`experiments/gate-exploit.json` is its fast first read: the fixed strategies most likely to beat thinking,
+under the engine, capped at 32 seeds. A direction; the full gate, under the planner, gives the verdict.
+`experiments/gate-075-c3.json` holds the Researcher's own checks, at 3 countries only.
 
-## Sanity checks (028)
+## Sanity checks
 
 Cheap checks that the game rewards what it asks of players. Compute one occasionally, and
 only when it is nearly free; these are not a gate on every screen.
@@ -208,7 +197,7 @@ and number has a place to matter in an 8–10 round game, and set its starting v
 it does; simulation then adjusts and evaluates.
 
 Until the rules are close to final, scoping runs use shallow, fast agents (greedy,
-engine, and since 028 the planner, Matt's standing ruling: rollouts before deeper search) and
+engine, and the planner, Matt's standing ruling: rollouts before deeper search) and
 short runs (`aic-sim experiment --quick`); deep-search agents stay in the code, ready, but
 don't get run time until the rules settle.
 
