@@ -123,6 +123,12 @@ function readCsv(file) {
 
 const LADDER = ['planner', 'rollout', 'beam', 'engine', 'greedy', 'random'];
 const plain = (a) => !a.includes(':');
+/** The ladder's highest agent, a profile (`planner:deals=1`) counting as its base; the shortest name first. */
+const defaultAgent = (agents) => {
+  const base = (a) => a.split(':')[0];
+  const tier = (a) => (LADDER.includes(base(a)) ? LADDER.indexOf(base(a)) : LADDER.length);
+  return [...agents].sort((a, b) => tier(a) - tier(b) || a.length - b.length)[0];
+};
 const MIN_GAMES = 100;
 
 /**
@@ -241,14 +247,16 @@ function buildStats(root) {
       revision: best.d.rules_revision ?? null,
       games: best.d.games_played ?? null,
       agents,
-      agent: LADDER.find((a) => agents.includes(a)) ?? agents[0],
+      agent: defaultAgent(agents),
     };
+    // Every stat label carries the rules revision it was measured at.
+    const r = source.revision ? ` (r${source.revision})` : '';
     columns.push(
       // Not kept / offered: `offered` counts draft packets only, and the opening deal is kept
       // undrafted, so that ratio reads 1000% on a card offered four times.
-      { key: 'kept_pct', label: 'Kept %', title: 'keeps per 100 games of this agent: each card is one copy, so about the share of games it was kept in', unit: '%' },
-      { key: 'played_pct', label: 'Played %', title: 'played ÷ (kept + drawn), as the screen report has it', unit: '%' },
-      { key: 'win_delta', label: 'Win Δ', title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (games.jsonl has other per-card outcomes, but committed results dirs do not keep it)', unit: ' pts' },
+      { key: 'kept_pct', label: `Kept %${r}`, title: `keeps per 100 games of this agent: each card is one copy, so about the share of games it was kept in; ${source.path}`, unit: '%' },
+      { key: 'played_pct', label: `Played %${r}`, title: `played ÷ (kept + drawn), as the screen report has it; ${source.path}`, unit: '%' },
+      { key: 'win_delta', label: `Win Δ${r}`, title: 'win % with this building standing at game end minus without, by variant and difficulty: a correlation, and buildings only (games.jsonl has other per-card outcomes, but committed results dirs do not keep it)', unit: ' pts' },
     );
   }
   const at = reasoned.revision ? ` (r${reasoned.revision})` : '';

@@ -344,6 +344,11 @@ Moved from the README in 048, as written.
   buildings appear twice, as second cards only. All 158 card scenes are drawn, 25 in each of
   cyber, diplomacy, power and science, 29 in each of industry and security; none remain. With
   the 6 adversary, Discord and Unity scenes, that is 164 drawn.
+- **Batch 5 (083, r34):** every deck card with no drawn scene (28) and the 8 redesigned in 059,
+  36 draws at 3 at once, 42–85 s each, about 11.5 min, about 10% of the window, none refused;
+  one redrawn (`inference_cluster_racks`, a flat icon on the first try). Its second cards are
+  the batch's own cards of the other window and tag where there are any, so a card shows on up
+  to three tiles. 200 scenes drawn in all.
 
 - **Numbers (2026-10-30, 026):** asking for 69:94 with a same-shape guide returns
   1075×1464, the right shape already, so the crop takes at most a pixel. 44–71 s an image,

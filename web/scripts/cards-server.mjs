@@ -5,7 +5,7 @@
 // Notes live in <root>/review/card-notes.json, git-ignored; review/card-seen.json is the
 // ledger behind the "new" badge. See web/README.md, Card viewer.
 
-import { closeSync, copyFileSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync } from 'node:fs';
+import { closeSync, copyFileSync, existsSync, fsyncSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 
@@ -22,7 +22,14 @@ const WEB = join(REPO, 'web');
 const NOTES = join(ROOT, 'review', 'card-notes.json');
 const SEEN = join(ROOT, 'review', 'card-seen.json');
 const FLAGS = ['ok', 'too cheap', 'too dear', 'rework', 'unclear text'];
-const SCENE_ROUNDS = ['b4', 'b3', 'b2', 'b1'];
+/** Scene batch folders (`b<n>`) under the originals, newest first: a redrawn id takes the latest draw. */
+function sceneRounds(base) {
+  const dir = join(base, 'scenes');
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((d) => /^b\d+$/.test(d))
+    .sort((a, b) => Number(b.slice(1)) - Number(a.slice(1)));
+}
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 
 let data;
@@ -114,7 +121,7 @@ function markSeen(ids) {
 function sceneFile(id) {
   if (!/^[a-z0-9_-]+$/.test(id)) return null;
   const base = originalsDir(REPO);
-  for (const round of SCENE_ROUNDS) {
+  for (const round of sceneRounds(base)) {
     const f = join(base, 'scenes', round, `${id}.png`);
     if (existsSync(f)) return f;
   }

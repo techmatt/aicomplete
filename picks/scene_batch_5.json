@@ -1,0 +1,583 @@
+{
+ "name": "scene_batch_5",
+ "title": "Card scenes, batch 5",
+ "intro": "Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window. For true size, print art-originals/scenes/b5/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "gears_pulled_apart",
+   "label": "1. Industry: Regulators in a bright hearing room prying a huge interlocked gear machine apart into separate small gears on a long table, owners watching sourly from the benches.",
+   "note": "Written for Antitrust Action. Shown on Antitrust Action and Market Watchdog. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/gears_pulled_apart.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "balance_on_the_floor",
+   "label": "2. Industry: A modern trading hall built around one giant brass balance scale, workers on ladders adding counterweights to hold it level while traders below look up.",
+   "note": "Written for Market Stabilization Board. Shown on Antitrust Action and Market Stabilization Board. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/balance_on_the_floor.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "hound_over_the_belts",
+   "label": "3. Industry: An inspector on a raised catwalk over a busy warehouse floor, a sturdy robot hound at their side, both watching crates move along the conveyor belts.",
+   "note": "Written for Market Watchdog. Shown on Supply Chain Audit and Market Watchdog. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/hound_over_the_belts.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "audit_on_the_quay",
+   "label": "4. Industry: Auditors in hard hats walking a container quay, one shipping container swung open to show crates of chips being counted against a clipboard.",
+   "note": "Written for Supply Chain Audit. Shown on Supply Chain Audit and Vertical Monopoly. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/audit_on_the_quay.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "one_company_valley",
+   "label": "5. Industry: A single sprawling industrial complex filling a whole valley, mine, foundry, factory and harbor joined by one continuous covered conveyor in matching company colors.",
+   "note": "Written for Vertical Monopoly. Shown on Reclamation Crew and Vertical Monopoly. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/one_company_valley.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reclamation_crew_scrub",
+   "label": "6. Industry: A work crew in hard hats prying creeping purple growths off a factory wall and hauling them into skips, the cleaned brick bright behind them.",
+   "note": "Written for Reclamation Crew. Shown on Reclamation Crew and Market Stabilization Board. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/reclamation_crew_scrub.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "trust_bureau_counters",
+   "label": "7. Diplomacy: A bright public atrium of open service counters, citizens queuing calmly while clerks hand back papers, a tall glass wall full of daylight behind them.",
+   "note": "Written for Civic Trust Bureau. Shown on Fact-Check Network and Civic Trust Bureau. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/trust_bureau_counters.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "street_watch_pairs",
+   "label": "8. Diplomacy: Volunteers in matching vests walking a busy market street in pairs, one peeling a fake poster off a wall while shopkeepers nod them on.",
+   "note": "Written for Civic Watch. Shown on Truth Commission and Civic Watch. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/street_watch_pairs.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "forgery_torn_in_half",
+   "label": "9. Diplomacy: A busy newsroom of journalists pinning photographs and string across a wall, one holding up a forged photograph torn cleanly in half.",
+   "note": "Written for Fact-Check Network. Shown on Fact-Check Network and Civic Watch. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/forgery_torn_in_half.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "keys_at_the_tower",
+   "label": "10. Diplomacy: Executives in sharp suits striding into a captured office tower lobby as the occupier's gray-uniformed guards are walked out, a ring of keys handed over at the door.",
+   "note": "Written for Hostile Buyout. Shown on Hostile Buyout and Civic Trust Bureau. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/keys_at_the_tower.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "crowd_at_the_barricade",
+   "label": "11. Diplomacy: A vast crowd of citizens with plain unmarked banners surging up a boulevard toward a fortified city hall, the barricade across its steps giving way.",
+   "note": "Written for Popular Uprising. Shown on Hostile Buyout and Popular Uprising. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/crowd_at_the_barricade.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "truth_hearing_tiers",
+   "label": "12. Diplomacy: A round public hearing hall, a witness speaking at a plain lectern while a seated panel listens and a hushed audience fills the tiers around them.",
+   "note": "Written for Truth Commission. Shown on Truth Commission and Popular Uprising. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/truth_hearing_tiers.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "ring_around_the_camp",
+   "label": "13. Security: Armored vehicles forming a protective ring around a field camp, soldiers raising barriers while a hostile drone tumbles out of the sky overhead.",
+   "note": "Written for Force Protection Order. Shown on Force Protection Order and Garrison Command. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/ring_around_the_camp.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "garrison_sand_table",
+   "label": "14. Security: A fortified command post on a hilltop, officers around a sand-table model of the valley below, a radio mast and sandbagged walls behind them.",
+   "note": "Written for Garrison Command. Shown on Force Protection Order and Garrison Command. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/garrison_sand_table.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "peacekeepers_through_the_gate",
+   "label": "15. Security: Peacekeepers in light vehicles rolling through a freed city gate, residents stepping out to greet them, the occupier's barricades shoved aside.",
+   "note": "Written for Peacekeeping Mission. Shown on Peacekeeping Mission and Sentinel Command. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/peacekeepers_through_the_gate.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "sentinel_hill_base",
+   "label": "16. Security: A wide hilltop base with a watchtower at each corner, radar dishes turning on its roof and patrol vehicles parked in neat rows below.",
+   "note": "Written for Sentinel Command. Shown on Peacekeeping Mission and Sentinel Command. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/sentinel_hill_base.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "shelter_drill_marshal",
+   "label": "17. Security: Office staff in a calm practiced drill, filing into a shelter while a siren tower turns on the roof and a marshal in an orange vest waves them through.",
+   "note": "Written for Early Warning Drill. Shown on Early Warning Drill and Aegis Dome Array. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/shelter_drill_marshal.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "dome_emitter_crews",
+   "label": "18. Security: Engineers bolting armor plates onto a ring of emitter towers around a city while a pale hexagonal dome of light flickers on above them, a falling missile glancing off it.",
+   "note": "Written for Aegis Dome Array. Shown on Early Warning Drill and Aegis Dome Array. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/dome_emitter_crews.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "drone_pylons_ring_city",
+   "label": "19. Cyber: A city skyline ringed by tall automated turret pylons and hovering drones, fine green lines of a sensor grid linking them into one net.",
+   "note": "Written for Autonomous Defense Grid. Shown on Threat Hunt and Autonomous Defense Grid. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/drone_pylons_ring_city.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "tower_flipping_green",
+   "label": "20. Cyber: A hacker team in an open van below a captured city tower, cables run up its wall, the tower's windows flipping from purple back to green floor by floor.",
+   "note": "Written for Root Access. Shown on Root Access and Security Ops Floor. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/tower_flipping_green.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "ops_floor_intrusion",
+   "label": "21. Cyber: A security operations floor of analysts at long desks under a wall of abstract green network maps, one standing and pointing at a red flare in the web.",
+   "note": "Written for Security Ops Floor. Shown on Shadow Broker Scrub and Security Ops Floor. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/ops_floor_intrusion.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "parasite_off_the_rack",
+   "label": "22. Cyber: Two analysts walking a bright server aisle, one prying a small spider-like parasite device off a rack while the other sweeps it with a handheld scanner.",
+   "note": "Written for Threat Hunt. Shown on Threat Hunt and Autonomous Defense Grid. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/parasite_off_the_rack.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "scrubbing_the_stains",
+   "label": "23. Cyber: Technicians with handheld scrubbers wiping glowing purple stains off a row of street-side server cabinets, a contact in a long coat handing one of them a slim folder.",
+   "note": "Written for Shadow Broker Scrub. Shown on Shadow Broker Scrub and Sentinel Mesh. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/scrubbing_the_stains.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "mesh_slows_the_swarm",
+   "label": "24. Cyber: A hillside of small sensor posts joined by a glowing green net, a technician tightening one strand as a dark swarm of drones slows and thins against it.",
+   "note": "Written for Sentinel Mesh. Shown on Root Access and Sentinel Mesh. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/mesh_slows_the_swarm.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "forensic_records_room",
+   "label": "25. Science: Forensic investigators in white suits sweeping a captured city hall's records room, unplugging purple-glowing servers and boxing them as evidence.",
+   "note": "Written for Forensic Audit. Shown on Forensic Audit and Sample Repository. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/forensic_records_room.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "shaker_rig_test",
+   "label": "26. Science: Engineers stress-testing a server cabinet on a shaking rig in a test hall, a shield-shaped frame clamped around it as sparks bounce harmlessly off.",
+   "note": "Written for Stress Test Suite. Shown on Stress Test Suite and Inference Cluster. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/shaker_rig_test.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "dish_fed_archive",
+   "label": "27. Science: A long hall of humming storage cabinets fed by cables from antenna dishes outside the windows, an archivist holding up a printed chart to warn the room.",
+   "note": "Written for Telemetry Archive. Shown on Field Grant and Telemetry Archive. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/dish_fed_archive.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "vault_drives_to_market",
+   "label": "28. Science: A vast vault of glowing storage drawers cut into a mountainside, a forklift hauling crates of drives out to a buyer's waiting truck.",
+   "note": "Written for Exabyte Archive. Shown on Preprint Exchange and Exabyte Archive. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/vault_drives_to_market.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "antimatter_flash_on_fortress",
+   "label": "29. Power: A blinding white antimatter flash engulfing a captured fortress tower at a city's edge, seen from a distant hillside where onlookers shield their eyes, no mushroom cloud.",
+   "note": "Written for The Nuclear Option. Shown on The Nuclear Option and Power to the People. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/antimatter_flash_on_fortress.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "rooftop_grid_by_hand",
+   "label": "30. Power: Townspeople hauling solar panels and cable reels onto rooftops, wiring their own grid as the lamps come back on across a district that had gone dark.",
+   "note": "Written for Power to the People. Shown on The Nuclear Option and Power to the People. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/rooftop_grid_by_hand.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "field_grant_survey",
+   "label": "31. Science: Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet.",
+   "note": "Written for Field Grant. Shown on Field Grant and Breakthrough Lab. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/field_grant_survey.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "sample_repository_shelves",
+   "label": "32. Science: A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place.",
+   "note": "Written for Sample Repository. Shown on Stress Test Suite and Sample Repository. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/sample_repository_shelves.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "preprint_exchange_board",
+   "label": "33. Science: A crowded corkboard wall of pinned papers in a bright corridor, two scientists swapping a printout and a small glowing cube.",
+   "note": "Written for Preprint Exchange. Shown on Preprint Exchange and Policy Institute. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/preprint_exchange_board.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "inference_cluster_racks",
+   "label": "34. Science: A compact server rack in a bright university machine room, fed by a chute of small glowing cubes, a technician watching its status lamps wake row by row.",
+   "note": "Written for Inference Cluster. Shown on Forensic Audit and Inference Cluster. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/inference_cluster_racks.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "breakthrough_lab_flash",
+   "label": "35. Science: A glass-walled hilltop laboratory, a beam from an instrument on its bench lancing out through the open roof and shattering a dark crystal node on the next ridge, researchers shielding their eyes.",
+   "note": "Written for Breakthrough Lab. Shown on Field Grant and Breakthrough Lab. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/breakthrough_lab_flash.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "policy_institute_hall",
+   "label": "36. Science: A round meeting hall where scientists present a glowing cube model to seated delegates, a banner of linked hands on the wall.",
+   "note": "Written for Policy Institute. Shown on Preprint Exchange and Policy Institute. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_5/policy_institute_hall.jpg",
+     "label": "keep"
+    }
+   ]
+  }
+ ]
+}

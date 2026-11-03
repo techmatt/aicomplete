@@ -243,7 +243,9 @@ Researcher, Protector + Researcher; with the capstones out 39.6 / 37.5 / 58.3; `
 56.2 / 79.2 / 60.4. A new corruption in 67 / 35 / 65% of games (60 / 46 / 56%), and 2.1 liberations a won game (1.9-2.2),
 1.5 of them by a card. `screen-080-next.json` (576 games, about 7 min on 7 threads) is the 2x2 run after the freeze on 30600
 (not adopted). Details and the agent finding: rules-history.md, revision 34; the tables:
-`experiments/results/screen-080/liberation.md`.
+`experiments/results/screen-080/liberation.md`. 083 reran `screen-080.json --seed 30300` on main's r34 build (about 5 min
+on 5 threads beside another item) for the card viewer's per-card stats: it reproduced every win rate above, and its
+`results.json`, `cards.csv`, `games.csv` and `report.md` sit beside `liberation.md` (`games.jsonl`, 17 MB, not kept).
 
 **The ballpark read at r33 (078; Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
 players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,

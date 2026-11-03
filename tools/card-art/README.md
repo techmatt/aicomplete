@@ -105,10 +105,16 @@ browser; `npm ci` first):
   drawn are the row ids in `picks/scene_batch_<n>.json`. Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
-- 158 card scenes are drawn, and with the 6 adversary, Discord and Unity scenes that is 164. The
-  17 player cards added since (070 and `vertical_monopoly`) have none, and `scenes.json` still
-  suggests 5 retired cards. How each batch was chosen, and the first rounds' numbers, are in
-  [experiments/history.md](../../experiments/history.md).
+- Every one of the 159 deck cards has a suggested scene, drawn (batch 5, 083, made it so). Batch 5
+  drew 36: the 28 deck cards with no drawn scene (070's and 076's new cards, `vertical_monopoly`,
+  080's seven liberate capstones, and six scenes written for 076 but never drawn) and the 8
+  redesigned in 059. 36 draws at 3 at once, 42–85 s each, about 11.5 min, about 10% of the
+  window. A scene whose card was cut (27: 070, 076, 078) or redrawn (those 8) has `was` in place
+  of `card`: drawn, in the pool, suggested for nothing. The viewer serves a scene id from the
+  newest `scenes/b<n>/` that has it. 083 respelled three ids (`armored_conduit_trench`,
+  `grant_check_racks`, `data_license_handover`) by copying the drawn files to the new name;
+  the old files stay for the old pickers. How each batch was chosen, and the first rounds'
+  numbers, are in [experiments/history.md](../../experiments/history.md).
 - **Originals:** `art-originals/` is a git-ignored junction to
   `C:\Code\gdrive-sync\aicomplete\art-originals` (`mklink /J art-originals <that path>`).
   The scripts other than the pickers fall back to that path. The pickers stop without the

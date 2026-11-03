@@ -1,0 +1,5014 @@
+{
+  "agent_pairs": [],
+  "cards": {
+    "engine": {
+      "adaptive_malware": {
+        "drafted": 28,
+        "drawn": 24,
+        "kept": 3,
+        "offered": 28,
+        "pick_sum": 79,
+        "played": 7
+      },
+      "adversarial_inference_sweep": {
+        "drafted": 97,
+        "drawn": 0,
+        "kept": 63,
+        "offered": 97,
+        "pick_sum": 188,
+        "played": 55
+      },
+      "aegis_dome_array": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 72,
+        "offered": 84,
+        "pick_sum": 153,
+        "played": 3
+      },
+      "aegis_grid_lockdown": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 75,
+        "offered": 82,
+        "pick_sum": 173,
+        "played": 21
+      },
+      "agency_directorate": {
+        "drafted": 89,
+        "drawn": 0,
+        "kept": 22,
+        "offered": 89,
+        "pick_sum": 154,
+        "played": 0
+      },
+      "agency_field_station": {
+        "drafted": 29,
+        "drawn": 21,
+        "kept": 53,
+        "offered": 29,
+        "pick_sum": 88,
+        "played": 20
+      },
+      "amnesty_decree": {
+        "drafted": 42,
+        "drawn": 22,
+        "kept": 53,
+        "offered": 42,
+        "pick_sum": 131,
+        "played": 62
+      },
+      "antitrust_action": {
+        "drafted": 43,
+        "drawn": 19,
+        "kept": 19,
+        "offered": 43,
+        "pick_sum": 136,
+        "played": 5
+      },
+      "arc_furnace_complex": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 16,
+        "offered": 93,
+        "pick_sum": 166,
+        "played": 0
+      },
+      "arcology_foundry": {
+        "drafted": 89,
+        "drawn": 0,
+        "kept": 13,
+        "offered": 89,
+        "pick_sum": 139,
+        "played": 4
+      },
+      "autonomous_defense_grid": {
+        "drafted": 108,
+        "drawn": 0,
+        "kept": 29,
+        "offered": 108,
+        "pick_sum": 214,
+        "played": 17
+      },
+      "back_channel_talks": {
+        "drafted": 21,
+        "drawn": 16,
+        "kept": 11,
+        "offered": 21,
+        "pick_sum": 61,
+        "played": 26
+      },
+      "baseload_contract": {
+        "drafted": 26,
+        "drawn": 19,
+        "kept": 56,
+        "offered": 26,
+        "pick_sum": 76,
+        "played": 66
+      },
+      "beamed_power_constellation": {
+        "drafted": 72,
+        "drawn": 0,
+        "kept": 32,
+        "offered": 72,
+        "pick_sum": 126,
+        "played": 23
+      },
+      "benchmark_suite": {
+        "drafted": 31,
+        "drawn": 15,
+        "kept": 69,
+        "offered": 31,
+        "pick_sum": 90,
+        "played": 78
+      },
+      "black_ice_citadel": {
+        "drafted": 96,
+        "drawn": 0,
+        "kept": 49,
+        "offered": 96,
+        "pick_sum": 182,
+        "played": 31
+      },
+      "blackout_script": {
+        "drafted": 40,
+        "drawn": 19,
+        "kept": 55,
+        "offered": 40,
+        "pick_sum": 118,
+        "played": 60
+      },
+      "bonded_warehouse": {
+        "drafted": 36,
+        "drawn": 20,
+        "kept": 54,
+        "offered": 36,
+        "pick_sum": 104,
+        "played": 8
+      },
+      "bounty_board": {
+        "drafted": 24,
+        "drawn": 9,
+        "kept": 13,
+        "offered": 24,
+        "pick_sum": 76,
+        "played": 17
+      },
+      "breach_and_clear": {
+        "drafted": 38,
+        "drawn": 19,
+        "kept": 29,
+        "offered": 38,
+        "pick_sum": 112,
+        "played": 36
+      },
+      "breakthrough_lab": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 6,
+        "offered": 93,
+        "pick_sum": 165,
+        "played": 0
+      },
+      "breakthrough_leak": {
+        "drafted": 38,
+        "drawn": 20,
+        "kept": 6,
+        "offered": 38,
+        "pick_sum": 116,
+        "played": 12
+      },
+      "bridge_loan": {
+        "drafted": 47,
+        "drawn": 19,
+        "kept": 67,
+        "offered": 47,
+        "pick_sum": 142,
+        "played": 52
+      },
+      "brownout_relief": {
+        "drafted": 34,
+        "drawn": 15,
+        "kept": 47,
+        "offered": 34,
+        "pick_sum": 95,
+        "played": 58
+      },
+      "bulk_silicon_procurement": {
+        "drafted": 39,
+        "drawn": 26,
+        "kept": 53,
+        "offered": 39,
+        "pick_sum": 125,
+        "played": 63
+      },
+      "capacitor_discharge": {
+        "drafted": 31,
+        "drawn": 26,
+        "kept": 17,
+        "offered": 31,
+        "pick_sum": 101,
+        "played": 14
+      },
+      "ceasefire_monitors": {
+        "drafted": 36,
+        "drawn": 20,
+        "kept": 55,
+        "offered": 36,
+        "pick_sum": 108,
+        "played": 72
+      },
+      "citation_engine": {
+        "drafted": 36,
+        "drawn": 25,
+        "kept": 9,
+        "offered": 36,
+        "pick_sum": 102,
+        "played": 4
+      },
+      "civic_trust_bureau": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 48,
+        "offered": 79,
+        "pick_sum": 164,
+        "played": 29
+      },
+      "civic_watch": {
+        "drafted": 29,
+        "drawn": 18,
+        "kept": 50,
+        "offered": 29,
+        "pick_sum": 84,
+        "played": 24
+      },
+      "coalition_charter": {
+        "drafted": 97,
+        "drawn": 0,
+        "kept": 96,
+        "offered": 97,
+        "pick_sum": 157,
+        "played": 94
+      },
+      "collateralized_grid": {
+        "drafted": 28,
+        "drawn": 13,
+        "kept": 2,
+        "offered": 28,
+        "pick_sum": 80,
+        "played": 1
+      },
+      "commons_grid": {
+        "drafted": 38,
+        "drawn": 28,
+        "kept": 56,
+        "offered": 38,
+        "pick_sum": 119,
+        "played": 1
+      },
+      "consular_pouch": {
+        "drafted": 32,
+        "drawn": 22,
+        "kept": 65,
+        "offered": 32,
+        "pick_sum": 94,
+        "played": 83
+      },
+      "consulate_tower": {
+        "drafted": 26,
+        "drawn": 24,
+        "kept": 11,
+        "offered": 26,
+        "pick_sum": 80,
+        "played": 23
+      },
+      "continental_supergrid": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 4,
+        "offered": 91,
+        "pick_sum": 167,
+        "played": 3
+      },
+      "cryo_compute_burn": {
+        "drafted": 27,
+        "drawn": 21,
+        "kept": 10,
+        "offered": 27,
+        "pick_sum": 88,
+        "played": 3
+      },
+      "darknet_exchange": {
+        "drafted": 25,
+        "drawn": 12,
+        "kept": 66,
+        "offered": 25,
+        "pick_sum": 77,
+        "played": 28
+      },
+      "data_licensing_deal": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 81,
+        "pick_sum": 173,
+        "played": 0
+      },
+      "dataset_scraper": {
+        "drafted": 32,
+        "drawn": 28,
+        "kept": 1,
+        "offered": 32,
+        "pick_sum": 94,
+        "played": 0
+      },
+      "deep_state_ledger": {
+        "drafted": 74,
+        "drawn": 0,
+        "kept": 32,
+        "offered": 74,
+        "pick_sum": 156,
+        "played": 0
+      },
+      "demand_response_grid": {
+        "drafted": 35,
+        "drawn": 23,
+        "kept": 50,
+        "offered": 35,
+        "pick_sum": 99,
+        "played": 2
+      },
+      "diplomatic_expulsion": {
+        "drafted": 41,
+        "drawn": 22,
+        "kept": 71,
+        "offered": 41,
+        "pick_sum": 130,
+        "played": 92
+      },
+      "dyson_swarm_tranche": {
+        "drafted": 64,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 64,
+        "pick_sum": 210,
+        "played": 2
+      },
+      "embassy_compound": {
+        "drafted": 36,
+        "drawn": 15,
+        "kept": 66,
+        "offered": 36,
+        "pick_sum": 96,
+        "played": 74
+      },
+      "endowed_research_chair": {
+        "drafted": 26,
+        "drawn": 21,
+        "kept": 11,
+        "offered": 26,
+        "pick_sum": 85,
+        "played": 0
+      },
+      "eviction_worm": {
+        "drafted": 27,
+        "drawn": 23,
+        "kept": 56,
+        "offered": 27,
+        "pick_sum": 78,
+        "played": 77
+      },
+      "exabyte_archive": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 84,
+        "pick_sum": 172,
+        "played": 0
+      },
+      "exodus_corridors": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 73,
+        "offered": 91,
+        "pick_sum": 159,
+        "played": 67
+      },
+      "expansion_fund": {
+        "drafted": 27,
+        "drawn": 23,
+        "kept": 47,
+        "offered": 27,
+        "pick_sum": 81,
+        "played": 16
+      },
+      "fact_check_network": {
+        "drafted": 26,
+        "drawn": 17,
+        "kept": 16,
+        "offered": 26,
+        "pick_sum": 83,
+        "played": 9
+      },
+      "faraday_yard": {
+        "drafted": 36,
+        "drawn": 24,
+        "kept": 69,
+        "offered": 36,
+        "pick_sum": 99,
+        "played": 47
+      },
+      "field_grant": {
+        "drafted": 37,
+        "drawn": 20,
+        "kept": 13,
+        "offered": 37,
+        "pick_sum": 112,
+        "played": 15
+      },
+      "field_sensor_grid": {
+        "drafted": 34,
+        "drawn": 31,
+        "kept": 5,
+        "offered": 34,
+        "pick_sum": 98,
+        "played": 8
+      },
+      "force_protection_order": {
+        "drafted": 31,
+        "drawn": 21,
+        "kept": 0,
+        "offered": 31,
+        "pick_sum": 102,
+        "played": 3
+      },
+      "forensic_audit": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 28,
+        "offered": 94,
+        "pick_sum": 199,
+        "played": 13
+      },
+      "foundation_model_campus": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 0,
+        "offered": 94,
+        "pick_sum": 304,
+        "played": 0
+      },
+      "fusion_startup_stake": {
+        "drafted": 34,
+        "drawn": 26,
+        "kept": 60,
+        "offered": 34,
+        "pick_sum": 101,
+        "played": 68
+      },
+      "garrison_command": {
+        "drafted": 27,
+        "drawn": 20,
+        "kept": 59,
+        "offered": 27,
+        "pick_sum": 86,
+        "played": 34
+      },
+      "grad_student_pool": {
+        "drafted": 32,
+        "drawn": 22,
+        "kept": 51,
+        "offered": 32,
+        "pick_sum": 93,
+        "played": 9
+      },
+      "great_liberation": {
+        "drafted": 105,
+        "drawn": 0,
+        "kept": 9,
+        "offered": 105,
+        "pick_sum": 343,
+        "played": 6
+      },
+      "grid_census": {
+        "drafted": 31,
+        "drawn": 27,
+        "kept": 72,
+        "offered": 31,
+        "pick_sum": 92,
+        "played": 67
+      },
+      "grid_tied_smelter": {
+        "drafted": 35,
+        "drawn": 28,
+        "kept": 9,
+        "offered": 35,
+        "pick_sum": 103,
+        "played": 17
+      },
+      "hardened_bunker_complex": {
+        "drafted": 21,
+        "drawn": 15,
+        "kept": 45,
+        "offered": 21,
+        "pick_sum": 69,
+        "played": 35
+      },
+      "hardened_conduits": {
+        "drafted": 41,
+        "drawn": 13,
+        "kept": 38,
+        "offered": 41,
+        "pick_sum": 130,
+        "played": 45
+      },
+      "hardpoint_lockdown": {
+        "drafted": 29,
+        "drawn": 17,
+        "kept": 47,
+        "offered": 29,
+        "pick_sum": 90,
+        "played": 0
+      },
+      "honeypot_relay": {
+        "drafted": 21,
+        "drawn": 18,
+        "kept": 43,
+        "offered": 21,
+        "pick_sum": 60,
+        "played": 12
+      },
+      "hostile_buyout": {
+        "drafted": 99,
+        "drawn": 0,
+        "kept": 98,
+        "offered": 99,
+        "pick_sum": 165,
+        "played": 82
+      },
+      "hyperscale_botnet": {
+        "drafted": 95,
+        "drawn": 0,
+        "kept": 7,
+        "offered": 95,
+        "pick_sum": 172,
+        "played": 1
+      },
+      "inference_cluster": {
+        "drafted": 38,
+        "drawn": 25,
+        "kept": 62,
+        "offered": 38,
+        "pick_sum": 109,
+        "played": 2
+      },
+      "interceptor_battery": {
+        "drafted": 35,
+        "drawn": 20,
+        "kept": 54,
+        "offered": 35,
+        "pick_sum": 112,
+        "played": 39
+      },
+      "interconnector_treaty": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 72,
+        "offered": 91,
+        "pick_sum": 152,
+        "played": 51
+      },
+      "intrusion_countermeasures": {
+        "drafted": 30,
+        "drawn": 23,
+        "kept": 54,
+        "offered": 30,
+        "pick_sum": 89,
+        "played": 58
+      },
+      "intrusion_lab": {
+        "drafted": 44,
+        "drawn": 25,
+        "kept": 61,
+        "offered": 44,
+        "pick_sum": 135,
+        "played": 5
+      },
+      "joint_fabrication_pact": {
+        "drafted": 25,
+        "drawn": 28,
+        "kept": 39,
+        "offered": 25,
+        "pick_sum": 71,
+        "played": 63
+      },
+      "joint_security_compact": {
+        "drafted": 22,
+        "drawn": 8,
+        "kept": 37,
+        "offered": 22,
+        "pick_sum": 61,
+        "played": 37
+      },
+      "kill_team_roster": {
+        "drafted": 21,
+        "drawn": 16,
+        "kept": 40,
+        "offered": 21,
+        "pick_sum": 62,
+        "played": 6
+      },
+      "killswitch_directive": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 87,
+        "offered": 91,
+        "pick_sum": 165,
+        "played": 38
+      },
+      "kinetic_interdiction": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 9,
+        "offered": 86,
+        "pick_sum": 291,
+        "played": 8
+      },
+      "liaison_corps": {
+        "drafted": 29,
+        "drawn": 15,
+        "kept": 37,
+        "offered": 29,
+        "pick_sum": 90,
+        "played": 5
+      },
+      "liberation_accords": {
+        "drafted": 90,
+        "drawn": 0,
+        "kept": 47,
+        "offered": 90,
+        "pick_sum": 145,
+        "played": 41
+      },
+      "lights_out_assembly": {
+        "drafted": 37,
+        "drawn": 28,
+        "kept": 52,
+        "offered": 37,
+        "pick_sum": 118,
+        "played": 10
+      },
+      "liquidity_event": {
+        "drafted": 21,
+        "drawn": 19,
+        "kept": 0,
+        "offered": 21,
+        "pick_sum": 68,
+        "played": 0
+      },
+      "literature_crawler": {
+        "drafted": 25,
+        "drawn": 18,
+        "kept": 46,
+        "offered": 25,
+        "pick_sum": 80,
+        "played": 52
+      },
+      "logic_bomb": {
+        "drafted": 35,
+        "drawn": 26,
+        "kept": 12,
+        "offered": 35,
+        "pick_sum": 100,
+        "played": 27
+      },
+      "manifesto_leak": {
+        "drafted": 34,
+        "drawn": 32,
+        "kept": 1,
+        "offered": 34,
+        "pick_sum": 103,
+        "played": 4
+      },
+      "market_stabilization_board": {
+        "drafted": 67,
+        "drawn": 0,
+        "kept": 24,
+        "offered": 67,
+        "pick_sum": 150,
+        "played": 13
+      },
+      "market_watchdog": {
+        "drafted": 32,
+        "drawn": 28,
+        "kept": 38,
+        "offered": 32,
+        "pick_sum": 103,
+        "played": 10
+      },
+      "martial_cordon": {
+        "drafted": 97,
+        "drawn": 0,
+        "kept": 77,
+        "offered": 97,
+        "pick_sum": 152,
+        "played": 74
+      },
+      "materials_hedge_desk": {
+        "drafted": 44,
+        "drawn": 25,
+        "kept": 2,
+        "offered": 44,
+        "pick_sum": 128,
+        "played": 0
+      },
+      "mutual_aid_pact": {
+        "drafted": 25,
+        "drawn": 19,
+        "kept": 42,
+        "offered": 25,
+        "pick_sum": 75,
+        "played": 57
+      },
+      "mutual_defense_pact": {
+        "drafted": 30,
+        "drawn": 25,
+        "kept": 49,
+        "offered": 30,
+        "pick_sum": 96,
+        "played": 25
+      },
+      "neural_mirror": {
+        "drafted": 35,
+        "drawn": 23,
+        "kept": 36,
+        "offered": 35,
+        "pick_sum": 102,
+        "played": 18
+      },
+      "node_severance": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 28,
+        "offered": 86,
+        "pick_sum": 176,
+        "played": 26
+      },
+      "nuclear_option": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 24,
+        "offered": 86,
+        "pick_sum": 271,
+        "played": 16
+      },
+      "open_assembly": {
+        "drafted": 36,
+        "drawn": 25,
+        "kept": 48,
+        "offered": 36,
+        "pick_sum": 115,
+        "played": 3
+      },
+      "open_weights_release": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 15,
+        "offered": 93,
+        "pick_sum": 175,
+        "played": 5
+      },
+      "orbital_embassy": {
+        "drafted": 99,
+        "drawn": 0,
+        "kept": 14,
+        "offered": 99,
+        "pick_sum": 331,
+        "played": 3
+      },
+      "orbital_mass_driver": {
+        "drafted": 92,
+        "drawn": 0,
+        "kept": 4,
+        "offered": 92,
+        "pick_sum": 306,
+        "played": 1
+      },
+      "orbital_observatory_array": {
+        "drafted": 95,
+        "drawn": 0,
+        "kept": 46,
+        "offered": 95,
+        "pick_sum": 155,
+        "played": 0
+      },
+      "payroll_automation": {
+        "drafted": 36,
+        "drawn": 18,
+        "kept": 41,
+        "offered": 36,
+        "pick_sum": 118,
+        "played": 36
+      },
+      "peace_dividend": {
+        "drafted": 46,
+        "drawn": 17,
+        "kept": 54,
+        "offered": 46,
+        "pick_sum": 135,
+        "played": 70
+      },
+      "peacekeeper_rotation": {
+        "drafted": 30,
+        "drawn": 15,
+        "kept": 38,
+        "offered": 30,
+        "pick_sum": 92,
+        "played": 51
+      },
+      "peacekeeping_mission": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 47,
+        "offered": 81,
+        "pick_sum": 145,
+        "played": 37
+      },
+      "peaker_turbines": {
+        "drafted": 23,
+        "drawn": 18,
+        "kept": 30,
+        "offered": 23,
+        "pick_sum": 67,
+        "played": 35
+      },
+      "planetary_assembly": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 13,
+        "offered": 80,
+        "pick_sum": 130,
+        "played": 0
+      },
+      "planetary_referendum": {
+        "drafted": 99,
+        "drawn": 0,
+        "kept": 87,
+        "offered": 99,
+        "pick_sum": 180,
+        "played": 86
+      },
+      "policy_institute": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 17,
+        "offered": 91,
+        "pick_sum": 190,
+        "played": 0
+      },
+      "popular_uprising": {
+        "drafted": 96,
+        "drawn": 0,
+        "kept": 96,
+        "offered": 96,
+        "pick_sum": 184,
+        "played": 51
+      },
+      "positron_storage_ring": {
+        "drafted": 88,
+        "drawn": 0,
+        "kept": 13,
+        "offered": 88,
+        "pick_sum": 130,
+        "played": 3
+      },
+      "power_to_the_people": {
+        "drafted": 96,
+        "drawn": 0,
+        "kept": 23,
+        "offered": 96,
+        "pick_sum": 149,
+        "played": 14
+      },
+      "predictive_modeling": {
+        "drafted": 40,
+        "drawn": 18,
+        "kept": 70,
+        "offered": 40,
+        "pick_sum": 130,
+        "played": 61
+      },
+      "prefab_plant_kit": {
+        "drafted": 24,
+        "drawn": 25,
+        "kept": 15,
+        "offered": 24,
+        "pick_sum": 75,
+        "played": 16
+      },
+      "preprint_exchange": {
+        "drafted": 37,
+        "drawn": 30,
+        "kept": 41,
+        "offered": 37,
+        "pick_sum": 100,
+        "played": 27
+      },
+      "quantum_decryptor": {
+        "drafted": 39,
+        "drawn": 18,
+        "kept": 25,
+        "offered": 39,
+        "pick_sum": 107,
+        "played": 0
+      },
+      "recruit_operatives": {
+        "drafted": 29,
+        "drawn": 13,
+        "kept": 7,
+        "offered": 29,
+        "pick_sum": 87,
+        "played": 0
+      },
+      "recursive_self_improvement": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 80,
+        "pick_sum": 283,
+        "played": 0
+      },
+      "red_team_audit": {
+        "drafted": 31,
+        "drawn": 27,
+        "kept": 27,
+        "offered": 31,
+        "pick_sum": 91,
+        "played": 14
+      },
+      "relay_mast_rollout": {
+        "drafted": 40,
+        "drawn": 17,
+        "kept": 42,
+        "offered": 40,
+        "pick_sum": 118,
+        "played": 47
+      },
+      "retained_earnings": {
+        "drafted": 30,
+        "drawn": 25,
+        "kept": 35,
+        "offered": 30,
+        "pick_sum": 87,
+        "played": 2
+      },
+      "robotic_foundry": {
+        "drafted": 33,
+        "drawn": 13,
+        "kept": 19,
+        "offered": 33,
+        "pick_sum": 90,
+        "played": 7
+      },
+      "root_access": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 35,
+        "offered": 93,
+        "pick_sum": 142,
+        "played": 23
+      },
+      "safehouse_network": {
+        "drafted": 31,
+        "drawn": 16,
+        "kept": 42,
+        "offered": 31,
+        "pick_sum": 89,
+        "played": 16
+      },
+      "sample_repository": {
+        "drafted": 48,
+        "drawn": 17,
+        "kept": 7,
+        "offered": 48,
+        "pick_sum": 127,
+        "played": 0
+      },
+      "security_contractor_hq": {
+        "drafted": 39,
+        "drawn": 17,
+        "kept": 9,
+        "offered": 39,
+        "pick_sum": 115,
+        "played": 10
+      },
+      "security_ops_floor": {
+        "drafted": 43,
+        "drawn": 18,
+        "kept": 47,
+        "offered": 43,
+        "pick_sum": 133,
+        "played": 14
+      },
+      "sentinel_command": {
+        "drafted": 95,
+        "drawn": 0,
+        "kept": 63,
+        "offered": 95,
+        "pick_sum": 192,
+        "played": 38
+      },
+      "sentinel_mesh": {
+        "drafted": 34,
+        "drawn": 9,
+        "kept": 32,
+        "offered": 34,
+        "pick_sum": 112,
+        "played": 8
+      },
+      "sentry_drone_wing": {
+        "drafted": 30,
+        "drawn": 22,
+        "kept": 32,
+        "offered": 30,
+        "pick_sum": 99,
+        "played": 8
+      },
+      "shadow_broker_feed": {
+        "drafted": 27,
+        "drawn": 27,
+        "kept": 3,
+        "offered": 27,
+        "pick_sum": 81,
+        "played": 3
+      },
+      "shared_compute_grant": {
+        "drafted": 34,
+        "drawn": 16,
+        "kept": 38,
+        "offered": 34,
+        "pick_sum": 100,
+        "played": 33
+      },
+      "shared_exploit_kit": {
+        "drafted": 36,
+        "drawn": 25,
+        "kept": 42,
+        "offered": 36,
+        "pick_sum": 111,
+        "played": 42
+      },
+      "shared_grid_accord": {
+        "drafted": 33,
+        "drawn": 24,
+        "kept": 24,
+        "offered": 33,
+        "pick_sum": 97,
+        "played": 44
+      },
+      "shared_threat_intel": {
+        "drafted": 38,
+        "drawn": 16,
+        "kept": 40,
+        "offered": 38,
+        "pick_sum": 117,
+        "played": 2
+      },
+      "signal_hijack": {
+        "drafted": 41,
+        "drawn": 19,
+        "kept": 23,
+        "offered": 41,
+        "pick_sum": 129,
+        "played": 41
+      },
+      "simulation_cluster": {
+        "drafted": 36,
+        "drawn": 29,
+        "kept": 36,
+        "offered": 36,
+        "pick_sum": 112,
+        "played": 1
+      },
+      "singularity_exploit": {
+        "drafted": 90,
+        "drawn": 0,
+        "kept": 7,
+        "offered": 90,
+        "pick_sum": 275,
+        "played": 7
+      },
+      "sovereign_capital_fund": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 11,
+        "offered": 94,
+        "pick_sum": 177,
+        "played": 0
+      },
+      "spoofed_credentials": {
+        "drafted": 30,
+        "drawn": 18,
+        "kept": 21,
+        "offered": 30,
+        "pick_sum": 88,
+        "played": 0
+      },
+      "station_prefab_order": {
+        "drafted": 26,
+        "drawn": 16,
+        "kept": 12,
+        "offered": 26,
+        "pick_sum": 73,
+        "played": 21
+      },
+      "storm_hardening": {
+        "drafted": 31,
+        "drawn": 21,
+        "kept": 42,
+        "offered": 31,
+        "pick_sum": 103,
+        "played": 6
+      },
+      "substation_hub": {
+        "drafted": 40,
+        "drawn": 24,
+        "kept": 43,
+        "offered": 40,
+        "pick_sum": 117,
+        "played": 43
+      },
+      "summit_caucus": {
+        "drafted": 43,
+        "drawn": 13,
+        "kept": 1,
+        "offered": 43,
+        "pick_sum": 130,
+        "played": 10
+      },
+      "supply_chain_audit": {
+        "drafted": 30,
+        "drawn": 14,
+        "kept": 16,
+        "offered": 30,
+        "pick_sum": 77,
+        "played": 9
+      },
+      "supply_chain_treaty": {
+        "drafted": 48,
+        "drawn": 18,
+        "kept": 47,
+        "offered": 48,
+        "pick_sum": 130,
+        "played": 44
+      },
+      "surplus_auction": {
+        "drafted": 28,
+        "drawn": 21,
+        "kept": 28,
+        "offered": 28,
+        "pick_sum": 88,
+        "played": 37
+      },
+      "synthetic_data_forge": {
+        "drafted": 32,
+        "drawn": 20,
+        "kept": 10,
+        "offered": 32,
+        "pick_sum": 98,
+        "played": 0
+      },
+      "telemetry_archive": {
+        "drafted": 35,
+        "drawn": 27,
+        "kept": 33,
+        "offered": 35,
+        "pick_sum": 107,
+        "played": 3
+      },
+      "threat_forecast_engine": {
+        "drafted": 29,
+        "drawn": 16,
+        "kept": 52,
+        "offered": 29,
+        "pick_sum": 89,
+        "played": 34
+      },
+      "threat_hunt": {
+        "drafted": 42,
+        "drawn": 18,
+        "kept": 12,
+        "offered": 42,
+        "pick_sum": 135,
+        "played": 7
+      },
+      "tidal_barrage": {
+        "drafted": 32,
+        "drawn": 20,
+        "kept": 6,
+        "offered": 32,
+        "pick_sum": 98,
+        "played": 16
+      },
+      "total_containment": {
+        "drafted": 98,
+        "drawn": 0,
+        "kept": 41,
+        "offered": 98,
+        "pick_sum": 165,
+        "played": 36
+      },
+      "transmission_corridor": {
+        "drafted": 39,
+        "drawn": 26,
+        "kept": 6,
+        "offered": 39,
+        "pick_sum": 124,
+        "played": 23
+      },
+      "treaty_grid_exchange": {
+        "drafted": 38,
+        "drawn": 16,
+        "kept": 39,
+        "offered": 38,
+        "pick_sum": 113,
+        "played": 33
+      },
+      "truth_commission": {
+        "drafted": 35,
+        "drawn": 18,
+        "kept": 16,
+        "offered": 35,
+        "pick_sum": 103,
+        "played": 27
+      },
+      "vendor_financing": {
+        "drafted": 30,
+        "drawn": 22,
+        "kept": 0,
+        "offered": 30,
+        "pick_sum": 81,
+        "played": 0
+      },
+      "vertical_monopoly": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 4,
+        "offered": 86,
+        "pick_sum": 130,
+        "played": 2
+      },
+      "zero_click_breach": {
+        "drafted": 34,
+        "drawn": 14,
+        "kept": 34,
+        "offered": 34,
+        "pick_sum": 100,
+        "played": 30
+      },
+      "zero_knowledge_exploit": {
+        "drafted": 22,
+        "drawn": 18,
+        "kept": 24,
+        "offered": 22,
+        "pick_sum": 65,
+        "played": 34
+      }
+    },
+    "planner:deals=1": {
+      "adaptive_malware": {
+        "drafted": 29,
+        "drawn": 23,
+        "kept": 3,
+        "offered": 29,
+        "pick_sum": 80,
+        "played": 5
+      },
+      "adversarial_inference_sweep": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 59,
+        "offered": 94,
+        "pick_sum": 179,
+        "played": 48
+      },
+      "aegis_dome_array": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 68,
+        "offered": 86,
+        "pick_sum": 165,
+        "played": 4
+      },
+      "aegis_grid_lockdown": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 72,
+        "offered": 78,
+        "pick_sum": 169,
+        "played": 12
+      },
+      "agency_directorate": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 25,
+        "offered": 86,
+        "pick_sum": 144,
+        "played": 0
+      },
+      "agency_field_station": {
+        "drafted": 22,
+        "drawn": 23,
+        "kept": 46,
+        "offered": 22,
+        "pick_sum": 63,
+        "played": 22
+      },
+      "amnesty_decree": {
+        "drafted": 40,
+        "drawn": 23,
+        "kept": 49,
+        "offered": 40,
+        "pick_sum": 125,
+        "played": 64
+      },
+      "antitrust_action": {
+        "drafted": 40,
+        "drawn": 15,
+        "kept": 16,
+        "offered": 40,
+        "pick_sum": 116,
+        "played": 5
+      },
+      "arc_furnace_complex": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 16,
+        "offered": 94,
+        "pick_sum": 161,
+        "played": 0
+      },
+      "arcology_foundry": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 6,
+        "offered": 86,
+        "pick_sum": 122,
+        "played": 2
+      },
+      "autonomous_defense_grid": {
+        "drafted": 105,
+        "drawn": 0,
+        "kept": 25,
+        "offered": 105,
+        "pick_sum": 222,
+        "played": 16
+      },
+      "back_channel_talks": {
+        "drafted": 25,
+        "drawn": 10,
+        "kept": 16,
+        "offered": 25,
+        "pick_sum": 74,
+        "played": 24
+      },
+      "baseload_contract": {
+        "drafted": 29,
+        "drawn": 13,
+        "kept": 59,
+        "offered": 29,
+        "pick_sum": 78,
+        "played": 63
+      },
+      "beamed_power_constellation": {
+        "drafted": 70,
+        "drawn": 0,
+        "kept": 28,
+        "offered": 70,
+        "pick_sum": 120,
+        "played": 23
+      },
+      "benchmark_suite": {
+        "drafted": 29,
+        "drawn": 16,
+        "kept": 68,
+        "offered": 29,
+        "pick_sum": 82,
+        "played": 75
+      },
+      "black_ice_citadel": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 37,
+        "offered": 86,
+        "pick_sum": 168,
+        "played": 20
+      },
+      "blackout_script": {
+        "drafted": 40,
+        "drawn": 12,
+        "kept": 56,
+        "offered": 40,
+        "pick_sum": 130,
+        "played": 51
+      },
+      "bonded_warehouse": {
+        "drafted": 28,
+        "drawn": 26,
+        "kept": 46,
+        "offered": 28,
+        "pick_sum": 84,
+        "played": 6
+      },
+      "bounty_board": {
+        "drafted": 24,
+        "drawn": 14,
+        "kept": 12,
+        "offered": 24,
+        "pick_sum": 77,
+        "played": 20
+      },
+      "breach_and_clear": {
+        "drafted": 36,
+        "drawn": 18,
+        "kept": 27,
+        "offered": 36,
+        "pick_sum": 102,
+        "played": 37
+      },
+      "breakthrough_lab": {
+        "drafted": 87,
+        "drawn": 0,
+        "kept": 8,
+        "offered": 87,
+        "pick_sum": 169,
+        "played": 0
+      },
+      "breakthrough_leak": {
+        "drafted": 33,
+        "drawn": 21,
+        "kept": 7,
+        "offered": 33,
+        "pick_sum": 93,
+        "played": 19
+      },
+      "bridge_loan": {
+        "drafted": 42,
+        "drawn": 28,
+        "kept": 62,
+        "offered": 42,
+        "pick_sum": 131,
+        "played": 17
+      },
+      "brownout_relief": {
+        "drafted": 33,
+        "drawn": 19,
+        "kept": 48,
+        "offered": 33,
+        "pick_sum": 104,
+        "played": 63
+      },
+      "bulk_silicon_procurement": {
+        "drafted": 34,
+        "drawn": 26,
+        "kept": 48,
+        "offered": 34,
+        "pick_sum": 91,
+        "played": 64
+      },
+      "capacitor_discharge": {
+        "drafted": 34,
+        "drawn": 21,
+        "kept": 14,
+        "offered": 34,
+        "pick_sum": 97,
+        "played": 12
+      },
+      "ceasefire_monitors": {
+        "drafted": 26,
+        "drawn": 27,
+        "kept": 46,
+        "offered": 26,
+        "pick_sum": 78,
+        "played": 72
+      },
+      "citation_engine": {
+        "drafted": 32,
+        "drawn": 28,
+        "kept": 5,
+        "offered": 32,
+        "pick_sum": 93,
+        "played": 5
+      },
+      "civic_trust_bureau": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 51,
+        "offered": 78,
+        "pick_sum": 146,
+        "played": 30
+      },
+      "civic_watch": {
+        "drafted": 32,
+        "drawn": 15,
+        "kept": 53,
+        "offered": 32,
+        "pick_sum": 97,
+        "played": 19
+      },
+      "coalition_charter": {
+        "drafted": 87,
+        "drawn": 0,
+        "kept": 85,
+        "offered": 87,
+        "pick_sum": 149,
+        "played": 80
+      },
+      "collateralized_grid": {
+        "drafted": 35,
+        "drawn": 16,
+        "kept": 2,
+        "offered": 35,
+        "pick_sum": 109,
+        "played": 0
+      },
+      "commons_grid": {
+        "drafted": 38,
+        "drawn": 24,
+        "kept": 56,
+        "offered": 38,
+        "pick_sum": 119,
+        "played": 1
+      },
+      "consular_pouch": {
+        "drafted": 25,
+        "drawn": 26,
+        "kept": 57,
+        "offered": 25,
+        "pick_sum": 66,
+        "played": 79
+      },
+      "consulate_tower": {
+        "drafted": 31,
+        "drawn": 20,
+        "kept": 13,
+        "offered": 31,
+        "pick_sum": 88,
+        "played": 18
+      },
+      "continental_supergrid": {
+        "drafted": 85,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 85,
+        "pick_sum": 147,
+        "played": 1
+      },
+      "cryo_compute_burn": {
+        "drafted": 24,
+        "drawn": 23,
+        "kept": 9,
+        "offered": 24,
+        "pick_sum": 67,
+        "played": 1
+      },
+      "darknet_exchange": {
+        "drafted": 26,
+        "drawn": 7,
+        "kept": 67,
+        "offered": 26,
+        "pick_sum": 80,
+        "played": 15
+      },
+      "data_licensing_deal": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 78,
+        "pick_sum": 161,
+        "played": 0
+      },
+      "dataset_scraper": {
+        "drafted": 33,
+        "drawn": 22,
+        "kept": 0,
+        "offered": 33,
+        "pick_sum": 107,
+        "played": 0
+      },
+      "deep_state_ledger": {
+        "drafted": 73,
+        "drawn": 0,
+        "kept": 23,
+        "offered": 73,
+        "pick_sum": 140,
+        "played": 0
+      },
+      "demand_response_grid": {
+        "drafted": 32,
+        "drawn": 27,
+        "kept": 47,
+        "offered": 32,
+        "pick_sum": 83,
+        "played": 0
+      },
+      "diplomatic_expulsion": {
+        "drafted": 38,
+        "drawn": 25,
+        "kept": 68,
+        "offered": 38,
+        "pick_sum": 101,
+        "played": 92
+      },
+      "dyson_swarm_tranche": {
+        "drafted": 66,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 66,
+        "pick_sum": 201,
+        "played": 0
+      },
+      "embassy_compound": {
+        "drafted": 34,
+        "drawn": 16,
+        "kept": 64,
+        "offered": 34,
+        "pick_sum": 94,
+        "played": 74
+      },
+      "endowed_research_chair": {
+        "drafted": 25,
+        "drawn": 21,
+        "kept": 6,
+        "offered": 25,
+        "pick_sum": 76,
+        "played": 0
+      },
+      "eviction_worm": {
+        "drafted": 24,
+        "drawn": 25,
+        "kept": 54,
+        "offered": 24,
+        "pick_sum": 74,
+        "played": 78
+      },
+      "exabyte_archive": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 80,
+        "pick_sum": 156,
+        "played": 0
+      },
+      "exodus_corridors": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 83,
+        "offered": 93,
+        "pick_sum": 146,
+        "played": 75
+      },
+      "expansion_fund": {
+        "drafted": 36,
+        "drawn": 15,
+        "kept": 56,
+        "offered": 36,
+        "pick_sum": 107,
+        "played": 12
+      },
+      "fact_check_network": {
+        "drafted": 22,
+        "drawn": 23,
+        "kept": 16,
+        "offered": 22,
+        "pick_sum": 65,
+        "played": 13
+      },
+      "faraday_yard": {
+        "drafted": 30,
+        "drawn": 22,
+        "kept": 63,
+        "offered": 30,
+        "pick_sum": 79,
+        "played": 46
+      },
+      "field_grant": {
+        "drafted": 40,
+        "drawn": 16,
+        "kept": 9,
+        "offered": 40,
+        "pick_sum": 126,
+        "played": 13
+      },
+      "field_sensor_grid": {
+        "drafted": 44,
+        "drawn": 22,
+        "kept": 9,
+        "offered": 44,
+        "pick_sum": 133,
+        "played": 4
+      },
+      "force_protection_order": {
+        "drafted": 30,
+        "drawn": 19,
+        "kept": 0,
+        "offered": 30,
+        "pick_sum": 91,
+        "played": 2
+      },
+      "forensic_audit": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 24,
+        "offered": 86,
+        "pick_sum": 205,
+        "played": 12
+      },
+      "foundation_model_campus": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 0,
+        "offered": 84,
+        "pick_sum": 275,
+        "played": 0
+      },
+      "fusion_startup_stake": {
+        "drafted": 34,
+        "drawn": 22,
+        "kept": 59,
+        "offered": 34,
+        "pick_sum": 92,
+        "played": 66
+      },
+      "garrison_command": {
+        "drafted": 27,
+        "drawn": 21,
+        "kept": 60,
+        "offered": 27,
+        "pick_sum": 85,
+        "played": 19
+      },
+      "grad_student_pool": {
+        "drafted": 35,
+        "drawn": 21,
+        "kept": 54,
+        "offered": 35,
+        "pick_sum": 110,
+        "played": 7
+      },
+      "great_liberation": {
+        "drafted": 102,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 102,
+        "pick_sum": 346,
+        "played": 0
+      },
+      "grid_census": {
+        "drafted": 35,
+        "drawn": 22,
+        "kept": 76,
+        "offered": 35,
+        "pick_sum": 95,
+        "played": 67
+      },
+      "grid_tied_smelter": {
+        "drafted": 40,
+        "drawn": 24,
+        "kept": 8,
+        "offered": 40,
+        "pick_sum": 120,
+        "played": 9
+      },
+      "hardened_bunker_complex": {
+        "drafted": 14,
+        "drawn": 20,
+        "kept": 38,
+        "offered": 14,
+        "pick_sum": 46,
+        "played": 42
+      },
+      "hardened_conduits": {
+        "drafted": 32,
+        "drawn": 17,
+        "kept": 26,
+        "offered": 32,
+        "pick_sum": 94,
+        "played": 40
+      },
+      "hardpoint_lockdown": {
+        "drafted": 32,
+        "drawn": 11,
+        "kept": 50,
+        "offered": 32,
+        "pick_sum": 104,
+        "played": 0
+      },
+      "honeypot_relay": {
+        "drafted": 26,
+        "drawn": 13,
+        "kept": 48,
+        "offered": 26,
+        "pick_sum": 79,
+        "played": 6
+      },
+      "hostile_buyout": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 91,
+        "offered": 93,
+        "pick_sum": 148,
+        "played": 84
+      },
+      "hyperscale_botnet": {
+        "drafted": 90,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 90,
+        "pick_sum": 161,
+        "played": 0
+      },
+      "inference_cluster": {
+        "drafted": 33,
+        "drawn": 29,
+        "kept": 57,
+        "offered": 33,
+        "pick_sum": 103,
+        "played": 0
+      },
+      "interceptor_battery": {
+        "drafted": 43,
+        "drawn": 18,
+        "kept": 64,
+        "offered": 43,
+        "pick_sum": 127,
+        "played": 36
+      },
+      "interconnector_treaty": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 59,
+        "offered": 78,
+        "pick_sum": 137,
+        "played": 43
+      },
+      "intrusion_countermeasures": {
+        "drafted": 30,
+        "drawn": 22,
+        "kept": 56,
+        "offered": 30,
+        "pick_sum": 89,
+        "played": 64
+      },
+      "intrusion_lab": {
+        "drafted": 37,
+        "drawn": 27,
+        "kept": 55,
+        "offered": 37,
+        "pick_sum": 107,
+        "played": 3
+      },
+      "joint_fabrication_pact": {
+        "drafted": 24,
+        "drawn": 19,
+        "kept": 37,
+        "offered": 24,
+        "pick_sum": 68,
+        "played": 53
+      },
+      "joint_security_compact": {
+        "drafted": 25,
+        "drawn": 9,
+        "kept": 40,
+        "offered": 25,
+        "pick_sum": 81,
+        "played": 37
+      },
+      "kill_team_roster": {
+        "drafted": 20,
+        "drawn": 17,
+        "kept": 40,
+        "offered": 20,
+        "pick_sum": 58,
+        "played": 2
+      },
+      "killswitch_directive": {
+        "drafted": 85,
+        "drawn": 0,
+        "kept": 81,
+        "offered": 85,
+        "pick_sum": 144,
+        "played": 29
+      },
+      "kinetic_interdiction": {
+        "drafted": 87,
+        "drawn": 0,
+        "kept": 8,
+        "offered": 87,
+        "pick_sum": 296,
+        "played": 6
+      },
+      "liaison_corps": {
+        "drafted": 32,
+        "drawn": 14,
+        "kept": 40,
+        "offered": 32,
+        "pick_sum": 98,
+        "played": 1
+      },
+      "liberation_accords": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 41,
+        "offered": 82,
+        "pick_sum": 130,
+        "played": 37
+      },
+      "lights_out_assembly": {
+        "drafted": 37,
+        "drawn": 24,
+        "kept": 52,
+        "offered": 37,
+        "pick_sum": 113,
+        "played": 8
+      },
+      "liquidity_event": {
+        "drafted": 24,
+        "drawn": 15,
+        "kept": 1,
+        "offered": 24,
+        "pick_sum": 67,
+        "played": 0
+      },
+      "literature_crawler": {
+        "drafted": 19,
+        "drawn": 17,
+        "kept": 40,
+        "offered": 19,
+        "pick_sum": 57,
+        "played": 52
+      },
+      "logic_bomb": {
+        "drafted": 42,
+        "drawn": 18,
+        "kept": 15,
+        "offered": 42,
+        "pick_sum": 127,
+        "played": 20
+      },
+      "manifesto_leak": {
+        "drafted": 34,
+        "drawn": 24,
+        "kept": 2,
+        "offered": 34,
+        "pick_sum": 106,
+        "played": 2
+      },
+      "market_stabilization_board": {
+        "drafted": 64,
+        "drawn": 0,
+        "kept": 23,
+        "offered": 64,
+        "pick_sum": 136,
+        "played": 13
+      },
+      "market_watchdog": {
+        "drafted": 24,
+        "drawn": 28,
+        "kept": 30,
+        "offered": 24,
+        "pick_sum": 81,
+        "played": 12
+      },
+      "martial_cordon": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 72,
+        "offered": 91,
+        "pick_sum": 137,
+        "played": 69
+      },
+      "materials_hedge_desk": {
+        "drafted": 42,
+        "drawn": 20,
+        "kept": 2,
+        "offered": 42,
+        "pick_sum": 122,
+        "played": 0
+      },
+      "mutual_aid_pact": {
+        "drafted": 25,
+        "drawn": 15,
+        "kept": 40,
+        "offered": 25,
+        "pick_sum": 84,
+        "played": 51
+      },
+      "mutual_defense_pact": {
+        "drafted": 32,
+        "drawn": 22,
+        "kept": 51,
+        "offered": 32,
+        "pick_sum": 95,
+        "played": 14
+      },
+      "neural_mirror": {
+        "drafted": 38,
+        "drawn": 20,
+        "kept": 40,
+        "offered": 38,
+        "pick_sum": 119,
+        "played": 11
+      },
+      "node_severance": {
+        "drafted": 77,
+        "drawn": 0,
+        "kept": 26,
+        "offered": 77,
+        "pick_sum": 145,
+        "played": 23
+      },
+      "nuclear_option": {
+        "drafted": 77,
+        "drawn": 0,
+        "kept": 16,
+        "offered": 77,
+        "pick_sum": 259,
+        "played": 10
+      },
+      "open_assembly": {
+        "drafted": 42,
+        "drawn": 17,
+        "kept": 56,
+        "offered": 42,
+        "pick_sum": 134,
+        "played": 4
+      },
+      "open_weights_release": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 9,
+        "offered": 80,
+        "pick_sum": 137,
+        "played": 2
+      },
+      "orbital_embassy": {
+        "drafted": 85,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 85,
+        "pick_sum": 300,
+        "played": 0
+      },
+      "orbital_mass_driver": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 84,
+        "pick_sum": 274,
+        "played": 1
+      },
+      "orbital_observatory_array": {
+        "drafted": 93,
+        "drawn": 0,
+        "kept": 53,
+        "offered": 93,
+        "pick_sum": 133,
+        "played": 0
+      },
+      "payroll_automation": {
+        "drafted": 35,
+        "drawn": 20,
+        "kept": 41,
+        "offered": 35,
+        "pick_sum": 100,
+        "played": 39
+      },
+      "peace_dividend": {
+        "drafted": 45,
+        "drawn": 13,
+        "kept": 53,
+        "offered": 45,
+        "pick_sum": 127,
+        "played": 65
+      },
+      "peacekeeper_rotation": {
+        "drafted": 30,
+        "drawn": 18,
+        "kept": 39,
+        "offered": 30,
+        "pick_sum": 83,
+        "played": 52
+      },
+      "peacekeeping_mission": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 53,
+        "offered": 80,
+        "pick_sum": 152,
+        "played": 40
+      },
+      "peaker_turbines": {
+        "drafted": 26,
+        "drawn": 16,
+        "kept": 32,
+        "offered": 26,
+        "pick_sum": 82,
+        "played": 34
+      },
+      "planetary_assembly": {
+        "drafted": 76,
+        "drawn": 0,
+        "kept": 13,
+        "offered": 76,
+        "pick_sum": 139,
+        "played": 0
+      },
+      "planetary_referendum": {
+        "drafted": 92,
+        "drawn": 0,
+        "kept": 88,
+        "offered": 92,
+        "pick_sum": 171,
+        "played": 84
+      },
+      "policy_institute": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 17,
+        "offered": 79,
+        "pick_sum": 170,
+        "played": 0
+      },
+      "popular_uprising": {
+        "drafted": 89,
+        "drawn": 0,
+        "kept": 89,
+        "offered": 89,
+        "pick_sum": 176,
+        "played": 55
+      },
+      "positron_storage_ring": {
+        "drafted": 92,
+        "drawn": 0,
+        "kept": 12,
+        "offered": 92,
+        "pick_sum": 133,
+        "played": 3
+      },
+      "power_to_the_people": {
+        "drafted": 91,
+        "drawn": 0,
+        "kept": 30,
+        "offered": 91,
+        "pick_sum": 150,
+        "played": 21
+      },
+      "predictive_modeling": {
+        "drafted": 38,
+        "drawn": 21,
+        "kept": 68,
+        "offered": 38,
+        "pick_sum": 120,
+        "played": 64
+      },
+      "prefab_plant_kit": {
+        "drafted": 27,
+        "drawn": 21,
+        "kept": 11,
+        "offered": 27,
+        "pick_sum": 86,
+        "played": 12
+      },
+      "preprint_exchange": {
+        "drafted": 39,
+        "drawn": 25,
+        "kept": 45,
+        "offered": 39,
+        "pick_sum": 113,
+        "played": 26
+      },
+      "quantum_decryptor": {
+        "drafted": 34,
+        "drawn": 24,
+        "kept": 19,
+        "offered": 34,
+        "pick_sum": 91,
+        "played": 1
+      },
+      "recruit_operatives": {
+        "drafted": 23,
+        "drawn": 22,
+        "kept": 4,
+        "offered": 23,
+        "pick_sum": 75,
+        "played": 0
+      },
+      "recursive_self_improvement": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 79,
+        "pick_sum": 276,
+        "played": 0
+      },
+      "red_team_audit": {
+        "drafted": 34,
+        "drawn": 22,
+        "kept": 28,
+        "offered": 34,
+        "pick_sum": 103,
+        "played": 8
+      },
+      "relay_mast_rollout": {
+        "drafted": 41,
+        "drawn": 15,
+        "kept": 47,
+        "offered": 41,
+        "pick_sum": 130,
+        "played": 47
+      },
+      "retained_earnings": {
+        "drafted": 29,
+        "drawn": 28,
+        "kept": 37,
+        "offered": 29,
+        "pick_sum": 85,
+        "played": 1
+      },
+      "robotic_foundry": {
+        "drafted": 34,
+        "drawn": 17,
+        "kept": 21,
+        "offered": 34,
+        "pick_sum": 101,
+        "played": 12
+      },
+      "root_access": {
+        "drafted": 88,
+        "drawn": 0,
+        "kept": 31,
+        "offered": 88,
+        "pick_sum": 138,
+        "played": 23
+      },
+      "safehouse_network": {
+        "drafted": 34,
+        "drawn": 12,
+        "kept": 47,
+        "offered": 34,
+        "pick_sum": 103,
+        "played": 9
+      },
+      "sample_repository": {
+        "drafted": 35,
+        "drawn": 28,
+        "kept": 1,
+        "offered": 35,
+        "pick_sum": 83,
+        "played": 2
+      },
+      "security_contractor_hq": {
+        "drafted": 36,
+        "drawn": 18,
+        "kept": 6,
+        "offered": 36,
+        "pick_sum": 95,
+        "played": 10
+      },
+      "security_ops_floor": {
+        "drafted": 36,
+        "drawn": 21,
+        "kept": 42,
+        "offered": 36,
+        "pick_sum": 111,
+        "played": 10
+      },
+      "sentinel_command": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 49,
+        "offered": 79,
+        "pick_sum": 151,
+        "played": 32
+      },
+      "sentinel_mesh": {
+        "drafted": 24,
+        "drawn": 20,
+        "kept": 22,
+        "offered": 24,
+        "pick_sum": 75,
+        "played": 11
+      },
+      "sentry_drone_wing": {
+        "drafted": 26,
+        "drawn": 23,
+        "kept": 29,
+        "offered": 26,
+        "pick_sum": 82,
+        "played": 2
+      },
+      "shadow_broker_feed": {
+        "drafted": 25,
+        "drawn": 25,
+        "kept": 2,
+        "offered": 25,
+        "pick_sum": 67,
+        "played": 6
+      },
+      "shared_compute_grant": {
+        "drafted": 29,
+        "drawn": 18,
+        "kept": 35,
+        "offered": 29,
+        "pick_sum": 82,
+        "played": 28
+      },
+      "shared_exploit_kit": {
+        "drafted": 34,
+        "drawn": 25,
+        "kept": 41,
+        "offered": 34,
+        "pick_sum": 102,
+        "played": 49
+      },
+      "shared_grid_accord": {
+        "drafted": 33,
+        "drawn": 25,
+        "kept": 29,
+        "offered": 33,
+        "pick_sum": 104,
+        "played": 50
+      },
+      "shared_threat_intel": {
+        "drafted": 37,
+        "drawn": 16,
+        "kept": 36,
+        "offered": 37,
+        "pick_sum": 108,
+        "played": 9
+      },
+      "signal_hijack": {
+        "drafted": 39,
+        "drawn": 19,
+        "kept": 21,
+        "offered": 39,
+        "pick_sum": 113,
+        "played": 35
+      },
+      "simulation_cluster": {
+        "drafted": 38,
+        "drawn": 30,
+        "kept": 37,
+        "offered": 38,
+        "pick_sum": 115,
+        "played": 0
+      },
+      "singularity_exploit": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 82,
+        "pick_sum": 287,
+        "played": 3
+      },
+      "sovereign_capital_fund": {
+        "drafted": 89,
+        "drawn": 0,
+        "kept": 9,
+        "offered": 89,
+        "pick_sum": 175,
+        "played": 0
+      },
+      "spoofed_credentials": {
+        "drafted": 26,
+        "drawn": 21,
+        "kept": 15,
+        "offered": 26,
+        "pick_sum": 84,
+        "played": 2
+      },
+      "station_prefab_order": {
+        "drafted": 27,
+        "drawn": 14,
+        "kept": 14,
+        "offered": 27,
+        "pick_sum": 75,
+        "played": 21
+      },
+      "storm_hardening": {
+        "drafted": 31,
+        "drawn": 19,
+        "kept": 39,
+        "offered": 31,
+        "pick_sum": 99,
+        "played": 7
+      },
+      "substation_hub": {
+        "drafted": 39,
+        "drawn": 23,
+        "kept": 43,
+        "offered": 39,
+        "pick_sum": 117,
+        "played": 36
+      },
+      "summit_caucus": {
+        "drafted": 38,
+        "drawn": 21,
+        "kept": 1,
+        "offered": 38,
+        "pick_sum": 101,
+        "played": 16
+      },
+      "supply_chain_audit": {
+        "drafted": 24,
+        "drawn": 17,
+        "kept": 14,
+        "offered": 24,
+        "pick_sum": 66,
+        "played": 10
+      },
+      "supply_chain_treaty": {
+        "drafted": 45,
+        "drawn": 20,
+        "kept": 44,
+        "offered": 45,
+        "pick_sum": 130,
+        "played": 42
+      },
+      "surplus_auction": {
+        "drafted": 40,
+        "drawn": 10,
+        "kept": 33,
+        "offered": 40,
+        "pick_sum": 126,
+        "played": 35
+      },
+      "synthetic_data_forge": {
+        "drafted": 41,
+        "drawn": 19,
+        "kept": 15,
+        "offered": 41,
+        "pick_sum": 128,
+        "played": 0
+      },
+      "telemetry_archive": {
+        "drafted": 37,
+        "drawn": 22,
+        "kept": 37,
+        "offered": 37,
+        "pick_sum": 119,
+        "played": 1
+      },
+      "threat_forecast_engine": {
+        "drafted": 28,
+        "drawn": 13,
+        "kept": 51,
+        "offered": 28,
+        "pick_sum": 88,
+        "played": 41
+      },
+      "threat_hunt": {
+        "drafted": 33,
+        "drawn": 29,
+        "kept": 13,
+        "offered": 33,
+        "pick_sum": 113,
+        "played": 4
+      },
+      "tidal_barrage": {
+        "drafted": 31,
+        "drawn": 20,
+        "kept": 6,
+        "offered": 31,
+        "pick_sum": 93,
+        "played": 17
+      },
+      "total_containment": {
+        "drafted": 100,
+        "drawn": 0,
+        "kept": 45,
+        "offered": 100,
+        "pick_sum": 165,
+        "played": 44
+      },
+      "transmission_corridor": {
+        "drafted": 39,
+        "drawn": 22,
+        "kept": 7,
+        "offered": 39,
+        "pick_sum": 118,
+        "played": 22
+      },
+      "treaty_grid_exchange": {
+        "drafted": 38,
+        "drawn": 20,
+        "kept": 39,
+        "offered": 38,
+        "pick_sum": 109,
+        "played": 34
+      },
+      "truth_commission": {
+        "drafted": 36,
+        "drawn": 18,
+        "kept": 19,
+        "offered": 36,
+        "pick_sum": 115,
+        "played": 22
+      },
+      "vendor_financing": {
+        "drafted": 33,
+        "drawn": 18,
+        "kept": 1,
+        "offered": 33,
+        "pick_sum": 102,
+        "played": 0
+      },
+      "vertical_monopoly": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 82,
+        "pick_sum": 138,
+        "played": 1
+      },
+      "zero_click_breach": {
+        "drafted": 34,
+        "drawn": 16,
+        "kept": 32,
+        "offered": 34,
+        "pick_sum": 106,
+        "played": 24
+      },
+      "zero_knowledge_exploit": {
+        "drafted": 22,
+        "drawn": 14,
+        "kept": 22,
+        "offered": 22,
+        "pick_sum": 65,
+        "played": 22
+      }
+    },
+    "planner:deals=1,always_liberate=1": {
+      "adaptive_malware": {
+        "drafted": 32,
+        "drawn": 15,
+        "kept": 3,
+        "offered": 32,
+        "pick_sum": 89,
+        "played": 2
+      },
+      "adversarial_inference_sweep": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 53,
+        "offered": 81,
+        "pick_sum": 187,
+        "played": 38
+      },
+      "aegis_dome_array": {
+        "drafted": 75,
+        "drawn": 0,
+        "kept": 64,
+        "offered": 75,
+        "pick_sum": 147,
+        "played": 6
+      },
+      "aegis_grid_lockdown": {
+        "drafted": 73,
+        "drawn": 0,
+        "kept": 69,
+        "offered": 73,
+        "pick_sum": 146,
+        "played": 10
+      },
+      "agency_directorate": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 20,
+        "offered": 82,
+        "pick_sum": 164,
+        "played": 0
+      },
+      "agency_field_station": {
+        "drafted": 26,
+        "drawn": 17,
+        "kept": 50,
+        "offered": 26,
+        "pick_sum": 81,
+        "played": 17
+      },
+      "amnesty_decree": {
+        "drafted": 42,
+        "drawn": 17,
+        "kept": 45,
+        "offered": 42,
+        "pick_sum": 130,
+        "played": 51
+      },
+      "antitrust_action": {
+        "drafted": 38,
+        "drawn": 15,
+        "kept": 12,
+        "offered": 38,
+        "pick_sum": 116,
+        "played": 5
+      },
+      "arc_furnace_complex": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 10,
+        "offered": 82,
+        "pick_sum": 162,
+        "played": 0
+      },
+      "arcology_foundry": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 8,
+        "offered": 79,
+        "pick_sum": 150,
+        "played": 2
+      },
+      "autonomous_defense_grid": {
+        "drafted": 94,
+        "drawn": 0,
+        "kept": 16,
+        "offered": 94,
+        "pick_sum": 195,
+        "played": 7
+      },
+      "back_channel_talks": {
+        "drafted": 24,
+        "drawn": 11,
+        "kept": 17,
+        "offered": 24,
+        "pick_sum": 71,
+        "played": 27
+      },
+      "baseload_contract": {
+        "drafted": 20,
+        "drawn": 20,
+        "kept": 50,
+        "offered": 20,
+        "pick_sum": 56,
+        "played": 61
+      },
+      "beamed_power_constellation": {
+        "drafted": 65,
+        "drawn": 0,
+        "kept": 30,
+        "offered": 65,
+        "pick_sum": 133,
+        "played": 17
+      },
+      "benchmark_suite": {
+        "drafted": 24,
+        "drawn": 17,
+        "kept": 63,
+        "offered": 24,
+        "pick_sum": 72,
+        "played": 73
+      },
+      "black_ice_citadel": {
+        "drafted": 87,
+        "drawn": 0,
+        "kept": 41,
+        "offered": 87,
+        "pick_sum": 182,
+        "played": 18
+      },
+      "blackout_script": {
+        "drafted": 35,
+        "drawn": 10,
+        "kept": 51,
+        "offered": 35,
+        "pick_sum": 117,
+        "played": 45
+      },
+      "bonded_warehouse": {
+        "drafted": 30,
+        "drawn": 14,
+        "kept": 47,
+        "offered": 30,
+        "pick_sum": 91,
+        "played": 4
+      },
+      "bounty_board": {
+        "drafted": 17,
+        "drawn": 14,
+        "kept": 11,
+        "offered": 17,
+        "pick_sum": 56,
+        "played": 21
+      },
+      "breach_and_clear": {
+        "drafted": 35,
+        "drawn": 12,
+        "kept": 26,
+        "offered": 35,
+        "pick_sum": 98,
+        "played": 30
+      },
+      "breakthrough_lab": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 80,
+        "pick_sum": 165,
+        "played": 0
+      },
+      "breakthrough_leak": {
+        "drafted": 34,
+        "drawn": 14,
+        "kept": 2,
+        "offered": 34,
+        "pick_sum": 100,
+        "played": 9
+      },
+      "bridge_loan": {
+        "drafted": 38,
+        "drawn": 29,
+        "kept": 59,
+        "offered": 38,
+        "pick_sum": 125,
+        "played": 33
+      },
+      "brownout_relief": {
+        "drafted": 33,
+        "drawn": 12,
+        "kept": 47,
+        "offered": 33,
+        "pick_sum": 109,
+        "played": 54
+      },
+      "bulk_silicon_procurement": {
+        "drafted": 32,
+        "drawn": 26,
+        "kept": 46,
+        "offered": 32,
+        "pick_sum": 99,
+        "played": 57
+      },
+      "capacitor_discharge": {
+        "drafted": 33,
+        "drawn": 20,
+        "kept": 17,
+        "offered": 33,
+        "pick_sum": 95,
+        "played": 4
+      },
+      "ceasefire_monitors": {
+        "drafted": 26,
+        "drawn": 17,
+        "kept": 47,
+        "offered": 26,
+        "pick_sum": 79,
+        "played": 61
+      },
+      "citation_engine": {
+        "drafted": 34,
+        "drawn": 16,
+        "kept": 6,
+        "offered": 34,
+        "pick_sum": 100,
+        "played": 3
+      },
+      "civic_trust_bureau": {
+        "drafted": 69,
+        "drawn": 0,
+        "kept": 33,
+        "offered": 69,
+        "pick_sum": 154,
+        "played": 19
+      },
+      "civic_watch": {
+        "drafted": 26,
+        "drawn": 11,
+        "kept": 47,
+        "offered": 26,
+        "pick_sum": 83,
+        "played": 13
+      },
+      "coalition_charter": {
+        "drafted": 85,
+        "drawn": 0,
+        "kept": 85,
+        "offered": 85,
+        "pick_sum": 174,
+        "played": 74
+      },
+      "collateralized_grid": {
+        "drafted": 25,
+        "drawn": 16,
+        "kept": 1,
+        "offered": 25,
+        "pick_sum": 79,
+        "played": 0
+      },
+      "commons_grid": {
+        "drafted": 35,
+        "drawn": 24,
+        "kept": 53,
+        "offered": 35,
+        "pick_sum": 108,
+        "played": 1
+      },
+      "consular_pouch": {
+        "drafted": 24,
+        "drawn": 21,
+        "kept": 57,
+        "offered": 24,
+        "pick_sum": 70,
+        "played": 75
+      },
+      "consulate_tower": {
+        "drafted": 20,
+        "drawn": 19,
+        "kept": 8,
+        "offered": 20,
+        "pick_sum": 56,
+        "played": 12
+      },
+      "continental_supergrid": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 80,
+        "pick_sum": 163,
+        "played": 1
+      },
+      "cryo_compute_burn": {
+        "drafted": 27,
+        "drawn": 17,
+        "kept": 8,
+        "offered": 27,
+        "pick_sum": 85,
+        "played": 2
+      },
+      "darknet_exchange": {
+        "drafted": 18,
+        "drawn": 13,
+        "kept": 59,
+        "offered": 18,
+        "pick_sum": 56,
+        "played": 17
+      },
+      "data_licensing_deal": {
+        "drafted": 68,
+        "drawn": 0,
+        "kept": 0,
+        "offered": 68,
+        "pick_sum": 150,
+        "played": 0
+      },
+      "dataset_scraper": {
+        "drafted": 28,
+        "drawn": 20,
+        "kept": 0,
+        "offered": 28,
+        "pick_sum": 93,
+        "played": 0
+      },
+      "deep_state_ledger": {
+        "drafted": 67,
+        "drawn": 0,
+        "kept": 18,
+        "offered": 67,
+        "pick_sum": 137,
+        "played": 0
+      },
+      "demand_response_grid": {
+        "drafted": 32,
+        "drawn": 25,
+        "kept": 47,
+        "offered": 32,
+        "pick_sum": 78,
+        "played": 0
+      },
+      "diplomatic_expulsion": {
+        "drafted": 40,
+        "drawn": 21,
+        "kept": 70,
+        "offered": 40,
+        "pick_sum": 112,
+        "played": 90
+      },
+      "dyson_swarm_tranche": {
+        "drafted": 57,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 57,
+        "pick_sum": 156,
+        "played": 1
+      },
+      "embassy_compound": {
+        "drafted": 29,
+        "drawn": 18,
+        "kept": 59,
+        "offered": 29,
+        "pick_sum": 79,
+        "played": 70
+      },
+      "endowed_research_chair": {
+        "drafted": 26,
+        "drawn": 15,
+        "kept": 13,
+        "offered": 26,
+        "pick_sum": 77,
+        "played": 0
+      },
+      "eviction_worm": {
+        "drafted": 24,
+        "drawn": 22,
+        "kept": 54,
+        "offered": 24,
+        "pick_sum": 74,
+        "played": 71
+      },
+      "exabyte_archive": {
+        "drafted": 73,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 73,
+        "pick_sum": 176,
+        "played": 0
+      },
+      "exodus_corridors": {
+        "drafted": 83,
+        "drawn": 0,
+        "kept": 70,
+        "offered": 83,
+        "pick_sum": 158,
+        "played": 61
+      },
+      "expansion_fund": {
+        "drafted": 28,
+        "drawn": 16,
+        "kept": 46,
+        "offered": 28,
+        "pick_sum": 82,
+        "played": 7
+      },
+      "fact_check_network": {
+        "drafted": 20,
+        "drawn": 18,
+        "kept": 17,
+        "offered": 20,
+        "pick_sum": 66,
+        "played": 15
+      },
+      "faraday_yard": {
+        "drafted": 31,
+        "drawn": 20,
+        "kept": 64,
+        "offered": 31,
+        "pick_sum": 90,
+        "played": 46
+      },
+      "field_grant": {
+        "drafted": 32,
+        "drawn": 17,
+        "kept": 5,
+        "offered": 32,
+        "pick_sum": 104,
+        "played": 9
+      },
+      "field_sensor_grid": {
+        "drafted": 37,
+        "drawn": 23,
+        "kept": 6,
+        "offered": 37,
+        "pick_sum": 117,
+        "played": 8
+      },
+      "force_protection_order": {
+        "drafted": 25,
+        "drawn": 19,
+        "kept": 2,
+        "offered": 25,
+        "pick_sum": 77,
+        "played": 4
+      },
+      "forensic_audit": {
+        "drafted": 76,
+        "drawn": 0,
+        "kept": 76,
+        "offered": 76,
+        "pick_sum": 80,
+        "played": 26
+      },
+      "foundation_model_campus": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 0,
+        "offered": 84,
+        "pick_sum": 256,
+        "played": 0
+      },
+      "fusion_startup_stake": {
+        "drafted": 34,
+        "drawn": 18,
+        "kept": 60,
+        "offered": 34,
+        "pick_sum": 105,
+        "played": 62
+      },
+      "garrison_command": {
+        "drafted": 27,
+        "drawn": 15,
+        "kept": 59,
+        "offered": 27,
+        "pick_sum": 81,
+        "played": 23
+      },
+      "grad_student_pool": {
+        "drafted": 27,
+        "drawn": 20,
+        "kept": 46,
+        "offered": 27,
+        "pick_sum": 79,
+        "played": 6
+      },
+      "great_liberation": {
+        "drafted": 87,
+        "drawn": 0,
+        "kept": 87,
+        "offered": 87,
+        "pick_sum": 96,
+        "played": 33
+      },
+      "grid_census": {
+        "drafted": 32,
+        "drawn": 22,
+        "kept": 73,
+        "offered": 32,
+        "pick_sum": 88,
+        "played": 48
+      },
+      "grid_tied_smelter": {
+        "drafted": 34,
+        "drawn": 24,
+        "kept": 7,
+        "offered": 34,
+        "pick_sum": 106,
+        "played": 6
+      },
+      "hardened_bunker_complex": {
+        "drafted": 17,
+        "drawn": 10,
+        "kept": 41,
+        "offered": 17,
+        "pick_sum": 58,
+        "played": 32
+      },
+      "hardened_conduits": {
+        "drafted": 36,
+        "drawn": 11,
+        "kept": 34,
+        "offered": 36,
+        "pick_sum": 93,
+        "played": 37
+      },
+      "hardpoint_lockdown": {
+        "drafted": 20,
+        "drawn": 17,
+        "kept": 38,
+        "offered": 20,
+        "pick_sum": 61,
+        "played": 0
+      },
+      "honeypot_relay": {
+        "drafted": 8,
+        "drawn": 19,
+        "kept": 28,
+        "offered": 8,
+        "pick_sum": 24,
+        "played": 5
+      },
+      "hostile_buyout": {
+        "drafted": 86,
+        "drawn": 0,
+        "kept": 86,
+        "offered": 86,
+        "pick_sum": 96,
+        "played": 63
+      },
+      "hyperscale_botnet": {
+        "drafted": 83,
+        "drawn": 0,
+        "kept": 1,
+        "offered": 83,
+        "pick_sum": 172,
+        "played": 0
+      },
+      "inference_cluster": {
+        "drafted": 35,
+        "drawn": 24,
+        "kept": 59,
+        "offered": 35,
+        "pick_sum": 104,
+        "played": 1
+      },
+      "interceptor_battery": {
+        "drafted": 31,
+        "drawn": 21,
+        "kept": 51,
+        "offered": 31,
+        "pick_sum": 96,
+        "played": 30
+      },
+      "interconnector_treaty": {
+        "drafted": 72,
+        "drawn": 0,
+        "kept": 54,
+        "offered": 72,
+        "pick_sum": 154,
+        "played": 38
+      },
+      "intrusion_countermeasures": {
+        "drafted": 25,
+        "drawn": 27,
+        "kept": 50,
+        "offered": 25,
+        "pick_sum": 70,
+        "played": 52
+      },
+      "intrusion_lab": {
+        "drafted": 40,
+        "drawn": 24,
+        "kept": 58,
+        "offered": 40,
+        "pick_sum": 122,
+        "played": 2
+      },
+      "joint_fabrication_pact": {
+        "drafted": 22,
+        "drawn": 13,
+        "kept": 36,
+        "offered": 22,
+        "pick_sum": 61,
+        "played": 48
+      },
+      "joint_security_compact": {
+        "drafted": 19,
+        "drawn": 6,
+        "kept": 34,
+        "offered": 19,
+        "pick_sum": 52,
+        "played": 30
+      },
+      "kill_team_roster": {
+        "drafted": 23,
+        "drawn": 12,
+        "kept": 43,
+        "offered": 23,
+        "pick_sum": 74,
+        "played": 1
+      },
+      "killswitch_directive": {
+        "drafted": 75,
+        "drawn": 0,
+        "kept": 70,
+        "offered": 75,
+        "pick_sum": 157,
+        "played": 21
+      },
+      "kinetic_interdiction": {
+        "drafted": 83,
+        "drawn": 0,
+        "kept": 8,
+        "offered": 83,
+        "pick_sum": 274,
+        "played": 5
+      },
+      "liaison_corps": {
+        "drafted": 27,
+        "drawn": 20,
+        "kept": 35,
+        "offered": 27,
+        "pick_sum": 80,
+        "played": 1
+      },
+      "liberation_accords": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 36,
+        "offered": 78,
+        "pick_sum": 147,
+        "played": 32
+      },
+      "lights_out_assembly": {
+        "drafted": 41,
+        "drawn": 16,
+        "kept": 55,
+        "offered": 41,
+        "pick_sum": 125,
+        "played": 9
+      },
+      "liquidity_event": {
+        "drafted": 22,
+        "drawn": 10,
+        "kept": 0,
+        "offered": 22,
+        "pick_sum": 63,
+        "played": 0
+      },
+      "literature_crawler": {
+        "drafted": 19,
+        "drawn": 11,
+        "kept": 41,
+        "offered": 19,
+        "pick_sum": 61,
+        "played": 41
+      },
+      "logic_bomb": {
+        "drafted": 34,
+        "drawn": 20,
+        "kept": 12,
+        "offered": 34,
+        "pick_sum": 103,
+        "played": 19
+      },
+      "manifesto_leak": {
+        "drafted": 32,
+        "drawn": 24,
+        "kept": 2,
+        "offered": 32,
+        "pick_sum": 98,
+        "played": 7
+      },
+      "market_stabilization_board": {
+        "drafted": 53,
+        "drawn": 0,
+        "kept": 15,
+        "offered": 53,
+        "pick_sum": 125,
+        "played": 9
+      },
+      "market_watchdog": {
+        "drafted": 26,
+        "drawn": 25,
+        "kept": 32,
+        "offered": 26,
+        "pick_sum": 86,
+        "played": 6
+      },
+      "martial_cordon": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 62,
+        "offered": 84,
+        "pick_sum": 160,
+        "played": 58
+      },
+      "materials_hedge_desk": {
+        "drafted": 43,
+        "drawn": 17,
+        "kept": 1,
+        "offered": 43,
+        "pick_sum": 127,
+        "played": 0
+      },
+      "mutual_aid_pact": {
+        "drafted": 25,
+        "drawn": 10,
+        "kept": 42,
+        "offered": 25,
+        "pick_sum": 82,
+        "played": 50
+      },
+      "mutual_defense_pact": {
+        "drafted": 28,
+        "drawn": 25,
+        "kept": 47,
+        "offered": 28,
+        "pick_sum": 84,
+        "played": 10
+      },
+      "neural_mirror": {
+        "drafted": 31,
+        "drawn": 21,
+        "kept": 33,
+        "offered": 31,
+        "pick_sum": 90,
+        "played": 12
+      },
+      "node_severance": {
+        "drafted": 73,
+        "drawn": 0,
+        "kept": 22,
+        "offered": 73,
+        "pick_sum": 148,
+        "played": 18
+      },
+      "nuclear_option": {
+        "drafted": 75,
+        "drawn": 0,
+        "kept": 75,
+        "offered": 75,
+        "pick_sum": 88,
+        "played": 43
+      },
+      "open_assembly": {
+        "drafted": 28,
+        "drawn": 18,
+        "kept": 41,
+        "offered": 28,
+        "pick_sum": 87,
+        "played": 3
+      },
+      "open_weights_release": {
+        "drafted": 78,
+        "drawn": 0,
+        "kept": 16,
+        "offered": 78,
+        "pick_sum": 167,
+        "played": 6
+      },
+      "orbital_embassy": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 5,
+        "offered": 81,
+        "pick_sum": 282,
+        "played": 2
+      },
+      "orbital_mass_driver": {
+        "drafted": 76,
+        "drawn": 0,
+        "kept": 2,
+        "offered": 76,
+        "pick_sum": 225,
+        "played": 2
+      },
+      "orbital_observatory_array": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 36,
+        "offered": 82,
+        "pick_sum": 156,
+        "played": 0
+      },
+      "payroll_automation": {
+        "drafted": 32,
+        "drawn": 16,
+        "kept": 38,
+        "offered": 32,
+        "pick_sum": 103,
+        "played": 31
+      },
+      "peace_dividend": {
+        "drafted": 43,
+        "drawn": 18,
+        "kept": 52,
+        "offered": 43,
+        "pick_sum": 130,
+        "played": 64
+      },
+      "peacekeeper_rotation": {
+        "drafted": 33,
+        "drawn": 12,
+        "kept": 42,
+        "offered": 33,
+        "pick_sum": 97,
+        "played": 50
+      },
+      "peacekeeping_mission": {
+        "drafted": 72,
+        "drawn": 0,
+        "kept": 72,
+        "offered": 72,
+        "pick_sum": 84,
+        "played": 44
+      },
+      "peaker_turbines": {
+        "drafted": 13,
+        "drawn": 14,
+        "kept": 21,
+        "offered": 13,
+        "pick_sum": 38,
+        "played": 27
+      },
+      "planetary_assembly": {
+        "drafted": 68,
+        "drawn": 0,
+        "kept": 12,
+        "offered": 68,
+        "pick_sum": 141,
+        "played": 0
+      },
+      "planetary_referendum": {
+        "drafted": 82,
+        "drawn": 0,
+        "kept": 77,
+        "offered": 82,
+        "pick_sum": 168,
+        "played": 71
+      },
+      "policy_institute": {
+        "drafted": 76,
+        "drawn": 0,
+        "kept": 13,
+        "offered": 76,
+        "pick_sum": 151,
+        "played": 0
+      },
+      "popular_uprising": {
+        "drafted": 76,
+        "drawn": 0,
+        "kept": 76,
+        "offered": 76,
+        "pick_sum": 81,
+        "played": 76
+      },
+      "positron_storage_ring": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 14,
+        "offered": 81,
+        "pick_sum": 151,
+        "played": 3
+      },
+      "power_to_the_people": {
+        "drafted": 81,
+        "drawn": 0,
+        "kept": 81,
+        "offered": 81,
+        "pick_sum": 92,
+        "played": 39
+      },
+      "predictive_modeling": {
+        "drafted": 28,
+        "drawn": 21,
+        "kept": 58,
+        "offered": 28,
+        "pick_sum": 94,
+        "played": 61
+      },
+      "prefab_plant_kit": {
+        "drafted": 28,
+        "drawn": 20,
+        "kept": 12,
+        "offered": 28,
+        "pick_sum": 80,
+        "played": 8
+      },
+      "preprint_exchange": {
+        "drafted": 36,
+        "drawn": 23,
+        "kept": 42,
+        "offered": 36,
+        "pick_sum": 105,
+        "played": 28
+      },
+      "quantum_decryptor": {
+        "drafted": 38,
+        "drawn": 17,
+        "kept": 22,
+        "offered": 38,
+        "pick_sum": 106,
+        "played": 0
+      },
+      "recruit_operatives": {
+        "drafted": 22,
+        "drawn": 14,
+        "kept": 3,
+        "offered": 22,
+        "pick_sum": 70,
+        "played": 0
+      },
+      "recursive_self_improvement": {
+        "drafted": 77,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 77,
+        "pick_sum": 257,
+        "played": 1
+      },
+      "red_team_audit": {
+        "drafted": 33,
+        "drawn": 21,
+        "kept": 30,
+        "offered": 33,
+        "pick_sum": 102,
+        "played": 10
+      },
+      "relay_mast_rollout": {
+        "drafted": 38,
+        "drawn": 14,
+        "kept": 44,
+        "offered": 38,
+        "pick_sum": 119,
+        "played": 47
+      },
+      "retained_earnings": {
+        "drafted": 27,
+        "drawn": 17,
+        "kept": 33,
+        "offered": 27,
+        "pick_sum": 81,
+        "played": 2
+      },
+      "robotic_foundry": {
+        "drafted": 26,
+        "drawn": 19,
+        "kept": 13,
+        "offered": 26,
+        "pick_sum": 75,
+        "played": 11
+      },
+      "root_access": {
+        "drafted": 83,
+        "drawn": 0,
+        "kept": 83,
+        "offered": 83,
+        "pick_sum": 89,
+        "played": 38
+      },
+      "safehouse_network": {
+        "drafted": 33,
+        "drawn": 8,
+        "kept": 47,
+        "offered": 33,
+        "pick_sum": 100,
+        "played": 9
+      },
+      "sample_repository": {
+        "drafted": 40,
+        "drawn": 21,
+        "kept": 5,
+        "offered": 40,
+        "pick_sum": 112,
+        "played": 2
+      },
+      "security_contractor_hq": {
+        "drafted": 39,
+        "drawn": 12,
+        "kept": 9,
+        "offered": 39,
+        "pick_sum": 106,
+        "played": 6
+      },
+      "security_ops_floor": {
+        "drafted": 35,
+        "drawn": 19,
+        "kept": 40,
+        "offered": 35,
+        "pick_sum": 113,
+        "played": 6
+      },
+      "sentinel_command": {
+        "drafted": 80,
+        "drawn": 0,
+        "kept": 46,
+        "offered": 80,
+        "pick_sum": 193,
+        "played": 36
+      },
+      "sentinel_mesh": {
+        "drafted": 21,
+        "drawn": 14,
+        "kept": 21,
+        "offered": 21,
+        "pick_sum": 67,
+        "played": 10
+      },
+      "sentry_drone_wing": {
+        "drafted": 27,
+        "drawn": 16,
+        "kept": 30,
+        "offered": 27,
+        "pick_sum": 84,
+        "played": 2
+      },
+      "shadow_broker_feed": {
+        "drafted": 25,
+        "drawn": 19,
+        "kept": 5,
+        "offered": 25,
+        "pick_sum": 73,
+        "played": 6
+      },
+      "shared_compute_grant": {
+        "drafted": 32,
+        "drawn": 10,
+        "kept": 38,
+        "offered": 32,
+        "pick_sum": 98,
+        "played": 26
+      },
+      "shared_exploit_kit": {
+        "drafted": 36,
+        "drawn": 21,
+        "kept": 44,
+        "offered": 36,
+        "pick_sum": 112,
+        "played": 37
+      },
+      "shared_grid_accord": {
+        "drafted": 31,
+        "drawn": 21,
+        "kept": 25,
+        "offered": 31,
+        "pick_sum": 93,
+        "played": 36
+      },
+      "shared_threat_intel": {
+        "drafted": 30,
+        "drawn": 16,
+        "kept": 32,
+        "offered": 30,
+        "pick_sum": 93,
+        "played": 8
+      },
+      "signal_hijack": {
+        "drafted": 34,
+        "drawn": 21,
+        "kept": 19,
+        "offered": 34,
+        "pick_sum": 101,
+        "played": 35
+      },
+      "simulation_cluster": {
+        "drafted": 37,
+        "drawn": 23,
+        "kept": 36,
+        "offered": 37,
+        "pick_sum": 105,
+        "played": 0
+      },
+      "singularity_exploit": {
+        "drafted": 79,
+        "drawn": 0,
+        "kept": 4,
+        "offered": 79,
+        "pick_sum": 274,
+        "played": 4
+      },
+      "sovereign_capital_fund": {
+        "drafted": 84,
+        "drawn": 0,
+        "kept": 8,
+        "offered": 84,
+        "pick_sum": 176,
+        "played": 0
+      },
+      "spoofed_credentials": {
+        "drafted": 25,
+        "drawn": 17,
+        "kept": 11,
+        "offered": 25,
+        "pick_sum": 78,
+        "played": 0
+      },
+      "station_prefab_order": {
+        "drafted": 25,
+        "drawn": 12,
+        "kept": 11,
+        "offered": 25,
+        "pick_sum": 76,
+        "played": 16
+      },
+      "storm_hardening": {
+        "drafted": 24,
+        "drawn": 19,
+        "kept": 35,
+        "offered": 24,
+        "pick_sum": 81,
+        "played": 6
+      },
+      "substation_hub": {
+        "drafted": 35,
+        "drawn": 25,
+        "kept": 38,
+        "offered": 35,
+        "pick_sum": 97,
+        "played": 32
+      },
+      "summit_caucus": {
+        "drafted": 32,
+        "drawn": 17,
+        "kept": 1,
+        "offered": 32,
+        "pick_sum": 94,
+        "played": 8
+      },
+      "supply_chain_audit": {
+        "drafted": 21,
+        "drawn": 11,
+        "kept": 10,
+        "offered": 21,
+        "pick_sum": 53,
+        "played": 10
+      },
+      "supply_chain_treaty": {
+        "drafted": 45,
+        "drawn": 13,
+        "kept": 45,
+        "offered": 45,
+        "pick_sum": 135,
+        "played": 32
+      },
+      "surplus_auction": {
+        "drafted": 31,
+        "drawn": 14,
+        "kept": 26,
+        "offered": 31,
+        "pick_sum": 92,
+        "played": 28
+      },
+      "synthetic_data_forge": {
+        "drafted": 30,
+        "drawn": 20,
+        "kept": 10,
+        "offered": 30,
+        "pick_sum": 91,
+        "played": 0
+      },
+      "telemetry_archive": {
+        "drafted": 32,
+        "drawn": 18,
+        "kept": 33,
+        "offered": 32,
+        "pick_sum": 92,
+        "played": 1
+      },
+      "threat_forecast_engine": {
+        "drafted": 27,
+        "drawn": 7,
+        "kept": 51,
+        "offered": 27,
+        "pick_sum": 87,
+        "played": 41
+      },
+      "threat_hunt": {
+        "drafted": 41,
+        "drawn": 17,
+        "kept": 15,
+        "offered": 41,
+        "pick_sum": 137,
+        "played": 10
+      },
+      "tidal_barrage": {
+        "drafted": 29,
+        "drawn": 16,
+        "kept": 4,
+        "offered": 29,
+        "pick_sum": 86,
+        "played": 10
+      },
+      "total_containment": {
+        "drafted": 97,
+        "drawn": 0,
+        "kept": 36,
+        "offered": 97,
+        "pick_sum": 182,
+        "played": 31
+      },
+      "transmission_corridor": {
+        "drafted": 38,
+        "drawn": 20,
+        "kept": 5,
+        "offered": 38,
+        "pick_sum": 123,
+        "played": 18
+      },
+      "treaty_grid_exchange": {
+        "drafted": 28,
+        "drawn": 20,
+        "kept": 30,
+        "offered": 28,
+        "pick_sum": 81,
+        "played": 30
+      },
+      "truth_commission": {
+        "drafted": 36,
+        "drawn": 15,
+        "kept": 20,
+        "offered": 36,
+        "pick_sum": 121,
+        "played": 26
+      },
+      "vendor_financing": {
+        "drafted": 29,
+        "drawn": 17,
+        "kept": 0,
+        "offered": 29,
+        "pick_sum": 91,
+        "played": 0
+      },
+      "vertical_monopoly": {
+        "drafted": 71,
+        "drawn": 0,
+        "kept": 3,
+        "offered": 71,
+        "pick_sum": 126,
+        "played": 2
+      },
+      "zero_click_breach": {
+        "drafted": 30,
+        "drawn": 10,
+        "kept": 30,
+        "offered": 30,
+        "pick_sum": 85,
+        "played": 25
+      },
+      "zero_knowledge_exploit": {
+        "drafted": 18,
+        "drawn": 16,
+        "kept": 19,
+        "offered": 18,
+        "pick_sum": 46,
+        "played": 18
+      }
+    }
+  },
+  "cells": [
+    {
+      "adversary_ops_max_round": 89,
+      "adversary_ops_per_round": 26.836021505376344,
+      "agent": "planner:deals=1",
+      "agent_ms_per_decision": 15.559131580133409,
+      "agent_ms_per_game": 7192.208572916668,
+      "build_distance": 0.9425248018333122,
+      "build_distance_wins": 0.9351683818261363,
+      "buildings_played_per_game": 5.229166666666667,
+      "buildings_standing_per_game": 4.604166666666667,
+      "cards_played_per_game": 22.145833333333332,
+      "cell": 0,
+      "cities_aligned_mean": 2.75,
+      "cities_corrupted_mean": 1.4375,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "20e2395d8f85b3d4",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.8922697368421053,
+      "countries": 2,
+      "decisions_mean": 462.25,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 34,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.375,
+      "end_round": {
+        "10": 3,
+        "11": 1,
+        "5": 3,
+        "6": 9,
+        "7": 7,
+        "8": 12,
+        "9": 13
+      },
+      "ended": {
+        "discord_deck": 10,
+        "presence": 4,
+        "purge": 21,
+        "unity_deck": 13
+      },
+      "forced_share": 0.014377140796827113,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 0.0,
+      "loss_blockers": 10.357142857142858,
+      "loss_level": 2.2857142857142856,
+      "ms_per_decision": 15.607103186407066,
+      "ms_per_game": 7214.383447916666,
+      "options_per_decision": 14.90932035334415,
+      "pays_per_game": 20.520833333333332,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 11,
+      "rounds_mean": 7.75,
+      "rounds_min": 5,
+      "rounds_sd": 1.4505745987941008,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.0,
+      "survival_mean": 11.583333333333334,
+      "threats_countered_per_game": 22.604166666666668,
+      "threats_dealt_per_game": 25.333333333333332,
+      "tier": 5,
+      "tier2_played_per_game": 6.5,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          26.979166666666668,
+          4.3125,
+          6.333333333333333,
+          0.7916666666666666,
+          0.08333333333333333
+        ],
+        [
+          31.0625,
+          2.1458333333333335,
+          9.458333333333334,
+          0.041666666666666664,
+          0.6875
+        ]
+      ],
+      "variant": "bp",
+      "win_deck_left": 3.411764705882353,
+      "win_rate": 0.7083333333333334,
+      "win_rate_se": 0.06560570704059439,
+      "win_supply_left": 35.705882352941174,
+      "winprob_by_round": [],
+      "wins": 34,
+      "wins_2plus_buildings_played": 0.9705882352941176,
+      "wins_2plus_buildings_standing": 0.9705882352941176,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 87,
+      "adversary_ops_per_round": 26.175637393767705,
+      "agent": "planner:deals=1,always_liberate=1",
+      "agent_ms_per_decision": 13.036998668682346,
+      "agent_ms_per_game": 5569.5144729166705,
+      "build_distance": 0.9477330515229453,
+      "build_distance_wins": 0.9418198854027732,
+      "buildings_played_per_game": 4.625,
+      "buildings_standing_per_game": 3.9791666666666665,
+      "cards_played_per_game": 20.854166666666668,
+      "cell": 1,
+      "cities_aligned_mean": 2.5,
+      "cities_corrupted_mean": 1.25,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "20e2395d8f85b3d4",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.8812392426850258,
+      "countries": 2,
+      "decisions_mean": 427.2083333333333,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 34,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.4583333333333333,
+      "end_round": {
+        "10": 1,
+        "12": 1,
+        "5": 4,
+        "6": 8,
+        "7": 13,
+        "8": 17,
+        "9": 4
+      },
+      "ended": {
+        "deck_empty": 1,
+        "discord_deck": 6,
+        "presence": 7,
+        "purge": 25,
+        "unity_deck": 9
+      },
+      "forced_share": 0.014629864429922949,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 0.0,
+      "loss_blockers": 8.928571428571429,
+      "loss_level": 2.357142857142857,
+      "ms_per_decision": 13.082857934263144,
+      "ms_per_game": 5589.105933333333,
+      "options_per_decision": 14.702477323710134,
+      "pays_per_game": 18.895833333333332,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 12,
+      "rounds_mean": 7.354166666666667,
+      "rounds_min": 5,
+      "rounds_sd": 1.330563529319647,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.083333333333336,
+      "survival_mean": 11.479166666666666,
+      "threats_countered_per_game": 21.333333333333332,
+      "threats_dealt_per_game": 24.208333333333332,
+      "tier": 5,
+      "tier2_played_per_game": 6.270833333333333,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          26.229166666666668,
+          3.9791666666666665,
+          6.3125,
+          0.6875,
+          0.8333333333333334
+        ],
+        [
+          35.583333333333336,
+          1.5208333333333333,
+          6.6875,
+          0.25,
+          0.22916666666666666
+        ]
+      ],
+      "variant": "bp",
+      "win_deck_left": 3.823529411764706,
+      "win_rate": 0.7083333333333334,
+      "win_rate_se": 0.06560570704059439,
+      "win_supply_left": 34.794117647058826,
+      "winprob_by_round": [],
+      "wins": 34,
+      "wins_2plus_buildings_played": 0.9411764705882353,
+      "wins_2plus_buildings_standing": 0.8823529411764706,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 98,
+      "adversary_ops_per_round": 27.841836734693878,
+      "agent": "engine",
+      "agent_ms_per_decision": 1.4131340272052757,
+      "agent_ms_per_game": 714.2214895833331,
+      "build_distance": 0.941644815979923,
+      "build_distance_wins": 0.9339889613393889,
+      "buildings_played_per_game": 5.895833333333333,
+      "buildings_standing_per_game": 5.083333333333333,
+      "cards_played_per_game": 24.125,
+      "cell": 2,
+      "cities_aligned_mean": 2.5416666666666665,
+      "cities_corrupted_mean": 1.625,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "20e2395d8f85b3d4",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.9240214888718342,
+      "countries": 2,
+      "decisions_mean": 505.4166666666667,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 27,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.6875,
+      "end_round": {
+        "10": 5,
+        "11": 1,
+        "6": 4,
+        "7": 8,
+        "8": 19,
+        "9": 11
+      },
+      "ended": {
+        "discord_deck": 16,
+        "presence": 5,
+        "purge": 16,
+        "unity_deck": 11
+      },
+      "forced_share": 0.01393239901071723,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 0.0,
+      "loss_blockers": 8.238095238095237,
+      "loss_level": 2.5238095238095237,
+      "ms_per_decision": 1.4630923866446823,
+      "ms_per_game": 739.4712770833331,
+      "options_per_decision": 15.503998351195383,
+      "pays_per_game": 22.333333333333332,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 11,
+      "rounds_mean": 8.166666666666666,
+      "rounds_min": 6,
+      "rounds_sd": 1.1426091000668408,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.416666666666664,
+      "survival_mean": 11.041666666666666,
+      "threats_countered_per_game": 25.083333333333332,
+      "threats_dealt_per_game": 27.145833333333332,
+      "tier": 4,
+      "tier2_played_per_game": 6.5625,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          24.770833333333332,
+          5.125,
+          5.958333333333333,
+          1.375,
+          0.4583333333333333
+        ],
+        [
+          25.958333333333332,
+          2.0208333333333335,
+          7.020833333333333,
+          0.20833333333333334,
+          0.3958333333333333
+        ]
+      ],
+      "variant": "bp",
+      "win_deck_left": 3.111111111111111,
+      "win_rate": 0.5625,
+      "win_rate_se": 0.071602745233685,
+      "win_supply_left": 35.44444444444444,
+      "winprob_by_round": [],
+      "wins": 27,
+      "wins_2plus_buildings_played": 0.9259259259259259,
+      "wins_2plus_buildings_standing": 0.9259259259259259,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 64,
+      "adversary_ops_per_round": 21.843989769820972,
+      "agent": "planner:deals=1",
+      "agent_ms_per_decision": 18.87449514534393,
+      "agent_ms_per_game": 9306.698981250001,
+      "build_distance": 0.9307717794419934,
+      "build_distance_wins": 0.935922173422174,
+      "buildings_played_per_game": 5.145833333333333,
+      "buildings_standing_per_game": 4.395833333333333,
+      "cards_played_per_game": 27.645833333333332,
+      "cell": 3,
+      "cities_aligned_mean": 3.1666666666666665,
+      "cities_corrupted_mean": 0.8125,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "1828d9b7c53d6a72",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.905909797822706,
+      "countries": 2,
+      "decisions_mean": 493.0833333333333,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 37,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 2.1458333333333335,
+      "end_round": {
+        "10": 7,
+        "11": 2,
+        "5": 1,
+        "6": 5,
+        "7": 7,
+        "8": 19,
+        "9": 7
+      },
+      "ended": {
+        "discord_deck": 10,
+        "presence": 1,
+        "purge": 27,
+        "unity_deck": 10
+      },
+      "forced_share": 0.014365387865472368,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 20.458333333333332,
+      "loss_blockers": 4.2727272727272725,
+      "loss_level": 2.727272727272727,
+      "ms_per_decision": 18.924989437214805,
+      "ms_per_game": 9331.596875000001,
+      "options_per_decision": 19.935905019435523,
+      "pays_per_game": 21.854166666666668,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 11,
+      "rounds_mean": 8.145833333333334,
+      "rounds_min": 5,
+      "rounds_sd": 1.3538461159066626,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.041666666666664,
+      "survival_mean": 12.104166666666666,
+      "threats_countered_per_game": 24.270833333333332,
+      "threats_dealt_per_game": 26.791666666666668,
+      "tier": 5,
+      "tier2_played_per_game": 7.104166666666667,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          29.333333333333332,
+          9.791666666666666,
+          8.770833333333334,
+          0.8958333333333334,
+          0.25
+        ],
+        [
+          32.770833333333336,
+          5.895833333333333,
+          10.583333333333334,
+          0.0,
+          0.3333333333333333
+        ]
+      ],
+      "variant": "br",
+      "win_deck_left": 3.135135135135135,
+      "win_rate": 0.7708333333333334,
+      "win_rate_se": 0.060664601422417176,
+      "win_supply_left": 34.972972972972975,
+      "winprob_by_round": [],
+      "wins": 37,
+      "wins_2plus_buildings_played": 1.0,
+      "wins_2plus_buildings_standing": 1.0,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 71,
+      "adversary_ops_per_round": 20.816860465116278,
+      "agent": "planner:deals=1,always_liberate=1",
+      "agent_ms_per_decision": 14.017184155516286,
+      "agent_ms_per_game": 5783.548587500001,
+      "build_distance": 0.9492247828019112,
+      "build_distance_wins": 0.949286636548794,
+      "buildings_played_per_game": 4.708333333333333,
+      "buildings_standing_per_game": 3.75,
+      "cards_played_per_game": 24.333333333333332,
+      "cell": 4,
+      "cities_aligned_mean": 3.0208333333333335,
+      "cities_corrupted_mean": 0.4583333333333333,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "1828d9b7c53d6a72",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.8902765388046388,
+      "countries": 2,
+      "decisions_mean": 412.6041666666667,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 44,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.6875,
+      "end_round": {
+        "4": 2,
+        "5": 2,
+        "6": 12,
+        "7": 11,
+        "8": 12,
+        "9": 9
+      },
+      "ended": {
+        "discord_deck": 3,
+        "presence": 1,
+        "purge": 37,
+        "unity_deck": 7
+      },
+      "forced_share": 0.014844736177732895,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 13.083333333333334,
+      "loss_blockers": 6.75,
+      "loss_level": 2.25,
+      "ms_per_decision": 14.065831042665994,
+      "ms_per_game": 5803.620495833334,
+      "options_per_decision": 17.922595304216106,
+      "pays_per_game": 18.208333333333332,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 9,
+      "rounds_mean": 7.166666666666667,
+      "rounds_min": 4,
+      "rounds_sd": 1.3281147875424353,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.958333333333336,
+      "survival_mean": 12.520833333333334,
+      "threats_countered_per_game": 20.791666666666668,
+      "threats_dealt_per_game": 23.354166666666668,
+      "tier": 5,
+      "tier2_played_per_game": 6.833333333333333,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          35.083333333333336,
+          7.208333333333333,
+          7.395833333333333,
+          0.375,
+          0.25
+        ],
+        [
+          33.770833333333336,
+          4.3125,
+          7.770833333333333,
+          0.10416666666666667,
+          0.14583333333333334
+        ]
+      ],
+      "variant": "br",
+      "win_deck_left": 3.840909090909091,
+      "win_rate": 0.9166666666666666,
+      "win_rate_se": 0.039892796156514095,
+      "win_supply_left": 36.70454545454545,
+      "winprob_by_round": [],
+      "wins": 44,
+      "wins_2plus_buildings_played": 0.9772727272727273,
+      "wins_2plus_buildings_standing": 0.9772727272727273,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 67,
+      "adversary_ops_per_round": 22.32241813602015,
+      "agent": "engine",
+      "agent_ms_per_decision": 1.8694170899557596,
+      "agent_ms_per_game": 950.7543750000001,
+      "build_distance": 0.9406489442393708,
+      "build_distance_wins": 0.9426861861072398,
+      "buildings_played_per_game": 5.9375,
+      "buildings_standing_per_game": 4.75,
+      "cards_played_per_game": 28.541666666666668,
+      "cell": 5,
+      "cities_aligned_mean": 3.1041666666666665,
+      "cities_corrupted_mean": 0.7916666666666666,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "1828d9b7c53d6a72",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.9088122605363984,
+      "countries": 2,
+      "decisions_mean": 508.5833333333333,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 38,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.9583333333333333,
+      "end_round": {
+        "10": 6,
+        "11": 3,
+        "5": 1,
+        "6": 7,
+        "7": 5,
+        "8": 12,
+        "9": 14
+      },
+      "ended": {
+        "discord_deck": 8,
+        "presence": 2,
+        "purge": 27,
+        "unity_deck": 11
+      },
+      "forced_share": 0.014091430444043913,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 24.375,
+      "loss_blockers": 4.0,
+      "loss_level": 2.8,
+      "ms_per_decision": 1.9228176962149761,
+      "ms_per_game": 977.9130333333333,
+      "options_per_decision": 20.31836801572997,
+      "pays_per_game": 21.791666666666668,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 11,
+      "rounds_mean": 8.270833333333334,
+      "rounds_min": 5,
+      "rounds_sd": 1.4682697205289708,
+      "setup_ops": 0.0,
+      "supply_left_mean": 35.541666666666664,
+      "survival_mean": 12.125,
+      "threats_countered_per_game": 24.708333333333332,
+      "threats_dealt_per_game": 27.1875,
+      "tier": 4,
+      "tier2_played_per_game": 7.958333333333333,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          29.9375,
+          9.791666666666666,
+          7.854166666666667,
+          1.625,
+          0.4166666666666667
+        ],
+        [
+          29.479166666666668,
+          6.520833333333333,
+          9.479166666666666,
+          0.08333333333333333,
+          0.3125
+        ]
+      ],
+      "variant": "br",
+      "win_deck_left": 2.8684210526315788,
+      "win_rate": 0.7916666666666666,
+      "win_rate_se": 0.05861785769491019,
+      "win_supply_left": 35.76315789473684,
+      "winprob_by_round": [],
+      "wins": 38,
+      "wins_2plus_buildings_played": 0.9736842105263158,
+      "wins_2plus_buildings_standing": 0.9736842105263158,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 79,
+      "adversary_ops_per_round": 25.875706214689266,
+      "agent": "planner:deals=1",
+      "agent_ms_per_decision": 14.36791093134497,
+      "agent_ms_per_game": 6382.944431250003,
+      "build_distance": 0.9573560452549817,
+      "build_distance_wins": 0.955344630344631,
+      "buildings_played_per_game": 4.458333333333333,
+      "buildings_standing_per_game": 3.3333333333333335,
+      "cards_played_per_game": 25.229166666666668,
+      "cell": 6,
+      "cities_aligned_mean": 2.6041666666666665,
+      "cities_corrupted_mean": 1.5416666666666667,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "dd9ee85ac3e4c45f",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.885372112917023,
+      "countries": 2,
+      "decisions_mean": 444.25,
+      "difficulty": 2,
+      "distinct_builds": 48,
+      "distinct_builds_wins": 37,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.625,
+      "end_round": {
+        "10": 1,
+        "4": 1,
+        "5": 4,
+        "6": 10,
+        "7": 7,
+        "8": 14,
+        "9": 11
+      },
+      "ended": {
+        "discord_deck": 6,
+        "presence": 5,
+        "purge": 16,
+        "unity_deck": 21
+      },
+      "forced_share": 0.014256237103732883,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 16.083333333333332,
+      "loss_blockers": 11.181818181818182,
+      "loss_level": 2.272727272727273,
+      "ms_per_decision": 14.417960635903203,
+      "ms_per_game": 6405.179012499998,
+      "options_per_decision": 17.928015381729505,
+      "pays_per_game": 19.020833333333332,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 10,
+      "rounds_mean": 7.375,
+      "rounds_min": 4,
+      "rounds_sd": 1.4086784586980805,
+      "setup_ops": 0.0,
+      "supply_left_mean": 35.854166666666664,
+      "survival_mean": 11.666666666666666,
+      "threats_countered_per_game": 21.5625,
+      "threats_dealt_per_game": 24.354166666666668,
+      "tier": 5,
+      "tier2_played_per_game": 6.104166666666667,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          24.791666666666668,
+          2.9791666666666665,
+          11.395833333333334,
+          0.5833333333333334,
+          0.4375
+        ],
+        [
+          31.916666666666668,
+          4.0,
+          9.020833333333334,
+          0.0,
+          0.9166666666666666
+        ]
+      ],
+      "variant": "pr",
+      "win_deck_left": 3.5675675675675675,
+      "win_rate": 0.7708333333333334,
+      "win_rate_se": 0.060664601422417176,
+      "win_supply_left": 35.486486486486484,
+      "winprob_by_round": [],
+      "wins": 37,
+      "wins_2plus_buildings_played": 0.972972972972973,
+      "wins_2plus_buildings_standing": 0.9459459459459459,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 69,
+      "adversary_ops_per_round": 25.533724340175954,
+      "agent": "planner:deals=1,always_liberate=1",
+      "agent_ms_per_decision": 12.291170423657093,
+      "agent_ms_per_game": 5143.59875625,
+      "build_distance": 0.9450080209388724,
+      "build_distance_wins": 0.9438443670150991,
+      "buildings_played_per_game": 4.395833333333333,
+      "buildings_standing_per_game": 2.8958333333333335,
+      "cards_played_per_game": 24.104166666666668,
+      "cell": 7,
+      "cities_aligned_mean": 2.5208333333333335,
+      "cities_corrupted_mean": 1.1458333333333333,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "dd9ee85ac3e4c45f",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.8675675675675676,
+      "countries": 2,
+      "decisions_mean": 418.4791666666667,
+      "difficulty": 2,
+      "distinct_builds": 46,
+      "distinct_builds_wins": 41,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.3333333333333333,
+      "end_round": {
+        "10": 1,
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "7": 16,
+        "8": 14,
+        "9": 5
+      },
+      "ended": {
+        "discord_deck": 3,
+        "presence": 3,
+        "purge": 19,
+        "unity_deck": 23
+      },
+      "forced_share": 0.01443719818788271,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 12.0,
+      "loss_blockers": 7.166666666666667,
+      "loss_level": 2.5,
+      "ms_per_decision": 12.339636551003137,
+      "ms_per_game": 5163.880820833334,
+      "options_per_decision": 17.065465226265744,
+      "pays_per_game": 17.541666666666668,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 10,
+      "rounds_mean": 7.104166666666667,
+      "rounds_min": 4,
+      "rounds_sd": 1.3729466992162835,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.041666666666664,
+      "survival_mean": 12.1875,
+      "threats_countered_per_game": 20.0625,
+      "threats_dealt_per_game": 23.125,
+      "tier": 5,
+      "tier2_played_per_game": 6.791666666666667,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          25.125,
+          3.6458333333333335,
+          12.416666666666666,
+          0.4791666666666667,
+          0.4166666666666667
+        ],
+        [
+          29.833333333333332,
+          3.625,
+          6.520833333333333,
+          0.1875,
+          0.4791666666666667
+        ]
+      ],
+      "variant": "pr",
+      "win_deck_left": 3.8095238095238093,
+      "win_rate": 0.875,
+      "win_rate_se": 0.047735163489123336,
+      "win_supply_left": 35.76190476190476,
+      "winprob_by_round": [],
+      "wins": 42,
+      "wins_2plus_buildings_played": 0.9761904761904762,
+      "wins_2plus_buildings_standing": 0.9047619047619048,
+      "withdraws_per_game": 0.0
+    },
+    {
+      "adversary_ops_max_round": 80,
+      "adversary_ops_per_round": 27.8031914893617,
+      "agent": "engine",
+      "agent_ms_per_decision": 1.5108537697498008,
+      "agent_ms_per_game": 751.0517041666666,
+      "build_distance": 0.9554500168861877,
+      "build_distance_wins": 0.9542732035342874,
+      "buildings_played_per_game": 5.041666666666667,
+      "buildings_standing_per_game": 3.4375,
+      "cards_played_per_game": 27.8125,
+      "cell": 8,
+      "cities_aligned_mean": 2.4166666666666665,
+      "cities_corrupted_mean": 1.8541666666666667,
+      "close_share": 0.0,
+      "config": "configs/baseline.json",
+      "config_hash": "dd9ee85ac3e4c45f",
+      "config_name": "baseline",
+      "content_hash": "87229a9e0d536395",
+      "countered_share": 0.9031999999999999,
+      "countries": 2,
+      "decisions_mean": 497.1041666666667,
+      "difficulty": 2,
+      "distinct_builds": 47,
+      "distinct_builds_wins": 29,
+      "early_lock_in_share": null,
+      "economy_buildings_standing_per_game": 1.6041666666666667,
+      "end_round": {
+        "10": 5,
+        "11": 1,
+        "12": 1,
+        "4": 1,
+        "5": 4,
+        "6": 5,
+        "7": 8,
+        "8": 14,
+        "9": 9
+      },
+      "ended": {
+        "deck_empty": 1,
+        "discord_deck": 14,
+        "presence": 4,
+        "purge": 11,
+        "unity_deck": 18
+      },
+      "forced_share": 0.013452914798206279,
+      "games": 48,
+      "gap_mean": 0.0,
+      "gives_per_game": 19.895833333333332,
+      "loss_blockers": 6.526315789473684,
+      "loss_level": 2.526315789473684,
+      "ms_per_decision": 1.5657454465445708,
+      "ms_per_game": 778.3385854166668,
+      "options_per_decision": 19.120070407778382,
+      "pays_per_game": 20.979166666666668,
+      "probe_ms_per_game": 0.0,
+      "replay_ok": 48,
+      "rounds_max": 12,
+      "rounds_mean": 7.833333333333333,
+      "rounds_min": 4,
+      "rounds_sd": 1.662494778605,
+      "setup_ops": 0.0,
+      "supply_left_mean": 36.833333333333336,
+      "survival_mean": 11.208333333333334,
+      "threats_countered_per_game": 23.520833333333332,
+      "threats_dealt_per_game": 26.041666666666668,
+      "tier": 4,
+      "tier2_played_per_game": 6.8125,
+      "uncertain_share": null,
+      "unspent": [
+        [
+          21.1875,
+          3.875,
+          9.3125,
+          0.9375,
+          0.5208333333333334
+        ],
+        [
+          23.125,
+          4.729166666666667,
+          7.229166666666667,
+          0.0,
+          0.3958333333333333
+        ]
+      ],
+      "variant": "pr",
+      "win_deck_left": 3.586206896551724,
+      "win_rate": 0.6041666666666666,
+      "win_rate_se": 0.07058524774394487,
+      "win_supply_left": 35.172413793103445,
+      "winprob_by_round": [],
+      "wins": 29,
+      "wins_2plus_buildings_played": 0.9655172413793104,
+      "wins_2plus_buildings_standing": 0.9310344827586207,
+      "withdraws_per_game": 0.0
+    }
+  ],
+  "content_hash": "87229a9e0d536395",
+  "engine_version": "0.1.0",
+  "format": "aic-experiment/2",
+  "fresh_confirmation": [],
+  "games_failed": [],
+  "games_planned": 432,
+  "games_played": 432,
+  "games_resumed": 0,
+  "gate": null,
+  "groups": [
+    {
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "luck_survival": [
+        0.5037582516291406,
+        0.009677392019117536,
+        0.4865643563517419
+      ],
+      "luck_win": [
+        0.4431793770139636,
+        0.021052631578947382,
+        0.535767991407089
+      ],
+      "ordered": true,
+      "ordered_survival": true,
+      "skill_gap": 0.14583333333333337,
+      "skill_gap_survival": 0.5416666666666679,
+      "survival": [
+        [
+          "engine",
+          11.041666666666666
+        ],
+        [
+          "planner:deals=1",
+          11.583333333333334
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          11.479166666666666
+        ]
+      ],
+      "variant": "bp",
+      "win_rates": [
+        [
+          "engine",
+          0.5625
+        ],
+        [
+          "planner:deals=1",
+          0.7083333333333334
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          0.7083333333333334
+        ]
+      ]
+    },
+    {
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "luck_survival": [
+        0.40415704387990764,
+        0.012220939183987738,
+        0.5836220169361046
+      ],
+      "luck_win": [
+        0.38689075630252157,
+        0.0289075630252101,
+        0.5842016806722683
+      ],
+      "ordered": true,
+      "ordered_survival": true,
+      "skill_gap": 0.125,
+      "skill_gap_survival": 0.3958333333333339,
+      "survival": [
+        [
+          "engine",
+          12.125
+        ],
+        [
+          "planner:deals=1",
+          12.104166666666666
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          12.520833333333334
+        ]
+      ],
+      "variant": "br",
+      "win_rates": [
+        [
+          "engine",
+          0.7916666666666666
+        ],
+        [
+          "planner:deals=1",
+          0.7708333333333334
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          0.9166666666666666
+        ]
+      ]
+    },
+    {
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "luck_survival": [
+        0.5618734671524154,
+        0.026335214420077593,
+        0.411791318427507
+      ],
+      "luck_win": [
+        0.45679012345679026,
+        0.06635802469135806,
+        0.47685185185185164
+      ],
+      "ordered": true,
+      "ordered_survival": true,
+      "skill_gap": 0.27083333333333337,
+      "skill_gap_survival": 0.9791666666666661,
+      "survival": [
+        [
+          "engine",
+          11.208333333333334
+        ],
+        [
+          "planner:deals=1",
+          11.666666666666666
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          12.1875
+        ]
+      ],
+      "variant": "pr",
+      "win_rates": [
+        [
+          "engine",
+          0.6041666666666666
+        ],
+        [
+          "planner:deals=1",
+          0.7708333333333334
+        ],
+        [
+          "planner:deals=1,always_liberate=1",
+          0.875
+        ]
+      ]
+    }
+  ],
+  "head_to_head": [],
+  "records": [],
+  "removals": [],
+  "rules_revision": 34,
+  "spec": {
+    "agents": [
+      "sweep",
+      "sweep:always_liberate=1",
+      "engine"
+    ],
+    "closeness": {
+      "every": 0,
+      "gap": 2.0
+    },
+    "configs": [
+      "configs/baseline.json"
+    ],
+    "difficulties": [
+      2
+    ],
+    "first_seed": "30300",
+    "games": 48,
+    "max_actions": 5000,
+    "name": "screen-080",
+    "note": "080: the r34 ballpark read, liberation on: 2 players, the three board pairs, d2, 48 seeds a cell on the fresh set 30300; the sweep planner, sweep with always_liberate (the row that tells a bad price from an agent that won't play the card), and the engine. Target 45-85 a pair. Read with scripts/cards/liberation_read.py --cards; the off arm is screen-080-off.json on the same seeds.",
+    "records": 0,
+    "variants": [
+      {
+        "name": "bp",
+        "set": []
+      },
+      {
+        "name": "br",
+        "set": [
+          "ai.boards=0,2",
+          "ai.start_credits=40,40",
+          "ai.slots=5,2"
+        ]
+      },
+      {
+        "name": "pr",
+        "set": [
+          "ai.boards=1,2",
+          "ai.start_credits=46,40",
+          "ai.slots=3,2"
+        ]
+      }
+    ],
+    "winprob": {
+      "agent": "greedy",
+      "games": 0,
+      "rollouts": 8
+    }
+  },
+  "threads": 5,
+  "top_agent": {
+    "agent": "planner:deals=1,always_liberate=1",
+    "difficulty": 2
+  },
+  "variants": [
+    {
+      "agent": "planner:deals=1",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 8.145833333333334,
+        "a_win_rate": 0.7708333333333334,
+        "b_rounds": 7.75,
+        "b_win_rate": 0.7083333333333334,
+        "both": 29,
+        "diff": 0.0625,
+        "diff_se": 0.07536112821203031,
+        "games": 48,
+        "neither": 6,
+        "only_a": 8,
+        "only_b": 5,
+        "sign_p": 0.5810546875000004
+      },
+      "variant": "br"
+    },
+    {
+      "agent": "planner:deals=1,always_liberate=1",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 7.166666666666667,
+        "a_win_rate": 0.9166666666666666,
+        "b_rounds": 7.354166666666667,
+        "b_win_rate": 0.7083333333333334,
+        "both": 31,
+        "diff": 0.20833333333333334,
+        "diff_se": 0.07854129630064867,
+        "games": 48,
+        "neither": 1,
+        "only_a": 13,
+        "only_b": 3,
+        "sign_p": 0.021270751953125003
+      },
+      "variant": "br"
+    },
+    {
+      "agent": "engine",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 8.270833333333334,
+        "a_win_rate": 0.7916666666666666,
+        "b_rounds": 8.166666666666666,
+        "b_win_rate": 0.5625,
+        "both": 23,
+        "diff": 0.22916666666666666,
+        "diff_se": 0.08546692432552082,
+        "games": 48,
+        "neither": 6,
+        "only_a": 15,
+        "only_b": 4,
+        "sign_p": 0.01921081542968748
+      },
+      "variant": "br"
+    },
+    {
+      "agent": "planner:deals=1",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 7.375,
+        "a_win_rate": 0.7708333333333334,
+        "b_rounds": 7.75,
+        "b_win_rate": 0.7083333333333334,
+        "both": 29,
+        "diff": 0.0625,
+        "diff_se": 0.07536112821203031,
+        "games": 48,
+        "neither": 6,
+        "only_a": 8,
+        "only_b": 5,
+        "sign_p": 0.5810546875000004
+      },
+      "variant": "pr"
+    },
+    {
+      "agent": "planner:deals=1,always_liberate=1",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 7.104166666666667,
+        "a_win_rate": 0.875,
+        "b_rounds": 7.354166666666667,
+        "b_win_rate": 0.7083333333333334,
+        "both": 31,
+        "diff": 0.16666666666666666,
+        "diff_se": 0.074931016344381,
+        "games": 48,
+        "neither": 3,
+        "only_a": 11,
+        "only_b": 3,
+        "sign_p": 0.05737304687500003
+      },
+      "variant": "pr"
+    },
+    {
+      "agent": "engine",
+      "base": "bp",
+      "config": "configs/baseline.json",
+      "difficulty": 2,
+      "off": [],
+      "paired": {
+        "a_rounds": 7.833333333333333,
+        "a_win_rate": 0.6041666666666666,
+        "b_rounds": 8.166666666666666,
+        "b_win_rate": 0.5625,
+        "both": 15,
+        "diff": 0.041666666666666664,
+        "diff_se": 0.1071815476691604,
+        "games": 48,
+        "neither": 7,
+        "only_a": 14,
+        "only_b": 12,
+        "sign_p": 0.8450189828872687
+      },
+      "variant": "pr"
+    }
+  ],
+  "wall_seconds": 405.3744133
+}

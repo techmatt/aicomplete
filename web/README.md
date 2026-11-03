@@ -337,13 +337,19 @@ cards -- --port 60476`). If the port is taken it says so and exits.
 - **Stats** come from the newest `results.json` of 100 games or more with a per-card `cards`
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision, then
   most plain agents, then most games); the page says which and warns when it is behind the
-  rules. Today that is r24 (`screen-055-prices`): later items committed reports, not `results.json`. Kept % is keeps per 100 games of the
+  rules. Today that is r34 (`screen-080`: 083 reran `experiments/screen-080.json` on seeds 30300, the frozen build's own
+  seeds, which reproduced 080's win rates exactly, and committed its `results.json`, `cards.csv` and `games.csv`; every
+  card has a row there). Each stat's label carries its revision, as in *Kept % (r34)*. The default agent is the ladder's
+  highest, a profile counting as its base (`planner:deals=1`). An item whose screen should feed the viewer commits its
+  `results.json`, not only a report. Kept % is keeps per 100 games of the
   agent, about the share of games a one-copy card was kept in: the report's kept ÷ offered
   counts draft packets only, while the opening deal is kept undrafted, so it read 1000% on a card
   offered four times. Played % is the report's, played ÷ (kept + drawn). Win Δ comes from `games.csv`, which names only the buildings standing at the end, so it is blank
   for other cards and a correlation for buildings. A CSV under `experiments/results/` with a
   `card` (or `id`) column and a column with `reason` in its name, `card-prices.csv` by
   convention, adds the reasoned price and printed minus reasoned; a `revision` column prints in their labels, as the rules whose costs they were reasoned at. No results: no columns.
+  Today the only one is `screen-055-prices/card-prices.csv`, reasoned at r23's costs, before 076 repriced every card:
+  it covers 131 of the 159 cards (the rest are blank) and names 19 cards since cut, which the export warns about.
 - **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
   cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is empty or
   one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the card's text when
