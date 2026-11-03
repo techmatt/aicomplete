@@ -143,16 +143,19 @@
       "params": {
         "boards": [
           0,
-          1
+          1,
+          2
         ],
         "start_credits": [
           15,
-          25
+          25,
+          15
         ],
         "start_energy": 1,
         "slots": [
           5,
-          3
+          3,
+          2
         ]
       }
     },
@@ -173,6 +176,12 @@
         "discount_floor": 1
       },
       "cards": [
+        "field_grant",
+        "sample_repository",
+        "preprint_exchange",
+        "inference_cluster",
+        "breakthrough_lab",
+        "policy_institute",
         "rapid_response",
         "force_protection_order",
         "garrison_command",

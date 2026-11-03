@@ -170,9 +170,10 @@ current gate** is `experiments/gate.json` (gate-070; gate-046 is retired): plann
 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit, summarized by
 `scripts/cards/screen.py --gate`. Its predecessors are
 `experiments/archive/gate-034.json` and `experiments/archive/gate-041.json`.
-`experiments/archive/gate-exploit.json` (050) was its fast first read: the 13 checks that could still beat
-thinking, under the engine, capped at 32 seeds. Today's binary refuses it, so no fast first read
-stands now; the full gate, under the planner, gives the verdict.
+`experiments/gate-exploit.json` (050; rebuilt at r31 in 075, the archived one refused) is its fast first read:
+the fixed strategies most likely to beat thinking, under the engine, capped at 32 seeds. A direction; the full
+gate, under the planner, gives the verdict. 075 adds `experiments/gate-075-c3.json`: the Researcher's own checks,
+at 3 countries only.
 
 ## Sanity checks (028)
 

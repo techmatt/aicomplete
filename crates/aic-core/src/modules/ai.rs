@@ -120,6 +120,19 @@ pub fn power_builds(w: &World, seat: usize, k: usize) -> bool {
     board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)))
 }
 
+/// Whether power `k` of seat `s`'s board buys a research cube (075).
+pub fn power_buys_cube(w: &World, seat: usize, k: usize) -> bool {
+    board(w, seat).powers.get(k).is_some_and(|p| p.effects.iter().any(|e| matches!(e, Op::ProjectCube { .. })))
+}
+
+/// Whether power `k` of seat `s`'s board only turns one resource into another
+/// (075, a power menu's conversions): it sacrifices nothing and places nothing.
+pub fn power_converts(w: &World, seat: usize, k: usize) -> bool {
+    board(w, seat).powers.get(k).is_some_and(|p| {
+        p.tags.is_empty() && !p.cost.is_empty() && !p.effects.iter().any(|e| matches!(e, Op::PlacePresence { .. } | Op::Harden { .. }))
+    })
+}
+
 /// Whether power `k` of seat `s`'s board sacrifices more than one tag: its
 /// sacrifice prompts come before what it does (068).
 pub fn power_sacrifices_many(w: &World, seat: usize, k: usize) -> bool {
@@ -156,10 +169,36 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     None
 }
 
+/// 075: what seat `s` could still do with its dear powers as the action phase
+/// ends, and why it can't: the measure's, so a power near unused has a cause.
+pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
+    let w = cx.world;
+    let b = board(&w, seat);
+    for (k, p) in b.powers.iter().enumerate() {
+        if p.tags.iter().map(|(_, n)| n).sum::<i64>() < 2 {
+            continue;
+        }
+        let why = power_blocked(&w, g, seat, k);
+        let key = match why {
+            None => "idle",
+            Some("used") => continue,
+            Some("needs tags") => "no_tags",
+            Some("no target") => "no_target",
+            Some(_) => "unpaid",
+        };
+        cx.tally(g, &format!("ai.dear.{}.{k}.{key}", b.id), 1);
+    }
+}
+
 /// Whether seat `s` has a presence token left on its track.
 pub fn can_place(w: &World, g: &GameState, seat: usize) -> bool {
     board::track_taken(g, seat) < board(w, seat).presence.len()
         || board::track2_taken(g, seat) < board(w, seat).presence2.len()
+}
+
+/// Whether uncovering `u` builds a research station (075).
+pub fn builds_station(u: &Uncover) -> bool {
+    u.effects.iter().any(|e| matches!(e, Op::BuildStation))
 }
 
 /// What uncovering a space gives, in the words of its option (a record key:
@@ -170,6 +209,9 @@ pub fn uncover_label(u: &Uncover) -> String {
         parts.push("T2 keep -1".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if builds_station(u) {
+        parts.push("free station".into());
+    }
     if let Some(c) = &u.capstone {
         parts.push(format!("capstone {}", c.name));
     }
@@ -183,6 +225,9 @@ pub fn uncover_words(u: &Uncover) -> String {
         parts.push("T2 keep".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if builds_station(u) {
+        parts.push("free station".into());
+    }
     if let Some(c) = &u.capstone {
         parts.push(format!("capstone: {}", c.name));
     }
@@ -319,6 +364,13 @@ impl Module for Ai {
                             key: t.to_string(),
                             label: format!("{t} tag"),
                             doc: "this tag counts for what a card requires once uncovered".into(),
+                        });
+                    }
+                    if builds_station(u) {
+                        marks.push(TrackMark {
+                            key: "station".into(),
+                            label: "free station".into(),
+                            doc: "uncovering this builds a research station in reach, paying no chips".into(),
                         });
                     }
                     if let Some(c) = &u.capstone {

@@ -63,7 +63,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station"),
     ("war", "presence destroyed", "a destroyed factory takes the presence on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
-    ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter a hex with the Protector's presence"),
+    ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's presence"),
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].

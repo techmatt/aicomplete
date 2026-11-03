@@ -131,6 +131,12 @@
       "interconnector_ship": { "card": "interconnector_treaty", "subject": "A cable-laying ship at sea paying out a heavy subsea power link, a coastal converter station on each horizon." }
     },
     "science": {
+      "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
+      "sample_repository_shelves": { "card": "sample_repository", "subject": "A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place." },
+      "preprint_exchange_board": { "card": "preprint_exchange", "subject": "A crowded corkboard wall of pinned papers in a bright corridor, two scientists swapping a printout and a small glowing cube." },
+      "inference_cluster_racks": { "card": "inference_cluster", "subject": "A compact rack of servers fed by a chute of small glowing cubes, an eye-shaped light panel blinking awake above it." },
+      "breakthrough_lab_flash": { "card": "breakthrough_lab", "subject": "A glass-walled laboratory at the moment of a discovery, a cube of light flaring on a central bench while instruments swing toward it." },
+      "policy_institute_hall": { "card": "policy_institute", "subject": "A round meeting hall where scientists present a glowing cube model to seated delegates, a banner of linked hands on the wall." },
       "paper_engine": { "card": "citation_engine", "subject": "A great whirring machine of brass and paper, journals feeding in one end and threads of references spinning out to a wall." },
       "graduate_lab": { "card": "grad_student_pool", "subject": "A cluttered university lab full of students bent over benches and whiteboards, coffee cups and cables everywhere." },
       "simulation_weather_globe": { "card": "simulation_cluster", "subject": "A compact compute cluster around a floating holographic model of swirling weather over a globe, two researchers watching." },

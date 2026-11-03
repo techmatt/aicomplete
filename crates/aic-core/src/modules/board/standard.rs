@@ -156,14 +156,20 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
     text.to_string()
 }
 
+/// Where seat `s` may build a research station: an open hex in reach that is
+/// not an industrial zone.
+pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len())
+        .filter(|&h| buildable(w, g, h) && !w.map.hexes[h].industrial && in_reach(w, g, seat, h))
+        .collect()
+}
+
 /// The hexes a standard action of `seat` may target (empty: not offered).
 pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Vec<usize> {
     let reach = |h: usize| in_reach(w, g, seat, h);
     let all = 0..g.hexes.len();
     match act {
-        StandardAction::Station => all
-            .filter(|&h| buildable(w, g, h) && !w.map.hexes[h].industrial && reach(h))
-            .collect(),
+        StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
         StandardAction::Clear => all.filter(|&h| reach(h) && g.tokens(h, MARKER) > 0).collect(),
         // Onto a piece in reach, from the supply or another hex: never onto the

@@ -5,7 +5,7 @@ generated from `content/cards.json`. The screen that checked these prices, and t
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
 
-## Current rates (to r30)
+## Current rates (to r31)
 
 This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
 dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
@@ -14,12 +14,13 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 |---|---|---|
 | insight | 2.5 | **Was 3-5.** Unspent insight is lost each round, so credits bind, not insight. At 4 the set read 85 of 150 cards too dear. **A fit:** 2.5 centers tier 1 on its printed prices (median gap 0). It is not a measure: unspent insight was not read at 055 (last at 021, r12), and `economy.insight_unspent` would settle it. Credits binding is the reasoning, not a result |
 | keep | tier 1 2.5, tier 2 6.5 | insight at 2.5, tier 2 between 3 and the upgraded 2 |
-| energy | 2 | was 1. 066: no standard action sells energy or spends it on the map now, so this rests on a presence (1 energy) and on cards; a price pass owes it a look |
+| energy | 2 | was 1. 066: no standard action sells energy or spends it on the map now, so this rests on a presence (1 energy) and on cards. **075: measured under 2.** A completion paying 5 energy a cube read 31 / 31 where one paying 3 energy and 4 credits read 40 / 46 (48 seeds, the same corp values): energy past what presence takes is worth little; the Researcher's Fieldwork (1 energy for 3 cards) is the one new sink |
 | chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
 | antimatter | 9 | 1 a round costs 8-11 of credits |
 | token held | 1 | spent, it is worth what its action buys |
 | Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | 059: replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
-| research cube | 3 | new (074): a station costs 2 chips and makes about 3 cubes before its card completes. Reasoned, not fitted |
+| research cube | 3 | new (074): a station costs 2 chips and makes about 3 cubes before its card completes. Reasoned, not fitted. 075: a cube on an incomplete card is worth its payout, about 9 (below), but only once the card completes, and the Researcher pays 4 credits for one; held on a board it is worth what a converter or Peer Review (3 for a presence) turns it into |
+| player cube at completion | about 9 | 075 (Matt's 6-10): Horizon 3 energy and 3 credits, Cintamani a drawn card and 5 credits, Onyx 4 chips and 3 credits, Biomia 1 Sway, a card and 1 credit. **Measured cheaper than this in play:** energy and chips buy less than their rates (below) |
 | drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
 | tag left in play | 1, then 0.5 each | new: discounts, `needs`, powers. Events leave none |
 | Sway toward Unity | 4 | **was 1.5-2.** New: a tip is 4-6 Sway, about 5 tips win, and a tip pays a Unity card. Reasoned, not fitted |
@@ -44,6 +45,34 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2 |
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
+## 075's changes (r31): the Researcher, cheaper cards, the corp payouts
+
+**Every tier-1 and tier-2 card is 1 credit cheaper** (none below 0), and the Builder and Protector print 3 more credits (13, 12).
+The prompt's lever for 068's piles was the other way (cut income, raise costs), but the piles are gone at r31: seats hold
+4-5 credits at upkeep in every round (068: 13-18 at the last action phase), losers end their last action phase on 5-9, and
+only winners end high (14-21), because a purge ends the game mid-round. With 074's credits gone (a cube paid 10, now about
+9 in flavor) the planner was credit-bound: cards 1 cheaper read +8 to +23 points, +3 credits +10 to +23, both +27 / +42
+(48 seeds, seeds 27700). Every rate in the table is unchanged by this; the printed prices sit 1 under them.
+
+**The six research-cube cards** (Science; reasoned at the cube's 3, the payout's 9 on a card and a held cube's 1-3):
+
+| Card | Does | Price | Why |
+|---|---|---|---|
+| Field Grant | 2 cubes in your color on a card where you own a station | 2, tier 1 program | 2 cubes toward a completion that pays about 9 each; it needs a station there before the card completes |
+| Sample Repository | 1 research cube a round | 5, 1 insight, needs 1 Science | the tier-1 income rate at a held cube's worth (about 2): only a Science seat, the Researcher, reaches it early |
+| Preprint Exchange | 1 cube, draw 1 | 2, tier 1 program | a held cube and a drawn card, 4 and 1-3, under the rate: the agents never played it at 5 |
+| Inference Cluster | Action: 1 cube for 2 insight | 2, 1 insight | a converter with no presence gate, 2 insight (5) for a held cube; Patience keeps the insight |
+| Breakthrough Lab | Action: 2 cubes, remove a node in reach | 7, 2 insight, needs 2 Science | a node is 12; 2 cubes (2-6) a use; tier 2, as node removal is |
+| Policy Institute | Action: 2 cubes, sway 2 toward Unity | 5, 1 insight, needs 2 Science | 2 Sway (8) for 2 cubes: the cube's Unity route, Biomia's converter at 2 for 1 doubled |
+
+At 3-9 credits as first reasoned, the agents kept them and never played one in 480 games: the heuristic valued a held cube
+at 0.3, under any card's price. 075 values one at 1.2 for a seat whose board spends cubes (`research_cube_power`) and prices
+the cards above; what they did in play is in rules-history.md, revision 31.
+
+**Consulate Tower:** its Action was 1 credit for an ambassador, under every other route (Liaison Corps 2 Followers, about
+one every 2 rounds; the standard project 9; Consular Pouch 2 for 5): now 4 credits, the ambassador's rate, so the Tower is a
+discount on the project and the Followers route stays the cheap slow one.
 
 ## 074's changes (r30): research cubes and the corps
 

@@ -446,6 +446,17 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![w("building"), w("free")],
             "play a building from your hand, paying no credits",
         )),
+        Op::BuildStation => one(clause(
+            vec![w("station"), w("free")],
+            "build a research station in reach, paying no chips",
+        )),
+        Op::ProjectCube { count, station } => {
+            let mut icons = counted(*count, "research_cubes");
+            icons.push(w("megaproject"));
+            let what = amount(Resource::ResearchCubes, *count);
+            let place = if *station { "in a country where you own a station" } else { "that isn't complete" };
+            one(clause(icons, format!("add {what} in your color to a megaproject {place}")))
+        }
         Op::Troops { .. }
         | Op::FlipStation { .. }
         | Op::CorruptCity
@@ -488,6 +499,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::SpreadShield
         | Op::CivicShelter
         | Op::Wall
+        | Op::Patience
+        | Op::SupplyInsight { .. }
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::CityBuild { .. }

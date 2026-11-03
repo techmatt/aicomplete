@@ -317,8 +317,9 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     if g.var(&project_done(c)) == 0 {
         return Some("the megaproject is not complete");
     }
-    if !aligned_in(w, g, s, c) {
-        return Some("no aligned city here");
+    // 075 (Matt): presence in the country, where 074 asked for an aligned city.
+    if !has_presence_in(w, g, s, c) {
+        return Some("no presence here");
     }
     if g.var(&converter_round(c, s)) == g.round as i64 {
         return Some("used this round");

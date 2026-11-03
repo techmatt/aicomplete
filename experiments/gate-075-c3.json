@@ -1,0 +1,30 @@
+{
+  "name": "gate-075-c3",
+  "note": "075: the Researcher's fixed policies against the planner at 3 countries, d2 (the only size that seats the Researcher). Run on the gate's seeds, so the planner row pairs with gate-075's c3 cells. 48 paired seeds, early-stopped from 12 at 2 SE.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner",
+    "planner:always_buy_cubes=1",
+    "planner:hoard_insight=3"
+  ],
+  "games": 48,
+  "gate": {
+    "z": 2.0,
+    "min_games": 12,
+    "every": 4
+  },
+  "records": 0
+}

@@ -116,6 +116,9 @@ pub struct Weights {
     /// Each research cube a seat holds (074): low on purpose, under what every
     /// converter nets by these weights, so a cube held never beats using one.
     pub research_cube: f64,
+    /// A research cube held by a seat whose board spends cubes on a power (075:
+    /// the Researcher's second presence takes 3): in place of `research_cube`.
+    pub research_cube_power: f64,
     /// Horizon mode: per round left, each of a seat's first
     /// [`STATIONS_USEFUL`] owned stations (074).
     pub station_round: f64,
@@ -158,6 +161,12 @@ pub struct Weights {
     pub energy: f64,
     pub antimatter: f64,
     pub insight: f64,
+    /// An insight held by a seat with Patience (075): it carries over, so it
+    /// keeps its worth at the end of a round, where anyone else's goes.
+    pub patience: f64,
+    /// A player-owned facility under a Wall (075): no troop can strike it. Twice
+    /// this with a troop within `WALL_NEAR` hexes.
+    pub wall: f64,
     /// A card in hand: `hand + hand_cost * cost`, cost in credits (see
     /// [`super::credit_equivalent`]).
     pub hand: f64,
@@ -230,6 +239,8 @@ fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
 /// own points for antimatter and insight (1 for the rest), times `income`.
 /// How many of a seat's owned stations the eval counts in full (074).
 const STATIONS_USEFUL: i64 = 2;
+/// How far off a troop makes a Wall's facility worth more: two marches.
+const WALL_NEAR: u32 = 4;
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
 
@@ -271,6 +282,7 @@ impl Default for Weights {
             station: 5.0,
             project_cube: 2.0,
             research_cube: 0.3,
+            research_cube_power: 1.2,
             station_round: 1.0,
             station_spare: 1.0,
             factory: 0.5,
@@ -292,6 +304,8 @@ impl Default for Weights {
             energy: 0.8,
             antimatter: 2.0,
             insight: 0.5,
+            patience: 1.0,
+            wall: 3.0,
             hand: 3.0,
             hand_cost: 0.4,
             drafted: 0.3,
@@ -374,6 +388,12 @@ pub struct Eval {
     city_energy: i64,
     aligned_bonus: i64,
     tip_per_player: i64,
+    /// The seat with Wall, if a seat has it.
+    wall_seat: Option<usize>,
+    /// Each seat's Patience (075).
+    patient: [bool; 4],
+    /// Each seat whose board has a power paid in research cubes (075).
+    cube_power: [bool; 4],
     keys: TokenKeys,
     /// Each card by its interned id (compared by pointer, never iterated): its
     /// index in the content and its [`Eval::cost`]. A position asks for a hand's
@@ -484,6 +504,11 @@ impl Eval {
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
+            wall_seat: (0..seats).find(|&s| ai::board(&world, s).innate.passives.iter().any(|p| matches!(p, Op::Wall))),
+            patient: std::array::from_fn(|s| s < seats && economy::patient(&world, s)),
+            cube_power: std::array::from_fn(|s| {
+                s < seats && ai::board(&world, s).powers.iter().any(|p| p.cost.iter().any(|(r, _)| *r == Resource::ResearchCubes))
+            }),
             keys: TokenKeys::new(),
             facts: Arc::new(
                 world
@@ -517,6 +542,24 @@ impl Eval {
     /// Adversary cards still to come: the face-up one and the deck.
     pub(crate) fn cards_left(g: &GameState) -> usize {
         g.pile(adversary::DECK).len() + g.pile(adversary::NEXT).len()
+    }
+
+    /// What a research cube seat `s` holds is worth (075).
+    fn cube_unit(&self, s: usize) -> f64 {
+        if self.cube_power[s] {
+            self.w.research_cube_power
+        } else {
+            self.w.research_cube
+        }
+    }
+
+    /// What an insight seat `s` holds is worth (075).
+    fn insight_unit(&self, s: usize) -> f64 {
+        if self.patient[s] {
+            self.w.patience
+        } else {
+            self.w.insight
+        }
     }
 
     /// What a seat's credits are worth: `credits` each up to `credit_cap`,
@@ -673,6 +716,11 @@ impl Eval {
             v -= w.marker * t.marker as f64;
             if held && t.harden > 0 {
                 v += w.shield;
+            }
+            // 075: a Wall's facility can't be struck.
+            if owned && !bad && (t.station > 0 || t.factory > 0) && self.wall_seat.is_some_and(|s| t.presence[s] > 0) {
+                let near = (0..g.hexes.len()).any(|x| tokens[x].troop > 0 && world.map.distance(h, x) <= WALL_NEAR as i32);
+                v += w.wall * if near { 2.0 } else { 1.0 };
             }
             if held {
                 v += w.presence;
@@ -871,8 +919,8 @@ impl Eval {
             *v += self.credit_value(res(Resource::Credits))
                 + w.energy * res(Resource::Energy)
                 + w.antimatter * res(Resource::Antimatter)
-                + w.insight * res(Resource::Insight)
-                + w.research_cube * res(Resource::ResearchCubes);
+                + self.insight_unit(s) * res(Resource::Insight)
+                + self.cube_unit(s) * res(Resource::ResearchCubes);
             for (r, n) in ai::track_income(&world, g, s) {
                 let unit = match r {
                     Resource::Antimatter => ANTIMATTER_INCOME_UNIT,
@@ -1020,6 +1068,10 @@ impl Eval {
             for (i, r) in RESOURCES.iter().enumerate() {
                 if *r == Resource::Credits {
                     v += fade * self.credit_value(res(*r) as f64);
+                } else if *r == Resource::Insight {
+                    v += fade * self.insight_unit(s) * res(*r) as f64;
+                } else if *r == Resource::ResearchCubes {
+                    v += fade * self.cube_unit(s) * res(*r) as f64;
                 } else if *r != Resource::Chips {
                     v += fade * unit[i] * res(*r) as f64;
                 }
@@ -1029,8 +1081,9 @@ impl Eval {
             // the rounds left; board production counts `production` of its own.
             let tags = cards::tag_counts(&world, g, s);
             let income = economy::income_with(&world, g, s, &tags);
-            for (i, (_, n)) in income.iter().enumerate() {
-                v += w.horizon * left * unit[i] * n as f64;
+            for (i, (r, n)) in income.iter().enumerate() {
+                let u = if r == Resource::ResearchCubes { self.cube_unit(s) } else { unit[i] };
+                v += w.horizon * left * u * n as f64;
             }
             v += w.horizon * w.production * left * w.energy * *made as f64;
             for id in g.pile(&cards::built(s)) {

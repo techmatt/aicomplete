@@ -1,6 +1,6 @@
 {
-  "name": "gate-070",
-  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-068 plus home_only and capstone_rush (070); never_counter is the existing no_counters. 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with experiments/gate-close-070/. Run on fresh seeds.",
+  "name": "gate-075",
+  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-070 plus never_convert (075). The Researcher's own checks (always_buy_cubes, hoard_insight) sit at 3 countries only, in gate-075-c3.json, since no seat has its board at 2. 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with experiments/gate-close-075/. Run on fresh seeds.",
   "configs": [
     "configs/baseline.json"
   ],
@@ -50,7 +50,8 @@
     "planner:free_only=1",
     "planner:abandon=1",
     "planner:home_only=1",
-    "planner:capstone_rush=1"
+    "planner:capstone_rush=1",
+    "planner:never_convert=1"
   ],
   "games": 48,
   "gate": {

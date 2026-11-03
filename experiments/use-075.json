@@ -1,0 +1,28 @@
+{
+  "name": "use-075",
+  "note": "075: behavior read per agent: planner and engine, c2 and c3, d2. The planner cells are the band's; this adds the engine. Read with scripts/cards/board_read.py and corp_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    },
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine",
+    "planner"
+  ],
+  "games": 48,
+  "records": 0
+}

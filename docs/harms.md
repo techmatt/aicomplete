@@ -15,7 +15,7 @@ One row per harm, one column per kind of source. A number is how many printed ca
 | facilities destroyed or seized |  | 1 |  |  | 1 |  |  |  |  | yes | yes | yes |
 | production blacked out | 2 |  |  |  |  |  | yes |  | yes |  |  |  |
 | adversary pieces placed | 3 | 6 | 3 | 6 | 8 |  | yes | yes |  | yes |  |  |
-| projects advanced (compute) | 5 | 7 |  |  |  | 3 |  | yes |  |  |  |  |
+| projects advanced (compute) | 5 | 7 |  |  |  | 1 |  | yes |  |  |  |  |
 | extra threats |  |  | 2 |  | 1 |  |  |  |  |  |  |  |
 | Discord sway | 1 | 2 |  | 5 | 3 | 3 | yes |  | yes |  |  |  |
 | Unity pulled back | 1 |  | 1 | 4 |  |  |  |  |  |  |  |  |
@@ -44,4 +44,4 @@ One row per harm, one column per kind of source. A number is how many printed ca
 - **uncountered threats, facilities destroyed or seized:** with no neutral one left, its target is a player's factory or station.
 - **war, presence destroyed:** a destroyed factory takes the presence on its hex.
 - **war, facilities destroyed or seized:** surplus troops destroy factories.
-- **march, facilities destroyed or seized:** a troop strikes player-owned facilities; it can't enter a hex with the Protector's presence.
+- **march, facilities destroyed or seized:** a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's presence.

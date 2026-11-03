@@ -360,7 +360,9 @@ export function seatValuesHtml(v: View, seatIndex: number): string {
     const have = findValue(s.values, `resource.${r}`);
     const inc = findValue(s.values, `economy.income.${r}`);
     // Insight is set to its income each round, not added to (020: "+4" read as more).
-    const sign = r === 'insight' ? '→' : inc && inc.value >= 0 ? '+' : '';
+    // 075: under Patience it adds, unspent insight carrying over.
+    const patient = !!findValue(s.values, 'economy.insight_carried');
+    const sign = r === 'insight' && !patient ? '→' : inc && inc.value >= 0 ? '+' : '';
     const incHtml = inc ? `<span class="inc" data-value="${inc.key}" data-scope="${scope}" title="${r === 'insight' ? 'next round: insight is set to this, plus any insight-next-round bonus' : 'income in upkeep'}">${sign}${inc.value}</span>` : '';
     return `<span class="res r-${esc(r)}" data-value="resource.${esc(r)}" data-scope="${scope}"><span class="label">${esc(have?.label ?? r.replace(/_/g, ' '))}</span> <b>${have?.value ?? 0}</b>${incHtml}</span>`;
   }).join('');

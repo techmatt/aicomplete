@@ -86,7 +86,7 @@ try {
   check(/research cubes\s*3/.test(shown), `its board shows them: "${shown.trim()}"`);
   const conv = await js(`[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter').length ? [...[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter')].map((e) => [e.className, e.textContent]) : []`);
   check(conv.some(([c]) => c.includes(' usable')), `a usable converter: ${JSON.stringify(conv.find(([c]) => c.includes(' usable')))}`);
-  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no aligned city')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
+  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no presence')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
   writeFileSync(join(out, 'corps.png'), await page.shot());
 
   const anti = await resource('antimatter');

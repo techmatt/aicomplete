@@ -223,7 +223,7 @@ pub(super) fn corps_block(c: &Content) -> String {
                 m.cubes.to_string(),
                 format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
                 m.converter.words(),
-                Megaproject::words(&m.after),
+                if m.after.is_empty() { "lost (075)".to_string() } else { Megaproject::words(&m.after) },
             ]
         })
         .collect();
@@ -414,6 +414,9 @@ pub(super) fn space(u: &Uncover) -> String {
         parts.push("**keep upgrade**".to_string());
     }
     parts.extend(u.tags.iter().map(|t| format!("{} tag", title(t.name()))));
+    if aic_core::modules::ai::builds_station(u) {
+        parts.push("builds a free research station in reach".to_string());
+    }
     if let Some(c) = &u.capstone {
         parts.push(format!("**{}** (capstone): {}", c.name, c.text));
     }
@@ -570,7 +573,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "adversary cubes on a megaproject as it completes, and after, as its corp's card prints".to_string(),
+            "adversary cubes on a megaproject as it completes, as its corp's card prints".to_string(),
             "1 each".to_string(),
         ],
         [

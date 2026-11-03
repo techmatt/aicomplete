@@ -192,7 +192,8 @@ an `engine:samples=2` you meant to compare is easy to lose. It caps seeds at 16 
 **Content levers run on one binary (040).** A variant's `set` (or `--set` on `run` and
 `compare`) takes a content overlay, `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`,
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes.
-`cards.telemetry_archive.cost=3`, `cards.turnkey_factory.effects=[]`,
+`cards.telemetry_archive.cost=3`, `cards.turnkey_factory.effects=[]`, `corps.horizon.project.after=[]` (075: the map's
+country pieces by lowercase name, the only part of the map an overlay reaches),
 `cards.turnkey_factory.passives.0.amount=2`, `ais.*.presence.4.cost=2`,
 `threats.<id>.counter=[["credits",3]]`. It goes through the same parsing and checks as
 `content/`, so a typo or an illegal op is an error naming the entry. The overlay lands in
@@ -227,6 +228,15 @@ keep-aware, and at r19 greedy, engine and planner keep 58-69% (d0, d2, 8 seeds a
 is still their plan, not a table's.
 
 ## The band and the gate
+
+**The band and gate at r31 (075).** A planner game costs about 20 s at c2 and 51-54 s at c3 in thread time (8.8-9
+rounds; the Researcher's seven powers), so a 96-seed band of both sizes is about 15 min on 8 threads and the gate's
+first pass about 2 h. `experiments/use-075.json` adds the engine to the band's cells; the behavior read
+(`experiments/behave-075.json`: Wall off, Patience off, the dear powers at 2 tags) is about 20 min at 32 seeds. Read both
+with `scripts/cards/board_read.py DIR... --powers --cards`. The corp cards are an overlay now (`corps.<name>.project.<path>`,
+lowercase piece name, `*` for every corp), so a payout what-if needs no build. **Gate-075 measured:** first pass
+89 min (1,436 of 3,072 games at the cap), `gate-075-c3.json` 17 min, closes 92 min for 23 rows: budget 3.5 h and
+start it 4 h before a hard stop.
 
 **The band at r30 (074).** `experiments/use-074.json` is the band with the engine added, 384 games, about 11 min on 7 threads; its read is `scripts/cards/corp_read.py`. A rule what-if on content needs its own build: the map isn't reachable by a content overlay.
 
@@ -267,7 +277,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. Next free: 26100.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. Next free: 29000.
 
 ## Reading prices
 

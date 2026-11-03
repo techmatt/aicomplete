@@ -1,0 +1,35 @@
+{
+ "name": "fill-c3-44",
+ "note": "gate close of gate-075: c3, seeds 28244+4",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c3",
+   "set": [
+    "countries=3"
+   ]
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:always_max_presence=1",
+  "planner:never_second_presence=1"
+ ],
+ "first_seed": "28244",
+ "games": 4,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}

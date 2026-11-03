@@ -84,6 +84,10 @@ pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
         let mut at = from;
         let mut alive = true;
         for _ in 0..steps {
+            // 075: the measure's: a facility a Wall kept this troop off.
+            if next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
+                cx.tally(g, "board.wall_strikes", 1);
+            }
             if has_troop_target(&w, g, at) {
                 cx.tally(g, "board.troop_steps", 1);
                 if !strike_from(g, cx, at)? {
@@ -123,6 +127,10 @@ pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
 /// neutral or corrupted ones, and never cities).
 pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String> {
     let mut out = Vec::new();
+    // 075: a Wall stops the strike as well as the walk.
+    if walled(w, g, h) {
+        return out;
+    }
     if cube_owner(g, h).is_some() && !corrupted(g, h) {
         if g.tokens(h, FACTORY) > 0 {
             out.push(FACTORY.to_string());
@@ -137,6 +145,11 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
         }
     }
     out
+}
+
+/// Whether hex `h` holds a player-owned facility, what a Wall there saves.
+fn under_wall(g: &GameState, h: usize) -> bool {
+    cube_owner(g, h).is_some() && !corrupted(g, h) && (g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0)
 }
 
 /// Whether hex `h` holds anything an adversary troop targets.

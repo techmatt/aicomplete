@@ -7,6 +7,30 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 31 (075): the Researcher, the open board rulings, the corps amended.** (Bumped from the constant, 30.) Design: Matt, 2026-11-02 (the brief, and amendment #3106 on the corps). Locked: every board power once a round; powers paid by sacrificing played cards; no rule exceptions without an extremely good reason; a power's cost names N of one tag or N of any tag, never a mix (Matt, 2026-11-02). Everything else a **candidate**. Two countries seat Builder and Protector; three add the Researcher. The band: planner, d2, fresh seeds 25900 and 26000, 96 a cell each, pooled to 192, frozen build: **66.7 ±3.4 / 79.2 ±2.9** (r30: 12.5 / 7.3): c2 in band, **c3 4.2 points over 75, 1.45 SE**, inside 2 SE, so no lever after the freeze; the cause, as measured: the three-seat game took more from the cheaper cards (+23 against +8) and the Researcher's Patience is worth 15.6 ±11.1 to it. The base band after the corp change alone (27600, 96): 27.1 / 35.4, under 074's 62 / 62 what-if because flavor payouts buy less than 10 credits (w1: 29 / 33 against 54 / 62.5 on the same seeds). The gate: planner, seeds 28200, gate-075 (62 rows) and gate-075-c3 (the Researcher's own checks), then 23 rows closed at 96 paired seeds: **no check ahead of the planner by more than 1 SE.** The nearest: c2 `tier2_rush` -3.1 ±6.0, c3 `never_second_presence` -1.0 ±5.8, `free_build_rush` 0.0 ±5.3, `always_buy_cubes` +2.1 ±6.3; c2 `home_only` led by 25 at 16 seeds and closed at +4.2 ±5.3. `hoard_insight=3` trails by 31 ±12 at 16. The gate's own planner row (96): 63.5 / 72.9. Reasoning, the screens and every read: [experiments/results/screen-075-researcher/researcher.md](../experiments/results/screen-075-researcher/researcher.md).
+
+| Rule | Was | Status |
+|---|---|---|
+| The Researcher: Patience (unspent insight carries over, no cap); Fieldwork 1 energy → 3 cards; Grant 4 credits → 1 research cube on an incomplete megaproject in your color; Deploy; Peer Review 3 research cubes → 1 presence (no energy, the step still paid); Field Station (1 Industry) a free station in reach; Audit (1 Cyber) 3 compute off one project; Particle Run (3 Power) 1 antimatter; Science printed; 2 slots; 8 credits and 4 insight printed, 15 starting credits | new board | candidate (Matt's sheet; credits, insight and starting credits 075's) |
+| Its tracks: economy 1 insight, 2 credits, a free station, 2 credits and Power, 1, 1, Open Archive (1 research cube a round); card-play 1 insight, 1 insight, keep upgrade and Science, 1 insight and Cyber, 1 insight, 1 credit and Industry, 1 insight and Open Science (2 insight a round from the supply to the other players, split as it chooses, in upkeep for the next round) | new | candidate, 075's call within the sheet |
+| A track space may do something once when uncovered (`effects`, `Op::BuildStation`) | spaces only paid income, tags, the keep upgrade or a capstone | candidate |
+| `ai.boards` 0, 1, 2; c3 seats the Researcher where it seated a second Builder; 4 players repeat the Builder | 0, 1 | candidate |
+| Wall also stops a strike into a hex with the Protector's presence | it stopped entering only | candidate (Matt) |
+| Rush Build sacrifices 3 Industry, Shelter 3 Security | 2 of the tag + 1 any | **locked** (the cost rule) |
+| `Content::check` refuses a power that names two tags | none | follows the lock |
+| Six research-cube cards: Field Grant, Sample Repository, Preprint Exchange, Inference Cluster, Breakthrough Lab, Policy Institute | new | candidate |
+| Every tier-1 and tier-2 card 1 credit cheaper | as printed | candidate (075; the brief's lever was the other way: see the results) |
+| Builder 13 printed credits, Protector 12 | 10, 9 | candidate |
+| Builder economy space 5: +1 credit | blank | candidate (073's item) |
+| Consulate Tower's Action: 4 credits → 1 ambassador | 1 credit | candidate |
+| Megaprojects (#3106): no after line, an adversary cube after completion is lost | 2 compute, 1 compute on every project, 3 compute, 1 Discord | candidate (Matt) |
+| Player payouts: Horizon 3 energy and 3 credits; Cintamani a drawn card and 5 credits; Onyx 4 chips and 3 credits; Biomia 1 Sway, a drawn card and 1 credit | 1 energy; 3 credits; 3 credits; a drawn card | candidate (Matt's 6-10 a cube) |
+| A converter needs presence in its country | an aligned city | candidate (Matt) |
+| Megaproject size 8 | 8 | 10 screened and rejected: completion moved to round 4.1-4.2, -6 to -19 points |
+| Content overlay table `corps.<name>.project.<path>` | the map unreachable | not a rule |
+| Eval: `patience` 1.0, `wall` 3, `research_cube_power` 1.2 | none | agents, not rules |
+| Fixed policies `always_buy_cubes`, `hoard_insight`, `never_convert`; `ignore_threats` refuses automatic counters | none | agents, not rules |
+
 **Revision 30 (074): research cubes and the four corps.** (Bumped from the constant, 29.) Design: Matt, 2026-11-02. Everything here is a **candidate** but the two lines marked locked. The band, read and not tuned: planner, d2, seeds 25700 and 25800, 96 a cell each, pooled to 192, frozen build: **12.5 ±2.4 / 7.3 ±1.9** against r29's 53.5 / 50. Structural causes, by what-ifs that changed one thing each: a player cube pays about 3 where it paid 10, and adversary cubes make compute every round after completion; both undone on other seeds reads close to r29. The card, the converters against *Current rates* and the use: [experiments/results/screen-074-corps/corps.md](../experiments/results/screen-074-corps/corps.md).
 
 | Rule | Was | Status |

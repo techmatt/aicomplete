@@ -111,6 +111,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::FreeBuilding => cards::play_free_building(g, cx, seat)?,
+        Op::BuildStation => resources::build_station(g, cx, seat)?,
+        Op::ProjectCube { count, station } => resources::project_cube(g, cx, seat, *count, *station)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
         Op::Jam { amount, source } => {
             let active = threats::counterable(&w, g, seat, *source);
@@ -268,6 +270,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::SpreadShield
         | Op::CivicShelter
         | Op::Wall
+        | Op::Patience
+        | Op::SupplyInsight { .. }
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::CityBuild { .. }

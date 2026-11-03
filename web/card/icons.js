@@ -17,6 +17,8 @@ const RESOURCES = {
   energy: ['#e0761a', fill('M13.8 2 5.5 13.4h5.2L9.2 22l9.3-12.6h-5.6z')],
   antimatter: ['#c22f6d', `${line('M12 12m-2.6 0a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0-5.2 0')}<g fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="12" rx="10" ry="3.9"/><ellipse cx="12" cy="12" rx="10" ry="3.9" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="3.9" transform="rotate(120 12 12)"/></g>`],
   compute: ['#3a6fc4', `<rect x="4.5" y="4.5" width="15" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>${fill('M8 8h3.4v3.4H8zM12.6 12.6H16V16h-3.4z')}`],
+  // Three stacked research cubes (075).
+  research_cubes: ['#2c9aa0', `<g fill="none" stroke="currentColor" stroke-width="1.700" stroke-linejoin="round"><path d="M12 3.500 16.500 6v5L12 13.500 7.500 11V6zM7.500 6 12 8.500 16.500 6M12 8.500v5"/><path d="M7.500 12.500 12 15v5l-4.500 2.500L3 20v-5zM3 15l4.500 2.500L12 15M7.500 17.500v5" transform="translate(0 -1.500)"/><path d="M16.500 12.500 21 15v5l-4.500 2.500L12 20v-5zM12 15l4.500 2.500L21 15M16.500 17.500v5" transform="translate(0 -1.500)"/></g>`],
   cards: ['#5d6875', `<rect x="4" y="5.5" width="10.5" height="15" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="9.5" y="3" width="10.5" height="15" rx="1.6" fill="currentColor"/>`],
 };
 
@@ -43,6 +45,10 @@ const PIECES = {
   shelter: `${fill('M2 13 12 3l10 10h-3v0z')}${line('M5.500 14v7.500h13V14', 2.4)}`,
   // A country, for "in one country": the map's hex cluster.
   country: fill('M8 2.500 12 4.800v4.600L8 11.700 4 9.400V4.800zM16.500 2.500l4 2.300v4.600l-4 2.300-4-2.300V4.800zM12.200 12.300l4 2.300v4.600l-4 2.300-4-2.300v-4.600z'),
+  // A research station: a dome with its mast, as the board draws one.
+  station: `${fill('M4 21v-5a8 8 0 0 1 16 0v5z')}${line('M12 8V2.500M9 4.500h6', 2.200)}`,
+  // A corp's megaproject: the card with a cube on it (the adversary's project is the plain card).
+  megaproject: `<rect x="3.500" y="3" width="17" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2.200"/>${fill('M12 7l4.500 2.500v5L12 17l-4.500-2.500v-5z')}`,
   project: `<rect x="3.500" y="4" width="17" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="2.200"/>${fill('M7 8h10v2H7zM7 12h6v2H7z')}`,
   hex: line('M12 2 20.700 7v10L12 22 3.300 17V7z', 2.4),
   troop: fill('M12 2.500 15 7.500h-1.800v2.300l6.800 3.700v3l-6.800-1.800V19l2.300 1.700V22L12 21l-3.500 1v-1.300L10.800 19v-4.300L4 16.500v-3l6.800-3.700V7.500H9z'),

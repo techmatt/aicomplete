@@ -64,9 +64,9 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
     }
     let (e0, e1, discord) = (g.resource(0, Resource::Energy), g.resource(1, Resource::Energy), g.var("alignment.discord"));
     run(&rules, &mut g);
-    // 9 cubes on an 8-cube card: all pay. Horizon: 1 energy a player cube, 1
-    // Discord an adversary cube, nothing for a neutral cube.
-    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), (4, 1));
+    // 9 cubes on an 8-cube card: all pay. Horizon (075): 3 energy and 3 credits
+    // a player cube, 1 Discord an adversary cube, nothing for a neutral cube.
+    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), (12, 3));
     assert_eq!(g.var("alignment.discord") - discord, 2);
     assert_eq!(g.var(&board::project_done(0)), 1);
     for k in [board::project_key(0, Some(0)), board::project_key(0, Some(1)), board::project_key(0, None), board::project_neutral(0)] {
@@ -111,9 +111,31 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_takes_i
     assert_eq!(g.tokens(h, ADV_AMBASSADOR), 0);
 }
 
+/// 075 (Matt): no corp prints an after line, so an adversary cube made after
+/// completion is lost, as a neutral one is.
+#[test]
+fn adversary_cubes_after_completion_are_lost() {
+    let (rules, mut g) = lab(&["board.produce"]);
+    for c in 0..2 {
+        g.vars.insert(board::project_done(c).into(), 1);
+        let h = rules.map.numbered(c, piece(c).stations[0]);
+        put(&mut g, h, STATION, 1);
+        put(&mut g, h, ADV_CUBE, 1);
+    }
+    let (made, discord) = (g.var(adversary::COMPUTE), g.var("alignment.discord"));
+    run(&rules, &mut g);
+    assert_eq!(g.var(adversary::COMPUTE), made);
+    assert_eq!(g.var("alignment.discord"), discord);
+    assert_eq!(g.stats.counters["board.cubes_after"], 2);
+}
+
+/// The rule still reads an after line content prints (074's, by overlay).
 #[test]
 fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
-    let (rules, mut g) = lab(&["board.produce"]);
+    let (rules, mut g) = lab_with(
+        &["board.produce"],
+        &[r#"corps.horizon.project.after=[{"op":"compute","amount":2}]"#, r#"corps.cintamani.project.after=[{"op":"compute_every","amount":1}]"#],
+    );
     // Onyx is not in a 2-country game: Horizon's 2, Cintamani's every project.
     for c in 0..2 {
         g.vars.insert(board::project_done(c).into(), 1);
@@ -130,7 +152,7 @@ fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
 }
 
 #[test]
-fn a_converter_needs_an_aligned_city_and_works_once_a_round() {
+fn a_converter_needs_presence_in_its_country_and_works_once_a_round() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let convert = Action::Convert { seat: 0, country: 0 };
@@ -139,13 +161,15 @@ fn a_converter_needs_an_aligned_city_and_works_once_a_round() {
         cx.add_resource(&mut g, 0, Resource::ResearchCubes, 3);
         cx.add_resource(&mut g, 0, Resource::Energy, 10);
     });
-    // Not complete, then no aligned city.
+    // Not complete, then no presence there (075: an aligned city was 074's gate).
     assert!(!offered(&g));
     g.vars.insert(board::project_done(0).into(), 1);
-    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("no aligned city here"));
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("no presence here"));
     assert!(rules.apply_mut(&mut g, &convert, None).is_err());
     let city = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, city, cube(0), 1);
+    assert!(!offered(&g), "an aligned city is no longer the gate");
+    put(&mut g, city, presence(0), 1);
     assert!(offered(&g));
     let (e, a) = (g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter));
     rules.apply_mut(&mut g, &convert, None).unwrap();

@@ -1,0 +1,65 @@
+{
+  "name": "behave-075",
+  "note": "075's behavior read before the freeze: the frozen rules at c2 and c3, Wall off at both, Patience off at c3, the dear powers at 2 tags at both; planner and engine, 32 seeds (075 ran --seed 28100). Read with scripts/cards/board_read.py --powers --cards.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    },
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    },
+    {
+      "name": "c2_walloff",
+      "set": [
+        "ais.protector.innate.passives=[]"
+      ]
+    },
+    {
+      "name": "c3_walloff",
+      "set": [
+        "countries=3",
+        "ais.protector.innate.passives=[]"
+      ]
+    },
+    {
+      "name": "c3_patienceoff",
+      "set": [
+        "countries=3",
+        "ais.researcher.innate.passives=[]"
+      ]
+    },
+    {
+      "name": "c2_dear2",
+      "set": [
+        "ais.builder.powers.5.tags=[[\"industry\",2]]",
+        "ais.protector.powers.5.tags=[[\"security\",2]]",
+        "ais.researcher.powers.6.tags=[[\"power\",2]]"
+      ]
+    },
+    {
+      "name": "c3_dear2",
+      "set": [
+        "countries=3",
+        "ais.builder.powers.5.tags=[[\"industry\",2]]",
+        "ais.protector.powers.5.tags=[[\"security\",2]]",
+        "ais.researcher.powers.6.tags=[[\"power\",2]]"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine",
+    "planner"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -48,6 +48,8 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
         Op::CutNode => !cuttable_nodes(w, g, seat).is_empty(),
         Op::Shelter => !unsheltered(w, g).is_empty(),
         Op::FreeBuilding => cards::free_building_exists(w, g, seat),
+        Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
+        Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
         Op::AddTokens { kind, .. } => !cards::token_cards(w, g, seat, Some(*kind)).is_empty(),
         Op::Consolidate { .. } => ambassador_hexes(g, seat)
             .iter()

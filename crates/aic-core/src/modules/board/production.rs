@@ -27,12 +27,13 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
         for r in LEFT {
             cx.per_round(g, &format!("left.{s}.{r}"), g.resource(s, r));
         }
+        ai::tally_dear_powers(g, cx, s);
         // 074: converters a seat holding cubes left unused, and why: the measure's.
         if g.resource(s, Resource::ResearchCubes) > 0 {
             for c in 0..w.map.countries.len() {
                 match converter_blocked(&w, g, s, c) {
                     None => cx.tally(g, "board.converter_idle", 1),
-                    Some("no aligned city here") => cx.tally(g, "board.converter_no_city", 1),
+                    Some("no presence here") => cx.tally(g, "board.converter_no_city", 1),
                     Some("can't pay it") => cx.tally(g, "board.converter_unpaid", 1),
                     Some(_) => {}
                 }

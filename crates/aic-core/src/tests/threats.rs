@@ -108,7 +108,8 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     assert!(g
         .pile("threats.discard.1")
         .contains(&Key::new("blackout")));
-    assert_eq!(g.resource(0, Resource::Credits), 8);
+    let triage = rules.world().content.cards.iter().find(|c| c.id == "threat_triage").unwrap().cost;
+    assert_eq!(g.resource(0, Resource::Credits), 12 - 2 - triage);
 }
 
 #[test]

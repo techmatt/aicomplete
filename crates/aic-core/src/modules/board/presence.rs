@@ -146,6 +146,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     let second = tracks[k].0;
     let step = tracks[k].1.cost;
     let capstone = tracks[k].1.capstone.is_some();
+    let uncovers = tracks[k].1.effects.as_slice();
     let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = format!("Seat {seat}: place presence ({what}) on which hex?");
@@ -165,6 +166,7 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
         cx.tally(g, "board.capstones", 1);
         cx.per_round(g, "board.presence_capstones", 1);
     }
+    effects::run(g, cx, uncovers, &mut effects::Ctx::seat(seat))?;
     Ok(true)
 }
 

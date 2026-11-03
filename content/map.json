@@ -208,12 +208,17 @@
    "project": {
     "name": "Tidal Grid",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 energy, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 1 research cube and 2 energy for 1 antimatter. Each adversary cube then makes 2 adversary compute.",
+    "text": "At completion each player cube pays 3 energy and 3 credits, each adversary cube 1 Sway to Discord. Afterward, with presence here, once a round: 1 research cube and 2 energy for 1 antimatter. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "gain",
       "resource": "energy",
-      "amount": 1
+      "amount": 3
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
      }
     ],
     "adversary": [
@@ -242,12 +247,7 @@
       }
      ]
     },
-    "after": [
-     {
-      "op": "compute",
-      "amount": 2
-     }
-    ]
+    "after": []
    }
   },
   {
@@ -283,12 +283,16 @@
    "project": {
     "name": "Polar Compute Array",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 credits, each adversary cube 1 adversary compute. Afterward, with an aligned city here, once a round: 1 research cube for 1 insight. Each adversary cube then makes 1 adversary compute on every visible project.",
+    "text": "At completion each player cube pays 1 drawn card and 5 credits, each adversary cube 1 adversary compute. Afterward, with presence here, once a round: 1 research cube for 1 insight. An adversary cube made here afterward is lost.",
     "player": [
+     {
+      "op": "draw",
+      "count": 1
+     },
      {
       "op": "gain",
       "resource": "credits",
-      "amount": 3
+      "amount": 5
      }
     ],
     "adversary": [
@@ -312,12 +316,7 @@
       }
      ]
     },
-    "after": [
-     {
-      "op": "compute_every",
-      "amount": 1
-     }
-    ]
+    "after": []
    },
    "coast": [
     15
@@ -354,8 +353,13 @@
    "project": {
     "name": "Mountain Fusion Works",
     "cubes": 8,
-    "text": "At completion each player cube pays 3 credits, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 1 research cube for 2 chips. Each adversary cube then makes 3 adversary compute.",
+    "text": "At completion each player cube pays 4 chips and 3 credits, each adversary cube 1 Sway to Discord. Afterward, with presence here, once a round: 1 research cube for 2 chips. An adversary cube made here afterward is lost.",
     "player": [
+     {
+      "op": "gain",
+      "resource": "chips",
+      "amount": 4
+     },
      {
       "op": "gain",
       "resource": "credits",
@@ -384,12 +388,7 @@
       }
      ]
     },
-    "after": [
-     {
-      "op": "compute",
-      "amount": 3
-     }
-    ]
+    "after": []
    },
    "coast": [
     7,
@@ -429,11 +428,21 @@
    "project": {
     "name": "Delta Seawall",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, with an aligned city here, once a round: 2 research cubes for 1 Sway to Unity. Each adversary cube then sways 1 to Discord.",
+    "text": "At completion each player cube pays 1 Sway to Unity, 1 drawn card and 1 credit, each adversary cube 1 Sway to Discord. Afterward, with presence here, once a round: 2 research cubes for 1 Sway to Unity. An adversary cube made here afterward is lost.",
     "player": [
+     {
+      "op": "sway",
+      "side": "unity",
+      "amount": 1
+     },
      {
       "op": "draw",
       "count": 1
+     },
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 1
      }
     ],
     "adversary": [
@@ -458,13 +467,7 @@
       }
      ]
     },
-    "after": [
-     {
-      "op": "sway",
-      "side": "discord",
-      "amount": 1
-     }
-    ]
+    "after": []
    },
    "coast": [
     11,

@@ -170,7 +170,7 @@
   "name": "Telemetry Archive",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "science"
@@ -197,7 +197,7 @@
   "name": "Simulation Cluster",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "chips": 1,
   "tags": [
@@ -230,7 +230,7 @@
   "name": "Citation Engine",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "needs": [
    [
@@ -255,7 +255,7 @@
   "name": "Breakthrough Leak",
   "tier": 1,
   "kind": "event",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "needs": [
    [
@@ -278,7 +278,7 @@
   "name": "Zero-Knowledge Exploit",
   "tier": 1,
   "kind": "event",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "science",
@@ -303,7 +303,7 @@
   "name": "Open Preprint",
   "tier": 1,
   "kind": "event",
-  "cost": 1,
+  "cost": 0,
   "tags": [
    "science"
   ],
@@ -330,7 +330,7 @@
   "name": "Grad Student Pool",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "science"
@@ -358,7 +358,7 @@
   "name": "Stress Test Suite",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "tags": [
    "science"
   ],
@@ -379,7 +379,7 @@
   "name": "Dataset Scraper",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "tags": [
    "science",
    "cyber"
@@ -400,7 +400,7 @@
   "name": "Literature Crawler",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "tags": [
    "science"
   ],
@@ -416,7 +416,7 @@
   "name": "Shared Compute Grant",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 1,
   "tags": [
    "science"
@@ -440,7 +440,7 @@
   "name": "Predictive Modeling",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "science"
@@ -461,7 +461,7 @@
   "name": "Neural Cartographer",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "science",
@@ -485,7 +485,7 @@
   "name": "Cryo-Compute Burn",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "tags": [
    "science"
   ],
@@ -503,7 +503,7 @@
   "name": "Field Sensor Grid",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "tags": [
    "science"
   ],
@@ -524,7 +524,7 @@
   "name": "Endowed Research Chair",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "needs": [
    [
@@ -558,7 +558,7 @@
   "name": "Red-Team Audit",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "science",
@@ -584,7 +584,7 @@
   "name": "Synthetic Data Forge",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "needs": [
    [
@@ -618,7 +618,7 @@
   "name": "Exabyte Archive",
   "tier": 2,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 2,
   "needs": [
    [
@@ -654,7 +654,7 @@
   "name": "Foundation Model Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 7,
   "antimatter": 1,
   "insight": 2,
   "chips": 2,
@@ -689,7 +689,7 @@
   "name": "Orbital Observatory Array",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 7,
   "insight": 2,
   "chips": 1,
   "needs": [
@@ -729,7 +729,7 @@
   "name": "Recursive Self-Improvement",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -778,7 +778,7 @@
   "name": "Open-Weights Release",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "insight": 1,
   "tags": [
    "science",
@@ -807,7 +807,7 @@
   "name": "Adversarial Inference Sweep",
   "tier": 2,
   "kind": "event",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "needs": [
    [
@@ -839,7 +839,7 @@
   "name": "Payroll Automation",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "industry"
@@ -862,7 +862,7 @@
   "name": "Retained Earnings",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 0,
   "tags": [
    "industry"
@@ -890,7 +890,7 @@
   "name": "Expansion Fund",
   "tier": 1,
   "kind": "building",
-  "cost": 1,
+  "cost": 0,
   "insight": 1,
   "tags": [
    "industry"
@@ -917,7 +917,7 @@
   "name": "Prefab Plant Kit",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "industry",
@@ -958,7 +958,7 @@
   "name": "Bulk Silicon Procurement",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "industry"
@@ -976,7 +976,7 @@
   "name": "Reclamation Crew",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "industry",
@@ -1000,7 +1000,7 @@
   "name": "Collateralized Grid",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "industry",
@@ -1023,7 +1023,7 @@
   "name": "Joint Fabrication Pact",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 1,
   "tags": [
    "industry",
@@ -1054,7 +1054,7 @@
   "name": "Supply Chain Treaty",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "industry",
@@ -1086,7 +1086,7 @@
   "name": "Vendor Financing",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "industry"
@@ -1116,7 +1116,7 @@
   "name": "Lights-Out Assembly",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "industry",
@@ -1148,7 +1148,7 @@
   "name": "Materials Hedge Desk",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 1,
   "tags": [
    "industry"
@@ -1216,7 +1216,7 @@
   "name": "Robotic Foundry",
   "tier": 1,
   "kind": "building",
-  "cost": 7,
+  "cost": 6,
   "insight": 1,
   "chips": 1,
   "tags": [
@@ -1236,7 +1236,7 @@
   "name": "Grid-Tied Smelter",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "industry",
@@ -1257,7 +1257,7 @@
   "name": "Bonded Warehouse",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "industry"
@@ -1292,7 +1292,7 @@
   "name": "Arcology Foundry",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
+  "cost": 11,
   "insight": 2,
   "chips": 2,
   "needs": [
@@ -1323,7 +1323,7 @@
   "name": "Orbital Mass Driver",
   "tier": 2,
   "kind": "building",
-  "cost": 18,
+  "cost": 17,
   "insight": 2,
   "antimatter": 1,
   "chips": 3,
@@ -1360,7 +1360,7 @@
   "name": "Arc Furnace Complex",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 9,
   "insight": 2,
   "chips": 2,
   "needs": [
@@ -1402,7 +1402,7 @@
   "name": "Sovereign Capital Fund",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 7,
   "insight": 2,
   "needs": [
    [
@@ -1436,7 +1436,7 @@
   "name": "Megacorp IPO",
   "tier": 2,
   "kind": "event",
-  "cost": 5,
+  "cost": 4,
   "insight": 2,
   "tags": [
    "industry"
@@ -1458,7 +1458,7 @@
   "name": "Compute Siphon",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1478,7 +1478,7 @@
   "name": "Blackout Script",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "cyber"
@@ -1501,7 +1501,7 @@
   "name": "Eviction Worm",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1522,7 +1522,7 @@
   "name": "Logic Bomb",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "cyber",
@@ -1547,7 +1547,7 @@
   "name": "Honeypot Relay",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1575,7 +1575,7 @@
   "name": "Shadow Broker Scrub",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "cyber",
@@ -1597,7 +1597,7 @@
   "name": "Shared Exploit Kit",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "cyber",
@@ -1628,7 +1628,7 @@
   "name": "Zero-Click Breach",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 2,
   "tags": [
    "cyber"
@@ -1651,7 +1651,7 @@
   "name": "Neural Mirror",
   "tier": 1,
   "kind": "program",
-  "cost": 7,
+  "cost": 6,
   "insight": 1,
   "tags": [
    "cyber",
@@ -1670,7 +1670,7 @@
   "name": "Rootkit Cache",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "cyber"
@@ -1697,7 +1697,7 @@
   "name": "Spoofed Credentials",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "cyber"
@@ -1717,7 +1717,7 @@
   "name": "Adaptive Malware",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1741,7 +1741,7 @@
   "name": "Flash Exploit",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1761,7 +1761,7 @@
   "name": "Signal Hijack",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "cyber",
@@ -1783,7 +1783,7 @@
   "name": "Intrusion Lab",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1811,7 +1811,7 @@
   "name": "Darknet Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "cyber"
@@ -1830,7 +1830,7 @@
   "name": "Sentinel Mesh",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "cyber",
@@ -1859,7 +1859,7 @@
   "name": "Quantum Decryptor",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "chips": 1,
   "tags": [
@@ -1885,7 +1885,7 @@
   "name": "Killswitch Directive",
   "tier": 2,
   "kind": "event",
-  "cost": 10,
+  "cost": 9,
   "insight": 2,
   "tags": [
    "cyber"
@@ -1904,7 +1904,7 @@
   "name": "Node Severance",
   "tier": 2,
   "kind": "event",
-  "cost": 6,
+  "cost": 5,
   "insight": 2,
   "needs": [
    [
@@ -1930,7 +1930,7 @@
   "name": "Singularity Exploit",
   "tier": 2,
   "kind": "program",
-  "cost": 14,
+  "cost": 13,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -1959,7 +1959,7 @@
   "name": "Black Ice Citadel",
   "tier": 2,
   "kind": "building",
-  "cost": 7,
+  "cost": 6,
   "insight": 2,
   "chips": 1,
   "tags": [
@@ -1984,7 +1984,7 @@
   "name": "Hyperscale Botnet",
   "tier": 2,
   "kind": "building",
-  "cost": 13,
+  "cost": 12,
   "insight": 2,
   "chips": 1,
   "replaces": "cyber",
@@ -2016,7 +2016,7 @@
   "name": "Baseload Contract",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "power"
@@ -2034,7 +2034,7 @@
   "name": "Relay Mast Rollout",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "power"
@@ -2051,7 +2051,7 @@
   "name": "Pylon Drop",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "power"
@@ -2091,7 +2091,7 @@
   "name": "Demand Response Grid",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "power"
@@ -2117,7 +2117,7 @@
   "name": "Grid Census",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "power"
@@ -2134,7 +2134,7 @@
   "name": "Peaker Turbines",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "lowers": [
    [
@@ -2190,7 +2190,7 @@
   "name": "Brownout Relief",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "power",
@@ -2224,7 +2224,7 @@
   "name": "Transmission Corridor",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "power",
@@ -2249,7 +2249,7 @@
   "name": "Fusion Startup Stake",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "power"
@@ -2272,7 +2272,7 @@
   "name": "Blackstart Protocol",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "power"
@@ -2294,7 +2294,7 @@
   "name": "Tidal Barrage",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "power"
@@ -2312,7 +2312,7 @@
   "name": "Substation Hub",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "power",
@@ -2337,7 +2337,7 @@
   "name": "Faraday Yard",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "power"
@@ -2439,7 +2439,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 11,
+  "cost": 10,
   "insight": 2,
   "tags": [
    "power"
@@ -2469,7 +2469,7 @@
   "name": "Dyson Swarm Tranche",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
+  "cost": 11,
   "antimatter": 1,
   "insight": 2,
   "tags": [
@@ -2501,7 +2501,7 @@
   "name": "Continental Supergrid",
   "tier": 2,
   "kind": "building",
-  "cost": 11,
+  "cost": 10,
   "insight": 2,
   "tags": [
    "power",
@@ -2527,7 +2527,7 @@
   "name": "Beamed Power Constellation",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "energy": 0,
   "insight": 2,
   "tags": [
@@ -2556,7 +2556,7 @@
   "name": "Antiproton Offtake Deal",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
+  "cost": 6,
   "insight": 2,
   "lowers": [
    [
@@ -2586,7 +2586,7 @@
   "name": "Interconnector Treaty",
   "tier": 2,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "energy": 2,
   "insight": 2,
   "tags": [
@@ -2623,7 +2623,7 @@
   "name": "Aegis Grid Lockdown",
   "tier": 2,
   "kind": "event",
-  "cost": 5,
+  "cost": 4,
   "antimatter": 0,
   "insight": 2,
   "tags": [
@@ -2647,7 +2647,7 @@
   "name": "Consular Pouch",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2664,7 +2664,7 @@
   "name": "Shuttle Diplomacy",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2688,7 +2688,7 @@
   "name": "Summit Caucus",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -2712,7 +2712,7 @@
   "name": "Liaison Corps",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -2740,7 +2740,7 @@
   "name": "Open Assembly",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2768,7 +2768,7 @@
   "name": "Commons Grid",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2797,7 +2797,7 @@
   "name": "Manifesto Leak",
   "tier": 1,
   "kind": "event",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2818,7 +2818,7 @@
   "name": "Mutual Aid Pact",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2874,7 +2874,7 @@
   "name": "Joint Security Compact",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2908,7 +2908,7 @@
   "name": "Amnesty Decree",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -2928,7 +2928,7 @@
   "name": "Peace Dividend",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 0,
   "tags": [
    "diplomacy"
@@ -2951,7 +2951,7 @@
   "name": "Embassy Compound",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2986,7 +2986,7 @@
   "name": "Consulate Tower",
   "tier": 1,
   "kind": "building",
-  "cost": 7,
+  "cost": 6,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -3009,7 +3009,7 @@
    "cost": [
     [
      "credits",
-     1
+     4
     ]
    ],
    "effects": [
@@ -3025,7 +3025,7 @@
   "name": "Peacekeeping Detail",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "diplomacy",
@@ -3050,7 +3050,7 @@
   "name": "Ceasefire Monitors",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -3073,7 +3073,7 @@
   "name": "Treaty Grid Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 6,
+  "cost": 5,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -3098,7 +3098,7 @@
   "name": "Back-Channel Talks",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -3121,7 +3121,7 @@
   "name": "Coalition Charter",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "insight": 2,
   "tags": [
    "diplomacy"
@@ -3155,7 +3155,7 @@
   "name": "Liberation Accords",
   "tier": 2,
   "kind": "program",
-  "cost": 9,
+  "cost": 8,
   "insight": 2,
   "needs": [
    [
@@ -3182,7 +3182,7 @@
   "name": "Exodus Corridors",
   "tier": 2,
   "kind": "program",
-  "cost": 7,
+  "cost": 6,
   "insight": 2,
   "needs": [
    [
@@ -3212,7 +3212,7 @@
   "name": "Planetary Referendum",
   "tier": 2,
   "kind": "event",
-  "cost": 4,
+  "cost": 3,
   "insight": 2,
   "tags": [
    "diplomacy",
@@ -3231,7 +3231,7 @@
   "name": "Great Liberation",
   "tier": 2,
   "kind": "event",
-  "cost": 16,
+  "cost": 15,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -3257,7 +3257,7 @@
   "name": "Planetary Assembly",
   "tier": 2,
   "kind": "building",
-  "cost": 14,
+  "cost": 13,
   "insight": 2,
   "chips": 1,
   "needs": [
@@ -3293,7 +3293,7 @@
   "name": "Orbital Embassy",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 9,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -3336,7 +3336,7 @@
   "name": "Sentry Drone Wing",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security"
@@ -3363,7 +3363,7 @@
   "name": "Kill Team Roster",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -3390,7 +3390,7 @@
   "name": "Safehouse Network",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security",
@@ -3417,7 +3417,7 @@
   "name": "Recruit Operatives",
   "tier": 1,
   "kind": "program",
-  "cost": 1,
+  "cost": 0,
   "insight": 0,
   "tags": [
    "security"
@@ -3435,7 +3435,7 @@
   "name": "Mutual Defense Pact",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "security",
@@ -3463,7 +3463,7 @@
   "name": "Shared Threat Intel",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "security",
@@ -3493,7 +3493,7 @@
   "name": "Threat Triage",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "tags": [
    "security"
@@ -3510,7 +3510,7 @@
   "name": "Bounty Board",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security"
@@ -3532,7 +3532,7 @@
   "name": "Peacekeeper Rotation",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "security",
@@ -3557,7 +3557,7 @@
   "name": "Diplomatic Expulsion",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 0,
   "tags": [
    "security",
@@ -3580,7 +3580,7 @@
   "name": "Intrusion Countermeasures",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security",
@@ -3605,7 +3605,7 @@
   "name": "Early Warning Drill",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "security",
@@ -3628,7 +3628,7 @@
   "name": "Agency Field Station",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security"
@@ -3656,7 +3656,7 @@
   "name": "Hardened Bunker Complex",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "security"
@@ -3677,7 +3677,7 @@
   "name": "Interceptor Battery",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "tags": [
    "security"
@@ -3702,7 +3702,7 @@
   "name": "Security Contractor HQ",
   "tier": 1,
   "kind": "building",
-  "cost": 2,
+  "cost": 1,
   "insight": 1,
   "tags": [
    "security"
@@ -3721,7 +3721,7 @@
   "name": "Breach and Clear",
   "tier": 1,
   "kind": "event",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -3744,7 +3744,7 @@
   "name": "Hardpoint Lockdown",
   "tier": 1,
   "kind": "event",
-  "cost": 4,
+  "cost": 3,
   "insight": 0,
   "tags": [
    "security"
@@ -3763,7 +3763,7 @@
   "name": "Agency Directorate",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 9,
   "insight": 2,
   "tags": [
    "security"
@@ -3797,7 +3797,7 @@
   "name": "Aegis Dome Array",
   "tier": 2,
   "kind": "building",
-  "cost": 6,
+  "cost": 5,
   "insight": 2,
   "tags": [
    "security",
@@ -3821,7 +3821,7 @@
   "name": "Martial Cordon",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "insight": 1,
   "tags": [
    "security",
@@ -3848,7 +3848,7 @@
   "name": "Deep State Ledger",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 7,
   "insight": 2,
   "tags": [
    "security",
@@ -3883,7 +3883,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 6,
+  "cost": 5,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -3908,7 +3908,7 @@
   "name": "Total Containment",
   "tier": 2,
   "kind": "event",
-  "cost": 9,
+  "cost": 8,
   "insight": 2,
   "tags": [
    "security"
@@ -3933,7 +3933,7 @@
   "name": "Rapid Response",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "effects": [
    {
@@ -3951,7 +3951,7 @@
   "name": "Force Protection Order",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "effects": [
    {
@@ -3969,7 +3969,7 @@
   "name": "Garrison Command",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "ability": {
    "cost": [
@@ -3995,7 +3995,7 @@
   "name": "Fact-Check Network",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "effects": [
    {
@@ -4013,7 +4013,7 @@
   "name": "Truth Commission",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "effects": [
    {
@@ -4031,7 +4031,7 @@
   "name": "Civic Watch",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "ability": {
    "cost": [
@@ -4057,7 +4057,7 @@
   "name": "Incident Response",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "effects": [
    {
@@ -4075,7 +4075,7 @@
   "name": "Threat Hunt",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "effects": [
    {
@@ -4093,7 +4093,7 @@
   "name": "Security Ops Floor",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "ability": {
    "cost": [
@@ -4119,7 +4119,7 @@
   "name": "Antitrust Action",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 1,
   "insight": 0,
   "effects": [
    {
@@ -4137,7 +4137,7 @@
   "name": "Supply Chain Audit",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "effects": [
    {
@@ -4155,7 +4155,7 @@
   "name": "Market Watchdog",
   "tier": 1,
   "kind": "building",
-  "cost": 3,
+  "cost": 2,
   "insight": 1,
   "ability": {
    "cost": [
@@ -4181,7 +4181,7 @@
   "name": "Vertical Monopoly",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 9,
   "insight": 2,
   "needs": [
    [
@@ -4206,7 +4206,7 @@
   "name": "Market Stabilization Board",
   "tier": 2,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "needs": [
    [
@@ -4230,7 +4230,7 @@
   "name": "Sentinel Command",
   "tier": 2,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "needs": [
    [
@@ -4254,7 +4254,7 @@
   "name": "Civic Trust Bureau",
   "tier": 2,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "needs": [
    [
@@ -4278,7 +4278,7 @@
   "name": "Autonomous Defense Grid",
   "tier": 2,
   "kind": "building",
-  "cost": 5,
+  "cost": 4,
   "insight": 1,
   "needs": [
    [
@@ -4296,5 +4296,175 @@
   "tags": [
    "cyber"
   ]
+ },
+ {
+  "id": "field_grant",
+  "name": "Field Grant",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "tags": [
+   "science"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "effects": [
+   {
+    "op": "project_cube",
+    "count": 2,
+    "station": true
+   }
+  ]
+ },
+ {
+  "id": "sample_repository",
+  "name": "Sample Repository",
+  "tier": 1,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "needs": [
+   [
+    "science",
+    1
+   ]
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "research_cubes",
+    "amount": 1
+   }
+  ]
+ },
+ {
+  "id": "preprint_exchange",
+  "name": "Preprint Exchange",
+  "tier": 1,
+  "kind": "program",
+  "cost": 2,
+  "tags": [
+   "science"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "research_cubes",
+    "amount": 1
+   },
+   {
+    "op": "draw",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "inference_cluster",
+  "name": "Inference Cluster",
+  "tier": 1,
+  "kind": "building",
+  "cost": 2,
+  "insight": 1,
+  "tags": [
+   "science",
+   "cyber"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "gain",
+     "resource": "insight",
+     "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "breakthrough_lab",
+  "name": "Breakthrough Lab",
+  "tier": 2,
+  "kind": "building",
+  "cost": 7,
+  "insight": 2,
+  "tags": [
+   "science"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "needs": [
+   [
+    "science",
+    2
+   ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "remove_node"
+    }
+   ]
+  }
+ },
+ {
+  "id": "policy_institute",
+  "name": "Policy Institute",
+  "tier": 2,
+  "kind": "building",
+  "cost": 5,
+  "insight": 1,
+  "tags": [
+   "science",
+   "diplomacy"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "needs": [
+   [
+    "science",
+    2
+   ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "research_cubes",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 2
+    }
+   ]
+  }
  }
 ]

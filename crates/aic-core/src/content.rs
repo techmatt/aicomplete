@@ -175,8 +175,9 @@ pub struct CountryPiece {
 /// A megaproject card (074), the corp's defining card: research stations fill
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
-/// After that a seat with an aligned city in the country has the `converter`,
-/// and each adversary cube made there resolves `after`.
+/// After that a seat with presence in the country has the `converter` (075;
+/// 074: an aligned city), and each adversary cube made there resolves `after`,
+/// if it prints one (075: none do).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Megaproject {
@@ -486,6 +487,9 @@ pub struct Uncover {
     /// The track's end (068): a standing rule once uncovered.
     #[serde(default)]
     pub capstone: Option<Innate>,
+    /// What uncovering this space does, once (075).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub effects: Vec<Op>,
 }
 
 /// An AI-board power (021). `tags` is the tag cost (`"any"` for any tag), paid
@@ -639,6 +643,10 @@ impl Content {
                     return Err(format!("{what}: power tag counts are 1 or more"));
                 }
             }
+            // Locked (Matt, 075): N of one tag or N of any tag, never a mix.
+            if p.tags.len() > 1 {
+                return Err(format!("{what}: a power's cost names one tag or `any`, never a mix"));
+            }
         }
         if let Some(id) = &b.start {
             match self.card_index(id) {
@@ -652,6 +660,7 @@ impl Content {
                 check_ops(&c.passives, Slot::Standing, &what)?;
                 innate_only(&c.passives, &what)?;
             }
+            check_ops(&u.effects, Slot::Player, &what)?;
         }
         Ok(())
     }
@@ -751,8 +760,8 @@ fn seat_resource(r: &Resource, what: &str) -> Result<(), String> {
 /// 068: only an innate may hold `Wall`: nothing else is read for it, so
 /// anywhere else it would print and do nothing.
 fn innate_only(passives: &[Op], what: &str) -> Result<(), String> {
-    if passives.iter().any(|o| matches!(o, Op::Wall)) {
-        return Err(format!("{what}: Wall goes on an AI board's innate only"));
+    if passives.iter().any(|o| matches!(o, Op::Wall | Op::Patience)) {
+        return Err(format!("{what}: Wall and Patience go on an AI board's innate only"));
     }
     Ok(())
 }
@@ -910,8 +919,9 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
     }
     let what = format!("project of country piece {i}");
     let m = &p.megaproject;
-    if !(6..=10).contains(&m.cubes) || m.player.is_empty() || m.adversary.is_empty() || m.after.is_empty() {
-        return Err(format!("{what}: 6-10 cubes, and a payout for each color and after"));
+    // 075: `after` may be empty (an adversary cube after completion is lost, as a neutral one is).
+    if !(6..=12).contains(&m.cubes) || m.player.is_empty() || m.adversary.is_empty() {
+        return Err(format!("{what}: 6-12 cubes, and a payout for each color"));
     }
     check_ops(&m.player, Slot::Player, &what)?;
     check_ops(&m.adversary, Slot::Team, &what)?;
@@ -985,9 +995,11 @@ pub fn content() -> &'static Content {
     C.get_or_init(|| Content::parse(FILES).expect("embedded content is valid"))
 }
 
-/// The tables an overlay reaches, each with its index in [`FILES`]. The map
-/// stays out: its pieces have no ids, and a layout is not a number to sweep.
-const OVERLAY_TABLES: [(&str, usize); 6] = [
+/// The tables an overlay reaches, each with its index in [`FILES`]. Of the
+/// map only `corps` (075): its country pieces, by lowercase name
+/// (`corps.horizon.project.after=[]`); a layout is not a number to sweep.
+const OVERLAY_TABLES: [(&str, usize); 7] = [
+    ("corps", 0),
     ("cards", 1),
     ("threats", 2),
     ("adversary", 3),
@@ -1026,10 +1038,17 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
     let value: Value =
         serde_json::from_str(value).unwrap_or_else(|_| Value::String(value.to_string()));
     let ix = OVERLAY_TABLES.iter().find(|(t, _)| *t == table).expect("is_overlay_key: a table").1;
-    let rows = files[ix].as_array_mut().ok_or_else(|| fail("not a list".into()))?;
+    let corps = table == "corps";
+    let rows = if corps { files[ix].get_mut("countries") } else { Some(&mut files[ix]) };
+    let rows = rows.and_then(Value::as_array_mut).ok_or_else(|| fail("not a list".into()))?;
     let mut hit = false;
     for row in rows {
-        if id != "*" && row.get("id").and_then(Value::as_str) != Some(id) {
+        let name = if corps {
+            row.get("name").and_then(Value::as_str).map(str::to_lowercase)
+        } else {
+            row.get("id").and_then(Value::as_str).map(str::to_string)
+        };
+        if id != "*" && name.as_deref() != Some(id) {
             continue;
         }
         hit = true;

@@ -51,6 +51,34 @@ pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     Ok(())
 }
 
+/// Builds a research station of `seat`'s in reach, paying no chips (075).
+pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+    let w = cx.world;
+    let hexes = board::station_sites(&w, g, seat);
+    let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+    let prompt = format!("Seat {seat}: build a research station on which hex?");
+    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+        cx.add_tokens(g, hexes[i], STATION, 1);
+        cx.add_tokens(g, hexes[i], cube(seat), 1);
+        cx.tally(g, "board.stations_free", 1);
+    }
+    Ok(())
+}
+
+/// `count` research cubes in `seat`'s color onto an incomplete megaproject (075).
+pub(super) fn project_cube(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, station: bool) -> Res {
+    let w = cx.world;
+    let cs = cube_projects(&w, g, seat, station);
+    let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
+    let prompt = format!("Seat {seat}: add {} to which country's megaproject?", Resource::ResearchCubes.amount(count));
+    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+        cx.add_key(g, &board::project_key(cs[i], Some(seat)), count);
+        cx.tally(g, "board.cubes_bought", count);
+        cx.per_round(g, "board.cubes_bought", count);
+    }
+    Ok(())
+}
+
 pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
     let w = cx.world;
     // 022: only facilities a token can protect, each at most once ("harden 2

@@ -91,6 +91,7 @@ fn check_takes_an_op_name() {
 #[test]
 fn a_track_space_prints_income_upgrade_and_cost() {
     let u = Uncover {
+        effects: Vec::new(),
         income: vec![(Resource::Credits, 2), (Resource::Chips, 1)],
         keep2: true,
         cost: 3,

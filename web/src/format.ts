@@ -15,8 +15,9 @@ export const isHex = (v: unknown): v is Hex =>
 const words = (s: string) => s.replace(/_/g, ' ');
 
 /** `n` of a resource: "2 chips", "1 chip" (as `Resource::amount` in the core). */
-const SINGULAR: Record<string, string> = { chips: 'chip', credits: 'credit', ambassadors: 'ambassador' };
-const amount = (n: number, what: string) => `${n} ${n === 1 ? (SINGULAR[what] ?? what) : what}`;
+const SINGULAR: Record<string, string> = { chips: 'chip', credits: 'credit', ambassadors: 'ambassador', research_cubes: 'research cube' };
+// 075: `research_cubes` reads as words.
+const amount = (n: number, what: string) => `${n} ${(n === 1 ? (SINGULAR[what] ?? what) : what).replace(/_/g, ' ')}`;
 
 function field(k: string, v: unknown): string {
   if (isHex(v)) return `@${hexKey(v)}`;

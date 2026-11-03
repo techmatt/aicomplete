@@ -82,7 +82,7 @@ fn troops_ignore_neutral_buildings_and_cities_and_stay_with_no_target() {
 
 #[test]
 fn equally_near_targets_are_the_players_choice() {
-    let (rules, g0) = lab(&["board.march"]);
+    let (rules, g0) = lab_with(&["board.march"], &["ais.protector.innate.passives=[]"]);
     let m = &rules.map;
     let w = rules.world();
     // A troop with two presence tokens equally far on foot, each alone
@@ -153,7 +153,7 @@ fn a_troop_walking_onto_an_unmarched_troop_marches_once_and_so_does_it() {
 
 #[test]
 fn with_troop_spent_off_a_troop_strikes_on_both_steps() {
-    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_spent=0"]);
+    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_spent=0", "ais.protector.innate.passives=[]"]);
     let m = &rules.map;
     let p = m.numbered(0, piece(0).presence);
     let q = m.hexes[p]
@@ -224,7 +224,7 @@ fn a_protector_presence_stops_a_marching_troop() {
 }
 
 #[test]
-fn a_troop_strikes_a_target_on_a_walled_hex_from_next_to_it() {
+fn a_wall_stops_a_strike_on_its_hex() {
     let (rules, mut g) = lab(&["board.march"]);
     let m = &rules.map;
     let p = m.numbered(0, piece(0).presence);
@@ -235,7 +235,9 @@ fn a_troop_strikes_a_target_on_a_walled_hex_from_next_to_it() {
     put(&mut g, t, TROOP, 1);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!(g.tokens(p, STATION), 0);
+    assert_eq!(g.tokens(p, STATION), 1, "a troop next door can't strike under a Wall");
+    assert_eq!(g.tokens(t, TROOP), 1, "and isn't spent");
+    assert!(g.stats.counters["board.wall_strikes"] >= 1);
 }
 
 #[test]
@@ -345,7 +347,7 @@ fn a_troop_that_strikes_is_used_up_and_one_with_no_target_stays() {
     assert_eq!(g.stats.counters["board.troops_spent"], 1);
 
     // With `troop_spent` 0 a troop strikes and stays.
-    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_spent=0"]);
+    let (rules, mut g) = lab_with(&["board.march"], &["board.troop_spent=0", "ais.protector.innate.passives=[]"]);
     put(&mut g, at, TROOP, 1);
     put(&mut g, target, FACTORY, 1);
     put(&mut g, target, cube(0), 1);

@@ -202,6 +202,16 @@ pub enum Op {
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
     FreeBuilding,
+    /// Build a research station in your reach, paying no chips (075).
+    BuildStation,
+    /// `count` research cubes in your color onto one incomplete megaproject
+    /// (075): with `station`, in a country where you own a station. They pay at
+    /// completion like any cube.
+    ProjectCube {
+        count: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        station: bool,
+    },
     /// The next `count` adversary cards are shown.
     Peek {
         count: i64,
@@ -466,10 +476,18 @@ pub enum Op {
     /// Once a round, prevent the first facility or presence destruction in a country
     /// where you have a presence.
     CivicShelter,
-    /// Adversary troops can't enter a hex holding your presence (068: Wall).
-    /// An AI board's innate only: `board::walled` reads nothing else, and
-    /// `Content::check` refuses it on a card or a capstone.
+    /// Adversary troops can't enter or strike a hex holding your presence
+    /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
+    /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
+    /// Your unspent insight carries over to the next round (075: Patience). An
+    /// AI board's innate only: `economy` reads nothing else.
+    Patience,
+    /// Each round in upkeep, `amount` insight from the supply goes to other
+    /// players for the next round, split as you choose (075).
+    SupplyInsight {
+        amount: i64,
+    },
     /// While you have this building, cards discarded from hand that carry
     /// `tag` (or any tag, `"any"`) count as those tags for AI-board powers (021).
     TagsFromHand {
@@ -567,6 +585,8 @@ impl Op {
             | Op::SpreadShield
             | Op::CivicShelter
             | Op::Wall
+            | Op::Patience
+            | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
             Op::CityBuild { .. }
@@ -598,6 +618,8 @@ impl Op {
             | Op::Shelter
             | Op::Cordon
             | Op::FreeBuilding
+            | Op::BuildStation
+            | Op::ProjectCube { .. }
             | Op::Peek { .. }
             | Op::Jam { .. }
             | Op::DrainProject { .. }

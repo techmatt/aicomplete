@@ -31,6 +31,17 @@ pub(super) fn guarded_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize
         .collect()
 }
 
+/// Countries whose incomplete megaproject seat `s` can add a cube to (075):
+/// with `station`, only where it owns a station.
+pub fn cube_projects(w: &World, g: &GameState, seat: usize, station: bool) -> Vec<usize> {
+    let mine = |c: usize| {
+        w.map.countries[c].hexes.iter().any(|&h| g.tokens(h, STATION) > 0 && !corrupted(g, h) && g.tokens(h, cube(seat)) > 0)
+    };
+    (0..w.map.countries.len())
+        .filter(|&c| g.var(&board::project_done(c)) == 0 && (!station || mine(c)))
+        .collect()
+}
+
 /// Free industrial zones in seat `s`'s reach (a card's factory site).
 pub(super) fn factory_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     free_zones(w, g)

@@ -176,6 +176,13 @@ macro_rules! forced_table {
             (home_only: bool, true, 0.0, "fixed policy (070): counter only threats in your home country")
             /// Fixed policy (070): tier-2 capstones first.
             (capstone_rush: bool, true, 0.0, "fixed policy (070): tier 2 whenever the keep is affordable, and tier-2 capstones before anything else")
+            /// Fixed policy (075): a power that buys a cube at every chance.
+            (always_buy_cubes: bool, true, 0.0, "fixed policy (075): the power that buys a research cube at every chance")
+            /// Fixed policy (075): a seat with Patience plays and keeps only in
+            /// every n-th round, the rest of the time holding its insight for a burst.
+            (hoard_insight: usize, true, 0.0, "fixed policy (075): a seat with Patience plays and keeps cards only every n-th round (0: off)")
+            /// Fixed policy (075): no converter, and no conversion on a power menu.
+            (never_convert: bool, true, 0.0, "fixed policy (075): no converter and no power that only converts a resource")
         }
     };
 }
@@ -211,6 +218,15 @@ impl Forced {
         self.no_presence || self.turtle || self.free_only
     }
 
+    /// Whether seat `s` is holding its insight this round (075): no play, and no
+    /// keep but the opening's, which are free.
+    fn hoarding(&self, w: &World, g: &GameState, s: usize, keep: bool) -> bool {
+        self.hoard_insight > 0
+            && !(keep && g.round == 1)
+            && !(g.round as usize).is_multiple_of(self.hoard_insight)
+            && economy::patient(w, s)
+    }
+
     /// Whether the card restrictions (mono-tag, ignore-X, event-hoarder)
     /// let this seat keep or play `d`. AI-unique cards (tier 0) are exempt.
     pub fn allows(&self, d: &CardDef) -> bool {
@@ -222,14 +238,18 @@ impl Forced {
             && !has(&self.never_tag)
             && (!self.events_only || d.is_event())
             && (!self.free_only || d.tags.contains(&Tag::Diplomacy))
-            && (!self.ignore_threats || !counters_threats(&d.effects))
+            && (!self.ignore_threats || !counters_threats(d))
             && (!self.never_remove || !d.effects.iter().any(|e| matches!(e, Op::ClearMarkers { .. })))
     }
 }
 
-/// Whether `ops` counter a threat or make one cheaper.
-fn counters_threats(ops: &[Op]) -> bool {
-    ops.iter().any(|o| matches!(o, Op::CounterThreat | Op::Jam { .. } | Op::DelayThreat { .. }))
+/// Whether `d` counters a threat or makes one cheaper, in any of its lists: an
+/// automatic-counter capstone too (075, 073's finding 13).
+fn counters_threats(d: &CardDef) -> bool {
+    let ability = d.ability.iter().flat_map(|a| &a.effects);
+    d.effects.iter().chain(ability).chain(&d.passives).any(|o| {
+        matches!(o, Op::CounterThreat | Op::Jam { .. } | Op::DelayThreat { .. } | Op::AutoCounter { .. })
+    })
 }
 
 pub struct Policy {
@@ -289,9 +309,10 @@ impl Policy {
         } else {
             plan_keeps(&world, g, s, &self.forced)
         };
+        let hoards = self.forced.hoarding(&world, g, s, true);
         let set: Vec<Key> = set
             .into_iter()
-            .filter(|id| self.forced.allows(cards::def(&world, id)))
+            .filter(|id| !hoards && self.forced.allows(cards::def(&world, id)))
             .collect();
         self.keeps.retain(|(r, _, _)| *r == round);
         self.keeps.push((round, s, set.clone()));
@@ -310,10 +331,12 @@ impl Policy {
                     || (!losing_pick(g) && target.and_then(|t| world.map.find(t)).is_some_and(|h| given_up(world, h)))
             }
             Action::Tier { tier: 2, .. } => f.tier1_only,
+            Action::Convert { .. } => f.never_convert,
             Action::Power { seat, power } => {
                 let (s, k) = (*seat as usize, *power as usize);
                 let sacrifices = !ai::board(world, s).powers[k].tags.is_empty();
                 (f.never_sacrifice && sacrifices)
+                    || (f.never_convert && ai::power_converts(world, s, k))
                     || if ai::power_places(world, s, k) {
                         f.stays_put()
                             || (f.never_second_presence && second_presence(world, s, k))
@@ -331,9 +354,9 @@ impl Policy {
             Action::Play { card, seat } => {
                 let d = cards::def(world, card);
                 let walls = f.wall_turtle && has_wall(world, g, *seat as usize) && !troops_up(g);
-                ((f.stays_put() || walls) && places_presence(&d.effects)) || !f.allows(d)
+                ((f.stays_put() || walls) && places_presence(&d.effects)) || !f.allows(d) || f.hoarding(world, g, *seat as usize, false)
             }
-            Action::Keep { card, .. } => !f.allows(cards::def(world, card)),
+            Action::Keep { card, seat } => !f.allows(cards::def(world, card)) || f.hoarding(world, g, *seat as usize, true),
             _ => false,
         }
     }
@@ -453,6 +476,11 @@ impl Agent for Policy {
         }
         if self.forced.free_build_rush && !pending {
             if let Some(i) = first_power(legal, |s, k| ai::power_builds(&world, s, k)) {
+                return i;
+            }
+        }
+        if self.forced.always_buy_cubes && !pending {
+            if let Some(i) = first_power(legal, |s, k| ai::power_buys_cube(&world, s, k)) {
                 return i;
             }
         }
@@ -760,12 +788,14 @@ fn plan(
     let mut total = 0.0;
     let mut b = now;
     let needs = cards::required_tags(w, g, s);
+    let patient = economy::patient(w, s);
     for round in 0..rounds.max(1) {
         if round > 0 {
-            // Credits, chips, energy and antimatter carry over; insight resets.
+            // Credits, chips, energy and antimatter carry over; insight resets,
+            // but under Patience (075).
             b = Budget {
                 credits: b.credits + inc(Resource::Credits),
-                insight: (inc(Resource::Insight) - reserve).max(0),
+                insight: (inc(Resource::Insight) - reserve).max(0) + if patient { b.insight } else { 0 },
                 chips: b.chips + inc(Resource::Chips),
                 energy: b.energy + inc(Resource::Energy),
                 antimatter: b.antimatter + inc(Resource::Antimatter),

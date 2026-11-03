@@ -21,6 +21,7 @@ npm run build                   # wasm + typecheck + static site in web/dist/
 npm run e2e [-- <record.json>] # browser check, dev server must be running (see below)
 npm run e2e:sources            # the threat-source check, the same way
 npm run e2e:corps              # research cubes and the corps, the same way
+npm run e2e:researcher         # the Researcher's board, the same way
 ```
 
 - **The wasm build step:** `scripts/build-wasm.mjs` runs `wasm-pack build
@@ -182,7 +183,12 @@ With `AIC_SHOTS=<dir>` the mid-game and end-of-game shots are also saved there a
 
 `npm run e2e:corps` (`scripts/e2e-corps.mjs`, 074) plays the baseline at `station_cubes` 3, with arrivals, city builds and troop marches off and
 `corrupt_at` 20 so nothing disturbs it: a claimed and a neutral station, a card that overflows in round 2, stored
-cubes, a usable converter beside an unusable one, and a use. `research cubes` and the converters show in a seat's panel.
+cubes, a usable converter beside an unusable one (075: no presence there), and a use. `research cubes` and the converters show in a seat's panel.
+
+`npm run e2e:researcher` (`scripts/e2e-researcher.mjs`, 075) plays the baseline at 3 countries, `station_cubes` 3, with the same
+quiet board: the Researcher's two tracks with the free station, keep upgrade and both capstones, its seven powers and Patience on
+its panel, the insight it carried into round 2 (shown as `+N`, not a reset), the research cubes it stores once Onyx completes,
+and Peer Review spending 3 of them. Screenshot `web/e2e-out/researcher.png`.
 
 `npm run e2e:sources` (`scripts/e2e-sources.mjs`, 070) plays first legal actions until a
 face-up threat refuses a seat, then checks the threat's source badge, its sources marked on

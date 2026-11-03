@@ -116,7 +116,7 @@
  "amnesty_decree": {"top":[],"top_text":"","effect":[[{"adversary":["−2","ambassador","city"]}]],"text":"Remove 2 adversary ambassadors on or next to one corrupted city in reach."},
  "peace_dividend": {"top":[],"top_text":"","effect":[["sway"],["2","credits"]],"text":"Sway 1 toward Unity. Gain 2 credits."},
  "embassy_compound": {"top":[["credits","→","move","2","hex"]],"top_text":"Action: pay 1 credit, move 1 ambassador on the board up to 2 hexes.","effect":[["2","ambassador"]],"text":"Gain 2 ambassadors."},
- "consulate_tower": {"top":[[{"income":["credits","/","2","#diplomacy"]}],["credits","→","ambassador"]],"top_text":"Each round, 1 credit per 2 Diplomacy tags you have. Action: pay 1 credit, get 1 ambassador.","effect":[["ambassador"]],"text":"Gain 1 ambassador."},
+ "consulate_tower": {"top":[[{"income":["credits","/","2","#diplomacy"]}],["4","credits","→","ambassador"]],"top_text":"Each round, 1 credit per 2 Diplomacy tags you have. Action: pay 4 credits, get 1 ambassador.","effect":[["ambassador"]],"text":"Gain 1 ambassador."},
  "peacekeeping_detail": {"top":[],"top_text":"","effect":[["2","harden"],["move","2","hex"]],"text":"Harden 2 facilities in reach. Move 1 ambassador on the board up to 2 hexes."},
  "ceasefire_monitors": {"top":[],"top_text":"","effect":[[{"adversary":["−1","ambassador","hex"]}],["2","ambassador"]],"text":"Remove 1 adversary ambassador in reach. Gain 2 ambassadors."},
  "treaty_grid_exchange": {"top":[[{"income":["energy","credits"]}]],"top_text":"Each round, 1 energy and 1 credit.","effect":[],"text":""},
@@ -168,5 +168,11 @@
  "market_stabilization_board": {"top":[[{"adversary":["−4","jam"]}]],"top_text":"Effect: economic threats in your home country need 4 less.","effect":[],"text":""},
  "sentinel_command": {"top":[[{"adversary":["−4","jam"]}]],"top_text":"Effect: military threats in your home country need 4 less.","effect":[],"text":""},
  "civic_trust_bureau": {"top":[[{"adversary":["−4","jam"]}]],"top_text":"Effect: influence threats in your home country need 4 less.","effect":[],"text":""},
- "autonomous_defense_grid": {"top":[[{"adversary":["−4","jam"]}]],"top_text":"Effect: cyber threats in your home country need 4 less.","effect":[],"text":""}
+ "autonomous_defense_grid": {"top":[[{"adversary":["−4","jam"]}]],"top_text":"Effect: cyber threats in your home country need 4 less.","effect":[],"text":""},
+ "field_grant": {"top":[],"top_text":"","effect":[["2","research_cubes","megaproject"]],"text":"Add 2 research cubes in your color to a megaproject in a country where you own a station."},
+ "sample_repository": {"top":[[{"income":["research_cubes"]}]],"top_text":"Each round, 1 research cube.","effect":[],"text":""},
+ "preprint_exchange": {"top":[],"top_text":"","effect":[["research_cubes"],["cards"]],"text":"Gain 1 research cube. Draw 1 card."},
+ "inference_cluster": {"top":[["research_cubes","→","2","insight"]],"top_text":"Action: pay 1 research cube, get 2 insight.","effect":[],"text":""},
+ "breakthrough_lab": {"top":[["2","research_cubes","→",{"adversary":["−1","node"]}]],"top_text":"Action: pay 2 research cubes, remove a node in reach.","effect":[],"text":""},
+ "policy_institute": {"top":[["2","research_cubes","→","2","sway"]],"top_text":"Action: pay 2 research cubes, sway 2 toward Unity.","effect":[],"text":""}
 }

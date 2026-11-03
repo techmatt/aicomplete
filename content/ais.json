@@ -8,7 +8,7 @@
    "text": "You have 5 building slots; boards have 3.",
    "passives": []
   },
-  "credits": 10,
+  "credits": 13,
   "income": [
    [
     "insight",
@@ -53,7 +53,12 @@
     ]
    },
    {
-    "income": [],
+    "income": [
+     [
+      "credits",
+      1
+     ]
+    ],
     "cost": 2
    },
    {
@@ -184,11 +189,7 @@
     "tags": [
      [
       "industry",
-      2
-     ],
-     [
-      "any",
-      1
+      3
      ]
     ],
     "text": "play a building from your hand, paying no credits",
@@ -279,17 +280,17 @@
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The defender: plays on the board; troops stop at its presence.",
+  "text": "The defender: plays on the board; troops stop at its presence and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary troops can't enter a hex with your presence.",
+   "text": "Adversary troops can't enter or strike a hex with your presence.",
    "passives": [
     {
      "op": "wall"
     }
    ]
   },
-  "credits": 9,
+  "credits": 12,
   "income": [
    [
     "insight",
@@ -470,11 +471,7 @@
     "tags": [
      [
       "security",
-      2
-     ],
-     [
-      "any",
-      1
+      3
      ]
     ],
     "text": "in one country this round, no presence or facility can be destroyed",
@@ -559,6 +556,298 @@
   ],
   "tags": [
    "security"
+  ]
+ },
+ {
+  "id": "researcher",
+  "name": "Researcher",
+  "text": "The scientist: plays off the board, on its turn budget and on research cubes.",
+  "innate": {
+   "name": "Patience",
+   "text": "Your unspent insight carries over to the next round.",
+   "passives": [
+    {
+     "op": "patience"
+    }
+   ]
+  },
+  "credits": 8,
+  "income": [
+   [
+    "insight",
+    4
+   ]
+  ],
+  "presence": [
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      2
+     ]
+    ]
+   },
+   {
+    "income": [],
+    "effects": [
+     {
+      "op": "build_station"
+     }
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      2
+     ]
+    ],
+    "cost": 1,
+    "tags": [
+     "power"
+    ]
+   },
+   {
+    "income": [
+     [
+      "credits",
+      1
+     ]
+    ],
+    "cost": 2
+   },
+   {
+    "income": [
+     [
+      "credits",
+      1
+     ]
+    ],
+    "cost": 3
+   },
+   {
+    "income": [],
+    "cost": 5,
+    "capstone": {
+     "name": "Open Archive",
+     "text": "Each round, 1 research cube onto your board.",
+     "passives": [
+      {
+       "op": "income",
+       "resource": "research_cubes",
+       "amount": 1
+      }
+     ]
+    }
+   }
+  ],
+  "cards": [],
+  "powers": [
+   {
+    "name": "Fieldwork",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "draw 3 cards",
+    "effects": [
+     {
+      "op": "draw",
+      "count": 3
+     }
+    ]
+   },
+   {
+    "name": "Deploy",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Peer Review",
+    "tags": [],
+    "cost": [
+     [
+      "research_cubes",
+      3
+     ]
+    ],
+    "text": "place 1 presence",
+    "effects": [
+     {
+      "op": "place_presence",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Grant",
+    "tags": [],
+    "cost": [
+     [
+      "credits",
+      4
+     ]
+    ],
+    "text": "add 1 research cube in your color to an incomplete megaproject",
+    "effects": [
+     {
+      "op": "project_cube",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "name": "Field Station",
+    "tags": [
+     [
+      "industry",
+      1
+     ]
+    ],
+    "text": "build a research station in reach, paying no chips",
+    "effects": [
+     {
+      "op": "build_station"
+     }
+    ]
+   },
+   {
+    "name": "Audit",
+    "tags": [
+     [
+      "cyber",
+      1
+     ]
+    ],
+    "text": "remove 3 compute from one adversary project",
+    "effects": [
+     {
+      "op": "drain_project",
+      "amount": 3
+     }
+    ]
+   },
+   {
+    "name": "Particle Run",
+    "tags": [
+     [
+      "power",
+      3
+     ]
+    ],
+    "text": "gain 1 antimatter",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 1
+     }
+    ]
+   }
+  ],
+  "presence2": [
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ]
+   },
+   {
+    "income": [],
+    "keep2": true,
+    "cost": 1,
+    "tags": [
+     "science"
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
+    "cost": 2,
+    "tags": [
+     "cyber"
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
+    "cost": 2
+   },
+   {
+    "income": [
+     [
+      "credits",
+      1
+     ]
+    ],
+    "cost": 3,
+    "tags": [
+     "industry"
+    ]
+   },
+   {
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
+    "cost": 5,
+    "capstone": {
+     "name": "Open Science",
+     "text": "Each round, 2 insight from the supply, split among other players.",
+     "passives": [
+      {
+       "op": "supply_insight",
+       "amount": 2
+      }
+     ]
+    }
+   }
+  ],
+  "tags": [
+   "science"
   ]
  }
 ]

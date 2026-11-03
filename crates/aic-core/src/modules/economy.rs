@@ -12,7 +12,7 @@ use crate::module::{
 use crate::state::GameState;
 use crate::view::ViewOut;
 
-use super::common::has_presence_in;
+use super::common::{has_presence_in, seat_opt};
 use super::{ai, alignment, board, cards};
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -53,6 +53,22 @@ pub fn production_key(seat: usize, resource: Resource) -> KeyBuf {
 /// Insight seat `s` loses next round (021: an adversary ambassador on its presence).
 pub fn insight_debt(seat: usize) -> String {
     format!("economy.insight_debt.{seat}")
+}
+
+/// Insight seat `s` gains next round from another seat's capstone (075).
+pub fn insight_gift(seat: usize) -> String {
+    format!("economy.insight_gift.{seat}")
+}
+
+/// Insight seat `s` carried into this round by Patience (075).
+pub fn insight_carried(seat: usize) -> String {
+    format!("economy.insight_carried.{seat}")
+}
+
+/// Whether seat `s`'s unspent insight carries over (075: Patience): its AI
+/// board's innate, the only place content may print it.
+pub fn patient(w: &World, seat: usize) -> bool {
+    ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Patience))
 }
 
 #[derive(Debug)]
@@ -126,6 +142,33 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
     out
 }
 
+/// Seat `s`'s capstone (075): `amount` insight from the supply for the other
+/// players next round, one at a time, split as `s` chooses. Its own bank pays
+/// nothing, and what lands is the receiver's next insight.
+fn supply_insight(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
+    let w = cx.world;
+    let others: Vec<usize> = (0..g.seats.len()).filter(|&o| o != s).collect();
+    let amount: i64 = cards::passives(&w, g, s)
+        .iter()
+        .map(|p| match p {
+            Op::SupplyInsight { amount } => *amount,
+            _ => 0,
+        })
+        .sum();
+    if others.is_empty() {
+        return Ok(());
+    }
+    for k in 0..amount {
+        let opts = others.iter().map(|&o| seat_opt(o)).collect();
+        let prompt = format!("Seat {s}: insight {} of {amount} from the supply goes to whom?", k + 1);
+        if let Some(i) = cx.choose(s, &prompt, opts)? {
+            cx.add_key(g, &insight_gift(others[i]), 1);
+            cx.tally(g, "economy.insight_supplied", 1);
+        }
+    }
+    Ok(())
+}
+
 impl Economy {
     /// Whether seat `s` can give insight now. `give_insight` 0 switches giving
     /// off (rules.md §9; 020: it was still offered and cost the giver an
@@ -139,13 +182,23 @@ impl Module for Economy {
     fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
         for s in 0..g.seats.len() {
-            // Unspent insight is lost.
+            // Unspent insight is lost, but under Patience (075).
             let have = g.resource(s, Resource::Insight);
             let debt = g.var(&insight_debt(s));
-            let n = (income(&w, g, s)[Resource::Insight] - debt).max(0);
+            let gift = g.var(&insight_gift(s));
+            let carried = if patient(&w, s) { have } else { 0 };
+            let n = (income(&w, g, s)[Resource::Insight] + gift + carried - debt).max(0);
             cx.add_resource(g, s, Resource::Insight, n - have);
             if debt > 0 {
                 cx.set_key(g, &insight_debt(s), 0);
+            }
+            if gift > 0 {
+                cx.set_key(g, &insight_gift(s), 0);
+            }
+            if patient(&w, s) {
+                cx.set_key(g, &insight_carried(s), carried);
+                cx.tally(g, "economy.insight_carried", carried);
+                cx.per_round(g, "economy.insight_carried", carried);
             }
         }
     }
@@ -201,6 +254,7 @@ impl Module for Economy {
             cx.add_resource(g, s, Resource::Ambassadors, ambassador_income(&w, g, s));
             cx.count(g, "credits_income", inc[Resource::Credits]);
             cards::upkeep(g, cx, s);
+            supply_insight(g, cx, s)?;
         }
         Ok(())
     }
@@ -234,11 +288,34 @@ impl Module for Economy {
                 (
                     "insight",
                     inc[Resource::Insight],
-                    "insight at the start of each round (unspent insight is lost)",
+                    if patient(w, s) {
+                        "insight at the start of each round (Patience: unspent insight carries over)"
+                    } else {
+                        "insight at the start of each round (unspent insight is lost)"
+                    },
+                ),
+                (
+                    "research_cubes",
+                    inc[Resource::ResearchCubes],
+                    "research cubes in upkeep: a capstone, buildings (stations make theirs in production)",
                 ),
             ];
             for (r, n, doc) in parts {
-                out.seat(s, &format!("income.{r}"), &format!("+{r}"), n, None, doc);
+                out.seat(s, &format!("income.{r}"), &format!("+{}", r.replace('_', " ")), n, None, doc);
+            }
+            if patient(w, s) {
+                out.seat(
+                    s,
+                    "insight_carried",
+                    "insight carried",
+                    g.var(&insight_carried(s)),
+                    None,
+                    "Patience: unspent insight this seat carried into this round; all it holds now carries to the next",
+                );
+            }
+            let gift = g.var(&insight_gift(s));
+            if gift > 0 {
+                out.seat(s, "insight_gift", "insight next round", gift, None, "this much more insight next round, from another seat's capstone");
             }
             let debt = g.var(&insight_debt(s));
             if debt > 0 {
@@ -252,6 +329,6 @@ impl Module for Economy {
                 );
             }
         }
-        out.bookkeeping(&["economy.production.", "economy.insight_debt."]);
+        out.bookkeeping(&["economy.production.", "economy.insight_debt.", "economy.insight_gift.", "economy.insight_carried."]);
     }
 }
