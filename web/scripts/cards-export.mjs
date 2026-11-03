@@ -280,6 +280,7 @@ function playerCard(c, face, keep) {
     c.energy && ['Energy', c.energy],
     c.chips && ['Chips', c.chips],
     c.antimatter && ['Antimatter', c.antimatter],
+    c.research_cubes && ['Research cubes', c.research_cubes],
     c.lowers?.length && ['Lowers income', costs(c.lowers)],
     c.needs?.length && ['Needs', c.needs.map(([t, n]) => `${n} ${t}`).join(', ')],
     c.replaces && ['Replaces', c.replaces],
@@ -383,7 +384,7 @@ function megaproject(country, i) {
 function aiBoard(b, cardName) {
   const step = (u) => [costs(u.income), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
   const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
-  const capstones = [...b.presence, ...(b.presence2 ?? [])].flatMap((u) => u.capstone ?? []);
+  const capstones = [...b.economy_track, ...(b.play_track ?? [])].flatMap((u) => u.capstone ?? []);
   return frameless('ai', b, {
     tier: null,
     tierLabel: 'AI board',
@@ -396,8 +397,8 @@ function aiBoard(b, cardName) {
     sections: [
       { head: `Innate: ${b.innate.name}`, text: b.innate.text ?? '' },
       ...(b.powers ?? []).map((p) => ({ head: `Power: ${p.name}`, text: p.text ?? '' })),
-      { head: 'Economy track', text: track(b.presence) },
-      ...(b.presence2?.length ? [{ head: 'Card-play track', text: track(b.presence2) }] : []),
+      { head: 'Economy track', text: track(b.economy_track) },
+      ...(b.play_track?.length ? [{ head: 'Card-play track', text: track(b.play_track) }] : []),
       ...capstones.map((c) => ({ head: `Capstone: ${c.name}`, text: c.text })),
       ...(b.start ? [{ head: 'Starts with', text: cardName(b.start) }] : []),
       ...(b.cards?.length ? [{ head: 'Unique cards', text: b.cards.map(cardName).join(', ') }] : []),

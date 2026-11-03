@@ -57,9 +57,8 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
             ParamSpec::int("base_unity", 0, 10, "Unity a player ambassador on a producing base sways"),
             ParamSpec::int("factory_unity", 0, 10, "Unity a player ambassador on a producing factory sways"),
-            ParamSpec::int("hold_base", 0, 10, "a corrupted city's hold before adversary ambassadors: 1 more for each on or next to it"),
+            ParamSpec::int("liberate_at", 1, 10, "player ambassadors on a corrupted city, from seats with presence on or next to it, that liberate it (the fallback)"),
             ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last presence (0: never safe)"),
-            ParamSpec::int("hold_min", 1, 10, "player ambassadors that free a corrupted city, at the least"),
             ParamSpec::int("free_leaves", 0, 5, "adversary ambassadors left on a city as it frees (the piece ladder)"),
             ParamSpec::int("destruction_discord", 0, 5, "Discord each facility destroyed in war sways"),
             ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
@@ -78,7 +77,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
             ParamSpec::int("move_credits", 0, 20, "standard action: credits to move a player ambassador"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
-            ParamSpec::int("harden_chips", 1, 20, "standard action a card grants: chips a hardening token (at least 1: free, it has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
@@ -213,7 +211,7 @@ impl Module for Board {
     fn legal(&self, _phase: usize, g: &GameState, w: &World, seat: u8, out: &mut Vec<Action>) {
         let s = seat as usize;
         for act in STANDARD {
-            if !printed_price(w, act).affordable(g, s) {
+            if !seat_price(w, g, s, act).affordable(g, s) {
                 continue;
             }
             if !std_targets(w, g, s, act).is_empty() {
@@ -260,7 +258,7 @@ impl Module for Board {
                     return Err(Halt::Illegal("no such standard action".into()));
                 };
                 let targets = std_targets(&w, g, s, act);
-                let price = printed_price(&w, act);
+                let price = seat_price(&w, g, s, act);
                 if !price.affordable(g, s) || targets.is_empty() {
                     return Err("can't take that standard action now".into());
                 }

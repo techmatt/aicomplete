@@ -7,7 +7,7 @@
     {"name": "cost1", "set": ["cards.telemetry_archive.cost=1"]},
     {"name": "cost5", "set": ["cards.telemetry_archive.cost=5"]},
     {"name": "cost7", "set": ["cards.telemetry_archive.cost=7"]},
-    {"name": "track", "set": ["ais.*.presence.4.cost=2"]}
+    {"name": "track", "set": ["ais.*.economy_track.4.cost=2"]}
   ],
   "difficulties": [2],
   "agents": ["engine"],

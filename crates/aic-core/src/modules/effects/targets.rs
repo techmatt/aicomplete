@@ -21,6 +21,16 @@ pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool) -> bo
             || (g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
 }
 
+/// Corrupted cities in seat `s`'s reach that a liberate card can take (080):
+/// not held by a face-up influence threat.
+pub fn liberable_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len())
+        .filter(|&h| {
+            corrupted_city(w, g, h) && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Influence)
+        })
+        .collect()
+}
+
 /// Corrupted cities in seat `s`'s reach with an adversary ambassador on or
 /// next to them (a `clear_city` target, 024).
 pub(super) fn guarded_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {

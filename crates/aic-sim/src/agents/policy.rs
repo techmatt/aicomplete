@@ -110,6 +110,9 @@ macro_rules! forced_table {
             /// threat it would delay and presence it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
             /// every keep to a tier-2).
+            /// 080: credits the keep plan adds to a liberate card while a city is
+            /// corrupted (the draft's keep price on liberate cards, lowered).
+            (plan_liberate: f64, false, 20.0, "credits the keep plan adds to a liberate card while a city is corrupted (080)")
             (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and presence it would shield")
             /// Keep every drafted card it can afford.
             (keep_all: bool, true, 0.0, "dominance check: keep every drafted card")
@@ -157,7 +160,7 @@ macro_rules! forced_table {
             /// Exploit check (034): draft, keep and play Science first, for its discounts.
             (science_rush: bool, true, 0.0, "exploit check (034): draft, keep and play Science first, for its discounts")
             /// Fixed policy (041): never clear a corruption marker.
-            (never_remove: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
+            (never_clear: bool, true, 0.0, "fixed policy (041): never clear a corruption marker")
             /// Fixed policy (041): the Science rush, board cards first.
             (science_board: bool, true, 0.0, "fixed policy (041): the Science rush, board cards first")
             /// Fixed policy (066): both presence powers whenever affordable.
@@ -166,6 +169,8 @@ macro_rules! forced_table {
             (never_second_presence: bool, true, 0.0, "fixed policy (066): never use the board's second presence power")
             /// Fixed policy (068): no power that sacrifices.
             (never_sacrifice: bool, true, 0.0, "fixed policy (068): never use a power that sacrifices")
+            /// Fixed policy (080): keep every liberate card, play one the first round it is legal.
+            (always_liberate: bool, true, 0.0, "fixed policy (080): draft and keep every liberate card, and play one the first round it is legal")
             /// Fixed policy (068): buy every ambassador it can.
             (ambassador_mass: bool, true, 0.0, "fixed policy (068): before anything else, buy every ambassador it can afford")
             /// Fixed policy (068): the Builder's expensive power at every chance.
@@ -239,7 +244,7 @@ impl Forced {
             && (!self.events_only || d.is_event())
             && (!self.free_only || d.tags.contains(&Tag::Diplomacy))
             && (!self.ignore_threats || !counters_threats(d))
-            && (!self.never_remove || !d.effects.iter().any(|e| matches!(e, Op::ClearMarkers { .. })))
+            && (!self.never_clear || !d.effects.iter().any(|e| matches!(e, Op::ClearMarkers { .. })))
     }
 }
 
@@ -285,11 +290,21 @@ impl Policy {
             drafted.into_iter().filter(coin).collect()
         } else if self.forced.keep_all {
             drafted
-        } else if self.forced.science_rush || self.forced.science_board || self.forced.capstone_rush {
+        } else if self.forced.science_rush
+            || self.forced.science_board
+            || self.forced.capstone_rush
+            || self.forced.always_liberate
+        {
             let mut set = plan_keeps(&world, g, s, &self.forced);
             for id in &drafted {
                 let d = cards::def(&world, id);
-                let rush = if self.forced.capstone_rush { is_capstone(d) } else { d.tags.contains(&Tag::Science) };
+                let rush = if self.forced.always_liberate {
+                    is_liberate(d)
+                } else if self.forced.capstone_rush {
+                    is_capstone(d)
+                } else {
+                    d.tags.contains(&Tag::Science)
+                };
                 if rush && !set.contains(id) {
                     set.push(*id);
                 }
@@ -347,7 +362,7 @@ impl Policy {
             }
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
-                (f.never_remove && act == "clear")
+                (f.never_clear && act == "clear")
                     || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy" | "chips"))
                     || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move" | "chips"))
             }
@@ -508,6 +523,11 @@ impl Agent for Policy {
                 if let Some(i) = first_card(legal, |id| science(id, board)) {
                     return i;
                 }
+            }
+        }
+        if self.forced.always_liberate && !pending {
+            if let Some(i) = first_card(legal, |id| is_liberate(cards::def(&world, id))) {
+                return i;
             }
         }
         if self.forced.capstone_rush && !pending {
@@ -715,10 +735,32 @@ fn capstone_jobs(d: &CardDef) -> i64 {
         .sum()
 }
 
+/// A liberate card (080): one that liberates a corrupted city when played or
+/// by its Action (Great Liberation's cleanse of cities too).
+pub(crate) fn is_liberate(d: &CardDef) -> bool {
+    let lib = |e: &Op| matches!(e, Op::Liberate { .. } | Op::Cleanse { cities: true, .. });
+    d.effects.iter().any(lib)
+        || d.ability.as_ref().is_some_and(|a| {
+            a.effects.iter().any(lib) || a.or.as_ref().is_some_and(|b| b.effects.iter().any(lib))
+        })
+}
+
+/// 080: a liberate card with no corrupted city in reach now still plans to
+/// play while a city is corrupted: presence can get there.
+fn liberate_later(w: &World, g: &GameState, d: &CardDef) -> bool {
+    is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h))
+}
+
 /// The card's value: its printed cost plus 1 (a play is worth something),
-/// plus the jobs it would do (046).
+/// plus the jobs it would do (046), plus `plan_liberate` for a liberate card
+/// while a city is corrupted (080).
 fn value(w: &World, g: &GameState, s: usize, d: &CardDef, f: &Forced) -> f64 {
-    1.0 + list_cost(d) as f64 + f.plan_niche * niche_jobs(w, g, s, d) as f64
+    let liberate = if is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)) {
+        f.plan_liberate
+    } else {
+        0.0
+    };
+    1.0 + list_cost(d) as f64 + f.plan_niche * niche_jobs(w, g, s, d) as f64 + liberate
 }
 
 /// Whether a building that must go over one of the seat's can (024: the
@@ -812,9 +854,10 @@ fn plan(
                 && b.chips >= d.chips
                 && b.energy >= d.energy
                 && b.antimatter >= d.antimatter
+                && g.resource(s, Resource::ResearchCubes) >= d.research_cubes
                 && cards::lowers_ok(w, g, s, d)
                 && replaceable(w, g, s, d)
-                && (d.is_building() || effects::feasible(w, g, s, &d.effects))
+                && (d.is_building() || effects::feasible(w, g, s, &d.effects) || liberate_later(w, g, d))
                 && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
             if fits {
                 b.credits -= credits;

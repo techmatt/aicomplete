@@ -75,6 +75,7 @@ const LOWERED_COST: i64 = 3;
 pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> i64 {
     credits
         + ANTIMATTER_COST * d.antimatter
+        + 2 * d.research_cubes
         + d.energy
         + d.chips
         + INSIGHT_COST * d.insight
@@ -729,8 +730,9 @@ mod tests {
     #[test]
     fn deck_clock_penalizes_a_team_behind_the_deck() {
         // 078: at `city_build` 2 the opening stops at a spread choice before
-        // next round's card is revealed; at 1 seed 1's doesn't.
-        let r = config_rules_with("baseline", 0, &["adversary.city_build=1"]);
+        // next round's card is revealed; at 1 seed 1's doesn't. 080: nor
+        // may the Wall pressure's landing ask where.
+        let r = config_rules_with("baseline", 0, &["adversary.city_build=1", "adversary.wall_troops=0"]);
         let mut g = r.new_game(1);
         let value = |clock: f64, g: &aic_core::GameState| {
             let w = eval::Weights { clock, ..Default::default() };

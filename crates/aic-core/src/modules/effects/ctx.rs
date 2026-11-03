@@ -4,7 +4,7 @@ use super::*;
 
 /// Who is resolving an op.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Source {
+pub enum EffectSource {
     /// A player's card, ability or power: that seat chooses.
     Seat(usize),
     /// An executing threat: seat 0 chooses for the team, the rest by scope.
@@ -25,7 +25,7 @@ pub(super) fn placing(free: bool) -> board::Placing {
 /// The context an op resolves in.
 #[derive(Debug)]
 pub struct Ctx {
-    pub source: Source,
+    pub source: EffectSource,
     /// Where it applies: a threat's country, or the whole board.
     pub scope: Option<usize>,
     /// What earlier effects of the same card chose (the other player).
@@ -37,7 +37,7 @@ pub struct Ctx {
 }
 
 impl Ctx {
-    pub(super) fn new(source: Source, scope: Option<usize>) -> Ctx {
+    pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
         Ctx { source, scope, other: None, label: "card", card: None }
     }
 
@@ -55,30 +55,30 @@ impl Ctx {
     }
 
     pub fn seat(seat: usize) -> Ctx {
-        Ctx::new(Source::Seat(seat), None)
+        Ctx::new(EffectSource::Seat(seat), None)
     }
 
     pub fn threat(scope: Option<usize>) -> Ctx {
-        Ctx::new(Source::Threat, scope)
+        Ctx::new(EffectSource::Threat, scope)
     }
 
     pub fn team() -> Ctx {
-        Ctx::new(Source::Team, None)
+        Ctx::new(EffectSource::Team, None)
     }
 
     /// The seat that answers a choice.
     pub(super) fn chooser(&self) -> usize {
         match self.source {
-            Source::Seat(s) => s,
-            Source::Threat | Source::Team => 0,
+            EffectSource::Seat(s) => s,
+            EffectSource::Threat | EffectSource::Team => 0,
         }
     }
 
     /// The seats an effect on "players" hits.
     pub(super) fn seats(&self, w: &World, g: &GameState) -> Vec<usize> {
         match self.source {
-            Source::Seat(s) => vec![s],
-            Source::Threat | Source::Team => seats_in_scope(w, g, self.scope),
+            EffectSource::Seat(s) => vec![s],
+            EffectSource::Threat | EffectSource::Team => seats_in_scope(w, g, self.scope),
         }
     }
 
@@ -97,7 +97,7 @@ impl Ctx {
 
     /// `threat` from a threat, else `team`: the two wordings of a shared op.
     pub(super) fn says<T>(&self, threat: T, team: T) -> T {
-        if self.source == Source::Threat {
+        if self.source == EffectSource::Threat {
             threat
         } else {
             team

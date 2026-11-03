@@ -25,7 +25,7 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     // 068: what each seat left unspent, the measure's: not a rule.
     for s in 0..g.seats.len() {
         for r in LEFT {
-            cx.per_round(g, &format!("left.{s}.{r}"), g.resource(s, r));
+            cx.per_round(g, &format!("unspent.{s}.{r}"), g.resource(s, r));
         }
         ai::tally_dear_powers(g, cx, s);
         // 078: the seat's most-held tag on its cards in play, the measure's (tags by round).

@@ -96,14 +96,7 @@ pub(super) fn pick_target(w: &World, g: &GameState, c: usize, source: ThreatSour
 /// lands. One a country a round; a Wall stops the landing.
 pub(super) fn make_source(g: &mut GameState, cx: &mut Cx, c: usize, source: ThreatSource, h: usize) {
     let w = cx.world;
-    let switched_off = match w.int("threats.uncreated") {
-        1 => source == ThreatSource::Influence,
-        2 => source == ThreatSource::Cyber,
-        3 => source == ThreatSource::Economic,
-        4 => source == ThreatSource::Military,
-        _ => false,
-    };
-    if switched_off || g.var(&made_key(c)) == g.round as i64 {
+    if g.var(&made_key(c)) == g.round as i64 {
         return;
     }
     match source {

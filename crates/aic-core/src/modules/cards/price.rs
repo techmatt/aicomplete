@@ -116,17 +116,18 @@ impl Prices {
 
 /// A card's costs beyond credits, in the order the view lists them, with its
 /// insight cost for the seat already known.
-pub(super) fn extra_costs_at(d: &CardDef, insight: i64) -> [(Resource, i64); 4] {
+pub(super) fn extra_costs_at(d: &CardDef, insight: i64) -> [(Resource, i64); 5] {
     [
         (Resource::Insight, insight),
         (Resource::Energy, d.energy),
         (Resource::Chips, d.chips),
         (Resource::Antimatter, d.antimatter),
+        (Resource::ResearchCubes, d.research_cubes),
     ]
 }
 
 /// A card's costs beyond credits, for seat `s`.
-pub(super) fn extra_costs(w: &World, g: &GameState, seat: usize, d: &CardDef) -> [(Resource, i64); 4] {
+pub(super) fn extra_costs(w: &World, g: &GameState, seat: usize, d: &CardDef) -> [(Resource, i64); 5] {
     extra_costs_at(d, play_insight(w, g, seat, d))
 }
 

@@ -114,10 +114,32 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Move => credits(i("move_credits")),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         StandardAction::Align => ambassadors(1),
-        StandardAction::HardenChips => chips(i("harden_chips")),
+        // 080: the price is the card's (`seat_price`); none printed here.
+        StandardAction::HardenChips => Price::default(),
         StandardAction::Chips => chips(1),
         StandardAction::HardenBuy => credits(i("harden_credits")),
         StandardAction::Drain => credits(i("drain_credits")),
+    }
+}
+
+/// The chips seat `s` pays for the Harden action its cards grant (080: printed
+/// on the card; the cheapest if several): `None` with no such card.
+pub fn harden_card_chips(w: &World, g: &GameState, seat: usize) -> Option<i64> {
+    let mut best: Option<i64> = None;
+    cards::each_passive(w, g, seat, |p| {
+        if let Op::HardenAction { chips } = p {
+            best = Some(best.map_or(*chips, |b| b.min(*chips)));
+        }
+    });
+    best
+}
+
+/// A standard action's price for seat `s`: the printed price, or the card's
+/// for the Harden action a card grants (080).
+pub fn seat_price(w: &World, g: &GameState, seat: usize, act: StandardAction) -> Price {
+    match (act, harden_card_chips(w, g, seat)) {
+        (StandardAction::HardenChips, Some(chips)) => Price { chips, ..Price::default() },
+        _ => printed_price(w, act),
     }
 }
 
@@ -187,7 +209,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         }
         StandardAction::Align => all.filter(|&h| clean_city(w, g, h) && can_claim(w, g, seat, h)).collect(),
         StandardAction::HardenChips => {
-            if cards::has_passive(w, g, seat, |p| matches!(p, Op::HardenAction)) {
+            if harden_card_chips(w, g, seat).is_some() {
                 all.filter(|&h| reach(h) && hardenable(g, h)).collect()
             } else {
                 Vec::new()

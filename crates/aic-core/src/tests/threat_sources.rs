@@ -109,7 +109,7 @@ fn a_face_up_threat_shields_its_sources_until_it_is_countered() {
     let w = rules.world();
     let city = threats::sources(&w, &g, 0, ThreatSource::Influence)[0];
     only_presence(&mut g, 0, city);
-    let hold = crate::modules::board::hold(&w, &g, city);
+    let hold = crate::modules::board::liberate_at(&w);
     put(&mut g, city, TROOP, 1);
     let troops = Op::Damage { ambassadors: 0, troops: 1 };
 

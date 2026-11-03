@@ -1,0 +1,37 @@
+{
+  "name": "screen-080-fresh",
+  "note": "080: the fresh confirmation of the frozen r34 build: the sweep planner alone, liberation on, the three board pairs, d2, 48 seeds on 30500 (the levers were picked on 30300 and 30400).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "sweep"
+  ],
+  "games": 48,
+  "records": 0
+}

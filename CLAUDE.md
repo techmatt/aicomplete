@@ -31,7 +31,13 @@ experiments, speed, scripts, web, card art.
 - **A new op, resource or token type** gets its eval term (`crates/aic-sim/src/agents/eval.rs`)
   in the same change, and a 2-minute engine smoke read (16 seeds; `scripts/cards/play_read.py`
   for cards kept and never played, `board_read.py --powers` for powers never used) before any
-  band read: 075 lost a whole screen to six cards and Grant that no agent valued.
+  band read: 075 lost a whole screen to six cards and Grant that no agent valued. **Before a freeze**, read
+  each new mechanic's use per game and its on/off gap on the same seeds (080: `liberation_read.py`).
+- **A new decision type for the agents** (a new kind of card to keep, a new action to take): review the
+  agent code that makes that decision (keep plan, eval term, fixed policies) before the first screen, not
+  after it reads low.
+- **The prompt's stated numbers run as a cell of every screen**, beside any lever you try, so the report
+  can always say what the asked-for numbers did.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
   (README, *Rules changes*). Bump from the constant, not from a prompt's revision number, which
   is a guess since a bug hunt may have taken it, and say so in the rules-history row and the

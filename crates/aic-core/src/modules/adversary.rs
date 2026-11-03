@@ -36,6 +36,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("arrivals", 0, 5, "build: ambassadors each site the adversary card names gains, whatever the board holds"),
+    ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has presence (080: pressure for Wall to stop)"),
     ParamSpec::int("node_compute", 0, 5, "adversary compute each node makes a round (none with a player ambassador on it)"),
     ParamSpec::list("project_cards", 0, 20, "adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top"),
     ParamSpec::int("project_row", 1, 6, "adversary projects visible at once; a new row is dealt when all have resolved"),
@@ -345,6 +346,7 @@ impl Module for Adversary {
                     }
                 }
                 build_all(g, cx, None);
+                wall_pressure(g, cx)?;
                 if c.escalation {
                     for (h, n) in super::plan::escalation_hexes(&w, g) {
                         place(g, cx, h, n);
@@ -721,6 +723,27 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) {
     for (h, n) in super::plan::build_plan(&w, g, &on, scope) {
         place(g, cx, h, n);
     }
+}
+
+/// Troop pressure where the Protector stands (080, candidate): in the round's
+/// build, `wall_troops` adversary troops land in each country where a seat with
+/// Wall has presence, as any landing does (on a factory, else a city, never on
+/// a walled hex), so Wall has strikes to stop.
+fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    let n = w.int("adversary.wall_troops");
+    if n == 0 {
+        return Ok(());
+    }
+    let walls: Vec<usize> = (0..g.seats.len()).filter(|&s| board::has_wall(&w, s)).collect();
+    for c in 0..w.map.countries.len() {
+        if !walls.iter().any(|&s| has_presence_in(&w, g, s, c)) {
+            continue;
+        }
+        let hexes = w.map.countries[c].hexes.clone();
+        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None)?;
+    }
+    Ok(())
 }
 
 /// Places `n` adversary ambassadors from the supply on hex `h`. The supply

@@ -132,7 +132,7 @@ fn op_uses() -> BTreeMap<String, usize> {
     }
     for b in &c.ais {
         add(&b.innate.passives, &mut out);
-        for c in b.presence.iter().chain(&b.presence2).filter_map(|u| u.capstone.as_ref()) {
+        for c in b.economy_track.iter().chain(&b.play_track).filter_map(|u| u.capstone.as_ref()) {
             add(&c.passives, &mut out);
         }
         for p in &b.powers {
@@ -218,10 +218,13 @@ const COUNTERS: [&str; 1] = ["threats.short"];
 
 /// Bare `snake_case` names rules.md may print that are no tunable or op:
 /// action names, content fields, and retired parameters in its history.
-const NOT_TUNABLES: [&str; 9] = [
+const NOT_TUNABLES: [&str; 12] = [
     "free_city_at",
     "free_keep",
     "harden_buy",
+    "harden_chips",
+    "hold_base",
+    "hold_min",
     "legal_actions",
     "node_energy",
     "per_round",

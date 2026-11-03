@@ -1,0 +1,25 @@
+{
+  "name": "screen-080-pace",
+  "note": "080: the adversary's pace levers at r34, engine, 2 players, the three board pairs, d2, 32 seeds: base, city_build 3, corrupt_at 4, spread_range 3. Read with scripts/cards/liberation_read.py for cities corrupted and liberated a game.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]},
+    {"name": "bp-cb3", "set": ["adversary.city_build=3"]},
+    {"name": "br-cb3", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2", "adversary.city_build=3"]},
+    {"name": "pr-cb3", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2", "adversary.city_build=3"]},
+    {"name": "bp-ca4", "set": ["adversary.corrupt_at=4"]},
+    {"name": "br-ca4", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2", "adversary.corrupt_at=4"]},
+    {"name": "pr-ca4", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2", "adversary.corrupt_at=4"]},
+    {"name": "bp-sr3", "set": ["adversary.spread_range=3"]},
+    {"name": "br-sr3", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2", "adversary.spread_range=3"]},
+    {"name": "pr-sr3", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2", "adversary.spread_range=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine"],
+  "games": 32,
+  "records": 0
+}

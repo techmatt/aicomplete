@@ -37,9 +37,11 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   its next tip, the bar level, and each visible adversary project's fill as a share of
   its cost, `project` 30, 017); the players' board (presence
   4, nodes −25 (022, 020's D9: was −6, and agents made nodes when an equal free choice existed), owned factories 4 (an adversary-owned one −4), chips 2, cities/bases/stations in reach 0.5, owned stations 5, a seat's third on `station_spare` 1 (074), and in horizon mode `station_round` 1 a round left for a seat's first two (a corrupted one −5),
-  megaproject cubes 2 (adversary's −1, neutral 0), research cubes held `research_cube` 0.3 (074: low on purpose, under what every converter nets; 075: `research_cube_power` 1.2 for a seat whose board spends cubes on a power, the Researcher's Peer Review, or no card that spends cubes was ever played), insight a Patience seat holds `patience` 1.0 (075: it carries over, so it keeps its worth at the round's end; others' `insight` 0.5), a player facility on a hex with the Protector's presence `wall` 3, twice that with a troop within 4 hexes (075: no troop can strike it), factories 0.5, hardening 1, a track's progress toward its capstone (`capstone` 16 × the square of the share uncovered, 068), player ambassadors
-  5 in supply (018: was 3, below their 6-credit cost, so agents never bought one) / 2.5 on the board, and toward freeing a corrupted city `freeing` 2 ×
-  `corrupted` × a share of the hold: gathered ambassadors, then, once enough are at hand, a climbing bonus for landing them, 027), corruption markers (`marker` 1 each, against), shields (`shield` 3); track income, resources, cards in hand and
+  megaproject cubes 2 (adversary's −1, neutral 0), research cubes held `research_cube` 0.3 (074: low on purpose, under what every converter nets; 075: `research_cube_power` 1.2 for a seat whose board spends cubes on a power, the Researcher's Peer Review, or no card that spends cubes was ever played), insight a Patience seat holds `patience` 1.0 (075: it carries over, so it keeps its worth at the round's end; others' `insight` 0.5), a player facility on a hex with the Protector's presence `wall` 3, twice that with a troop within 4 hexes (075: no troop can strike it), factories 0.5, hardening 1, a track's progress toward its capstone (`track_capstone` 16 × the square of the share uncovered, 068; `capstone` before 080, still read), player ambassadors
+  5 in supply (018: was 3, below their 6-credit cost, so agents never bought one) / 2.5 on the board, and toward liberating a corrupted city by the fallback `freeing` 2 ×
+  `corrupted` × a share of `liberate_at`: gathered ambassadors, then, once enough are at hand, a climbing bonus for landing them, 027; 080: only seats in reach count),
+  each city liberated this game `liberated` 10 (080), a clean or aligned city one adversary ambassador from corrupting `at_risk` 4 on top of
+  its `pressure` (080), corruption markers (`marker` 1 each, against), shields (`shield` 3); track income, resources, cards in hand and
   built; unpaid threats (one that waits counts `threat_waits` 0.5, one that can't be reached `threat_stranded` 1.25). Every weight is a parameter: `w.<name>=V` in an agent spec. The
   014 weights are hand-set, not swept.
 
@@ -61,16 +63,16 @@ budget with the cards it would play (hand plus the candidates) in value-per-cost
 (value: the card's printed cost in credits, antimatter 3, insight 2, a lowered income
 point 3, plus 1; cost: what this seat pays, its building discount off), and keeps each
 drafted card, best ratio first, only if the plan with it is worth more than without it
-(a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and presence it would shield adds `plan_niche` 3 to the card's value). The dominance checks are the same agents with
+(a play waiting a round is worth 15% less; 046: each marker in reach a card would clear, threat it would delay and presence it would shield adds `plan_niche` 3 to the card's value; 080: a liberate card adds `plan_liberate` 20 while a city is corrupted, the draft's keep price on it lowered). The dominance checks are the same agents with
 one behavior forced: `keep_all=1`, `keep_k=2`, `tier1_only=1`, `tier2_rush=1`,
-`no_powers=1`, `no_counters=1`, `no_presence=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1`, `home_only=1`, `capstone_rush=1`, `always_buy_cubes=1` (075: the Researcher's Grant at every chance), `hoard_insight=N` (075: a Patience seat keeps and plays cards only in every N-th round, the opening's free keeps aside), `never_convert=1` (075: no converter, and no power that only turns one resource into another); `ignore_threats=1` also refuses an automatic-counter capstone and a building whose Action jams (075, 073's finding 13) (`docs/principles.md`, *Dominance
+`no_powers=1`, `no_counters=1`, `no_presence=1`, `never_sacrifice=1`, `ambassador_mass=1`, `free_build_rush=1`, `wall_turtle=1`, `home_only=1`, `capstone_rush=1`, `always_buy_cubes=1` (075: the Researcher's Grant at every chance), `always_liberate=1` (080: draft and keep every liberate card and play one the first round it is legal: the row that tells a bad price from an agent that won't play the card), `never_clear=1` (041 as `never_remove`, renamed 080), `hoard_insight=N` (075: a Patience seat keeps and plays cards only in every N-th round, the opening's free keeps aside), `never_convert=1` (075: no converter, and no power that only turns one resource into another); `ignore_threats=1` also refuses an automatic-counter capstone and a building whose Action jams (075, 073's finding 13) (`docs/principles.md`, *Dominance
 checks*).
 
 The keep plan also charges credits paid for keeps (`plan_credit` 3), skips cards it can't
 play now and holds back `plan_reserve` (0) insight in later rounds; `plan_hand` and
 `plan_t2` exist for probes and are off. In `agents/eval.rs`, credits beyond `w.credit_cap`
-(12) a seat are worth `w.credit_idle` (0.15), and `w.guard` prices an adversary ambassador
-next to a corrupted city.
+(12) a seat are worth `w.credit_idle` (0.15). (`w.guard`, an adversary ambassador next to a corrupted city, went
+with the hold in 080.)
 
 Any agent can use horizon mode (`greedy:w.horizon=1,...`); `engine` only changes the
 defaults. Agent sweeps with strategy health (win %, buildings and tier-2 cards played per

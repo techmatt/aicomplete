@@ -6,7 +6,7 @@ use super::*;
 /// play area, a whole building stack (named by its top), or (with a
 /// `tags_from_hand` building) a card in hand.
 #[derive(Debug, Clone)]
-pub struct Source {
+pub struct SacrificeSource {
     pub label: String,
     /// The pile the cards leave, and the cards (a stack: all of it).
     pub cards: Vec<(String, Key)>,
@@ -15,10 +15,10 @@ pub struct Source {
 
 /// What seat `s` could sacrifice now, in a fixed order: programs, stacks,
 /// then hand cards a `tags_from_hand` building counts.
-pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
+pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<SacrificeSource> {
     let mut out = Vec::new();
     for id in g.pile(&played(seat)) {
-        out.push(Source {
+        out.push(SacrificeSource {
             label: format!("program {id}"),
             cards: vec![(played(seat).to_string(), *id)],
             tags: def(w, id).tags.clone(),
@@ -35,7 +35,7 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
             .iter()
             .flat_map(|(_, c)| def(w, c).tags.iter().copied())
             .collect();
-        out.push(Source {
+        out.push(SacrificeSource {
             label: format!("stack {top}"),
             cards,
             tags,
@@ -57,7 +57,7 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<Source> {
                 .filter(|&t| from_hand.iter().any(|x| x.accepts(t)))
                 .collect();
             if !tags.is_empty() {
-                out.push(Source {
+                out.push(SacrificeSource {
                     label: format!("hand {id}"),
                     cards: vec![(hand(seat).to_string(), *id)],
                     tags,
@@ -116,7 +116,7 @@ impl TagNeed {
 
     /// Whether the tags of all of `sources` together could pay it (exact:
     /// a tag fills its own requirement first, the rest go to `any`).
-    pub fn payable(&self, sources: &[Source]) -> bool {
+    pub fn payable(&self, sources: &[SacrificeSource]) -> bool {
         let mut left = self.clone();
         for s in sources {
             left.pay(&s.tags);
@@ -135,7 +135,7 @@ pub fn sacrifice_for(g: &mut GameState, cx: &mut Cx, seat: usize, cost: &[(TagOr
     // `tags_from_hand` building mid-payment doesn't take its hand cards away.
     let mut left = sources(&w, g, seat);
     while !need.met() {
-        let helping: Vec<Source> = left
+        let helping: Vec<SacrificeSource> = left
             .iter()
             .filter(|s| need.helps(&s.tags))
             .cloned()

@@ -61,8 +61,8 @@ fn a_config_change_changes_its_block() {
 fn a_content_change_changes_its_block() {
     let base = content();
     let mut c = base.clone();
-    c.ais[0].presence[1].income[0].1 += 1;
-    c.ais[1].presence2[2].cost += 1;
+    c.ais[0].economy_track[1].income[0].1 += 1;
+    c.ais[1].play_track[2].cost += 1;
     c.ais[1].powers.iter_mut().find(|p| p.name == "Stand Down").unwrap().tags[0].1 += 1;
     c.ais[0].innate.name = "Something else".to_string();
     c.map.countries[0].megaproject.cubes += 1;

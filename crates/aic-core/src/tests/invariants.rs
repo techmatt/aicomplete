@@ -84,7 +84,7 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
                 out.push(format!("seat {s}: {n} {r}"));
             }
         }
-        let track = ai::board(&w, s).presence.len() + ai::board(&w, s).presence2.len();
+        let track = ai::board(&w, s).economy_track.len() + ai::board(&w, s).play_track.len();
         let taken = board::track_taken(g, s) + board::track2_taken(g, s);
         let placed = total(g, presence(s));
         if taken > track {

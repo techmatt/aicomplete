@@ -61,7 +61,13 @@ where a gate can tell a good price from a bad one. A 48-seed band read is ±7 an
 Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
 Protector + Researcher), no c3, an engine smoke read first, then the `sweep` profile at 48 seeds a pair on one fresh set;
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
-([experiments.md](experiments.md), *The ballpark read at r33*).
+([experiments.md](experiments.md), *The ballpark read at r34*).
+
+**Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
+measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);
+at d2 the adversary corrupts at least one new city in most games, and a won game liberates about one; at high difficulty
+expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the share of games with a new corruption is
+`adversary.corruptions` > 0).
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses (was 60%): Discord may be the
 main cause, and the presence clock stays live. The round cap is a quiet backstop with no share target
@@ -160,7 +166,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | Unity farm (028) | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
 | Science rush (034) | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
 | always-max-presence, never-second-presence (066) | `always_max_presence=1`, `never_second_presence=1` | both presence powers whenever affordable; never the board's second |
-| never-Remove, Science board (041) | `never_remove=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
+| never-Remove, Science board (041) | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
 | abandon (053) | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
 | never-sacrifice (068) | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
 | ambassador mass (068) | `ambassador_mass=1` | buys every ambassador it can, before anything else |

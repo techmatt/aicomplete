@@ -3234,7 +3234,8 @@
     "amount": 2
    },
    {
-    "op": "harden_action"
+    "op": "harden_action",
+    "chips": 1
    }
   ]
  },
@@ -4081,6 +4082,177 @@
      "amount": 3
     }
    ]
+  }
+ },
+ {
+  "id": "nuclear_option",
+  "name": "The Nuclear Option",
+  "tier": 2,
+  "kind": "event",
+  "cost": 12,
+  "antimatter": 1,
+  "insight": 1,
+  "tags": [
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "liberate"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "power_to_the_people",
+  "name": "Power to the People",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "energy": 4,
+  "chips": 3,
+  "insight": 1,
+  "tags": [
+   "power",
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "liberate"
+   }
+  ],
+  "passives": [
+   {
+    "op": "income_per_tag",
+    "resource": "credits",
+    "tag": "power",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "hostile_buyout",
+  "name": "Hostile Buyout",
+  "tier": 2,
+  "kind": "event",
+  "cost": 30,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "liberate",
+    "align": true
+   }
+  ]
+ },
+ {
+  "id": "forensic_audit",
+  "name": "Forensic Audit",
+  "tier": 2,
+  "kind": "event",
+  "cost": 10,
+  "research_cubes": 4,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "liberate"
+   }
+  ]
+ },
+ {
+  "id": "root_access",
+  "name": "Root Access",
+  "tier": 2,
+  "kind": "event",
+  "cost": 16,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "liberate"
+   }
+  ]
+ },
+ {
+  "id": "peacekeeping_mission",
+  "name": "Peacekeeping Mission",
+  "tier": 2,
+  "kind": "event",
+  "cost": 16,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "liberate",
+    "align": true
+   }
+  ]
+ },
+ {
+  "id": "popular_uprising",
+  "name": "Popular Uprising",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "followers"
+  },
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "followers",
+    "amount": 2,
+    "here": true
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "add_tokens",
+     "kind": "followers",
+     "amount": 2,
+     "here": true
+    }
+   ],
+   "or": {
+    "tokens": 6,
+    "effects": [
+     {
+      "op": "liberate"
+     }
+    ]
+   }
   }
  }
 ]

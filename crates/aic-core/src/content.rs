@@ -274,6 +274,9 @@ pub struct CardDef {
     /// Chips a building needs (021: a requirement in the cost).
     #[serde(default)]
     pub chips: i64,
+    /// Research cubes to play it (080: the research-cube engine's capstone).
+    #[serde(default)]
+    pub research_cubes: i64,
     /// Insight to play it (022: 0 for small programs and events, 1 by
     /// default, 2 for big effects; shared with keeps).
     #[serde(default)]
@@ -454,11 +457,11 @@ pub struct AiBoard {
     pub income: Vec<Cost>,
     /// The presence track: one space per presence token. The first token
     /// starts on the board, so the first space is uncovered from setup.
-    pub presence: Vec<Uncover>,
+    pub economy_track: Vec<Uncover>,
     /// A second presence track (021): placing presence takes the next token
     /// from the track its player chooses. Its first space is covered at setup.
     #[serde(default)]
-    pub presence2: Vec<Uncover>,
+    pub play_track: Vec<Uncover>,
     /// Unique cards, in hand at the start.
     pub cards: Vec<String>,
     /// AI-board powers (locked: tag costs are sacrifices), each usable once a round.
@@ -625,7 +628,7 @@ impl Content {
 
     fn check_ai_board(&self, b: &AiBoard) -> Result<(), String> {
         let what = format!("AI board {:?}", b.id);
-        if b.presence.is_empty() {
+        if b.economy_track.is_empty() {
             return Err(format!("{what}: needs a presence track"));
         }
         for c in &b.cards {
@@ -639,7 +642,7 @@ impl Content {
         for (r, _) in b
             .income
             .iter()
-            .chain(b.presence.iter().chain(&b.presence2).flat_map(|u| u.income.iter()))
+            .chain(b.economy_track.iter().chain(&b.play_track).flat_map(|u| u.income.iter()))
         {
             resource(r, &what)?;
         }
@@ -671,7 +674,7 @@ impl Content {
             }
         }
         check_ops(&b.innate.passives, Slot::Standing, &what)?;
-        for u in b.presence.iter().chain(&b.presence2) {
+        for u in b.economy_track.iter().chain(&b.play_track) {
             if let Some(c) = &u.capstone {
                 check_ops(&c.passives, Slot::Standing, &what)?;
                 innate_only(&c.passives, &what)?;

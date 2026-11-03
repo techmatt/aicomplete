@@ -7,6 +7,48 @@ What each rules revision changed, what it replaced and whether it is **locked** 
 record, moved out of it in 025 otherwise as written, so a row quoting a number or a card
 is as of its revision. Add a table here with every rules change.
 
+**Revision 34 (080): liberating cities, and board-balance candidates.** (Bumped from the constant, 33.) Design: Matt,
+2026-11-03 (liberating cities is a core mechanic; the standard route is the bad fallback; a family of tier-2 liberate
+capstones, one or more an engine; liberating needs presence next to the city; a liberated city is clean; the adversary is too
+kind), his answer to the executor's question (a liberated city is clean, a card may put its player's cube on it as an extra,
+and every liberation still sways `alignment.free_city`: a Unity moment), and the planner's defaults on board balance. Every
+row a **candidate**. The read: [experiments.md](experiments.md), *The ballpark read at r34*.
+
+| Rule | Was | Status |
+|---|---|---|
+| A corrupted city is **liberated** by a liberate card or by the fallback, `board.liberate_at` 5 player ambassadors on it; both need the liberating seat's presence on or next to the city (the fallback counts only ambassadors of seats in reach); a liberated city is clean, sways `alignment.free_city` 5 toward Unity and keeps `free_leaves` 1 adversary ambassador | the hold: `hold_base` 3 plus each adversary ambassador on or next to the city, at least `hold_min` 2, from any players, no presence needed | candidate (Matt: the fallback is flat 5, the hold arithmetic goes; the 5 Sway stays, Matt's answer) |
+| Seven tier-2 liberate capstones (rules.md §8): The Nuclear Option, Power to the People, Hostile Buyout, Forensic Audit, Root Access, Peacekeeping Mission, Popular Uprising (159 cards); new op `liberate` (with `align`: your cube on the city) | Great Liberation the one card that freed a city | candidate (every price and extra; card-pricing.md, *080's changes*) |
+| A card may cost research cubes (`research_cubes`, Forensic Audit) | credits, insight, energy, chips, antimatter | candidate |
+| `adversary.corrupt_at` 4 | 5 | candidate (the adversary corrupting a new city in most d2 games: 71 / 44 / 65% of games against 48 / 31 / 46% at 5, the planner, seeds 30300; `city_build` 3 corrupted more, 72-84% under the engine, for 19-28 points) |
+| Troop pressure where the Protector stands: in each round's build, `adversary.wall_troops` 1 adversary troop lands in each country where a seat with Wall has presence (a factory, players choose, else a city; never a walled hex) | none: Wall had only the strikes the board brought | candidate (the planner's default: Wall stays, give it strikes to stop) |
+| The Researcher's Grant costs 3 credits | 4 | candidate (the planner's default) |
+| Hardened Bunker Complex prints the Harden action's price: `harden_action` `chips` 1 | `board.harden_chips` 1 (removed) | candidate; play unchanged |
+| A typed jam reads "counts as N toward a … threat" | "counts as N credits toward …" | face text only |
+| `threats.uncreated` removed (a screen's switch; `experiments/screen-070-creation-off.json` archived) | 0 | not a rule |
+| Renames riding the bump (the executor's picks, Matt: "use your picks"): the AI-board tracks `presence` → `economy_track`, `presence2` → `play_track` (content and overlays: `ais.*.economy_track.N`); the per-round stat `left.<seat>.<r>` → `unspent.<seat>.<r>`; the weight `w.capstone` → `w.track_capstone` (the old name still reads); the policy `never_remove` → `never_clear` (specs renamed); `sacrifice::Source` → `SacrificeSource`, `effects::Source` → `EffectSource` (`ThreatSource` unchanged) | | names only |
+| Shared-row threats publish `threat_sources` in the view: every country's sources of their type, every seat may counter | none published | view only |
+| Agents (not rules): eval terms `liberated` 10 a city liberated this game, `at_risk` 4 a city one ambassador from corrupting, `liberate_progress` 20 for a full pile toward Popular Uprising's liberation; `w.guard` removed with the hold; the keep plan plans a liberate card while any city is corrupted (`plan_liberate` 20 added to its value); fixed policy `always_liberate` | | agents |
+
+**The read (the sweep, d2, 2 players, 48 seeds a pair; Builder + Protector / Builder + Researcher / Protector + Researcher).**
+r33 on seeds 30300: 70.8 / 77.1 / 75.0, freeing 1.4 cities a game by the hold. **The first r34 build** (`corrupt_at` 5, the
+first prices, the minimal agent hook): 50.0 / 47.9 / 77.1; with the capstones out 41.7 / 35.4 / 58.3; `always_liberate` 77.1 /
+77.1 / 85.4. **An agent finding, fixed in the hook:** the keep plan dropped a liberate card while no corrupted city was in its
+seat's reach that round (it plans only cards it could play now), and the eval gave Popular Uprising's Followers no worth toward
+the city, so the planner kept it in 62% of games and never played it. With the keep plan planning a liberate card while any
+city is corrupted, and `liberate_progress`, the same build read 60.4 / 72.9 / 75.0. **`corrupt_at` 4 against 5** on that build:
+62.5 / 58.3 / 68.8, a new corruption in 71 / 44 / 65% of games against 48 / 31 / 46%. **Repriced after it** (five cards at once,
+screened under the engine only, 32 seeds on 30400, not alone under the planner): `always_liberate` kept Nuclear Option, Root
+Access, Peacekeeping Mission and Forensic Audit in 50-62% of games and played them in 6-21%. **The frozen build:** 70.8 / 77.1 /
+77.1 on 30300, **70.8 / 77.1 / 83.3 on the fresh set 30500**; capstones out 39.6 / 37.5 / 58.3 (a liberation gap of 31 / 40 /
+19 points); `always_liberate` 70.8 / 91.7 / 87.5, so the planner still leaves 0-15 points of liberation on the table. A new
+corruption in 67 / 35 / 65% of games (fresh 60 / 46 / 56%): Builder + Researcher
+misses "most games". 2.1 liberations a won game, about 1.5 of them by a card, against the aim of about 1: the capstones carry
+the win (the off arm sits at 38-58). **After the freeze, a 2x2 on fresh seeds 30600** (Matt, MESSAGE #3573: this one, then
+freeze the cell nearest the aims): the frozen build 70.8 / 77.1 / 89.6; dearer liberation (Hostile Buyout 40, Popular Uprising 8
+Followers) moved neither the wins nor the 2.1 liberations a won game; `city_build` 3 corrupted a new city in 85-96% of games and
+dropped every pair to 29-44, out of the band. Neither adopted. Protector + Researcher reads 77.1 / 83.3 / 89.6 on the three
+sets, about 83 pooled: at the band's top, with liberation worth 19 points to it (off 58.3).
+
 **Revision 33 (078): a bigger starting economy, a faster adversary.** (Bumped from the constant, 32.) Design: Matt's brief and rulings, 2026-11-03: a **scaffold** until engines carry the economy, coming down as they take over, **no new tracks**; MESSAGE #3446 (keep the sizes, make the adversary make ambassadors faster than the party can easily deal with, raise the ambassador project) and #3451 (that project at 20 or more, the band tuned by the adversary's pace, not by its price). Everything a **candidate**. Simulation is a ballpark check (Matt's ruling, amendment #3415): two players, the three board pairs, the `sweep` profile, d2, 48 fresh seeds (30200) a pair: **Builder + Protector 70.8 ±6.6, Builder + Researcher 64.6 ±6.9, Protector + Researcher 62.5 ±7.0**, all in the 45-85 ballpark, no gate. Matt's sizes alone, with the ambassador project at 9 and r32's pace, read 100 / 98 / 100 (seeds 30000) and ended in round 6 by purge: the seats bought 11-14 ambassadors a game, 16 under the engine. **Open:** `sweep:tier2_rush=1` leads the sweep by 13.2 ±4.9 pooled (144 paired seeds); with the draft's keep price off (`w.packet_keep=0`, a diagnostic) the sweep closes it to 3.5 ±4.3, so the planner under-drafts tier 2 at this income: an agent item (MESSAGE #3464). The dear powers at 2 tags are still unused (0.00 a game). Reads: `experiments/results/screen-078/economy.md`.
 
 | Rule | Was | Status |

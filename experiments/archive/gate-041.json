@@ -9,7 +9,7 @@
   "difficulties": [2],
   "agents": [
     "planner",
-    "planner:always_expand=1", "planner:always_consolidate=1", "planner:never_remove=1", "planner:science_board=1",
+    "planner:always_expand=1", "planner:always_consolidate=1", "planner:never_clear=1", "planner:science_board=1",
     "planner:never_tag=1", "planner:never_tag=2", "planner:never_tag=3",
     "planner:never_tag=4", "planner:never_tag=5", "planner:never_tag=6",
     "planner:rich_spend=1", "planner:science_rush=1", "planner:tier2_rush=1", "planner:no_counters=1"

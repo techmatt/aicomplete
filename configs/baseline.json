@@ -25,9 +25,8 @@
         "base_discord": 1,
         "base_unity": 2,
         "factory_unity": 1,
-        "hold_base": 3,
+        "liberate_at": 5,
         "last_safe_stage": 2,
-        "hold_min": 2,
         "free_leaves": 1,
         "destruction_discord": 0,
         "troop_spent": 1,
@@ -51,7 +50,6 @@
           1
         ],
         "city_energy_credits": 2,
-        "harden_chips": 1,
         "harden_credits": 3,
         "drain_credits": 5,
         "drain_amount": 3
@@ -72,7 +70,7 @@
         "city_build": 2,
         "factory_build": 0,
         "spread_range": 2,
-        "corrupt_at": 5,
+        "corrupt_at": 4,
         "escalation_ambassadors": 1,
         "counter_bonus": 0,
         "counter_bonus_all": 0,
@@ -85,6 +83,7 @@
         "tier2_early": 1,
         "discord_removed": 1,
         "arrivals": 1,
+        "wall_troops": 1,
         "node_compute": 1,
         "project_cards": [
           6,
@@ -97,8 +96,7 @@
       "module": "threats",
       "variant": "countries",
       "params": {
-        "per_country": 1,
-        "uncreated": 0
+        "per_country": 1
       }
     },
     {
@@ -303,6 +301,13 @@
         "exodus_corridors",
         "planetary_referendum",
         "great_liberation",
+        "nuclear_option",
+        "power_to_the_people",
+        "hostile_buyout",
+        "forensic_audit",
+        "root_access",
+        "peacekeeping_mission",
+        "popular_uprising",
         "planetary_assembly",
         "orbital_embassy",
         "sentry_drone_wing",

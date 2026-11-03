@@ -56,7 +56,7 @@ fn a_parameter_is_still_a_parameter() {
 /// A record names the content it ran, and replays with no warning.
 #[test]
 fn a_record_of_an_overlaid_game_replays_from_itself() {
-    let r = Rules::new(&baseline_with(&["cards.*.cost=1", "ais.*.presence.4.cost=2"])).unwrap();
+    let r = Rules::new(&baseline_with(&["cards.*.cost=1", "ais.*.economy_track.4.cost=2"])).unwrap();
     let mut agent = Middle;
     let (g, rec) = crate::play(&r, 7, &mut agent, 300);
     let saved = crate::SavedGame::new(&r, 7, rec.actions.clone(), &g, "overlay");
@@ -81,14 +81,14 @@ fn overlays_change_how_a_game_plays() {
 fn deep_paths_reach_ops_and_tracks() {
     let (c, _) = overlaid(&[
         "cards.orbital_embassy.passives.0.amount=3".to_string(),
-        "ais.*.presence.0.income=[[\"credits\",7]]".to_string(),
+        "ais.*.economy_track.0.income=[[\"credits\",7]]".to_string(),
         "cards.orbital_embassy.effects=[]".to_string(),
     ])
     .unwrap();
     let card = &c.cards[c.card_index("orbital_embassy").unwrap()];
     assert!(card.effects.is_empty());
     assert!(serde_json::to_string(&card.passives).unwrap().contains("\"amount\":3"));
-    assert!(c.ais.iter().all(|a| a.presence[0].income == [(Resource::Credits, 7)]));
+    assert!(c.ais.iter().all(|a| a.economy_track[0].income == [(Resource::Credits, 7)]));
 }
 
 /// The text follows the numbers: a face is generated from the overlaid ops.
@@ -107,7 +107,7 @@ fn bad_overlays_are_errors_that_name_the_entry() {
         ("cards.telemetry_archive.costs=1", "unknown field"),
         ("cards.telemetry_archive.id=x", "id can't"),
         ("cards.orbital_embassy.effects.99.amount=1", "no \"99\""),
-        ("ais.*.presence.99=[]", "no list entry"),
+        ("ais.*.economy_track.99=[]", "no list entry"),
         ("cards.telemetry_archive.cost=lots", "invalid type"),
         ("threats.*.tier=9", "tier 1 or 2"),
     ] {

@@ -17,7 +17,7 @@
  ],
  "agents": [
   "planner:never_sacrifice=1",
-  "planner:never_remove=1",
+  "planner:never_clear=1",
   "planner:tier2_rush=1"
  ],
  "first_seed": "28232",

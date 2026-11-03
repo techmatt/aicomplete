@@ -71,6 +71,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::Cleanse { cities, .. } => {
             any_hex(g, |h| cleansable(w, g, h, *cities) && in_reach(w, g, seat, h))
         }
+        Op::Liberate { .. } => !liberable_cities(w, g, seat).is_empty(),
         Op::ClearCity { .. } => !guarded_cities(w, g, seat).is_empty(),
         Op::Jam { source, .. } => !threats::counterable(w, g, seat, *source).is_empty(),
         Op::CounterThreat => !threats::counterable(w, g, seat, None).is_empty(),

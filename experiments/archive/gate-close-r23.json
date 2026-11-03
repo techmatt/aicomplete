@@ -7,7 +7,7 @@
     {"name": "c3", "set": ["countries=3"]}
   ],
   "difficulties": [2],
-  "agents": ["planner:always_consolidate=1", "planner:never_remove=1", "planner:never_tag=2", "planner:never_tag=3", "planner:no_powers=1", "planner:tier2_rush=1"],
+  "agents": ["planner:always_consolidate=1", "planner:never_clear=1", "planner:never_tag=2", "planner:never_tag=3", "planner:no_powers=1", "planner:tier2_rush=1"],
   "games": 48,
   "records": 0
 }

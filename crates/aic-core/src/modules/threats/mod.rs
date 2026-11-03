@@ -24,12 +24,6 @@ pub use sources::*;
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("per_country", 0, 5, "threats dealt each round per country"),
-    ParamSpec::int(
-        "uncreated",
-        0,
-        4,
-        "a screen's switch: this source type makes nothing when uncountered (1 influence, 2 cyber, 3 economic, 4 military; 0 none)",
-    ),
 ];
 
 const PHASES: &[PhaseSpec] = &[
@@ -644,6 +638,20 @@ impl Module for Threats {
         if self.shared {
             let row: Vec<CardView> = g.pile(ROW).iter().map(|t| show(t)).collect();
             out.pile("row", "Threats (every country)", None, row.len(), row);
+            // 080: a shared-row threat publishes its sources too: its type's
+            // pieces in every country (it has no country and names no target),
+            // and anyone may counter it.
+            for t in g.pile(ROW).iter() {
+                let source = source_of(w, t);
+                let hexes = (0..w.map.countries.len()).flat_map(|c| sources(w, g, c, source)).collect();
+                out.threat_source(ThreatSourceView {
+                    threat: t.to_string(),
+                    source: source.to_string(),
+                    hexes,
+                    target: target(g, t),
+                    seats: (0..g.seats.len()).collect(),
+                });
+            }
         } else {
             for c in 0..w.map.countries.len() {
                 let cards: Vec<CardView> = g.pile(&on(c)).iter().map(|t| show(t)).collect();

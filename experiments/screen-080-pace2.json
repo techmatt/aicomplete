@@ -1,0 +1,61 @@
+{
+  "name": "screen-080-pace2",
+  "note": "080: the planner on the agent-fixed build (keep plan plans a liberate card while a city is corrupted; a liberate building's tokens count toward it), base against corrupt_at 4, 2 players, the three board pairs, d2, sweep, 48 seeds on 30300. Read with scripts/cards/liberation_read.py --cards.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    },
+    {
+      "name": "bp-ca4",
+      "set": [
+        "adversary.corrupt_at=4"
+      ]
+    },
+    {
+      "name": "br-ca4",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "adversary.corrupt_at=4"
+      ]
+    },
+    {
+      "name": "pr-ca4",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "adversary.corrupt_at=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "sweep"
+  ],
+  "games": 48,
+  "records": 0
+}

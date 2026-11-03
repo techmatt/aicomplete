@@ -28,7 +28,7 @@ fn a_card_pays_the_step_and_a_free_one_does_not() {
 fn a_placements_prompt_names_what_it_charges() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
-    let step = ai::board(&w, 0).presence[5].cost;
+    let step = ai::board(&w, 0).economy_track[5].cost;
     assert!(step > 0);
     set_res(&mut g, 0, Resource::Energy, 20);
     set_res(&mut g, 0, Resource::Credits, 50);
@@ -187,10 +187,10 @@ fn placing_presence_takes_the_next_track_token_and_uncovers_its_income() {
     assert_eq!(presence_of(&g, 0).len(), 3);
     // The tracks run out after their last spaces (021: both of them).
     g.vars
-        .insert(board::track_key(0).into(), ai::board(&w, 0).presence.len() as i64);
+        .insert(board::track_key(0).into(), ai::board(&w, 0).economy_track.len() as i64);
     assert!(ai::can_place(&w, &g, 0));
     g.vars
-        .insert(board::track2_key(0).into(), ai::board(&w, 0).presence2.len() as i64);
+        .insert(board::track2_key(0).into(), ai::board(&w, 0).play_track.len() as i64);
     assert!(!ai::can_place(&w, &g, 0));
 }
 
@@ -202,9 +202,9 @@ fn a_track_s_last_steps_cost_more() {
     let a = rules.map.numbered(0, piece(0).presence);
     put(&mut g, a, presence(0), 1);
     // Both tracks down to their last steps.
-    g.vars.insert(board::track_key(0).into(), b.presence.len() as i64 - 1);
-    g.vars.insert(board::track2_key(0).into(), b.presence2.len() as i64 - 1);
-    let extra = b.presence.last().unwrap().cost.min(b.presence2.last().unwrap().cost);
+    g.vars.insert(board::track_key(0).into(), b.economy_track.len() as i64 - 1);
+    g.vars.insert(board::track2_key(0).into(), b.play_track.len() as i64 - 1);
+    let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
     let deploy = power(&rules, 0, "Deploy");
     set_res(&mut g, 0, Resource::Energy, extra);

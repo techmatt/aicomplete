@@ -65,8 +65,8 @@ pub(super) fn bound_city(w: &World, g: &GameState, c: usize, start: usize) -> Op
 /// track's last steps cost more), or `None` with both tracks empty.
 fn cheapest_step(w: &World, g: &GameState, seat: usize) -> Option<i64> {
     let b = ai::board(w, seat);
-    let first = b.presence.get(track_taken(g, seat)).map(|u| u.cost);
-    let second = b.presence2.get(track2_taken(g, seat)).map(|u| u.cost);
+    let first = b.economy_track.get(track_taken(g, seat)).map(|u| u.cost);
+    let second = b.play_track.get(track2_taken(g, seat)).map(|u| u.cost);
     first.into_iter().chain(second).min()
 }
 
@@ -122,10 +122,10 @@ pub fn place_presence(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing)
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));
     let can_pay = |u: &Uncover| placing_price(how, u.cost).affordable(g, seat);
     let mut tracks: Vec<(bool, &Uncover)> = Vec::new();
-    if let Some(u) = b.presence.get(t1).filter(|u| can_pay(u)) {
+    if let Some(u) = b.economy_track.get(t1).filter(|u| can_pay(u)) {
         tracks.push((false, u));
     }
-    if let Some(u) = b.presence2.get(t2).filter(|u| can_pay(u)) {
+    if let Some(u) = b.play_track.get(t2).filter(|u| can_pay(u)) {
         tracks.push((true, u));
     }
     let opts = tracks

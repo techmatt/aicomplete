@@ -109,7 +109,7 @@ ends the run.
 - **Win probability by round** from the playouts; checkpoints that are uncertain
   (0.1 < p < 0.9); early lock-in (the result was decided, p ≤ 0.05 or ≥ 0.95 to the end,
   by round 2).
-- **Unspent resources** (068): each seat's credits, chips, energy, antimatter and ambassadors when its last action phase ended (`left.<seat>.<resource>` in
+- **Unspent resources** (068): each seat's credits, chips, energy, antimatter and ambassadors when its last action phase ended (`unspent.<seat>.<resource>` in
   `per_round`, read by `margin.unspent`): *Unspent resources* in `report.md`, `unspent` in `results.json`, the `--gate` readout. The flag is `UNSPENT_HIGH`
   (`crates/aic-sim/src/experiment.rs`, `scripts/screens.py`).
 - **Margin**: on a win, adversary cards left (deck plus the face-up card: rounds to
@@ -194,7 +194,7 @@ an `engine:samples=2` you meant to compare is easy to lose. It caps seeds at 16 
 `alignment`, `projects`; `*` for every id; a path through fields and list indexes.
 `cards.telemetry_archive.cost=3`, `cards.orbital_embassy.effects=[]`, `corps.horizon.project.after=[]` (075: the map's
 country pieces by lowercase name, the only part of the map an overlay reaches),
-`cards.orbital_embassy.passives.0.amount=2`, `ais.*.presence.4.cost=2`,
+`cards.orbital_embassy.passives.0.amount=2`, `ais.*.economy_track.4.cost=2`,
 `threats.<id>.counter=[["credits",3]]`. It goes through the same parsing and checks as
 `content/`, so a typo or an illegal op is an error naming the entry. The overlay lands in
 the config (`content`), so the config hash, `content_hash` and every saved record name
@@ -228,6 +228,22 @@ keep-aware, and at r19 greedy, engine and planner keep 58-69% (d0, d2, 8 seeds a
 is still their plan, not a table's.
 
 ## The band and the gate
+
+**The ballpark read at r34 (080).** The r33 recipe below, with the liberation reads beside it: `experiments/use-080.json` (the
+engine smoke, engine and `engine:always_liberate=1`, 16-32 seeds, about 20-30 s on 6 threads), then `screen-080.json` (the
+`sweep` planner, `sweep:always_liberate=1` and the engine, 48 seeds a pair, 432 games) and `screen-080-off.json` (the same seeds
+with the seven liberate capstones out of the deck: `experiments/configs/no_liberate.json`, written by
+`scripts/configs/no_liberate.py`; the planner and the engine, 288 games): both together about 9 min on 6 threads with nothing
+beside them (about 13 ms a planner decision). Read every one with `python scripts/cards/liberation_read.py DIR... --cards`:
+cities corrupted (and the share of games with one) and liberated (card / fallback) a game, liberations per won game, each
+liberate card's kept / played, Grant uses, Wall stops. `screen-080-pace.json` (engine, 32 seeds) and `screen-080-pace2.json`
+(sweep, 48) are the pace levers; `screen-080-fresh.json` the fresh confirmation. **The frozen build read** (seeds 30300; the
+fresh set 30500 alone in brackets): the planner 70.8 / 77.1 / 77.1 (70.8 / 77.1 / 83.3) for Builder + Protector, Builder +
+Researcher, Protector + Researcher; with the capstones out 39.6 / 37.5 / 58.3; `always_liberate` 70.8 / 91.7 / 87.5; the engine
+56.2 / 79.2 / 60.4. A new corruption in 67 / 35 / 65% of games (60 / 46 / 56%), and 2.1 liberations a won game (1.9-2.2),
+1.5 of them by a card. `screen-080-next.json` (576 games, about 7 min on 7 threads) is the 2x2 run after the freeze on 30600
+(not adopted). Details and the agent finding: rules-history.md, revision 34; the tables:
+`experiments/results/screen-080/liberation.md`.
 
 **The ballpark read at r33 (078; Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
 players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
@@ -295,7 +311,7 @@ run goes on, and `^time: wall` that an `experiment` finished.
 **Fresh seeds for a gate.** The specs start at seed 0, as the calibration screens do. Give the
 gate a `--seed` no screen of this revision used (046 used 3000), or it confirms on the seeds
 that picked the levers. The ledger, updated by any item that spends seeds, and reset at each bump
-keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. r32 (076): screens 29000-29300 (r31's cards on 29000 too), 29400 and 29500 band, 29600 gate and its closes (to 29695), 29696-29743 more seeds of `always_buy_cubes`, 29800 the eval probe; 29400 and 29500 again for the final build's band, 29600 for a stopped gate-row replay (`experiments/gate-076-replay/`). r33 (078): 29900 the engine screens and use reads (16-32 seeds), 30000 the full-size planner read, 30100 the planner brackets (24 seeds), 30200 the fresh 48-seed read. Next free: 30300.
+keeping the seeds that picked that revision: r28: 22000 band of a rejected build, 22100 band, 23000 gate; screens 21000-21700; 069: 24000 frozen speed seeds, 24100 lever screen, 24200 its fresh confirmation (96), 24400 `sweep` screen (96). r27 picked at: 18000-19100, 20200, 20300, 21000. r29 (070): screens 24500-24999, 25000 band, 25200 gate and closes to 25295, 25400 creation-off screen, 25500 engine row, 25600 second band. r30 (074): 25700 and 25800 band, 25900 use screens, 26000 what-ifs. r31 (075): screens 27000-27900, 28100 behavior read, 25900 and 26000 band (the prompt's start), 28200 gate and its closes. r32 (076): screens 29000-29300 (r31's cards on 29000 too), 29400 and 29500 band, 29600 gate and its closes (to 29695), 29696-29743 more seeds of `always_buy_cubes`, 29800 the eval probe; 29400 and 29500 again for the final build's band, 29600 for a stopped gate-row replay (`experiments/gate-076-replay/`). r33 (078): 29900 the engine screens and use reads (16-32 seeds), 30000 the full-size planner read, 30100 the planner brackets (24 seeds), 30200 the fresh 48-seed read. r34 (080): 30300 the planner reads (the first build, the pace levers, the frozen build; liberation on and off), 30400 the engine smoke and the engine pace screen (16-32 seeds), 30500 the fresh confirmation, 30600 the 2x2 after the freeze (`screen-080-next.json`). Next free: 30700.
 
 ## Reading prices
 

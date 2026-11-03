@@ -15,7 +15,7 @@
     4
    ]
   ],
-  "presence": [
+  "economy_track": [
    {
     "income": [
      [
@@ -195,7 +195,7 @@
     ]
    }
   ],
-  "presence2": [
+  "play_track": [
    {
     "income": [
      [
@@ -296,7 +296,7 @@
     1
    ]
   ],
-  "presence": [
+  "economy_track": [
    {
     "income": [
      [
@@ -476,7 +476,7 @@
     ]
    }
   ],
-  "presence2": [
+  "play_track": [
    {
     "income": [
      [
@@ -572,7 +572,7 @@
     4
    ]
   ],
-  "presence": [
+  "economy_track": [
    {
     "income": [
      [
@@ -702,7 +702,7 @@
     "cost": [
      [
       "credits",
-      4
+      3
      ]
     ],
     "text": "add 1 research cube in your color to an incomplete megaproject",
@@ -762,7 +762,7 @@
     ]
    }
   ],
-  "presence2": [
+  "play_track": [
    {
     "income": [
      [

@@ -7,8 +7,8 @@ use crate::modules::common::{hex_opt, is_ocean, MARKER};
 use crate::modules::{adversary, alignment, board};
 use crate::state::Pick;
 
-/// The hold rule's numbers (the lab pins them off).
-const HOLD: [&str; 3] = ["board.hold_base=3", "board.hold_min=2", "board.free_leaves=1"];
+/// The fallback's numbers (the lab pins them off).
+const HOLD: [&str; 2] = ["board.liberate_at=5", "board.free_leaves=1"];
 
 fn empty_deck(g: &mut GameState, side: &str) {
     for tier in 1..=2 {
@@ -87,35 +87,39 @@ fn a_card_brings_arrivals_to_every_site_it_names_a_round_ahead() {
 }
 
 #[test]
-fn the_hold_counts_any_players_and_the_adversary_on_or_next_to_it() {
+fn the_fallback_is_a_flat_count_whatever_the_adversary_holds_nearby() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     let n = rules.map.hexes[h].neighbors[0];
     put(&mut g, h, ADV_CUBE, 1);
-    let w = rules.world();
-    assert_eq!(board::hold(&w, &g, h), 3);
     put(&mut g, n, ADV_AMBASSADOR, 2);
-    assert_eq!(board::hold(&w, &g, h), 5);
-    put(&mut g, n, ADV_AMBASSADOR, 0);
+    put(&mut g, n, presence(0), 1);
+    put(&mut g, n, presence(1), 1);
     put(&mut g, h, ambassador(0), 2);
-    put(&mut g, h, ambassador(1), 1);
-    // The next end check frees it: nothing else moved.
+    put(&mut g, h, ambassador(1), 2);
+    give(&rules, &mut g);
+    assert_eq!(g.tokens(h, ADV_CUBE), 1, "4 of 5");
+    put(&mut g, h, ambassador(1), 3);
+    // The next end check liberates it: any players, adversary ambassadors next to it don't count.
     give(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
     assert_eq!(g.tokens(h, ambassador(0)) + g.tokens(h, ambassador(1)), 0);
     // Down the ladder, not off the board.
     assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
+    assert_eq!(g.stats.counters["board.liberated_fallback"], 1);
 }
 
 #[test]
-fn the_hold_is_never_below_its_minimum() {
-    let (rules, mut g) = lab_with(&[], &["board.hold_base=0", "board.hold_min=2"]);
+fn the_fallback_counts_only_seats_with_presence_on_or_next_to_the_city() {
+    let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
-    assert_eq!(board::hold(&rules.world(), &g, h), 2);
     put(&mut g, h, ADV_CUBE, 1);
-    put(&mut g, h, ambassador(0), 1);
+    put(&mut g, h, ambassador(0), 5);
     give(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 1);
+    assert_eq!(g.tokens(h, ADV_CUBE), 1, "no presence near it");
+    put(&mut g, rules.map.hexes[h].neighbors[0], presence(0), 1);
+    give(&rules, &mut g);
+    assert_eq!(g.tokens(h, ADV_CUBE), 0);
 }
 
 #[test]
@@ -375,13 +379,13 @@ fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
 }
 
 #[test]
-fn hold_base_is_the_same_at_every_difficulty() {
-    let hold = |d: i64| {
+fn the_fallback_is_the_same_at_every_difficulty() {
+    let at = |d: i64| {
         let arg = format!("adversary.difficulty={d}");
-        let (rules, g) = lab_with(&[], &["board.hold_base=3", &arg]);
-        board::hold(&rules.world(), &g, rules.map.numbered(0, piece(0).cities[0]))
+        let (rules, _) = lab_with(&[], &["board.liberate_at=5", &arg]);
+        board::liberate_at(&rules.world())
     };
     for d in 1..=4 {
-        assert_eq!(hold(d), hold(0));
+        assert_eq!(at(d), at(0));
     }
 }

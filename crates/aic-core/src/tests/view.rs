@@ -5,7 +5,7 @@ use crate::modules::{board, threats};
 fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     // 078: at `city_build` 2 every opening stops at a spread choice; at 1 some
     // stop at the draft, which is what this reads.
-    let rules = Rules::new(&baseline_with(&["adversary.city_build=1"])).unwrap();
+    let rules = Rules::new(&baseline_with(&["adversary.city_build=1", "adversary.wall_troops=0"])).unwrap();
     let m = &rules.map;
     // A seed whose opening stops at the draft, not at a spread choice
     // before next round's card is revealed.

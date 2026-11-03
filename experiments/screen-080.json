@@ -1,0 +1,16 @@
+{
+  "name": "screen-080",
+  "note": "080: the r34 ballpark read, liberation on: 2 players, the three board pairs, d2, 48 seeds a cell on the fresh set 30300; the sweep planner, sweep with always_liberate (the row that tells a bad price from an agent that won't play the card), and the engine. Target 45-85 a pair. Read with scripts/cards/liberation_read.py --cards; the off arm is screen-080-off.json on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["sweep", "sweep:always_liberate=1", "engine"],
+  "games": 48,
+  "records": 0
+}

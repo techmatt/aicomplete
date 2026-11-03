@@ -92,6 +92,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
         Op::Cleanse { amount, one_country, cities } => removal::cleanse(g, cx, seat, *amount, *one_country, *cities)?,
+        Op::Liberate { align } => removal::liberate_city(g, cx, seat, *align)?,
         Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
         Op::Harden { count } => resources::harden(g, cx, seat, *count)?,
         Op::MoveAmbassadors { max } => ambassadors::move_ambassadors(g, cx, seat, *max)?,
@@ -131,12 +132,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::CounterThreat => {
             // 070: a player's card reaches what they may counter; a reward any threat.
             let active: Vec<_> = match ctx.source {
-                Source::Seat(_) => threats::counterable(&w, g, seat, None),
+                EffectSource::Seat(_) => threats::counterable(&w, g, seat, None),
                 _ => threats::active(g).into_iter().map(|(t, _)| t).collect(),
             };
             let opts = active.iter().map(|t| opt(*t)).collect();
             let prompt = match ctx.source {
-                Source::Seat(_) => format!("Seat {seat}: counter which threat?"),
+                EffectSource::Seat(_) => format!("Seat {seat}: counter which threat?"),
                 _ => "Unity: counter which threat?".to_string(),
             };
             if let Some(i) = cx.choose(seat, &prompt, opts)? {
@@ -284,7 +285,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }
-        | Op::HardenAction
+        | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
         | Op::ProjectDrain { .. }

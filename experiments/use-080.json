@@ -1,0 +1,16 @@
+{
+  "name": "use-080",
+  "note": "080: the engine smoke read of r34 (liberation): 2 players, the three board pairs, d2, 16 seeds, the engine and engine:always_liberate. Cards kept and never played, powers never used, cities corrupted and liberated. Read with scripts/cards/liberation_read.py --cards, play_read.py and board_read.py --powers.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["engine", "engine:always_liberate=1"],
+  "games": 16,
+  "records": 0
+}

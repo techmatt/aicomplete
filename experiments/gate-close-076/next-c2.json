@@ -17,7 +17,7 @@
   "planner",
   "planner:never_sacrifice=1",
   "planner:free_build_rush=1",
-  "planner:never_remove=1",
+  "planner:never_clear=1",
   "planner:only_tag=5",
   "planner:home_only=1",
   "planner:never_convert=1"

@@ -37,7 +37,7 @@ def tiers():
 def tokens():
     """Presence tokens on an AI board's two tracks."""
     ai = ais()[0]
-    return len(ai['presence']) + len(ai['presence2'])
+    return len(ai['economy_track']) + len(ai['play_track'])
 
 
 def power_key(board, k):

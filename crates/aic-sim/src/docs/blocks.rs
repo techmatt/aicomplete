@@ -362,9 +362,9 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
                 start_building(c, b),
                 per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
-                b.presence.len().to_string(),
-                b.presence2.len().to_string(),
-                (b.presence.len() + b.presence2.len()).to_string(),
+                b.economy_track.len().to_string(),
+                b.play_track.len().to_string(),
+                (b.economy_track.len() + b.play_track.len()).to_string(),
             ]
         })
         .collect();
@@ -459,11 +459,11 @@ fn track_block(boards: &[AiBoard], track: fn(&AiBoard) -> &[Uncover], first: &st
 }
 
 pub(super) fn presence_track_block(c: &Content) -> String {
-    track_block(&c.ais, |b| &b.presence, "1 (on the board at setup)")
+    track_block(&c.ais, |b| &b.economy_track, "1 (on the board at setup)")
 }
 
 pub(super) fn presence_track2_block(c: &Content) -> String {
-    track_block(&c.ais, |b| &b.presence2, "1")
+    track_block(&c.ais, |b| &b.play_track, "1")
 }
 
 pub(super) fn powers_block(c: &Content) -> String {
@@ -517,8 +517,8 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "in reach, with a site claim: your cube on it".to_string(),
         ],
         [
-            "Harden a facility (a card grants it, `harden_chips`)".to_string(),
-            format!("{} chips a token", t("board.harden_chips")),
+            "Harden a facility (a card grants it: Hardened Bunker Complex)".to_string(),
+            "the chips the card prints a token (080: 1)".to_string(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike (022: any facility, the adversary's too)".to_string(),
         ],
         [
@@ -558,7 +558,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ["Unity".to_string(), "Biomia's converter (074)".to_string(), "1 for 2 research cubes".to_string()],
         [
             "Unity".to_string(),
-            "freeing a corrupted city (§2; or a tier-2 ultimate)".to_string(),
+            "liberating a corrupted city (§2: a liberate card or the fallback)".to_string(),
             t("alignment.free_city"),
         ],
         ["Unity".to_string(), "removing a node".to_string(), t("alignment.node")],

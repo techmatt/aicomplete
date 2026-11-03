@@ -44,12 +44,12 @@ pub fn board<'w>(w: &World<'w>, seat: usize) -> &'w AiBoard {
 /// Spaces uncovered on seat `s`'s presence track (the board module counts
 /// the tokens taken off it, the starting one included).
 pub fn uncovered(w: &World, g: &GameState, seat: usize) -> usize {
-    board::track_taken(g, seat).clamp(1, board(w, seat).presence.len())
+    board::track_taken(g, seat).clamp(1, board(w, seat).economy_track.len())
 }
 
 /// Spaces uncovered on seat `s`'s second presence track (021; none at setup).
 fn uncovered2(w: &World, g: &GameState, seat: usize) -> usize {
-    board::track2_taken(g, seat).min(board(w, seat).presence2.len())
+    board::track2_taken(g, seat).min(board(w, seat).play_track.len())
 }
 
 /// Income from the AI board and its presence track: `(resource, amount)`
@@ -75,7 +75,7 @@ pub fn each_track_income(w: &World, g: &GameState, seat: usize, mut f: impl FnMu
 /// Spaces seat `s` has uncovered on both tracks.
 fn uncovered_spaces<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Uncover> {
     let b = board(w, seat);
-    b.presence[..uncovered(w, g, seat)].iter().chain(&b.presence2[..uncovered2(w, g, seat)])
+    b.economy_track[..uncovered(w, g, seat)].iter().chain(&b.play_track[..uncovered2(w, g, seat)])
 }
 
 /// The capstones seat `s` has uncovered (068): a track's last space, so a
@@ -83,7 +83,7 @@ fn uncovered_spaces<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Itera
 pub fn capstones<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Innate> {
     let b = board(w, seat);
     let end = |t: &'w [Uncover], up: usize| t.last().filter(|_| up >= t.len()).and_then(|u| u.capstone.as_ref());
-    end(&b.presence, uncovered(w, g, seat)).into_iter().chain(end(&b.presence2, uncovered2(w, g, seat)))
+    end(&b.economy_track, uncovered(w, g, seat)).into_iter().chain(end(&b.play_track, uncovered2(w, g, seat)))
 }
 
 /// The tags printed on seat `s`'s board and those its tracks have revealed
@@ -192,8 +192,8 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
 
 /// Whether seat `s` has a presence token left on its track.
 pub fn can_place(w: &World, g: &GameState, seat: usize) -> bool {
-    board::track_taken(g, seat) < board(w, seat).presence.len()
-        || board::track2_taken(g, seat) < board(w, seat).presence2.len()
+    board::track_taken(g, seat) < board(w, seat).economy_track.len()
+        || board::track2_taken(g, seat) < board(w, seat).play_track.len()
 }
 
 /// Whether uncovering `u` builds a research station (075).
@@ -400,9 +400,9 @@ impl Module for Ai {
         for s in 0..g.seats.len() {
             let b = board(w, s);
             let up = uncovered(w, g, s);
-            let mut tracks = vec![track_view("economy track", &b.presence, up)];
-            if !b.presence2.is_empty() {
-                tracks.push(track_view("card-play track", &b.presence2, uncovered2(w, g, s)));
+            let mut tracks = vec![track_view("economy track", &b.economy_track, up)];
+            if !b.play_track.is_empty() {
+                tracks.push(track_view("card-play track", &b.play_track, uncovered2(w, g, s)));
             }
             let (hand, built) = (cards::hand(s), cards::built(s));
             let mut unique: Vec<CardView> = b

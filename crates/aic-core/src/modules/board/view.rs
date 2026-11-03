@@ -193,7 +193,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             );
         }
         let b = ai::board(w, s);
-        let left = b.presence.len().saturating_sub(track_taken(g, s));
+        let left = b.economy_track.len().saturating_sub(track_taken(g, s));
         out.seat(
             s,
             "presence_track",

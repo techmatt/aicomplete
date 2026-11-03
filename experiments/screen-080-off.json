@@ -1,0 +1,16 @@
+{
+  "name": "screen-080-off",
+  "note": "080: the r34 ballpark read, liberation off (the seven liberate capstones out of the deck, experiments/configs/no_liberate.json from scripts/configs/no_liberate.py): 2 players, the three board pairs, d2, 48 seeds a cell on the fresh set 30300; the sweep planner and the engine, on the seeds of screen-080.json (the on arm), so the liberation gap shows apart from the balance changes. Read with scripts/cards/liberation_read.py.",
+  "configs": [
+    "experiments/configs/no_liberate.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["sweep", "engine"],
+  "games": 48,
+  "records": 0
+}

@@ -43,22 +43,16 @@ pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
 }
 
 /// Whether an adversary ambassador stands on hex `h` or an adjacent hex
-/// (each adds 1 to a corrupted city's [`hold`]).
+/// (what Clear City clears).
 pub fn guarded(w: &World, g: &GameState, h: usize) -> bool {
     next_to(w, h, |x| g.tokens(x, ADV_AMBASSADOR) > 0)
 }
 
-/// A corrupted city's hold (027): the player ambassadors, from any players,
-/// that free it. `hold_base`, plus 1 for each adversary ambassador on or
-/// next to it, never below `hold_min`.
-pub fn hold(w: &World, g: &GameState, h: usize) -> i64 {
-    let near: i64 = g.tokens(h, ADV_AMBASSADOR)
-        + w.map.hexes[h]
-            .neighbors
-            .iter()
-            .map(|&x| g.tokens(x, ADV_AMBASSADOR))
-            .sum::<i64>();
-    (w.int("board.hold_base") + near).max(w.int("board.hold_min"))
+/// The fallback (080, r34): player ambassadors on a corrupted city that
+/// liberate it, a flat `liberate_at` (027-r33's hold, `hold_base` plus the
+/// adversary ambassadors on or next to it, is gone).
+pub fn liberate_at(w: &World) -> i64 {
+    w.int("board.liberate_at").max(1)
 }
 
 /// Player ambassadors on hex `h`, from all seats.
@@ -66,38 +60,53 @@ pub fn ambassadors_on(g: &GameState, h: usize) -> i64 {
     (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum()
 }
 
-/// City `h` frees: the adversary's cube comes off, Unity sways, and it drops
-/// down the piece ladder rather than off the board (027: `free_leaves`
-/// adversary ambassadors stay on it).
+/// Player ambassadors on hex `h` that count toward liberating it (080): from
+/// seats whose presence is on or next to it.
+pub fn liberating_ambassadors(w: &World, g: &GameState, h: usize) -> i64 {
+    (0..g.seats.len())
+        .filter(|&s| in_reach(w, g, s, h))
+        .map(|s| g.tokens(h, ambassador(s)))
+        .sum()
+}
+
+/// City `h` is liberated: the adversary's cube comes off, so it is clean,
+/// Unity sways, and it drops down the piece ladder rather than off the board
+/// (027: `free_leaves` adversary ambassadors stay on it). `by` with `align`
+/// (a liberate card's extra, 080) puts that seat's cube on it.
 pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
     cx.add_tokens(g, h, ADV_CUBE, -1);
     cx.tally(g, "board.cities_freed", 1);
     alignment::for_city_freed(g, cx);
     adversary::place(g, cx, h, w.int("board.free_leaves"));
-    cx.note(Some(h), || format!("{} is freed", hex_name(&w, h)));
+    cx.note(Some(h), || format!("{} is liberated", hex_name(&w, h)));
 }
 
-/// 027: a corrupted city frees the moment player ambassadors on it, from any
-/// players, reach its [`hold`]; that many are used up, lower seats first.
-/// Checked after every action and automatic phase.
+/// The fallback (080): a corrupted city is liberated the moment
+/// `liberate_at` player ambassadors stand on it from seats with presence on or
+/// next to it; that many are used up, lower seats first. Checked after every
+/// action and automatic phase.
 pub(super) fn free_cities(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     for h in 0..g.hexes.len() {
         if !corrupted_city(&w, g, h) {
             continue;
         }
-        let need = hold(&w, g, h);
+        let need = liberate_at(&w);
         // 070: a face-up influence threat here holds the city until it is countered.
-        if ambassadors_on(g, h) < need || threats::shielded(&w, g, h, ThreatSource::Influence) {
+        if liberating_ambassadors(&w, g, h) < need || threats::shielded(&w, g, h, ThreatSource::Influence) {
             continue;
         }
         let mut left = need;
         for s in 0..g.seats.len() {
+            if !in_reach(&w, g, s, h) {
+                continue;
+            }
             let k = g.tokens(h, ambassador(s)).min(left);
             cx.add_tokens(g, h, ambassador(s), -k);
             left -= k;
         }
+        cx.tally(g, "board.liberated_fallback", 1);
         liberate(g, cx, h);
     }
 }

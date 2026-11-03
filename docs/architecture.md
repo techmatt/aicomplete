@@ -324,7 +324,7 @@ Content is data in `content/`, composed from code primitives:
 - **Player cards** (`cards.json`, 021): a `tier` (1 or 2; 0 for an AI's unique card or
   starting building), a `kind` (`building`, `program`: stays in the play area, or
   `event`: discarded), a credit `cost` and optional `insight` (022: to play, shared
-  with keeps), `energy`, `chips` and `antimatter` costs and `lowers` (022: incomes
+  with keeps), `energy`, `chips`, `antimatter` and `research_cubes` (080) costs and `lowers` (022: incomes
   the play lowers for good, `[["credits", 1]]`), 1-3 `tags` (`vocab::Tag`), `needs` (tags in play), `effects`
   (ops: on play, or when built), `passives` (ops: a building's standing effects), an
   `ability` (once a round; buildings only; `cost` from the seat, `tokens` from the
@@ -341,7 +341,7 @@ Content is data in `content/`, composed from code primitives:
 - **Adversary projects** (`projects.json`, 017): `stage` (1 cheap, 2 big), `cost` per
   player, `ongoing`, `text` and `effects` (ops, as on Alignment cards).
 - **AI boards** (`ais.json`): credit production, innate
-  passives, printed `tags` (they count for requirements only), the two presence tracks (`presence`, the economy track, and `presence2`, the card-play track: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
+  passives, printed `tags` (they count for requirements only), the two presence tracks (`economy_track`, and `play_track`, the card-play track; `presence` and `presence2` before 080: for each space, `tags` it reveals, a `capstone` read as a passive once uncovered, `income` what it uncovers,
   `cost` the energy a placement pays for it, `keep2` the tier-2 keep upgrade) and flat `income`, unique cards, a
   `start` building; `powers` are `{name, text, tags, cost, effects}` (021; `tags` may
   name `any`). Slots and starting credits are config lists read by seat, `ai.slots` and
@@ -367,7 +367,7 @@ content loads: references, and that every op sits in a list its [`Op::slots`] al
 
 Everything content does is one enum, [`Op`] (`op.rs`), read from JSON as
 `{"op": "<snake_case>", ...}`. An op means one thing wherever it is printed; a context
-(`effects::Ctx`) supplies what differs: who chooses (`Source`), who is hit and where
+(`effects::Ctx`) supplies what differs: who chooses (`EffectSource`), who is hit and where
 (`scope`, a threat's country or the whole board). So `sway` is `sway`, whether a card, a
 threat or a Discord card prints it. Three kinds:
 

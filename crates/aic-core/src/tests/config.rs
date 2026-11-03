@@ -159,7 +159,7 @@ fn tunables_list_every_module_parameter() {
     };
     for k in [
         "board.start_corrupted",
-        "board.hold_base",
+        "board.liberate_at",
         "board.clear_cost",
         "adversary.difficulty",
         "adversary.supply_per_country",

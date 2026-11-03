@@ -88,12 +88,12 @@ fn lab_config(round: &[&str]) -> Config {
         "board.free_leaves=0",
         "board.unit_cap=3",
         "board.destruction_discord=1",
-        "board.hold_base=0",
-        "board.hold_min=1",
+        "board.liberate_at=1",
         "board.last_safe_stage=0",
         "board.troop_steps=2",
         "board.troop_spent=1",
         "adversary.arrivals=0",
+        "adversary.wall_troops=0",
         // 021: no credits, so no neutral city's energy is bought unasked.
         "ai.start_credits=0",
     ]);
@@ -108,7 +108,7 @@ fn lab(phases: &[&str]) -> (Rules, GameState) {
 }
 
 /// `lab` with overrides on top of the lab config, whose params are not the
-/// baseline's (`hold_base` 0): a test of a tunable's value uses `baseline_with`.
+/// baseline's (`liberate_at` 1): a test of a tunable's value uses `baseline_with`.
 fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     let mut round = phases.to_vec();
     round.push(ACTIONS);
@@ -328,7 +328,7 @@ fn at_step(sets: &[&str], taken: i64) -> (Rules, GameState) {
 /// The cheaper of seat 0's two tracks at `taken` steps.
 fn step_cost(w: &module::World, taken: usize) -> i64 {
     let b = modules::ai::board(w, 0);
-    b.presence[taken].cost.min(b.presence2[taken].cost)
+    b.economy_track[taken].cost.min(b.play_track[taken].cost)
 }
 
 fn threat_lab() -> (Rules, GameState) {
@@ -489,9 +489,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 33;
-const GOLDEN_FINGERPRINT: &str = "cec4fab721718f33";
-const GOLDEN_CONTENT_HASH: &str = "e617d4a74a9e2c97";
+const GOLDEN_REVISION: u32 = 34;
+const GOLDEN_FINGERPRINT: &str = "9424d8d7a0b00847";
+const GOLDEN_CONTENT_HASH: &str = "87229a9e0d536395";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

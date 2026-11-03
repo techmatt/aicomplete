@@ -67,7 +67,7 @@ fn a_bought_cube_goes_on_an_incomplete_project_and_pays_at_completion_only() {
     let w = rules.world();
     set_res(&mut g, 2, Resource::Credits, 10);
     act(&rules, &mut g, researcher_power(&rules, "Grant"));
-    assert_eq!(g.resource(2, Resource::Credits), 6);
+    assert_eq!(g.resource(2, Resource::Credits), 7);
     let on: i64 = (0..w.map.countries.len()).map(|c| g.var(&board::project_key(c, Some(2)))).sum();
     assert_eq!(on, 1);
     for c in 0..w.map.countries.len() {
@@ -106,7 +106,7 @@ fn the_track_space_builds_a_free_station() {
     let (rules, _) = c3();
     let w = rules.world();
     let b = ai::board(&w, 2);
-    let spaces = b.presence.iter().filter(|u| u.effects == [Op::BuildStation]).count();
+    let spaces = b.economy_track.iter().filter(|u| u.effects == [Op::BuildStation]).count();
     assert_eq!(spaces, 1);
 }
 

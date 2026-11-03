@@ -352,6 +352,16 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             }
             one(clause(adversary(parts), say))
         }
+        Op::Liberate { align } => {
+            let mut parts = minus(1, "cube");
+            parts.push(w("city"));
+            let say = if *align {
+                "liberate a corrupted city in reach; your cube goes on it"
+            } else {
+                "liberate a corrupted city in reach"
+            };
+            one(clause(adversary(parts), say.to_string()))
+        }
         Op::ClearCity { max } => {
             let (parts, what) = if *max > 0 {
                 let mut p = minus(*max, "ambassador");
@@ -393,7 +403,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::Jam { amount: n, source: Some(s) } => one(clause(
             adversary(minus(*n, "jam")),
-            format!("counts as {n} credits toward {} threat", s.a_word()),
+            format!("counts as {n} toward {} threat", s.a_word()),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
         Op::DrainProject { amount: n } => {
@@ -516,7 +526,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }
-        | Op::HardenAction
+        | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
         | Op::ProjectDrain { .. }
@@ -572,10 +582,11 @@ fn standing(op: &Op) -> Standing {
             parts.extend(minus(*n, "credits"));
             effect(parts, format!("your buildings cost {} less", amount(Resource::Credits, *n)))
         }
-        Op::HardenAction => effect(
-            vec![w("ACT"), w("harden"), w("chips")],
-            "you gain the Harden action, paid in chips".to_string(),
-        ),
+        Op::HardenAction { chips: n } => {
+            let mut parts = vec![w("ACT"), w("harden")];
+            parts.extend(minus(*n, "chips"));
+            effect(parts, format!("you gain the Harden action, paid {}", amount(Resource::Chips, *n)))
+        }
         Op::Slots { amount: n } => effect(
             vec![Part::Word(format!("+{n}")), w("slot")],
             format!("you have {}", plural(*n, "more building slot")),
@@ -740,6 +751,7 @@ fn below_art(c: &CardDef, f: &mut Face) {
         (Resource::Chips, c.chips),
         (Resource::Energy, c.energy),
         (Resource::Antimatter, c.antimatter),
+        (Resource::ResearchCubes, c.research_cubes),
     ]
     .into_iter()
     .filter(|(_, n)| *n != 0)

@@ -222,8 +222,8 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
 /// A card's costs beyond credits, and the income it lowers.
 fn pay_card_extras(g: &mut GameState, cx: &mut Cx, seat: usize, d: &CardDef) {
     let w = cx.world;
-    let [insight, energy, chips, antimatter] = extra_costs(&w, g, seat, d);
-    for (r, n) in [antimatter, energy, chips, insight] {
+    let [insight, energy, chips, antimatter, cubes] = extra_costs(&w, g, seat, d);
+    for (r, n) in [antimatter, energy, chips, cubes, insight] {
         cx.add_resource(g, seat, r, -n);
     }
     if insight.1 > 0 {

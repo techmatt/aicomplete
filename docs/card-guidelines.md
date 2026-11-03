@@ -82,7 +82,7 @@ in reach, a country you're in, here, Remove N, Draw, on your cards, Action) are 
 
 **"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;
 the same token on presence is a "shield". "You gain the Harden action" is a standard action a card grants, paid in
-chips (`harden_chips`, 066); the Protector's Bulwark is a power, paid in energy (068). It is not a keyword.
+chips (066; since 080 the card prints the price); the Protector's Bulwark is a power, paid in energy (068). It is not a keyword.
 
 **American English.** Content, faces, docs, UI and comments: Mobilization, Armored, Modeling.
 `aic-sim docs --check`, so the fast lane, refuses a British spelling (`crates/aic-sim/src/spelling.rs`).

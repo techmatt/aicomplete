@@ -145,12 +145,32 @@ pub(super) fn cleanse(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64, 
         };
         cx.tally(g, "effects.cleansed", 1);
         if is_city(&w, hexes[i]) {
+            cx.tally(g, "board.liberated_card", 1);
             board::liberate(g, cx, hexes[i]);
         } else {
             cx.add_tokens(g, hexes[i], ADV_CUBE, -1);
         }
         if one_country {
             country = Some(w.map.hexes[hexes[i]].country);
+        }
+    }
+    Ok(())
+}
+
+/// A liberate card (080): one corrupted city in reach is liberated; with
+/// `align` the seat's cube goes on it.
+pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, align: bool) -> Res {
+    let w = cx.world;
+    let cities = liberable_cities(&w, g, seat);
+    let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
+    let prompt = format!("Seat {seat}: liberate which corrupted city?");
+    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+        let h = cities[i];
+        cx.tally(g, "board.liberated_card", 1);
+        board::liberate(g, cx, h);
+        if align {
+            cx.add_tokens(g, h, cube(seat), 1);
+            cx.tally(g, "board.liberated_aligned", 1);
         }
     }
     Ok(())

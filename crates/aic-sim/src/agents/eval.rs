@@ -137,14 +137,20 @@ pub struct Weights {
     /// Player ambassadors toward a corrupted city's hold (027), on it or in
     /// the supply of a seat with it in reach: this share of `corrupted`.
     pub freeing: f64,
-    /// Each adversary ambassador next to a corrupted city (024: it blocks
-    /// the freeing), on top of `adv_ambassador`.
-    pub guard: f64,
+    /// 080: each city liberated this game (by a card or the fallback), on top of
+    /// the corrupted city it no longer is.
+    pub liberated: f64,
+    /// 080: a clean or aligned city one adversary ambassador from corrupting,
+    /// on top of `pressure`.
+    pub at_risk: f64,
+    /// 080: a liberate building's tokens toward its liberation (Popular
+    /// Uprising), at this much for a full pile, while a city is corrupted.
+    pub liberate_progress: f64,
     /// Each point of per-round income (AI tracks).
     pub income: f64,
     /// A track's capstone (068): the square of the share of the track
     /// uncovered, so the last steps count most.
-    pub capstone: f64,
+    pub track_capstone: f64,
     pub credits: f64,
     /// 024: credits a seat holds beyond `credit_cap` are worth `credit_idle`
     /// each: a stockpile buys nothing this round, so spending wins.
@@ -222,10 +228,11 @@ pub struct Weights {
 }
 
 /// Weights renamed since experiments named them: (former name, name).
-const RENAMED: [(&str, &str); 3] = [
+const RENAMED: [(&str, &str); 4] = [
     ("opp_rate", "unity_rate_start"),
     ("hardware", "chips"),
     ("data_center", "presence"),
+    ("capstone", "track_capstone"),
 ];
 
 /// A drafted card's keep price in credits (its tier's insight at
@@ -292,9 +299,11 @@ impl Default for Weights {
             ambassador: 5.0,
             ambassador_board: 2.5,
             freeing: 2.0,
-            guard: 3.0,
+            liberated: 10.0,
+            at_risk: 4.0,
+            liberate_progress: 20.0,
             income: 3.0,
-            capstone: 16.0,
+            track_capstone: 16.0,
             credits: 0.6,
             credit_cap: 12.0,
             credit_idle: 0.15,
@@ -653,12 +662,13 @@ impl Eval {
             if city {
                 if bad {
                     corrupted += 1;
-                    let on = board::ambassadors_on(g, h) as f64;
+                    // 080: only seats with presence on or next to it count.
+                    let on = board::liberating_ambassadors(&world, g, h) as f64;
                     let held: i64 = (0..seats)
                         .filter(|&s| near[s] >> h & 1 != 0)
                         .map(|s| g.resource(s, Resource::Ambassadors))
                         .sum();
-                    let need = board::hold(&world, g, h).max(1) as f64;
+                    let need = board::liberate_at(&world) as f64;
                     // Gathering counts a little; landing, once enough are at
                     // hand to meet the hold, counts more each step, so a push
                     // climbs to the free one action at a time (027: agents
@@ -670,9 +680,6 @@ impl Eval {
                     }
                     v += w.corrupted * w.freeing * share;
                     v += (w.ambassador - w.ambassador_board) * on;
-                    let around = world.map.hexes[h].neighbors.iter();
-                    let guards: i64 = around.map(|&n| tokens[n].adv_ambassador).sum();
-                    v -= w.guard * guards as f64;
                 } else {
                     if owned {
                         v += w.aligned;
@@ -681,6 +688,9 @@ impl Eval {
                     let toward = adv + t.marker;
                     let p = (toward as f64 / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
+                    if toward + 1 >= corrupt_at {
+                        v -= w.at_risk;
+                    }
                 }
             }
             let held = t.presence[..seats].iter().any(|&n| n > 0);
@@ -735,6 +745,7 @@ impl Eval {
             pieces += adversary::against_bar(city && bad, t.node, adv, t.troop, level);
         }
         v -= w.corrupted * corrupted as f64;
+        v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
         let mut thin = i64::MAX;
         for s in 0..self.seats {
             let count = tokens.iter().filter(|t| t.presence[s] > 0).count() as i64;
@@ -999,10 +1010,20 @@ impl Eval {
         *v += self.w.program * g.pile(&cards::played(s)).len() as f64;
         let b = ai::board(&world, s);
         let share = |taken: usize, len: usize| if len == 0 { 0.0 } else { (taken as f64 / len as f64).powi(2) };
-        *v += self.w.capstone
-            * (share(board::track_taken(g, s), b.presence.len()) + share(board::track2_taken(g, s), b.presence2.len()));
+        *v += self.w.track_capstone
+            * (share(board::track_taken(g, s), b.economy_track.len()) + share(board::track2_taken(g, s), b.play_track.len()));
+        let corrupted = (0..g.hexes.len()).any(|h| common::corrupted_city(&world, g, h));
         for id in cards::token_cards(&world, g, s, None) {
-            *v += self.w.token * g.var(&cards::tokens_key(s, &id)) as f64;
+            let k = g.var(&cards::tokens_key(s, &id));
+            *v += self.w.token * k as f64;
+            // 080: tokens toward a liberation count for it.
+            if let Some(need) = cards::def(&world, &id).ability.as_ref().and_then(|a| a.or.as_ref()).filter(|b| {
+                b.tokens > 0 && b.effects.iter().any(|e| matches!(e, aic_core::content::Op::Liberate { .. }))
+            }) {
+                if corrupted {
+                    *v += self.w.liberate_progress * (k as f64 / need.tokens as f64).min(1.0);
+                }
+            }
         }
     }
 
@@ -1127,6 +1148,7 @@ impl Eval {
                         d.antimatter,
                         income[Resource::Antimatter],
                     ),
+                    (res(Resource::ResearchCubes), d.research_cubes, 1),
                     (res(Resource::Insight), insight_need, income[Resource::Insight]),
                 ] {
                     let short = need - have;

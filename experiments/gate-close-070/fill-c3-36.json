@@ -16,7 +16,7 @@
   2
  ],
  "agents": [
-  "planner:never_remove=1",
+  "planner:never_clear=1",
   "planner:science_rush=1",
   "planner:no_powers=1",
   "planner:home_only=1",

@@ -473,7 +473,7 @@ fn left_unspent(g: &GameState, s: usize) -> Vec<i64> {
     UNSPENT
         .iter()
         .map(|r| {
-            let at_end = g.stats.per_round.get(format!("left.{s}.{r}").as_str()).and_then(|v| v.last().copied());
+            let at_end = g.stats.per_round.get(format!("unspent.{s}.{r}").as_str()).and_then(|v| v.last().copied());
             match at_end {
                 Some(n) if !in_actions => n,
                 _ => g.resource(s, *r),

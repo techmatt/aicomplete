@@ -185,6 +185,13 @@ pub enum Op {
         #[serde(default)]
         cities: bool,
     },
+    /// Liberate one corrupted city in your reach (080, r34: the liberate
+    /// capstones): its adversary cube comes off, so it is clean; with `align`
+    /// your cube goes on it.
+    Liberate {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        align: bool,
+    },
     /// Remove up to `max` adversary ambassadors (0: all) on or next to one
     /// corrupted city in your reach, the ones next to it first (024).
     ClearCity {
@@ -467,8 +474,11 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
-    /// You may use the Harden standard action, paid at `harden_chips`.
-    HardenAction,
+    /// You may use the Harden standard action, paid `chips` chips (080: the
+    /// price is printed on the card; r33 read `board.harden_chips`).
+    HardenAction {
+        chips: i64,
+    },
     /// `amount` more building slots.
     Slots {
         amount: i64,
@@ -601,7 +611,7 @@ impl Op {
             Op::Income { .. }
             | Op::IncomePerTag { .. }
             | Op::BuildingDiscount { .. }
-            | Op::HardenAction
+            | Op::HardenAction { .. }
             | Op::Slots { .. }
             | Op::Logistics { .. }
             | Op::ProjectDrain { .. }
@@ -639,6 +649,7 @@ impl Op {
             | Op::GainPerTag { .. }
             | Op::BuildFactory
             | Op::Cleanse { .. }
+            | Op::Liberate { .. }
             | Op::ClearCity { .. }
             | Op::Harden { .. }
             | Op::MoveAmbassadors { .. }

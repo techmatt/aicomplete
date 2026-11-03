@@ -164,7 +164,7 @@ fn has_troop_target(w: &World, g: &GameState, h: usize) -> bool {
 
 /// Whether seat `s` has Wall: `Content::check` keeps it to innates, so no
 /// card's passives need reading.
-fn has_wall(w: &World, seat: usize) -> bool {
+pub fn has_wall(w: &World, seat: usize) -> bool {
     ai::board(w, seat).innate.passives.iter().any(|p| matches!(p, Op::Wall))
 }
 

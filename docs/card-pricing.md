@@ -1,4 +1,4 @@
-# Card pricing: the reasoning (023, rules r14; current rates to r33)
+# Card pricing: the reasoning (023, rules r14; current rates to r34)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
@@ -30,7 +30,7 @@ of a round's printed credits, and tier 2 about half. **As built:**
 Tier 2 lands under 14 because the chains price their gates (the six needs-3-to-6 tier-2 cards sit at 6-16) and the four
 standing counters share one 8-credit shape; the band was tuned on printed income, not on these prices.
 
-## Current rates (to r33)
+## Current rates (to r34)
 
 This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
 dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
@@ -72,13 +72,44 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | adversary compute made | 1.1 against the players; on every visible project 1.1 a project | new (074): the removal's rate read the other way. **Measured dearer than this:** see *074's changes* |
 | cut node | 1 | **was 3:** `adversary.node_compute` is 1 |
 | node removed | 12 | 2 Sway plus its compute and the block on claims |
-| city freed | 25 | 5 Sway plus a city |
+| city liberated | 25 | 5 Sway plus a city. 080: the liberate capstones are priced at 18-33 worth plus the keep against it, and the fallback (5 ambassadors at 20) at about 100 |
 | income, tier 1 / tier 2 | credit 5 / 3, energy 5 / 3.5, chip 4 / 2.5, insight 8 / 6 | about 6 incomes in tier 1, 3 in tier 2. Insight's pair was built at 4, not rebased |
 | a gift to another seat | 0.75 × face | new: they may not need it then |
 | income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2. 076: one shape, 1 credit (Tidal Barrage: energy) per tag of its own, needs 3, 9 credits (Citation Engine, Consulate Tower, Security Contractor HQ, Grid-Tied Smelter) |
 | `needs` chain | needs 3-4: 2-4 under the recipe; needs 6: about half | 076 (ruling 10): the requirement is the price |
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
+## 080's changes (r34): the liberate capstones
+
+Seven tier-2 cards, one an engine, each "pay in the engine's resource, liberate a corrupted city in reach" (rules.md §8,
+*The liberate capstones*). **The yardstick:** a city liberated is 25 at *Current rates* (5 Sway and a city); the
+fallback, 5 ambassadors at the project's 20, is about 100. Matt's start: each card about 30-40 credits' worth with at
+least half in its engine's resource, out of reach before mid-game; a tag chain prices its gate (ruling 10). **Worth paid,
+as printed after the screens** (credits 1, antimatter 9, energy 2, chip 1.5, research cube 3, insight 2.5, Sway 4; the
+tier-2 keep, 6.5, on top of each):
+
+| Card | Pays | Worth paid | Extra, valued | First price (screened, not kept) |
+|---|---|---|---|---|
+| The Nuclear Option | 12 cr, 1 antimatter, 1 insight | 23.5, plus 2 Discord Sway (8): 31.5 | none; the Discord is the cost | 8 cr, 2 antimatter |
+| Power to the People | 12 cr, 4 energy, 3 chips, 1 insight | 27 | 1 credit income per Power tag: about 3 a round for 3-4 rounds at tier-2 income 3 | 10 cr, 5 energy, 4 chips |
+| Hostile Buyout | 30 cr, 1 insight | 32.5 | your cube on the city: its energy each round | |
+| Forensic Audit | 10 cr, 4 research cubes, 1 insight | 24.5 | none | 8 cr, 6 cubes |
+| Root Access | 16 cr, 1 insight, needs 2 Cyber | 18.5 and the gate | none | 14 cr, needs 4 |
+| Peacekeeping Mission | 16 cr, 1 insight, needs 2 Security | 18.5 and the gate | your cube on the city | 14 cr, needs 4 |
+| Popular Uprising | 10 cr, 1 insight; then 6 Followers (9) a city, three Actions | 12.5 + 9 a city | repeatable: about one city every 3 rounds | |
+
+**Why the first prices moved:** `always_liberate` (the row that keeps every liberate card and plays one the first round it
+is legal) kept Nuclear Option, Root Access, Peacekeeping Mission and Forensic Audit in 50-62% of games and played them in
+6-21% (the sweep, seeds 30300, 48 a pair): out of reach, not merely dear. Two antimatter, four of a tag and six cubes were
+the gates; each came down, and the credits went up where the gate came down.
+
+**The energy rate (Matt's ask, 080): left at 2.** At game end a seat holds 6-11 energy unspent at r34 (r33: 10-14), against
+the "ends high" mark of 4 (`UNSPENT_HIGH`, about a round's income), in every pair and agent (the sweep, seeds 30300). That says
+energy past what presence takes piles up, as 075 measured, but only at game end, where nothing buys anything: a per-round
+read of unspent energy (the `unspent.<seat>.energy` per-round stat is in the state, not in `games.jsonl`) would settle it.
+Not clear enough to move the rate.
+**Current rates** gain a research cube as a card cost (3, unchanged) and nothing else.
 
 ## 078's changes (r33): a bigger starting economy
 
