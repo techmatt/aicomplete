@@ -41,8 +41,8 @@ The house words, as the player aid prints them ([player-aid.md](player-aid.md)):
 - **Here**: on a building: on this card, where its tokens sit.
 - **Remove N**: as many as there are, up to N.
 - **Draw**: from the tier-1 deck, with no keep to pay.
-- **You have**: on tags and tokens: on your cards in play; a covered building's tokens don't count.
-- **Action**: once a round, always.
+- **On your cards**: on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them.
+- **Action**: once a round, always; "A, OR B" is one use, either half.
 <!-- /generated -->
 
 The rest:
@@ -316,7 +316,7 @@ up at once; when all of them have resolved (or been discarded), the next row is 
   017 screen, toward the target round 3–4
   (`experiments/results/screen-017-projects/projects.md`).
 - **Counterplay:** a player ambassador on a node stops its compute and is not used up;
-  Cyber's hacks drain compute from one project (Flash Exploit, Compute Siphon, ...),
+  Cyber's hacks drain compute from one project (Blackout Script, Zero-Click Breach, ...),
   tier-2 hacks from every visible one (Black Ice Citadel, each upkeep) or discard one with its compute
   (Killswitch Directive); the drain standard project (§6, 024) at credits.
 
@@ -906,8 +906,8 @@ game ends it there.
 |---|---|---|
 | Credits | Credit production on the AI board (§7), the presence track, cards and Unity cards, in upkeep; megaproject payouts; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters (024: every counter) |
 | Energy (keeps between rounds) | Cities' cubes in production (§6 below); Horizon's completion payout; the presence tracks; Power buildings and the starting Sentinel Post; Power programs; `ai.start_energy` at the start | The presence powers and every track step (§7); Power cards' `energy` cost; Bulwark's hardening |
-| Chips | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; Industry cards (chip income, Bulk Silicon Procurement, Capital spent for chips) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
-| Antimatter | Tier-2 cards (Antiproton Offtake Deal, Positron Storage Ring); the antimatter action; Horizon's converter | Tier-2 cards |
+| Chips | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; cards (chip income: Bulk Silicon Procurement, Peaker Turbines, Arcology Foundry; Antitrust Action's chips per Industry tag; Joint Fabrication Pact; Surplus Auction) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
+| Antimatter | Tier-2 cards (Positron Storage Ring; 076 merged Antiproton Offtake Deal into it); the antimatter action; Horizon's converter | Tier-2 cards |
 | Research cubes (keep between rounds, 074) | Your stations, once their country's megaproject is complete; the Researcher's Open Archive capstone; Sample Repository, Preprint Exchange (075) | Converters (§1); the Researcher's Peer Review (§7); Inference Cluster, Breakthrough Lab, Policy Institute |
 | Insight | Each round, set to the AI board's insight (§7) plus the presence track's uncovers plus buildings; less 1 per adversary ambassador that drained your presence, and less what Smear Campaign took; Cintamani's converter adds 1; the Researcher's Open Science capstone gives others 2 a round; Inference Cluster | Keeping drafted cards; playing cards (022); giving (expires at the round's end, but the Researcher's carries over: Patience, §7) |
 | Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound), Followers through a card's Action, income on Orbital Embassy; the standard project | Moving onto pieces and evicting (they stay, §2); aligning cities, claiming sites, freeing cities (consumed) |
@@ -1009,9 +1009,9 @@ reachable date is about round 8 at 1-2 placements a round.
 <!-- generated: boards -->
 | Board | Printed income | Starting credits | Starting building | Slots | Printed tags | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|---|
-| Builder | 13 credits, 4 insight | 15 | Foundry Core (Industry): +1 credit | 5 | Industry | 7 | 7 | 14 |
-| Protector | 12 credits, 4 insight | 25 | Sentinel Post (Security): +1 energy | 3 | Security | 7 | 7 | 14 |
-| Researcher | 8 credits, 4 insight | 15 |  | 2 | Science | 7 | 7 | 14 |
+| Builder | 16 credits, 4 insight | 15 | Foundry Core (Industry): +1 credit | 5 | Industry | 7 | 7 | 14 |
+| Protector | 14 credits, 4 insight | 25 | Sentinel Post (Security): +1 energy | 3 | Security | 7 | 7 | 14 |
+| Researcher | 12 credits, 4 insight | 15 |  | 2 | Science | 7 | 7 | 14 |
 <!-- /generated -->
 
 **One payment path (041, locked).** Every space prints a **cost** in energy, the last ones more.
@@ -1322,8 +1322,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   under them, and programs. Events' tags don't stay.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice
   them). **Events** resolve and are discarded. A program or event (or ability) is only
-  offered when each of its targeted effects has a target (a Harden or a move counts
-  only on a card that does nothing else; 044). A removal's target is a hex with a piece the
+  offered when each of its targeted effects has a target (a Harden, a move or a gain per tag counts
+  only on a card that does nothing else; 044, 076: an event paying per tag needs one of those tags on your cards). A removal's target is a hex with a piece the
   card names: "remove 1 adversary ambassador" can't name a hex holding only a troop. A building's when-built effect
   is not checked: with no target it does nothing.
 - **Buildings** go into a slot: your AI board's `ai.slots`, plus Modular Expansion's 2 (it
@@ -1333,18 +1333,28 @@ The cards config lists which cards are in the game (baseline: all of them).
   sacrificed with the stack. A building with `replaces` (most tier-2 buildings, over
   their own tag) must be built over one whose top card carries that tag.
 - **Tokens** (021) live on buildings that print a type (`tokens`): Datasets (Science),
-  Followers (Diplomacy), Capital (Industry), Agents (Security). An active token building
-  gains its `per_round` in upkeep; a covered one holds its tokens but gains none and
-  counts for nothing; Actions may cost tokens from their own card; some cards
-  (Dataset Scraper, Manifesto Leak, Recruit Operatives) add tokens to a card of a type;
-  Sabotage and Purge Protocols make each player lose tokens.
+  Followers (Diplomacy), Capital (Industry), Agents (Security). **076 (Matt's ruling 12): a
+  token card is progressive and counts only its own tokens.** No card gains tokens by itself
+  (`per_round` is 0 on every card; the rule that pays it in upkeep stays, unused). A token
+  card's Action is "add N here, OR spend or count what is here"; a few tier-2 ones arrive
+  loaded ("Add 2 Agents here" when built); a covered one holds its tokens and its Action
+  stops; Actions may cost tokens from their own card; feeder cards (Dataset Scraper, Capital
+  Injection, Vendor Financing, Manifesto Leak, Recruit Operatives) add tokens to one of your
+  cards of a type; Sabotage and Purge Protocols make each player lose tokens.
   Sacrificing or discarding a card loses its tokens.
 - **Actions** (abilities: `ability`, buildings only, 033) are used with `Use` once a round,
-  pay their cost, and refresh at the start of a round. **Ongoing abilities live only on
+  pay their cost, and refresh at the start of a round. **An OR Action (076, `or`)** has two
+  halves: one use a round, the player picks a half it can pay and that has a target (a
+  half that counts tokens here needs one there). **Ongoing abilities live only on
   buildings:** income, Effect or Action on a program or event is refused when content loads.
 
 Effects needing choices ask the acting player: hexes, countries, players, threats,
 amounts ("up to N" offers 0..N), or "stop".
+
+**Token cards, for new players (076).** A building that holds Agents, Datasets, Followers or Capital grows only when
+you choose: its Action is "add 1 Agent here, OR get 1 credit per Agent here" (or pay some of them for an effect). Each
+round you either grow the pile or cash in, and a few cards add tokens to one of your piles. A card only ever counts the
+tokens on itself, so there is nothing to total across your cards.
 
 (Variant `off`: no draft, §9. 011's `free_keep` variant went with 021: keeps cost insight.)
 
@@ -1363,11 +1373,11 @@ happens once, when you play the card: extra costs first, then gains, placements 
 round ("Each round, ..."); below the art it moves your income track once ("Raise your X
 income by N", "Lower ..." for a minus). A minus before a plain icon: pay or lose it now. A
 dark frame acts on the adversary's pieces, projects or threats. A dashed outline is another
-player. A thin solid outline counts across your cards. No outline is you, or this card.
+player. A thin solid outline is your cards: a token in it goes to, or comes from, one of your cards (076: nothing counts tokens across cards). No outline is you, or this card.
 
 **Connectors.** `→` is an Action: once a round, pay the left to get the right. A bare `→`
 is free ("Action: get ..."). `:` is an Effect: when the left happens, get the
-right. `/` is per. OR is written out. No card has an exception: every symbol means what it always
+right. `/` is per. OR is written out; a line opening with OR is the other half of an Action (076), one use a round between them. No card has an exception: every symbol means what it always
 means ([card-guidelines.md](card-guidelines.md)). `→` needs no "once a round": every Action is.
 
 **Shapes.** Square tiles are resources, discs are tokens on cards (alone, on this card),
@@ -1380,17 +1390,17 @@ country for the round. A presence with a struck-through coin is placed free. The
 
 Card details beyond the card text:
 
-The card set (023, grown by 068, 070 and 075): 176 cards, 168 in the draft decks and 8 unique to the AI boards (the Researcher has none).
-The decks hold 120 tier 1 and 42 tier 2, 49% programs, 37% buildings and 14% events (033 moved
-the engines onto buildings), each tag primary on 25 to 29; every card is listed
+The card set (023, grown by 068, 070 and 075; 076 merged or cut 16 and rebuilt the rest): 160 cards, 152 in the draft decks and 8 unique to the AI boards (the Researcher has none).
+The decks hold 110 tier 1 and 42 tier 2, 44% programs, 41% buildings and 14% events (033 moved
+the engines onto buildings), each tag primary on 22 to 29; every card is listed
 with its cost, insight, tags, kind and text in [cards.md](cards.md) (generated:
 `aic-sim docs`, then `python scripts/cards/cards_doc.py`), and priced in [card-pricing.md](card-pricing.md).
 Card text says what a card does; how each primitive resolves:
 
 - **Reach (016):** a card's map target is in your reach (within 1 of your
-  presence) where its text says so; Total Containment's hex and a country sweep are not. A removal (`damage`) takes a hex in reach holding adversary pieces;
-  a country sweep any country holding them. A card names the pieces it removes: where it says "2
-  adversary ambassadors or 1 troop" you choose one kind, per hex on a sweep.
+  presence) where its text says so; a removal in one country (076: troops or ambassadors by number) is not. A removal (`damage`) takes a hex in reach holding adversary pieces;
+  a country removal any country holding them. A card names the pieces it removes: where it says "2
+  adversary ambassadors or 1 troop" you choose one kind.
 - **Hardening:** a different facility in reach for each token, each one a token can protect
   (022, 020's D10: a player-owned station or factory that is not corrupted).
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is
@@ -1409,7 +1419,7 @@ Card text says what a card does; how each primitive resolves:
   (024; `cities` on the effect; any freeing card did before), and it sways
   `alignment.free_city`.
 - **Clear a city (024, `clear_city`):** remove up to N adversary ambassadors (Liberation
-  Accords: all) around one corrupted city in reach, on it or next to it, your choice which. This is how cards help free a city; moving your ambassadors there is the other
+  Accords: 6) around one corrupted city in reach, on it or next to it, your choice which. This is how cards help free a city; moving your ambassadors there is the other
   half.
 - **Card text (033):** generated from the card's ops (*The card grammar*, above), so it says
   everything, extra costs and lowered income included; a long card sets smaller. Terms:
@@ -1425,10 +1435,17 @@ Card text says what a card does; how each primitive resolves:
   in the next build.
 - **Draw (023):** every draw takes the top cards of the tier-1 deck into your hand, no keep paid
   (the deck reshuffles its discards when empty). Science's card draw.
-- **Count as power (023, `gain_per_tokens`):** gain 1 of a resource per N tokens of a
-  type on your active buildings; the tokens stay.
-- **Cash out (023, 059, `cash_out`):** remove all your tokens of a type from your active
-  buildings; gain the card's rate of a resource for each.
+- **Count as power (023, `gain_per_tokens`; 076: here only):** gain 1 of a resource per N
+  tokens here, on the Action's own card; the tokens stay. Nothing counts tokens across cards.
+- **Cash out (023, 059, `cash_out`; 076: one card):** remove every token of a type from one
+  card (an Action's own, "here"; a program's, one of your cards you pick); gain the card's
+  rate of a resource for each.
+- **Per tag (076, `gain_per_tag`):** once, 1 of a resource per N tags of a kind on your cards
+  in play; a program counts itself (it enters play before it resolves), an event doesn't.
+- **Troops in one country (076, `remove_troops`):** remove up to N troops in one country, any
+  country, your pick of hexes when there are more than N. **Ambassadors in one country**
+  (`remove_ambassadors_country` with a number): up to N there, the same way. Neither reads
+  "per hex": Matt's ruling 6.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain,
   the helper paying.
 - **Cordon (068, `cordon`):** in one country, no arrivals land in the next round's build (an out-of-turn build before it brings none either); the rest of a build goes on. Hardpoint Lockdown prints it:
@@ -1615,7 +1632,7 @@ that matches its intent):
 27. Unique AI cards return to the box when used up; `ai.boards` repeats for more seats,
     and a repeated AI has no unique cards (one copy each).
 28. (Gone with 059: no card converts in upkeep.)
-29. A card that gives from your own stock (`transfer`: Development Loan, Vendor Financing)
+29. A card that gives from your own stock (`transfer`; since 076 no card prints it)
     is not offered without another player; other help cards, such as Venture Capital, are
     (their own gain still applies).
 30. (016) The presence track replaces both AI tracks; uncovers are per-round income.

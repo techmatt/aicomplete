@@ -8,7 +8,7 @@
    "text": "You have 5 building slots; boards have 3.",
    "passives": []
   },
-  "credits": 13,
+  "credits": 16,
   "income": [
    [
     "insight",
@@ -290,7 +290,7 @@
     }
    ]
   },
-  "credits": 12,
+  "credits": 14,
   "income": [
    [
     "insight",
@@ -571,7 +571,7 @@
     }
    ]
   },
-  "credits": 8,
+  "credits": 12,
   "income": [
    [
     "insight",

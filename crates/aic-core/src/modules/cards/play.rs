@@ -111,10 +111,21 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
     if g.seats[seat].exhausted.iter().any(|c| c == id) {
         return Some("used");
     }
+    // 076: an OR Action is usable while either branch is.
+    let mut first = None;
+    for b in ab.branches() {
+        let why = branch_blocked(w, g, seat, id, b)?;
+        first.get_or_insert(why);
+    }
+    first
+}
+
+/// Why one branch of an Action can't be used now.
+fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
-    if !effects::feasible(w, g, seat, &ab.effects) {
+    if !effects::feasible_on(w, g, seat, &ab.effects, 0, Some(id)) {
         return Some("no target");
     }
     None
@@ -203,7 +214,9 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     } else {
         cx.move_card(g, id, &hand(seat), &played(seat), false)?;
     }
-    effects::run(g, cx, &d.effects, &mut effects::Ctx::seat(seat))
+    // 076: a building's play effects may load it ("add 2 Agents here").
+    let mut ctx = if d.is_building() { effects::Ctx::ability(seat, Key::new(id)) } else { effects::Ctx::seat(seat) };
+    effects::run(g, cx, &d.effects, &mut ctx)
 }
 
 /// A card's costs beyond credits, and the income it lowers.
@@ -292,13 +305,37 @@ pub(super) fn use_ability(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) 
             return Err(Halt::Illegal(format!("can't use {card}: {why}")));
         }
     }
-    let ab = def(&w, card).ability.as_ref().ok_or("no ability")?;
+    let root = def(&w, card).ability.as_ref().ok_or("no ability")?;
+    // 076: an OR Action asks which branch, among those it can use now.
+    let usable: Vec<&Ability> = root
+        .branches()
+        .into_iter()
+        .filter(|b| branch_blocked(&w, g, s, card, b).is_none())
+        .collect();
+    let ab = match usable.as_slice() {
+        [] => return Err(Halt::Illegal(format!("can't use {card}: no branch"))),
+        [one] => *one,
+        _ => {
+            let opts = usable.iter().map(|b| opt(branch_label(b))).collect();
+            let prompt = format!("Seat {s}: {card}, which half of the Action?");
+            usable[cx.choose(s, &prompt, opts)?.unwrap_or(0)]
+        }
+    };
     for (r, n) in &ab.cost {
         cx.add_resource(g, s, *r, -n);
     }
     add_tokens(g, cx, s, card, -ab.tokens);
     cx.exhaust(g, s, card);
     cx.count(g, &format!("used.{card}"), 1);
-    effects::run(g, cx, &ab.effects, &mut effects::Ctx::seat(s))?;
+    effects::run(g, cx, &ab.effects, &mut effects::Ctx::ability(s, *card))?;
     Ok(())
+}
+
+/// A branch's option label: its first effect, for records and the viewer.
+fn branch_label(b: &Ability) -> String {
+    match b.effects.first() {
+        Some(Op::AddTokens { .. }) => "add tokens here".to_string(),
+        Some(op) => format!("{op:?}").split_whitespace().next().unwrap_or("act").to_string(),
+        None => "act".to_string(),
+    }
 }

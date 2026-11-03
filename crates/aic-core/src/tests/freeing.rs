@@ -48,8 +48,10 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
     assert!(!plays.iter().any(|a| matches!(a, Action::Play { card, .. } if card == "back_channel_talks")));
     // The ultimate frees it.
     let mut k = g.clone();
-    // It needs a Diplomacy tag in play.
-    Arc::make_mut(k.piles.entry(crate::modules::cards::played(0)).or_default()).push("consular_pouch".into());
+    // It needs 4 Diplomacy tags in play (076: a chain).
+    for c in ["consular_pouch", "peace_dividend", "mutual_aid_pact", "summit_caucus"] {
+        Arc::make_mut(k.piles.entry(crate::modules::cards::played(0)).or_default()).push(c.into());
+    }
     play_card(&rules, &mut k, 0, "great_liberation");
     pick(&rules, &mut k, h);
     answer_all(&rules, &mut k);
@@ -60,13 +62,13 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
 fn clearing_a_city_takes_the_ones_the_player_picks() {
     let (rules, mut g) = lab_actions();
     let (h, n) = city(&rules, &mut g);
-    put(&mut g, h, ADV_AMBASSADOR, 2);
-    put(&mut g, n, ADV_AMBASSADOR, 2);
+    put(&mut g, h, ADV_AMBASSADOR, 4);
+    put(&mut g, n, ADV_AMBASSADOR, 3);
     play_card(&rules, &mut g, 0, "amnesty_decree");
     pick(&rules, &mut g, h);
     answer_all(&rules, &mut g);
     let left = g.tokens(n, ADV_AMBASSADOR) + g.tokens(h, ADV_AMBASSADOR);
-    assert_eq!(left, 2, "the card takes 2 of the 4, on or next to the city");
+    assert_eq!(left, 2, "the card takes 5 of the 7, on or next to the city");
     let mut k = g.clone();
     put(&mut k, n, ADV_AMBASSADOR, 3);
     // It needs a Diplomacy tag in play.

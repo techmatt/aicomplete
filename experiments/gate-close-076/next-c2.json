@@ -1,0 +1,38 @@
+{
+ "name": "next-c2",
+ "note": "gate close of gate-075: c2, seeds 29648+48",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2",
+   "set": []
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner",
+  "planner:never_sacrifice=1",
+  "planner:free_build_rush=1",
+  "planner:never_remove=1",
+  "planner:only_tag=5",
+  "planner:home_only=1",
+  "planner:never_convert=1"
+ ],
+ "first_seed": "29648",
+ "games": 48,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}

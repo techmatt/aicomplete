@@ -76,8 +76,9 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
 #[test]
 fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     let (rules, mut g) = threat_lab();
-    // Blackout needs 4 credits (024); with 2 paid, Threat Triage (023; was
-    // Jam Signals) takes it to 2: countered at once.
+    // Blackout needs 4 credits (024); with 2 paid, Red-Team Audit's jam 4 (076:
+    // Threat Triage's jam 2 merged away) takes it to 0: countered at once, and
+    // the 2 paid come back, as a counter's partial payments do.
     deal(&mut g, "blackout", 0);
     put(&mut g, rules.map.numbered(0, piece(0).presence), NODE, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
@@ -93,23 +94,23 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
             None,
         )
         .unwrap();
-    Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|c| c != "threat_triage");
-    set_pile(&mut g, "cards.hand.0", &["threat_triage"]);
+    Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|c| c != "red_team_audit");
+    set_pile(&mut g, "cards.hand.0", &["red_team_audit"]);
     set_res(&mut g, 0, Resource::Insight, 1);
     act(
         &rules,
         &mut g,
         Action::Play {
             seat: 0,
-            card: "threat_triage".into(),
+            card: "red_team_audit".into(),
         },
     );
     assert!(g.pile("threats.on.0").is_empty());
     assert!(g
         .pile("threats.discard.1")
         .contains(&Key::new("blackout")));
-    let triage = rules.world().content.cards.iter().find(|c| c.id == "threat_triage").unwrap().cost;
-    assert_eq!(g.resource(0, Resource::Credits), 12 - 2 - triage);
+    let triage = rules.world().content.cards.iter().find(|c| c.id == "red_team_audit").unwrap().cost;
+    assert_eq!(g.resource(0, Resource::Credits), 12 - triage);
 }
 
 #[test]

@@ -1,0 +1,15 @@
+{
+  "name": "screen-076-income4",
+  "note": "076 fourth read, fresh seeds: Z = Builder 16, Protector 14, Researcher 12 printed credits (+3, +2, +4). The planner, and the planner with w.ability=2 (a building's Action valued at 2 a round left, not 0.5): an agent probe of the Action and token buildings it keeps and never plays, not a rules lever (planner, d2).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "c2Z", "set": ["ais.builder.credits=16", "ais.protector.credits=14", "ais.researcher.credits=12"]},
+    {"name": "c3Z", "set": ["countries=3", "ais.builder.credits=16", "ais.protector.credits=14", "ais.researcher.credits=12"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "planner:w.ability=2"],
+  "games": 48,
+  "records": 0
+}

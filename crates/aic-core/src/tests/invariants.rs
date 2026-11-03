@@ -180,7 +180,10 @@ fn check_games(configs: &[Config], seeds: std::ops::Range<u64>) {
 /// outside its own cards changed, a var moved (once-a-round marks and payments
 /// aside) or a resource rose. 044: cards were offered and paid for with no effect.
 fn got_something(before: &GameState, after: &GameState, s: usize, played: bool) -> bool {
-    let spent = |k: &str| k.contains(".used") || k.starts_with("ai.power_used") || k.starts_with("cards.");
+    // 076: a token added to a card is something (a progressive card's "add 1 here").
+    let spent = |k: &str| {
+        k.contains(".used") || k.starts_with("ai.power_used") || (k.starts_with("cards.") && !k.starts_with("cards.tokens."))
+    };
     let hexes = before.hexes.iter().zip(after.hexes.iter()).any(|(a, b)| a.tokens != b.tokens);
     let vars = before.vars.iter().any(|(k, v)| !spent(k) && after.var(k) != *v)
         || after.vars.iter().any(|(k, v)| !spent(k) && before.var(k) != *v);

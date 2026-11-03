@@ -59,19 +59,72 @@ pub(super) fn remove_node(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     Ok(())
 }
 
-pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: usize, unity_per: i64) -> Res {
+pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: usize, unity_per: i64, max: i64) -> Res {
     let w = cx.world;
     let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt =
-        format!("Seat {seat}: remove every adversary ambassador in which country?");
+    let prompt = format!("Seat {seat}: remove adversary ambassadors in which country?");
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
-        let removed = adversary::remove_all_in_country(g, cx, cs[i]);
+        let removed = if max > 0 {
+            up_to_in_country(g, cx, seat, cs[i], max, ADV_AMBASSADOR)?
+        } else {
+            adversary::remove_all_in_country(g, cx, cs[i])
+        };
         if unity_per > 0 {
             alignment::sway(g, cx, Side::Unity, removed / unity_per);
         }
     }
     Ok(())
+}
+
+/// 076 (ruling 6): up to `count` adversary troops in one country, any country.
+pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
+    let w = cx.world;
+    let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, 0, 1));
+    let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
+    let prompt = format!("Seat {seat}: remove adversary troops in which country?");
+    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+        up_to_in_country(g, cx, seat, cs[i], count, TROOP)?;
+    }
+    Ok(())
+}
+
+/// Removes up to `max` pieces of `kind` in country `c`, hex by hex: all of them
+/// with no question when they are `max` or fewer, else the player picks each
+/// hex, which gives up as many as it holds and the card has left.
+fn up_to_in_country(g: &mut GameState, cx: &mut Cx, seat: usize, c: usize, max: i64, kind: &'static str) -> Res<i64> {
+    let w = cx.world;
+    let mut left = max;
+    let mut removed = 0;
+    while left > 0 {
+        let held: Vec<usize> = w.map.countries[c]
+            .hexes
+            .iter()
+            .copied()
+            .filter(|&h| if kind == TROOP { adversary::can_damage(&w, g, h, 0, 1) } else { g.tokens(h, kind) > 0 })
+            .collect();
+        let total: i64 = held.iter().map(|&h| g.tokens(h, kind)).sum();
+        if held.is_empty() {
+            break;
+        }
+        let at = if total <= left || held.len() == 1 {
+            held[0]
+        } else {
+            let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
+            let prompt = format!("Seat {seat}: remove {} from which hex?", piece_name(kind));
+            match cx.choose(seat, &prompt, opts)? {
+                Some(k) => held[k],
+                None => break,
+            }
+        };
+        let n = g.tokens(at, kind).min(left);
+        for _ in 0..n {
+            adversary::remove_piece(g, cx, Some(seat), at, kind);
+        }
+        left -= n;
+        removed += n;
+    }
+    Ok(removed)
 }
 
 pub(super) fn cleanse(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64, one_country: bool, cities: bool) -> Res {

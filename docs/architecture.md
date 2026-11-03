@@ -328,9 +328,9 @@ Content is data in `content/`, composed from code primitives:
   the play lowers for good, `[["credits", 1]]`), 1-3 `tags` (`vocab::Tag`), `needs` (tags in play), `effects`
   (ops: on play, or when built), `passives` (ops: a building's standing effects), an
   `ability` (once a round; buildings only; `cost` from the seat, `tokens` from the
-  card), `replaces` (a tag: built over one of your
+  card; 076: `or`, a second ability, makes it "A, OR B", one use a round), `replaces` (a tag: built over one of your
   buildings whose top card carries it), `tokens` (`{kind, per_round}`, a type from
-  `vocab::TokenKind`), `keywords` (read by `scripts/cards/cards_doc.py` and the card viewer, not by the core, not printed; `help` marks
+  `vocab::TokenKind`; 076: `per_round` is 0 on every card, Matt's ruling 12, and "here" in an op names this card), `keywords` (read by `scripts/cards/cards_doc.py` and the card viewer, not by the core, not printed; `help` marks
   a help card) and `unique`. A card has no `text`: `aic_core::face` generates
   its icons and words from these fields, and a new op doesn't compile until it has a face. List the id in the `cards` module's config
   `cards`, run `python scripts/configs/shared_row.py`, then `aic-sim docs` (it writes the faces) and `python scripts/cards/cards_doc.py`, which reads them, to regenerate `docs/cards.md`

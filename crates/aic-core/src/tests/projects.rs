@@ -142,17 +142,17 @@ fn security_cards_drain_or_discard_a_project() {
     let (rules, mut g) = lab_actions();
     row(&mut g, &["false_flag", "disinformation"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 6);
-    set_pile(&mut g, "cards.hand.0", &["flash_exploit", "killswitch_directive"]);
+    set_pile(&mut g, "cards.hand.0", &["blackout_script", "killswitch_directive"]);
     fund(&mut g, 0);
     act(
         &rules,
         &mut g,
         Action::Play {
             seat: 0,
-            card: "flash_exploit".into(),
+            card: "blackout_script".into(),
         },
     );
-    // The only project holding compute: 6 - 5 (023: Flash Exploit; was Security Patch's 4).
+    // The only project holding compute: 6 - 5 (076: Blackout Script, Flash Exploit's 5 folded in).
     assert_eq!(g.var(&adversary::project_key("false_flag")), 1);
     act(
         &rules,
@@ -179,8 +179,10 @@ fn node_takedown_removes_a_node_in_reach() {
     put(&mut g, far, NODE, 1);
     set_pile(&mut g, "cards.hand.0", &["node_severance"]);
     fund(&mut g, 0);
-    // It needs a Cyber tag in play.
-    Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("flash_exploit".into());
+    // It needs a Cyber tag in play, and (076) a project holding compute for its drain.
+    Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("blackout_script".into());
+    row(&mut g, &["false_flag"]);
+    g.vars.insert(adversary::project_key("false_flag").into(), 6);
     let play = Action::Play {
         seat: 0,
         card: "node_severance".into(),

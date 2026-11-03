@@ -180,10 +180,10 @@ fn the_023_primitives_draw_drain_all_count_and_cash_out() {
     set_pile(&mut g, "cards.built.0", &["retained_earnings"]);
     g.vars.insert(cards::tokens_key(0, "retained_earnings").into(), 5);
     let credits = g.resource(0, Resource::Credits);
-    run_ops(&rules, &mut g, &[Op::GainPerTokens { resource: Resource::Credits, kind: TokenKind::Capital, per: 2 }]);
+    run_ops(&rules, &mut g, &[Op::GainPerTokens { resource: Resource::Credits, kind: TokenKind::Capital, per: 2, here: false }]);
     assert_eq!(g.resource(0, Resource::Credits), credits + 2, "5 Capital count as 2; they stay");
     assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 5);
-    run_ops(&rules, &mut g, &[Op::CashOut { kind: TokenKind::Capital, resource: Resource::Credits, rate: 3 }]);
+    run_ops(&rules, &mut g, &[Op::CashOut { kind: TokenKind::Capital, resource: Resource::Credits, rate: 3, here: false }]);
     assert_eq!(g.resource(0, Resource::Credits), credits + 2 + 15, "5 cashed out at 3");
     assert_eq!(g.var(&cards::tokens_key(0, "retained_earnings")), 0);
 }
@@ -230,9 +230,9 @@ fn a_cash_in_counts_the_tokens_the_same_card_adds_first() {
     let kind = TokenKind::Capital;
     let holder = w.content.cards.iter().find(|c| c.tokens.as_ref().is_some_and(|t| t.kind == kind)).unwrap();
     g.piles.insert(cards::built(0).into(), vec![holder.id.as_str().into()].into());
-    let cash = Op::CashOut { kind, resource: Resource::Credits, rate: 1 };
+    let cash = Op::CashOut { kind, resource: Resource::Credits, rate: 1, here: false };
     assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&cash)), "nothing to cash in");
-    assert!(effects::feasible(&w, &g, 0, &[Op::AddTokens { kind, amount: 2 }, cash]));
+    assert!(effects::feasible(&w, &g, 0, &[Op::AddTokens { kind, amount: 2, here: false }, cash]));
 }
 
 #[test]
@@ -334,4 +334,51 @@ fn prices_worked_out_once_match_each_cards_own() {
             assert_eq!(counts[t as usize], by_hand as i64);
         }
     }
+}
+
+/// 076 (ruling 12): a progressive token card adds a token here, or counts only
+/// its own tokens; with nothing here only the add is offered, so nothing asks.
+#[test]
+fn an_or_action_adds_here_then_offers_both_halves_and_counts_only_its_own_tokens() {
+    let (rules, mut g) = lab_actions();
+    let id = "agency_field_station";
+    set_pile(&mut g, "cards.built.0", &[id, "kill_team_roster"]);
+    g.vars.insert(cards::tokens_key(0, "kill_team_roster").into(), 5);
+    act(&rules, &mut g, Action::Use { seat: 0, card: id.into() });
+    assert_eq!(g.var(&cards::tokens_key(0, id)), 1, "the add, asked nothing");
+    g.seats[0].exhausted.clear();
+    let credits = g.resource(0, Resource::Credits);
+    rules.apply_mut(&mut g, &Action::Use { seat: 0, card: id.into() }, None).unwrap();
+    assert_eq!(g.pending.as_ref().expect("which half").ask.options.len(), 2);
+    answer_with(&rules, &mut g, "GainPerTokens");
+    assert_eq!(g.resource(0, Resource::Credits), credits + 1, "1 Agent here; the other card's 5 don't count");
+    assert_eq!(g.var(&cards::tokens_key(0, id)), 1, "they stay");
+}
+
+/// 076 (ruling 6): a printed troop number in one country, no "per hex".
+#[test]
+fn remove_troops_takes_up_to_its_number_in_one_country() {
+    let (rules, mut g) = lab(&[]);
+    let hexes: Vec<usize> = (1..=3).map(|n| rules.map.numbered(0, n)).collect();
+    for &h in &hexes {
+        put(&mut g, h, TROOP, 1);
+    }
+    run_ops(&rules, &mut g, &[Op::RemoveTroops { count: 6 }]);
+    assert_eq!(total(&g, TROOP), 0, "3 troops, all of them: nothing to ask");
+}
+
+/// 076 (ruling 11): a one-off per tag on your cards.
+#[test]
+fn gain_per_tag_counts_the_tag_on_your_cards() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let per_tag = [Op::GainPerTag { resource: Resource::Energy, tag: Tag::Science, per: 1 }];
+    assert!(!effects::feasible(&w, &g, 0, &per_tag), "no Science on your cards: it would gain nothing");
+    let science: Vec<_> = programs(&w, Tag::Science).filter(|c| c.tags.len() == 1).take(3).map(|c| Key::new(&c.id)).collect();
+    assert_eq!(science.len(), 3);
+    g.piles.insert(cards::played(0).into(), Arc::new(science));
+    assert!(effects::feasible(&w, &g, 0, &per_tag));
+    let energy = g.resource(0, Resource::Energy);
+    run_ops(&rules, &mut g, &per_tag);
+    assert_eq!(g.resource(0, Resource::Energy), energy + 3);
 }

@@ -1,0 +1,17 @@
+{
+  "name": "screen-076-income3",
+  "note": "076 third read, fresh seeds: X = Builder 16, Protector 15, Researcher 13 printed credits (+3, +3, +5); Y = 17, 16, 14 (planner, d2).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "c2X", "set": ["ais.builder.credits=16", "ais.protector.credits=15", "ais.researcher.credits=13"]},
+    {"name": "c3X", "set": ["countries=3", "ais.builder.credits=16", "ais.protector.credits=15", "ais.researcher.credits=13"]},
+    {"name": "c2Y", "set": ["ais.builder.credits=17", "ais.protector.credits=16", "ais.researcher.credits=14"]},
+    {"name": "c3Y", "set": ["countries=3", "ais.builder.credits=17", "ais.protector.credits=16", "ais.researcher.credits=14"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner"],
+  "games": 48,
+  "records": 0
+}

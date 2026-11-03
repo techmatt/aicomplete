@@ -18,24 +18,29 @@ pub(super) fn transfer(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, seat: usize, r
     Ok(())
 }
 
-pub(super) fn gain_per_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, resource: Resource, kind: TokenKind, per: i64) {
-    let w = cx.world;
-    let held: i64 = cards::token_cards(&w, g, seat, Some(kind))
-        .iter()
-        .map(|c| g.var(&cards::tokens_key(seat, c)))
-        .sum();
-    cx.add_resource(g, seat, resource, held / per.max(1));
-}
-
-pub(super) fn cash_out(g: &mut GameState, cx: &mut Cx, seat: usize, kind: TokenKind, resource: Resource, rate: i64) {
-    let w = cx.world;
-    let mut n = 0;
-    for c in cards::token_cards(&w, g, seat, Some(kind)) {
-        let k = g.var(&cards::tokens_key(seat, &c));
-        cards::add_tokens(g, cx, seat, &c, -k);
-        n += k;
+/// The one card a token count reads (076, Matt's ruling 12): with `here`, the
+/// building whose Action this is; else one of seat `seat`'s `kind` cards
+/// holding at least `least`, the player's pick (no pick when only one).
+pub(super) fn token_card(
+    g: &mut GameState,
+    cx: &mut Cx,
+    ctx: &Ctx,
+    seat: usize,
+    kind: TokenKind,
+    here: bool,
+    least: i64,
+) -> Res<Option<Key>> {
+    if here {
+        return Ok(ctx.card);
     }
-    cx.add_resource(g, seat, resource, n * rate);
+    let w = cx.world;
+    let ids: Vec<Key> = cards::token_cards(&w, g, seat, Some(kind))
+        .into_iter()
+        .filter(|c| g.var(&cards::tokens_key(seat, c)) >= least.max(1))
+        .collect();
+    let opts = ids.iter().map(|c| opt(*c)).collect();
+    let prompt = format!("Seat {seat}: count the {kind} on which card?");
+    Ok(cx.choose(seat, &prompt, opts)?.map(|i| ids[i]))
 }
 
 pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {

@@ -296,5 +296,5 @@ fn income_can_print_ambassadors() {
     let (rules, mut g) = lab_actions();
     let w = rules.world();
     set_pile(&mut g, &cards::built(0), &["orbital_embassy"]);
-    assert_eq!(economy::ambassador_income(&w, &g, 0), 1);
+    assert_eq!(economy::ambassador_income(&w, &g, 0), 2);
 }

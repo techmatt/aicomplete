@@ -160,9 +160,18 @@ pub enum Op {
     DestroyAll,
     /// Remove one node within your reach (019: the tier-2 way to remove a node).
     RemoveNode,
-    /// Remove every adversary ambassador in one country; sway 1 toward Unity per `unity_per` removed.
+    /// Remove up to `max` adversary ambassadors in one country (0: every one);
+    /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
     RemoveAmbassadorsCountry {
+        #[serde(default)]
         unity_per: i64,
+        #[serde(default)]
+        max: i64,
+    },
+    /// Remove up to `count` adversary troops in one country, any country
+    /// (076, Matt's ruling 6: a printed number, never "per hex").
+    RemoveTroops {
+        count: i64,
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
@@ -239,10 +248,13 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Add `amount` tokens to one of your active buildings holding `kind` (021).
+    /// Add `amount` tokens to one of your active buildings holding `kind` (021);
+    /// with `here`, to the building whose Action this is (076).
     AddTokens {
         kind: TokenKind,
         amount: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        here: bool,
     },
     /// A hack (021): a node within your reach makes no compute in the next build.
     CutNode,
@@ -268,19 +280,33 @@ pub enum Op {
     DrainAll {
         amount: i64,
     },
-    /// "Count as power" (023): 1 of `resource` per `per` tokens of `kind` on
-    /// your active buildings (the tokens stay).
+    /// "Count as power" (023): 1 of `resource` per `per` tokens of `kind`
+    /// (the tokens stay). 076 (Matt's ruling 12, no recounting across cards):
+    /// only the tokens on one card, this building's with `here`, else one of
+    /// yours the player picks.
     GainPerTokens {
         resource: Resource,
         kind: TokenKind,
         per: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        here: bool,
     },
-    /// Cash out (023, 059): remove all your `kind` tokens; gain `rate` of
-    /// `resource` for each.
+    /// Cash out (023, 059): remove every `kind` token from one card (076: one
+    /// card, never all yours; this building's with `here`, else one of yours the
+    /// player picks); gain `rate` of `resource` for each.
     CashOut {
         kind: TokenKind,
         resource: Resource,
         rate: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        here: bool,
+    },
+    /// One-off (076, Matt's ruling 11): 1 of `resource` per `per` `tag` tags on
+    /// your cards in play.
+    GainPerTag {
+        resource: Resource,
+        tag: Tag,
+        per: i64,
     },
 
     // ---------- instant: players, threats, the team, twists ----------
@@ -609,6 +635,8 @@ impl Op {
             | Op::DestroyAll
             | Op::RemoveNode
             | Op::RemoveAmbassadorsCountry { .. }
+            | Op::RemoveTroops { .. }
+            | Op::GainPerTag { .. }
             | Op::BuildFactory
             | Op::Cleanse { .. }
             | Op::ClearCity { .. }

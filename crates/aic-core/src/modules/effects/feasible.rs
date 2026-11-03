@@ -11,6 +11,13 @@ pub fn feasible(w: &World, g: &GameState, seat: usize, effects: &[Op]) -> bool {
 /// The same once seat `s` has paid `spent` energy for them (066: a presence
 /// power pays its own energy, then the track step).
 pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64) -> bool {
+    feasible_on(w, g, seat, effects, spent, None)
+}
+
+/// [`feasible_after`] for the Action of seat `seat`'s building `card`: what
+/// "here" counts (076).
+pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64, card: Option<&str>) -> bool {
+    let here_held = || card.map_or(0, |c| g.var(&cards::tokens_key(seat, c)));
     // 041: energy the same effects gain first can pay a placement's step.
     let gained: i64 = effects
         .iter()
@@ -27,17 +34,20 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
         effects[..upto]
             .iter()
             .map(|e| match e {
-                Op::AddTokens { kind: k, amount } if k == kind && has => *amount,
+                Op::AddTokens { kind: k, amount, here: false } if k == kind && has => *amount,
                 _ => 0,
             })
             .sum()
     };
-    // 044: these two only veto a card that would do nothing at all: a card that
-    // also gains something is still worth playing ("you may move").
-    let only_these = effects.iter().all(|e| matches!(e, Op::Harden { .. } | Op::MoveOne { .. }));
+    // 044: these only veto a card that would do nothing at all: a card that
+    // also gains something is still worth playing ("you may move"). 076: a gain
+    // per tag with too few tags on your cards is one of them (an event counts
+    // none of its own; a program, which counts itself, carries other effects).
+    let only_these = effects.iter().all(|e| matches!(e, Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. }));
     let one_acts = effects.iter().any(|e| match e {
         Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
         Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
+        Op::GainPerTag { tag, per, .. } => cards::tags(w, g, seat, *tag) >= *per,
         _ => false,
     });
     effects.iter().enumerate().all(|(at, e)| match e {
@@ -50,7 +60,9 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
         Op::FreeBuilding => cards::free_building_exists(w, g, seat),
         Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
         Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
+        Op::AddTokens { here: true, .. } => card.is_some(),
         Op::AddTokens { kind, .. } => !cards::token_cards(w, g, seat, Some(*kind)).is_empty(),
+        Op::RemoveTroops { .. } => any_hex(g, |h| adversary::can_damage(w, g, h, 0, 1)),
         Op::Consolidate { .. } => ambassador_hexes(g, seat)
             .iter()
             .any(|&h| in_reach(w, g, seat, h)),
@@ -65,9 +77,13 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
         Op::DrainProject { .. } | Op::DrainAll { .. } => !adversary::projects_with_compute(g).is_empty(),
         Op::DiscardProject => !adversary::projects(g).is_empty(),
         // 024: too few to count, nothing to cash in: the card would do nothing.
+        // 076: one card's tokens, this building's with "here" (an Action's own
+        // token cost comes off first), else the best of yours.
+        Op::GainPerTokens { here: true, per, .. } => here_held() >= *per,
+        Op::CashOut { here: true, .. } => here_held() > 0,
         Op::GainPerTokens { kind, per, .. } => {
             let cards = cards::token_cards(w, g, seat, Some(*kind));
-            cards.iter().map(|c| g.var(&cards::tokens_key(seat, c))).sum::<i64>() + added(kind, at) >= *per
+            cards.iter().map(|c| g.var(&cards::tokens_key(seat, c))).max().unwrap_or(0) + added(kind, at) >= *per
         }
         Op::CashOut { kind, .. } => {
             added(kind, at) > 0
@@ -75,7 +91,7 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
                     .iter()
                     .any(|c| g.var(&cards::tokens_key(seat, c)) > 0)
         }
-        Op::Harden { .. } | Op::MoveOne { .. } => !only_these || one_acts,
+        Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } => !only_these || one_acts,
         Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
         Op::PlacePresence { free, .. } => {
             board::can_pay_placement(w, g, seat, placing(*free), gained)

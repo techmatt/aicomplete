@@ -1,0 +1,35 @@
+{
+  "name": "gate-076-cubes-more",
+  "note": "076, information only (no lever: the gap was inside 2 SE): always_buy_cubes and the planner at c3 on the 48 seeds after the gate's 96, after the check closed 1.1 SE ahead.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c3",
+      "set": [
+        "countries=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner",
+    "planner:always_buy_cubes=1"
+  ],
+  "first_seed": 29696,
+  "games": 48,
+  "max_actions": 5000,
+  "winprob": {
+    "games": 0,
+    "rollouts": 8,
+    "agent": "greedy"
+  },
+  "closeness": {
+    "every": 0,
+    "gap": 2.0
+  },
+  "records": 0
+}

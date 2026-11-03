@@ -336,6 +336,22 @@ pub struct Ability {
     #[serde(default)]
     pub tokens: i64,
     pub effects: Vec<Op>,
+    /// The other branch of an "A, OR B" Action (076, Matt's ruling 12: a
+    /// progressive token card adds a token here or spends what is here). One
+    /// use a round covers both: the player picks a branch it can pay.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub or: Option<Box<Ability>>,
+}
+
+impl Ability {
+    /// This ability and its OR branch, in print order.
+    pub fn branches(&self) -> Vec<&Ability> {
+        let mut out = vec![self];
+        if let Some(b) = &self.or {
+            out.extend(b.branches());
+        }
+        out
+    }
 }
 
 // ---------- threats ----------
@@ -777,13 +793,28 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     check_ops(&c.effects, Slot::Player, &what)?;
     check_ops(&c.passives, Slot::Standing, &what)?;
     innate_only(&c.passives, &what)?;
-    if let Some(a) = &c.ability {
+    let branches: Vec<&Ability> = c.ability.iter().flat_map(|a| a.branches()).collect();
+    for a in &branches {
         check_ops(&a.effects, Slot::Player, &what)?;
     }
     if c.tags.is_empty() || c.tags.len() > 3 {
         return Err(format!("{what}: 1-3 tags"));
     }
-    let niche = c.effects.iter().chain(c.ability.iter().flat_map(|a| &a.effects)).any(science_niche);
+    // 076 (ruling 12): "here" names this building, so only an Action prints it;
+    // a count of tokens is one card's, never "you have" across cards.
+    let here_op = |o: &Op| {
+        matches!(o, Op::AddTokens { here: true, .. } | Op::GainPerTokens { here: true, .. } | Op::CashOut { here: true, .. })
+    };
+    if c.effects.iter().any(here_op) && c.tokens.is_none() {
+        return Err(format!("{what}: \"here\" names a building holding tokens: a program or event has no here"));
+    }
+    if branches.iter().flat_map(|a| &a.effects).any(here_op) && c.tokens.is_none() {
+        return Err(format!("{what}: an Action counts tokens here but the card holds none"));
+    }
+    if c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).any(|o| matches!(o, Op::GainPerTokens { here: false, .. })) {
+        return Err(format!("{what}: gain_per_tokens counts the tokens here (076, ruling 12)"));
+    }
+    let niche = c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).any(science_niche);
     if niche && !c.tags.contains(&Tag::Science) {
         return Err(format!("{what}: shields, delays and marker clearing are Science's"));
     }
@@ -810,7 +841,7 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     for (r, _) in &c.lowers {
         resource(r, &what)?;
     }
-    if let Some(a) = &c.ability {
+    for a in &branches {
         for (r, _) in &a.cost {
             resource(r, &what)?;
         }
@@ -953,6 +984,15 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                 if *ambassadors < 0 || *troops < 0 || ambassadors + troops < 1 =>
             {
                 return Err(format!("{what}: a removal names at least one piece"));
+            }
+            Op::RemoveTroops { count } if *count < 1 => {
+                return Err(format!("{what}: remove_troops needs count >= 1"));
+            }
+            Op::GainPerTag { resource: r, per, .. } => {
+                seat_resource(r, what)?;
+                if *per < 1 {
+                    return Err(format!("{what}: gain_per_tag needs per >= 1"));
+                }
             }
             Op::GainPerTokens { resource: r, per, .. } => {
                 seat_resource(r, what)?;

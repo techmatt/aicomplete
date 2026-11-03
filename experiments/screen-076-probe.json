@@ -1,0 +1,15 @@
+{
+  "name": "screen-076-probe",
+  "note": "076 diagnostic, not a lever (MESSAGE #3307): the planner, and the planner with w.credit_cap=24 (credits valued in full to 24, not 12), on the frozen r32 build. Does the eval's 12-credit cap, set when a seat made about 12 a round, hide the cards that gain credits (Demand Response Grid, Lights-Out Assembly, Arc Furnace Complex, the Capital cash-outs)? Planner, d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner", "planner:w.credit_cap=24"],
+  "games": 48,
+  "records": 0
+}

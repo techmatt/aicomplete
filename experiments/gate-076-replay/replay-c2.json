@@ -1,0 +1,35 @@
+{
+  "name": "gate-076-replay-c2",
+  "note": "076: the gate's nearest rows (within 1.5 SE, or ahead) replayed at 96 seeds on the final build, after the per-tag feasibility fix landed post-gate (CLAUDE.md: a core rules change after a frozen run replays its seeds).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c2",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner",
+    "planner:never_convert=1",
+    "planner:only_tag=5",
+    "planner:free_build_rush=1"
+  ],
+  "first_seed": 29600,
+  "games": 96,
+  "max_actions": 5000,
+  "winprob": {
+    "games": 0,
+    "rollouts": 8,
+    "agent": "greedy"
+  },
+  "closeness": {
+    "every": 0,
+    "gap": 2.0
+  },
+  "records": 0
+}

@@ -5,6 +5,7 @@
 //! read by the rule they change and never resolve.
 
 use crate::content::{Op, RoundFlag, Side};
+use crate::key::Key;
 use crate::module::{Cx, Res, World};
 use crate::state::{GameState, Opt};
 use crate::vocab::TokenKind;
@@ -86,7 +87,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
         Op::DestroyAll => removal::destroy_all(g, cx, seat)?,
         Op::RemoveNode => removal::remove_node(g, cx, seat)?,
-        Op::RemoveAmbassadorsCountry { unity_per } => removal::remove_ambassadors_country(g, cx, seat, *unity_per)?,
+        Op::RemoveAmbassadorsCountry { unity_per, max } => {
+            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max)?
+        }
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
         Op::Cleanse { amount, one_country, cities } => removal::cleanse(g, cx, seat, *amount, *one_country, *cities)?,
         Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
@@ -155,14 +158,35 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Draw { count } => cards::draw(g, cx, seat, *count)?,
-        Op::GainPerTokens { resource, kind, per } => resources::gain_per_tokens(g, cx, seat, *resource, *kind, *per),
-        Op::CashOut { kind, resource, rate } => resources::cash_out(g, cx, seat, *kind, *resource, *rate),
+        Op::GainPerTokens { resource, kind, per, here } => {
+            if let Some(c) = resources::token_card(g, cx, ctx, seat, *kind, *here, *per)? {
+                let held = g.var(&cards::tokens_key(seat, &c));
+                cx.add_resource(g, seat, *resource, held / (*per).max(1));
+            }
+        }
+        Op::CashOut { kind, resource, rate, here } => {
+            if let Some(c) = resources::token_card(g, cx, ctx, seat, *kind, *here, 1)? {
+                let k = g.var(&cards::tokens_key(seat, &c));
+                cards::add_tokens(g, cx, seat, &c, -k);
+                cx.add_resource(g, seat, *resource, k * rate);
+            }
+        }
+        Op::GainPerTag { resource, tag, per } => {
+            let n = cards::tags(&w, g, seat, *tag) / (*per).max(1);
+            cx.add_resource(g, seat, *resource, n);
+        }
+        Op::RemoveTroops { count } => removal::remove_troops(g, cx, seat, *count)?,
         Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
         Op::Production { resource, amount } => {
             cx.add_key(g, &economy::production_key(seat, *resource), *amount)
         }
-        Op::AddTokens { kind, amount } => {
+        Op::AddTokens { kind: _, amount, here: true } => {
+            if let Some(c) = ctx.card {
+                cards::add_tokens(g, cx, seat, &c, *amount);
+            }
+        }
+        Op::AddTokens { kind, amount, here: false } => {
             let ids = cards::token_cards(&w, g, seat, Some(*kind));
             let opts = ids.iter().map(|c| opt(*c)).collect();
             let prompt = format!("Seat {seat}: add {amount} {kind} to which card?");

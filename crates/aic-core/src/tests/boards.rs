@@ -7,7 +7,7 @@ use crate::op::Site;
 
 /// Three Industry programs in the Builder's play area.
 fn builder_with_tags(g: &mut GameState) {
-    set_pile(g, &cards::played(0), &["payroll_automation", "chip_spot_market", "bulk_silicon_procurement"]);
+    set_pile(g, &cards::played(0), &["payroll_automation", "materials_hedge_desk", "bulk_silicon_procurement"]);
 }
 
 #[test]

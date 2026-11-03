@@ -1,0 +1,20 @@
+{
+  "name": "screen-076-income2",
+  "note": "076 second read: printed credits on the new set. c2 seats Builder and Protector, so only their raise moves it; c3 adds the Researcher, raised apart (planner, d2).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "c2b1", "set": ["ais.builder.credits=14", "ais.protector.credits=13"]},
+    {"name": "c2b2", "set": ["ais.builder.credits=15", "ais.protector.credits=14"]},
+    {"name": "c2b3", "set": ["ais.builder.credits=16", "ais.protector.credits=15"]},
+    {"name": "c3b2r2", "set": ["countries=3", "ais.builder.credits=15", "ais.protector.credits=14", "ais.researcher.credits=10"]},
+    {"name": "c3b2r5", "set": ["countries=3", "ais.builder.credits=15", "ais.protector.credits=14", "ais.researcher.credits=13"]},
+    {"name": "c3b2r8", "set": ["countries=3", "ais.builder.credits=15", "ais.protector.credits=14", "ais.researcher.credits=16"]},
+    {"name": "c3b4r4", "set": ["countries=3", "ais.builder.credits=17", "ais.protector.credits=16", "ais.researcher.credits=12"]}
+  ],
+  "difficulties": [2],
+  "agents": ["planner"],
+  "games": 48,
+  "records": 0
+}

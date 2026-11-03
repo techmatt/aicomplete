@@ -174,7 +174,9 @@ try {
   check(notes().requisition.hash !== hash && !(await hasBadge(page, 'requisition', 'changed')), 'saving again clears "changed"');
 
   // Stats: a reasoned price, then none at all.
-  writeFileSync(join(ROOT, 'experiments', 'results', 'card-prices.csv'), 'card,reason,reasoned_price\nfield_sensor_grid,"worth more, on\ntwo lines",3.5\n');
+  // 076: reasoned 1.5 over what content prints today, so a repricing doesn't break the check.
+  const printed = JSON.parse(readFileSync(join(ROOT, 'content', 'cards.json'), 'utf8')).find((c) => c.id === 'field_sensor_grid').cost;
+  writeFileSync(join(ROOT, 'experiments', 'results', 'card-prices.csv'), `card,reason,reasoned_price\nfield_sensor_grid,"worth more, on\ntwo lines",${printed + 1.5}\n`);
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`[...document.getElementById('sort').options].some((o) => o.value === 'price_gap')`, 'the reasoned column');
   check(await page.js(`['jam', 'free_presence'].every((m) => document.querySelector('.ico[aria-label="' + m + '"]'))`), 'after Rebuild the grid shows the jam and free-placement marks');

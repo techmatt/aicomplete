@@ -23,8 +23,8 @@ pub const HOUSE_TERMS: [(&str, &str); 13] = [
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
     ("Draw", "from the tier-1 deck, with no keep to pay"),
-    ("You have", "on tags and tokens: on your cards in play; a covered building's tokens don't count"),
-    ("Action", "once a round, always"),
+    ("On your cards", "on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them"),
+    ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
 ];
 
 /// `3 credits, 1 energy`.

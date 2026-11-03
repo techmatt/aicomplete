@@ -32,11 +32,20 @@ pub struct Ctx {
     pub other: Option<usize>,
     /// The kind of source, for tallying what it destroys.
     pub label: &'static str,
+    /// The building whose Action this is: what "here" names (076).
+    pub card: Option<Key>,
 }
 
 impl Ctx {
     pub(super) fn new(source: Source, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card" }
+        Ctx { source, scope, other: None, label: "card", card: None }
+    }
+
+    /// The Action of seat `seat`'s building `card`: "here" is that card (076).
+    pub fn ability(seat: usize, card: Key) -> Ctx {
+        let mut c = Ctx::seat(seat);
+        c.card = Some(card);
+        c
     }
 
     /// Names the kind of source, for tallies (`discord`, `threat2`, ...).

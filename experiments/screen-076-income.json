@@ -1,0 +1,61 @@
+{
+  "name": "screen-076-income",
+  "note": "076 first read: the new set at r31 printed income, +3 and +6 credits a round on every board (planner, d2)",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "c2i0",
+      "set": []
+    },
+    {
+      "name": "c3i0",
+      "set": [
+        "countries=3"
+      ]
+    },
+    {
+      "name": "c2i3",
+      "set": [
+        "ais.builder.credits=16",
+        "ais.protector.credits=15",
+        "ais.researcher.credits=11"
+      ]
+    },
+    {
+      "name": "c3i3",
+      "set": [
+        "countries=3",
+        "ais.builder.credits=16",
+        "ais.protector.credits=15",
+        "ais.researcher.credits=11"
+      ]
+    },
+    {
+      "name": "c2i6",
+      "set": [
+        "ais.builder.credits=19",
+        "ais.protector.credits=18",
+        "ais.researcher.credits=14"
+      ]
+    },
+    {
+      "name": "c3i6",
+      "set": [
+        "countries=3",
+        "ais.builder.credits=19",
+        "ais.protector.credits=18",
+        "ais.researcher.credits=14"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "planner"
+  ],
+  "games": 48,
+  "records": 0
+}

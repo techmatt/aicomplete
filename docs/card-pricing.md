@@ -1,11 +1,34 @@
-# Card pricing: the reasoning (023, rules r14; current rates to r29)
+# Card pricing: the reasoning (023, rules r14; current rates to r32)
 
 Every price here is a **candidate**. The card list itself is [cards.md](cards.md),
 generated from `content/cards.json`. The screen that checked these prices, and the
 patches it led to, are in
 [experiments/results/screen-023-cards/cards.md](../experiments/results/screen-023-cards/cards.md).
+076's pass over every card, with each card's verdict, is in
+[experiments/results/screen-076-cards/cards.md](../experiments/results/screen-076-cards/cards.md).
 
-## Current rates (to r31)
+## The cost curve (076, r32)
+
+Matt's ruling 4 (2026-11-02): tier is power, costs and effects go up a lot, few cards cost 0, and tier is not a proxy
+for cost. **The recipe:** value the effect at *Current rates* (a tag left in play 1, then 0.5), then credits = value
+− the keep (2.5 tier 1, 6.5 tier 2) − 2.5 × the insight to play − about 1, so the card beats the plain route it
+replaces (ruling 7). A `needs` chain is the price (ruling 10): needs 3-4 of a tag sits 2-4 under the recipe, needs 6
+about half. **The targets 076 chose:** tier 1 median 6 (most 4-9, a few strong cards at 10-12), tier 2 median 14
+(ultimates 16-21 and 1 antimatter). Six credits is about a third of a round's printed credits after the raise (16 and 14
+on the two-seat boards), so a seat plays one or two tier-1 cards a round beside its standard actions, as Terraforming
+Mars's 10-ish median sits against its income; tier 2 a round's credits. **As built:**
+
+| | median r31 | median r32 | at 0-1 credits | at 10 or more |
+|---|---|---|---|---|
+| tier 1, all (110) | 2 | 6 | 51 → 3 | 0 → 7 |
+| tier 1 programs / buildings / events | 1 / 2 / 0.5 | 6 / 6 / 5 | | |
+| tier 2, all (42) | 7 | 12 | 2 → 0 | 9 → 28 |
+| tier 2 programs / buildings / events | 7 / 7 / 5 | 13 / 10 / 11.5 | | |
+
+Tier 2 lands under 14 because the chains price their gates (the six needs-3-to-6 tier-2 cards sit at 6-16) and the four
+standing counters share one 8-credit shape; the band was tuned on printed income, not on these prices.
+
+## Current rates (to r32)
 
 This table and its notes are the only home of a current rate; every section below keeps the numbers of its day. The
 dated sections run newest first, then the 023 sections by tag, and the cards as they stand are in [cards.md](cards.md).
@@ -18,7 +41,7 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | chip | 1.5 | sells at 1, Chip Spot Market pays 2 |
 | antimatter | 9 | 1 a round costs 8-11 of credits |
 | token held | 1 | spent, it is worth what its action buys |
-| Capital or Dataset sold | 2 credits, 1 chip, or 4 on the tier-2 card | 059: replaces 1 + 2 + ... + n. 4 Capital paid 10, now 8; 8 paid 15, capped, now 16 |
+| Capital or Dataset sold | 3 credits, or 4 on Sovereign Capital Fund and Data Licensing Deal; 2 energy (Collateralized Grid) | 059: replaces 1 + 2 + ... + n. 076: from one card only (ruling 12), so a pile is smaller and a sale dearer |
 | research cube | 3 | new (074): a station costs 2 chips and makes about 3 cubes before its card completes. Reasoned, not fitted. 075: a cube on an incomplete card is worth its payout, about 9 (below), but only once the card completes, and the Researcher pays 4 credits for one; held on a board it is worth what a converter or Peer Review (3 for a presence) turns it into |
 | player cube at completion | about 9 | 075 (Matt's 6-10): Horizon 3 energy and 3 credits, Cintamani a drawn card and 5 credits, Onyx 4 chips and 3 credits, Biomia 1 Sway, a card and 1 credit. **Measured cheaper than this in play:** energy and chips buy less than their rates (below) |
 | drawn tier-1 card | 4 | was 1 insight; a keep saved, blind, and it still costs its play |
@@ -30,6 +53,14 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | Follower | 1.5, at 2 for an ambassador; a building earns its first ambassador about round 4 | 068: Liaison Corps 2 for 1; Open Assembly, cheaper and two tags, 3 for 1 |
 | removal | 1 worth 2, 2 worth 5, 3 worth 6 | a troop is 2 worth and sways 1 |
 | troop removal | 1 troop 5; 3 ambassadors or 1 troop 6 | 059: the card names a kind: one choice, no mix |
+| troops in one country | 5.5 each, × 0.6-0.7 for being there | 076 (`remove_troops`, ruling 6): any country, no reach; past about 3 troops in one country the count is rarely there. Reasoned, not measured: read troops a country before trusting it |
+| ambassadors in one country | 2 each | 076 (`remove_ambassadors_country` with a number) |
+| progressive token card | (uses × payoff) × 0.7: tier 1 about 5 uses, tier 2 about 3 | 076 (ruling 12): the adds are uses too, so count the fires exactly; a tier-2 one may arrive loaded ("Add 2 here" when built) |
+| feeder (tokens onto one card) | about 3 a Dataset or Capital, 2.5 a Follower, 2 an Agent | 076: what the token buys on its best card, less a little for needing one |
+| per tag, once (`gain_per_tag`) | at the count when played: 3-4 for a committed seat | 076 (ruling 11): a program counts itself |
+| standing counter (`auto_counter`) | 2 credit income when built and 5 off its type at home: 8 credits, needs 2 of the tag | 076: one shape for the four sources; alone it was kept and never played (070) |
+| typed jam, one-off | jam 5 and a rider of the tag | 076 (ruling 14): never a counter; jam 5 covers most tier-1 threats of its type, none of tier 2 |
+| typed jam, free Action | jam 3 a round | 076: jam 4 a round would cancel most tier-1 threats of its type, a standing counter |
 | marker cleared | 6, × 0.7 for a target | 2 credits (066), 1 Sway, a hex back |
 | shield 4, building token 1.5, shelter 4 | | conditional; project ceiling 3 |
 | delay 2.5, jam N is N, counter 7 | | |
@@ -42,9 +73,28 @@ dated sections run newest first, then the 023 sections by tag, and the cards as 
 | city freed | 25 | 5 Sway plus a city |
 | income, tier 1 / tier 2 | credit 5 / 3, energy 5 / 3.5, chip 4 / 2.5, insight 8 / 6 | about 6 incomes in tier 1, 3 in tier 2. Insight's pair was built at 4, not rebased |
 | a gift to another seat | 0.75 × face | new: they may not need it then |
-| income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2 |
+| income per tag | 1 per 2 tags at tier 1, 1 per tag only with a `needs` or a tier-2 price | 059: a rate where a cap used to be. 055 priced it, capped, at credit income × about 1.2. 076: one shape, 1 credit (Tidal Barrage: energy) per tag of its own, needs 3, 9 credits (Citation Engine, Consulate Tower, Security Contractor HQ, Grid-Tied Smelter) |
+| `needs` chain | needs 3-4: 2-4 under the recipe; needs 6: about half | 076 (ruling 10): the requirement is the price |
 | repeatable Action | (value less its cost) × uses × 0.7 | tier 1 about 5 uses, tier 2 about 2-3 |
 | a fixed trade | the two sides at these rates | 059: replaces every `convert`: nothing to cap, nothing to count |
+
+## 076's changes (r32): every card under Matt's rulings
+
+Six analysts, one a tag, read every card by ruling 9 against *Current rates*; a critic read the set across tags; the
+lead's corrections are what shipped. Every card's verdict and one line why are in
+[experiments/results/screen-076-cards/cards.md](../experiments/results/screen-076-cards/cards.md). What moved most:
+
+- **Prices at the rates, effects scaled up to them.** 075's cards sat 1 under the rates; the recipe above prices at
+  them less the keep and insight, and the effects grew until the price landed on the curve: 5 compute for 4
+  (Blackout Script, Matt's), Sway 2 for 5 (Peace Dividend, Matt's), 6 troops in one country (Kinetic Interdiction).
+- **One shape for one job across the tags:** per-tag income (1 a tag of its own, needs 3, 9 credits), standing
+  counters (8, needs 2), typed jams (5 and a rider; a free Action 3). Where two tags priced the same effect apart (the
+  critic's list), the lead set one number.
+- **Progressive token cards are priced on exact fires:** a tier-1 card used about 5 times alternates add and spend,
+  so a "pay 2" half fires once or twice; most halves now pay 1 here, and three tier-2 piles arrive loaded.
+- **Measured against the plan:** at r31's printed credits the set read 47 / 34; +3 a board on top read 84 / 53, and
+  the frozen +3, +2 and +4 read 68.8 / 72.9 on the final band. The agents keep and never play most Action and token
+  buildings, at r31 too (the write-up's *Play*): their prices are reasoned, not measured.
 
 ## 075's changes (r31): the Researcher, cheaper cards, the corp payouts
 

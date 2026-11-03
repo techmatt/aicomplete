@@ -1,0 +1,32 @@
+{
+ "name": "fill-c2-44",
+ "note": "gate close of gate-075: c2, seeds 29644+4",
+ "configs": [
+  "configs/baseline.json"
+ ],
+ "variants": [
+  {
+   "name": "c2",
+   "set": []
+  }
+ ],
+ "difficulties": [
+  2
+ ],
+ "agents": [
+  "planner:home_only=1"
+ ],
+ "first_seed": "29644",
+ "games": 4,
+ "max_actions": 5000,
+ "winprob": {
+  "games": 0,
+  "rollouts": 8,
+  "agent": "greedy"
+ },
+ "closeness": {
+  "every": 0,
+  "gap": 2.0
+ },
+ "records": 0
+}
