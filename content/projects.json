@@ -94,7 +94,7 @@
   "name": "Station Coup",
   "stage": 2,
   "cost": 10,
-  "text": "In each country, an uncorrupted research station becomes corrupted (a player's holds unless enough adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex.",
+  "text": "In each country, an uncorrupted research station becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex.",
   "effects": [{"op": "flip_station", "each_country": true}, {"op": "botnet_ambassadors", "amount": 1}]
  }
 ]

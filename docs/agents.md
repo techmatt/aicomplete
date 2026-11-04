@@ -23,8 +23,13 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   - botnets −25 (D9): low enough that agents don't make one when an equal free choice exists;
   - `research_cube` 0.3, under what every converter nets; `research_cube_power` 1.2 for a
     seat whose board spends cubes on a power (the Researcher's Peer Review); `converter_city` 2
-    (r37) for a seat holding cubes with a node in a city of a completed megaproject's country,
-    the converter's gate, so agents hold a city node there;
+    (r37) for a seat with a node in a city of a completed megaproject's country, the converter's
+    gate, so agents hold a city node there, whatever the cubes it holds (`w.converter_any`, 102,
+    D27: the last cube gets spent);
+  - a corrupted station's `station_flip` 20 scaled by its country's megaproject still open, 0
+    once completed (`w.flip_open`, 102, D28: frees fell from 0.2 a game to 0.01);
+  - the liberation push needs `liberate_at` plus the city's own adversary ambassadors, each of
+    which cancels an arrival (`w.push_adv`, 102, D35);
   - a city an adversary ambassador darkens: `city_dark` 4 (r37) for a neutral one in some seat's
     reach (its sale lost), `city_dark_aligned` 6 (r38) for an aligned one (its owner's free energy lost);
   - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
@@ -50,8 +55,16 @@ more with it. A play waiting a round is worth 15% less; `plan_niche` adds for ea
 threat or node a card would act on now; `needs` may be met by cards planned earlier, short
 by at most `plan_short` tags; a card with no target now may be planned from the second
 round at `target_share`, unless it works a pile of the seat's own none stands or is planned for (`pile_ok`); a building
-over one of the seat's adds only what it beats the weakest by (`plan_cover`); `plan_bury`
+over one of the seat's adds only what it beats the weakest by (`plan_cover`), the covered one
+counted at what it would still earn, its play effects spent (`plan_cover_spent`, 102); `plan_bury`
 and `plan_cubes` are guide heuristics (below); credits paid for keeps cost `plan_credit` each.
+
+As the play check prices a card (102, D34, D23): a card adds its value **less its price**, and
+one worth no more is not planned (`plan_net`); credits over `w.credit_cap` cost `w.credit_idle`
+(`plan_idle`); energy and antimatter at the heuristic's rates (about 1.3 and 3.3 credits), a
+building's Action at the table's (`plan_rates`); a project discard or drain at what the
+heuristic charges for the projects up (reads: `experiments/results/102_agents_and_r40/`;
+`plan_gross`, a probe at 0, keeps the drop but adds gross value: +5.7 ±1.9 at d2, r40).
 
 **Dominance checks** are the same agents with one behavior forced: each is a row of
 `forced_table!` in `agents/policy.rs`, with its description (`docs/principles.md`,
@@ -74,6 +87,8 @@ its standing effects pay a round times the rounds it counts for, a use of its Ac
 adds takes), and its tags. In a game those rounds are the rounds left; at the table's typical
 context (the opening's strategy choice, the effect ledger) they are its tier's horizon,
 `horizon_t1` 4 and `horizon_t2` 2.5 (the rounds left at a typical purchase less a tempo discount).
+"Remove up to N troops" counts the troops it removes in play, the table's `troops_removed` (102,
+D26: 6 → 3.6), which the effect ledger reads too.
 
 Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, off for `greedy`):
 
@@ -83,7 +98,8 @@ Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, o
   play cost, less its keep times `packet_keep` in the packet; times `hand_share`, then `drafted`. `pick_cost` is 0: the keep
   plan judges what a seat can pay (at 1 the engine drafts tier 1 only).
 - **A building in play:** what it earns a round beyond income, times the rounds left.
-- **A token:** what its card's spend pays per token, else the held rate.
+- **A token:** what its card's spend pays per token, else the held rate; on a card whose
+  Action cashes its own pile out, the cash-out's rate (`w.token_cash`, 102, D24).
 - **A supply ambassador:** its row.
 - **Energy:** `energy` 0.8 points (0.3 of the table's 4.5; `w.table_energy` 1 played worse).
 - **An action** is credited what the board terms can't see after it: a cordon, a peek, a
@@ -146,21 +162,22 @@ Rules a player could say aloud where a one-step search misses a card's point (Ma
 - **`needs`:** a card whose `needs` aren't met counts `needs_floor` (0.25) of its worth,
   plus the rest times the square of the share of the tags held toward them: a chain card has
   value before it is playable, and each tag toward it adds more than the last.
-- **Dear powers:** a board power that sacrifices two tags or more counts `power_progress`
-  (0.5) of one use's worth, times the square of the share of the tags held toward it.
+- **Dear powers:** a dear board power (`ai::power_is_dear`: two tags or more, or a tag and
+  energy without placing a node; `w.power_dear`, 102, D33) counts `power_progress` (0.5) of one
+  use's worth, times the square of the share of the tags held toward it.
 - **Drafting for the neighbor:** a passed hand's cards count for the next seat, by its
   strategy (a card not kept is discarded).
 
 ## The tiers
 
-| Tier | Stands for | Spec | win %, bp / br / pr, r38 (098, seeds 31900, 48 a pair) |
+| Tier | Stands for | Spec | win %, bp / br / pr, r40 (102, seeds 32900, 200 a pair) |
 |---|---|---|---|
-| Greedy without strategy | A new player | `engine` | d0 58 / 79 / 58 (target 70-85) |
-| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 23 / 35 / 38 (target 45-85: every pair out of band, not retuned) |
-| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r38 |
+| Greedy without strategy | A new player | `engine` | d0 56 / 73 / 60 (target 70-85) |
+| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 28 / 42 / 32 (target 45-85: every pair out of band, not retuned) |
+| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r40 |
 
 The strategist judges (Matt, 2026-11-03: while within about 5 points of `sweep` a pair on the
 same seeds) at about an eleventh of its time a game; `sweep` is the spot check. A strategy
 pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them, and
-`aic-sim strategies CONFIG --agent strategist` prints what each seat chooses. Tables:
-`experiments/results/098_rules_r38_troops_dark/r38.md` (r39 changed only Rush Build's offer, unread).
+`aic-sim strategies CONFIG` prints what each seat chooses. Tables:
+`experiments/results/102_agents_and_r40/r40.md`.

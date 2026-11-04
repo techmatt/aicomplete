@@ -92,7 +92,7 @@ Choice threats are preferred; a destroyed node leaves the game, so a tier-1 thre
 | Eviction | 1 | military | Each player here pays 6 credits or loses a node here (never their last). | 5 credits |
 | Embargo | 1 | economic | No site here can be claimed next round; the adversary gains 3 compute. | 4 credits |
 | Smear Campaign | 1 | influence | Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided. | 4 credits |
-| Station Seizure | 2 | cyber | An uncorrupted research station here becomes corrupted (a player's holds unless enough adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
+| Station Seizure | 2 | cyber | An uncorrupted research station here becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
 | Overrun | 2 | influence | The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their nodes here. | 8 credits |
 | Mass Production | 2 | economic | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
 | Purge Protocols | 2 | cyber | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 6 credits |

@@ -20,13 +20,16 @@ lost. **An adversary ambassador on a city stays, and the city is dark** (Matt: n
 cities at r37, aligned ones at r38): every round it stands there, a neutral city sells none of
 its cubes and an aligned city gives its owner none, and they are lost. One ambassador makes a
 city dark; `corrupt_at` of them corrupt it, so clearing ambassadors from the cities you buy
-from, and above all from the cities you aligned, comes well before corruption. A corrupted
-city's go to the adversary (Discord).
+from, and above all from the cities you aligned, comes well before corruption. **Aligning a
+dark city cancels one adversary ambassador on it** (r40, D38), as a site claim on a station or
+factory does: both are removed and no cube goes on; once the city is clean, a second Align
+aligns it. A corrupted city's go to the adversary (Discord).
 
 **Cities' energy, for new players.** A city you aligned gives you its energy every round.
 A neutral city next to your node sells you its energy. An adversary ambassador standing on
 any city shuts it off: your aligned city gives you nothing, a neutral one sells nothing,
-every round until someone removes the ambassador, and more of them corrupt the city. If
+every round until someone removes the ambassador, and more of them corrupt the city. Aligning
+a dark city spends your ambassador knocking one of theirs off; align again once it is clean. If
 enemy ambassadors get that close to your city, work to stop them: clear them early. A Blackout stops a country's cities
 in the production after the threat executes.
 
@@ -52,7 +55,7 @@ target is in the player's reach. The view publishes each action with its cost
 | Clear a corruption marker | `clear_cost` 2 credits | in reach: sway `clear_unity` 1 toward Unity, gain `clear_credits` 0 credits |
 | Move a player ambassador | `move_credits` 1 credit | from your supply or the board onto a piece in reach (not the hex it comes from) |
 | Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
-| Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it (an adversary ambassador there stays, so a dark city stays dark) |
+| Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean |
 | Free a research station | `free_station_credits` 6 credits; `free_station_ambassadors` 2 of your ambassadors on it, used up | a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays) |
 | Harden a facility (a card grants it: Hardened Bunker Complex) | the chips the card prints, per token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
 | Sell chips | 1 chip | gain `chips_credits` 1 |

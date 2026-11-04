@@ -43,7 +43,7 @@ console.log(`view ${viewOk ? 'ok' : 'BAD'}, record ${recordOk ? 'ok' : 'BAD'} ($
 // seed and policy), proving native and wasm builds play the same game.
 const GOLDEN = '905f49d72ce7ed25';
 // Must equal GOLDEN_CONTENT_HASH there: this game may never pay for a repriced card.
-const GOLDEN_CONTENT = 'b736317436e5cb1d';
+const GOLDEN_CONTENT = '9fbcc51d5daf8241';
 let h = 0xcbf29ce484222325n;
 for (const b of new TextEncoder().encode(state)) {
   h = ((h ^ BigInt(b)) * 0x100000001b3n) & 0xffffffffffffffffn;

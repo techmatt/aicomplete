@@ -63,8 +63,8 @@ Current:
   proposed `cards.json` or `values.json`; `--hold-ratio OLD.csv` adds the credit price that keeps each card's
   printed / reasoned ratio of an older `cards.csv` (`git show REV:experiments/results/effect-ledger/cards.csv`), for
   repricing after a value change. Its Python mirror of `agents/value.rs` must change with it (the
-  fast-lane `effect_ledger_mirrors_the_table` checks the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`TROOPS_REMOVED`, from the
-  engine's `cards.troops_removed.<N>` / `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
+  fast-lane `effect_ledger_mirrors_the_table` checks the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`values.json` `troops_removed`, which
+  value.rs reads too, from the engine's `cards.troops_removed.<N>` / `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on

@@ -291,6 +291,30 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
+/// 102: README.md, CLAUDE.md and every `docs/*.md` page but the generated cards.md over
+/// [`RULES_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/` is [`rules_file_failures`]'s).
+fn page_budget_failures() -> Vec<String> {
+    let mut paths = vec!["README.md".to_string(), "CLAUDE.md".to_string()];
+    if let Ok(dir) = fs::read_dir("docs") {
+        let mut pages: Vec<String> = dir
+            .flatten()
+            .map(|e| e.path())
+            .filter(|p| p.extension().and_then(|x| x.to_str()) == Some("md"))
+            .map(|p| p.to_string_lossy().replace('\\', "/"))
+            .filter(|p| p != "docs/cards.md")
+            .collect();
+        pages.sort();
+        paths.extend(pages);
+    }
+    paths
+        .into_iter()
+        .filter_map(|p| {
+            let n = fs::metadata(&p).ok()?.len() as usize;
+            (n > RULES_BUDGET).then(|| format!("{p}: {n} bytes, over the {RULES_BUDGET}-byte doc budget: trim it"))
+        })
+        .collect()
+}
+
 /// Every `.md` file in `docs/rules/`, sorted, as (path, text).
 fn rules_files() -> Vec<(String, String)> {
     let dir = fs::read_dir(RULES_DIR).unwrap_or_else(|e| fail(&format!("{RULES_DIR}: {e}")));
@@ -397,6 +421,7 @@ pub fn run(o: &Options) {
     let stale: Vec<&(String, String, String)> = files.iter().filter(|(_, new, old)| new != old).collect();
     let mut failures: Vec<String> = harm_failures().into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
     failures.extend(rules_file_failures(&rules_new));
+    failures.extend(page_budget_failures());
     for f in &failures {
         eprintln!("{f}");
     }

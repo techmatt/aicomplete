@@ -31,6 +31,8 @@ function field(k: string, v: unknown): string {
 export interface LabelContext {
   config: Config;
   view?: View;
+  /** Country names by index, for labels made with no view (the log, the step line; 102, D30). */
+  countries?: string[];
 }
 
 /** A card in a seat's hand as the view shows it, if any. */
@@ -125,8 +127,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     }
     case 'convert': {
       const x = cx.view?.seats[Number(a.seat)]?.values.find((y) => y.key === `board.converter.${a.country}`);
-      // The log and the step line have no view: the country still names it.
-      if (!x) return `the converter of country ${a.country}`;
+      // The log and the step line have no view: the country's name, handed in, names it.
+      if (!x) return `the converter of ${cx.countries?.[Number(a.country)] ?? `country ${a.country}`}`;
       return `${x.label}: ${(x.doc ?? '').split(':')[0]}`;
     }
     case 'sell': {

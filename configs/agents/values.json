@@ -149,5 +149,9 @@
     "corrupt_sooner": {"credits": 0, "per": "a twist"},
     "war": {"credits": 0, "per": "a twist"}
   },
+  "troops_removed": {
+    "note": "102 (D26): troops a 'remove up to N troops' removes in play, by N: the cards.remove_troops.<N> counters of 093's r36 read (1,008 games); an N not here counts as N. remove_troops' row is per troop removed; value.rs and scripts/cards/effect_ledger.py both read these.",
+    "1": 1.0, "2": 1.48, "3": 1.75, "4": 2.37, "6": 3.6
+  },
   "overrides": []
 }

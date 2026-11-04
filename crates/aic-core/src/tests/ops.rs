@@ -93,21 +93,26 @@ fn text_numbers(text: &str) -> Vec<i64> {
 
 /// Only player-card text is generated: the hand-written rest must not print a
 /// number its ops don't have (044's content sweep found none; keep it so).
+/// A station flip prints `station_flip_at` (D39), which
+/// `a_station_flip_face_prints_station_flip_at` keeps in step instead.
 #[test]
 fn hand_written_text_prints_no_number_its_ops_lack() {
-    fn walk(v: &serde_json::Value, bad: &mut Vec<String>) {
+    let n = Rules::new(&baseline()).unwrap().world().int("adversary.station_flip_at");
+    let tunable = format!("unless {n} adversary ambassadors");
+    fn walk(v: &serde_json::Value, tunable: &str, bad: &mut Vec<String>) {
         match v {
-            serde_json::Value::Array(a) => a.iter().for_each(|x| walk(x, bad)),
+            serde_json::Value::Array(a) => a.iter().for_each(|x| walk(x, tunable, bad)),
             serde_json::Value::Object(o) => {
                 if let (Some(id), Some(text)) = (o.get("id"), o.get("text").and_then(|t| t.as_str())) {
                     let mut have = Vec::new();
                     op_numbers(v, &mut have);
-                    let missing: Vec<i64> = text_numbers(text).into_iter().filter(|n| !have.contains(n)).collect();
+                    let text = text.replace(tunable, "");
+                    let missing: Vec<i64> = text_numbers(&text).into_iter().filter(|n| !have.contains(n)).collect();
                     if !missing.is_empty() {
                         bad.push(format!("{id}: {missing:?} in {text:?}"));
                     }
                 }
-                o.values().for_each(|x| walk(x, bad));
+                o.values().for_each(|x| walk(x, tunable, bad));
             }
             _ => {}
         }
@@ -118,7 +123,7 @@ fn hand_written_text_prints_no_number_its_ops_lack() {
         include_str!("../../../../content/adversary.json"),
         include_str!("../../../../content/alignment.json"),
     ] {
-        walk(&serde_json::from_str(file).unwrap(), &mut bad);
+        walk(&serde_json::from_str(file).unwrap(), &tunable, &mut bad);
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }

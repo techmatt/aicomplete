@@ -72,7 +72,7 @@ Measured or found against play; each is still the table's number until a pass mo
 - **Antimatter 7** (lowered from 9 at r35): the heuristic holds antimatter at 2 points, about 3 credits; what antimatter
   buys is the ultimates' 1-a-card gate, not 7 credits of anything.
 - **Troop removal 11** (7 each in one country; 15 and 10 at r35-r37, 4 less at r38 when `alignment.troop` went to 0):
-  the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger counts what one removes in play (`TROOPS_REMOVED`; Kinetic Interdiction's 6 about 3.6).
+  the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`, 102; Kinetic Interdiction's 6 about 3.6).
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for
   a draft: tier 2 reads as worth no more than its keep unless the draft leaves the play cost out, as the agents' does.
 - **Energy 4.5** (from 2 at r35): seats now hold about 1-2 at rounds 3 and 6 and 1.8-2.6 at the end (090,

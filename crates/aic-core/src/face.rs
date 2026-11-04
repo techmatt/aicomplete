@@ -351,6 +351,12 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let place = if *one_country { "in reach, in one country" } else { "in reach" };
             let say = format!("free {n} {what} {place}");
             let mut parts = minus(*n, "cube");
+            // D37: a narrowed cube names its facility, so the bare cube keeps one meaning.
+            match (*cities, only) {
+                (false, Some(Facility::Station)) => parts.push(w("station")),
+                (false, Some(Facility::Factory)) => parts.push(w("factory")),
+                _ => {}
+            }
             if *one_country {
                 parts.push(w("country"));
             }
@@ -375,7 +381,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 out.push(clause(adversary(p), format!("remove up to {troops} troops in its country")));
             }
             if *botnet {
-                out.push(clause(adversary(minus(1, "botnet")), "remove a botnet on or next to it".to_string()));
+                // D37: on or next to the city, as Clear a city's city glyph says.
+                let mut p = minus(1, "botnet");
+                p.push(w("city"));
+                out.push(clause(adversary(p), "remove a botnet on or next to it".to_string()));
             }
             out
         }

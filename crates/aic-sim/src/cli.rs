@@ -19,7 +19,8 @@ usage: aic-sim run <config.json> [options]
        aic-sim strategies <config.json> [--games N] [--seed S] [--set k=v]... [--agent SPEC]
                                                      each seed's strategies as the agent's
                                                      seats choose them at the round-1 keep
-                                                     (CSV: seed,seat,board,strategy)
+                                                     (CSV: seed,seat,board,strategy;
+                                                     --agent defaults to strategist here)
 
 options:
   --games N         games per config (default 200)

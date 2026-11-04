@@ -296,7 +296,7 @@
   "name": "Station Seizure",
   "tier": 2,
   "source": "cyber",
-  "text": "An uncorrupted research station here becomes corrupted (a player's holds unless enough adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here.",
+  "text": "An uncorrupted research station here becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here.",
   "counter": [
    [
     "credits",

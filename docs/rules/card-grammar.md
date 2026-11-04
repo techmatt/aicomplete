@@ -51,11 +51,11 @@ card does; how each primitive resolves:
   is countered at once. **Counter a threat:** partial payments on it are refunded.
 - **Cleanse:** take the adversary cube off a corrupted research station or factory in reach, one hex at a time (some
   cards: all in the first hex's country). A station becomes neutral. `only` limits it to stations (Reclamation Crew,
-  priced as a station flip) or to factories (Back-Channel Talks, cheap). With `cities` (Great Liberation) a corrupted
+  priced as a station flip) or to factories (Back-Channel Talks, cheap); its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a corrupted
   city counts too, and it is liberated ([ambassadors.md](ambassadors.md)).
 - **Liberate:** liberate one corrupted city in your reach ([ambassadors.md](ambassadors.md)): it is clean; with `align` your cube goes on it. Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
-  off), `botnet` (a botnet on or next to the city comes off). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
+  off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Liberation Accords: 6) around one corrupted
   city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Those next to the city don't raise the fallback, so clearing them only
   thins the city's build before it spreads; each on the city costs the fallback one more ambassador ([ambassadors.md](ambassadors.md)).

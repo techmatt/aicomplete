@@ -1,0 +1,38 @@
+{
+  "name": "use-102",
+  "note": "102: the engine smoke read of the Phase A levers on r39 (2 players, the three pairs, d2, dev seeds from 0): r39 agent against D34 (plan_net) alone, with D23 (plan_rates) and with D24 (w.token_cash). Run on a binary with those switches off by default. Read with scripts/cards/play_read.py and use_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:plan_net=1",
+    "strategist:plan_net=1,plan_rates=1",
+    "strategist:plan_net=1,plan_rates=1,w.token_cash=1",
+    "engine",
+    "engine:plan_net=1,plan_rates=1,w.token_cash=1"
+  ],
+  "games": 32,
+  "records": 0
+}

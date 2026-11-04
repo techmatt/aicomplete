@@ -291,6 +291,24 @@ pub struct Weights {
     /// counts this share of one use, times the square of the share of the tags
     /// the seat has toward it.
     pub power_progress: f64,
+    /// 102 (D33): above 0, the dear-power progress term reads the rules' own test
+    /// (`ai::power_is_dear`: two tags or more, or a tag and energy without
+    /// placing a node); at 0 it counts powers needing two tags or more, which
+    /// since r35 is none.
+    pub power_dear: f64,
+    /// 102 (D24): above 0, a token on a card whose Action cashes its own pile
+    /// out (Exabyte Archive, Bonded Warehouse, Sovereign Capital Fund) is worth
+    /// its cash-out rate, not the held rate.
+    pub token_cash: f64,
+    /// 102 (D27): above 0, `converter_city` counts a city node in a completed
+    /// megaproject's country whatever the cubes the seat holds.
+    pub converter_any: f64,
+    /// 102 (D28): above 0, a corrupted station's `station_flip` is scaled by the
+    /// share of its country's megaproject still open (0 once completed).
+    pub flip_open: f64,
+    /// 102 (D35): above 0, the liberation push needs the city's own adversary
+    /// ambassadors on top of `liberate_at` (each cancels an arrival).
+    pub push_adv: f64,
     /// The deck clock (011), any mode: per round the team's projected win
     /// (Unity still needed at its rate so far, plus `win_lag`) comes
     /// after the adversary deck runs out. 0 = off.
@@ -334,6 +352,20 @@ pub fn check_names<'a>(names: impl IntoIterator<Item = &'a str>) -> Result<(), S
 fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
     let key = if tier == 2 { "cards.keep_tier2" } else { "cards.keep_tier1" };
     (INSIGHT_COST * world.int(key)) as f64
+}
+
+/// 102 (D28): the share of hex `h`'s country's megaproject still to fill, 0 once
+/// it has completed (a station's cubes then go to their owner, none to it).
+fn open_share(world: &aic_core::module::World, g: &GameState, h: usize) -> f64 {
+    let c = world.map.hexes[h].country as usize;
+    if c >= world.map.countries.len() || g.var(&board::project_done(c)) > 0 {
+        return 0.0;
+    }
+    let need = world.content.map.countries[c].megaproject.cubes.max(1);
+    let filled = g.var(&board::project_key(c, None))
+        + g.var(&board::project_neutral(c))
+        + (0..g.seats.len()).map(|s| g.var(&board::project_key(c, Some(s)))).sum::<i64>();
+    (1.0 - filled as f64 / need as f64).clamp(0.0, 1.0)
 }
 
 /// The share of `node_danger` a seat with `count` nodes is charged.
@@ -459,6 +491,11 @@ impl Default for Weights {
             pick_cost: 0.0,
             needs_floor: 0.25,
             power_progress: 0.5,
+            power_dear: 1.0,
+            token_cash: 1.0,
+            converter_any: 1.0,
+            flip_open: 1.0,
+            push_adv: 1.0,
             clock: 0.0,
         }
     }
@@ -577,6 +614,8 @@ fn pile_kind(d: &CardDef) -> Option<aic_core::content::TokenKind> {
 /// One board power, read once.
 #[derive(Clone)]
 struct PowerFact {
+    /// `ai::power_is_dear` (102, D33).
+    dear: bool,
     unseen: f64,
     worth: f64,
     tags: Vec<(TagOrAny, i64)>,
@@ -677,6 +716,7 @@ impl Eval {
         let seats = rules.config.countries as usize;
         // 028: the Unity deck's last card wins, and it comes before the last bar drop.
         let target_tips = world.list("alignment.unity_cards").iter().sum();
+        let token_cash = w.token_cash > 0.0;
         Eval {
             w,
             seats,
@@ -702,7 +742,11 @@ impl Eval {
                             index: i,
                             cost: Self::cost(d),
                             value: CardValue::of(value::table(), d),
-                            token: value::token_worth(value::table(), d),
+                            token: if token_cash {
+                                value::token_worth_cash(value::table(), d)
+                            } else {
+                                value::token_worth(value::table(), d)
+                            },
                             pile: if d.is_building() { None } else { pile_kind(d) },
                         };
                         (Key::new(&d.id).as_str().as_ptr() as usize, fact)
@@ -720,6 +764,7 @@ impl Eval {
                             .map(|p| {
                                 let wv = value::power_worth(value::table(), p);
                                 PowerFact {
+                                    dear: ai::power_is_dear(p),
                                     unseen: wv.unseen,
                                     worth: wv.instant(value::table(), &Ctx::typical(value::table())),
                                     tags: p.tags.clone(),
@@ -831,6 +876,24 @@ impl Eval {
         }
     }
 
+    /// 102: for the keep plan, in table credits as this heuristic prices them
+    /// (its points over a table credit's): an energy held and an antimatter held
+    /// (D23), and an adversary project wholly filled (D34: `project`, charged
+    /// for each project's share filled); the credits it counts in full
+    /// (`credit_cap`) and an idle credit's share of one beyond them.
+    pub fn plan_rates(&self) -> [f64; 5] {
+        let w = &self.w;
+        let credit = if w.table > 0.0 { w.table } else { w.credits };
+        let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
+            w.table * w.table_antimatter * value::table().res(Resource::Antimatter)
+        } else {
+            w.antimatter
+        };
+        let cap = if w.credit_cap > 0.0 { w.credit_cap } else { f64::MAX };
+        let idle = if w.credits > 0.0 { w.credit_idle / w.credits } else { 1.0 };
+        [self.energy_unit() / credit, antimatter / credit, w.project / credit, cap, idle]
+    }
+
     /// An energy a round to come (income, a city's production; 093): as held,
     /// less `rates.energy_income_share` in table mode, as the card prices count it.
     fn energy_income_unit(&self) -> f64 {
@@ -939,7 +1002,10 @@ impl Eval {
                         .filter(|&s| near[s] >> h & 1 != 0)
                         .map(|s| g.resource(s, Resource::Ambassadors))
                         .sum();
-                    let need = board::liberate_at(&world) as f64;
+                    // 102 (D35): the city's own adversary ambassadors each cancel
+                    // an arrival first (F122's rule).
+                    let cancel = if w.push_adv > 0.0 { adv as f64 } else { 0.0 };
+                    let need = board::liberate_at(&world) as f64 + cancel;
                     // Gathering counts a little; landing, once enough are at
                     // hand to meet the hold, counts more each step, so a push
                     // climbs to the free one action at a time (027: agents
@@ -986,14 +1052,17 @@ impl Eval {
             v -= w.troop * t.troop as f64;
             if t.station > 0 {
                 if bad {
-                    v -= w.station + w.station_flip;
+                    // 102 (D28): the flip counts what its cubes still change: none
+                    // once its country's megaproject has completed.
+                    let flip = if w.flip_open > 0.0 { w.station_flip * open_share(&world, g, h) } else { w.station_flip };
+                    v -= w.station + flip;
                     // r35: ambassadors gathering to free it, worth their supply
                     // value while they stand there (as on a city).
                     if adv == 0 {
                         let need = world.int("board.free_station_ambassadors").max(1) as f64;
                         let on = t.ambassador[..seats].iter().copied().max().unwrap_or(0) as f64;
                         let share = (on / need).min(1.0);
-                        v += (w.station + w.station_flip) * w.station_freeing * share * share;
+                        v += (w.station + flip) * w.station_freeing * share * share;
                         v += (self.ambassador_unit() - w.ambassador_board) * on.min(need);
                     }
                 } else if owned {
@@ -1077,7 +1146,10 @@ impl Eval {
                 // r37: the converter needs a node in a city of its country.
                 if w.converter_city != 0.0 {
                     for s in 0..self.seats {
-                        if g.resource(s, Resource::ResearchCubes) > 0 && common::has_city_node_in(&world, g, s, c) {
+                        // 102 (D27): with `converter_any`, whatever the cubes, so the
+                        // last cube is worth spending there.
+                        let cubes = w.converter_any > 0.0 || g.resource(s, Resource::ResearchCubes) > 0;
+                        if cubes && common::has_city_node_in(&world, g, s, c) {
                             v += w.converter_city;
                         }
                     }
@@ -1592,7 +1664,9 @@ impl Eval {
         let mut v = 0.0;
         for p in powers {
             let need: i64 = p.tags.iter().map(|(_, n)| n).sum();
-            if need < 2 || p.worth <= 0.0 {
+            // 102 (D33): the rules' own test, which since r35 is what makes a power dear.
+            let dear = if self.w.power_dear > 0.0 { p.dear && need > 0 } else { need >= 2 };
+            if !dear || p.worth <= 0.0 {
                 continue;
             }
             let have: i64 = p

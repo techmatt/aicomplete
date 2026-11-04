@@ -89,14 +89,21 @@ RENAMED_086 = {
     'effects.botnets_cut': 'effects.nodes_cut',
 }
 
+# Counters 102 renamed (D40): name -> former name. `board.stations_free` (a station built
+# paying no chips) read as `board.stations_freed` (the Free a station action).
+RENAMED_102 = {
+    'board.stations_built_free': 'board.stations_free',
+}
+
 
 def old_names(k):
-    """The counter's former names: before 086 (`RENAMED_086`, and `board.node_lost.<source>`),
-    and before 026, when chips were called hardware."""
+    """The counter's former names: before 102 (`RENAMED_102`), before 086 (`RENAMED_086`, and
+    `board.node_lost.<source>`), and before 026, when chips were called hardware."""
     pre_086 = RENAMED_086.get(k, k)
     if k.startswith('board.node_lost.'):
         pre_086 = 'board.presence_lost.' + k[len('board.node_lost.'):]
-    return [n for n in dict.fromkeys([pre_086, k.replace('chips', 'hardware')]) if n != k]
+    names = [RENAMED_102.get(k, k), pre_086, k.replace('chips', 'hardware')]
+    return [n for n in dict.fromkeys(names) if n != k]
 
 
 def cnt(g, k):

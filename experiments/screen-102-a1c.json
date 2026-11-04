@@ -1,0 +1,36 @@
+{
+  "name": "screen-102-a1c",
+  "note": "102, after the freeze, on r40 rules: the frozen strategist against its item 1 in the 099 patch form (plan_gross: drop a card worth no more than its price, add its gross value) and with item 1 off. Seeds 32500-32699 (the Phase A seeds, not the r40 reads). Information for Matt, not a freeze.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:plan_gross=1",
+    "strategist:plan_net=0,plan_rates=0,plan_idle=0,w.token_cash=0"
+  ],
+  "games": 200,
+  "first_seed": 32500,
+  "records": 0
+}

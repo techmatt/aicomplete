@@ -16,7 +16,7 @@
 use std::sync::Arc;
 
 use aic_core::content::{CardDef, CardKind, Op, Resource, Tag, TAGS};
-use aic_core::modules::{ai, cards, common, economy, effects, threats};
+use aic_core::modules::{adversary, ai, cards, common, economy, effects, threats};
 use aic_core::module::World;
 use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
@@ -216,6 +216,23 @@ macro_rules! forced_table {
             (strat1: usize, true, 0.0, "082: seat 1's strategy, fixed (as strat0)")
             /// 082: seat 2's strategy, fixed.
             (strat2: usize, true, 0.0, "082: seat 2's strategy, fixed (as strat0)")
+            /// 102 (D34): the keep plan adds a card's value less its price, and plans
+            /// no card worth no more than it costs (the play check nets the price).
+            (plan_net: bool, false, 1.0, "102 (D34): keep plan: a card adds its value less its price, and one worth no more than it costs is not planned")
+            /// 102 (D23): the keep plan prices energy and antimatter at the
+            /// heuristic's own rates (its `energy` and `antimatter` over a table
+            /// credit), as the play check does, not at the value table's.
+            (plan_rates: bool, false, 1.0, "102 (D23): keep plan: energy and antimatter at the heuristic's rates, as the play check prices them")
+            /// 102 (100's finding): a building that must go over one of the seat's
+            /// is charged what the covered one would still earn (`buried_value`),
+            /// not its play effects, which are spent either way.
+            (plan_cover_spent: bool, false, 1.0, "102: keep plan: a covering building is charged what the covered one would still earn, as plan_bury")
+            /// 102 (with `plan_net`): a price paid from credits beyond the heuristic's
+            /// `credit_cap` costs its `credit_idle` rate, as the play check counts them.
+            (plan_idle: bool, false, 1.0, "102 (with plan_net): credits beyond the heuristic's credit_cap cost its idle rate in a net price")
+            /// 102, a probe: with `plan_net`, the plan still drops a card worth no
+            /// more than its price but adds its gross value (099's patch's form).
+            (plan_gross: bool, false, 0.0, "102, a probe (with plan_net): drop a card worth no more than its price, but add its gross value (099's patch)")
         }
     };
 }
@@ -292,6 +309,9 @@ pub struct Policy {
     strat: Choice,
     chosen: bool,
     mults: Option<Arc<Mults>>,
+    /// 102 (`plan_rates`): the value table with energy and antimatter at the
+    /// heuristic's rates, made at the first keep.
+    rates: Option<Arc<value::Table>>,
 }
 
 impl Policy {
@@ -303,6 +323,7 @@ impl Policy {
             strat: [None; 4],
             chosen: false,
             mults: None,
+            rates: None,
         }
     }
 
@@ -341,7 +362,17 @@ impl Policy {
         if strat.is_some() && self.mults.is_none() {
             self.mults = Some(Arc::new(Mults::new(&world)));
         }
-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref() };
+        let [energy, antimatter, project, cap, idle] = self.inner.plan_rates().unwrap_or_else(|| {
+            let t = value::table();
+            [t.res(Resource::Energy), t.res(Resource::Antimatter), 0.0, f64::MAX, 1.0]
+        });
+        if self.forced.plan_rates && self.rates.is_none() {
+            self.rates = Some(Arc::new(value::table().repriced(energy, antimatter)));
+        }
+        let t = self.rates.as_deref().unwrap_or_else(|| value::table());
+        let project = if self.forced.plan_net { project } else { 0.0 };
+        let idle = if self.forced.plan_idle { (cap, idle) } else { (f64::MAX, 1.0) };
+        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle };
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -506,6 +537,10 @@ impl Strategic for Policy {
         self.strat = c;
         self.chosen = true;
         self.inner.set_strategies(c);
+    }
+
+    fn plan_rates(&self) -> Option<[f64; 5]> {
+        self.inner.plan_rates()
     }
 }
 
@@ -795,14 +830,25 @@ pub struct PlanCtx<'a> {
     pub table: bool,
     pub strat: Option<u16>,
     pub mults: Option<&'a Mults>,
+    /// The value table the plan prices by (102: repriced under `plan_rates`).
+    pub t: &'a value::Table,
+    /// 102 (D34, `plan_net`): what the heuristic charges for an adversary project
+    /// wholly filled, in table credits (0: no situational project value).
+    pub project: f64,
+    /// 102 (`plan_idle`): the credits the heuristic counts in full and an idle
+    /// credit's share of one beyond them; a net price pays from the idle ones
+    /// first (`(f64::MAX, 1.0)`: every credit in full).
+    pub idle: (f64, f64),
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
-/// seat's nodes, whether a city is corrupted.
+/// seat's nodes, whether a city is corrupted; 102: the visible projects' shares
+/// filled, fullest first.
 struct PlanTable {
     left: f64,
     node: f64,
     corrupted: bool,
+    projects: Vec<(f64, i64)>,
 }
 
 impl PlanTable {
@@ -811,8 +857,51 @@ impl PlanTable {
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,
             corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
+            projects: {
+                // (share filled, compute on it), fullest first.
+                let mut p: Vec<(f64, i64)> = adversary::projects(g)
+                    .iter()
+                    .map(|id| {
+                        let on = g.var(&adversary::project_key(id));
+                        (on as f64 / adversary::project_cost(w, g, id).max(1) as f64, on)
+                    })
+                    .collect();
+                p.sort_by(|a, b| b.0.total_cmp(&a.0));
+                p
+            },
         }
     }
+}
+
+/// 102 (D34): what a card's project ops add over their table rows on this table:
+/// a discard takes the fullest project, a drain the compute it can reach, each
+/// at what the heuristic charges for it (`PlanCtx::project`). A one-use worth,
+/// once (the project is the table as it stands).
+fn situational(d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
+    if pc.project <= 0.0 {
+        return 0.0;
+    }
+    let t = pc.t;
+    let action = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects);
+    d.effects
+        .iter()
+        .chain(action)
+        .map(|e| match e {
+            Op::DiscardProject => match pt.projects.first() {
+                Some((share, _)) => (pc.project * share - t.op("discard_project")).max(0.0),
+                None => 0.0,
+            },
+            Op::DrainProject { amount } => match pt.projects.first() {
+                Some((share, on)) if *on > 0 => {
+                    let cost = *on as f64 / share.max(1e-9);
+                    let drained = (*amount).min(*on) as f64;
+                    (pc.project * drained / cost - t.op("drain_project") * *amount as f64).max(0.0)
+                }
+                _ => 0.0,
+            },
+            _ => 0.0,
+        })
+        .fold(0.0, f64::max)
 }
 
 /// The drafted cards seat `s` keeps: each, best value per cost first, if
@@ -943,7 +1032,7 @@ fn value(
     if !pc.table {
         return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
-    let t = value::table();
+    let t = pc.t;
     let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted);
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
@@ -960,21 +1049,28 @@ fn value(
             .iter()
             .map(|id| cards::def(w, id))
             .filter(|b| b.tags.contains(tag))
-            .map(|b| CardValue::of(t, b).total(t, &ctx) - t.tags_value(b))
+            .map(|b| {
+                if f.plan_cover_spent {
+                    // 102: what it would still earn; what playing it did is spent.
+                    buried_value(t, b, &ctx)
+                } else {
+                    CardValue::of(t, b).total(t, &ctx) - t.tags_value(b)
+                }
+            })
             .fold(f64::INFINITY, f64::min),
         _ => f64::INFINITY,
     };
     let covered = if covered.is_finite() { covered.max(0.0) } else { 0.0 };
-    m * CardValue::of(t, d).total(t, &ctx) - covered + jobs
+    m * CardValue::of(t, d).total(t, &ctx) - covered + jobs + situational(d, pc, pt)
 }
 
 /// 092: what building `d`, buried now, would still have earned: its standing
 /// effects and a share of its Action, each round left. Its tags stay, and what
 /// playing it did (production included) is spent.
-fn buried_value(d: &CardDef, ctx: &Ctx) -> f64 {
-    let t = value::table();
+fn buried_value(t: &value::Table, d: &CardDef, ctx: &Ctx) -> f64 {
     let standing = value::list_worth(t, &d.passives);
-    let action = d.ability.as_ref().map(|a| value::ability_worth(t, a)).unwrap_or_default();
+    // An Action at the value table's own rates, as `CardValue::of` reads it.
+    let action = d.ability.as_ref().map(|a| value::ability_worth(value::table(), a)).unwrap_or_default();
     let use_ = (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
     // 099: a one-shot Action (Popular Uprising) buried unused loses its one use,
     // not a share of it every round left.
@@ -998,7 +1094,7 @@ fn replaceable(w: &World, g: &GameState, s: usize, d: &CardDef) -> bool {
 /// other costs at fixed rates (before 082) or the table's (082).
 fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
     if pc.table {
-        value::table().cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left)
+        pc.t.cost(d, cards::play_cost(w, g, s, d), cards::play_insight(w, g, s, d), pt.left)
     } else {
         credit_equivalent(d, cards::play_cost(w, g, s, d)) as f64
     }
@@ -1071,7 +1167,7 @@ fn plan(
         !pc.table || d.needs.iter().map(|(t, n)| (n - needs_now[*t as usize]).max(0)).sum::<i64>() <= f.plan_short as i64
     };
     let patient = economy::patient(w, s);
-    let share = value::table().rate("target_share");
+    let share = pc.t.rate("target_share");
     // 092 (`plan_bury`): the slots still open, and the tops a building may bury.
     let mut tops: Vec<&CardDef> = g.pile(&cards::built(s)).iter().map(|id| cards::def(w, id)).collect();
     let mut open = cards::capacity(w, g, s) - tops.len() as i64;
@@ -1108,6 +1204,27 @@ fn plan(
                 && (target || later)
                 && near(d)
                 && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
+            // 102 (D34): at the table a card adds its value less its price, and one
+            // worth no more than it costs is no plan: the play check nets the price,
+            // so spare credits kept cards it never played (099).
+            let (v, price) = if fits {
+                let v = value(w, g, s, d, f, pc, pt, round, &tags);
+                let price = if f.plan_net && pc.table {
+                    // 102 (`plan_idle`): credits over the heuristic's cap are worth its
+                    // idle rate to it, so a price paid from them costs that much.
+                    let (cap, share) = pc.idle;
+                    let idle_paid = (credits as f64).min((b.credits as f64 - cap).max(0.0));
+                    spend(w, g, s, d, pc, pt) - idle_paid * (1.0 - share)
+                } else {
+                    0.0
+                };
+                (v, price)
+            } else {
+                (0.0, 0.0)
+            };
+            if fits && f.plan_net && pc.table && v <= price {
+                continue;
+            }
             if fits {
                 b.credits -= credits;
                 b.insight -= cards::play_insight(w, g, s, d);
@@ -1135,19 +1252,18 @@ fn plan(
                     } else {
                         let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted);
                         let worst = (0..tops.len()).min_by(|&i, &j| {
-                            buried_value(tops[i], &ctx).total_cmp(&buried_value(tops[j], &ctx))
+                            buried_value(pc.t, tops[i], &ctx).total_cmp(&buried_value(pc.t, tops[j], &ctx))
                         });
                         match worst {
-                            Some(i) => buried_value(tops.swap_remove(i), &ctx),
+                            Some(i) => buried_value(pc.t, tops.swap_remove(i), &ctx),
                             None => 0.0,
                         }
                     }
                 } else {
                     0.0
                 };
-                total += found
-                    * (value(w, g, s, d, f, pc, pt, round, &tags) - buried)
-                    * (1.0 - WAIT * round as f64).max(0.1);
+                let netted = if f.plan_gross { 0.0 } else { price };
+                total += found * (v - netted - buried) * (1.0 - WAIT * round as f64).max(0.1);
                 planned.push(*id);
                 if pc.table && !d.is_event() {
                     // 082: what it leaves in play counts toward later cards' needs.

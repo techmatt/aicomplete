@@ -19,9 +19,9 @@ amnesty_decree,clear_city [play],play,max=5,5.0,10.0,2.0,7.0,1.4
 antitrust_action,jam typed [play],play,"amount=5, source=economic",5.0,3.5,0.7,2.33,0.47
 antitrust_action,gain_per_tag chips [play],play,"resource=chips, tag=industry, per=1",1.0,4.5,4.5,3.0,3.0
 antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
-arc_furnace_complex,income chips [passive],passive,"resource=chips, amount=2",2.0,7.5,3.75,10.09,5.05
-arc_furnace_complex,gain credits [action],action,"resource=credits, amount=16; pays 3 energy",16.0,4.38,0.27,5.89,0.37
-arc_furnace_complex,tags [card],card,industry power,2.0,1.5,0.75,2.02,1.01
+arc_furnace_complex,income chips [passive],passive,"resource=chips, amount=3",3.0,11.25,3.75,5.78,1.93
+arc_furnace_complex,gain credits [action],action,"resource=credits, amount=24; pays 3 energy",24.0,18.38,0.77,9.45,0.39
+arc_furnace_complex,tags [card],card,industry power,2.0,1.5,0.75,0.77,0.39
 arcology_foundry,income credits [passive],passive,"resource=credits, amount=9",9.0,22.5,2.5,16.69,1.85
 arcology_foundry,income chips [passive],passive,"resource=chips, amount=2",2.0,7.5,3.75,5.56,2.78
 arcology_foundry,tags [card],card,industry,1.0,1.0,1.0,0.74,0.74
@@ -89,16 +89,16 @@ continental_supergrid,tags [card],card,power diplomacy,2.0,1.5,0.75,1.5,0.75
 cryo_compute_burn,gain_per_tag insight [play],play,"resource=insight, tag=science, per=1",1.0,7.5,7.5,10.0,10.0
 darknet_exchange,income_per_tag credits [passive],passive,"resource=credits, tag=cyber, per=2",0.5,6.0,12.0,5.57,11.14
 darknet_exchange,tags [card],card,cyber,1.0,1.0,1.0,0.93,0.93
-data_licensing_deal,cash_out credits datasets [play],play,"kind=datasets, resource=credits, rate=4",4.0,12.0,3.0,6.0,1.5
-data_licensing_deal,tags [card],card,science,1.0,1.0,1.0,0.5,0.5
+data_licensing_deal,cash_out credits datasets [play],play,"kind=datasets, resource=credits, rate=10",10.0,30.0,3.0,6.29,0.63
+data_licensing_deal,tags [card],card,science,1.0,1.0,1.0,0.21,0.21
 dataset_scraper,add_tokens datasets [play],play,"kind=datasets, amount=3",3.0,9.0,3.0,6.43,2.14
 dataset_scraper,tags [card],card,science cyber,2.0,1.5,0.75,1.07,0.54
 deep_state_ledger,add_tokens agents [play],play,"kind=agents, amount=3, here=True",3.0,6.0,2.0,6.52,2.17
 deep_state_ledger,"add_tokens agents [action, unused branch]","action, unused branch","kind=agents, amount=3, here=True",3.0,0.0,0.0,0.0,0.0
 deep_state_ledger,gain_per_tokens credits agents [action],action,"resource=credits, kind=agents, per=1, here=True",1.0,2.62,2.62,2.85,2.85
 deep_state_ledger,tags [card],card,security cyber,2.0,1.5,0.75,1.63,0.81
-demand_response_grid,gain credits [action],action,"resource=credits, amount=10; pays 3 energy",10.0,0.0,0.0,0.0,0.0
-demand_response_grid,tags [card],card,power,1.0,1.0,1.0,11.5,11.5
+demand_response_grid,gain credits [action],action,"resource=credits, amount=15; pays 3 energy",15.0,4.2,0.28,9.29,0.62
+demand_response_grid,tags [card],card,power,1.0,1.0,1.0,2.21,2.21
 diplomatic_expulsion,remove_ambassadors_country [play],play,"unity_per=0, max=4",4.0,8.0,2.0,5.63,1.41
 diplomatic_expulsion,sway unity [play],play,"side=unity, amount=1",1.0,4.0,4.0,2.81,2.81
 diplomatic_expulsion,tags [card],card,security diplomacy,2.0,1.5,0.75,1.06,0.53
@@ -323,8 +323,8 @@ shared_threat_intel,jam any [play],play,amount=4,4.0,4.0,1.0,2.59,0.65
 shared_threat_intel,other_gain insight [play],play,"resource=insight, amount=2; to a chosen player",2.0,3.75,1.88,2.43,1.22
 shared_threat_intel,tags [card],card,security cyber,2.0,1.5,0.75,0.97,0.49
 signal_hijack,remove_troops [play],play,count=2,2.0,10.36,5.18,5.5,2.75
-simulation_cluster,draw [action],action,count=2; pays 2 energy,2.0,0.0,0.0,0.0,0.0
-simulation_cluster,tags [card],card,science cyber,2.0,1.5,0.75,11.5,5.75
+simulation_cluster,draw [action],action,count=2; pays 1 energy,2.0,9.8,4.9,9.97,4.99
+simulation_cluster,tags [card],card,science cyber,2.0,1.5,0.75,1.53,0.76
 singularity_exploit,remove_botnet [play],play,,1.0,12.0,12.0,11.43,11.43
 singularity_exploit,discard_project [play],play,,1.0,8.0,8.0,7.62,7.62
 singularity_exploit,tags [card],card,cyber,1.0,1.0,1.0,0.95,0.95

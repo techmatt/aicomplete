@@ -96,6 +96,11 @@ pub(crate) fn credit_cost(d: &CardDef) -> i64 {
 /// [`policy::Policy`] wraps.
 pub trait Strategic: Agent {
     fn set_strategies(&mut self, _c: strategy::Choice) {}
+    /// 102 (D23): energy and antimatter in table credits as this agent's
+    /// heuristic prices them, for the keep plan (`None`: the value table's).
+    fn plan_rates(&self) -> Option<[f64; 5]> {
+        None
+    }
 }
 
 impl Strategic for RandomAgent {}

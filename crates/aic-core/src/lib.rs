@@ -56,7 +56,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// mistaken for the same experiment. Recorded with every result. The
 /// `golden_game` test fails until it is bumped and the golden fingerprint
 /// updated (also in `scripts/wasm-smoke.mjs`).
-pub const RULES_REVISION: u32 = 39;
+pub const RULES_REVISION: u32 = 40;
 
 /// The rules of the config embedded in `state`, checked against it.
 fn rules_for(state: &GameState) -> Result<Rules, String> {

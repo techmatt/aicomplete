@@ -219,6 +219,11 @@ function labels(): LabelContext {
   return { config: tl.frame.snap.state.config, view: shown };
 }
 
+/** The countries' names, fixed for a game: the log's and step line's labels have no view (102, D30). */
+function countryNames(): string[] | undefined {
+  return shown?.countries.map((c) => c.name);
+}
+
 function renderPhase() {
   const v = shown;
   const order = v.round_order
@@ -369,7 +374,8 @@ function renderLog() {
   while (keep < had.length && keep < tl.frames.length && had[keep] === tl.frames[keep]) keep++;
   while (ui.log.children.length > keep) ui.log.lastElementChild!.remove();
   if (tl.frames.length > keep) {
-    ui.log.insertAdjacentHTML('beforeend', tl.frames.slice(keep).map((f, j) => logEntry(f, keep + j, tl.frames[keep + j - 1])).join(''));
+    const names = countryNames();
+    ui.log.insertAdjacentHTML('beforeend', tl.frames.slice(keep).map((f, j) => logEntry(f, keep + j, tl.frames[keep + j - 1], names)).join(''));
   }
   logBuilt.frames = [...tl.frames];
   const entries = ui.log.children;
@@ -384,7 +390,7 @@ function renderTimeline() {
   ui.scrub.max = String(tl.last);
   ui.scrub.value = String(tl.cursor);
   const a = tl.frame.action;
-  ui.step.textContent = `step ${tl.cursor} / ${tl.last}${a ? ` · ${actionLabel(a, true, true, { config: tl.frame.snap.state.config })}` : ' · setup'}`;
+  ui.step.textContent = `step ${tl.cursor} / ${tl.last}${a ? ` · ${actionLabel(a, true, true, { config: tl.frame.snap.state.config, countries: countryNames() })}` : ' · setup'}`;
   ui.step.title = ui.step.textContent;
   ui.play.textContent = autoplay !== null ? '⏸ pause' : '▶ play';
 }

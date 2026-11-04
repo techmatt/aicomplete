@@ -1,0 +1,39 @@
+{
+  "name": "screen-102-a",
+  "note": "102 Phase A on r39 rules: strategist at d2, the three pairs, 200 seeds from 32500. r39's agent (all off), item 1 (D34+D23+D24: plan_net, plan_rates, w.token_cash), item 1 without plan_rates, item 2 (plan_cover_spent), item 3 (D33 w.power_dear), item 4 (D27/D28/D35 weights; D26 is compiled: its cell, screen-102-a4, runs on the D26 build). Read with scripts/bench/paired.py and scripts/cards/play_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:plan_net=1,plan_rates=1,w.token_cash=1",
+    "strategist:plan_net=1,w.token_cash=1",
+    "strategist:plan_cover_spent=1",
+    "strategist:w.power_dear=1",
+    "strategist:w.converter_any=1,w.flip_open=1,w.push_adv=1"
+  ],
+  "games": 200,
+  "first_seed": 32500,
+  "records": 0
+}

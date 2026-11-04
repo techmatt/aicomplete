@@ -161,11 +161,11 @@ def income_r(t, resource):
 
 
 # "Remove up to N troops" at what it removes in play, not N (093): troops removed per
-# resolution of `remove_troops` with that N, from the engine's `cards.troops_removed.<N>` /
-# `cards.remove_troops.<N>` counters in 093's r36 read (experiments/results/093_rules_r36/, the
-# strategist at d2 over screen-093's 15 cells and greedy d0 over screen-093-d0's 6, 1,008 games; up to 6
-# from 57 resolutions, up to 4 from 364). An N not read here counts as N.
-TROOPS_REMOVED = {1: 1.0, 2: 1.48, 3: 1.75, 4: 2.37, 6: 3.60}
+# resolution of `remove_troops` with that N, measured in 093's r36 read
+# (experiments/results/093_rules_r36/, 1,008 games). Since 102 (D26) the rows live in
+# values.json's `troops_removed`, which value.rs reads too: one table for both. An N not
+# there counts as N.
+TROOPS_REMOVED = {}
 
 
 def expected_troops(n):
@@ -527,7 +527,10 @@ def load_path(path):
 
 
 def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None):
-    t = Table(load_path(values_path) if values_path else load_json('configs', 'agents', 'values.json'))
+    raw = load_path(values_path) if values_path else load_json('configs', 'agents', 'values.json')
+    t = Table(raw)
+    TROOPS_REMOVED.clear()
+    TROOPS_REMOVED.update({int(k): v for k, v in raw.get('troops_removed', {}).items() if k != 'note'})
     cards = sorted(load_path(cards_path) if cards_path else load_json('content', 'cards.json'), key=lambda c: c['id'])
     if not stdout:
         os.makedirs(OUT, exist_ok=True)

@@ -65,7 +65,8 @@ pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
         cx.add_tokens(g, hexes[i], STATION, 1);
         cx.add_tokens(g, hexes[i], cube(seat), 1);
-        cx.tally(g, "board.stations_free", 1);
+        // 102 (D40): was `board.stations_free`, which read as `stations_freed`.
+        cx.tally(g, "board.stations_built_free", 1);
     }
     Ok(())
 }

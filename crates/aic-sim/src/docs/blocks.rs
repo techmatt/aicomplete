@@ -467,8 +467,8 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         [
             "Align a clean city".to_string(),
             "1 ambassador".to_string(),
-            // 099: what a dark city does when aligned (Matt's call whether it should cancel).
-            "in reach, with a site claim: your cube on it (an adversary ambassador there stays, so a dark city stays dark)".to_string(),
+            // r40 (D38): on a dark city it cancels, as an ambassador arriving on a piece does.
+            "in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean".to_string(),
         ],
         // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
         [

@@ -137,9 +137,10 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `screen-098.json` (the three pairs at d2, 144 games, about 40 s on 6 threads), `-d0`
-  (greedy at d0), `-terms` (an agent term off, per cell), `-split` / `-t0` (each ruling alone, `-d0` twins); read with
-  `scripts/cards/r38_read.py`. `screen-096*.json` hold r37's cells, `screen-093*.json` r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
+- **Current recipe:** `screen-102-c.json` (the three pairs at d2, 200 seeds each, about 2 min on 6 threads) and
+  `-c-d0` ("greedy at d0" is the `engine` spec, no strategy); `screen-102-a*.json` screen agent switches on and off as
+  agent cells of one spec. `screen-098*.json` hold r38's cells: `-terms` (an agent term off, per cell), `-split` / `-t0`
+  (each ruling alone), read with `scripts/cards/r38_read.py`. `screen-096*.json` hold r37's cells, `screen-093*.json` r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision).
 - **A before/after read is paired** (Matt, 093): run the old binary, with its configs from `git archive <main> configs
   | tar -x`, on the same seeds. Build and copy the old binary before the first edit (096 did, at a minute), or build
@@ -163,7 +164,8 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump: r38: 31900 and 31948 the r38 reads (`screen-098*.json`). Next free: 31996 (32099 the last given to 098).
+seeds and reset at each bump: r40: 32700-32899 the r39 → r40 read and 32900-33099 the band read (`screen-102-b*`, `-c*`;
+32500-32699 screened 102's agent levers on r39). Next free: 33100.
 
 ## Reading prices
 

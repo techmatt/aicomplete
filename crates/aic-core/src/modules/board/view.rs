@@ -26,6 +26,26 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 out.country(c, f.name(), f.name(), 1, None, flag_doc(f));
             }
         }
+        // 102 (D29): dark cities, named, so a dark city reads as one off the hover.
+        let dark: Vec<String> = w.map.countries[c]
+            .hexes
+            .iter()
+            .filter(|&&h| is_city(w, h) && !corrupted(g, h) && g.tokens(h, ADV_AMBASSADOR) > 0)
+            .map(|&h| hex_name(w, h))
+            .collect();
+        if !dark.is_empty() {
+            out.country(
+                c,
+                "dark",
+                "dark cities",
+                dark.len() as i64,
+                None,
+                &format!(
+                    "dark: an adversary ambassador stands on {}: no energy for anyone there (sold or to its owner) while it stays",
+                    dark.join(", ")
+                ),
+            );
+        }
         let p = &w.content.map.countries[c].megaproject;
         let done = g.var(&project_done(c)) > 0;
         let total: i64 = g.var(&project_key(c, None))

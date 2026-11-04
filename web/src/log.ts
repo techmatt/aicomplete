@@ -26,8 +26,8 @@ function phaseGroups(events: GameEvent[], before: string): { label: string; roun
   return groups;
 }
 
-export function logEntry(f: Frame, i: number, prev: Frame | undefined): string {
-  const head = f.action ? `#${i} ${escapeHtml(actionLabel(f.action, true, true, { config: f.snap.state.config }))}` : '#0 setup';
+export function logEntry(f: Frame, i: number, prev: Frame | undefined, countries?: string[]): string {
+  const head = f.action ? `#${i} ${escapeHtml(actionLabel(f.action, true, true, { config: f.snap.state.config, countries }))}` : '#0 setup';
   const hexes = [...(f.action ? hexesIn(f.action) : []), ...f.events.flatMap(hexesIn)].map(hexKey);
   const ps = prev?.snap.state;
   const before = ps ? shortPhase(ps.config.round[ps.phase] ?? 'setup') : 'setup';

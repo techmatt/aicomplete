@@ -303,8 +303,18 @@ pub(super) fn std_resolve(
         }
         StandardAction::Align => {
             if let Some(h) = on_hex(cx)? {
-                cx.add_tokens(g, h, cube(s), 1);
-                cx.tally(g, "board.cities_aligned", 1);
+                // r40 (D38): on a dark city the ambassador cancels one adversary
+                // ambassador there, as it does arriving on any piece, and aligns
+                // nothing; the city is aligned by a later Align once it is clean.
+                if g.tokens(h, ADV_AMBASSADOR) > 0 {
+                    adversary::remove(g, cx, h, 1);
+                    cx.tally(g, "board.canceled", 1);
+                    cx.tally(g, "board.align_canceled", 1);
+                    cx.note(Some(h), || format!("Seat {s}'s ambassador cancels an adversary ambassador at {}", hex_name(&w, h)));
+                } else {
+                    cx.add_tokens(g, h, cube(s), 1);
+                    cx.tally(g, "board.cities_aligned", 1);
+                }
             }
         }
         StandardAction::FreeStation => {

@@ -456,11 +456,19 @@ impl super::Strategic for Greedy {
     fn set_strategies(&mut self, c: super::strategy::Choice) {
         self.ev.set_strategies(c);
     }
+
+    fn plan_rates(&self) -> Option<[f64; 5]> {
+        Some(self.ev.plan_rates())
+    }
 }
 
 impl super::Strategic for Beam {
     fn set_strategies(&mut self, c: super::strategy::Choice) {
         self.ev.set_strategies(c);
+    }
+
+    fn plan_rates(&self) -> Option<[f64; 5]> {
+        Some(self.ev.plan_rates())
     }
 }
 

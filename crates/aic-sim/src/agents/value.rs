@@ -22,7 +22,7 @@ use aic_core::content::{Ability, CardDef, CardKind, Facility, Op, Power, Resourc
 use serde::Deserialize;
 
 /// The table as loaded.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Table {
     #[allow(dead_code)]
     note: String,
@@ -31,6 +31,8 @@ pub struct Table {
     tokens: BTreeMap<String, f64>,
     rates: BTreeMap<String, f64>,
     pub(crate) ops: BTreeMap<String, Row>,
+    /// 102 (D26): troops a "remove up to N troops" removes in play, by N.
+    troops_removed: TroopsRemoved,
     /// Per-card adjustments, each with its reason (kept minimal).
     pub overrides: Vec<Override>,
     /// What a position reads, looked up once (the heuristic asks per card).
@@ -38,7 +40,7 @@ pub struct Table {
     fast: Fast,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 struct Fast {
     /// By `Resource as usize`.
     res: [f64; 7],
@@ -49,13 +51,21 @@ struct Fast {
     uses_share: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
+struct TroopsRemoved {
+    #[allow(dead_code)]
+    note: String,
+    #[serde(flatten)]
+    by: BTreeMap<String, f64>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 struct TagRates {
     first: f64,
     more: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub(crate) struct Row {
     pub(crate) credits: f64,
     #[allow(dead_code)]
@@ -63,7 +73,7 @@ pub(crate) struct Row {
 }
 
 /// One per-card adjustment: credits added to the card's value, and why.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Override {
     pub card: String,
     pub credits: f64,
@@ -77,6 +87,9 @@ pub(crate) const PART_ROWS: &[&str] =
     &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
+
+/// 102 (D26): whether a troop removal is valued at what it removes in play.
+const TROOPS_EXPECTED: bool = true;
 
 /// The table, parsed once.
 pub fn table() -> &'static Table {
@@ -109,6 +122,17 @@ pub fn table() -> &'static Table {
 }
 
 impl Table {
+    /// 102 (D23): this table with energy and antimatter at other rates (the
+    /// keep plan's, priced as the heuristic prices them).
+    pub fn repriced(&self, energy: f64, antimatter: f64) -> Table {
+        let mut t = self.clone();
+        t.fast.res[Resource::Energy as usize] = energy;
+        t.fast.res[Resource::Antimatter as usize] = antimatter;
+        t.resources.insert(Resource::Energy.name().to_string(), energy);
+        t.resources.insert(Resource::Antimatter.name().to_string(), antimatter);
+        t
+    }
+
     pub fn rate(&self, k: &str) -> f64 {
         *self.rates.get(k).unwrap_or_else(|| panic!("values.json: no rate {k:?}"))
     }
@@ -139,6 +163,16 @@ impl Table {
             return 0.0;
         }
         self.tags.first + self.tags.more * (d.tags.len() - 1) as f64
+    }
+
+    /// 102 (D26): the troops "remove up to `n` troops" removes in play, by the
+    /// table's `troops_removed` (measured; the effect ledger reads the same
+    /// rows); an `n` not measured counts as `n`.
+    pub fn troops_removed(&self, n: i64) -> f64 {
+        if !TROOPS_EXPECTED {
+            return n as f64;
+        }
+        self.troops_removed.by.get(&n.to_string()).copied().unwrap_or(n as f64)
     }
 
     /// A keep's price in credits (the table's keep rows).
@@ -339,7 +373,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let sway = if *unity_per > 0 { (n / *unity_per as f64).floor() * t.rate("sway") } else { 0.0 };
             Worth::now(row("remove_ambassadors_country") * n + sway)
         }
-        Op::RemoveTroops { count } => Worth::now(row("remove_troops") * *count as f64),
+        Op::RemoveTroops { count } => Worth::now(row("remove_troops") * t.troops_removed(*count)),
         Op::BuildFactory => Worth::now(row("build_factory")),
         Op::Cleanse { amount, one_country, cities, only } => {
             let share = if *one_country { 0.8 } else { 1.0 };
@@ -546,6 +580,29 @@ pub fn token_worth(t: &Table, d: &CardDef) -> Worth {
     spend.unwrap_or(Worth::now(t.token_held()))
 }
 
+/// 102 (D24): [`token_worth`], but a token on a card whose Action cashes its own
+/// pile out (Exabyte Archive, Bonded Warehouse, Sovereign Capital Fund) is worth
+/// what that cash-out pays for it, not the held rate.
+pub fn token_worth_cash(t: &Table, d: &CardDef) -> Worth {
+    let cash = d.ability.as_ref().and_then(|a| {
+        a.branches()
+            .into_iter()
+            .flat_map(|b| &b.effects)
+            .filter_map(|e| match e {
+                Op::CashOut { resource, rate, here: true, .. } => Some(t.op("cash_out") * t.res(*resource) * *rate as f64),
+                Op::GainPerTokens { resource, per, here: true, .. } => {
+                    Some(t.op("gain_per_tokens") * t.res(*resource) / (*per).max(1) as f64)
+                }
+                _ => None,
+            })
+            .reduce(f64::max)
+    });
+    match cash {
+        Some(v) if v > t.token_held() => Worth::now(v),
+        _ => token_worth(t, d),
+    }
+}
+
 /// A card's value in pieces: what playing it does (its effects and, for a
 /// building, its standing effects), a use of its Action, the tags it leaves in
 /// play and any override.
@@ -574,7 +631,9 @@ impl CardValue {
             list_worth(t, &d.effects)
         };
         play += list_worth(t, &d.passives);
-        let use_ = d.ability.as_ref().map(|a| ability_worth(t, a)).unwrap_or_default();
+        // 102: an Action at the value table's own rates, even under a repriced
+        // table (`Table::repriced`), as the heuristic values a building's Action.
+        let use_ = d.ability.as_ref().map(|a| ability_worth(table(), a)).unwrap_or_default();
         let extra = t.overrides.iter().filter(|o| o.card == d.id).map(|o| o.credits).sum();
         CardValue { play, use_, has_use: d.ability.is_some(), once, tags: t.tags_value(d), extra }
     }
@@ -667,17 +726,13 @@ mod tests {
         let mut rows = csv_records(include_str!("../../../../experiments/results/effect-ledger/cards.csv")).into_iter();
         let head = rows.next().expect("a header");
         let col = |name: &str| head.iter().position(|h| h == name).expect(name);
-        let (id, reasoned, effects) = (col("card"), col("reasoned"), col("effects"));
+        let (id, reasoned) = (col("card"), col("reasoned"));
         let mut read = 0;
         let mut off = Vec::new();
         for cells in rows {
             let d = w.content.card(&cells[id]);
             read += 1;
-            // The one difference by design: the ledger counts a troop removal at
-            // what one removes in play (`TROOPS_REMOVED`), value.rs at its face.
-            if cells[effects].contains("remove_troops") {
-                continue;
-            }
+            // 102 (D26): a troop removal too: both read `troops_removed`.
             let ledger: f64 = cells[reasoned].parse().expect("a number");
             let rust = CardValue::of(t, d).total(t, &Ctx::typical_for(t, d.tier));
             if (ledger - rust).abs() > 0.011 {

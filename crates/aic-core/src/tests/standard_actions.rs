@@ -201,6 +201,26 @@ fn aligning_puts_a_cube_on_a_clean_city_in_reach() {
     assert!(!standard_offered(&rules, &g, 0).contains("align"));
 }
 
+/// r40 (D38): aligning a dark city (an adversary ambassador on it) cancels one
+/// adversary ambassador, as a site claim does, and aligns nothing; once the city
+/// is clean, a second Align aligns it.
+#[test]
+fn aligning_a_dark_city_cancels_an_adversary_ambassador() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let (city, next) = city_with_lonely_neighbors(m);
+    put(&mut g, next[0], node(0), 1);
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    set_res(&mut g, 0, Resource::Energy, 0);
+    set_res(&mut g, 0, Resource::Ambassadors, 2);
+    act(&rules, &mut g, std_act(0, "align"));
+    assert_eq!((g.tokens(city, ADV_AMBASSADOR), g.tokens(city, cube(0))), (0, 0));
+    assert_eq!(g.resource(0, Resource::Ambassadors), 1);
+    act(&rules, &mut g, std_act(0, "align"));
+    assert_eq!(g.tokens(city, cube(0)), 1);
+    assert_eq!(g.resource(0, Resource::Ambassadors), 0);
+}
+
 /// 022 (D10): hardening goes only on facilities a token can protect (a
 /// player-owned one, not the adversary's), and "harden 2" is two
 /// different buildings (fewer if fewer exist).

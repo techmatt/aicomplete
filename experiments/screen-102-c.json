@@ -1,0 +1,34 @@
+{
+  "name": "screen-102-c",
+  "note": "102 Phase C: the band read at r40, frozen agent, fresh seeds: strategist at d2, the three pairs, 200 seeds from 32900. Report only (Matt, 2026-11-04).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 200,
+  "first_seed": 32900,
+  "records": 0
+}

@@ -1,0 +1,35 @@
+{
+  "name": "screen-102-a1b-d0",
+  "note": "102 Phase A item 1 second form: plan_idle added (credits over the heuristic's cap at its idle rate in a net price), engine at d0, the seeds of screen-102-a-d0; the base cell replays r39's agent.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "engine",
+    "engine:plan_net=1,plan_rates=1,plan_idle=1,w.token_cash=1"
+  ],
+  "games": 200,
+  "first_seed": 32500,
+  "records": 0
+}

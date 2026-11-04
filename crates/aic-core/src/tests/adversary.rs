@@ -183,6 +183,27 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
     assert_eq!(total(&g, ADV_AMBASSADOR), 4);
 }
 
+/// D39: a station flip's face prints `station_flip_at`, so the two stay in step.
+#[test]
+fn a_station_flip_face_prints_station_flip_at() {
+    let rules = Rules::new(&baseline()).unwrap();
+    let n = rules.world().int("adversary.station_flip_at");
+    let want = format!("unless {n} adversary ambassadors");
+    let flips = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::FlipStation { .. }));
+    let c = crate::content();
+    let texts: Vec<(&str, &str)> = c
+        .threats
+        .iter()
+        .filter(|t| flips(&t.effects))
+        .map(|t| (t.id.as_str(), t.text.as_str()))
+        .chain(c.projects.iter().filter(|p| flips(&p.effects)).map(|p| (p.id.as_str(), p.text.as_str())))
+        .collect();
+    assert!(texts.len() >= 2, "{texts:?}");
+    for (id, text) in texts {
+        assert!(text.contains(&want), "{id} should say \"{want}\": {text}");
+    }
+}
+
 #[test]
 fn a_clean_city_holding_corrupt_at_ambassadors_is_corrupted() {
     let (rules, mut g) = lab(&["adversary.corrupt"]);

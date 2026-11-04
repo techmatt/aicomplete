@@ -90,7 +90,7 @@ resolved (or been discarded), the next row is dealt.
 | Propaganda Network | 2 | 9 | ongoing | Ongoing: every round, sway 2 toward Discord. |
 | Total Offensive | 2 | 9 | once | The adversary builds and spreads now; sway 2 toward Discord. |
 | Armored Columns | 2 | 9 | once | In each country, 2 troops land on factories, or cities if no factories. |
-| Station Coup | 2 | 10 | once | In each country, an uncorrupted research station becomes corrupted (a player's holds unless enough adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex. |
+| Station Coup | 2 | 10 | once | In each country, an uncorrupted research station becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex. |
 <!-- /generated -->
 
 Compute goes on one point at a time, so a full project resolves before the
