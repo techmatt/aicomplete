@@ -1,13 +1,14 @@
 //! `aic-sim docs [--check]`: the parts of the rules docs generated from
 //! content, configs and the op schema, so a number or a card has one home.
 //!
-//! `docs/rules.md` holds blocks between `<!-- generated: NAME -->` and
-//! `<!-- /generated -->`; `docs/ops.md` and `docs/harms.md` are generated
-//! whole (the ledger's checks fail the run), and so are `docs/player-aid.md`
-//! (the house terms, printed in rules.md's *Terms* too) and
-//! `web/card/faces.json`, every card's face from its ops (`aic_core::face`).
-//! `--check` changes nothing and exits 1 if anything is stale, if `rules.md`
-//! backticks a `module.param` or bare `snake_case` name that isn't a tunable,
+//! The files of `docs/rules/` hold blocks between `<!-- generated: NAME -->` and
+//! `<!-- /generated -->`, each block in exactly one file (`run::BLOCKS`); `docs/ops.md`
+//! and `docs/harms.md` are generated whole (the ledger's checks fail the run), and so
+//! are `docs/player-aid.md` (the house terms, printed in `docs/rules/README.md`'s
+//! *Terms* too) and `web/card/faces.json`, every card's face from its ops
+//! (`aic_core::face`). The run fails on a block missing or doubled, or a rules file
+//! over 15 KB. `--check` changes nothing and exits 1 if anything is stale, if a rules
+//! file backticks a `module.param` or bare `snake_case` name that isn't a tunable,
 //! on a British spelling (`crate::spelling`), on an "NNN's changes" heading
 //! (`crate::current_docs`), or on a problem in `docs/card-pricing-notes.json`. The fast
 //! test lane runs the check. A block is a pure function of `Rules` or

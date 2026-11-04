@@ -76,7 +76,7 @@ never a quiet exception.
 
 Use these, and let the rulebook carry the rest. The terms (facility, shield, ambassador, troop,
 in reach, a country you're in, here, Remove N, Draw, on your cards, Action) are defined once, in
-`HOUSE_TERMS` in `crates/aic-sim/src/docs/blocks.rs`, which prints them in [rules.md](rules.md)'s
+`HOUSE_TERMS` in `crates/aic-sim/src/docs/blocks.rs`, which prints them in [rules/README.md](rules/README.md)'s
 *Terms* and in [player-aid.md](player-aid.md). `face.rs` prints the phrases as plain strings.
 
 **"Building" is always a card, "facility" a station or factory.** "Harden" goes on a facility;

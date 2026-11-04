@@ -82,7 +82,7 @@ Paired on the seeds that picked them, then the band above on fresh seeds. Planne
    the rulebook, so it is not done.
 2. **House wording as rulebook terms.** Cards now lean on these: "ambassador" alone is yours, "troop" is always the
    adversary's, "in reach", "here" on a building, "Draw" is always tier 1, "Remove N" means up to N. They are in
-   `docs/rules.md` and the guidelines. Options: keep them as rules text, or print a reference line on the player aid.
+   the rules (`docs/rules/`) and the guidelines. Options: keep them as rules text, or print a reference line on the player aid.
    **Pick: both:** with the rest of this pass they took the cards from 2,674 printed words to 1,693, and the aid is where a player looks.
 3. **"Harden action".** "You gain the Harden action" replaces "you may Harden as a standard action". Options:
    keep, or name it a keyword. **Pick: keep,** it is the same action the Protector has.

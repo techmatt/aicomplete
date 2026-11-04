@@ -3,7 +3,7 @@
 use super::*;
 
 /// Moves one of seat `s`'s ambassadors from hex `from` onto hex `to` (021:
-/// movement keywords); it arrives as in rules.md §2.
+/// movement keywords); it arrives as in docs/rules/ambassadors.md.
 fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) {
     cx.add_tokens(g, from, ambassador(seat), -1);
     board::place_ambassador(g, cx, seat, to);

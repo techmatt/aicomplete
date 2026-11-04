@@ -1,7 +1,7 @@
 //! Every module the engine knows: the current ruleset, one module per
 //! rules area. To add one: write `modules/<id>.rs` with a `pub static DEF:
-//! ModuleDef`, add it to [`REGISTRY`], and document it in `docs/rules.md`
-//! and `docs/architecture.md`.
+//! ModuleDef`, add it to [`REGISTRY`], and document it in a file of `docs/rules/`
+//! (its `README.md` lists them) and in `docs/architecture.md`.
 //!
 //! The rules areas lean on each other (a card's damage destroys adversary
 //! pieces and sways toward Unity), so modules call each other's public

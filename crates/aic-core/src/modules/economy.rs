@@ -171,7 +171,7 @@ fn supply_insight(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
 
 impl Economy {
     /// Whether seat `s` can give insight now. `give_insight` 0 switches giving
-    /// off (rules.md §9; 020: it was still offered and cost the giver an
+    /// off (docs/rules/README.md, *Off-variants*; 020: it was still offered and cost the giver an
     /// insight for nothing).
     fn can_give(&self, g: &GameState, seat: usize) -> bool {
         g.resource(seat, Resource::Insight) >= 1 && self.give_insight > 0

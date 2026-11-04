@@ -1,6 +1,6 @@
 # 009 engine-payback sweep: which levers make a building engine win?
 
-> **Historical:** ran on rules r3 (today's is r6). Configs, parameters, rules.md
+> **Historical:** ran on rules r3 (today's is r6). Configs, parameters, the rules
 > sections and game records named here were removed or rewritten later; several of its
 > specs are refused today and the records do not replay. The refused specs moved to
 > [`archive/`](archive/) in 016, and `scripts/payback/resources.py` was deleted

@@ -49,7 +49,7 @@ the face to the resource's color.
 **Faces.** Generated, never written: `crates/aic-core/src/face.rs` turns a card's ops into
 its icon lines and rules text, and `aic-sim docs` writes them to `web/card/faces.json`, one
 card a line. A card's `text` in `content/cards.json` is refused at load, and the fast lane
-fails if `faces.json` is stale. The grammar is in docs/rules.md, *The card grammar*. The
+fails if `faces.json` is stale. The grammar is in docs/rules/card-grammar.md. The
 renderer fails on an icon word it doesn't know. `tools/card-art/samples.json` says which
 card shows each variant and which buildings show the splay.
 

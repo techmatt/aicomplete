@@ -1,7 +1,7 @@
 # Architecture
 
 How the engine is put together, and how to change the game without fighting it. The
-rules themselves are in [rules.md](rules.md).
+rules themselves are in [rules/](rules/README.md).
 
 ## Crates
 
@@ -131,7 +131,7 @@ the way it does at a table where the team talks it through.
   neither fits. The viewer shows its tokens, resources, `vars` and exhausted cards with
   no work; a `view` hook adds the rest.
 - Either way: add it to `variant_matrix` (`crates/aic-core/src/tests/mod.rs`), bump
-  `RULES_REVISION` if existing games change, and document it in `docs/rules.md`.
+  `RULES_REVISION` if existing games change, and document it in `docs/rules/`.
 
 ### Adding content
 
@@ -170,7 +170,7 @@ An op shared by threats and team cards takes its wording and tally from the cont
 ### Generated docs
 
 `aic-sim docs` rewrites the blocks between `<!-- generated: NAME -->` markers in
-[rules.md](rules.md), all of [ops.md](ops.md), [harms.md](harms.md) and
+the files of [rules/](rules/README.md) (each block in one file, listed in `BLOCKS`), all of [ops.md](ops.md), [harms.md](harms.md) and
 [player-aid.md](player-aid.md), and `web/card/faces.json`; `python
 scripts/cards/cards_doc.py` reads the faces and writes [cards.md](cards.md). A block is
 a pure function of `Rules` or `Content` in `crates/aic-sim/src/docs/blocks.rs`, named
@@ -179,9 +179,10 @@ in `run` (`run.rs`), with unit tests in `tests.rs`.
 `aic-sim docs` fails on a broken harm distribution (`harm_failures`). `--check`, and a
 fast-lane test, also refuse a stale block, a British spelling (`spelling.rs`), a
 heading like `## 080's changes` (`current_docs.rs`), an id in
-`docs/card-pricing-notes.json` that is no player card, and in rules.md a backticked
+`docs/card-pricing-notes.json` that is no player card, a missing or doubled block, a `docs/rules/` file
+over 15 KB, and in a rules file a backticked
 `module.param` or bare `snake_case` name that is neither a tunable nor an op
-(`NOT_TUNABLES` lists the other names it may print). rules.md names a tunable rather
+(`NOT_TUNABLES` lists the other names it may print). The rules name a tunable rather
 than repeating its value. Two more fast-lane tests read generated files: an icon-line word
 in a face that `web/card/icons.js` has no icon for (`tests/face.rs`), and a committed
 effect ledger (`experiments/results/effect-ledger/cards.csv`) that values a card otherwise

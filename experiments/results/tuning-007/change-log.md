@@ -1,6 +1,6 @@
 # 007 tuning run: change log
 
-> **Historical:** ran on rules r2 and produced r3 (today's is r6). Configs, rules.md
+> **Historical:** ran on rules r2 and produced r3 (today's is r6). Configs, the rules
 > sections and game records named here were removed or rewritten later; the records do
 > not replay.
 

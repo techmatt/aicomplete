@@ -13,7 +13,7 @@
 //! The free functions below are the convenient (slower) path that rebuilds
 //! the rules from the config embedded in the state on every call.
 //!
-//! What the rules are is in `docs/rules.md`; how modules, configs and
+//! What the rules are is in `docs/rules/` (start at its `README.md`); how modules, configs and
 //! tunables fit together is in `docs/architecture.md`.
 
 pub mod action;

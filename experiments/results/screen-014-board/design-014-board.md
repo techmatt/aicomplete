@@ -3,7 +3,7 @@
 > **Frozen design input (016).** Matt's 014 board prompt, verbatim as queued
 > (conductor item `014_board_model`, its front matter dropped). It records the design
 > as handed over: *Locked* and *Candidate* are as of 014, and later items have changed
-> some of it. What the code implements is [rules.md](rules.md); this file is not
+> some of it. What the code implements is [docs/rules/](../../../docs/rules/README.md); this file is not
 > updated.
 
 ## Goal

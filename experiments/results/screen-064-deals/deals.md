@@ -78,7 +78,7 @@ gives a second fresh read of r26: 67 / 52 on seeds 17000, so 71 / 62 over 96 see
 before the run (both sizes in band and nearer 67). Its 48 is one seed set, and "c3 is ±15 on any one set" applies;
 a further lever between these would need its own fresh read, and the gate had to start.
 
-**New player summary:** in docs/rules.md, *Megaprojects*.
+**New player summary:** in the rules, *Megaprojects* (now `docs/rules/board.md`).
 
 ## The gate
 

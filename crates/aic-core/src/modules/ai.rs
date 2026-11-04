@@ -186,7 +186,7 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
 /// 099: whether a building is still free to play once a free-building power
 /// (Rush Build) is paid: its resources spent and some sacrifice made, since a
 /// building may have needed the tags it sacrifices, or its energy, or the stack
-/// it covers (rules.md §8). Without this the power took its energy and card
+/// it covers (docs/rules/card-grammar.md). Without this the power took its energy and card
 /// and played nothing. A sacrifice of more than one source isn't tried (no
 /// such power prints one): the resources alone are checked then.
 fn free_building_after(w: &World, g: &GameState, seat: usize, p: &Power) -> bool {

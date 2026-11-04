@@ -13,10 +13,9 @@ experiments, speed, scripts, web, card art.
   implementation detail: flag it rather than build it.
 - A **Rust core** simulates the rules. Clients render it and take input, and hold no rules;
   the first is **wasm + a JS front-end**.
-- Design is still being gathered. The core implements [docs/rules.md](docs/rules.md), whose
-  opening says which content is a placeholder. Don't describe or document code as if it does
-  more than it does. **Don't read rules.md whole:** read its section index at the top, then
-  only the sections your task touches.
+- Design is still being gathered. The core implements the rules in [docs/rules/](docs/rules/README.md),
+  whose `README.md` says which content is a placeholder. Don't describe or document code as if it
+  does more than it does. **Read that `README.md`, then only the files your task touches.**
 
 ## Engine rules
 
@@ -45,7 +44,7 @@ experiments, speed, scripts, web, card art.
   (README, *Rules changes*). Bump from the constant, not from a prompt's revision number, which
   is a guess since a bug hunt may have taken it, and say so in the rules-history row and the
   report. A content-only edit moves the content hash constants with no bump unless play changes.
-- **Every rules change** updates [docs/rules.md](docs/rules.md) and adds its row to
+- **Every rules change** updates the files of `docs/rules/` it touches and adds its row to
   [docs/rules-history.md](docs/rules-history.md) in the same commit.
 - **After changing threats, cards, adversary rules, content or tunables:** run `aic-sim docs`,
   then `python scripts/cards/cards_doc.py`; after a card or `values.json` edit also `python
@@ -54,7 +53,7 @@ experiments, speed, scripts, web, card art.
   What [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.
 - **Before the report**, `git grep` each renamed name and each changed number, and reread the
-  rules.md section a new mechanic touches. A diff doesn't show the prose it left stale, and a
+  `docs/rules/` file a new mechanic touches. A diff doesn't show the prose it left stale, and a
   sentence saying something never happens has nothing to grep.
 - **Adding or removing a card** edits `configs/baseline.json`, then run `python
   scripts/configs/shared_row.py`; a core test fails until you do.
@@ -119,8 +118,8 @@ experiments, speed, scripts, web, card art.
   `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's flags in
   `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes in
   its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
-- **Each doc keeps to a 15 KB budget** (README, CLAUDE.md and every `docs/` page), except
-  `docs/rules.md`, the full rules statement read by its section index, and the generated
+- **Each doc keeps to a 15 KB budget** (README, CLAUDE.md and every `docs/` page, each
+  `docs/rules/` file included: `docs --check` refuses one over), except the generated
   `docs/cards.md`. Trim before you add past it.
 - **Docs state the current game.** An item updates the current text in place, never appends an
   'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a

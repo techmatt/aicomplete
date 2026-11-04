@@ -41,7 +41,7 @@ try {
         await shot('viewer-projects-r2');
         saved.r2 = { seed, ...s };
       }
-      // A resolved project leaves its slot empty until all three have gone (rules.md), so
+      // A resolved project leaves its slot empty until all three have gone (docs/rules/adversary.md), so
       // this row has fewer than three.
       if (!saved.late && s.round >= 4 && s.resolved > 0 && midFill(s)) {
         await shot(`viewer-projects-r${s.round}`);

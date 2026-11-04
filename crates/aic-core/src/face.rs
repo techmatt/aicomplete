@@ -5,8 +5,8 @@
 //!
 //! **Where it sits is what it is.** Above the art (`top`, buildings only): what
 //! lasts while the building is active. Below the art (`effect`): what happens
-//! once, when played, extra costs first. The grammar is in docs/rules.md (*The
-//! card grammar*); `web/card/card.js` draws the parts, and `web/card/faces.json`
+//! once, when played, extra costs first. The grammar is in
+//! docs/rules/card-grammar.md; `web/card/card.js` draws the parts, and `web/card/faces.json`
 //! is this module's output for it, kept current by `aic-sim docs`.
 //!
 //! A new one-shot op fails to compile here until it has its face: that match

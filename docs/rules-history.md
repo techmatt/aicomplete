@@ -1,7 +1,7 @@
 # Rules history
 
 One line per rules revision, newest first: the item that made it, what changed, and its
-status where that still applies. [rules.md](rules.md) is the current rules and marks every
+status where that still applies. [rules/](rules/README.md) is the current rules and marks every
 rule **locked** or a candidate; the reasoning, reads and numbers of a revision are in its
 item's write-up under `experiments/results/` and in git. Every rules change adds its line
 here in the same commit (CLAUDE.md).

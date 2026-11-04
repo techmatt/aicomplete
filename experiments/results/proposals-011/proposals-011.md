@@ -1,14 +1,14 @@
 # 011: 007's accepted proposals, agent and harness fixes
 
 > **Historical:** ran on rules r4 (today's is r6). The `opposition` module, parameters
-> and rules.md sections named here were removed or rewritten later;
+> and rules sections named here were removed or rewritten later;
 > `proposals-011.json` and two of its screens are refused today, and live in
 > [`archive/`](archive/) since 016 (paths below are as they were).
 
 2026-10-28. Rules **r4**, 2 countries, the tuned baseline. Each rule change is a variant
 or a tunable (a broader overhaul is coming). Three are new defaults: the clear-board
 win from stage II, and new effects for difficulty levels 1 and 3. Everything else is
-off by default. Rules text: [`docs/rules.md`](../docs/rules.md) §2, §2a, §3, §7.
+off by default. Rules text: then §2, §2a, §3 and §7 of the rules, now in [`docs/rules/`](../../../docs/rules/README.md).
 
 Results: `results/screen-011-*` (the screens that chose the defaults). No other number
 was retuned.

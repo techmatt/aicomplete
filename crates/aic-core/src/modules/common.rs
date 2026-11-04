@@ -2,7 +2,7 @@
 //! options. Rules live in the modules; this only answers questions about
 //! the board.
 //!
-//! Terms used throughout (see `docs/rules.md`):
+//! Terms used throughout (see `docs/rules/README.md`):
 //! - **adjacent**: a neighboring hex on the board (across country borders too);
 //! - **next to X**: holding X, or adjacent to a hex holding X;
 //! - **reach**: a seat's reach is every hex within 1 of one of its nodes.

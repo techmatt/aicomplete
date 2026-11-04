@@ -2,7 +2,7 @@ use aic_core::content::{content, Resource, Uncover};
 use aic_core::{Config, Rules};
 
 use super::blocks::*;
-use super::run::{card_note_failures, op_docs, unknown_params};
+use super::run::{block, card_note_failures, op_docs, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET};
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
 
@@ -80,6 +80,35 @@ fn a_content_change_changes_its_block() {
     assert_ne!(powers_block(base), powers_block(&c));
     assert_ne!(board_details_block(base), board_details_block(&c));
     assert_ne!(corps_block(base), corps_block(&c));
+}
+
+#[test]
+fn every_listed_block_has_a_body() {
+    let r = baseline(&[]);
+    for name in BLOCKS {
+        assert!(block(name, &r).is_some(), "{name}");
+    }
+    assert!(block("no_such_block", &r).is_none());
+}
+
+/// 101: the rules are split over docs/rules/; a block that went missing in the move, or one
+/// pasted twice, or a file past the budget, fails the check.
+#[test]
+fn check_wants_each_block_once_and_files_in_budget() {
+    let all: String = BLOCKS.iter().map(|b| format!("<!-- generated: {b} -->\n<!-- /generated -->\n")).collect();
+    let ok = vec![("docs/rules/a.md".to_string(), all.clone())];
+    assert!(rules_file_failures(&ok).is_empty());
+    let missing = vec![("docs/rules/a.md".to_string(), all.replace("generated: tunables -->", "x -->"))];
+    let f = rules_file_failures(&missing);
+    assert_eq!(f.len(), 1);
+    assert!(f[0].contains("\"tunables\" stands 0 times"), "{f:?}");
+    let twice = vec![
+        ("docs/rules/a.md".to_string(), all.clone()),
+        ("docs/rules/b.md".to_string(), "<!-- generated: corps -->".to_string()),
+    ];
+    assert_eq!(rules_file_failures(&twice).len(), 1);
+    let big = vec![("docs/rules/a.md".to_string(), all + &"x".repeat(RULES_BUDGET))];
+    assert_eq!(rules_file_failures(&big).len(), 1);
 }
 
 #[test]

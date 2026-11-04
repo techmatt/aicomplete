@@ -1,4 +1,4 @@
-//! The blocks of `docs/rules.md`, each a pure function of `Rules` or `Content`,
+//! The blocks of `docs/rules/`, each a pure function of `Rules` or `Content`,
 //! and the house terms.
 
 use aic_core::config::ParamValue;
@@ -10,7 +10,7 @@ use aic_core::Rules;
 use super::table;
 use crate::cli::fail;
 
-/// The words cards lean on, once: rules.md's *Terms* and the player aid print these.
+/// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
 pub const HOUSE_TERMS: [(&str, &str); 13] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
@@ -470,7 +470,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             // 099: what a dark city does when aligned (Matt's call whether it should cancel).
             "in reach, with a site claim: your cube on it (an adversary ambassador there stays, so a dark city stays dark)".to_string(),
         ],
-        // 099: rules.md §1 and §2 send readers here for it.
+        // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
         [
             "Free a research station".to_string(),
             format!(
@@ -522,7 +522,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ["Unity".to_string(), "Biomia's converter".to_string(), "1 for 2 research cubes".to_string()],
         [
             "Unity".to_string(),
-            "liberating a corrupted city (§2: a liberate card or the fallback)".to_string(),
+            "liberating a corrupted city (ambassadors.md: a liberate card or the fallback)".to_string(),
             t("alignment.free_city"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
