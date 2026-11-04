@@ -41,7 +41,7 @@ never a quiet exception.
    cards) has no budget yet: it comes with the frame.
 10. **The name says what it does,** and the art matches the name.
 11. **No near-duplicates without a reason.** Same effect at another price or kind is fine only
-    when the kind matters (an event leaves no tag; a program stays). An AI-unique card that repeats its board's
+    when the kind matters (an event leaves no tag; a program stays). A card that repeats an AI board's
     power needs a real price, or goes (*Shelter Order* duplicated the Protector's Shelter at 0 credits).
 12. **Tier is power; costs and effects are big** (ruling 4). Tier 2 is more powerful; some complexity is fine but
     not required. Many tier-1 cards carry strong effects at high prices, tier-2 income is far stronger still, and

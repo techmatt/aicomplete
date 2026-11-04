@@ -2,14 +2,10 @@
 
 use super::*;
 
-/// Discards `card` from pile `from`: to its tier's discard pile, or back to
-/// the box for an AI's unique card.
+/// Discards `card` from pile `from` to its tier's discard pile.
 pub fn discard(g: &mut GameState, cx: &mut Cx, card: &str, from: &str) {
     let w = cx.world;
-    let to = match def(&w, card).tier {
-        0 => KeyBuf::new(""),
-        t => discard_pile(t),
-    };
+    let to = discard_pile(def(&w, card).tier);
     cx.move_card(g, card, from, &to, true)
         .expect("card to discard is there");
 }

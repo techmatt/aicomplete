@@ -263,7 +263,7 @@ pub type TagCount = (Tag, i64);
 pub struct CardDef {
     pub id: String,
     pub name: String,
-    /// 1 or 2 for the draft decks; 0 for an AI's unique cards.
+    /// 1 or 2: the draft deck it is in.
     pub tier: u8,
     pub kind: CardKind,
     /// Credits.
@@ -297,8 +297,7 @@ pub struct CardDef {
     /// carries this tag (021: tier-2 replacement).
     #[serde(default)]
     pub replaces: Option<Tag>,
-    /// The token type this card holds, and how many it gains a round while
-    /// an active building (021: token engines).
+    /// The token type this card holds (021: token engines).
     #[serde(default)]
     pub tokens: Option<TokenSpec>,
     /// Tags you must have (on your cards in play) to play it.
@@ -316,19 +315,14 @@ pub struct CardDef {
     /// A building's once-a-round ability.
     #[serde(default)]
     pub ability: Option<Ability>,
-    /// The AI board this card is unique to.
-    #[serde(default)]
-    pub unique: Option<String>,
 }
 
-/// A card's token type and its gain a round (in upkeep, while the card is
-/// an active building).
+/// A card's token type. No card gains tokens by itself (Matt's ruling 12):
+/// its effects and ability add them.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TokenSpec {
     pub kind: TokenKind,
-    #[serde(default)]
-    pub per_round: i64,
 }
 
 /// A once-a-round ability: `cost` from the seat, `tokens` from the card's own
@@ -475,14 +469,9 @@ pub struct AiBoard {
     /// from the track its player chooses. Its first space is covered at setup.
     #[serde(default)]
     pub play_track: Vec<Uncover>,
-    /// Unique cards, in hand at the start.
-    pub cards: Vec<String>,
     /// AI-board powers (locked: tag costs are sacrifices), each usable once a round.
     #[serde(default)]
     pub powers: Vec<Power>,
-    /// A building the board starts with in a slot, carrying its built-in tag (021).
-    #[serde(default)]
-    pub start: Option<String>,
     /// Tags printed on the board (068): they count for what a card requires,
     /// not for discounts or sacrifices.
     #[serde(default)]
@@ -644,14 +633,6 @@ impl Content {
         if b.economy_track.is_empty() {
             return Err(format!("{what}: needs a node track"));
         }
-        for c in &b.cards {
-            match self.card_index(c) {
-                Some(i) if self.cards[i].unique.as_deref() == Some(b.id.as_str()) => {}
-                _ => {
-                    return Err(format!("{what}: {c:?} is not a card unique to it"))
-                }
-            }
-        }
         for (r, _) in b
             .income
             .iter()
@@ -678,12 +659,6 @@ impl Content {
             // Locked (Matt, 075): N of one tag or N of any tag, never a mix.
             if p.tags.len() > 1 {
                 return Err(format!("{what}: a power's cost names one tag or `any`, never a mix"));
-            }
-        }
-        if let Some(id) = &b.start {
-            match self.card_index(id) {
-                Some(i) if self.cards[i].is_building() => {}
-                _ => return Err(format!("{what}: start building {id:?} is not a building")),
             }
         }
         check_ops(&b.innate.passives, Slot::Standing, &what)?;
@@ -851,8 +826,8 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     if c.replaces.is_some() && !c.is_building() {
         return Err(format!("{what}: only a building replaces one"));
     }
-    if c.tier > 2 || (c.tier == 0) != c.unique.is_some() {
-        return Err(format!("{what}: tier 0 exactly for unique cards, else 1 or 2"));
+    if !(1..=2).contains(&c.tier) {
+        return Err(format!("{what}: tier 1 or 2"));
     }
     for (r, _) in &c.lowers {
         resource(r, &what)?;

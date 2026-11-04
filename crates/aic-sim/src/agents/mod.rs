@@ -338,6 +338,7 @@ impl AgentSpec {
                 ));
             }
         }
+        eval::check_names(weights.keys().map(String::as_str)).map_err(|e| format!("agent {spec:?}: {e}"))?;
         if kind == "engine" {
             // What the chosen mode never reads: set, it would only be a label.
             let on = |k: &str| params[k].round() > 0.0;

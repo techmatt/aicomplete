@@ -4,7 +4,7 @@
 
 use crate::action::Action;
 use crate::content::{AiBoard, Innate, Op, Power, Resource, Tag, Uncover};
-use crate::key::{Key, KeyBuf};
+use crate::key::KeyBuf;
 use crate::module::{
     Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
@@ -404,54 +404,19 @@ impl Module for Ai {
             if !b.play_track.is_empty() {
                 tracks.push(track_view("card-play track", &b.play_track, uncovered2(w, g, s)));
             }
-            let (hand, built) = (cards::hand(s), cards::built(s));
-            let mut unique: Vec<CardView> = b
-                .cards
-                .iter()
-                .map(|id| {
-                    // A board two seats play has one copy of each card (rules.md
-                    // §7): say who holds it (020: the second seat read "gone").
-                    let key = Key::new(id);
-                    let other = (0..g.seats.len()).find(|&o| {
-                        o != s && (g.pile(&cards::hand(o)).contains(&key) || cards::in_play(g, o).contains(&key))
-                    });
-                    let status = if g.pile(&hand).contains(&key) {
-                        "in hand".to_string()
-                    } else if g.pile(&built).contains(&key) {
-                        "built".to_string()
-                    } else if cards::in_play(g, s).contains(&key) {
-                        "in play".to_string()
-                    } else if let Some(o) = other {
-                        format!("with seat {o}")
-                    } else {
-                        "gone".to_string()
-                    };
-                    let (name, text) = match w.content.card_index(id) {
-                        Some(i) => (
-                            w.content.cards[i].name.clone(),
-                            w.content.cards[i].text.clone(),
-                        ),
-                        None => (id.clone(), String::new()),
-                    };
-                    CardView {
-                        id: id.clone(),
-                        name,
-                        text,
-                        status,
-                        cost: None,
-                    }
-                })
-                .collect();
             // The board's powers (021), with their status this round.
-            for (k, p) in b.powers.iter().enumerate() {
-                unique.push(CardView {
+            let powers: Vec<CardView> = b
+                .powers
+                .iter()
+                .enumerate()
+                .map(|(k, p)| CardView {
                     id: format!("{}.power.{k}", b.id),
                     name: p.name.clone(),
                     text: power_text(p),
                     status: power_blocked(w, g, s, k).unwrap_or("ready").into(),
                     cost: None,
-                });
-            }
+                })
+                .collect();
             out.board(
                 s,
                 "board",
@@ -468,7 +433,7 @@ impl Module for Ai {
                     tags: b.tags.iter().map(|t| t.to_string()).collect(),
                     tracks,
                     slots: Some(slots(w, s)),
-                    cards: unique,
+                    cards: powers,
                 },
             );
             out.seat(

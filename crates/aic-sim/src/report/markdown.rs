@@ -1,7 +1,7 @@
 //! `report.md`: the run, the findings, then the tables, the timing and the
 //! saved records.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 use std::fmt::Write as _;
 
 use aic_core::content_hash;
@@ -680,7 +680,7 @@ fn strategy_health(md: &Md, w: &mut String) {
     let spec = md.run.spec;
     let sums = md.run.sums;
     let _ = writeln!(w, "\n## Strategy health\n");
-    let _ = writeln!(w, "Per game, over the whole team: buildings played (any tier, AI unique buildings too), tier-2 cards played (buildings and programs), all cards played, economy buildings (printing standing income) standing at the end; then the share of wins with 2 or more buildings played, and in brackets with 2 or more buildings standing at the end.\n");
+    let _ = writeln!(w, "Per game, over the whole team: buildings played (any tier), tier-2 cards played (buildings and programs), all cards played, economy buildings (printing standing income) standing at the end; then the share of wins with 2 or more buildings played, and in brackets with 2 or more buildings standing at the end.\n");
     let order = agent_order(run.cells);
     let mut gkeys: Vec<(String, String)> = Vec::new();
     for c in run.cells {
@@ -735,7 +735,7 @@ fn strategy_health(md: &Md, w: &mut String) {
 fn card_rates(md: &Md, w: &mut String) {
     let run = md.run;
     let _ = writeln!(w, "## Pick and play rates per card\n");
-    let _ = writeln!(w, "Over all cells of each agent. Offered: in a draft packet (each round's deal). Every dealt card is drafted by someone (packets pass until empty), so pick is the mean pick position, 1 = a seat's first pick of the round (lower = wanted sooner). Keep: keeps per offer; keeps count the opening deal and offers don't, so it can pass 100%. Play: played per card gained (kept or drawn; unique AI cards start in hand, so their plays are per game). Per variant, config and difficulty in `cards.csv`.\n");
+    let _ = writeln!(w, "Over all cells of each agent. Offered: in a draft packet (each round's deal). Every dealt card is drafted by someone (packets pass until empty), so pick is the mean pick position, 1 = a seat's first pick of the round (lower = wanted sooner). Keep: keeps per offer; keeps count the opening deal and offers don't, so it can pass 100%. Play: played per card gained (kept or drawn). Per variant, config and difficulty in `cards.csv`.\n");
     let mut order: Vec<&String> = run.cards.keys().collect();
     order.sort_by_key(|l| {
         run.cells
@@ -751,15 +751,9 @@ fn card_rates(md: &Md, w: &mut String) {
     }
     let _ = writeln!(w, "{head}\n{sep}");
     let all_cards: BTreeSet<&String> = run.cards.values().flat_map(|t| t.keys()).collect();
-    let cell_labels: Vec<String> = run.cells.iter().map(|c| c.agent.label()).collect();
-    let mut games_by_label: BTreeMap<&str, usize> = BTreeMap::new();
-    for g in run.games {
-        *games_by_label.entry(&cell_labels[g.cell]).or_default() += 1;
-    }
     for card in all_cards {
         let mut row = format!("| {card} |");
         for l in &order {
-            let games_of = games_by_label.get(l.as_str()).copied().unwrap_or(0).max(1);
             let n = run.cards[*l].get(card).copied().unwrap_or_default();
             let r = |a: u32, b: u32| {
                 if b == 0 {
@@ -768,12 +762,8 @@ fn card_rates(md: &Md, w: &mut String) {
                     pct(a as f64 / b as f64)
                 }
             };
-            // In hand by keeping or drawing; unique AI cards start there.
-            let play = if n.kept + n.drawn == 0 && n.offered == 0 {
-                format!("{:.2}/game", n.played as f64 / games_of as f64)
-            } else {
-                r(n.played, n.kept + n.drawn)
-            };
+            // In hand by keeping or drawing.
+            let play = r(n.played, n.kept + n.drawn);
             let pos = if n.drafted == 0 {
                 "–".to_string()
             } else {

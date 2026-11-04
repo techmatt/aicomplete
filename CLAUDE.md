@@ -103,6 +103,9 @@ experiments, speed, scripts, web, card art.
   `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's flags in
   `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes in
   its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
+- **Each doc keeps to a 15 KB budget** (README, CLAUDE.md and every `docs/` page), except
+  `docs/rules.md`, the full rules statement read by its section index, and the generated
+  `docs/cards.md`. Trim before you add past it.
 - **Docs state the current game.** An item updates the current text in place, never appends an
   'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a
   heading like `## 080's changes`. A card's pricing note for the viewer is one current line in

@@ -62,7 +62,7 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
     let rules = Rules::new(&baseline_with(&["cards.variant=off"])).unwrap();
     let mut g = rules.new_game(4);
     advance_to(&rules, &mut g, ACTIONS);
-    // Nothing dealt or drafted, and no board prints unique cards (078).
+    // Nothing dealt or drafted: no player cards at all.
     assert!(g.pile("cards.hand.0").is_empty());
     assert!(rules
         .legal_actions(&g)

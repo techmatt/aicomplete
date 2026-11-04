@@ -85,8 +85,8 @@ pub struct CellSummary {
     /// the same buildings, 1 = never a shared building).
     pub build_distance: f64,
     pub build_distance_wins: Option<f64>,
-    /// Strategy health (see [`plays`]): cards, buildings (any tier, AI
-    /// uniques too) and tier-2 cards played per game, buildings standing at
+    /// Strategy health (see [`plays`]): cards, buildings (any tier) and
+    /// tier-2 cards played per game, buildings standing at
     /// the end per game, and the share of wins with 2 or more buildings
     /// played (standing at the end).
     pub cards_played_per_game: f64,
@@ -199,7 +199,7 @@ pub(super) fn economy_standing(sig: &str, content: &Content) -> usize {
         .count()
 }
 
-/// One game's plays: [cards, buildings (any tier, AI uniques too), tier-2
+/// One game's plays: [cards, buildings (any tier), tier-2
 /// cards], from the per-card counts and the content's tier and kind.
 pub fn plays(g: &GameResult, content: &Content) -> [u32; 3] {
     let mut out = [0u32; 3];

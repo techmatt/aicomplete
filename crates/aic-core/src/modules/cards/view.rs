@@ -5,12 +5,7 @@ use super::*;
 /// One card as a seat sees it, its status and costs in its text.
 fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: Option<i64>) -> CardView {
     let d = def(w, id);
-    let mut bits = vec![format!("{:?}", d.kind).to_lowercase()];
-    if d.tier > 0 {
-        bits.push(format!("tier {}", d.tier));
-    } else {
-        bits.push("unique".into());
-    }
+    let mut bits = vec![format!("{:?}", d.kind).to_lowercase(), format!("tier {}", d.tier)];
     if !d.tags.is_empty() {
         bits.push(d.tags.iter().map(|t| t.name()).collect::<Vec<_>>().join("/"));
     }

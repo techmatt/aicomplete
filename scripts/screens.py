@@ -57,14 +57,38 @@ def load(d):
     return cells, games
 
 
-def old_name(k):
-    """The counter's name in results from before 026, when chips were called hardware."""
-    return k.replace('chips', 'hardware')
+# Counters 086 renamed (presence -> node, the adversary's node -> botnet): name -> pre-086 name.
+RENAMED_086 = {
+    'adversary.compute_botnets': 'adversary.compute_nodes',
+    'adversary.botnets_made': 'adversary.nodes_made',
+    'adversary.botnets_removed': 'adversary.nodes_removed',
+    'alignment.sacrificed_node': 'alignment.sacrificed_presence',
+    'alignment.purge_blocked_by_botnets': 'alignment.purge_blocked_by_nodes',
+    'board.last_node_safe': 'board.last_presence_safe',
+    'board.node_placed': 'board.presence_placed',
+    'board.node_capstones': 'board.presence_capstones',
+    'board.node_lost': 'board.presence_lost',
+    'board.node_drained': 'board.presence_drained',
+    'effects.botnets_cut': 'effects.nodes_cut',
+}
+
+
+def old_names(k):
+    """The counter's former names: before 086 (`RENAMED_086`, and `board.node_lost.<source>`),
+    and before 026, when chips were called hardware."""
+    pre_086 = RENAMED_086.get(k, k)
+    if k.startswith('board.node_lost.'):
+        pre_086 = 'board.presence_lost.' + k[len('board.node_lost.'):]
+    return [n for n in dict.fromkeys([pre_086, k.replace('chips', 'hardware')]) if n != k]
 
 
 def cnt(g, k):
+    """Counter `k` of game `g`, read under its former name in older results; 0 if absent."""
     c = g['counters']
-    return c.get(k, c.get(old_name(k), 0))
+    if k in c:
+        return c[k]
+    return next((c[o] for o in old_names(k) if o in c), 0)
+
 
 
 def mean(gs, f):
@@ -100,7 +124,7 @@ def checked_cnt(games):
     warned = set()
 
     def checked(g, k):
-        if k not in seen and old_name(k) not in seen and k not in warned:
+        if k not in seen and not seen.intersection(old_names(k)) and k not in warned:
             warned.add(k)
             print(f'warning: no game has counter {k}: it may be gone, so its 0 means nothing', file=sys.stderr)
         return cnt(g, k)

@@ -13,13 +13,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_names, stream  # noqa: E402
+from screens import cell_names, cnt, stream  # noqa: E402
 
 CORPS = ('Horizon', 'Cintamani', 'Onyx', 'Biomia')
-
-
-def cnt(g, k):
-    return g['counters'].get(k, 0)
 
 
 def load(dirs):

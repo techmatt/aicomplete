@@ -863,7 +863,7 @@ There is no "build a factory" standard action: cities build factories.
 | 13 | `board.bases` | Production 1, on a production step: bases and factories make troops (ambassadors divert), factories make chips, cities grow factories |
 | 14 | `board.war` | Production 2, on a war step: front battles |
 | 15 | `board.produce` | Production 3: cities' energy cubes (neutral ones for sale) and stations (ambassadors divert); ambassadors on nodes drain insight; full megaprojects complete |
-| 16 | `economy.upkeep` | Production 4: income; building upkeep; token cards gain their tokens |
+| 16 | `economy.upkeep` | Production 4: income; building upkeep |
 | 17 | `threats.execute` | Production 5: partial payments refunded; uncountered threats execute |
 | 18 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |
 
@@ -871,7 +871,7 @@ There is no "build a factory" standard action: cities build factories.
 
 Each AI board has a **special rule**, a printed **income**, **printed tags**, two **node tracks** (economy and
 card-play), building slots (`ai.slots`, a config list in seat order), starting credits (`ai.start_credits`, in the
-same order) and its **powers**. No board starts with a building or unique cards. The first token starts on the economy
+same order) and its **powers**. The first token starts on the economy
 track, so its first space is uncovered from setup; placing a node takes the next token off a track and uncovers what
 is printed under it. Uncovered values add to the income every round (insight at the start of the round, the rest in
 upkeep). The board module owns nodes and counts the tokens taken (`board.track.<seat>`); the AI board reads it.
@@ -1235,7 +1235,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   own tag) must be built over one whose top card carries that tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
   (Industry), Agents (Security). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
-  card gains tokens by itself (`per_round` is 0 on every card, so the upkeep rule that pays it does nothing). A token
+  card gains tokens by itself. A token
   card's Action is "add N here, OR spend or count what is here"; a few tier-2 ones arrive loaded ("Add 2 Agents here"
   when built); a covered one holds its tokens and its Action stops; Actions may cost tokens from their own card;
   feeder cards (Dataset Scraper, Capital Injection, Vendor Financing, Manifesto Leak, Recruit Operatives) add tokens to
@@ -1350,7 +1350,7 @@ card does; how each primitive resolves:
 For measuring what a module adds, these variants remove its effect and keep the round: `threats.variant=off` (no
 threats), `alignment.variant=off` (no Sway moves, nothing tips, no antimatter action; the purge, the node loss and the
 adversary deck-out stay; with no tips the Unity-deck win and the Discord-deck loss can't happen), `cards.variant=off`
-(no draft or drawing; no board prints unique cards, so no player cards at all). Two don't isolate their module: with
+(no draft or drawing, so no player cards at all). Two don't isolate their module: with
 Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission removes a
 botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
 `cards=off` and `economy=off` remove the module. Parts switch off by parameters (`factory_units` 0, `factory_chips` 0,
@@ -1541,8 +1541,7 @@ Every parameter of the baseline config, with its value and range, generated from
 49. Power payment: what can be sacrificed is fixed when the power is used; each sacrificed card pays with all its
     tags, each tag first toward its own requirement; the player picks cards one at a time among those that still
     help.
-50. A token card's `per_round` tokens (0 on every card) arrive in upkeep while it is an active building (not
-    splayed); only buildings hold tokens; sacrificing or discarding a card loses its tokens.
+50. Only buildings hold tokens; sacrificing or discarding a card loses its tokens.
 51. The movement add-on's "up to 2 hexes" is hex distance (`Map::distance`, over land and sea); the destination must
     be a piece. Spread moves each ambassador at most once, in hex order.
 52. A threat dealt after the round's counter phase executes next round, not this one (at a table: it goes beside the

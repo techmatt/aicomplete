@@ -270,12 +270,36 @@ pub struct Weights {
 }
 
 /// Weights renamed since experiments named them: (former name, name).
-const RENAMED: [(&str, &str); 4] = [
+/// 086 renamed `presence` to `node` and the old `node` (the adversary's) to
+/// `botnet`; that `node` can't be aliased, see [`PRE_086`].
+const RENAMED: [(&str, &str); 6] = [
     ("opp_rate", "unity_rate_start"),
     ("hardware", "chips"),
     ("data_center", "node"),
     ("capstone", "track_capstone"),
+    ("presence", "node"),
+    ("presence_danger", "node_danger"),
 ];
+
+/// Weight names only a pre-086 spec uses. Such a spec's `node` meant the
+/// adversary's (now `botnet`), so [`check_names`] refuses it there.
+const PRE_086: [&str; 3] = ["presence", "presence_danger", "data_center"];
+
+/// Refuses a spec's weight names that would silently mean another weight:
+/// a bare `node` beside a pre-086 name. A pre-086 spec naming `node` alone
+/// can't be told apart and sets the player-node weight.
+pub fn check_names<'a>(names: impl IntoIterator<Item = &'a str>) -> Result<(), String> {
+    let names: Vec<&str> = names.into_iter().collect();
+    if let Some(old) = names.iter().find(|n| PRE_086.contains(n)) {
+        if names.contains(&"node") {
+            return Err(format!(
+                "weight `node` beside pre-086 `{old}`: there `node` was the adversary's, now `botnet`; \
+                 write `botnet`, or `node` with the other names current"
+            ));
+        }
+    }
+    Ok(())
+}
 
 /// A drafted card's keep price in credits (its tier's insight at
 /// `INSIGHT_COST`), for valuing the draft packet (023).
@@ -1556,5 +1580,13 @@ mod tests {
         assert_eq!(w.unity_rate_start, 0.5);
         assert!(w.set("data_center", 2.5));
         assert_eq!(w.node, 2.5);
+        // 086: presence -> node, presence_danger -> node_danger.
+        assert!(w.set("presence", 1.25));
+        assert_eq!(w.node, 1.25);
+        assert!(w.set("presence_danger", 3.0));
+        assert_eq!(w.node_danger, 3.0);
+        assert!(check_names(["presence", "botnet"]).is_ok());
+        assert!(check_names(["node", "botnet"]).is_ok());
+        assert!(check_names(["presence", "node"]).is_err());
     }
 }

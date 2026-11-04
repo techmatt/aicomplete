@@ -219,7 +219,7 @@ const COUNTERS: [&str; 1] = ["threats.short"];
 
 /// Bare `snake_case` names rules.md may print that are no tunable or op:
 /// action names and content fields.
-const NOT_TUNABLES: [&str; 5] = ["harden_buy", "harden_chips", "legal_actions", "per_round", "shared_row"];
+const NOT_TUNABLES: [&str; 4] = ["harden_buy", "harden_chips", "legal_actions", "shared_row"];
 
 /// Backticked `module.name` words in `text` that are no tunable, phase or
 /// counter of the baseline, and bare `snake_case` words that are no tunable

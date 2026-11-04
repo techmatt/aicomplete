@@ -2,7 +2,7 @@
 //! and the house terms.
 
 use aic_core::config::ParamValue;
-use aic_core::content::{content, AiBoard, Content, Cost, Megaproject, Op, Resource, Uncover};
+use aic_core::content::{content, AiBoard, Content, Cost, Megaproject, Resource, Uncover};
 use aic_core::modules::adversary;
 use aic_core::rules::Tunable;
 use aic_core::Rules;
@@ -326,26 +326,6 @@ fn per_board(r: &Rules, key: &str, board: usize) -> String {
         .map_or(String::new(), |seat| values[seat % values.len()].to_string())
 }
 
-/// `Foundry Core (Industry): +1 credit`.
-fn start_building(c: &Content, b: &AiBoard) -> String {
-    let Some(id) = &b.start else {
-        return String::new();
-    };
-    let Some(card) = c.cards.iter().find(|d| d.id == *id) else {
-        fail(&format!("docs: no card {id}"))
-    };
-    let tags: Vec<String> = card.tags.iter().map(|t| title(t.name())).collect();
-    let income: Vec<Cost> = card
-        .passives
-        .iter()
-        .filter_map(|p| match p {
-            Op::Income { resource, amount } => Some((*resource, *amount)),
-            _ => None,
-        })
-        .collect();
-    format!("{} ({}): {}", card.name, tags.join(", "), gains(&income))
-}
-
 /// What each AI board prints before its tracks.
 pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
     let rows: Vec<Vec<String>> = c
@@ -359,7 +339,6 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
                 b.name.clone(),
                 costs(&printed),
                 per_board(r, "ai.start_credits", i),
-                start_building(c, b),
                 per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
                 b.economy_track.len().to_string(),
@@ -372,50 +351,23 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         "Board",
         "Printed income",
         "Starting credits",
-        "Starting building",
         "Slots",
         "Printed tags",
         "Economy track",
         "Card-play track",
         "Tokens in all",
     ];
-    // 078: no board starts with a building, so the column shows only if one does.
-    let keep = |k: usize| k != 3 || c.ais.iter().any(|b| b.start.is_some());
-    let head: Vec<&str> = head.iter().enumerate().filter(|(k, _)| keep(*k)).map(|(_, h)| *h).collect();
-    let rows = rows
-        .into_iter()
-        .map(|row: Vec<String>| row.into_iter().enumerate().filter(|(k, _)| keep(*k)).map(|(_, v)| v).collect())
-        .collect();
     table(&head, rows)
 }
 
-/// Each board's special rule (innate), and its unique cards when any board prints them.
+/// Each board's special rule (innate).
 pub(super) fn board_details_block(c: &Content) -> String {
-    let uniques = c.ais.iter().any(|b| !b.cards.is_empty());
-    let name = |id: &String| {
-        c.cards
-            .iter()
-            .find(|d| d.id == *id)
-            .map_or_else(|| fail(&format!("docs: no card {id}")), |d| d.name.clone())
-    };
     let rows = c
         .ais
         .iter()
-        .map(|b| {
-            let cards: Vec<String> = b.cards.iter().map(name).collect();
-            let mut row = vec![b.name.clone(), format!("*{}*: {}", b.innate.name, b.innate.text)];
-            if uniques {
-                row.push(cards.join(", "));
-            }
-            row
-        })
+        .map(|b| vec![b.name.clone(), format!("*{}*: {}", b.innate.name, b.innate.text)])
         .collect();
-    // 078: no board prints unique cards, so the column shows only if one does.
-    if uniques {
-        table(&["Board", "Special rule", "Unique cards"], rows)
-    } else {
-        table(&["Board", "Special rule"], rows)
-    }
+    table(&["Board", "Special rule"], rows)
 }
 
 /// One space of a node track.

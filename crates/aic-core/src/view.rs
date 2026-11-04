@@ -200,7 +200,7 @@ pub struct BoardView {
     /// Slots printed on the board (what they hold is the module's), if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub slots: Option<i64>,
-    /// Cards that belong to this board, with where they are now.
+    /// The board's powers as cards, with their status this round.
     pub cards: Vec<CardView>,
 }
 

@@ -263,7 +263,7 @@ function playerCard(c, face, keep) {
     ['Keep', keepCost],
     c.ability?.cost?.length && ['Action cost', costs(c.ability.cost)],
     c.ability?.tokens && ['Action tokens', c.ability.tokens],
-    c.tokens && ['Tokens', `${c.tokens.kind}${c.tokens.per_round ? `, +${c.tokens.per_round} a round` : ''}`],
+    c.tokens && ['Tokens', c.tokens.kind],
   ].filter(Boolean);
   const ops = { effects: c.effects, passives: c.passives, ability: c.ability?.effects };
   return {
@@ -275,7 +275,7 @@ function playerCard(c, face, keep) {
     cost: c.cost,
     costLabel: `${c.cost} credits`,
     tags: c.tags ?? [],
-    keywords: [...(c.keywords ?? []), ...(c.unique ? [`unique: ${c.unique}`] : [])],
+    keywords: c.keywords ?? [],
     text: [face?.top_text, face?.text].filter(Boolean).join(' '),
     sections: [],
     price,
@@ -436,7 +436,7 @@ export function exportCards(root = REPO) {
       ...c,
       hash: contentHash(...hashParts),
       scene: scenes[c.id] ?? null,
-      inDeck: isPlayer ? deck.has(c.id) || c.tier === 0 : null,
+      inDeck: isPlayer ? deck.has(c.id) : null,
       pricing: isPlayer ? notes[c.id] ?? null : null,
       reasoned: reasoned ?? null,
       priceGap: reasoned == null || c.cost == null ? null : c.cost - reasoned,

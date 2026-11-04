@@ -15,12 +15,12 @@ Current:
   too, gate key or not; report.md's agent pairs read the other way, check minus reference. `--preset tiers` is cards offered, kept and played per game by tier: run it on the
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
-  `scripts/screens.py` holds what it shares with the kept scripts below, and is the way to read a run from Python: `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`).
+  `scripts/screens.py` holds what it shares with the kept scripts below, and is the way to read a run from Python: `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`), read under its pre-086 or pre-026 name in older runs.
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by source type, paid abroad or by ambassador
   alone, sources made, and the typed counters and capstones played: who counters what, from `games.jsonl`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
-  in none, and every draft card no game kept. AI-unique cards (there are none) are left out. Seconds.
+  in none, and every draft card no game kept. Seconds.
 - `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's carried insight, cubes bought, free stations, the Researcher's second node, strikes a Wall stopped, troop hits, nodes lost and what seats leave unspent; `--powers` every board power a game, `--cards` the six research-cube cards kept, played and used
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled over DIRs: wins, each dear
   power's uses a game (a board power sacrificing two tags or more), Grant, Action buildings' uses, tokens gained / spent,

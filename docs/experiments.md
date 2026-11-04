@@ -64,8 +64,7 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 - **Skill gap**: top tier's win rate minus the bottom's (each tier by its best agent, so a budget sweep of one kind is
   one rung), also on **survival**: a loss's round; a win counts its rounds plus adversary cards left plus 2, so any win
   ranks above any loss. *Ordered*: no tier below the one under it.
-- **Pick position** is the card signal (every dealt card is drafted, so how early it goes); played is per card gained,
-  per game for unique AI cards, which start in hand.
+- **Pick position** is the card signal (every dealt card is drafted, so how early it goes); played is per card gained.
 - **Economy buildings standing**: passive `income` or `income_per_tag` at the end, overlay included; token stores and
   `convert_upkeep` alone don't count.
 - **Early lock-in**: p ≤ 0.05 or ≥ 0.95 from round 2 to the end; uncertain checkpoints are 0.1 < p < 0.9.

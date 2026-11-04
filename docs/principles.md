@@ -158,7 +158,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | no-powers | `no_powers=1` | never uses an AI-board power |
 | no-counters | `no_counters=1` | never pays toward a threat's counter |
 | no-node | `no_node=1` | places no nodes beyond setup (no power or card that places one) |
-| mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag (AI-unique cards exempt; there are none) |
+| mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag |
 | ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder | `events_only=1` | keeps and plays only events |
 | ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |

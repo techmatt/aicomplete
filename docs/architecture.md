@@ -155,9 +155,8 @@ where the team talks it through.
 Content fields are the serde structs in `content.rs`. What isn't plain there:
 
 - **Player cards** have no `text`: `aic_core::face` generates icons and words from the
-  fields, and a new op doesn't compile until it has a face. `tier` 0 is an AI's unique
-  card or starting building. `tokens.per_round` is 0 on every card (Matt's ruling 12),
-  and "here" in an op names this card. `keywords` are read only by
+  fields, and a new op doesn't compile until it has a face. `tokens` names a token type
+  only: no card gains tokens by itself (Matt's ruling 12), and "here" in an op names this card. `keywords` are read only by
   `scripts/cards/cards_doc.py` and the viewer, never printed. Adding a card: CLAUDE.md;
   every op and where it prints: [ops.md](ops.md).
 - **AI boards**: printed `tags` count for requirements only. Slots and starting credits

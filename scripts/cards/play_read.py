@@ -4,8 +4,8 @@
 
 Each DIR holds an experiment's games.jsonl and results.json (whose `cells` name each game's agent). Per agent, pooled over its cells and DIRs: for each player card,
 the share of games that kept it and its plays in all of them: listed when kept in more than `--min` percent of the
-games and played in none (the "kept, never played" read); then every draft card no game of that agent kept. AI-unique cards (tier 0) start in hand and are never kept: they are left
-out. A card counts once a game, whichever seat held it.
+games and played in none (the "kept, never played" read); then every draft card no game of that agent kept.
+A card counts once a game, whichever seat held it.
 """
 import argparse
 import collections
@@ -24,7 +24,7 @@ def main():
     ap.add_argument('--agents', default='', help='comma-separated agent specs to read (default: all)')
     a = ap.parse_args()
     content = json.load(open(os.path.join(ROOT, 'content', 'cards.json'), encoding='utf-8'))
-    deck = {c['id']: c for c in content if c['tier'] > 0}
+    deck = {c['id']: c for c in content}
     want = set(x for x in a.agents.split(',') if x)
     games = collections.Counter()
     idle = collections.defaultdict(collections.Counter)

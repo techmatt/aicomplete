@@ -716,11 +716,6 @@ fn above_art(c: &CardDef, f: &mut Face) {
             Standing::Effect(parts, say) => effects.push((parts, say)),
         }
     }
-    // 076: a progressive token card gains none by itself, so prints no box.
-    if let Some(t) = c.tokens.as_ref().filter(|t| t.per_round > 0) {
-        boxes.push(counted(t.per_round, t.kind.name()));
-        each_round.push(format!("{} {} here", t.per_round, token(t.kind, t.per_round)));
-    }
     for b in boxes {
         f.top.push(vec![Part::Income { income: b }]);
     }

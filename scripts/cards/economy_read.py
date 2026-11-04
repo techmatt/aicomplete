@@ -9,8 +9,7 @@ tags by round: each seat's most-held tag on its cards in play when the action ph
     python scripts/cards/economy_read.py DIR [DIR ...] [--rounds 10]
 
 Each DIR holds an experiment's games.jsonl and results.json. A variant's seats follow its
-`ai.boards=` override, else the baseline's 0, 1, 2. AI-unique cards (tier 0 in older content) are
-counted apart, so an r32 output reads beside an r33 one.
+`ai.boards=` override, else the baseline's 0, 1, 2.
 """
 import argparse
 import collections
@@ -20,10 +19,6 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cnt, content, load  # noqa: E402
-
-UNIQUES = {'turnkey_factory', 'venture_capital', 'modular_expansion', 'point_defense',
-           'strike_team', 'shelter_order', 'foundry_core', 'sentinel_post'}
-
 
 def boards_of(spec, variant):
     for v in spec['variants']:
@@ -54,18 +49,15 @@ def main():
             seats_of[key] = boards_of(spec, c['variant'])[:n_seats]
             pooled[key].extend(gs)
 
-    print('| cell | games | win % | rounds | kept / seat (opening) | played / seat | uniques played / seat '
+    print('| cell | games | win % | rounds | kept / seat (opening) | played / seat '
           '| kept, never played / seat | node / seat | credit income / seat-round | credits left / seat-round | insight left / seat-round |')
-    print('|---|' + '---|' * 11)
+    print('|---|' + '---|' * 10)
     for key, gs in sorted(pooled.items()):
         seats = len(seats_of[key])
         n = len(gs) * seats
-        kept = played = uniq = idle = 0
+        kept = played = idle = 0
         for g in gs:
             for cid, c in g['cards'].items():
-                if cid in UNIQUES:
-                    uniq += c.get('played', 0)
-                    continue
                 kept += c.get('kept', 0)
                 played += c.get('played', 0)
                 if c.get('kept', 0) > 0 and c.get('played', 0) == 0:
@@ -80,7 +72,7 @@ def main():
         p = wins / len(gs)
         se = 100 * (p * (1 - p) / len(gs)) ** 0.5
         print(f"| {key[0]} {key[1]} | {len(gs)} | {100 * p:.1f} ±{se:.1f} | {sum(g['rounds'] for g in gs) / len(gs):.1f} "
-              f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {uniq / n:.2f} | {idle / n:.1f} | {node / n:.1f} "
+              f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {idle / n:.1f} | {node / n:.1f} "
               f"| {income / seat_rounds:.1f} | {left / seat_rounds:.1f} | {insight_left / seat_rounds:.1f} |")
 
     print('\nDear powers (2 or more of one tag; 3 before r33), a game per seat of that board: used, and seat-rounds it '

@@ -99,8 +99,8 @@ pub fn add_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, card: &str, n: i6
     }
 }
 
-/// Building upkeep for seat `s` (in the economy's upkeep): upkeep
-/// conversions, then token cards gain their tokens.
+/// Building upkeep for seat `s` (in the economy's upkeep): project drains and
+/// upkeep conversions. No card gains tokens by itself (Matt's ruling 12).
 pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
     for p in passives(&w, g, seat) {
@@ -120,12 +120,6 @@ pub fn upkeep(g: &mut GameState, cx: &mut Cx, seat: usize) {
                 cx.add_resource(g, seat, *from, -amount);
                 cx.add_resource(g, seat, *to, *gain);
             }
-        }
-    }
-    for id in token_cards(&w, g, seat, None) {
-        let n = def(&w, &id).tokens.as_ref().map_or(0, |t| t.per_round);
-        if n > 0 {
-            add_tokens(g, cx, seat, &id, n);
         }
     }
 }

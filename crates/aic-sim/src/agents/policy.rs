@@ -251,11 +251,8 @@ impl Forced {
     }
 
     /// Whether the card restrictions (mono-tag, ignore-X, event-hoarder)
-    /// let this seat keep or play `d`. AI-unique cards (tier 0) are exempt.
+    /// let this seat keep or play `d`.
     pub fn allows(&self, d: &CardDef) -> bool {
-        if d.tier == 0 {
-            return true;
-        }
         let has = |t: &Option<Tag>| t.as_ref().is_some_and(|t| d.tags.contains(t));
         (self.only_tag.is_none() || has(&self.only_tag))
             && !has(&self.never_tag)

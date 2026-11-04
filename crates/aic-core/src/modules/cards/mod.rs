@@ -62,7 +62,7 @@ pub static DEF: ModuleDef = ModuleDef {
         build,
     }, VariantDef {
         name: "off",
-        summary: "No draft: players have only their AI's unique cards",
+        summary: "No draft: players have no cards",
         params: &[],
         phases: PHASES,
         rng: &["cards"],
@@ -190,38 +190,16 @@ fn build_off(b: &Build) -> Result<Box<dyn Module>, String> {
 impl Module for Cards {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
-        let starts: Vec<&str> = (0..g.seats.len())
-            .filter_map(|s| ai::board(&w, s).start.as_deref())
-            .collect();
         for tier in [1, 2] {
             let mut ids: Vec<Key> = self
                 .cards
                 .iter()
                 .map(|&i| &w.content.cards[i])
-                .filter(|c| c.tier == tier && !starts.contains(&c.id.as_str()))
+                .filter(|c| c.tier == tier)
                 .map(|c| Key::new(&c.id))
                 .collect();
             shuffle(&mut ids, cx.rng(g, "cards"));
             cx.set_pile(g, &deck(tier), ids);
-        }
-        for s in 0..g.seats.len() {
-            let b = ai::board(&w, s);
-            let selected =
-                |id: &str| w.content.card_index(id).is_some_and(|i| self.cards.contains(&i));
-            for id in &b.cards {
-                let taken = (0..s).any(|o| g.pile(&hand(o)).iter().any(|c| c == id));
-                if selected(id) && !taken {
-                    cx.move_card(g, id, "", &hand(s), false).unwrap();
-                }
-            }
-            // The board's starting building (021), one copy: a repeated AI's
-            // second seat has none.
-            if let Some(id) = &b.start {
-                let taken = (0..s).any(|o| g.pile(&built(o)).iter().any(|c| c == id));
-                if selected(id) && !taken {
-                    cx.move_card(g, id, "", &built(s), false).unwrap();
-                }
-            }
         }
     }
 
