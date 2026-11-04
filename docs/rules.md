@@ -15,7 +15,7 @@
 - [Tunables](#tunables): every baseline config parameter with its value, range and meaning (generated).
 - [Defaults and deviations](#defaults-and-deviations): the numbered readings chosen where the prompt or v0 ruleset left a gap.
 
-What the code implements, at rules revision 37 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 38 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](cards.md), priced in [card-pricing.md](card-pricing.md). The
@@ -239,7 +239,7 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
 
 | On | Adversary ambassador | Player ambassador |
 |---|---|---|
-| City | on a neutral city it stays, and the city is **dark**: no energy sale while it stands there (r37); on an aligned city that round's energy is diverted (no Discord at `ambassador_discord` 0, below) and the ambassador goes | waits; a corrupted city is liberated the moment `liberate_at` player ambassadors stand on it from seats with a node on or next to it (the fallback, below; checked after every action and automatic phase) |
+| City | it stays, and the city is **dark** while it stands there: a neutral city sells no energy (r37), an aligned city gives its owner none (r38; no Discord at `ambassador_discord` 0, below) | waits; a corrupted city is liberated the moment `liberate_at` player ambassadors stand on it from seats with a node on or next to it (the fallback, below; checked after every action and automatic phase) |
 | Research station | that round's cube is the adversary's (on any station, a neutral one too); `station_flip_at` (2) of them on a player's station let an effect flip it (§1) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays; 2 of them there, with no adversary ambassador, can free it (the *Free a station* action, §6: both used up) |
 | Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too | on a neutral factory the player can claim: the factory becomes the player's; otherwise each production step it sways `factory_unity` Unity and no corp troop is made, except that an adversary-owned factory still makes its adversary troop; it stays |
 | Node | if the node is alone on its hex (on a city, base, station or factory the ambassador is that piece's), each production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; it stays until removed | waits (defense, below) |
@@ -270,10 +270,9 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
   position is held only until the next arrival.
 - **Defense:** a player ambassador on a facility's hex is used up instead of the facility
   when it would be destroyed.
-- **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit; one
-  diverted by an adversary ambassador on an aligned city sways `ambassador_discord`
-  (0). A neutral city an adversary ambassador stands on is dark instead (§6): nothing is
-  diverted, the energy is lost.
+- **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit. A city
+  an adversary ambassador stands on is dark instead (§6): nothing is diverted, the energy
+  is lost; an aligned one sways `ambassador_discord` (0) per unit each round it is dark.
 
 Player ambassadors move only through cards and the standard actions (Move, Remove).
 
@@ -573,8 +572,10 @@ troop's next target (the nearest; the arrow is solid when the hit lands in the n
 and every troop on the board was there through an action phase except those that arrive
 between the action phase and the march (built in production, placed by an uncountered
 threat or by Armored Columns in the build): an adversary factory within two hexes of your
-station or factory is a known danger. Cards remove troops, each card naming how many,
-swaying `alignment.troop` toward Unity.
+station or factory is a known danger. Cards remove troops, each card naming how many.
+Removing a troop sways `alignment.troop` toward Unity: 0 since r38 (Matt: removing one already
+pays by stopping its harm, so the Sway counted it twice); a card meant to build Unity that way
+prints its Sway (none does).
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on adversary
 factories (and from some threats and projects), and every round, in the adversary's turn,
@@ -673,12 +674,12 @@ tip's card may fill a bucket again, which then tips too.
 | Toward | From | Amount |
 |---|---|---|
 | Unity | a player ambassador on a producing base / factory | `base_unity` 2 / `factory_unity` 1 |
-| Unity | removing an adversary troop | `alignment.troop` 1 |
+| Unity | removing an adversary troop | `alignment.troop` 0 |
 | Unity | Biomia's converter | 1 for 2 research cubes |
 | Unity | liberating a corrupted city (§2: a liberate card or the fallback) | `alignment.free_city` 5 |
 | Unity | removing a botnet | `alignment.botnet` 2 |
 | Unity | cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards | card text |
-| Discord | energy diverted (a corrupted city, an ambassador on a city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 of an ambassador's |
+| Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 a round of a dark aligned city's |
 | Discord | an adversary ambassador on a producing base | `base_discord` 1 |
 | Discord | a facility destroyed in war (not by an adversary troop) | `destruction_discord` 0 |
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
@@ -824,17 +825,18 @@ game ends it there.
 corp) energy cubes a round. An aligned city's go free to the player who aligned it (+
 `aligned_bonus`). A neutral city's can be bought for `city_energy_credits` credits by a
 player with a node on or next to it (players choose who, or nobody); otherwise they are
-lost. **An adversary ambassador on a neutral city stays, and the city is dark** (Matt, r37):
-none of its cubes are sold, every round it stands there, and they are lost as usual. One
-ambassador makes a city dark; `corrupt_at` of them corrupt it, so clearing ambassadors from
-the cities you buy from comes well before corruption. On an aligned city an adversary
-ambassador diverts that round's cubes, so none go to the player, and is removed (§3). A
-corrupted city's go to the adversary (Discord).
+lost. **An adversary ambassador on a city stays, and the city is dark** (Matt: neutral
+cities at r37, aligned ones at r38): every round it stands there, a neutral city sells none of
+its cubes and an aligned city gives its owner none, and they are lost. One ambassador makes a
+city dark; `corrupt_at` of them corrupt it, so clearing ambassadors from the cities you buy
+from, and above all from the cities you aligned, comes well before corruption. A corrupted
+city's go to the adversary (Discord).
 
 **Cities' energy, for new players.** A city you aligned gives you its energy every round.
 A neutral city next to your node sells you its energy. An adversary ambassador standing on
-a neutral city shuts that sale off until someone removes it, and more of them corrupt the
-city: clear them early. A Blackout stops a country's cities
+any city shuts it off: your aligned city gives you nothing, a neutral one sells nothing,
+every round until someone removes the ambassador, and more of them corrupt the city. If
+enemy ambassadors get that close to your city, work to stop them: clear them early. A Blackout stops a country's cities
 in the production after the threat executes.
 
 **Each resource is paid in its home domain (principle accepted):** energy for nodes and
@@ -1398,7 +1400,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a station makes a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
-| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy an adversary ambassador on an aligned city diverts |
+| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
 | `board.base_discord` | 1 | 0..10 | Discord an adversary ambassador on a producing base sways |
 | `board.base_unity` | 2 | 0..10 | Unity a player ambassador on a producing base sways |
 | `board.factory_unity` | 1 | 0..10 | Unity a player ambassador on a producing factory sways |
@@ -1458,7 +1460,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.tip_per_player` | 2 | 1..50 | the Unity bucket tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 2 | 1..50 | the Discord bucket tips when it holds this many Sway per player |
 | `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
-| `alignment.troop` | 1 | 0..10 | Sway toward Unity for removing an adversary troop |
+| `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
 | `alignment.botnet` | 2 | 0..10 | Sway toward Unity for removing a botnet |
 | `alignment.threat_discord` | 1 | 0..10 | Sway toward Discord when a threat executes uncountered |

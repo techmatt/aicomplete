@@ -1,0 +1,133 @@
+{
+  "name": "screen-098-split",
+  "note": "098: r38 split on screen-098's seeds (48 from 31900). On the r38 build: -old (r37's troop-removal prices) and -old-t1 (also alignment.troop 1: dark aligned cities and the agents' r38 values alone). screen-098-t0 runs on the r37 binary with alignment.troop 0 alone. Read with scripts/bench/paired.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-old",
+      "set": [
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]"
+      ]
+    },
+    {
+      "name": "bp-old-t1",
+      "set": [
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]",
+        "alignment.troop=1"
+      ]
+    },
+    {
+      "name": "br-old",
+      "set": [
+        "ai.boards=0,2",
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]"
+      ]
+    },
+    {
+      "name": "br-old-t1",
+      "set": [
+        "ai.boards=0,2",
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]",
+        "alignment.troop=1"
+      ]
+    },
+    {
+      "name": "pr-old",
+      "set": [
+        "ai.boards=1,2",
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]"
+      ]
+    },
+    {
+      "name": "pr-old-t1",
+      "set": [
+        "ai.boards=1,2",
+        "cards.logic_bomb.cost=11",
+        "cards.signal_hijack.cost=5",
+        "cards.ceasefire_monitors.cost=10",
+        "cards.kill_team_roster.cost=6",
+        "cards.bounty_board.cost=4",
+        "cards.interceptor_battery.cost=3",
+        "cards.breach_and_clear.cost=10",
+        "cards.agency_directorate.cost=14",
+        "cards.kinetic_interdiction.cost=16",
+        "cards.total_containment.cost=13",
+        "cards.force_protection_order.cost=5",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.interceptor_battery.ability.cost=[[\"energy\",2]]",
+        "alignment.troop=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 31900,
+  "records": 0
+}

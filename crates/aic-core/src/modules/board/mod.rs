@@ -53,7 +53,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a station makes a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
-            ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy an adversary ambassador on an aligned city diverts"),
+            ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens"),
             ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
             ParamSpec::int("base_unity", 0, 10, "Unity a player ambassador on a producing base sways"),
             ParamSpec::int("factory_unity", 0, 10, "Unity a player ambassador on a producing factory sways"),

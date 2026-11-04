@@ -110,7 +110,7 @@
         "tip_per_player": 2,
         "discord_tip_per_player": 2,
         "momentum_every": 0,
-        "troop": 1,
+        "troop": 0,
         "free_city": 5,
         "botnet": 2,
         "threat_discord": 1,

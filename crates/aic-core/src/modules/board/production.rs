@@ -214,9 +214,8 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
 }
 
 /// Production step 3: cities make energy, stations research cubes; an
-/// adversary ambassador on the piece diverts its output and is removed, and
-/// diverted energy sways toward Discord (r37: on a neutral city it stays and
-/// the city sells nothing). Then an adversary ambassador on a
+/// adversary ambassador on a station takes its output and is removed; on a
+/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then an adversary ambassador on a
 /// lone node drains 1 of its owner's next insight into adversary compute,
 /// and last full megaprojects complete.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
@@ -251,12 +250,15 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             // no sale, and the unbought energy is lost as usual.
             cx.tally(g, "board.city_dark", 1);
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 {
-            adversary::remove(g, cx, h, 1);
+            // r38 (Matt): on an aligned city too the ambassador stays and the city is
+            // dark: its owner gets no energy until a player removes it.
             alignment::sway(g, cx, Side::Discord, energy * w.int("board.ambassador_discord"));
-            cx.tally(g, "board.energy_diverted", energy);
+            cx.tally(g, "board.city_dark_aligned", 1);
         } else if let Some(s) = cube_owner(g, h) {
             // An aligned city's cube goes free to the player who aligned it.
-            cx.add_resource(g, s, Resource::Energy, energy + w.int("board.aligned_bonus"));
+            let n = energy + w.int("board.aligned_bonus");
+            cx.add_resource(g, s, Resource::Energy, n);
+            cx.tally(g, "board.city_energy_aligned", n);
         } else {
             // A neutral city's cube: a player with a node next to it may buy
             // it (players choose who), otherwise it is lost (021).

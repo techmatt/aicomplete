@@ -517,9 +517,9 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "energy diverted (a corrupted city, an ambassador on a city)".to_string(),
+            "energy diverted (a corrupted city) or darkened (an ambassador on an aligned city)".to_string(),
             format!(
-                "{} per unit of a corrupted city's, {} of an ambassador's",
+                "{} per unit of a corrupted city's, {} a round of a dark aligned city's",
                 t("board.divert_discord"),
                 t("board.ambassador_discord")
             ),

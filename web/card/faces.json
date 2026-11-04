@@ -120,7 +120,7 @@
  "threat_forecast_engine": {"top":[],"top_text":"","effect":[[{"adversary":["clock"]}],["2","harden","node"]],"text":"Delay 1 threat one round. Shield 2 of your nodes."},
  "agency_field_station": {"top":[["→","+1","agents"],["OR","→","credits","/","agents"]],"top_text":"Action: add 1 Agent here, OR get 1 credit per Agent here.","effect":[],"text":""},
  "hardened_bunker_complex": {"top":[[{"income":["energy"]}],["ACT","harden","−1","chips"]],"top_text":"Each round, 1 energy. Effect: you gain the Harden action, paid 1 chip.","effect":[],"text":""},
- "interceptor_battery": {"top":[["2","energy","→",{"adversary":["−1","troop","country"]}]],"top_text":"Action: pay 2 energy, remove 1 troop in one country.","effect":[],"text":""},
+ "interceptor_battery": {"top":[["energy","→",{"adversary":["−1","troop","country"]}]],"top_text":"Action: pay 1 energy, remove 1 troop in one country.","effect":[],"text":""},
  "security_contractor_hq": {"top":[[{"income":["credits","/","#security"]}]],"top_text":"Each round, 1 credit per Security tag on your cards.","effect":[],"text":""},
  "breach_and_clear": {"top":[],"top_text":"","effect":[[{"adversary":["−3","troop","country"]}]],"text":"Remove 3 troops in one country."},
  "hardpoint_lockdown": {"top":[],"top_text":"","effect":[["shelter","country"],[{"adversary":["ambassador","country","clock"]}]],"text":"Shelter one country this round. In one country, no arrivals land next round."},

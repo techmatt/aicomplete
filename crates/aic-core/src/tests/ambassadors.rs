@@ -148,20 +148,21 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     run(&rules, &mut g);
     assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (1, 0));
 
-    // So does an aligned city's with an adversary ambassador on it (which goes).
+    // r38: on an aligned city the ambassador stays too and the city is dark: no
+    // energy to its owner, and `ambassador_discord` (1 here) a unit, every round.
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 1);
     put(&mut g, city, cube(0), 1);
     put(&mut g, open, node(0), 1);
-    run(&rules, &mut g);
-    assert_eq!(
-        (
-            discord(&g),
-            res(&g, 0, Resource::Energy),
-            g.tokens(city, ADV_AMBASSADOR)
-        ),
-        (1, 0, 0)
-    );
+    for round in 1..=2 {
+        run(&rules, &mut g);
+        assert_eq!(
+            (discord(&g), res(&g, 0, Resource::Energy), g.tokens(city, ADV_AMBASSADOR)),
+            (round, 0, 1)
+        );
+    }
+    assert_eq!(g.stats.counters["board.city_dark_aligned"], 2);
+    assert!(!g.stats.counters.contains_key("board.city_dark"));
 
     // r37: on a neutral city the ambassador stays and the city is dark: no sale, no
     // Discord, every round it stands there.

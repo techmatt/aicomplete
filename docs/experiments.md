@@ -132,13 +132,15 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `screen-096.json` (the three pairs at d2, 144 games, about 1 min on 3 threads), `-d0`
-  (greedy at d0), `-terms` (an agent term off, per cell), `-fresh` / `-d0-fresh` (31800), `-cards36`; read with `scripts/cards/r37_read.py`. `screen-093*.json`
-  hold r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
+- **Current recipe:** `screen-098.json` (the three pairs at d2, 144 games, about 40 s on 6 threads), `-d0`
+  (greedy at d0), `-terms` (an agent term off, per cell), `-split` / `-t0` (each ruling alone, `-d0` twins); read with
+  `scripts/cards/r38_read.py`. `screen-096*.json` hold r37's cells, `screen-093*.json` r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision).
 - **A before/after read is paired** (Matt, 093): run the old binary, with its configs from `git archive <main> configs
   | tar -x`, on the same seeds. Build and copy the old binary before the first edit (096 did, at a minute), or build
-  it from a `git archive` with its own `CARGO_TARGET_DIR`.
+  it from a `git archive` with its own `CARGO_TARGET_DIR`. Run it from its own folder, with the spec copied there:
+  specs and their configs resolve against the working directory. A counter the read needs that the old binary
+  lacks: patch in only the tally, build that as the old binary (098's `board.city_energy_aligned`).
 - **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
   first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
   `corps.<name>.project.<path>`) and need no build; a rule or map what-if does.
@@ -156,7 +158,7 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump: r37: 31700 and 31800 the r37 reads (`screen-096*.json`). Next free: 31900.
+seeds and reset at each bump: r38: 31900 and 31948 the r38 reads (`screen-098*.json`). Next free: 31996 (32099 the last given to 098).
 
 ## Reading prices
 

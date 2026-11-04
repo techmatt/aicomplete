@@ -25,6 +25,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
     seat whose board spends cubes on a power (the Researcher's Peer Review); `converter_city` 2
     (r37) for a seat holding cubes with a node in a city of a completed megaproject's country,
     the converter's gate, so agents hold a city node there;
+  - a city an adversary ambassador darkens: `city_dark` 4 (r37) for a neutral one in some seat's
+    reach (its sale lost), `city_dark_aligned` 6 (r38) for an aligned one (its owner's free energy lost);
   - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
   - credits beyond `w.credit_cap` (12) a seat are worth `w.credit_idle` (0.15).
 

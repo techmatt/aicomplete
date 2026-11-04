@@ -40,6 +40,9 @@ Current:
   lacked the tags; then tags by round: each seat's most-held tag on its cards in play (`ai.tag_top.<seat>`),
   mean and share at 3 or more. A variant's seats follow its `ai.boards=` override. Reads r32 outputs too (no tag
   table). Seconds.
+- `cards/r38_read.py DIR...` (098): per cell, win % and routes (purge / Unity deck), losses by reason, Unity
+  Sway, Unity and Discord tips, troops removed; then dark city-rounds, neutral and aligned (`board.city_dark`,
+  `board.city_dark_aligned`), energy from aligned cities and bought from neutral ones, nodes placed and lost, corruptions.
 - `cards/r37_read.py DIR...` (096): per cell of each DIR, two Markdown tables: win %, converter uses, cube-holding
   seat-rounds a converter stood idle for want of a city node, Popular Uprising plays and liberations, Continental
   Supergrid plays; then dark neutral city-rounds (`board.city_dark`), energy bought, end energy, nodes placed, corruptions.
@@ -105,7 +108,7 @@ Current:
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per
   decision on the same seeds, for telling longer games from a slower agent. 6 games is
   too few across rules revisions; `--games 16` or more. Bad arguments stop it before anything runs: each root is
-  an `.exe` or a directory holding `aic-sim.exe`.
+  an `.exe` or a directory holding `aic-sim.exe` and the `configs/` it plays (a copied binary needs them beside it).
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE,

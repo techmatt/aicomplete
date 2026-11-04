@@ -122,6 +122,9 @@ pub struct Weights {
     /// r37: a neutral city in some seat's reach that an adversary ambassador
     /// darkens (no energy sale while it stands there).
     pub city_dark: f64,
+    /// r38: an aligned city an adversary ambassador darkens (its owner gets no
+    /// energy while it stands there).
+    pub city_dark_aligned: f64,
     /// r37: a seat holding research cubes with a node in a city of a country
     /// whose megaproject is done (the converter's gate), once per such country.
     pub converter_city: f64,
@@ -396,6 +399,9 @@ impl Default for Weights {
             // r37: a round's sale is near break-even at the table (5 credits for
             // energy worth 4.5), but energy is scarce: about one energy's worth.
             city_dark: 4.0,
+            // r38: the owner's free energy each round (about 4.5 credits), lost
+            // for sure, where a neutral sale is near break-even: half again.
+            city_dark_aligned: 6.0,
             research_cube_power: 1.2,
             shelter_read: 1.0,
             shelter_node: 12.0,
@@ -945,6 +951,10 @@ impl Eval {
                 } else {
                     if owned {
                         v += w.aligned;
+                        if adv > 0 {
+                            // r38: an adversary ambassador darkens an aligned city too.
+                            v -= w.city_dark_aligned;
+                        }
                     } else if adv > 0 && (0..seats).any(|s| near[s] >> h & 1 != 0) {
                         // r37: an adversary ambassador darkens a neutral city: no sale
                         // to the seats that could buy its energy, until it is cleared.

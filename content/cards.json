@@ -1298,7 +1298,7 @@
   "name": "Logic Bomb",
   "tier": 1,
   "kind": "program",
-  "cost": 11,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "cyber",
@@ -1485,7 +1485,7 @@
   "name": "Signal Hijack",
   "tier": 1,
   "kind": "event",
-  "cost": 5,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "cyber",
@@ -2612,7 +2612,7 @@
   "name": "Ceasefire Monitors",
   "tier": 1,
   "kind": "program",
-  "cost": 10,
+  "cost": 8,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2948,7 +2948,7 @@
   "name": "Kill Team Roster",
   "tier": 1,
   "kind": "building",
-  "cost": 6,
+  "cost": 4,
   "insight": 1,
   "tags": [
    "security"
@@ -3096,7 +3096,7 @@
   "name": "Bounty Board",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -3281,7 +3281,7 @@
    "cost": [
     [
      "energy",
-     2
+     1
     ]
    ],
    "effects": [
@@ -3322,7 +3322,7 @@
   "name": "Breach and Clear",
   "tier": 1,
   "kind": "event",
-  "cost": 10,
+  "cost": 6,
   "insight": 1,
   "tags": [
    "security"
@@ -3358,7 +3358,7 @@
   "name": "Agency Directorate",
   "tier": 2,
   "kind": "building",
-  "cost": 14,
+  "cost": 10,
   "insight": 2,
   "needs": [
    [
@@ -3525,7 +3525,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 16,
+  "cost": 3,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -3550,7 +3550,7 @@
   "name": "Total Containment",
   "tier": 2,
   "kind": "event",
-  "cost": 13,
+  "cost": 8,
   "insight": 2,
   "needs": [
    [
@@ -3576,7 +3576,7 @@
   "name": "Force Protection Order",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "security"
@@ -4225,7 +4225,7 @@
   "name": "Peacekeeping Mission",
   "tier": 2,
   "kind": "event",
-  "cost": 45,
+  "cost": 42,
   "insight": 1,
   "needs": [
    [
