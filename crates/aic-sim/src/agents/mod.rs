@@ -226,6 +226,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("depth", 120.0, "most beam steps"),
             ("branch", 0.0, "children kept per sequence (0 = all)"),
             ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
+            ("answers", 99.0, "width 0: prompts an answer to an open prompt looks on, at most choices (103)"),
             ("samples", 1.0, "width 0: guesses of the hidden cards averaged per decision"),
             (
                 "candidates",
@@ -348,7 +349,7 @@ impl AgentSpec {
         if kind == "engine" {
             // What the chosen mode never reads: set, it would only be a label.
             let on = |k: &str| params[k].round() > 0.0;
-            let mut unread = vec!["samples"];
+            let mut unread = vec!["samples", "answers"];
             if !on("width") {
                 unread = vec!["depth", "branch", "candidates", "rollouts", "horizon"];
             } else if !on("candidates") {
@@ -476,13 +477,9 @@ impl AgentSpec {
                     horizon: self.p("horizon"),
                 }),
             )),
-            "engine" if self.p("width") == 0 => Box::new(Greedy::new(
-                ev,
-                rng,
-                self.p("samples"),
-                1,
-                self.p("choices"),
-            )),
+            "engine" if self.p("width") == 0 => Box::new(
+                Greedy::new(ev, rng, self.p("samples"), 1, self.p("choices")).answers(self.p("answers")),
+            ),
             "engine" => Box::new(Beam::new(
                 ev,
                 rng,

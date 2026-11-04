@@ -96,8 +96,8 @@ fn discard(tier: u8) -> String {
     format!("threats.discard.{tier}")
 }
 
-fn on(country: usize) -> String {
-    format!("threats.on.{country}")
+fn on(country: usize) -> KeyBuf {
+    KeyBuf::new("threats.on.").num(country)
 }
 
 /// Prefix of every payment toward `threat` (by any seat, in any resource).
@@ -171,8 +171,8 @@ pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
     out
 }
 
-fn pile_of(scope: Option<usize>) -> String {
-    scope.map_or(ROW.to_string(), on)
+fn pile_of(scope: Option<usize>) -> KeyBuf {
+    scope.map_or(KeyBuf::new(ROW), on)
 }
 
 /// An empty `tier` deck is refilled from its shuffled discard (070: extra
@@ -345,14 +345,18 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
 /// a delayed threat isn't cut twice and an extra deal is cut too.
 fn standing(w: &World, g: &GameState, threat: &str) -> i64 {
     let source = source_of(w, threat);
-    (0..g.seats.len())
-        .filter(|&s| g.pile(&on(home_country(w, s))).iter().any(|t| t == threat))
-        .flat_map(|s| cards::passives(w, g, s))
-        .map(|p| match p {
-            Op::AutoCounter { source: x, amount } if *x == source => *amount,
-            _ => 0,
-        })
-        .sum()
+    let mut n = 0;
+    for s in (0..g.seats.len()).filter(|&s| g.pile(&on(home_country(w, s))).iter().any(|t| t == threat)) {
+        // A walk, not a list: the heuristic asks this of every threat a position (103).
+        cards::each_passive(w, g, s, |p| {
+            if let Op::AutoCounter { source: x, amount } = p {
+                if *x == source {
+                    n += *amount;
+                }
+            }
+        });
+    }
+    n
 }
 
 /// Jam Signals: `threat` needs `n` less of each resource.

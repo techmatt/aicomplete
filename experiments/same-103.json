@@ -1,0 +1,37 @@
+{
+  "name": "same-103",
+  "note": "103: the identical-games check for each pure speed-up: the strategist, engine, planner and planner with strategy rollouts on each pair, 16 seeds from 1000, d2, before and after; compare with bench/same_results.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "engine",
+    "planner",
+    "planner:strategy=1"
+  ],
+  "games": 16,
+  "first_seed": 1000,
+  "records": 0
+}

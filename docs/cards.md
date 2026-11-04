@@ -178,7 +178,7 @@ play; keeping a drafted card costs 1 (tier 1) or 3 (tier 2) more.
 | Orbital Embassy | 2 | building | 17 cr; 1 am; needs 3 diplomacy; over diplomacy | 2 | power | Each round, 2 ambassadors and 3 credits. Pay 1 antimatter. Gain 2 ambassadors. |
 | Planetary Assembly | 2 | building | 12 cr; 1 ch; needs 2 diplomacy; over diplomacy | 2 | - | Action: add 3 Followers here, OR pay 3 Followers, sway 5 toward Unity. Pay 1 chip. |
 | Planetary Referendum | 2 | event | 11 cr | 2 | power | Sway 6 toward Unity. |
-| Popular Uprising | 2 | building | 36 cr | 1 | - | Action: pay 6 Followers, liberate a corrupted city in reach, then discard it. Add 6 Followers here. |
+| Popular Uprising | 2 | building | 36 cr | 1 | - | Action: pay 6 Followers, liberate a city in reach, discard it and what it's built over. Add 6 Followers here. |
 
 ## Security (27)
 

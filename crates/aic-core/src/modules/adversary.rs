@@ -981,11 +981,7 @@ pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
 /// rest), then distance.
 fn destinations(w: &World, g: &GameState, from: usize, range: i32) -> Vec<usize> {
     let shields: Vec<usize> = (0..g.seats.len())
-        .filter(|&s| {
-            cards::passives(w, g, s)
-                .iter()
-                .any(|p| matches!(p, Op::SpreadShield))
-        })
+        .filter(|&s| cards::has_passive(w, g, s, |p| matches!(p, Op::SpreadShield)))
         .collect();
     let mut best: Option<(u8, i32)> = None;
     let mut out = Vec::new();

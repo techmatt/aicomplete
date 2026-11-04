@@ -40,6 +40,16 @@ pub struct Rules {
     params: FastMap<ParamValue>,
     /// Each configured module's variant, by module id.
     variants: FastMap<String>,
+    /// `ai.boards`, read once (see [`World::ai_boards`]).
+    ai_boards: Vec<i64>,
+}
+
+/// The `ai.boards` parameter, or nothing without the `ai` module.
+fn ai_boards(params: &FastMap<ParamValue>) -> Vec<i64> {
+    match params.get("ai.boards") {
+        Some(ParamValue::List(v)) => v.clone(),
+        _ => Vec::new(),
+    }
 }
 
 /// One phase of the round: one module's phase, or several modules'
@@ -212,11 +222,13 @@ impl Rules {
                 }
             }
         }
+        let ai_boards = ai_boards(&params);
         let world = World {
             map: &map,
             content,
             params: &params,
             variants: &variants,
+            ai_boards: &ai_boards,
         };
         for ((def, variant, cards), mc) in to_build.into_iter().zip(&resolved.modules) {
             let b = Build {
@@ -253,6 +265,7 @@ impl Rules {
             modules: instances,
             params,
             variants,
+            ai_boards,
         })
     }
 
@@ -262,6 +275,7 @@ impl Rules {
             content: self.content,
             params: &self.params,
             variants: &self.variants,
+            ai_boards: &self.ai_boards,
         }
     }
 

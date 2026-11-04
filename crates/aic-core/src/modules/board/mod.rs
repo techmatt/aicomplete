@@ -104,8 +104,8 @@ pub const FLAGS: [RoundFlag; 5] =
     [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo, RoundFlag::Cordon];
 
 /// The var key of a country flag.
-pub fn flag(f: RoundFlag, country: usize) -> String {
-    format!("board.{}.{country}", f.name())
+pub fn flag(f: RoundFlag, country: usize) -> KeyBuf {
+    KeyBuf::new("board.").text(f.name()).text(".").num(country)
 }
 
 /// A country flag's count: above 0 while it is up.

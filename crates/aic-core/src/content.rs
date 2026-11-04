@@ -56,6 +56,12 @@ pub struct Content {
     /// (rules and agents look things up by id constantly). Built by `parse`.
     #[serde(skip)]
     card_ix: FastMap<usize>,
+    /// A card id's index by where its interned [`Key`](crate::key::Key) lives
+    /// (address and length): piles hold keys, and hashing the address beats
+    /// hashing and comparing the text (103). Any other `&str` misses and falls
+    /// to `card_ix`.
+    #[serde(skip)]
+    card_at: AddressMap,
     #[serde(skip)]
     threat_ix: FastMap<usize>,
     #[serde(skip)]
@@ -69,6 +75,14 @@ pub struct Content {
 /// Each id's first place in a list.
 fn index_of<T>(list: &[T], id: impl Fn(&T) -> &str) -> FastMap<usize> {
     list.iter().enumerate().rev().map(|(i, x)| (id(x).to_string(), i)).collect()
+}
+
+type AddressMap = std::collections::HashMap<(usize, usize), usize, std::hash::BuildHasherDefault<crate::key::Fnv>>;
+
+/// [`index_of`] by each id's interned key's address and length.
+fn index_at<T>(list: &[T], id: impl Fn(&T) -> &str) -> AddressMap {
+    let at = |s: &'static str| (s.as_ptr() as usize, s.len());
+    list.iter().enumerate().rev().map(|(i, x)| (at(crate::key::Key::new(id(x)).as_str()), i)).collect()
 }
 
 // ---------- map ----------
@@ -552,12 +566,14 @@ impl Content {
             alignment: p("alignment.json", alignment)?,
             projects: p("projects.json", projects)?,
             card_ix: FastMap::default(),
+            card_at: AddressMap::default(),
             threat_ix: FastMap::default(),
             project_ix: FastMap::default(),
             alignment_ix: FastMap::default(),
             adversary_ix: FastMap::default(),
         };
         c.card_ix = index_of(&c.cards, |x| &x.id);
+        c.card_at = index_at(&c.cards, |x| &x.id);
         c.threat_ix = index_of(&c.threats, |x| &x.id);
         c.project_ix = index_of(&c.projects, |x| &x.id);
         c.alignment_ix = index_of(&c.alignment, |x| &x.id);
@@ -692,7 +708,10 @@ impl Content {
     }
 
     pub fn card_index(&self, id: &str) -> Option<usize> {
-        self.card_ix.get(id).copied()
+        match self.card_at.get(&(id.as_ptr() as usize, id.len())) {
+            Some(&i) => Some(i),
+            None => self.card_ix.get(id).copied(),
+        }
     }
 
     pub fn threat_index(&self, id: &str) -> Option<usize> {

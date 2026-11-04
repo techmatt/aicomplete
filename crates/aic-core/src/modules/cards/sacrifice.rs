@@ -9,34 +9,40 @@ use super::*;
 pub struct SacrificeSource {
     pub label: String,
     /// The pile the cards leave, and the cards (a stack: all of it).
-    pub cards: Vec<(String, Key)>,
+    pub cards: Vec<(KeyBuf, Key)>,
     pub tags: Vec<Tag>,
 }
 
 /// What seat `s` could sacrifice now, in a fixed order: programs, stacks,
 /// then hand cards a `tags_from_hand` building counts.
 pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<SacrificeSource> {
+    // Labels joined by hand and piles named on the stack: legality checks build
+    // these for every power on offer (103).
+    let label = |what: &str, id: &str| {
+        let mut s = String::with_capacity(what.len() + 1 + id.len());
+        s.push_str(what);
+        s.push(' ');
+        s.push_str(id);
+        s
+    };
     let mut out = Vec::new();
     for id in g.pile(&played(seat)) {
         out.push(SacrificeSource {
-            label: format!("program {id}"),
-            cards: vec![(played(seat).to_string(), *id)],
+            label: label("program", id),
+            cards: vec![(played(seat), *id)],
             tags: def(w, id).tags.clone(),
         });
     }
     for top in g.pile(&built(seat)) {
-        let mut cards: Vec<(String, Key)> = g
-            .pile(&under(seat, top))
-            .iter()
-            .map(|c| (under(seat, top).to_string(), *c))
-            .collect();
-        cards.push((built(seat).to_string(), *top));
+        let below = under(seat, top);
+        let mut cards: Vec<(KeyBuf, Key)> = g.pile(&below).iter().map(|c| (below, *c)).collect();
+        cards.push((built(seat), *top));
         let tags = cards
             .iter()
             .flat_map(|(_, c)| def(w, c).tags.iter().copied())
             .collect();
         out.push(SacrificeSource {
-            label: format!("stack {top}"),
+            label: label("stack", top),
             cards,
             tags,
         });
@@ -58,8 +64,8 @@ pub fn sources(w: &World, g: &GameState, seat: usize) -> Vec<SacrificeSource> {
                 .collect();
             if !tags.is_empty() {
                 out.push(SacrificeSource {
-                    label: format!("hand {id}"),
-                    cards: vec![(hand(seat).to_string(), *id)],
+                    label: label("hand", id),
+                    cards: vec![(hand(seat), *id)],
                     tags,
                 });
             }

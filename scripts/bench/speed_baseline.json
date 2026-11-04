@@ -6,8 +6,8 @@
   "engine": "6f5d51630a13",
   "planner": "ac62a7bb5b49"
  },
- "random": 6.0,
- "greedy": 268.9,
- "engine": 526.5,
- "planner": 7250.2
+ "random": 4.9,
+ "greedy": 211.0,
+ "engine": 387.7,
+ "planner": 5500.0
 }

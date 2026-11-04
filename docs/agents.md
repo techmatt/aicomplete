@@ -41,7 +41,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `greedy` | One action at a time: each scored by the heuristic after it, its own choices resolved best-first. A pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2 |
 | `beam` | Beam search over the rest of the round's action sequences, scored at the start of the next round; plans once, follows the plan while the table matches, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each continued by `rollouts` greedy playouts for `horizon` more rounds on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
-| `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × its weight × the rounds left (the adversary deck's clock, discounted by danger); cards, buildings, tokens and supply ambassadors by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0 makes it a beam, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2; weights: `Weights::engine` in `eval.rs` |
+| `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × its weight × the rounds left (the adversary deck's clock, discounted by danger); cards, buildings, tokens and supply ambassadors by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0 makes it a beam, `candidates` > 0 adds rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins, 103); weights: `Weights::engine` in `eval.rs` |
 | `strategist` | `engine:strategy=1`: greedy with strategy, no search. **The screens' judge** (*The tiers*). | the engine's |
 | `planner` | The engine, with a shortlist of alternatives in the action phase, each rolled out with the engine as policy `horizon` rounds on; the best line by the heuristic is taken. A line runs on the real state but the Alignment deal (**full information**, Matt, 2026-10-29), valued over `deals` guesses of the deal; decisions inside a line are scored on a guess. The followed line is reused. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0 and the rest in `agents/planner.rs`. `sweep[:...]` is `planner:deals=1,lead=0`. |
 
@@ -177,7 +177,7 @@ Rules a player could say aloud where a one-step search misses a card's point (Ma
 | Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r40 |
 
 The strategist judges (Matt, 2026-11-03: while within about 5 points of `sweep` a pair on the
-same seeds) at about an eleventh of its time a game; `sweep` is the spot check. A strategy
+same seeds) at about a tenth of its time a game; `sweep` is the spot check. A strategy
 pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them, and
 `aic-sim strategies CONFIG` prints what each seat chooses. Tables:
 `experiments/results/102_agents_and_r40/r40.md`.

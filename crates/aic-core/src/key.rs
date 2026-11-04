@@ -98,6 +98,7 @@ impl Key {
         Key(intern(s))
     }
 
+    #[inline]
     pub fn as_str(&self) -> &'static str {
         self.0
     }
@@ -105,18 +106,21 @@ impl Key {
 
 impl Deref for Key {
     type Target = str;
+    #[inline]
     fn deref(&self) -> &str {
         self.0
     }
 }
 
 impl Borrow<str> for Key {
+    #[inline]
     fn borrow(&self) -> &str {
         self.0
     }
 }
 
 impl PartialEq for Key {
+    #[inline]
     fn eq(&self, other: &Key) -> bool {
         std::ptr::eq(self.0, other.0)
     }
@@ -125,8 +129,13 @@ impl PartialEq for Key {
 impl Eq for Key {}
 
 impl Ord for Key {
+    #[inline]
     fn cmp(&self, other: &Key) -> Ordering {
-        self.0.cmp(other.0)
+        if std::ptr::eq(self.0, other.0) {
+            Ordering::Equal
+        } else {
+            cmp_bytes(self.0.as_bytes(), other.0.as_bytes())
+        }
     }
 }
 
@@ -248,19 +257,23 @@ impl KeyBuf {
         self
     }
 
-    /// Adds a number in decimal.
-    pub fn num(self, mut n: usize) -> KeyBuf {
-        let mut digits = [0u8; 20];
-        let mut i = digits.len();
-        loop {
-            i -= 1;
-            digits[i] = b'0' + (n % 10) as u8;
-            n /= 10;
-            if n == 0 {
-                break;
-            }
+    /// Adds a number in decimal, its digits written in place (103: through a
+    /// `str` check and a copy, a seat's or a hex's number was 4% of a search).
+    pub fn num(mut self, n: usize) -> KeyBuf {
+        let mut width = 1;
+        let mut rest = n / 10;
+        while rest > 0 {
+            width += 1;
+            rest /= 10;
         }
-        self.text(std::str::from_utf8(&digits[i..]).expect("digits are text"))
+        let at = self.len as usize;
+        let mut rest = n;
+        for d in self.buf[at..at + width].iter_mut().rev() {
+            *d = b'0' + (rest % 10) as u8;
+            rest /= 10;
+        }
+        self.len = (at + width) as u8;
+        self
     }
 
     pub fn as_str(&self) -> &str {
@@ -273,6 +286,12 @@ impl Deref for KeyBuf {
     type Target = str;
     fn deref(&self) -> &str {
         self.as_str()
+    }
+}
+
+impl fmt::Debug for KeyBuf {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self.as_str(), f)
     }
 }
 
@@ -311,12 +330,62 @@ impl<K, V> Default for FlatMap<K, V> {
     }
 }
 
-impl<K: Ord + Copy, V> FlatMap<K, V> {
-    fn find<Q: Ord + ?Sized>(&self, q: &Q) -> Result<usize, usize>
+/// How a [`FlatMap`]'s search compares a key with what it looks for: always as
+/// `Ord` does, faster for names. `str`'s own compare calls the C runtime's
+/// `memcmp`, and with a map of a few hundred names and lookups by the million
+/// that call alone was a tenth of the strategist's time (103).
+pub trait Probe: Ord {
+    fn probe(&self, q: &Self) -> Ordering {
+        self.cmp(q)
+    }
+}
+
+impl Probe for str {
+    #[inline]
+    fn probe(&self, q: &str) -> Ordering {
+        cmp_bytes(self.as_bytes(), q.as_bytes())
+    }
+}
+
+impl Probe for Key {
+    #[inline]
+    fn probe(&self, q: &Key) -> Ordering {
+        self.cmp(q)
+    }
+}
+
+/// `a.cmp(b)` for byte strings, eight bytes a step and inline: names are short
+/// and share prefixes (`"cards.picked.0"`), where a call to `memcmp` costs more
+/// than the compare.
+#[inline]
+pub fn cmp_bytes(a: &[u8], b: &[u8]) -> Ordering {
+    let n = a.len().min(b.len());
+    let (mut x, mut y) = (&a[..n], &b[..n]);
+    while x.len() >= 8 {
+        let (p, xs) = x.split_at(8);
+        let (q, ys) = y.split_at(8);
+        let p = u64::from_be_bytes(p.try_into().expect("eight bytes"));
+        let q = u64::from_be_bytes(q.try_into().expect("eight bytes"));
+        if p != q {
+            return p.cmp(&q);
+        }
+        (x, y) = (xs, ys);
+    }
+    for (p, q) in x.iter().zip(y) {
+        if p != q {
+            return p.cmp(q);
+        }
+    }
+    a.len().cmp(&b.len())
+}
+
+impl<K: Probe + Copy, V> FlatMap<K, V> {
+    #[inline]
+    fn find<Q: Probe + ?Sized>(&self, q: &Q) -> Result<usize, usize>
     where
         K: Borrow<Q>,
     {
-        self.0.binary_search_by(|(k, _)| k.borrow().cmp(q))
+        self.0.binary_search_by(|(k, _)| k.borrow().probe(q))
     }
 
     pub fn len(&self) -> usize {
@@ -331,21 +400,21 @@ impl<K: Ord + Copy, V> FlatMap<K, V> {
         self.0.clear()
     }
 
-    pub fn get<Q: Ord + ?Sized>(&self, q: &Q) -> Option<&V>
+    pub fn get<Q: Probe + ?Sized>(&self, q: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
     {
         self.find(q).ok().map(|i| &self.0[i].1)
     }
 
-    pub fn get_mut<Q: Ord + ?Sized>(&mut self, q: &Q) -> Option<&mut V>
+    pub fn get_mut<Q: Probe + ?Sized>(&mut self, q: &Q) -> Option<&mut V>
     where
         K: Borrow<Q>,
     {
         self.find(q).ok().map(|i| &mut self.0[i].1)
     }
 
-    pub fn contains_key<Q: Ord + ?Sized>(&self, q: &Q) -> bool
+    pub fn contains_key<Q: Probe + ?Sized>(&self, q: &Q) -> bool
     where
         K: Borrow<Q>,
     {
@@ -362,7 +431,7 @@ impl<K: Ord + Copy, V> FlatMap<K, V> {
         }
     }
 
-    pub fn remove<Q: Ord + ?Sized>(&mut self, q: &Q) -> Option<V>
+    pub fn remove<Q: Probe + ?Sized>(&mut self, q: &Q) -> Option<V>
     where
         K: Borrow<Q>,
     {
@@ -396,12 +465,38 @@ impl<K: Ord + Copy, V> FlatMap<K, V> {
     }
 
     /// The entries from `q` on, as `range(q..)`.
-    pub fn from_key<Q: Ord + ?Sized>(&self, q: &Q) -> impl Iterator<Item = (&K, &V)>
+    pub fn from_key<Q: Probe + ?Sized>(&self, q: &Q) -> impl Iterator<Item = (&K, &V)>
     where
         K: Borrow<Q>,
     {
         let at = self.find(q).unwrap_or_else(|i| i);
         self.0[at..].iter().map(|(k, v)| (k, v))
+    }
+}
+
+impl<V> FlatMap<Key, V> {
+    /// [`FlatMap::entry`] by name, interning it only for a new entry: the
+    /// interner's thread-local lookup was most of a counter's update (103).
+    #[inline]
+    pub fn entry_str(&mut self, k: &str) -> Entry<'_, Key, V> {
+        let at = self.find(k);
+        let key = match at {
+            Ok(i) => self.0[i].0,
+            Err(_) => Key::new(k),
+        };
+        Entry { map: self, key, at }
+    }
+
+    /// [`FlatMap::insert`] by name, interning it only for a new entry.
+    #[inline]
+    pub fn insert_str(&mut self, k: &str, v: V) -> Option<V> {
+        match self.find(k) {
+            Ok(i) => Some(std::mem::replace(&mut self.0[i].1, v)),
+            Err(i) => {
+                self.0.insert(i, (Key::new(k), v));
+                None
+            }
+        }
     }
 }
 
@@ -443,7 +538,7 @@ impl<V> std::ops::Index<&str> for FlatMap<Key, V> {
     }
 }
 
-impl<K: Ord + Copy, V> FromIterator<(K, V)> for FlatMap<K, V> {
+impl<K: Probe + Copy, V> FromIterator<(K, V)> for FlatMap<K, V> {
     fn from_iter<I: IntoIterator<Item = (K, V)>>(it: I) -> Self {
         let mut m = FlatMap::default();
         for (k, v) in it {
@@ -491,7 +586,7 @@ impl<K: Serialize, V: Serialize> Serialize for FlatMap<K, V> {
 
 impl<'de, K, V> Deserialize<'de> for FlatMap<K, V>
 where
-    K: Deserialize<'de> + Ord + Copy,
+    K: Deserialize<'de> + Probe + Copy,
     V: Deserialize<'de>,
 {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {

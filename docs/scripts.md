@@ -132,6 +132,13 @@ Current:
   cells of one run first play differently.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently,
   game by game.
+- `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin: Visual Studio's collector
+  and `xperf` (docs/speed.md, *Profiling*). `--runs K` on the next seeds each; `--attach S1,S2,...`
+  reads 5 s windows of a long run; writes `self.csv`, `total.csv`, `callers.csv`, `edges.csv`.
+- `bench/card_ranks.py DIR A B`: Spearman of each card's keep and play rates, agent B against A
+  (as `cards.csv` names them: the strategist is `engine:strategy=1`); an approximation's bar.
+- `bench/item_time.py ITEM...`: how a done conductor item's wall time split between sims, builds, tests and
+  the rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls (103).
 - `tune/`: `sweep.py`, `log_table.py`, `engine_sweep.py`.
 
 `--preset 016` and `018` cover what `scripts/board/` and `scripts/alignment/` read; git has those for the

@@ -20,7 +20,10 @@ pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl F
 }
 
 pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
-    passives(w, g, seat).into_iter().any(f)
+    // A walk, not a list: the adversary's spread asks it of every seat (103).
+    let mut found = false;
+    each_passive(w, g, seat, |p| found = found || f(p));
+    found
 }
 
 /// Every card seat `s` has in play whose tags count: active buildings, the
@@ -70,16 +73,17 @@ pub fn tag_counts(w: &World, g: &GameState, seat: usize) -> [i64; TAGS.len()] {
 
 /// Active buildings of seat `s` holding tokens of `kind`.
 pub fn token_cards(w: &World, g: &GameState, seat: usize, kind: Option<TokenKind>) -> Vec<Key> {
-    g.pile(&built(seat))
-        .iter()
-        .filter(|id| {
-            def(w, id)
-                .tokens
-                .as_ref()
-                .is_some_and(|t| kind.is_none_or(|k| t.kind == k))
-        })
-        .cloned()
-        .collect()
+    g.pile(&built(seat)).iter().filter(|id| holds_tokens(w, id, kind)).cloned().collect()
+}
+
+/// Whether seat `s` has an active building holding tokens of `kind`: [`token_cards`]
+/// with nothing collected (103: the agents ask it of every card in hand).
+pub fn has_token_card(w: &World, g: &GameState, seat: usize, kind: Option<TokenKind>) -> bool {
+    g.pile(&built(seat)).iter().any(|id| holds_tokens(w, id, kind))
+}
+
+fn holds_tokens(w: &World, id: &str, kind: Option<TokenKind>) -> bool {
+    def(w, id).tokens.as_ref().is_some_and(|t| kind.is_none_or(|k| t.kind == k))
 }
 
 /// Adds `n` tokens to seat `s`'s card (negative removes; never below 0).

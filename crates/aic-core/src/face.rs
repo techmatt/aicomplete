@@ -758,7 +758,13 @@ fn above_art(c: &CardDef, f: &mut Face) {
             left.extend(right.iter().flat_map(|c| c.icons.clone()));
             let mut says: Vec<String> = right.into_iter().map(|c| c.say).collect();
             if b.once {
-                says.push("then discard it".to_string());
+                // D31: the stack under it goes too, in the plates' term. The words are paid
+                // for in the same top box at 7.5 pt: liberating already means a corrupted
+                // city, and the list order says "then".
+                for s in &mut says {
+                    *s = s.replace("liberate a corrupted city", "liberate a city");
+                }
+                says.push("discard it and what it's built over".to_string());
             }
             // Call 2: a bare arrow is a free action; every Action is once a round.
             let open = if paid.is_empty() { String::new() } else { format!("pay {}, ", listed(&paid)) };

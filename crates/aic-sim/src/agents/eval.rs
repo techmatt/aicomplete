@@ -557,6 +557,8 @@ impl Weights {
 #[derive(Clone)]
 pub struct Eval {
     pub w: Weights,
+    /// For the seat-terms store's key (see [`tableau_parts`]): clones share it.
+    id: u64,
     seats: usize,
     /// Unity tip count the team aims for: the deck's last card.
     target_tips: i64,
@@ -719,6 +721,7 @@ impl Eval {
         let token_cash = w.token_cash > 0.0;
         Eval {
             w,
+            id: next_eval_id(),
             seats,
             target_tips,
             corrupt_at: world.int("adversary.corrupt_at"),
@@ -1496,18 +1499,22 @@ impl Eval {
         // has picked from counts for the seat it goes to (082).
         let seats: Vec<SeatData> = (0..self.seats)
             .map(|s| {
-                let tags = cards::tag_counts(&world, g, s);
-                let mut required = tags;
-                for t in ai::board_tags(&world, g, s) {
-                    required[*t as usize] += 1;
-                }
-                let income = economy::income_with(&world, g, s, &tags);
+                let terms = || {
+                    let tags = cards::tag_counts(&world, g, s);
+                    let mut required = tags;
+                    for t in ai::board_tags(&world, g, s) {
+                        required[*t as usize] += 1;
+                    }
+                    let income = economy::income_with(&world, g, s, &tags);
+                    (tags, required, cards::prices_with(&world, g, s, &tags), income)
+                };
+                let (tags, required, prices, income) = seat_terms_cached(self.id, g, s, terms);
                 let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
                 SeatData {
                     s,
                     tags,
                     required,
-                    prices: cards::prices_with(&world, g, s, &tags),
+                    prices,
                     income,
                     ctx: Ctx::at(left, node, tags, corrupted),
                 }
@@ -1631,7 +1638,7 @@ impl Eval {
         // A card that works on a pile of the seat's own with none to work on counts
         // as a `needs` card with none of its tags.
         let pile = match f.pile {
-            Some(k) if cards::token_cards(world, g, s, Some(k)).is_empty() => w.needs_floor,
+            Some(k) if !cards::has_token_card(world, g, s, Some(k)) => w.needs_floor,
             _ => 1.0,
         };
         p * w.table * w.hand_share * net.max(0.0) * self.needs_factor(d, &sd.required) * pile
@@ -1685,6 +1692,94 @@ impl Eval {
 }
 
 /// What one seat's cards are judged by in a position (082).
+/// A seat's tags, `needs` tags, prices and income: what [`Eval::value`] reads
+/// off its tableau, kept a decision long (103: worked out for every position, they
+/// were a sixth of the strategist's time, and a search's positions mostly share them).
+type SeatTerms = ([i64; TAGS.len()], [i64; TAGS.len()], cards::Prices, aic_core::content::PerResource);
+
+thread_local! {
+    /// The seat terms worked out this decision, by a hash of [`tableau_parts`],
+    /// with the parts to confirm a hit by.
+    static SEAT_TERMS: std::cell::RefCell<SeatStore> = std::cell::RefCell::new(SeatStore::default());
+}
+
+/// Tableaus the store holds before it starts over (a decision reaches a few dozen).
+const SEAT_STORE_CAP: usize = 4096;
+
+#[derive(Default)]
+struct SeatStore {
+    terms: HashMap<u64, (Vec<u64>, SeatTerms), BuildHasherDefault<Fnv>>,
+    parts: Vec<u64>,
+}
+
+/// Empties the seat-terms store: called as each decision's scoring starts, so
+/// it holds one decision's tableaus.
+pub fn new_decision() {
+    SEAT_TERMS.with(|c| c.borrow_mut().terms.clear());
+}
+
+/// Gives each [`Eval`] (and its clones, a game's) an id for the store's key.
+static EVAL_IDS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+fn next_eval_id() -> u64 {
+    EVAL_IDS.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Everything seat `s`'s terms are read from besides the rules (the [`Eval`]'s
+/// `id` stands for those): its tracks, the cards of its piles in play by their
+/// interned names (whose addresses never move), its production vars and the
+/// team's income bonuses. Equal parts, equal terms: `tag_counts`, `board_tags`,
+/// `income_with` and `prices_with` read nothing else, and a debug build checks
+/// each hit against a fresh reading.
+fn tableau_parts(id: u64, g: &GameState, s: usize, out: &mut Vec<u64>) {
+    out.clear();
+    out.extend([id, s as u64, board::track_taken(g, s) as u64, board::track2_taken(g, s) as u64]);
+    for top in g.pile(&cards::built(s)) {
+        out.push(top.as_str().as_ptr() as u64);
+        out.extend(g.pile(&cards::under(s, top)).iter().map(|c| c.as_str().as_ptr() as u64));
+        out.push(1);
+    }
+    out.push(2);
+    out.extend(g.pile(&cards::played(s)).iter().map(|c| c.as_str().as_ptr() as u64));
+    out.push(3);
+    out.extend([alignment::income_bonus(g) as u64, alignment::insight_bonus(g) as u64]);
+    let prefix = aic_core::key::KeyBuf::new("economy.production.").num(s).text(".");
+    for (k, n) in g.vars.from_key(prefix.as_str()).take_while(|(k, _)| k.starts_with(prefix.as_str())) {
+        out.extend([k.as_str().as_ptr() as u64, *n as u64]);
+    }
+}
+
+fn seat_terms_cached(id: u64, g: &GameState, s: usize, terms: impl Fn() -> SeatTerms) -> SeatTerms {
+    SEAT_TERMS.with(|c| {
+        let store = &mut *c.borrow_mut();
+        tableau_parts(id, g, s, &mut store.parts);
+        let key = store.parts.iter().fold(0xcbf2_9ce4_8422_2325u64, |h, x| (h ^ x).wrapping_mul(0x0000_0100_0000_01b3));
+        if let Some((parts, t)) = store.terms.get(&key) {
+            if *parts == store.parts {
+                debug_assert!(same_terms(t, &terms()), "seat terms read state tableau_parts leaves out");
+                return *t;
+            }
+        }
+        let t = terms();
+        // A beam or a rollout never calls `new_decision`: a cap keeps the store small.
+        if store.terms.len() >= SEAT_STORE_CAP {
+            store.terms.clear();
+        }
+        store.terms.insert(key, (store.parts.clone(), t));
+        t
+    })
+}
+
+#[cfg(debug_assertions)]
+fn same_terms(a: &SeatTerms, b: &SeatTerms) -> bool {
+    a == b
+}
+
+#[cfg(not(debug_assertions))]
+fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
+    true
+}
+
 struct SeatData {
     s: usize,
     tags: [i64; TAGS.len()],

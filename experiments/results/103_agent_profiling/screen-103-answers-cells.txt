@@ -1,0 +1,8 @@
+| cell | games | win % | ±SE | rounds | ends |
+|---|---|---|---|---|---|
+| screen-103-answers/bp/strategist | 200 | 25 | 3.1 | 7.31 | discord_deck 86, node 64, unity_deck 44, purge 6 |
+| screen-103-answers/bp/strategist:answers=1 | 200 | 26 | 3.1 | 7.22 | discord_deck 83, node 66, unity_deck 46, purge 5 |
+| screen-103-answers/br/strategist | 200 | 42 | 3.5 | 7.46 | unity_deck 69, discord_deck 62, node 54, purge 14, deck_empty 1 |
+| screen-103-answers/br/strategist:answers=1 | 200 | 44 | 3.5 | 7.54 | unity_deck 76, discord_deck 72, node 40, purge 11, deck_empty 1 |
+| screen-103-answers/pr/strategist | 200 | 34 | 3.3 | 7.42 | discord_deck 81, unity_deck 59, node 51, purge 9 |
+| screen-103-answers/pr/strategist:answers=1 | 200 | 28 | 3.2 | 7.32 | discord_deck 82, node 62, unity_deck 49, purge 7 |

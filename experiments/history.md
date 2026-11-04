@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 103 agent profiling (where the agents' time goes; exact speed-ups; two approximations screened, not landed; where an item's time goes) | r40 | [103_agent_profiling/speed.md](results/103_agent_profiling/speed.md), [profile.md](results/103_agent_profiling/profile.md), [time-split.md](results/103_agent_profiling/time-split.md) |
 | 102 agents and r40 (the keep plan nets prices, D23-D35 agent fixes; D25 reprices, Align cancels, deep-engine gates lowered; band read) | r40 | [102_agents_and_r40/r40.md](results/102_agents_and_r40/r40.md) |
 | 099 bug hunt (Rush Build's offer, measures gone quiet, the keep plan's gross value: not landed) | r39 | [099_bug_hunt_r38/fixed.md](results/099_bug_hunt_r38/fixed.md) |
 | 098 rules r38 (troop Sway off, dark aligned cities, troop-removal cards repriced) | r38 | [098_rules_r38_troops_dark/r38.md](results/098_rules_r38_troops_dark/r38.md) |

@@ -254,6 +254,7 @@ pub fn score_guesses(
     how: Scoring,
 ) -> Vec<f64> {
     let Scoring { samples, depth, choices, placing_choices, sacrificing_choices, answer_choices } = how;
+    super::eval::new_decision();
     let world = rules.world();
     let mut scores = vec![0.0; legal.len()];
     let n = samples.max(1);

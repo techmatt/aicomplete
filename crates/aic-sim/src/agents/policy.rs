@@ -1294,7 +1294,7 @@ fn pile_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> 
         })
         .collect();
     kinds.iter().all(|k| {
-        !cards::token_cards(w, g, s, Some(*k)).is_empty()
+        cards::has_token_card(w, g, s, Some(*k))
             || planned.iter().any(|id| cards::def(w, id).tokens.as_ref().is_some_and(|t| t.kind == *k))
     })
 }

@@ -1,0 +1,8 @@
+| cell | games | win % | ±SE | rounds | ends |
+|---|---|---|---|---|---|
+| screen-103-answers-d0/bp/engine | 200 | 54 | 3.5 | 8.01 | unity_deck 81, discord_deck 74, purge 27, node 17, deck_empty 1 |
+| screen-103-answers-d0/bp/engine:answers=1 | 200 | 45 | 3.5 | 7.98 | discord_deck 79, unity_deck 62, node 31, purge 28 |
+| screen-103-answers-d0/br/engine | 200 | 72 | 3.2 | 7.89 | unity_deck 99, purge 46, discord_deck 45, node 10 |
+| screen-103-answers-d0/br/engine:answers=1 | 200 | 68 | 3.3 | 7.78 | unity_deck 92, discord_deck 47, purge 45, node 16 |
+| screen-103-answers-d0/pr/engine | 200 | 61 | 3.4 | 8.00 | unity_deck 100, discord_deck 58, purge 22, node 19, deck_empty 1 |
+| screen-103-answers-d0/pr/engine:answers=1 | 200 | 61 | 3.4 | 7.96 | unity_deck 95, discord_deck 59, purge 27, node 19 |

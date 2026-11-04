@@ -1,0 +1,35 @@
+{
+  "name": "screen-103-d0",
+  "note": "103 class 2: screen-103's twin for greedy at d0 (the engine spec, no strategy), the seat-terms cache on and off, fresh seeds 33100-33299.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "engine",
+    "engine:w.seat_cache=1"
+  ],
+  "games": 200,
+  "first_seed": 33100,
+  "records": 0
+}

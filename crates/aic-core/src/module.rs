@@ -226,6 +226,10 @@ pub struct World<'a> {
     pub params: &'a FastMap<ParamValue>,
     /// Each configured module's variant, by module id.
     pub variants: &'a FastMap<String>,
+    /// `ai.boards` (empty without the `ai` module), read once with the rules:
+    /// each seat's board is asked for by every passive, track and capstone
+    /// read, and the parameter's lookup by name was 2% of a search (103).
+    pub ai_boards: &'a [i64],
 }
 
 impl World<'_> {
@@ -375,7 +379,7 @@ impl<'a> Cx<'a> {
         if next == 0 {
             tokens.remove(kind);
         } else {
-            tokens.insert(kind.into(), next);
+            tokens.insert_str(kind, next);
         }
         let at = self.world.map.hexes[hex].hex;
         self.emit(|| Event::TokensChanged {
@@ -406,7 +410,7 @@ impl<'a> Cx<'a> {
     /// round: entry `r` is round `r`, entry 0 setup.
     pub fn per_round(&mut self, g: &mut GameState, key: &str, n: i64) {
         let r = g.round as usize;
-        let v = Arc::make_mut(g.stats.per_round.entry(key).or_default());
+        let v = Arc::make_mut(g.stats.per_round.entry_str(key).or_default());
         if v.len() <= r {
             v.resize(r + 1, 0);
         }
@@ -421,12 +425,12 @@ impl<'a> Cx<'a> {
     /// Adds to a counter by its full key (shared rules code counting for
     /// the module that owns the rule).
     pub fn tally(&mut self, g: &mut GameState, key: &str, n: i64) {
-        *g.stats.counters.entry(key).or_insert(0) += n;
+        *g.stats.counters.entry_str(key).or_insert(0) += n;
     }
 
     /// Raises a counter by its full key to `n` if it is lower (a peak).
     pub fn peak(&mut self, g: &mut GameState, key: &str, n: i64) {
-        let e = g.stats.counters.entry(key).or_insert(0);
+        let e = g.stats.counters.entry_str(key).or_insert(0);
         *e = (*e).max(n);
     }
 
@@ -442,7 +446,7 @@ impl<'a> Cx<'a> {
         let old = if v == 0 {
             g.vars.remove(key).unwrap_or(0)
         } else {
-            g.vars.insert(key.into(), v).unwrap_or(0)
+            g.vars.insert_str(key, v).unwrap_or(0)
         };
         if old == v {
             return;
@@ -484,7 +488,7 @@ impl<'a> Cx<'a> {
             }
         }
         if !to.is_empty() {
-            let pile = Arc::make_mut(g.piles.entry(to).or_default());
+            let pile = Arc::make_mut(g.piles.entry_str(to).or_default());
             if top {
                 pile.insert(0, card.into());
             } else {

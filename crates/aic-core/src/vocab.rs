@@ -29,6 +29,8 @@ pub enum Resource {
     ResearchCubes,
 }
 
+impl crate::key::Probe for Resource {}
+
 /// The player resources, in display order (the order of income arrays, see
 /// [`Resource::index`]). 021: players have no compute; compute is the
 /// adversary's, `adversary.compute`.

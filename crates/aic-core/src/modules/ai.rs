@@ -37,8 +37,7 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// The AI board seat `s` plays.
 pub fn board<'w>(w: &World<'w>, seat: usize) -> &'w AiBoard {
-    let list = w.list("ai.boards");
-    &w.content.ais[list[seat % list.len()] as usize]
+    &w.content.ais[board_index(w, seat)]
 }
 
 /// Spaces uncovered on seat `s`'s node track (the board module counts
@@ -100,7 +99,7 @@ pub fn keep2(w: &World, g: &GameState, seat: usize) -> bool {
 
 /// The AI board (index into content/ais.json) seat `s` plays.
 fn board_index(w: &World, seat: usize) -> usize {
-    let list = w.list("ai.boards");
+    let list = w.ai_boards;
     list[seat % list.len()] as usize
 }
 

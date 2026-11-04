@@ -77,7 +77,7 @@ pub fn play_insight(w: &World, g: &GameState, seat: usize, d: &CardDef) -> i64 {
 /// a whole hand gets the same numbers as [`play_cost`] and [`play_insight`]
 /// without counting the seat's tags again for each card (042: that was most of
 /// what the heuristic cost). Good until the seat's cards or vars change.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Prices {
     insight_off: i64,
     building_off: i64,

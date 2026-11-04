@@ -49,7 +49,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Forensic Audit | research cubes | event | none |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
-  | Popular Uprising | Followers | building (arrives with 6 Followers) | Action: spend 6 Followers here: liberate, then discard it (and the stack under it) |
+  | Popular Uprising | Followers | building (arrives with 6 Followers) | Action: spend 6 Followers here: liberate, then discard it and what it's built over |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
   a corrupted city costs in play; the extra at its own row), about 25-47 credits, well under the fallback's ~100 and
@@ -84,7 +84,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   one of your cards of a type; Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a
   card loses its tokens.
 - **A one-shot Action (`once`):** an Action, or a half of one, may take its card out of play once it resolves, with
-  the stack under it (Popular Uprising: spend its 6 Followers, liberate, then discard it).
+  the stack under it (Popular Uprising: spend its 6 Followers, liberate, then discard it and what it's built over).
 - **Actions** (abilities: `ability`, buildings only) are used with `Use` once a round, pay their cost, and refresh at
   the start of a round. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay
   and that has a target (a half that counts tokens here needs one there). **Ongoing abilities live only on

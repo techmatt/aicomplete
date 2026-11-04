@@ -245,7 +245,18 @@ pub fn piece_name(kind: &str) -> String {
 /// a country index the board never shows).
 pub fn hex_name(w: &World, h: usize) -> String {
     let c = &w.map.hexes[h];
-    format!("{} #{}", country_name(w, c.country as usize), c.number)
+    // One allocation, no formatter: every hex option's label is one of these,
+    // rebuilt on each replay of a prompt (103).
+    match w.content.map.countries.get(c.country as usize) {
+        Some(p) => {
+            let mut s = String::with_capacity(p.name.len() + 4);
+            s.push_str(&p.name);
+            s.push_str(" #");
+            s.push_str(crate::key::KeyBuf::new("").num(c.number as usize).as_str());
+            s
+        }
+        None => format!("{} #{}", country_name(w, c.country as usize), c.number),
+    }
 }
 
 /// The printed name of country `c`'s piece ("country 1" if the map has none).

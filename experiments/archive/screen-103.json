@@ -1,0 +1,35 @@
+{
+  "name": "screen-103",
+  "note": "103 class 2: the seat-terms cache (w.seat_cache) on and off as paired agent cells, strategist at d2, the three pairs, fresh seeds 33100-33299 (Matt, 2026-11-04: lands if the paired win rate is not lower by more than 1 SE and card keep and play rates keep their rank order).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.seat_cache=1"
+  ],
+  "games": 200,
+  "first_seed": 33100,
+  "records": 0
+}

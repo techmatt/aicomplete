@@ -165,7 +165,8 @@ policy or `prune`, the line alone should read near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump: r40: 32700-32899 the r39 → r40 read and 32900-33099 the band read (`screen-102-b*`, `-c*`;
-32500-32699 screened 102's agent levers on r39). Next free: 33100.
+32500-32699 screened 102's agent levers on r39); 33100-33299 103's speed approximations (`screen-103-answers*.json`,
+`archive/screen-103*.json`). Next free: 33300.
 
 ## Reading prices
 

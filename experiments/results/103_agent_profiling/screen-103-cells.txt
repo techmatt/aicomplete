@@ -1,0 +1,8 @@
+| cell | games | win % | ±SE | rounds | ends |
+|---|---|---|---|---|---|
+| screen-103/bp/strategist | 200 | 25 | 3.1 | 7.31 | discord_deck 86, node 64, unity_deck 44, purge 6 |
+| screen-103/bp/strategist:w.seat_cache=1 | 200 | 26 | 3.1 | 7.36 | discord_deck 82, node 66, unity_deck 46, purge 6 |
+| screen-103/br/strategist | 200 | 42 | 3.5 | 7.46 | unity_deck 69, discord_deck 62, node 54, purge 14, deck_empty 1 |
+| screen-103/br/strategist:w.seat_cache=1 | 200 | 42 | 3.5 | 7.45 | unity_deck 68, discord_deck 67, node 48, purge 17 |
+| screen-103/pr/strategist | 200 | 34 | 3.3 | 7.42 | discord_deck 81, unity_deck 59, node 51, purge 9 |
+| screen-103/pr/strategist:w.seat_cache=1 | 200 | 32 | 3.3 | 7.40 | discord_deck 83, unity_deck 53, node 53, purge 11 |

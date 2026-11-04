@@ -147,6 +147,8 @@ never mixed up.
 
 - 6 cores, 12 threads: 12 workers give about 6 × one, so never read "12 threads" as 12 ×
   in an estimate.
+- `samply` waits on a UAC prompt a headless session never sees: profile with `bench/profile_win.py`
+  (VS's collector, no admin; docs/speed.md).
 - Check processes with PowerShell `Get-Process` or `Get-CimInstance`. `wmic` and `tasklist`
   hang for minutes under load, and a script guard on one stalls silently.
 - Timing has no warning of other load: another session's test suite can take half the
