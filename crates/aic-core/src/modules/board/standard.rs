@@ -11,6 +11,8 @@ pub enum StandardAction {
     Move,
     Ambassador,
     Align,
+    /// r35: free a corrupted research station your ambassadors stand on.
+    FreeStation,
     /// 066: the Harden action a card grants, paid in chips.
     HardenChips,
     Chips,
@@ -20,13 +22,14 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 10] = [
+pub const STANDARD: [StandardAction; 11] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
     StandardAction::Move,
     StandardAction::Ambassador,
     StandardAction::Align,
+    StandardAction::FreeStation,
     StandardAction::HardenChips,
     StandardAction::Chips,
     StandardAction::HardenBuy,
@@ -43,6 +46,7 @@ impl StandardAction {
             StandardAction::Move => "move",
             StandardAction::Ambassador => "ambassador",
             StandardAction::Align => "align",
+            StandardAction::FreeStation => "free_station",
             StandardAction::HardenChips => "harden_chips",
             StandardAction::Chips => "chips",
             StandardAction::HardenBuy => "harden_buy",
@@ -114,6 +118,8 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Move => credits(i("move_credits")),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         StandardAction::Align => ambassadors(1),
+        // r35: the ambassadors it uses up stand on the station, not in the supply.
+        StandardAction::FreeStation => credits(i("free_station_credits")),
         // 080: the price is the card's (`seat_price`); none printed here.
         StandardAction::HardenChips => Price::default(),
         StandardAction::Chips => chips(1),
@@ -170,6 +176,12 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Move => "move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Align => "align a clean city you can claim",
+        StandardAction::FreeStation => {
+            return format!(
+                "free a corrupted research station in reach where {} of your ambassadors stand and no adversary ambassador: they are used up and it becomes neutral",
+                w.int("board.free_station_ambassadors")
+            );
+        }
         StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
         StandardAction::Chips => "sell 1 chip for credits",
         StandardAction::HardenBuy => "standard project: harden a facility in reach",
@@ -184,6 +196,16 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())
         .filter(|&h| buildable(w, g, h) && !w.map.hexes[h].industrial && in_reach(w, g, seat, h))
         .collect()
+}
+
+/// A corrupted station seat `s` can free (r35): `free_station_ambassadors` of
+/// its ambassadors on it, no adversary ambassador, no face-up cyber threat
+/// holding it. A botnet there stays, and still blocks a claim.
+pub fn station_freeable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    corrupted_station(g, h)
+        && g.tokens(h, ambassador(seat)) >= w.int("board.free_station_ambassadors")
+        && g.tokens(h, ADV_AMBASSADOR) == 0
+        && !threats::shielded(w, g, h, ThreatSource::Cyber)
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -208,6 +230,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             .collect()
         }
         StandardAction::Align => all.filter(|&h| clean_city(w, g, h) && can_claim(w, g, seat, h)).collect(),
+        StandardAction::FreeStation => all.filter(|&h| reach(h) && station_freeable(w, g, seat, h)).collect(),
         StandardAction::HardenChips => {
             if harden_card_chips(w, g, seat).is_some() {
                 all.filter(|&h| reach(h) && hardenable(g, h)).collect()
@@ -282,6 +305,13 @@ pub(super) fn std_resolve(
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, cube(s), 1);
                 cx.tally(g, "board.cities_aligned", 1);
+            }
+        }
+        StandardAction::FreeStation => {
+            if let Some(h) = on_hex(cx)? {
+                cx.add_tokens(g, h, ambassador(s), -w.int("board.free_station_ambassadors"));
+                cx.add_tokens(g, h, ADV_CUBE, -1);
+                cx.tally(g, "board.stations_freed", 1);
             }
         }
         StandardAction::HardenChips | StandardAction::HardenBuy => {

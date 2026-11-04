@@ -127,12 +127,20 @@ fn up_to_in_country(g: &mut GameState, cx: &mut Cx, seat: usize, c: usize, max: 
     Ok(removed)
 }
 
-pub(super) fn cleanse(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64, one_country: bool, cities: bool) -> Res {
+pub(super) fn cleanse(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    amount: i64,
+    one_country: bool,
+    cities: bool,
+    only: Option<Facility>,
+) -> Res {
     let w = cx.world;
     let mut country: Option<u8> = None;
     for k in 0..amount {
         let hexes: Vec<usize> = (0..g.hexes.len())
-            .filter(|&h| cleansable(&w, g, h, cities) && in_reach(&w, g, seat, h))
+            .filter(|&h| cleansable(&w, g, h, cities, only) && in_reach(&w, g, seat, h))
             .filter(|&h| country.is_none_or(|c| w.map.hexes[h].country == c))
             .collect();
         if hexes.is_empty() {
@@ -158,8 +166,19 @@ pub(super) fn cleanse(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64, 
 }
 
 /// A liberate card (080): one corrupted city in reach is liberated; with
-/// `align` the seat's cube goes on it.
-pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, align: bool) -> Res {
+/// `align` the seat's cube goes on it. Each engine's twist (r35): `ambassadors`
+/// gained, up to `troops` adversary troops off in the city's country, and with
+/// `botnet` one botnet on or next to the city off.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn liberate_city(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    align: bool,
+    ambassadors: i64,
+    troops: i64,
+    botnet: bool,
+) -> Res {
     let w = cx.world;
     let cities = liberable_cities(&w, g, seat);
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
@@ -171,6 +190,30 @@ pub(super) fn liberate_city(g: &mut GameState, cx: &mut Cx, seat: usize, align: 
         if align {
             cx.add_tokens(g, h, cube(seat), 1);
             cx.tally(g, "board.liberated_aligned", 1);
+        }
+        if ambassadors > 0 {
+            cx.add_resource(g, seat, Resource::Ambassadors, ambassadors);
+            cx.tally(g, "board.liberated_ambassadors", ambassadors);
+        }
+        if troops > 0 {
+            let c = w.map.hexes[h].country as usize;
+            let n = up_to_in_country(g, cx, seat, c, troops, TROOP)?;
+            cx.tally(g, "board.liberated_troops", n);
+        }
+        if botnet {
+            let mut near = w.map.hexes[h].neighbors.to_vec();
+            near.sort_unstable();
+            near.insert(0, h);
+            let hexes: Vec<usize> = near
+                .into_iter()
+                .filter(|&x| g.tokens(x, BOTNET) > 0 && !threats::shielded(&w, g, x, ThreatSource::Cyber))
+                .collect();
+            let opts = hexes.iter().map(|&x| hex_opt(&w, x)).collect();
+            let prompt = format!("Seat {seat}: remove the botnet in which hex?");
+            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+                adversary::remove_botnet(g, cx, hexes[i]);
+                cx.tally(g, "board.liberated_botnet", 1);
+            }
         }
     }
     Ok(())

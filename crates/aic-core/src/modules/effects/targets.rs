@@ -13,12 +13,15 @@ pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, tro
 }
 
 /// A corrupted research station or factory, or with `cities` (024: tier-2
-/// ultimates only) a corrupted city: a cleanse target.
-pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool) -> bool {
+/// ultimates only) a corrupted city: a cleanse target. `only` (r35) limits it
+/// to one facility kind.
+pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only: Option<Facility>) -> bool {
+    let stations = only != Some(Facility::Factory);
+    let factories = only != Some(Facility::Station);
     corrupted(g, h)
         && ((cities && is_city(w, h) && !threats::shielded(w, g, h, ThreatSource::Influence))
-            || (g.tokens(h, STATION) > 0 && !threats::shielded(w, g, h, ThreatSource::Cyber))
-            || (g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
+            || (stations && g.tokens(h, STATION) > 0 && !threats::shielded(w, g, h, ThreatSource::Cyber))
+            || (factories && g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
 }
 
 /// Corrupted cities in seat `s`'s reach that a liberate card can take (080):

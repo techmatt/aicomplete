@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 090 balance pass | r35 | [screen-090/balance.md](results/screen-090/balance.md) (`scripts/cards/energy_read.py`) |
 | 088 effect ledger | r34 | [effect-ledger/outliers.md](results/effect-ledger/outliers.md) (`scripts/cards/effect_ledger.py`) |
 | 082 strategy agents | r34 | [screen-082/agents.md](results/screen-082/agents.md) |
 | 080 liberating cities | r34 | [screen-080/liberation.md](results/screen-080/liberation.md) |

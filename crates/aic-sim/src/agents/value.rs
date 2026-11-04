@@ -1,7 +1,9 @@
 //! 082: the value table. One table (`configs/agents/values.json`) gives a value in
 //! credits to each resource, tag, token and effect, transcribed from
 //! `docs/card-pricing.md`'s *Current rates* as they stood at r34 (the table is
-//! their home since 082); a card is valued by its ops.
+//! their home since 082; 090 corrected energy, antimatter, troop removal,
+//! liberation and the station flip against play, and gave income a horizon by
+//! tier); a card is valued by its ops.
 //!
 //! [`op_worth`] matches every [`Op`] with no catch-all arm, so a new op does not
 //! compile until it has an arm here, and a test fails until it has its row in the
@@ -16,7 +18,7 @@
 use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
-use aic_core::content::{Ability, CardDef, CardKind, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
+use aic_core::content::{Ability, CardDef, CardKind, Facility, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
 use serde::Deserialize;
 
 /// The table as loaded.
@@ -71,7 +73,8 @@ pub struct Override {
 
 /// Rows of `ops` that are parts of another op's arm, not ops of their own.
 #[cfg(test)]
-pub(crate) const PART_ROWS: &[&str] = &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align"];
+pub(crate) const PART_ROWS: &[&str] =
+    &["remove_ambassador", "remove_troop", "typed_jam", "liberate_align", "liberate_troops", "liberate_botnet", "cleanse_station"];
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
@@ -166,6 +169,9 @@ impl Table {
 pub struct Ctx {
     /// Rounds of income still to come.
     pub left: f64,
+    /// Rounds an income or an Action is counted for (r35: the horizon, with a
+    /// tempo discount, at the typical purchase; `left` in a game).
+    pub horizon: f64,
     /// The seat's nodes on the board.
     pub node: f64,
     /// The seat's tags on its cards in play.
@@ -179,10 +185,24 @@ impl Ctx {
     pub fn typical(t: &Table) -> Ctx {
         Ctx {
             left: t.rate("income_rounds"),
+            horizon: t.rate("income_rounds"),
             node: t.rate("node_count"),
             tags: [t.rate("tag_count") as i64; TAGS.len()],
             corrupted: true,
         }
+    }
+
+    /// The typical context for a card of `tier` (r35): its income counted over
+    /// the tier's horizon, rounds left at a typical purchase less a tempo
+    /// discount (`horizon_t1`, `horizon_t2`).
+    pub fn typical_for(t: &Table, tier: u8) -> Ctx {
+        let horizon = if tier >= 2 { t.rate("horizon_t2") } else { t.rate("horizon_t1") };
+        Ctx { horizon, ..Ctx::typical(t) }
+    }
+
+    /// A context in a game: income counts every round left.
+    pub fn at(left: f64, node: f64, tags: [i64; TAGS.len()], corrupted: bool) -> Ctx {
+        Ctx { left, horizon: left, node, tags, corrupted }
     }
 }
 
@@ -313,16 +333,23 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::RemoveTroops { count } => Worth::now(row("remove_troops") * *count as f64),
         Op::BuildFactory => Worth::now(row("build_factory")),
-        Op::Cleanse { amount, one_country, cities } => {
+        Op::Cleanse { amount, one_country, cities, only } => {
             let share = if *one_country { 0.8 } else { 1.0 };
             if *cities {
                 Worth { city: row("liberate") * share * *amount as f64, ..Worth::default() }
             } else {
-                Worth::now(row("cleanse") * share * *amount as f64)
+                // r35: a station is a flip, a factory stays cheap; either kind
+                // reads the station's row, the dearer one it may take.
+                let each = if *only == Some(Facility::Factory) { row("cleanse") } else { row("cleanse_station") };
+                Worth::now(each * share * *amount as f64)
             }
         }
-        Op::Liberate { align } => Worth {
-            city: row("liberate") + if *align { row("liberate_align") } else { 0.0 },
+        Op::Liberate { align, ambassadors, troops, botnet } => Worth {
+            city: row("liberate")
+                + if *align { row("liberate_align") } else { 0.0 }
+                + row("gain_ambassadors") * r(Resource::Ambassadors) * *ambassadors as f64
+                + row("liberate_troops") * *troops as f64
+                + if *botnet { row("liberate_botnet") } else { 0.0 },
             ..Worth::default()
         },
         Op::ClearCity { max } => {
@@ -536,9 +563,9 @@ impl CardValue {
     /// The card's whole value in this context: now, plus a round's worth for each
     /// round left, plus its Action's uses.
     pub fn total(&self, t: &Table, c: &Ctx) -> f64 {
-        let uses = if self.has_use { c.left * t.fast.uses_share } else { 0.0 };
+        let uses = if self.has_use { c.horizon * t.fast.uses_share } else { 0.0 };
         self.play.instant(t, c)
-            + c.left * self.play.per_round(c)
+            + c.horizon * self.play.per_round(c)
             + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
             + self.tags
             + self.extra
@@ -614,6 +641,8 @@ mod tests {
         let without = CardValue::of(t, d).total(t, &c);
         assert!(with > without + 10.0, "{with} {without}");
         let pu = CardValue::of(t, w.content.card("popular_uprising"));
-        assert!((pu.use_.city - 25.0 / 4.0).abs() < 1e-9, "{:?}", pu.use_);
+        // r35: one liberation, read as one use in its cycle of adds (about one
+        // over a tier-2 card's uses).
+        assert!((pu.use_.city - t.op("liberate") / 4.0).abs() < 1e-9, "{:?}", pu.use_);
     }
 }

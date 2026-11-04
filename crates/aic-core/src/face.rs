@@ -16,7 +16,7 @@
 
 use serde::Serialize;
 
-use crate::content::{Ability, CardDef, Op, Resource, Tag, TokenKind};
+use crate::content::{Ability, CardDef, Facility, Op, Resource, Tag, TokenKind};
 
 /// One part of an icon line: an icon or a connector (`→ / : OR ALL ACT`), a
 /// tag (`#science`), a number, or a box of parts.
@@ -338,11 +338,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, format!("{gain} 1 {} per {tags} on your cards", noun(*resource, 1))))
         }
         Op::BuildFactory => one(clause(vec![w("factory")], "build a factory in reach")),
-        Op::Cleanse { amount: n, one_country, cities } => {
-            let what = match (*cities, *n) {
-                (true, _) => "corrupted cities, stations or factories",
-                (false, 1) => "corrupted station or factory",
-                (false, _) => "corrupted stations or factories",
+        Op::Cleanse { amount: n, one_country, cities, only } => {
+            let what = match (*cities, only, *n) {
+                (true, _, _) => "corrupted cities, stations or factories",
+                (false, Some(Facility::Station), 1) => "corrupted station",
+                (false, Some(Facility::Station), _) => "corrupted stations",
+                (false, Some(Facility::Factory), 1) => "corrupted factory",
+                (false, Some(Facility::Factory), _) => "corrupted factories",
+                (false, None, 1) => "corrupted station or factory",
+                (false, None, _) => "corrupted stations or factories",
             };
             let place = if *one_country { "in reach, in one country" } else { "in reach" };
             let say = format!("free {n} {what} {place}");
@@ -352,15 +356,28 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             }
             one(clause(adversary(parts), say))
         }
-        Op::Liberate { align } => {
+        Op::Liberate { align, ambassadors, troops, botnet } => {
             let mut parts = minus(1, "cube");
             parts.push(w("city"));
-            let say = if *align {
-                "liberate a corrupted city in reach; your cube goes on it"
-            } else {
-                "liberate a corrupted city in reach"
-            };
-            one(clause(adversary(parts), say.to_string()))
+            let mut say = "liberate a corrupted city in reach".to_string();
+            if *align {
+                say.push_str("; your cube goes on it");
+            }
+            let mut out = vec![clause(adversary(parts), say)];
+            if *ambassadors > 0 {
+                let n = *ambassadors;
+                let noun = if n == 1 { "ambassador" } else { "ambassadors" };
+                out.push(clause(counted(n, "ambassador"), format!("gain {n} {noun}")));
+            }
+            if *troops > 0 {
+                let mut p = minus(*troops, "troop");
+                p.push(w("country"));
+                out.push(clause(adversary(p), format!("remove up to {troops} troops in its country")));
+            }
+            if *botnet {
+                out.push(clause(adversary(minus(1, "botnet")), "remove a botnet on or next to it".to_string()));
+            }
+            out
         }
         Op::ClearCity { max } => {
             let (parts, what) = if *max > 0 {
@@ -729,15 +746,21 @@ fn above_art(c: &CardDef, f: &mut Face) {
         for (i, b) in a.branches().into_iter().enumerate() {
             let (cost, paid) = action_cost(b, c.tokens.as_ref().map(|t| t.kind));
             let mut left = if i > 0 { vec![w("OR")] } else { Vec::new() };
+            // r35: a gate on Unity tips and a one-shot half are said in words only
+            // (the card art has no icon for a tip or a discard).
             left.extend(cost);
             left.push(w("\u{2192}"));
             let right = clauses(&b.effects, "get");
             left.extend(right.iter().flat_map(|c| c.icons.clone()));
-            let says: Vec<String> = right.into_iter().map(|c| c.say).collect();
+            let mut says: Vec<String> = right.into_iter().map(|c| c.say).collect();
+            if b.once {
+                says.push("then discard it".to_string());
+            }
             // Call 2: a bare arrow is a free action; every Action is once a round.
+            let gate = if b.tips > 0 { format!("at {}+ Unity tips, ", b.tips) } else { String::new() };
             let open = if paid.is_empty() { String::new() } else { format!("pay {}, ", listed(&paid)) };
             f.top.push(left);
-            halves.push(format!("{open}{}", says.join(", ")));
+            halves.push(format!("{gate}{open}{}", says.join(", ")));
         }
         top_said.push(sentence(&format!("action: {}", halves.join(", OR "))));
     }

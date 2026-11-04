@@ -122,6 +122,9 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
 
 /// Why one branch of an Action can't be used now.
 fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
+    if g.var(alignment::tips_key(crate::content::Side::Unity)) < ab.tips {
+        return Some("needs Unity tips");
+    }
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
@@ -328,6 +331,17 @@ pub(super) fn use_ability(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) 
     cx.exhaust(g, s, card);
     cx.count(g, &format!("used.{card}"), 1);
     effects::run(g, cx, &ab.effects, &mut effects::Ctx::ability(s, *card))?;
+    // r35: a one-shot branch takes its card out of play, with the stack under it.
+    if ab.once {
+        let mut stack: Vec<(String, Key)> =
+            g.pile(&under(s, card)).iter().map(|c| (under(s, card).to_string(), *c)).collect();
+        stack.push((built(s).to_string(), *card));
+        for (pile, c) in &stack {
+            cx.set_key(g, &tokens_key(s, c), 0);
+            discard(g, cx, c, pile);
+        }
+        cx.tally(g, "cards.once_discarded", 1);
+    }
     Ok(())
 }
 

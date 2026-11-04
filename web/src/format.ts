@@ -159,7 +159,7 @@ function contentName(id: string): string {
 
 /**
  * Content ids written into engine text (`snake_case` only, so plain words stay), but
- * not inside a dotted key (`adversary.project.node_swarm` stays as the state has it).
+ * not inside a dotted key (`adversary.project.botnet_swarm` stays as the state has it).
  */
 export const contentIds = (text: string) => text.replace(/(?<![\w.])[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b(?!\.)/g, (m) => contentName(m));
 

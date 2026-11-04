@@ -81,9 +81,11 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
+            ParamSpec::int("free_station_credits", 0, 50, "standard action: credits to free a corrupted research station"),
+            ParamSpec::int("free_station_ambassadors", 1, 5, "standard action: your ambassadors on a corrupted research station that freeing it uses up"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, harden, chips, sell, drain; completed megaprojects' converters"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, free a station, harden, chips, sell, drain; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),

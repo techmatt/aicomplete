@@ -5,7 +5,7 @@
   "text": "The economy AI: plays mostly off the board, with the most building slots.",
   "innate": {
    "name": "Breadth",
-   "text": "You have 5 building slots; boards have 3.",
+   "text": "You have 5 building slots; the Protector has 3 and the Researcher 2.",
    "passives": []
   },
   "credits": 25,
@@ -184,7 +184,7 @@
     "tags": [
      [
       "industry",
-      2
+      1
      ]
     ],
     "text": "play a building from your hand, paying no credits",
@@ -192,6 +192,12 @@
      {
       "op": "free_building"
      }
+    ],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
     ]
    }
   ],
@@ -465,7 +471,7 @@
     "tags": [
      [
       "security",
-      2
+      1
      ]
     ],
     "text": "in one country this round, no nodes or facility can be destroyed",
@@ -473,6 +479,12 @@
      {
       "op": "shelter"
      }
+    ],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
     ]
    }
   ],
@@ -749,7 +761,7 @@
     "tags": [
      [
       "power",
-      2
+      1
      ]
     ],
     "text": "gain 1 antimatter",
@@ -759,6 +771,12 @@
       "resource": "antimatter",
       "amount": 1
      }
+    ],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
     ]
    }
   ],

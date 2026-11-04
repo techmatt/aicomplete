@@ -128,6 +128,13 @@ pub struct Weights {
     /// of `station`: a converter takes a cube or two a round, so more stations
     /// fill a card sooner and then only stack cubes.
     pub station_spare: f64,
+    /// r35: a corrupted station costs this on top of `station` (a flip: a cube
+    /// a round both ways), and freeing it earns it back.
+    pub station_flip: f64,
+    /// r35: player ambassadors toward freeing a corrupted station, on it with
+    /// no adversary ambassador there: this share of `station` + `station_flip`
+    /// at the full count, growing with its square.
+    pub station_freeing: f64,
     pub factory: f64,
     /// Each hardening token.
     pub harden: f64,
@@ -327,6 +334,8 @@ impl Default for Weights {
             research_cube_power: 1.2,
             station_round: 1.0,
             station_spare: 1.0,
+            station_flip: 20.0,
+            station_freeing: 0.25,
             factory: 0.5,
             harden: 1.0,
             // 018: was 3, below the 6 credits (3.6) an ambassador costs, so no
@@ -869,7 +878,16 @@ impl Eval {
             v -= w.troop * t.troop as f64;
             if t.station > 0 {
                 if bad {
-                    v -= w.station;
+                    v -= w.station + w.station_flip;
+                    // r35: ambassadors gathering to free it, worth their supply
+                    // value while they stand there (as on a city).
+                    if adv == 0 {
+                        let need = world.int("board.free_station_ambassadors").max(1) as f64;
+                        let on = t.ambassador[..seats].iter().copied().max().unwrap_or(0) as f64;
+                        let share = (on / need).min(1.0);
+                        v += (w.station + w.station_flip) * w.station_freeing * share * share;
+                        v += (self.ambassador_unit() - w.ambassador_board) * on.min(need);
+                    }
                 } else if owned {
                     let s = (0..self.seats).find(|&s| t.cube[s] > 0).unwrap_or(0);
                     stations[s] += 1;
@@ -1283,7 +1301,7 @@ impl Eval {
                     required,
                     prices: cards::prices_with(&world, g, s, &tags),
                     income,
-                    ctx: Ctx { left, node, tags, corrupted },
+                    ctx: Ctx::at(left, node, tags, corrupted),
                 }
             })
             .collect();

@@ -138,7 +138,7 @@ levers under about 20 points.
 `scripts/bench/paired.py DIR` and `scripts/cards/use_read.py DIR`. Recipes and costs (6 threads): `screen-082.json`
 (eight agents, four planners, 1,152 games, 17 min beside another item), `screen-082-d0`/`-d4.json` (greedy tiers at the
 range's ends, 1 min each), `screen-082-table-bp/br/pr.json` (pairings fixed, 2,688 games, 8 min),
-`screen-082-fresh.json` (7.5 min).
+`screen-082-fresh.json` (7.5 min). The r35 ballpark read is `screen-090.json` (the strategist, 144 games, 20 s on 6 threads); `screen-090-onoff.json` turns each r35 mechanic off on the same seeds (27 cells, 1,296 games, about 3 min), read with `scripts/cards/energy_read.py`.
 
 **The ballpark read (Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
 players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
@@ -181,10 +181,9 @@ override or dead agent shows in minutes. In a long gate, `panicked` in stderr is
 `^time: wall` the end.
 
 **Fresh seeds for a gate.** Specs start at seed 0: give a gate a `--seed` no screen of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds, and reset at each bump keeping the seeds that picked that revision: r34: 30300 the planner reads (080), 30400
-the engine smoke and pace screen, 30500 the fresh confirmation, 30600 the 2x2 after the freeze
-(`screen-080-next.json`); 30700 the 082 screens, 30800 their fresh confirmation, 31000 082's antimatter read. Next free:
-31100.
+seeds, and reset at each bump keeping the seeds that picked that revision: r35: 31100 the fresh d2 read
+(`screen-090.json`) and the d0 read (`screen-090-d0.json`), 31200 the engine smoke (`use-090.json`), 31300 the on/off
+and liberate-price screens (`screen-090-onoff.json`, `screen-090-lib.json`). Next free: 31400.
 
 ## Reading prices
 

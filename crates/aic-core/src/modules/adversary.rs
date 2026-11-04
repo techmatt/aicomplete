@@ -37,6 +37,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("arrivals", 0, 5, "build: ambassadors each site the adversary card names gains, whatever the board holds"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
+    ParamSpec::int("station_flip_at", 0, 5, "adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::list("project_cards", 0, 20, "adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top"),
     ParamSpec::int("project_row", 1, 6, "adversary projects visible at once; a new row is dealt when all have resolved"),
@@ -924,9 +925,23 @@ pub fn land_troops(
     Ok(())
 }
 
-/// Research station `h`, not yet corrupted, flips to the adversary.
+/// Research station `h`, not yet corrupted, flips to the adversary. r35: a
+/// player's station is defended: it flips only with `station_flip_at`
+/// adversary ambassadors on it and no player ambassador, and those are used
+/// up; short of that one adversary ambassador lands on it instead (a player
+/// ambassador standing there cancels it).
 pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
+    if cube_owner(g, h).is_some() {
+        let need = w.int("adversary.station_flip_at");
+        if g.tokens(h, ADV_AMBASSADOR) < need || player_ambassador(g, h).is_some() {
+            place(g, cx, h, 1);
+            cx.tally(g, "adversary.station_flip_held", 1);
+            cx.note(Some(h), || format!("The station at {} holds: an adversary ambassador lands on it", hex_name(&w, h)));
+            return;
+        }
+        remove(g, cx, h, need);
+    }
     take_for_adversary(g, cx, h);
     // 059: corruption replaces any marker here, as on a city.
     clear_markers_on(g, cx, h);

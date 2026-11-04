@@ -16,12 +16,13 @@ What it does:
    card-level factors. `choose_player` is a condition on the gift that follows it
    (082 values it 0), so it is no effect of its own.
 2. Reasoned value of each effect: a Python mirror of `crates/aic-sim/src/agents/value.rs`
-   (`op_worth`, `ability_worth`, `CardValue::total` at `Ctx::typical`). An action's
+   (`op_worth`, `ability_worth`, `CardValue::total` at `Ctx::typical_for` the card's tier:
+   income and Actions over `horizon_t1` or `horizon_t2` rounds, r35). An action's
    value goes to the ops of its best branch, net of the branch's cost, pro rata; the
    other branches (and a cycle card's add branch) carry 0. The mirror is checked
    against nothing in Rust: if value.rs changes, change `op_worth` here too.
 3. Joint fit: printed cost (credits + other resources at the table's rates, `lowers`
-   over income_rounds) = sum over effects of beta_e x reasoned value + a per-tier
+   over the tier's horizon) = sum over effects of beta_e x reasoned value + a per-tier
    constant + a credit rate per needed tag. beta_e is one multiplier per effect key, so
    the fit reads what an effect is priced at, relative to its reasoned value, across
    all the cards carrying it; fitted value per unit = beta_e x reasoned per unit. An
@@ -96,6 +97,7 @@ class Table:
     def __init__(self, raw):
         self.raw = raw
         self.left = self.rate('income_rounds')
+        self.horizon = self.left
         self.node_count = self.rate('node_count')
         self.tag_count = self.rate('tag_count')
 
@@ -116,13 +118,18 @@ class Table:
             return 0.0
         return self.raw['tags']['first'] + self.raw['tags']['more'] * (len(card['tags']) - 1)
 
+    def at_tier(self, tier):
+        """Ctx::typical_for (r35): income and Actions counted over the tier's horizon."""
+        self.horizon = self.rate('horizon_t2') if tier >= 2 else self.rate('horizon_t1')
+
     def cost(self, card):
-        """Table::cost at the printed price and typical rounds left."""
+        """Table::cost at the printed price, lowered income over the card's horizon."""
+        self.at_tier(card['tier'])
         v = card.get('cost', 0) + self.res('insight') * card.get('insight', 0)
         for r in ('energy', 'chips', 'antimatter', 'research_cubes'):
             v += self.res(r) * card.get(r, 0)
         for r, n in card.get('lowers', []):
-            v += self.res(r) * n * max(self.left, 1.0)
+            v += self.res(r) * n * max(self.horizon, 1.0)
         return v
 
     # Ctx::typical: left = income_rounds, node = node_count, every tag at tag_count,
@@ -136,8 +143,8 @@ class Table:
         return w.income + w.standing + sum(v * self.tag_count for v in w.income_per_tag.values())
 
     def whole(self, w):
-        """What a played op is worth: now plus a round's worth each round left."""
-        return self.instant(w) + self.left * self.per_round(w)
+        """What a played op is worth: now plus a round's worth each round of its horizon."""
+        return self.instant(w) + self.horizon * self.per_round(w)
 
     def use_value(self, w):
         """One use of an action: instant plus a round (as CardValue::total reads use_)."""
@@ -189,9 +196,13 @@ def op_worth(t, o):
         share = 0.8 if o.get('one_country') else 1.0
         if o.get('cities'):
             return Worth(city=row('liberate') * share * n('amount'))
-        return Worth(now=row('cleanse') * share * n('amount'))
+        each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
+        return Worth(now=each * share * n('amount'))
     if op == 'liberate':
-        return Worth(city=row('liberate') + (row('liberate_align') if o.get('align') else 0.0))
+        return Worth(city=row('liberate') + (row('liberate_align') if o.get('align') else 0.0)
+                     + row('gain_ambassadors') * r('ambassadors') * n('ambassadors')
+                     + row('liberate_troops') * n('troops')
+                     + (row('liberate_botnet') if o.get('botnet') else 0.0))
     if op == 'clear_city':
         m = t.rate('token_pile') if n('max') == 0 else n('max')
         return Worth(now=row(op) * m)
@@ -335,8 +346,12 @@ def effect_key(o, slot):
         cat.append('troops' if o.get('troops') else 'ambassadors')
     if o['op'] == 'jam':
         cat.append('typed' if o.get('source') else 'any')
-    if o['op'] == 'liberate' and o.get('align'):
-        cat.append('align')
+    if o['op'] == 'liberate':
+        for k in ('align', 'ambassadors', 'troops', 'botnet'):
+            if o.get(k):
+                cat.append(k)
+    if o['op'] == 'cleanse' and o.get('only'):
+        cat.append(o['only'])
     if o['op'] == 'place_node' and o.get('free'):
         cat.append('free')
     if o['op'] == 'cleanse' and o.get('cities'):
@@ -358,6 +373,7 @@ def needs_text(card):
 
 def decompose(t, card):
     """Each effect instance of one card: dicts with key, slot, quantity, reasoned."""
+    t.at_tier(card['tier'])
     rows = []
 
     def add_list(ops, slot, values=None):
@@ -375,7 +391,7 @@ def decompose(t, card):
     add_list(card.get('passives', []), 'passive')
     if card.get('ability'):
         parts, _ = ability_parts(t, card['ability'])
-        uses = t.left * t.rate('uses_share')
+        uses = t.horizon * t.rate('uses_share')
         bs = branches(card['ability'])
         for bi, b in enumerate(bs):
             ops = b.get('effects', [])

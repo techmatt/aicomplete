@@ -13,6 +13,7 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
     }
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 6);
+        set_res(&mut g, s, Resource::Energy, 1);
     }
     let legal = rules.legal_actions(&g);
     // Only players with one of its sources in reach may pay.
@@ -29,7 +30,7 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
         resource,
         amount,
     };
-    // Blackout: 4 credits (024). Pay 1, withdraw, then pay in full.
+    // Blackout: 1 credit and 1 energy (r35). Pay 1, withdraw, then pay in full.
     rules
         .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
         .unwrap();
@@ -48,14 +49,19 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
         .apply_mut(&mut g, &pay(0, "blackout", Resource::Credits, 1), None)
         .is_err());
     rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 4), None)
+        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
+        .unwrap();
+    assert_eq!(g.pile("threats.on.1"), ["blackout"], "the energy is still owed");
+    rules
+        .apply_mut(&mut g, &pay(1, "blackout", Resource::Energy, 1), None)
         .unwrap();
     assert!(g.pile("threats.on.1").is_empty());
     assert_eq!(g.pile("threats.discard.1")[0], "blackout");
-    assert_eq!(g.resource(1, Resource::Credits), 2);
-    // Sabotage: 5 credits. Pay only part; it comes back.
+    assert_eq!(g.resource(1, Resource::Credits), 5);
+    assert_eq!(g.resource(1, Resource::Energy), 0);
+    // Sabotage: 1 credit and 1 energy (r35). Pay only part; it comes back.
     rules
-        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Credits, 2), None)
+        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Credits, 1), None)
         .unwrap();
     assert_eq!(g.pile("threats.on.0"), ["sabotage"]);
     let discord = g.var("alignment.discord");
@@ -76,9 +82,10 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
 #[test]
 fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     let (rules, mut g) = threat_lab();
-    // Blackout needs 4 credits (024); with 2 paid, Red-Team Audit's jam 4 (076:
-    // Threat Triage's jam 2 merged away) takes it to 0: countered at once, and
-    // the 2 paid come back, as a counter's partial payments do.
+    // Blackout needs 1 credit and 1 energy (r35); with the credit paid, Red-Team
+    // Audit's jam 4 (076: Threat Triage's jam 2 merged away; a jam takes every
+    // entry) takes it to 0: countered at once, and the credit paid comes back,
+    // as a counter's partial payments do.
     deal(&mut g, "blackout", 0);
     put(&mut g, rules.map.numbered(0, piece(0).node), BOTNET, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
@@ -89,7 +96,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
                 seat: 0,
                 threat: "blackout".into(),
                 resource: Resource::Credits,
-                amount: 2,
+                amount: 1,
             },
             None,
         )

@@ -60,7 +60,7 @@ fn a_removal_says_which_pieces() {
     assert_eq!(face_of("bounty_board").text, "Remove 1 troop in reach. Gain 1 credit per Security tag on your cards.");
     // 076 (ruling 6): a printed number in one country, never "per hex".
     assert_eq!(face_of("eviction_worm").text, "Remove 6 adversary ambassadors in one country.");
-    assert_eq!(face_of("kinetic_interdiction").text, "Pay 1 antimatter. Remove 6 troops in one country.");
+    assert_eq!(face_of("kinetic_interdiction").text, "Pay 2 energy and 1 antimatter. Remove 6 troops in one country.");
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);
     }

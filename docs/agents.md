@@ -79,9 +79,12 @@ resource, tag left in play, token and op; the table is the rates' one home, and
 card-pricing.md keeps the method and the rates known to be off. `value.rs` matches every op
 with no catch-all arm, so a new op doesn't compile without its arm, and `every_op_has_a_row`
 fails until its row is in the table. A card is worth its ops: what its effects do now, what
-its standing effects pay a round times the rounds left, a use of its Action times
-`uses_share` of the rounds left (a progressive token card's spend over the uses its cycle of
-adds takes), and its tags.
+its standing effects pay a round times the rounds it counts for, a use of its Action times
+`uses_share` of those rounds (a progressive token card's spend over the uses its cycle of
+adds takes), and its tags. In a game those rounds are the rounds left; at the table's typical
+context (the opening's strategy choice, the effect ledger) they are its tier's horizon,
+`horizon_t1` 4 and `horizon_t2` 2.5 (r35: the rounds left at a typical purchase less a tempo
+discount).
 
 Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, off for `greedy`):
 

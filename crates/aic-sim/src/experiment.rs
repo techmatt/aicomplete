@@ -755,9 +755,11 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
     r.counters = g.stats.counters.iter().map(|(k, v)| (k.to_string(), *v)).collect();
     // 021: the per-round tables of the card, AI, economy and node
     // counters, as `<key>.rNN` (summed over seats), for the screen's by-round
-    // tables. Others (`adversary.*`) stay out, to keep games.jsonl small.
+    // tables. Others (`adversary.*`) stay out, to keep games.jsonl small. 090:
+    // energy each seat holds as the action phase ends (`unspent.<seat>.energy`).
     for (k, v) in &g.stats.per_round {
-        if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.node") {
+        let energy = k.starts_with("unspent.") && k.ends_with(".energy");
+        if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.node") || energy {
             for (i, n) in v.iter().enumerate().skip(1) {
                 if *n != 0 {
                     r.counters.insert(format!("{k}.r{i:02}"), *n);

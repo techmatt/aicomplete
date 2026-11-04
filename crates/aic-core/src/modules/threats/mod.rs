@@ -372,6 +372,12 @@ fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool {
     let payers: Vec<usize> = (0..g.seats.len())
         .filter(|&p| req.iter().any(|(r, _)| g.var(&paid_key(threat, p, *r)) > 0))
         .collect();
+    // 090: what counters cost beyond credits, the measure's (energy counters).
+    for (r, need) in &req {
+        if *r != Resource::Credits && *need > 0 {
+            cx.tally(g, &format!("threats.counter_paid.{r}"), *need);
+        }
+    }
     for (r, need) in &req {
         let mut excess = paid(g, threat, *r) - need;
         for p in (0..g.seats.len()).rev() {

@@ -40,7 +40,7 @@
       "black_ice_fortress": { "card": "black_ice_citadel", "subject": "A fortress of faceted black crystal rising from a frozen plain, its walls threaded with cold green circuit lines." },
       "city_of_infected_devices": { "card": "hyperscale_botnet", "subject": "A hillside city from above with thousands of rooftop devices all tilted the same way, linked by fine bright threads." },
       "red_switch": { "card": "killswitch_directive", "subject": "A heavy lever under a lifted safety cover on a bare concrete wall, a gloved hand pulling it down." },
-      "severed_cable": { "card": "node_severance", "subject": "A thick undersea-gauge data cable cut clean through on a dockside, its bright strands fanned out, sparks falling." },
+      "severed_cable": { "card": "botnet_takedown", "subject": "A thick undersea-gauge data cable cut clean through on a dockside, its bright strands fanned out, sparks falling." },
       "falling_dominoes_of_servers": { "was": "cascade_failure", "subject": "A long row of tall server cabinets toppling like dominoes down a wide hall." },
       "intrusion_pact_table": { "was": "mesh_intrusion_pact", "subject": "Three small teams at linked terminals around a round table, one woven cable running between all of them." },
       "singularity_rift": { "card": "singularity_exploit", "subject": "A small sphere of folded light hanging inside a data hall, racks bending and stretching toward it." },

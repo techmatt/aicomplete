@@ -503,7 +503,7 @@
   "name": "Orbital Observatory Array",
   "tier": 2,
   "kind": "building",
-  "cost": 16,
+  "cost": 18,
   "insight": 2,
   "needs": [
    [
@@ -743,7 +743,7 @@
   "name": "Prefab Plant Kit",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "industry",
@@ -784,7 +784,7 @@
   "name": "Reclamation Crew",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 11,
   "insight": 1,
   "tags": [
    "industry",
@@ -793,8 +793,9 @@
   "effects": [
    {
     "op": "cleanse",
-    "amount": 2,
-    "one_country": false
+    "amount": 1,
+    "one_country": false,
+    "only": "station"
    }
   ]
  },
@@ -1154,7 +1155,8 @@
     "resource": "chips",
     "amount": 3
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "arc_furnace_complex",
@@ -1595,7 +1597,7 @@
   "name": "Killswitch Directive",
   "tier": 2,
   "kind": "event",
-  "cost": 12,
+  "cost": 6,
   "insight": 2,
   "tags": [
    "cyber"
@@ -1610,7 +1612,7 @@
   ]
  },
  {
-  "id": "node_severance",
+  "id": "botnet_takedown",
   "name": "Botnet Takedown",
   "tier": 2,
   "kind": "event",
@@ -1644,7 +1646,7 @@
   "name": "Singularity Exploit",
   "tier": 2,
   "kind": "program",
-  "cost": 18,
+  "cost": 8,
   "antimatter": 1,
   "insight": 2,
   "needs": [
@@ -1730,7 +1732,7 @@
   "name": "Baseload Contract",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "power"
@@ -1739,7 +1741,7 @@
    {
     "op": "production",
     "resource": "energy",
-    "amount": 2
+    "amount": 1
    }
   ]
  },
@@ -1808,7 +1810,7 @@
   "name": "Grid Census",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 12,
   "insight": 1,
   "tags": [
    "power"
@@ -1825,7 +1827,7 @@
   "name": "Peaker Turbines",
   "tier": 1,
   "kind": "program",
-  "cost": 9,
+  "cost": 12,
   "insight": 1,
   "tags": [
    "power",
@@ -1835,7 +1837,7 @@
    {
     "op": "production",
     "resource": "energy",
-    "amount": 2
+    "amount": 1
    },
    {
     "op": "production",
@@ -1896,7 +1898,7 @@
    {
     "op": "other_gain",
     "resource": "energy",
-    "amount": 3
+    "amount": 2
    },
    {
     "op": "place_node",
@@ -1935,7 +1937,7 @@
   "name": "Fusion Startup Stake",
   "tier": 1,
   "kind": "program",
-  "cost": 10,
+  "cost": 14,
   "insight": 1,
   "tags": [
    "power"
@@ -1958,7 +1960,7 @@
   "name": "Tidal Barrage",
   "tier": 1,
   "kind": "building",
-  "cost": 9,
+  "cost": 10,
   "insight": 1,
   "needs": [
    [
@@ -1974,7 +1976,7 @@
     "op": "income_per_tag",
     "resource": "energy",
     "tag": "power",
-    "per": 1
+    "per": 2
    }
   ]
  },
@@ -1983,7 +1985,7 @@
   "name": "Substation Hub",
   "tier": 1,
   "kind": "building",
-  "cost": 5,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "power",
@@ -1994,21 +1996,33 @@
     "op": "income",
     "resource": "energy",
     "amount": 1
-   },
-   {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "industry",
-    "per": 2
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "choose_player"
+    },
+    {
+     "op": "other_gain",
+     "resource": "chips",
+     "amount": 2
+    }
+   ]
+  }
  },
  {
   "id": "faraday_yard",
   "name": "Faraday Yard",
   "tier": 1,
   "kind": "building",
-  "cost": 6,
+  "cost": 11,
   "insight": 1,
   "tags": [
    "power"
@@ -2034,7 +2048,7 @@
   "name": "Capacitor Discharge",
   "tier": 1,
   "kind": "event",
-  "cost": 3,
+  "cost": 7,
   "insight": 0,
   "tags": [
    "power"
@@ -2094,7 +2108,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 14,
+  "cost": 12,
   "insight": 2,
   "needs": [
    [
@@ -2110,7 +2124,7 @@
    {
     "op": "income",
     "resource": "energy",
-    "amount": 3
+    "amount": 1
    },
    {
     "op": "income",
@@ -2142,7 +2156,7 @@
    {
     "op": "income",
     "resource": "energy",
-    "amount": 5
+    "amount": 2
    },
    {
     "op": "income",
@@ -2156,7 +2170,7 @@
   "name": "Continental Supergrid",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
+  "cost": 6,
   "insight": 2,
   "needs": [
    [
@@ -2172,7 +2186,7 @@
    {
     "op": "income",
     "resource": "energy",
-    "amount": 4
+    "amount": 2
    },
    {
     "op": "income_per_tag",
@@ -2237,7 +2251,7 @@
    {
     "op": "other_gain",
     "resource": "energy",
-    "amount": 6
+    "amount": 3
    },
    {
     "op": "production",
@@ -2493,7 +2507,7 @@
    {
     "op": "other_gain",
     "resource": "energy",
-    "amount": 4
+    "amount": 2
    },
    {
     "op": "harden",
@@ -2622,7 +2636,7 @@
   "name": "Treaty Grid Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 11,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2632,15 +2646,28 @@
   "passives": [
    {
     "op": "income",
-    "resource": "credits",
-    "amount": 2
-   },
-   {
-    "op": "income",
     "resource": "energy",
     "amount": 1
    }
-  ]
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "choose_player"
+    },
+    {
+     "op": "other_gain",
+     "resource": "insight",
+     "amount": 1
+    }
+   ]
+  }
  },
  {
   "id": "back_channel_talks",
@@ -2656,7 +2683,8 @@
    {
     "op": "cleanse",
     "amount": 2,
-    "one_country": false
+    "one_country": false,
+    "only": "factory"
    },
    {
     "op": "sway",
@@ -3222,7 +3250,7 @@
   "name": "Hardened Bunker Complex",
   "tier": 1,
   "kind": "building",
-  "cost": 7,
+  "cost": 10,
   "insight": 1,
   "tags": [
    "security"
@@ -3231,7 +3259,7 @@
    {
     "op": "income",
     "resource": "energy",
-    "amount": 2
+    "amount": 1
    },
    {
     "op": "harden_action",
@@ -3514,7 +3542,8 @@
     "op": "remove_troops",
     "count": 6
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "total_containment",
@@ -3793,7 +3822,7 @@
   "name": "Market Stabilization Board",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 13,
   "insight": 1,
   "needs": [
    [
@@ -3824,7 +3853,7 @@
   "name": "Sentinel Command",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 13,
   "insight": 1,
   "needs": [
    [
@@ -3855,7 +3884,7 @@
   "name": "Civic Trust Bureau",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 13,
   "insight": 1,
   "needs": [
    [
@@ -3886,7 +3915,7 @@
   "name": "Autonomous Defense Grid",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 13,
   "insight": 1,
   "needs": [
    [
@@ -4089,7 +4118,7 @@
   "name": "The Nuclear Option",
   "tier": 2,
   "kind": "event",
-  "cost": 12,
+  "cost": 19,
   "antimatter": 1,
   "insight": 1,
   "tags": [
@@ -4111,7 +4140,7 @@
   "name": "Power to the People",
   "tier": 2,
   "kind": "building",
-  "cost": 12,
+  "cost": 25,
   "energy": 4,
   "chips": 3,
   "insight": 1,
@@ -4138,7 +4167,7 @@
   "name": "Hostile Buyout",
   "tier": 2,
   "kind": "event",
-  "cost": 30,
+  "cost": 47,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -4146,7 +4175,8 @@
   "effects": [
    {
     "op": "liberate",
-    "align": true
+    "align": true,
+    "ambassadors": 1
    }
   ]
  },
@@ -4155,7 +4185,7 @@
   "name": "Forensic Audit",
   "tier": 2,
   "kind": "event",
-  "cost": 10,
+  "cost": 27,
   "research_cubes": 4,
   "insight": 1,
   "tags": [
@@ -4172,7 +4202,7 @@
   "name": "Root Access",
   "tier": 2,
   "kind": "event",
-  "cost": 16,
+  "cost": 40,
   "insight": 1,
   "needs": [
    [
@@ -4185,7 +4215,8 @@
   ],
   "effects": [
    {
-    "op": "liberate"
+    "op": "liberate",
+    "botnet": true
    }
   ]
  },
@@ -4194,7 +4225,7 @@
   "name": "Peacekeeping Mission",
   "tier": 2,
   "kind": "event",
-  "cost": 16,
+  "cost": 45,
   "insight": 1,
   "needs": [
    [
@@ -4208,7 +4239,7 @@
   "effects": [
    {
     "op": "liberate",
-    "align": true
+    "troops": 3
    }
   ]
  },
@@ -4217,7 +4248,7 @@
   "name": "Popular Uprising",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 19,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -4251,7 +4282,9 @@
      {
       "op": "liberate"
      }
-    ]
+    ],
+    "tips": 2,
+    "once": true
    }
   }
  }

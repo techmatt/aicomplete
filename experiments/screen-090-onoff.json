@@ -1,0 +1,271 @@
+{
+  "name": "screen-090-onoff",
+  "note": "090: each r35 mechanic on (base: the prompt's design) and off on the same seeds, the strategist at d2, the three board pairs: energy counters, energy-cost cards, the energy gift, station freeing, station defense, the capstone twists, Popular Uprising's gate and once, the dear powers' r34 costs. Read with scripts/cards/energy_read.py and scripts/bench/paired.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "bp-counters_off",
+      "set": [
+        "threats.blackout.counter=[[\"credits\",4]]",
+        "threats.sabotage.counter=[[\"credits\",5]]",
+        "threats.commandeer.counter=[[\"credits\",4]]"
+      ]
+    },
+    {
+      "name": "bp-ecards_off",
+      "set": [
+        "cards.kinetic_interdiction.energy=0",
+        "cards.orbital_mass_driver.energy=0",
+        "cards.nuclear_option.energy=0"
+      ]
+    },
+    {
+      "name": "bp-gift_off",
+      "set": [
+        "cards.substation_hub.ability=null",
+        "cards.treaty_grid_exchange.ability=null",
+        "cards.tidal_barrage.ability=null"
+      ]
+    },
+    {
+      "name": "bp-freeing_off",
+      "set": [
+        "board.free_station_ambassadors=5"
+      ]
+    },
+    {
+      "name": "bp-defense_off",
+      "set": [
+        "adversary.station_flip_at=0"
+      ]
+    },
+    {
+      "name": "bp-twists_off",
+      "set": [
+        "cards.hostile_buyout.effects.0.ambassadors=0",
+        "cards.peacekeeping_mission.effects.0.troops=0",
+        "cards.root_access.effects.0.botnet=false"
+      ]
+    },
+    {
+      "name": "bp-uprising_off",
+      "set": [
+        "cards.popular_uprising.ability.or.tips=0",
+        "cards.popular_uprising.ability.or.once=false"
+      ]
+    },
+    {
+      "name": "bp-powers_off",
+      "set": [
+        "ais.builder.powers.5.tags=[[\"industry\",2]]",
+        "ais.builder.powers.5.cost=[]",
+        "ais.protector.powers.5.tags=[[\"security\",2]]",
+        "ais.protector.powers.5.cost=[]",
+        "ais.researcher.powers.6.tags=[[\"power\",2]]",
+        "ais.researcher.powers.6.cost=[]"
+      ]
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "br-counters_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "threats.blackout.counter=[[\"credits\",4]]",
+        "threats.sabotage.counter=[[\"credits\",5]]",
+        "threats.commandeer.counter=[[\"credits\",4]]"
+      ]
+    },
+    {
+      "name": "br-ecards_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "cards.kinetic_interdiction.energy=0",
+        "cards.orbital_mass_driver.energy=0",
+        "cards.nuclear_option.energy=0"
+      ]
+    },
+    {
+      "name": "br-gift_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "cards.substation_hub.ability=null",
+        "cards.treaty_grid_exchange.ability=null",
+        "cards.tidal_barrage.ability=null"
+      ]
+    },
+    {
+      "name": "br-freeing_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "board.free_station_ambassadors=5"
+      ]
+    },
+    {
+      "name": "br-defense_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "adversary.station_flip_at=0"
+      ]
+    },
+    {
+      "name": "br-twists_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "cards.hostile_buyout.effects.0.ambassadors=0",
+        "cards.peacekeeping_mission.effects.0.troops=0",
+        "cards.root_access.effects.0.botnet=false"
+      ]
+    },
+    {
+      "name": "br-uprising_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "cards.popular_uprising.ability.or.tips=0",
+        "cards.popular_uprising.ability.or.once=false"
+      ]
+    },
+    {
+      "name": "br-powers_off",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "ais.builder.powers.5.tags=[[\"industry\",2]]",
+        "ais.builder.powers.5.cost=[]",
+        "ais.protector.powers.5.tags=[[\"security\",2]]",
+        "ais.protector.powers.5.cost=[]",
+        "ais.researcher.powers.6.tags=[[\"power\",2]]",
+        "ais.researcher.powers.6.cost=[]"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    },
+    {
+      "name": "pr-counters_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "threats.blackout.counter=[[\"credits\",4]]",
+        "threats.sabotage.counter=[[\"credits\",5]]",
+        "threats.commandeer.counter=[[\"credits\",4]]"
+      ]
+    },
+    {
+      "name": "pr-ecards_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "cards.kinetic_interdiction.energy=0",
+        "cards.orbital_mass_driver.energy=0",
+        "cards.nuclear_option.energy=0"
+      ]
+    },
+    {
+      "name": "pr-gift_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "cards.substation_hub.ability=null",
+        "cards.treaty_grid_exchange.ability=null",
+        "cards.tidal_barrage.ability=null"
+      ]
+    },
+    {
+      "name": "pr-freeing_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "board.free_station_ambassadors=5"
+      ]
+    },
+    {
+      "name": "pr-defense_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "adversary.station_flip_at=0"
+      ]
+    },
+    {
+      "name": "pr-twists_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "cards.hostile_buyout.effects.0.ambassadors=0",
+        "cards.peacekeeping_mission.effects.0.troops=0",
+        "cards.root_access.effects.0.botnet=false"
+      ]
+    },
+    {
+      "name": "pr-uprising_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "cards.popular_uprising.ability.or.tips=0",
+        "cards.popular_uprising.ability.or.once=false"
+      ]
+    },
+    {
+      "name": "pr-powers_off",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "ais.builder.powers.5.tags=[[\"industry\",2]]",
+        "ais.builder.powers.5.cost=[]",
+        "ais.protector.powers.5.tags=[[\"security\",2]]",
+        "ais.protector.powers.5.cost=[]",
+        "ais.researcher.powers.6.tags=[[\"power\",2]]",
+        "ais.researcher.powers.6.cost=[]"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

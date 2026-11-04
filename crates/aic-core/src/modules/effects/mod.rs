@@ -4,7 +4,7 @@
 //! stay there; an arm here calls them. Standing ops and the twist-only ops are
 //! read by the rule they change and never resolve.
 
-use crate::content::{Op, RoundFlag, Side};
+use crate::content::{Facility, Op, RoundFlag, Side};
 use crate::key::Key;
 use crate::module::{Cx, Res, World};
 use crate::state::{GameState, Opt};
@@ -91,8 +91,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max)?
         }
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
-        Op::Cleanse { amount, one_country, cities } => removal::cleanse(g, cx, seat, *amount, *one_country, *cities)?,
-        Op::Liberate { align } => removal::liberate_city(g, cx, seat, *align)?,
+        Op::Cleanse { amount, one_country, cities, only } => {
+            removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only)?
+        }
+        Op::Liberate { align, ambassadors, troops, botnet } => {
+            removal::liberate_city(g, cx, seat, *align, *ambassadors, *troops, *botnet)?
+        }
         Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
         Op::Harden { count } => resources::harden(g, cx, seat, *count)?,
         Op::MoveAmbassadors { max } => ambassadors::move_ambassadors(g, cx, seat, *max)?,

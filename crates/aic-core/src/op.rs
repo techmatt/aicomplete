@@ -80,6 +80,18 @@ pub enum Site {
     BaseSites,
 }
 
+/// A facility kind a cleanse may be limited to (r35).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Facility {
+    Station,
+    Factory,
+}
+
+fn is_zero(n: &i64) -> bool {
+    *n == 0
+}
+
 impl RoundFlag {
     pub fn name(self) -> &'static str {
         match self {
@@ -178,19 +190,31 @@ pub enum Op {
     /// Take the adversary cube off up to `amount` corrupted stations or
     /// factories, one at a time (`one_country`: all in the first one's
     /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
-    /// does (`board::liberate`); only a tier-2 ultimate prints it.
+    /// does (`board::liberate`); only a tier-2 ultimate prints it. `only` (r35):
+    /// stations alone or factories alone, priced apart (a station is a flip
+    /// worth several cubes both ways, a factory stays cheap).
     Cleanse {
         amount: i64,
         one_country: bool,
         #[serde(default)]
         cities: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        only: Option<Facility>,
     },
     /// Liberate one corrupted city in your reach (080, r34: the liberate
     /// capstones): its adversary cube comes off, so it is clean; with `align`
-    /// your cube goes on it.
+    /// your cube goes on it. Each engine's twist (r35): `ambassadors`, you gain
+    /// that many; `troops`, up to that many adversary troops in the city's
+    /// country come off; `botnet`, a botnet on or next to the city comes off.
     Liberate {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         align: bool,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        ambassadors: i64,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        troops: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        botnet: bool,
     },
     /// Remove up to `max` adversary ambassadors (0: all) on or next to one
     /// corrupted city in your reach, the ones next to it first (024).

@@ -627,8 +627,10 @@ impl Agent for Policy {
 /// opening deal, with `f`'s fixed ones (`strat0`..`strat2`) standing.
 pub fn opening_choice(w: &World, g: &GameState, f: &Forced) -> Choice {
     let t = value::table();
-    let typical = Ctx::typical(t);
-    let worth = |d: &CardDef| CardValue::of(t, d).total(t, &typical) - t.cost(d, d.cost, d.insight, typical.left);
+    let worth = |d: &CardDef| {
+        let typical = Ctx::typical_for(t, d.tier);
+        CardValue::of(t, d).total(t, &typical) - t.cost(d, d.cost, d.insight, typical.horizon)
+    };
     let fixed = [f.strat0, f.strat1, f.strat2, 0];
     let mut c: Choice = [None; 4];
     for (s, slot) in c.iter_mut().enumerate().take(g.seats.len().min(4)) {
@@ -924,7 +926,7 @@ fn value(
         return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = value::table();
-    let ctx = Ctx { left: (pt.left - round as f64).max(0.0), node: pt.node, tags: *tags, corrupted: pt.corrupted };
+    let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted);
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
             let i = w.content.card_index(&d.id).unwrap_or(0);

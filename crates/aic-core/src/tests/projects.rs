@@ -35,13 +35,13 @@ fn setup_deals_three_cheap_projects_from_a_staged_deck() {
 fn compute_fills_the_cheapest_project_which_resolves_when_full() {
     let (rules, mut g) = lab(&[]);
     // At 2 players: False Flag 12, Disinformation 10, Botnet Swarm 10.
-    row(&mut g, &["false_flag", "disinformation", "node_swarm"]);
+    row(&mut g, &["false_flag", "disinformation", "botnet_swarm"]);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
     // Disinformation (the first of the cheapest) filled at 10 and resolved:
     // 4 toward Discord. The 11th point went onto Botnet Swarm.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 4);
-    assert_eq!(g.var(&adversary::project_key("node_swarm")), 1);
+    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 1);
     assert_eq!(g.var(&adversary::project_key("false_flag")), 0);
     assert_eq!(g.var(adversary::COMPUTE), 11);
     assert_eq!(g.stats.counters["adversary.projects_resolved.cheap"], 1);
@@ -177,7 +177,7 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
         .unwrap();
     let near = m.hexes[p].neighbors[0];
     put(&mut g, far, BOTNET, 1);
-    set_pile(&mut g, "cards.hand.0", &["node_severance"]);
+    set_pile(&mut g, "cards.hand.0", &["botnet_takedown"]);
     fund(&mut g, 0);
     // It needs a Cyber tag in play, and (076) a project holding compute for its drain.
     Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("blackout_script".into());
@@ -185,7 +185,7 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
     g.vars.insert(adversary::project_key("false_flag").into(), 6);
     let play = Action::Play {
         seat: 0,
-        card: "node_severance".into(),
+        card: "botnet_takedown".into(),
     };
     // Only a botnet within reach.
     assert!(!rules.legal_actions(&g).contains(&play));

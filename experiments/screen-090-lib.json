@@ -1,0 +1,79 @@
+{
+  "name": "screen-090-lib",
+  "note": "090: the liberate family at its corrected value (082's liberate row at 45, the ledger's fit) against base on the same seeds, the strategist at d2, the three board pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2"
+      ]
+    },
+    {
+      "name": "bp-libvalue",
+      "set": [
+        "cards.hostile_buyout.cost=47",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.root_access.cost=40",
+        "cards.nuclear_option.cost=15",
+        "cards.power_to_the_people.cost=25",
+        "cards.forensic_audit.cost=27",
+        "cards.popular_uprising.cost=19"
+      ]
+    },
+    {
+      "name": "br-libvalue",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=40,40",
+        "ai.slots=5,2",
+        "cards.hostile_buyout.cost=47",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.root_access.cost=40",
+        "cards.nuclear_option.cost=15",
+        "cards.power_to_the_people.cost=25",
+        "cards.forensic_audit.cost=27",
+        "cards.popular_uprising.cost=19"
+      ]
+    },
+    {
+      "name": "pr-libvalue",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=46,40",
+        "ai.slots=3,2",
+        "cards.hostile_buyout.cost=47",
+        "cards.peacekeeping_mission.cost=45",
+        "cards.root_access.cost=40",
+        "cards.nuclear_option.cost=15",
+        "cards.power_to_the_people.cost=25",
+        "cards.forensic_audit.cost=27",
+        "cards.popular_uprising.cost=19"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

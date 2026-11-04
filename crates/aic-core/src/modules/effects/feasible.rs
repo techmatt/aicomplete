@@ -68,8 +68,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             .any(|&h| in_reach(w, g, seat, h)),
         Op::RemoveAmbassadorsCountry { .. } => any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0),
         Op::BuildFactory => !factory_sites(w, g, seat).is_empty(),
-        Op::Cleanse { cities, .. } => {
-            any_hex(g, |h| cleansable(w, g, h, *cities) && in_reach(w, g, seat, h))
+        Op::Cleanse { cities, only, .. } => {
+            any_hex(g, |h| cleansable(w, g, h, *cities, *only) && in_reach(w, g, seat, h))
         }
         Op::Liberate { .. } => !liberable_cities(w, g, seat).is_empty(),
         Op::ClearCity { .. } => !guarded_cities(w, g, seat).is_empty(),

@@ -38,12 +38,20 @@ Current:
   lacked the tags; then tags by round: each seat's most-held tag on its cards in play (`ai.tag_top.<seat>`),
   mean and share at 3 or more. A variant's seats follow its `ai.boards=` override. Reads r32 outputs too (no tag
   table). Seconds.
+- `cards/energy_read.py DIR...` (090): per cell, pooled across DIRs: win %, the energy a seat holds as the action
+  phase ends at rounds 3 and 6 and at its last round (`unspent.<seat>.energy.rNN`, exported from 090), then the use per
+  game of each r35 mechanic: energy paid to counters, energy-cost cards, the energy gift Actions, stations freed and
+  flips held, the capstones and their twists, Popular Uprising's liberation, Rush Build, Shelter and Particle Run.
+  Seconds.
 - `cards/corp_read.py DIR...`: per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl
   ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, opening deal and draws
   included: never a share of offered, which would pass 100.
-- `cards/effect_ledger.py`: rewrites `experiments/results/effect-ledger/`, where card prices disagree
-  with each other and with the value table; rerun at each card revision. Its docstring says how it reads.
+- `cards/effect_ledger.py` (no flags): the effect ledger (088). It splits each card's printed cost over its
+  effects pro rata to 082's reasoned values (`configs/agents/values.json`, an income valued over its tier's
+  horizon), fits a price multiplier per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to
+  `experiments/results/effect-ledger/`; rerun at each card revision. Its Python mirror of `agents/value.rs`
+  must change with it. Seconds.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on

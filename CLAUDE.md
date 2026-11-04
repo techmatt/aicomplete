@@ -116,4 +116,6 @@ Write the report to the path conductor's preamble gives, starting with the heade
 - Findings, decisions and surprises only: no process narration.
 - Mention tests only for a red you couldn't fix.
 - Answer every amendment and message by number.
+- A rules item's report ends with a short new-player summary of its rule changes, naming any rule
+  that resisted one (Matt, 2026-11-03).
 - End your final message with `Report written to <path>`.

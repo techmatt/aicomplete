@@ -37,11 +37,13 @@ fn rush_build_pays_tags_and_no_credits() {
     set_pile(&mut g, &cards::hand(0), &["liaison_corps"]);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
+    set_res(&mut g, 0, Resource::Energy, 1);
     act(&rules, &mut g, power(&rules, 0, "Rush Build"));
     assert!(g.pile(&cards::built(0)).contains(&Key::new("liaison_corps")));
     assert_eq!(g.resource(0, Resource::Credits), 0);
+    assert_eq!(g.resource(0, Resource::Energy), 0, "r35: an Industry tag and an energy");
     assert!(g.resource(0, Resource::Insight) < 3, "its insight is still paid");
-    assert_eq!(g.pile(&cards::played(0)).len(), 1, "two tags went (078), the third card stays");
+    assert_eq!(g.pile(&cards::played(0)).len(), 2, "one tag went (r35), two cards stay");
 }
 
 #[test]
