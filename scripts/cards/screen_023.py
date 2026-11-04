@@ -1,4 +1,4 @@
-"""Kept for the docs that cite it (docs/principles.md, screen-023-cards/cards.md); new work: scripts/cards/screen.py.
+"""Kept for the docs that cite it (screen-023-cards/cards.md); new work: scripts/cards/screen.py.
 
 The card-set screen summary (023, rules r14).
 
@@ -150,7 +150,7 @@ def tag_table(cells, games, cards):
 
 
 def main(argv):
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     cards = content()
     cells, games = s22.load(argv[0])
     print('## Win rates\n')

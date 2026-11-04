@@ -444,6 +444,7 @@ export function exportCards(root = REPO) {
   });
   for (const id of Object.keys(notes)) if (!out.some((c) => c.id === id)) warnings.push(`docs/card-pricing-notes.json names ${id}, which is no card`);
   for (const id of Object.keys(stats.reasoned)) if (!out.some((c) => c.id === id)) warnings.push(`a reasoned price names ${id}, which is no card`);
+  for (const [id, scene] of Object.entries(scenes)) if (!out.some((c) => c.id === id)) warnings.push(`tools/card-art/scenes.json: scene ${scene} names ${id}, which is no card`);
   for (const c of out) if (c.inDeck === false) c.keywords.push('not in baseline');
 
   const git = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' });

@@ -96,7 +96,7 @@ def adversary(cells, games):
 
 
 def main(argv):
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     if argv[0] == '--brief':
         for d in argv[1:]:
             print(f'\n### {d}\n')

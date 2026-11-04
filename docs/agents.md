@@ -7,7 +7,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 - **No peeking.** Before any search an agent replaces what the printed game hides with
   a guess from its own RNG (`agents/determinize.rs`): the player-card and threat
   decks are shuffled; the Unity and Discord piles are dealt again from their tier's unresolved
-  printed cards; each hidden adversary-deck position gets an unseen card of its stage (the
+  printed cards; the project deck within each stage; each hidden adversary-deck position gets an unseen card of its stage (the
   top cards stay put under Recon Sweep); RNG streams are reseeded. A test changes only hidden information
   and checks that decisions stay the same.
 - **Own randomness.** Each agent's RNG is the game seed on a stream named after the agent
@@ -46,7 +46,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 | `strategist` | `engine:strategy=1`: greedy with strategy, no search. **The screens' judge** (*The tiers*). | the engine's |
 | `planner` | The engine, with a shortlist of alternatives in the action phase, each rolled out with the engine as policy to the first decision `horizon` rounds on; the best line by the heuristic is taken. A line runs on the real state but the Alignment deal (**full information**, Matt, 2026-10-29), valued as the mean over `deals` guesses of the deal (played once to its first tip, then forked; an alternative must lead by `lead` on the first guess before it and its rival play the rest, then lead on the mean). Each decision inside a line is still scored on a guess: on open decks the one-step heuristic wins far less (it drafts by printed cost). `hide_alignment_deal` is `determinize`'s `redeal_alignment` alone; it reorders every pile it redeals, so at d2 a line sees the fully dealt Discord deck in a guessed order. **Speed:** the followed line is reused, so a decision pays only for its alternatives. | `horizon` 2, `alts` 2 a decision, `budget` 8 a round, `margin` 40 (only actions this close to the engine's best), `choices` 2, `samples` 1, `prune` 12 (actions each seat keeps through a rollout phase after its first full scoring), `powers` 6 (powers kept so; 6, a board's count, is off), `answers` 99 (prompts an answer looks on in a rollout, at most `choices`), `deals` 4, `lead` 0. Keep and dominance parameters are the engine's and hold in its rollouts. `--quick` keeps it. `sweep[:...]` is `planner:deals=1,lead=0`, for price sweeps. |
 
-**Keeping by plan (`agents/policy.rs`).** Greedy and engine keep drafted cards by a plan
+**Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafted cards by a plan
 (`plan_keep` 1; 0 lets the heuristic keep): at its first keep of the round a seat sketches
 `plan_rounds` (4) rounds from what it holds and earns, fills each round's budget with the
 cards it would play in value-per-cost order (value: the value table at the rounds then left
@@ -88,7 +88,7 @@ Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, o
 - **A card in hand:** `hand_share` of its net worth (value less play cost, times the chance
   of paying and the progress term); under 1, or holding a card would be as good as playing it.
 - **A card to draft or keep:** its value times the strategy multiplier, less `pick_cost` of its
-  play cost, less its keep times `packet_keep` in the packet. `pick_cost` is 0 because the keep
+  play cost, less its keep times `packet_keep` in the packet; times `hand_share`, then `drafted`. `pick_cost` is 0 because the keep
   plan judges what a seat can pay: at 1 a tier-2 card, priced at about its value less its
   keep, reads as worth no more than its keep, and the engine drafts tier 1 only.
 - **A building in play:** what it earns a round beyond income, times the rounds left.
@@ -106,7 +106,7 @@ multipliers add most to what those cards are worth (`strategy=1`; `strat0`, `str
 card's tags, the resources and tokens it pays in or out, its kind and its categories; a
 card's multiplier is 1 plus the weights it matches, times the **phase schedule** for its
 categories: early (rounds 1-3) income ×1.4 and engine pieces ×1.3; mid (4-6) chain pieces
-(a card with `needs`) ×1.4; late (7 on) capstones ×1.4, liberation ×1.5, purge ×1.4. The
+(a card with `needs`) ×1.4; late (7 on) capstones ×1.4, liberation ×1.5, purge ×1.4 (cuts too: `strategies.json`); a card takes its categories' largest. The
 multiplier reaches what a seat drafts and keeps, not a card in hand: the board terms playing
 brings aren't multiplied, so a multiplied hand would beat playing it. The choice is a pure
 function of the table at that keep, and the planner hands it to every rollout's policy.

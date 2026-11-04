@@ -867,7 +867,7 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
     }
     // The city's corruption replaces any marker on it.
     clear_markers_on(g, cx, h);
-    // 034: by `corruption_reach`, node around the city goes too.
+    // 034: by `corruption_reach`, nodes around the city go too.
     for x in within(&w, h, w.int("board.corruption_reach")) {
         if let Some(s) = node_owner(g, x) {
             board::lose_node(g, cx, x, s, "corruption");

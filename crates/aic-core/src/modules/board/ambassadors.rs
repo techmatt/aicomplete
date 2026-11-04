@@ -55,11 +55,6 @@ pub fn liberate_at(w: &World) -> i64 {
     w.int("board.liberate_at").max(1)
 }
 
-/// Player ambassadors on hex `h`, from all seats.
-pub fn ambassadors_on(g: &GameState, h: usize) -> i64 {
-    (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum()
-}
-
 /// Player ambassadors on hex `h` that count toward liberating it (080): from
 /// seats whose node is on or next to it.
 pub fn liberating_ambassadors(w: &World, g: &GameState, h: usize) -> i64 {
@@ -71,8 +66,9 @@ pub fn liberating_ambassadors(w: &World, g: &GameState, h: usize) -> i64 {
 
 /// City `h` is liberated: the adversary's cube comes off, so it is clean,
 /// Unity sways, and it drops down the piece ladder rather than off the board
-/// (027: `free_leaves` adversary ambassadors stay on it). `by` with `align`
-/// (a liberate card's extra, 080) puts that seat's cube on it.
+/// (027: `free_leaves` adversary ambassadors stay on it). A liberate card
+/// with `align` (080) puts the seat's cube on it afterward
+/// (`effects::removal::liberate_city`).
 pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
     cx.add_tokens(g, h, ADV_CUBE, -1);

@@ -10,7 +10,7 @@
 //!
 //! The plan is simple and deterministic, and reads only the public state
 //! and the seat's own hand: projected credit, insight,
-//! chips and energy income; the cards it would play (hand plus the
+//! chips, energy and antimatter income; the cards it would play (hand plus the
 //! candidates) in value-per-cost order, filled into each round's budget.
 
 use std::sync::Arc;
@@ -21,7 +21,7 @@ use aic_core::module::World;
 use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
 
-use super::credit_equivalent;
+use super::{credit_cost, credit_equivalent};
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx};
 use super::Strategic;
@@ -212,7 +212,8 @@ pub(crate) use forced_table;
 
 macro_rules! forced_struct {
     (() $($(#[$doc:meta])* ($name:ident: $ty:ty, $active:literal, $default:expr, $desc:expr))*) => {
-        /// The behavior a dominance check forces (none for thoughtful play).
+        /// Keep-plan numbers, strategy settings, and the behavior a dominance
+        /// check forces (none for thoughtful play).
         #[derive(Debug, Clone)]
         pub struct Forced {
             $($(#[$doc])* pub $name: $ty,)*
@@ -268,7 +269,7 @@ impl Forced {
 /// Whether `d` counters a threat or makes one cheaper, in any of its lists: an
 /// automatic-counter capstone too (075, 073's finding 13).
 fn counters_threats(d: &CardDef) -> bool {
-    let ability = d.ability.iter().flat_map(|a| &a.effects);
+    let ability = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects);
     d.effects.iter().chain(ability).chain(&d.passives).any(|o| {
         matches!(o, Op::CounterThreat | Op::Jam { .. } | Op::DelayThreat { .. } | Op::AutoCounter { .. })
     })
@@ -301,9 +302,7 @@ impl Policy {
     /// it chooses them itself at the round-1 keep, as the planner's would).
     pub fn with_strategies(mut self, c: Choice) -> Policy {
         if c.iter().any(Option::is_some) {
-            self.strat = c;
-            self.chosen = true;
-            self.inner.set_strategies(c);
+            self.set_strategies(c);
         }
         self
     }
@@ -317,9 +316,7 @@ impl Policy {
     /// opening deal (a pure function of the table), and handed to the agent inside.
     fn choose_strategies(&mut self, w: &World, g: &GameState) {
         let c = opening_choice(w, g, &self.forced);
-        self.strat = c;
-        self.chosen = true;
-        self.inner.set_strategies(c);
+        self.set_strategies(c);
     }
 
     /// The cards seat `s` keeps this round, worked out at its first keep
@@ -367,8 +364,8 @@ impl Policy {
         } else if self.forced.keep_k > 0 {
             let mut d = drafted;
             d.sort_by(|a, b| {
-                list_cost(cards::def(&world, a))
-                    .cmp(&list_cost(cards::def(&world, b)))
+                credit_cost(cards::def(&world, a))
+                    .cmp(&credit_cost(cards::def(&world, b)))
                     .then_with(|| a.cmp(b))
             });
             d.truncate(self.forced.keep_k);
@@ -753,12 +750,6 @@ fn farm(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     act("move").or_else(|| act("ambassador"))
 }
 
-/// A card's printed cost in credits (antimatter, insight, energy, chips
-/// and lowered income at fixed rates): the plan's measure of what it does.
-pub fn list_cost(d: &CardDef) -> i64 {
-    credit_equivalent(d, d.cost)
-}
-
 /// Whether seat `s` could pay to keep a card of `tier` now (insight, with
 /// any shortfall in credits).
 fn keep_affordable(w: &World, g: &GameState, s: usize, tier: u8) -> bool {
@@ -787,7 +778,7 @@ pub struct PlanCtx<'a> {
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
-/// seat's node, whether a city is corrupted.
+/// seat's nodes, whether a city is corrupted.
 struct PlanTable {
     left: f64,
     node: f64,
@@ -849,7 +840,7 @@ fn plan_value(w: &World, g: &GameState, s: usize, kept: &[Key], f: &Forced, pc: 
 }
 
 /// The jobs `d` would do for seat `s` on this table: markers in reach to
-/// clear, threats to delay, node with no token to shield.
+/// clear, threats to delay, nodes with no token to shield.
 fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
     d.effects
         .iter()
@@ -930,7 +921,7 @@ fn value(
 ) -> f64 {
     let jobs = f.plan_niche * niche_jobs(w, g, s, d) as f64;
     if !pc.table {
-        return 1.0 + list_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
+        return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = value::table();
     let ctx = Ctx { left: (pt.left - round as f64).max(0.0), node: pt.node, tags: *tags, corrupted: pt.corrupted };
@@ -1036,9 +1027,9 @@ fn plan(
     let mut total = 0.0;
     let mut b = now;
     let mut needs = cards::required_tags(w, g, s);
-    let now = needs;
+    let needs_now = needs;
     let near = |d: &CardDef| {
-        !pc.table || d.needs.iter().map(|(t, n)| (n - now[*t as usize]).max(0)).sum::<i64>() <= f.plan_short as i64
+        !pc.table || d.needs.iter().map(|(t, n)| (n - needs_now[*t as usize]).max(0)).sum::<i64>() <= f.plan_short as i64
     };
     let patient = economy::patient(w, s);
     let share = value::table().rate("target_share");
@@ -1117,7 +1108,7 @@ fn pile_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> 
 }
 
 /// 080: a liberate card with no corrupted city in reach now still plans to
-/// play while a city is corrupted: node can get there.
+/// play while a city is corrupted: a node can get there.
 fn liberate_later(w: &World, g: &GameState, d: &CardDef) -> bool {
     is_liberate(d) && (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h))
 }

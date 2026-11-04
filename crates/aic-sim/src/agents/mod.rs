@@ -84,6 +84,13 @@ pub(crate) fn credit_equivalent(d: &CardDef, credits: i64) -> i64 {
         + LOWERED_COST * d.lowers.iter().map(|(_, n)| n).sum::<i64>()
 }
 
+/// A card's printed price in credits, its other costs and lowered income at the
+/// fixed rates above: the plan's measure of what it does. Not the core's
+/// `cards::list_cost`, the printed credit price alone.
+pub(crate) fn credit_cost(d: &CardDef) -> i64 {
+    credit_equivalent(d, d.cost)
+}
+
 /// An agent that can be handed each seat's strategy (082): the search agents a
 /// [`policy::Policy`] wraps.
 pub trait Strategic: Agent {

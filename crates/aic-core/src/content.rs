@@ -188,6 +188,8 @@ pub struct Megaproject {
     pub player: Vec<Op>,
     pub adversary: Vec<Op>,
     pub converter: Converter,
+    /// May be empty (every project prints none today).
+    #[serde(default)]
     pub after: Vec<Op>,
 }
 
@@ -1059,7 +1061,7 @@ pub fn is_overlay_key(key: &str) -> bool {
 }
 
 /// One overlay entry applied to the parsed content files. `path` walks
-/// object fields and list indexes (`effects.0.amount`, `node.4.cost`);
+/// object fields and list indexes (`effects.0.amount`, `economy_track.4.cost`);
 /// the last step may add a field the JSON left at its default, and parsing
 /// rejects one the schema doesn't have. `id` may be `*`: every row of the
 /// table. The value is JSON, or a bare word taken as a string.

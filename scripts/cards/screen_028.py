@@ -1,4 +1,4 @@
-"""Kept for the docs that cite it (docs/principles.md, screen-028-rollout/rollout.md); new work: screen.py.
+"""Kept for the docs that cite it (screen-028-rollout/rollout.md); new work: screen.py.
 The rollout-agent screen summary (028, rules r17).
 
     python scripts/cards/screen_028.py DIR [DIR ...]

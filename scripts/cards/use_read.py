@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from screens import content, load, cnt  # noqa: E402
 
-sys.stdout.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
 LIBERATE = ['nuclear_option', 'power_to_the_people', 'hostile_buyout', 'forensic_audit',
             'root_access', 'peacekeeping_mission', 'popular_uprising', 'great_liberation']

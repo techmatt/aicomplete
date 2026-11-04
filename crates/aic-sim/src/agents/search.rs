@@ -506,7 +506,7 @@ pub struct Beam {
 }
 
 /// A sequence in the beam.
-struct Botnet {
+struct Seq {
     g: GameState,
     seq: Vec<Action>,
     /// Order-free hash of `seq`: sequences that are reorderings of each
@@ -596,38 +596,38 @@ impl Beam {
     /// Searches the rest of the round from a guess of `state`. Returns the
     /// guess and the finished sequences (reaching the next round or the
     /// end of the game), best first, with their end states and values.
-    fn search(&mut self, rules: &Rules, state: &GameState) -> (GameState, Vec<(f64, Botnet)>) {
+    fn search(&mut self, rules: &Rules, state: &GameState) -> (GameState, Vec<(f64, Seq)>) {
         let mut start = state.clone();
         determinize(rules, &mut start, &mut self.rng);
         let round = start.round;
-        let mut beam = vec![Botnet {
+        let mut beam = vec![Seq {
             g: start.clone(),
             seq: Vec::new(),
             key: 0,
         }];
-        let mut finished: Vec<(f64, Botnet)> = Vec::new();
+        let mut finished: Vec<(f64, Seq)> = Vec::new();
         let mut legal = Vec::new();
         let mut scratch = Vec::new();
         for _ in 0..self.depth {
-            let mut children: Vec<(f64, Botnet)> = Vec::new();
-            for botnet in &beam {
-                legal_into(rules, &botnet.g, &mut legal);
-                let mut kids: Vec<(f64, Botnet)> = Vec::new();
+            let mut children: Vec<(f64, Seq)> = Vec::new();
+            for item in &beam {
+                legal_into(rules, &item.g, &mut legal);
+                let mut kids: Vec<(f64, Seq)> = Vec::new();
                 for a in &legal {
-                    if undoes(&botnet.seq, a) {
+                    if undoes(&item.seq, a) {
                         continue;
                     }
-                    let Some(c) = step(rules, &botnet.g, a) else {
+                    let Some(c) = step(rules, &item.g, a) else {
                         continue;
                     };
                     // The choices an action asks for are scored best-first,
                     // so an action is not judged by its first open question.
-                    let mut seq = botnet.seq.clone();
+                    let mut seq = item.seq.clone();
                     seq.push(a.clone());
                     let v =
                         settled(rules, &self.ev, &c, self.choices, &mut scratch, &mut Seen::default()) - moves_cost(&seq);
-                    let key = botnet.key.wrapping_add(action_hash(a));
-                    kids.push((v, Botnet { g: c, seq, key }));
+                    let key = item.key.wrapping_add(action_hash(a));
+                    kids.push((v, Seq { g: c, seq, key }));
                 }
                 if self.branch > 0 && kids.len() > self.branch {
                     kids.sort_by(|x, y| y.0.total_cmp(&x.0));
@@ -704,11 +704,11 @@ impl Beam {
         let mut best = 0;
         if let Some(cfg) = self.rollout.take() {
             let mut top = f64::NEG_INFINITY;
-            for (i, (value, botnet)) in finished.iter().enumerate().take(cfg.candidates) {
-                let v = if botnet.g.is_over() {
+            for (i, (value, item)) in finished.iter().enumerate().take(cfg.candidates) {
+                let v = if item.g.is_over() {
                     *value
                 } else {
-                    self.playouts(rules, &botnet.g, &cfg)
+                    self.playouts(rules, &item.g, &cfg)
                 };
                 if v > top {
                     top = v;

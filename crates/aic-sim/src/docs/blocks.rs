@@ -145,7 +145,7 @@ fn list(r: &Rules, key: &str) -> Vec<i64> {
     }
 }
 
-/// A tunable as the tables print it: `` `hold_base` 3 ``, or with its module
+/// A tunable as the tables print it: `` `botnet_compute` 1 ``, or with its module
 /// where the bare name says little (`` `alignment.botnet` 2 ``).
 fn tick(r: &Rules, key: &str) -> String {
     let name = key.split_once('.').map_or(key, |(_, p)| p);
@@ -389,7 +389,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
     table(&head, rows)
 }
 
-/// Each board's innate, discount and unique cards.
+/// Each board's special rule (innate), and its unique cards when any board prints them.
 pub(super) fn board_details_block(c: &Content) -> String {
     let uniques = c.ais.iter().any(|b| !b.cards.is_empty());
     let name = |id: &String| {
@@ -642,7 +642,7 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          Programs stay in front of you; events are used and discarded. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
          and you can sacrifice cards with the right tags to use your AI board's powers.\n\n\
-         **Node, for new players.** There is no growth step. In the action phase you place \
+         **Nodes, for new players.** There is no growth step. In the action phase you place \
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
          round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \

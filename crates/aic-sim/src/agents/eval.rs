@@ -34,7 +34,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 use std::sync::Arc;
 
-use super::policy::list_cost;
+use super::credit_cost;
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx, Worth};
 use super::INSIGHT_COST;
@@ -89,7 +89,7 @@ pub struct Weights {
     /// city energy; its track income is counted as income).
     /// Was `data_center` (still accepted, see [`RENAMED`]).
     pub node: f64,
-    /// Each botnet on the board (a cost: adversary compute, contests node,
+    /// Each botnet on the board (a cost: adversary compute, contests nodes,
     /// blocks the purge).
     pub botnet: f64,
     /// Each corruption marker (041: a hex lost to placement).
@@ -101,7 +101,7 @@ pub struct Weights {
     /// but with a counter phase first.
     pub threat_waits: f64,
     /// 070: an unpaid threat no seat may counter yet counts this much more: the
-    /// pull to put node or an ambassador on a source.
+    /// pull to put a node or an ambassador on a source.
     pub threat_stranded: f64,
     /// Each player-owned factory (chips each production step); an
     /// adversary-owned one costs as much.
@@ -182,7 +182,8 @@ pub struct Weights {
     /// A drafted card not yet kept, as a share of its hand value.
     pub drafted: f64,
     /// 023: a card dealt into the draft packet counts as drafted, less its
-    /// keep price (insight, at `INSIGHT_COST` credits) times this; so the
+    /// keep price (flat mode: insight at `INSIGHT_COST` credits; table mode: the
+    /// table's `keep_tier1` / `keep_tier2` rate) times this; so the
     /// tier pick is a choice (before 023 a tier pick scored nothing, and
     /// tier 2 was drafted only once the tier-1 deck ran dry).
     pub packet_keep: f64,
@@ -276,12 +277,12 @@ fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
     (INSIGHT_COST * world.int(key)) as f64
 }
 
-/// Flat mode: a point of track income is worth this many of the resource's
-/// own points for antimatter and insight (1 for the rest), times `income`.
 /// How many of a seat's owned stations the eval counts in full (074).
 const STATIONS_USEFUL: i64 = 2;
 /// How far off a troop makes a Wall's facility worth more: two marches.
 const WALL_NEAR: u32 = 4;
+/// Flat mode: a point of track income is worth this many of the resource's
+/// own points for antimatter and insight (1 for the rest), times `income`.
 const ANTIMATTER_INCOME_UNIT: f64 = 3.0;
 const INSIGHT_INCOME_UNIT: f64 = 1.5;
 
@@ -644,7 +645,7 @@ impl Eval {
                     })
                     .collect(),
             ),
-            picked: std::array::from_fn(|s| format!("cards.picked.{s}")),
+            picked: std::array::from_fn(aic_core::modules::cards::picked_key),
         }
     }
 
@@ -699,7 +700,7 @@ impl Eval {
     }
 
     fn cost(d: &CardDef) -> f64 {
-        list_cost(d).max(0) as f64
+        credit_cost(d).max(0) as f64
     }
 
     /// A card in hand, before any chance of paying for it. The packet's
@@ -1373,7 +1374,6 @@ impl Eval {
     /// playing it brings is the board's terms, which no strategy multiplies, so a
     /// multiplied hand would make holding a strategy's cards beat playing them.
     /// Else the flat `hand` + `hand_cost` × its cost.
-    #[allow(clippy::too_many_arguments)]
     fn hand_worth(&self, world: &aic_core::module::World, g: &GameState, sd: &SeatData, left: f64, id: &Key, pick: bool) -> f64 {
         let w = &self.w;
         let s = sd.s;

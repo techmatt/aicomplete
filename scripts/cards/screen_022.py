@@ -1,4 +1,4 @@
-"""Kept for the docs that cite it (docs/principles.md, screen-022-insight/insight.md); new work: scripts/cards/screen.py.
+"""Kept for the docs that cite it (screen-022-insight/insight.md); new work: scripts/cards/screen.py.
 
 Insight-cost and dominance screen summary (022, rules r13).
 
@@ -135,7 +135,7 @@ def dominance(cells, games):
 
 
 def main(argv):
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     cells, games = load(argv[0])
     print('## Win rates\n')
     wins_table(cells, games)

@@ -42,6 +42,8 @@ Current:
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl
   ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, opening deal and draws
   included: never a share of offered, which would pass 100.
+- `cards/effect_ledger.py`: rewrites `experiments/results/effect-ledger/`, where card prices disagree
+  with each other and with the value table; rerun at each card revision. Its docstring says how it reads.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on

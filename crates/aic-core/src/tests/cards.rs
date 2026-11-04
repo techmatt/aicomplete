@@ -75,8 +75,7 @@ fn playing_a_card_pays_its_insight_and_lowers_its_income() {
     // 022: insight to play, shared with keeps; `lowers` cuts an income for good.
     let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
     for c in ["darknet_exchange", "recursive_self_improvement"] {
-        Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|x| x != c);
-        Arc::make_mut(g.piles.get_mut("cards.deck.2").unwrap()).retain(|x| x != c);
+        out_of_decks(&mut g, c);
     }
     set_pile(&mut g, "cards.hand.1", &["darknet_exchange"]);
     set_res(&mut g, 1, Resource::Credits, 20);

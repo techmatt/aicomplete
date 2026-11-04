@@ -218,21 +218,8 @@ fn fill(text: &str, block: &dyn Fn(&str) -> Option<String>) -> String {
 const COUNTERS: [&str; 1] = ["threats.short"];
 
 /// Bare `snake_case` names rules.md may print that are no tunable or op:
-/// action names, content fields, and retired parameters in its history.
-const NOT_TUNABLES: [&str; 12] = [
-    "free_city_at",
-    "free_keep",
-    "harden_buy",
-    "harden_chips",
-    "hold_base",
-    "hold_min",
-    "legal_actions",
-    "botnet_energy",
-    "per_round",
-    "purge_round",
-    "shared_row",
-    "unity_win",
-];
+/// action names and content fields.
+const NOT_TUNABLES: [&str; 5] = ["harden_buy", "harden_chips", "legal_actions", "per_round", "shared_row"];
 
 /// Backticked `module.name` words in `text` that are no tunable, phase or
 /// counter of the baseline, and bare `snake_case` words that are no tunable

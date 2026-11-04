@@ -76,7 +76,7 @@ fn a_content_change_changes_its_block() {
 #[test]
 fn check_flags_a_bare_name_that_is_no_tunable() {
     let r = baseline(&[]);
-    assert!(unknown_params("`hold_base`, `harden_buy`", &r, &[]).is_empty());
+    assert!(unknown_params("`legal_actions`, `harden_buy`", &r, &[]).is_empty());
     assert_eq!(unknown_params("`hold_bass`", &r, &[]), ["hold_bass"]);
 }
 

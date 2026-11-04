@@ -22,9 +22,9 @@ pub static DEF: ModuleDef = ModuleDef {
         summary: "Each seat plays an AI board from content/ais.json",
         params: &[
             ParamSpec::list("boards", 0, 99, "AI board (index into content/ais.json) of each seat; the list repeats for more seats"),
-            ParamSpec::list("start_credits", 0, 100, "credits each seat's AI board starts with, in the order of boards; the list repeats"),
+            ParamSpec::list("start_credits", 0, 100, "credits each seat starts with, in seat order (not by board); the list repeats"),
             ParamSpec::int("start_energy", 0, 20, "energy each player starts with"),
-            ParamSpec::list("slots", 1, 10, "building slots of each seat's AI board, in the order of boards; the list repeats"),
+            ParamSpec::list("slots", 1, 10, "building slots of each seat, in seat order (not by board); the list repeats"),
         ],
         phases: &[
             PhaseSpec::decision("power", "use AI-board powers, each once a round: place nodes, or sacrifice played cards' tags (combine with the action phase)"),

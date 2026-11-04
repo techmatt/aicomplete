@@ -10,16 +10,6 @@ fn c3() -> (Rules, GameState) {
     lab_actions_with(&["countries=3"])
 }
 
-/// Every seat passes the action phase, the lab's whole round, into the next.
-fn next_round(rules: &Rules, g: &mut GameState) {
-    let round = g.round;
-    while g.round == round {
-        let legal = rules.legal_actions(g);
-        let pass = legal.iter().find(|a| matches!(a, Action::Pass { .. })).unwrap().clone();
-        rules.apply_mut(g, &pass, None).unwrap();
-    }
-}
-
 fn researcher_power(r: &Rules, name: &str) -> Action {
     power(r, 2, name)
 }

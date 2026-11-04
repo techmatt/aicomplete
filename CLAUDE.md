@@ -29,8 +29,9 @@ experiments, speed, scripts, web, card art.
   rule that reads it.
 - What content does is one schema, `Op` (`crates/aic-core/src/op.rs`); resources, tags and
   token types are enums (`vocab.rs`). See *The op schema* in docs/architecture.md.
-- **A new op, resource or token type** gets its eval term (`crates/aic-sim/src/agents/eval.rs`)
-  in the same change, and a 2-minute engine smoke read (16 seeds; `scripts/cards/play_read.py`
+- **A new op, resource or token type** gets its value in the same change (an op: its arm in
+  `crates/aic-sim/src/agents/value.rs` and its row in `configs/agents/values.json`; a resource or
+  token type: its held-value term in `agents/eval.rs`), and a 2-minute engine smoke read (16 seeds; `scripts/cards/play_read.py`
   for cards kept and never played, `board_read.py --powers` for powers never used) before any
   band read: 075 lost a whole screen to six cards and Grant that no agent valued. **Before a freeze**, read
   each new mechanic's use per game and its on/off gap on the same seeds (080: `liberation_read.py`).
@@ -58,7 +59,8 @@ experiments, speed, scripts, web, card art.
 - **Any card work** follows [docs/card-guidelines.md](docs/card-guidelines.md) (`npm run
   cards:fit` in `web/` checks the fit). A display rename keeps the card's id: notes,
   `scenes.json` and records key on it. An id changes only to fix a spelling `docs --check`
-  refuses; that moves the golden fingerprint with no bump and strands any note on the old id.
+  refuses, and only in a rules item: card id order feeds play (087 kept 086's two ids for it),
+  so it bumps `RULES_REVISION` and strands any note on the old id.
 
 ## Working rules
 
@@ -70,7 +72,8 @@ experiments, speed, scripts, web, card art.
   with a cheaper fast-lane twin where one makes sense. See README, *Build and test*. Leave
   `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt. In a fresh
   worktree, web's `npm run check` needs `npm run wasm` first; e2e's `board fills its pane`
-  measures a fixed record (seed 11), not the random game (web/README).
+  plays a fixed game (baseline seed 11, first legal action), not the random game, so a rules
+  change can move it (web/README).
 - **Agents stay fast.** After a change to rules, state or agents, run `python
   scripts/bench/speed.py check target/release/aic-sim.exe`, after the first screen, not last,
   while a fix can still be tested. It fails over 1.3 × the baseline and gives no verdict across

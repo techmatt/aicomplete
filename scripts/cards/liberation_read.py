@@ -37,7 +37,7 @@ def per(gs, key):
 
 
 def main():
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     ap = argparse.ArgumentParser()
     ap.add_argument('dirs', nargs='+')
     ap.add_argument('--cards', action='store_true', help='kept and played per game for each liberate card')

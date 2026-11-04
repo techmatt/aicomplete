@@ -173,6 +173,9 @@ strategy-health gate runs them beside the planner at d2, early-stopped
 | wall turtle | `wall_turtle=1` | the Protector places nodes only with a troop on the board, on the hex nearest one |
 | home only | `home_only=1` | counters only threats in its home country |
 | capstone rush | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
+| never-convert | `never_convert=1` | no converter, and no power that only converts a resource |
+| always-buy-cubes, hoard insight (c3) | `always_buy_cubes=1`, `hoard_insight=N` | the power that buys a research cube at every chance; a Patience seat plays and keeps only every n-th round |
+| always-liberate | `always_liberate=1` | drafts and keeps every liberate card, and plays one the first round it is legal |
 
 **The gate** is `experiments/gate.json` (named gate-075: every check of gate-070 plus `never_convert`): planner
 only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,

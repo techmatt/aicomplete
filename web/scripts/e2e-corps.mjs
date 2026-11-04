@@ -8,7 +8,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checker, openPage, viewerUrl as url } from './cdp.mjs';
+import { checker, openPage, playConfig, toRound } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(web, 'e2e-out');
@@ -23,29 +23,14 @@ const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;
 const { check, failed } = checker();
 
-/** The action phase's menu is up. */
-const acting = `window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
-/** Takes the last legal action (a pass where there is one) until round `n`'s action phase. */
-async function toRound(n) {
-  for (let i = 0; i < 600; i++) {
-    const at = await js(`window.aic.view.round >= ${n} && window.aic.legal.some((a) => a.type === 'standard')`);
-    if (at) return true;
-    if (await js('window.aic.legal.length === 0')) return false;
-    await js('window.aic.act(window.aic.legal[window.aic.legal.length - 1])');
-  }
-  return false;
-}
 const value = (where, key) => `(${where}.values.find((x) => x.key === '${key}'))`;
 const resource = (r) => js(`${value('window.aic.view.seats[0]', `resource.${r}`)}?.value ?? 0`);
 
 try {
   await size(1366, 768);
-  await send('Page.navigate', { url });
-  await until('window.aic && window.aic.view', 'the viewer to start', 30000);
-  await js(`window.aic.play(${JSON.stringify(JSON.stringify(config))}, '1')`);
-  await until(`window.aic.timeline.last === 0 || ${acting}`, 'the game to start', 10000);
+  await playConfig(page, config);
 
-  check(await toRound(1), 'reached the first action phase');
+  check(await toRound(page, 1, 600), 'reached the first action phase');
   // Seat 0's starting ambassador claims the neutral station next to its node.
   const station = await js(`(() => {
     const v = window.aic.view;
@@ -63,7 +48,7 @@ try {
   const owned = await js(`window.aic.view.hexes.some((h) => h.country === 0 && h.number === ${station} && h.tokens.some((t) => t.kind === 'cube:0'))`);
   check(owned, 'the ambassador claimed the station');
 
-  check(await toRound(2), 'reached round 2');
+  check(await toRound(page, 2, 600), 'reached round 2');
   const colors = await js(`(() => {
     const cells = [...document.querySelectorAll('#countries .project')].filter((p) => p.querySelector('.cubes'));
     const count = (p, c) => p.querySelectorAll('.pc[data-color="' + c + '"]').length;
@@ -73,13 +58,13 @@ try {
   check(colors.cintamani[0] === 3 && colors.cintamani[1] === 3, `Cintamani's shows neutral cubes: ${colors.cintamani} (neutral, adversary)`);
 
   // Round 2 makes 12 cubes on an 8-cube card: every one pays.
-  check(await toRound(3), 'reached round 3');
+  check(await toRound(page, 3, 600), 'reached round 3');
   const paid = await js(`[...document.querySelectorAll('#countries .ppaid')].map((e) => e.textContent)`);
   check(paid.length === 2 && paid[0].startsWith('12 cubes paid') && paid[0].includes('player'), `the card completed with its overflow paid: "${paid[0]}"`);
   check(await js(`document.querySelectorAll('#countries .project.done').length`) === 2, 'both cards show completed');
 
   // Round 3 stores 3 cubes on seat 0's board; round 4 can spend them.
-  check(await toRound(4), 'reached round 4');
+  check(await toRound(page, 4, 600), 'reached round 4');
   const stored = await resource('research_cubes');
   check(stored === 3, `seat 0 stores ${stored} research cubes`);
   const shown = await js(`document.querySelector('.seat .res.r-research_cubes')?.textContent ?? ''`);

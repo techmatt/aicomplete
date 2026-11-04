@@ -62,7 +62,7 @@ def play(sim, out, label, agent, games, config, sets):
     base = [os.path.abspath(sim), "run", f"configs/{config}.json", "--seed", "1000", "--agent", agent]
     extra = [x for s in sets for x in ("--set", s)]
     rec = os.path.join(out, "rec", label)
-    with open(os.path.join(out, label + ".json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, label + ".json"), "w", encoding="utf-8", newline="\n") as f:
         sim_to(f, base + extra + THREADS + ["--games", str(games), "--json", "--save", rec,
                                             "--save-when", "all", "--save-max", "1000"])
     with open(os.path.join(out, label + ".trace"), "wb") as f:

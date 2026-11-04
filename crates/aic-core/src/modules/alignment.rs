@@ -270,7 +270,7 @@ pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
     sway(g, cx, Side::Unity, n);
 }
 
-/// Whether the adversary's node is under the bar for `level`. The
+/// Whether the adversary's pieces are under the bar for `level`. The
 /// level-0 bar (no adversary pieces) counts only once this round's adversary
 /// card is of stage `clear_win_stage` (the stages are stacked and public).
 fn purge_won(w: &World, g: &GameState, level: i64) -> bool {

@@ -8,7 +8,7 @@
 //! table. A card's value is split by what it depends on ([`Worth`]): what it does
 //! now, what it pays a round (and whether the heuristic's board terms already see
 //! it), per node, per tag, and what needs a corrupted city. The caller supplies
-//! the table's context ([`Ctx`]: rounds left, node, tags, a corrupted city).
+//! the table's context ([`Ctx`]: rounds left, nodes, tags, a corrupted city).
 //!
 //! These are agent numbers, never rules: they change how agents value a card, not
 //! what any card does.
@@ -166,7 +166,7 @@ impl Table {
 pub struct Ctx {
     /// Rounds of income still to come.
     pub left: f64,
-    /// The seat's node on the board.
+    /// The seat's nodes on the board.
     pub node: f64,
     /// The seat's tags on its cards in play.
     pub tags: [i64; TAGS.len()],
@@ -194,7 +194,7 @@ pub struct Worth {
     /// The part of `now` the heuristic's board terms don't see after the op
     /// resolves (a shelter, a cordon, a peek): credited when the action is taken.
     pub unseen: f64,
-    /// Node placed (each at `node`, or `node_late` near the end).
+    /// Each node placed (at `node`, or `node_late` near the end).
     pub node: f64,
     /// Now, per node the seat has.
     pub per_node: f64,

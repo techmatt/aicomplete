@@ -91,14 +91,14 @@ A **module** is one rules area; a **variant** is one way of doing it:
 
 Modules (`crates/aic-core/src/modules/`) call each other's public functions and read
 each other's parameters through `World::int("<module>.<param>")`; `ModuleDef::requires`
-lists the modules whose parameters one reads. `plan.rs` holds read-only forecasts for
-agents and clients.
+lists the modules whose parameters one reads. `plan.rs` holds the adversary build's
+placement rule and `next_build`, a forecast only tests call.
 
 **One path per piece change**, so supply, cancellation and botnet-making hold
 everywhere: adversary ambassadors are placed and removed only through `adversary`'s
 functions (`place`, `build_all`, `spread`, `corrupt_*`, `remove*`, `damage`, ...),
 `board::liberate`/`free_cities` and effects' `cleanse`; `build_all` places what
-`plan::build_plan` reads. Node is placed by `board::place_node`; it and facilities are
+`plan::build_plan` reads. A node is placed by `board::place_node`; nodes and facilities are
 destroyed by `board::destroy_piece`, which applies every protection and sways the
 Discord (corruption, sacrifice, Eviction and war's factory-hex hit call
 `board::lose_node`, unabsorbed).

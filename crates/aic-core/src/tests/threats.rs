@@ -94,7 +94,7 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
             None,
         )
         .unwrap();
-    Arc::make_mut(g.piles.get_mut("cards.deck.1").unwrap()).retain(|c| c != "red_team_audit");
+    out_of_decks(&mut g, "red_team_audit");
     set_pile(&mut g, "cards.hand.0", &["red_team_audit"]);
     set_res(&mut g, 0, Resource::Insight, 1);
     act(

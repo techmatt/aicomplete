@@ -103,7 +103,7 @@ def main():
     ap.add_argument('--csv')
     ap.add_argument('--flags', type=int, default=20)
     a = ap.parse_args()
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     tier = {c['id']: c['tier'] for c in s.content('cards') if c['tier'] in (1, 2)}
     cells, games = s.load(a.dir)
     by_variant = {}

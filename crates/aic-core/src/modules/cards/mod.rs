@@ -137,7 +137,8 @@ fn discard_pile(tier: u8) -> KeyBuf {
     KeyBuf::new("cards.discard.").num(tier as usize)
 }
 
-fn picked_key(seat: usize) -> String {
+/// The var counting the cards seat `seat` has picked (the agents read it too).
+pub fn picked_key(seat: usize) -> String {
     format!("cards.picked.{seat}")
 }
 

@@ -27,7 +27,7 @@ from screens import ROUND, checked_cnt, ends_text, load, mean  # noqa: E402
 
 
 def main(d, short):
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
     cells, games = load(d)
     cnt = checked_cnt(games)
     played = lambda g: sum(v for k, v in g['counters'].items() if k.startswith('cards.played.') and not ROUND.search(k))

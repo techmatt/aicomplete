@@ -305,11 +305,6 @@ impl Module for Board {
     }
 }
 
-/// Whether seat `s` has an aligned city in country `c` (the bound city counts).
-pub fn aligned_in(w: &World, g: &GameState, s: usize, c: usize) -> bool {
-    w.map.countries[c].hexes.iter().any(|&h| is_city(w, h) && g.tokens(h, cube(s)) > 0)
-}
-
 /// Why seat `s` can't use country `c`'s converter now, if anything stops it.
 pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option<&'static str> {
     if g.var(&project_done(c)) == 0 {

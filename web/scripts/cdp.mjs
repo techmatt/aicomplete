@@ -1,6 +1,6 @@
 // A headless Edge or Chrome page driven over the DevTools protocol, with no extra npm
-// packages. Shared by every browser script here: e2e, e2e-sources, sweep, odd, cards-check,
-// cards-fit and the shots-*.
+// packages. Shared by every browser script here: e2e, e2e-sources, e2e-corps, e2e-researcher,
+// sweep, odd, cards-check, cards-fit and the shots-*.
 //   AIC_BROWSER browser executable (default: Edge, then Chrome, at their usual paths)
 //   AIC_URL     the viewer the scripts drive (default http://localhost:5173/)
 
@@ -28,6 +28,29 @@ export async function newGame(page, file, seed) {
   await page.js(`(() => { document.getElementById('config').value = '${file}'; document.getElementById('seed').value = '${seed}';
                           document.getElementById('new-form').requestSubmit(); })()`);
   await page.until(`window.aic.timeline.last === 0 && window.aic.timeline.seed === '${seed}'`, `the seed-${seed} game`, 30000);
+}
+
+/** The action phase's menu is up (seat 0 may pass or a standard action is legal). */
+export const ACTING = `window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
+
+/** Opens the viewer and plays `config` (a parsed config object) at `seed`, up to its first decision. */
+export async function playConfig(page, config, seed = '1') {
+  await page.send('Page.navigate', { url: viewerUrl });
+  await page.until('window.aic && window.aic.view', 'the viewer to start', 30000);
+  await page.js(`window.aic.play(${JSON.stringify(JSON.stringify(config))}, '${seed}')`);
+  await page.until(`window.aic.timeline.last === 0 || ${ACTING}`, 'the game to start', 10000);
+}
+
+/** Takes the last legal action (a pass where there is one) until round `n`'s action phase,
+ * at most `limit` actions; false if the game ends or the limit runs out first. */
+export async function toRound(page, n, limit = 900) {
+  for (let i = 0; i < limit; i++) {
+    const at = await page.js(`window.aic.view.round >= ${n} && window.aic.legal.some((a) => a.type === 'standard')`);
+    if (at) return true;
+    if (await page.js('window.aic.legal.length === 0')) return false;
+    await page.js('window.aic.act(window.aic.legal[window.aic.legal.length - 1])');
+  }
+  return false;
 }
 
 /** Saves the viewport as `dir/name.png`, the mouse moved off anything with a hover first. */

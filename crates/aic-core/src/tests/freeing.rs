@@ -15,11 +15,7 @@ fn city(rules: &Rules, g: &mut GameState) -> (usize, usize) {
 
 /// Plays `card` for `seat` out of its deck, funded to afford it.
 fn play_card(rules: &Rules, g: &mut GameState, seat: u8, card: &str) {
-    for tier in [1, 2] {
-        if let Some(p) = g.piles.get_mut(format!("cards.deck.{tier}").as_str()) {
-            Arc::make_mut(p).retain(|c| c != card);
-        }
-    }
+    out_of_decks(g, card);
     Arc::make_mut(g.piles.entry(crate::modules::cards::hand(seat as usize)).or_default()).push(card.into());
     let s = seat as usize;
     fund(g, s);

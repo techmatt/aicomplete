@@ -177,8 +177,8 @@ pub enum Op {
     BuildFactory,
     /// Take the adversary cube off up to `amount` corrupted stations or
     /// factories, one at a time (`one_country`: all in the first one's
-    /// country). `cities` (024): corrupted cities too, outright; only a tier-2
-    /// ultimate prints it.
+    /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
+    /// does (`board::liberate`); only a tier-2 ultimate prints it.
     Cleanse {
         amount: i64,
         one_country: bool,

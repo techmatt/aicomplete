@@ -9,7 +9,7 @@ Where to look: how to build and test is below. The rest has its own page.
 - [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records.
 - [docs/agents.md](docs/agents.md): the agent ladder, the specs, the heuristic, the dominance checks.
 - [docs/experiments.md](docs/experiments.md): experiment specs, outputs, measures, overlays, the
-  band and the gate, budgeting a run, the seed ledger.
+  band and the gate, budgeting a run, the seed ledger (*Fresh seeds for a gate*).
 - [docs/speed.md](docs/speed.md): what a run costs and where it goes.
 - [docs/scripts.md](docs/scripts.md): every script under `scripts/`.
 - [web/README.md](web/README.md): the viewer, the sweep and the card viewer.
@@ -41,8 +41,8 @@ Where to look: how to build and test is below. The rest has its own page.
 | Path | What it is |
 |---|---|
 | `crates/aic-core` | The rules engine. No I/O, no clock, seeded per-purpose RNG streams in the state, serde state, exact replay. `Rules::new(config)` then `new_game` / `legal_actions_into` / `apply_mut`, plus the convenient free functions `new_game`, `legal_actions`, `apply`. |
-| `crates/aic-core/src/modules/` | One file per rules area (`adversary`, `alignment`, `economy`, `ai`), or a directory for the big ones (`board/`, `cards/`, `threats/`), shared code (`common`, `effects/`), a read-only forecast of the adversary's next build (`plan`; only tests call it today), the registry in `mod.rs`. |
-| `crates/aic-sim` | Native CLI: seeded games over a seed range, one config or two side by side, with every game replay-checked; the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates the docs; `spelling.rs` is the American-spelling check; `prof.rs` is the `profile` feature. |
+| `crates/aic-core/src/modules/` | One file per rules area (`adversary`, `alignment`, `economy`, `ai`), or a directory for the big ones (`board/`, `cards/`, `threats/`), shared code (`common`, `effects/`), the adversary build's placement rule (`plan`; its `next_build` forecast only tests call), the registry in `mod.rs`. |
+| `crates/aic-sim` | Native CLI: seeded games over a seed range, one config or two side by side, with every game replay-checked; the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `cli.rs` parses the arguments; `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates the docs; `spelling.rs` is the American-spelling check; `current_docs.rs` refuses an 'NNN's changes' heading; `prof.rs` is the `profile` feature. |
 | `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports. Records under `results/` from old revisions (`screen-014-board`, `-016-`, `-017-`, `-023-`, r6 to r14) don't load; `payback-009-records/` holds only its README. At the top level: the standing specs (`band`, `gate`, `smoke`, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `archive/`: specs of past revisions (every spec not tied to the current one) and those the binary refuses today. [`history.md`](experiments/history.md): an index of past items' write-ups. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
 | `content/` | Data embedded at compile time: `map.json` (piece shape, layouts for 1–4 countries, the four printed country pieces with their cities, ocean, setup buildings and megaproject), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. |
@@ -65,7 +65,8 @@ cd web && npm install && npm run dev               # builds the wasm (~9 s warm)
 npm run dev -- --port 61870                        # another port
 ```
 
-The dev server rebuilds the wasm and reloads when `crates/` or `content/` change. Open a
+The dev server rebuilds the wasm and reloads when `crates/` or `content/` change; an edit
+under `configs/` reloads with no rebuild (only `content/` and `configs/agents/` are compiled in). Open a
 record from `aic-sim --save` with *Open record…* or by dropping the file on the page.
 Details, and the browser check (`npm run e2e`), are in [web/README.md](web/README.md).
 
@@ -159,13 +160,12 @@ never mixed up.
 - Two checkouts sharing a `CARGO_TARGET_DIR` share `release/aic-sim.exe` and its fingerprints:
   one read a 0.08 s `Finished` and an old-against-new comparison ran one binary twice. Give
   each checkout its own target dir, and `md5sum` both binaries before a `pair` or `same_play`.
-- On Windows a Python script printing a non-ASCII character to a redirected stdout writes
-  cp1252, not UTF-8: scripts reconfigure stdout, and pass `encoding='utf-8'` to `open`.
 - Bash heredocs holding Python fail here (triple quotes, and backslashes get mangled even
   with a quoted delimiter), and a long one fails on size (ENAMETOOLONG). Write scripts with the
   editor, not with `cat <<'EOF'`.
-- Python's `open(p, 'w')` writes cp1252 and CRLF here: pass `encoding='utf-8', newline='\n'`. A
-  CRLF list read by a Bash `read -r` loop hands on `20\r`.
+- Python writes cp1252 and CRLF here, to `open(p, 'w')` and to a redirected stdout: scripts
+  `sys.stdout.reconfigure(encoding='utf-8', newline='\n')` and open with `encoding='utf-8',
+  newline='\n'`. A CRLF list read by a Bash `read -r` loop hands on `20\r`.
 - `timeout N cargo test` under load kills the compile and prints "could not compile" with no
   reason. Background it with a log instead. `npm run wasm` can pass 60 s under load: the same.
 - In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching). Copy a binary

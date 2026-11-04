@@ -19,7 +19,7 @@ import time
 SIM = os.environ.get("AIC_SIM", os.path.join("target", "release", "aic-sim"))
 
 # A redirected stdout on Windows is cp1252: its ± and the like would not encode (020).
-sys.stdout.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8", newline="\n")
 
 
 def run(config, agent, games, seed, sets):

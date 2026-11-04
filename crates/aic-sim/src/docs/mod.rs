@@ -8,7 +8,8 @@
 //! `web/card/faces.json`, every card's face from its ops (`aic_core::face`).
 //! `--check` changes nothing and exits 1 if anything is stale, if `rules.md`
 //! backticks a `module.param` or bare `snake_case` name that isn't a tunable,
-//! or on a British spelling (`crate::spelling`). The fast
+//! on a British spelling (`crate::spelling`), on an "NNN's changes" heading
+//! (`crate::current_docs`), or on a problem in `docs/card-pricing-notes.json`. The fast
 //! test lane runs the check. A block is a pure function of `Rules` or
 //! `Content`, so a test can show it moves with its source.
 

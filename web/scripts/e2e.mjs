@@ -290,8 +290,8 @@ try {
   const auto = await js(`({ o: window.aic.view.outcome, n: window.aic.timeline.last, text: document.querySelector('#phase-bar .outcome')?.textContent })`);
   check(!!auto.o && !!auto.text, `Random to end plays baseline seed 5 to an outcome in ${auto.n} actions: ${auto.text}`);
 
-  // The board's size on a fixed game (048): the random game's panels moved it by 60 px.
-  // This one read 350, 547 and 878 px high; at r30 the same seed plays another game, 333 at 1366x768.
+  // The board's size on a fixed game (048: seed 11, first legal action): the random game's panels
+  // moved it by 60 px. A rules change can change this game too.
   await newGame(page, 'baseline.json', 11);
   for (let i = 0; i < 150 && !(await js('!!window.aic.view.outcome')); i++) await js('window.aic.act(window.aic.legal[0])');
   for (const [w, h] of [[1366, 768], [1920, 1080], [2560, 1440]]) {

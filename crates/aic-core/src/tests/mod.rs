@@ -92,6 +92,8 @@ fn lab_config(round: &[&str]) -> Config {
         "board.last_safe_stage=0",
         "board.troop_steps=2",
         "board.troop_spent=1",
+        // The build adds nothing unasked and asks nothing: no arrivals, no
+        // Wall-pressure landing (080). Pin any new build-step choice off here.
         "adversary.arrivals=0",
         "adversary.wall_troops=0",
         // 021: no credits, so no neutral city's energy is bought unasked.
@@ -301,9 +303,28 @@ fn std_act(seat: u8, act: &str) -> Action {
     }
 }
 
+/// Every seat passes the action phase, the lab's whole round, into the next.
+fn next_round(rules: &Rules, g: &mut GameState) {
+    let round = g.round;
+    while g.round == round {
+        let legal = rules.legal_actions(g);
+        let pass = legal.iter().find(|a| matches!(a, Action::Pass { .. })).unwrap().clone();
+        rules.apply_mut(g, &pass, None).unwrap();
+    }
+}
+
+/// Takes `card` out of the player-card decks (to put it in a hand or in play).
+fn out_of_decks(g: &mut GameState, card: &str) {
+    for tier in [1, 2] {
+        if let Some(p) = g.piles.get_mut(format!("cards.deck.{tier}").as_str()) {
+            Arc::make_mut(p).retain(|c| c != card);
+        }
+    }
+}
+
 /// Every seat passes, then whatever that asks takes first options.
 fn pass_round(rules: &Rules, g: &mut GameState) {
-    for s in 0..2 {
+    for s in 0..g.seats.len() as u8 {
         rules.apply_mut(g, &Action::Pass { seat: s }, None).unwrap();
     }
     answer_all(rules, g);

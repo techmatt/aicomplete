@@ -9,7 +9,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checker, openPage, viewerUrl as url } from './cdp.mjs';
+import { checker, openPage, playConfig, toRound } from './cdp.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(web, 'e2e-out');
@@ -26,28 +26,14 @@ const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;
 const { check, failed } = checker();
 
-const acting = `window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
-/** Takes the last legal action (a pass where there is one) until round `n`'s action phase. */
-async function toRound(n) {
-  for (let i = 0; i < 900; i++) {
-    const at = await js(`window.aic.view.round >= ${n} && window.aic.legal.some((a) => a.type === 'standard')`);
-    if (at) return true;
-    if (await js('window.aic.legal.length === 0')) return false;
-    await js('window.aic.act(window.aic.legal[window.aic.legal.length - 1])');
-  }
-  return false;
-}
 const value = (key) => js(`(window.aic.view.seats[${SEAT}].values.find((x) => x.key === '${key}'))?.value ?? 0`);
 const panel = `[...document.querySelectorAll('.seat')][${SEAT}]`;
 
 try {
   await size(1366, 900);
-  await send('Page.navigate', { url });
-  await until('window.aic && window.aic.view', 'the viewer to start', 30000);
-  await js(`window.aic.play(${JSON.stringify(JSON.stringify(config))}, '1')`);
-  await until(`window.aic.timeline.last === 0 || ${acting}`, 'the game to start', 10000);
+  await playConfig(page, config);
 
-  check(await toRound(1), 'reached the first action phase');
+  check(await toRound(page, 1), 'reached the first action phase');
   check(await js(`window.aic.view.seats[${SEAT}].board?.name ?? ''`) === 'Researcher', 'seat 2 plays the Researcher');
   check(await js(`${panel}.querySelectorAll('.board .track-row').length`) === 2, 'its two tracks are on the page');
   const marks = await js(`[...${panel}.querySelectorAll('.board .mark')].map((m) => m.textContent)`);
@@ -74,7 +60,7 @@ try {
   }
   check(await js(`window.aic.view.hexes.some((h) => h.country === 2 && h.number === ${station} && h.tokens.some((t) => t.kind === 'cube:${SEAT}'))`), 'the ambassador claimed the station');
 
-  check(await toRound(2), 'reached round 2');
+  check(await toRound(page, 2), 'reached round 2');
   const carried = await value('economy.insight_carried');
   check(carried > 0, `Patience carried ${carried} insight into round 2`);
   const chip = await js(`${panel}.textContent`);
@@ -86,7 +72,7 @@ try {
   check(await js(`${panel}.querySelector('.res.r-insight .inc')?.textContent ?? ''`) === `+${income}`, 'its insight reads as an addition, not a reset');
 
   // Round 3 stores cubes once the card has completed in round 2.
-  check(await toRound(4), 'reached round 4');
+  check(await toRound(page, 4), 'reached round 4');
   const stored = await value('resource.research_cubes');
   check(stored >= 3, `the Researcher stores ${stored} research cubes`);
   const shown = await js(`${panel}.querySelector('.res.r-research_cubes')?.textContent ?? ''`);

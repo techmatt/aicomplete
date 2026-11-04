@@ -1,4 +1,4 @@
-// `npm run e2e:sources` (070): threat sources in a real browser. Plays the first legal actions until a face-up threat
+// `npm run e2e:sources` (070): threat sources in a real browser. Plays the last legal action until a face-up threat
 // refuses a seat, then checks the threat's source badge, its sources marked on the map, the
 // refusal on the card, and the engine's refusal of a forged payment. Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
@@ -22,7 +22,7 @@ try {
   await send('Page.navigate', { url });
   await until('window.aic && window.aic.view', 'the viewer to start', 30000);
 
-  // First legal actions until a seat is refused a threat that is up.
+  // The last legal action until a seat is refused a threat that is up.
   const refused = `(() => {
     const v = window.aic.view;
     const t = (v.threat_sources ?? []).find((x) => x.seats.length < v.seats.length);

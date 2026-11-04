@@ -23,7 +23,7 @@ not yet copied into a second checkout is refused.
 | `agents` | | Agent specs, weakest first. |
 | `games`, `first_seed` | `first_seed` 0 | Seeds per cell. `--games`/`--seed` override. |
 | `selection_seeds` | none | `{"first": N, "games": M}`: the seeds that picked a winner. Adds *Fresh-seed confirmation*; `--resume` refuses a stream started without it. |
-| `max_actions` | `5000` | Per-game cap (`timeout`). |
+| `max_actions` | `5000` | Per-game cap (`timeout`); `--max-actions` overrides. |
 | `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability by round: `rollouts` playouts by `agent` at each round's start, on each cell's first `games` seeds (`--winprob N`). |
 | `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Every n-th real choice (`--closeness N`), close when the best two 1-ply greedy scores are within `gap` (about credits). |
 | `records` | `4` | Records saved per category. |
@@ -72,14 +72,14 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 - **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>` in `per_round`); the flag
   thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`.
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
-  head against the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
+  head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off (`<module>=off`,
   `<module>.variant=off`) reads as what the module is worth.
 - **Luck share**: raw sums-of-squares shares of outcome variance over seeds × agents: seed (luck), agent (skill), rest.
 - **Margin**: a win's adversary cards left (rounds to spare) and ambassador supply; a loss's adversary pieces over the
   bar (`margin.level`; `margin.unity_tips` the Unity tips); every game, `margin.cities_corrupted_end`, `_aligned_end`.
 
-**Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
+**Counters.** `games.csv` carries the margin columns (`games.jsonl` alone: botnets, troops, unspent) and the core's `adversary.corruptions`,
 `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys starting `cards.`, `ai.`,
 `economy.` or `board.node`: extend the list in `experiment.rs` for another. In the core `cx.count(g, "x", n)` writes
@@ -163,7 +163,7 @@ with `scripts/cards/screen.py --gate DIR`. Rows still within 2 SE, whatever stop
 `scripts/bench/gate_close.py`: fill to 48, then the next 48 seeds with no early stop (`read ... --min-seeds 96` keeps
 those rows apart from early ones).
 
-**Gate early-stopping.** With `"gate": {"z": 2.0, "min_games": 8, "every": 4}`, `planner:<check>` is a check of
+**Gate early-stopping.** With `"gate": {"z": 2.0, "min_games": 8, "every": 4}` (defaults; `gate.json` has 12), `planner:<check>` is a check of
 `planner` in the same variant and difficulty, and `games` each check's cap. After each block (8 seeds, then 4) a check
 stops if its gap clears `z` SE (`clears_noise` in `gate.rs`) or the seeds left can't turn its sign back
 (`sign_settled`: so a stopped row can sit inside 2 SE and isn't "clearly behind"); an agent runs until its last check
