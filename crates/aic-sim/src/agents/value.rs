@@ -654,6 +654,68 @@ mod tests {
         }
     }
 
+    /// 100: the effect ledger (`scripts/cards/effect_ledger.py`) mirrors this file
+    /// by hand; its committed `cards.csv` must read each card as `CardValue::total`
+    /// does at `Ctx::typical_for` the card's tier. A failure means value.rs, the
+    /// table or a card moved: fix the ledger's mirror if it no longer matches, then
+    /// rerun the ledger.
+    #[test]
+    fn effect_ledger_mirrors_the_table() {
+        let r = crate::agents::tests::rules(2);
+        let w = r.world();
+        let t = table();
+        let mut rows = csv_records(include_str!("../../../../experiments/results/effect-ledger/cards.csv")).into_iter();
+        let head = rows.next().expect("a header");
+        let col = |name: &str| head.iter().position(|h| h == name).expect(name);
+        let (id, reasoned, effects) = (col("card"), col("reasoned"), col("effects"));
+        let mut read = 0;
+        let mut off = Vec::new();
+        for cells in rows {
+            let d = w.content.card(&cells[id]);
+            read += 1;
+            // The one difference by design: the ledger counts a troop removal at
+            // what one removes in play (`TROOPS_REMOVED`), value.rs at its face.
+            if cells[effects].contains("remove_troops") {
+                continue;
+            }
+            let ledger: f64 = cells[reasoned].parse().expect("a number");
+            let rust = CardValue::of(t, d).total(t, &Ctx::typical_for(t, d.tier));
+            if (ledger - rust).abs() > 0.011 {
+                off.push(format!("{} ledger {ledger} value.rs {rust:.2}", d.id));
+            }
+        }
+        assert_eq!(read, w.content.cards.len(), "cards.csv is stale: rerun scripts/cards/effect_ledger.py");
+        assert!(off.is_empty(), "the ledger's mirror of value.rs disagrees:\n{}", off.join("\n"));
+    }
+
+    /// The records of a CSV as Python's `csv` writes it: a quoted field may hold
+    /// commas, newlines and doubled quotes.
+    fn csv_records(text: &str) -> Vec<Vec<String>> {
+        let (mut rows, mut row, mut cell) = (Vec::new(), Vec::new(), String::new());
+        let mut quoted = false;
+        let mut chars = text.chars().peekable();
+        while let Some(ch) = chars.next() {
+            match (quoted, ch) {
+                (true, '"') if chars.peek() == Some(&'"') => {
+                    chars.next();
+                    cell.push('"');
+                }
+                (_, '"') => quoted = !quoted,
+                (false, ',') => row.push(std::mem::take(&mut cell)),
+                (false, '\n') => {
+                    row.push(std::mem::take(&mut cell));
+                    rows.push(std::mem::take(&mut row));
+                }
+                (_, c) => cell.push(c),
+            }
+        }
+        if !cell.is_empty() || !row.is_empty() {
+            row.push(cell);
+            rows.push(row);
+        }
+        rows
+    }
+
     /// A liberate capstone counts its city only while one is corrupted, and Popular
     /// Uprising's one-shot Action is a whole city, used once (r37).
     #[test]

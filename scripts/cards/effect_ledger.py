@@ -3,6 +3,8 @@ reasoned values. A diagnostic for picking the extreme outliers to discuss, not a
 pricing formula.
 
     python scripts/cards/effect_ledger.py          # rewrites experiments/results/effect-ledger/
+    python scripts/cards/effect_ledger.py --stdout [--cards PROPOSED.json] [--values VALUES.json]
+                                                   # prints each card's fit and fair price; writes nothing
 
 Re-run it at each card revision; it reads only content/cards.json,
 configs/agents/values.json and RULES_REVISION, and writes the same files for the same
@@ -35,6 +37,7 @@ What it does:
 Outputs (experiments/results/effect-ledger/): effects.csv, instances.csv, cards.csv,
 factors.csv, ledger.html (self-contained, sortable, opens from disk), outliers.md.
 """
+import argparse
 import csv
 import io
 import json
@@ -42,6 +45,7 @@ import math
 import os
 import re
 import statistics
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, 'experiments', 'results', 'effect-ledger')
@@ -517,10 +521,17 @@ def write_csv(name, header, rows):
         f.write(buf.getvalue())
 
 
-def main():
-    os.makedirs(OUT, exist_ok=True)
-    t = Table(load_json('configs', 'agents', 'values.json'))
-    cards = sorted(load_json('content', 'cards.json'), key=lambda c: c['id'])
+def load_path(path):
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None):
+    t = Table(load_path(values_path) if values_path else load_json('configs', 'agents', 'values.json'))
+    cards = sorted(load_path(cards_path) if cards_path else load_json('content', 'cards.json'), key=lambda c: c['id'])
+    if not stdout:
+        os.makedirs(OUT, exist_ok=True)
+    out = (lambda *_: None) if stdout else write_csv
     rev = revision()
 
     inst = {c['id']: decompose(t, c) for c in cards}
@@ -580,7 +591,7 @@ def main():
         eff_rows.append(e['out'])
     eff_cols = ['effect', 'slot', 'status', 'cards', 'fitted', 'beta', 'beta_se', 'reasoned', 'min', 'min_card',
                 'max', 'max_card', 'spread', 'max_over_min', 'all_cards']
-    write_csv('effects.csv', eff_cols, [[r_[c] for c in eff_cols] for r_ in eff_rows])
+    out('effects.csv', eff_cols, [[r_[c] for c in eff_cols] for r_ in eff_rows])
 
     inst_cols = ['card', 'effect', 'slot', 'params', 'quantity', 'reasoned', 'reasoned_per_unit', 'printed_share',
                  'per_unit']
@@ -591,7 +602,7 @@ def main():
                               'quantity': r2(r_['quantity']), 'reasoned': r2(r_['reasoned']),
                               'reasoned_per_unit': r2(r_['reasoned_unit']), 'printed_share': r2(r_['share']),
                               'per_unit': r2(r_['per_unit'])})
-    write_csv('instances.csv', inst_cols, [[r_[c] for c in inst_cols] for r_ in inst_rows])
+    out('instances.csv', inst_cols, [[r_[c] for c in inst_cols] for r_ in inst_rows])
 
     card_rows = []
     for c in cards:
@@ -608,15 +619,38 @@ def main():
     card_rows.sort(key=lambda r_: (-abs(r_['gap']), r_['card']))
     card_cols = ['card', 'name', 'tier', 'kind', 'needs', 'cost', 'insight', 'printed', 'reasoned', 'gap', 'ratio',
                  'fit', 'fit_resid', 'effects']
-    write_csv('cards.csv', card_cols, [[r_[c] for c in card_cols] for r_ in card_rows])
+    out('cards.csv', card_cols, [[r_[c] for c in card_cols] for r_ in card_rows])
 
     fac_cols = ['factor', 'value', 'se']
     fac_rows = [[k, r2(coef[k][0]), r2(coef[k][1])] for k in ('tier 1', 'tier 2', 'per needed tag')]
     fac_rows.append(['residual sd', r2(sigma), ''])
     fac_rows.append(['degrees of freedom', dof, ''])
-    write_csv('factors.csv', fac_cols, fac_rows)
+    out('factors.csv', fac_cols, fac_rows)
 
-    meta = {'revision': rev, 'cards': len(cards), 'effects': len(effects), 'fitted': len(fitted_keys),
+    if stdout:
+        # The fair credit price (docs/card-pricing.md, *A fair price*): the fit's printed
+        # value less what the card costs in other resources at the table's rates.
+        # --hold-ratio: the credit price that keeps each card's printed / reasoned ratio of an
+        # older cards.csv after a value change (098 repriced 12 cards so, by hand).
+        old_ratio = {}
+        if hold_ratio:
+            with open(hold_ratio, encoding='utf-8', newline='') as f:
+                old_ratio = {r_['card']: float(r_['ratio']) for r_ in csv.DictReader(f) if r_['ratio']}
+        w = csv.writer(sys.stdout, lineterminator='\n')
+        w.writerow(['card', 'name', 'tier', 'cost', 'printed', 'reasoned', 'fit', 'fair_credits']
+                   + (['held_credits'] if hold_ratio else []))
+        for r_ in sorted(card_rows, key=lambda r_: r_['card']):
+            other = printed[r_['card']] - r_['cost']
+            held = old_ratio.get(r_['card'])
+            w.writerow([r_['card'], r_['name'], r_['tier'], r_['cost'], r_['printed'], r_['reasoned'], r_['fit'],
+                        r2(fitted_cost[r_['card']] - other)]
+                       + ([r2(held * reasoned[r_['card']] - other) if held is not None else ''] if hold_ratio else []))
+        print()
+        for row in fac_rows:
+            print(f"{row[0]}: {row[1]}" + (f" (se {row[2]})" if row[2] != '' else ''))
+        return
+
+    meta ={'revision': rev, 'cards': len(cards), 'effects': len(effects), 'fitted': len(fitted_keys),
             'unidentified': sum(1 for e in effects.values() if e['status'] == 'unidentified'),
             'sigma': r2(sigma), 'dof': dof, 'factors': {k: [r2(v[0]), r2(v[1])] for k, v in coef.items()
                                                         if k in ('tier 1', 'tier 2', 'per needed tag')}}
@@ -780,5 +814,22 @@ def write_html(meta, eff_rows, eff_cols, card_rows, card_cols, inst_rows, inst_c
         fh.write(head + HTML_JS)
 
 
+def args():
+    p = argparse.ArgumentParser(description=__doc__.split('\n\n')[0],
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument('--stdout', action='store_true',
+                   help='print the cards table (with fair credits) and the factors; write nothing')
+    p.add_argument('--cards', help='a cards.json to read instead of content/cards.json (proposed prices)')
+    p.add_argument('--values', help='a values.json to read instead of configs/agents/values.json')
+    p.add_argument('--hold-ratio', metavar='OLD_CARDS_CSV',
+                   help='with --stdout: add each card\'s credit price at its printed / reasoned ratio in an older '
+                        'cards.csv (git show REV:experiments/results/effect-ledger/cards.csv > out/old.csv)')
+    a = p.parse_args()
+    if a.hold_ratio and not a.stdout:
+        p.error('--hold-ratio prints: pass --stdout')
+    return a
+
+
 if __name__ == '__main__':
-    main()
+    a = args()
+    main(stdout=a.stdout, cards_path=a.cards, values_path=a.values, hold_ratio=a.hold_ratio)

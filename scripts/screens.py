@@ -44,6 +44,23 @@ def cell_names(spec):
     return [(v['name'], a) for v in spec['variants'] for a in spec['agents']]
 
 
+def cell_labels(spec):
+    """Each cell's name, by cell id, for any spec: VARIANT/AGENT, led by the config's file
+    stem and `dN` when the spec has more than one config or difficulty
+    (CONFIG/dN/VARIANT/AGENT). The order is `cells` in crates/aic-sim/src/experiment.rs:
+    config, variant, difficulty, agent."""
+    configs, diffs = spec['configs'], spec['difficulties']
+    out = []
+    for c in configs:
+        stem = os.path.splitext(os.path.basename(c))[0]
+        for v in spec['variants']:
+            for d in diffs:
+                lead = (f'{stem}/' if len(configs) > 1 else '') + (f'd{d}/' if len(diffs) > 1 else '')
+                out.extend(f"{lead}{v['name']}/{a}" for a in spec['agents'])
+    assert len(set(out)) == len(out), f"{spec['name']}: two cells share a name (configs with one file name?)"
+    return out
+
+
 def load(d):
     """(cells by id, games by cell), without the games' action lists."""
     with open(f'{d}/results.json', encoding='utf-8') as f:

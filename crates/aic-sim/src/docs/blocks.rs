@@ -41,7 +41,12 @@ pub(super) fn threats_block() -> String {
     let rows = content()
         .threats
         .iter()
-        .map(|t| vec![t.name.clone(), t.tier.to_string(), t.source.to_string(), t.text.clone(), costs(&t.counter)])
+        // A counter is one combined cost: " + ", so "1 credits, 1 energy" can't
+        // read as alternatives (100).
+        .map(|t| {
+            let counter: Vec<String> = t.counter.iter().map(|(r, n)| r.words(*n)).collect();
+            vec![t.name.clone(), t.tier.to_string(), t.source.to_string(), t.text.clone(), counter.join(" + ")]
+        })
         .collect();
     table(&["Threat", "Tier", "Source", "If not countered", "Counter"], rows)
 }

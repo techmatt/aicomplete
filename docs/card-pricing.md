@@ -13,6 +13,28 @@ that sets the price.
 each op's row saying what one unit is. The agents value cards by the same table (`docs/agents.md`, *The value table*), so
 a rate moved there moves the agents' read of every card that prints it. Change a rate there, not here.
 
+Two other places hold rates, and neither is a price:
+
+- **The search's weights** (`Weights` in `crates/aic-sim/src/agents/eval.rs`) are points tuned against win rate, not
+  credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 2, `liberated` and
+  `liberate_progress`, `station_flip`), the gap is deliberate until a screen moves it: held energy below the table's
+  price is on purpose (100), and `w.table_energy` and `w.table_antimatter` stay off. A table edit does not
+  move them; say in the write-up when a price and its weight part further.
+- **The effect ledger** (`scripts/cards/effect_ledger.py`) mirrors `agents/value.rs` by hand. The fast-lane test
+  `effect_ledger_mirrors_the_table` checks its committed `cards.csv` against value.rs card by card (bar troop removal, which the ledger counts at what one
+  removes in play): after a change to
+  value.rs, `values.json` or a card, rerun the ledger, and fix its `op_worth` if the test still fails.
+
+## A fair price
+
+`python scripts/cards/effect_ledger.py --stdout [--cards PROPOSED.json]` prints each card's `fit` (the printed value the
+joint fit gives it: Σ multiplier × reasoned value per fitted effect, + an effect on one or two cards and the tags at
+their reasoned value, + its tier's constant, + the rate per needed tag × its
+`needs`) and `fair_credits`: the fit less what the card costs in other resources (insight, energy, chips, antimatter,
+cubes, `lowers`) at the table's rates. That is the credit price that would put the card on the fitted curve. It writes
+nothing, so a staging session can price proposed cards: copy `content/cards.json` to `out/`, edit, pass it with
+`--cards`. The fit's constants move with the set; read them from the printout, never from an old write-up.
+
 ## The method (Matt's rulings)
 
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for

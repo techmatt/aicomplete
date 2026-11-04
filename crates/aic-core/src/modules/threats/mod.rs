@@ -105,7 +105,8 @@ pub fn paid_prefix(threat: &str) -> KeyBuf {
     KeyBuf::new("threats.paid.").text(threat).text(".")
 }
 
-fn paid_key(threat: &str, seat: usize, resource: Resource) -> KeyBuf {
+/// What seat `seat` has paid toward `threat` in `resource`.
+pub fn paid_key(threat: &str, seat: usize, resource: Resource) -> KeyBuf {
     paid_prefix(threat).num(seat).text(".").text(resource.name())
 }
 

@@ -91,3 +91,50 @@ fn each_mark_has_one_reading() {
         }
     }
 }
+
+/// 100: every word of every icon line is one `web/card/card.js` `part()` draws: an
+/// icon or tag of `web/card/icons.js`, a connector, or a number. 090 met a stray word
+/// only when `npm run cards:fit` threw "no icon or number".
+#[test]
+fn icon_lines_print_only_what_the_viewer_draws() {
+    use crate::face::Part;
+    let js = include_str!("../../../../web/card/icons.js");
+    let mut known: BTreeSet<String> = ["→", "/", ":", "OR", "ALL", "ACT"].iter().map(|s| s.to_string()).collect();
+    for (table, prefix) in [("RESOURCES", ""), ("TOKENS", ""), ("PIECES", ""), ("TAGS", "#")] {
+        let start = js.find(&format!("const {table} = {{")).unwrap_or_else(|| panic!("icons.js: no {table}"));
+        let body = &js[start..];
+        let body = &body[..body.find("\n};").expect("the table closes")];
+        for line in body.lines().skip(1) {
+            if let Some(key) = line.strip_prefix("  ").and_then(|l| l.split(':').next()) {
+                if !key.is_empty() && key.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+                    known.insert(format!("{prefix}{key}"));
+                }
+            }
+        }
+    }
+    assert!(known.contains("credits") && known.contains("troop") && known.contains("#cyber"), "{known:?}");
+    let number = |w: &str| {
+        // card.js: /^[−+]?≤?[\dn]+$/
+        let w = w.strip_prefix(['−', '+']).unwrap_or(w);
+        let w = w.strip_prefix('≤').unwrap_or(w);
+        !w.is_empty() && w.chars().all(|c| c.is_ascii_digit() || c == 'n')
+    };
+    fn words<'a>(parts: &'a [Part], out: &mut Vec<&'a str>) {
+        for p in parts {
+            match p {
+                Part::Word(w) => out.push(w),
+                Part::Income { income: v } | Part::Adversary { adversary: v } | Part::Other { other: v } | Part::Yours { yours: v } => words(v, out),
+            }
+        }
+    }
+    let mut bad = Vec::new();
+    for c in &content().cards {
+        let f = crate::face::card_face(c);
+        let mut all = Vec::new();
+        for line in f.top.iter().chain(f.effect.iter()) {
+            words(line, &mut all);
+        }
+        bad.extend(all.into_iter().filter(|w| !known.contains(*w) && !number(w)).map(|w| format!("{}: {w:?}", c.id)));
+    }
+    assert!(bad.is_empty(), "icon-line words the viewer can't draw:\n{}", bad.join("\n"));
+}

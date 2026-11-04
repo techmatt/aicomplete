@@ -77,9 +77,12 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
 `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
-`games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys starting `cards.`, `ai.`,
-`economy.` or `board.node`, and `unspent.<seat>.energy` (per seat: energy held as the action phase ends; no key in a
-round the game ended before then): extend the list in `experiment.rs` for another. In the core `cx.count(g, "x", n)` writes
+`games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
+`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, and `unspent.<seat>.energy` (per seat: energy held
+as the action phase ends). Add a pair there for another; an aic-sim rebuild, no script change. A zero is written for
+every round up to the key's last record (100), so an absent `unspent.*.rNN` means the round's action phase never ended. A read that takes a key's presence as
+"reached" (`ai.tag_top`, in `energy_read.py`, `r37_read.py`, `economy_read.py`) reads a seat with no tagged card
+differently on an older games.jsonl: don't diff such reads across 100. In the core `cx.count(g, "x", n)` writes
 `<module>.x` while `cx.tally` and `cx.per_round` take the full key, so a power use is `ai.power.builder.0`: a screen
 column on the bare name prints zeros.
 
@@ -103,7 +106,8 @@ agent is one stderr line and a missing cell, so an `engine:samples=2` you meant 
 `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`, `alignment`, `projects`; `*` for every id;
 a path through fields and list indexes (`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.passives.0.amount=2`,
 `ais.*.economy_track.4.cost=2`, `threats.<id>.counter=[["credits",3]]`; `corps.horizon.project.after=[]` reaches the
-map's country pieces by lowercase name, the only part of the map an overlay reaches). It is checked like `content/`
+map's country pieces by lowercase name, the only part of the map an overlay reaches; `null` clears an optional field,
+`cards.<id>.ability=null`). It is checked like `content/`
 and lands in the config, so the hashes and records name it and `replay` needs nothing else
 (`experiments/overlay-card-cost.json` is a worked sweep). Only player-card text is generated: other text and the
 viewer's faces show printed values while the game plays the overlay. `experiment` refuses `--set` and a spec has no

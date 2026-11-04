@@ -10,7 +10,7 @@
 use aic_core::content::{Op, RoundFlag};
 use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
-use aic_core::modules::{adversary, board, threats};
+use aic_core::modules::{board, threats};
 use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
@@ -33,12 +33,6 @@ impl Saves {
 /// player ambassador on it).
 fn absorbed(g: &GameState, h: usize) -> bool {
     g.tokens(h, HARDEN) > 0 || common::player_ambassador(g, h).is_some()
-}
-
-/// Whether seat `s`'s last node can't be destroyed now (the engine's
-/// `last_node_safe`, read from the table).
-fn last_safe(w: &World, g: &GameState, s: usize) -> bool {
-    g.var(adversary::STAGE) < w.int("board.last_safe_stage") && common::node_count(g, s) <= 1
 }
 
 /// The share of threat `t`'s counter still unpaid.
@@ -66,7 +60,7 @@ fn counterable(w: &World, g: &GameState, t: &str, scope: Option<usize>) -> bool 
         return false;
     }
     threats::requirement(w, g, t).iter().all(|&(r, n)| {
-        let paid: i64 = (0..g.seats.len()).map(|s| g.var(&format!("threats.paid.{t}.{s}.{}", r.name()))).sum();
+        let paid: i64 = (0..g.seats.len()).map(|s| g.var(&threats::paid_key(t, s, r))).sum();
         let held: i64 = seats.iter().map(|&s| g.resource(s, r).max(0)).sum();
         n - paid <= held
     })
@@ -95,7 +89,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             match op {
                 Op::EachDestroyNode { count } => {
                     for s in 0..seats {
-                        if last_safe(w, g, s) {
+                        if board::last_node_safe(w, g, s) {
                             continue;
                         }
                         let open = nodes_here(s).into_iter().filter(|&h| !absorbed(g, h)).count() as i64;
@@ -117,7 +111,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                             continue;
                         }
                         if let Some(s) = common::node_owner(g, h) {
-                            if s < seats && !last_safe(w, g, s) {
+                            if s < seats && !board::last_node_safe(w, g, s) {
                                 out.nodes[s] += share;
                                 hit += 1;
                             }

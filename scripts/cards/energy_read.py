@@ -93,12 +93,14 @@ def energy_by_round(games, nseats):
         for s in range(nseats):
             for r in at:
                 # 099: a round counts once its action phase ended (its tag key), as at the end:
-                # a game lost mid-round read 0 here.
-                # (a later round also proves it: a seat with no card in play writes no tag key).
+                # a game lost mid-round read 0 here. Since 100 every round up to the last
+                # record is written, zeros included, so the key is there from round 1; on an
+                # older games.jsonl a seat with no card in play wrote none (a later round
+                # proves it then).
                 if g['rounds'] > r or f'ai.tag_top.{s}.r{r:02d}' in g['counters']:
                     at[r].append(cnt(g, f'unspent.{s}.energy.r{r:02d}'))
-            # The last round whose action phase ended: zeros aren't written, so a
-            # round counts by its tag key (recorded beside it, never 0 once a card is in play).
+            # The last round whose action phase ended: the round of its tag key (recorded
+            # beside the energy; before 100, missing while it was 0).
             last = max((r for r in range(1, g['rounds'] + 1)
                         if f'ai.tag_top.{s}.r{r:02d}' in g['counters']), default=g['rounds'] - 1)
             last = max(last, g['rounds'] - 1)  # 099: every round before the last one ended
@@ -129,7 +131,8 @@ def main():
         print(f'| {k[0]}/{k[1]}/d{k[2]} | {len(gs)} | {w:.0f} | {e3:.1f} | {e6:.1f} | {ee:.1f} |')
     print()
     table = {k: rows(pooled[k]) for k in keys}
-    print('| use a game | ' + ' | '.join(f'{k[0]}/{k[1]}' for k in keys) + ' |')
+    # 100: the difficulty too, or a spec with two prints duplicate headers.
+    print('| use a game | ' + ' | '.join(f'{k[0]}/{k[1]}/d{k[2]}' for k in keys) + ' |')
     print('|---|' + '---|' * len(keys))
     for i, r in enumerate(table[keys[0]]):
         cells = []

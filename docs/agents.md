@@ -66,7 +66,8 @@ or strategy switch goes bare (`strategist:plan_bury=0`).
 ## The value table
 
 `configs/agents/values.json`, read by `agents/value.rs`: one value in credits for each
-resource, tag left in play, token and op (the rates' one home; method in card-pricing.md). Every
+resource, tag left in play, token and op (the rates' one home for prices; the search's `Weights` are points, and
+card-pricing.md, *The rates*, says which shadow a row and why). Every
 op has its arm (no catch-all) and its row (`every_op_has_a_row`). A card is worth its ops: what its effects do now, what
 its standing effects pay a round times the rounds it counts for, a use of its Action times
 `uses_share` of those rounds (a progressive token card's spend over the uses its cycle of

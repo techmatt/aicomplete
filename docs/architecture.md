@@ -182,7 +182,11 @@ heading like `## 080's changes` (`current_docs.rs`), an id in
 `docs/card-pricing-notes.json` that is no player card, and in rules.md a backticked
 `module.param` or bare `snake_case` name that is neither a tunable nor an op
 (`NOT_TUNABLES` lists the other names it may print). rules.md names a tunable rather
-than repeating its value.
+than repeating its value. Two more fast-lane tests read generated files: an icon-line word
+in a face that `web/card/icons.js` has no icon for (`tests/face.rs`), and a committed
+effect ledger (`experiments/results/effect-ledger/cards.csv`) that values a card otherwise
+than `agents/value.rs` (`effect_ledger_mirrors_the_table`): rerun
+`scripts/cards/effect_ledger.py` after a card or `values.json` edit.
 
 ## The generic view
 

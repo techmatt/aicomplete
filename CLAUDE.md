@@ -37,7 +37,8 @@ experiments, speed, scripts, web, card art.
   each new mechanic's use per game and its on/off gap on the same seeds (080: `liberation_read.py`).
 - **A new decision type for the agents** (a new kind of card to keep, a new action to take): review the
   agent code that makes that decision (keep plan, eval term, fixed policies) before the first screen, not
-  after it reads low.
+  after it reads low. **A new agent heuristic** gets a 16-seed engine smoke, on and off, on the dev seeds
+  before its first fresh read (092 lost a screen and a fresh seed set to two heuristics that lost).
 - **The prompt's stated numbers run as a cell of every screen**, beside any lever you try, so the report
   can always say what the asked-for numbers did.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants
@@ -47,7 +48,8 @@ experiments, speed, scripts, web, card art.
 - **Every rules change** updates [docs/rules.md](docs/rules.md) and adds its row to
   [docs/rules-history.md](docs/rules-history.md) in the same commit.
 - **After changing threats, cards, adversary rules, content or tunables:** run `aic-sim docs`,
-  then `python scripts/cards/cards_doc.py`. What they generate, and what a fast-lane test
+  then `python scripts/cards/cards_doc.py`; after a card or `values.json` edit also `python
+  scripts/cards/effect_ledger.py` (a fast-lane test reads its `cards.csv`). What they generate, and what a fast-lane test
   refuses, is in *Generated docs* in docs/architecture.md; change the source, not the output.
   What [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.
@@ -84,7 +86,8 @@ experiments, speed, scripts, web, card art.
   `cargo test-all --test-threads=2`. A test slower than about a second goes in the slow lane,
   with a cheaper fast-lane twin where one makes sense. See README, *Build and test*. Leave
   `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt. In a fresh
-  worktree, web's `npm run check` needs `npm run wasm` first; e2e's `board fills its pane`
+  worktree, web's `npm run check` needs `npm run wasm` first; `npm run e2e` needs the dev server
+  running (another port: `AIC_URL`, web/README); e2e's `board fills its pane`
   plays a fixed game (baseline seed 11, first legal action), not the random game, so a rules
   change can move it (web/README).
 - **Agents stay fast.** After a change to rules, state or agents, run `python

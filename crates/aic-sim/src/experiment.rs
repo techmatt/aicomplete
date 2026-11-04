@@ -780,23 +780,33 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
             e.played = e.played.max(*v as u32);
         }
     }
-    // 021: the per-round tables of the card, AI, economy and node
-    // counters, as `<key>.rNN` (summed over seats), for the screen's by-round
-    // tables. Others (`adversary.*`) stay out, to keep games.jsonl small. 090:
-    // energy each seat holds as the action phase ends (`unspent.<seat>.energy`).
+    // 021: the per-round tables named in PER_ROUND_EXPORT, as `<key>.rNN`.
+    // 100: every round the counter's table reaches is written, zeros
+    // included, so an absent `.rNN` means no record by round NN (for a counter
+    // recorded every round, such as `unspent.*`, the round was not reached).
     for (k, v) in &g.stats.per_round {
-        let energy = k.starts_with("unspent.") && k.ends_with(".energy");
-        if k.starts_with("cards.") || k.starts_with("ai.") || k.starts_with("economy.") || k.starts_with("board.node") || energy {
+        if PER_ROUND_EXPORT.iter().any(|(pre, suf)| k.starts_with(pre) && k.ends_with(suf)) {
             for (i, n) in v.iter().enumerate().skip(1) {
-                if *n != 0 {
-                    r.counters.insert(format!("{k}.r{i:02}"), *n);
-                }
+                r.counters.insert(format!("{k}.r{i:02}"), *n);
             }
         }
     }
     r.build = build_signature(rules, &g);
     r.final_state = Some(Box::new(g));
 }
+
+/// The per-round counters games.jsonl carries, as (prefix, suffix) pairs: a
+/// key matching both is written round by round (`<key>.rNN`). Others
+/// (`adversary.*`, the other `unspent.*` resources) stay out, to keep
+/// games.jsonl small; a new by-round read adds its pair here. `unspent.<seat>.energy`
+/// is the energy a seat holds as the action phase ends (090).
+pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
+    ("cards.", ""),
+    ("ai.", ""),
+    ("economy.", ""),
+    ("board.node", ""),
+    ("unspent.", ".energy"),
+];
 
 fn ms_since(t: Instant) -> f64 {
     t.elapsed().as_secs_f64() * 1000.0

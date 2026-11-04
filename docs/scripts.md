@@ -55,11 +55,15 @@ Current:
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl
   ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, opening deal and draws
   included: never a share of offered, which would pass 100.
-- `cards/effect_ledger.py` (no flags): the effect ledger (088). It splits each card's printed cost over its
+- `cards/effect_ledger.py`: the effect ledger (088). It splits each card's printed cost over its
   effects pro rata to 082's reasoned values (`configs/agents/values.json`, an income valued over its tier's
   horizon), fits a price multiplier per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to
-  `experiments/results/effect-ledger/`; rerun at each card revision. Its Python mirror of `agents/value.rs`
-  must change with it. "Remove up to N troops" counts at what it removes in play (`TROOPS_REMOVED`, from the
+  `experiments/results/effect-ledger/`; rerun at each card revision. `--stdout` writes nothing and prints each
+  card's fit and fair credit price (card-pricing.md, *A fair price*); `--cards FILE` and `--values FILE` read a
+  proposed `cards.json` or `values.json`; `--hold-ratio OLD.csv` adds the credit price that keeps each card's
+  printed / reasoned ratio of an older `cards.csv` (`git show REV:experiments/results/effect-ledger/cards.csv`), for
+  repricing after a value change. Its Python mirror of `agents/value.rs` must change with it (the
+  fast-lane `effect_ledger_mirrors_the_table` checks the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`TROOPS_REMOVED`, from the
   engine's `cards.troops_removed.<N>` / `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
@@ -107,13 +111,17 @@ Current:
   A `--update` compares a run with itself: run a plain `check` after it.
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per
   decision on the same seeds, for telling longer games from a slower agent. 6 games is
-  too few across rules revisions; `--games 16` or more. Bad arguments stop it before anything runs: each root is
+  too few across rules revisions; `--games 16` or more (about 8 min for the default `--agent planner`, 092: plan
+  for it, and name the agents a change touched). A `speed.py check --update` plus the plain check after it is about
+  4 min more. Bad arguments stop it before anything runs: each root is
   an `.exe` or a directory holding `aic-sim.exe` and the `configs/` it plays (a copied binary needs them beside it).
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE,
   rounds and ends, and paired gaps between any two cells, pooled over several `--pair`s. A
-  `--pair` cell is its exact name (`bp/strategist`, or `DIR/bp/strategist`). `sweep` follows the
+  `--pair` cell is its exact name (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or
+  difficulties (an on/off config pair) leads it with the config's file stem and `dN`
+  (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `sweep` follows the
   engine's defaults: against a pre-082 run, name the old ones (`sweep:plan_table=0,w.table=0,w.packet_keep=1`).
   `--against-base` reads a price sweep: every variant `cN-x` against `cN`, per agent, and
   each lever pooled over its sizes. The spec's variants are `c2`, `c3`, `c2-x`, `c3-x`, each with

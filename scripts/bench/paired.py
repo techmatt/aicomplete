@@ -23,7 +23,8 @@ size, the same overrides under c2-x and c3-x:
     {"name": "c2-cost4", "set": ["countries=2", "cards.telemetry_archive.cost=4"]},
     {"name": "c3-cost4", "set": ["countries=3", "cards.telemetry_archive.cost=4"]}
 
-Cells must come from specs with one config and one difficulty.
+A spec with several configs or difficulties (an on/off config pair) leads each name with the
+config's file stem and `dN` where they vary: CONFIG/dN/VARIANT/AGENT (100).
 """
 import argparse
 import math
@@ -33,7 +34,7 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_names, gap, stream  # noqa: E402
+from screens import cell_labels, gap, stream  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -41,7 +42,7 @@ sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 def load(d):
     """{cell name: {seed: game}}, in the spec's order."""
     lines = stream(d)
-    names = [f'{v}/{a}' for v, a in cell_names(next(lines)['spec'])]
+    names = cell_labels(next(lines)['spec'])
     cells = {n: {} for n in names}
     for g in lines:
         cells[names[g['cell']]][g['seed']] = g

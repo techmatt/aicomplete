@@ -172,8 +172,8 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
 
 /// Whether seat `s`'s node is safe as its last (027): while this round's
 /// adversary card is below `last_safe_stage` (stage II), nothing destroys a
-/// player's last node.
-pub(super) fn last_node_safe(w: &World, g: &GameState, s: usize) -> bool {
+/// player's last node. Public for the agents' forecasts (092's shelter read).
+pub fn last_node_safe(w: &World, g: &GameState, s: usize) -> bool {
     g.var(adversary::STAGE) < w.int("board.last_safe_stage") && node_count(g, s) <= 1
 }
 

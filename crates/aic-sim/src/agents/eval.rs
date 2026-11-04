@@ -753,6 +753,9 @@ impl Eval {
 
     /// 082: what action `a` does that the board terms can't see after it (a
     /// shelter, a cordon, a peek), in heuristic points: credited when it is taken.
+    /// State-free by design: a flat worth per kind of action. A worth that depends
+    /// on the table now (what a shelter saves this round) is a term of `value` on
+    /// the state the action leaves, as 092's shelter read is (`guide.rs`).
     pub fn bonus(&self, world: &aic_core::module::World, a: &aic_core::Action) -> f64 {
         if self.w.table <= 0.0 {
             return 0.0;

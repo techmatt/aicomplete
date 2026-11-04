@@ -30,10 +30,10 @@ never a quiet exception.
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building
    holds income or tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice
    (rule 15).
-9. **Fits at the default size.** Rules text prints at 7.5 pt: a smaller card is the exception and
-   carries a reason. A building's box above the art holds about 80 characters on two lines; the
-   box below the art about the same; a program or event about 110. Cut words, split ideas or
-   simplify the op. Never shrink the type. Measure with `npm run cards:fit` in `web/`. A box's
+9. **Fits at the default size.** Rules text prints at 7.5 pt. A building's box above the art holds
+   about 80 characters on two lines; the box below the art about the same; a program or event about
+   110. Cut words, split ideas or simplify the op rather than shrink the type. A card that still
+   can't fit is a recorded exception: its reason goes in the item's write-up. Measure with `npm run cards:fit` in `web/`. A box's
    capacity derives from its height in `art/frames/r3/fit.json` (which overrides `layout.json`),
    less `CLEARANCE_MM` (`web/card/card.js`) and its icon rows, at about 3.2 mm a line: size and line
    height are `.rules`, side padding `.effect`, in `web/card/card.css`. The character counts above

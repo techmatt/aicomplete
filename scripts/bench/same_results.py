@@ -100,6 +100,9 @@ def agent_names(path, maps=()):
 
 def main():
     args = sys.argv[1:]
+    if any(x in ("-h", "--help") for x in args):
+        print(__doc__)
+        return 0
     maps = take_maps(args)
     flagged = "--ignore-content-hash" in args
     args = [x for x in args if x != "--ignore-content-hash"]
@@ -107,6 +110,8 @@ def main():
         IGNORED.append("content_hash")
     if maps:
         IGNORED.append("config_hash")
+    if len(args) != 2:
+        sys.exit(f"needs two output directories, got {args}\n{__doc__.splitlines()[2]}")
     a, b = args[0], args[1]
     # 096: a cell whose agent string differs (renamed, respelled) compares as the other's
     # name, quoted, so a longer name holding it is untouched; the rename is listed.

@@ -1064,6 +1064,10 @@ still help.
 so 4 players repeat the Builder. The engine reads a board's `cards` and `start` (one copy each, so a repeated AI's
 second seat would have neither); no content prints them.
 
+A **shelter** (the Protector's Shelter, or a card's "shelter one country") lasts until cleanup (phase 18) of the round
+it is used in. Used in the actions, it covers the rest of the actions and what comes after them: troops from bases,
+war, production and the threats that execute (phases 13-17). The march (phase 5) has already happened, so a shelter never meets it.
+
 <!-- generated: board_details -->
 | Board | Special rule |
 |---|---|
@@ -1161,10 +1165,10 @@ Choice threats are preferred; a destroyed node leaves the game, so a tier-1 thre
 | Threat | Tier | Source | If not countered | Counter |
 |---|---|---|---|---|
 | Requisition | 1 | economic | Each player here discards 2 cards or pays 6 credits. | 4 credits |
-| Commandeer | 1 | economic | Each player here discards 2 cards or pays 4 energy. | 1 credit, 1 energy |
+| Commandeer | 1 | economic | Each player here discards 2 cards or pays 4 energy. | 1 credit + 1 energy |
 | Supply Raid | 1 | economic | Each player here loses 6 credits. | 5 credits |
-| Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 credit, 1 energy |
-| Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 1 credit, 1 energy |
+| Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 credit + 1 energy |
+| Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 1 credit + 1 energy |
 | Infiltration | 1 | cyber | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 credits |
 | Agitators | 1 | influence | 3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their nodes here. | 5 credits |
 | Orbital Strike | 1 | military | 1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their nodes here. | 6 credits |
