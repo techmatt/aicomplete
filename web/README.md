@@ -94,7 +94,8 @@ rather than ids on screen, under 100 ms a step, a 4-country game, the shared row
 About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` also saves
 `viewer-mid.png` and `viewer-end.png` there.
 
-`board fills its pane` measures a fixed game (baseline seed 11, first legal action), not
+A fresh game has no face-up adversary card and no threats yet, so the checks of those run at round 2
+of the played game (096). `board fills its pane` measures a fixed game (baseline seed 11, first legal action), not
 the random one, which moved the same build by 60 px. A rules change can move it:
 remeasure before reading a layout change into a failure.
 

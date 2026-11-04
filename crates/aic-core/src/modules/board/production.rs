@@ -36,8 +36,8 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
             for c in 0..w.map.countries.len() {
                 match converter_blocked(&w, g, s, c) {
                     None => cx.tally(g, "board.converter_idle", 1),
-                    Some("no nodes here") => cx.tally(g, "board.converter_no_city", 1),
-                    Some("can't pay it") => cx.tally(g, "board.converter_unpaid", 1),
+                    Some(NO_CITY_NODE) => cx.tally(g, "board.converter_no_city", 1),
+                    Some(CANT_PAY) => cx.tally(g, "board.converter_unpaid", 1),
                     Some(_) => {}
                 }
             }
@@ -215,7 +215,8 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
 
 /// Production step 3: cities make energy, stations research cubes; an
 /// adversary ambassador on the piece diverts its output and is removed, and
-/// diverted energy sways toward Discord. Then an adversary ambassador on a
+/// diverted energy sways toward Discord (r37: on a neutral city it stays and
+/// the city sells nothing). Then an adversary ambassador on a
 /// lone node drains 1 of its owner's next insight into adversary compute,
 /// and last full megaprojects complete.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
@@ -245,6 +246,10 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         if corrupted(g, h) {
             alignment::discord_from(g, cx, "city", energy * divert);
             cx.tally(g, "board.energy_diverted", energy);
+        } else if g.tokens(h, ADV_AMBASSADOR) > 0 && cube_owner(g, h).is_none() {
+            // r37 (Matt): on a neutral city the ambassador stays and the city is dark:
+            // no sale, and the unbought energy is lost as usual.
+            cx.tally(g, "board.city_dark", 1);
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 {
             adversary::remove(g, cx, h, 1);
             alignment::sway(g, cx, Side::Discord, energy * w.int("board.ambassador_discord"));

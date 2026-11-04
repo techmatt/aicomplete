@@ -15,7 +15,7 @@
 - [Tunables](#tunables): every baseline config parameter with its value, range and meaning (generated).
 - [Defaults and deviations](#defaults-and-deviations): the numbered readings chosen where the prompt or v0 ruleset left a gap.
 
-What the code implements, at rules revision 36 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 37 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](cards.md), priced in [card-pricing.md](card-pricing.md). The
@@ -72,7 +72,11 @@ The rest:
 - **Reach**: every map target of a standard action is in the acting player's reach, and so
   are most of a card's. The exceptions are a card's single ambassador move and Spread
   (measured from the ambassador), Total Containment's hex, and country effects such as a
-  sweep or Shelter (any country; §8).
+  sweep or Shelter (any country; §8). Reach is 1 unless a rule gives a reason: Embassy
+  Compound's and Peacekeeper Rotation's moves go 2 (§8, moving is their point), and the
+  adversary's distances (`spread_range`, the spread twists, `war_reach`) are its dials, not
+  a player's reach (§3, §4). A converter is not a map target: it needs a node in a city of
+  its country (§1).
 - **Site claim**: aligning a city, or claiming a research station or factory, needs the
   player's node on or next to the site, and **a botnet next to the site blocks claims
   on it** (one hop from the site).
@@ -190,7 +194,9 @@ megaproject is the corp's defining card.
   **and so is an adversary cube (Matt).** Content can print an after line (the *Each
   adversary cube after* column); none does.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
-  player with a **node in that country** (Matt), once a round per player, per card. Cubes
+  player with a **node in a city of that country** (Matt, r37: any city, owned or not; a node
+  elsewhere in the country no longer counts), once a round per player, per card. A converter
+  is a reason to hold a city node. Cubes
   reach a board only after completion, so no converter feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board (§7) and several Science cards (cards.md) name them too.
@@ -210,8 +216,8 @@ a neutral one. A country's cubes fill its corp's megaproject, and when the card 
 the end of production, every cube on it pays, overflow included: yours pay you what the
 card says, the adversary's pay the adversary, neutral ones pay nothing. So claim the
 neutral station or build one before the card fills. After that your stations there put
-cubes on your board, and if you have a node in that country you can spend them on its
-converter once a round. Once the card is done, the adversary's cubes pay it nothing more.
+cubes on your board, and if you have a node on one of that country's cities (any city,
+not only yours) you can spend them on its converter once a round. Once the card is done, the adversary's cubes pay it nothing more.
 A station is worth defending both ways: to take back a corrupted one, stand 2 of your
 ambassadors on it with no adversary ambassador there and pay 6 credits (the ambassadors are
 spent, the station is neutral again); the adversary can take yours only once 2 of its
@@ -233,7 +239,7 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
 
 | On | Adversary ambassador | Player ambassador |
 |---|---|---|
-| City | that round's energy is diverted (no Discord at `ambassador_discord` 0, below) | waits; a corrupted city is liberated the moment `liberate_at` player ambassadors stand on it from seats with a node on or next to it (the fallback, below; checked after every action and automatic phase) |
+| City | on a neutral city it stays, and the city is **dark**: no energy sale while it stands there (r37); on an aligned city that round's energy is diverted (no Discord at `ambassador_discord` 0, below) and the ambassador goes | waits; a corrupted city is liberated the moment `liberate_at` player ambassadors stand on it from seats with a node on or next to it (the fallback, below; checked after every action and automatic phase) |
 | Research station | that round's cube is the adversary's (on any station, a neutral one too); `station_flip_at` (2) of them on a player's station let an effect flip it (§1) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays; 2 of them there, with no adversary ambassador, can free it (the *Free a station* action, §6: both used up) |
 | Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too | on a neutral factory the player can claim: the factory becomes the player's; otherwise each production step it sways `factory_unity` Unity and no corp troop is made, except that an adversary-owned factory still makes its adversary troop; it stays |
 | Node | if the node is alone on its hex (on a city, base, station or factory the ambassador is that piece's), each production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; it stays until removed | waits (defense, below) |
@@ -265,8 +271,9 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
 - **Defense:** a player ambassador on a facility's hex is used up instead of the facility
   when it would be destroyed.
 - **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit; one
-  diverted by an adversary ambassador on a clean or aligned city sways `ambassador_discord`
-  (0).
+  diverted by an adversary ambassador on an aligned city sways `ambassador_discord`
+  (0). A neutral city an adversary ambassador stands on is dark instead (§6): nothing is
+  diverted, the energy is lost.
 
 Player ambassadors move only through cards and the standard actions (Move, Remove).
 
@@ -313,6 +320,9 @@ lost node stays until removed.
    ambassador makes none (the ambassador stays).
 2. **Spread** (`adversary.spread`): every hex holding several adversary ambassadors, fixed
    when the step starts, keeps one and sends each other one to a hex within `spread_range`.
+   **Why 2:** spread is the adversary's movement, a dial on its pressure, not a player's
+   reach, so the players' reach-1 rule doesn't bind it; the +1 of Long Patrols and
+   Blitzkrieg is those twists' whole escalation.
    **Spread never targets an empty hex**: a destination holds a piece or is player-owned
    (node, an aligned city, an owned station or factory); it is not ocean, and it holds no
    adversary ambassador unless it is a city that isn't corrupted, clean or aligned (which
@@ -586,7 +596,8 @@ game on, from several sources: uncountered threats (Eviction offers it as a choi
 Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper
 Cells, Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and
 Siege two), a city that becomes corrupted (nodes on its hex and, by `corruption_reach`, next
-to it), war that destroys a factory (nodes on its hex and, by `war_reach`, next to it),
+to it), war that destroys a factory (nodes on its hex and, by `war_reach`, next to it:
+0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex),
 stage-III adversary cards (each player destroys two) and Border War (one), Discord cards,
 and Purge the Unaligned. **Discord steps:** the tier-2 cards and the tier-1 card left for
 the last tip make each player destroy nodes of theirs at their printed steps (§5; the
@@ -813,9 +824,17 @@ game ends it there.
 corp) energy cubes a round. An aligned city's go free to the player who aligned it (+
 `aligned_bonus`). A neutral city's can be bought for `city_energy_credits` credits by a
 player with a node on or next to it (players choose who, or nobody); otherwise they are
-lost. An adversary ambassador on a clean or aligned city diverts that round's cubes, so none
-are sold or given to a player (the ambassador is removed, §3). A corrupted city's go to the
-adversary (Discord). A Blackout stops a country's cities
+lost. **An adversary ambassador on a neutral city stays, and the city is dark** (Matt, r37):
+none of its cubes are sold, every round it stands there, and they are lost as usual. One
+ambassador makes a city dark; `corrupt_at` of them corrupt it, so clearing ambassadors from
+the cities you buy from comes well before corruption. On an aligned city an adversary
+ambassador diverts that round's cubes, so none go to the player, and is removed (§3). A
+corrupted city's go to the adversary (Discord).
+
+**Cities' energy, for new players.** A city you aligned gives you its energy every round.
+A neutral city next to your node sells you its energy. An adversary ambassador standing on
+a neutral city shuts that sale off until someone removes it, and more of them corrupt the
+city: clear them early. A Blackout stops a country's cities
 in the production after the threat executes.
 
 **Each resource is paid in its home domain (principle accepted):** energy for nodes and
@@ -984,7 +1003,7 @@ per gift building, for the team, not the buyer; it is capped by once a round, th
 (a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). Nothing turns the gift back
 into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with Cintamani's converter (a cube for an insight) is
-the intended engine, capped by how many stations make cubes, by the node in Cintamani's country that the converter
+the intended engine, capped by how many stations make cubes, by the city node in Cintamani's country that the converter
 needs, and by once a round per player. Bought cubes go only onto incomplete cards and are spent at completion, so credits never reach a converter.
 Open Science's insight comes from the supply, not the Researcher's bank, and goes only to other players, so Patience
 can't bank it. Fieldwork's three cards are paid for again to keep in play (credits and insight); sold, they are 3
@@ -1212,7 +1231,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Forensic Audit | research cubes | event | none |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
-  | Popular Uprising | Followers | building (arrives with 2 Followers) | Action: add 2 Followers here, OR spend 6 here: liberate, then discard it (and the stack under it) |
+  | Popular Uprising | Followers | building (arrives with 6 Followers) | Action: spend 6 Followers here: liberate, then discard it (and the stack under it) |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
   a corrupted city costs in play; the extra at its own row), about 25-47 credits, well under the fallback's ~100 and
@@ -1246,9 +1265,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   feeder cards (Dataset Scraper, Capital Injection, Vendor Financing, Manifesto Leak, Recruit Operatives) add tokens to
   one of your cards of a type; Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a
   card loses its tokens.
-- **A one-shot half (`once`, gated by `tips`):** a half of an Action may need the world's Unity tips to have reached a
-  number first, and may take its card out of play once it resolves, with the stack under it (Popular Uprising's
-  liberation: no gate, then discarded; no card prints a `tips` gate at r36).
+- **A one-shot Action (`once`):** an Action, or a half of one, may take its card out of play once it resolves, with
+  the stack under it (Popular Uprising: spend its 6 Followers, liberate, then discard it).
 - **Actions** (abilities: `ability`, buildings only) are used with `Use` once a round, pay their cost, and refresh at
   the start of a round. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay
   and that has a target (a half that counts tokens here needs one there). **Ongoing abilities live only on
@@ -1308,7 +1326,8 @@ card does; how each primitive resolves:
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
-  base, facility or node), each arriving as in §2; stop at any time.
+  base, facility or node), each arriving as in §2; stop at any time. `move_one`'s `range` 2 on Embassy Compound and
+  Peacekeeper Rotation is an exception to reach 1 kept on purpose: moving is those cards' point.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded.
@@ -1379,7 +1398,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a station makes a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
-| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy an adversary ambassador on a clean or aligned city diverts |
+| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy an adversary ambassador on an aligned city diverts |
 | `board.base_discord` | 1 | 0..10 | Discord an adversary ambassador on a producing base sways |
 | `board.base_unity` | 2 | 0..10 | Unity a player ambassador on a producing base sways |
 | `board.factory_unity` | 1 | 0..10 | Unity a player ambassador on a producing factory sways |

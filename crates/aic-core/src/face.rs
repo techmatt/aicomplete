@@ -752,10 +752,9 @@ fn above_art(c: &CardDef, f: &mut Face) {
                 says.push("then discard it".to_string());
             }
             // Call 2: a bare arrow is a free action; every Action is once a round.
-            let gate = if b.tips > 0 { format!("at {}+ Unity tips, ", b.tips) } else { String::new() };
             let open = if paid.is_empty() { String::new() } else { format!("pay {}, ", listed(&paid)) };
             f.top.push(left);
-            halves.push(format!("{gate}{open}{}", says.join(", ")));
+            halves.push(format!("{open}{}", says.join(", ")));
         }
         top_said.push(sentence(&format!("action: {}", halves.join(", OR "))));
     }

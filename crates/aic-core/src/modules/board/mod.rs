@@ -53,7 +53,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a station makes a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
-            ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy an adversary ambassador on a clean or aligned city diverts"),
+            ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy an adversary ambassador on an aligned city diverts"),
             ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
             ParamSpec::int("base_unity", 0, 10, "Unity a player ambassador on a producing base sways"),
             ParamSpec::int("factory_unity", 0, 10, "Unity a player ambassador on a producing factory sways"),
@@ -307,21 +307,26 @@ impl Module for Board {
     }
 }
 
+/// The converter's block when the seat has no node in a city of the country.
+pub const NO_CITY_NODE: &str = "no node in a city here";
+/// The converter's block when the seat can't pay its cost.
+pub const CANT_PAY: &str = "can't pay it";
+
 /// Why seat `s` can't use country `c`'s converter now, if anything stops it.
 pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option<&'static str> {
     if g.var(&project_done(c)) == 0 {
         return Some("the megaproject is not complete");
     }
-    // 075 (Matt): node in the country, where 074 asked for an aligned city.
-    if !has_node_in(w, g, s, c) {
-        return Some("no nodes here");
+    // r37 (Matt): a node in a city of the country, any city; 075 took any node there.
+    if !has_city_node_in(w, g, s, c) {
+        return Some(NO_CITY_NODE);
     }
     if g.var(&converter_round(c, s)) == g.round as i64 {
         return Some("used this round");
     }
     let cost = &w.content.map.countries[c].megaproject.converter.cost;
     if cost.iter().any(|(r, n)| g.resource(s, *r) < *n) {
-        return Some("can't pay it");
+        return Some(CANT_PAY);
     }
     None
 }

@@ -152,7 +152,7 @@ fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
 }
 
 #[test]
-fn a_converter_needs_node_in_its_country_and_works_once_a_round() {
+fn a_converter_needs_node_in_a_city_of_its_country_and_works_once_a_round() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let convert = Action::Convert { seat: 0, country: 0 };
@@ -164,8 +164,13 @@ fn a_converter_needs_node_in_its_country_and_works_once_a_round() {
     // Not complete, then no nodes there (075: an aligned city was 074's gate).
     assert!(!offered(&g));
     g.vars.insert(board::project_done(0).into(), 1);
-    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("no nodes here"));
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some(board::NO_CITY_NODE));
     assert!(rules.apply_mut(&mut g, &convert, None).is_err());
+    // r37: a node off the cities, here the starting node's hex, is not enough.
+    let open = rules.map.numbered(0, piece(0).node);
+    assert!(!crate::modules::common::is_city(&w, open));
+    put(&mut g, open, node(0), 1);
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some(board::NO_CITY_NODE));
     let city = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, city, cube(0), 1);
     assert!(!offered(&g), "an aligned city is no longer the gate");

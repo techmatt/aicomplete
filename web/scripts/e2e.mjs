@@ -81,13 +81,20 @@ try {
   const panels = await js(`({ pipeline: document.querySelectorAll('#pipeline .slot-box').length, alignment: document.querySelectorAll('#status .alignment .tug .bar').length,
                              undecided: !!document.querySelector('#status .alignment .undecided'),
                              next: document.querySelector('#pipeline .slot-box.next .acard .atext')?.textContent ?? '',
+                             // 096: a fresh game may have no face-up card yet: the box then says so.
+                             nextShown: (window.aic.view.piles.find((p) => p.key === 'adversary.next')?.visible.length ?? 0) > 0,
+                             nextEmpty: document.querySelector('#pipeline .slot-box.next .empty')?.textContent ?? '',
                              supply: !!document.querySelector('[data-value="adversary.supply"]'),
                              projects: document.querySelectorAll('#countries .project .cubes').length, countries: window.aic.view.countries.length,
-                             threats: document.querySelectorAll('#countries .threat').length })`);
+                             threats: document.querySelectorAll('#countries .threat').length,
+                             // 096: as many as the view deals (a fresh game may have none yet).
+                             dealt: window.aic.view.countries.flatMap((c) => c.cards).filter((g) => g.key === 'threats.on').reduce((n, g) => n + g.cards.length, 0) })`);
   check(panels.pipeline >= 4 && panels.alignment === 2 && panels.undecided, `adversary row (${panels.pipeline} boxes) and Alignment track (${panels.alignment} buckets, the Undecided) drawn`);
-  check(panels.next.length > 0 && panels.supply, `face-up next adversary card shown with its text ("${panels.next}") and the ambassador supply`);
+  check((panels.nextShown ? panels.next.length > 0 : panels.nextEmpty.length > 0) && panels.supply,
+    panels.nextShown ? `face-up next adversary card shown with its text ("${panels.next}") and the ambassador supply`
+      : `next adversary card box says it is not revealed ("${panels.nextEmpty}"), ambassador supply shown`);
   check(panels.projects === panels.countries, `${panels.projects} megaproject cards shown with their cubes`);
-  check(panels.threats > 0, `${panels.threats} threats shown with their countries`);
+  check(panels.threats === panels.dealt, `${panels.threats} threats shown with their countries, of ${panels.dealt} dealt`);
 
   // Country names, the AI boards' tracks, and no per-seat bookkeeping among the globals.
   const named = await js(`(() => {
@@ -125,7 +132,8 @@ try {
   check((await hover('#board .hex polygon')).includes('hex'), 'hovering a hex shows its details');
   check((await hover('#board .token .hit')).includes('×'), 'hovering a token shows its details');
   check((await hover('.value')).length > 0, 'hovering a value shows its details');
-  check((await hover('#pipeline .slot-box.next .acard')).length > 0, 'hovering the next adversary card shows its text');
+  if (panels.nextShown) check((await hover('#pipeline .slot-box.next .acard')).length > 0, 'hovering the next adversary card shows its text');
+  else check((await hover('#pipeline .slot-box.deck')).length > 0, 'hovering the adversary deck shows its details (no next card yet)');
   check((await hover('#board .hex.k-base polygon')).includes('military base'), 'hovering a military base shows it as one');
   check((await hover('.seat .board .step')).includes('step'), 'hovering a track step shows its details');
   check((await hover('.seat .board-name')).length > 0, 'hovering a board name shows the board');
@@ -159,7 +167,16 @@ try {
     for (const a of st.standard) seen.standard.add(a);
     seen.sell += st.sell ? 1 : 0;
     if (st.war) { seen.war++; seen.warShown += st.warShown ? 1 : 0; }
-    if (st.round >= 2 && st.phase.includes('cards.play') && !shots.has('mid')) { shots.add('mid'); await shot('play-mid-1366', 'viewer-mid'); }
+    if (st.round >= 2 && st.phase.includes('cards.play') && !shots.has('mid')) {
+      shots.add('mid');
+      await shot('play-mid-1366', 'viewer-mid');
+      // 096: by round 2 a card is face up and threats are dealt, which a fresh game lacks.
+      const mid = await js(`({ next: document.querySelector('#pipeline .slot-box.next .acard .atext')?.textContent ?? '',
+                               threats: document.querySelectorAll('#countries .threat').length })`);
+      check(mid.next.length > 0, `mid-game: the face-up next adversary card shows its text ("${mid.next}")`);
+      check(mid.threats > 0, `mid-game: ${mid.threats} threats shown with their countries`);
+      check((await hover('#pipeline .slot-box.next .acard')).length > 0, 'mid-game: hovering the next adversary card shows its text');
+    }
     if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {
       shots.add('powers');
       const powers = await js(`[...document.querySelectorAll('#seats ul.powers')].map((u) => u.textContent).join(' | ')`);

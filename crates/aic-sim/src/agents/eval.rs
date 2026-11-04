@@ -119,6 +119,12 @@ pub struct Weights {
     /// Each research cube a seat holds (074): low on purpose, under what every
     /// converter nets by these weights, so a cube held never beats using one.
     pub research_cube: f64,
+    /// r37: a neutral city in some seat's reach that an adversary ambassador
+    /// darkens (no energy sale while it stands there).
+    pub city_dark: f64,
+    /// r37: a seat holding research cubes with a node in a city of a country
+    /// whose megaproject is done (the converter's gate), once per such country.
+    pub converter_city: f64,
     /// A research cube held by a seat whose board spends cubes on a power (075:
     /// the Researcher's second node takes 3): in place of `research_cube`.
     pub research_cube_power: f64,
@@ -385,6 +391,11 @@ impl Default for Weights {
             station: 5.0,
             project_cube: 2.0,
             research_cube: 0.3,
+            // r37: about one converter use's net over holding the cubes.
+            converter_city: 2.0,
+            // r37: a round's sale is near break-even at the table (5 credits for
+            // energy worth 4.5), but energy is scarce: about one energy's worth.
+            city_dark: 4.0,
             research_cube_power: 1.2,
             shelter_read: 1.0,
             shelter_node: 12.0,
@@ -934,6 +945,10 @@ impl Eval {
                 } else {
                     if owned {
                         v += w.aligned;
+                    } else if adv > 0 && (0..seats).any(|s| near[s] >> h & 1 != 0) {
+                        // r37: an adversary ambassador darkens a neutral city: no sale
+                        // to the seats that could buy its energy, until it is cleared.
+                        v -= w.city_dark;
                     }
                     // 034: a corruption marker counts toward corrupting.
                     let toward = adv + t.marker;
@@ -1046,6 +1061,14 @@ impl Eval {
         // Megaprojects: each player cube pays when the project completes.
         for c in 0..world.map.countries.len() {
             if g.var(&board::project_done(c)) > 0 {
+                // r37: the converter needs a node in a city of its country.
+                if w.converter_city != 0.0 {
+                    for s in 0..self.seats {
+                        if g.resource(s, Resource::ResearchCubes) > 0 && common::has_city_node_in(&world, g, s, c) {
+                            v += w.converter_city;
+                        }
+                    }
+                }
                 continue;
             }
             let mine: i64 = (0..self.seats)

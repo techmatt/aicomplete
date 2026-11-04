@@ -66,12 +66,18 @@ experiments, speed, scripts, web, card art.
 
 - **Commit to the branch you are on.** Leave nothing uncommitted.
 - **Give / get before any sim.** An item that adds or reprices a card, a building Action or any conversion first
-  writes a give / get line for each at `configs/agents/values.json`. Each must show a gain a player can see at the
-  values it is priced at: no break-even conversions. Loops are capped by limits (once a round, slots, supply), never
-  by making the trade worthless. Fix or flag any that fails before the first read (090's energy gift traded 1
-  energy, worth 4.5, for 2 chips, so it was never played).
-- **A rules item runs `npm run cards:fit`** (in `web/`) before its first freeze, not only at the
-  end: a card-fit edit after a freeze redoes every frozen read (090 redid them all after four).
+  writes a give / get line for each, priced at `configs/agents/values.json`, in its write-up. Each must show a gain a
+  player can see at the values it is priced at: no break-even conversions. Loops are capped by limits (once a round,
+  slots, supply), never by making the trade worthless. Fix or flag any that fails before the first read (090's energy
+  gift traded 1 energy, worth 4.5, for 2 chips, so it was never played). **At a card's creation** also check: its net
+  at the table is above 0 for the seat that would use it; its precondition exists in measured play (spare energy at
+  round 6, say); a building beats the median building it would cover in a slot. **After any later edit to a card**
+  (card fit included), re-read its plays per game (095's fit edits took the gift buildings from 0.25-0.6 uses to
+  0.02-0.06, unflagged).
+- **A rules item's first freeze** comes after `npm run cards:fit` (in `web/`, after `aic-sim docs` rewrites the faces it reads), `cargo test --workspace` and `aic-sim
+  docs --check`, with every touched card priced from the effect ledger (`scripts/cards/effect_ledger.py`) before the
+  first screen: a card-fit edit after a freeze redoes every frozen read (090 redid them all after four, and
+  repriced twice after screens).
 - **Two test lanes.** Run `cargo test --workspace`, the fast lane, after every change, and
   `cargo test-all`, the full run, before every commit; a commit touching only Markdown outside the
   generated docs skips it, the fast lane still runs. Flags follow the alias with no `--`:

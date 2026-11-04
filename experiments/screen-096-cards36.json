@@ -1,0 +1,17 @@
+{
+  "name": "screen-096-cards36",
+  "note": "096: r37 with r36's Popular Uprising (19 credits, arrives with 2 Followers, Action: add 2, OR spend 6: liberate, then discard) and Continental Supergrid (6 credits), as overlays, on the fresh seeds (48 from 31800), d2 strategist: what the two card changes do apart from the rules (converter gate, dark cities). Compare with screen-096-fresh's cells with scripts/bench/paired.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": ["cards.popular_uprising.cost=19", "cards.popular_uprising.effects.0.amount=2", "cards.popular_uprising.ability={\"effects\":[{\"op\":\"add_tokens\",\"kind\":\"followers\",\"amount\":2,\"here\":true}],\"or\":{\"tokens\":6,\"effects\":[{\"op\":\"liberate\"}],\"once\":true}}", "cards.continental_supergrid.cost=6"]},
+    {"name": "br", "set": ["ai.boards=0,2", "cards.popular_uprising.cost=19", "cards.popular_uprising.effects.0.amount=2", "cards.popular_uprising.ability={\"effects\":[{\"op\":\"add_tokens\",\"kind\":\"followers\",\"amount\":2,\"here\":true}],\"or\":{\"tokens\":6,\"effects\":[{\"op\":\"liberate\"}],\"once\":true}}", "cards.continental_supergrid.cost=6"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "cards.popular_uprising.cost=19", "cards.popular_uprising.effects.0.amount=2", "cards.popular_uprising.ability={\"effects\":[{\"op\":\"add_tokens\",\"kind\":\"followers\",\"amount\":2,\"here\":true}],\"or\":{\"tokens\":6,\"effects\":[{\"op\":\"liberate\"}],\"once\":true}}", "cards.continental_supergrid.cost=6"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist"],
+  "games": 48,
+  "first_seed": 31800,
+  "records": 0
+}

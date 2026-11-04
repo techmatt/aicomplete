@@ -211,6 +211,16 @@ pub fn has_node_in(w: &World, g: &GameState, seat: usize, country: usize) -> boo
         .any(|&h| g.tokens(h, k) > 0)
 }
 
+/// Whether `seat` has a node on a city hex of `country` (any city, owned or not): r37's
+/// converter gate.
+pub fn has_city_node_in(w: &World, g: &GameState, seat: usize, country: usize) -> bool {
+    let k = node(seat);
+    w.map.countries[country]
+        .hexes
+        .iter()
+        .any(|&h| is_city(w, h) && g.tokens(h, k) > 0)
+}
+
 /// Seats a threat in `scope` concerns: with a node in the country,
 /// or every seat for the whole board.
 pub fn seats_in_scope(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usize> {

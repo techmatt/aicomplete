@@ -406,11 +406,18 @@ def decompose(t, card):
                          'params': describe(o) + ('; to a chosen player' if chosen else ''),
                          'quantity': quantity(o), 'reasoned': v})
 
-    add_list(card.get('effects', []), 'play')
+    # value.rs `CardValue::of` (r37): a one-shot Action is used once, and the tokens the
+    # card arrives with are its fuel, counted in that use.
+    ab = card.get('ability')
+    once = bool(ab and ab.get('once') and not ab.get('or'))
+    play = card.get('effects', [])
+    if once:
+        play = [o for o in play if not (o['op'] == 'add_tokens' and o.get('here'))]
+    add_list(play, 'play')
     add_list(card.get('passives', []), 'passive')
     if card.get('ability'):
         parts, _ = ability_parts(t, card['ability'])
-        uses = t.horizon * t.rate('uses_share')
+        uses = 1.0 if once else t.horizon * t.rate('uses_share')
         bs = branches(card['ability'])
         for bi, b in enumerate(bs):
             ops = b.get('effects', [])

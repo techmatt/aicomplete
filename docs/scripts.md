@@ -40,6 +40,9 @@ Current:
   lacked the tags; then tags by round: each seat's most-held tag on its cards in play (`ai.tag_top.<seat>`),
   mean and share at 3 or more. A variant's seats follow its `ai.boards=` override. Reads r32 outputs too (no tag
   table). Seconds.
+- `cards/r37_read.py DIR...` (096): per cell of each DIR, two Markdown tables: win %, converter uses, cube-holding
+  seat-rounds a converter stood idle for want of a city node, Popular Uprising plays and liberations, Continental
+  Supergrid plays; then dark neutral city-rounds (`board.city_dark`), energy bought, end energy, nodes placed, corruptions.
 - `cards/energy_read.py DIR...` (090): per cell, pooled across DIRs: win %, the energy a seat holds as the action
   phase ends at rounds 3 and 6 and at its last round (`unspent.<seat>.energy.rNN`, exported from 090), then the use per
   game of each r35 mechanic: energy paid to counters, energy-cost cards, the energy gift Actions, stations freed and
@@ -63,7 +66,8 @@ Current:
   (a shim for `screen.py --preset 034`), `cards/screen_028.py` (r17), `cards/screen_027.py`
   (r16), `cards/screen_024.py` (r15); `screen_023.py` and `screen_022.py` still read r15; `cards/screen_021.py` (r12) runs, but its
   gate is not the current one.
-- `bench/same_results.py`: compares two experiment outputs. `--map OLD=NEW`
+- `bench/same_results.py`: compares two experiment outputs. A cell's agent string that differs
+  (`strategist` against `engine:strategy=1`) is listed and is no difference when the games match. `--map OLD=NEW`
   renames in the old output first, for a rename that must play the same. 086's (presence →
   node, node → botnet; `experiments/same-086.json`, 48 strategist games, about 12 s on 4
   threads) shields the card ids first: `--map node_severance=QQ1 --map node_swarm=QQ2 --map

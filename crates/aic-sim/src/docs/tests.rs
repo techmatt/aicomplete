@@ -116,3 +116,54 @@ fn the_card_notes_on_disk_name_cards() {
     let ids: Vec<&str> = content().cards.iter().map(|c| c.id.as_str()).collect();
     assert!(card_note_failures(text, &ids).is_empty());
 }
+
+/// The keys of `const NAME = {` in `web/card/icons.js`: a two-space key at the block's top.
+fn icon_keys(js: &str, name: &str) -> Vec<String> {
+    let start = js.find(&format!("const {name} = {{")).unwrap_or_else(|| panic!("icons.js has no {name}"));
+    let body = &js[start..];
+    let body = &body[..body.find("\n};").expect("the block closes")];
+    body.lines()
+        .skip(1)
+        .filter_map(|l| l.strip_prefix("  "))
+        .filter(|l| !l.starts_with(' ') && !l.starts_with('/'))
+        .filter_map(|l| l.split_once(':').map(|(k, _)| k.trim().to_string()))
+        .filter(|k| k.chars().all(|c| c.is_ascii_lowercase() || c == '_'))
+        .collect()
+}
+
+/// 096 (P4): every word on a face's icon line is one `web/card/card.js` draws (an icon,
+/// a `#tag`, a connector or a number), so a face the card-fit run would crash on fails here.
+#[test]
+fn every_face_word_is_a_known_icon() {
+    use aic_core::face::{card_face, Part};
+    let js = include_str!("../../../../web/card/icons.js");
+    let icons: Vec<String> = ["RESOURCES", "TOKENS", "PIECES"].iter().flat_map(|n| icon_keys(js, n)).collect();
+    let tags = icon_keys(js, "TAGS");
+    assert!(icons.contains(&"followers".to_string()) && tags.contains(&"science".to_string()), "{icons:?} {tags:?}");
+    // card.js `TEXT` and its number pattern /^[−+]?≤?[\dn]+$/.
+    let known = |w: &str| {
+        ["\u{2192}", "/", ":", "OR", "ALL", "ACT"].contains(&w)
+            || icons.iter().any(|i| i == w)
+            || w.strip_prefix('#').is_some_and(|t| tags.iter().any(|x| x == t))
+            || {
+                let n = w.trim_start_matches(['\u{2212}', '+']).trim_start_matches('\u{2264}');
+                !n.is_empty() && n.chars().all(|c| c.is_ascii_digit() || c == 'n')
+            }
+    };
+    fn words<'a>(p: &'a Part, out: &mut Vec<&'a str>) {
+        match p {
+            Part::Word(w) => out.push(w),
+            Part::Income { income: v } | Part::Adversary { adversary: v } | Part::Other { other: v } | Part::Yours { yours: v } => {
+                v.iter().for_each(|x| words(x, out))
+            }
+        }
+    }
+    let mut bad = vec![];
+    for c in &content().cards {
+        let f = card_face(c);
+        let mut ws = vec![];
+        f.top.iter().chain(&f.effect).flatten().for_each(|p| words(p, &mut ws));
+        bad.extend(ws.into_iter().filter(|w| !known(w)).map(|w| format!("{}: {w}", c.id)));
+    }
+    assert!(bad.is_empty(), "icon-line words card.js can't draw: {bad:?}");
+}

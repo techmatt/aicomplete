@@ -13,6 +13,9 @@ play the same (025).
 --map is for a rename (026): each OLD becomes NEW in DIR_A's text before
 parsing, in the order given, so the longest words go first. Implies
 ignoring the content and config hashes, since the names are in them.
+An agent string that differs (a renamed or respelled agent, 092) is no
+difference when every game is otherwise identical: it is listed, and the
+exit is 0.
 """
 
 import csv
@@ -89,6 +92,12 @@ def diff(a, b, where=""):
     return [] if a == b else [f"{where}: {a!r} != {b!r}"]
 
 
+def agent_names(path, maps=()):
+    """Each cell's agent string, from results.json."""
+    cells = json.loads(read(path, maps)).get("cells", [])
+    return [c.get("agent") for c in cells]
+
+
 def main():
     args = sys.argv[1:]
     maps = take_maps(args)
@@ -99,6 +108,11 @@ def main():
     if maps:
         IGNORED.append("config_hash")
     a, b = args[0], args[1]
+    # 096: a cell whose agent string differs (renamed, respelled) compares as the other's
+    # name, quoted, so a longer name holding it is untouched; the rename is listed.
+    na, nb = agent_names(f"{a}/results.json", maps), agent_names(f"{b}/results.json")
+    renamed = sorted({(x, y) for x, y in zip(na, nb) if x != y and x and y})
+    maps = list(maps) + [(f'"{x}"', f'"{y}"') for x, y in renamed]
     problems = []
     ra, rb = rows(f"{a}/games.csv", maps), rows(f"{b}/games.csv")
     if len(ra) != len(rb):
@@ -114,6 +128,8 @@ def main():
     if problems:
         print(f"{len(problems)} difference(s)")
         sys.exit(1)
+    for x, y in renamed:
+        print(f"agent renamed, games identical: {x} -> {y}")
     print(f"same: {len(ra)} games")
 
 

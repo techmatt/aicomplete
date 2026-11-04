@@ -555,23 +555,40 @@ pub struct CardValue {
     pub use_: Worth,
     /// Whether it has an Action.
     pub has_use: bool,
+    /// Whether that Action is one-shot (r37): used once, not each round.
+    pub once: bool,
     pub tags: f64,
     pub extra: f64,
 }
 
 impl CardValue {
     pub fn of(t: &Table, d: &CardDef) -> CardValue {
-        let mut play = list_worth(t, &d.effects);
+        // r37: a one-shot Action (a single branch that leaves play) is used once, and
+        // the tokens the card arrives with are its fuel, counted in that use.
+        let once = d.ability.as_ref().is_some_and(|a| a.once && a.or.is_none());
+        let mut play = if once {
+            let rest: Vec<Op> =
+                d.effects.iter().filter(|e| !matches!(e, Op::AddTokens { here: true, .. })).cloned().collect();
+            list_worth(t, &rest)
+        } else {
+            list_worth(t, &d.effects)
+        };
         play += list_worth(t, &d.passives);
         let use_ = d.ability.as_ref().map(|a| ability_worth(t, a)).unwrap_or_default();
         let extra = t.overrides.iter().filter(|o| o.card == d.id).map(|o| o.credits).sum();
-        CardValue { play, use_, has_use: d.ability.is_some(), tags: t.tags_value(d), extra }
+        CardValue { play, use_, has_use: d.ability.is_some(), once, tags: t.tags_value(d), extra }
     }
 
     /// The card's whole value in this context: now, plus a round's worth for each
     /// round left, plus its Action's uses.
     pub fn total(&self, t: &Table, c: &Ctx) -> f64 {
-        let uses = if self.has_use { c.horizon * t.fast.uses_share } else { 0.0 };
+        let uses = if self.once {
+            1.0
+        } else if self.has_use {
+            c.horizon * t.fast.uses_share
+        } else {
+            0.0
+        };
         self.play.instant(t, c)
             + c.horizon * self.play.per_round(c)
             + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
@@ -636,7 +653,7 @@ mod tests {
     }
 
     /// A liberate capstone counts its city only while one is corrupted, and Popular
-    /// Uprising's Action is a city over its cycle of adds.
+    /// Uprising's one-shot Action is a whole city, used once (r37).
     #[test]
     fn liberation_reads_its_city() {
         let r = crate::agents::tests::rules(2);
@@ -649,8 +666,12 @@ mod tests {
         let without = CardValue::of(t, d).total(t, &c);
         assert!(with > without + 10.0, "{with} {without}");
         let pu = CardValue::of(t, w.content.card("popular_uprising"));
-        // r35: one liberation, read as one use in its cycle of adds (about one
-        // over a tier-2 card's uses).
-        assert!((pu.use_.city - t.op("liberate") / 4.0).abs() < 1e-9, "{:?}", pu.use_);
+        // r37: one Action, one-shot: a whole liberation, used once; the 6 Followers
+        // it arrives with are that use's fuel, not value of their own.
+        assert!(pu.once && (pu.use_.city - t.op("liberate")).abs() < 1e-9, "{:?}", pu.use_);
+        assert_eq!(pu.play.now, 0.0, "{:?}", pu.play);
+        c.corrupted = true;
+        let whole = pu.total(t, &c);
+        assert!((whole - t.op("liberate") - pu.tags).abs() < 1.0, "{whole}");
     }
 }

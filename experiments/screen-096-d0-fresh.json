@@ -1,0 +1,34 @@
+{
+  "name": "screen-096-d0-fresh",
+  "note": "096: the confirming read of screen-096-d0 on fresh seeds (48 from 31800), same cells; paired with the r36 binary.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "engine"
+  ],
+  "games": 48,
+  "first_seed": 31800,
+  "records": 0
+}

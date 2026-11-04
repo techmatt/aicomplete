@@ -122,9 +122,6 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
 
 /// Why one branch of an Action can't be used now.
 fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
-    if g.var(alignment::tips_key(crate::content::Side::Unity)) < ab.tips {
-        return Some("needs Unity tips");
-    }
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }

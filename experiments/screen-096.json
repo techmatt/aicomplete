@@ -1,0 +1,17 @@
+{
+  "name": "screen-096",
+  "note": "096: the r37 read: 2 players, the three board pairs, d2, the strategist, 48 fresh seeds from 31700. Paired with the r36 binary on the same seeds (its configs from git archive). Read with scripts/bench/paired.py and scripts/cards/r37_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist"],
+  "games": 48,
+  "first_seed": 31700,
+  "records": 0
+}

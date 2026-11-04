@@ -148,9 +148,10 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     run(&rules, &mut g);
     assert_eq!((discord(&g), res(&g, 0, Resource::Energy)), (1, 0));
 
-    // So does a clean city's with an adversary ambassador on it (which goes).
+    // So does an aligned city's with an adversary ambassador on it (which goes).
     let mut g = g0.clone();
     put(&mut g, city, ADV_AMBASSADOR, 1);
+    put(&mut g, city, cube(0), 1);
     put(&mut g, open, node(0), 1);
     run(&rules, &mut g);
     assert_eq!(
@@ -161,6 +162,22 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
         ),
         (1, 0, 0)
     );
+
+    // r37: on a neutral city the ambassador stays and the city is dark: no sale, no
+    // Discord, every round it stands there.
+    let mut g = g0.clone();
+    put(&mut g, city, ADV_AMBASSADOR, 1);
+    put(&mut g, open, node(0), 1);
+    with_cx(&rules, |cx| cx.add_resource(&mut g, 0, Resource::Credits, 50));
+    let credits = g.resource(0, Resource::Credits);
+    for _ in 0..2 {
+        run(&rules, &mut g);
+        assert_eq!(
+            (discord(&g), res(&g, 0, Resource::Energy), g.resource(0, Resource::Credits), g.tokens(city, ADV_AMBASSADOR)),
+            (0, 0, credits, 1)
+        );
+    }
+    assert_eq!(g.stats.counters["board.city_dark"], 2);
 
     // 021: an adversary ambassador on a node costs its owner 1 insight
     // next round and adds 1 compute to the cheapest project; it stays (068).

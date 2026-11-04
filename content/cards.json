@@ -2170,7 +2170,7 @@
   "name": "Continental Supergrid",
   "tier": 2,
   "kind": "building",
-  "cost": 6,
+  "cost": 22,
   "insight": 2,
   "needs": [
    [
@@ -4248,7 +4248,7 @@
   "name": "Popular Uprising",
   "tier": 2,
   "kind": "building",
-  "cost": 19,
+  "cost": 36,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -4263,28 +4263,18 @@
    {
     "op": "add_tokens",
     "kind": "followers",
-    "amount": 2,
+    "amount": 6,
     "here": true
    }
   ],
   "ability": {
+   "tokens": 6,
    "effects": [
     {
-     "op": "add_tokens",
-     "kind": "followers",
-     "amount": 2,
-     "here": true
+     "op": "liberate"
     }
    ],
-   "or": {
-    "tokens": 6,
-    "effects": [
-     {
-      "op": "liberate"
-     }
-    ],
-    "once": true
-   }
+   "once": true
   }
  }
 ]

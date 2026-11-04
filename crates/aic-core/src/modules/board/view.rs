@@ -189,7 +189,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 &label,
                 blocked.is_none() as i64,
                 None,
-                &format!("{}: once a round, with a node in {}", m.converter.words(), country_name(w, c)),
+                &format!("{}: once a round, with a node in a city of {}", m.converter.words(), country_name(w, c)),
             );
         }
         let b = ai::board(w, s);

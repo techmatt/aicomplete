@@ -157,5 +157,5 @@
  "forensic_audit": {"top":[],"top_text":"","effect":[["−4","research_cubes"],[{"adversary":["−1","cube","city"]}]],"text":"Pay 4 research cubes. Liberate a corrupted city in reach."},
  "root_access": {"top":[],"top_text":"","effect":[[{"adversary":["−1","cube","city"]}],[{"adversary":["−1","botnet"]}]],"text":"Liberate a corrupted city in reach. Remove a botnet on or next to it."},
  "peacekeeping_mission": {"top":[],"top_text":"","effect":[[{"adversary":["−1","cube","city"]}],[{"adversary":["−3","troop","country"]}]],"text":"Liberate a corrupted city in reach. Remove up to 3 troops in its country."},
- "popular_uprising": {"top":[["→","+2","followers"],["OR","6","followers","→",{"adversary":["−1","cube","city"]}]],"top_text":"Action: add 2 Followers here, OR pay 6 Followers, liberate a corrupted city in reach, then discard it.","effect":[["+2","followers"]],"text":"Add 2 Followers here."}
+ "popular_uprising": {"top":[["6","followers","→",{"adversary":["−1","cube","city"]}]],"top_text":"Action: pay 6 Followers, liberate a corrupted city in reach, then discard it.","effect":[["+6","followers"]],"text":"Add 6 Followers here."}
 }

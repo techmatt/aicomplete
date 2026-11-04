@@ -22,7 +22,9 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
   board, income, resources and cards; unpaid threats. Choices that aren't obvious:
   - botnets −25 (D9): low enough that agents don't make one when an equal free choice exists;
   - `research_cube` 0.3, under what every converter nets; `research_cube_power` 1.2 for a
-    seat whose board spends cubes on a power (the Researcher's Peer Review);
+    seat whose board spends cubes on a power (the Researcher's Peer Review); `converter_city` 2
+    (r37) for a seat holding cubes with a node in a city of a completed megaproject's country,
+    the converter's gate, so agents hold a city node there;
   - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
   - credits beyond `w.credit_cap` (12) a seat are worth `w.credit_idle` (0.15).
 

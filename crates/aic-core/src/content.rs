@@ -340,17 +340,10 @@ pub struct Ability {
     /// use a round covers both: the player picks a branch it can pay.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub or: Option<Box<Ability>>,
-    /// Unity tips the world needs before this branch can be used (r35).
-    #[serde(default, skip_serializing_if = "is_zero_i64")]
-    pub tips: i64,
     /// After this branch resolves the card leaves play, with the stack under
     /// it (r35: a one-shot Action).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub once: bool,
-}
-
-fn is_zero_i64(n: &i64) -> bool {
-    *n == 0
 }
 
 impl Ability {
