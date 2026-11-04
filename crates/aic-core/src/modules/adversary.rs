@@ -930,15 +930,26 @@ pub fn land_troops(
 /// adversary ambassadors on it and no player ambassador, and those are used
 /// up; short of that one adversary ambassador lands on it instead (a player
 /// ambassador standing there cancels it).
-pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
+/// Returns whether it flipped (099: a player's station that holds is no new source).
+pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
     let w = cx.world;
     if cube_owner(g, h).is_some() {
         let need = w.int("adversary.station_flip_at");
         if g.tokens(h, ADV_AMBASSADOR) < need || player_ambassador(g, h).is_some() {
+            // 099: say what happened: a player's ambassador there cancels the one
+            // arriving, and an empty supply sends none (both read "lands on it").
+            let (adv, supply) = (g.tokens(h, ADV_AMBASSADOR), g.var(SUPPLY));
             place(g, cx, h, 1);
             cx.tally(g, "adversary.station_flip_held", 1);
-            cx.note(Some(h), || format!("The station at {} holds: an adversary ambassador lands on it", hex_name(&w, h)));
-            return;
+            let what = if supply <= 0 {
+                "no adversary ambassador is left to send"
+            } else if g.tokens(h, ADV_AMBASSADOR) > adv {
+                "an adversary ambassador lands on it"
+            } else {
+                "the adversary ambassador sent and a player ambassador there cancel each other"
+            };
+            cx.note(Some(h), || format!("The station at {} holds: {what}", hex_name(&w, h)));
+            return false;
         }
         remove(g, cx, h, need);
     }
@@ -949,6 +960,7 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.note(Some(h), || {
         format!("The station at {} flips to the adversary", hex_name(&w, h))
     });
+    true
 }
 
 /// Factory `h` becomes the adversary's (070: a threat's target): any player

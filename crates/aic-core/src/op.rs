@@ -375,7 +375,9 @@ pub enum Op {
         amount: i64,
     },
     /// One research station in scope that is not corrupted becomes corrupted
-    /// (players choose). With `each_country` (team cards), one per country.
+    /// (players choose); a player's holds unless `adversary.station_flip_at`
+    /// adversary ambassadors and no player ambassador stand on it, and one lands
+    /// there instead (r35). With `each_country` (team cards), one per country.
     FlipStation {
         #[serde(default)]
         each_country: bool,

@@ -772,6 +772,14 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
         .map(|i| round_ops.get(i).copied().unwrap_or(0) as u32)
         .collect();
     r.counters = g.stats.counters.iter().map(|(k, v)| (k.to_string(), *v)).collect();
+    // 099: a card played by an effect (Rush Build's free building) is no Play
+    // action: the engine's count of plays is the whole of it.
+    for (k, v) in &g.stats.counters {
+        if let Some(id) = k.strip_prefix("cards.played.") {
+            let e = r.cards.entry(id.to_string()).or_default();
+            e.played = e.played.max(*v as u32);
+        }
+    }
     // 021: the per-round tables of the card, AI, economy and node
     // counters, as `<key>.rNN` (summed over seats), for the screen's by-round
     // tables. Others (`adversary.*`) stay out, to keep games.jsonl small. 090:

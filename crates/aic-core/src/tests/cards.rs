@@ -384,3 +384,23 @@ fn gain_per_tag_counts_the_tag_on_your_cards() {
     run_ops(&rules, &mut g, &per_tag);
     assert_eq!(g.resource(0, Resource::Energy), energy + 3);
 }
+
+/// 099: the energy gift Actions need another player (at one country they took
+/// the energy and gave nothing), and a draw needs a tier-1 card to draw.
+#[test]
+fn a_gift_needs_another_player_and_a_draw_a_card() {
+    let gift = [Op::ChoosePlayer, Op::OtherGain { resource: Resource::Chips, amount: 5 }];
+    let (rules, g) = lab_actions();
+    assert!(effects::feasible(&rules.world(), &g, 0, &gift));
+    let (rules, g) = lab_actions_with(&["countries=1"]);
+    assert!(!effects::feasible(&rules.world(), &g, 0, &gift), "no one to give to");
+    let (rules, mut g) = lab_actions();
+    let w = rules.world();
+    let draw = [Op::Draw { count: 2 }];
+    assert!(effects::feasible(&w, &g, 0, &draw));
+    set_pile(&mut g, "cards.deck.1", &[]);
+    set_pile(&mut g, "cards.discard.1", &[]);
+    assert!(!effects::feasible(&w, &g, 0, &draw), "both tier-1 piles empty");
+    let draw_and_more = [Op::Draw { count: 2 }, Op::Gain { resource: Resource::Credits, amount: 1 }];
+    assert!(effects::feasible(&w, &g, 0, &draw_and_more), "a card that also gains still plays");
+}

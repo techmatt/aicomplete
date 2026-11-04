@@ -46,6 +46,59 @@ fn rush_build_pays_tags_and_no_credits() {
     assert_eq!(g.pile(&cards::played(0)).len(), 2, "one tag went (r35), two cards stay");
 }
 
+/// 099: Rush Build isn't offered when its own sacrifice or energy leaves no
+/// building to play (it took both and built nothing).
+#[test]
+fn rush_build_needs_a_building_left_once_paid() {
+    let (rules, mut g) = lab_actions();
+    let rush = power(&rules, 0, "Rush Build");
+    let offered = |g: &GameState| rules.legal_actions(g).contains(&rush);
+    builder_with_tags(&mut g);
+    set_res(&mut g, 0, Resource::Credits, 0);
+    set_res(&mut g, 0, Resource::Insight, 3);
+    set_res(&mut g, 0, Resource::Energy, 1);
+    // Printed Industry + 3 programs = 4: Vertical Monopoly needs all 4, so the
+    // sacrifice of any one program leaves it short.
+    set_pile(&mut g, &cards::hand(0), &["vertical_monopoly"]);
+    assert!(!offered(&g), "every sacrifice leaves Industry 3 of the 4 it needs");
+    set_pile(&mut g, &cards::hand(0), &["sovereign_capital_fund"]);
+    assert!(offered(&g), "Industry 3 is left after the sacrifice");
+    // Power to the People's 4 energy, after Rush Build's 1.
+    set_pile(&mut g, &cards::hand(0), &["power_to_the_people"]);
+    set_res(&mut g, 0, Resource::Chips, 3);
+    set_res(&mut g, 0, Resource::Energy, 4);
+    assert!(!offered(&g), "4 energy pays Rush Build or the card, not both");
+    set_res(&mut g, 0, Resource::Energy, 5);
+    assert!(offered(&g));
+}
+
+/// 099: Rush Build's sacrifice offers only what leaves a building to play: the
+/// stack Arcology Foundry would go over is not offered while a program can go.
+#[test]
+fn rush_build_offers_no_sacrifice_that_strands_it() {
+    let (rules, mut g) = lab_actions();
+    set_pile(&mut g, &cards::played(0), &["payroll_automation"]);
+    set_pile(&mut g, &cards::built(0), &["retained_earnings"]);
+    set_pile(&mut g, &cards::hand(0), &["arcology_foundry"]);
+    set_res(&mut g, 0, Resource::Credits, 0);
+    set_res(&mut g, 0, Resource::Insight, 3);
+    set_res(&mut g, 0, Resource::Chips, 2);
+    set_res(&mut g, 0, Resource::Energy, 1);
+    // Not `act`: it answers every prompt itself. With the stack filtered out one
+    // source is left, so the sacrifice asks nothing.
+    rules.apply_mut(&mut g, &power(&rules, 0, "Rush Build"), None).unwrap();
+    for _ in 0..4 {
+        let Some(p) = g.pending.as_ref() else { break };
+        assert!(
+            !p.ask.prompt.contains("sacrifice") || p.ask.options.iter().all(|o| !o.option.contains("retained_earnings")),
+            "the stack is not offered: {:?}",
+            p.ask.options
+        );
+        answer(&rules, &mut g, 0);
+    }
+    assert!(g.pile(&cards::built(0)).contains(&Key::new("arcology_foundry")), "{:?}", g.pile(&cards::built(0)));
+}
+
 #[test]
 fn a_cordon_stops_arrivals_for_the_next_build() {
     let (rules, mut g) = lab_actions_with(&["adversary.arrivals=1"]);

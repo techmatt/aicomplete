@@ -1,5 +1,5 @@
 """082: what agents use, per agent and board pair, pooled over DIRs: the dear powers
-(a board power that sacrifices two tags or more), Grant, Action buildings' uses, tokens
+(`ai::power_is_dear`: two tags or more, or a tag and an energy and no node), Grant, Action buildings' uses, tokens
 gained and spent, each liberate card kept / played (Popular Uprising's Action uses),
 and per agent the draft cards kept in more than --min percent of games and never played,
 and those never kept.
@@ -37,7 +37,10 @@ def main():
     for b in boards:
         for k, p in enumerate(b['powers']):
             need = sum(n for _, n in p.get('tags', []))
-            if need >= 2:
+            # 099: the engine's dear powers (ai::power_is_dear): 2+ tags, or a tag and an energy (r35's);
+            # 2+ tags alone matched none after r35.
+            places = any(e['op'] == 'place_node' for e in p['effects'])
+            if need >= 2 or (need >= 1 and not places and any(r == 'energy' and n > 0 for r, n in p.get('cost') or [])):
                 dear[f"ai.power.{b['id']}.{k}"] = f"{b['name']} {p['name']}"
             if p['name'] == 'Grant':
                 grant = f"ai.power.{b['id']}.{k}"
@@ -50,10 +53,10 @@ def main():
                 continue
             by[(c['agent'], c.get('variant', ''))].extend(games[cid])
             by_agent[c['agent']].extend(games[cid])
-    print('| agent | pair | games | win % | ' + ' | '.join(dear.values()) +
-          ' | Grant | Actions used | tokens gained / spent | ' +
-          ' | '.join(names[x] for x in LIBERATE) + ' |')
-    print('|' + '---|' * (8 + len(dear) + len(LIBERATE)))
+    head = ['agent', 'pair', 'games', 'win %', *dear.values(), 'Grant', 'Actions used', 'tokens gained / spent',
+            *(names[x] for x in LIBERATE)]
+    print('| ' + ' | '.join(head) + ' |')
+    print('|' + '---|' * len(head))
     for (agent, pair), gs in sorted(by.items()):
         n = len(gs)
         m = lambda k: sum(cnt(g, k) for g in gs) / n  # noqa: E731

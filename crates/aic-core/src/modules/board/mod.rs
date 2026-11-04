@@ -89,7 +89,7 @@ pub static DEF: ModuleDef = ModuleDef {
             PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
             PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "cities and research stations produce; ambassadors divert them, one on a lone node drains its owner's insight into adversary compute; full megaprojects complete"),
+            PhaseSpec::auto("produce", "cities make energy (an adversary ambassador on one stays and darkens it) and research stations produce (ambassadors divert them); one on a lone node drains its owner's insight into adversary compute; full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],

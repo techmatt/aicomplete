@@ -103,6 +103,7 @@ function setTimeline(t: Timeline) {
   stopAutoplay();
   tl = t;
   showError(t.replayError);
+  // 099: a game that stopped replaying isn't saved (`Timeline.save`) until acted on.
   commit();
 }
 
@@ -625,9 +626,15 @@ async function copy(text: string) {
 
 $('record').onclick = () => {
   if (!tl) return;
+  // 099: autoplay kept moving the shown step behind the dialog.
+  stopAutoplay();
+  render();
   ui.recordNote.value = tl.source.kind === 'record' ? tl.source.note : '';
   ui.recordText.value = currentRecord(false);
-  ui.recordMsg.textContent = '';
+  // 099: a game that stopped replaying copies only the actions that replayed.
+  ui.recordMsg.textContent = tl.replayError
+    ? `This game stopped replaying (the error bar names the action): the copy holds only the ${tl.last} actions that replayed.`
+    : '';
   ui.recordDialog.showModal();
 };
 $('record-copy').onclick = () => void copy(currentRecord(false));
@@ -691,7 +698,12 @@ async function main() {
     if (CONFIGS[file] !== undefined) ui.config.value = file;
     ui.seed.value = restored.seed;
     setTimeline(restored);
-    if (restored.replayError) showError(`saved session: ${restored.replayError}`);
+    // 099: a session saved under other rules says so, replayed or not.
+    const other = restored.savedRules !== undefined && restored.savedRules !== rulesRevision
+      ? `saved session from rules revision ${restored.savedRules}, this engine plays ${rulesRevision}: `
+      : '';
+    if (restored.replayError) showError(`saved session: ${other}${restored.replayError}`);
+    else if (other) showError(`${other}it replayed, but may not be the game it was`);
     // The session keeps the config it started with: say so when the file has changed
     // since (a retuned baseline), or the game shown is not what the file now plays.
     else if (restored.source.kind === 'play' && CONFIGS[file] !== undefined && !sameJson(CONFIGS[file], restored.configJson))

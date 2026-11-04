@@ -172,6 +172,9 @@ function reasonedPrices(results, rules) {
     const number = (v) => v !== undefined && v !== '' && Number.isFinite(Number(v));
     const col = head.find((h) => /reason/i.test(h) && rows.some((r) => number(r[h])) && rows.every((r) => !r[h] || number(r[h])));
     if (!idCol || !col) continue;
+    // 099: a price file has one row per card: the effect ledger's instances.csv (a row per
+    // effect) qualified, and each card showed its last effect's value as its price.
+    if (new Set(rows.map((r) => r[idCol])).size !== rows.length) continue;
     if (rules && rows[0].revision && Number(rows[0].revision) < rules) {
       stale.push(f);
       continue;

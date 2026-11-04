@@ -112,7 +112,13 @@ fn replay_record(path: &str) -> bool {
     };
     match rec.replay() {
         Err(e) => {
-            println!("{path}: seed {}: ERROR {e}", rec.seed);
+            // 099: a record from other rules fails for that reason: say it first.
+            let other = if rec.rules_revision != aic_core::RULES_REVISION {
+                format!(" (recorded at rules revision {}, this engine plays {})", rec.rules_revision, aic_core::RULES_REVISION)
+            } else {
+                String::new()
+            };
+            println!("{path}: seed {}{other}: ERROR {e}", rec.seed);
             false
         }
         Ok((g, warnings)) => {

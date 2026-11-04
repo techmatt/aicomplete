@@ -40,7 +40,9 @@ Remove-Item "out/$Name.exit" -ErrorAction SilentlyContinue
 # stderr back until it exits, and a wait on `panicked` must fire mid-run.
 # -ArgumentList is the raw command line: a `"` in an arg goes as `\"`, a backslash before it or
 # at the end of the arg doubles. Doubling `'` is for the single-quoted string in $script.
-$list = ($SimArgs | ForEach-Object {
+# 099: called from a PowerShell prompt, an unquoted `a,b` arrives as an array: join it back
+# with its commas (it became "a b": `--variants base,lever` failed).
+$list = ($SimArgs | ForEach-Object { if ($_ -is [array]) { $_ -join ',' } else { "$_" } } | ForEach-Object {
     '"' + ($_ -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1' -replace "'", "''") + '"'
 }) -join ' '
 $script = "`$p = Start-Process -FilePath './$exe' -ArgumentList '$list' -NoNewWindow -PassThru " +

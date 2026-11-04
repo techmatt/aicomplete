@@ -83,9 +83,12 @@ pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
         }
         let mut at = from;
         let mut alive = true;
+        let mut stopped = false;
         for _ in 0..steps {
-            // 075: the measure's: a facility a Wall kept this troop off.
-            if next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
+            // 075: the measure's: a facility a Wall kept this troop off. 099:
+            // once a troop a march, not every step it spends beside the Wall.
+            if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
+                stopped = true;
                 cx.tally(g, "board.wall_strikes", 1);
             }
             if has_troop_target(&w, g, at) {

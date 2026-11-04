@@ -106,6 +106,14 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
     for (config, variant) in slices {
         let at = |d: i64| tops.iter().find(|s| s.config == config && s.variant == variant && s.difficulty == d);
         if let (Some(lo_s), Some(hi_s)) = (at(lo), at(hi)) {
+            // 099: one difficulty read "7.3 rounds at difficulty 2, 7.3 at 2".
+            if lo == hi {
+                f.push(format!(
+                    "Game length for the strongest agent ({}; {config}, {variant}): {:.1} rounds at difficulty {lo} (target 8–10).",
+                    hi_s.agent, hi_s.rounds_mean
+                ));
+                continue;
+            }
             f.push(format!(
                 "Game length for the strongest agent ({}; {config}, {variant}): {:.1} rounds at difficulty {lo}, {:.1} at {hi} (target 8–10).",
                 hi_s.agent, lo_s.rounds_mean, hi_s.rounds_mean

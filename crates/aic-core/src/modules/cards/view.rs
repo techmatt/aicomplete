@@ -30,10 +30,10 @@ fn card_view(w: &World, g: &GameState, s: usize, id: &str, status: &str, cost: O
     let mut name = d.name.clone();
     if let Some(t) = &d.tokens {
         let n = g.var(&tokens_key(s, id));
-        text.push_str(&format!(" ({n} {} on it)", t.kind));
+        text.push_str(&format!(" ({} on it)", t.kind.amount(n)));
         // The count on the card itself, as tokens sit on a printed card.
         if n > 0 && status != "discarded" && status != "draft" {
-            name = format!("{} · {n} {}", d.name, t.kind);
+            name = format!("{} · {}", d.name, t.kind.amount(n));
         }
     }
     let under_ids = g.pile(&under(s, id));

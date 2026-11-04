@@ -128,6 +128,18 @@ impl TagNeed {
 /// Seat `s` pays a power's tag cost by sacrificing sources one at a time
 /// (its choice among those that still help), until it is paid.
 pub fn sacrifice_for(g: &mut GameState, cx: &mut Cx, seat: usize, cost: &[(TagOrAny, i64)]) -> Res {
+    sacrifice_keeping(g, cx, seat, cost, &|_, _| true)
+}
+
+/// [`sacrifice_for`], offering only the sources `keep` allows when some do
+/// (099: Rush Build offers no sacrifice that leaves it nothing to build).
+pub fn sacrifice_keeping(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    cost: &[(TagOrAny, i64)],
+    keep: &dyn Fn(&GameState, &SacrificeSource) -> bool,
+) -> Res {
     let w = cx.world;
     let mut need = TagNeed::new(cost);
     let mut given = 0;
@@ -135,11 +147,14 @@ pub fn sacrifice_for(g: &mut GameState, cx: &mut Cx, seat: usize, cost: &[(TagOr
     // `tags_from_hand` building mid-payment doesn't take its hand cards away.
     let mut left = sources(&w, g, seat);
     while !need.met() {
-        let helping: Vec<SacrificeSource> = left
+        let mut helping: Vec<SacrificeSource> = left
             .iter()
             .filter(|s| need.helps(&s.tags))
             .cloned()
             .collect();
+        if helping.iter().any(|s| keep(g, s)) {
+            helping.retain(|s| keep(g, s));
+        }
         if helping.is_empty() {
             return Err(Halt::Illegal("not enough tags to sacrifice".into()));
         }

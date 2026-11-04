@@ -177,7 +177,49 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     if !effects::feasible_after(w, g, seat, &p.effects, spent) {
         return Some("no target");
     }
+    if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) && !free_building_after(w, g, seat, p) {
+        return Some("no target");
+    }
     None
+}
+
+/// 099: whether a building is still free to play once a free-building power
+/// (Rush Build) is paid: its resources spent and some sacrifice made, since a
+/// building may have needed the tags it sacrifices, or its energy, or the stack
+/// it covers (rules.md §8). Without this the power took its energy and card
+/// and played nothing. A sacrifice of more than one source isn't tried (no
+/// such power prints one): the resources alone are checked then.
+fn free_building_after(w: &World, g: &GameState, seat: usize, p: &Power) -> bool {
+    let mut paid = g.clone();
+    for (r, n) in &p.cost {
+        *paid.seats[seat].resources.entry(*r).or_insert(0) -= n;
+    }
+    let need = cards::TagNeed::new(&p.tags);
+    if need.met() || p.tags.iter().map(|(_, n)| n).sum::<i64>() > 1 {
+        return cards::free_building_exists(w, &paid, seat);
+    }
+    cards::sources(w, &paid, seat).iter().filter(|s| need.helps(&s.tags)).any(|s| builds_after(w, &paid, seat, s))
+}
+
+/// Whether a building is still free to play once source `s` is sacrificed.
+fn builds_after(w: &World, g: &GameState, seat: usize, s: &cards::SacrificeSource) -> bool {
+    let mut after = g.clone();
+    for (pile, card) in &s.cards {
+        if let Some(cards_in) = after.piles.get_mut(pile.as_str()) {
+            std::sync::Arc::make_mut(cards_in).retain(|c| c != card);
+        }
+    }
+    cards::free_building_exists(w, &after, seat)
+}
+
+/// A dear power: one that sacrifices 2 or more tags (075), or a tag and an
+/// energy and places no node (r35's Rush Build, Shelter, Particle Run; Accord
+/// is a node power). 099: the 2-tag test alone matched no power after r35, and
+/// the measure went silent.
+pub fn power_is_dear(p: &Power) -> bool {
+    let tags: i64 = p.tags.iter().map(|(_, n)| n).sum();
+    let places = p.effects.iter().any(|e| matches!(e, Op::PlaceNode { .. }));
+    tags >= 2 || (tags >= 1 && !places && p.cost.iter().any(|(r, n)| *r == Resource::Energy && *n > 0))
 }
 
 /// 075: what seat `s` could still do with its dear powers as the action phase
@@ -186,7 +228,7 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
     let w = cx.world;
     let b = board(&w, seat);
     for (k, p) in b.powers.iter().enumerate() {
-        if p.tags.iter().map(|(_, n)| n).sum::<i64>() < 2 {
+        if !power_is_dear(p) {
             continue;
         }
         let why = power_blocked(&w, g, seat, k);
@@ -198,6 +240,11 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             Some(_) => "unpaid",
         };
         cx.tally(g, &format!("ai.dear.{}.{k}.{key}", b.id), 1);
+        // 099: the cost is checked first, so a round short of both read "unpaid"
+        // alone: the tags are counted on their own as well.
+        if key == "unpaid" && !cards::TagNeed::new(&p.tags).payable(&cards::sources(&w, g, seat)) {
+            cx.tally(g, &format!("ai.dear.{}.{k}.no_tags", b.id), 1);
+        }
     }
 }
 
@@ -344,7 +391,12 @@ impl Module for Ai {
             cx.add_resource(g, s, *r, -n);
         }
         cx.set_key(g, &power_used(s, k), 1);
-        cards::sacrifice_for(g, cx, s, &p.tags)?;
+        if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) {
+            // 099: only a sacrifice that leaves a building to play (its energy is paid).
+            cards::sacrifice_keeping(g, cx, s, &p.tags, &|st, src| builds_after(&w, st, s, src))?;
+        } else {
+            cards::sacrifice_for(g, cx, s, &p.tags)?;
+        }
         cx.count(g, &format!("power.{}.{k}", board(&w, s).id), 1);
         cx.per_round(g, &format!("ai.power.{}.{k}", board(&w, s).id), 1);
         cx.tally(g, "ai.powers_used", 1);

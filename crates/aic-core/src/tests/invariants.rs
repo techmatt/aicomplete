@@ -247,6 +247,72 @@ fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<Stri
     found
 }
 
+/// 099: wherever Rush Build is offered in random games, every way of paying it
+/// builds: tried on a copy for each first answer to its sacrifice. A net, not
+/// the proof: with 099's fix taken out these games still never reached a
+/// stranding hand (the `boards.rs` tests do), as `paid_for_nothing` never did.
+fn rush_build_strandings(configs: &[Config], seeds: std::ops::Range<u64>) -> (usize, Vec<String>) {
+    let mut tried = 0;
+    let mut found = Vec::new();
+    for config in configs {
+        let rules = Rules::new(config).unwrap();
+        let w = rules.world();
+        for seed in seeds.clone() {
+            let mut agent = Busy(rand_chacha::ChaCha8Rng::seed_from_u64(seed ^ 0x99));
+            let mut g = rules.new_game(seed);
+            for _ in 0..20_000 {
+                if g.is_over() {
+                    break;
+                }
+                let legal = rules.legal_actions(&g);
+                for a in &legal {
+                    let Action::Power { seat, power } = a else { continue };
+                    let s = *seat as usize;
+                    let free = ai::board(&w, s).powers[*power as usize].effects.iter().any(|e| matches!(e, content::Op::FreeBuilding));
+                    if !free {
+                        continue;
+                    }
+                    let built = |x: &GameState| x.pile(&crate::modules::cards::built(s)).to_vec();
+                    let before = built(&g);
+                    let mut t = g.clone();
+                    rules.apply_mut(&mut t, a, None).unwrap();
+                    let first: Vec<usize> = t.pending.as_ref().map_or(vec![0], |p| (0..p.ask.options.len()).collect());
+                    for i in first {
+                        tried += 1;
+                        let mut u = t.clone();
+                        let mut k = i;
+                        while u.pending.is_some() && !u.is_over() {
+                            let l = rules.legal_actions(&u);
+                            rules.apply_mut(&mut u, &l[k.min(l.len() - 1)], None).unwrap();
+                            k = 0;
+                        }
+                        if built(&u).iter().all(|c| before.contains(c)) {
+                            found.push(format!("seed {seed} round {}: seat {s} answer {i} built nothing", g.round));
+                        }
+                    }
+                }
+                let a = legal[agent.choose(&rules, &g, &legal)].clone();
+                rules.apply_mut(&mut g, &a, None).unwrap();
+            }
+        }
+    }
+    (tried, found)
+}
+
+#[test]
+fn rush_build_always_builds() {
+    let (_, found) = rush_build_strandings(&[baseline()], 0..2);
+    assert!(found.is_empty(), "{}", found.join("\n"));
+}
+
+#[test]
+#[ignore = "slow lane: Rush Build over more games and sizes"]
+fn rush_build_always_builds_more_seeds() {
+    let (tried, found) = rush_build_strandings(&[baseline(), baseline_with(&["countries=3"])], 2..24);
+    assert!(found.is_empty(), "{} of {tried} tries built nothing:\n{}", found.len(), found.join("\n"));
+    assert!(tried > 0, "no game offered Rush Build");
+}
+
 #[test]
 fn no_action_is_paid_for_nothing() {
     let found = paid_for_nothing(&[baseline()], 0..2);

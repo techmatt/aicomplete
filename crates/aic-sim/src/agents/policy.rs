@@ -974,9 +974,15 @@ fn value(
 fn buried_value(d: &CardDef, ctx: &Ctx) -> f64 {
     let t = value::table();
     let standing = value::list_worth(t, &d.passives);
-    let uses = if d.ability.is_some() { t.rate("uses_share") } else { 0.0 };
     let action = d.ability.as_ref().map(|a| value::ability_worth(t, a)).unwrap_or_default();
-    let round = standing.per_round(ctx) + uses * (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
+    let use_ = (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
+    // 099: a one-shot Action (Popular Uprising) buried unused loses its one use,
+    // not a share of it every round left.
+    if d.ability.as_ref().is_some_and(|a| a.once && a.or.is_none()) {
+        return (ctx.horizon * standing.per_round(ctx)).max(0.0) + use_;
+    }
+    let uses = if d.ability.is_some() { t.rate("uses_share") } else { 0.0 };
+    let round = standing.per_round(ctx) + uses * use_;
     (ctx.horizon * round).max(0.0)
 }
 

@@ -43,11 +43,21 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
     // also gains something is still worth playing ("you may move"). 076: a gain
     // per tag with too few tags on your cards is one of them (an event counts
     // none of its own; a program, which counts itself, carries other effects).
-    let only_these = effects.iter().all(|e| matches!(e, Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. }));
+    // 099: a gift with no other player (one country: the energy gift Actions took
+    // their energy and gave nothing) and a draw with both tier-1 piles empty
+    // (Fieldwork) are of them too.
+    let only_these = effects.iter().all(|e| {
+        matches!(
+            e,
+            Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } | Op::ChoosePlayer | Op::OtherGain { .. } | Op::Draw { .. }
+        )
+    });
     let one_acts = effects.iter().any(|e| match e {
         Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
         Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
         Op::GainPerTag { tag, per, .. } => cards::tags(w, g, seat, *tag) >= *per,
+        Op::OtherGain { .. } => g.seats.len() > 1,
+        Op::Draw { .. } => cards::tier_open(g, 1),
         _ => false,
     });
     effects.iter().enumerate().all(|(at, e)| match e {
@@ -92,7 +102,9 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
                     .iter()
                     .any(|c| g.var(&cards::tokens_key(seat, c)) > 0)
         }
-        Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } => !only_these || one_acts,
+        Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } | Op::OtherGain { .. } | Op::Draw { .. } => {
+            !only_these || one_acts
+        }
         Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
         Op::PlaceNode { free, .. } => {
             board::can_pay_placement(w, g, seat, placing(*free), gained)

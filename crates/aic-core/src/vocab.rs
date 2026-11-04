@@ -180,6 +180,17 @@ impl TokenKind {
             TokenKind::Agents => "agents",
         }
     }
+
+    /// `n` of them in words: "1 follower", "3 followers", "2 capital" (099: "1 followers").
+    pub fn amount(self, n: i64) -> String {
+        let one = match self {
+            TokenKind::Datasets => "dataset",
+            TokenKind::Followers => "follower",
+            TokenKind::Capital => "capital",
+            TokenKind::Agents => "agent",
+        };
+        format!("{n} {}", if n == 1 { one } else { self.name() })
+    }
 }
 
 /// A side of the Alignment track: Unity (the good AIs) or Discord (the evil AI).

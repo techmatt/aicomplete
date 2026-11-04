@@ -78,7 +78,8 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
 `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys starting `cards.`, `ai.`,
-`economy.` or `board.node`: extend the list in `experiment.rs` for another. In the core `cx.count(g, "x", n)` writes
+`economy.` or `board.node`, and `unspent.<seat>.energy` (per seat: energy held as the action phase ends; no key in a
+round the game ended before then): extend the list in `experiment.rs` for another. In the core `cx.count(g, "x", n)` writes
 `<module>.x` while `cx.tally` and `cx.per_round` take the full key, so a power use is `ai.power.builder.0`: a screen
 column on the bare name prints zeros.
 

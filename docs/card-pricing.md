@@ -20,8 +20,9 @@ a rate moved there moves the agents' read of every card that prints it. Change a
 - **The recipe:** value the effect at the rates; then credits = value − the keep (tier 1 2.5, tier 2 6.5) − 2.5 × the
   insight to play − about 1, so the card beats the plain route it replaces (ruling 7).
 - **A `needs` chain is the price** (ruling 10): needs 3-4 of a tag sits 2-4 under the recipe, needs 6 about half.
-- **The cost curve:** tier 1 median 6 (most 4-9, a few strong cards at 10-12), tier 2 median 12 (ultimates 16-21 and
-  1 antimatter; the liberate capstones 25-47). Six credits is about a quarter of a round's printed credits on r33's boards (25 / 21 / 18), tier 2 about
+- **The cost curve** (r38): tier 1 median 6 (most 4-9; the Power-income and energy-gift buildings and Hardened Bunker
+  Complex 14-19, from r36's energy-income price), tier 2 median 13 (the antimatter ultimates mostly 16-21, Singularity
+  Exploit 8 and Kinetic Interdiction 3; the liberate capstones 25-47). Six credits is about a quarter of a round's printed credits on r33's boards (25 / 21 / 18), tier 2 about
   half.
 - **One shape for one job across the tags:** income per tag 1 a tag of its own, needs 3, 9 credits; a standing counter
   (`auto_counter`) 13 credits, needs 2; a typed jam 5 and a rider of its tag, a free typed-jam Action 3 a round.

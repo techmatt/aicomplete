@@ -69,9 +69,26 @@ try {
   check(stored === 3, `seat 0 stores ${stored} research cubes`);
   const shown = await js(`document.querySelector('.seat .res.r-research_cubes')?.textContent ?? ''`);
   check(/research cubes\s*3/.test(shown), `its board shows them: "${shown.trim()}"`);
+  // 099: since r37 a converter needs a node in a city of its country: seat 0 places
+  // one on a Horizon city with a node power (answering each prompt toward it).
+  const horizonCities = await js(`window.aic.view.hexes.filter((h) => h.country === 0 && h.kind === 'city').map((h) => 'Horizon #' + h.number)`);
+  // The board's powers that place a node (their index is the id's last part).
+  const placing = await js(`(window.aic.view.seats[0].board?.cards ?? []).filter((c) => c.id.includes('.power.') && /place/.test(c.text ?? '')).map((c) => Number(c.id.split('.').pop()))`);
+  for (const k of placing) {
+    if (await js(`window.aic.view.seats[0].values.some((x) => x.key === 'board.converter.0' && x.value > 0)`)) break;
+    if (!(await js(`window.aic.legal.some((a) => a.type === 'power' && a.seat === 0 && a.power === ${k})`))) continue;
+    await js(`window.aic.act({ type: 'power', seat: 0, power: ${k} })`);
+    for (let i = 0; i < 6 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
+      await js(`(() => {
+        const l = window.aic.legal.filter((a) => a.type === 'choose');
+        const cities = ${JSON.stringify(horizonCities)};
+        window.aic.act(l.find((a) => cities.includes(a.option)) ?? l[0]);
+      })()`);
+    }
+  }
   const conv = await js(`[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter').length ? [...[...document.querySelectorAll('.seat')][0].querySelectorAll('.converter')].map((e) => [e.className, e.textContent]) : []`);
   check(conv.some(([c]) => c.includes(' usable')), `a usable converter: ${JSON.stringify(conv.find(([c]) => c.includes(' usable')))}`);
-  check(conv.some(([c, t]) => c.includes('unusable') && t.includes('no nodes')), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
+  check(conv.some(([c, t]) => c.includes('unusable') && /no node/.test(t)), `beside an unusable one: ${JSON.stringify(conv.find(([c]) => c.includes('unusable')))}`);
   writeFileSync(join(out, 'corps.png'), await page.shot());
 
   const anti = await resource('antimatter');

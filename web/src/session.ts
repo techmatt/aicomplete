@@ -115,6 +115,8 @@ export class Timeline {
       throw e;
     }
     this.changed(this.cursor - 1);
+    // 099: acting on a game that stopped replaying makes it this game: it may save now.
+    this.replayError = null;
   }
 
   /** Drops the last action. */
@@ -123,6 +125,7 @@ export class Timeline {
     this.frames.pop();
     this.cursor = Math.min(this.cursor, this.last);
     this.changed(this.last);
+    this.replayError = null;
   }
 
   /** A loaded record that has been changed is no longer that record. */
@@ -137,12 +140,20 @@ export class Timeline {
   }
 
   save() {
-    storageSet(SAVE_KEY, JSON.stringify({ config: this.configJson, seed: this.seed, actions: this.actions, cursor: this.cursor, source: this.source }));
+    // 099: a game that stopped replaying isn't saved over the session (seeking or
+    // autoplay wrote its replayed prefix, and the next load showed it as whole);
+    // the first action or undo on it clears `replayError` and saves.
+    if (this.replayError) return;
+    // 099: with the rules revision, so a session from other rules can say so.
+    storageSet(SAVE_KEY, JSON.stringify({ config: this.configJson, seed: this.seed, actions: this.actions, cursor: this.cursor, source: this.source, rules: rulesRevision }));
   }
+
+  /** The rules revision a restored session was saved under (undefined before 099). */
+  savedRules?: number;
 
   /** The saved session, replayed; null if there is none. Throws if its config no longer loads. */
   static restore(): Timeline | null {
-    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string } };
+    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string }; rules?: number };
     const raw = storageGet(SAVE_KEY);
     if (!raw) return null;
     try {
@@ -155,6 +166,7 @@ export class Timeline {
       : { kind: 'play', file: saved.source?.file ?? '?' };
     const t = Timeline.replay(saved.config, saved.seed, saved.actions, source);
     t.seek(saved.cursor ?? t.last);
+    t.savedRules = saved.rules;
     return t;
   }
 }

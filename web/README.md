@@ -94,26 +94,20 @@ rather than ids on screen, under 100 ms a step, a 4-country game, the shared row
 About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` also saves
 `viewer-mid.png` and `viewer-end.png` there.
 
-A fresh game has no face-up adversary card and no threats yet, so the checks of those run at round 2
-of the played game (096). `board fills its pane` measures a fixed game (baseline seed 11, first legal action), not
-the random one, which moved the same build by 60 px. A rules change can move it:
-remeasure before reading a layout change into a failure.
+The face-up adversary card and threat checks run at round 2 (a fresh game has neither).
+`board fills its pane` measures a fixed game (baseline seed 11, first legal action): a rules
+change can move it, so remeasure before reading a layout change into a failure.
 
-The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the
-baseline at `station_cubes` 3 on a quiet board (arrivals, city builds and troop marches
-off, `corrupt_at` 20) to check research cubes, converters and the Researcher's board;
-`e2e:sources` plays until a face-up threat refuses a seat, then checks its sources and
-the engine refusing a forged payment.
+The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the baseline
+at `station_cubes` 3 on a quiet board (no arrivals, city builds or marches, `corrupt_at` 20)
+for cubes, converters (a node on a city, since r37) and the Researcher's board; `e2e:sources`
+checks a face-up threat's sources and a forged payment refused.
 
-**Against a built site:** while anyone edits the engine, a dev-server rebuild breaks a
-run mid-way (`Cannot read properties of undefined (reading 'view')`; rerun once built).
-Use a snapshot: `node scripts/build-wasm.mjs && npx vite build && npx vite preview --port
-$PORT --strictPort`, then `AIC_URL=http://localhost:$PORT/`. After changing only
-`web/src/`, `npx vite build` (about 1 s) refreshes `dist/`.
-
-**Stale port:** stopping a backgrounded `npm run dev` or `npx vite preview` wrapper (a
-tool runner's time limit included) can leave its `node`/`vite` process holding the port,
-and `--strictPort` then fails. Kill the process that holds it.
+**Against a built site:** a dev-server rebuild breaks a run mid-way (`reading 'view'`), so
+while the engine is edited serve a snapshot: `node scripts/build-wasm.mjs && npx vite build
+&& npx vite preview --port $PORT --strictPort`, `AIC_URL=http://localhost:$PORT/`
+(`npx vite build` alone, about 1 s, after a `web/src/` edit). A killed wrapper can leave its
+`node` holding the port, failing `--strictPort`: kill that process.
 
 ## The sweep
 
@@ -127,27 +121,32 @@ engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   one). For each, `aic-sim` plays games (greedy unless the case names an agent) and saves
   records; the sweep **watches** each record step by step and **plays** as many fresh
   games of the resolved config through the page, picking legal actions at random (choices,
-  hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1).
-- **Moments:** new rounds, prompts, war steps, the first of each key event, the end. At
+  hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
+  simulated ones from seed `AIC_SWEEP_SEED` (100). The engine-agent cases at 2-4 countries and
+  `cubes-3` (`station_cubes` 3) reach r35-r38's stations, cubes, converters and liberations.
+- **Moments:** new rounds, prompts, war steps, the first of each key event (and each first
+  rise of an r35-r38 counter: `COUNTER_EVENTS`), the end. At
   each, the checks at 1366×768, layout checks at 1920×1080 and 2560×1440, and a
   screenshot (at most 14 a game, plus the end and anything failing).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
   without an outcome), the error bar, page scroll, placeholder text (`undefined`, `NaN`),
   elements off screen with no scroll to them, `hidden-target`, `clipped` (no ellipsis),
-  `token-unknown`, `case` (`aic-sim` could not play it). **Reported for a look:** `raw-id`,
+  `token-unknown`, `case` (`aic-sim` could not play it). **Reported for a look:** `no-control`
+  (a legal action with no button or hex pick on screen), `raw-id`,
   `truncated-no-hover`, `truncated`, overlapping buttons, hex numbers and counts on each
   other, tokens in the view not drawn, step spikes over 150 ms, heap growth over 50 MB.
-- **Output** in `web/sweep-out/` (git-ignored; `AIC_SWEEP_OUT` moves it): `shots/`,
-  `issues.json` (each issue with game, step and moment), `index.html` and `sheet-N.png`
-  contact sheets (failing captures framed red), and the watched records. `AIC_SWEEP_VERBOSE=1` prints each moment's timing.
-- **Hooks:** `window.aic` (main.ts) goes through the buttons' own paths;
-  `scripts/cdp.mjs` is the DevTools driver.
-- **Running it:** give a background run a long timeout and serve the viewer from a
-  process that outlives it. Don't rebuild `aic-sim` mid-sweep (newer records load with
-  warnings). Its rules twin is the core test `invariants_hold_in_random_games`.
-- **Times:** all cases at `AIC_SWEEP_SEEDS=1` (1,337 captures) took 25 min beside a planner
-  run, `--quick` 6.7 min (r21). A step costs 7–30 ms, a capture about 1 s (three sizes).
-  Run at most one sweep alongside one browser test lane.
+- **Output** in `web/sweep-out/` (`AIC_SWEEP_OUT`): `shots/`, `issues.json` (game, step,
+  moment), `index.html`, `sheet-N.png` contact sheets (failures framed red), the records.
+  `AIC_SWEEP_VERBOSE=1` times each moment. Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
+- **Running it:** background it, the viewer served by a process that outlives it; don't
+  rebuild `aic-sim` mid-sweep. Rules twin: `invariants_hold_in_random_games`. At most one
+  sweep beside one browser test lane. Five cases at one seed (541 captures) took 12 min at
+  r38: a step 14-46 ms (p50), a capture about 1.3 s (three sizes).
+
+## Kept, never played
+
+`npm run probe -- DIR card_id...` (`scripts/legal-probe.mjs`): over saved records, the steps
+each card was held, legal to play and played. Legal, never played: the agents' valuation.
 
 ## Odd input
 
@@ -166,8 +165,7 @@ colors), `panels.ts`, `hover.ts`, `log.ts`, and `main.ts` (wiring).
 
 `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
 (`cards/`), not by this game viewer: see [tools/card-art/README.md](../tools/card-art/README.md).
-`scripts/shots-017.mjs`, `shots-019.mjs` and `shots-021.mjs` save their items' viewer
-shots; how to run them is in those write-ups.
+`scripts/shots-0NN.mjs`: past items' viewer shots (see their write-ups).
 
 ## Card viewer
 
@@ -201,7 +199,7 @@ says so and exits.
     undrafted, so that ratio can pass 100%). Played % is played ÷ (kept + drawn). Win Δ comes
     from `games.csv`, which names only buildings standing at the end: blank for other
     cards, a correlation for buildings.
-  - A CSV under `experiments/results/` with a `card` (or `id`) column and a column with
+  - A CSV under `experiments/results/` with a `card` (or `id`) column, a row a card, and a column with
     `reason` in its name (`card-prices.csv` by convention) adds the reasoned price and
     printed minus reasoned. One whose `revision` is older than `RULES_REVISION` is passed
     over (no columns, no warnings; the CLI export names it). The only one,

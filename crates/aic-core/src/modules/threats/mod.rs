@@ -240,7 +240,11 @@ fn shared_row(w: &World) -> Option<bool> {
 /// What countering `threat` asks for now, resource by resource (difficulty
 /// and Jam Signals applied).
 pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<(Resource, i64)> {
-    let jam = g.var(&jam_key(threat)) + standing(w, g, threat);
+    requirement_less(w, threat, g.var(&jam_key(threat)) + standing(w, g, threat))
+}
+
+/// [`requirement`] less `jam` of each resource.
+fn requirement_less(w: &World, threat: &str, jam: i64) -> Vec<(Resource, i64)> {
     let (bonus, all) = if adversary::level(w, 1) {
         (
             w.int("adversary.counter_bonus"),
@@ -390,9 +394,12 @@ fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool {
             cx.set_key(g, &k, 0);
         }
     }
-    let auto = standing(&w, g, threat);
-    if auto > 0 {
-        cx.tally(g, "threats.auto_countered", auto);
+    // 099: what the Auto Counter took off (each resource's need, floored at 0),
+    // not its printed amount: a 1 + 1 energy threat read 5.
+    if standing(&w, g, threat) > 0 {
+        let unaided = requirement_less(&w, threat, g.var(&jam_key(threat)));
+        let cut: i64 = unaided.iter().zip(req.iter()).map(|((_, a), (_, b))| a - b).sum();
+        cx.tally(g, "threats.auto_countered", cut);
     }
     clear(g, cx, threat, scope);
     tally_countered(g, cx, threat);

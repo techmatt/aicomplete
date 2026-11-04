@@ -28,6 +28,8 @@ const quick = args.includes('--quick');
 const only = args.flatMap((a, i) => (args[i - 1] === '--case' ? [a] : []));
 const out = resolve(process.env.AIC_SWEEP_OUT ?? join(web, 'sweep-out'));
 const games = Number(process.env.AIC_SWEEP_SEEDS ?? (quick ? 1 : 3));
+/** First seed of each case's simulated games (099: a hunt names its seed range). */
+const firstSeed = Number(process.env.AIC_SWEEP_SEED ?? 100);
 const sim = process.env.AIC_SIM ?? join(repo, 'target', 'release', process.platform === 'win32' ? 'aic-sim.exe' : 'aic-sim');
 
 /** Cases: a config file and `--set` overrides. The quick run keeps the first four. */
@@ -48,6 +50,13 @@ const CASES = [
   { name: 'c2-d2-engine', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'engine' },
   { name: 'c3-d3-engine', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'engine' },
   { name: 'overlay', config: 'baseline.json', set: ['cards.telemetry_archive.cost=9', 'threats.*.counter=[["credits",1]]'] },
+  // 099: r35-r38's table: stations to free, research cubes and converters, liberations and
+  // their twists, dark cities, the gift buildings and the one-shot Actions (engine games
+  // play the most cards), and the three boards' slots at 3 and 4 countries.
+  { name: 'c2-d0-engine', config: 'baseline.json', set: [], agent: 'engine' },
+  { name: 'c3-d0-engine', config: 'baseline.json', set: ['countries=3'], agent: 'engine' },
+  { name: 'c4-d2-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=2'], agent: 'engine' },
+  { name: 'cubes-3', config: 'baseline.json', set: ['countries=3', 'board.station_cubes=3'], agent: 'engine' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -95,13 +104,22 @@ const PAGE_LIB = String.raw`(() => {
     if (e.type === 'note' && / is freed$/.test(e.text ?? '')) return 'city freed';
     return null;
   }
+  /** 099: r35-r38's rules show in the engine's counters, not in its events: a counter
+   *  that rose in the step names a key moment (a station freed, a liberation and its
+   *  twist, a dark city, a converter, a one-shot Action discarded, troops removed). */
+  const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|threats\.sources_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
+  const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
+  function counterEvents(c0, c1) {
+    return Object.keys(c1).filter((k) => COUNTER_EVENTS.test(k) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+  }
   /** Why the step from a to b is worth a capture, or null. */
-  function moment(a, b, events) {
+  function moment(a, b, events, extra = []) {
     // 044: every new key event of the step is seen and named, whatever else the step is.
-    const fresh = [...new Set(events.map(keyEvent).filter((k) => k && !seenEvents.has(k)))];
+    const fresh = [...new Set([...events.map(keyEvent), ...extra].filter((k) => k && !seenEvents.has(k)))];
     fresh.forEach((k) => seenEvents.add(k));
     const ev = fresh.length ? ' event: ' + fresh.join(', ') : '';
-    if (b.outcome && !a.outcome) return 'end: ' + b.outcome;
+    // 099: with what was new in the last step (it was marked seen and left off).
+    if (b.outcome && !a.outcome) return 'end: ' + b.outcome + ev;
     // A war round starts with its round: say so in the round's label (020: tested after
     // the round, so it never fired).
     // 044: the adversary's whole turn lands in that one step: say what was new in it.
@@ -129,12 +147,13 @@ const PAGE_LIB = String.raw`(() => {
       const nonPass = legal.filter((a) => a.type !== 'pass');
       const pool = nonPass.length && r() < 0.85 ? nonPass : legal;
       const a = pool[Math.floor(r() * pool.length)];
+      const c0 = counters();
       times.push(timed(() => aic.act(a)));
       if (aic.error) return { error: aic.error, action: a, times };
       // Now and then: undo and act again (the undo path), never at the end.
       if (r() < 0.01 && !aic.view.outcome) { times.push(timed(() => document.getElementById('undo').click())); times.push(timed(() => aic.act(a))); }
       const after = sig(aic.view);
-      const m = moment(before, after, aic.timeline.frame.events);
+      const m = moment(before, after, aic.timeline.frame.events, counterEvents(c0, counters()));
       if (m) return { moment: m, times };
     }
     return { times };
@@ -146,8 +165,9 @@ const PAGE_LIB = String.raw`(() => {
       const tl = aic.timeline;
       if (tl.atEnd) return { done: true, times };
       const before = sig(aic.view);
+      const c0 = counters();
       times.push(timed(() => aic.seek(tl.cursor + 1)));
-      const m = moment(before, sig(aic.view), aic.timeline.frame.events);
+      const m = moment(before, sig(aic.view), aic.timeline.frame.events, counterEvents(c0, counters()));
       if (m) return { moment: m, times };
     }
     return { times };
@@ -233,6 +253,17 @@ const PAGE_LIB = String.raw`(() => {
     // 044: every token has its own glyph and name (r19's marker fell to a hashed-color disc).
     for (const h of aic.view.hexes) for (const tok of h.tokens)
       if (!TOKENS.has(tok.kind.split(':')[0])) add('token-unknown', tok.kind + ' has no glyph');
+    // 099: input is accepted: every legal action has a control on screen (a button with
+    // its action, or a hex pick naming its hex), so no stretch of play has a move the
+    // page can't take.
+    const controls = [...document.querySelectorAll('[data-action]')].filter(vis);
+    const exact = new Set(controls.map((el) => el.dataset.action));
+    const hexes = new Set(controls.flatMap((el) => (el.dataset.hexes ?? '').split(' ').filter(Boolean)));
+    const isHex = (t) => Array.isArray(t) && t.length === 2 && t.every(Number.isInteger);
+    for (const a of aic.legal) {
+      if (exact.has(JSON.stringify(a)) || (isHex(a.target) && hexes.has(a.target.join(',')))) continue;
+      add('no-control', 'no control for ' + JSON.stringify(a).slice(0, 160));
+    }
     // Arrows (019) point between hexes that exist.
     for (const a of aic.view.arrows ?? []) if (!aic.view.hexes[a.from] || !aic.view.hexes[a.to]) add('arrow', JSON.stringify(a));
     return issues;
@@ -251,7 +282,7 @@ let shotNo = 0;
 
 function simRecords(c) {
   const dir = join(out, 'records', c.name);
-  const r = spawnSync(sim, ['run', join(repo, 'configs', c.config), '--games', String(games), '--seed', '100', '--agent', c.agent ?? 'greedy',
+  const r = spawnSync(sim, ['run', join(repo, 'configs', c.config), '--games', String(games), '--seed', String(firstSeed),'--agent', c.agent ?? 'greedy',
     ...c.set.flatMap((s) => ['--set', s]), '--save', dir, '--save-when', 'all', '--threads', '4'], { encoding: 'utf8' });
   if (r.status !== 0) throw new Error(`aic-sim failed for ${c.name}: ${r.stderr || r.stdout}`);
   return readdirSync(dir).filter((f) => f.endsWith('.json')).sort().map((f) => readFileSync(join(dir, f), 'utf8'));
@@ -275,7 +306,9 @@ async function capture(page, game, what) {
   const file = `shots/${String(++shotNo).padStart(4, '0')}.png`;
   // The end, a stuck game, an error or a failing check is always shot, past the cap
   // (020: the cap used to eat every game's end screen).
-  const must = /^(end|stuck|error)|event: .*(marker|threat waits)/.test(what) || found.some((i) => HARD.has(i.kind));
+  // 099: and the first rise of an r35-r38 counter: they come late, after the cap, so a
+  // 20-game sweep shot no liberation, freed station or converted cube.
+  const must = /^(end|stuck|error)|event: .*(marker|threat waits|count: )/.test(what) || found.some((i) => HARD.has(i.kind));
   const shoot = must || game.shots < MAX_SHOTS;
   if (shoot) {
     game.shots++;

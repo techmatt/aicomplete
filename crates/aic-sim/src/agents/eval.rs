@@ -1336,10 +1336,15 @@ impl Eval {
         for id in cards::token_cards(&world, g, s, None) {
             let k = g.var(&cards::tokens_key(s, &id));
             *v += self.w.token * k as f64;
-            // 080: tokens toward a liberation count for it.
-            if let Some(need) = cards::def(&world, &id).ability.as_ref().and_then(|a| a.or.as_ref()).filter(|b| {
-                b.tokens > 0 && b.effects.iter().any(|e| matches!(e, aic_core::content::Op::Liberate { .. }))
-            }) {
+            // 080: tokens toward a liberation count for it. 099: either half (r37's
+            // Popular Uprising spends them in its only one; reading `or` alone left
+            // this dead).
+            let liberating = cards::def(&world, &id).ability.as_ref().and_then(|a| {
+                a.branches().into_iter().find(|b| {
+                    b.tokens > 0 && b.effects.iter().any(|e| matches!(e, aic_core::content::Op::Liberate { .. }))
+                })
+            });
+            if let Some(need) = liberating {
                 if corrupted {
                     *v += self.w.liberate_progress * (k as f64 / need.tokens as f64).min(1.0);
                 }

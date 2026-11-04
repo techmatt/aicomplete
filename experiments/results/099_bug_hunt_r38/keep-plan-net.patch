@@ -1,0 +1,30 @@
+diff --git a/crates/aic-sim/src/agents/policy.rs b/crates/aic-sim/src/agents/policy.rs
+index 110e2eb..959fb8a 100644
+--- a/crates/aic-sim/src/agents/policy.rs
++++ b/crates/aic-sim/src/agents/policy.rs
+@@ -1108,6 +1108,14 @@ fn plan(
+                 && (target || later)
+                 && near(d)
+                 && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
++            // 099: at the table a card worth no more than its price is no plan: the
++            // total adds its gross value, so spare credits kept cards that the play
++            // check, which nets the price, never played (Demand Response Grid,
++            // Simulation Cluster).
++            let v = if fits { value(w, g, s, d, f, pc, pt, round, &tags) } else { 0.0 };
++            if fits && pc.table && v <= spend(w, g, s, d, pc, pt) {
++                continue;
++            }
+             if fits {
+                 b.credits -= credits;
+                 b.insight -= cards::play_insight(w, g, s, d);
+@@ -1145,9 +1153,7 @@ fn plan(
+                 } else {
+                     0.0
+                 };
+-                total += found
+-                    * (value(w, g, s, d, f, pc, pt, round, &tags) - buried)
+-                    * (1.0 - WAIT * round as f64).max(0.1);
++                total += found * (v - buried) * (1.0 - WAIT * round as f64).max(0.1);
+                 planned.push(*id);
+                 if pc.table && !d.is_event() {
+                     // 082: what it leaves in play counts toward later cards' needs.

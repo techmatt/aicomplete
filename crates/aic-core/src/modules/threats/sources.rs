@@ -116,7 +116,13 @@ pub(super) fn make_source(g: &mut GameState, cx: &mut Cx, c: usize, source: Thre
             if corrupted(g, h) {
                 return;
             }
-            adversary::corrupt_station(g, cx, h);
+            if !adversary::corrupt_station(g, cx, h) {
+                // 099: a player's station held: the attempt still takes the
+                // country's source this round, but no source appears.
+                cx.set_key(g, &made_key(c), g.round as i64);
+                cx.tally(g, "threats.sources_held", 1);
+                return;
+            }
         }
         ThreatSource::Economic => {
             if g.tokens(h, FACTORY) == 0 {

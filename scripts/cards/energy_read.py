@@ -18,7 +18,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cnt, content, load  # noqa: E402
+from screens import cnt, content, load, seats  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -92,12 +92,16 @@ def energy_by_round(games, nseats):
     for g in games:
         for s in range(nseats):
             for r in at:
-                if g['rounds'] >= r:
+                # 099: a round counts once its action phase ended (its tag key), as at the end:
+                # a game lost mid-round read 0 here.
+                # (a later round also proves it: a seat with no card in play writes no tag key).
+                if g['rounds'] > r or f'ai.tag_top.{s}.r{r:02d}' in g['counters']:
                     at[r].append(cnt(g, f'unspent.{s}.energy.r{r:02d}'))
             # The last round whose action phase ended: zeros aren't written, so a
             # round counts by its tag key (recorded beside it, never 0 once a card is in play).
             last = max((r for r in range(1, g['rounds'] + 1)
-                        if f'ai.tag_top.{s}.r{r:02d}' in g['counters']), default=0)
+                        if f'ai.tag_top.{s}.r{r:02d}' in g['counters']), default=g['rounds'] - 1)
+            last = max(last, g['rounds'] - 1)  # 099: every round before the last one ended
             end.append(cnt(g, f'unspent.{s}.energy.r{last:02d}') if last else 0)
     avg = lambda xs: sum(xs) / len(xs) if xs else float('nan')  # noqa: E731
     return avg(at[3]), avg(at[6]), avg(end)
@@ -108,17 +112,20 @@ def main():
     ap.add_argument('dirs', nargs='+')
     a = ap.parse_args()
     pooled = collections.defaultdict(list)
+    nseats = {}
     for d in a.dirs:
         cells, games = load(d)
         for cid, c in cells.items():
-            pooled[(c['variant'], c['agent'], c['difficulty'])].extend(games[cid])
+            key = (c['variant'], c['agent'], c['difficulty'])
+            pooled[key].extend(games[cid])
+            nseats[key] = seats(c)  # 099: a c3 cell has three (it read two)
     keys = sorted(pooled)
     print('| cell | games | win % | energy r3 | energy r6 | energy at end |')
     print('|---|---|---|---|---|---|')
     for k in keys:
         gs = pooled[k]
         w = 100 * sum(g['won'] for g in gs) / len(gs)
-        e3, e6, ee = energy_by_round(gs, 2)
+        e3, e6, ee = energy_by_round(gs, nseats[k])
         print(f'| {k[0]}/{k[1]}/d{k[2]} | {len(gs)} | {w:.0f} | {e3:.1f} | {e6:.1f} | {ee:.1f} |')
     print()
     table = {k: rows(pooled[k]) for k in keys}

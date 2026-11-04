@@ -26,10 +26,14 @@ def main():
     rows = []
     for d in dirs:
         cells, games = load(d)
+        # 099: a run of several agents or difficulties names them (as r37_read), or its rows repeat a variant.
+        many = lambda k: len({x.get(k) for x in cells.values()}) > 1  # noqa: E731
         for cid in sorted(games):
             gs = games[cid]
             c = cells.get(cid, {})
-            rows.append((os.path.basename(d.rstrip('/\\')), c.get('variant', str(cid)), gs))
+            name = c.get('variant', str(cid)) + (' ' + str(c.get('agent', '')) if many('agent') else '') \
+                + (f" d{c.get('difficulty')}" if many('difficulty') else '')
+            rows.append((os.path.basename(d.rstrip('/\\')), name, gs))
 
     def m(gs, f):
         return sum(f(g) for g in gs) / len(gs)

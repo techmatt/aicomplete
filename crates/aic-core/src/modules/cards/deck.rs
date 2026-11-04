@@ -51,7 +51,7 @@ pub(super) fn all_picked(g: &GameState) -> bool {
     (0..g.seats.len()).all(|s| g.var(&picked_key(s)) > 0 || g.pile(&packet(s)).is_empty())
 }
 
-pub(super) fn tier_open(g: &GameState, tier: u8) -> bool {
+pub(crate) fn tier_open(g: &GameState, tier: u8) -> bool {
     !(g.pile(&deck(tier)).is_empty() && g.pile(&discard_pile(tier)).is_empty())
 }
 

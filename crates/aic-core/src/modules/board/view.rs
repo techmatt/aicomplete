@@ -144,16 +144,23 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         let price = printed_price(w, act);
         let Price { energy: e, credits: cr, chips, ambassadors } = price;
         let cost = price.label();
+        // 099: the Harden action a card grants costs that card's chips, not nothing.
+        let card_priced = act == StandardAction::HardenChips;
         let doc = format!(
             "{}; costs {}",
             std_text(w, act),
-            if cost.is_empty() {
+            if card_priced {
+                "the chips the card prints".into()
+            } else if cost.is_empty() {
                 "nothing".into()
             } else {
                 cost.join(" + ")
             }
         );
         out.standard(act.name(), e, cr, chips, ambassadors, &doc);
+        if card_priced {
+            out.standard_seat_chips((0..g.seats.len()).map(|s| seat_price(w, g, s, act).chips).collect());
+        }
     }
     for s in 0..g.seats.len() {
         out.seat(

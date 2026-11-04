@@ -43,7 +43,7 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 20] = [
+pub const RULE_HARMS: [(&str, &str, &str); 21] = [
     ("arrivals", "adversary pieces placed", "every matching site gains an ambassador"),
     ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
     ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
@@ -60,7 +60,9 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("uncountered threats", "adversary pieces placed", "a threat with no source that goes uncountered makes its target one: a city, station or factory goes over, or a troop lands at a base; one a country a round"),
     ("uncountered threats", "node destroyed", "a city it corrupts takes the nodes on and next to it"),
     ("uncountered threats", "ambassadors lost", "player ambassadors on a city it corrupts are lost"),
-    ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station"),
+    ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station (a player's station holds unless `station_flip_at` adversary ambassadors and no player ambassador stand on it)"),
+    // 099: the board's most frequent Discord source had no mark.
+    ("uncountered threats", "Discord sway", "every threat that executes uncountered sways `threat_discord` toward Discord, beside its printed effects"),
     ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
     ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's node"),

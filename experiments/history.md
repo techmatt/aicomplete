@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 099 bug hunt (Rush Build's offer, measures gone quiet, the keep plan's gross value: not landed) | r39 | [099_bug_hunt_r38/fixed.md](results/099_bug_hunt_r38/fixed.md) |
 | 098 rules r38 (troop Sway off, dark aligned cities, troop-removal cards repriced) | r38 | [098_rules_r38_troops_dark/r38.md](results/098_rules_r38_troops_dark/r38.md) |
 | 096 rules r37 (converter city node, Popular Uprising one Action, Supergrid, dark cities) | r37 | [096_rules_r37_followups/r37.md](results/096_rules_r37_followups/r37.md) |
 | 093 rules r36 (slots, Uprising's gate, energy, reach audit) | r36 | [093_rules_r36/r36.md](results/093_rules_r36/r36.md), [reach.md](results/093_rules_r36/reach.md) |

@@ -599,7 +599,9 @@ impl CardValue {
     /// What a building in play still earns a round that the heuristic's income
     /// doesn't count: its standing rules and a share of its Action.
     pub fn built_round(&self, t: &Table, c: &Ctx) -> f64 {
-        let uses = if self.has_use { t.fast.uses_share } else { 0.0 };
+        // 099: a one-shot Action earns nothing a round: its one use is its fuel's
+        // worth (the token term), so using it no longer reads as giving up a stream.
+        let uses = if self.has_use && !self.once { t.fast.uses_share } else { 0.0 };
         self.play.unseen_round() + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
     }
 }

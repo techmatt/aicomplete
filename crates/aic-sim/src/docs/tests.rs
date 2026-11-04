@@ -36,6 +36,15 @@ fn the_round_cap_comes_from_the_engines_deal() {
     assert_eq!(row(&harsher, "2")[5], "10");
 }
 
+/// 099: every standard action has its row (r35's Free a station had none),
+/// plus selling a card, which is no standard action.
+#[test]
+fn every_standard_action_has_a_row() {
+    let block = standard_actions_block(&baseline(&[]));
+    let rows = block.lines().filter(|l| l.starts_with("| ") && !l.starts_with("| Action |")).count();
+    assert_eq!(rows, aic_core::modules::board::STANDARD.len() + 1, "{block}");
+}
+
 /// Every block that reads a config moves with it.
 #[test]
 fn a_config_change_changes_its_block() {

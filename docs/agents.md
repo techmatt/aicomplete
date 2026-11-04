@@ -152,14 +152,14 @@ Rules a player could say aloud where a one-step search misses a card's point (Ma
 
 ## The tiers
 
-| Tier | Stands for | Spec | win %, bp / br / pr, r36 (093, seeds 31600, 48 a pair) |
+| Tier | Stands for | Spec | win %, bp / br / pr, r38 (098, seeds 31900, 48 a pair) |
 |---|---|---|---|
-| Greedy without strategy | A new player | `engine` | d0 90 / 88 / 94 (target 70-85) |
-| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 65 / 65 / 71 (target 45-85) |
-| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r36 |
+| Greedy without strategy | A new player | `engine` | d0 58 / 79 / 58 (target 70-85) |
+| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 23 / 35 / 38 (target 45-85: every pair out of band, not retuned) |
+| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r38 |
 
 The strategist judges (Matt, 2026-11-03: while within about 5 points of `sweep` a pair on the
 same seeds) at about an eleventh of its time a game; `sweep` is the spot check. A strategy
 pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them, and
 `aic-sim strategies CONFIG --agent strategist` prints what each seat chooses. Tables:
-`experiments/results/093_rules_r36/r36.md`.
+`experiments/results/098_rules_r38_troops_dark/r38.md` (r39 changed only Rush Build's offer, unread).

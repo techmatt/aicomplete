@@ -20,6 +20,15 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cnt, content, load  # noqa: E402
 
+
+def dear(p):
+    """The engine's dear power (ai::power_is_dear): 2+ tags, or a tag and an energy (r35's three).
+    099: 2+ tags alone matched no power after r35."""
+    tags = sum(n for _, n in p['tags'])
+    places = any(e['op'] == 'place_node' for e in p['effects'])
+    return tags >= 2 or (tags >= 1 and not places and any(r == 'energy' and n > 0 for r, n in p.get('cost') or []))
+
+
 def boards_of(spec, variant):
     for v in spec['variants']:
         if v['name'] == variant:
@@ -75,14 +84,14 @@ def main():
               f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {idle / n:.1f} | {node / n:.1f} "
               f"| {income / seat_rounds:.1f} | {left / seat_rounds:.1f} | {insight_left / seat_rounds:.1f} |")
 
-    print('\nDear powers (2 or more of one tag; 3 before r33), a game per seat of that board: used, and seat-rounds it '
+    print('\nDear powers (the first of each board: 2+ tags, or a tag and an energy since r35), a game per seat of that board: used, and seat-rounds it '
           'lacked the tags.\n')
     print('| cell | ' + ' | '.join(f"{b['name']}" for b in ais) + ' |')
     print('|---|' + '---|' * len(ais))
     for key, gs in sorted(pooled.items()):
         parts = []
         for bi, b in enumerate(ais):
-            k = next((k for k, p in enumerate(b['powers']) if sum(n for _, n in p['tags']) >= 2), None)
+            k = next((k for k, p in enumerate(b['powers']) if dear(p)), None)
             if k is None or bi not in seats_of[key]:
                 parts.append('')
                 continue

@@ -175,8 +175,8 @@ pub struct CountryPiece {
 /// A megaproject card (074), the corp's defining card: research stations fill
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
-/// After that a seat with a node in the country has the `converter` (075;
-/// 074: an aligned city), and each adversary cube made there resolves `after`,
+/// After that a seat with a node in a city of the country has the `converter`
+/// (r37; 075: any node there; 074: an aligned city), and each adversary cube made there resolves `after`,
 /// if it prints one (075: none do).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

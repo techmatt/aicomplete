@@ -15,7 +15,7 @@
 - [Tunables](#tunables): every baseline config parameter with its value, range and meaning (generated).
 - [Defaults and deviations](#defaults-and-deviations): the numbered readings chosen where the prompt or v0 ruleset left a gap.
 
-What the code implements, at rules revision 38 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 39 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](cards.md), priced in [card-pricing.md](card-pricing.md). The
@@ -231,7 +231,8 @@ once-a-round is per player per card, which a new player reads as once a round.
 
 **An ambassador sits on a piece. The next time that piece does its normal thing, the
 ambassador redirects it to its own side.** An adversary ambassador is then used up and
-returns to the adversary's supply, unless it stands on a lone node. **A player ambassador
+returns to the adversary's supply, unless it stands on a lone node or a city: on a city it redirects nothing, but
+stays (a clean or aligned city goes dark; a corrupted one's energy is diverted anyway: the table). **A player ambassador
 is consumed for a permanent change and stays for a position (candidate, Matt):** aligning a
 city, claiming a site, freeing a station and liberating a city by the fallback consume it (no card spends one);
 evicting, standing on a base, factory, station or botnet, and moving leave it on the board.
@@ -260,7 +261,10 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
   **The fallback is the bad route** (Matt): at `ambassador_credits` 20 each it costs about
   100 credits, for a seat with far too many. Ambassadors waiting on a city are canceled by
   the next build like any others, so the fallback is met in one action phase: gather five
-  in your supply, stand next to the city, land them.
+  in your supply, stand next to the city, land them, plus one for each adversary ambassador
+  on the city (a corrupted city keeps one through the action phase, and the first arrival
+  cancels it: six, about 120 credits), unless the Remove action clears them first (its
+  ambassador evicts them and stays, and counts).
 - **Opposing ambassadors cancel.** When an ambassador arrives on a piece holding one of the
   other side, both are removed (the adversary's to its supply), with no Unity. **Two
   arrivals don't cancel:** the ambassador the Remove action moves evicts what stands there
@@ -270,9 +274,9 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
   position is held only until the next arrival.
 - **Defense:** a player ambassador on a facility's hex is used up instead of the facility
   when it would be destroyed.
-- **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit. A city
-  an adversary ambassador stands on is dark instead (§6): nothing is diverted, the energy
-  is lost; an aligned one sways `ambassador_discord` (0) per unit each round it is dark.
+- **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit, whatever
+  stands on it. A clean or aligned city an adversary ambassador stands on is dark instead
+  (§6): nothing is diverted, the energy is lost; an aligned one sways `ambassador_discord` (0) per unit each round it is dark.
 
 Player ambassadors move only through cards and the standard actions (Move, Remove).
 
@@ -281,7 +285,8 @@ ambassadors into the world until someone liberates it. You need to stand next to
 nodes on the city or a hex beside it. Then either play a liberate card, the tier-2 capstone
 of your engine (antimatter, power and chips, credits, research cubes, Cyber, Security or
 Followers), or, the expensive way, land 5 of your ambassadors on it (at 20 credits each from
-the standard project). The city is clean again (some cards also put your cube on it), the
+the standard project), one more for each adversary ambassador standing there, since the first
+cancels it. The city is clean again (some cards also put your cube on it), the
 world sways 5 toward Unity, and 1 adversary ambassador lands on it. In the draft, pass a
 liberate card to the player whose engine can pay for it. **What resisted this summary:** a
 fallback where two players pool ambassadors counts only the ambassadors of players standing
@@ -345,7 +350,8 @@ removed: it makes `botnet_compute` adversary compute a round, it **blocks site c
 site with a botnet on or next to it can't be claimed), and it counts against the purge until
 Unity eases it (§5). **Botnets are hard to remove (candidate, Matt):** no standard action
 does it, only tier-2 effects: the tier-2 cards **Botnet Takedown** and **Singularity
-Exploit** (which also discards a project), each removing a botnet in your reach, and the
+Exploit** (which also discards a project) and **Breakthrough Lab**'s Action, each removing a
+botnet in your reach; **Root Access**, one on or next to the city it liberates; and the
 tier-2 Unity card **Decommission** (a botnet anywhere, players choose). Removing a botnet
 sways `alignment.botnet` Unity (§5).
 
@@ -678,8 +684,10 @@ tip's card may fill a bucket again, which then tips too.
 | Unity | Biomia's converter | 1 for 2 research cubes |
 | Unity | liberating a corrupted city (§2: a liberate card or the fallback) | `alignment.free_city` 5 |
 | Unity | removing a botnet | `alignment.botnet` 2 |
+| Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 1 |
+| Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards | card text |
-| Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 a round of a dark aligned city's |
+| Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
 | Discord | an adversary ambassador on a producing base | `base_discord` 1 |
 | Discord | a facility destroyed in war (not by an adversary troop) | `destruction_discord` 0 |
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
@@ -814,9 +822,9 @@ game ends it there.
 | Resource | Comes from | Spent on |
 |---|---|---|
 | Credits | Credit production on the AI board (§7), the node track, cards and Unity cards, in upkeep; megaproject payouts; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters |
-| Energy (keeps between rounds; rare, candidate: about 1-3 held mid-game, near 0 at the end) | Cities' cubes in production (§6 below); Horizon's completion payout; the node tracks; Power buildings (a flat income of +2 a round at most on any card); the Protector's printed energy; Power programs; `ai.start_energy` at the start | The node powers and every track step (§7); the dear powers (Rush Build, Shelter, Particle Run); cards' `energy` cost (a few, two of them strong: Kinetic Interdiction, Orbital Mass Driver); Blackout's, Sabotage's and Commandeer's counters; the energy gift Actions (Substation Hub, Treaty Grid Exchange: 1 energy, another player gains); Bulwark's hardening |
+| Energy (keeps between rounds; rare, candidate: about 1-3 held mid-game, near 0 at the end) | Cities' cubes in production (§6 below); Horizon's completion payout; the node tracks; Power buildings (a flat income of +2 a round at most on any card; Tidal Barrage grows with Power tags); the Builder's Overcharge; the Protector's printed energy; Power programs; `ai.start_energy` at the start | The node powers and every track step (§7); the dear powers (Rush Build, Shelter, Particle Run); cards' `energy` cost (a few, two of them strong: Kinetic Interdiction, Orbital Mass Driver); Blackout's, Sabotage's and Commandeer's counters; the energy gift Actions (Substation Hub, Treaty Grid Exchange: 1 energy, another player gains); Bulwark's hardening |
 | Chips | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; cards (chip income: Bulk Silicon Procurement, Peaker Turbines, Arcology Foundry; Antitrust Action's chips per Industry tag; Joint Fabrication Pact; Surplus Auction) | Some buildings' `chips` cost; research stations (`station_chips`); the Harden action a card grants (`harden_chips`); sold at `chips_credits` |
-| Antimatter | Tier-2 cards (Positron Storage Ring); the antimatter action; Horizon's converter | Tier-2 cards |
+| Antimatter | Tier-2 cards (Positron Storage Ring); the antimatter action; Horizon's converter; the Researcher's Particle Run | Tier-2 cards |
 | Research cubes (keep between rounds) | Your stations, once their country's megaproject is complete; the Researcher's Open Archive capstone; Sample Repository, Preprint Exchange | Converters (§1); the Researcher's Peer Review (§7); Inference Cluster, Breakthrough Lab, Policy Institute |
 | Insight | Each round, set to the AI board's insight (§7) plus the node track's uncovers plus buildings; less 1 per adversary ambassador that drained your nodes, and less what Smear Campaign took; Cintamani's converter adds 1; the Researcher's Open Science capstone gives others 2 a round; Inference Cluster | Keeping drafted cards; playing cards; giving (expires at the round's end, but the Researcher's carries over: Patience, §7) |
 | Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Embassy Compound), Followers through a card's Action, income on Orbital Embassy; the standard project | Moving onto pieces and evicting (they stay, §2); aligning cities, claiming sites, freeing cities (consumed) |
@@ -860,9 +868,10 @@ target is in the player's reach. The view publishes each action with its cost
 | Remove adversary ambassadors | `remove_ambassadors` 1 of your ambassadors, from your supply | it goes onto one hex in reach, removes up to `remove_count` 3 there and stays |
 | Clear a corruption marker | `clear_cost` 2 credits | in reach: sway `clear_unity` 1 toward Unity, gain `clear_credits` 0 credits |
 | Move a player ambassador | `move_credits` 1 credit | from your supply or the board onto a piece in reach (not the hex it comes from) |
-| Gain a player ambassador | `ambassador_credits` 20 | into your supply; a standard project too |
-| Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it |
-| Harden a facility (a card grants it: Hardened Bunker Complex) | the chips the card prints a token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
+| Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
+| Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it (an adversary ambassador there stays, so a dark city stays dark) |
+| Free a research station | `free_station_credits` 6 credits; `free_station_ambassadors` 2 of your ambassadors on it, used up | a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays) |
+| Harden a facility (a card grants it: Hardened Bunker Complex) | the chips the card prints, per token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
 | Sell chips | 1 chip | gain `chips_credits` 1 |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Project: harden (`harden_buy`) | `harden_credits` 3 credits | any player: a hardening token on a player-owned station or factory in reach |
@@ -1000,8 +1009,9 @@ takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
 hand cap it. **The energy gift** (1 energy → another player's 5 chips at Substation Hub or 8 credits at Treaty Grid
 Exchange, once a round a building) is a conversion with a boost: an energy is worth about 4.5, the gift 7.5-8. Energy
-bought from a neutral city costs `city_energy_credits` (5), so credits → energy → gift → credits gains about 3 a round
-per gift building, for the team, not the buyer; it is capped by once a round, the two buildings, and the cities' energy
+bought from a neutral city costs `city_energy_credits` (5), so credits → energy → Treaty Grid Exchange → credits gains 3 a
+round, for the team, not the buyer; Substation Hub's 5 chips sell back for 5 credits (`chips_credits` 1), so its loop
+gains only where the chips pay a chip cost. It is capped by once a round, the two buildings, and the cities' energy
 (a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). Nothing turns the gift back
 into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with Cintamani's converter (a cube for an insight) is
@@ -1015,8 +1025,8 @@ arrival there cancels one. Wall has no loop, but it takes troops away as a harm 
 `docs/harms.md`'s checks count sources, so they hold.
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 2 chips, 2 energy, 3 credits, a marker with its Sway; 2 tags buy a building, a
-sheltered country or an antimatter.
+each payoff priced to be worth the card: 2 chips, 2 energy, 3 credits, a marker with its Sway; a tag and an energy buy a
+building, a sheltered country or an antimatter (r35).
 
 **Powers (locked: tag costs are sacrifices).** A power's cost names tags (`any` for any tag) and optional other
 resources; in the table a tag in the cost is a sacrifice, and thresholds are for powerful cards only. It is paid by
@@ -1341,8 +1351,8 @@ card does; how each primitive resolves:
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off). Only the liberate capstones print it (§8).
 - **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Liberation Accords: 6) around one corrupted
-  city in reach, on it or next to it, your choice which. Adversary ambassadors near a city don't raise the fallback, so
-  this only thins the city's build before it spreads.
+  city in reach, on it or next to it, your choice which. Those next to the city don't raise the fallback, so clearing them only
+  thins the city's build before it spreads; each on the city costs the fallback one more ambassador (§2).
 - **Card text:** generated from the card's ops (*The card grammar*, above), extra costs and lowered income included; a
   long card sets smaller. **Harden N facilities** is N different ones (Hardening, above); **shelter one country**:
   nothing in it, facility or node, can be destroyed this round. The house words are in *Terms*, at the top.
@@ -1367,7 +1377,8 @@ card does; how each primitive resolves:
   ambassador's job.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
   so a building that needed those tags or the sacrificed stack can't then be played; its other costs and requirements
-  stand.
+  stand, paid from what is left after the power's energy. The power isn't offered when no building in hand would still
+  be playable after some sacrifice and that energy (r39: it took both and played nothing).
 - **Aegis Dome Array's shelter:** automatic, the first destruction of a facility or node each round in a country where
   its owner has a node.
 
@@ -1532,8 +1543,10 @@ Every parameter of the baseline config, with its value and range, generated from
 25. Insight is set at the start of each round (unspent insight is lost, save Patience); income arrives in upkeep.
 26. Tags are counted on every card you have in play, splayed buildings included; events' tags don't stay.
 27. `ai.boards` repeats for more seats.
-28. A card that gives from your own stock (`transfer`; no card prints it) is not offered without another player;
-    other help cards are (their own gain still applies).
+28. A card that gives from your own stock (`transfer`; no card prints it) is not offered without another player,
+    nor is one whose only effect is another player's gain (r39: the energy gift Actions, Substation Hub and Treaty
+    Grid Exchange, took their energy at one country and gave nothing); other help cards are (their own gain still
+    applies). Likewise a draw with both tier-1 piles empty (Fieldwork) is not offered on its own.
 29. Node-track uncovers are per-round income.
 30. The clock gates factories, troops, chips and war only.
 31. Setup factories start neutral.

@@ -204,7 +204,9 @@ impl Cards {
 
 /// A paid card leaves the hand and resolves.
 fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) -> Res {
-    cx.count(g, &format!("played.{id}"), 1);
+    // 099: by its full key: Rush Build plays from the ai module, and `count`
+    // filed its buildings under `ai.played.`, out of every read of plays.
+    cx.tally(g, &format!("cards.played.{id}"), 1);
     cx.per_round(g, "cards.played", 1);
     if d.is_building() {
         place_building(g, cx, seat, id, d)?;

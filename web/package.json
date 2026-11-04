@@ -18,7 +18,8 @@
     "odd": "node scripts/odd.mjs",
     "cards": "node scripts/cards-server.mjs",
     "cards:check": "node scripts/cards-check.mjs",
-    "cards:fit": "node scripts/cards-fit.mjs"
+    "cards:fit": "node scripts/cards-fit.mjs",
+    "probe": "node scripts/legal-probe.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

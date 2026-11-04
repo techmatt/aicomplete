@@ -141,8 +141,9 @@ never mixed up.
 
 **This machine.**
 
-- Content is compiled into `aic-sim` (`include_str!`); configs, `configs/agents/` included, are read from the
-  working directory. An old binary runs from an old tree: `git archive <rev> configs | tar -x -C out/old`.
+- Content and `configs/agents/` are compiled into `aic-sim` (`include_str!`): an edit to `values.json` needs a
+  rebuild. The game configs are read from the working directory, so an old binary runs from an old tree:
+  `git archive <rev> configs | tar -x -C out/old`.
 
 - 6 cores, 12 threads: 12 workers give about 6 × one, so never read "12 threads" as 12 ×
   in an estimate.

@@ -456,17 +456,28 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
         ],
         [
             "Gain a player ambassador".to_string(),
-            t("board.ambassador_credits"),
+            format!("{} credits", t("board.ambassador_credits")),
             "into your supply; a standard project too".to_string(),
         ],
         [
             "Align a clean city".to_string(),
             "1 ambassador".to_string(),
-            "in reach, with a site claim: your cube on it".to_string(),
+            // 099: what a dark city does when aligned (Matt's call whether it should cancel).
+            "in reach, with a site claim: your cube on it (an adversary ambassador there stays, so a dark city stays dark)".to_string(),
+        ],
+        // 099: rules.md §1 and §2 send readers here for it.
+        [
+            "Free a research station".to_string(),
+            format!(
+                "{} credits; {} of your ambassadors on it, used up",
+                t("board.free_station_credits"),
+                t("board.free_station_ambassadors")
+            ),
+            "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".to_string(),
         ],
         [
             "Harden a facility (a card grants it: Hardened Bunker Complex)".to_string(),
-            "the chips the card prints a token".to_string(),
+            "the chips the card prints, per token".to_string(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike".to_string(),
         ],
         [
@@ -510,6 +521,17 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             t("alignment.free_city"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
+        // 099: two Unity sources the table left out.
+        [
+            "Unity".to_string(),
+            "clearing a corruption marker (the Clear action, Recovery, cards)".to_string(),
+            t("board.clear_unity"),
+        ],
+        [
+            "Unity".to_string(),
+            "player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall)".to_string(),
+            "1 each".to_string(),
+        ],
         [
             "Unity".to_string(),
             "cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards".to_string(),
@@ -519,7 +541,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "Discord".to_string(),
             "energy diverted (a corrupted city) or darkened (an ambassador on an aligned city)".to_string(),
             format!(
-                "{} per unit of a corrupted city's, {} a round of a dark aligned city's",
+                "{} per unit of a corrupted city's, {} per unit, each round, of a dark aligned city's",
                 t("board.divert_discord"),
                 t("board.ambassador_discord")
             ),

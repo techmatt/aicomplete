@@ -13,7 +13,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cnt, load  # noqa: E402
+from screens import cnt, load, seats  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -35,11 +35,11 @@ def main():
                 c = cells.get(cid, {})
                 name = c.get('variant', cid) + ('' if len({x.get('agent') for x in cells.values()}) < 2
                                                  else ' ' + c.get('agent', ''))
-                yield os.path.basename(d.rstrip('/')), name, gs, lambda f, gs=gs: sum(f(g) for g in gs) / len(gs)
+                yield os.path.basename(d.rstrip('/')), name, gs, lambda f, gs=gs: sum(f(g) for g in gs) / len(gs), seats(c)
 
     print('| run | cell | games | win % | converter uses | idle, no city node | PU played | PU liberations | Supergrid played |')
     print('|---|---|---|---|---|---|---|---|---|')
-    for run, name, gs, m in cells_of():
+    for run, name, gs, m, _ in cells_of():
         print(f"| {run} | {name} | {len(gs)} | {100 * m(lambda g: g['won']):.1f} "
               f"| {m(converter_uses):.2f} | {m(lambda g: cnt(g, 'board.converter_no_city')):.2f} "
               f"| {m(lambda g: cnt(g, 'cards.played.popular_uprising')):.2f} "
@@ -48,11 +48,16 @@ def main():
     # Amendment #4040: dark neutral cities (`board.city_dark`, from r37), energy bought, the
     # seats' energy at their last round's action-phase end, nodes placed, corruptions.
     print()
-    print('| run | cell | dark city-rounds | energy bought | end energy (both seats) | nodes placed | corruptions |')
+    print('| run | cell | dark city-rounds | energy bought | end energy (all seats) | nodes placed | corruptions |')
     print('|---|---|---|---|---|---|---|')
-    for run, name, gs, m in cells_of():
-        def end_energy(g):
-            return sum(cnt(g, f'unspent.{s}.energy.r{g["rounds"]:02d}') for s in range(2))
+    for run, name, gs, m, ns in cells_of():
+        def end_energy(g, ns=ns):
+            # 099: each seat's last round whose action phase ended (energy_read's), every seat:
+            # the final round's key is missing when the game ended mid-round, and c3 has three.
+            def last(s):
+                return max(g['rounds'] - 1, max((r for r in range(1, g['rounds'] + 1)
+                                                 if f'ai.tag_top.{s}.r{r:02d}' in g['counters']), default=0))
+            return sum(cnt(g, f'unspent.{s}.energy.r{last(s):02d}') for s in range(ns) if last(s))
         print(f"| {run} | {name} | {m(lambda g: cnt(g, 'board.city_dark')):.2f} "
               f"| {m(lambda g: cnt(g, 'board.city_energy_bought')):.2f} | {m(end_energy):.2f} "
               f"| {m(lambda g: cnt(g, 'board.node_placed')):.2f} | {m(lambda g: cnt(g, 'adversary.corruptions')):.2f} |")

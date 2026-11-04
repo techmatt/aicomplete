@@ -41,7 +41,18 @@ function handCard(view: View | undefined, seat: number, id: string | undefined) 
 /** A card's costs beyond credits ("1 insight", "2 chips"), from its view text's bracket line (044). */
 export function extraCosts(text: string | undefined): string[] {
   const bracket = (text ?? '').match(/^\[([^\]]*)\]/)?.[1] ?? '';
-  return [...bracket.matchAll(/\+(\d+ [a-z]+)/g)].map((m) => m[1]);
+  // 099: by part, so a cost of more than one word stays whole ("+4 research cubes" read "4 research").
+  return bracket.split(', ').filter((p) => /^\+\d+ /.test(p)).map((p) => p.slice(1));
+}
+
+/** A built card of the seat's as the view shows it, if any. */
+function builtCard(view: View | undefined, seat: number, id: string | undefined) {
+  return view?.seats[seat]?.cards.find((g) => g.key === 'cards.built')?.cards.find((c) => c.id === id);
+}
+
+/** The "Action: ..." sentence of a card's text, without its period (099: the use button named no cost). */
+function actionClause(text: string | undefined): string {
+  return (text ?? '').match(/Action: ([^.]*)\./)?.[1] ?? '';
 }
 
 /** " (5 credits + 1 insight)", or nothing for a free card. */
@@ -60,7 +71,11 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const t = withTarget && isHex(a.target) ? ` @${hexKey(a.target)}` : '';
       // An option that is a content id (one word ids too: `sweep`) shows its name.
       // The option is a record key, so it keeps its number; the track step's hover has it.
-      return `${contentIds(contentName(String(a.option ?? 'choose'))).replace('T2 keep -1', 'T2 keep')}${t}`;
+      // 099: an Action's second half is named by its op (`CashOut`, `GainPerTokens`): in words.
+      const o = String(a.option ?? 'choose');
+      // Two humps at least, so a one-word name (Horizon, a country) keeps its capital.
+      const opName = /^[A-Z][a-z]+(?:[A-Z][a-z]+)+$/.test(o) ? o.replace(/(?!^)([A-Z])/g, ' $1').toLowerCase() : o;
+      return `${contentIds(contentName(opName)).replace('T2 keep -1', 'T2 keep')}${t}`;
     }
     case 'tier':
       return `draft from tier ${a.tier}`;
@@ -72,8 +87,10 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const c = handCard(cx.view, a.seat, a.card);
       return `play ${card}${playPrice(c?.cost, extraCosts(c?.text))}`;
     }
-    case 'use':
-      return `use ${card}`;
+    case 'use': {
+      const what = actionClause(builtCard(cx.view, a.seat, a.card)?.text);
+      return `use ${card}${what ? `: ${what}` : ''}`;
+    }
     case 'power': {
       // 021: an AI-board power, paid in resources or by sacrificing played cards' tags.
       const p = aiBoard(cx.config, a.seat)?.powers?.[Number(a.power)];
@@ -99,7 +116,9 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       // The rules publish each standard action's words and cost in the view.
       const s = cx.view?.standard.find((x) => x.act === String(a.act));
       if (!s) return `standard: ${words(String(a.act))}`;
-      const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [s.chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
+      // 099: a card-set price (the Harden action a card grants) is the seat's own.
+      const chips = s.seat_chips?.[Number(a.seat)] ?? s.chips;
+      const costs = ([[s.energy, 'energy'], [s.credits, 'credits'], [chips, 'chips'], [s.ambassadors, 'ambassadors']] as const)
         .filter(([v]) => v > 0)
         .map(([v, what]) => amount(v, what));
       return `${s.doc.split(';')[0]}${costs.length ? ` (${costs.join(', ')})` : ''}`;
