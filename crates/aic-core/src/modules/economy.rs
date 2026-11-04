@@ -160,8 +160,8 @@ fn supply_insight(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     }
     for k in 0..amount {
         let opts = others.iter().map(|&o| seat_opt(o)).collect();
-        let prompt = format!("Seat {s}: insight {} of {amount} from the supply goes to whom?", k + 1);
-        if let Some(i) = cx.choose(s, &prompt, opts)? {
+        let prompt = || format!("Seat {s}: insight {} of {amount} from the supply goes to whom?", k + 1);
+        if let Some(i) = cx.choose(s, prompt, opts)? {
             cx.add_key(g, &insight_gift(others[i]), 1);
             cx.tally(g, "economy.insight_supplied", 1);
         }

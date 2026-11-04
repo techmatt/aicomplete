@@ -1,0 +1,35 @@
+{
+  "name": "screen-104-p1-d0",
+  "note": "104 P1: plan_gross=1 (the new default) against plan_gross=0, greedy at d0, paired, fresh r40 seeds 33300-33499, the three pairs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "greedy",
+    "greedy:plan_gross=0"
+  ],
+  "games": 200,
+  "first_seed": 33300,
+  "records": 0
+}

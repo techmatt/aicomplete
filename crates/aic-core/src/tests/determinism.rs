@@ -163,7 +163,7 @@ fn malformed_and_mismatched_states_are_errors_not_panics() {
     g.seats.pop();
     assert!(apply(&g, &Action::Pass { seat: 0 }).is_err());
     let mut g = Rules::new(&config).unwrap().new_game(1);
-    g.hexes.pop();
+    Arc::make_mut(&mut g.hexes).pop();
     assert!(view(&g).is_err());
     let other = Rules::new(&baseline_with(&["countries=3"])).unwrap();
     assert!(other.check_state(&Rules::new(&config).unwrap().new_game(1)).is_err());

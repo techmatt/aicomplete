@@ -19,7 +19,7 @@ fn the_build_forecast_matches_the_build_step() {
         for seed in 0..3 {
             let mut g0 = rules.new_game(seed);
             let players: Vec<Key> = (0..g0.seats.len()).map(|s| Key::new(ambassador(s))).collect();
-            for h in g0.hexes.iter_mut() {
+            for h in Arc::make_mut(&mut g0.hexes).iter_mut() {
                 Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
             }
             g0.vars.insert(SUPPLY.into(), 1000);

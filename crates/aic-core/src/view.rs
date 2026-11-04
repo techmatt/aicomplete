@@ -487,7 +487,7 @@ pub(crate) fn generic(rules: &crate::Rules, g: &GameState) -> View {
         .map
         .hexes
         .iter()
-        .zip(&g.hexes)
+        .zip(g.hexes.iter())
         .enumerate()
         .map(|(i, (cell, h))| HexView {
             index: i,

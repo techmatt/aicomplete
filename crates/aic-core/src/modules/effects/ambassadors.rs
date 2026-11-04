@@ -19,11 +19,11 @@ pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max:
         let dest = pieces_in_reach(&w, g, seat);
         let mut opts: Vec<_> = dest.iter().map(|&h| hex_opt(&w, h)).collect();
         opts.push(opt("stop"));
-        let prompt = format!(
+        let prompt = || format!(
             "Seat {seat}: move ambassador {} of up to {max} to which piece?",
             k + 1
         );
-        let Some(i) = cx.choose(seat, &prompt, opts)? else {
+        let Some(i) = cx.choose(seat, prompt, opts)? else {
             break;
         };
         if i >= dest.len() {
@@ -39,15 +39,15 @@ pub(super) fn move_one(g: &mut GameState, cx: &mut Cx, seat: usize, range: i64) 
     let from = movable_one(&w, g, seat, range);
     let mut opts: Vec<_> = from.iter().map(|&h| hex_opt(&w, h)).collect();
     opts.push(opt("stop"));
-    let prompt = format!("Seat {seat}: move which of your ambassadors (up to {range} hexes)?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: move which of your ambassadors (up to {range} hexes)?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         if let Some(&a) = from.get(i) {
             let dest: Vec<usize> = (0..g.hexes.len())
                 .filter(|&h| move_one_dest(&w, g, a, range, h))
                 .collect();
             let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = format!("Seat {seat}: move it to which piece?");
-            if let Some(j) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: move it to which piece?");
+            if let Some(j) = cx.choose(seat, prompt, opts)? {
                 walk(g, cx, seat, a, dest[j]);
             }
         }
@@ -73,8 +73,8 @@ pub(super) fn spread_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize) ->
             .collect();
         let mut opts = vec![opt("stay")];
         opts.extend(dest.iter().map(|&h| hex_opt(&w, h)));
-        let prompt = format!("Seat {seat}: spread your ambassador at {}?", hex_name(&w, a));
-        if let Some(j) = cx.choose(seat, &prompt, opts)? {
+        let prompt = || format!("Seat {seat}: spread your ambassador at {}?", hex_name(&w, a));
+        if let Some(j) = cx.choose(seat, prompt, opts)? {
             if j > 0 && g.tokens(a, ambassador(seat)) > 0 {
                 walk(g, cx, seat, a, dest[j - 1]);
             }
@@ -87,8 +87,8 @@ pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64)
     let w = cx.world;
     let dest = pieces_in_reach(&w, g, seat);
     let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: consolidate up to {max} ambassadors onto which piece?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: consolidate up to {max} ambassadors onto which piece?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let to = dest[i];
         for _ in 0..max {
             let from: Vec<usize> = ambassador_hexes(g, seat)
@@ -100,8 +100,8 @@ pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64)
             }
             let mut opts: Vec<_> = from.iter().map(|&h| hex_opt(&w, h)).collect();
             opts.push(opt("stop"));
-            let prompt = format!("Seat {seat}: bring which ambassador to {}?", hex_name(&w, to));
-            let Some(j) = cx.choose(seat, &prompt, opts)? else {
+            let prompt = || format!("Seat {seat}: bring which ambassador to {}?", hex_name(&w, to));
+            let Some(j) = cx.choose(seat, prompt, opts)? else {
                 break;
             };
             let Some(&a) = from.get(j) else {

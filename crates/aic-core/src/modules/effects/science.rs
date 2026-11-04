@@ -12,8 +12,8 @@ pub(super) fn clear_markers(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
             break;
         }
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {seat}: clear the corruption marker on which hex?");
-        let Some(i) = pick_or_stop(cx, seat, &prompt, opts, k == 0)? else {
+        let prompt = || format!("Seat {seat}: clear the corruption marker on which hex?");
+        let Some(i) = pick_or_stop(cx, seat, prompt, opts, k == 0)? else {
             break;
         };
         board::clear_marker(g, cx, seat, hexes[i]);
@@ -29,8 +29,8 @@ pub(super) fn shield_node(g: &mut GameState, cx: &mut Cx, seat: usize, count: i6
             break;
         }
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {seat}: shield your nodes on which hex?");
-        let Some(i) = pick_or_stop(cx, seat, &prompt, opts, k == 0)? else {
+        let prompt = || format!("Seat {seat}: shield your nodes on which hex?");
+        let Some(i) = pick_or_stop(cx, seat, prompt, opts, k == 0)? else {
             break;
         };
         cx.add_tokens(g, hexes[i], HARDEN, 1);
@@ -45,8 +45,8 @@ pub(super) fn delay_threat(g: &mut GameState, cx: &mut Cx, seat: usize, count: i
             break;
         }
         let opts = active.iter().map(|(t, _)| opt(*t)).collect();
-        let prompt = format!("Seat {seat}: delay which threat?");
-        let Some(i) = pick_or_stop(cx, seat, &prompt, opts, k == 0)? else {
+        let prompt = || format!("Seat {seat}: delay which threat?");
+        let Some(i) = pick_or_stop(cx, seat, prompt, opts, k == 0)? else {
             break;
         };
         threats::delay(g, cx, &active[i].0);

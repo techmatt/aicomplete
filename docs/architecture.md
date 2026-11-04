@@ -83,7 +83,8 @@ A **module** is one rules area; a **variant** is one way of doing it:
 | A new kind of player action | `Action`; a structural change |
 
 Modules (`crates/aic-core/src/modules/`) call each other's public functions and read
-each other's parameters through `World::int("<module>.<param>")`; `ModuleDef::requires`
+each other's parameters through `World::int("<module>.<param>")` (a few read in every
+position have a slot, `World::hot(Hot::...)`, the same value); `ModuleDef::requires`
 lists the modules whose parameters one reads.
 
 **One path per piece change**, so supply, cancellation and botnet-making hold
@@ -106,6 +107,8 @@ Every point where the rules say players choose is a choice in `legal_actions`:
 
 - A module calls `cx.choose(seat, prompt, options)?` mid-resolution. No options gives
   `None`, one gives it without asking; otherwise the first pass stops with `Halt::Ask`.
+  A prompt built with `format!` goes in as a closure (`|| format!(...)`): it runs only
+  when the question is really asked, not on each replay.
 - The engine stores `GameState::pending` (the question, the answers so far and a
   snapshot from before); `legal_actions` is only the options (`Action::Choose`), no pass.
 - An answer restores the snapshot and resolves again from the start, replaying the

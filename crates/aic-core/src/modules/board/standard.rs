@@ -264,8 +264,8 @@ pub(super) fn std_resolve(
     let on_hex = |cx: &mut Cx| -> Res<Option<usize>> {
         let opts = targets.iter().map(|&h| hex_opt(&w, h)).collect();
         let verb = act.name().split('_').next().unwrap_or_default();
-        let prompt = format!("Seat {s}: {verb} on which hex?");
-        Ok(cx.choose(s, &prompt, opts)?.map(|i| targets[i]))
+        let prompt = || format!("Seat {s}: {verb} on which hex?");
+        Ok(cx.choose(s, prompt, opts)?.map(|i| targets[i]))
     };
     match act {
         StandardAction::Ambassador => cx.add_resource(g, s, Resource::Ambassadors, 1),

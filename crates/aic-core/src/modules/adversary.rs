@@ -125,8 +125,8 @@ pub fn projects_with_compute(g: &GameState) -> Vec<Key> {
 pub fn choose_drain(g: &mut GameState, cx: &mut Cx, seat: usize, amount: i64) -> Res {
     let ids = projects_with_compute(g);
     let opts = ids.iter().map(|p| opt(*p)).collect();
-    let prompt = format!("Seat {seat}: remove compute from which adversary project?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove compute from which adversary project?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         drain_project(g, cx, &ids[i], amount);
     }
     Ok(())
@@ -658,7 +658,7 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
         },
         1,
     );
-    cx.tally(g, &format!("adversary.project.{id}"), 1);
+    cx.tally(g, &KeyBuf::new("adversary.project.").text(id), 1);
     if g.var(FIRST_PROJECT) == 0 {
         cx.set_key(g, FIRST_PROJECT, g.round as i64);
         cx.tally(g, "adversary.first_project_round", g.round as i64);
@@ -1047,11 +1047,11 @@ pub fn spread(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
                 break;
             }
             let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = format!(
+            let prompt = || format!(
                 "Adversary spread: an ambassador from {} goes to which hex?",
                 hex_name(&w, from)
             );
-            let Some(i) = cx.choose(0, &prompt, opts)? else {
+            let Some(i) = cx.choose(0, prompt, opts)? else {
                 break;
             };
             cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
@@ -1096,8 +1096,8 @@ pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors
                 .iter()
                 .map(|(k, n)| opt(format!("remove {} {} at {}", (*n).min(g.tokens(h, k)), piece_name(k), hex_name(&w, h))))
                 .collect();
-            let prompt = format!("Seat {seat}: remove which pieces?");
-            let Some(i) = cx.choose(seat, &prompt, opts)? else {
+            let prompt = || format!("Seat {seat}: remove which pieces?");
+            let Some(i) = cx.choose(seat, prompt, opts)? else {
                 return Ok(());
             };
             kinds[i]

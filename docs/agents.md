@@ -59,12 +59,13 @@ over one of the seat's adds only what it beats the weakest by (`plan_cover`), th
 counted at what it would still earn, its play effects spent (`plan_cover_spent`, 102); `plan_bury`
 and `plan_cubes` are guide heuristics (below); credits paid for keeps cost `plan_credit` each.
 
-As the play check prices a card (102, D34, D23): a card adds its value **less its price**, and
-one worth no more is not planned (`plan_net`); credits over `w.credit_cap` cost `w.credit_idle`
+As the play check prices a card (102, D34, D23): a card worth no more than its price is not
+planned (`plan_net`), and one that is adds its **gross value** (`plan_gross`, Matt, 104: 099's form;
+`plan_gross=0` adds value less price); credits over `w.credit_cap` cost `w.credit_idle`
 (`plan_idle`); energy and antimatter at the heuristic's rates (about 1.3 and 3.3 credits), a
 building's Action at the table's (`plan_rates`); a project discard or drain at what the
-heuristic charges for the projects up (reads: `experiments/results/102_agents_and_r40/`;
-`plan_gross`, a probe at 0, keeps the drop but adds gross value: +5.7 ±1.9 at d2, r40).
+heuristic charges for the projects up (reads: `experiments/results/102_agents_and_r40/`,
+`104_agent_speed_2/`).
 
 **Dominance checks** are the same agents with one behavior forced: each is a row of
 `forced_table!` in `agents/policy.rs`, with its description (`docs/principles.md`,

@@ -1,5 +1,6 @@
 //! Playing a card, taking and keeping one, and using an ability.
 
+use crate::key::KeyBuf;
 use super::*;
 
 impl Cards {
@@ -81,8 +82,8 @@ pub fn play_free_building(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     let ids = free_buildings(&w, g, seat);
     let opts = ids.iter().map(|id| opt(id.to_string())).collect();
-    let prompt = format!("Seat {seat}: play which building, paying no credits?");
-    let Some(i) = cx.choose(seat, &prompt, opts)? else {
+    let prompt = || format!("Seat {seat}: play which building, paying no credits?");
+    let Some(i) = cx.choose(seat, prompt, opts)? else {
         return Ok(());
     };
     let id = ids[i];
@@ -206,7 +207,7 @@ impl Cards {
 fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef) -> Res {
     // 099: by its full key: Rush Build plays from the ai module, and `count`
     // filed its buildings under `ai.played.`, out of every read of plays.
-    cx.tally(g, &format!("cards.played.{id}"), 1);
+    cx.tally(g, &KeyBuf::new("cards.played.").text(id), 1);
     cx.per_round(g, "cards.played", 1);
     if d.is_building() {
         place_building(g, cx, seat, id, d)?;
@@ -253,8 +254,8 @@ fn place_building(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &Car
         opts.push(opt("a new slot".to_string()));
     }
     opts.extend(targets.iter().map(|t| opt(format!("over {t}"))));
-    let prompt = format!("Seat {seat}: build {id} where?");
-    let k = cx.choose(seat, &prompt, opts)?;
+    let prompt = || format!("Seat {seat}: build {id} where?");
+    let k = cx.choose(seat, prompt, opts)?;
     let over = match k {
         Some(0) if free => None,
         Some(k) => targets.get(k - free as usize).cloned(),
@@ -319,8 +320,8 @@ pub(super) fn use_ability(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) 
         [one] => *one,
         _ => {
             let opts = usable.iter().map(|b| opt(branch_label(b))).collect();
-            let prompt = format!("Seat {s}: {card}, which half of the Action?");
-            usable[cx.choose(s, &prompt, opts)?.unwrap_or(0)]
+            let prompt = || format!("Seat {s}: {card}, which half of the Action?");
+            usable[cx.choose(s, prompt, opts)?.unwrap_or(0)]
         }
     };
     for (r, n) in &ab.cost {

@@ -1,5 +1,6 @@
 //! War on the fronts, and the march of adversary troops.
 
+use crate::module::Hot;
 use super::*;
 
 /// The nearest hex to `from` among `hexes` (ties: country, then lower hex number).
@@ -142,7 +143,7 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
             out.push(STATION.to_string());
         }
     }
-    if g.var(adversary::STAGE) >= w.int("board.troop_node") {
+    if g.var(adversary::STAGE) >= w.hot(Hot::TroopNode) {
         if let Some(s) = node_owner(g, h) {
             out.push(node(s).to_string());
         }
@@ -245,11 +246,11 @@ fn step_toward(g: &mut GameState, cx: &mut Cx, at: usize) -> Res<Option<usize>> 
     let w = cx.world;
     let steps = troop_steps_from(&w, g, at);
     let opts = steps.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!(
+    let prompt = || format!(
         "The adversary troop at {} moves to which hex?",
         hex_name(&w, at)
     );
-    Ok(cx.choose(0, &prompt, opts)?.map(|i| steps[i]))
+    Ok(cx.choose(0, prompt, opts)?.map(|i| steps[i]))
 }
 
 /// One adversary troop at `h` strikes a target on or next to its hex
@@ -267,11 +268,11 @@ fn strike_from(g: &mut GameState, cx: &mut Cx, h: usize) -> Res<bool> {
         .iter()
         .map(|(x, k)| opt(format!("{} at {}", piece_name(k), hex_name(&w, *x))))
         .collect();
-    let prompt = format!(
+    let prompt = || format!(
         "Adversary troop at {}: which target does it destroy?",
         hex_name(&w, h)
     );
-    let Some(i) = cx.choose_loss(0, &prompt, opts)? else {
+    let Some(i) = cx.choose_loss(0, prompt, opts)? else {
         return Ok(false);
     };
     let (x, k) = targets[i].clone();

@@ -37,8 +37,8 @@ pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount:
                 .filter(|c| g.var(&cards::tokens_key(s, c)) > 0)
                 .collect();
             let opts = cards.iter().map(|c| opt(*c)).collect();
-            let prompt = format!("Seat {s}: lose a token from which card?");
-            let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
+            let prompt = || format!("Seat {s}: lose a token from which card?");
+            let Some(i) = cx.choose_loss(s, prompt, opts)? else {
                 break;
             };
             cards::add_tokens(g, cx, s, &cards[i], -1);
@@ -68,8 +68,8 @@ pub fn requisition(
         if g.pile(&cards::hand(s)).len() as i64 >= n {
             opts.push(opt(format!("discard {n} cards")));
         }
-        let prompt = format!("Seat {s}: pay {} or discard {n} cards?", resource.amount(amount));
-        match cx.choose(s, &prompt, opts)? {
+        let prompt = || format!("Seat {s}: pay {} or discard {n} cards?", resource.amount(amount));
+        match cx.choose(s, prompt, opts)? {
             Some(0) if can_pay => {
                 cx.add_resource(g, s, resource, -amount);
             }
@@ -77,8 +77,8 @@ pub fn requisition(
                 for k in 0..n {
                     let hand = g.pile(&cards::hand(s)).to_vec();
                     let opts = hand.iter().map(|c| opt(*c)).collect();
-                    let prompt = format!("Seat {s}: discard which card ({} of {n})?", k + 1);
-                    if let Some(j) = cx.choose(s, &prompt, opts)? {
+                    let prompt = || format!("Seat {s}: discard which card ({} of {n})?", k + 1);
+                    if let Some(j) = cx.choose(s, prompt, opts)? {
                         cards::discard(g, cx, &hand[j], &cards::hand(s));
                     }
                 }
@@ -108,8 +108,8 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> 
         let k = ambassador(s);
         let on = ambassador_hexes(g, s);
         let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {s}: lose the ambassador on which hex?");
-        if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
+        let prompt = || format!("Seat {s}: lose the ambassador on which hex?");
+        if let Some(i) = cx.choose_loss(s, prompt, opts)? {
             cx.add_tokens(g, on[i], k, -1);
         }
     }
@@ -142,8 +142,8 @@ pub fn lose_node_or(
         }
         let off = opts.len();
         opts.extend(mine.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = format!("Seat {s}: pay {amount} {resource} or lose a node?");
-        match cx.choose_loss(s, &prompt, opts)? {
+        let prompt = || format!("Seat {s}: pay {amount} {resource} or lose a node?");
+        match cx.choose_loss(s, prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
             Some(i) => {
                 board::lose_node(g, cx, mine[i - off], s, source);
@@ -169,8 +169,8 @@ pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usiz
         };
         let tied: Vec<Key> = hand.into_iter().filter(|c| cost(c) == top).collect();
         let opts = tied.iter().map(|c| opt(c.as_str())).collect();
-        let prompt = format!("Purge Protocols: seat {s} discards which card?");
-        if let Some(i) = cx.choose(s, &prompt, opts)? {
+        let prompt = || format!("Purge Protocols: seat {s} discards which card?");
+        if let Some(i) = cx.choose(s, prompt, opts)? {
             cards::discard(g, cx, &tied[i], &cards::hand(s));
         }
     }

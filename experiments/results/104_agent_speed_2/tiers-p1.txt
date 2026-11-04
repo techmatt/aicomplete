@@ -1,0 +1,36 @@
+engine, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r40 | 3 | 7.31 | 474 | 13.48 | 390 | 0.8 |
+| new | r40 | 4 | 7.12 | 445 | 13.30 | 338 | 0.8 |
+| new / old | | | 0.97 | 0.94 | 0.99 | 0.87 | 0.92 |
+
+strategist, c2, d2, 16 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r40 | 5 | 6.75 | 424 | 12.56 | 310 | 0.7 |
+| new | r40 | 3 | 6.50 | 400 | 13.18 | 301 | 0.8 |
+| new / old | | | 0.96 | 0.94 | 1.05 | 0.97 | 1.03 |
+
+sweep, c2, d2, 8 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r40 | 3 | 7.12 | 413 | 12.12 | 3266 | 7.9 |
+| new | r40 | 1 | 7.50 | 436 | 12.77 | 3395 | 7.8 |
+| new / old | | | 1.05 | 1.06 | 1.05 | 1.04 | 0.98 |
+
+planner, c2, d2, 8 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r40 | 3 | 7.00 | 424 | 12.58 | 5296 | 12.5 |
+| new | r40 | 3 | 7.25 | 440 | 12.78 | 4986 | 11.3 |
+| new / old | | | 1.04 | 1.04 | 1.02 | 0.94 | 0.91 |
+
+planner:strategy=1, c2, d2, 8 games from seed 1000, one thread, best of 2
+| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |
+|---|---|---|---|---|---|---|---|
+| old | r40 | 3 | 6.75 | 401 | 13.42 | 6020 | 15.0 |
+| new | r40 | 3 | 7.25 | 424 | 13.66 | 5799 | 13.7 |
+| new / old | | | 1.07 | 1.06 | 1.02 | 0.96 | 0.91 |
+
+DONE

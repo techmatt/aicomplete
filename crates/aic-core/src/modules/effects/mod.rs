@@ -6,7 +6,7 @@
 
 use crate::content::{Facility, Op, RoundFlag, Side};
 use crate::key::Key;
-use crate::module::{Cx, Res, World};
+use crate::module::{Cx, PromptText, Res, World};
 use crate::state::{GameState, Opt};
 use crate::vocab::TokenKind;
 
@@ -39,7 +39,7 @@ pub fn run(g: &mut GameState, cx: &mut Cx, ops: &[Op], ctx: &mut Ctx) -> Res {
 
 /// Asks `seat` to pick among `opts`, "stop" added unless this is the `first`
 /// pick of an "up to N". `None`: no pick, or stop.
-fn pick_or_stop(cx: &mut Cx, seat: usize, prompt: &str, mut opts: Vec<Opt>, first: bool) -> Res<Option<usize>> {
+fn pick_or_stop(cx: &mut Cx, seat: usize, prompt: impl PromptText, mut opts: Vec<Opt>, first: bool) -> Res<Option<usize>> {
     let n = opts.len();
     if !first {
         opts.push(opt("stop"));
@@ -63,8 +63,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::ChoosePlayer => {
             let others: Vec<usize> = (0..g.seats.len()).filter(|&s| s != seat).collect();
             let opts = others.iter().map(|&s| seat_opt(s)).collect();
-            let prompt = format!("Seat {seat}: which other player?");
-            ctx.other = cx.choose(seat, &prompt, opts)?.map(|i| others[i]);
+            let prompt = || format!("Seat {seat}: which other player?");
+            ctx.other = cx.choose(seat, prompt, opts)?.map(|i| others[i]);
         }
         Op::OtherGain { resource, amount } => {
             if let Some(o) = ctx.other {
@@ -104,16 +104,16 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Shelter => {
             let cs = unsheltered(&w, g);
             let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-            let prompt = format!("Seat {seat}: shelter which country?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: shelter which country?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 board::shelter(g, cx, cs[i]);
             }
         }
         Op::Cordon => {
             let cs: Vec<usize> = (0..w.map.countries.len()).filter(|&c| !board::flagged(g, RoundFlag::Cordon, c)).collect();
             let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-            let prompt = format!("Seat {seat}: cordon which country?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: cordon which country?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 // Up through the next round's build: cleanup counts it down.
                 cx.set_key(g, &board::flag(RoundFlag::Cordon, cs[i]), 2);
             }
@@ -125,8 +125,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Jam { amount, source } => {
             let active = threats::counterable(&w, g, seat, *source);
             let opts = active.iter().map(|t| opt(*t)).collect();
-            let prompt = format!("Seat {seat}: jam which threat?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: jam which threat?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 threats::jam(g, cx, &active[i], *amount);
                 if source.is_some() {
                     cx.tally(g, "threats.typed_counters", 1);
@@ -152,8 +152,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DiscardProject => {
             let ids = adversary::projects(g);
             let opts = ids.iter().map(|p| opt(*p)).collect();
-            let prompt = format!("Seat {seat}: discard which adversary project?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: discard which adversary project?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 adversary::discard_project(g, cx, &ids[i]);
             }
         }
@@ -194,8 +194,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::AddTokens { kind, amount, here: false } => {
             let ids = cards::token_cards(&w, g, seat, Some(*kind));
             let opts = ids.iter().map(|c| opt(*c)).collect();
-            let prompt = format!("Seat {seat}: add {amount} {kind} to which card?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: add {amount} {kind} to which card?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 cards::add_tokens(g, cx, seat, &ids[i], *amount);
             }
         }

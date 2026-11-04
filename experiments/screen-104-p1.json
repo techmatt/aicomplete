@@ -1,0 +1,35 @@
+{
+  "name": "screen-104-p1",
+  "note": "104 P1: plan_gross=1 (099's form, now the default) against the net form (plan_gross=0), strategist at d2, paired, fresh r40 seeds 33300-33499, the three pairs (greedy d0: screen-104-p1-d0.json).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:plan_gross=0"
+  ],
+  "games": 200,
+  "first_seed": 33300,
+  "records": 0
+}

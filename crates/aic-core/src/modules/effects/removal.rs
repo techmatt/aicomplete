@@ -6,8 +6,8 @@ pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i
     let w = cx.world;
     let hexes = damage_hexes(&w, g, seat, ambassadors, troops);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: remove adversary pieces in which hex?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove adversary pieces in which hex?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         adversary::damage(g, cx, seat, hexes[i], ambassadors, troops)?;
     }
     Ok(())
@@ -17,8 +17,8 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
     let w = cx.world;
     let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, ambassadors, troops));
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = format!("Seat {seat}: remove pieces in each adversary hex of which country?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove pieces in each adversary hex of which country?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let hexes: Vec<usize> = w.map.countries[cs[i]]
             .hexes
             .iter()
@@ -52,8 +52,8 @@ pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
         .filter(|&h| botnet_in_reach(&w, g, seat, h))
         .collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: remove the botnet in which hex?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove the botnet in which hex?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         adversary::remove_botnet(g, cx, hexes[i]);
     }
     Ok(())
@@ -63,8 +63,8 @@ pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: u
     let w = cx.world;
     let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = format!("Seat {seat}: remove adversary ambassadors in which country?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove adversary ambassadors in which country?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let removed = if max > 0 {
             up_to_in_country(g, cx, seat, cs[i], max, ADV_AMBASSADOR)?
         } else {
@@ -82,8 +82,8 @@ pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
     let w = cx.world;
     let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, 0, 1));
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = format!("Seat {seat}: remove adversary troops in which country?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: remove adversary troops in which country?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let removed = up_to_in_country(g, cx, seat, cs[i], count, TROOP)?;
         // 093: what "up to N" removes in play, for the effect ledger.
         cx.tally(g, &format!("cards.remove_troops.{count}"), 1);
@@ -114,8 +114,8 @@ fn up_to_in_country(g: &mut GameState, cx: &mut Cx, seat: usize, c: usize, max: 
             held[0]
         } else {
             let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = format!("Seat {seat}: remove {} from which hex?", piece_name(kind));
-            match cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: remove {} from which hex?", piece_name(kind));
+            match cx.choose(seat, prompt, opts)? {
                 Some(k) => held[k],
                 None => break,
             }
@@ -150,8 +150,8 @@ pub(super) fn cleanse(
             break;
         }
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {seat}: take the adversary cube off which hex?");
-        let Some(i) = pick_or_stop(cx, seat, &prompt, opts, k == 0)? else {
+        let prompt = || format!("Seat {seat}: take the adversary cube off which hex?");
+        let Some(i) = pick_or_stop(cx, seat, prompt, opts, k == 0)? else {
             break;
         };
         cx.tally(g, "effects.cleansed", 1);
@@ -185,8 +185,8 @@ pub(super) fn liberate_city(
     let w = cx.world;
     let cities = liberable_cities(&w, g, seat);
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: liberate which corrupted city?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: liberate which corrupted city?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let h = cities[i];
         cx.tally(g, "board.liberated_card", 1);
         board::liberate(g, cx, h);
@@ -212,8 +212,8 @@ pub(super) fn liberate_city(
                 .filter(|&x| g.tokens(x, BOTNET) > 0 && !threats::shielded(&w, g, x, ThreatSource::Cyber))
                 .collect();
             let opts = hexes.iter().map(|&x| hex_opt(&w, x)).collect();
-            let prompt = format!("Seat {seat}: remove the botnet in which hex?");
-            if let Some(i) = cx.choose(seat, &prompt, opts)? {
+            let prompt = || format!("Seat {seat}: remove the botnet in which hex?");
+            if let Some(i) = cx.choose(seat, prompt, opts)? {
                 adversary::remove_botnet(g, cx, hexes[i]);
                 cx.tally(g, "board.liberated_botnet", 1);
             }
@@ -226,8 +226,8 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
     let w = cx.world;
     let cities = guarded_cities(&w, g, seat);
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: clear adversary ambassadors around which corrupted city?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: clear adversary ambassadors around which corrupted city?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         let city = cities[i];
         let mut hexes = w.map.hexes[city].neighbors.to_vec();
         hexes.sort_unstable();
@@ -245,8 +245,8 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
                 held[0]
             } else {
                 let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
-                let prompt = format!("Seat {seat}: remove an adversary ambassador from which hex?");
-                match cx.choose(seat, &prompt, opts)? {
+                let prompt = || format!("Seat {seat}: remove an adversary ambassador from which hex?");
+                match cx.choose(seat, prompt, opts)? {
                     Some(k) => held[k],
                     None => break,
                 }
@@ -262,8 +262,8 @@ pub(super) fn cut_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     let hexes = cuttable_botnets(&w, g, seat);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: cut off the botnet in which hex?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: cut off the botnet in which hex?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         cx.set_key(g, &adversary::cut_key(hexes[i]), 1);
         cx.tally(g, "effects.botnets_cut", 1);
     }

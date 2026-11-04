@@ -8,8 +8,8 @@ pub(super) fn transfer(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, seat: usize, r
         let opts = (0..=most)
             .map(|k| opt(format!("give {}", resource.amount(k))))
             .collect();
-        let prompt = format!("Seat {seat}: give how much {resource} to seat {o}?");
-        let k = cx.choose(seat, &prompt, opts)?.unwrap_or(0) as i64;
+        let prompt = || format!("Seat {seat}: give how much {resource} to seat {o}?");
+        let k = cx.choose(seat, prompt, opts)?.unwrap_or(0) as i64;
         if k > 0 {
             cx.add_resource(g, seat, resource, -k);
             cx.add_resource(g, o, resource, k);
@@ -39,16 +39,16 @@ pub(super) fn token_card(
         .filter(|c| g.var(&cards::tokens_key(seat, c)) >= least.max(1))
         .collect();
     let opts = ids.iter().map(|c| opt(*c)).collect();
-    let prompt = format!("Seat {seat}: count the {kind} on which card?");
-    Ok(cx.choose(seat, &prompt, opts)?.map(|i| ids[i]))
+    let prompt = || format!("Seat {seat}: count the {kind} on which card?");
+    Ok(cx.choose(seat, prompt, opts)?.map(|i| ids[i]))
 }
 
 pub(super) fn build_factory(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     let hexes = factory_sites(&w, g, seat);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: build a factory on which zone?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: build a factory on which zone?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         cx.add_tokens(g, hexes[i], FACTORY, 1);
         cx.add_tokens(g, hexes[i], cube(seat), 1);
         cx.tally(g, "board.factories_built.player", 1);
@@ -61,8 +61,8 @@ pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     let w = cx.world;
     let hexes = board::station_sites(&w, g, seat);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: build a research station on which hex?");
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: build a research station on which hex?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         cx.add_tokens(g, hexes[i], STATION, 1);
         cx.add_tokens(g, hexes[i], cube(seat), 1);
         // 102 (D40): was `board.stations_free`, which read as `stations_freed`.
@@ -76,8 +76,8 @@ pub(super) fn project_cube(g: &mut GameState, cx: &mut Cx, seat: usize, count: i
     let w = cx.world;
     let cs = cube_projects(&w, g, seat, station);
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = format!("Seat {seat}: add {} to which country's megaproject?", Resource::ResearchCubes.amount(count));
-    if let Some(i) = cx.choose(seat, &prompt, opts)? {
+    let prompt = || format!("Seat {seat}: add {} to which country's megaproject?", Resource::ResearchCubes.amount(count));
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
         cx.add_key(g, &board::project_key(cs[i], Some(seat)), count);
         cx.tally(g, "board.cubes_bought", count);
         cx.per_round(g, "board.cubes_bought", count);
@@ -92,8 +92,8 @@ pub(super) fn harden(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) ->
     let mut hexes = harden_hexes(&w, g, seat);
     for k in 0..count {
         let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = format!("Seat {seat}: hardening {} of {count} on which facility?", k + 1);
-        let Some(j) = cx.choose(seat, &prompt, opts)? else {
+        let prompt = || format!("Seat {seat}: hardening {} of {count} on which facility?", k + 1);
+        let Some(j) = cx.choose(seat, prompt, opts)? else {
             break;
         };
         cx.add_tokens(g, hexes.remove(j), HARDEN, 1);

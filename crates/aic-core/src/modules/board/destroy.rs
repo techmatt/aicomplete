@@ -116,8 +116,8 @@ pub fn destroy_own_node(
         return Ok(());
     }
     let opts = mine.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {s}: destroy which of your nodes?");
-    if let Some(i) = cx.choose_loss(s, &prompt, opts)? {
+    let prompt = || format!("Seat {s}: destroy which of your nodes?");
+    if let Some(i) = cx.choose_loss(s, prompt, opts)? {
         destroy_piece(g, cx, mine[i], node(s), cause);
     }
     Ok(())

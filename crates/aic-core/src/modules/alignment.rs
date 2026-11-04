@@ -8,6 +8,7 @@
 //! (printed steps); 017–018's Discord-tip troop advance became 019's march
 //! (module `board`).
 
+use crate::module::Hot;
 use crate::action::Action;
 use crate::content::{AlignmentCard, Op, Resource, Side};
 use crate::key::{Key, KeyBuf};
@@ -182,11 +183,11 @@ fn card<'w>(w: &World<'w>, id: &str) -> &'w AlignmentCard {
 pub fn capacity(w: &World, g: &GameState, side: Side) -> i64 {
     let seats = g.seats.len().max(1) as i64;
     let per = match side {
-        Side::Unity => w.int("alignment.tip_per_player"),
-        Side::Discord => w.int("alignment.discord_tip_per_player"),
+        Side::Unity => w.hot(Hot::TipPerPlayer),
+        Side::Discord => w.hot(Hot::DiscordTipPerPlayer),
     };
     let full = per * seats;
-    let every = w.int("alignment.momentum_every");
+    let every = w.hot(Hot::MomentumEvery);
     if every <= 0 {
         return full;
     }
@@ -229,14 +230,14 @@ pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
         moved += 1;
     }
     if moved > 0 {
-        cx.tally(g, &format!("alignment.sway_{}", side.name()), moved);
+        cx.tally(g, &KeyBuf::new("alignment.sway_").text(side.name()), moved);
     }
 }
 
 /// [`sway`] toward Discord, tallied by where it came from (053).
 pub fn discord_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
     if n > 0 {
-        cx.tally(g, &format!("alignment.discord_from.{from}"), n);
+        cx.tally(g, &KeyBuf::new("alignment.discord_from.").text(from), n);
     }
     sway(g, cx, Side::Discord, n);
 }
@@ -274,7 +275,7 @@ pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
 /// level-0 bar (no adversary pieces) counts only once this round's adversary
 /// card is of stage `clear_win_stage` (the stages are stacked and public).
 fn purge_won(w: &World, g: &GameState, level: i64) -> bool {
-    if level == 0 && g.var(adversary::STAGE) < w.int("alignment.clear_win_stage") {
+    if level == 0 && g.var(adversary::STAGE) < w.hot(Hot::ClearWinStage) {
         return false;
     }
     adversary::under_bar(w, g, level)
@@ -321,8 +322,8 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     let off = opts.len();
     opts.extend(ambs.iter().map(|&h| labeled_hex_opt(&w, "ambassador", h)));
     opts.extend(pres.iter().map(|&h| labeled_hex_opt(&w, "node", h)));
-    let prompt = format!("Seat {s}: sacrifice which ambassador or node?");
-    let Some(i) = cx.choose_loss(s, &prompt, opts)? else {
+    let prompt = || format!("Seat {s}: sacrifice which ambassador or node?");
+    let Some(i) = cx.choose_loss(s, prompt, opts)? else {
         return Ok(());
     };
     if i < off {
@@ -368,7 +369,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     cx.set_key(g, bucket(side), 0);
     cx.add_key(g, UNDECIDED, back);
     cx.set_key(g, tips_key(side), before + 1);
-    cx.tally(g, &format!("alignment.tips_{}", side.name()), 1);
+    cx.tally(g, &KeyBuf::new("alignment.tips_").text(side.name()), 1);
     cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
     let Some((id, from)) = draw(g, &w, side, before) else {
         // Discord tips with no card left: the players lose (locked, 027).
@@ -395,7 +396,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
         .map_or(&c.effects, |st| &st.effects);
     let source = if side == Side::Discord { "discord" } else { "unity" };
     effects::run(g, cx, effects, &mut effects::Ctx::team().named(source))?;
-    cx.tally(g, &format!("alignment.card.{id}"), 1);
+    cx.tally(g, &KeyBuf::new("alignment.card.").text(&id), 1);
     Ok(())
 }
 
@@ -483,7 +484,7 @@ impl Module for Alignment {
     fn after(&self, g: &mut GameState, cx: &mut Cx) -> Res {
         let w = cx.world;
         // Full buckets tip, Discord first; a tip's card can fill a bucket again.
-        let tips = if w.variant("alignment") == Some("off") {
+        let tips = if w.hot.alignment_off {
             0
         } else {
             64
@@ -497,7 +498,7 @@ impl Module for Alignment {
                     }
                     // 028: a card that takes a last node loses here, before
                     // a Unity tip can win a game with no player on the board.
-                    if w.int("alignment.node_loss") > 0 && adversary::loss(g).is_some() {
+                    if w.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
                         break;
                     }
                     continue 'tips;
@@ -506,7 +507,7 @@ impl Module for Alignment {
             break;
         }
         // Losses first.
-        if w.int("alignment.node_loss") > 0 {
+        if w.hot(Hot::NodeLoss) > 0 {
             if let Some((reason, detail)) = adversary::loss(g) {
                 cx.end(g, false, reason, detail);
                 return Ok(());

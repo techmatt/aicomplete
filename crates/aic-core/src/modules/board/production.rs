@@ -159,8 +159,8 @@ fn grow_factories(g: &mut GameState, cx: &mut Cx) -> Res {
             } else {
                 let who = cube_owner(g, city).unwrap_or(0);
                 let opts = near.iter().map(|&z| hex_opt(&w, z)).collect();
-                let prompt = format!("{} builds a factory on which zone?", hex_name(&w, city));
-                cx.choose(who, &prompt, opts)?.map(|i| near[i])
+                let prompt = || format!("{} builds a factory on which zone?", hex_name(&w, city));
+                cx.choose(who, prompt, opts)?.map(|i| near[i])
             }
         };
         let Some(z) = at else {
@@ -209,8 +209,8 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
         return Ok(Some(tied[0]));
     }
     let opts = tied.iter().map(|&s| seat_opt(s)).collect();
-    let prompt = format!("The factory at {} goes to which player?", hex_name(&w, z));
-    Ok(cx.choose(0, &prompt, opts)?.map(|i| tied[i]))
+    let prompt = || format!("The factory at {} goes to which player?", hex_name(&w, z));
+    Ok(cx.choose(0, prompt, opts)?.map(|i| tied[i]))
 }
 
 /// Production step 3: cities make energy, stations research cubes; an
@@ -270,11 +270,11 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             }
             let mut opts: Vec<_> = buyers.iter().map(|&s| opt(format!("seat {s} buys"))).collect();
             opts.push(opt("nobody".to_string()));
-            let prompt = format!(
+            let prompt = || format!(
                 "The energy of {} ({energy}) can be bought for {price} credits: by whom?",
                 hex_name(&w, h)
             );
-            if let Some(i) = cx.choose(0, &prompt, opts)? {
+            if let Some(i) = cx.choose(0, prompt, opts)? {
                 if let Some(&s) = buyers.get(i) {
                     cx.add_resource(g, s, Resource::Credits, -price);
                     cx.add_resource(g, s, Resource::Energy, energy);

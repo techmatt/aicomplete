@@ -230,6 +230,74 @@ pub struct World<'a> {
     /// each seat's board is asked for by every passive, track and capstone
     /// read, and the parameter's lookup by name was 2% of a search (103).
     pub ai_boards: &'a [i64],
+    /// The int parameters read after every action and in every position, read
+    /// once with the rules ([`Hot`], 104): by name they were 2% of a search.
+    pub hot: &'a HotParams,
+}
+
+/// An int parameter read often enough to keep in a slot (104): read it with
+/// [`World::hot`], which reads as [`World::int`] by its name does.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Hot {
+    NodeLoss,
+    ClearWinStage,
+    TipPerPlayer,
+    DiscordTipPerPlayer,
+    MomentumEvery,
+    TroopNode,
+    LiberateAt,
+    LastSafeStage,
+}
+
+impl Hot {
+    const ALL: [Hot; 8] = [
+        Hot::NodeLoss,
+        Hot::ClearWinStage,
+        Hot::TipPerPlayer,
+        Hot::DiscordTipPerPlayer,
+        Hot::MomentumEvery,
+        Hot::TroopNode,
+        Hot::LiberateAt,
+        Hot::LastSafeStage,
+    ];
+
+    /// The parameter's name.
+    pub fn key(self) -> &'static str {
+        match self {
+            Hot::NodeLoss => "alignment.node_loss",
+            Hot::ClearWinStage => "alignment.clear_win_stage",
+            Hot::TipPerPlayer => "alignment.tip_per_player",
+            Hot::DiscordTipPerPlayer => "alignment.discord_tip_per_player",
+            Hot::MomentumEvery => "alignment.momentum_every",
+            Hot::TroopNode => "board.troop_node",
+            Hot::LiberateAt => "board.liberate_at",
+            Hot::LastSafeStage => "board.last_safe_stage",
+        }
+    }
+}
+
+/// The [`Hot`] parameters' values, each `None` where its module isn't
+/// configured; and whether the alignment module is in its `off` variant.
+#[derive(Debug, Clone, Default)]
+pub struct HotParams {
+    ints: [Option<i64>; Hot::ALL.len()],
+    pub alignment_off: bool,
+}
+
+impl HotParams {
+    pub fn read(params: &FastMap<ParamValue>, variants: &FastMap<String>) -> HotParams {
+        let mut ints = [None; Hot::ALL.len()];
+        for (slot, h) in ints.iter_mut().zip(Hot::ALL) {
+            *slot = match params.get(h.key()) {
+                Some(ParamValue::Int(v)) => Some(*v),
+                _ => None,
+            };
+        }
+        HotParams {
+            ints,
+            alignment_off: variants.get("alignment").map(|v| v.as_str()) == Some("off"),
+        }
+    }
 }
 
 impl World<'_> {
@@ -251,12 +319,46 @@ impl World<'_> {
         }
     }
 
+    /// A [`Hot`] parameter: `self.int(h.key())`, from its slot.
+    #[inline]
+    pub fn hot(&self, h: Hot) -> i64 {
+        match self.hot.ints[h as usize] {
+            Some(v) => v,
+            None => self.int(h.key()),
+        }
+    }
+
     pub fn list(&self, key: &str) -> &[i64] {
         match self.params.get(key) {
             Some(ParamValue::List(v)) => v,
             Some(ParamValue::Int(_)) => panic!("parameter {key} is not a list"),
             None => panic!("parameter {key} is not configured"),
         }
+    }
+}
+
+/// A prompt's words for [`Cx::choose`]: a `&str`, or a closure building them
+/// (104). Most prompts a search meets are replayed or have one option, and
+/// their text is never read: `format!` there was 3% of a search (103).
+pub trait PromptText {
+    fn text(self) -> String;
+}
+
+impl PromptText for &str {
+    fn text(self) -> String {
+        self.to_string()
+    }
+}
+
+impl PromptText for &String {
+    fn text(self) -> String {
+        self.clone()
+    }
+}
+
+impl<F: FnOnce() -> String> PromptText for F {
+    fn text(self) -> String {
+        self()
     }
 }
 
@@ -324,16 +426,18 @@ impl<'a> Cx<'a> {
     /// there are no options; a single option is taken without asking.
     /// Otherwise returns the answer if it was given, else stops resolution
     /// with `Halt::Ask` (pass it on with `?`).
-    pub fn choose(&mut self, seat: usize, prompt: &str, options: Vec<Opt>) -> Res<Option<usize>> {
+    /// The prompt is a [`PromptText`]: text, or a closure that builds it, run only
+    /// when the question is really asked (a replay matches answers by label).
+    pub fn choose(&mut self, seat: usize, prompt: impl PromptText, options: Vec<Opt>) -> Res<Option<usize>> {
         self.ask(seat, prompt, options, AskKind::Plain)
     }
 
     /// [`Cx::choose`] for a loss: which of your things goes, or where a loss lands.
-    pub fn choose_loss(&mut self, seat: usize, prompt: &str, options: Vec<Opt>) -> Res<Option<usize>> {
+    pub fn choose_loss(&mut self, seat: usize, prompt: impl PromptText, options: Vec<Opt>) -> Res<Option<usize>> {
         self.ask(seat, prompt, options, AskKind::Loss)
     }
 
-    fn ask(&mut self, seat: usize, prompt: &str, options: Vec<Opt>, kind: AskKind) -> Res<Option<usize>> {
+    fn ask(&mut self, seat: usize, prompt: impl PromptText, options: Vec<Opt>, kind: AskKind) -> Res<Option<usize>> {
         match options.len() {
             0 => return Ok(None),
             1 => return Ok(Some(0)),
@@ -346,23 +450,24 @@ impl<'a> Cx<'a> {
                 .iter()
                 .position(|o| o.option == p.option && o.target == p.target)
                 .ok_or_else(|| {
-                    Halt::Illegal(format!("{:?} is not an option of {prompt:?}", p.option))
+                    Halt::Illegal(format!("{:?} is not an option of {:?}", p.option, prompt.text()))
                 })?;
             ch.used += 1;
             return Ok(Some(i));
         }
-        let ask = Ask {
-            seat: seat as u8,
-            prompt: prompt.to_string(),
-            options,
-            kind,
-        };
+        let prompt = prompt.text();
         if let Some(log) = self.events.as_deref_mut() {
             log.push(Event::Asked {
                 seat: seat as u8,
-                prompt: prompt.to_string(),
+                prompt: prompt.clone(),
             });
         }
+        let ask = Ask {
+            seat: seat as u8,
+            prompt,
+            options,
+            kind,
+        };
         ch.asked = Some(ask);
         Err(Halt::Ask)
     }
@@ -375,7 +480,7 @@ impl<'a> Cx<'a> {
         if next == cur {
             return 0;
         }
-        let tokens = &mut Arc::make_mut(&mut g.hexes[hex]).tokens;
+        let tokens = &mut Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[hex]).tokens;
         if next == 0 {
             tokens.remove(kind);
         } else {

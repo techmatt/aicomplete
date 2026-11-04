@@ -34,8 +34,10 @@ pub struct GameState {
     /// Per-hex contents, aligned with `Map::hexes`. Each hex, each pile, each
     /// RNG stream and each per-round counter is shared between copies of a
     /// state until one changes it (`Arc::make_mut`): an action touches a few
-    /// and a search copies all of them (030).
-    pub hexes: Vec<Arc<HexState>>,
+    /// and a search copies all of them (030). The table itself is shared too
+    /// (104): most actions touch no hex, and a copy and a drop of the table
+    /// counted every hex's share.
+    pub hexes: Arc<Vec<Arc<HexState>>>,
     /// Global tracks owned by modules, keyed `"<module>.<name>"`.
     pub vars: Table<i64>,
     /// Ordered card piles (decks, discards, hands, slots, building rows),

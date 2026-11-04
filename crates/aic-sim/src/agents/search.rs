@@ -58,7 +58,7 @@ fn position_hash(g: &GameState, choices: usize) -> u64 {
     const PRIME: u64 = 0x0000_0100_0000_01b3;
     let mut h = choices as u64 ^ ((g.round as u64) << 8) ^ ((g.phase as u64) << 40);
     let mut mix = |x: u64| h = (h ^ x).wrapping_mul(PRIME).rotate_left(23);
-    for hex in &g.hexes {
+    for hex in g.hexes.iter() {
         for (k, n) in hex.tokens.iter() {
             mix(k.as_str().as_ptr() as u64);
             mix(*n as u64);

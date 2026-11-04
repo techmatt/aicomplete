@@ -166,7 +166,7 @@ policy or `prune`, the line alone should read near the engine.
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump: r40: 32700-32899 the r39 → r40 read and 32900-33099 the band read (`screen-102-b*`, `-c*`;
 32500-32699 screened 102's agent levers on r39); 33100-33299 103's speed approximations (`screen-103-answers*.json`,
-`archive/screen-103*.json`). Next free: 33300.
+`archive/screen-103*.json`); 33300-33499 104's `plan_gross` read (`screen-104-p1*.json`). Next free: 33500.
 
 ## Reading prices
 

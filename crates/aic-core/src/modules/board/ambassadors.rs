@@ -1,5 +1,6 @@
 //! Player ambassadors, holding and claiming sites, and freeing cities.
 
+use crate::module::Hot;
 use super::*;
 
 /// Whether seat `s` can claim the site on hex `h` (align a city, take a
@@ -52,7 +53,7 @@ pub fn guarded(w: &World, g: &GameState, h: usize) -> bool {
 /// liberate it, a flat `liberate_at` (027-r33's hold, `hold_base` plus the
 /// adversary ambassadors on or next to it, is gone).
 pub fn liberate_at(w: &World) -> i64 {
-    w.int("board.liberate_at").max(1)
+    w.hot(Hot::LiberateAt).max(1)
 }
 
 /// Player ambassadors on hex `h` that count toward liberating it (080): from
@@ -120,11 +121,11 @@ pub fn move_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -
     }
     let off = opts.len();
     opts.extend(from.iter().map(|&h| hex_opt(&w, h)));
-    let prompt = format!(
+    let prompt = || format!(
         "Seat {seat}: move which ambassador to {}?",
         hex_name(&w, to)
     );
-    let Some(i) = cx.choose(seat, &prompt, opts)? else {
+    let Some(i) = cx.choose(seat, prompt, opts)? else {
         return Ok(());
     };
     if i < off {

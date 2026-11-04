@@ -121,7 +121,7 @@ fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     let rules = Rules::new(&c).unwrap();
     let mut g = rules.new_game(1);
     assert!(g.pending.is_none() && !g.is_over());
-    for h in g.hexes.iter_mut() {
+    for h in Arc::make_mut(&mut g.hexes).iter_mut() {
         Arc::make_mut(h).tokens.clear();
     }
     (rules, g)
@@ -168,9 +168,9 @@ fn run(rules: &Rules, g: &mut GameState) {
 
 fn put(g: &mut GameState, h: usize, kind: &str, n: i64) {
     if n == 0 {
-        Arc::make_mut(&mut g.hexes[h]).tokens.remove(kind);
+        Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.remove(kind);
     } else {
-        Arc::make_mut(&mut g.hexes[h]).tokens.insert(kind.into(), n);
+        Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.insert(kind.into(), n);
     }
 }
 

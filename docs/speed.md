@@ -4,48 +4,58 @@ What a run costs and where it goes. Current rates are in [experiments.md](experi
 
 **Where the time goes (profiled at r40).** The agents are 99% of a run. Every agent is one machine: the
 strategist scores each legal action by applying it to a copy and resolving the action's own prompts
-best-first (`search::settled`, 63-66% of its time), and that splits about evenly between the rules
-(`Rules::apply_to`, 43%) and the heuristic (`Eval::value`, 40%). The planner's rollouts (62% of it) run the
+best-first (`search::settled`, 67% of its time), and that splits about evenly between the rules
+(`Rules::apply_to`, 45%) and the heuristic (`Eval::value`, 39%). The planner's rollouts (62% of it) run the
 same search, so a speed-up to one serves all. Per 16 strategist games: 215k applies, 172k evaluations, 41.5M
-lookups by name. The profiles, with call counts, are in
-[103's write-up](../experiments/results/103_agent_profiling/profile.md). Legal-action generation is 0.1%:
-caching it buys nothing.
+lookups by name (103). The profiles, with call counts, are in
+[103's write-up](../experiments/results/103_agent_profiling/profile.md), 104's in
+[its own](../experiments/results/104_agent_speed_2/speed.md). Legal-action generation is 0.1%: caching it
+buys nothing.
 
 **What keeps it cheap.**
 
 - **State:** a clone is about 1.1 µs: names are interned `Key`s, maps are sorted `FlatMap`s, and hexes,
   piles, RNG streams and per-round counters are shared until written (`crates/aic-core/src/key.rs`, *No
-  hash-order leaks* in [architecture.md](architecture.md)). Searches call `Rules::apply_to` (one copy, not
+  hash-order leaks* in [architecture.md](architecture.md)); the table of hexes is shared too (104), so an
+  action that moves no token copies none of it. Searches call `Rules::apply_to` (one copy, not
   two). `aic-sim` uses **mimalloc** (on 12 threads Windows' heap serializes the clones).
 - **Lookups by name:** a `FlatMap` compares names eight bytes at a time (`Probe`: `str`'s own compare calls
   `memcmp`, a tenth of the strategist's time before). A card is found by its key's address
   (`Content::card_index`), names are built on the stack with digits written in place (`KeyBuf`), and a
-  counter's or pile's name is interned only when it is new (`entry_str`, `insert_str`). `ai.boards` is read
-  once with the rules (`World::ai_boards`).
+  counter's or pile's name is interned only when it is new (`entry_str`, `insert_str`); a counter named
+  by a card or a side is built on the stack too. `ai.boards` and the int parameters read after every
+  action (`alignment`'s tip sizes and loss rules, `board`'s stage gates) are read once with the rules
+  (`World::ai_boards`, `World::hot`).
 - **The heuristic:** a seat's tags, prices and income are kept a decision long, by everything they read
   (`tableau_parts` in `eval.rs`; a debug build checks each hit against a fresh reading). Anything that makes
   those four read more must add it there. Pricing a hand goes through `cards::prices`, anything counting
   several tags through `cards::tag_counts`.
-- **Labels:** an option's label must stay a `String` (a replayed prompt matches its answers by label), but
-  a hex's is joined by hand, without the formatter.
+- **Labels and prompts:** an option's label must stay a `String` (a replayed prompt matches its answers by
+  label), but a hex's is joined by hand, without the formatter. A prompt's own text is built only when the
+  question is really asked (`Cx::choose` takes a closure, `PromptText`): a replay never reads it.
 - **Loss prompts:** chains of them ("destroy which of your nodes", in `board.produce`, `board.bases`,
   `adversary.build`) replay the phase for each option over every order of one set of picks. `search.rs`'s
   `Seen` values each position once per scoring, among Loss answers only, confirmed field by field, with the
   same answers as a set (a loop's progress lives only in them). It costs under 1%; on every prompt it costs
   more than it saves.
 
-**What is left, by payoff** (shares of the strategist after 103):
+**What is left, by payoff** (shares of the strategist after 104, `profile_win.py`, 12 games from seed 1000):
 
-1. **The binary search by name**, 15.6% self, spread over `var` (3.3%), `pile` (2.5%) and the rules' own
-   reads. Keys carrying their first eight bytes were tried and gained nothing (the bigger entries cost the
-   saving back). Next: typed slots for the hottest vars, a state-layout change.
-2. **Replaying a prompt's phase for each option** under `apply_to`: the rules' work itself (alignment's
-   after-trigger and the effects it runs, 7-8%). Resuming from the resolved part instead of replaying is a
-   redesign of how prompts resolve.
-3. **State copies and drops**, about 8%: one copy an apply.
-4. **The heuristic's own loops**, `Eval::value` 5.8% self; an incremental evaluation is a redesign.
-5. **Parameters by name** (`World::int`, 3%): typed per-module parameters.
-6. **Formatting**, 3% (prompt texts and counter names built with `format!` in the rules).
+1. **Replaying a prompt's phase for each option**: `Rules::apply_to` is 45% and most of it is the replay
+   from the snapshot under `search::settled` (67%). Resuming from the resolved part instead is a redesign
+   of how prompts resolve, and the largest payoff left.
+2. **The binary search by name**, 17.1% self (more of a smaller whole): `var` 3.1%, `pile` 1.8%, the
+   node tracks 2.0%, `alignment`'s after-trigger 0.9%, `tag_counts` 0.8%. Keys carrying their first
+   eight bytes gained nothing (103). Next: typed slots for the hottest vars (the tracks, the stage, the
+   buckets), a state-layout change: a shadow kept beside `vars` must stay out of serde and `PartialEq`.
+3. **The heuristic's own loops**, `Eval::value` 6.5% self, its hex scan 2.1%, `Eval::fact` 1.9%; an
+   incremental evaluation is a redesign.
+4. **State copies and drops**, about 7% (clone 3.1%, drops 3.5%): piles, seats and counters are still
+   copied a table at a time; most actions write all three, so sharing them saves less than the hexes did.
+5. **Cards by address** (`Content::card_index`, 2.6%) and **counters** (`Cx::tally` 2.2%, redone on
+   every replay).
+6. **Parameters by name** (`World::int`, 0.7% self) and **formatting** (2.0%, mostly option labels,
+   which must stay strings).
 
 **Approximations** (screened on fresh seeds, 103): none adopted. An answer to an open prompt looking one
 prompt on (`engine:answers=1`) is 0.72 × the time and lost 9.0 ±3.8 (bp, d0); keeping a seat's terms by its
@@ -87,17 +97,18 @@ an action against one guess (`deals=1,lead=0`), and `deals=4,lead=60` about 1.25
 
 **The agent tiers at r40.** One thread, a quiet box, c2 (Builder + Protector), d2, from seed 1000, the best
 of two passes of `python scripts/bench/per_decision.py OLD NEW --agent A` (16 games for the greedy rows, 8
-for the planners). Before is the build 103 started from; the games are the same games, so the ratio is the
-code:
+for the planners). Before is the build 104 started from (`plan_gross=1` the default); the games are the
+same games, so the ratio is the code. 103's table (before `plan_gross=1`, other games) is in
+[104's write-up](../experiments/results/104_agent_speed_2/speed.md):
 
 | agent | ms / decision | ms / game | before (ms / game) | after / before | rounds | decisions / game |
 |---|---|---|---|---|---|---|
-| engine (greedy, no strategy) | 0.78 | 369 | 485 | 0.76 | 7.31 | 474 |
-| strategist (greedy with strategy) | 0.71 | 299 | 395 | 0.76 | 6.75 | 424 |
-| sweep (`planner:deals=1,lead=0`) | 7.5 | 3109 | 4111 | 0.76 | 7.12 | 413 |
-| planner (4 deals) | 11.9 | 5058 | 6688 | 0.76 | 7.00 | 424 |
-| planner with strategy rollouts (`planner:strategy=1`) | 14.2 | 5710 | 7583 | 0.75 | 6.75 | 401 |
+| engine (greedy, no strategy) | 0.69 | 305 | 322 | 0.95 | 7.12 | 445 |
+| strategist (greedy with strategy) | 0.69 | 274 | 286 | 0.96 | 6.50 | 400 |
+| sweep (`planner:deals=1,lead=0`) | 7.4 | 3214 | 3347 | 0.96 | 7.50 | 436 |
+| planner (4 deals) | 10.4 | 4596 | 4898 | 0.94 | 7.25 | 440 |
+| planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 5578 | 0.95 | 7.25 | 424 |
 
-The strategist is about 17 × faster a game than the planner, and 10 × faster than `sweep`. Under load, 6
+The strategist is about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
 threads beside another item, the read of `experiments/screen-082.json` (1,152 games: four greedy agents and
 four planners) took 17 min at r34.

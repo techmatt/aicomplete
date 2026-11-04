@@ -1,6 +1,7 @@
 //! [`Rules`]: a config compiled against the module registry and content.
 //! Build once per config, then run any number of games with it.
 
+use crate::module::HotParams;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
@@ -42,6 +43,8 @@ pub struct Rules {
     variants: FastMap<String>,
     /// `ai.boards`, read once (see [`World::ai_boards`]).
     ai_boards: Vec<i64>,
+    /// The hot parameters, read once (see [`World::hot`]).
+    hot: HotParams,
 }
 
 /// The `ai.boards` parameter, or nothing without the `ai` module.
@@ -223,12 +226,14 @@ impl Rules {
             }
         }
         let ai_boards = ai_boards(&params);
+        let hot = HotParams::read(&params, &variants);
         let world = World {
             map: &map,
             content,
             params: &params,
             variants: &variants,
             ai_boards: &ai_boards,
+            hot: &hot,
         };
         for ((def, variant, cards), mc) in to_build.into_iter().zip(&resolved.modules) {
             let b = Build {
@@ -266,6 +271,7 @@ impl Rules {
             params,
             variants,
             ai_boards,
+            hot,
         })
     }
 
@@ -276,6 +282,7 @@ impl Rules {
             params: &self.params,
             variants: &self.variants,
             ai_boards: &self.ai_boards,
+            hot: &self.hot,
         }
     }
 
@@ -337,7 +344,7 @@ impl Rules {
             seats: vec![seat; n],
             // One empty hex shared until written: copy on write, as `state.rs` says.
             #[allow(clippy::rc_clone_in_vec_init)]
-            hexes: vec![Arc::new(HexState::default()); self.map.hexes.len()],
+            hexes: Arc::new(vec![Arc::new(HexState::default()); self.map.hexes.len()]),
             vars: Table::default(),
             piles: Table::default(),
             pending: None,

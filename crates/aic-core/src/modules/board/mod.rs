@@ -265,7 +265,7 @@ impl Module for Board {
                     return Err("can't take that standard action now".into());
                 }
                 price.pay(g, cx, s);
-                cx.tally(g, &format!("board.std.{}", act.name()), 1);
+                cx.tally(g, &KeyBuf::new("board.std.").text(act.name()), 1);
                 cx.tally(g, "board.std_actions", 1);
                 std_resolve(g, cx, s, act, &targets)
             }

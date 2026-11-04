@@ -230,9 +230,10 @@ macro_rules! forced_table {
             /// 102 (with `plan_net`): a price paid from credits beyond the heuristic's
             /// `credit_cap` costs its `credit_idle` rate, as the play check counts them.
             (plan_idle: bool, false, 1.0, "102 (with plan_net): credits beyond the heuristic's credit_cap cost its idle rate in a net price")
-            /// 102, a probe: with `plan_net`, the plan still drops a card worth no
-            /// more than its price but adds its gross value (099's patch's form).
-            (plan_gross: bool, false, 0.0, "102, a probe (with plan_net): drop a card worth no more than its price, but add its gross value (099's patch)")
+            /// 104 (Matt, 2026-11-04; 102's probe): with `plan_net`, the plan still
+            /// drops a card worth no more than its price but adds its gross value
+            /// (099's patch's form). 0 is the net form: it adds value less price.
+            (plan_gross: bool, false, 1.0, "104 (with plan_net): drop a card worth no more than its price, but add its gross value (099's form); 0 adds value less price")
         }
     };
 }
@@ -1373,7 +1374,7 @@ mod tests {
         let open = (0..g.hexes.len()).filter(|&h| effects::shieldable(&g, 0, h)).count() as i64;
         assert!(open > 0);
         assert_eq!(niche_jobs(&w, &g, 0, shield), open.min(2));
-        for h in g.hexes.iter_mut() {
+        for h in Arc::make_mut(&mut g.hexes).iter_mut() {
             Arc::make_mut(h).tokens.clear();
         }
         assert_eq!(niche_jobs(&w, &g, 0, shield), 0);

@@ -1,5 +1,7 @@
 //! Node: the two tracks, what a placement costs and pays, and losing a node.
 
+use crate::module::Hot;
+use crate::key::KeyBuf;
 use crate::content::Uncover;
 
 use super::*;
@@ -139,18 +141,20 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
             ))
         })
         .collect();
-    let prompt = format!("Seat {seat}: take a node off which track?");
-    let Some(k) = cx.choose(seat, &prompt, opts)? else {
+    let prompt = || format!("Seat {seat}: take a node off which track?");
+    let Some(k) = cx.choose(seat, prompt, opts)? else {
         return Ok(false);
     };
     let second = tracks[k].0;
     let step = tracks[k].1.cost;
     let capstone = tracks[k].1.capstone.is_some();
     let uncovers = tracks[k].1.effects.as_slice();
-    let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = format!("Seat {seat}: place nodes ({what}) on which hex?");
-    let Some(j) = cx.choose(seat, &prompt, opts)? else {
+    let prompt = || {
+        let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
+        format!("Seat {seat}: place nodes ({what}) on which hex?")
+    };
+    let Some(j) = cx.choose(seat, prompt, opts)? else {
         return Ok(false);
     };
     placing_price(how, step).pay(g, cx, seat);
@@ -174,7 +178,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
 /// adversary card is below `last_safe_stage` (stage II), nothing destroys a
 /// player's last node. Public for the agents' forecasts (092's shelter read).
 pub fn last_node_safe(w: &World, g: &GameState, s: usize) -> bool {
-    g.var(adversary::STAGE) < w.int("board.last_safe_stage") && node_count(g, s) <= 1
+    g.var(adversary::STAGE) < w.hot(Hot::LastSafeStage) && node_count(g, s) <= 1
 }
 
 /// Seat `s` loses its nodes on hex `h`, unless it is safe as their last.
@@ -199,6 +203,6 @@ pub fn lose_node(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &st
         cx.tally(g, "board.markers", 1);
     }
     cx.tally(g, "board.node_lost", 1);
-    cx.tally(g, &format!("board.node_lost.{source}"), 1);
+    cx.tally(g, &KeyBuf::new("board.node_lost.").text(source), 1);
     true
 }

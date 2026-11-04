@@ -1734,9 +1734,14 @@ fn next_eval_id() -> u64 {
 fn tableau_parts(id: u64, g: &GameState, s: usize, out: &mut Vec<u64>) {
     out.clear();
     out.extend([id, s as u64, board::track_taken(g, s) as u64, board::track2_taken(g, s) as u64]);
-    for top in g.pile(&cards::built(s)) {
-        out.push(top.as_str().as_ptr() as u64);
-        out.extend(g.pile(&cards::under(s, top)).iter().map(|c| c.as_str().as_ptr() as u64));
+    out.extend(g.pile(&cards::built(s)).iter().map(|c| c.as_str().as_ptr() as u64));
+    out.push(1);
+    // Every pile under one of the seat's cards, by name, in one walk (104: a
+    // lookup a top was most of this): the tops' own are among them.
+    let under = aic_core::key::KeyBuf::new("cards.under.").num(s).text(".");
+    for (k, pile) in g.piles.from_key(under.as_str()).take_while(|(k, _)| k.starts_with(under.as_str())) {
+        out.push(k.as_str().as_ptr() as u64);
+        out.extend(pile.iter().map(|c| c.as_str().as_ptr() as u64));
         out.push(1);
     }
     out.push(2);
