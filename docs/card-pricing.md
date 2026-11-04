@@ -48,8 +48,11 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   credits on the boards (25 / 21 / 18).
 - **Engines are priced at their seat's fire rate** (106, Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
-  not the table's generic `fires_play` × `tag_share`, so the effect ledger and the agents read most engine cards under
-  their printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug.
+  not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their
+  printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. In a game the
+  agents read a one-tag trigger at the seat's own share of the tag's cards (107, `rates.own_mix`), and a threshold
+  at its own trigger's fill (`own_fill`).
+- **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays (107): the floor below.
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already
   takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards (Hyperscale Botnet).
   Science's discount card prints credits instead (Grad Student Pool).

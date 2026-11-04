@@ -3,10 +3,10 @@ adaptive_malware,drain_all [play],play,amount=8,8.0,13.2,1.65,7.9,0.99
 adaptive_malware,tags [card],card,cyber,1.0,1.0,1.0,0.6,0.6
 aegis_grid_lockdown,shelter [play],play,,1.0,2.8,2.8,1.55,1.55
 aegis_grid_lockdown,place_node free [play],play,"count=3, free=True",3.0,18.0,6.0,9.95,3.32
-agency_directorate,add_tokens agents [play],play,"kind=agents, amount=2, here=True",2.0,4.0,2.0,6.38,3.19
+agency_directorate,add_tokens agents [play],play,"kind=agents, amount=2, here=True",2.0,4.0,2.0,3.09,1.54
 agency_directorate,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'add_tokens', 'kind': 'agents', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-agency_directorate,threshold [passive],passive,"at=3, then=[{'op': 'remove_troops', 'count': 3}]",1.0,8.17,8.17,13.03,13.03
-agency_directorate,tags [card],card,security,1.0,1.0,1.0,1.59,1.59
+agency_directorate,threshold [passive],passive,"at=3, then=[{'op': 'remove_troops', 'count': 3}]",1.0,22.2,22.2,17.14,17.14
+agency_directorate,tags [card],card,security,1.0,1.0,1.0,0.77,0.77
 agency_field_station,when play security [passive],passive,"on={'event': 'play', 'tag': 'security'}, then=[{'op': 'remove_troops', 'count': 1}]",1.0,12.6,12.6,11.58,11.58
 agency_field_station,tags [card],card,security,1.0,1.0,1.0,0.92,0.92
 amnesty_decree,clear_city [play],play,max=5,5.0,10.0,2.0,6.05,1.21
@@ -58,8 +58,8 @@ collateralized_grid,tags [card],card,industry power,2.0,1.5,0.75,0.66,0.33
 command_and_control_grid,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 5}]",1.0,27.19,27.19,22.18,22.18
 command_and_control_grid,tags [card],card,cyber,1.0,1.0,1.0,0.82,0.82
 conglomerate_headquarters,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'add_tokens', 'kind': 'capital', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-conglomerate_headquarters,threshold [passive],passive,"at=3, then=[{'op': 'gain', 'resource': 'credits', 'amount': 10}]",1.0,6.67,6.67,10.87,10.87
-conglomerate_headquarters,tags [card],card,industry,1.0,1.0,1.0,1.63,1.63
+conglomerate_headquarters,threshold [passive],passive,"at=3, then=[{'op': 'gain', 'resource': 'credits', 'amount': 10}]",1.0,18.12,18.12,11.85,11.85
+conglomerate_headquarters,tags [card],card,industry,1.0,1.0,1.0,0.65,0.65
 consular_pouch,gain_per_tag ambassadors [play],play,"resource=ambassadors, tag=diplomacy, per=1",1.0,12.0,12.0,10.62,10.62
 consular_pouch,tags [card],card,diplomacy,1.0,1.0,1.0,0.88,0.88
 consulate_tower,when team_play diplomacy True [passive],passive,"on={'event': 'team_play', 'tag': 'diplomacy', 'both': True}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 6}]",1.0,18.9,18.9,10.92,10.92
@@ -144,9 +144,9 @@ homeland_security_act,tags [card],card,security power,2.0,1.5,0.75,1.28,0.64
 honeypot_relay,when remove_ambassadors [passive],passive,"on={'event': 'remove_ambassadors'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 6}]",1.0,19.2,19.2,11.88,11.88
 honeypot_relay,tags [card],card,cyber,1.0,1.0,1.0,0.62,0.62
 hostile_buyout,liberate align ambassadors [play],play,"align=True, ambassadors=1",1.0,54.0,54.0,44.5,44.5
-hyperscale_botnet,income insight [passive],passive,"resource=insight, amount=2",2.0,12.5,6.25,4.64,2.32
-hyperscale_botnet,card_discount insight [passive],passive,"resource=insight, amount=1",1.0,9.38,9.38,3.48,3.48
-hyperscale_botnet,tags [card],card,cyber,1.0,1.0,1.0,0.37,0.37
+hyperscale_botnet,income insight [passive],passive,"resource=insight, amount=2",2.0,12.5,6.25,6.71,3.35
+hyperscale_botnet,card_discount insight [passive],passive,"resource=insight, amount=1",1.0,2.34,2.34,1.26,1.26
+hyperscale_botnet,tags [card],card,cyber,1.0,1.0,1.0,0.54,0.54
 interceptor_battery,remove_troops [action],action,count=2; pays 1 energy,2.0,16.41,8.2,9.9,4.95
 interceptor_battery,tags [card],card,security,1.0,1.0,1.0,0.6,0.6
 interconnector_treaty,other_gain energy [play],play,"resource=energy, amount=4; to a chosen player",4.0,13.5,3.38,10.22,2.56
@@ -155,8 +155,8 @@ interconnector_treaty,tags [card],card,power diplomacy,2.0,1.5,0.75,1.14,0.57
 interdisciplinary_institute,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'gain', 'resource': 'insight', 'amount': 1}]",1.0,13.59,13.59,13.51,13.51
 interdisciplinary_institute,tags [card],card,science cyber,2.0,1.5,0.75,1.49,0.75
 intrusion_lab,when remove_compute [passive],passive,"on={'event': 'remove_compute'}, then=[{'op': 'add_tokens', 'kind': 'agents', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-intrusion_lab,threshold [passive],passive,"at=3, then=[{'op': 'gain', 'resource': 'antimatter', 'amount': 1}]",1.0,7.47,7.47,5.0,5.0
-intrusion_lab,tags [card],card,cyber security,2.0,1.5,0.75,1.0,0.5
+intrusion_lab,threshold [passive],passive,"at=3, then=[{'op': 'gain', 'resource': 'antimatter', 'amount': 1}]",1.0,3.73,3.73,4.28,4.28
+intrusion_lab,tags [card],card,cyber security,2.0,1.5,0.75,1.72,0.86
 joint_fabrication_pact,gain chips [play],play,"resource=chips, amount=6",6.0,9.0,1.5,5.83,0.97
 joint_fabrication_pact,other_gain chips [play],play,"resource=chips, amount=6; to a chosen player",6.0,6.75,1.12,4.37,0.73
 joint_fabrication_pact,tags [card],card,industry power diplomacy,3.0,2.0,0.67,1.3,0.43
@@ -197,8 +197,8 @@ neural_mirror,tags [card],card,cyber science,2.0,1.5,0.75,0.73,0.36
 nuclear_option,liberate [play],play,,1.0,45.0,45.0,34.66,34.66
 nuclear_option,sway discord [play],play,"side=discord, amount=2",2.0,-8.0,-4.0,-6.16,-3.08
 open_assembly,when play diplomacy [passive],passive,"on={'event': 'play', 'tag': 'diplomacy'}, then=[{'op': 'add_tokens', 'kind': 'followers', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-open_assembly,threshold [passive],passive,"at=3, then=[{'op': 'sway', 'side': 'unity', 'amount': 3}]",1.0,12.8,12.8,9.74,9.74
-open_assembly,tags [card],card,diplomacy,1.0,1.0,1.0,0.76,0.76
+open_assembly,threshold [passive],passive,"at=3, then=[{'op': 'sway', 'side': 'unity', 'amount': 3}]",1.0,7.2,7.2,9.22,9.22
+open_assembly,tags [card],card,diplomacy,1.0,1.0,1.0,1.28,1.28
 open_weights_release,clear_markers [play],play,count=4,4.0,16.8,4.2,11.24,2.81
 open_weights_release,other_gain insight [play],play,"resource=insight, amount=3; to a chosen player",3.0,5.62,1.88,3.76,1.25
 open_weights_release,tags [card],card,science cyber,2.0,1.5,0.75,1.0,0.5
@@ -266,8 +266,8 @@ relay_mast_rollout,tags [card],card,power,1.0,1.0,1.0,0.74,0.74
 research_royalties,production_per_tag credits [play],play,"resource=credits, tag=science, per=1",1.0,12.0,12.0,11.54,11.54
 research_royalties,tags [card],card,science,1.0,1.0,1.0,0.96,0.96
 retained_earnings,when play industry [passive],passive,"on={'event': 'play', 'tag': 'industry'}, then=[{'op': 'add_tokens', 'kind': 'capital', 'amount': 1, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-retained_earnings,threshold [passive],passive,"at=4, then=[{'op': 'production', 'resource': 'credits', 'amount': 3}]",1.0,0.0,0.0,0.0,0.0
-retained_earnings,tags [card],card,industry,1.0,1.0,1.0,9.5,9.5
+retained_earnings,threshold [passive],passive,"at=4, then=[{'op': 'production', 'resource': 'credits', 'amount': 3}]",1.0,2.7,2.7,6.93,6.93
+retained_earnings,tags [card],card,industry,1.0,1.0,1.0,2.57,2.57
 robotic_foundry,production credits [play],play,"resource=credits, amount=5",5.0,20.0,4.0,14.42,2.88
 robotic_foundry,tags [card],card,industry power,2.0,1.5,0.75,1.08,0.54
 root_access,liberate botnet [play],play,botnet=True,1.0,52.0,52.0,42.5,42.5
@@ -320,8 +320,8 @@ synthetic_data_forge,"add_tokens datasets [action, unused branch]","action, unus
 synthetic_data_forge,gain_per_tokens insight datasets [action],action,"resource=insight, kind=datasets, per=1, here=True",1.0,5.25,5.25,8.82,8.82
 synthetic_data_forge,tags [card],card,science,1.0,1.0,1.0,1.68,1.68
 telemetry_archive,when play science [passive],passive,"on={'event': 'play', 'tag': 'science'}, then=[{'op': 'add_tokens', 'kind': 'datasets', 'amount': 2, 'here': True}]",1.0,0.0,0.0,0.0,0.0
-telemetry_archive,threshold [passive],passive,"at=4, then=[{'op': 'gain', 'resource': 'insight', 'amount': 5}]",1.0,10.0,10.0,11.36,11.36
-telemetry_archive,tags [card],card,science,1.0,1.0,1.0,1.14,1.14
+telemetry_archive,threshold [passive],passive,"at=4, then=[{'op': 'gain', 'resource': 'insight', 'amount': 5}]",1.0,11.25,11.25,11.48,11.48
+telemetry_archive,tags [card],card,science,1.0,1.0,1.0,1.02,1.02
 threat_forecast_engine,delay_threat [play],play,count=1,1.0,2.5,2.5,2.03,2.03
 threat_forecast_engine,shield_node [play],play,count=3,3.0,8.4,2.8,6.84,2.28
 threat_forecast_engine,tags [card],card,security cyber science,3.0,2.0,0.67,1.63,0.54

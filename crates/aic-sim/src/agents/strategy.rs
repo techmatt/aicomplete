@@ -45,6 +45,13 @@ pub struct Spec {
     categories: BTreeMap<String, f64>,
 }
 
+impl Spec {
+    /// 107: the weight this strategy puts on tag `t` (0: none).
+    pub fn tag_weight(&self, t: aic_core::content::Tag) -> f64 {
+        self.tags.get(t.name()).copied().unwrap_or(0.0)
+    }
+}
+
 #[derive(Debug, Deserialize)]
 struct Schedule {
     early_through: u32,

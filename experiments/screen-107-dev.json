@@ -1,0 +1,35 @@
+{
+  "name": "screen-107-dev",
+  "note": "107: the engine-play fixes on 106's read seeds (33548-33595, the dev seeds: spent): the three pairs at d2, the strategist and greedy with every fix on and each fix off. The base is out/base (r42's agents) on screen-106-r42.json.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33548,
+  "records": 0
+}

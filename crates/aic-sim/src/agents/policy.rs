@@ -234,6 +234,28 @@ macro_rules! forced_table {
             /// drops a card worth no more than its price but adds its gross value
             /// (099's patch's form). 0 is the net form: it adds value less price.
             (plan_gross: bool, false, 1.0, "104 (with plan_net): drop a card worth no more than its price, but add its gross value (099's form); 0 adds value less price")
+            /// 107: a chain card's `needs` are short counted against the tags in
+            /// play and those of the cards in hand and kept ("keep the top of a
+            /// chain when the cards in your hand get you there"), not the tags in
+            /// play alone. The plan still plays it only once its feeders are planned.
+            (plan_reach: bool, false, 1.0, "107: keep plan: a card's needs may be short now by the tags of the cards in hand and kept (plan_short counts the rest)")
+            /// 107: a building that must go over one of the seat's may go over a
+            /// building the plan plays before it ("build the under-card first").
+            (plan_under: bool, false, 1.0, "107: keep plan: a built-over card may go over a building the plan plays first")
+            /// 107: a chain card in hand or kept that the plan can't play yet, but
+            /// whose `needs` the plan's cards bring within `plan_short` tags, counts
+            /// its value at the plan's last round times the square of the share of
+            /// its tags reached ("build toward the chain card you hold"): a feeder
+            /// adds progress, and the chain card is kept for it. Off (107: -2.8
+            /// ±2.2 for the strategist on 96 dev seeds; it kept chain cards it never played).
+            (plan_chain: bool, false, 0.0, "107, off: keep plan: a chain card the plan's tags bring within plan_short counts its later value times its share reached, squared")
+            /// 107: a card that copies a building's income is planned only with one
+            /// built or planned before it to copy.
+            (plan_copy: bool, false, 1.0, "107: keep plan: plan a copy-income card only with an income building built or planned before it")
+            /// 107, a probe: draft and keep every engine card (a trigger, a
+            /// threshold, a per-tag income or discount, a copy) and play one the
+            /// moment it is legal: what the engines win when they are played.
+            (engine_rush: usize, true, 0.0, "107, a probe: 1 drafts and keeps every engine card and plays one as soon as it is legal; 2 only plays a kept one at once")
         }
     };
 }
@@ -385,11 +407,14 @@ impl Policy {
             || self.forced.science_board
             || self.forced.capstone_rush
             || self.forced.always_liberate
+            || self.forced.engine_rush == 1
         {
             let mut set = plan_keeps(&world, g, s, &self.forced, &pc);
             for id in &drafted {
                 let d = cards::def(&world, id);
-                let rush = if self.forced.always_liberate {
+                let rush = if self.forced.engine_rush == 1 {
+                    is_engine(d)
+                } else if self.forced.always_liberate {
                     is_liberate(d)
                 } else if self.forced.capstone_rush {
                     is_capstone(d)
@@ -643,6 +668,17 @@ impl Agent for Policy {
                 return i;
             }
         }
+        if self.forced.engine_rush > 0 && !pending {
+            let engine = |id: &Key| is_engine(cards::def(&world, id));
+            let at = if self.forced.engine_rush == 1 {
+                first_card(legal, engine)
+            } else {
+                legal.iter().position(|a| matches!(a, Action::Play { card, .. } if engine(card)))
+            };
+            if let Some(i) = at {
+                return i;
+            }
+        }
         if self.forced.capstone_rush && !pending {
             if let Some(i) = first_card(legal, |id| is_capstone(cards::def(&world, id))) {
                 return i;
@@ -850,6 +886,8 @@ struct PlanTable {
     node: f64,
     corrupted: bool,
     projects: Vec<(f64, i64)>,
+    /// 107 (`rates.own_mix`): the share of the seat's cards carrying each tag.
+    share: [f64; TAGS.len()],
 }
 
 impl PlanTable {
@@ -858,6 +896,10 @@ impl PlanTable {
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,
             corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
+            share: {
+                let tags = cards::tag_counts(w, g, s);
+                super::eval::own_mix(w, g, s, &tags, Ctx::at(0.0, 0.0, tags, false)).share
+            },
             projects: {
                 // (share filled, compute on it), fullest first.
                 let mut p: Vec<(f64, i64)> = adversary::projects(g)
@@ -1002,6 +1044,15 @@ fn capstone_jobs(d: &CardDef) -> i64 {
         .sum()
 }
 
+/// An engine card (107's probe): one whose standing effects fire on plays or
+/// other events, fill a threshold, pay by tags or cut play costs, or whose play
+/// raises an income by tags or copies one.
+pub(crate) fn is_engine(d: &CardDef) -> bool {
+    d.passives.iter().any(|p| {
+        matches!(p, Op::When { .. } | Op::Threshold { .. } | Op::IncomePerTag { .. } | Op::CardDiscount { .. })
+    }) || d.effects.iter().any(|e| matches!(e, Op::ProductionPerTag { .. } | Op::CopyIncome))
+}
+
 /// A liberate card (080): one that liberates a corrupted city when played or
 /// by its Action (Great Liberation's cleanse of cities too).
 pub(crate) fn is_liberate(d: &CardDef) -> bool {
@@ -1028,13 +1079,14 @@ fn value(
     pt: &PlanTable,
     round: usize,
     tags: &[i64; TAGS.len()],
+    planned: &[Key],
 ) -> f64 {
     let jobs = f.plan_niche * niche_jobs(w, g, s, d) as f64;
     if !pc.table {
         return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = pc.t;
-    let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted);
+    let ctx = Ctx { share: pt.share, ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted) };
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
             let i = w.content.card_index(&d.id).unwrap_or(0);
@@ -1045,20 +1097,26 @@ fn value(
     // A building that must go over one of the seat's adds only what it beats the
     // one it covers by (082: kept and never played, it was worth less than that).
     let covered = match (f.plan_cover, &d.replaces) {
-        (true, Some(tag)) => g
-            .pile(&cards::built(s))
-            .iter()
-            .map(|id| cards::def(w, id))
-            .filter(|b| b.tags.contains(tag))
-            .map(|b| {
-                if f.plan_cover_spent {
-                    // 102: what it would still earn; what playing it did is spent.
-                    buried_value(t, b, &ctx)
-                } else {
-                    CardValue::of(t, b).total(t, &ctx) - t.tags_value(b)
-                }
-            })
-            .fold(f64::INFINITY, f64::min),
+        (true, Some(tag)) => {
+            let built = || g.pile(&cards::built(s)).iter().map(|id| cards::def(w, id)).filter(|b| b.tags.contains(tag));
+            // 107 (`plan_under`): with none built, the planned building it goes over.
+            let under: Vec<&CardDef> = if built().next().is_none() && f.plan_under {
+                planned.iter().map(|id| cards::def(w, id)).filter(|b| b.is_building() && b.tags.contains(tag)).collect()
+            } else {
+                built().collect()
+            };
+            under
+                .into_iter()
+                .map(|b| {
+                    if f.plan_cover_spent {
+                        // 102: what it would still earn; what playing it did is spent.
+                        buried_value(t, b, &ctx)
+                    } else {
+                        CardValue::of(t, b).total(t, &ctx) - t.tags_value(b)
+                    }
+                })
+                .fold(f64::INFINITY, f64::min)
+        }
         _ => f64::INFINITY,
     };
     let covered = if covered.is_finite() { covered.max(0.0) } else { 0.0 };
@@ -1069,7 +1127,7 @@ fn value(
 /// effects and a share of its Action, each round left. Its tags stay, and what
 /// playing it did (production included) is spent.
 fn buried_value(t: &value::Table, d: &CardDef, ctx: &Ctx) -> f64 {
-    let standing = value::list_worth(t, &d.passives);
+    let standing = value::passives_worth(t, &d.passives);
     // An Action at the value table's own rates, as `CardValue::of` reads it.
     let action = d.ability.as_ref().map(|a| value::ability_worth(value::table(), a)).unwrap_or_default();
     let use_ = (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
@@ -1091,6 +1149,14 @@ fn replaceable(w: &World, g: &GameState, s: usize, d: &CardDef) -> bool {
     })
 }
 
+/// 107 (`plan_under`): whether a building that must go over one of the seat's
+/// tag may go over a building the plan plays before it.
+fn under_planned(w: &World, d: &CardDef, planned: &[Key]) -> bool {
+    d.replaces.as_ref().is_some_and(|t| {
+        planned.iter().map(|id| cards::def(w, id)).any(|b| b.is_building() && b.replaces.is_none() && b.tags.contains(t))
+    })
+}
+
 /// What seat `s` pays to play `d`: credits after its building discount, its
 /// other costs at fixed rates (before 082) or the table's (082).
 fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
@@ -1104,7 +1170,7 @@ fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &Pla
 #[allow(clippy::too_many_arguments)]
 fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced, pc: &PlanCtx, pt: &PlanTable, tags: &[i64; TAGS.len()]) -> f64 {
     let d = cards::def(w, id);
-    value(w, g, s, d, f, pc, pt, 0, tags) / (1.0 + spend(w, g, s, d, pc, pt))
+    value(w, g, s, d, f, pc, pt, 0, tags, &[]) / (1.0 + spend(w, g, s, d, pc, pt))
 }
 
 /// `ids`, best value per cost first.
@@ -1164,8 +1230,31 @@ fn plan(
     let mut b = now;
     let mut needs = cards::required_tags(w, g, s);
     let needs_now = needs;
+    // 107 (`plan_reach`): the tags the hand and the keeps would add, a card's own aside.
+    let mut reach = needs_now;
+    if f.plan_reach && pc.table {
+        for id in &pool {
+            let d = cards::def(w, id);
+            if !d.is_event() {
+                for t in &d.tags {
+                    reach[*t as usize] += 1;
+                }
+            }
+        }
+    }
+    // 107: a seat builds toward a chain card only on its strategy's tags ("commit
+    // to the tags your strategy plays"); greedy, with no strategy, never does.
+    let committed = |d: &CardDef| {
+        pc.strat.is_some_and(|k| {
+            let spec = &strategy::strategies().strategies[k as usize];
+            d.needs.iter().all(|(t, _)| spec.tag_weight(*t) > 0.0)
+        })
+    };
     let near = |d: &CardDef| {
-        !pc.table || d.needs.iter().map(|(t, n)| (n - needs_now[*t as usize]).max(0)).sum::<i64>() <= f.plan_short as i64
+        let by_hand = f.plan_reach && committed(d);
+        let own = |t: usize| if by_hand && !d.is_event() { d.tags.iter().filter(|x| **x as usize == t).count() as i64 } else { 0 };
+        let have = |t: usize| if by_hand { reach[t] - own(t) } else { needs_now[t] };
+        !pc.table || d.needs.iter().map(|(t, n)| (n - have(*t as usize)).max(0)).sum::<i64>() <= f.plan_short as i64
     };
     let patient = economy::patient(w, s);
     let share = pc.t.rate("target_share");
@@ -1192,7 +1281,11 @@ fn plan(
             let d = cards::def(w, id);
             let credits = cards::play_cost(w, g, s, d);
             let target = d.is_building() || effects::feasible(w, g, s, &d.effects);
-            let later = if pc.table { round > 0 && pile_ok(w, g, s, d, &planned) } else { liberate_later(w, g, d) };
+            let later = if pc.table {
+                round > 0 && pile_ok(w, g, s, d, &planned) && (!f.plan_copy || copy_ok(w, g, s, d, &planned))
+            } else {
+                liberate_later(w, g, d)
+            };
             let cubes = if f.plan_cubes { b.research_cubes } else { g.resource(s, Resource::ResearchCubes) };
             let fits = b.credits >= credits
                 && b.insight >= cards::play_insight(w, g, s, d)
@@ -1201,7 +1294,7 @@ fn plan(
                 && b.antimatter >= d.antimatter
                 && cubes >= d.research_cubes
                 && cards::lowers_ok(w, g, s, d)
-                && replaceable(w, g, s, d)
+                && (replaceable(w, g, s, d) || (f.plan_under && pc.table && under_planned(w, d, &planned)))
                 && (target || later)
                 && near(d)
                 && d.needs.iter().all(|(t, n)| needs[*t as usize] >= *n);
@@ -1209,7 +1302,7 @@ fn plan(
             // worth no more than it costs is no plan: the play check nets the price,
             // so spare credits kept cards it never played (099).
             let (v, price) = if fits {
-                let v = value(w, g, s, d, f, pc, pt, round, &tags);
+                let v = value(w, g, s, d, f, pc, pt, round, &tags, &planned);
                 let price = if f.plan_net && pc.table {
                     // 102 (`plan_idle`): credits over the heuristic's cap are worth its
                     // idle rate to it, so a price paid from them costs that much.
@@ -1251,7 +1344,7 @@ fn plan(
                         open -= 1;
                         0.0
                     } else {
-                        let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted);
+                        let ctx = Ctx { share: pt.share, ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted) };
                         let worst = (0..tops.len()).min_by(|&i, &j| {
                             buried_value(pc.t, tops[i], &ctx).total_cmp(&buried_value(pc.t, tops[j], &ctx))
                         });
@@ -1273,6 +1366,28 @@ fn plan(
                         tags[*t as usize] += 1;
                     }
                 }
+            }
+        }
+    }
+    // 107 (`plan_chain`): the chain cards the plan builds toward but can't play
+    // within its rounds count their value after it, times their share reached.
+    if f.plan_chain && pc.table {
+        let last = rounds.max(1);
+        for id in &pool {
+            let d = cards::def(w, id);
+            if planned.contains(id) || d.needs.is_empty() || !committed(d) {
+                continue;
+            }
+            let short: i64 = d.needs.iter().map(|(t, n)| (n - needs[*t as usize]).max(0)).sum();
+            if short == 0 || short > f.plan_short as i64 {
+                continue;
+            }
+            let want: i64 = d.needs.iter().map(|(_, n)| *n).sum();
+            let share = (want - short) as f64 / want.max(1) as f64;
+            let v = value(w, g, s, d, f, pc, pt, last, &tags, &planned) - spend(w, g, s, d, pc, pt);
+            if v > 0.0 {
+                total += share * share * v * (1.0 - WAIT * last as f64).max(0.1);
+                planned.push(*id);
             }
         }
     }
@@ -1298,6 +1413,19 @@ fn pile_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> 
         cards::has_token_card(w, g, s, Some(*k))
             || planned.iter().any(|id| cards::def(w, id).tokens.as_ref().is_some_and(|t| t.kind == *k))
     })
+}
+
+
+/// 107 (`plan_copy`): whether a card that copies a building's income has one to
+/// copy, built or planned before it.
+fn copy_ok(w: &World, g: &GameState, s: usize, d: &CardDef, planned: &[Key]) -> bool {
+    if !d.effects.iter().any(|e| matches!(e, Op::CopyIncome)) {
+        return true;
+    }
+    let earns = |b: &CardDef| {
+        b.is_building() && b.passives.iter().any(|p| matches!(p, Op::Income { .. } | Op::IncomePerTag { .. }))
+    };
+    g.pile(&cards::built(s)).iter().chain(planned).any(|id| earns(cards::def(w, id)))
 }
 
 /// 080: a liberate card with no corrupted city in reach now still plans to

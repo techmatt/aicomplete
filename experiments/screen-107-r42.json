@@ -1,0 +1,35 @@
+{
+  "name": "screen-107-r42",
+  "note": "107: the ballpark read of the engine-play agents against r42's agents (106's final build, 5601d22), paired on fresh seeds 33596-33643: the three pairs at d2, the strategist and greedy, 48 a cell. Run r42's binary from a folder holding it and a git archive of 5601d22's configs, with this spec copied there. The play counts read its cards.csv (experiments/results/107_agents_play_engines/play_counts.py).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33596,
+  "records": 0
+}

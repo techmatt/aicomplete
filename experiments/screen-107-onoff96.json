@@ -1,0 +1,38 @@
+{
+  "name": "screen-107-onoff96",
+  "note": "107: each keep-plan fix flipped alone against the defaults (plan_chain, off by default, on; the rest off), for the strategist, on the dev seeds 33452-33547 (96 a cell; not fresh). The value-code fixes are read with binaries rebuilt with their rate at 0.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:plan_reach=0",
+    "strategist:plan_under=0",
+    "strategist:plan_chain=1",
+    "strategist:plan_copy=0"
+  ],
+  "games": 96,
+  "first_seed": 33452,
+  "records": 0
+}

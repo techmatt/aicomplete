@@ -6,14 +6,14 @@ Values are credits per unit of the effect (printed cost shared out pro rata to 0
 ## Effects priced most unevenly across cards (max / min per unit over 2.5, 3+ cards)
 
 - **damage troops [play]** (5 cards, reasoned 11.0): 1.83 on `ceasefire_monitors` to 9.17 on `bounty_board` (x5.0).
-- **threshold [passive]** (5 cards, reasoned 8.17): 5.0 on `intrusion_lab` to 13.03 on `agency_directorate` (x2.61).
+- **threshold [passive]** (6 cards, reasoned 9.22): 4.28 on `intrusion_lab` to 17.14 on `agency_directorate` (x4.0).
 
 ## Effects whose fitted price is far from the reasoned one (beta outside 0.5-2.0, 4+ cards)
 
 - none
 
-## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -5.3 ± 7.3)
+## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -5.4 ± 7.1)
 
 - `great_liberation` (tier 2 event, needs diplomacy 4): printed 33.0 vs reasoned 108.0 (gap -75.0). cleanse cities [play] 108.0.
 
-Fit: 23 effects fitted, 71 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -4.16 ± 0.99, tier 2 -8.85 ± 1.85, -0.12 ± 0.59 cr per needed tag; residual sd 7.05 cr on 128 dof.
+Fit: 23 effects fitted, 71 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -3.76 ± 0.95, tier 2 -8.84 ± 1.8, -0.32 ± 0.58 cr per needed tag; residual sd 6.88 cr on 128 dof.

@@ -49,6 +49,10 @@ struct Fast {
     late_rounds: f64,
     no_city_share: f64,
     uses_share: f64,
+    /// 107: `rates.tag_share`, `rates.own_mix` and `rates.mix_prior`.
+    tag_share: f64,
+    own_mix: f64,
+    mix_prior: f64,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -116,6 +120,9 @@ pub fn table() -> &'static Table {
             late_rounds: t.rate("late_rounds"),
             no_city_share: t.rate("no_city_share"),
             uses_share: t.rate("uses_share"),
+            tag_share: t.rate("tag_share"),
+            own_mix: t.rate("own_mix"),
+            mix_prior: t.rate("mix_prior"),
         };
         t
     })
@@ -212,6 +219,9 @@ pub struct Ctx {
     pub tags: [i64; TAGS.len()],
     /// Whether a city is corrupted (a liberation has a target).
     pub corrupted: bool,
+    /// 107: the share of the seat's cards carrying each tag (`rates.tag_share`
+    /// each, unless the caller reads the seat's own: [`Ctx::with_mix`]).
+    pub share: [f64; TAGS.len()],
 }
 
 impl Ctx {
@@ -223,7 +233,24 @@ impl Ctx {
             node: t.rate("node_count"),
             tags: [t.rate("tag_count") as i64; TAGS.len()],
             corrupted: true,
+            share: [t.fast.tag_share; TAGS.len()],
         }
+    }
+
+    /// 107 (`rates.own_mix`): the context with each tag's share read from the
+    /// seat's own cards, `counts` cards carrying each tag of `cards` in all, with
+    /// `rates.mix_prior` cards at the table's `tag_share` added so a thin hand
+    /// doesn't swing it ("a Science trigger fires as often as your cards are Science").
+    pub fn with_mix(mut self, counts: &[i64; TAGS.len()], cards: i64) -> Ctx {
+        let t = table();
+        if t.fast.own_mix <= 0.0 {
+            return self;
+        }
+        let k = t.fast.mix_prior;
+        for (i, s) in self.share.iter_mut().enumerate() {
+            *s = (counts[i] as f64 + k * t.fast.tag_share) / (cards as f64 + k);
+        }
+        self
     }
 
     /// The typical context for a card of `tier` (r35): its income counted over
@@ -236,7 +263,7 @@ impl Ctx {
 
     /// A context in a game: income counts every round left.
     pub fn at(left: f64, node: f64, tags: [i64; TAGS.len()], corrupted: bool) -> Ctx {
-        Ctx { left, horizon: left, node, tags, corrupted }
+        Ctx { left, horizon: left, node, tags, corrupted, share: [table().fast.tag_share; TAGS.len()] }
     }
 }
 
@@ -263,6 +290,9 @@ pub struct Worth {
     pub income_per_tag: [f64; TAGS.len()],
     /// A round, standing, that nothing else counts (a discount, a shelter rule).
     pub standing: f64,
+    /// 107: a round, standing, per share of the seat's cards carrying a tag (a
+    /// trigger or discount on one tag's plays), times [`Ctx::share`].
+    pub standing_tag: [f64; TAGS.len()],
 }
 
 impl std::ops::AddAssign for Worth {
@@ -277,6 +307,7 @@ impl std::ops::AddAssign for Worth {
         for t in 0..TAGS.len() {
             self.per_tag[t] += o.per_tag[t];
             self.income_per_tag[t] += o.income_per_tag[t];
+            self.standing_tag[t] += o.standing_tag[t];
         }
     }
 }
@@ -310,8 +341,17 @@ impl Worth {
         for t in 0..TAGS.len() {
             self.per_tag[t] *= k;
             self.income_per_tag[t] *= k;
+            self.standing_tag[t] *= k;
         }
         self
+    }
+
+    /// 107: a standing rate on one tag's plays (`rates.fires_play` plays a round
+    /// times `per_play`), its share of the seat's cards read from the context.
+    fn on_tag(tag: aic_core::content::Tag, per_play: f64) -> Worth {
+        let mut w = Worth::default();
+        w.standing_tag[tag as usize] = per_play;
+        w
     }
 
     /// What resolves now, in this context.
@@ -324,7 +364,7 @@ impl Worth {
 
     /// What it pays a round, in this context: income and standing.
     pub fn per_round(&self, c: &Ctx) -> f64 {
-        self.income + self.standing + self.income_round_tags(c)
+        self.income + self.unseen_round(c) + self.income_round_tags(c)
     }
 
     fn income_round_tags(&self, c: &Ctx) -> f64 {
@@ -332,8 +372,8 @@ impl Worth {
     }
 
     /// The standing part the heuristic's income doesn't count, a round.
-    pub fn unseen_round(&self) -> f64 {
-        self.standing
+    pub fn unseen_round(&self, c: &Ctx) -> f64 {
+        self.standing + (0..TAGS.len()).map(|i| self.standing_tag[i] * c.share[i]).sum::<f64>()
     }
 }
 
@@ -513,12 +553,24 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         // 105: the engine wording. A trigger is worth what it resolves (tokens
         // here aside: a threshold prices those) times how often it fires a round.
         Op::CardDiscount { tag, resource, amount } => {
-            let share = if tag.is_some() { t.rate("tag_share") } else { 1.0 };
-            Worth::standing(row("card_discount") * t.rate("fires_play") * share * r(*resource) * *amount as f64)
+            // 107: insight off every card cuts only the plays the discount floor
+            // leaves above it (Hyperscale Botnet was kept at a full rate, never played).
+            let each = row("card_discount") * t.rate("fires_play") * r(*resource) * *amount as f64;
+            match (tag, resource) {
+                // 107: at the seat's share of the tag's cards (`Ctx::share`).
+                (Some(tag), _) => Worth::on_tag(*tag, each),
+                (None, Resource::Insight) => Worth::standing(each * t.rate("insight_discount_share")),
+                (None, _) => Worth::standing(each),
+            }
         }
         Op::When { on, then } => {
             let both = if matches!(on, Event::TeamPlay { both: true, .. }) { 1.0 + row("other_gain") } else { 1.0 };
-            Worth::standing(row("when") * fires(t, on) * triggered(t, then) * both)
+            let each = row("when") * triggered(t, then) * both;
+            match on_tag(on) {
+                // 107: a trigger on one tag's plays fires at the seat's share of them.
+                Some(tag) => Worth::on_tag(tag, each * fires(t, on) / t.rate("tag_share")),
+                None => Worth::standing(each * fires(t, on)),
+            }
         }
         Op::Threshold { at, then } => {
             Worth::standing(row("threshold") * t.rate("threshold_fill") / (*at).max(1) as f64 * triggered(t, then))
@@ -535,6 +587,15 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Arrivals { .. } => Worth::now(row("arrivals")),
         Op::CorruptSooner { .. } => Worth::now(row("corrupt_sooner")),
         Op::War => Worth::now(row("war")),
+    }
+}
+
+/// 107: the tag a trigger's plays must carry, if one: its firing rate is
+/// `rates.tag_share` of the plays at the table, the seat's own share in a game.
+fn on_tag(on: &Event) -> Option<aic_core::content::Tag> {
+    match *on {
+        Event::Play { tag } | Event::PlayTag { tag } | Event::TeamPlay { tag, .. } => tag,
+        _ => None,
     }
 }
 
@@ -563,7 +624,50 @@ fn triggered(t: &Table, then: &[Op]) -> f64 {
     for op in then.iter().filter(|o| !matches!(o, Op::AddTokens { here: true, .. })) {
         w += op_worth(t, op);
     }
-    w.now + w.node * t.fast.node
+    // 107: an income a firing raises counts `raised_rounds` rounds (Retained
+    // Earnings' raise read 0, so its Capital feeders had no pile to feed).
+    w.now + w.node * t.fast.node + w.income * t.rate("raised_rounds")
+}
+
+/// 107: a card's standing effects. A threshold whose tokens the card's own
+/// trigger adds fills at that trigger's rate (`rates.own_fill`), not the flat
+/// `threshold_fill`: Conglomerate Headquarters adds one a tag played.
+pub fn passives_worth(t: &Table, ops: &[Op]) -> Worth {
+    // Tokens a round the card's own triggers add here: untagged, and per share of
+    // one tag's plays (107: read at the seat's share, as the trigger itself).
+    let mut own = 0.0;
+    let mut own_tag = [0.0; TAGS.len()];
+    for o in ops {
+        if let Op::When { on, then } = o {
+            let added: i64 = then
+                .iter()
+                .map(|e| match e {
+                    Op::AddTokens { amount, here: true, .. } => *amount,
+                    _ => 0,
+                })
+                .sum();
+            match on_tag(on) {
+                Some(tag) => own_tag[tag as usize] += fires(t, on) / t.rate("tag_share") * added as f64,
+                None => own += fires(t, on) * added as f64,
+            }
+        }
+    }
+    let fed = own > 0.0 || own_tag.iter().any(|x| *x > 0.0);
+    let mut w = Worth::default();
+    for op in ops {
+        w += match op {
+            Op::Threshold { at, then } if fed && t.rate("own_fill") > 0.0 => {
+                let each = t.op("threshold") / (*at).max(1) as f64 * triggered(t, then);
+                let mut x = Worth::standing(each * own);
+                for (i, f) in own_tag.iter().enumerate() {
+                    x.standing_tag[i] = each * f;
+                }
+                x
+            }
+            _ => op_worth(t, op),
+        };
+    }
+    w
 }
 
 /// A damage's worth: the better of its two kinds.
@@ -683,7 +787,7 @@ impl CardValue {
         } else {
             list_worth(t, &d.effects)
         };
-        play += list_worth(t, &d.passives);
+        play += passives_worth(t, &d.passives);
         // 102: an Action at the value table's own rates, even under a repriced
         // table (`Table::repriced`), as the heuristic values a building's Action.
         let use_ = d.ability.as_ref().map(|a| ability_worth(table(), a)).unwrap_or_default();
@@ -714,7 +818,7 @@ impl CardValue {
         // 099: a one-shot Action earns nothing a round: its one use is its fuel's
         // worth (the token term), so using it no longer reads as giving up a stream.
         let uses = if self.has_use && !self.once { t.fast.uses_share } else { 0.0 };
-        self.play.unseen_round() + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
+        self.play.unseen_round(c) + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
     }
 }
 

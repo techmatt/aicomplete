@@ -177,6 +177,7 @@ its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/scre
 | never-convert | `never_convert=1` | no converter, and no power that only converts a resource |
 | always-buy-cubes, hoard insight (c3) | `always_buy_cubes=1`, `hoard_insight=N` | the power that buys a research cube at every chance; a Patience seat plays and keeps only every n-th round |
 | always-liberate | `always_liberate=1` | drafts and keeps every liberate card, and plays one the first round it is legal |
+| engine rush (107, a probe) | `engine_rush=1`, `=2` | drafts and keeps every engine card (a trigger, threshold, per-tag income, discount or copy) and plays one the moment it is legal; `=2` only plays a kept one at once |
 
 **The gate** is `experiments/gate.json` (named gate-075: every check of gate-070 plus `never_convert`): planner
 only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,

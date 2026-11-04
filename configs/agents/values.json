@@ -53,7 +53,12 @@
     "fires_wall": 0.5,
     "threshold_fill": 0.8,
     "hand_discards": 1,
-    "dead_card": 1
+    "dead_card": 1,
+    "raised_rounds": 2,
+    "own_fill": 1,
+    "insight_discount_share": 0.25,
+    "own_mix": 1,
+    "mix_prior": 4
   },
   "ops": {
     "gain": {"credits": 1, "per": "the resource gained, at its rate"},
@@ -154,9 +159,9 @@
     "supply_insight": {"credits": 1.9, "per": "insight handed out, a round: 2.5 x 0.75"},
     "tags_from_hand": {"credits": 1, "per": "a round: a discard that pays a power"},
     "convert_upkeep": {"credits": 1, "per": "what the conversion nets at the rates, a round (never below 0)"},
-    "card_discount": {"credits": 1, "per": "105: credit or insight (at its rate) off a play, a round: rates.fires_play plays, x rates.tag_share for one tag"},
-    "when": {"credits": 1, "per": "105: a trigger, a round: what one firing resolves (tokens here aside) x its rates.fires_<event> (plays at rates.fires_play, x tag_share for one tag; a rebate at 1 - at/rebate_span); both players gaining: x (1 + other_gain)"},
-    "threshold": {"credits": 1, "per": "105: what the threshold resolves, a round: x rates.threshold_fill tokens a round / at"},
+    "card_discount": {"credits": 1, "per": "105: credit or insight (at its rate) off a play, a round: rates.fires_play plays, x rates.tag_share for one tag; 107: insight off every card x rates.insight_discount_share, the plays a discount floor of 1 leaves it to cut"},
+    "when": {"credits": 1, "per": "105: a trigger, a round: what one firing resolves (tokens here aside) x its rates.fires_<event> (plays at rates.fires_play, x tag_share for one tag, 107: in a game x the seat's own share, rates.own_mix with mix_prior cards at tag_share; a rebate at 1 - at/rebate_span); both players gaining: x (1 + other_gain)"},
+    "threshold": {"credits": 1, "per": "105: what the threshold resolves, a round: x rates.threshold_fill tokens a round / at; 107: a card whose own trigger adds the tokens fills at that trigger's rate (rates.own_fill 1; 0: threshold_fill), and an income the threshold raises counts rates.raised_rounds rounds a firing (0: none)"},
     "copy_income": {"credits": 3, "per": "105: a copied building income, a round (about a typical building's Each round)"},
     "reuse": {"credits": 5, "per": "105: another building's Action used again (about a typical Action's use)"},
     "discard_hand": {"credits": 1, "per": "105: a card discarded (rates.hand_discards a use): the resource at its rate less rates.dead_card (a card you would sell)"},

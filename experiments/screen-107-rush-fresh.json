@@ -1,0 +1,36 @@
+{
+  "name": "screen-107-rush-fresh",
+  "note": "107, a probe: the strategist made to draft, keep and play every engine card at once (engine_rush=1), or only to play a kept one at once (=2), against the strategist, confirmed on fresh seeds 33644-33691 (48 a cell): what the engines win when played.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:engine_rush=1",
+    "strategist:engine_rush=2"
+  ],
+  "games": 48,
+  "first_seed": 33644,
+  "records": 0
+}

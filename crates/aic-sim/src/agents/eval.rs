@@ -578,6 +578,8 @@ pub struct Eval {
     /// for a hand's worth of each, and an id hashed as text was a tenth of the
     /// heuristic (069).
     facts: Arc<HashMap<usize, Fact, BuildHasherDefault<Fnv>>>,
+    /// 107 (`rates.own_mix`): whether a one-tag trigger fires at the seat's own share.
+    mix: bool,
     /// 082: each strategy's multiplier for each card and phase.
     mults: Arc<Mults>,
     /// 082: each seat's strategy, once chosen (none: every multiplier 1).
@@ -734,6 +736,7 @@ impl Eval {
                 s < seats && ai::board(&world, s).powers.iter().any(|p| p.cost.iter().any(|(r, _)| *r == Resource::ResearchCubes))
             }),
             keys: TokenKeys::new(),
+            mix: value::table().rate("own_mix") > 0.0,
             facts: Arc::new(
                 world
                     .content
@@ -1506,18 +1509,23 @@ impl Eval {
                         required[*t as usize] += 1;
                     }
                     let income = economy::income_with(&world, g, s, &tags);
-                    (tags, required, cards::prices_with(&world, g, s, &tags), income)
+                    (tags, required, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
                 };
-                let (tags, required, prices, income) = seat_terms_cached(self.id, g, s, terms);
+                let (tags, required, prices, income, n) = seat_terms_cached(self.id, g, s, terms);
                 let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
-                SeatData {
-                    s,
-                    tags,
-                    required,
-                    prices,
-                    income,
-                    ctx: Ctx::at(left, node, tags, corrupted),
+                let mut ctx = Ctx::at(left, node, tags, corrupted);
+                if table && self.mix {
+                    // 107: the share of the seat's cards, in play and in hand, by tag.
+                    let (mut counts, mut cards_n) = (tags, n);
+                    for id in g.pile(&cards::hand(s)) {
+                        cards_n += 1;
+                        for t in &self.fact(&world, id).0.tags {
+                            counts[*t as usize] += 1;
+                        }
+                    }
+                    ctx = ctx.with_mix(&counts, cards_n);
                 }
+                SeatData { s, tags, required, prices, income, ctx }
             })
             .collect();
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
@@ -1695,7 +1703,7 @@ impl Eval {
 /// A seat's tags, `needs` tags, prices and income: what [`Eval::value`] reads
 /// off its tableau, kept a decision long (103: worked out for every position, they
 /// were a sixth of the strategist's time, and a search's positions mostly share them).
-type SeatTerms = ([i64; TAGS.len()], [i64; TAGS.len()], cards::Prices, aic_core::content::PerResource);
+type SeatTerms = ([i64; TAGS.len()], [i64; TAGS.len()], cards::Prices, aic_core::content::PerResource, i64);
 
 thread_local! {
     /// The seat terms worked out this decision, by a hash of [`tableau_parts`],
@@ -1783,6 +1791,30 @@ fn same_terms(a: &SeatTerms, b: &SeatTerms) -> bool {
 #[cfg(not(debug_assertions))]
 fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
     true
+}
+
+/// 107: `ctx` with each tag's share read from seat `s`'s cards, in play (its
+/// `tags`, one a card) and in hand.
+pub(crate) fn own_mix(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()], ctx: Ctx) -> Ctx {
+    let mut counts = *tags;
+    let mut n = in_play(g, s);
+    for id in g.pile(&cards::hand(s)) {
+        n += 1;
+        for t in &cards::def(w, id).tags {
+            counts[*t as usize] += 1;
+        }
+    }
+    ctx.with_mix(&counts, n)
+}
+
+/// 107: seat `s`'s cards in play: its tops, the cards under them and its programs.
+fn in_play(g: &GameState, s: usize) -> i64 {
+    let tops = g.pile(&cards::built(s));
+    let mut n = (tops.len() + g.pile(&cards::played(s)).len()) as i64;
+    for top in tops {
+        n += g.pile(&cards::under(s, top)).len() as i64;
+    }
+    n
 }
 
 struct SeatData {

@@ -292,7 +292,9 @@ def op_worth(t, o):
         return Worth(standing=max(row(op) * (r(o['to']) * n('gain') - r(o['from']) * n('amount')), 0.0))
     # 105: the engine wording, as value.rs prices it.
     if op == 'card_discount':
-        share = t.rate('tag_share') if o.get('tag') else 1.0
+        # 107: insight off every card x insight_discount_share (the floor's share).
+        share = t.rate('tag_share') if o.get('tag') else (
+            t.rate('insight_discount_share') if o['resource'] == 'insight' else 1.0)
         return Worth(standing=row(op) * t.rate('fires_play') * share * r(o['resource']) * n('amount'))
     if op == 'when':
         on = o['on']
@@ -333,7 +335,25 @@ def triggered(t, then):
         if o['op'] == 'add_tokens' and o.get('here'):
             continue
         w.add(op_worth(t, o))
-    return w.now + w.node * t.op('place_node') * t.rate('node')
+    # 107: an income a firing raises counts rates.raised_rounds rounds.
+    return w.now + w.node * t.op('place_node') * t.rate('node') + w.income * t.rate('raised_rounds')
+
+
+def passive_worths(t, ops):
+    """value.rs `passives_worth` (107) at the table's context: a threshold whose tokens the card's own
+    trigger adds fills at that trigger's rate (rates.own_fill), each passive's Worth in order."""
+    own = 0.0
+    for o in ops:
+        if o['op'] == 'when':
+            added = sum(e['amount'] for e in o['then'] if e['op'] == 'add_tokens' and e.get('here'))
+            own += fires(t, o['on']) * added
+    out = []
+    for o in ops:
+        if o['op'] == 'threshold' and own > 0 and t.rate('own_fill') > 0:
+            out.append(Worth(standing=t.op('threshold') / max(o['at'], 1) * own * triggered(t, o['then'])))
+        else:
+            out.append(op_worth(t, o))
+    return out
 
 
 def branches(ability):
@@ -466,7 +486,8 @@ def decompose(t, card):
     if once:
         play = [o for o in play if not (o['op'] == 'add_tokens' and o.get('here'))]
     add_list(play, 'play')
-    add_list(card.get('passives', []), 'passive')
+    passives = card.get('passives', [])
+    add_list(passives, 'passive', values=[t.whole(w) for w in passive_worths(t, passives)])
     if card.get('ability'):
         parts, _ = ability_parts(t, card['ability'])
         uses = 1.0 if once else t.horizon * t.rate('uses_share')
