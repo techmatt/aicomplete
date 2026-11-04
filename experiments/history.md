@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 093 rules r36 (slots, Uprising's gate, energy, reach audit) | r36 | [093_rules_r36/r36.md](results/093_rules_r36/r36.md), [reach.md](results/093_rules_r36/reach.md) |
 | 092 test-agent heuristics | r35 | [screen-092/agents.md](results/screen-092/agents.md) (`scripts/cards/slots_read.py`) |
 | 090 balance pass | r35 | [screen-090/balance.md](results/screen-090/balance.md) (`scripts/cards/energy_read.py`) |
 | 088 effect ledger | r34 | [effect-ledger/outliers.md](results/effect-ledger/outliers.md) (`scripts/cards/effect_ledger.py`) |

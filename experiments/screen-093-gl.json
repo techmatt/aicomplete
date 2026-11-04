@@ -1,0 +1,18 @@
+{
+  "name": "screen-093-gl",
+  "note": "093: Great Liberation on and off at r36, same seeds as screen-093 (31600, 48 a pair), the strategist at d2, the three board pairs. The off config is baseline less the card (experiments/configs/no_great_liberation.json): regenerate it from baseline before a re-run. Read with scripts/bench/paired.py and scripts/cards/liberation_read.py --cards.",
+  "configs": [
+    "configs/baseline.json",
+    "experiments/configs/no_great_liberation.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist"],
+  "games": 48,
+  "first_seed": 31600,
+  "records": 0
+}

@@ -6,8 +6,8 @@
   ],
   "variants": [
     {"name": "bp", "set": []},
-    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
-    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
   ],
   "difficulties": [2],
   "agents": ["strategist", "strategist:plan_short=99", "engine", "engine:plan_short=99"],

@@ -29,9 +29,11 @@ a rate moved there moves the agents' read of every card that prints it. Change a
   purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
   a progressive token card (uses × payoff) × 0.7, counting adds as uses (ruling 12).
-- **Energy is rare** (r35): about 4.5 credits an energy; +1 energy of income about 8-10 credits on a tier-1 card, +2 a
-  tier-2 one, and no card above +2 (a big income fits the target at no price). Two strong cards and three threats'
-  counters take energy, and two buildings gift it on (1 energy: another player's 2 chips or 1 insight).
+- **Energy is rare** (r35): about 4.5 credits an energy, 5 to buy from a neutral city (r36). +1 energy of income or
+  production is the horizon × 4.5 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed):
+  about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling; it replaced r35's 8-10 anchor), and no card above
+  +2. Two strong cards and three threats' counters take energy, and two buildings turn it into a gift with a boost
+  (1 energy: another player's 5 chips or 8 credits, about 1.7× an energy).
 - **A station is a flip** (r35): freeing one is worth a cube a round both ways, about 15 (`cleanse_station`); freeing a
   factory stays about 6.
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 1, then 0.5 each (events leave none).
@@ -40,7 +42,7 @@ a rate moved there moves the agents' read of every card that prints it. Change a
   50), against the fallback's 5 ambassadors at about 100; each engine's twist at its own row (an ambassador; up to 3
   troops in the city's country; a botnet next to it).
 
-## Rates known to be off at r35
+## Rates known to be off at r36
 
 Measured or found against play; each is still the table's number until a pass moves it.
 
@@ -48,9 +50,6 @@ Measured or found against play; each is still the table's number until a pass mo
   buys is the ultimates' 1-a-card gate, not 7 credits of anything.
 - **Troop removal 15** (10 each in one country, from 5 and 3.6 at r35): the heuristic counts a troop at 12 points, about
   20 credits. A count prints "up to": Kinetic Interdiction's 6 in one country reads 60, though a country rarely holds 6.
-- **Energy income against its anchor:** at 4.5 an energy over a 4-round horizon, +1 energy of income reads 18 on a tier-1
-  card, against the 8-10 Matt's anchor sets (the anchor priced Baseload Contract and the Power-grid incomes); one of
-  the two moves when play says which.
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for
   a draft: tier 2 reads as worth no more than its keep unless the draft leaves the play cost out, as the agents' does.
 - **Energy 4.5** (from 2 at r35): seats now hold about 1-2 at rounds 3 and 6 and 1.8-2.6 at the end (090,

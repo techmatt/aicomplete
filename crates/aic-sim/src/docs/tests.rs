@@ -49,7 +49,7 @@ fn a_config_change_changes_its_block() {
         ("cards.keep_tier2=5", new_players_block),
         ("adversary.corrupt_at=7", game_end_block),
         ("adversary.stage_cards=3,5,2", round_cap_block),
-        ("ai.slots=4,3", |r| boards_block(r, content())),
+        ("ai.slots=4,3,2", |r| boards_block(r, content())),
     ];
     for (o, block) in blocks {
         assert_ne!(block(&base), block(&baseline(&[o])), "{o}");

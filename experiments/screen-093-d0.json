@@ -1,0 +1,20 @@
+{
+  "name": "screen-093-d0",
+  "note": "093: greedy (the engine, no strategy) at d0, 2 players, the three board pairs, 48 fresh seeds from 31600, r36 base and r35's slots. Paired with the r35 binary on the same seeds (MESSAGE #3969). Read with scripts/bench/paired.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-slots35", "set": ["ai.slots=5,3,2"]},
+    {"name": "br-slots35", "set": ["ai.boards=0,2", "ai.slots=5,3,2"]},
+    {"name": "pr-slots35", "set": ["ai.boards=1,2", "ai.slots=5,3,2"]}
+  ],
+  "difficulties": [0],
+  "agents": ["engine"],
+  "games": 48,
+  "first_seed": 31600,
+  "records": 0
+}

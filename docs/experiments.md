@@ -135,13 +135,16 @@ levers under about 20 points.
 **The judge is the strategist** (`engine:strategy=1`; why: [agents.md](agents.md), *The tiers*); `sweep` is the spot check of a verdict that matters, `planner:strategy=1` the ceiling, and
 `sweep:plan_table=0,w.table=0,w.packet_keep=1` the judge off the value table. Read a screen with
 `scripts/bench/paired.py DIR` and `scripts/cards/use_read.py DIR`. Recipes and costs (6 threads): `screen-082.json`
-(eight agents, four planners, 1,152 games, 17 min beside another item), `screen-082-d0`/`-d4.json` (greedy tiers at the
-range's ends, 1 min each), `screen-082-table-bp/br/pr.json` (pairings fixed, 2,688 games, 8 min),
-`screen-082-fresh.json` (7.5 min). The r35 ballpark read is `screen-090.json` (the strategist, 144 games, 20 s on 6 threads); `screen-090-onoff.json` turns each r35 mechanic off on the same seeds (27 cells, 1,296 games, about 3 min), read with `scripts/cards/energy_read.py`. `screen-092.json` reads each agent heuristic on and off (864 games, about 2 min); `scripts/cards/slots_read.py` gives build-overs and slot fill by round.
+(1,152 games, 17 min beside another item), `screen-082-table-bp/br/pr.json` (2,688 games, 8 min). The r36 read is
+`screen-093.json` (each r36 lever off, 720 games, 2.5 min on 3 threads), `-gl` (Great Liberation on/off), `-d0`
+(greedy); older specs' seat-ordered triples need only `ai.boards=` now. `scripts/cards/slots_read.py` gives build-overs and slot fill
+by round, `energy_read.py` stations freed and the gift. **A before/after read is paired** (Matt, 093): seed sets
+alone move a pair 10-25 points at 48 seeds, so run the old binary from `git archive <main> configs | tar -x` on the
+same seeds.
 
 **The ballpark read (Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
-players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
-`ai.start_credits` and `ai.slots` are seat-ordered, so each pair's variant restates all three), no c3, no gate; target
+players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; a pair's variant
+sets `ai.boards`, since `ai.slots` and `ai.start_credits` are by board from r36), no c3, no gate; target
 45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s
 on 6 threads), then the strategist read (`screen-090.json`, 20 s). A `sweep` screen of 432 games is about 9 min
 (about 13 ms a planner decision); an engine one about 0.7 s a game. Credits feed the purge almost directly through the
@@ -150,9 +153,8 @@ are overlays (`ais.builder.credits=16`, `corps.<name>.project.<path>`) and need 
 **Copy the binary before a run, then rebuild freely.** The read scripts (`economy_read`, `play_read`, `board_read`,
 `liberation_read`) are in [scripts.md](scripts.md).
 
-`experiments/band.json` places a win rate: `--seed S --games 96` (Matt: two sets of 48), planner and engine. One band
-can sit 10 points off another on the same build, so read a pool before calling a miss, and read its win mix (purge vs.
-Unity deck) before any rule touching the board's end state. `experiments/sanity-line.json`: after a change to the
+`experiments/band.json` places a win rate: `--seed S --games 96`, planner and engine. Read a pool before calling a
+miss, and its win mix (purge vs. Unity deck) before any rule touching the end state. `experiments/sanity-line.json`: after a change to the
 rollout policy or `prune`, the line alone should read near the engine.
 
 `experiments/gate.json`: checks and the planner × c2 and c3, early-stopped from 12 seeds at 2 SE, capped at 48; read
@@ -164,10 +166,8 @@ those rows apart from early ones).
 `planner` in the same variant and difficulty, and `games` each check's cap. After each block (8 seeds, then 4) a check
 stops if its gap clears `z` SE (`clears_noise` in `gate.rs`) or the seeds left can't turn its sign back
 (`sign_settled`: so a stopped row can sit inside 2 SE and isn't "clearly behind"); an agent runs until its last check
-stops. The verdict is the gap's sign.
-Decisions come only from finished blocks, so the games played don't depend on threads or timing. A panicked game
-counts for neither side and fails the gate. `scripts/bench/gate_stop_rate.py [z]` simulates the rule: at `z` 2 a level
-check stops early about half the time, and about 1% of runs get the sign the cap wouldn't.
+stops. The verdict is the gap's sign. Decisions come only from finished blocks, so play doesn't depend on threads; a
+panicked game fails the gate. `scripts/bench/gate_stop_rate.py [z]` simulates the rule.
 
 **Budgeting a gate.** Cells = agents × variants × difficulties × configs, the planner row counting as one; early
 stopping plays about half of `games` × cells. Time is games × `ms_per_game` (from a first screen) ÷ threads. The last

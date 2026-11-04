@@ -74,17 +74,13 @@
     {
       "name": "br-base",
       "set": [
-        "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2"
+        "ai.boards=0,2"
       ]
     },
     {
       "name": "br-counters_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "threats.blackout.counter=[[\"credits\",4]]",
         "threats.sabotage.counter=[[\"credits\",5]]",
         "threats.commandeer.counter=[[\"credits\",4]]"
@@ -94,8 +90,6 @@
       "name": "br-ecards_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.kinetic_interdiction.energy=0",
         "cards.orbital_mass_driver.energy=0",
         "cards.nuclear_option.energy=0"
@@ -105,8 +99,6 @@
       "name": "br-gift_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.substation_hub.ability=null",
         "cards.treaty_grid_exchange.ability=null",
         "cards.tidal_barrage.ability=null"
@@ -116,8 +108,6 @@
       "name": "br-freeing_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "board.free_station_ambassadors=5"
       ]
     },
@@ -125,8 +115,6 @@
       "name": "br-defense_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "adversary.station_flip_at=0"
       ]
     },
@@ -134,8 +122,6 @@
       "name": "br-twists_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.hostile_buyout.effects.0.ambassadors=0",
         "cards.peacekeeping_mission.effects.0.troops=0",
         "cards.root_access.effects.0.botnet=false"
@@ -145,8 +131,6 @@
       "name": "br-uprising_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.popular_uprising.ability.or.tips=0",
         "cards.popular_uprising.ability.or.once=false"
       ]
@@ -155,8 +139,6 @@
       "name": "br-powers_off",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "ais.builder.powers.5.tags=[[\"industry\",2]]",
         "ais.builder.powers.5.cost=[]",
         "ais.protector.powers.5.tags=[[\"security\",2]]",
@@ -168,17 +150,13 @@
     {
       "name": "pr-base",
       "set": [
-        "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2"
+        "ai.boards=1,2"
       ]
     },
     {
       "name": "pr-counters_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "threats.blackout.counter=[[\"credits\",4]]",
         "threats.sabotage.counter=[[\"credits\",5]]",
         "threats.commandeer.counter=[[\"credits\",4]]"
@@ -188,8 +166,6 @@
       "name": "pr-ecards_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.kinetic_interdiction.energy=0",
         "cards.orbital_mass_driver.energy=0",
         "cards.nuclear_option.energy=0"
@@ -199,8 +175,6 @@
       "name": "pr-gift_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.substation_hub.ability=null",
         "cards.treaty_grid_exchange.ability=null",
         "cards.tidal_barrage.ability=null"
@@ -210,8 +184,6 @@
       "name": "pr-freeing_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "board.free_station_ambassadors=5"
       ]
     },
@@ -219,8 +191,6 @@
       "name": "pr-defense_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "adversary.station_flip_at=0"
       ]
     },
@@ -228,8 +198,6 @@
       "name": "pr-twists_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.hostile_buyout.effects.0.ambassadors=0",
         "cards.peacekeeping_mission.effects.0.troops=0",
         "cards.root_access.effects.0.botnet=false"
@@ -239,8 +207,6 @@
       "name": "pr-uprising_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.popular_uprising.ability.or.tips=0",
         "cards.popular_uprising.ability.or.once=false"
       ]
@@ -249,8 +215,6 @@
       "name": "pr-powers_off",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "ais.builder.powers.5.tags=[[\"industry\",2]]",
         "ais.builder.powers.5.cost=[]",
         "ais.protector.powers.5.tags=[[\"security\",2]]",

@@ -5,7 +5,7 @@
   "text": "The economy AI: plays mostly off the board, with the most building slots.",
   "innate": {
    "name": "Breadth",
-   "text": "You have 5 building slots; the Protector has 3 and the Researcher 2.",
+   "text": "You have 5 building slots; the Protector has 4 and the Researcher 3.",
    "passives": []
   },
   "credits": 25,

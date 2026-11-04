@@ -22,9 +22,9 @@ pub static DEF: ModuleDef = ModuleDef {
         summary: "Each seat plays an AI board from content/ais.json",
         params: &[
             ParamSpec::list("boards", 0, 99, "AI board (index into content/ais.json) of each seat; the list repeats for more seats"),
-            ParamSpec::list("start_credits", 0, 100, "credits each seat starts with, in seat order (not by board); the list repeats"),
+            ParamSpec::list("start_credits", 0, 100, "credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board"),
             ParamSpec::int("start_energy", 0, 20, "energy each player starts with"),
-            ParamSpec::list("slots", 1, 10, "building slots of each seat, in seat order (not by board); the list repeats"),
+            ParamSpec::list("slots", 1, 10, "building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board"),
         ],
         phases: &[
             PhaseSpec::decision("power", "use AI-board powers, each once a round: place nodes, or sacrifice played cards' tags (combine with the action phase)"),
@@ -98,16 +98,27 @@ pub fn keep2(w: &World, g: &GameState, seat: usize) -> bool {
     uncovered_spaces(w, g, seat).any(|u| u.keep2)
 }
 
-/// Credits seat `s`'s AI board starts with (`ai.start_credits`, 068).
-pub fn start_credits(w: &World, seat: usize) -> i64 {
-    let list = w.list("ai.start_credits");
-    list[seat % list.len()]
+/// The AI board (index into content/ais.json) seat `s` plays.
+fn board_index(w: &World, seat: usize) -> usize {
+    let list = w.list("ai.boards");
+    list[seat % list.len()] as usize
 }
 
-/// Building slots of seat `s`'s AI board (`ai.slots`, 021).
+/// `key`'s value for seat `s`'s board: the list is by board (093), one value
+/// for every board or one per board in content/ais.json.
+fn by_board(w: &World, key: &str, seat: usize) -> i64 {
+    let list = w.list(key);
+    list[board_index(w, seat) % list.len()]
+}
+
+/// Credits seat `s`'s AI board starts with (`ai.start_credits`, 068; by board, 093).
+pub fn start_credits(w: &World, seat: usize) -> i64 {
+    by_board(w, "ai.start_credits", seat)
+}
+
+/// Building slots of seat `s`'s AI board (`ai.slots`, 021; by board, 093).
 pub fn slots(w: &World, seat: usize) -> i64 {
-    let list = w.list("ai.slots");
-    list[seat % list.len()]
+    by_board(w, "ai.slots", seat)
 }
 
 /// Whether power `k` of seat `s`'s board places nodes.
@@ -270,6 +281,13 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
             "boards: no AI board {x} (content/ais.json has {})",
             b.world.content.ais.len()
         ));
+    }
+    let n = b.world.content.ais.len();
+    for key in ["start_credits", "slots"] {
+        let len = b.list(key)?.len();
+        if len != 1 && len != n {
+            return Err(format!("{key}: one value, or one per AI board ({n}), not {len}"));
+        }
     }
     Ok(Box::new(Ai {
         start_energy: b.int("start_energy")?,

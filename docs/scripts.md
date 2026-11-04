@@ -53,7 +53,8 @@ Current:
   effects pro rata to 082's reasoned values (`configs/agents/values.json`, an income valued over its tier's
   horizon), fits a price multiplier per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to
   `experiments/results/effect-ledger/`; rerun at each card revision. Its Python mirror of `agents/value.rs`
-  must change with it. Seconds.
+  must change with it. "Remove up to N troops" counts at what it removes in play (`TROOPS_REMOVED`, from the
+  engine's `cards.troops_removed.<N>` / `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on

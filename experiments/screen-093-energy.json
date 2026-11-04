@@ -1,0 +1,17 @@
+{
+  "name": "screen-093-energy",
+  "note": "093 (MESSAGE #3982): the agents' energy at the table's rate (w.table_energy=1, the new default: held 4.5 credits, income and city production at 0.8 of it) against eval.rs's flat w.energy 0.8 points (w.table_energy=0, 092's agents), r36, the three board pairs, 48 seeds from 31600, the strategist at d2 and greedy at d0. Read with scripts/bench/paired.py and scripts/cards/energy_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist", "strategist:w.table_energy=0"],
+  "games": 48,
+  "first_seed": 31600,
+  "records": 0
+}

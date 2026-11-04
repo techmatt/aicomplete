@@ -316,14 +316,10 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     table(&["Level", "Adds", "Tunable"], rows)
 }
 
-/// What `key`, a list per seat in `ai.boards` order, gives `board`; a board no
-/// seat plays has nothing.
+/// What `key`, a list by board (093; one value sets every board), gives `board`.
 fn per_board(r: &Rules, key: &str, board: usize) -> String {
     let values = list(r, key);
-    list(r, "ai.boards")
-        .iter()
-        .position(|b| *b == board as i64)
-        .map_or(String::new(), |seat| values[seat % values.len()].to_string())
+    values[board % values.len()].to_string()
 }
 
 /// What each AI board prints before its tracks.

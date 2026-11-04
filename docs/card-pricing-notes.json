@@ -1,7 +1,7 @@
 {
   "autonomous_defense_grid": "13 credits: 5 points off a threat of its type a round and 2 credits of production, over a tier-2 card's 2.5-round horizon (r35), about 25 at the table.",
   "back_channel_talks": "Two corrupted factories, never stations, for 7: factories stay cheap to free; stations are a flip.",
-  "baseload_contract": "+1 energy of production for 9: Matt's anchor for a tier-1 energy income (8-10 credits); energy is rare from r35.",
+  "baseload_contract": "+1 energy of production for 14. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
   "civic_trust_bureau": "13 credits: 5 points off a threat of its type a round and 2 credits of production, over a tier-2 card's 2.5-round horizon (r35), about 25 at the table.",
   "continental_supergrid": "Cut to +2 energy (from +4), 6 credits: at value over the tier-2 horizon behind its 6 Power tags.",
   "dyson_swarm_tranche": "Cut to +2 energy (from +5) with +8 credits: a big energy income fits the r35 target at no price; at value over the tier-2 horizon.",
@@ -12,15 +12,18 @@
   "market_stabilization_board": "13 credits: 5 points off a threat of its type a round and 2 credits of production, over a tier-2 card's 2.5-round horizon (r35), about 25 at the table.",
   "nuclear_option": "19 and an antimatter: a liberation at its r35 value (45), less the Discord it sways.",
   "peacekeeping_mission": "45: a liberation (45) and up to 3 troops off in its country (about 12), less its 2 Security tags; no cube from r35.",
-  "peaker_turbines": "+1 energy and +1 chip of production for 12, at the tier-1 energy anchor (8-10) plus the chip.",
-  "popular_uprising": "19: one liberation, gated on 2 Unity tips and three Actions of Followers; the card leaves play after it. Its Action prints under 7.5 pt (5.4): the gate and the discard have no icon and the design asks for both.",
+  "peaker_turbines": "+1 energy and +1 chip of production for 17: the energy at 14 plus the chip. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "popular_uprising": "19: one liberation, after three Actions of Followers; the card leaves play after it (r36: no Unity-tip gate). Its Action prints at 5.8 pt, under 7.5: the two-row OR Action with the liberate plate crowds the top box, and the discard has no icon.",
   "positron_storage_ring": "Cut to +1 energy (from +3) beside its antimatter; 12 credits, at value over the tier-2 horizon.",
   "power_to_the_people": "25 with 4 energy and 3 chips: a liberation at its r35 value (45) and its Power income.",
   "root_access": "40: a liberation (45) and a botnet off next to the city when one is there (about 7), less its 2 Cyber tags.",
   "sentinel_command": "13 credits: 5 points off a threat of its type a round and 2 credits of production, over a tier-2 card's 2.5-round horizon (r35), about 25 at the table.",
   "singularity_exploit": "8 and an antimatter: a botnet (12) and a project discarded (8) read about 20; it was over value at 18.",
   "station_prefab_order": "One corrupted station for 11: a station freed is a flip, a cube a round both ways (about 15).",
-  "substation_hub": "+1 energy of income at the tier-1 anchor (8-10), and its Action gifts an energy on: another player's 2 chips.",
-  "tidal_barrage": "1 energy a round per 2 Power tags (was per tag), behind 3 Power tags: energy is rare from r35.",
-  "treaty_grid_exchange": "+1 energy of income at the tier-1 anchor (8-10), and its Action gifts an energy on: another player's insight."
+  "substation_hub": "17: +1 energy of income (14) and an Action turning 1 energy (4.5) into another player's 5 chips (7.5), about +1 a use at the gift share, 0.7 x 4 uses. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "tidal_barrage": "1 energy a round per 2 Power tags, behind 3 Power tags, for 15: about 1 energy of income at the typical tag count, 5 more than r35. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "treaty_grid_exchange": "18: +1 energy of income (14) and an Action turning 1 energy (4.5) into another player's 8 credits, about +1.5 a use at the gift share, 0.7 x 4 uses. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "fusion_startup_stake": "+2 credits and +1 energy of production for 19: 5 more than r35 for the energy. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "faraday_yard": "+1 energy of income and a 2-hardening Action for 16: 5 more than r35 for the energy. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10).",
+  "hardened_bunker_complex": "+1 energy of income and a hardening Action for 15: 5 more than r35 for the energy. r36: +1 energy of income is about 14 at tier 1 (4 rounds x 4.5 x 0.8, Matt's ruling; was 8-10)."
 }

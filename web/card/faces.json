@@ -74,7 +74,7 @@
  "transmission_corridor": {"top":[],"top_text":"","effect":[["2","node"],["2","move"]],"text":"Place 2 nodes. Move up to 2 ambassadors onto pieces in reach."},
  "fusion_startup_stake": {"top":[],"top_text":"","effect":[[{"income":["+2","credits"]}],[{"income":["+1","energy"]}]],"text":"Raise your credit income by 2. Raise your energy income by 1."},
  "tidal_barrage": {"top":[[{"income":["energy","/","2","#power"]}]],"top_text":"Each round, 1 energy per 2 Power tags on your cards.","effect":[],"text":""},
- "substation_hub": {"top":[[{"income":["energy"]}],["energy","→",{"other":["2","chips"]}]],"top_text":"Each round, 1 energy. Action: pay 1 energy, another player gains 2 chips.","effect":[],"text":""},
+ "substation_hub": {"top":[[{"income":["energy"]}],["energy","→",{"other":["5","chips"]}]],"top_text":"Each round, 1 energy. Action: pay 1 energy, another player gains 5 chips.","effect":[],"text":""},
  "faraday_yard": {"top":[[{"income":["energy"]}],["→","2","harden"]],"top_text":"Each round, 1 energy. Action: harden 2 facilities in reach.","effect":[],"text":""},
  "capacitor_discharge": {"top":[],"top_text":"","effect":[["energy","/","#power"]],"text":"Gain 1 energy per Power tag on your cards."},
  "storm_hardening": {"top":[],"top_text":"","effect":[["shelter","country"],["3","harden"]],"text":"Shelter one country this round. Harden 3 facilities in reach."},
@@ -98,7 +98,7 @@
  "embassy_compound": {"top":[["→","move","2","hex"]],"top_text":"Action: move 1 ambassador on the board up to 2 hexes.","effect":[["2","ambassador"]],"text":"Gain 2 ambassadors."},
  "consulate_tower": {"top":[[{"income":["credits","/","#diplomacy"]}]],"top_text":"Each round, 1 credit per Diplomacy tag on your cards.","effect":[],"text":""},
  "ceasefire_monitors": {"top":[],"top_text":"","effect":[[{"adversary":["−3","ambassador","OR","−1","troop","hex"]}],["2","ambassador"]],"text":"Remove 3 adversary ambassadors or 1 troop from a hex in reach. Gain 2 ambassadors."},
- "treaty_grid_exchange": {"top":[[{"income":["energy"]}],["energy","→",{"other":["insight"]}]],"top_text":"Each round, 1 energy. Action: pay 1 energy, another player gains 1 insight.","effect":[],"text":""},
+ "treaty_grid_exchange": {"top":[[{"income":["energy"]}],["energy","→",{"other":["8","credits"]}]],"top_text":"Each round, 1 energy. Action: pay 1 energy, another player gains 8 credits.","effect":[],"text":""},
  "back_channel_talks": {"top":[],"top_text":"","effect":[[{"adversary":["−2","cube"]}],["sway"]],"text":"Free 2 corrupted factories in reach. Sway 1 toward Unity."},
  "coalition_charter": {"top":[],"top_text":"","effect":[[{"other":["8","credits"]}],["5","sway"]],"text":"Another player gains 8 credits. Sway 5 toward Unity."},
  "liberation_accords": {"top":[],"top_text":"","effect":[[{"adversary":["−6","ambassador","city"]}],["3","ambassador"]],"text":"Remove 6 adversary ambassadors on or next to one corrupted city in reach. Gain 3 ambassadors."},
@@ -157,5 +157,5 @@
  "forensic_audit": {"top":[],"top_text":"","effect":[["−4","research_cubes"],[{"adversary":["−1","cube","city"]}]],"text":"Pay 4 research cubes. Liberate a corrupted city in reach."},
  "root_access": {"top":[],"top_text":"","effect":[[{"adversary":["−1","cube","city"]}],[{"adversary":["−1","botnet"]}]],"text":"Liberate a corrupted city in reach. Remove a botnet on or next to it."},
  "peacekeeping_mission": {"top":[],"top_text":"","effect":[[{"adversary":["−1","cube","city"]}],[{"adversary":["−3","troop","country"]}]],"text":"Liberate a corrupted city in reach. Remove up to 3 troops in its country."},
- "popular_uprising": {"top":[["→","+2","followers"],["OR","6","followers","→",{"adversary":["−1","cube","city"]}]],"top_text":"Action: add 2 Followers here, OR at 2+ Unity tips, pay 6 Followers, liberate a corrupted city in reach, then discard it.","effect":[["+2","followers"]],"text":"Add 2 Followers here."}
+ "popular_uprising": {"top":[["→","+2","followers"],["OR","6","followers","→",{"adversary":["−1","cube","city"]}]],"top_text":"Action: add 2 Followers here, OR pay 6 Followers, liberate a corrupted city in reach, then discard it.","effect":[["+2","followers"]],"text":"Add 2 Followers here."}
 }

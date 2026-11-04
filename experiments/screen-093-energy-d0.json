@@ -1,0 +1,17 @@
+{
+  "name": "screen-093-energy-d0",
+  "note": "093 (MESSAGE #3982): screen-093-energy's comparison for greedy (the engine) at d0.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [0],
+  "agents": ["engine", "engine:w.table_energy=0"],
+  "games": 48,
+  "first_seed": 31600,
+  "records": 0
+}

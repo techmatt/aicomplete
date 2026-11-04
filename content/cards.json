@@ -1732,7 +1732,7 @@
   "name": "Baseload Contract",
   "tier": 1,
   "kind": "program",
-  "cost": 9,
+  "cost": 14,
   "insight": 1,
   "tags": [
    "power"
@@ -1827,7 +1827,7 @@
   "name": "Peaker Turbines",
   "tier": 1,
   "kind": "program",
-  "cost": 12,
+  "cost": 17,
   "insight": 1,
   "tags": [
    "power",
@@ -1937,7 +1937,7 @@
   "name": "Fusion Startup Stake",
   "tier": 1,
   "kind": "program",
-  "cost": 14,
+  "cost": 19,
   "insight": 1,
   "tags": [
    "power"
@@ -1960,7 +1960,7 @@
   "name": "Tidal Barrage",
   "tier": 1,
   "kind": "building",
-  "cost": 10,
+  "cost": 15,
   "insight": 1,
   "needs": [
    [
@@ -1985,7 +1985,7 @@
   "name": "Substation Hub",
   "tier": 1,
   "kind": "building",
-  "cost": 9,
+  "cost": 17,
   "insight": 1,
   "tags": [
    "power",
@@ -2012,7 +2012,7 @@
     {
      "op": "other_gain",
      "resource": "chips",
-     "amount": 2
+     "amount": 5
     }
    ]
   }
@@ -2022,7 +2022,7 @@
   "name": "Faraday Yard",
   "tier": 1,
   "kind": "building",
-  "cost": 11,
+  "cost": 16,
   "insight": 1,
   "tags": [
    "power"
@@ -2636,7 +2636,7 @@
   "name": "Treaty Grid Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 9,
+  "cost": 18,
   "insight": 1,
   "tags": [
    "diplomacy",
@@ -2663,8 +2663,8 @@
     },
     {
      "op": "other_gain",
-     "resource": "insight",
-     "amount": 1
+     "resource": "credits",
+     "amount": 8
     }
    ]
   }
@@ -3250,7 +3250,7 @@
   "name": "Hardened Bunker Complex",
   "tier": 1,
   "kind": "building",
-  "cost": 10,
+  "cost": 15,
   "insight": 1,
   "tags": [
    "security"
@@ -4283,7 +4283,6 @@
       "op": "liberate"
      }
     ],
-    "tips": 2,
     "once": true
    }
   }

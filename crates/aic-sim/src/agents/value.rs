@@ -303,6 +303,14 @@ impl Worth {
     }
 }
 
+/// A resource's rate as income (093): energy income is discounted by
+/// `rates.energy_income_share`, since it arrives a drop at a time rather than
+/// when it is needed.
+fn income_rate(t: &Table, res: Resource) -> f64 {
+    let share = if res == Resource::Energy { t.rate("energy_income_share") } else { 1.0 };
+    t.res(res) * share
+}
+
 /// What one op is worth when the seat that resolves it is a player.
 pub fn op_worth(t: &Table, op: &Op) -> Worth {
     let r = |res: Resource| t.res(res);
@@ -372,7 +380,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterThreat => Worth::now(row("counter_threat")),
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
-        Op::Production { resource, amount } => Worth::income(row("production") * r(*resource) * *amount as f64),
+        Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
         Op::AddTokens { kind, amount, .. } => Worth::now(row("add_tokens") * t.feed(*kind) * *amount as f64),
         Op::CutBotnet => Worth::unseen(row("cut_botnet")),
         Op::MoveOne { .. } => Worth::now(row("move_one")),
@@ -436,10 +444,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::BotnetAmbassadors { amount } => Worth::now(row("botnet_ambassadors") * *amount as f64),
         Op::CleanCityAmbassadors { amount } => Worth::now(row("clean_city_ambassadors") * *amount as f64),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
-        Op::Income { resource, amount } => Worth::income(row("income") * r(*resource) * *amount as f64),
+        Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per } => {
             let mut w = Worth::default();
-            w.income_per_tag[tag_i(*tag)] = row("income_per_tag") * r(*resource) / (*per).max(1) as f64;
+            w.income_per_tag[tag_i(*tag)] = row("income_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
             w
         }
         Op::BuildingDiscount { amount } => Worth::standing(row("building_discount") * *amount as f64),

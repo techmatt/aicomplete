@@ -12,17 +12,13 @@
     {
       "name": "br",
       "set": [
-        "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2"
+        "ai.boards=0,2"
       ]
     },
     {
       "name": "pr",
       "set": [
-        "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2"
+        "ai.boards=1,2"
       ]
     },
     {
@@ -35,8 +31,6 @@
       "name": "br-ca4",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "adversary.corrupt_at=4"
       ]
     },
@@ -44,8 +38,6 @@
       "name": "pr-ca4",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "adversary.corrupt_at=4"
       ]
     }

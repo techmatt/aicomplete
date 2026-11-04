@@ -33,17 +33,13 @@
     {
       "name": "br",
       "set": [
-        "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2"
+        "ai.boards=0,2"
       ]
     },
     {
       "name": "br-price",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.hostile_buyout.cost=40",
         "cards.popular_uprising.ability.or.tokens=8"
       ]
@@ -52,8 +48,6 @@
       "name": "br-cb3",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "adversary.city_build=3"
       ]
     },
@@ -61,8 +55,6 @@
       "name": "br-price-cb3",
       "set": [
         "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2",
         "cards.hostile_buyout.cost=40",
         "cards.popular_uprising.ability.or.tokens=8",
         "adversary.city_build=3"
@@ -71,17 +63,13 @@
     {
       "name": "pr",
       "set": [
-        "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2"
+        "ai.boards=1,2"
       ]
     },
     {
       "name": "pr-price",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.hostile_buyout.cost=40",
         "cards.popular_uprising.ability.or.tokens=8"
       ]
@@ -90,8 +78,6 @@
       "name": "pr-cb3",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "adversary.city_build=3"
       ]
     },
@@ -99,8 +85,6 @@
       "name": "pr-price-cb3",
       "set": [
         "ai.boards=1,2",
-        "ai.start_credits=46,40",
-        "ai.slots=3,2",
         "cards.hostile_buyout.cost=40",
         "cards.popular_uprising.ability.or.tokens=8",
         "adversary.city_build=3"

@@ -259,6 +259,14 @@ pub struct Weights {
     /// credits) times this, in place of `antimatter`. At 1 the strategist held its
     /// antimatter and lost 59 points (31000, 144 games): off.
     pub table_antimatter: f64,
+    /// 093: above 0, energy in table mode, held, earned as income or made by a
+    /// city, is the table's rate (`resources.energy`, 4.5 credits) times this,
+    /// in place of `energy`; income at `rates.energy_income_share` of it, as the
+    /// card prices count it (value.rs `income_rate`). Off: at 1 greedy d0 lost
+    /// 15.3 ±4.0 (it hoards energy) and the strategist d2 2.1 ±5.0; at 0.3, which
+    /// is about `energy` 0.8 at the table's credit weight, d2 −4.9 ±2.7 and d0
+    /// +2.1 ±2.1 (31600, 144 games each).
+    pub table_energy: f64,
     /// 082, a probe: above 0, income (tracks, buildings, rewards) in table mode is
     /// valued at the table's rates times this, in place of the held resources'.
     pub table_income: f64,
@@ -429,6 +437,7 @@ impl Default for Weights {
             hand_share: 0.5,
             table_ambassador: 1.0,
             table_antimatter: 0.0,
+            table_energy: 0.0,
             table_income: 0.0,
             pick_cost: 0.0,
             needs_floor: 0.25,
@@ -788,6 +797,28 @@ impl Eval {
             self.w.patience
         } else {
             self.w.insight
+        }
+    }
+
+    /// An energy held (093): the table's rate in table mode with `table_energy`
+    /// on, else the flat `energy` weight.
+    fn energy_unit(&self) -> f64 {
+        let w = &self.w;
+        if w.table > 0.0 && w.table_energy > 0.0 {
+            w.table * w.table_energy * value::table().res(Resource::Energy)
+        } else {
+            w.energy
+        }
+    }
+
+    /// An energy a round to come (income, a city's production; 093): as held,
+    /// less `rates.energy_income_share` in table mode, as the card prices count it.
+    fn energy_income_unit(&self) -> f64 {
+        let w = &self.w;
+        if w.table > 0.0 && w.table_energy > 0.0 {
+            self.energy_unit() * value::table().rate("energy_income_share")
+        } else {
+            w.energy
         }
     }
 
@@ -1175,7 +1206,7 @@ impl Eval {
         for s in 0..self.seats {
             let res = |k: Resource| g.resource(s, k) as f64;
             *v += self.credit_value(res(Resource::Credits))
-                + w.energy * res(Resource::Energy)
+                + self.energy_unit() * res(Resource::Energy)
                 + w.antimatter * res(Resource::Antimatter)
                 + self.insight_unit(s) * res(Resource::Insight)
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
@@ -1332,7 +1363,7 @@ impl Eval {
         } else {
             w.antimatter
         };
-        let unit = [w.credits, w.credits, w.energy, antimatter, w.insight, w.research_cube];
+        let unit = [w.credits, w.credits, self.energy_income_unit(), antimatter, w.insight, w.research_cube];
         let mut v = 0.0;
         // 074: an owned station makes a cube a round for the rest of the game.
         if w.production != 0.0 {
@@ -1391,6 +1422,8 @@ impl Eval {
                     v += fade * self.insight_unit(s) * res(*r) as f64;
                 } else if *r == Resource::ResearchCubes {
                     v += fade * self.cube_unit(s) * res(*r) as f64;
+                } else if *r == Resource::Energy {
+                    v += fade * self.energy_unit() * res(*r) as f64;
                 } else if *r != Resource::Chips {
                     v += fade * unit[i] * res(*r) as f64;
                 }
@@ -1410,7 +1443,7 @@ impl Eval {
                 };
                 v += w.horizon * left * u * n as f64;
             }
-            v += w.horizon * w.production * left * w.energy * *made as f64;
+            v += w.horizon * w.production * left * self.energy_income_unit() * *made as f64;
             for id in g.pile(&cards::built(s)) {
                 let (d, f) = self.fact(&world, id);
                 v += w.built + w.built_cost * f.cost;

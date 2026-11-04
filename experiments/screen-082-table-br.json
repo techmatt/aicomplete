@@ -8,9 +8,7 @@
     {
       "name": "br",
       "set": [
-        "ai.boards=0,2",
-        "ai.start_credits=40,40",
-        "ai.slots=5,2"
+        "ai.boards=0,2"
       ]
     }
   ],

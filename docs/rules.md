@@ -15,7 +15,7 @@
 - [Tunables](#tunables): every baseline config parameter with its value, range and meaning (generated).
 - [Defaults and deviations](#defaults-and-deviations): the numbered readings chosen where the prompt or v0 ruleset left a gap.
 
-What the code implements, at rules revision 35 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 36 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](cards.md), priced in [card-pricing.md](card-pricing.md). The
@@ -35,7 +35,7 @@ Design intent lives in [principles.md](principles.md); the engine in
 [architecture.md](architecture.md). **Keep this current with every rules change.**
 
 <!-- generated: new_players -->
-**For new players.** In the first round you are dealt 10 cards and keep 4 free (more at 5 credits each). From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 2-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers.
+**For new players.** In the first round you are dealt 10 cards and keep 4 free (more at 5 credits each). From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 3 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers.
 
 **Nodes, for new players.** There is no growth step. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 1 energy and one city bound to you, which makes energy every round.
 <!-- /generated -->
@@ -813,7 +813,9 @@ game ends it there.
 corp) energy cubes a round. An aligned city's go free to the player who aligned it (+
 `aligned_bonus`). A neutral city's can be bought for `city_energy_credits` credits by a
 player with a node on or next to it (players choose who, or nobody); otherwise they are
-lost. A corrupted city's go to the adversary (Discord). A Blackout stops a country's cities
+lost. An adversary ambassador on a clean or aligned city diverts that round's cubes, so none
+are sold or given to a player (the ambassador is removed, §3). A corrupted city's go to the
+adversary (Discord). A Blackout stops a country's cities
 in the production after the threat executes.
 
 **Each resource is paid in its home domain (principle accepted):** energy for nodes and
@@ -870,14 +872,14 @@ There is no "build a factory" standard action: cities build factories.
 ## 7. AI boards (module `ai`; [`content/ais.json`](../content/ais.json))
 
 Each AI board has a **special rule**, a printed **income**, **printed tags**, two **node tracks** (economy and
-card-play), building slots (`ai.slots`, a config list in seat order), starting credits (`ai.start_credits`, in the
-same order) and its **powers**. The first token starts on the economy
+card-play), building slots (`ai.slots`) and starting credits (`ai.start_credits`), config lists by board, so a board
+has the same in every seating, and its **powers**. The first token starts on the economy
 track, so its first space is uncovered from setup; placing a node takes the next token off a track and uncovers what
 is printed under it. Uncovered values add to the income every round (insight at the start of the round, the rest in
 upkeep). The board module owns nodes and counts the tokens taken (`board.track.<seat>`); the AI board reads it.
 
-**The Builder, for new players.** Your special rule is Breadth: five building slots (the Protector has three, the
-Researcher two), so your engine is wider. You start with 40 credits and earn 25 a round, and each credit space of your
+**The Builder, for new players.** Your special rule is Breadth: five building slots (the Protector has four, the
+Researcher three), so your engine is wider. You start with 40 credits and earn 25 a round, and each credit space of your
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals you
 10 cards: 4 are free and each further keep costs 5, so choose between more cards now and more money for the first
 plays. Each round you may turn credits into a chip with Mint. Late in the game, sacrifice cards you have finished with:
@@ -914,8 +916,8 @@ placements a round it is reachable about round 8.
 | Board | Printed income | Starting credits | Slots | Printed tags | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|
 | Builder | 25 credits, 4 insight | 40 | 5 | Industry | 7 | 7 | 14 |
-| Protector | 21 credits, 4 insight, 1 energy | 46 | 3 | Security | 7 | 7 | 14 |
-| Researcher | 18 credits, 4 insight | 40 | 2 | Science | 7 | 7 | 14 |
+| Protector | 21 credits, 4 insight, 1 energy | 46 | 4 | Security | 7 | 7 | 14 |
+| Researcher | 18 credits, 4 insight | 40 | 3 | Science | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate; Matt).** Until engines carry the economy, the boards start and earn much
@@ -975,9 +977,12 @@ have tokens).
 **Loops and caps.** Credits → chips → buildings → income → credits runs once a round and in 5 slots at most. Rush Build
 takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
-hand cap it. **The energy gift** (1 energy → another player's 2 chips or 1 insight, once a round a building):
-energy bought from a neutral city costs `city_energy_credits` (2), and the gift's 2 chips sell for 2 and its
-insight expires with the round, so credits → energy → gift → credits never gains; nothing turns the gift back into energy. **Energy counters**
+hand cap it. **The energy gift** (1 energy → another player's 5 chips at Substation Hub or 8 credits at Treaty Grid
+Exchange, once a round a building) is a conversion with a boost: an energy is worth about 4.5, the gift 7.5-8. Energy
+bought from a neutral city costs `city_energy_credits` (5), so credits → energy → gift → credits gains about 3 a round
+per gift building, for the team, not the buyer; it is capped by once a round, the two buildings, and the cities' energy
+(a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). Nothing turns the gift back
+into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with Cintamani's converter (a cube for an insight) is
 the intended engine, capped by how many stations make cubes, by the node in Cintamani's country that the converter
 needs, and by once a round per player. Bought cubes go only onto incomplete cards and are spent at completion, so credits never reach a converter.
@@ -1031,7 +1036,7 @@ second seat would have neither); no content prints them.
 <!-- generated: board_details -->
 | Board | Special rule |
 |---|---|
-| Builder | *Breadth*: You have 5 building slots; the Protector has 3 and the Researcher 2. |
+| Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
 | Protector | *Wall*: Adversary troops can't enter or strike a hex with your node. |
 | Researcher | *Patience*: Your unspent insight carries over to the next round. |
 <!-- /generated -->
@@ -1207,15 +1212,15 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Forensic Audit | research cubes | event | none |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
-  | Popular Uprising | Followers | building (arrives with 2 Followers) | Action: add 2 Followers here, OR, once Unity has tipped twice, spend 6 here: liberate, then discard it (and the stack under it) |
+  | Popular Uprising | Followers | building (arrives with 2 Followers) | Action: add 2 Followers here, OR spend 6 here: liberate, then discard it (and the stack under it) |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
   a corrupted city costs in play; the extra at its own row), about 25-47 credits, well under the fallback's ~100 and
   out of reach before mid-game. Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising liberates once too, gated on 2 Unity
-  tips, and leaves play when it does.
+  liberation → clean city → energy → more liberation is capped; Popular Uprising liberates once too and leaves play when it
+  does.
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";
@@ -1243,7 +1248,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   card loses its tokens.
 - **A one-shot half (`once`, gated by `tips`):** a half of an Action may need the world's Unity tips to have reached a
   number first, and may take its card out of play once it resolves, with the stack under it (Popular Uprising's
-  liberation: 2 tips, then discarded).
+  liberation: no gate, then discarded; no card prints a `tips` gate at r36).
 - **Actions** (abilities: `ability`, buildings only) are used with `Use` once a round, pay their cost, and refresh at
   the start of a round. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay
   and that has a target (a half that counts tokens here needs one there). **Ongoing abilities live only on
@@ -1370,7 +1375,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.factory_units` | 1 | 0..5 | corp units each factory makes on a production step at each of its corp's bases |
 | `board.clock` | 1, 2, 1, 2, 1, 3 | 0..3 | the printed round track, per round: 1 production, 2 war, 3 both (the last entry repeats) |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
-| `board.city_energy_credits` | 2 | 0..20 | credits for a neutral city's energy cube, bought by a player with a node next to it |
+| `board.city_energy_credits` | 5 | 0..20 | credits for a neutral city's energy cube, bought by a player with a node next to it |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
 | `board.station_cubes` | 1 | 0..5 | research cubes a station makes a round |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
@@ -1448,9 +1453,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `economy.give_insight` | 1 | 0..10 | insight the receiver gains for 1 given |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
-| `ai.start_credits` | 40, 46, 40 | 0..100 | credits each seat starts with, in seat order (not by board); the list repeats |
+| `ai.start_credits` | 40, 46, 40 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `ai.start_energy` | 1 | 0..20 | energy each player starts with |
-| `ai.slots` | 5, 3, 2 | 1..10 | building slots of each seat, in seat order (not by board); the list repeats |
+| `ai.slots` | 5, 4, 3 | 1..10 | building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `cards.deal` | 4 | 0..10 | cards each player drafts from each round after the first, choosing each one's tier |
 | `cards.opening_deal` | 10 | 0..20 | cards dealt to each player in round 1 (the opening) |
 | `cards.opening_free` | 4 | 0..20 | opening cards each player keeps free |

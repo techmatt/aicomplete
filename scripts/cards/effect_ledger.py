@@ -151,6 +151,23 @@ class Table:
         return self.instant(w) + self.per_round(w)
 
 
+def income_r(t, resource):
+    """value.rs `income_rate` (093): energy income at `rates.energy_income_share` of its rate."""
+    return t.res(resource) * (t.rate('energy_income_share') if resource == 'energy' else 1.0)
+
+
+# "Remove up to N troops" at what it removes in play, not N (093): troops removed per
+# resolution of `remove_troops` with that N, from the engine's `cards.troops_removed.<N>` /
+# `cards.remove_troops.<N>` counters in 093's r36 read (experiments/results/093_rules_r36/, the
+# strategist at d2 over screen-093's 15 cells and greedy d0 over screen-093-d0's 6, 1,008 games; up to 6
+# from 57 resolutions, up to 4 from 364). An N not read here counts as N.
+TROOPS_REMOVED = {1: 1.0, 2: 1.48, 3: 1.75, 4: 2.37, 6: 3.60}
+
+
+def expected_troops(n):
+    return TROOPS_REMOVED.get(n, n)
+
+
 def damage(t, o):
     return max(t.op('remove_ambassador') * o.get('ambassadors', 0), t.op('remove_troop') * o.get('troops', 0))
 
@@ -191,7 +208,7 @@ def op_worth(t, o):
         sway = math.floor(m / n('unity_per')) * t.rate('sway') if n('unity_per') > 0 else 0.0
         return Worth(now=row(op) * m + sway)
     if op == 'remove_troops':
-        return Worth(now=row(op) * n('count'))
+        return Worth(now=row(op) * expected_troops(n('count')))
     if op == 'cleanse':
         share = 0.8 if o.get('one_country') else 1.0
         if o.get('cities'):
@@ -224,7 +241,7 @@ def op_worth(t, o):
     if op == 'drain_project' or op == 'drain_all':
         return Worth(now=row(op) * n('amount'))
     if op == 'production':
-        return Worth(income=row(op) * r(o['resource']) * n('amount'))
+        return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))
     if op == 'add_tokens':
         return Worth(now=row(op) * t.feed(o['kind']) * n('amount'))
     if op == 'cut_botnet':
@@ -240,8 +257,10 @@ def op_worth(t, o):
     if op == 'sway':
         sign = 1.0 if o['side'] == 'unity' else -1.0
         return Worth(now=row('sway') * sign * t.rate('sway') * n('amount'))
-    if op == 'team_income' or op == 'income':
+    if op == 'team_income':
         return Worth(income=row(op) * r(o['resource']) * n('amount'))
+    if op == 'income':
+        return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))
     if op == 'free_purchases':
         return Worth(now=row(op) * t.rate('keep_tier1') * n('count'))
     if op == 'counter_all':
@@ -251,7 +270,7 @@ def op_worth(t, o):
     if op == 'remove_botnets':
         return Worth(now=row(op) * n('count'))
     if op == 'income_per_tag':
-        return Worth(income_per_tag={o['tag']: row(op) * r(o['resource']) / max(n('per'), 1)})
+        return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) / max(n('per'), 1)})
     if op in ('building_discount', 'slots', 'project_drain', 'unity_bonus', 'supply_insight'):
         return Worth(standing=row(op) * n('amount'))
     if op == 'auto_counter':

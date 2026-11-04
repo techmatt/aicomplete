@@ -8,7 +8,7 @@ fn cities_power_the_player_with_the_most_node_next_to_them() {
     let res = |g: &GameState, s: usize, r: Resource| g.resource(s, r) - g0.resource(s, r);
 
     // 021: a neutral city's cube is lost unless a player with a node next
-    // to it buys it (`city_energy_credits`, 2; players choose who).
+    // to it buys it (`city_energy_credits`, 5 at r36; players choose who).
     let mut g = g0.clone();
     put(&mut g, n[0], node(0), 1);
     put(&mut g, n[1], node(1), 1);
@@ -19,13 +19,13 @@ fn cities_power_the_player_with_the_most_node_next_to_them() {
     put(&mut g, n[0], node(0), 1);
     put(&mut g, n[1], node(1), 1);
     set_res(&mut g, 0, Resource::Credits, 5);
-    set_res(&mut g, 1, Resource::Credits, 5);
+    set_res(&mut g, 1, Resource::Credits, 8);
     run(&rules, &mut g);
     let p = g.pending.as_ref().expect("an energy choice");
     assert!(p.ask.prompt.starts_with("The energy of"), "{}", p.ask.prompt);
     answer_with(&rules, &mut g, "seat 1 buys");
     assert_eq!((res(&g, 0, Resource::Energy), res(&g, 1, Resource::Energy)), (0, 1));
-    assert_eq!(g.resource(1, Resource::Credits), 3);
+    assert_eq!(g.resource(1, Resource::Credits), 3, "8 less the price, 5");
     let mut g = g0.clone();
     put(&mut g, n[0], node(0), 1);
     set_res(&mut g, 0, Resource::Credits, 5);

@@ -32,6 +32,7 @@
     "keep_tier1": 2.5,
     "keep_tier2": 6.5,
     "income_rounds": 5,
+    "energy_income_share": 0.8,
     "horizon_t1": 4,
     "horizon_t2": 2.5,
     "uses_share": 0.7,

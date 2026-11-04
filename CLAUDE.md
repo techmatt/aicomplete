@@ -65,6 +65,11 @@ experiments, speed, scripts, web, card art.
 ## Working rules
 
 - **Commit to the branch you are on.** Leave nothing uncommitted.
+- **Give / get before any sim.** An item that adds or reprices a card, a building Action or any conversion first
+  writes a give / get line for each at `configs/agents/values.json`. Each must show a gain a player can see at the
+  values it is priced at: no break-even conversions. Loops are capped by limits (once a round, slots, supply), never
+  by making the trade worthless. Fix or flag any that fails before the first read (090's energy gift traded 1
+  energy, worth 4.5, for 2 chips, so it was never played).
 - **A rules item runs `npm run cards:fit`** (in `web/`) before its first freeze, not only at the
   end: a card-fit edit after a freeze redoes every frozen read (090 redid them all after four).
 - **Two test lanes.** Run `cargo test --workspace`, the fast lane, after every change, and

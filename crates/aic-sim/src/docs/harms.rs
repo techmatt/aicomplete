@@ -47,7 +47,7 @@ pub const RULE_HARMS: [(&str, &str, &str); 20] = [
     ("arrivals", "adversary pieces placed", "every matching site gains an ambassador"),
     ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
     ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
-    ("arrivals", "production blacked out", "an ambassador on a city or station diverts it"),
+    ("arrivals", "production blacked out", "an ambassador on a city or station diverts its output: a city's energy is neither sold nor given to players that round"),
     ("build and spread", "adversary pieces placed", "cities build; surplus spreads; two meeting make a botnet"),
     ("build and spread", "projects advanced (compute)", "each botnet makes compute"),
     ("build and spread", "actions or claims blocked", "a botnet blocks site claims next to it"),

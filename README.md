@@ -92,7 +92,7 @@ command, port and path as they are. Everything else about it is in
 ```sh
 cargo build --workspace
 cargo test --workspace                             # fast lane: ~8 s once built, ~13 s after an edit in aic-sim (rebuild included); after every change
-cargo test-all                                     # full run, slow lane included: ~40 s on 6 test threads, ~2 min with a cold test build
+cargo test-all                                     # full run, slow lane included: ~40 s on 6 test threads, ~2 min with a cold test build (--test-threads=N; -j N fails fast and looks like a pass)
 cargo test-slow                                    # the slow lane alone: nearly all of that
 cargo build --release -p aic-sim                   # ~12 s
 ./target/release/aic-sim docs                      # regenerate the docs built from content and configs (--check: report only)
@@ -140,6 +140,9 @@ play changes: update both constants. The revision is recorded with every sim res
 never mixed up.
 
 **This machine.**
+
+- Content is compiled into `aic-sim` (`include_str!`); configs, `configs/agents/` included, are read from the
+  working directory. An old binary runs from an old tree: `git archive <rev> configs | tar -x -C out/old`.
 
 - 6 cores, 12 threads: 12 workers give about 6 × one, so never read "12 threads" as 12 ×
   in an estimate.

@@ -87,6 +87,7 @@ Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, o
 - **A building in play:** what it earns a round beyond income, times the rounds left.
 - **A token:** what its card's spend pays per token, else the held rate.
 - **A supply ambassador:** its row.
+- **Energy:** `energy` 0.8 points (0.3 of the table's 4.5); `w.table_energy` 1 lost d0 15 ±4 (093).
 - **An action** is credited what the board terms can't see after it: a cordon, a peek, a
   shelter's flat worth (`Eval::bonus`; what a shelter saves now is the guide's, below).
 
@@ -102,8 +103,7 @@ card's tags, the resources and tokens it pays in or out, its kind and its catego
 card's multiplier is 1 plus the weights it matches, times the **phase schedule** for its
 categories: early (rounds 1-3) income ×1.4 and engine pieces ×1.3; mid (4-6) chain pieces
 (a card with `needs`) ×1.4; late (7 on) capstones ×1.4, liberation ×1.5, purge ×1.4 (cuts too: `strategies.json`); a card takes its categories' largest. The
-multiplier reaches what a seat drafts and keeps, not a card in hand: the board terms playing
-brings aren't multiplied, so a multiplied hand would beat playing it. The choice is a pure
+multiplier reaches drafting and keeping, not a card in hand (a multiplied hand would beat playing it). The choice is a pure
 function of the table at that keep, and the planner hands it to every rollout's policy.
 
 The strategies as a player says them (the config's `says`; a test requires each line verbatim):
@@ -133,7 +133,7 @@ The strategies as a player says them (the config's `says`; a test requires each 
 ## Strategy-guide heuristics
 
 Rules a player could say aloud where a one-step search misses a card's point (Matt,
-2026-11-03), each with a switch, all on (on/off reads: `experiments/results/screen-092/`).
+2026-11-03), each with a switch, all on (reads: `experiments/results/screen-092/`).
 
 - *Shelter what a destruction showing would take, once you can't counter it.* A sheltered
   country is worth the nodes and player factories this round's destroying threats and war
@@ -145,31 +145,29 @@ Rules a player could say aloud where a one-step search misses a card's point (Ma
   one-step eval already saw it, the keep plan didn't).
 - *Count your research cubes like credits* (`plan_cubes`): two cube cards aren't planned on
   the same cubes.
-- *Pick the strategy your board's powers feed* (`strat_powers`, in *Strategies*).
+- *Pick the strategy your board's powers feed* (`strat_powers`).
 
 ## The progress term and the draft
 
 - **`needs`:** a card whose `needs` aren't met counts `needs_floor` (0.25) of its worth,
-  plus the rest times the square of the share of the tags the seat has toward them, so a
-  chain card, a dear capstone or a gated liberate card has value before it is playable, and
-  each tag played toward it adds more than the last.
+  plus the rest times the square of the share of the tags held toward them: a chain card has
+  value before it is playable, and each tag toward it adds more than the last.
 - **Dear powers:** a board power that sacrifices two tags or more counts `power_progress`
   (0.5) of one use's worth, times the square of the share of the tags held toward it.
-- **Drafting for the neighbor:** a draft hand a seat has taken from goes to the next seat, so
-  its cards count for that seat, by that seat's strategy. A card not kept is discarded, so
-  there is no keeping for the neighbor.
+- **Drafting for the neighbor:** a passed hand's cards count for the next seat, by its
+  strategy (a card not kept is discarded).
 
 ## The tiers
 
-| Tier | Stands for | Spec | win %, bp / br / pr, r35 (092, seeds 31500, 48 a pair) |
+| Tier | Stands for | Spec | win %, bp / br / pr, r36 (093, seeds 31600, 48 a pair) |
 |---|---|---|---|
-| Greedy without strategy | A new player | `engine` | d0 77 / 85 / 94 (target 70-85) |
-| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 73 / 73 / 58 (target 45-85) |
-| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read at r35 (r34: 79 / 88 / 92) |
+| Greedy without strategy | A new player | `engine` | d0 90 / 88 / 94 (target 70-85) |
+| Greedy with strategy | A moderately skilled player; **the screens' judge** | `strategist` | d2 65 / 65 / 71 (target 45-85) |
+| Planner with strategy rollouts | A strong player; spot checks of the ceiling | `planner:strategy=1` | not read since r34 (79 / 88 / 92) |
 
 The strategist judges (Matt, 2026-11-03: while within about 5 points of `sweep` a pair on the
 same seeds) at about an eleventh of its time a game; `sweep`, 2-8 points above, is the spot check. A strategy pairing's
 win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them, and `aic-sim
 strategies CONFIG --agent strategist` prints what each seat chooses (seeds 31100, r35: Power
-grid for 37 of 48 Builders). Tables: `experiments/results/screen-082/agents.md` (r34),
-`screen-092/agents.md` (r35).
+grid for 37 of 48 Builders). Tables: `experiments/results/screen-092/agents.md` (r35),
+`093_rules_r36/r36.md` (r36).

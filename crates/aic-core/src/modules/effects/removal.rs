@@ -84,7 +84,10 @@ pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
     let prompt = format!("Seat {seat}: remove adversary troops in which country?");
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
-        up_to_in_country(g, cx, seat, cs[i], count, TROOP)?;
+        let removed = up_to_in_country(g, cx, seat, cs[i], count, TROOP)?;
+        // 093: what "up to N" removes in play, for the effect ledger.
+        cx.tally(g, &format!("cards.remove_troops.{count}"), 1);
+        cx.tally(g, &format!("cards.troops_removed.{count}"), removed);
     }
     Ok(())
 }
