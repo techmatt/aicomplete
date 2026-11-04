@@ -12,6 +12,11 @@ lookups by name (103). The profiles, with call counts, are in
 [its own](../experiments/results/104_agent_speed_2/speed.md). Legal-action generation is 0.1%: caching it
 buys nothing.
 
+**What a rule costs the agents.** The strategist resolves every prompt of every legal action it scores, so a
+free power usable at every decision with N picks (pick a card, or stop) costs about N² evaluations a decision:
+105's first Synthesis (discard any number of cards) doubled a Researcher pair's agent time; one card a use cost
+1.3×. Prefer one pick a use.
+
 **What keeps it cheap.**
 
 - **State:** a clone is about 1.1 µs: names are interned `Key`s, maps are sorted `FlatMap`s, and hexes,

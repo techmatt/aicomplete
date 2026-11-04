@@ -92,6 +92,44 @@ fn is_zero(n: &i64) -> bool {
     *n == 0
 }
 
+/// What a standing trigger (`Op::When`) waits for (105). Each fires as often as
+/// it happens: there is no per-round limit on a trigger.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "event", rename_all = "snake_case", deny_unknown_fields)]
+pub enum Event {
+    /// You play a card carrying `tag` (no tag: any card). A building counts
+    /// itself: it is in play when the trigger is read.
+    Play {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tag: Option<Tag>,
+    },
+    /// You play a card: once for each `tag` tag on it (the per-tag form).
+    PlayTag { tag: Tag },
+    /// Another player plays a card carrying `tag` (no tag: any card); with
+    /// `both`, that player gains the same (the trigger's ops must be gains).
+    TeamPlay {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tag: Option<Tag>,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        both: bool,
+    },
+    /// You play a card whose printed credit cost is at least `at` (a rebate).
+    PlayCost { at: i64 },
+    /// You remove an adversary troop: once a troop.
+    RemoveTroop,
+    /// You remove compute from adversary projects: once a card, Action, power
+    /// or standard action that removes any.
+    RemoveCompute,
+    /// You remove adversary ambassadors (canceling included): once a card,
+    /// Action, power or standard action that removes any.
+    RemoveAmbassadors,
+    /// You place a token of `kind` on one of your cards: once a token.
+    PlaceTokens { kind: TokenKind },
+    /// Your Wall stops a troop in the march (an AI board's innate: Vigil):
+    /// once a troop a march.
+    WallStops,
+}
+
 impl RoundFlag {
     pub fn name(self) -> &'static str {
         match self {
@@ -339,6 +377,20 @@ pub enum Op {
         tag: Tag,
         per: i64,
     },
+    /// Copy (105, a program's): raise your income by one of your active
+    /// buildings' Each round output, as it pays at the time of play (a
+    /// per-tag income at its count then).
+    CopyIncome,
+    /// Reuse (105, a building's Action): use another of your buildings'
+    /// Actions again this round. Not one whose own Action is a reuse.
+    Reuse,
+    /// Discard a card from your hand and gain `amount` of `resource` (105: the
+    /// Researcher's Synthesis; one card a use, which keeps the agents' search
+    /// to one pick).
+    DiscardHand {
+        resource: Resource,
+        amount: i64,
+    },
 
     // ---------- instant: players, threats, the team, twists ----------
     /// Sway `amount` toward `side` (module `alignment`).
@@ -500,6 +552,26 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
+    /// Your cards carrying `tag` (no tag: every card) cost `amount` less of
+    /// `resource`, credits or insight, to play (105), down to `cards.discount_floor`.
+    CardDiscount {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tag: Option<Tag>,
+        resource: Resource,
+        amount: i64,
+    },
+    /// A trigger (105): when `on` happens, resolve `then` (instant player ops;
+    /// "here" is this card). On a card, an Effect: `:`.
+    When {
+        on: Event,
+        then: Vec<Op>,
+    },
+    /// A threshold counter (105): whenever a trigger of this card leaves
+    /// `at` or more tokens here, remove `at` of them and resolve `then`.
+    Threshold {
+        at: i64,
+        then: Vec<Op>,
+    },
     /// You may use the Harden standard action, paid `chips` chips (080: the
     /// price is printed on the card; r33 read `board.harden_chips`).
     HardenAction {
@@ -637,6 +709,9 @@ impl Op {
             Op::Income { .. }
             | Op::IncomePerTag { .. }
             | Op::BuildingDiscount { .. }
+            | Op::CardDiscount { .. }
+            | Op::When { .. }
+            | Op::Threshold { .. }
             | Op::HardenAction { .. }
             | Op::Slots { .. }
             | Op::Logistics { .. }
@@ -698,7 +773,10 @@ impl Op {
             | Op::Draw { .. }
             | Op::DrainAll { .. }
             | Op::GainPerTokens { .. }
-            | Op::CashOut { .. } => &[Player],
+            | Op::CashOut { .. }
+            | Op::CopyIncome
+            | Op::Reuse
+            | Op::DiscardHand { .. } => &[Player],
         }
     }
 }

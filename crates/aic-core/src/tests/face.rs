@@ -16,8 +16,8 @@ fn a_face_opens_with_its_boxes_word() {
 
 #[test]
 fn a_bare_arrow_is_a_free_action() {
-    let f = face_of("honeypot_relay");
-    assert_eq!(f.top_text, "Action: remove 2 adversary ambassadors from a hex in reach.");
+    let f = face_of("sentinel_mesh");
+    assert_eq!(f.top_text, "Action: one threat needs 2 less of each resource.");
     // 076: an OR Action prints each half; the second line opens with OR.
     let f = face_of("agency_field_station");
     assert_eq!(f.top_text, "Action: add 1 Agent here, OR get 1 credit per Agent here.");
@@ -114,9 +114,9 @@ fn icon_lines_print_only_what_the_viewer_draws() {
     }
     assert!(known.contains("credits") && known.contains("troop") && known.contains("#cyber"), "{known:?}");
     let number = |w: &str| {
-        // card.js: /^[−+]?≤?[\dn]+$/
+        // card.js: /^[−+]?[≤≥]?[\dn]+$/
         let w = w.strip_prefix(['−', '+']).unwrap_or(w);
-        let w = w.strip_prefix('≤').unwrap_or(w);
+        let w = w.strip_prefix(['≤', '≥']).unwrap_or(w);
         !w.is_empty() && w.chars().all(|c| c.is_ascii_digit() || c == 'n')
     };
     fn words<'a>(parts: &'a [Part], out: &mut Vec<&'a str>) {

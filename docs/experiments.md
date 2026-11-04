@@ -146,7 +146,10 @@ the judge off the value table.
   | tar -x`, on the same seeds. Build and copy the old binary before the first edit (096 did, at a minute), or build
   it from a `git archive` with its own `CARGO_TARGET_DIR`. Run it from its own folder, with the spec copied there:
   specs and their configs resolve against the working directory. A counter the read needs that the old binary
-  lacks: patch in only the tally, build that as the old binary (098's `board.city_energy_aligned`).
+  lacks: patch in only the tally, build that as the old binary (098's `board.city_energy_aligned`). The quickest
+  check that the new code is play-neutral: the new binary with every content change reverted by overlay should
+  reproduce the old numbers exactly (105: 34 overlays, same games). A prompt's "greedy" is the `greedy` agent; the
+  house's "greedy at d0" is the `engine` spec.
 - **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
   first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
   `corps.<name>.project.<path>`) and need no build; a rule or map what-if does.
@@ -164,9 +167,8 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump: r40: 32700-32899 the r39 → r40 read and 32900-33099 the band read (`screen-102-b*`, `-c*`;
-32500-32699 screened 102's agent levers on r39); 33100-33299 103's speed approximations (`screen-103-answers*.json`,
-`archive/screen-103*.json`); 33300-33499 104's `plan_gross` read (`screen-104-p1*.json`). Next free: 33500.
+seeds and reset at each bump: r41: 33500-33547 the r40 → r41 read (`screen-105-r41.json`, both binaries, and 105's
+diagnostic overlays on r41). Next free: 33548.
 
 ## Reading prices
 

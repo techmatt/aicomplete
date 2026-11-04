@@ -186,9 +186,13 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Production { resource, amount } => {
             cx.add_key(g, &economy::production_key(seat, *resource), *amount)
         }
-        Op::AddTokens { kind: _, amount, here: true } => {
+        Op::AddTokens { kind, amount, here: true } => {
             if let Some(c) = ctx.card {
                 cards::add_tokens(g, cx, seat, &c, *amount);
+                // 105: a token placed fires the seat's place-token triggers.
+                if cards::def(&w, &c).tokens.as_ref().is_some_and(|t| t.kind == *kind) {
+                    cards::on_tokens(g, cx, seat, *kind, *amount)?;
+                }
             }
         }
         Op::AddTokens { kind, amount, here: false } => {
@@ -197,8 +201,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let prompt = || format!("Seat {seat}: add {amount} {kind} to which card?");
             if let Some(i) = cx.choose(seat, prompt, opts)? {
                 cards::add_tokens(g, cx, seat, &ids[i], *amount);
+                cards::on_tokens(g, cx, seat, *kind, *amount)?;
             }
         }
+        Op::CopyIncome => cards::copy_income(g, cx, seat)?,
+        Op::Reuse => cards::reuse(g, cx, seat, ctx.card)?,
+        Op::DiscardHand { resource, amount } => cards::discard_hand(g, cx, seat, *resource, *amount)?,
         Op::MoveOne { range } => ambassadors::move_one(g, cx, seat, *range)?,
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
         Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
@@ -289,6 +297,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }
+        | Op::CardDiscount { .. }
+        | Op::When { .. }
+        | Op::Threshold { .. }
         | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }

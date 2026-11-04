@@ -54,7 +54,8 @@
         "drain_credits": 5,
         "drain_amount": 3,
         "free_station_credits": 6,
-        "free_station_ambassadors": 2
+        "free_station_ambassadors": 2,
+        "cube_insight": 1
       }
     },
     {

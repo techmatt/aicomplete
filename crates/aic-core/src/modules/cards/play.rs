@@ -122,7 +122,7 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
 }
 
 /// Why one branch of an Action can't be used now.
-fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
+pub(super) fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }
@@ -145,6 +145,18 @@ pub(super) fn play_card(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str) -
         }
     }
     let d = def(&w, id);
+    // 105: what the card discounts by tag saved, the measure's.
+    let (credits, insight) = if holds(&w, g, seat, |p| matches!(p, Op::CardDiscount { .. })) {
+        prices(&w, g, seat).tag_savings(d)
+    } else {
+        (0, 0)
+    };
+    if credits > 0 {
+        cx.tally(g, "cards.discount_credits", credits);
+    }
+    if insight > 0 {
+        cx.tally(g, "cards.discount_insight", insight);
+    }
     cx.add_resource(g, seat, Resource::Credits, -play_cost(&w, g, seat, d));
     pay_card_extras(g, cx, seat, d);
     enter_play(g, cx, seat, id, d)
@@ -219,7 +231,12 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     }
     // 076: a building's play effects may load it ("add 2 Agents here").
     let mut ctx = if d.is_building() { effects::Ctx::ability(seat, Key::new(id)) } else { effects::Ctx::seat(seat) };
-    effects::run(g, cx, &d.effects, &mut ctx)
+    effects::run(g, cx, &d.effects, &mut ctx)?;
+    // 105: then every seat's play triggers (a building counts itself).
+    if g.is_over() {
+        return Ok(());
+    }
+    on_play(g, cx, seat, d)
 }
 
 /// A card's costs beyond credits, and the income it lowers.

@@ -19,10 +19,12 @@ pub enum StandardAction {
     // 024: the credit sinks, Terraforming Mars' standard projects.
     HardenBuy,
     Drain,
+    /// 105: the general converter, a research cube for insight, no limit a round.
+    Insight,
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 11] = [
+pub const STANDARD: [StandardAction; 12] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -34,6 +36,7 @@ pub const STANDARD: [StandardAction; 11] = [
     StandardAction::Chips,
     StandardAction::HardenBuy,
     StandardAction::Drain,
+    StandardAction::Insight,
 ];
 
 impl StandardAction {
@@ -51,6 +54,7 @@ impl StandardAction {
             StandardAction::Chips => "chips",
             StandardAction::HardenBuy => "harden_buy",
             StandardAction::Drain => "drain",
+            StandardAction::Insight => "insight",
         }
     }
 
@@ -69,16 +73,19 @@ pub struct Price {
     pub chips: i64,
     /// 066: player ambassadors from the supply (removing, aligning).
     pub ambassadors: i64,
+    /// 105: research cubes (the general converter).
+    pub cubes: i64,
 }
 
 impl Price {
     /// What it charges, in print order.
-    fn parts(self) -> [(i64, Resource); 4] {
+    fn parts(self) -> [(i64, Resource); 5] {
         [
             (self.energy, Resource::Energy),
             (self.credits, Resource::Credits),
             (self.chips, Resource::Chips),
             (self.ambassadors, Resource::Ambassadors),
+            (self.cubes, Resource::ResearchCubes),
         ]
     }
 
@@ -125,6 +132,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Chips => chips(1),
         StandardAction::HardenBuy => credits(i("harden_credits")),
         StandardAction::Drain => credits(i("drain_credits")),
+        StandardAction::Insight => Price { cubes: 1, ..Price::default() },
     }
 }
 
@@ -186,6 +194,9 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Chips => "sell 1 chip for credits",
         StandardAction::HardenBuy => "standard project: harden a facility in reach",
         StandardAction::Drain => "standard project: remove compute from an adversary project",
+        StandardAction::Insight => {
+            return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
+        }
     };
     text.to_string()
 }
@@ -246,8 +257,10 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
                 Vec::new()
             }
         }
-        // Gaining an ambassador or credits needs no target.
+        // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador | StandardAction::Chips => vec![usize::MAX],
+        StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
+        StandardAction::Insight => Vec::new(),
     }
 }
 
@@ -274,6 +287,10 @@ pub(super) fn std_resolve(
             cx.tally(g, "board.chips_sold", 1);
         }
         StandardAction::Drain => adversary::choose_drain(g, cx, s, w.int("board.drain_amount"))?,
+        StandardAction::Insight => {
+            cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
+            cx.tally(g, "board.cubes_converted", 1);
+        }
         StandardAction::Station => {
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, STATION, 1);

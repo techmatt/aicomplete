@@ -162,7 +162,8 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     }
     for act in STANDARD {
         let price = printed_price(w, act);
-        let Price { energy: e, credits: cr, chips, ambassadors } = price;
+        // 105: a cube cost (the general converter) reaches the client in its words.
+        let Price { energy: e, credits: cr, chips, ambassadors, cubes: _ } = price;
         let cost = price.label();
         // 099: the Harden action a card grants costs that card's chips, not nothing.
         let card_priced = act == StandardAction::HardenChips;

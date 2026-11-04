@@ -26,6 +26,17 @@ pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> boo
     found
 }
 
+/// [`has_passive`] for a hot path (105): the innate and the active buildings,
+/// and the tracks read only when one of the board's capstones could match.
+pub fn holds(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
+    let b = ai::board(w, seat);
+    if b.innate.passives.iter().any(&f) || g.pile(&built(seat)).iter().any(|id| def(w, id).passives.iter().any(&f)) {
+        return true;
+    }
+    let caps = || b.economy_track.iter().chain(&b.play_track).filter_map(|u| u.capstone.as_ref());
+    caps().flat_map(|c| c.passives.iter()).any(&f) && ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()).any(&f)
+}
+
 /// Every card seat `s` has in play whose tags count: active buildings, the
 /// cards splayed under them, and programs in the play area.
 pub fn in_play(g: &GameState, seat: usize) -> Vec<Key> {

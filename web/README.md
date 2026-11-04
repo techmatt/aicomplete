@@ -165,7 +165,7 @@ colors), `panels.ts`, `hover.ts`, `log.ts`, and `main.ts` (wiring).
 
 `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
 (`cards/`), not by this game viewer: see [tools/card-art/README.md](../tools/card-art/README.md).
-`scripts/shots-0NN.mjs`: past items' viewer shots (see their write-ups).
+`scripts/shots-NNN.mjs`: past items' viewer shots (see their write-ups; 105's opens each demo card's large view).
 
 ## Card viewer
 

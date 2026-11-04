@@ -12,7 +12,7 @@
   "income": [
    [
     "insight",
-    4
+    5
    ]
   ],
   "economy_track": [
@@ -198,6 +198,24 @@
       1
      ]
     ]
+   },
+   {
+    "name": "Focus",
+    "tags": [],
+    "cost": [
+     [
+      "credits",
+      5
+     ]
+    ],
+    "text": "gain 1 insight",
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 1
+     }
+    ]
    }
   ],
   "play_track": [
@@ -247,7 +265,12 @@
     "cost": 2
    },
    {
-    "income": [],
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
     "cost": 3,
     "tags": [
      "cyber"
@@ -283,10 +306,23 @@
   "text": "The defender: plays on the board; troops stop at its nodes and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary troops can't enter or strike a hex with your node.",
+   "text": "Adversary troops can't enter or strike a hex with your node. Vigil: when your Wall stops a troop, gain 1 insight.",
    "passives": [
     {
      "op": "wall"
+    },
+    {
+     "op": "when",
+     "on": {
+      "event": "wall_stops"
+     },
+     "then": [
+      {
+       "op": "gain",
+       "resource": "insight",
+       "amount": 1
+      }
+     ]
     }
    ]
   },
@@ -294,7 +330,7 @@
   "income": [
    [
     "insight",
-    4
+    5
    ],
    [
     "energy",
@@ -533,7 +569,12 @@
     "cost": 2
    },
    {
-    "income": [],
+    "income": [
+     [
+      "insight",
+      1
+     ]
+    ],
     "cost": 3,
     "tags": [
      "diplomacy"
@@ -579,7 +620,7 @@
   "income": [
    [
     "insight",
-    4
+    5
    ]
   ],
   "economy_track": [
@@ -774,6 +815,18 @@
       "energy",
       1
      ]
+    ]
+   },
+   {
+    "name": "Synthesis",
+    "tags": [],
+    "text": "discard a card from your hand: gain 2 insight",
+    "effects": [
+     {
+      "op": "discard_hand",
+      "resource": "insight",
+      "amount": 2
+     }
     ]
    }
   ],

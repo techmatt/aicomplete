@@ -124,13 +124,13 @@ fn a_face_up_threat_shields_its_sources_until_it_is_countered() {
     assert_eq!(g.tokens(city, TROOP), 0);
 
     // Influence: ambassadors at the hold wait, and free it once it is countered.
-    deal(&mut g, "smear_campaign", 0);
+    deal(&mut g, "defection", 0);
     put(&mut g, city, ambassador(0), hold);
     assert!(corrupted(&g, city));
     set_res(&mut g, 0, Resource::Credits, 20);
-    act(&rules, &mut g, Action::Pay { seat: 0, threat: "smear_campaign".into(), resource: Resource::Credits, amount: 1 });
+    act(&rules, &mut g, Action::Pay { seat: 0, threat: "defection".into(), resource: Resource::Credits, amount: 1 });
     assert!(g.tokens(city, ADV_CUBE) > 0, "held while it is face up");
-    act(&rules, &mut g, Action::Pay { seat: 0, threat: "smear_campaign".into(), resource: Resource::Credits, amount: 3 });
+    act(&rules, &mut g, Action::Pay { seat: 0, threat: "defection".into(), resource: Resource::Credits, amount: 3 });
     assert_eq!(g.tokens(city, ADV_CUBE), 0, "countered, the city frees");
 }
 

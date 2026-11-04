@@ -83,6 +83,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
             ParamSpec::int("free_station_credits", 0, 50, "standard action: credits to free a corrupted research station"),
             ParamSpec::int("free_station_ambassadors", 1, 5, "standard action: your ambassadors on a corrupted research station that freeing it uses up"),
+            ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
         ],
         phases: &[
             PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, free a station, harden, chips, sell, drain; completed megaprojects' converters"),
@@ -267,7 +268,10 @@ impl Module for Board {
                 price.pay(g, cx, s);
                 cx.tally(g, &KeyBuf::new("board.std.").text(act.name()), 1);
                 cx.tally(g, "board.std_actions", 1);
-                std_resolve(g, cx, s, act, &targets)
+                // 105: a removal here fires the seat's fight triggers.
+                let before = cards::fight_watch(&w, g, s);
+                std_resolve(g, cx, s, act, &targets)?;
+                cards::fight_fire(g, cx, s, before)
             }
             Action::Convert { seat, country } => {
                 let (s, c) = (*seat as usize, *country as usize);
@@ -321,10 +325,12 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     if !has_city_node_in(w, g, s, c) {
         return Some(NO_CITY_NODE);
     }
-    if g.var(&converter_round(c, s)) == g.round as i64 {
+    let conv = &w.content.map.countries[c].megaproject.converter;
+    // 105: only a converter printed once a round keeps the limit.
+    if conv.once && g.var(&converter_round(c, s)) == g.round as i64 {
         return Some("used this round");
     }
-    let cost = &w.content.map.countries[c].megaproject.converter.cost;
+    let cost = &conv.cost;
     if cost.iter().any(|(r, n)| g.resource(s, *r) < *n) {
         return Some(CANT_PAY);
     }
@@ -341,9 +347,13 @@ fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
             cx.tally(g, "board.cubes_converted", *n);
         }
     }
-    cx.set_key(g, &converter_round(c, s), g.round as i64);
+    if m.converter.once {
+        cx.set_key(g, &converter_round(c, s), g.round as i64);
+    }
     cx.tally(g, &format!("board.converter.{c}"), 1);
-    effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s))
+    let before = cards::fight_watch(&w, g, s);
+    effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s))?;
+    cards::fight_fire(g, cx, s, before)
 }
 
 /// The round-end cleanup: flags count down, then the end-of-round tallies.

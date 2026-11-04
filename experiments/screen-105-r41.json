@@ -1,0 +1,35 @@
+{
+  "name": "screen-105-r41",
+  "note": "105: the ballpark read of r41 (the engine wording and the insight economy) against r40, paired on fresh seeds 33500-33547: the three pairs at d2, the strategist and greedy, 48 a cell. Run the r40 binary from a git archive of 4960abf with this spec copied there.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33500,
+  "records": 0
+}

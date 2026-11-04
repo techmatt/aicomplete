@@ -71,7 +71,7 @@ function part(p) {
   if (TEXT[p]) return TEXT[p]();
   if (isTag(p)) return `<span class="fx-tag">${tagMedallion(p.slice(1))}</span>`;
   if (isIcon(p)) return icon(p);
-  if (/^[−+]?≤?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
+  if (/^[−+]?[≤≥]?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
   throw new Error(`no icon or number ${p}`);
 }
 const iconLine = (parts) => `<div class="fx-line" data-safe>${parts.map(part).join('')}</div>`;

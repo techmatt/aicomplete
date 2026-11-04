@@ -106,6 +106,11 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             !only_these || one_acts
         }
         Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
+        // 105: a copy needs a building with an income, a reuse an Action used
+        // this round, a discard a card in hand.
+        Op::CopyIncome => !cards::income_buildings(w, g, seat).is_empty(),
+        Op::Reuse => !cards::reusable(w, g, seat, card).is_empty(),
+        Op::DiscardHand { .. } => !g.pile(&cards::hand(seat)).is_empty(),
         Op::PlaceNode { free, .. } => {
             board::can_pay_placement(w, g, seat, placing(*free), gained)
                 && !board::node_hexes(w, g, seat).is_empty()

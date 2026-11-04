@@ -18,7 +18,7 @@
 use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
-use aic_core::content::{Ability, CardDef, CardKind, Facility, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
+use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
 use serde::Deserialize;
 
 /// The table as loaded.
@@ -503,6 +503,24 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::ConvertUpkeep { from, amount, to, gain } => {
             Worth::standing((row("convert_upkeep") * (r(*to) * *gain as f64 - r(*from) * *amount as f64)).max(0.0))
         }
+        // 105: the engine wording. A trigger is worth what it resolves (tokens
+        // here aside: a threshold prices those) times how often it fires a round.
+        Op::CardDiscount { tag, resource, amount } => {
+            let share = if tag.is_some() { t.rate("tag_share") } else { 1.0 };
+            Worth::standing(row("card_discount") * t.rate("fires_play") * share * r(*resource) * *amount as f64)
+        }
+        Op::When { on, then } => {
+            let both = if matches!(on, Event::TeamPlay { both: true, .. }) { 1.0 + row("other_gain") } else { 1.0 };
+            Worth::standing(row("when") * fires(t, on) * triggered(t, then) * both)
+        }
+        Op::Threshold { at, then } => {
+            Worth::standing(row("threshold") * t.rate("threshold_fill") / (*at).max(1) as f64 * triggered(t, then))
+        }
+        Op::CopyIncome => Worth::income(row("copy_income")),
+        Op::Reuse => Worth::now(row("reuse")),
+        Op::DiscardHand { resource, amount } => {
+            Worth::now(row("discard_hand") * t.rate("hand_discards") * (r(*resource) * *amount as f64 - t.rate("dead_card")))
+        }
         Op::CityBuild { .. } => Worth::now(row("city_build")),
         Op::CleanFactories { .. } => Worth::now(row("clean_factories")),
         Op::StationBuild { .. } => Worth::now(row("station_build")),
@@ -511,6 +529,32 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CorruptSooner { .. } => Worth::now(row("corrupt_sooner")),
         Op::War => Worth::now(row("war")),
     }
+}
+
+/// 105: how often a trigger fires a round, at the table's rates.
+fn fires(t: &Table, on: &Event) -> f64 {
+    let tagged = |tag: Option<aic_core::content::Tag>| if tag.is_some() { t.rate("tag_share") } else { 1.0 };
+    match *on {
+        Event::Play { tag } => t.rate("fires_play") * tagged(tag),
+        Event::PlayTag { .. } => t.rate("fires_play") * t.rate("tag_share"),
+        Event::TeamPlay { tag, .. } => t.rate("fires_play") * tagged(tag) * (t.rate("countries") - 1.0).max(1.0),
+        Event::PlayCost { at } => t.rate("fires_play") * (1.0 - at as f64 / t.rate("rebate_span")).clamp(0.05, 1.0),
+        Event::RemoveTroop => t.rate("fires_troop"),
+        Event::RemoveCompute => t.rate("fires_compute"),
+        Event::RemoveAmbassadors => t.rate("fires_ambassadors"),
+        Event::PlaceTokens { .. } => t.rate("fires_tokens"),
+        Event::WallStops => t.rate("fires_wall"),
+    }
+}
+
+/// 105: what one firing of a trigger's ops is worth: now, and its nodes at the
+/// table's node rate; tokens added here are a threshold's to price.
+fn triggered(t: &Table, then: &[Op]) -> f64 {
+    let mut w = Worth::default();
+    for op in then.iter().filter(|o| !matches!(o, Op::AddTokens { here: true, .. })) {
+        w += op_worth(t, op);
+    }
+    w.now + w.node * t.fast.node
 }
 
 /// A damage's worth: the better of its two kinds.

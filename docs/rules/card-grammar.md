@@ -40,7 +40,7 @@ card does; how each primitive resolves:
   country (troops or ambassadors by number) is not. A removal (`damage`) takes a hex in reach holding adversary
   pieces; a country removal any country holding them. A card names the pieces it removes: where it says "2 adversary
   ambassadors or 1 troop" you choose one kind.
-- **Hardening:** a different facility in reach for each token, each one a token can protect ([ai-boards.md](ai-boards.md)).
+- **Hardening:** a different facility in reach for each token, each one a token can protect ([ai-powers.md](ai-powers.md)).
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
@@ -93,3 +93,33 @@ card does; how each primitive resolves:
   be playable after some sacrifice and that energy (r39: it took both and played nothing).
 - **Aegis Dome Array's shelter:** automatic, the first destruction of a facility or node each round in a country where
   its owner has a node.
+
+**The engine wording (r41, candidate).** Every trigger is an Effect on a building (`:`, `when`): it fires each time its
+event happens, with no limit a round, and resolves after what caused it. A building counts itself: playing a Science
+building with a Science trigger fires it. The `play` mark is a card you play.
+
+- **Play triggers (`when`, `play`):** "When you play a Science card, gain 6 credits" (Citation Engine); with no tag, any
+  card. **Per tag** (`play_tag`): "when you play a card, gain 2 insight per Science tag on it" (Quantum Decryptor), the
+  ringed tag after `/` on the right of the `:`.
+- **Teammate triggers (`team_play`):** "When another player plays a Power card, gain 6 credits" (Grid-Tied Smelter); with
+  `both`, "you both gain" (Consulate Tower), the dashed box holding the other's gain. Your own plays don't fire them.
+- **Rebate (`play_cost`):** "when you play a card printed at 12 credits or more, gain 4 credits" (Lights-Out Assembly):
+  the printed cost, before discounts. `≥`N is at least N.
+- **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove compute
+  from an adversary project" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
+  the card, Action, power, converter or standard action that removed any, canceling an arrival included.
+- **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a token (Data
+  Licensing Deal); a trigger's own tokens count too.
+- **Discounts (`card_discount`):** "your Cyber cards cost 3 credits less to play" (Darknet Exchange), or insight
+  (Hyperscale Botnet: every card, 1 insight). A card with the tag twice is discounted once. Like every discount, never
+  below `discount_floor`, and a cost under it stays.
+- **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): when the tokens here reach
+  N, N come off and the reward happens (Telemetry Archive: a Science card played adds a Dataset; at 3, 4 insight).
+- **Copy (`copy_income`, a program):** raise your income by one of your buildings' Each round output, as it pays when
+  you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later (Payroll
+  Automation).
+- **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
+  that tag, a teammate does, you remove a troop. A minus after the colon makes those cards cheaper. Discs and a
+  number before the colon count up on the card and pay when they reach it.
+- **Reuse (`reuse`, an Action):** use again another of your buildings' Actions you used this round, paying its cost
+  again; never one whose own Action is a reuse (two would loop) (Simulation Cluster).

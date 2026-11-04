@@ -37,7 +37,19 @@
   "total_containment": "r38: a troop off is 11 (15 less its Sway, alignment.troop 0), 7 in a country; value 26.5 to 19.4, 13 to 8 at its ratio (0.68).",
   "force_protection_order": "r38: a troop off is 11 (15 less its Sway, alignment.troop 0), 7 in a country; value 19.5 to 15.5, 5 to 3 at its ratio (0.38).",
   "demand_response_grid": "r40 (D25): its Action trades 3 energy (13.5 at the table) for 15 credits, a visible +1.5 a use, not 10 (a loss); 9 credits and an insight for the building.",
-  "simulation_cluster": "r40 (D25): its Action trades 1 energy (4.5) for 2 draws (8), +3.5 a use, not 2 energy (9) for 8; 9 credits and an insight for the building.",
-  "data_licensing_deal": "r40 (D25): 10 credits a Dataset cashed, over the 8 a Dataset Grad Student Pool's draws pay, for 4 credits and an insight (6.5): it pays back from 4 Datasets in one pile, which the agents rarely hold.",
-  "arc_furnace_complex": "r40 (D25): 8 credits, 2 chips and 2 insight (16) for +3 chips a round (11 over 2.5 rounds) and an Action of 3 energy (13.5) for 24 credits (+10.5 a use): about 31 at the table, so it clears the median Industry building it must cover (about 10 at that horizon) by about 5."
+  "simulation_cluster": "r41 (105, reuse): another building's Action again, about 5 a use (15.5) for 9 and an insight.",
+  "data_licensing_deal": "r41 (105, P1): 5 credits a Dataset placed, about 1 a round with Grad Student Pool (13.5 over the tier-2 horizon) for 10 and an insight.",
+  "arc_furnace_complex": "r40 (D25): 8 credits, 2 chips and 2 insight (16) for +3 chips a round (11 over 2.5 rounds) and an Action of 3 energy (13.5) for 24 credits (+10.5 a use): about 31 at the table, so it clears the median Industry building it must cover (about 10 at that horizon) by about 5.",
+  "citation_engine": "r41 (105, demo of a play trigger): 6 credits a Science card played, at 1.5 plays a round x 30% tagged over 4 rounds (11.8) for 9 credits and an insight (11.5); a Science seat fires it more.",
+  "consulate_tower": "r41 (105, a teammate trigger, both gain): 4 credits each when another player plays a Diplomacy card (13.6 with the gift at 0.75) for 9 and an insight.",
+  "darknet_exchange": "r41 (105, a credit discount): Cyber cards 3 credits less (6.4) for 3 and an insight.",
+  "grid_tied_smelter": "r41 (105, a teammate trigger): 6 credits when another player plays a Power card (12.3) for 9 and an insight.",
+  "honeypot_relay": "r41 (105, a fight trigger): 3 credits when you remove adversary ambassadors (0.8 a round, 10.6) for 6 and an insight.",
+  "hyperscale_botnet": "r41 (105, the insight discount): every card 1 insight less (10.4 at the table) for 5 and an insight; discount_floor 1 keeps a 1-insight card at 1, so it bites on 2-insight cards.",
+  "lights_out_assembly": "r41 (105, the rebate): 4 credits after each card printed at 12 or more (13.5) for 5 and an insight: cheap on purpose, a strong engine.",
+  "payroll_automation": "r41 (105, copy): a building's Each round output as income (about 3 a round, 13) for 7 and 2 insight.",
+  "quantum_decryptor": "r41 (105, the per-tag trigger): 2 insight per Science tag on a card you play (10.5 at the table) for 6 credits and an insight.",
+  "security_contractor_hq": "r41 (105, a fight trigger): 10 credits a troop you remove (0.3 a round, 13) for 9 and an insight.",
+  "security_ops_floor": "r41 (105, a fight trigger): 2 insight when you remove compute (0.4 a round, 9) for 4 and an insight.",
+  "telemetry_archive": "r41 (105, the threshold): a Science card played adds a Dataset; at 3, 4 insight (11.7) for 5 and an insight."
 }

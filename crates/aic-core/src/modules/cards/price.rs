@@ -70,7 +70,10 @@ fn floored(cost: i64, off: i64, floor: i64) -> i64 {
 
 /// The insight seat `s` pays to play `d`.
 pub fn play_insight(w: &World, g: &GameState, seat: usize, d: &CardDef) -> i64 {
-    science_off(w, g, seat, d.insight)
+    if !has_card_discount(w, g, seat) {
+        return science_off(w, g, seat, d.insight);
+    }
+    prices(w, g, seat).insight(d)
 }
 
 /// What seat `s` takes off card costs now, worked out once: a caller pricing
@@ -82,6 +85,25 @@ pub struct Prices {
     insight_off: i64,
     building_off: i64,
     floor: i64,
+    /// 105: card discounts by tag (`Tag as usize`), the last for every card:
+    /// credits, then insight.
+    tag_credits: [i64; TAGS.len() + 1],
+    tag_insight: [i64; TAGS.len() + 1],
+}
+
+/// What a card's tags take off: each kind once, however many it carries, and
+/// the every-card discount.
+fn tag_off(off: &[i64; TAGS.len() + 1], d: &CardDef) -> i64 {
+    let mut seen = [false; TAGS.len()];
+    let mut n = off[TAGS.len()];
+    for t in &d.tags {
+        let i = *t as usize;
+        if !seen[i] {
+            seen[i] = true;
+            n += off[i];
+        }
+    }
+    n
 }
 
 pub fn prices(w: &World, g: &GameState, seat: usize) -> Prices {
@@ -90,27 +112,50 @@ pub fn prices(w: &World, g: &GameState, seat: usize) -> Prices {
 
 /// [`prices`], with the seat's [`tag_counts`] already counted.
 pub fn prices_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.len()]) -> Prices {
+    // One walk of the passives for both kinds of discount (105: the agents price
+    // every hand with this).
+    let (mut tag_credits, mut tag_insight) = ([0; TAGS.len() + 1], [0; TAGS.len() + 1]);
+    let mut building = 0;
+    each_passive(w, g, seat, |p| match p {
+        Op::BuildingDiscount { amount } => building += *amount,
+        Op::CardDiscount { tag, resource, amount } => {
+            let i = tag.map_or(TAGS.len(), |t| t as usize);
+            match resource {
+                Resource::Insight => tag_insight[i] += *amount,
+                _ => tag_credits[i] += *amount,
+            }
+        }
+        _ => {}
+    });
     Prices {
         insight_off: per_tags(w, counts[Tag::Science as usize], SCIENCE_EVERY),
-        building_off: passive_discount(w, g, seat)
-            + per_tags(w, counts[Tag::Industry as usize], INDUSTRY_EVERY),
+        building_off: building + per_tags(w, counts[Tag::Industry as usize], INDUSTRY_EVERY),
         floor: discount_floor(w),
+        tag_credits,
+        tag_insight,
     }
 }
 
 impl Prices {
     /// [`play_insight`].
     pub fn insight(&self, d: &CardDef) -> i64 {
-        floored(d.insight, self.insight_off, self.floor)
+        floored(d.insight, self.insight_off + tag_off(&self.tag_insight, d), self.floor)
     }
 
-    /// [`play_cost`].
+    /// What the card discounts by tag (105) take off `d` after the floor:
+    /// (credits, insight), for the measure.
+    pub fn tag_savings(&self, d: &CardDef) -> (i64, i64) {
+        let building = if d.is_building() { self.building_off } else { 0 };
+        let credits = floored(d.cost, building, self.floor) - self.credits(d);
+        let insight = floored(d.insight, self.insight_off, self.floor) - self.insight(d);
+        (credits, insight)
+    }
+
+    /// [`play_cost`]: buildings get the building discounts, every card its
+    /// tags' (105).
     pub fn credits(&self, d: &CardDef) -> i64 {
-        if d.is_building() {
-            floored(d.cost, self.building_off, self.floor)
-        } else {
-            d.cost
-        }
+        let building = if d.is_building() { self.building_off } else { 0 };
+        floored(d.cost, building + tag_off(&self.tag_credits, d), self.floor)
     }
 }
 
@@ -131,21 +176,16 @@ pub(super) fn extra_costs(w: &World, g: &GameState, seat: usize, d: &CardDef) ->
     extra_costs_at(d, play_insight(w, g, seat, d))
 }
 
-/// Credits to play a card: buildings get the seat's discounts.
+/// Credits to play a card: the seat's discounts (buildings', and its tags').
 pub fn play_cost(w: &World, g: &GameState, seat: usize, d: &CardDef) -> i64 {
-    if !d.is_building() {
+    if !d.is_building() && !has_card_discount(w, g, seat) {
         return d.cost;
     }
     prices(w, g, seat).credits(d)
 }
 
-/// The credits seat `s`'s passives take off its buildings, before tags.
-fn passive_discount(w: &World, g: &GameState, seat: usize) -> i64 {
-    let mut off = 0;
-    each_passive(w, g, seat, |p| {
-        if let Op::BuildingDiscount { amount } = p {
-            off += *amount;
-        }
-    });
-    off
+/// Whether seat `s` holds a card discount by tag (105): without one, a program's
+/// price is its printed cost and an insight cost needs only the Science count.
+fn has_card_discount(w: &World, g: &GameState, seat: usize) -> bool {
+    holds(w, g, seat, |p| matches!(p, Op::CardDiscount { .. }))
 }

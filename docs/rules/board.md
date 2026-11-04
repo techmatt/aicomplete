@@ -63,11 +63,11 @@ neighbors change with the country count).
 megaproject is the corp's defining card.
 
 <!-- generated: corps -->
-| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (once a round) | Each adversary cube after |
+| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Each adversary cube after |
 |---|---|---|---|---|---|
 | Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter | lost |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 1 insight | lost |
-| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips | lost |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight | lost |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) | lost |
 | Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card, 1 credit / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity | lost |
 <!-- /generated -->
 
@@ -101,7 +101,9 @@ megaproject is the corp's defining card.
   adversary cube after* column); none does.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with a **node in a city of that country** (Matt, r37: any city, owned or not; a node
-  elsewhere in the country no longer counts), once a round per player, per card. A converter
+  elsewhere in the country no longer counts), as often as the player can pay (r41); only Onyx's
+  is once a round per player, its loop ([ai-powers.md](ai-powers.md)). Every player also has the cube converter, a
+  standard action: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A converter
   is a reason to hold a city node. Cubes
   reach a board only after completion, so no converter feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
@@ -123,12 +125,13 @@ the end of production, every cube on it pays, overflow included: yours pay you w
 card says, the adversary's pay the adversary, neutral ones pay nothing. So claim the
 neutral station or build one before the card fills. After that your stations there put
 cubes on your board, and if you have a node on one of that country's cities (any city,
-not only yours) you can spend them on its converter once a round. Once the card is done, the adversary's cubes pay it nothing more.
+not only yours) you can spend them on its converter, as often as you can pay (Onyx's once a round), or
+anywhere for 1 insight each. Once the card is done, the adversary's cubes pay it nothing more.
 A station is worth defending both ways: to take back a corrupted one, stand 2 of your
 ambassadors on it with no adversary ambassador there and pay 6 credits (the ambassadors are
 spent, the station is neutral again); the adversary can take yours only once 2 of its
 ambassadors stand on it and none of yours.
 
 **What resisted this summary:** what an adversary cube pays at completion differs per card,
-so it can only say "the card says"; the table above is the rule. A converter's
-once-a-round is per player per card, which a new player reads as once a round.
+so it can only say "the card says"; the table above is the rule. Onyx's converter
+alone keeps once a round, an exception a new player has to be told.

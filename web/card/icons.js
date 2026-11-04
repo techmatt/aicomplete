@@ -67,6 +67,8 @@ const PIECES = {
   clock: `<circle cx="12" cy="12" r="9.500" fill="none" stroke="currentColor" stroke-width="2.400"/>${line('M12 6.500V12l4 2.500', 2.400)}`,
   // A threat struck through: countered.
   counter: `${fill('M12 2 23 21H1z')}${line('M3 3l18 18', 3)}`,
+  // 105: a card you play, for a trigger or a discount: a card with an arrow onto it.
+  play: `<rect x="6" y="8" width="12" height="14" rx="1.600" fill="none" stroke="currentColor" stroke-width="2"/>${line('M12 1.500v8M8.800 6.300 12 9.500l3.200-3.200', 2.200)}`,
   // The adversary deck, looked at.
   peek: `<rect x="5" y="2.500" width="14" height="19" rx="1.600" fill="none" stroke="currentColor" stroke-width="2"/><g transform="translate(5.400 5.400) scale(.55)">${EYE}</g>`,
 };

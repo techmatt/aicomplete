@@ -26,9 +26,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
-  token on a hex with your node (a shield, [ai-boards.md](ai-boards.md)) or make a threat wait a round (a delay: it skips this round's
+  token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
-  the tag or on a power, save the Protector's Recovery, which clears a marker. Six tier-1 and two tier-2 cards do it.
+  the tag or on a power, save the Protector's Recovery, which clears a marker. Five tier-1 and two tier-2 cards do it.
   No card `needs` Science for it: a team without the tag still has the Clear standard action, its counters and the
   board.
 - **Typed counters (candidate).** Twelve tier-1 cards fight one source type, and count for more than they cost toward

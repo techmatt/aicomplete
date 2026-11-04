@@ -184,7 +184,7 @@ fn every_face_word_is_a_known_icon() {
             || icons.iter().any(|i| i == w)
             || w.strip_prefix('#').is_some_and(|t| tags.iter().any(|x| x == t))
             || {
-                let n = w.trim_start_matches(['\u{2212}', '+']).trim_start_matches('\u{2264}');
+                let n = w.trim_start_matches(['\u{2212}', '+']).trim_start_matches(['\u{2264}', '\u{2265}']);
                 !n.is_empty() && n.chars().all(|c| c.is_ascii_digit() || c == 'n')
             }
     };

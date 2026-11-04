@@ -287,7 +287,50 @@ def op_worth(t, o):
         return Worth(standing=row(op))
     if op == 'convert_upkeep':
         return Worth(standing=max(row(op) * (r(o['to']) * n('gain') - r(o['from']) * n('amount')), 0.0))
+    # 105: the engine wording, as value.rs prices it.
+    if op == 'card_discount':
+        share = t.rate('tag_share') if o.get('tag') else 1.0
+        return Worth(standing=row(op) * t.rate('fires_play') * share * r(o['resource']) * n('amount'))
+    if op == 'when':
+        on = o['on']
+        both = 1.0 + row('other_gain') if on['event'] == 'team_play' and on.get('both') else 1.0
+        return Worth(standing=row(op) * fires(t, on) * triggered(t, o['then']) * both)
+    if op == 'threshold':
+        return Worth(standing=row(op) * t.rate('threshold_fill') / max(n('at'), 1) * triggered(t, o['then']))
+    if op == 'copy_income':
+        return Worth(income=row(op))
+    if op == 'reuse':
+        return Worth(now=row(op))
+    if op == 'discard_hand':
+        return Worth(now=row(op) * t.rate('hand_discards') * (r(o['resource']) * n('amount') - t.rate('dead_card')))
     raise KeyError(f'effect_ledger.py has no arm for op {op!r}: mirror value.rs op_worth')
+
+
+def fires(t, on):
+    """value.rs `fires` (105): how often a trigger fires a round."""
+    ev = on['event']
+    tagged = t.rate('tag_share') if on.get('tag') else 1.0
+    if ev == 'play':
+        return t.rate('fires_play') * tagged
+    if ev == 'play_tag':
+        return t.rate('fires_play') * t.rate('tag_share')
+    if ev == 'team_play':
+        return t.rate('fires_play') * tagged * max(t.rate('countries') - 1.0, 1.0)
+    if ev == 'play_cost':
+        return t.rate('fires_play') * min(max(1.0 - on['at'] / t.rate('rebate_span'), 0.05), 1.0)
+    return t.rate({'remove_troop': 'fires_troop', 'remove_compute': 'fires_compute',
+                   'remove_ambassadors': 'fires_ambassadors', 'place_tokens': 'fires_tokens',
+                   'wall_stops': 'fires_wall'}[ev])
+
+
+def triggered(t, then):
+    """value.rs `triggered` (105): one firing, tokens added here aside (a threshold's)."""
+    w = Worth()
+    for o in then:
+        if o['op'] == 'add_tokens' and o.get('here'):
+            continue
+        w.add(op_worth(t, o))
+    return w.now + w.node * t.op('place_node') * t.rate('node')
 
 
 def branches(ability):
@@ -375,6 +418,8 @@ def effect_key(o, slot):
                 cat.append(k)
     if o['op'] == 'cleanse' and o.get('only'):
         cat.append(o['only'])
+    if o['op'] == 'when':
+        cat.append(' '.join(str(v) for v in o['on'].values()))
     if o['op'] == 'place_node' and o.get('free'):
         cat.append('free')
     if o['op'] == 'cleanse' and o.get('cities'):

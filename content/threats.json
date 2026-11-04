@@ -131,7 +131,7 @@
   "text": "3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute.",
   "counter": [
    [
-    "credits",
+    "insight",
     5
    ]
   ],
@@ -276,8 +276,8 @@
   "text": "Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided.",
   "counter": [
    [
-    "credits",
-    4
+    "insight",
+    5
    ]
   ],
   "effects": [
@@ -369,8 +369,8 @@
   "text": "Each player here discards their most expensive card in hand and loses 3 tokens from their cards.",
   "counter": [
    [
-    "credits",
-    6
+    "insight",
+    5
    ]
   ],
   "effects": [
@@ -575,8 +575,8 @@
   "text": "Sway 3 toward Discord. Each player here gets 2 less insight next round.",
   "counter": [
    [
-    "credits",
-    7
+    "insight",
+    5
    ]
   ],
   "effects": [

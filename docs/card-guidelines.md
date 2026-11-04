@@ -108,7 +108,10 @@ What every mark on a card means. Each means one thing; the sheet is `icons.png` 
 | Thin solid outline | your cards: a disc in it goes to (or comes from) one of your cards |
 | `→` | an Action: pay the left, get the right. A bare `→` is free |
 | OR at a line's start | the other half of an Action: once a round, one half or the other |
-| `:` | an Effect: when the left happens, the right |
+| `:` | an Effect: when the left happens, the right. A minus on a cost after it (`building :`, a tag, `play`): those cards cost that much less |
+| Play (a card with an arrow onto it) | a card you play, with its tag if any; in the dashed outline, another player's |
+| `≥`N | at least N: a rebate's printed credit cost |
+| Discs left of `:` (At N) | when the tokens here reach N, they come off and the right happens |
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
 | Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield; with a country, Aegis Dome Array's |

@@ -9,31 +9,40 @@
   "tags": [
    "science"
   ],
-  "keywords": [
-   "tokens"
-  ],
   "tokens": {
    "kind": "datasets"
   },
-  "ability": {
-   "effects": [
-    {
-     "op": "add_tokens",
-     "kind": "datasets",
-     "amount": 1,
-     "here": true
-    }
-   ],
-   "or": {
-    "tokens": 1,
-    "effects": [
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play",
+     "tag": "science"
+    },
+    "then": [
      {
-      "op": "delay_threat",
-      "count": 2
+      "op": "add_tokens",
+      "kind": "datasets",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 4
      }
     ]
    }
-  }
+  ],
+  "keywords": [
+   "tokens"
+  ]
  },
  {
   "id": "simulation_cluster",
@@ -47,16 +56,9 @@
    "cyber"
   ],
   "ability": {
-   "cost": [
-    [
-     "energy",
-     1
-    ]
-   ],
    "effects": [
     {
-     "op": "draw",
-     "count": 2
+     "op": "reuse"
     }
    ]
   }
@@ -79,10 +81,18 @@
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "science",
-    "per": 1
+    "op": "when",
+    "on": {
+     "event": "play",
+     "tag": "science"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 6
+     }
+    ]
    }
   ]
  },
@@ -571,18 +581,26 @@
   "id": "data_licensing_deal",
   "name": "Data Licensing Deal",
   "tier": 2,
-  "kind": "program",
-  "cost": 4,
+  "kind": "building",
+  "cost": 10,
   "insight": 1,
   "tags": [
    "science"
   ],
-  "effects": [
+  "passives": [
    {
-    "op": "cash_out",
-    "kind": "datasets",
-    "resource": "credits",
-    "rate": 10
+    "op": "when",
+    "on": {
+     "event": "place_tokens",
+     "kind": "datasets"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 5
+     }
+    ]
    }
   ]
  },
@@ -652,16 +670,14 @@
   "name": "Payroll Automation",
   "tier": 1,
   "kind": "program",
-  "cost": 8,
+  "cost": 7,
   "insight": 2,
   "tags": [
    "industry"
   ],
   "effects": [
    {
-    "op": "production",
-    "resource": "credits",
-    "amount": 3
+    "op": "copy_income"
    }
   ]
  },
@@ -922,21 +938,22 @@
    "industry",
    "power"
   ],
-  "ability": {
-   "cost": [
-    [
-     "energy",
-     1
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_cost",
+     "at": 12
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 4
+     }
     ]
-   ],
-   "effects": [
-    {
-     "op": "gain",
-     "resource": "credits",
-     "amount": 5
-    }
-   ]
-  }
+   }
+  ]
  },
  {
   "id": "materials_hedge_desk",
@@ -1044,10 +1061,18 @@
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "power",
-    "per": 1
+    "op": "when",
+    "on": {
+     "event": "team_play",
+     "tag": "power"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 6
+     }
+    ]
    }
   ]
  },
@@ -1331,14 +1356,21 @@
   "keywords": [
    "hack"
   ],
-  "ability": {
-   "effects": [
-    {
-     "op": "damage",
-     "ambassadors": 2
-    }
-   ]
-  }
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_ambassadors"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 3
+     }
+    ]
+   }
+  ]
  },
  {
   "id": "shadow_broker_feed",
@@ -1534,17 +1566,17 @@
   "name": "Darknet Exchange",
   "tier": 1,
   "kind": "building",
-  "cost": 4,
+  "cost": 3,
   "insight": 1,
   "tags": [
    "cyber"
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
+    "op": "card_discount",
     "tag": "cyber",
-    "per": 2
+    "resource": "credits",
+    "amount": 3
    }
   ]
  },
@@ -1585,10 +1617,18 @@
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "insight",
-    "tag": "science",
-    "per": 2
+    "op": "when",
+    "on": {
+     "event": "play_tag",
+     "tag": "science"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 2
+     }
+    ]
    }
   ]
  },
@@ -1700,9 +1740,9 @@
   "name": "Hyperscale Botnet",
   "tier": 2,
   "kind": "building",
-  "cost": 10,
+  "cost": 5,
   "chips": 1,
-  "insight": 2,
+  "insight": 1,
   "needs": [
    [
     "cyber",
@@ -1715,15 +1755,9 @@
   ],
   "passives": [
    {
-    "op": "income",
+    "op": "card_discount",
     "resource": "insight",
-    "amount": 2
-   },
-   {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "cyber",
-    "per": 1
+    "amount": 1
    }
   ]
  },
@@ -2600,10 +2634,19 @@
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "diplomacy",
-    "per": 1
+    "op": "when",
+    "on": {
+     "event": "team_play",
+     "tag": "diplomacy",
+     "both": true
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 4
+     }
+    ]
    }
   ]
  },
@@ -3310,10 +3353,17 @@
   ],
   "passives": [
    {
-    "op": "income_per_tag",
-    "resource": "credits",
-    "tag": "security",
-    "per": 1
+    "op": "when",
+    "on": {
+     "event": "remove_troop"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 10
+     }
+    ]
    }
   ]
  },
@@ -3710,15 +3760,21 @@
   "tags": [
    "cyber"
   ],
-  "ability": {
-   "effects": [
-    {
-     "op": "jam",
-     "amount": 3,
-     "source": "cyber"
-    }
-   ]
-  }
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_compute"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 2
+     }
+    ]
+   }
+  ]
  },
  {
   "id": "antitrust_action",

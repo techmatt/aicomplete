@@ -11,7 +11,7 @@ use super::table;
 use crate::cli::fail;
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 13] = [
+pub const HOUSE_TERMS: [(&str, &str); 14] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
@@ -22,6 +22,7 @@ pub const HOUSE_TERMS: [(&str, &str); 13] = [
     ("A threat", "on your card: one you may counter, with one of its sources in reach or your ambassador on one"),
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
+    ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
     ("Draw", "from the tier-1 deck, with no keep to pay"),
     ("On your cards", "on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
@@ -238,7 +239,7 @@ pub(super) fn corps_block(c: &Content) -> String {
             "Megaproject",
             "Cubes",
             "At completion: player cube / adversary cube",
-            "Converter (once a round)",
+            "Converter (as often as you can pay, unless marked)",
             "Each adversary cube after",
         ],
         rows,
@@ -425,7 +426,9 @@ pub(super) fn powers_block(c: &Content) -> String {
         for p in &b.powers {
             let mut cost: Vec<String> = p.tags.iter().map(|(t, n)| format!("{n} {}", title(&t.to_string()).replace("Any", "any"))).collect();
             cost.extend(p.cost.iter().map(|(r, n)| r.words(*n)));
-            rows.push(vec![b.name.clone(), p.name.clone(), cost.join(" + "), p.text.clone()]);
+            // 105: Synthesis pays with the card it discards, nothing else.
+            let cost = if cost.is_empty() { "nothing".to_string() } else { cost.join(" + ") };
+            rows.push(vec![b.name.clone(), p.name.clone(), cost, p.text.clone()]);
         }
     }
     table(&["Board", "Power", "Cost", "Effect"], rows)
@@ -504,6 +507,12 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "Project: drain (`drain`)".to_string(),
             format!("{} credits", t("board.drain_credits")),
             format!("remove up to {} compute from one visible adversary project", t("board.drain_amount")),
+        ],
+        // 105: the general converter every player has.
+        [
+            "Turn a cube into insight".to_string(),
+            "1 research cube".to_string(),
+            format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
         ],
     ];
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())

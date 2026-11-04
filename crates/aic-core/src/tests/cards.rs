@@ -284,7 +284,7 @@ fn only_a_building_keeps_an_action() {
         card.text.clear();
     }
     assert_eq!(c.check(), Ok(()));
-    let bld = c.cards.iter_mut().find(|d| d.id == "telemetry_archive").expect("a card");
+    let bld = c.cards.iter_mut().find(|d| d.id == "sentry_drone_wing").expect("a card");
     bld.kind = crate::content::CardKind::Program;
     assert!(c.check().unwrap_err().contains("only a building"));
 }

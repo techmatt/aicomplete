@@ -48,6 +48,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.free_station_credits` | 6 | 0..50 | standard action: credits to free a corrupted research station |
 | `board.free_station_ambassadors` | 2 | 1..5 | standard action: your ambassadors on a corrupted research station that freeing it uses up |
+| `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 5, 2 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | adversary ambassadors in the supply per country |

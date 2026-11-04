@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use crate::hash::fnv1a64;
 use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
-pub use crate::op::{Facility, Op, RoundFlag, Slot, Spot};
+pub use crate::op::{Event, Facility, Op, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
     PerResource, Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind, RESOURCES, TAGS,
 };
@@ -207,20 +207,24 @@ pub struct Megaproject {
     pub after: Vec<Op>,
 }
 
-/// What a completed megaproject prints for players (074): once a round, pay
-/// `cost` for `effects`.
+/// What a completed megaproject prints for players (074): pay `cost` for
+/// `effects`, as often as you can pay (105), or once a round with `once`
+/// (Onyx's, whose chips build the stations that make its cubes).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Converter {
     pub cost: Vec<Cost>,
     pub effects: Vec<Op>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub once: bool,
 }
 
 impl Converter {
     /// In the card's words: "1 research cube + 2 energy → 1 antimatter".
     pub fn words(&self) -> String {
         let cost: Vec<String> = self.cost.iter().map(|(r, n)| r.words(*n)).collect();
-        format!("{} → {}", cost.join(" + "), Megaproject::words(&self.effects))
+        let once = if self.once { " (once a round)" } else { "" };
+        format!("{} → {}{once}", cost.join(" + "), Megaproject::words(&self.effects))
     }
 }
 
@@ -814,6 +818,20 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     if branches.iter().flat_map(|a| &a.effects).any(here_op) && c.tokens.is_none() {
         return Err(format!("{what}: an Action counts tokens here but the card holds none"));
     }
+    // 105: a trigger's or threshold's ops resolve on this card: "here" is it.
+    let triggered = c.passives.iter().flat_map(|p| match p {
+        Op::When { then, .. } | Op::Threshold { then, .. } => then.as_slice(),
+        _ => &[],
+    });
+    if triggered.clone().any(here_op) && c.tokens.is_none() {
+        return Err(format!("{what}: a trigger adds tokens here but the card holds none"));
+    }
+    if c.passives.iter().any(|p| matches!(p, Op::Threshold { .. })) && c.tokens.is_none() {
+        return Err(format!("{what}: a threshold counts tokens here but the card holds none"));
+    }
+    if c.effects.iter().chain(triggered).any(|o| matches!(o, Op::Reuse)) {
+        return Err(format!("{what}: reuse is an Action's (a building's ongoing use, never a one-off)"));
+    }
     if c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).any(|o| matches!(o, Op::GainPerTokens { here: false, .. })) {
         return Err(format!("{what}: gain_per_tokens counts the tokens here (076, ruling 12)"));
     }
@@ -1026,6 +1044,41 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             {
                 return Err(format!("{what}: each_country is for team cards"));
             }
+            // 105: a trigger resolves player ops; "both" hands the same gains to
+            // the player who played, so it prints gains only.
+            Op::When { on, then } => {
+                check_ops(then, Slot::Player, what)?;
+                if then.is_empty() {
+                    return Err(format!("{what}: a trigger resolves something"));
+                }
+                if matches!(on, Event::TeamPlay { both: true, .. }) && !then.iter().all(|o| matches!(o, Op::Gain { .. })) {
+                    return Err(format!("{what}: a trigger both players gain from prints gains only"));
+                }
+                if matches!(on, Event::PlayCost { at } if *at < 1) {
+                    return Err(format!("{what}: a rebate's cost is at least 1"));
+                }
+                // A token placed fires it; a token it placed would fire it again, forever.
+                if matches!(on, Event::PlaceTokens { .. }) && then.iter().any(|o| matches!(o, Op::AddTokens { .. })) {
+                    return Err(format!("{what}: a place-token trigger places no tokens (it would loop)"));
+                }
+            }
+            Op::Threshold { at, then } => {
+                check_ops(then, Slot::Player, what)?;
+                if *at < 1 || then.is_empty() {
+                    return Err(format!("{what}: a threshold counts to at least 1 and resolves something"));
+                }
+                // Its tokens come off and the rest resolves while N stand here: tokens it
+                // placed would count it again, forever.
+                if then.iter().any(|o| matches!(o, Op::AddTokens { .. })) {
+                    return Err(format!("{what}: a threshold places no tokens (it would loop)"));
+                }
+            }
+            Op::CardDiscount { resource: r, amount, .. } => {
+                if !matches!(r, Resource::Credits | Resource::Insight) || *amount < 1 {
+                    return Err(format!("{what}: a card discount takes 1 or more credits or insight off"));
+                }
+            }
+            Op::DiscardHand { resource: r, .. } => seat_resource(r, what)?,
             _ => {}
         }
     }

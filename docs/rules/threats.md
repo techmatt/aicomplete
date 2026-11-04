@@ -63,7 +63,10 @@ discards can't supply deals what it can and counts the rest as `threats.short`.
 **Energy counters (candidate).** A counter is one cost, each resource it prints paid in full. Most print credits alone;
 the grid's own harms, Blackout, Sabotage and Commandeer, take 1 credit and 1 energy, so energy has a use every round
 a threat lands. Any resource a seat gets without a specific card may be a counter's; the full threat redesign waits
-for the adversary pass.
+for the adversary pass. **Insight counters (r41):** Smear Campaign, Infiltration (tier 1), Deepfake Wave and Purge
+Protocols (tier 2) take 5 insight and nothing else, about one round's printed insight: a sink for the insight a seat
+didn't spend on cards. Insight is pooled like any payment; the players bring it through their converters (the cube
+converter, Cintamani's, Focus, Vigil, Synthesis), and no rule lets it stand for another resource.
 
 **Countering.** A threat is countered only when fully paid. Payments are pooled across players (`Pay` 1, or
 as much as is still useful, at a time; `Withdraw` takes back everything you put on it in one resource, even after you
@@ -75,7 +78,7 @@ upkeep, False Flag) waits beside its country (or the row) and executes next roun
 can be paid (Matt).
 
 Choice threats are preferred; a destroyed node leaves the game, so a tier-1 threat's loss can be permanent too.
-**Counters cost credits (candidate),** 4-8 by tier and harm (the table prints them):
+**Counters cost credits (candidate),** 4-8 by tier and harm, or 5 insight on four of them (the table prints them):
 
 <!-- generated: threats -->
 | Threat | Tier | Source | If not countered | Counter |
@@ -85,17 +88,17 @@ Choice threats are preferred; a destroyed node leaves the game, so a tier-1 thre
 | Supply Raid | 1 | economic | Each player here loses 6 credits. | 5 credits |
 | Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 credit + 1 energy |
 | Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 1 credit + 1 energy |
-| Infiltration | 1 | cyber | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 credits |
+| Infiltration | 1 | cyber | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 insight |
 | Agitators | 1 | influence | 3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their nodes here. | 5 credits |
 | Orbital Strike | 1 | military | 1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their nodes here. | 6 credits |
 | Defection | 1 | influence | Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their nodes here. | 4 credits |
 | Eviction | 1 | military | Each player here pays 6 credits or loses a node here (never their last). | 5 credits |
 | Embargo | 1 | economic | No site here can be claimed next round; the adversary gains 3 compute. | 4 credits |
-| Smear Campaign | 1 | influence | Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided. | 4 credits |
+| Smear Campaign | 1 | influence | Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided. | 5 insight |
 | Station Seizure | 2 | cyber | An uncorrupted research station here becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
 | Overrun | 2 | influence | The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their nodes here. | 8 credits |
 | Mass Production | 2 | economic | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
-| Purge Protocols | 2 | cyber | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 6 credits |
+| Purge Protocols | 2 | cyber | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 5 insight |
 | Total War | 2 | military | 2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute. | 8 credits |
 | Conscription | 2 | economic | Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute. | 7 credits |
 | Sleeper Cells | 2 | cyber | 4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
@@ -103,7 +106,7 @@ Choice threats are preferred; a destroyed node leaves the game, so a tier-1 thre
 | Siege | 2 | military | 2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their nodes here and loses an ambassador. The adversary gains 3 compute. | 8 credits |
 | Manhunt | 2 | military | Each player here destroys 2 of their nodes here. | 8 credits |
 | Asset Freeze | 2 | economic | Each player here loses 8 credits. The adversary gains 3 compute. | 7 credits |
-| Deepfake Wave | 2 | influence | Sway 3 toward Discord. Each player here gets 2 less insight next round. | 7 credits |
+| Deepfake Wave | 2 | influence | Sway 3 toward Discord. Each player here gets 2 less insight next round. | 5 insight |
 <!-- /generated -->
 
 **Compute.** About half the threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they execute

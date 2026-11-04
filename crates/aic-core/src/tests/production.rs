@@ -152,7 +152,7 @@ fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
 }
 
 #[test]
-fn a_converter_needs_node_in_a_city_of_its_country_and_works_once_a_round() {
+fn a_converter_needs_node_in_a_city_of_its_country() {
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let convert = Action::Convert { seat: 0, country: 0 };
@@ -183,9 +183,8 @@ fn a_converter_needs_node_in_a_city_of_its_country_and_works_once_a_round() {
         (g.resource(0, Resource::ResearchCubes), g.resource(0, Resource::Energy), g.resource(0, Resource::Antimatter)),
         (2, e - 2, a + 1)
     );
-    assert_eq!(board::converter_blocked(&w, &g, 0, 0), Some("used this round"));
-    assert!(!offered(&g));
-    // Another player, or the next round, is another use.
-    g.round += 1;
+    // 105: Horizon's converter has no limit a round (only Onyx's keeps one,
+    // tests/engine.rs): it is offered again while the seat can pay.
+    assert_eq!(board::converter_blocked(&w, &g, 0, 0), None);
     assert!(offered(&g));
 }

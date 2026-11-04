@@ -16,7 +16,7 @@
 
 use serde::Serialize;
 
-use crate::content::{Ability, CardDef, Facility, Op, Resource, Tag, TokenKind};
+use crate::content::{Ability, CardDef, Event, Facility, Op, Resource, Tag, TokenKind};
 
 /// One part of an icon line: an icon or a connector (`→ / : OR ALL ACT`), a
 /// tag (`#science`), a number, or a box of parts.
@@ -520,6 +520,20 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let place = if *station { "in a country where you own a station" } else { "that isn't complete" };
             one(clause(icons, format!("add {what} in your color to a megaproject {place}")))
         }
+        // 105: a brown box below the art moves the track; the solid outline is
+        // one of your cards.
+        Op::CopyIncome => one(clause(
+            vec![Part::Income { income: vec![Part::Yours { yours: vec![w("building")] }] }],
+            "raise your income by one of your buildings' Each round output",
+        )),
+        Op::Reuse => one(clause(
+            vec![w("ACT"), Part::Yours { yours: vec![w("building")] }],
+            "use another of your buildings' Actions again this round",
+        )),
+        Op::DiscardHand { resource, amount: n } => one(clause(
+            { let mut p = counted(*n, icon(*resource)); p.extend([w("/"), w("cards")]); p },
+            format!("discard a card from your hand and {gain} {}", amount(*resource, *n)),
+        )),
         Op::Troops { .. }
         | Op::FlipStation { .. }
         | Op::CorruptCity
@@ -552,6 +566,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }
+        | Op::CardDiscount { .. }
+        | Op::When { .. }
+        | Op::Threshold { .. }
         | Op::HardenAction { .. }
         | Op::Slots { .. }
         | Op::Logistics { .. }
@@ -582,11 +599,86 @@ enum Standing {
     Effect(Vec<Part>, String),
 }
 
-/// What one standing op prints.
-fn standing(op: &Op) -> Standing {
+/// 105: a trigger's left side, before its `:`, and its words ("when ...").
+fn event_face(on: &Event) -> (Vec<Part>, String) {
+    let a_card = |t: Option<Tag>| match t {
+        Some(t) => format!("a {} card", tag(t)),
+        None => "a card".to_string(),
+    };
+    let played = |t: Option<Tag>| {
+        let mut p = vec![w("play")];
+        p.extend(t.map(hash));
+        p
+    };
+    match *on {
+        Event::Play { tag: t } => (played(t), format!("when you play {}", a_card(t))),
+        Event::PlayTag { .. } => (played(None), "when you play a card".to_string()),
+        Event::TeamPlay { tag: t, .. } => {
+            (vec![Part::Other { other: played(t) }], format!("when another player plays {}", a_card(t)))
+        }
+        Event::PlayCost { at } => (
+            vec![w("play"), Part::Word(format!("\u{2265}{at}")), w("credits")],
+            format!("when you play a card printed at {at} credits or more"),
+        ),
+        Event::RemoveTroop => (adversary(minus(1, "troop")), "when you remove a troop".to_string()),
+        Event::RemoveCompute => (
+            adversary(vec![w("compute"), w("project")]),
+            "when you remove compute from an adversary project".to_string(),
+        ),
+        Event::RemoveAmbassadors => (adversary(vec![w("ambassador")]), "when you remove adversary ambassadors".to_string()),
+        Event::PlaceTokens { kind } => (
+            vec![Part::Yours { yours: vec![w(kind.name())] }],
+            format!("when you place a {} on one of your cards", token(kind, 1)),
+        ),
+        Event::WallStops => (vec![w("node"), w("troop")], "when your Wall stops a troop".to_string()),
+    }
+}
+
+/// What one standing op prints; `kind` is the card's token type.
+fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
     let income = |parts: Vec<Part>, say: String| Standing::Income(parts, say);
     let effect = |parts: Vec<Part>, say: String| Standing::Effect(parts, say);
     match op {
+        Op::CardDiscount { tag: t, resource, amount: n } => {
+            let mut parts = match t {
+                Some(t) => vec![hash(*t)],
+                None => vec![w("play")],
+            };
+            parts.push(w(":"));
+            parts.extend(minus(*n, icon(*resource)));
+            let which = t.map_or("your cards".to_string(), |t| format!("your {} cards", tag(t)));
+            effect(parts, format!("{which} cost {} less to play", amount(*resource, *n)))
+        }
+        Op::When { on, then } => {
+            let (mut parts, when) = event_face(on);
+            parts.push(w(":"));
+            let cls = clauses(then, "gain");
+            let gains: Vec<Part> = cls.iter().flat_map(|c| c.icons.clone()).collect();
+            parts.extend(gains.clone());
+            let mut say = cls.into_iter().map(|c| c.say).collect::<Vec<_>>().join(", ");
+            match on {
+                Event::PlayTag { tag: t } => {
+                    parts.extend([w("/"), hash(*t)]);
+                    say.push_str(&format!(" per {} tag on it", tag(*t)));
+                }
+                Event::TeamPlay { both: true, .. } => {
+                    parts.push(Part::Other { other: gains });
+                    say = format!("you both {say}");
+                }
+                _ => {}
+            }
+            effect(parts, format!("{when}, {say}"))
+        }
+        Op::Threshold { at, then } => {
+            let kind = kind.expect("Content::check: a threshold counts the card's own tokens");
+            let mut parts = counted(*at, kind.name());
+            parts.push(w(":"));
+            let cls = clauses(then, "gain");
+            parts.extend(cls.iter().flat_map(|c| c.icons.clone()));
+            let say = cls.into_iter().map(|c| c.say).collect::<Vec<_>>().join(", ");
+            // "At N" is a house term (they come off, then the rest): it fits 7.5 pt.
+            effect(parts, format!("at {at}, {say}"))
+        }
         Op::Income { resource, amount: n } => income(counted(*n, icon(*resource)), amount(*resource, *n)),
         Op::IncomePerTag { resource, tag: t, per } => {
             let mut parts = vec![w(icon(*resource)), w("/")];
@@ -712,7 +804,7 @@ fn above_art(c: &CardDef, f: &mut Face) {
     let mut effects: Vec<(Vec<Part>, String)> = Vec::new();
     let mut plain = false;
     for op in &c.passives {
-        match standing(op) {
+        match standing(op, c.tokens.as_ref().map(|t| t.kind)) {
             Standing::Income(parts, say) => {
                 let this_plain = matches!(op, Op::Income { .. });
                 match boxes.last_mut() {

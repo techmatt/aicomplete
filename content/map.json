@@ -312,7 +312,7 @@
       {
        "op": "gain",
        "resource": "insight",
-       "amount": 1
+       "amount": 2
       }
      ]
     },
@@ -386,7 +386,8 @@
        "resource": "chips",
        "amount": 2
       }
-     ]
+     ],
+     "once": true
     },
     "after": []
    },

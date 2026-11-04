@@ -12,15 +12,16 @@ The rules are split by area. Read this page, then only the files your task touch
 - [war.md](war.md): the production/war clock, factories, corp troops and war, the adversary march, Wall, node loss.
 - [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
-- [ai-boards.md](ai-boards.md): the three boards, node tracks and capstones, node powers, sacrifice powers, hardening
-  and shields.
+- [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
+- [ai-powers.md](ai-powers.md): the boards' powers (node, sacrifice and insight), the insight conversions and loops,
+  shelters, hardening and shields.
 - [threats.md](threats.md): threat sources, dealing, countering and what threats do.
 - [player-cards.md](player-cards.md): the opening, the draft, keeps, play, slots, tags, tokens, the liberate
   capstones.
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 39 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 41 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -58,6 +59,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **A threat**: on your card: one you may counter, with one of its sources in reach or your ambassador on one.
 - **Here**: on a building: on this card, where its tokens sit.
 - **Remove N**: as many as there are, up to N.
+- **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.
 - **Draw**: from the tier-1 deck, with no keep to pay.
 - **On your cards**: on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.

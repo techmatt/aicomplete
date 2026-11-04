@@ -25,6 +25,7 @@ mod play;
 mod price;
 mod sacrifice;
 mod tableau;
+mod triggers;
 mod view;
 
 pub use deck::*;
@@ -32,6 +33,7 @@ pub use play::*;
 pub use price::*;
 pub use sacrifice::*;
 pub use tableau::*;
+pub use triggers::*;
 use view::*;
 
 const DRAFT_PARAMS: &[ParamSpec] = &[
@@ -341,8 +343,17 @@ impl Module for Cards {
             Action::Tier { tier, .. } => self.take_tier(g, cx, s, *tier)?,
             Action::Draft { card, .. } => draft_pick(g, cx, s, card)?,
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
-            Action::Play { card, .. } => play_card(g, cx, s, card)?,
-            Action::Use { card, .. } => use_ability(g, cx, s, card)?,
+            // 105: what a play or an Action removes fires the seat's fight triggers.
+            Action::Play { card, .. } => {
+                let before = fight_watch(&cx.world, g, s);
+                play_card(g, cx, s, card)?;
+                fight_fire(g, cx, s, before)?;
+            }
+            Action::Use { card, .. } => {
+                let before = fight_watch(&cx.world, g, s);
+                use_ability(g, cx, s, card)?;
+                fight_fire(g, cx, s, before)?;
+            }
             _ => return Err(Halt::Illegal(format!("not a card action: {a:?}"))),
         }
         Ok(())

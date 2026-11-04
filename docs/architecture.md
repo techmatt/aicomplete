@@ -162,7 +162,10 @@ Everything content does is one enum, `Op` (`op.rs`), read from JSON as
 - **Instant** ops resolve in `effects::run`, the one dispatch (`modules/effects/mod.rs`);
   `effects::feasible` says whether a player's card has a target.
 - **Standing** ops (a building's `passives`, an AI's `innate`) are read through
-  `cards::passives` by the rule they change, while the card is in force.
+  `cards::passives` by the rule they change, while the card is in force. A `when` (r41) is a
+  trigger: `cards/triggers.rs` fires its instant ops when its event happens (a play, a token
+  placed, Wall stopping a troop, and what one seat's action removed, diffed around that action
+  in `cards::act`, `ai`'s `act`, a converter and a standard action).
 - **Twists** (an adversary card's `twists`) are read through `adversary::twists` while
   the card is current; its `sway`, `each_destroy_node` and `pull_unity` resolve once, in
   `adversary.build`, when it becomes this round's card.
