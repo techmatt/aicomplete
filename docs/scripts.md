@@ -21,6 +21,8 @@ Current:
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds.
+- `cards/slots_read.py DIR... [--rounds N]`: per cell, each seat's build-overs a game and its
+  buildings standing as each round starts, from the `slots.*` counters the experiment loop records (092).
 - `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's carried insight, cubes bought, free stations, the Researcher's second node, strikes a Wall stopped, troop hits, nodes lost and what seats leave unspent; `--powers` every board power a game, `--cards` the six research-cube cards kept, played and used
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled over DIRs: wins, each dear
   power's uses a game (a board power sacrificing two tags or more), Grant, Action buildings' uses, tokens gained / spent,

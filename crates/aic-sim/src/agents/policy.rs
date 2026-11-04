@@ -192,6 +192,17 @@ macro_rules! forced_table {
             /// 082: the keep plan counts a building that must go over one of the
             /// seat's at what it adds over the one it covers (its tags stay).
             (plan_cover: bool, false, 1.0, "082: keep plan: a building that must go over one of yours adds only what it beats the one it covers by")
+            /// 092: the keep plan charges a building played with every slot full
+            /// the buried building's remaining value (its standing effects and
+            /// Action over the rounds left); the cheapest top is the one buried.
+            (plan_bury: bool, false, 1.0, "092: keep plan: a building played with every slot full loses what the one it buries would still earn")
+            /// 092 (089's call): the keep plan's budget carries research cubes, so two
+            /// cube cards are not planned on the same cubes.
+            (plan_cubes: bool, false, 1.0, "092: keep plan: research cubes are a budget, spent by each card planned and earned by income")
+            /// 092: the opening's strategy choice reads the board's powers too.
+            (strat_powers: bool, false, 1.0, "092: the strategy choice reads the board's powers as well as the opening 10")
+            /// 092: the uses of each power the strategy choice counts.
+            (strat_power_uses: f64, false, 1.0, "092: uses of each board power the strategy choice counts (with strat_powers)")
             /// 082, a player's rule, kept as a probe: with a card in hand that needs
             /// antimatter the seat lacks, and a board power that trades spent cards for
             /// antimatter, use it. It never fired in 288 games at d2 (seeds 31000): the
@@ -628,10 +639,18 @@ pub fn opening_choice(w: &World, g: &GameState, f: &Forced) -> Choice {
         let typical = Ctx::typical_for(t, d.tier);
         CardValue::of(t, d).total(t, &typical) - t.cost(d, d.cost, d.insight, typical.horizon)
     };
+    // 092: one use of a power, less its resources. Over the opening's horizon
+    // (4 uses) it outweighed the opening 10 and set every seat's choice alone
+    // (every Builder Power grid, every Researcher Patience burst, seeds 31100).
+    let power = |p: &aic_core::content::Power| {
+        let typical = Ctx::typical_for(t, 1);
+        (value::power_worth(t, p).instant(t, &typical), f.strat_power_uses)
+    };
+    let power: strategy::PowerWorth = if f.strat_powers { Some(&power) } else { None };
     let fixed = [f.strat0, f.strat1, f.strat2, 0];
     let mut c: Choice = [None; 4];
     for (s, slot) in c.iter_mut().enumerate().take(g.seats.len().min(4)) {
-        *slot = strategy::choose(w, g, s, fixed[s], &worth);
+        *slot = strategy::choose(w, g, s, fixed[s], &worth, power);
     }
     c
 }
@@ -765,6 +784,8 @@ struct Budget {
     chips: i64,
     energy: i64,
     antimatter: i64,
+    /// 092 (`plan_cubes`): research cubes.
+    research_cubes: i64,
 }
 
 /// What the keep plan values cards by (082): the value table or the printed
@@ -947,6 +968,18 @@ fn value(
     m * CardValue::of(t, d).total(t, &ctx) - covered + jobs
 }
 
+/// 092: what building `d`, buried now, would still have earned: its standing
+/// effects and a share of its Action, each round left. Its tags stay, and what
+/// playing it did (production included) is spent.
+fn buried_value(d: &CardDef, ctx: &Ctx) -> f64 {
+    let t = value::table();
+    let standing = value::list_worth(t, &d.passives);
+    let uses = if d.ability.is_some() { t.rate("uses_share") } else { 0.0 };
+    let action = d.ability.as_ref().map(|a| value::ability_worth(t, a)).unwrap_or_default();
+    let round = standing.per_round(ctx) + uses * (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
+    (ctx.horizon * round).max(0.0)
+}
+
 /// Whether a building that must go over one of the seat's can (024: the
 /// plan kept them with nothing to go over, and they were never played).
 fn replaceable(w: &World, g: &GameState, s: usize, d: &CardDef) -> bool {
@@ -1004,6 +1037,7 @@ fn plan(
         chips: res(Resource::Chips),
         energy: res(Resource::Energy),
         antimatter: res(Resource::Antimatter),
+        research_cubes: res(Resource::ResearchCubes),
     };
     // Pay the keeps: insight first, the shortfall in credits.
     let rate = w.int("cards.insight_credits");
@@ -1032,6 +1066,9 @@ fn plan(
     };
     let patient = economy::patient(w, s);
     let share = value::table().rate("target_share");
+    // 092 (`plan_bury`): the slots still open, and the tops a building may bury.
+    let mut tops: Vec<&CardDef> = g.pile(&cards::built(s)).iter().map(|id| cards::def(w, id)).collect();
+    let mut open = cards::capacity(w, g, s) - tops.len() as i64;
     for round in 0..rounds.max(1) {
         if round > 0 {
             // Credits, chips, energy and antimatter carry over; insight resets,
@@ -1042,6 +1079,7 @@ fn plan(
                 chips: b.chips + inc(Resource::Chips),
                 energy: b.energy + inc(Resource::Energy),
                 antimatter: b.antimatter + inc(Resource::Antimatter),
+                research_cubes: b.research_cubes + inc(Resource::ResearchCubes),
             };
         }
         for id in &pool {
@@ -1052,12 +1090,13 @@ fn plan(
             let credits = cards::play_cost(w, g, s, d);
             let target = d.is_building() || effects::feasible(w, g, s, &d.effects);
             let later = if pc.table { round > 0 && pile_ok(w, g, s, d, &planned) } else { liberate_later(w, g, d) };
+            let cubes = if f.plan_cubes { b.research_cubes } else { g.resource(s, Resource::ResearchCubes) };
             let fits = b.credits >= credits
                 && b.insight >= cards::play_insight(w, g, s, d)
                 && b.chips >= d.chips
                 && b.energy >= d.energy
                 && b.antimatter >= d.antimatter
-                && g.resource(s, Resource::ResearchCubes) >= d.research_cubes
+                && cubes >= d.research_cubes
                 && cards::lowers_ok(w, g, s, d)
                 && replaceable(w, g, s, d)
                 && (target || later)
@@ -1069,8 +1108,40 @@ fn plan(
                 b.chips -= d.chips;
                 b.energy -= d.energy;
                 b.antimatter -= d.antimatter;
+                if f.plan_cubes {
+                    b.research_cubes -= d.research_cubes;
+                    b.research_cubes += d
+                        .effects
+                        .iter()
+                        .map(|e| match e {
+                            Op::Gain { resource: Resource::ResearchCubes, amount } => *amount,
+                            _ => 0,
+                        })
+                        .sum::<i64>();
+                }
                 let found = if target || !pc.table { 1.0 } else { share };
-                total += found * value(w, g, s, d, f, pc, pt, round, &tags) * (1.0 - WAIT * round as f64).max(0.1);
+                // 092: with every slot full, a plain building buries the top that
+                // would earn least over the rounds left.
+                let buried = if f.plan_bury && pc.table && d.is_building() && d.replaces.is_none() {
+                    if open > 0 {
+                        open -= 1;
+                        0.0
+                    } else {
+                        let ctx = Ctx::at((pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted);
+                        let worst = (0..tops.len()).min_by(|&i, &j| {
+                            buried_value(tops[i], &ctx).total_cmp(&buried_value(tops[j], &ctx))
+                        });
+                        match worst {
+                            Some(i) => buried_value(tops.swap_remove(i), &ctx),
+                            None => 0.0,
+                        }
+                    }
+                } else {
+                    0.0
+                };
+                total += found
+                    * (value(w, g, s, d, f, pc, pt, round, &tags) - buried)
+                    * (1.0 - WAIT * round as f64).max(0.1);
                 planned.push(*id);
                 if pc.table && !d.is_event() {
                     // 082: what it leaves in play counts toward later cards' needs.

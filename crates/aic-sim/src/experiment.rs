@@ -611,6 +611,8 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
     };
     let (mut offered_round, mut checked_round, mut real_choices) = (0u32, 0u32, 0usize);
     let mut picks = vec![0u32; g.seats.len()];
+    let mut fill_round = 0u32;
+    let mut slots: BTreeMap<String, i64> = BTreeMap::new();
     r.setup_ms = ms_since(start);
     while r.actions.len() < spec.max_actions {
         let t = Instant::now();
@@ -662,12 +664,29 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
         r.agent_ms += ms_since(t);
         let t = Instant::now();
         let a = legal[i].clone();
+        // 092: building over a standing building, and how full each seat's
+        // slots are as each round starts.
+        if g.round != fill_round {
+            fill_round = g.round;
+            for s in 0..g.seats.len() {
+                let used = g.pile(&cards::built(s)).len() as i64;
+                slots.insert(format!("slots.used.{s}.r{:02}", g.round), used);
+                slots.insert(format!("slots.cap.{s}"), cards::capacity(&rules.world(), &g, s));
+            }
+        }
+        if let Action::Choose { seat, option, .. } = &a {
+            if option.starts_with("over ") {
+                *slots.entry(format!("slots.over.{seat}")).or_default() += 1;
+                *slots.entry(format!("slots.over.{seat}.r{:02}", g.round)).or_default() += 1;
+            }
+        }
         tally_action(&mut r, &a, &mut picks);
         apply_counting_draws(&mut r, rules, &mut g, &a);
         r.actions.push(a);
         r.apply_ms += ms_since(t);
     }
     finish(&mut r, rules, g);
+    r.counters.extend(slots);
     r.ms = ms_since(start);
     r
 }

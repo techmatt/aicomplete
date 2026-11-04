@@ -65,6 +65,8 @@ experiments, speed, scripts, web, card art.
 ## Working rules
 
 - **Commit to the branch you are on.** Leave nothing uncommitted.
+- **A rules item runs `npm run cards:fit`** (in `web/`) before its first freeze, not only at the
+  end: a card-fit edit after a freeze redoes every frozen read (090 redid them all after four).
 - **Two test lanes.** Run `cargo test --workspace`, the fast lane, after every change, and
   `cargo test-all`, the full run, before every commit; a commit touching only Markdown outside the
   generated docs skips it, the fast lane still runs. Flags follow the alias with no `--`:

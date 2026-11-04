@@ -35,6 +35,7 @@ use std::hash::BuildHasherDefault;
 use std::sync::Arc;
 
 use super::credit_cost;
+use super::guide;
 use super::strategy::{self, Choice, Mults};
 use super::value::{self, CardValue, Ctx, Worth};
 use super::INSIGHT_COST;
@@ -121,6 +122,16 @@ pub struct Weights {
     /// A research cube held by a seat whose board spends cubes on a power (075:
     /// the Researcher's second node takes 3): in place of `research_cube`.
     pub research_cube_power: f64,
+    /// 092, a strategy-guide heuristic (0: off): a country sheltered while a
+    /// threat or the war step showing would destroy a node or factory there is
+    /// worth what the shelter saves (`agents/guide.rs`).
+    pub shelter_read: f64,
+    /// 092: a node a shelter saves, beyond `node` and the seat's `node_danger`
+    /// step (a lost node leaves the game, and its hex takes a marker).
+    pub shelter_node: f64,
+    /// 092 (1: on): a shelter counts no threat the team can still counter from
+    /// what it holds (a player counters first and shelters what it can't).
+    pub shelter_counter: f64,
     /// Horizon mode: per round left, each of a seat's first
     /// [`STATIONS_USEFUL`] owned stations (074).
     pub station_round: f64,
@@ -308,6 +319,17 @@ fn keep_insight(world: &aic_core::module::World, tier: u8) -> f64 {
     (INSIGHT_COST * world.int(key)) as f64
 }
 
+/// The share of `node_danger` a seat with `count` nodes is charged.
+fn danger_share(count: i64) -> f64 {
+    match count {
+        ..=1 => 1.0,
+        2 => 0.5,
+        3 => 0.25,
+        4 => 0.1,
+        _ => 0.0,
+    }
+}
+
 /// How many of a seat's owned stations the eval counts in full (074).
 const STATIONS_USEFUL: i64 = 2;
 /// How far off a troop makes a Wall's facility worth more: two marches.
@@ -356,6 +378,9 @@ impl Default for Weights {
             project_cube: 2.0,
             research_cube: 0.3,
             research_cube_power: 1.2,
+            shelter_read: 1.0,
+            shelter_node: 12.0,
+            shelter_counter: 1.0,
             station_round: 1.0,
             station_spare: 1.0,
             station_flip: 20.0,
@@ -965,6 +990,21 @@ impl Eval {
                 3 => v -= 0.25 * w.node_danger,
                 4 => v -= 0.1 * w.node_danger,
                 _ => {}
+            }
+        }
+        // 092: a shelter is worth the destruction showing that it stops.
+        if w.shelter_read > 0.0 {
+            for saves in guide::sheltered_saves(&world, g, w.shelter_counter > 0.0) {
+                for s in 0..self.seats.min(4) {
+                    let k = saves.nodes[s];
+                    if k <= 0.0 {
+                        continue;
+                    }
+                    let count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
+                    let step = danger_share(count - 1) - danger_share(count);
+                    v += w.shelter_read * k * (w.node + w.shelter_node + step * w.node_danger);
+                }
+                v += w.shelter_read * saves.factories * (w.owned_factory + w.factory);
             }
         }
         v += w.reach * reach as f64;

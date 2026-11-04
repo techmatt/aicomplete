@@ -13,7 +13,7 @@
 use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
-use aic_core::content::{CardDef, CardKind, Op, Resource, TokenKind};
+use aic_core::content::{CardDef, CardKind, Op, Power, Resource, TagOrAny, TokenKind};
 use aic_core::module::World;
 use aic_core::modules::{ai, cards};
 use aic_core::GameState;
@@ -90,11 +90,19 @@ pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
     let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
     let all: Vec<&Op> = d.effects.iter().chain(&d.passives).chain(ability.iter().copied()).collect();
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
-    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::BuildingDiscount { .. }));
+    op_categories(&all, &mut c);
     c[1] = d.is_building() && (d.ability.is_some() || d.tokens.is_some() || any(&|o| matches!(o, Op::ConvertUpkeep { .. } | Op::Slots { .. })));
     c[2] = !d.needs.is_empty();
     c[3] = super::policy::is_capstone(d) || (d.tier == 2 && d.antimatter > 0);
     c[4] = super::policy::is_liberate(d);
+    c
+}
+
+/// The categories ops alone decide (income, purge, counter, defense, draw,
+/// support), for a card or (092) a board power.
+fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
+    let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
+    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::BuildingDiscount { .. }));
     c[5] = any(&|o| {
         matches!(
             o,
@@ -124,31 +132,12 @@ pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
     });
     c[8] = any(&|o| matches!(o, Op::Draw { .. }));
     c[9] = any(&|o| matches!(o, Op::OtherGain { .. } | Op::SupplyInsight { .. } | Op::Sway { .. } | Op::TeamIncome { .. }));
-    c
 }
 
 /// The resources card `d` pays out or (beyond credits and insight) costs.
 fn resources(d: &CardDef) -> Vec<Resource> {
     let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
-    let mut out: Vec<Resource> = d
-        .effects
-        .iter()
-        .chain(&d.passives)
-        .chain(ability.iter().copied())
-        .filter_map(|o| match o {
-            Op::Gain { resource, .. }
-            | Op::GainPerNode { resource }
-            | Op::Production { resource, .. }
-            | Op::Income { resource, .. }
-            | Op::IncomePerTag { resource, .. }
-            | Op::GainPerTokens { resource, .. }
-            | Op::CashOut { resource, .. }
-            | Op::GainPerTag { resource, .. } => Some(*resource),
-            Op::GainAmbassadors { .. } => Some(Resource::Ambassadors),
-            Op::ProjectCube { .. } | Op::BuildStation => Some(Resource::ResearchCubes),
-            _ => None,
-        })
-        .collect();
+    let mut out = op_resources(d.effects.iter().chain(&d.passives).chain(ability.iter().copied()));
     for (r, n) in [
         (Resource::Energy, d.energy),
         (Resource::Chips, d.chips),
@@ -162,6 +151,25 @@ fn resources(d: &CardDef) -> Vec<Resource> {
     out.sort();
     out.dedup();
     out
+}
+
+/// The resources ops pay out.
+fn op_resources<'a>(ops: impl Iterator<Item = &'a Op>) -> Vec<Resource> {
+    ops
+        .filter_map(|o| match o {
+            Op::Gain { resource, .. }
+            | Op::GainPerNode { resource }
+            | Op::Production { resource, .. }
+            | Op::Income { resource, .. }
+            | Op::IncomePerTag { resource, .. }
+            | Op::GainPerTokens { resource, .. }
+            | Op::CashOut { resource, .. }
+            | Op::GainPerTag { resource, .. } => Some(*resource),
+            Op::GainAmbassadors { .. } => Some(Resource::Ambassadors),
+            Op::ProjectCube { .. } | Op::BuildStation => Some(Resource::ResearchCubes),
+            _ => None,
+        })
+        .collect()
 }
 
 /// The token kinds card `d` holds or feeds.
@@ -195,6 +203,39 @@ impl Spec {
         f += get(&self.kinds, kind_name(d.kind));
         let cats = categories(d);
         f += CATEGORIES.iter().zip(cats).filter(|(_, on)| *on).map(|(c, _)| get(&self.categories, c)).sum::<f64>();
+        f
+    }
+
+    /// 092: 1 plus the weights board power `p` matches, read as a card would be:
+    /// the tags it sacrifices, the resources it pays out or costs, and the
+    /// categories of its effects.
+    pub fn fit_power(&self, p: &Power) -> f64 {
+        let get = |m: &BTreeMap<String, f64>, k: &str| m.get(k).copied().unwrap_or(0.0);
+        let mut f = 1.0;
+        f += p
+            .tags
+            .iter()
+            .filter_map(|(t, _)| match t {
+                TagOrAny::Is(t) => Some(get(&self.tags, t.name())),
+                TagOrAny::Any => None,
+            })
+            .sum::<f64>();
+        let mut res = op_resources(p.effects.iter());
+        res.extend(p.cost.iter().map(|(r, _)| *r).filter(|r| !matches!(r, Resource::Credits | Resource::Insight | Resource::Energy)));
+        res.sort();
+        res.dedup();
+        f += res.iter().map(|r| get(&self.resources, r.name())).sum::<f64>();
+        let ops: Vec<&Op> = p.effects.iter().collect();
+        let mut cats = [false; CATEGORIES.len()];
+        op_categories(&ops, &mut cats);
+        // A power is no building, chain card, capstone or liberate card.
+        f += CATEGORIES
+            .iter()
+            .zip(cats)
+            .enumerate()
+            .filter(|(i, (_, on))| *on && !(1..=4).contains(i))
+            .map(|(_, (c, _))| get(&self.categories, c))
+            .sum::<f64>();
         f
     }
 
@@ -270,10 +311,24 @@ pub fn menu(w: &World, s: usize) -> Vec<u16> {
     strategies().strategies.iter().enumerate().filter(|(_, x)| &x.board == board).map(|(i, _)| i as u16).collect()
 }
 
+/// 092: a board power's worth to the strategy choice: one use's worth, and the
+/// uses to count (`None`: powers aren't read).
+pub type PowerWorth<'a> = Option<&'a dyn Fn(&Power) -> (f64, f64)>;
+
 /// Seat `s`'s strategy from its board and the cards in front of it (the opening
 /// deal, its hand): the one whose multipliers add most to what the cards are worth.
 /// `fixed` (1-based in the board's menu) overrides the choice.
-pub fn choose(w: &World, g: &GameState, s: usize, fixed: usize, value: &dyn Fn(&CardDef) -> f64) -> Option<u16> {
+/// 092 (`power`, with `strat_powers`): each board power adds its use's worth
+/// times its fit, times the uses counted; a power that sacrifices a named tag
+/// is used at most once per card seen carrying it.
+pub fn choose(
+    w: &World,
+    g: &GameState,
+    s: usize,
+    fixed: usize,
+    value: &dyn Fn(&CardDef) -> f64,
+    power: PowerWorth,
+) -> Option<u16> {
     let menu = menu(w, s);
     if fixed > 0 {
         return menu.get(fixed - 1).copied().or(menu.first().copied());
@@ -288,7 +343,22 @@ pub fn choose(w: &World, g: &GameState, s: usize, fixed: usize, value: &dyn Fn(&
     let mut best: Option<(f64, u16)> = None;
     for &k in &menu {
         let spec = &list[k as usize];
-        let score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d) * schedule(d, phase(g.round)) - 1.0)).sum();
+        let mut score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d) * schedule(d, phase(g.round)) - 1.0)).sum();
+        if let Some(power) = power {
+            for p in &ai::board(w, s).powers {
+                let (worth, rounds) = power(p);
+                let named: Vec<_> = p.tags.iter().filter_map(|(t, _)| match t {
+                    TagOrAny::Is(t) => Some(*t),
+                    TagOrAny::Any => None,
+                }).collect();
+                let uses = if named.is_empty() {
+                    rounds
+                } else {
+                    rounds.min(seen.iter().filter(|d| d.tags.iter().any(|t| named.contains(t))).count() as f64)
+                };
+                score += worth.max(0.0) * uses * (spec.fit_power(p) - 1.0);
+            }
+        }
         if best.is_none_or(|(b, _)| score > b + 1e-9) {
             best = Some((score, k));
         }
@@ -330,5 +400,27 @@ mod tests {
         let payroll = w.content.card_index("payroll_automation").unwrap();
         let k = by_id("industry_income").unwrap();
         assert!(m.get(k, payroll, 0) > m.get(by_id("power_grid").unwrap(), payroll, 0));
+    }
+
+    /// 092: a board power reads as a card would: Shelter fits Civic shelter,
+    /// Grant and Peer Review (paid in cubes) fit Cubes and stations, and a
+    /// strategy weights nothing a power doesn't do.
+    #[test]
+    fn powers_fit_their_strategies() {
+        let r = crate::agents::tests::rules(3);
+        let w = r.world();
+        let list = &strategies().strategies;
+        let power = |board: &str, name: &str| {
+            let b = w.content.ais.iter().find(|b| b.id == board).unwrap();
+            b.powers.iter().find(|p| p.name == name).unwrap().clone()
+        };
+        let fit = |id: &str, p: &Power| list[by_id(id).unwrap() as usize].fit_power(p);
+        let shelter = power("protector", "Shelter");
+        assert!(fit("civic_shelter", &shelter) > fit("diplomacy_liberation", &shelter));
+        for name in ["Grant", "Peer Review"] {
+            let p = power("researcher", name);
+            assert!(fit("cubes_stations", &p) > 1.0, "{name}");
+            assert!(fit("cubes_stations", &p) > fit("science_chain", &p), "{name}");
+        }
     }
 }

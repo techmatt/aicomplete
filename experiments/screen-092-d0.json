@@ -1,0 +1,21 @@
+{
+  "name": "screen-092-d0",
+  "note": "092: greedy (the engine, no strategy) and the strategist at d0, a read only: 2 players, the three board pairs, 48 fresh seeds from 31400, the heuristics on (the default) and all off (090's agents).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [0],
+  "agents": [
+    "engine",
+    "engine:w.shelter_read=0,plan_bury=0,plan_cubes=0",
+    "strategist",
+    "strategist:w.shelter_read=0,plan_bury=0,plan_cubes=0,strat_powers=0"
+  ],
+  "games": 48,
+  "records": 0
+}

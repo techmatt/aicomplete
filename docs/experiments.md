@@ -137,16 +137,14 @@ levers under about 20 points.
 `scripts/bench/paired.py DIR` and `scripts/cards/use_read.py DIR`. Recipes and costs (6 threads): `screen-082.json`
 (eight agents, four planners, 1,152 games, 17 min beside another item), `screen-082-d0`/`-d4.json` (greedy tiers at the
 range's ends, 1 min each), `screen-082-table-bp/br/pr.json` (pairings fixed, 2,688 games, 8 min),
-`screen-082-fresh.json` (7.5 min). The r35 ballpark read is `screen-090.json` (the strategist, 144 games, 20 s on 6 threads); `screen-090-onoff.json` turns each r35 mechanic off on the same seeds (27 cells, 1,296 games, about 3 min), read with `scripts/cards/energy_read.py`.
+`screen-082-fresh.json` (7.5 min). The r35 ballpark read is `screen-090.json` (the strategist, 144 games, 20 s on 6 threads); `screen-090-onoff.json` turns each r35 mechanic off on the same seeds (27 cells, 1,296 games, about 3 min), read with `scripts/cards/energy_read.py`. `screen-092.json` reads each agent heuristic on and off (864 games, about 2 min); `scripts/cards/slots_read.py` gives build-overs and slot fill by round.
 
 **The ballpark read (Matt's ruling, 2026-11-03: simulation is a ballpark check until he names a milestone).** Two
 players only, rotating the board pairs (Builder + Protector, Builder + Researcher, Protector + Researcher; `ai.boards`,
 `ai.start_credits` and `ai.slots` are seat-ordered, so each pair's variant restates all three), no c3, no gate; target
-45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`use-080.json`, 16-32 seeds, 20-30 s
-on 6 threads), then `screen-080.json` (`sweep`, `sweep:always_liberate=1` and the engine, 48 seeds a
-pair, 432 games) and `screen-080-off.json` (same seeds, capstones out by `experiments/configs/no_liberate.json`; 288 games): both about 9 min (about
-13 ms a planner decision). An engine screen of 32 seeds a cell is about 0.7 s a game (a 24-cell factorial under
-3 min), close enough under `sweep` to pick the planner's bracket. Credits feed the purge almost directly through the
+45-85 a pair, aiming near 60-75 without chasing it. First the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s
+on 6 threads), then the strategist read (`screen-090.json`, 20 s). A `sweep` screen of 432 games is about 9 min
+(about 13 ms a planner decision); an engine one about 0.7 s a game. Credits feed the purge almost directly through the
 gain-an-ambassador project, so a size lever's first read is ambassadors bought (`board.std.ambassador`). Income levers
 are overlays (`ais.builder.credits=16`, `corps.<name>.project.<path>`) and need no build; a rule or map what-if does.
 **Copy the binary before a run, then rebuild freely.** The read scripts (`economy_read`, `play_read`, `board_read`,
@@ -182,7 +180,8 @@ override or dead agent shows in minutes. In a long gate, `panicked` in stderr is
 **Fresh seeds for a gate.** Specs start at seed 0: give a gate a `--seed` no screen of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds, and reset at each bump keeping the seeds that picked that revision: r35: 31100 the fresh d2 read
 (`screen-090.json`) and the d0 read (`screen-090-d0.json`), 31200 the engine smoke (`use-090.json`), 31300 the on/off
-and liberate-price screens (`screen-090-onoff.json`, `screen-090-lib.json`). Next free: 31400.
+and liberate-price screens (`screen-090-onoff.json`, `screen-090-lib.json`), 31400 and 31500 the agent
+heuristics' first and final reads (`screen-092.json`, `screen-092-d0.json`). Next free: 31600.
 
 ## Reading prices
 

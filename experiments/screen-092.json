@@ -1,0 +1,23 @@
+{
+  "name": "screen-092",
+  "note": "092: the test-agent heuristics at r35, d2, 2 players, the three board pairs, 48 fresh seeds from 31400. The strategist with all four switches on (the new default), all off (090's agent), and each off alone. Read with scripts/bench/paired.py, scripts/cards/board_read.py --powers and scripts/agents/slots_read.py.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2", "ai.start_credits=40,40", "ai.slots=5,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "ai.start_credits=46,40", "ai.slots=3,2"]}
+  ],
+  "difficulties": [2],
+  "agents": [
+    "strategist",
+    "strategist:w.shelter_read=0,plan_bury=0,plan_cubes=0,strat_powers=0",
+    "strategist:w.shelter_read=0",
+    "strategist:plan_bury=0",
+    "strategist:plan_cubes=0",
+    "strategist:strat_powers=0"
+  ],
+  "games": 48,
+  "records": 0
+}

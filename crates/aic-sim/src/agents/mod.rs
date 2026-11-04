@@ -50,6 +50,7 @@
 
 pub mod determinize;
 pub mod eval;
+pub mod guide;
 pub mod planner;
 pub mod policy;
 pub mod search;

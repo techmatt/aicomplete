@@ -2,12 +2,12 @@
  "rules_revision": 35,
  "games": {
   "random": "6dd4f04e15c4",
-  "greedy": "96b78ccf6c33",
-  "engine": "180f03def614",
-  "planner": "af9b94d1640c"
+  "greedy": "f86034201201",
+  "engine": "1b19bd7e2318",
+  "planner": "ee2e4341ed92"
  },
- "random": 5.4,
- "greedy": 401.8,
- "engine": 245.2,
- "planner": 5587.2
+ "random": 5.6,
+ "greedy": 372.0,
+ "engine": 269.2,
+ "planner": 6587.5
 }
