@@ -45,8 +45,7 @@ removed: it makes `botnet_compute` adversary compute a round, it **blocks site c
 site with a botnet on or next to it can't be claimed), and it counts against the purge until
 Unity eases it ([alignment.md](alignment.md)). **Botnets are hard to remove (candidate, Matt):** no standard action
 does it, only tier-2 effects: the tier-2 cards **Botnet Takedown** and **Singularity
-Exploit** (which also discards a project) and **Breakthrough Lab**'s Action, each removing a
-botnet in your reach; **Root Access**, one on or next to the city it liberates; and the
+Exploit** (which also discards a project), each removing a botnet in your reach; **Root Access**, one on or next to the city it liberates; and the
 tier-2 Unity card **Decommission** (a botnet anywhere, players choose). Removing a botnet
 sways `alignment.botnet` Unity ([alignment.md](alignment.md)).
 
@@ -72,9 +71,9 @@ resolved (or been discarded), the next row is dealt.
   3-player numbers; a per-player cost keeps the timing at 2 and 4 players). The table
   prints each cost.
 - **Counterplay:** a player ambassador on a botnet stops its compute and is not used up;
-  Cyber's hacks drain compute from one project (Blackout Script, Zero-Click Breach, ...),
-  tier-2 hacks from every visible one (Black Ice Citadel, each upkeep) or discard one with
-  its compute (Killswitch Directive); the drain standard project ([economy.md](economy.md)) does it for credits.
+  Cyber's hacks drain compute from one project (Zero-Click Breach, Threat Hunt, ...) or
+  from every visible one (Adaptive Malware), or discard one with its compute (Killswitch
+  Directive, Singularity Exploit); the drain standard project ([economy.md](economy.md)) does it for credits.
 
 <!-- generated: projects -->
 | Project | Stage | Compute per player | Resolves | Text |

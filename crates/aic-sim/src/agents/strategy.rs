@@ -102,7 +102,7 @@ pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
 /// support), for a card or (092) a board power.
 fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
-    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::BuildingDiscount { .. }));
+    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::BuildingDiscount { .. }));
     c[5] = any(&|o| {
         matches!(
             o,
@@ -160,6 +160,7 @@ fn op_resources<'a>(ops: impl Iterator<Item = &'a Op>) -> Vec<Resource> {
             Op::Gain { resource, .. }
             | Op::GainPerNode { resource }
             | Op::Production { resource, .. }
+            | Op::ProductionPerTag { resource, .. }
             | Op::Income { resource, .. }
             | Op::IncomePerTag { resource, .. }
             | Op::GainPerTokens { resource, .. }

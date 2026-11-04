@@ -1,0 +1,38 @@
+{
+  "name": "screen-106-newops",
+  "note": "106: each new op on and off (its cards out of the deck), the read's seeds.",
+  "configs": [
+    "configs/baseline.json",
+    "experiments/configs/106_no_production_per_tag.json",
+    "experiments/configs/106_no_income_per_tag_amount.json",
+    "experiments/configs/106_no_play_tag_any.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33548,
+  "records": 0
+}

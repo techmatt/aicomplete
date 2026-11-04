@@ -1,0 +1,645 @@
+[
+ {
+  "id": "eviction_worm",
+  "name": "Eviction Worm",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "remove_ambassadors_country",
+    "unity_per": 0,
+    "max": 8
+   }
+  ]
+ },
+ {
+  "id": "logic_bomb",
+  "name": "Logic Bomb",
+  "tier": 1,
+  "kind": "program",
+  "cost": 11,
+  "insight": 1,
+  "tags": [
+   "cyber",
+   "security"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "drain_project",
+    "amount": 10
+   },
+   {
+    "op": "damage",
+    "troops": 1
+   }
+  ]
+ },
+ {
+  "id": "shadow_broker_feed",
+  "name": "Shadow Broker Scrub",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "cyber",
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "clear_markers",
+    "count": 2
+   },
+   {
+    "op": "draw",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "shared_exploit_kit",
+  "name": "Shared Exploit Kit",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "cyber",
+   "science",
+   "security"
+  ],
+  "keywords": [
+   "hack",
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "drain_project",
+    "amount": 11
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "insight",
+    "amount": 3
+   }
+  ]
+ },
+ {
+  "id": "zero_click_breach",
+  "name": "Zero-Click Breach",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 2,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "drain_project",
+    "amount": 18
+   }
+  ]
+ },
+ {
+  "id": "neural_mirror",
+  "name": "Neural Mirror",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 0,
+  "tags": [
+   "cyber",
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "production_per_tag",
+    "resource": "insight",
+    "tag": "cyber",
+    "per": 2
+   }
+  ]
+ },
+ {
+  "id": "adaptive_malware",
+  "name": "Adaptive Malware",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    3
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "drain_all",
+    "amount": 8
+   }
+  ]
+ },
+ {
+  "id": "threat_hunt",
+  "name": "Threat Hunt",
+  "tier": 1,
+  "kind": "program",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "cyber"
+   },
+   {
+    "op": "drain_project",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "ransomware_syndicate",
+  "name": "Ransomware Syndicate",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    3
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "production_per_tag",
+    "resource": "credits",
+    "tag": "cyber",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "cryptojacking_campaign",
+  "name": "Cryptojacking Campaign",
+  "tier": 1,
+  "kind": "program",
+  "cost": 22,
+  "insight": 2,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 8
+   }
+  ]
+ },
+ {
+  "id": "spoofed_credentials",
+  "name": "Credential Harvest",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "gain_per_tag",
+    "resource": "insight",
+    "tag": "cyber",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "signal_hijack",
+  "name": "Signal Hijack",
+  "tier": 1,
+  "kind": "event",
+  "cost": 3,
+  "insight": 1,
+  "tags": [
+   "cyber",
+   "security"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "remove_troops",
+    "count": 2
+   }
+  ]
+ },
+ {
+  "id": "security_ops_floor",
+  "name": "Security Ops Floor",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_compute"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "insight",
+      "amount": 3
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "honeypot_relay",
+  "name": "Honeypot Relay",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_ambassadors"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 6
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "darknet_exchange",
+  "name": "Darknet Exchange",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "card_discount",
+    "tag": "cyber",
+    "resource": "credits",
+    "amount": 5
+   }
+  ]
+ },
+ {
+  "id": "sentinel_mesh",
+  "name": "Sentinel Mesh",
+  "tier": 1,
+  "kind": "building",
+  "cost": 4,
+  "insight": 1,
+  "tags": [
+   "cyber",
+   "security"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 4,
+     "source": "cyber"
+    }
+   ]
+  }
+ },
+ {
+  "id": "intrusion_lab",
+  "name": "Intrusion Lab",
+  "tier": 1,
+  "kind": "building",
+  "cost": 6,
+  "insight": 0,
+  "tags": [
+   "cyber",
+   "security"
+  ],
+  "keywords": [
+   "hack",
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "agents"
+  },
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_compute"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "agents",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "gain",
+      "resource": "antimatter",
+      "amount": 1
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "exploit_broker",
+  "name": "Exploit Broker",
+  "tier": 1,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play",
+     "tag": "cyber"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 5
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "killswitch_directive",
+  "name": "Killswitch Directive",
+  "tier": 2,
+  "kind": "event",
+  "cost": 10,
+  "insight": 2,
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "discard_project"
+   },
+   {
+    "op": "drain_all",
+    "amount": 10
+   }
+  ]
+ },
+ {
+  "id": "root_access",
+  "name": "Root Access",
+  "tier": 2,
+  "kind": "event",
+  "cost": 40,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "liberate",
+    "botnet": true
+   }
+  ]
+ },
+ {
+  "id": "singularity_exploit",
+  "name": "Singularity Exploit",
+  "tier": 2,
+  "kind": "program",
+  "cost": 10,
+  "antimatter": 1,
+  "insight": 2,
+  "needs": [
+   [
+    "cyber",
+    3
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "keywords": [
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "remove_botnet"
+   },
+   {
+    "op": "drain_all",
+    "amount": 12
+   }
+  ]
+ },
+ {
+  "id": "zero_day_auction",
+  "name": "Zero-Day Auction",
+  "tier": 2,
+  "kind": "program",
+  "cost": 6,
+  "insight": 2,
+  "needs": [
+   [
+    "cyber",
+    5
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "gain_per_tag",
+    "resource": "antimatter",
+    "tag": "cyber",
+    "per": 2
+   }
+  ]
+ },
+ {
+  "id": "hyperscale_botnet",
+  "name": "Hyperscale Botnet",
+  "tier": 2,
+  "kind": "building",
+  "cost": 6,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    3
+   ]
+  ],
+  "replaces": "cyber",
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "insight",
+    "amount": 2
+   },
+   {
+    "op": "card_discount",
+    "resource": "insight",
+    "amount": 1
+   }
+  ]
+ },
+ {
+  "id": "autonomous_defense_grid",
+  "name": "Autonomous Defense Grid",
+  "tier": 2,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "cyber",
+    "amount": 5
+   }
+  ]
+ },
+ {
+  "id": "command_and_control_grid",
+  "name": "Command-and-Control Grid",
+  "tier": 2,
+  "kind": "building",
+  "cost": 18,
+  "insight": 2,
+  "needs": [
+   [
+    "cyber",
+    3
+   ]
+  ],
+  "tags": [
+   "cyber"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 5
+     }
+    ]
+   }
+  ]
+ }
+]

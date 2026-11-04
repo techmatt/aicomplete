@@ -148,6 +148,6 @@ makes it matter.
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
 nothing (Matt). A destruction is absorbed, in this order, by a shelter on the country, a
 corp troop at a base next to it (adversary strikes only), a hardening token on the hex, a
-player ambassador on the hex, or Aegis Dome Array or the Aegis Doctrine capstone (once a
-round, for their owner's countries). A destroyed node leaves the game (above). A destroyed
+player ambassador on the hex, or the Aegis Doctrine capstone (once a
+round, for its owner's countries). A destroyed node leaves the game (above). A destroyed
 station or factory takes its cube with it.

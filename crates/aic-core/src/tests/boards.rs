@@ -7,7 +7,7 @@ use crate::op::Site;
 
 /// Three Industry programs in the Builder's play area.
 fn builder_with_tags(g: &mut GameState) {
-    set_pile(g, &cards::played(0), &["payroll_automation", "materials_hedge_desk", "bulk_silicon_procurement"]);
+    set_pile(g, &cards::played(0), &["payroll_automation", "supply_chain_audit", "vendor_financing"]);
 }
 
 #[test]
@@ -34,12 +34,12 @@ fn a_capstone_counts_once_uncovered() {
 fn rush_build_pays_tags_and_no_credits() {
     let (rules, mut g) = lab_actions();
     builder_with_tags(&mut g);
-    set_pile(&mut g, &cards::hand(0), &["liaison_corps"]);
+    set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
     set_res(&mut g, 0, Resource::Energy, 1);
     act(&rules, &mut g, power(&rules, 0, "Rush Build"));
-    assert!(g.pile(&cards::built(0)).contains(&Key::new("liaison_corps")));
+    assert!(g.pile(&cards::built(0)).contains(&Key::new("open_assembly")));
     assert_eq!(g.resource(0, Resource::Credits), 0);
     assert_eq!(g.resource(0, Resource::Energy), 0, "r35: an Industry tag and an energy");
     assert!(g.resource(0, Resource::Insight) < 3, "its insight is still paid");
@@ -50,7 +50,8 @@ fn rush_build_pays_tags_and_no_credits() {
 /// building to play (it took both and built nothing).
 #[test]
 fn rush_build_needs_a_building_left_once_paid() {
-    let (rules, mut g) = lab_actions();
+    // Open Assembly pinned to 4 energy: no building prints energy and no needs since r42.
+    let (rules, mut g) = lab_actions_with(&["cards.open_assembly.energy=4"]);
     let rush = power(&rules, 0, "Rush Build");
     let offered = |g: &GameState| rules.legal_actions(g).contains(&rush);
     builder_with_tags(&mut g);
@@ -61,11 +62,10 @@ fn rush_build_needs_a_building_left_once_paid() {
     // sacrifice of any one program leaves it short.
     set_pile(&mut g, &cards::hand(0), &["vertical_monopoly"]);
     assert!(!offered(&g), "every sacrifice leaves Industry 3 of the 4 it needs");
-    set_pile(&mut g, &cards::hand(0), &["sovereign_capital_fund"]);
-    assert!(offered(&g), "Industry 3 is left after the sacrifice");
-    // Power to the People's 4 energy, after Rush Build's 1.
-    set_pile(&mut g, &cards::hand(0), &["power_to_the_people"]);
-    set_res(&mut g, 0, Resource::Chips, 3);
+    set_pile(&mut g, &cards::hand(0), &["market_stabilization_board"]);
+    assert!(offered(&g), "Industry 3 is left after the sacrifice, of the 2 it needs");
+    // Open Assembly's 4 energy, after Rush Build's 1.
+    set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
     set_res(&mut g, 0, Resource::Energy, 4);
     assert!(!offered(&g), "4 energy pays Rush Build or the card, not both");
     set_res(&mut g, 0, Resource::Energy, 5);
@@ -73,13 +73,13 @@ fn rush_build_needs_a_building_left_once_paid() {
 }
 
 /// 099: Rush Build's sacrifice offers only what leaves a building to play: the
-/// stack Arcology Foundry would go over is not offered while a program can go.
+/// stack Capital Projects Office would go over is not offered while a program can go.
 #[test]
 fn rush_build_offers_no_sacrifice_that_strands_it() {
     let (rules, mut g) = lab_actions();
     set_pile(&mut g, &cards::played(0), &["payroll_automation"]);
     set_pile(&mut g, &cards::built(0), &["retained_earnings"]);
-    set_pile(&mut g, &cards::hand(0), &["arcology_foundry"]);
+    set_pile(&mut g, &cards::hand(0), &["capital_projects_office"]);
     set_res(&mut g, 0, Resource::Credits, 0);
     set_res(&mut g, 0, Resource::Insight, 3);
     set_res(&mut g, 0, Resource::Chips, 2);
@@ -96,7 +96,7 @@ fn rush_build_offers_no_sacrifice_that_strands_it() {
         );
         answer(&rules, &mut g, 0);
     }
-    assert!(g.pile(&cards::built(0)).contains(&Key::new("arcology_foundry")), "{:?}", g.pile(&cards::built(0)));
+    assert!(g.pile(&cards::built(0)).contains(&Key::new("capital_projects_office")), "{:?}", g.pile(&cards::built(0)));
 }
 
 #[test]

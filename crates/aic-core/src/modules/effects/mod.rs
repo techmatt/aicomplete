@@ -186,6 +186,13 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Production { resource, amount } => {
             cx.add_key(g, &economy::production_key(seat, *resource), *amount)
         }
+        // 106: counted once, now; a program is in play when it resolves.
+        Op::ProductionPerTag { resource, tag, per } => {
+            let n = cards::tags(&w, g, seat, *tag) / (*per).max(1);
+            if n != 0 {
+                cx.add_key(g, &economy::production_key(seat, *resource), n)
+            }
+        }
         Op::AddTokens { kind, amount, here: true } => {
             if let Some(c) = ctx.card {
                 cards::add_tokens(g, cx, seat, &c, *amount);

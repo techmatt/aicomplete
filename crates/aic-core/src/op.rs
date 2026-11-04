@@ -103,8 +103,12 @@ pub enum Event {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         tag: Option<Tag>,
     },
-    /// You play a card: once for each `tag` tag on it (the per-tag form).
-    PlayTag { tag: Tag },
+    /// You play a card: once for each `tag` tag on it (the per-tag form);
+    /// with no tag, once for each tag of any kind on it (106: the tier-2 form).
+    PlayTag {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tag: Option<Tag>,
+    },
     /// Another player plays a card carrying `tag` (no tag: any card); with
     /// `both`, that player gains the same (the trigger's ops must be gains).
     TeamPlay {
@@ -316,6 +320,14 @@ pub enum Op {
     Production {
         resource: Resource,
         amount: i64,
+    },
+    /// A one-time permanent gain per tag (106, a program's): your printed
+    /// production of `resource` rises by 1 per `per` `tag` tags on your cards
+    /// in play, counted once when it resolves (a program counts itself).
+    ProductionPerTag {
+        resource: Resource,
+        tag: Tag,
+        per: i64,
     },
     /// Add `amount` tokens to one of your active buildings holding `kind` (021);
     /// with `here`, to the building whose Action this is (076).
@@ -542,11 +554,13 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// `1` per `per` of your `tag` tags.
+    /// `amount` (default 1; 106) per `per` of your `tag` tags.
     IncomePerTag {
         resource: Resource,
         tag: Tag,
         per: i64,
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        amount: i64,
     },
     /// Your buildings cost `amount` credits less.
     BuildingDiscount {
@@ -670,6 +684,10 @@ fn one() -> i64 {
     1
 }
 
+fn is_one(n: &i64) -> bool {
+    *n == 1
+}
+
 impl Op {
     /// The lists that may print this op: the home of "what can go where".
     pub fn slots(&self) -> &'static [Slot] {
@@ -765,6 +783,7 @@ impl Op {
             | Op::DrainProject { .. }
             | Op::DiscardProject
             | Op::Production { .. }
+            | Op::ProductionPerTag { .. }
             | Op::AddTokens { .. }
             | Op::CutBotnet
             | Op::MoveOne { .. }

@@ -167,8 +167,8 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump: r41: 33500-33547 the r40 → r41 read (`screen-105-r41.json`, both binaries, and 105's
-diagnostic overlays on r41). Next free: 33548.
+seeds and reset at each bump: r42: 33548-33595 the r41 → r42 read (`screen-106-r42.json`, both binaries; 106's
+levers on r42 on the same seeds: `screen-106-boards.json`, `-dear`, `-newops`). Next free: 33596.
 
 ## Reading prices
 

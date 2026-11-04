@@ -1,12 +1,12 @@
 {
   "_note": "Which real card shows each variant, and the splay's buildings, oldest first. Everything comes from content/cards.json and its generated faces (web/card/faces.json).",
   "variants": {
-    "program-t1": "mutual_defense_pact",
-    "program-t2": "antiproton_offtake_deal",
-    "building-t1": "embassy_compound",
+    "program-t1": "joint_fabrication_pact",
+    "program-t2": "recursive_self_improvement",
+    "building-t1": "consulate_tower",
     "building-t2": "orbital_embassy",
     "event-t1": "hardpoint_lockdown",
-    "event-t2": "adversarial_inference_sweep"
+    "event-t2": "planetary_referendum"
   },
-  "splay": ["telemetry_archive", "exabyte_archive", "foundation_model_campus"]
+  "splay": ["telemetry_archive", "synthetic_data_forge", "foundation_model_campus"]
 }

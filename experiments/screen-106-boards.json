@@ -1,0 +1,45 @@
+{
+  "name": "screen-106-boards",
+  "note": "106: the interim r42 build with the boards printed credits back at r41 (28/24/21 -> 25/21/18), paired with screen-106-r42 on 33548-33595: separates the board raise from the cards. Run on an interim r42 build (boards +3, no Botnet Takedown): a factorial read against that build, kept for the record (r42.md).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "ais.builder.credits=25",
+        "ais.protector.credits=21",
+        "ais.researcher.credits=18"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=25",
+        "ais.protector.credits=21",
+        "ais.researcher.credits=18"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=25",
+        "ais.protector.credits=21",
+        "ais.researcher.credits=18"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33548,
+  "records": 0
+}

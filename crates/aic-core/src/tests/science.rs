@@ -31,7 +31,7 @@ fn shields_delays_and_marker_clearing_are_refused_off_science() {
         let set = format!("cards.payroll_automation.effects=[{{\"op\":\"{op}\",\"count\":1}}]");
         let err = Rules::new(&baseline_with(&[&set])).err().expect("refused");
         assert!(err.contains("Science"), "{err}");
-        let on_science = format!("cards.literature_crawler.effects=[{{\"op\":\"{op}\",\"count\":1}}]");
+        let on_science = format!("cards.shared_compute_grant.effects=[{{\"op\":\"{op}\",\"count\":1}}]");
         assert!(Rules::new(&baseline_with(&[&on_science])).is_ok());
     }
 }

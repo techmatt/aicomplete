@@ -623,7 +623,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          attention: what you don't spend is lost. Playing a card costs its credits and {} insight, \
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
-         Programs stay in front of you; events are used and discarded. Every card in front of you \
+         Programs stay in front of you and are where lasting income comes from (\"raise your credit \
+         income by 1 per Science tag on your cards\"); buildings are your engine: Actions you use once a \
+         round and Effects that pay each time their trigger happens; events are used and discarded. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
          and you can sacrifice cards with the right tags to use your AI board's powers.\n\n\
          **Nodes, for new players.** There is no growth step. In the action phase you place \

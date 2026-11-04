@@ -108,11 +108,9 @@ have tokens).
 **Loops and caps.** Credits → chips → buildings → income → credits runs once a round and in 5 slots at most. Rush Build
 takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
-hand cap it. **The energy gift** (1 energy → another player's 5 chips at Substation Hub or 8 credits at Treaty Grid
-Exchange, once a round a building) is a conversion with a boost: an energy is worth about 4.5, the gift 7.5-8. Energy
-bought from a neutral city costs `city_energy_credits` (5), so credits → energy → Treaty Grid Exchange → credits gains 3 a
-round, for the team, not the buyer; Substation Hub's 5 chips sell back for 5 credits (`chips_credits` 1), so its loop
-gains only where the chips pay a chip cost. It is capped by once a round, the two buildings, and the cities' energy
+hand cap it. **The energy gift** (106 cut the gift Actions; Shared Grid Accord and Interconnector Treaty give energy
+once, as programs) has no loop left: a gift is one-shot. Energy bought from a neutral city costs
+`city_energy_credits` (5); credits → energy → a card's income is capped by the cards and the cities' energy
 (a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). Nothing turns the gift back
 into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2 insight; everyone's

@@ -9,7 +9,12 @@ use crate::modules::{board, cards, economy};
 /// The lab at its action phase with these cards out of the decks, seat 0 (the
 /// Builder) holding `hand` and `built`, credits and insight to spare.
 fn table(hand: &[&str], built: &[&str]) -> (Rules, GameState) {
-    let (rules, mut g) = lab_actions();
+    table_with(&[], hand, built)
+}
+
+/// [`table`] with content overrides: a card built for the test.
+fn table_with(sets: &[&str], hand: &[&str], built: &[&str]) -> (Rules, GameState) {
+    let (rules, mut g) = lab_actions_with(sets);
     for c in hand.iter().chain(built) {
         out_of_decks(&mut g, c);
     }
@@ -42,30 +47,35 @@ fn trigger_gain(rules: &Rules, card: &str) -> (Resource, i64) {
 #[test]
 fn a_play_trigger_fires_for_its_tag_and_counts_itself() {
     // Citation Engine: a Science card played pays; a Cyber one doesn't.
-    let (rules, mut g) = table(&["literature_crawler", "darknet_exchange"], &["citation_engine"]);
+    let (rules, mut g) = table(&["shared_compute_grant", "darknet_exchange"], &["citation_engine"]);
     let (r, n) = trigger_gain(&rules, "citation_engine");
     let before = g.resource(0, r);
     let w = rules.world();
-    let cost = cards::play_cost(&w, &g, 0, cards::def(&w, "literature_crawler"));
-    play(&rules, &mut g, 0, "literature_crawler");
+    let cost = cards::play_cost(&w, &g, 0, cards::def(&w, "shared_compute_grant"));
+    play(&rules, &mut g, 0, "shared_compute_grant");
     assert_eq!(g.resource(0, r), before - cost + n);
     let before = g.resource(0, r);
     let cost = cards::play_cost(&w, &g, 0, cards::def(&w, "darknet_exchange"));
     play(&rules, &mut g, 0, "darknet_exchange");
     assert_eq!(g.resource(0, r), before - cost, "no Science tag, no trigger");
-    // Telemetry Archive is a Science card: playing it fires its own trigger.
+    // Telemetry Archive is a Science card: playing it fires its own trigger (2 Datasets).
     let (rules, mut g) = table(&["telemetry_archive"], &[]);
     play(&rules, &mut g, 0, "telemetry_archive");
-    assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 1);
+    assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 2);
 }
 
 #[test]
 fn the_per_tag_form_counts_the_played_cards_tags() {
-    let (rules, mut g) = table(&["simulation_cluster"], &["quantum_decryptor"]);
+    // No card prints a per-tag trigger naming its tag since r42: built here.
+    let (rules, mut g) = table_with(
+        &[r#"cards.interdisciplinary_institute.passives=[{"op":"when","on":{"event":"play_tag","tag":"science"},"then":[{"op":"gain","resource":"insight","amount":2}]}]"#],
+        &["simulation_cluster"],
+        &["interdisciplinary_institute"],
+    );
     let w = rules.world();
     let d = cards::def(&w, "simulation_cluster");
     let science = d.tags.iter().filter(|t| **t == Tag::Science).count() as i64;
-    let (r, n) = trigger_gain(&rules, "quantum_decryptor");
+    let (r, n) = trigger_gain(&rules, "interdisciplinary_institute");
     assert_eq!(r, Resource::Insight);
     let before = g.resource(0, Resource::Insight);
     let paid = cards::play_insight(&w, &g, 0, d);
@@ -75,32 +85,32 @@ fn the_per_tag_form_counts_the_played_cards_tags() {
 
 #[test]
 fn a_teammate_trigger_pays_on_another_players_play() {
-    // Grid-Tied Smelter on seat 1: seat 0 plays a Power card, seat 1 gains.
+    // Substation Hub on seat 1: seat 0 plays a Power card, seat 1 gains.
     let (rules, mut g) = table(&["baseload_contract"], &[]);
-    out_of_decks(&mut g, "grid_tied_smelter");
-    set_pile(&mut g, "cards.built.1", &["grid_tied_smelter"]);
-    let (r, n) = trigger_gain(&rules, "grid_tied_smelter");
+    out_of_decks(&mut g, "substation_hub");
+    set_pile(&mut g, "cards.built.1", &["substation_hub"]);
+    let (r, n) = trigger_gain(&rules, "substation_hub");
     let before = g.resource(1, r);
     play(&rules, &mut g, 0, "baseload_contract");
     assert_eq!(g.resource(1, r), before + n);
     // Consulate Tower: both gain.
-    let (rules, mut g) = table(&["consular_pouch"], &[]);
+    let (rules, mut g) = table(&["planetary_referendum"], &[]);
     out_of_decks(&mut g, "consulate_tower");
     set_pile(&mut g, "cards.built.1", &["consulate_tower"]);
     let (r, n) = trigger_gain(&rules, "consulate_tower");
     let w = rules.world();
-    let d = cards::def(&w, "consular_pouch");
+    let d = cards::def(&w, "planetary_referendum");
     assert!(d.tags.contains(&Tag::Diplomacy));
     let (mine, theirs) = (g.resource(0, r), g.resource(1, r));
     let cost = if r == Resource::Credits { cards::play_cost(&w, &g, 0, d) } else { 0 };
-    play(&rules, &mut g, 0, "consular_pouch");
+    play(&rules, &mut g, 0, "planetary_referendum");
     assert_eq!(g.resource(1, r), theirs + n);
     assert_eq!(g.resource(0, r), mine - cost + n);
 }
 
 #[test]
 fn a_rebate_reads_the_printed_cost() {
-    let (rules, mut g) = table(&["baseload_contract", "literature_crawler"], &["lights_out_assembly"]);
+    let (rules, mut g) = table(&["baseload_contract", "shared_compute_grant"], &["lights_out_assembly"]);
     let w = rules.world();
     let (r, n) = trigger_gain(&rules, "lights_out_assembly");
     let at = cards::def(&w, "lights_out_assembly").passives.iter().find_map(|p| match p {
@@ -108,7 +118,7 @@ fn a_rebate_reads_the_printed_cost() {
         _ => None,
     });
     let at = at.unwrap();
-    for (card, pays) in [("baseload_contract", true), ("literature_crawler", false)] {
+    for (card, pays) in [("baseload_contract", true), ("shared_compute_grant", false)] {
         let d = cards::def(&w, card);
         assert_eq!(d.cost >= at, pays, "{card} costs {}", d.cost);
         let before = g.resource(0, r);
@@ -123,9 +133,14 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
     let (rules, g) = table(&[], &["darknet_exchange"]);
     let w = rules.world();
     let floor = w.int("cards.discount_floor");
-    let cyber = cards::def(&w, "signal_hijack");
-    let science = cards::def(&w, "literature_crawler");
-    assert_eq!(cards::play_cost(&w, &g, 0, cyber), (cyber.cost - 2).max(cyber.cost.min(floor)));
+    let off = cards::def(&w, "darknet_exchange").passives.iter().find_map(|p| match p {
+        Op::CardDiscount { tag: Some(Tag::Cyber), resource: Resource::Credits, amount } => Some(*amount),
+        _ => None,
+    });
+    let cyber = cards::def(&w, "eviction_worm");
+    let science = cards::def(&w, "shared_compute_grant");
+    assert!(!science.tags.contains(&Tag::Cyber));
+    assert_eq!(cards::play_cost(&w, &g, 0, cyber), (cyber.cost - off.unwrap()).max(cyber.cost.min(floor)));
     assert_eq!(cards::play_cost(&w, &g, 0, science), science.cost);
     let (rules, mut g) = table(&["planetary_referendum"], &["hyperscale_botnet"]);
     let w = rules.world();
@@ -142,7 +157,7 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
 
 #[test]
 fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
-    let (rules, mut g) = table(&["literature_crawler"], &["telemetry_archive"]);
+    let (rules, mut g) = table(&["shared_compute_grant"], &["telemetry_archive"]);
     g.vars.insert(cards::tokens_key(0, "telemetry_archive").as_str().into(), 2);
     let w = rules.world();
     let reward = cards::def(&w, "telemetry_archive").passives.iter().find_map(|p| match p {
@@ -153,18 +168,18 @@ fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
         _ => None,
     });
     let before = g.resource(0, Resource::Insight);
-    let paid = cards::play_insight(&w, &g, 0, cards::def(&w, "literature_crawler"));
-    play(&rules, &mut g, 0, "literature_crawler");
-    assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 0, "3 reached: removed");
+    let paid = cards::play_insight(&w, &g, 0, cards::def(&w, "shared_compute_grant"));
+    play(&rules, &mut g, 0, "shared_compute_grant");
+    assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 0, "4 reached: removed");
     assert_eq!(g.resource(0, Resource::Insight), before - paid + reward.unwrap());
 }
 
 #[test]
 fn copy_raises_income_by_a_buildings_output() {
-    let (rules, mut g) = table(&["payroll_automation"], &["robotic_foundry"]);
+    let (rules, mut g) = table(&["payroll_automation"], &["orbital_mass_driver"]);
     let w = rules.world();
     let before = economy::income(&w, &g, 0)[Resource::Credits];
-    let foundry: i64 = cards::def(&w, "robotic_foundry")
+    let foundry: i64 = cards::def(&w, "orbital_mass_driver")
         .passives
         .iter()
         .map(|p| match p {
@@ -181,15 +196,15 @@ fn copy_raises_income_by_a_buildings_output() {
 
 #[test]
 fn reuse_uses_another_action_again_but_never_a_reuse() {
-    let (rules, mut g) = table(&[], &["simulation_cluster", "sentry_drone_wing"]);
+    let (rules, mut g) = table(&[], &["simulation_cluster", "synthetic_data_forge"]);
     let uses = |g: &GameState, card: &str| rules.legal_actions(g).iter().any(|a| matches!(a, Action::Use { seat: 0, card: c } if c == card));
     assert!(!uses(&g, "simulation_cluster"), "nothing used yet: nothing to reuse");
-    act(&rules, &mut g, Action::Use { seat: 0, card: "sentry_drone_wing".into() });
-    assert_eq!(g.var(&cards::tokens_key(0, "sentry_drone_wing")), 1);
+    act(&rules, &mut g, Action::Use { seat: 0, card: "synthetic_data_forge".into() });
+    assert_eq!(g.var(&cards::tokens_key(0, "synthetic_data_forge")), 1);
     assert!(uses(&g, "simulation_cluster"));
     act(&rules, &mut g, Action::Use { seat: 0, card: "simulation_cluster".into() });
-    assert_eq!(g.var(&cards::tokens_key(0, "sentry_drone_wing")), 2, "the Action ran again");
-    assert!(!uses(&g, "sentry_drone_wing") && !uses(&g, "simulation_cluster"));
+    assert_eq!(g.var(&cards::tokens_key(0, "synthetic_data_forge")), 2, "the Action ran again");
+    assert!(!uses(&g, "synthetic_data_forge") && !uses(&g, "simulation_cluster"));
     let w = rules.world();
     assert!(!cards::reusable(&w, &g, 0, None).iter().any(|c| c == "simulation_cluster"), "a reuse building is never reused");
 }
@@ -228,15 +243,77 @@ fn fight_triggers_fire_once_an_action_or_once_a_troop() {
 
 #[test]
 fn placing_a_dataset_pays_data_licensing_deal() {
-    let (rules, mut g) = table(&[], &["data_licensing_deal", "grad_student_pool"]);
+    let (rules, mut g) = table(&[], &["data_licensing_deal", "synthetic_data_forge"]);
     let (r, n) = trigger_gain(&rules, "data_licensing_deal");
     let before = g.resource(0, r);
-    rules.apply_mut(&mut g, &Action::Use { seat: 0, card: "grad_student_pool".into() }, None).unwrap();
+    rules.apply_mut(&mut g, &Action::Use { seat: 0, card: "synthetic_data_forge".into() }, None).unwrap();
     if g.pending.is_some() {
         answer_with(&rules, &mut g, "add tokens here");
     }
-    assert_eq!(g.var(&cards::tokens_key(0, "grad_student_pool")), 1);
+    assert_eq!(g.var(&cards::tokens_key(0, "synthetic_data_forge")), 1);
     assert_eq!(g.resource(0, r), before + n);
+}
+
+/// 106: Research Royalties raises credit income by the Science tags in play
+/// when it resolves, its own counted; a Science tag played later adds nothing.
+#[test]
+fn production_per_tag_counts_once_at_play_and_counts_itself() {
+    let (rules, mut g) = table(&["research_royalties", "shared_compute_grant"], &[]);
+    set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit", "shadow_broker_feed"]);
+    let w = rules.world();
+    let key = economy::production_key(0, Resource::Credits);
+    let science = cards::tags(&w, &g, 0, Tag::Science);
+    assert_eq!(science, 3, "its need, met");
+    let before = g.var(key.as_str());
+    let income = economy::income(&w, &g, 0)[Resource::Credits];
+    play(&rules, &mut g, 0, "research_royalties");
+    assert_eq!(g.var(key.as_str()), before + science + 1, "3 in play and itself");
+    let raised = economy::income(&w, &g, 0)[Resource::Credits];
+    assert_eq!(raised, income + science + 1);
+    play(&rules, &mut g, 0, "shared_compute_grant");
+    assert_eq!(cards::tags(&w, &g, 0, Tag::Science), science + 2);
+    assert_eq!(g.var(key.as_str()), before + science + 1, "counted once, at play");
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], raised);
+}
+
+/// 106: Foundation Model Campus pays 2 credits a round per Science tag, its
+/// own included, and a copy of it raises income by the same.
+#[test]
+fn income_per_tag_pays_its_amount_per_tag() {
+    let (rules, mut g) = table(&["payroll_automation"], &[]);
+    let w = rules.world();
+    let base = economy::income(&w, &g, 0)[Resource::Credits];
+    set_pile(&mut g, &cards::built(0), &["foundation_model_campus"]);
+    set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit"]);
+    let science = cards::tags(&w, &g, 0, Tag::Science);
+    assert_eq!(science, 3);
+    let per = cards::def(&w, "foundation_model_campus").passives.iter().find_map(|p| match p {
+        Op::IncomePerTag { resource: Resource::Credits, tag: Tag::Science, per: 1, amount } => Some(*amount),
+        _ => None,
+    });
+    assert_eq!(per, Some(2));
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 2 * science);
+    play(&rules, &mut g, 0, "payroll_automation");
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 4 * science, "the copy pays 2 a tag too");
+}
+
+/// 106: Interdisciplinary Institute's trigger names no tag: it fires once per
+/// tag of any kind on the card played.
+#[test]
+fn a_play_tag_trigger_with_no_tag_fires_once_per_tag_of_any_kind() {
+    let (rules, mut g) = table(&["joint_fabrication_pact", "shared_compute_grant"], &["interdisciplinary_institute"]);
+    let w = rules.world();
+    let (r, n) = trigger_gain(&rules, "interdisciplinary_institute");
+    assert_eq!(r, Resource::Insight);
+    for (card, tags) in [("joint_fabrication_pact", 3), ("shared_compute_grant", 1)] {
+        let d = cards::def(&w, card);
+        assert_eq!(d.tags.len() as i64, tags, "{card}");
+        let before = g.resource(0, r);
+        let paid = cards::play_insight(&w, &g, 0, d);
+        play(&rules, &mut g, 0, card);
+        assert_eq!(g.resource(0, r), before - paid + tags * n, "{card}");
+    }
+    assert!(!cards::def(&w, "joint_fabrication_pact").tags.iter().any(|t| cards::def(&w, "interdisciplinary_institute").tags.contains(t)), "none of the Institute's own tags");
 }
 
 #[test]

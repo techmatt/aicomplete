@@ -97,7 +97,7 @@ What every mark on a card means. Each means one thing; the sheet is `icons.png` 
 | Disc | a token on a card: alone, on this card ("here") |
 | Bare silhouette | a piece on the board, or moving one |
 | Place after a piece (dark frame) | where: a city, station or factory glyph, only that kind (a cube) or on or next to it (a botnet, ambassadors); a country, in one country |
-| Ringed circle | a tag |
+| Ringed circle | a tag; an empty ring, a tag of any kind (106) |
 | Number before an icon | how many; no number means 1 |
 | Minus before an icon | pay or lose it now, 1 included |
 | `≤`N | up to N, your choice: a give, paid and received at the number you pick |
@@ -114,7 +114,7 @@ What every mark on a card means. Each means one thing; the sheet is `icons.png` 
 | Discs left of `:` (At N) | when the tokens here reach N, they come off and the right happens |
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
-| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield; with a country, Aegis Dome Array's |
+| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield; with a country, the Aegis Doctrine capstone's |
 | Shelter (roof) | a whole country, this round |
 | Node | place it, paying its track step |
 | Node with a struck-through coin | place it free |

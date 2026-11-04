@@ -138,10 +138,15 @@ fn the_giving_capstone_draws_from_the_supply() {
 #[test]
 fn the_new_cards_can_be_played() {
     let (rules, mut g) = c3();
-    for id in ["inference_cluster", "preprint_exchange"] {
+    // The cube cards (r42): one raises cube income, one pays cubes.
+    set_pile(&mut g, &cards::played(0), &["shared_compute_grant", "dataset_scraper"]);
+    // Forensic Audit liberates: a corrupted city in reach.
+    corrupt_cities_except(&rules.map, &mut g, &[]);
+    for id in ["sample_repository", "forensic_audit"] {
         set_pile(&mut g, &cards::hand(0), &[id]);
-        set_res(&mut g, 0, Resource::Credits, 20);
+        set_res(&mut g, 0, Resource::Credits, 30);
         set_res(&mut g, 0, Resource::Insight, 5);
+        set_res(&mut g, 0, Resource::ResearchCubes, 4);
         let legal = rules.legal_actions(&g);
         assert!(legal.iter().any(|a| matches!(a, Action::Play { card, .. } if card.as_str() == id)), "{id}: {legal:?}");
     }

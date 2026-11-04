@@ -28,7 +28,7 @@ impl Cause {
 /// owner's last stays. A Shelter Order in
 /// its country, a corp unit at a base next to it (adversary strikes only,
 /// [`Cause::Troop`]), a hardening token, a player ambassador on the hex, or an
-/// Aegis Dome Array absorbs it (in that order); otherwise it goes, and a war
+/// the Aegis Doctrine capstone absorbs it (in that order); otherwise it goes, and a war
 /// destruction ([`Cause::War`]) sways toward Discord. Returns whether it was
 /// destroyed.
 pub fn destroy_piece(
@@ -123,7 +123,7 @@ pub fn destroy_own_node(
     Ok(())
 }
 
-/// Uses a seat's `CivicShelter` passive (Aegis Dome Array) for a facility or
+/// Uses a seat's `CivicShelter` passive (the Aegis Doctrine capstone) for a facility or
 /// node destruction in `country`, if one applies.
 fn civic_shelter(g: &mut GameState, cx: &mut Cx, country: usize) -> bool {
     let w = cx.world;

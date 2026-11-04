@@ -80,21 +80,21 @@ fn overlays_change_how_a_game_plays() {
 #[test]
 fn deep_paths_reach_ops_and_tracks() {
     let (c, _) = overlaid(&[
-        "cards.orbital_embassy.passives.0.amount=3".to_string(),
+        "cards.orbital_embassy.passives.0.then.0.count=3".to_string(),
         "ais.*.economy_track.0.income=[[\"credits\",7]]".to_string(),
         "cards.orbital_embassy.effects=[]".to_string(),
     ])
     .unwrap();
     let card = &c.cards[c.card_index("orbital_embassy").unwrap()];
     assert!(card.effects.is_empty());
-    assert!(serde_json::to_string(&card.passives).unwrap().contains("\"amount\":3"));
+    assert!(serde_json::to_string(&card.passives).unwrap().contains("\"count\":3"));
     assert!(c.ais.iter().all(|a| a.economy_track[0].income == [(Resource::Credits, 7)]));
 }
 
 /// The text follows the numbers: a face is generated from the overlaid ops.
 #[test]
 fn card_text_follows_the_overlay() {
-    let (c, _) = overlaid(&["cards.orbital_embassy.passives.0.amount=9".to_string()]).unwrap();
+    let (c, _) = overlaid(&["cards.orbital_embassy.passives.0.then.0.count=9".to_string()]).unwrap();
     let new = &c.cards[c.card_index("orbital_embassy").unwrap()].text;
     let old = &content().cards[content().card_index("orbital_embassy").unwrap()].text;
     assert_ne!(new, old);

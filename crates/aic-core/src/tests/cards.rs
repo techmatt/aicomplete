@@ -284,7 +284,7 @@ fn only_a_building_keeps_an_action() {
         card.text.clear();
     }
     assert_eq!(c.check(), Ok(()));
-    let bld = c.cards.iter_mut().find(|d| d.id == "sentry_drone_wing").expect("a card");
+    let bld = c.cards.iter_mut().find(|d| d.is_building() && d.ability.is_some()).expect("a card");
     bld.kind = crate::content::CardKind::Program;
     assert!(c.check().unwrap_err().contains("only a building"));
 }
@@ -306,7 +306,8 @@ fn science_tags_discount_insight_to_a_floor_of_one() {
 fn industry_tags_discount_buildings_to_a_floor_of_one() {
     let (rules, mut g) = lab_with(&[], &["cards.industry_every=2"]);
     let w = rules.world();
-    let d = w.content.cards.iter().find(|c| c.is_building() && c.cost >= 3 && c.tier == 1).unwrap();
+    // The cheapest, so the deck's Industry programs reach the floor.
+    let d = w.content.cards.iter().filter(|c| c.is_building() && c.cost >= 3 && c.tier == 1).min_by_key(|c| c.cost).unwrap();
     let before = cards::play_cost(&w, &g, 1, d);
     let industry: Vec<_> = w.content.cards.iter().filter(|c| c.tags.iter().filter(|t| **t == Tag::Industry).count() == 1 && c.tier == 1 && !c.is_building()).take(2).map(|c| Key::new(&c.id)).collect();
     g.piles.insert(cards::played(1).into(), Arc::new(industry));
@@ -343,17 +344,17 @@ fn prices_worked_out_once_match_each_cards_own() {
 #[test]
 fn an_or_action_adds_here_then_offers_both_halves_and_counts_only_its_own_tokens() {
     let (rules, mut g) = lab_actions();
-    let id = "agency_field_station";
-    set_pile(&mut g, "cards.built.0", &[id, "kill_team_roster"]);
-    g.vars.insert(cards::tokens_key(0, "kill_team_roster").into(), 5);
+    let id = "synthetic_data_forge";
+    set_pile(&mut g, "cards.built.0", &[id, "telemetry_archive"]);
+    g.vars.insert(cards::tokens_key(0, "telemetry_archive").into(), 5);
     act(&rules, &mut g, Action::Use { seat: 0, card: id.into() });
     assert_eq!(g.var(&cards::tokens_key(0, id)), 1, "the add, asked nothing");
     g.seats[0].exhausted.clear();
-    let credits = g.resource(0, Resource::Credits);
+    let insight = g.resource(0, Resource::Insight);
     rules.apply_mut(&mut g, &Action::Use { seat: 0, card: id.into() }, None).unwrap();
     assert_eq!(g.pending.as_ref().expect("which half").ask.options.len(), 2);
     answer_with(&rules, &mut g, "GainPerTokens");
-    assert_eq!(g.resource(0, Resource::Credits), credits + 1, "1 Agent here; the other card's 5 don't count");
+    assert_eq!(g.resource(0, Resource::Insight), insight + 1, "1 Dataset here; the other card's 5 don't count");
     assert_eq!(g.var(&cards::tokens_key(0, id)), 1, "they stay");
 }
 

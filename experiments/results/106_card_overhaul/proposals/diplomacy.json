@@ -1,0 +1,700 @@
+[
+ {
+  "id": "consular_pouch",
+  "name": "Consular Pouch",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "gain_per_tag",
+    "resource": "ambassadors",
+    "tag": "diplomacy",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "summit_caucus",
+  "name": "Summit Caucus",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "consolidate"
+  ],
+  "effects": [
+   {
+    "op": "consolidate",
+    "max": 6
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "mutual_aid_pact",
+  "name": "Mutual Aid Pact",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 0,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "credits",
+    "amount": 8
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "peace_dividend",
+  "name": "Peace Dividend",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    3
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "production_per_tag",
+    "resource": "credits",
+    "tag": "diplomacy",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "trade_delegation",
+  "name": "Trade Delegation",
+  "tier": 1,
+  "kind": "program",
+  "cost": 12,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    2
+   ]
+  ],
+  "tags": [
+   "diplomacy",
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 3
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ]
+ },
+ {
+  "id": "peace_conference",
+  "name": "Peace Conference",
+  "tier": 1,
+  "kind": "program",
+  "cost": 22,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    3
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 5
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "back_channel_talks",
+  "name": "Back-Channel Talks",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "cleanse",
+    "amount": 3,
+    "one_country": false,
+    "only": "factory"
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "ceasefire_monitors",
+  "name": "Ceasefire Monitors",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "diplomacy",
+   "security",
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "damage",
+    "ambassadors": 3,
+    "troops": 1
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ]
+ },
+ {
+  "id": "amnesty_decree",
+  "name": "Amnesty Decree",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "move"
+  ],
+  "effects": [
+   {
+    "op": "clear_city",
+    "max": 5
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ]
+ },
+ {
+  "id": "fact_check_network",
+  "name": "Fact-Check Network",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 0,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "influence"
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ]
+ },
+ {
+  "id": "truth_commission",
+  "name": "Truth Commission",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 0,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "influence"
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "consulate_tower",
+  "name": "Consulate Tower",
+  "tier": 1,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "diplomacy",
+    3
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "team_play",
+     "tag": "diplomacy",
+     "both": true
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 6
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "liaison_corps",
+  "name": "Liaison Corps",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "move"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   },
+   {
+    "op": "move_ambassadors",
+    "max": 4
+   }
+  ]
+ },
+ {
+  "id": "reconciliation_office",
+  "name": "Reconciliation Office",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "diplomacy",
+   "security"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_ambassadors"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 5
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "open_assembly",
+  "name": "Open Assembly",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "followers"
+  },
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag",
+     "tag": "diplomacy"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "followers",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "sway",
+      "side": "unity",
+      "amount": 3
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "protocol_office",
+  "name": "Protocol Office",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "passives": [
+   {
+    "op": "card_discount",
+    "tag": "diplomacy",
+    "resource": "credits",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "civic_watch",
+  "name": "Civic Watch",
+  "tier": 1,
+  "kind": "building",
+  "cost": 4,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 4,
+     "source": "influence"
+    }
+   ]
+  }
+ },
+ {
+  "id": "manifesto_leak",
+  "name": "Manifesto Leak",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "followers",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "coalition_charter",
+  "name": "Coalition Charter",
+  "tier": 2,
+  "kind": "program",
+  "cost": 14,
+  "insight": 2,
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "credits",
+    "amount": 10
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 6
+   }
+  ]
+ },
+ {
+  "id": "liberation_accords",
+  "name": "Liberation Accords",
+  "tier": 2,
+  "kind": "program",
+  "cost": 15,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "clear_city",
+    "max": 8
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 4
+   }
+  ]
+ },
+ {
+  "id": "exodus_corridors",
+  "name": "Exodus Corridors",
+  "tier": 2,
+  "kind": "program",
+  "cost": 13,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
+  "tags": [
+   "diplomacy",
+   "security"
+  ],
+  "keywords": [
+   "spread"
+  ],
+  "effects": [
+   {
+    "op": "spread_ambassadors"
+   },
+   {
+    "op": "gain_ambassadors",
+    "count": 6
+   }
+  ]
+ },
+ {
+  "id": "orbital_embassy",
+  "name": "Orbital Embassy",
+  "tier": 2,
+  "kind": "building",
+  "cost": 18,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    3
+   ]
+  ],
+  "replaces": "diplomacy",
+  "tags": [
+   "diplomacy",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 2
+   }
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag"
+    },
+    "then": [
+     {
+      "op": "gain_ambassadors",
+      "count": 1
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "popular_uprising",
+  "name": "Popular Uprising",
+  "tier": 2,
+  "kind": "building",
+  "cost": 28,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    3
+   ]
+  ],
+  "replaces": "diplomacy",
+  "tags": [
+   "diplomacy"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "followers"
+  },
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "followers",
+    "amount": 4,
+    "here": true
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "add_tokens",
+     "kind": "followers",
+     "amount": 2,
+     "here": true
+    }
+   ],
+   "or": {
+    "tokens": 6,
+    "effects": [
+     {
+      "op": "liberate"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "planetary_referendum",
+  "name": "Planetary Referendum",
+  "tier": 2,
+  "kind": "event",
+  "cost": 14,
+  "insight": 2,
+  "tags": [
+   "diplomacy",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 8
+   }
+  ]
+ },
+ {
+  "id": "great_liberation",
+  "name": "Great Liberation",
+  "tier": 2,
+  "kind": "event",
+  "cost": 21,
+  "antimatter": 1,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    4
+   ]
+  ],
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "cleanse",
+    "amount": 3,
+    "one_country": true,
+    "cities": true
+   }
+  ]
+ },
+ {
+  "id": "hostile_buyout",
+  "name": "Hostile Buyout",
+  "tier": 2,
+  "kind": "event",
+  "cost": 42,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "liberate",
+    "align": true,
+    "ambassadors": 1
+   }
+  ]
+ }
+]

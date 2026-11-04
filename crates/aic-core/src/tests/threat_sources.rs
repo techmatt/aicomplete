@@ -172,22 +172,27 @@ fn a_cyber_threat_reads_botnets_and_corrupted_stations() {
 fn an_auto_counter_works_its_home_country() {
     let (rules, mut g) = threat_lab();
     let w = rules.world();
-    deal(&mut g, "manhunt", 0);
-    deal(&mut g, "siege", 1);
-    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("sentinel_command".into());
-    let n = 8 - threats::requirement(&w, &g, "manhunt")[0].1;
-    assert!(n > 0 && n < 8, "a standing counter stays below a typical counter");
-    assert_eq!(threats::requirement(&w, &g, "siege")[0].1, 8, "only its home country");
+    // Two cyber threats printing 7 credits.
+    deal(&mut g, "station_seizure", 0);
+    deal(&mut g, "fifth_column", 1);
+    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());
+    let n = 7 - threats::requirement(&w, &g, "station_seizure")[0].1;
+    assert!(n > 0 && n < 7, "a standing counter stays below a typical counter");
+    assert_eq!(threats::requirement(&w, &g, "fifth_column")[0].1, 7, "only its home country");
     // Read, not stored: a delayed threat keeps the same cut.
-    with_cx(&rules, |cx| threats::delay(&mut g, cx, "manhunt"));
-    assert_eq!(threats::requirement(&w, &g, "manhunt")[0].1, 8 - n);
+    with_cx(&rules, |cx| threats::delay(&mut g, cx, "station_seizure"));
+    assert_eq!(threats::requirement(&w, &g, "station_seizure")[0].1, 7 - n);
 }
 
 #[test]
 fn project_drain_takes_compute_off_each_project_each_upkeep() {
-    let (rules, mut g) = threat_lab();
+    // No card prints a standing project drain since r42: a building is given it here.
+    let mut c = lab_config(&[ACTIONS, "threats.execute"]);
+    c.apply_override(r#"cards.darknet_exchange.passives=[{"op":"project_drain","amount":3}]"#).unwrap();
+    let rules = Rules::new(&c).unwrap();
+    let mut g = rules.new_game(3);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 4)).unwrap();
-    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("black_ice_citadel".into());
+    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("darknet_exchange".into());
     with_cx(&rules, |cx| cards::upkeep(&mut g, cx, 0));
     assert!(g.stats.counters["adversary.compute_drained"] > 0);
 }

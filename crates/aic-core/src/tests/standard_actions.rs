@@ -122,14 +122,15 @@ fn standard_actions_cost_what_the_config_says() {
 
 #[test]
 fn a_card_s_harden_action_costs_chips() {
-    let (rules, mut g) = actions_with_room();
+    // No card prints a chip Harden since r42: a building is given it here.
+    let (rules, mut g) = lab_actions_with(&[r#"cards.darknet_exchange.passives=[{"op":"harden_action","chips":1}]"#]);
     let p = node_of(&g, 0)[0];
     put(&mut g, p, STATION, 1);
     put(&mut g, p, cube(0), 1);
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Chips, 1);
     assert!(!standard_offered(&rules, &g, 0).contains("harden_chips"));
-    set_pile(&mut g, &crate::modules::cards::built(0), &["hardened_bunker_complex"]);
+    set_pile(&mut g, &crate::modules::cards::built(0), &["darknet_exchange"]);
     assert!(standard_offered(&rules, &g, 0).contains("harden_chips"));
     act(&rules, &mut g, std_act(0, "harden_chips"));
     assert_eq!((g.resource(0, Resource::Chips), total(&g, HARDEN)), (0, 1));

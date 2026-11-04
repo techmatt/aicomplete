@@ -247,7 +247,8 @@ fn paid_for_nothing(configs: &[Config], seeds: std::ops::Range<u64>) -> Vec<Stri
     found
 }
 
-/// 099: wherever Rush Build is offered in random games, every way of paying it
+/// 099: wherever Rush Build is offered in random games (106: 2..48 seeds, the
+/// smaller share of buildings in r42's deck offered it in none of 2..24), every way of paying it
 /// builds: tried on a copy for each first answer to its sacrifice. A net, not
 /// the proof: with 099's fix taken out these games still never reached a
 /// stranding hand (the `boards.rs` tests do), as `paid_for_nothing` never did.
@@ -308,7 +309,7 @@ fn rush_build_always_builds() {
 #[test]
 #[ignore = "slow lane: Rush Build over more games and sizes"]
 fn rush_build_always_builds_more_seeds() {
-    let (tried, found) = rush_build_strandings(&[baseline(), baseline_with(&["countries=3"])], 2..24);
+    let (tried, found) = rush_build_strandings(&[baseline(), baseline_with(&["countries=3"])], 2..48);
     assert!(found.is_empty(), "{} of {tried} tries built nothing:\n{}", found.len(), found.join("\n"));
     assert!(tried > 0, "no game offered Rush Build");
 }

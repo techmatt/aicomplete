@@ -127,7 +127,8 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
             resource,
             tag,
             per,
-        } => add(*resource, counts[*tag as usize] / per),
+            amount,
+        } => add(*resource, amount * (counts[*tag as usize] / per)),
         _ => {}
     });
     // A walk of the seat's keys: most seats hold none of them.

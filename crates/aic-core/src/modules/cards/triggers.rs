@@ -94,7 +94,7 @@ pub fn on_play(g: &mut GameState, cx: &mut Cx, player: usize, d: &CardDef) -> Re
             let mine = owner == player;
             let times = match on {
                 Event::Play { tag } if mine => carries(d, tag) as i64,
-                Event::PlayTag { tag } if mine => d.tags.iter().filter(|t| **t == tag).count() as i64,
+                Event::PlayTag { tag } if mine => d.tags.iter().filter(|t| tag.is_none_or(|x| **t == x)).count() as i64,
                 Event::TeamPlay { tag, .. } if !mine => carries(d, tag) as i64,
                 Event::PlayCost { at } if mine => (d.cost >= at) as i64,
                 _ => 0,
@@ -226,7 +226,7 @@ pub fn copy_income(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     for p in def(&w, &ids[i]).passives.iter().filter(|p| copies(p)) {
         let (r, n) = match p {
             Op::Income { resource, amount } => (*resource, *amount),
-            Op::IncomePerTag { resource, tag, per } => (*resource, counts[*tag as usize] / (*per).max(1)),
+            Op::IncomePerTag { resource, tag, per, amount } => (*resource, amount * (counts[*tag as usize] / (*per).max(1))),
             _ => continue,
         };
         if n != 0 {

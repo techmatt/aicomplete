@@ -1,0 +1,289 @@
+[
+ {
+  "id": "telemetry_archive",
+  "name": "Telemetry Archive",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": ["science"],
+  "keywords": ["tokens"],
+  "tokens": {"kind": "datasets"},
+  "passives": [
+   {"op": "when", "on": {"event": "play", "tag": "science"}, "then": [{"op": "add_tokens", "kind": "datasets", "amount": 2, "here": true}]},
+   {"op": "threshold", "at": 4, "then": [{"op": "gain", "resource": "insight", "amount": 5}]}
+  ]
+ },
+ {
+  "id": "simulation_cluster",
+  "name": "Simulation Cluster",
+  "tier": 1,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "tags": ["science", "cyber"],
+  "ability": {"effects": [{"op": "reuse"}]}
+ },
+ {
+  "id": "citation_engine",
+  "name": "Citation Engine",
+  "tier": 1,
+  "kind": "building",
+  "cost": 12,
+  "insight": 1,
+  "needs": [["science", 3]],
+  "tags": ["science"],
+  "passives": [
+   {"op": "when", "on": {"event": "play", "tag": "science"}, "then": [{"op": "gain", "resource": "credits", "amount": 6}]}
+  ]
+ },
+ {
+  "id": "grad_student_pool",
+  "name": "Grad Student Pool",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": ["science"],
+  "passives": [
+   {"op": "card_discount", "tag": "science", "resource": "credits", "amount": 4}
+  ]
+ },
+ {
+  "id": "breakthrough_leak",
+  "name": "Breakthrough Leak",
+  "tier": 1,
+  "kind": "event",
+  "cost": 6,
+  "insight": 1,
+  "needs": [["science", 3]],
+  "tags": ["science"],
+  "effects": [{"op": "draw", "count": 4}]
+ },
+ {
+  "id": "zero_knowledge_exploit",
+  "name": "Zero-Knowledge Exploit",
+  "tier": 1,
+  "kind": "event",
+  "cost": 6,
+  "insight": 1,
+  "tags": ["science", "cyber"],
+  "keywords": ["hack"],
+  "effects": [{"op": "drain_project", "amount": 7}, {"op": "draw", "count": 1}]
+ },
+ {
+  "id": "cryo_compute_burn",
+  "name": "Cryo-Compute Burn",
+  "tier": 1,
+  "kind": "event",
+  "cost": 1,
+  "energy": 2,
+  "insight": 0,
+  "tags": ["science"],
+  "effects": [{"op": "gain_per_tag", "resource": "insight", "tag": "science", "per": 1}]
+ },
+ {
+  "id": "benchmark_suite",
+  "name": "Stress Test Suite",
+  "tier": 1,
+  "kind": "program",
+  "cost": 7,
+  "insight": 0,
+  "tags": ["science"],
+  "effects": [{"op": "shield_node", "count": 3}]
+ },
+ {
+  "id": "dataset_scraper",
+  "name": "Dataset Scraper",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 1,
+  "tags": ["science", "cyber"],
+  "keywords": ["tokens"],
+  "effects": [{"op": "add_tokens", "kind": "datasets", "amount": 4}]
+ },
+ {
+  "id": "shared_compute_grant",
+  "name": "Shared Compute Grant",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 1,
+  "tags": ["science"],
+  "keywords": ["help"],
+  "effects": [{"op": "choose_player"}, {"op": "other_gain", "resource": "insight", "amount": 4}, {"op": "draw", "count": 1}]
+ },
+ {
+  "id": "predictive_modeling",
+  "name": "Predictive Modeling",
+  "tier": 1,
+  "kind": "program",
+  "cost": 7,
+  "insight": 0,
+  "tags": ["science"],
+  "effects": [{"op": "peek", "count": 3}, {"op": "delay_threat", "count": 3}]
+ },
+ {
+  "id": "field_sensor_grid",
+  "name": "Field Sensor Grid",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 0,
+  "tags": ["science"],
+  "effects": [{"op": "clear_markers", "count": 3}]
+ },
+ {
+  "id": "endowed_research_chair",
+  "name": "Endowed Research Chair",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "lowers": [["credits", 1]],
+  "needs": [["science", 2]],
+  "tags": ["science"],
+  "effects": [{"op": "production", "resource": "insight", "amount": 2}]
+ },
+ {
+  "id": "red_team_audit",
+  "name": "Red-Team Audit",
+  "tier": 1,
+  "kind": "program",
+  "cost": 4,
+  "insight": 1,
+  "tags": ["science", "cyber", "security"],
+  "keywords": ["hack"],
+  "effects": [{"op": "jam", "amount": 4}, {"op": "draw", "count": 1}]
+ },
+ {
+  "id": "field_grant",
+  "name": "Field Grant",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 0,
+  "tags": ["science"],
+  "keywords": ["cubes"],
+  "effects": [{"op": "project_cube", "count": 3, "station": true}]
+ },
+ {
+  "id": "sample_repository",
+  "name": "Sample Repository",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 0,
+  "needs": [["science", 2]],
+  "tags": ["science"],
+  "keywords": ["cubes"],
+  "effects": [{"op": "production", "resource": "research_cubes", "amount": 1}]
+ },
+ {
+  "id": "research_royalties",
+  "name": "Research Royalties",
+  "tier": 1,
+  "kind": "program",
+  "cost": 12,
+  "insight": 1,
+  "needs": [["science", 3]],
+  "tags": ["science"],
+  "effects": [{"op": "production_per_tag", "resource": "credits", "tag": "science", "per": 1}]
+ },
+ {
+  "id": "university_spinout",
+  "name": "University Spinout",
+  "tier": 1,
+  "kind": "program",
+  "cost": 24,
+  "insight": 1,
+  "needs": [["science", 2]],
+  "tags": ["science", "industry"],
+  "effects": [{"op": "production", "resource": "credits", "amount": 8}]
+ },
+ {
+  "id": "foundation_model_campus",
+  "name": "Foundation Model Campus",
+  "tier": 2,
+  "kind": "building",
+  "cost": 20,
+  "insight": 2,
+  "needs": [["science", 4]],
+  "replaces": "science",
+  "tags": ["science", "cyber"],
+  "passives": [
+   {"op": "income_per_tag", "resource": "credits", "tag": "science", "per": 1, "amount": 2}
+  ]
+ },
+ {
+  "id": "interdisciplinary_institute",
+  "name": "Interdisciplinary Institute",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 2,
+  "needs": [["science", 3]],
+  "tags": ["science", "cyber"],
+  "passives": [
+   {"op": "when", "on": {"event": "play_tag"}, "then": [{"op": "gain", "resource": "insight", "amount": 1}]}
+  ]
+ },
+ {
+  "id": "data_licensing_deal",
+  "name": "Data Licensing Deal",
+  "tier": 2,
+  "kind": "building",
+  "cost": 13,
+  "insight": 1,
+  "tags": ["science"],
+  "passives": [
+   {"op": "when", "on": {"event": "place_tokens", "kind": "datasets"}, "then": [{"op": "gain", "resource": "credits", "amount": 5}]}
+  ]
+ },
+ {
+  "id": "orbital_observatory_array",
+  "name": "Orbital Observatory Array",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 2,
+  "needs": [["cyber", 1]],
+  "tags": ["science", "cyber"],
+  "ability": {"cost": [["credits", 2]], "effects": [{"op": "draw", "count": 3}]}
+ },
+ {
+  "id": "recursive_self_improvement",
+  "name": "Recursive Self-Improvement",
+  "tier": 2,
+  "kind": "program",
+  "cost": 16,
+  "antimatter": 1,
+  "insight": 2,
+  "needs": [["science", 2]],
+  "tags": ["science", "cyber"],
+  "effects": [{"op": "production", "resource": "insight", "amount": 4}, {"op": "draw", "count": 4}]
+ },
+ {
+  "id": "open_weights_release",
+  "name": "Open-Weights Release",
+  "tier": 2,
+  "kind": "program",
+  "cost": 11,
+  "insight": 2,
+  "tags": ["science", "cyber"],
+  "keywords": ["help"],
+  "effects": [{"op": "clear_markers", "count": 4}, {"op": "choose_player"}, {"op": "other_gain", "resource": "insight", "amount": 3}]
+ },
+ {
+  "id": "forensic_audit",
+  "name": "Forensic Audit",
+  "tier": 2,
+  "kind": "event",
+  "cost": 27,
+  "research_cubes": 4,
+  "insight": 1,
+  "tags": ["science"],
+  "effects": [{"op": "liberate"}]
+ }
+]

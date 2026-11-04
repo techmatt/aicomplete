@@ -1015,6 +1015,18 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: gain_per_tag needs per >= 1"));
                 }
             }
+            Op::ProductionPerTag { resource: r, per, .. } => {
+                resource(r, what)?;
+                if *per < 1 {
+                    return Err(format!("{what}: production_per_tag needs per >= 1"));
+                }
+            }
+            Op::IncomePerTag { resource: r, per, amount, .. } => {
+                resource(r, what)?;
+                if *per < 1 || *amount < 1 {
+                    return Err(format!("{what}: income_per_tag needs per >= 1 and amount >= 1"));
+                }
+            }
             Op::GainPerTokens { resource: r, per, .. } => {
                 seat_resource(r, what)?;
                 if *per < 1 {
@@ -1030,8 +1042,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::LoseNodeOr { resource: r, .. }
             | Op::Requisition { resource: r, .. }
             | Op::Logistics { resource: r, .. }
-            | Op::GiveBonus { resource: r, .. }
-            | Op::IncomePerTag { resource: r, .. } => resource(r, what)?,
+            | Op::GiveBonus { resource: r, .. } => resource(r, what)?,
             // 068: income can print ambassadors, as effects do.
             Op::Income { resource: r, .. } => seat_resource(r, what)?,
             Op::TeamIncome { resource: r, .. } => {

@@ -246,6 +246,8 @@ def op_worth(t, o):
         return Worth(now=row(op) * n('amount'))
     if op == 'production':
         return Worth(income=row(op) * income_r(t, o['resource']) * n('amount'))
+    if op == 'production_per_tag':
+        return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) / max(n('per'), 1)})
     if op == 'add_tokens':
         return Worth(now=row(op) * t.feed(o['kind']) * n('amount'))
     if op == 'cut_botnet':
@@ -274,7 +276,8 @@ def op_worth(t, o):
     if op == 'remove_botnets':
         return Worth(now=row(op) * n('count'))
     if op == 'income_per_tag':
-        return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) / max(n('per'), 1)})
+        amount = o.get('amount', 1)
+        return Worth(income_per_tag={o['tag']: row(op) * income_r(t, o['resource']) * amount / max(n('per'), 1)})
     if op in ('building_discount', 'slots', 'project_drain', 'unity_bonus', 'supply_insight'):
         return Worth(standing=row(op) * n('amount'))
     if op == 'auto_counter':
@@ -313,7 +316,7 @@ def fires(t, on):
     if ev == 'play':
         return t.rate('fires_play') * tagged
     if ev == 'play_tag':
-        return t.rate('fires_play') * t.rate('tag_share')
+        return t.rate('fires_play') * (t.rate('tag_share') if on.get('tag') else t.rate('tags_per_card'))
     if ev == 'team_play':
         return t.rate('fires_play') * tagged * max(t.rate('countries') - 1.0, 1.0)
     if ev == 'play_cost':
@@ -394,8 +397,8 @@ DESCRIBE_SKIP = ('op',)
 
 
 def quantity(o):
-    if o['op'] in ('gain_per_tag', 'income_per_tag', 'gain_per_tokens'):
-        return 1.0 / max(o.get('per', 1), 1)
+    if o['op'] in ('gain_per_tag', 'income_per_tag', 'gain_per_tokens', 'production_per_tag'):
+        return o.get('amount', 1) / max(o.get('per', 1), 1) if o['op'] == 'income_per_tag' else 1.0 / max(o.get('per', 1), 1)
     if o['op'] == 'damage':
         return max(o.get('ambassadors', 0), o.get('troops', 0)) or 1
     for k in QTY_KEYS:

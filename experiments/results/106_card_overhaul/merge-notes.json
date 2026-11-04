@@ -1,0 +1,77 @@
+{
+ "research_royalties": {
+  "reason": "New: the canonical per-tag income program, \"raise your credit income by 1 per Science tag on your cards\" (production_per_tag, counted once, counting itself). Needs 3 Science. Integration: 10 credits, the one price of the six per-tag programs (one shape for one job).",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Science tags (the least it sees) 16 + 1 = +2; at 6, 24 + 1 = +10; at 8, +18. Researcher, rounds 3-5.",
+  "loop": "Counted once at play: none."
+ },
+ "ransomware_syndicate": {
+  "reason": "New: Cyber's per-tag income program, +1 credit income per Cyber tag. Needs 3 Cyber. Integration: 10 credits (one price for the six).",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Cyber tags 16 + 1 = +2; at 6, +10. A Cyber-heavy seat, rounds 3-6.",
+  "loop": "Counted once at play: none."
+ },
+ "economies_of_scale": {
+  "reason": "New: Industry's per-tag income program, +1 credit income per Industry tag. Needs 3 Industry. Integration: 10 credits, insight 1.",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Industry tags (the Builder's printed tag counts for needs only) 16 + 1 = +2; at 6, +10. Builder, rounds 3-5.",
+  "loop": "Counted once at play: none."
+ },
+ "capacity_market": {
+  "reason": "New: Power's per-tag income program, +1 credit income per Power tag. Needs 3 Power. Integration: 10 credits.",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Power tags 16 + 1 = +2; at 6, +10. A Power seat, rounds 3-6.",
+  "loop": "Counted once at play: none."
+ },
+ "peace_dividend": {
+  "reason": "Reworked (was sway 2 for 5, a trivial card): Diplomacy's per-tag income program, +1 credit income per Diplomacy tag. Needs 3 Diplomacy. Integration: 10 credits.",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Diplomacy tags 16 + 1 = +2; at 6, +10. Protector, rounds 3-6.",
+  "loop": "Counted once at play: none."
+ },
+ "defense_appropriations": {
+  "reason": "New: Security's per-tag income program, +1 credit income per Security tag. Needs 3 Security. 10 credits.",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. At 4 Security tags 16 + 1 = +2; at 6, +10. Protector, rounds 3-6.",
+  "loop": "Counted once at play: none."
+ },
+ "cryptojacking_campaign": {
+  "reason": "New: Cyber's big income program. Integration: it printed the same \"+8 credit income\" as University Spinout and Multiyear Defense Budget, so it now burns energy for more: pay 2 energy, raise your credit income by 9, 18 credits.",
+  "value": "Pay 18 + 9 (energy) + 2.5 + 2.5 = 32. Get 36 + 1 = +5. A Cyber seat with spare energy, rounds 2-4.",
+  "loop": "None."
+ },
+ "multiyear_defense_budget": {
+  "reason": "New: Security's big income program. Integration: varied from the two other \"+8 credit income\" cards: +6 credit income and +1 energy income, 30 credits.",
+  "value": "Pay 30 + 2.5 + 2.5 = 35. Get 24 + 14.4 + 1 = +4.4. Protector, rounds 2-4.",
+  "loop": "None."
+ },
+ "singularity_exploit": {
+  "reason": "Antimatter ultimate, needs 3 Cyber. Card fit: the proposal's drain-all 12 line set at 5.8 pt, so it keeps r41's \"remove a botnet in reach, discard an adversary project\" and drops to 4 credits.",
+  "value": "Pay 4 + 7 (antimatter) + 5 + 6.5 = 22.5. Get 12 + 8 + 1 = 21: -1.5 at the table's 7 an antimatter, +2.5 at the 3 the heuristic holds it at. Cyber seat, late.",
+  "loop": "One-off."
+ },
+ "peacekeeper_rotation": {
+  "reason": "A troop feeder that still moves an ambassador (was 3 ambassadors for 3). Card fit: \"5 ambassadors or 2 troops\" set at 5.8 pt, so it removes 2 troops from a hex in reach, the kind Security Contractor HQ pays for.",
+  "value": "Pay 12 + 2.5 + 2.5 = 17. Get 22 (2 troops in reach) + 1.5 + 1.5 = 25 (+8), plus 20 with Security Contractor HQ. Protector.",
+  "loop": "None."
+ },
+ "agency_field_station": {
+  "reason": "The tier-1 Security trigger. Card fit: the proposal's Agents counter (\"add 1 Agent per Security card; at 3, remove 2 troops in one country\") set at 5.4-5.8 pt, so it pays directly: when you play a Security card, remove 1 troop in one country. Agents stay on Agency Directorate and Intrusion Lab.",
+  "value": "Pay 10 + 2.5 + 2.5 = 15. A Security seat plays about 1 Security card a round: 1 troop in a country (7) a round over 4 rounds = 28 + 1 (+14), and each troop fires Security Contractor HQ (10). Protector, from round 2.",
+  "loop": "Troop removal pays credits through HQ; credits buy cards, capped by the hand, insight and troops on the board."
+ },
+ "open_assembly": {
+  "reason": "The Followers counter: when you play a Diplomacy card, add 1 Follower here; at 3, sway 3 toward Unity. Card fit: printed as a Diplomacy card, not per Diplomacy tag (same play, shorter line).",
+  "value": "See the Diplomacy row: about 1 Diplomacy card a round, 3 Sway (12) every 3 rounds. Protector.",
+  "loop": "Followers to Sway; Sway places no tokens."
+ },
+ "botnet_takedown": {
+  "reason": "Restored at integration as r41 printed it: the Cyber and Science designs cut Botnet Takedown and Breakthrough Lab, leaving two of r41's four botnet removers (Singularity Exploit, Root Access); that changes the adversary's counterplay, not the engines, so one comes back.",
+  "value": "Unchanged from r41: pay 8 + 5 + 6.5 = 19.5, get a botnet (12) and 8 compute (8.8) + 1.5 = 22.3.",
+  "loop": "One-off."
+ },
+ "synthetic_data_forge": {
+  "reason": "Restored at integration as r41 printed it: with Exabyte Archive cut, Telemetry Archive was the only Dataset holder, so Dataset Scraper and Data Licensing Deal were dead without it.",
+  "value": "Unchanged from r41.",
+  "loop": "Datasets to insight; insight places no tokens."
+ },
+ "consular_pouch": {
+  "reason": "Was a flat 3 ambassadors, near-trivial: now the one-off per-tag payout, gain 1 ambassador per Diplomacy tag on your cards (it counts itself). Integration: needs 2 Diplomacy, since a program whose only effect is a per-tag gain is refused with none of the tag already in play (feasible.rs), though it would count itself.",
+  "value": "Pay 9 + 2.5 + 2.5 = 14. Get 4 a tag: at 3 tags (the least it sees, itself included) 12 + 1, at 4 tags 17 (+3), at 6 tags 25 (+11). Protector, rounds 4-8.",
+  "loop": "None (one-off)."
+ }
+}

@@ -415,6 +415,12 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
         Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
+        // 106: an income per tag fixed at play, valued as one at the seat's count.
+        Op::ProductionPerTag { resource, tag, per } => {
+            let mut w = Worth::default();
+            w.income_per_tag[tag_i(*tag)] = row("production_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
+            w
+        }
         Op::AddTokens { kind, amount, .. } => Worth::now(row("add_tokens") * t.feed(*kind) * *amount as f64),
         Op::CutBotnet => Worth::unseen(row("cut_botnet")),
         Op::MoveOne { .. } => Worth::now(row("move_one")),
@@ -479,9 +485,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CleanCityAmbassadors { amount } => Worth::now(row("clean_city_ambassadors") * *amount as f64),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
-        Op::IncomePerTag { resource, tag, per } => {
+        Op::IncomePerTag { resource, tag, per, amount } => {
             let mut w = Worth::default();
-            w.income_per_tag[tag_i(*tag)] = row("income_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
+            w.income_per_tag[tag_i(*tag)] =
+                row("income_per_tag") * income_rate(t, *resource) * *amount as f64 / (*per).max(1) as f64;
             w
         }
         Op::BuildingDiscount { amount } => Worth::standing(row("building_discount") * *amount as f64),
@@ -536,7 +543,9 @@ fn fires(t: &Table, on: &Event) -> f64 {
     let tagged = |tag: Option<aic_core::content::Tag>| if tag.is_some() { t.rate("tag_share") } else { 1.0 };
     match *on {
         Event::Play { tag } => t.rate("fires_play") * tagged(tag),
-        Event::PlayTag { .. } => t.rate("fires_play") * t.rate("tag_share"),
+        Event::PlayTag { tag: Some(_) } => t.rate("fires_play") * t.rate("tag_share"),
+        // 106: every tag on the played card.
+        Event::PlayTag { tag: None } => t.rate("fires_play") * t.rate("tags_per_card"),
         Event::TeamPlay { tag, .. } => t.rate("fires_play") * tagged(tag) * (t.rate("countries") - 1.0).max(1.0),
         Event::PlayCost { at } => t.rate("fires_play") * (1.0 - at as f64 / t.rate("rebate_span")).clamp(0.05, 1.0),
         Event::RemoveTroop => t.rate("fires_troop"),
@@ -815,8 +824,8 @@ mod tests {
         rows
     }
 
-    /// A liberate capstone counts its city only while one is corrupted, and Popular
-    /// Uprising's one-shot Action is a whole city, used once (r37).
+    /// A liberate capstone counts its city only while one is corrupted, and a
+    /// one-shot liberate Action is a whole city, used once (r37).
     #[test]
     fn liberation_reads_its_city() {
         let r = crate::agents::tests::rules(2);
@@ -828,8 +837,14 @@ mod tests {
         c.corrupted = false;
         let without = CardValue::of(t, d).total(t, &c);
         assert!(with > without + 10.0, "{with} {without}");
-        let pu = CardValue::of(t, w.content.card("popular_uprising"));
-        // r37: one Action, one-shot: a whole liberation, used once; the 6 Followers
+        // No card prints a one-shot Action since r42: Popular Uprising's liberate
+        // half, made its only Action and one-shot (its r41 shape).
+        let mut one_shot = w.content.card("popular_uprising").clone();
+        let mut half = *one_shot.ability.as_mut().and_then(|a| a.or.take()).expect("its liberate half");
+        half.once = true;
+        one_shot.ability = Some(half);
+        let pu = CardValue::of(t, &one_shot);
+        // r37: one Action, one-shot: a whole liberation, used once; the Followers
         // it arrives with are that use's fuel, not value of their own.
         assert!(pu.once && (pu.use_.city - t.op("liberate")).abs() < 1e-9, "{:?}", pu.use_);
         assert_eq!(pu.play.now, 0.0, "{:?}", pu.play);

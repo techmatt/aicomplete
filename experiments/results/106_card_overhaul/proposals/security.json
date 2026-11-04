@@ -1,0 +1,698 @@
+[
+ {
+  "id": "security_contractor_hq",
+  "name": "Security Contractor HQ",
+  "tier": 1,
+  "kind": "building",
+  "cost": 12,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    3
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "remove_troop"
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 10
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "agency_field_station",
+  "name": "Agency Field Station",
+  "tier": 1,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "agents"
+  },
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag",
+     "tag": "security"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "agents",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "remove_troops",
+      "count": 2
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "interceptor_battery",
+  "name": "Interceptor Battery",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     1
+    ]
+   ],
+   "effects": [
+    {
+     "op": "remove_troops",
+     "count": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "joint_task_force",
+  "name": "Joint Task Force",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "team_play",
+     "tag": "security"
+    },
+    "then": [
+     {
+      "op": "remove_troops",
+      "count": 1
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "garrison_command",
+  "name": "Garrison Command",
+  "tier": 1,
+  "kind": "building",
+  "cost": 6,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 5,
+     "source": "military"
+    }
+   ]
+  }
+ },
+ {
+  "id": "quick_reaction_force",
+  "name": "Quick Reaction Force",
+  "tier": 1,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "reuse"
+    }
+   ]
+  }
+ },
+ {
+  "id": "defense_appropriations",
+  "name": "Defense Appropriations",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    3
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "production_per_tag",
+    "resource": "credits",
+    "tag": "security",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "multiyear_defense_budget",
+  "name": "Multiyear Defense Budget",
+  "tier": 1,
+  "kind": "program",
+  "cost": 24,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 8
+   }
+  ]
+ },
+ {
+  "id": "hardened_bunker_complex",
+  "name": "Hardened Bunker Complex",
+  "tier": 1,
+  "kind": "program",
+  "cost": 16,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "energy",
+    "amount": 1
+   },
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "counterinsurgency_campaign",
+  "name": "Counterinsurgency Campaign",
+  "tier": 1,
+  "kind": "program",
+  "cost": 13,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "remove_troops",
+    "count": 3
+   },
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "recruit_operatives",
+  "name": "Recruit Operatives",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 0,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "agents",
+    "amount": 5
+   }
+  ]
+ },
+ {
+  "id": "bounty_board",
+  "name": "Bounty Board",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "damage",
+    "troops": 1
+   },
+   {
+    "op": "gain_per_tag",
+    "resource": "credits",
+    "tag": "security",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "peacekeeper_rotation",
+  "name": "Peacekeeper Rotation",
+  "tier": 1,
+  "kind": "program",
+  "cost": 12,
+  "insight": 1,
+  "tags": [
+   "security",
+   "diplomacy"
+  ],
+  "keywords": [
+   "move"
+  ],
+  "effects": [
+   {
+    "op": "damage",
+    "ambassadors": 5,
+    "troops": 2
+   },
+   {
+    "op": "move_one",
+    "range": 2
+   }
+  ]
+ },
+ {
+  "id": "force_protection_order",
+  "name": "Force Protection Order",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "military"
+   },
+   {
+    "op": "damage",
+    "troops": 1
+   }
+  ]
+ },
+ {
+  "id": "shared_threat_intel",
+  "name": "Shared Threat Intel",
+  "tier": 1,
+  "kind": "program",
+  "cost": 7,
+  "insight": 0,
+  "tags": [
+   "security",
+   "cyber"
+  ],
+  "keywords": [
+   "help",
+   "hack"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 6
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "insight",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "diplomatic_expulsion",
+  "name": "Diplomatic Expulsion",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "security",
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "remove_ambassadors_country",
+    "unity_per": 0,
+    "max": 8
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   }
+  ]
+ },
+ {
+  "id": "threat_forecast_engine",
+  "name": "Early Warning Drill",
+  "tier": 1,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "security",
+   "cyber",
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "delay_threat",
+    "count": 1
+   },
+   {
+    "op": "shield_node",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "breach_and_clear",
+  "name": "Breach and Clear",
+  "tier": 1,
+  "kind": "event",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "remove_troops",
+    "count": 4
+   }
+  ]
+ },
+ {
+  "id": "hardpoint_lockdown",
+  "name": "Hardpoint Lockdown",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 0,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "shelter"
+   },
+   {
+    "op": "cordon"
+   }
+  ]
+ },
+ {
+  "id": "agency_directorate",
+  "name": "Agency Directorate",
+  "tier": 2,
+  "kind": "building",
+  "cost": 16,
+  "insight": 2,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "replaces": "security",
+  "tags": [
+   "security"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "agents"
+  },
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "agents",
+    "amount": 2,
+    "here": true
+   }
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "agents",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "remove_troops",
+      "count": 3
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "homeland_security_act",
+  "name": "Homeland Security Act",
+  "tier": 2,
+  "kind": "program",
+  "cost": 18,
+  "insight": 2,
+  "needs": [
+   [
+    "security",
+    4
+   ]
+  ],
+  "tags": [
+   "security",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "energy",
+    "amount": 2
+   },
+   {
+    "op": "production_per_tag",
+    "resource": "credits",
+    "tag": "security",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "deep_state_ledger",
+  "name": "Deep State Ledger",
+  "tier": 2,
+  "kind": "program",
+  "cost": 10,
+  "insight": 2,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security",
+   "cyber"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 4
+   },
+   {
+    "op": "add_tokens",
+    "kind": "agents",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "martial_cordon",
+  "name": "Martial Cordon",
+  "tier": 2,
+  "kind": "program",
+  "cost": 14,
+  "insight": 2,
+  "needs": [
+   [
+    "diplomacy",
+    1
+   ]
+  ],
+  "tags": [
+   "security",
+   "diplomacy"
+  ],
+  "keywords": [
+   "move"
+  ],
+  "effects": [
+   {
+    "op": "remove_ambassadors_country",
+    "unity_per": 0,
+    "max": 10
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "total_containment",
+  "name": "Total Containment",
+  "tier": 2,
+  "kind": "program",
+  "cost": 8,
+  "insight": 2,
+  "needs": [
+   [
+    "security",
+    1
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "remove_troops",
+    "count": 4
+   },
+   {
+    "op": "shelter"
+   }
+  ]
+ },
+ {
+  "id": "kinetic_interdiction",
+  "name": "Kinetic Interdiction",
+  "tier": 2,
+  "kind": "event",
+  "cost": 3,
+  "energy": 1,
+  "antimatter": 1,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "remove_troops",
+    "count": 6
+   }
+  ]
+ },
+ {
+  "id": "peacekeeping_mission",
+  "name": "Peacekeeping Mission",
+  "tier": 2,
+  "kind": "event",
+  "cost": 42,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "liberate",
+    "troops": 3
+   }
+  ]
+ }
+]

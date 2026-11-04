@@ -123,25 +123,25 @@ The strategies as a player says them (the config's `says`; a test requires each 
 
 **The Builder**
 
-- *Industry income.* Play Industry income early (Payroll Automation, Robotic Foundry), and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Rush Build.
-- *Power grid.* Take Power cards and energy income (Baseload Contract, Substation Hub), climb the Power tags to Dyson Swarm and the Supergrid, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
-- *Capital finance.* Build Capital piles (Retained Earnings, Expansion Fund, Sovereign Capital Fund), cash them when they are big, and save the credits for Hostile Buyout.
-- *Wide build.* Fill your five slots with Action buildings and use one each round, and push the card-play track to Master Plan's discount.
+- *Industry income.* Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Rush Build.
+- *Power grid.* Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Dyson Swarm and the Supergrid, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
+- *Capital finance.* Build Capital piles (Retained Earnings, Conglomerate Headquarters, Capital Injection), let them pay out, and save the credits for Hostile Buyout.
+- *Wide build.* Fill five slots with Action buildings, use one a round, and push the card-play track to Master Plan.
 
 **The Protector**
 
-- *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Interceptor Battery, Kill Team Roster) and finish with Total Containment or Kinetic Interdiction.
-- *Counter desk.* Answer threats with the typed jams and counters, build Sentinel Command and Security Contractor HQ, and send Peacekeeping Mission to a corrupted city.
+- *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Interceptor Battery, Agency Field Station, Security Contractor HQ) and finish with Total Containment or Kinetic Interdiction.
+- *Counter desk.* Answer threats with the typed jams and counters, build Garrison Command and Joint Task Force, and send Peacekeeping Mission to a corrupted city.
 - *Diplomacy and liberation.* Take Diplomacy and Followers (Liaison Corps, Open Assembly, Accord's node), and free cities with Great Liberation and Popular Uprising.
-- *Civic shelter.* Keep what you have standing: Bulwark, Hardened Bunker Complex, Safehouse Network and the Shelter power, toward Aegis Doctrine.
+- *Civic shelter.* Keep what you have standing: Bulwark, Hardened Bunker Complex, Hardpoint Lockdown and the Shelter power, toward Aegis Doctrine.
 
 **The Researcher**
 
 - *Cubes and stations.* Build stations early (Field Station), Grant cubes onto megaprojects, Peer Review your nodes, and spend the cubes on Forensic Audit.
-- *Science chain.* Stack Science tags: Quantum Decryptor and Citation Engine first, then Breakthrough Lab and Foundation Model Campus.
+- *Science chain.* Stack Science tags: Research Royalties and Citation Engine first, then Interdisciplinary Institute and Foundation Model Campus.
 - *Patience burst.* Save your insight under Patience and spend it in a big round on draws (Fieldwork, Simulation Cluster, Orbital Observatory Array).
-- *Datasets.* Grow Dataset piles (Telemetry Archive, Synthetic Data Forge) toward Exabyte Archive, and cash them for insight and cards.
-- *Team support.* Feed your partner: gifts, Open Science's insight, Policy Institute's Sway, Audit against projects, and Root Access for a corrupted city.
+- *Datasets.* Grow Dataset piles (Telemetry Archive, Synthetic Data Forge, Dataset Scraper) and cash them through Data Licensing Deal.
+- *Team support.* Feed your partner: gifts, Open Science's insight, Coalition Charter's Sway, Audit against projects, and Root Access for a corrupted city.
 
 ## Strategy-guide heuristics
 

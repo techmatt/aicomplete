@@ -138,10 +138,10 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
             out.seat(
                 s,
                 "civic_used",
-                "Aegis Dome Array used",
+                "Aegis Doctrine used",
                 1,
                 None,
-                "your Aegis Dome Array has saved a facility this round",
+                "your Aegis Doctrine has saved a facility this round",
             );
         }
     }

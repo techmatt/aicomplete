@@ -141,18 +141,18 @@ fn an_uncountered_threat_puts_its_compute_on_a_project() {
 fn security_cards_drain_or_discard_a_project() {
     let (rules, mut g) = lab_actions();
     row(&mut g, &["false_flag", "disinformation"]);
-    g.vars.insert(adversary::project_key("false_flag").into(), 6);
-    set_pile(&mut g, "cards.hand.0", &["blackout_script", "killswitch_directive"]);
+    g.vars.insert(adversary::project_key("false_flag").into(), 8);
+    set_pile(&mut g, "cards.hand.0", &["zero_knowledge_exploit", "killswitch_directive"]);
     fund(&mut g, 0);
     act(
         &rules,
         &mut g,
         Action::Play {
             seat: 0,
-            card: "blackout_script".into(),
+            card: "zero_knowledge_exploit".into(),
         },
     );
-    // The only project holding compute: 6 - 5 (076: Blackout Script, Flash Exploit's 5 folded in).
+    // The only project holding compute: 8 - 7 (Zero-Knowledge Exploit).
     assert_eq!(g.var(&adversary::project_key("false_flag")), 1);
     act(
         &rules,
@@ -177,15 +177,17 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
         .unwrap();
     let near = m.hexes[p].neighbors[0];
     put(&mut g, far, BOTNET, 1);
-    set_pile(&mut g, "cards.hand.0", &["botnet_takedown"]);
+    set_pile(&mut g, "cards.hand.0", &["singularity_exploit"]);
     fund(&mut g, 0);
-    // It needs a Cyber tag in play, and (076) a project holding compute for its drain.
-    Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push("blackout_script".into());
+    // It needs 3 Cyber tags in play, and (076) a project for its discard.
+    for c in ["eviction_worm", "zero_click_breach", "adaptive_malware"] {
+        Arc::make_mut(g.piles.entry(crate::modules::cards::played(0)).or_default()).push(c.into());
+    }
     row(&mut g, &["false_flag"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 6);
     let play = Action::Play {
         seat: 0,
-        card: "botnet_takedown".into(),
+        card: "singularity_exploit".into(),
     };
     // Only a botnet within reach.
     assert!(!rules.legal_actions(&g).contains(&play));

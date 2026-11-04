@@ -443,6 +443,19 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(adversary(parts), format!("remove {n} compute from each adversary project")))
         }
         Op::DiscardProject => one(clause(adversary(minus(1, "project")), "discard an adversary project")),
+        // 106: a program's per-tag income raise, counted once.
+        Op::ProductionPerTag { resource, tag: t, per } => {
+            let mut icons = vec![w("+1"), w(icon(*resource)), w("/")];
+            if *per != 1 {
+                icons.push(Part::Word(per.to_string()));
+            }
+            icons.push(hash(*t));
+            let tags = if *per == 1 { format!("{} tag", tag(*t)) } else { format!("{per} {} tags", tag(*t)) };
+            one(clause(
+                vec![Part::Income { income: icons }],
+                format!("raise your {} income by 1 per {tags} on your cards", track(*resource)),
+            ))
+        }
         Op::Production { resource, amount: n } => {
             let sign = if *n < 0 { format!("\u{2212}{}", -n) } else { format!("+{n}") };
             let verb = if *n < 0 { "lower" } else { "raise" };
@@ -602,6 +615,8 @@ enum Standing {
 /// 105: a trigger's left side, before its `:`, and its words ("when ...").
 fn event_face(on: &Event) -> (Vec<Part>, String) {
     let a_card = |t: Option<Tag>| match t {
+        // "an Industry card" (106: the article was always "a").
+        Some(t) if tag(t).starts_with(['A', 'E', 'I', 'O', 'U']) => format!("an {} card", tag(t)),
         Some(t) => format!("a {} card", tag(t)),
         None => "a card".to_string(),
     };
@@ -623,7 +638,8 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
         Event::RemoveTroop => (adversary(minus(1, "troop")), "when you remove a troop".to_string()),
         Event::RemoveCompute => (
             adversary(vec![w("compute"), w("project")]),
-            "when you remove compute from an adversary project".to_string(),
+            // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt.
+            "when you remove adversary compute".to_string(),
         ),
         Event::RemoveAmbassadors => (adversary(vec![w("ambassador")]), "when you remove adversary ambassadors".to_string()),
         Event::PlaceTokens { kind } => (
@@ -657,9 +673,14 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             parts.extend(gains.clone());
             let mut say = cls.into_iter().map(|c| c.say).collect::<Vec<_>>().join(", ");
             match on {
-                Event::PlayTag { tag: t } => {
+                Event::PlayTag { tag: Some(t) } => {
                     parts.extend([w("/"), hash(*t)]);
                     say.push_str(&format!(" per {} tag on it", tag(*t)));
+                }
+                // 106: every tag on the played card, the empty ring.
+                Event::PlayTag { tag: None } => {
+                    parts.extend([w("/"), Part::Word("#any".to_string())]);
+                    say.push_str(" per tag on it");
                 }
                 Event::TeamPlay { both: true, .. } => {
                     parts.push(Part::Other { other: gains });
@@ -680,14 +701,15 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             effect(parts, format!("at {at}, {say}"))
         }
         Op::Income { resource, amount: n } => income(counted(*n, icon(*resource)), amount(*resource, *n)),
-        Op::IncomePerTag { resource, tag: t, per } => {
-            let mut parts = vec![w(icon(*resource)), w("/")];
+        Op::IncomePerTag { resource, tag: t, per, amount: n } => {
+            let mut parts = counted(*n, icon(*resource));
+            parts.push(w("/"));
             if *per != 1 {
                 parts.push(Part::Word(per.to_string()));
             }
             parts.push(hash(*t));
             let tags = if *per == 1 { format!("{} tag", tag(*t)) } else { format!("{per} {} tags", tag(*t)) };
-            income(parts, format!("1 {} per {tags} on your cards", noun(*resource, 1)))
+            income(parts, format!("{n} {} per {tags} on your cards", noun(*resource, *n)))
         }
         Op::ConvertUpkeep { from, amount: n, to, gain } => {
             let mut parts = minus(*n, icon(*from));

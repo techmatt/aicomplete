@@ -1059,7 +1059,7 @@ mod tests {
     #[test]
     fn economy_buildings_print_income() {
         // Income, income per tag; a building with no income and a token building.
-        let sig = "a:robotic_foundry+tidal_barrage+black_ice_citadel|b:telemetry_archive+";
+        let sig = "a:orbital_mass_driver+vertical_monopoly+darknet_exchange|b:telemetry_archive+";
         assert_eq!(standing(sig), 4);
         assert_eq!(standing("builder:a+b|protector:"), 2);
         let c = aic_core::content();

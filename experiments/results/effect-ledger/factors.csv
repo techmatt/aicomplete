@@ -1,6 +1,6 @@
 factor,value,se
-tier 1,-2.33,0.91
-tier 2,-4.13,2.01
-per needed tag,-1.75,0.74
-residual sd,7.14,
-degrees of freedom,126,
+tier 1,-4.16,0.99
+tier 2,-8.85,1.85
+per needed tag,-0.12,0.59
+residual sd,7.05,
+degrees of freedom,128,

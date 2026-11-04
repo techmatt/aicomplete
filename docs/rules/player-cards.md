@@ -21,21 +21,29 @@ The cards config lists which cards are in the game (baseline: all of them).
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2, 34 of 49 (the draft set: 27 / 96 / 36 cards at 0 / 1 / 2); it
+  events included), 2 for big effects and most tier 2, 30 of 45 (the draft set: 21 / 101 / 32 cards at 0 / 1 / 2); it
   comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
-  the tag or on a power, save the Protector's Recovery, which clears a marker. Five tier-1 and two tier-2 cards do it.
+  the tag or on a power, save the Protector's Recovery, which clears a marker. Five tier-1 cards and one tier-2 card do it.
   No card `needs` Science for it: a team without the tag still has the Clear standard action, its counters and the
   board.
-- **Typed counters (candidate).** Twelve tier-1 cards fight one source type, and count for more than they cost toward
+- **Typed counters (candidate).** Ten tier-1 cards fight one source type, and count for more than they cost toward
   threats of it that the player may counter: Security for military, Diplomacy for influence, Cyber for cyber, Industry
-  for economic (Science's and Power's tools stay general). Each type has two programs and an Action building.
-- **Tier-2 capstones (candidate).** Each tag ends in at least one standing tier-2 building: income per tag, a drain on
-  every adversary project each upkeep, or an automatic counter. No capstone prints a shield or a delay. Reasoning and
+  for economic (Science's and Power's tools stay general). Diplomacy and Industry have two programs and an Action
+  building, Cyber and Security one of each (106 made Security's third a troop removal).
+- **Engines (candidate; 106, the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
+  permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per Science tag on your cards",
+  one such program per tag, needs 3 of it). Buildings are the blue cards: triggers, Actions and Effects, never a
+  one-off; a building's income is per tag, 2 a tag (Foundation Model Campus, Vertical Monopoly), or on a strong
+  tier-2 building built over its tag, the only kind that may also carry a one-off. Each tag has a tier-1 play
+  trigger (when you play a card of the tag) and a tier-2 one that counts every tag on the played card, and its
+  engines' payoffs: fight triggers, teammate triggers, discounts, rebates, thresholds, copy and reuse
+  ([card-grammar.md](card-grammar.md), *The engine wording*). Industry and Cyber keep a standing automatic
+  counter (Market Stabilization Board, Autonomous Defense Grid); Diplomacy's and Security's were cut. No capstone prints a shield or a delay. Reasoning and
   prices: [card-pricing.md](../card-pricing.md).
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
@@ -44,20 +52,20 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
   | The Nuclear Option | antimatter | event | sway 2 toward Discord |
-  | Power to the People | power + chips | building | income: 1 credit per Power tag on your cards |
+  | Power to the People | power + chips | building (over Power, needs 3) | income: 1 credit per Power tag on your cards |
   | Hostile Buyout | Diplomacy, credits | event | your cube goes on the city, and you gain 1 ambassador |
   | Forensic Audit | research cubes | event | none |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
-  | Popular Uprising | Followers | building (arrives with 6 Followers) | Action: spend 6 Followers here: liberate, then discard it and what it's built over |
+  | Popular Uprising | Followers | building (over Diplomacy, arrives with 4 Followers) | Action: add 2 Followers here, or spend 6 to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), about 25-47 credits, well under the fallback's ~100 and
+  a corrupted city costs in play; the extra at its own row), about 18-42 credits, well under the fallback's ~100 and
   out of reach before mid-game. Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising liberates once too and leaves play when it
-  does.
+  liberation → clean city → energy → more liberation is capped; Popular Uprising (106) liberates every third round at
+  most, capped by its once-a-round Action, 6 Followers a liberation and corrupted cities in reach.
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";

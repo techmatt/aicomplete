@@ -80,6 +80,8 @@ const TAGS = {
   diplomacy: ['#e8a35c', `${line('M2 10.500 7 7l5 2 5-2 5 3.500-10 9.500z')}${line('M8 13l4 3.500M12 9.500l-3 3', 1.800)}`],
   industry: ['#c98d62', fill('M3 22V10l6 4v-4l6 4V3h6v19z')],
   security: ['#ec6a5c', fill('M12 1.500 3.500 4.500v7c0 5.500 3.500 9 8.500 11 5-2 8.500-5.500 8.500-11v-7z')],
+  // 106: any tag (a trigger counting every tag on the played card): an empty ring.
+  any: ['#a7adb4', `<circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2.200"/>`],
 };
 
 /** Every icon's name, tags as `#tag`: the render script's review sheet shows them all. */

@@ -25,14 +25,14 @@ has an exception: every symbol means what it always means ([card-guidelines.md](
 on the board and moving them, ringed circles are tags. A number goes before its icon, no number means 1, and a
 negative always has its minus. In the dark frame a clock is a delay (threats wait a round), a minus on the jam mark a
 jam (off one threat's counter). `≤`N is up to N, your choice: a give. The shield mark stops one destruction (alone, a
-hardening token on a facility; with a node, a shield; with a country, Aegis Dome Array's); the shelter mark is a whole
+hardening token on a facility; with a node, a shield; with a country, the Aegis Doctrine capstone's); the shelter mark is a whole
 country for the round. A node with a struck-through coin is placed free. The rules text says what the icons say, in
 the same order, and opens with the box's word.
 
 Card details beyond the card text:
 
-The card set: 159 cards, all in the draft decks: 110 tier 1 and 49 tier 2; 42% programs, 41% buildings and 17% events
-(the engines are on buildings); each tag primary on 24 to 30. Every card is listed with its cost, insight, tags, kind
+The card set: 154 cards, all in the draft decks: 109 tier 1 and 45 tier 2; 53% programs, 31% buildings and 16% events
+(income raises are on programs, the engines' triggers, Actions and Effects on buildings); each tag primary on 24 to 30. Every card is listed with its cost, insight, tags, kind
 and text in [cards.md](../cards.md) (generated) and priced in [card-pricing.md](../card-pricing.md). Card text says what a
 card does; how each primitive resolves:
 
@@ -44,8 +44,8 @@ card does; how each primitive resolves:
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
-  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. `move_one`'s `range` 2 on Embassy Compound and
-  Peacekeeper Rotation is an exception to reach 1 kept on purpose: moving is those cards' point.
+  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. `move_one`'s `range` 2 on
+  Peacekeeper Rotation is an exception to reach 1 kept on purpose: moving is that card's point.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded.
@@ -79,8 +79,7 @@ card does; how each primitive resolves:
   there, the same way. Neither reads "per hex": Matt's ruling 6.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. Without
   another player, a card that gives from your own stock (`transfer`; no card prints it) is not offered, nor is one
-  whose only effect is another player's gain (r39: the energy gift Actions, Substation Hub and Treaty Grid Exchange,
-  took their energy at one country and gave nothing); other help cards are (their own gain still applies). Likewise a
+  whose only effect is another player's gain (r39: the energy gift Actions took their energy at one country and gave nothing); other help cards are (their own gain still applies). Likewise a
   draw with both tier-1 piles empty (Fieldwork) is not offered on its own.
 - **Moves of "up to 2 hexes"** count hex distance (`Map::distance`, over land and sea); the destination must be a
   piece.
@@ -91,33 +90,36 @@ card does; how each primitive resolves:
   so a building that needed those tags or the sacrificed stack can't then be played; its other costs and requirements
   stand, paid from what is left after the power's energy. The power isn't offered when no building in hand would still
   be playable after some sacrifice and that energy (r39: it took both and played nothing).
-- **Aegis Dome Array's shelter:** automatic, the first destruction of a facility or node each round in a country where
-  its owner has a node.
 
 **The engine wording (r41, candidate).** Every trigger is an Effect on a building (`:`, `when`): it fires each time its
 event happens, with no limit a round, and resolves after what caused it. A building counts itself: playing a Science
 building with a Science trigger fires it. The `play` mark is a card you play.
 
 - **Play triggers (`when`, `play`):** "When you play a Science card, gain 6 credits" (Citation Engine); with no tag, any
-  card. **Per tag** (`play_tag`): "when you play a card, gain 2 insight per Science tag on it" (Quantum Decryptor), the
+  card. **Per tag** (`play_tag`): "when you play a card, gain 1 insight per tag on it" (Interdisciplinary Institute), the tier-2
+  form, once for each tag of any kind on the played card (106; the empty ring), or per tag of one kind, the
   ringed tag after `/` on the right of the `:`.
-- **Teammate triggers (`team_play`):** "When another player plays a Power card, gain 6 credits" (Grid-Tied Smelter); with
-  `both`, "you both gain" (Consulate Tower), the dashed box holding the other's gain. Your own plays don't fire them.
-- **Rebate (`play_cost`):** "when you play a card printed at 12 credits or more, gain 4 credits" (Lights-Out Assembly):
+- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 1 troop in one country" (Joint Task
+  Force); with `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them.
+- **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 4 credits" (Lights-Out Assembly):
   the printed cost, before discounts. `≥`N is at least N.
-- **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove compute
-  from an adversary project" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
+- **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove adversary
+  compute" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
   the card, Action, power, converter or standard action that removed any, canceling an arrival included.
 - **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a token (Data
   Licensing Deal); a trigger's own tokens count too.
-- **Discounts (`card_discount`):** "your Cyber cards cost 3 credits less to play" (Darknet Exchange), or insight
+- **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight
   (Hyperscale Botnet: every card, 1 insight). A card with the tag twice is discounted once. Like every discount, never
   below `discount_floor`, and a cost under it stays.
 - **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): when the tokens here reach
-  N, N come off and the reward happens (Telemetry Archive: a Science card played adds a Dataset; at 3, 4 insight).
+  N, N come off and the reward happens (Telemetry Archive: a Science card played adds 2 Datasets; at 4, 5 insight).
 - **Copy (`copy_income`, a program):** raise your income by one of your buildings' Each round output, as it pays when
   you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later (Payroll
   Automation).
+- **Per-tag income (106):** a program's "raise your credit income by 1 per Science tag on your cards"
+  (`production_per_tag`, Research Royalties) counts once, when it resolves, the program itself included; later tags
+  don't raise it. A building's "each round, 2 credits per Science tag on your cards" (`income_per_tag` with an
+  `amount`, Foundation Model Campus) counts again every round while it is active.
 - **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
   that tag, a teammate does, you remove a troop. A minus after the colon makes those cards cheaper. Discs and a
   number before the colon count up on the card and pay when they reach it.

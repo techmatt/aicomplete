@@ -1,0 +1,35 @@
+{
+  "name": "screen-106-r42",
+  "note": "106: the ballpark read of r42 (the card overhaul) against r41, paired on fresh seeds 33548-33595: the three pairs at d2, the strategist and greedy, 48 a cell. Run the r41 binary from a git archive of 97eff1f with this spec copied there. Records kept for the play counts.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33548,
+  "records": 0
+}

@@ -1,0 +1,642 @@
+[
+ {
+  "id": "payroll_automation",
+  "name": "Payroll Automation",
+  "tier": 1,
+  "kind": "program",
+  "cost": 12,
+  "insight": 2,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "copy_income"
+   }
+  ]
+ },
+ {
+  "id": "retained_earnings",
+  "name": "Retained Earnings",
+  "tier": 1,
+  "kind": "building",
+  "cost": 7,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "capital"
+  },
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play",
+     "tag": "industry"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "capital",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 4,
+    "then": [
+     {
+      "op": "production",
+      "resource": "credits",
+      "amount": 3
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "standardized_tooling",
+  "name": "Standardized Tooling",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "passives": [
+   {
+    "op": "card_discount",
+    "tag": "industry",
+    "resource": "credits",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "prefab_plant_kit",
+  "name": "Prefab Plant Kit",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "build_factory"
+   },
+   {
+    "op": "gain_per_tag",
+    "resource": "energy",
+    "tag": "power",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "economies_of_scale",
+  "name": "Economies of Scale",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "industry",
+    3
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "production_per_tag",
+    "resource": "credits",
+    "tag": "industry",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "station_prefab_order",
+  "name": "Reclamation Crew",
+  "tier": 1,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "cleanse",
+    "amount": 1,
+    "one_country": false,
+    "only": "station"
+   }
+  ]
+ },
+ {
+  "id": "collateralized_grid",
+  "name": "Collateralized Grid",
+  "tier": 2,
+  "kind": "program",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "cash_out",
+    "kind": "capital",
+    "resource": "energy",
+    "rate": 2
+   }
+  ]
+ },
+ {
+  "id": "joint_fabrication_pact",
+  "name": "Joint Fabrication Pact",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power",
+   "diplomacy"
+  ],
+  "keywords": [
+   "help"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "chips",
+    "amount": 6
+   },
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "chips",
+    "amount": 6
+   }
+  ]
+ },
+ {
+  "id": "vendor_financing",
+  "name": "Vendor Financing",
+  "tier": 1,
+  "kind": "program",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "keywords": [
+   "help",
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "choose_player"
+   },
+   {
+    "op": "other_gain",
+    "resource": "credits",
+    "amount": 5
+   },
+   {
+    "op": "add_tokens",
+    "kind": "capital",
+    "amount": 4
+   }
+  ]
+ },
+ {
+  "id": "lights_out_assembly",
+  "name": "Lights-Out Assembly",
+  "tier": 1,
+  "kind": "building",
+  "cost": 7,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_cost",
+     "at": 10
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 4
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "materials_hedge_desk",
+  "name": "Capital Injection",
+  "tier": 1,
+  "kind": "event",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "add_tokens",
+    "kind": "capital",
+    "amount": 6
+   }
+  ]
+ },
+ {
+  "id": "liquidity_event",
+  "name": "Liquidity Event",
+  "tier": 1,
+  "kind": "event",
+  "cost": 5,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "effects": [
+   {
+    "op": "cash_out",
+    "kind": "capital",
+    "resource": "credits",
+    "rate": 4
+   }
+  ]
+ },
+ {
+  "id": "bridge_loan",
+  "name": "Bridge Loan",
+  "tier": 1,
+  "kind": "event",
+  "cost": 0,
+  "insight": 0,
+  "lowers": [
+   [
+    "credits",
+    2
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "credits",
+    "amount": 15
+   }
+  ]
+ },
+ {
+  "id": "plant_overdrive",
+  "name": "Plant Overdrive",
+  "tier": 1,
+  "kind": "event",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "gain_per_tag",
+    "resource": "energy",
+    "tag": "industry",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "robotic_foundry",
+  "name": "Robotic Foundry",
+  "tier": 1,
+  "kind": "program",
+  "cost": 13,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 5
+   }
+  ]
+ },
+ {
+  "id": "gigafactory_charter",
+  "name": "Gigafactory Charter",
+  "tier": 1,
+  "kind": "program",
+  "cost": 40,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 12
+   }
+  ]
+ },
+ {
+  "id": "arcology_foundry",
+  "name": "Arcology Foundry",
+  "tier": 2,
+  "kind": "program",
+  "cost": 16,
+  "insight": 2,
+  "needs": [
+   [
+    "industry",
+    3
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 9
+   },
+   {
+    "op": "production",
+    "resource": "chips",
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "orbital_mass_driver",
+  "name": "Orbital Mass Driver",
+  "tier": 2,
+  "kind": "building",
+  "cost": 22,
+  "antimatter": 1,
+  "chips": 2,
+  "insight": 2,
+  "needs": [
+   [
+    "industry",
+    4
+   ]
+  ],
+  "replaces": "industry",
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "credits",
+    "amount": 16
+   },
+   {
+    "op": "income",
+    "resource": "chips",
+    "amount": 3
+   }
+  ]
+ },
+ {
+  "id": "capital_projects_office",
+  "name": "Capital Projects Office",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "replaces": "industry",
+  "tags": [
+   "industry"
+  ],
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_cost",
+     "at": 10
+    },
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 10
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "conglomerate_headquarters",
+  "name": "Conglomerate Headquarters",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "needs": [
+   [
+    "industry",
+    4
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "keywords": [
+   "tokens"
+  ],
+  "tokens": {
+   "kind": "capital"
+  },
+  "passives": [
+   {
+    "op": "when",
+    "on": {
+     "event": "play_tag"
+    },
+    "then": [
+     {
+      "op": "add_tokens",
+      "kind": "capital",
+      "amount": 1,
+      "here": true
+     }
+    ]
+   },
+   {
+    "op": "threshold",
+    "at": 3,
+    "then": [
+     {
+      "op": "gain",
+      "resource": "credits",
+      "amount": 10
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "antitrust_action",
+  "name": "Antitrust Action",
+  "tier": 1,
+  "kind": "program",
+  "cost": 6,
+  "insight": 0,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "economic"
+   },
+   {
+    "op": "gain_per_tag",
+    "resource": "chips",
+    "tag": "industry",
+    "per": 1
+   }
+  ]
+ },
+ {
+  "id": "supply_chain_audit",
+  "name": "Supply Chain Audit",
+  "tier": 1,
+  "kind": "program",
+  "cost": 4,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "effects": [
+   {
+    "op": "jam",
+    "amount": 5,
+    "source": "economic"
+   },
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 1
+   }
+  ]
+ },
+ {
+  "id": "market_watchdog",
+  "name": "Market Watchdog",
+  "tier": 1,
+  "kind": "building",
+  "cost": 3,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "jam",
+     "amount": 4,
+     "source": "economic"
+    }
+   ]
+  }
+ },
+ {
+  "id": "vertical_monopoly",
+  "name": "Vertical Monopoly",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "insight": 2,
+  "needs": [
+   [
+    "industry",
+    4
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "passives": [
+   {
+    "op": "income_per_tag",
+    "resource": "credits",
+    "tag": "industry",
+    "per": 1,
+    "amount": 2
+   }
+  ]
+ },
+ {
+  "id": "market_stabilization_board",
+  "name": "Market Stabilization Board",
+  "tier": 2,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "needs": [
+   [
+    "industry",
+    2
+   ]
+  ],
+  "tags": [
+   "industry"
+  ],
+  "passives": [
+   {
+    "op": "auto_counter",
+    "source": "economic",
+    "amount": 5
+   }
+  ]
+ }
+]

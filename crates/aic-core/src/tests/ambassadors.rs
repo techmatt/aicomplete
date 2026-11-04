@@ -311,7 +311,10 @@ fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_takes_its_cub
 
 #[test]
 fn income_can_print_ambassadors() {
-    let (rules, mut g) = lab_actions();
+    // No card prints ambassador income since r42: the card is built here.
+    let (rules, mut g) = lab_actions_with(&[
+        r#"cards.orbital_embassy.passives=[{"op":"income","resource":"ambassadors","amount":2}]"#,
+    ]);
     let w = rules.world();
     set_pile(&mut g, &cards::built(0), &["orbital_embassy"]);
     assert_eq!(economy::ambassador_income(&w, &g, 0), 2);
