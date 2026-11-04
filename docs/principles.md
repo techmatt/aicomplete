@@ -131,14 +131,15 @@ the one-step heuristic wins far less: it drafts by printed cost.
 included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
 a mean of guesses of the deal, never read from the table (`deals`, [agents.md](agents.md)).
 
-## Dominance checks (a standing gate; Matt, 2026-10-29)
+## Dominance checks (Matt, 2026-10-29)
 
 > Balance should require thought, not an obvious heuristic dominating.
 
 Each check is a fixed, simple policy: the planner with one behavior forced
 (`planner:<check>=1` in an experiment spec; `crates/aic-sim/src/agents/policy.rs`). The
-strategy-health gate runs them beside the planner at d2, early-stopped
-(`experiments/gate.json`, summarized by `scripts/cards/screen.py --gate`).
+strategy-health gate, which runs them beside the planner at d2, is suspended until Matt
+names a milestone (the ballpark ruling, 2026-11-03): its spec is `experiments/gate.json`,
+its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/screen.py --gate`.
 
 - **Healthy:** every check loses ground to the planner at d2. Report each check's gap
   (planner win % minus the check's) with its noise.
@@ -146,7 +147,7 @@ strategy-health gate runs them beside the planner at d2, early-stopped
   unnecessary. Fix it when the fix is a number or a content change; otherwise report
   the structural cause.
 - **Early stopping:** a spec's `gate` stops a check once its verdict is decided at
-  the stated noise ([experiments.md](experiments.md), *Gate early-stopping*); a check that stays close runs to the cap.
+  the stated noise (`crates/aic-sim/src/gate.rs`); a check that stays close runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
 | Check | Spec | Policy |
