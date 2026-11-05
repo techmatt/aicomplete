@@ -165,7 +165,7 @@ Everything content does is one enum, `Op` (`op.rs`), read from JSON as
   `cards::passives` by the rule they change, while the card is in force. A `when` (r41) is a
   trigger: `cards/triggers.rs` fires its instant ops when its event happens (a play, a token
   placed, Wall stopping a troop, and what one seat's action removed, diffed around that action
-  in `cards::act`, `ai`'s `act`, a converter and a standard action).
+  by `cards::fighting`, the wrapper a play, an Action, a power, a converter and a standard action share).
 - **Twists** (an adversary card's `twists`) are read through `adversary::twists` while
   the card is current; its `sway`, `each_destroy_node` and `pull_unity` resolve once, in
   `adversary.build`, when it becomes this round's card.
@@ -173,10 +173,16 @@ Everything content does is one enum, `Op` (`op.rs`), read from JSON as
 An op shared by threats and team cards takes its wording and tally from the context;
 `each_country` is the one printed difference.
 
+**A new op parameter** touches `op.rs` (the field, `slots()`), `content.rs` (its check), `face.rs`,
+its dispatch (`effects/mod.rs`, or the rule that reads a standing op: `economy.rs`, `cards/triggers.rs`'s
+copy), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
+ledger's hand mirror, `scripts/cards/effect_ledger.py`. The compiler finds the Rust sites; only a
+fast-lane mirror test finds the ledger (106).
+
 ### Generated docs
 
 `aic-sim docs` rewrites the blocks between `<!-- generated: NAME -->` markers in
-the files of [rules/](rules/README.md) (each block in one file, listed in `BLOCKS`), all of [ops.md](ops.md), [harms.md](harms.md) and
+the files of [rules/](rules/README.md) (each block in one file, listed in `BLOCKS`), the `strategies` block of [agents.md](agents.md), all of [ops.md](ops.md), [harms.md](harms.md) and
 [player-aid.md](player-aid.md), and `web/card/faces.json`; `python
 scripts/cards/cards_doc.py` reads the faces and writes [cards.md](cards.md). A block is
 a pure function of `Rules` or `Content` in `crates/aic-sim/src/docs/blocks.rs`, named

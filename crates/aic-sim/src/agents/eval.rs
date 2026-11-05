@@ -894,7 +894,7 @@ impl Eval {
     /// (D23), and an adversary project wholly filled (D34: `project`, charged
     /// for each project's share filled); the credits it counts in full
     /// (`credit_cap`) and an idle credit's share of one beyond them.
-    pub fn plan_rates(&self) -> [f64; 5] {
+    pub fn plan_rates(&self) -> PlanRates {
         let w = &self.w;
         let credit = if w.table > 0.0 { w.table } else { w.credits };
         let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
@@ -904,7 +904,7 @@ impl Eval {
         };
         let cap = if w.credit_cap > 0.0 { w.credit_cap } else { f64::MAX };
         let idle = if w.credits > 0.0 { w.credit_idle / w.credits } else { 1.0 };
-        [self.energy_unit() / credit, antimatter / credit, w.project / credit, cap, idle]
+        PlanRates { energy: self.energy_unit() / credit, antimatter: antimatter / credit, project: w.project / credit, cap, idle }
     }
 
     /// An energy a round to come (income, a city's production; 093): as held,
@@ -1832,6 +1832,19 @@ struct SeatData {
     prices: cards::Prices,
     income: aic_core::content::PerResource,
     ctx: Ctx,
+}
+
+
+/// 102 (D23, D34): the heuristic's prices the keep plan shares (`Eval::plan_rates`), in
+/// table credits: an energy and an antimatter held, an adversary project wholly filled,
+/// the credits counted in full (`cap`) and an idle credit's share of one beyond them.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct PlanRates {
+    pub energy: f64,
+    pub antimatter: f64,
+    pub project: f64,
+    pub cap: f64,
+    pub idle: f64,
 }
 
 #[cfg(test)]

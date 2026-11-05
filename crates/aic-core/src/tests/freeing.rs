@@ -32,7 +32,8 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
     }
     // A tier-1 cleanse is not offered for a city, and does nothing to one. The test pins the
     // ultimate's price under what `fund` gives (r44 prints 32).
-    let (rules, mut g) = lab_actions_with(&["cards.great_liberation.cost=21"]);
+    // 119: and its need of 4 Diplomacy, r46's print.
+    let (rules, mut g) = lab_actions_with(&["cards.great_liberation.cost=21", r#"cards.great_liberation.needs=[["diplomacy",4]]"#]);
     let (h, _) = city(&rules, &mut g);
     let others: Vec<usize> = (0..g.hexes.len()).filter(|&x| x != h).collect();
     for x in others {
@@ -57,7 +58,14 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
 
 #[test]
 fn clearing_a_city_takes_the_ones_the_player_picks() {
-    let (rules, mut g) = lab_actions();
+    // 119: both cards pinned to r46's print, under what `fund` pays.
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.amnesty_decree.cost=11",
+        r#"cards.amnesty_decree.effects=[{"op":"clear_city","max":4},{"op":"gain_ambassadors","count":2}]"#,
+        "cards.liberation_accords.cost=15",
+        r#"cards.liberation_accords.needs=[["diplomacy",1]]"#,
+        r#"cards.liberation_accords.effects=[{"op":"remove_ambassadors_country","unity_per":0,"max":6,"reach":true},{"op":"gain_ambassadors","count":4}]"#,
+    ]);
     let (h, n) = city(&rules, &mut g);
     put(&mut g, h, ADV_AMBASSADOR, 4);
     put(&mut g, n, ADV_AMBASSADOR, 3);

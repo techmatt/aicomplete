@@ -1,9 +1,13 @@
 """Cost per decision, for telling longer games from a slower agent (040).
 
     python scripts/bench/per_decision.py OLD_ROOT NEW_ROOT [--agent planner] [--games 6]
-        [--old-agent SPEC] [--first 1000] [--countries 2] [--pairs 2]
+        [--old-agent SPEC] [--first 1000] [--countries 2] [--pairs 2] [--set K=V]...
 
     python scripts/bench/per_decision.py SIM.exe --old-agent SPEC_A --agent SPEC_B [...]
+
+`--set K=V` (repeatable) goes to both sides' `aic-sim run`, after the built-in `--set`s, so it
+overrides them; a content overlay (`cards.<id>.cost=4`) runs the new binary on old content.
+`aic-sim run` has no overlay-file flag: overlays are `--set`s.
 
 Each ROOT is a directory holding `aic-sim.exe` and the configs/ it plays; one `.exe` path
 instead compares two agent specs on that binary, from this directory's configs/. Plays
@@ -25,11 +29,13 @@ def sim(root):
     return (root, '.') if root.endswith('.exe') else (os.path.join(root, 'aic-sim.exe'), root)
 
 
-def one(root, agent, games, first, countries):
+def one(root, agent, games, first, countries, sets=()):
     exe, root = sim(root)
     cmd = [os.path.abspath(exe), 'run', 'configs/baseline.json',
            '--seed', str(first), '--agent', agent, '--games', str(games), '--threads', '1',
            '--json', '--set', f'countries={countries}', '--set', 'adversary.difficulty=2']
+    for kv in sets:
+        cmd += ['--set', kv]
     run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
     if run.returncode != 0:
         sys.exit(f"{cmd[0]} failed in {root} (its own configs/baseline.json is what it plays): {run.stderr.strip()}")
@@ -55,7 +61,12 @@ def main():
     ap.add_argument('--first', type=int, default=1000)
     ap.add_argument('--countries', type=int, default=2)
     ap.add_argument('--pairs', type=int, default=2)
+    ap.add_argument('--set', action='append', default=[], metavar='K=V',
+                    help="passed to both sides' run, after the built-in sets (repeatable)")
     a = ap.parse_args()
+    for kv in a.set:
+        if '=' not in kv:
+            ap.error(f'--set {kv}: expected K=V')
     if len(a.roots) > 2:
         ap.error('at most two roots')
     for root in a.roots:
@@ -67,13 +78,15 @@ def main():
     best = {}
     for _ in range(pairs):
         for side, root in (('old', old), ('new', new)):
-            r = one(root, old_agent if side == 'old' else agent, games, first, countries)
+            r = one(root, old_agent if side == 'old' else agent, games, first, countries, a.set)
             if side not in best or r['ms'] < best[side]['ms']:
                 best[side] = r
     before, after = best['old'], best['new']
     print(f'{agent}, c{countries}, d2, {games} games from seed {first}, one thread, best of {pairs}')
     if old_agent != agent:
         print(f'old is {old_agent}, new is {agent}')
+    if a.set:
+        print('both with --set ' + ' --set '.join(a.set))
     print('| | rules | wins | rounds | decisions | options/decision | ms/game | ms/decision |')
     print('|---|---|---|---|---|---|---|---|')
     for name, r in (('old', before), ('new', after)):

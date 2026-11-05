@@ -22,6 +22,7 @@ const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
 const FACES_JSON: &str = "web/card/faces.json";
 const PLAYER_AID_MD: &str = "docs/player-aid.md";
+const AGENTS_MD: &str = "docs/agents.md";
 const CARD_NOTES: &str = "docs/card-pricing-notes.json";
 
 fn player_aid_md() -> String {
@@ -294,6 +295,29 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
+/// 117: the rules README's "at rules revision N" line, hand-kept, must name `rev`
+/// (`RULES_REVISION`): it once said 43 at 45. A missing line is a failure too.
+pub(super) fn revision_line_failures(files: &[(String, String)], rev: u32) -> Vec<String> {
+    const LEAD: &str = "at rules revision ";
+    let Some((path, text)) = files.iter().find(|(p, _)| p.ends_with("README.md")) else {
+        return vec![format!("{RULES_DIR}: no README.md")];
+    };
+    let said: Vec<&str> = text
+        .match_indices(LEAD)
+        .map(|(i, _)| {
+            let rest = &text[i + LEAD.len()..];
+            &rest[..rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len())]
+        })
+        .collect();
+    if said.is_empty() {
+        return vec![format!("{path}: no \"{LEAD}N\" line naming RULES_REVISION ({rev})")];
+    }
+    said.into_iter()
+        .filter(|n| *n != rev.to_string())
+        .map(|n| format!("{path}: says \"{LEAD}{n}\", but RULES_REVISION is {rev}"))
+        .collect()
+}
+
 /// 118: a rules file quoting a card, `"words" (Card Name)`, whose face no longer says
 /// the words (a card pass changed the number: four such quotes in one hunt). `faces` is
 /// (name, full face text). Case and punctuation are ignored.
@@ -450,6 +474,9 @@ pub fn run(o: &Options) {
         (HARMS_MD.to_string(), harms_md(), on_disk(HARMS_MD)),
         (PLAYER_AID_MD.to_string(), player_aid_md(), on_disk(PLAYER_AID_MD)),
     ];
+    let agents_old = on_disk(AGENTS_MD);
+    let strategies = |name: &str| (name == "strategies").then(super::blocks::strategies_block);
+    files.push((AGENTS_MD.to_string(), fill(&agents_old, &strategies), agents_old));
     let rules_md = rules_files();
     let mut rules_new: Vec<(String, String)> = Vec::new();
     for (path, old) in &rules_md {
@@ -460,6 +487,7 @@ pub fn run(o: &Options) {
     let stale: Vec<&(String, String, String)> = files.iter().filter(|(_, new, old)| new != old).collect();
     let mut failures: Vec<String> = harm_failures().into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
     failures.extend(rules_file_failures(&rules_new));
+    failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
     let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
     failures.extend(card_quote_failures(&rules_new, &faces));
     failures.extend(page_budget_failures());

@@ -37,6 +37,7 @@ fn main() {
             "{}",
             serde_json::to_string_pretty(&aic_core::describe_modules()).unwrap()
         ),
+        "cards" => print!("{}", agents::policy::cards_csv()),
         "show" => show(&o),
         "docs" => docs::run(&o),
         "run" | "compare" => play::run(&o),

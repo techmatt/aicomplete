@@ -139,7 +139,13 @@ fn an_uncountered_threat_puts_its_compute_on_a_project() {
 
 #[test]
 fn security_cards_drain_or_discard_a_project() {
-    let (rules, mut g) = lab_actions();
+    // 119: both cards pinned to r46's print, under what `fund` pays.
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.zero_knowledge_exploit.cost=6",
+        r#"cards.zero_knowledge_exploit.effects=[{"op":"drain_project","amount":5},{"op":"draw","count":1}]"#,
+        "cards.killswitch_directive.cost=14",
+        r#"cards.killswitch_directive.effects=[{"op":"discard_project"},{"op":"remove_ambassadors_country","unity_per":0,"max":4,"reach":true}]"#,
+    ]);
     row(&mut g, &["false_flag", "disinformation"]);
     g.vars.insert(adversary::project_key("false_flag").into(), 8);
     set_pile(&mut g, "cards.hand.0", &["zero_knowledge_exploit", "killswitch_directive"]);
@@ -172,7 +178,12 @@ fn security_cards_drain_or_discard_a_project() {
 
 #[test]
 fn botnet_takedown_removes_a_botnet_in_reach() {
-    let (rules, mut g) = lab_actions();
+    // 119: Singularity Exploit pinned to r46's price and need of 3 Cyber.
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.singularity_exploit.cost=4",
+        "cards.singularity_exploit.antimatter=1",
+        r#"cards.singularity_exploit.needs=[["cyber",3]]"#,
+    ]);
     let m = &rules.map;
     let p = node_of(&g, 0)[0];
     let far = (0..m.hexes.len())

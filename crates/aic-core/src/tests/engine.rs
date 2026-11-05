@@ -27,6 +27,11 @@ fn table_with(sets: &[&str], hand: &[&str], built: &[&str]) -> (Rules, GameState
     (rules, g)
 }
 
+/// 119: Telemetry Archive's trigger and threshold pinned as printed at r46 (2 Datasets
+/// a Science card played; at 4, 3 insight), and its arrival (2 here).
+const TELEMETRY_PASSIVES: &str = r#"cards.telemetry_archive.passives=[{"op":"when","on":{"event":"play","tag":"science"},"then":[{"op":"add_tokens","kind":"datasets","amount":2,"here":true}]},{"op":"threshold","at":4,"then":[{"op":"gain","resource":"insight","amount":3}]}]"#;
+const TELEMETRY_EFFECTS: &str = r#"cards.telemetry_archive.effects=[{"op":"add_tokens","kind":"datasets","amount":2,"here":true}]"#;
+
 fn play(rules: &Rules, g: &mut GameState, seat: u8, card: &str) {
     act(rules, g, Action::Play { seat, card: card.into() });
 }
@@ -60,11 +65,11 @@ fn a_play_trigger_fires_for_its_tag_and_counts_itself() {
     assert_eq!(g.resource(0, r), before - cost, "no Science tag, no trigger");
     // Telemetry Archive is a Science card: playing it fires its own trigger (2 Datasets).
     // Pinned to arrive empty (r43 arrives with 2, so its own play fills it at once).
-    let (rules, mut g) = table_with(&["cards.telemetry_archive.effects=[]"], &["telemetry_archive"], &[]);
+    let (rules, mut g) = table_with(&["cards.telemetry_archive.effects=[]", TELEMETRY_PASSIVES], &["telemetry_archive"], &[]);
     play(&rules, &mut g, 0, "telemetry_archive");
     assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 2);
-    // As printed (r43): 2 when built and 2 from its own play reach its At 4, which pays and empties it.
-    let (rules, mut g) = table(&["telemetry_archive"], &[]);
+    // As printed (r43, pinned): 2 when built and 2 from its own play reach its At 4, which pays and empties it.
+    let (rules, mut g) = table_with(&[TELEMETRY_PASSIVES, TELEMETRY_EFFECTS], &["telemetry_archive"], &[]);
     let insight = g.resource(0, Resource::Insight);
     let paid = cards::def(&rules.world(), "telemetry_archive").insight;
     play(&rules, &mut g, 0, "telemetry_archive");
@@ -118,7 +123,13 @@ fn a_teammate_trigger_pays_on_another_players_play() {
 
 #[test]
 fn a_rebate_reads_the_printed_cost() {
-    let (rules, mut g) = table(&["baseload_contract", "shared_compute_grant"], &["lights_out_assembly"]);
+    // 119: the rebate's At 10 and the two costs either side of it pinned (r46's print).
+    let pins = [
+        r#"cards.lights_out_assembly.passives=[{"op":"when","on":{"event":"play_cost","at":10},"then":[{"op":"gain","resource":"credits","amount":5}]}]"#,
+        "cards.baseload_contract.cost=20",
+        "cards.shared_compute_grant.cost=6",
+    ];
+    let (rules, mut g) = table_with(&pins, &["baseload_contract", "shared_compute_grant"], &["lights_out_assembly"]);
     let w = rules.world();
     let (r, n) = trigger_gain(&rules, "lights_out_assembly");
     let at = cards::def(&w, "lights_out_assembly").passives.iter().find_map(|p| match p {
@@ -152,7 +163,7 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
     assert_eq!(cards::play_cost(&w, &g, 0, science), science.cost);
     // 111: no deck card prints an insight discount now (Hyperscale Botnet dropped it): the test gives it one.
     let insight_off = r#"cards.hyperscale_botnet.passives=[{"op":"card_discount","resource":"insight","amount":1}]"#;
-    let (rules, mut g) = table_with(&[insight_off], &["planetary_referendum"], &["hyperscale_botnet"]);
+    let (rules, mut g) = table_with(&[insight_off, "cards.planetary_referendum.insight=2"], &["planetary_referendum"], &["hyperscale_botnet"]);
     let w = rules.world();
     let d = cards::def(&w, "simulation_cluster");
     assert_eq!(cards::play_insight(&w, &g, 0, d), (d.insight - 1).max(d.insight.min(floor)));
@@ -167,7 +178,7 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
 
 #[test]
 fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
-    let (rules, mut g) = table(&["shared_compute_grant"], &["telemetry_archive"]);
+    let (rules, mut g) = table_with(&[TELEMETRY_PASSIVES], &["shared_compute_grant"], &["telemetry_archive"]);
     g.vars.insert(cards::tokens_key(0, "telemetry_archive").as_str().into(), 2);
     let w = rules.world();
     let reward = cards::def(&w, "telemetry_archive").passives.iter().find_map(|p| match p {
@@ -208,7 +219,7 @@ fn copy_raises_income_by_a_buildings_output() {
 
 #[test]
 fn reuse_uses_another_action_again_but_never_a_reuse() {
-    let (rules, mut g) = table(&[], &["simulation_cluster", "synthetic_data_forge"]);
+    let (rules, mut g) = table_with(&[FORGE_ABILITY], &[], &["simulation_cluster", "synthetic_data_forge"]);
     let uses = |g: &GameState, card: &str| rules.legal_actions(g).iter().any(|a| matches!(a, Action::Use { seat: 0, card: c } if c == card));
     assert!(!uses(&g, "simulation_cluster"), "nothing used yet: nothing to reuse");
     act(&rules, &mut g, Action::Use { seat: 0, card: "synthetic_data_forge".into() });
@@ -223,7 +234,9 @@ fn reuse_uses_another_action_again_but_never_a_reuse() {
 
 #[test]
 fn fight_triggers_fire_once_an_action_or_once_a_troop() {
-    let (rules, mut g) = table(&["signal_hijack"], &["security_contractor_hq", "honeypot_relay", "security_ops_floor"]);
+    // 119: Signal Hijack's 2 troops pinned (r46), so both troops near go.
+    let hijack = r#"cards.signal_hijack.effects=[{"op":"remove_troops","count":2,"reach":true}]"#;
+    let (rules, mut g) = table_with(&[hijack], &["signal_hijack"], &["security_contractor_hq", "honeypot_relay", "security_ops_floor"]);
     let m = &rules.map;
     let home = m.numbered(0, piece(0).node);
     let near = m.hexes[home].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
@@ -277,7 +290,12 @@ fn a_teammate_triggers_removal_fires_its_owners_fight_triggers() {
 #[test]
 fn a_threshold_pays_when_a_feeder_fills_it() {
     // 118: Recruit Operatives' Agent onto Intrusion Lab (1 of 2) reaches its At 2 at once.
-    let (rules, mut g) = table(&["recruit_operatives"], &["intrusion_lab"]);
+    // 119: the lab's At 2 and its 1 antimatter, and the Agent the program adds, pinned (r46).
+    let pins = [
+        r#"cards.intrusion_lab.passives=[{"op":"when","on":{"event":"remove_compute"},"then":[{"op":"add_tokens","kind":"agents","amount":1,"here":true}]},{"op":"threshold","at":2,"then":[{"op":"gain","resource":"antimatter","amount":1}]}]"#,
+        r#"cards.recruit_operatives.effects=[{"op":"draw","count":2},{"op":"add_tokens","kind":"agents","amount":1}]"#,
+    ];
+    let (rules, mut g) = table_with(&pins, &["recruit_operatives"], &["intrusion_lab"]);
     g.vars.insert(cards::tokens_key(0, "intrusion_lab").as_str().into(), 1);
     let before = g.resource(0, Resource::Antimatter);
     play(&rules, &mut g, 0, "recruit_operatives");
@@ -289,7 +307,8 @@ fn a_threshold_pays_when_a_feeder_fills_it() {
 #[test]
 fn a_move_up_to_n_does_not_veto_a_card_that_also_gains() {
     // 118: Summit Caucus with no ambassador of yours in reach still gains its 3.
-    let (rules, mut g) = table(&["summit_caucus"], &[]);
+    let caucus = r#"cards.summit_caucus.effects=[{"op":"consolidate","max":6},{"op":"gain_ambassadors","count":3}]"#;
+    let (rules, mut g) = table_with(&[caucus], &["summit_caucus"], &[]);
     for h in 0..g.hexes.len() {
         put(&mut g, h, crate::modules::common::ambassador(0), 0);
     }
@@ -304,7 +323,8 @@ fn a_move_up_to_n_does_not_veto_a_card_that_also_gains() {
 fn a_program_counts_its_own_tag_toward_its_gain_per_tag() {
     // 118: Consular Pouch (1 ambassador a Diplomacy tag) with none in play still has its
     // own tag once it enters play: it is offered, and pays 1.
-    let (rules, mut g) = table_with(&["cards.consular_pouch.needs=[]"], &["consular_pouch"], &[]);
+    let pouch = r#"cards.consular_pouch.effects=[{"op":"gain_per_tag","resource":"ambassadors","tag":"diplomacy","per":1}]"#;
+    let (rules, mut g) = table_with(&["cards.consular_pouch.needs=[]", pouch], &["consular_pouch"], &[]);
     assert_eq!(cards::tags(&rules.world(), &g, 0, Tag::Diplomacy), 0);
     assert!(rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { seat: 0, card } if card == "consular_pouch")));
     let before = g.resource(0, Resource::Ambassadors);
@@ -322,7 +342,7 @@ fn a_sale_paying_nothing_is_refused_not_only_hidden() {
 
 #[test]
 fn placing_a_dataset_pays_data_licensing_deal() {
-    let (rules, mut g) = table(&[], &["data_licensing_deal", "synthetic_data_forge"]);
+    let (rules, mut g) = table_with(&[FORGE_ABILITY], &[], &["data_licensing_deal", "synthetic_data_forge"]);
     let (r, n) = trigger_gain(&rules, "data_licensing_deal");
     let before = g.resource(0, r);
     rules.apply_mut(&mut g, &Action::Use { seat: 0, card: "synthetic_data_forge".into() }, None).unwrap();
@@ -337,7 +357,12 @@ fn placing_a_dataset_pays_data_licensing_deal() {
 /// when it resolves, its own counted; a Science tag played later adds nothing.
 #[test]
 fn production_per_tag_counts_once_at_play_and_counts_itself() {
-    let (rules, mut g) = table(&["research_royalties", "shared_compute_grant"], &[]);
+    // 119: its need (Science 2) and its 1 a tag pinned (r46).
+    let pins = [
+        r#"cards.research_royalties.needs=[["science",2]]"#,
+        r#"cards.research_royalties.effects=[{"op":"production_per_tag","resource":"credits","tag":"science","per":1}]"#,
+    ];
+    let (rules, mut g) = table_with(&pins, &["research_royalties", "shared_compute_grant"], &[]);
     set_pile(&mut g, &cards::played(0), &["dataset_scraper", "red_team_audit", "shadow_broker_feed"]);
     let w = rules.world();
     let key = economy::production_key(0, Resource::Credits);
@@ -360,7 +385,9 @@ fn production_per_tag_counts_once_at_play_and_counts_itself() {
 #[test]
 fn income_per_tag_pays_its_amount_per_tag() {
     let copy = r#"cards.payroll_automation.effects=[{"op":"copy_income"}]"#;
-    let (rules, mut g) = table_with(&[copy], &["payroll_automation"], &[]);
+    // 119: the campus's amount pinned here, so a reprice leaves the test alone.
+    let campus = r#"cards.foundation_model_campus.passives=[{"op":"income_per_tag","resource":"credits","tag":"science","per":1,"amount":3}]"#;
+    let (rules, mut g) = table_with(&[copy, campus], &["payroll_automation"], &[]);
     let w = rules.world();
     let base = economy::income(&w, &g, 0)[Resource::Credits];
     set_pile(&mut g, &cards::built(0), &["foundation_model_campus"]);

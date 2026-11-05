@@ -32,7 +32,8 @@ fn a_capstone_counts_once_uncovered() {
 
 #[test]
 fn rush_build_pays_tags_and_no_credits() {
-    let (rules, mut g) = lab_actions();
+    // 119: Open Assembly pinned to r46's no energy, 1 insight and no needs.
+    let (rules, mut g) = lab_actions_with(&["cards.open_assembly.energy=0", "cards.open_assembly.insight=1", "cards.open_assembly.needs=[]"]);
     builder_with_tags(&mut g);
     set_pile(&mut g, &cards::hand(0), &["open_assembly"]);
     set_res(&mut g, 0, Resource::Credits, 0);
@@ -52,7 +53,13 @@ fn rush_build_pays_tags_and_no_credits() {
 fn rush_build_needs_a_building_left_once_paid() {
     // Open Assembly pinned to 4 energy: no building prints energy and no needs since r42.
     // Vertical Monopoly pinned to needs Industry 4 (r43 printed 3).
-    let (rules, mut g) = lab_actions_with(&["cards.open_assembly.energy=4", r#"cards.vertical_monopoly.needs=[["industry",4]]"#]);
+    // 119: Market Stabilization Board pinned to r46's needs Industry 2 and no energy.
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.open_assembly.energy=4",
+        r#"cards.vertical_monopoly.needs=[["industry",4]]"#,
+        r#"cards.market_stabilization_board.needs=[["industry",2]]"#,
+        "cards.market_stabilization_board.energy=0",
+    ]);
     let rush = power(&rules, 0, "Rush Build");
     let offered = |g: &GameState| rules.legal_actions(g).contains(&rush);
     builder_with_tags(&mut g);
@@ -78,7 +85,13 @@ fn rush_build_needs_a_building_left_once_paid() {
 #[test]
 fn rush_build_offers_no_sacrifice_that_strands_it() {
     // Capital Projects Office pinned to built over Industry (r43 dropped it).
-        let (rules, mut g) = lab_actions_with(&[r#"cards.capital_projects_office.replaces="industry""#]);
+    // 119: and to r46's 1 insight, no energy and no needs.
+    let (rules, mut g) = lab_actions_with(&[
+        r#"cards.capital_projects_office.replaces="industry""#,
+        "cards.capital_projects_office.insight=1",
+        "cards.capital_projects_office.energy=0",
+        "cards.capital_projects_office.needs=[]",
+    ]);
     set_pile(&mut g, &cards::played(0), &["payroll_automation"]);
     set_pile(&mut g, &cards::built(0), &["retained_earnings"]);
     set_pile(&mut g, &cards::hand(0), &["capital_projects_office"]);

@@ -4,29 +4,53 @@ fn face_of(id: &str) -> crate::face::Face {
     crate::face::card_face(content().cards.iter().find(|c| c.id == id).expect("a card"))
 }
 
+/// 119: a card as the test writes it (copied from content at r47), so a reprice or a
+/// card pass leaves the face-grammar tests alone (108's note).
+fn pinned(json: &str) -> crate::face::Face {
+    let c: crate::content::CardDef = serde_json::from_str(json).expect("a card");
+    crate::face::card_face(&c)
+}
+
+const FORGE: &str = r#"{"id": "synthetic_data_forge", "name": "Synthetic Data Forge", "tier": 1, "kind": "building",
+    "cost": 8, "insight": 1, "tags": ["science"], "tokens": {"kind": "datasets"},
+    "ability": {"effects": [{"op": "add_tokens", "kind": "datasets", "amount": 1, "here": true}],
+        "or": {"effects": [{"op": "gain_per_tokens", "resource": "insight", "kind": "datasets", "per": 1, "here": true}]}},
+    "effects": [{"op": "add_tokens", "kind": "datasets", "amount": 1, "here": true}]}"#;
+
 #[test]
 fn a_face_opens_with_its_boxes_word() {
-    let f = face_of("synthetic_data_forge");
+    let f = pinned(FORGE);
     assert_eq!(f.top_text, "Action: add 1 Dataset here, OR get 1 insight per Dataset here.");
     assert_eq!(f.text, "Add 1 Dataset here.");
-    let f = face_of("orbital_mass_driver");
+    let f = pinned(
+        r#"{"id": "orbital_mass_driver", "name": "Orbital Mass Driver", "tier": 2, "kind": "building", "cost": 28,
+        "chips": 2, "insight": 2, "tags": ["industry", "power"],
+        "passives": [{"op": "income", "resource": "credits", "amount": 16}, {"op": "income", "resource": "chips", "amount": 3}],
+        "effects": [{"op": "draw", "count": 3}]}"#,
+    );
     assert_eq!(f.top_text, "Each round, 16 credits and 3 chips.");
     assert_eq!(f.text, "Pay 2 chips. Draw 3 cards.");
 }
 
 #[test]
 fn a_bare_arrow_is_a_free_action() {
-    let f = face_of("sentinel_mesh");
+    let f = pinned(
+        r#"{"id": "sentinel_mesh", "name": "Sentinel Mesh", "tier": 1, "kind": "building", "cost": 7, "insight": 0,
+        "tags": ["cyber", "security"], "ability": {"effects": [{"op": "jam", "amount": 6, "source": "cyber"}]}}"#,
+    );
     assert_eq!(f.top_text, "Action: counts as 6 toward a cyber threat.");
     // 076: an OR Action prints each half; the second line opens with OR.
-    let f = face_of("synthetic_data_forge");
+    let f = pinned(FORGE);
     let json = serde_json::to_string(&f.top).unwrap();
     assert_eq!(json, r#"[["→","+1","datasets"],["OR","→","insight","/","datasets"]]"#);
 }
 
 #[test]
 fn income_below_the_art_raises_or_lowers_the_track() {
-    let f = face_of("endowed_research_chair");
+    let f = pinned(
+        r#"{"id": "endowed_research_chair", "name": "Endowed Research Chair", "tier": 1, "kind": "program", "cost": 8,
+        "insight": 1, "lowers": [["credits", 1]], "tags": ["science"], "effects": [{"op": "production", "resource": "insight", "amount": 2}]}"#,
+    );
     assert_eq!(f.top_text, "");
     assert_eq!(f.text, "Lower your credit income by 1. Raise your insight income by 2.");
 }
@@ -81,13 +105,18 @@ fn harden_says_facility_and_a_shield_says_shield() {
 /// 063: one mark, one reading.
 #[test]
 fn each_mark_has_one_reading() {
-    let json = |id: &str| serde_json::to_string(&face_of(id)).unwrap();
-    assert!(json("red_team_audit").contains(r#""−6","jam""#));
-    assert!(json("beamed_power_constellation").contains(r#""3","free_node""#));
+    // A program whose effects the test names (119: pinned, not read from content).
+    let json = |effects: &str| {
+        let card = format!(r#"{{"id": "t", "name": "T", "tier": 1, "kind": "program", "cost": 8, "insight": 1, "tags": ["science"], "effects": {effects}}}"#);
+        serde_json::to_string(&pinned(&card)).unwrap()
+    };
+    assert!(json(r#"[{"op": "jam", "amount": 6}, {"op": "draw", "count": 2}]"#).contains(r#""−6","jam""#));
+    assert!(json(r#"[{"op": "place_node", "count": 3, "free": true}, {"op": "gain_per_node", "resource": "energy"}]"#).contains(r#""3","free_node""#));
     // Dashed is another player; the solid box is one of your cards (076: never a count across them).
-    assert!(json("vendor_financing").contains(r#"{"other":["2","chips"]}"#));
-    assert!(json("recruit_operatives").contains(r#"{"yours":["agents"]}"#));
-    assert!(json("synthetic_data_forge").contains(r#"["OR","→","insight","/","datasets"]"#));
+    let other = r#"[{"op": "choose_player"}, {"op": "other_gain", "resource": "chips", "amount": 2}, {"op": "production", "resource": "credits", "amount": 4}]"#;
+    assert!(json(other).contains(r#"{"other":["2","chips"]}"#));
+    assert!(json(r#"[{"op": "draw", "count": 2}, {"op": "add_tokens", "kind": "agents", "amount": 1}]"#).contains(r#"{"yours":["agents"]}"#));
+    assert!(serde_json::to_string(&pinned(FORGE)).unwrap().contains(r#"["OR","→","insight","/","datasets"]"#));
     // No card prints Civic Shelter since r42: a building is given it here.
     let mut shelter = content().cards.iter().find(|c| c.is_building()).expect("a building").clone();
     shelter.passives = vec![crate::content::Op::CivicShelter];

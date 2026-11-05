@@ -364,16 +364,8 @@ impl Module for Cards {
             Action::Draft { card, .. } => draft_pick(g, cx, s, card)?,
             Action::Keep { card, .. } => self.keep_card(g, cx, s, card)?,
             // 105: what a play or an Action removes fires the seat's fight triggers.
-            Action::Play { card, .. } => {
-                let before = fight_watch(&cx.world, g, s);
-                play_card(g, cx, s, card)?;
-                fight_fire(g, cx, s, before)?;
-            }
-            Action::Use { card, .. } => {
-                let before = fight_watch(&cx.world, g, s);
-                use_ability(g, cx, s, card)?;
-                fight_fire(g, cx, s, before)?;
-            }
+            Action::Play { card, .. } => fighting(g, cx, s, |g, cx| play_card(g, cx, s, card))?,
+            Action::Use { card, .. } => fighting(g, cx, s, |g, cx| use_ability(g, cx, s, card))?,
             _ => return Err(Halt::Illegal(format!("not a card action: {a:?}"))),
         }
         Ok(())

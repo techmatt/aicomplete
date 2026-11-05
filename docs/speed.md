@@ -74,7 +74,8 @@ inside them, `scripts/bench/profile_win.py` samples by function with stacks: `sa
 session here (it raises a UAC prompt and waits), so it uses Visual Studio's collector, which needs no
 admin. Build with symbols in its own target dir (`CARGO_PROFILE_RELEASE_DEBUG=true
 CARGO_TARGET_DIR=out/target-prof`), keep a run under 5 s (a session's trace holds about 5.6 s) or read a
-planner game in windows (`--attach`), and run nothing else named `aic-sim.exe` beside it. Call counts of a
+planner game in windows (`--attach`), and run nothing else named `aic-sim.exe` beside it. An old binary
+copied out of its target dir needs its `aic_sim.pdb` beside it, or the profile has no symbols (105). Call counts of a
 helper: a copy of the tree in `out/` with a counter in it. Timers in the core break its no-clock rule.
 Count work by prompt before optimizing a part: a tally of scorings by prompt text finds where the cost is,
 which passes made by guess miss. For a long screen, `cargo build --profile fast -p aic-sim` (`target/fast/`)

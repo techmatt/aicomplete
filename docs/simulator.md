@@ -1,6 +1,6 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`;
+The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`, `cards`;
 `experiment` is in [experiments.md](experiments.md), `docs [--check]` in architecture.md *Generated docs*.
 
 Always run the sim in release.
@@ -20,6 +20,7 @@ $S modules                                         # registry: modules, variants
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
 $S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy (--agent defaults to strategist)
+$S cards                                           # every content card, CSV id,kind,tier,engine,liberate: the agents' engine and liberate tests (policy.rs) for scripts
 ```
 
 | Option | Default | Meaning |

@@ -405,12 +405,7 @@ mod tests {
         for s in 0..3 {
             assert!(menu(&w, s).len() >= 3, "seat {s}");
         }
-        // docs/agents.md prints each strategy as a player would say it.
-        let doc = std::fs::read_to_string(format!("{}/../../docs/agents.md", env!("CARGO_MANIFEST_DIR"))).unwrap();
-        for s in &strategies().strategies {
-            let line = format!("- *{}.* {}", s.name, s.says);
-            assert!(doc.contains(&line), "docs/agents.md, *Strategies*, lacks {line:?}");
-        }
+        // docs/agents.md's lines are `aic-sim docs`'s `strategies` block (119), checked by `docs --check`.
         let m = Mults::new(&w, 1.0);
         let payroll = w.content.card_index("payroll_automation").unwrap();
         let k = by_id("industry_income").unwrap();

@@ -3,9 +3,9 @@
   "note": "106: each new op on and off (its cards out of the deck), the read's seeds.",
   "configs": [
     "configs/baseline.json",
-    "experiments/configs/106_no_production_per_tag.json",
-    "experiments/configs/106_no_income_per_tag_amount.json",
-    "experiments/configs/106_no_play_tag_any.json"
+    "experiments/archive/106_no_production_per_tag.json",
+    "experiments/archive/106_no_income_per_tag_amount.json",
+    "experiments/archive/106_no_play_tag_any.json"
   ],
   "variants": [
     {

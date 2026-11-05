@@ -73,7 +73,11 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
 #[test]
 fn playing_a_card_pays_its_insight_and_lowers_its_income() {
     // 022: insight to play, shared with keeps; `lowers` cuts an income for good.
-    let (rules, mut g) = lab_actions_with(&["cards.darknet_exchange.cost=2", "cards.darknet_exchange.insight=1"]);
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.darknet_exchange.cost=2",
+        "cards.darknet_exchange.insight=1",
+        r#"cards.endowed_research_chair.lowers=[["credits",1]]"#,
+    ]);
     for c in ["darknet_exchange", "recursive_self_improvement"] {
         out_of_decks(&mut g, c);
     }
@@ -369,7 +373,7 @@ fn prices_worked_out_once_match_each_cards_own() {
 /// its own tokens; with nothing here only the add is offered, so nothing asks.
 #[test]
 fn an_or_action_adds_here_then_offers_both_halves_and_counts_only_its_own_tokens() {
-    let (rules, mut g) = lab_actions();
+    let (rules, mut g) = lab_actions_with(&[FORGE_ABILITY]);
     let id = "synthetic_data_forge";
     set_pile(&mut g, "cards.built.0", &[id, "telemetry_archive"]);
     g.vars.insert(cards::tokens_key(0, "telemetry_archive").into(), 5);
@@ -443,7 +447,11 @@ fn a_gift_lands_alone_and_a_draw_needs_a_card() {
 /// first read).
 #[test]
 fn a_draw_event_cannot_draw_itself_back() {
-    let (rules, mut g) = lab_actions_with(&["cards.breakthrough_leak.needs=[]", "cards.breakthrough_leak.cost=0"]);
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.breakthrough_leak.needs=[]",
+        "cards.breakthrough_leak.cost=0",
+        r#"cards.breakthrough_leak.effects=[{"op":"draw","count":4}]"#,
+    ]);
     for c in ["breakthrough_leak", "spoofed_credentials", "materials_hedge_desk"] {
         out_of_decks(&mut g, c);
     }

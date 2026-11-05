@@ -137,7 +137,16 @@ fn the_giving_capstone_draws_from_the_supply() {
 
 #[test]
 fn the_new_cards_can_be_played() {
-    let (rules, mut g) = c3();
+    // 119: both prices and the repository's need pinned to r46's print, under what is given.
+    let (rules, mut g) = lab_actions_with(&[
+        "countries=3",
+        "cards.sample_repository.cost=8",
+        "cards.sample_repository.insight=0",
+        r#"cards.sample_repository.needs=[["science",2]]"#,
+        "cards.forensic_audit.cost=27",
+        "cards.forensic_audit.research_cubes=4",
+        "cards.forensic_audit.insight=1",
+    ]);
     // The cube cards (r42): one raises cube income, one pays cubes.
     set_pile(&mut g, &cards::played(0), &["shared_compute_grant", "dataset_scraper"]);
     // Forensic Audit liberates: a corrupted city in reach.

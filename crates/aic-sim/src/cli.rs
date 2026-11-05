@@ -21,6 +21,8 @@ usage: aic-sim run <config.json> [options]
                                                      seats choose them at the round-1 keep
                                                      (CSV: seed,seat,board,strategy;
                                                      --agent defaults to strategist here)
+       aic-sim cards                                 every content card as CSV: id,kind,tier,
+                                                     engine,liberate (the agents' card tests)
 
 options:
   --games N         games per config (default 200)
@@ -94,6 +96,7 @@ const COMMANDS: &[(&str, usize, usize, &str, &[&str])] = &[
     ("compare", 2, 2, "compare takes 2 config path(s)", COMPARE_FLAGS),
     ("show", 1, 1, "show takes one config", &["--set"]),
     ("modules", 0, 0, "modules takes no paths", &[]),
+    ("cards", 0, 0, "cards takes no paths", &[]),
     ("replay", 1, usize::MAX, "replay takes one or more game records", &[]),
     ("docs", 0, 0, "docs takes no paths", &["--check"]),
     ("strategies", 1, 1, "strategies takes one config", &["--games", "--seed", "--set", "--agent"]),

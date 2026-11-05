@@ -411,9 +411,7 @@ impl Module for Ai {
         cx.tally(g, "ai.powers_used", 1);
         cx.per_round(g, "ai.powers_used", 1);
         // 105: what a power removes fires the seat's fight triggers.
-        let before = cards::fight_watch(&w, g, s);
-        effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s))?;
-        cards::fight_fire(g, cx, s, before)
+        cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &p.effects, &mut effects::Ctx::seat(s)))
     }
 
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {

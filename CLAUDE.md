@@ -82,7 +82,7 @@ experiments, speed, scripts, web, card art.
 - **Two test lanes.** Run `cargo test --workspace`, the fast lane, after every change, and
   `cargo test-all`, the full run, before every commit; a commit touching only Markdown outside the
   generated docs skips it, the fast lane still runs. Flags follow the alias with no `--`:
-  `cargo test-all --test-threads=2`. A test slower than about a second goes in the slow lane,
+  `cargo test-all --test-threads=2` (build jobs: `CARGO_BUILD_JOBS=3`; a `-j` reaches the test binary and fails). A test slower than about a second goes in the slow lane,
   with a cheaper fast-lane twin where one makes sense. See README, *Build and test*. Leave
   `cargo clippy --workspace --all-targets` clean. The repo doesn't use rustfmt. In a fresh
   worktree, web's `npm run check` needs `npm run wasm` first; `npm run e2e` needs the dev server

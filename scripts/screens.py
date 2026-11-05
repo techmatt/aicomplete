@@ -74,8 +74,11 @@ def load(d):
     return cells, games
 
 
-# Counters 086 renamed (presence -> node, the adversary's node -> botnet): name -> pre-086 name.
-RENAMED_086 = {
+# Renamed counters: name -> former name. A former name may itself be renamed: `old_names`
+# follows the chain, newest first.
+RENAMED = {
+    # 086: presence -> node, the adversary's node -> botnet (also `board.node_lost.<source>`,
+    # in `old_names`).
     'adversary.compute_botnets': 'adversary.compute_nodes',
     'adversary.botnets_made': 'adversary.nodes_made',
     'adversary.botnets_removed': 'adversary.nodes_removed',
@@ -87,22 +90,25 @@ RENAMED_086 = {
     'board.node_lost': 'board.presence_lost',
     'board.node_drained': 'board.presence_drained',
     'effects.botnets_cut': 'effects.nodes_cut',
-}
-
-# Counters 102 renamed (D40): name -> former name. `board.stations_free` (a station built
-# paying no chips) read as `board.stations_freed` (the Free a station action).
-RENAMED_102 = {
+    # 102 (D40): `board.stations_free` (a station built paying no chips) read as
+    # `board.stations_freed` (the Free a station action).
     'board.stations_built_free': 'board.stations_free',
 }
 
 
 def old_names(k):
-    """The counter's former names: before 102 (`RENAMED_102`), before 086 (`RENAMED_086`, and
-    `board.node_lost.<source>`), and before 026, when chips were called hardware."""
-    pre_086 = RENAMED_086.get(k, k)
-    if k.startswith('board.node_lost.'):
-        pre_086 = 'board.presence_lost.' + k[len('board.node_lost.'):]
-    names = [RENAMED_102.get(k, k), pre_086, k.replace('chips', 'hardware')]
+    """The counter's former names, newest first: the `RENAMED` chain (and 086's
+    `board.node_lost.<source>`), then its name before 026, when chips were called hardware."""
+    names, n = [], k
+    while True:
+        if n in RENAMED:
+            n = RENAMED[n]
+        elif n.startswith('board.node_lost.'):
+            n = 'board.presence_lost.' + n[len('board.node_lost.'):]
+        else:
+            break
+        names.append(n)
+    names.append(k.replace('chips', 'hardware'))
     return [n for n in dict.fromkeys(names) if n != k]
 
 

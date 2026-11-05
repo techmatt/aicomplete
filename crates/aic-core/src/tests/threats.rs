@@ -81,7 +81,12 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
 
 #[test]
 fn jamming_a_threat_down_to_what_is_paid_counters_it() {
-    let (rules, mut g) = threat_lab();
+    // 119: Red-Team Audit's 1 insight and its jam pinned (r46), the price under the 12 given.
+    let (rules, mut g) = threat_lab_with(&[
+        "cards.red_team_audit.cost=8",
+        "cards.red_team_audit.insight=1",
+        r#"cards.red_team_audit.effects=[{"op":"jam","amount":6},{"op":"draw","count":2}]"#,
+    ]);
     // Blackout needs 1 credit and 1 energy (r35); with the credit paid, Red-Team
     // Audit's jam 4 (076: Threat Triage's jam 2 merged away; a jam takes every
     // entry) takes it to 0: countered at once, and the credit paid comes back,

@@ -458,7 +458,7 @@ impl super::Strategic for Greedy {
         self.ev.set_strategies(c);
     }
 
-    fn plan_rates(&self) -> Option<[f64; 5]> {
+    fn plan_rates(&self) -> Option<super::eval::PlanRates> {
         Some(self.ev.plan_rates())
     }
     fn strat_scale(&self) -> f64 {
@@ -471,7 +471,7 @@ impl super::Strategic for Beam {
         self.ev.set_strategies(c);
     }
 
-    fn plan_rates(&self) -> Option<[f64; 5]> {
+    fn plan_rates(&self) -> Option<super::eval::PlanRates> {
         Some(self.ev.plan_rates())
     }
     fn strat_scale(&self) -> f64 {

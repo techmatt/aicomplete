@@ -165,6 +165,15 @@ fn removed_since(b: Watch, now: Watch) -> [i64; 3] {
     [(b.ambassadors - now.ambassadors).max(0), (b.troops - now.troops).max(0), (b.compute - now.compute).max(0)]
 }
 
+/// 105: seat `s`'s action `f`, then its fight triggers for what `f` removed. The one
+/// wrapper a card play, a building's Action, an AI power, a converter and a standard
+/// action share, so an "after the action" hook lives here once.
+pub fn fighting(g: &mut GameState, cx: &mut Cx, s: usize, f: impl FnOnce(&mut GameState, &mut Cx) -> Res) -> Res {
+    let before = fight_watch(&cx.world, g, s);
+    f(g, cx)?;
+    fight_fire(g, cx, s, before)
+}
+
 /// After seat `s`'s action: its fight triggers fire for what it removed (a
 /// troop: each; compute or ambassadors: once for the action), less what a
 /// teammate's trigger removed inside it (`Cx::fought`).

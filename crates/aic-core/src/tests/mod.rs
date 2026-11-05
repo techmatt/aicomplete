@@ -363,10 +363,23 @@ fn step_cost(w: &module::World, taken: usize) -> i64 {
 }
 
 fn threat_lab() -> (Rules, GameState) {
-    let rules = Rules::new(&lab_config(&[ACTIONS, "threats.execute"])).unwrap();
+    threat_lab_with(&[])
+}
+
+/// `threat_lab` with overrides on top: a test pins the card numbers it reads.
+fn threat_lab_with(sets: &[&str]) -> (Rules, GameState) {
+    let mut c = lab_config(&[ACTIONS, "threats.execute"]);
+    for o in sets {
+        c.apply_override(o).unwrap();
+    }
+    let rules = Rules::new(&c).unwrap();
     let g = rules.new_game(3);
     (rules, g)
 }
+
+/// 119: Synthetic Data Forge's Action pinned as printed at r46 (add 1 here, or 1
+/// insight a Dataset here), so a reprice of the forge leaves the tests reading it alone.
+const FORGE_ABILITY: &str = r#"cards.synthetic_data_forge.ability={"effects":[{"op":"add_tokens","kind":"datasets","amount":1,"here":true}],"or":{"effects":[{"op":"gain_per_tokens","resource":"insight","kind":"datasets","per":1,"here":true}]}}"#;
 
 /// Puts `threat` on country `c` (out of its deck).
 fn deal(g: &mut GameState, threat: &str, c: usize) {

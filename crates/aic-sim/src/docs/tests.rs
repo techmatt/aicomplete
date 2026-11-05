@@ -2,7 +2,9 @@ use aic_core::content::{content, Resource, Uncover};
 use aic_core::{Config, Rules};
 
 use super::blocks::*;
-use super::run::{block, card_note_failures, card_quote_failures, op_docs, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET};
+use super::run::{
+    block, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET,
+};
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
 
@@ -171,53 +173,34 @@ fn the_card_notes_on_disk_name_cards() {
     assert!(card_note_failures(text, &ids).is_empty());
 }
 
-/// The keys of `const NAME = {` in `web/card/icons.js`: a two-space key at the block's top.
-fn icon_keys(js: &str, name: &str) -> Vec<String> {
-    let start = js.find(&format!("const {name} = {{")).unwrap_or_else(|| panic!("icons.js has no {name}"));
-    let body = &js[start..];
-    let body = &body[..body.find("\n};").expect("the block closes")];
-    body.lines()
-        .skip(1)
-        .filter_map(|l| l.strip_prefix("  "))
-        .filter(|l| !l.starts_with(' ') && !l.starts_with('/'))
-        .filter_map(|l| l.split_once(':').map(|(k, _)| k.trim().to_string()))
-        .filter(|k| k.chars().all(|c| c.is_ascii_lowercase() || c == '_'))
-        .collect()
+
+/// 117: the rules README names the revision the code implements, and a stale one fails.
+#[test]
+fn the_rules_readme_names_the_rules_revision() {
+    let readme = include_str!("../../../../docs/rules/README.md");
+    let files = vec![("docs/rules/README.md".to_string(), readme.to_string())];
+    let ok = revision_line_failures(&files, aic_core::RULES_REVISION);
+    assert!(ok.is_empty(), "{ok:?}");
+    let stale = vec![("docs/rules/README.md".to_string(), "at rules revision 43 (x)".to_string())];
+    assert_eq!(revision_line_failures(&stale, 45).len(), 1);
+    let none = vec![("docs/rules/README.md".to_string(), "no line".to_string())];
+    assert_eq!(revision_line_failures(&none, 45).len(), 1);
 }
 
-/// 096 (P4): every word on a face's icon line is one `web/card/card.js` draws (an icon,
-/// a `#tag`, a connector or a number), so a face the card-fit run would crash on fails here.
+/// 106: every card `tools/card-art/samples.json` names is in content (one named a card cut
+/// at r41, unnoticed until the art tool was run).
 #[test]
-fn every_face_word_is_a_known_icon() {
-    use aic_core::face::{card_face, Part};
-    let js = include_str!("../../../../web/card/icons.js");
-    let icons: Vec<String> = ["RESOURCES", "TOKENS", "PIECES"].iter().flat_map(|n| icon_keys(js, n)).collect();
-    let tags = icon_keys(js, "TAGS");
-    assert!(icons.contains(&"followers".to_string()) && tags.contains(&"science".to_string()), "{icons:?} {tags:?}");
-    // card.js `TEXT` and its number pattern /^[−+]?≤?[\dn]+$/.
-    let known = |w: &str| {
-        ["\u{2192}", "/", ":", "OR", "ALL", "ACT"].contains(&w)
-            || icons.iter().any(|i| i == w)
-            || w.strip_prefix('#').is_some_and(|t| tags.iter().any(|x| x == t))
-            || {
-                let n = w.trim_start_matches(['\u{2212}', '+']).trim_start_matches(['\u{2264}', '\u{2265}']);
-                !n.is_empty() && n.chars().all(|c| c.is_ascii_digit() || c == 'n')
-            }
-    };
-    fn words<'a>(p: &'a Part, out: &mut Vec<&'a str>) {
-        match p {
-            Part::Word(w) => out.push(w),
-            Part::Income { income: v } | Part::Adversary { adversary: v } | Part::Other { other: v } | Part::Yours { yours: v } => {
-                v.iter().for_each(|x| words(x, out))
-            }
-        }
-    }
-    let mut bad = vec![];
-    for c in &content().cards {
-        let f = card_face(c);
-        let mut ws = vec![];
-        f.top.iter().chain(&f.effect).flatten().for_each(|p| words(p, &mut ws));
-        bad.extend(ws.into_iter().filter(|w| !known(w)).map(|w| format!("{}: {w}", c.id)));
-    }
-    assert!(bad.is_empty(), "icon-line words card.js can't draw: {bad:?}");
+fn the_art_samples_name_cards_in_content() {
+    let v: serde_json::Value = serde_json::from_str(include_str!("../../../../tools/card-art/samples.json")).unwrap();
+    let ids: Vec<&str> = content().cards.iter().map(|c| c.id.as_str()).collect();
+    let named: Vec<&str> = v["variants"]
+        .as_object()
+        .expect("samples.json has variants")
+        .values()
+        .chain(v["splay"].as_array().expect("samples.json has a splay"))
+        .map(|x| x.as_str().expect("a card id"))
+        .collect();
+    assert!(named.len() > 3, "{named:?}");
+    let gone: Vec<&&str> = named.iter().filter(|n| !ids.contains(n)).collect();
+    assert!(gone.is_empty(), "samples.json names cards not in content: {gone:?}");
 }

@@ -385,9 +385,9 @@ impl Policy {
         if strat.is_some() && self.mults.is_none() {
             self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale())));
         }
-        let [energy, antimatter, project, cap, idle] = self.inner.plan_rates().unwrap_or_else(|| {
+        let super::eval::PlanRates { energy, antimatter, project, cap, idle } = self.inner.plan_rates().unwrap_or_else(|| {
             let t = value::table();
-            [t.res(Resource::Energy), t.res(Resource::Antimatter), 0.0, f64::MAX, 1.0]
+            super::eval::PlanRates { energy: t.res(Resource::Energy), antimatter: t.res(Resource::Antimatter), project: 0.0, cap: f64::MAX, idle: 1.0 }
         });
         if self.forced.plan_rates && self.rates.is_none() {
             self.rates = Some(Arc::new(value::table().repriced(energy, antimatter)));
@@ -567,7 +567,7 @@ impl Strategic for Policy {
         self.inner.set_strategies(c);
     }
 
-    fn plan_rates(&self) -> Option<[f64; 5]> {
+    fn plan_rates(&self) -> Option<super::eval::PlanRates> {
         self.inner.plan_rates()
     }
     fn strat_scale(&self) -> f64 {
@@ -1059,6 +1059,18 @@ pub(crate) fn is_engine(d: &CardDef) -> bool {
     }) || d.effects.iter().any(|e| matches!(e, Op::ProductionPerTag { .. } | Op::CopyIncome))
 }
 
+/// 119: `aic-sim cards`: every content card with the agents' card tests
+/// ([`is_engine`], [`is_liberate`]), so a script reads them here instead of
+/// copying them (108 copied `is_engine` into Python twice).
+pub fn cards_csv() -> String {
+    let mut out = String::from("id,kind,tier,engine,liberate\n");
+    for d in &aic_core::content::content().cards {
+        let kind = serde_json::to_value(d.kind).ok().and_then(|v| v.as_str().map(str::to_string)).unwrap_or_default();
+        out.push_str(&format!("{},{kind},{},{},{}\n", d.id, d.tier, is_engine(d) as u8, is_liberate(d) as u8));
+    }
+    out
+}
+
 /// A liberate card (080): one that liberates a corrupted city when played or
 /// by its Action (Great Liberation's cleanse of cities too).
 pub(crate) fn is_liberate(d: &CardDef) -> bool {
@@ -1454,6 +1466,18 @@ mod tests {
     fn forced(name: &str) -> Policy {
         let f = Forced::read(|k| f64::from(k == name));
         Policy::new(Box::new(crate::agents::tests::First), f)
+    }
+
+    /// 119: `aic-sim cards` lists every content card once, with the agents' own tests.
+    #[test]
+    fn the_cards_listing_carries_the_engine_test() {
+        let csv = cards_csv();
+        let rows: Vec<&str> = csv.lines().skip(1).collect();
+        let all = &aic_core::content::content().cards;
+        assert_eq!(rows.len(), all.len());
+        let engines = rows.iter().filter(|r| r.split(',').nth(3) == Some("1")).count();
+        assert_eq!(engines, all.iter().filter(|d| is_engine(d)).count());
+        assert!(engines > 0 && rows.iter().all(|r| r.split(',').count() == 5), "{csv}");
     }
 
     /// 082: the strategies are chosen at the round-1 keep from each seat's board's

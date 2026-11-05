@@ -144,18 +144,19 @@ the judge off the value table.
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
   an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load (r45: 1.2-2 games/s).
 - **A before/after read is paired** (Matt, 093): run the old binary, with its configs from `git archive <main> configs
-  | tar -x`, on the same seeds. Build and copy the old binary before the first edit (096 did, at a minute), or build
+  | tar -x`, on the same seeds. Build and copy the old binary before the first edit, or build
   it from a `git archive` with its own `CARGO_TARGET_DIR`. Run it from its own folder, with the spec copied there:
   specs and their configs resolve against the working directory. A counter the read needs that the old binary
-  lacks: patch in only the tally, build that as the old binary (098's `board.city_energy_aligned`). The quickest
+  lacks: patch in only the tally, build that as the old binary. The quickest
   check that the new code is play-neutral: the new binary with every content change reverted by overlay should
   reproduce the old numbers exactly (105: 34 overlays, same games). A prompt's "greedy" is the `greedy` agent; the
   house's "greedy at d0" is the `engine` spec.
 - **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
   first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
-  `corps.<name>.project.<path>`) and need no build; a rule or map what-if does.
+  `corps.<name>.project.<path>`) and need no build (the old binary with the new numbers by overlay is a
+  content change's numbers-only arm, 117); a rule or map what-if does.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run with `SPEC --games 1 --out
-  out/preflight` (its own `--out`, so no stream is moved aside): a crash, bad override or dead agent shows in minutes.
+  out/preflight`: a crash, bad override or dead agent shows in minutes.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and the other read scripts in
   [scripts.md](scripts.md). Credits a seat left at game end are `margin.unspent[seat][0]` in `games.jsonl` (117's
   `experiments/results/117_big_cards_and_income/read.py pair OLD NEW` pairs them). **A won game ends inside a round,

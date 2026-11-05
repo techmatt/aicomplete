@@ -92,9 +92,6 @@ pub(crate) const PART_ROWS: &[&str] =
 
 const SOURCE: &str = include_str!("../../../../configs/agents/values.json");
 
-/// 102 (D26): whether a troop removal is valued at what it removes in play.
-const TROOPS_EXPECTED: bool = true;
-
 /// The table, parsed once.
 pub fn table() -> &'static Table {
     static T: OnceLock<Table> = OnceLock::new();
@@ -176,9 +173,6 @@ impl Table {
     /// table's `troops_removed` (measured; the effect ledger reads the same
     /// rows); an `n` not measured counts as `n`.
     pub fn troops_removed(&self, n: i64) -> f64 {
-        if !TROOPS_EXPECTED {
-            return n as f64;
-        }
         self.troops_removed.by.get(&n.to_string()).copied().unwrap_or(n as f64)
     }
 

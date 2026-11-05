@@ -10,6 +10,22 @@ use aic_core::Rules;
 use super::table;
 use crate::cli::fail;
 
+/// 119: `docs/agents.md`'s strategies as a player says them, each board's in turn: the one
+/// home of the words is `configs/agents/strategies.json` (`says`).
+pub fn strategies_block() -> String {
+    let mut out = String::new();
+    let mut board = "";
+    for s in &crate::agents::strategy::strategies().strategies {
+        if s.board != board {
+            let name = content().ais.iter().find(|b| b.id == s.board).map_or(s.board.as_str(), |b| b.name.as_str());
+            out.push_str(&format!("{}**The {name}**\n\n", if board.is_empty() { "" } else { "\n" }));
+            board = &s.board;
+        }
+        out.push_str(&format!("- *{}.* {}\n", s.name, s.says));
+    }
+    out
+}
+
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
 pub const HOUSE_TERMS: [(&str, &str); 14] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),

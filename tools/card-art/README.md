@@ -113,6 +113,11 @@ browser; `npm ci` first):
   serves a scene id from the newest `scenes/b<n>/` that has it. Three ids (`armored_conduit_trench`,
   `grant_check_racks`, `data_license_handover`) were respelled by copying the drawn files to the
   new name; the old files stay for the old pickers.
+- **Hand-laid JSON:** `scenes.json` is one scene a line, which `json.dump` destroys: edit it through
+  `scenes_io.py` (`load`, `assign(s, card, scene)`, `release(s, card)`, `save`; `python
+  scenes_io.py check` confirms its `dump` gives the file back byte for byte). `docs/card-pricing-notes.json`
+  is keyed by card id in its own order, not sorted: a rewrite is `json.dumps(d, indent=2,
+  ensure_ascii=False) + '\n'` (byte-identical), loaded in order and with no `sort_keys`.
 - **Originals:** `art-originals/` is a git-ignored junction to
   `C:\Code\gdrive-sync\aicomplete\art-originals` (`mklink /J art-originals <that path>`).
   The scripts other than the pickers fall back to that path. The pickers stop without the

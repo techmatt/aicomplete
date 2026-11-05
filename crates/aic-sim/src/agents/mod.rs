@@ -98,7 +98,7 @@ pub trait Strategic: Agent {
     fn set_strategies(&mut self, _c: strategy::Choice) {}
     /// 102 (D23): energy and antimatter in table credits as this agent's
     /// heuristic prices them, for the keep plan (`None`: the value table's).
-    fn plan_rates(&self) -> Option<[f64; 5]> {
+    fn plan_rates(&self) -> Option<eval::PlanRates> {
         None
     }
     /// 116: the heuristic's `strat_scale`, for the keep plan's multipliers.

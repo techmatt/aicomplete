@@ -69,7 +69,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback within 2
   rounds** (108): give (credits, insight to play and keep, other costs) less the when-built gain and the card's own
   first fire, over a round's yield at that rate, is 2 or less for every engine building
-  (`experiments/results/108_engines_worth_playing/payback.py`). **Engines pay up front** (108): the when-built gain is
+  (`scripts/cards/payback.py`). **Engines pay up front** (108): the when-built gain is
   about two fires, in cards (draw 3, 4 on Foundation Model Campus and Vertical Monopoly) where the fire pays credits, since a credit gain on a
   credit cost would be a circular payment (guideline 5). In a game the
   agents read a one-tag trigger at the seat's own share of the tag's cards (107, `rates.own_mix`), and a threshold

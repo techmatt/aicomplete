@@ -15,7 +15,7 @@ Current:
   too, gate key or not; report.md's agent pairs read the other way, check minus reference. `--preset tiers` is cards offered, kept and played per game by tier: run it on the
   first screen of a card rework, since agents draft tier 2 about three picks in four
   ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
-  `scripts/screens.py` holds what it shares with the kept scripts below, and is the way to read a run from Python: `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`), read under its pre-086 or pre-026 name in older runs.
+  `scripts/screens.py` holds what it shares with the kept scripts below, and is the way to read a run from Python: `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`), read under its former name (`RENAMED`, chips as hardware before 026) in older runs.
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by source type, paid abroad or by ambassador
   alone, sources made, and the typed counters and capstones played: who counters what, from `games.jsonl`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
@@ -68,6 +68,8 @@ Current:
   repricing after a value change. Its Python mirror of `agents/value.rs` must change with it (the
   fast-lane `effect_ledger_mirrors_the_table` checks the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`values.json` `troops_removed`, which
   value.rs reads too, from the engine's `cards.troops_removed.<N>` / `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
+- `cards/payback.py [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its price at a
+  committed seat's fire rates (108, card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older deck's column.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
   the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
   `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on
@@ -118,6 +120,7 @@ Current:
   for it, and name the agents a change touched). A `speed.py check --update` plus the plain check after it is about
   4 min more. Bad arguments stop it before anything runs: each root is
   an `.exe` or a directory holding `aic-sim.exe` and the `configs/` it plays (a copied binary needs them beside it).
+  `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old content.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE,

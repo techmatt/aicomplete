@@ -168,9 +168,12 @@ fn a_cyber_threat_reads_botnets_and_corrupted_stations() {
     assert!(threats::sources(&w, &g, 0, ThreatSource::Cyber).contains(&station));
 }
 
+/// 119: Autonomous Defense Grid's standing counter pinned to r46's 5 (cyber).
+const GRID: &str = r#"cards.autonomous_defense_grid.passives=[{"op":"auto_counter","source":"cyber","amount":5}]"#;
+
 #[test]
 fn an_auto_counter_works_its_home_country() {
-    let (rules, mut g) = threat_lab();
+    let (rules, mut g) = threat_lab_with(&[GRID]);
     let w = rules.world();
     // Two cyber threats printing 7 credits.
     deal(&mut g, "station_seizure", 0);
@@ -188,7 +191,7 @@ fn an_auto_counter_works_its_home_country() {
 /// holding its sources until execute.
 #[test]
 fn a_threat_an_auto_counter_pays_in_full_is_countered() {
-    let (rules, mut g) = threat_lab();
+    let (rules, mut g) = threat_lab_with(&[GRID]);
     let w = rules.world();
     deal(&mut g, "blackout", 0);
     Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());

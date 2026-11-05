@@ -275,9 +275,7 @@ impl Module for Board {
                 cx.tally(g, &KeyBuf::new("board.std.").text(act.name()), 1);
                 cx.tally(g, "board.std_actions", 1);
                 // 105: a removal here fires the seat's fight triggers.
-                let before = cards::fight_watch(&w, g, s);
-                std_resolve(g, cx, s, act, &targets)?;
-                cards::fight_fire(g, cx, s, before)
+                cards::fighting(g, cx, s, |g, cx| std_resolve(g, cx, s, act, &targets))
             }
             Action::Convert { seat, country } => {
                 let (s, c) = (*seat as usize, *country as usize);
@@ -361,9 +359,7 @@ fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
         cx.set_key(g, &converter_round(c, s), g.round as i64);
     }
     cx.tally(g, &format!("board.converter.{c}"), 1);
-    let before = cards::fight_watch(&w, g, s);
-    effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s))?;
-    cards::fight_fire(g, cx, s, before)
+    cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s)))
 }
 
 /// The round-end cleanup: flags count down, then the end-of-round tallies.
