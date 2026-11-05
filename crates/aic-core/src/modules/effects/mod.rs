@@ -61,7 +61,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             cx.add_resource(g, seat, *resource, n);
         }
         Op::ChoosePlayer => {
-            let others: Vec<usize> = (0..g.seats.len()).filter(|&s| s != seat).collect();
+            // 111 (Matt's ruling 7): in a 1-player game, "another player" means you.
+            let others: Vec<usize> = (0..g.seats.len()).filter(|&s| s != seat || g.seats.len() == 1).collect();
             let opts = others.iter().map(|&s| seat_opt(s)).collect();
             let prompt = || format!("Seat {seat}: which other player?");
             ctx.other = cx.choose(seat, prompt, opts)?.map(|i| others[i]);
@@ -87,8 +88,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::DamageCountry { ambassadors, troops } => removal::damage_country(g, cx, seat, *ambassadors, *troops)?,
         Op::DestroyAll => removal::destroy_all(g, cx, seat)?,
         Op::RemoveBotnet => removal::remove_botnet(g, cx, seat)?,
-        Op::RemoveAmbassadorsCountry { unity_per, max } => {
-            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max)?
+        Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
+            removal::remove_ambassadors_country(g, cx, seat, *unity_per, *max, *reach)?
         }
         Op::BuildFactory => resources::build_factory(g, cx, seat)?,
         Op::Cleanse { amount, one_country, cities, only } => {
@@ -180,7 +181,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let n = cards::tags(&w, g, seat, *tag) / (*per).max(1);
             cx.add_resource(g, seat, *resource, n);
         }
-        Op::RemoveTroops { count } => removal::remove_troops(g, cx, seat, *count)?,
+        Op::RemoveTroops { count, reach } => removal::remove_troops(g, cx, seat, *count, *reach)?,
         Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
         Op::Production { resource, amount } => {

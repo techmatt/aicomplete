@@ -23,7 +23,7 @@ pub const HOUSE_TERMS: [(&str, &str); 14] = [
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
-    ("Draw", "from the tier-1 deck, with no keep to pay"),
+    ("Draw", "from the tier-1 deck, never its discards, with no keep to pay"),
     ("On your cards", "on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
 ];
@@ -484,7 +484,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".to_string(),
         ],
         [
-            "Harden a facility (a card grants it: Hardened Bunker Complex)".to_string(),
+            "Harden a facility (a card prints it: Faraday Yard)".to_string(),
             "the chips the card prints, per token".to_string(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike".to_string(),
         ],
@@ -548,7 +548,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Unity".to_string(),
-            "cards (Peace Dividend, Planetary Referendum, Martial Cordon), AI boards, Unity cards".to_string(),
+            "cards (Peace Conference, Coalition Charter, Open Assembly), AI boards, Unity cards".to_string(),
             "card text".to_string(),
         ],
         [

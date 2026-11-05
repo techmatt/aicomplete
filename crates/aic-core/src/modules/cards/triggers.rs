@@ -84,6 +84,9 @@ fn carries(d: &CardDef, tag: Option<Tag>) -> bool {
 /// seat's play triggers fire, seat by seat.
 pub fn on_play(g: &mut GameState, cx: &mut Cx, player: usize, d: &CardDef) -> Res {
     let w = cx.world;
+    // 111 (Matt's ruling 7): in a 1-player game "another player" means you, so a
+    // teammate trigger fires on your own plays (a shared gain lands once).
+    let solo = g.seats.len() == 1;
     let plays = |e: &Event| matches!(e, Event::Play { .. } | Event::PlayTag { .. } | Event::TeamPlay { .. } | Event::PlayCost { .. });
     for owner in 0..g.seats.len() {
         // The walk alone: most seats hold no play trigger (a play is a hot path).
@@ -95,7 +98,7 @@ pub fn on_play(g: &mut GameState, cx: &mut Cx, player: usize, d: &CardDef) -> Re
             let times = match on {
                 Event::Play { tag } if mine => carries(d, tag) as i64,
                 Event::PlayTag { tag } if mine => d.tags.iter().filter(|t| tag.is_none_or(|x| **t == x)).count() as i64,
-                Event::TeamPlay { tag, .. } if !mine => carries(d, tag) as i64,
+                Event::TeamPlay { tag, .. } if !mine || solo => carries(d, tag) as i64,
                 Event::PlayCost { at } if mine => (d.cost >= at) as i64,
                 _ => 0,
             };
@@ -103,7 +106,7 @@ pub fn on_play(g: &mut GameState, cx: &mut Cx, player: usize, d: &CardDef) -> Re
                 continue;
             }
             fire(g, cx, owner, card, then, times)?;
-            if let Event::TeamPlay { both: true, .. } = on {
+            if let (Event::TeamPlay { both: true, .. }, false) = (on, solo) {
                 // Content::check: gains only, so the player's share asks nothing.
                 for _ in 0..times {
                     effects::run(g, cx, then, &mut effects::Ctx::seat(player))?;

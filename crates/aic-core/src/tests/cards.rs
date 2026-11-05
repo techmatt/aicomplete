@@ -366,7 +366,7 @@ fn remove_troops_takes_up_to_its_number_in_one_country() {
     for &h in &hexes {
         put(&mut g, h, TROOP, 1);
     }
-    run_ops(&rules, &mut g, &[Op::RemoveTroops { count: 6 }]);
+    run_ops(&rules, &mut g, &[Op::RemoveTroops { count: 6, reach: false }]);
     assert_eq!(total(&g, TROOP), 0, "3 troops, all of them: nothing to ask");
 }
 
@@ -386,15 +386,19 @@ fn gain_per_tag_counts_the_tag_on_your_cards() {
     assert_eq!(g.resource(0, Resource::Energy), energy + 3);
 }
 
-/// 099: the energy gift Actions need another player (at one country they took
-/// the energy and gave nothing), and a draw needs a tier-1 card to draw.
+/// 099: a draw needs a tier-1 card to draw. 111: a gift always lands: alone, on
+/// you (at r39 the energy gift Actions took the energy at one country and gave nothing).
 #[test]
-fn a_gift_needs_another_player_and_a_draw_a_card() {
+fn a_gift_lands_alone_and_a_draw_needs_a_card() {
     let gift = [Op::ChoosePlayer, Op::OtherGain { resource: Resource::Chips, amount: 5 }];
     let (rules, g) = lab_actions();
     assert!(effects::feasible(&rules.world(), &g, 0, &gift));
-    let (rules, g) = lab_actions_with(&["countries=1"]);
-    assert!(!effects::feasible(&rules.world(), &g, 0, &gift), "no one to give to");
+    // 111 (Matt's ruling 7): in a 1-player game "another player" means you.
+    let (rules, mut g) = lab_actions_with(&["countries=1"]);
+    assert!(effects::feasible(&rules.world(), &g, 0, &gift), "alone, the gift is yours");
+    let before = g.resource(0, Resource::Chips);
+    run_ops(&rules, &mut g, &gift);
+    assert_eq!(g.resource(0, Resource::Chips), before + 5);
     let (rules, mut g) = lab_actions();
     let w = rules.world();
     let draw = [Op::Draw { count: 2 }];
@@ -404,4 +408,31 @@ fn a_gift_needs_another_player_and_a_draw_a_card() {
     assert!(!effects::feasible(&w, &g, 0, &draw), "both tier-1 piles empty");
     let draw_and_more = [Op::Draw { count: 2 }, Op::Gain { resource: Resource::Credits, amount: 1 }];
     assert!(effects::feasible(&w, &g, 0, &draw_and_more), "a card that also gains still plays");
+}
+
+/// 111: an event is discarded after it resolves, and a draw never reshuffles the
+/// discards (only the draft does). With either, Breakthrough Leak played on a
+/// thin deck drew itself, or Capital Injection, back: with Credential Harvest
+/// and sells it looped to the 5000-action cap (109 at r43; 2308 plays at r44's
+/// first read).
+#[test]
+fn a_draw_event_cannot_draw_itself_back() {
+    let (rules, mut g) = lab_actions_with(&["cards.breakthrough_leak.needs=[]", "cards.breakthrough_leak.cost=0"]);
+    for c in ["breakthrough_leak", "spoofed_credentials", "materials_hedge_desk"] {
+        out_of_decks(&mut g, c);
+    }
+    set_pile(&mut g, "cards.deck.1", &["materials_hedge_desk"]);
+    set_pile(&mut g, "cards.discard.1", &["spoofed_credentials"]);
+    set_pile(&mut g, "cards.hand.1", &["breakthrough_leak"]);
+    fund(&mut g, 1);
+    rules
+        .apply_mut(&mut g, &Action::Play { seat: 1, card: "breakthrough_leak".into() }, None)
+        .unwrap();
+    let names = |g: &GameState, p: &str| -> Vec<String> { g.pile(p).iter().map(|c| c.as_str().to_string()).collect() };
+    assert_eq!(names(&g, "cards.hand.1"), vec!["materials_hedge_desk"], "the deck's one card, no reshuffle");
+    assert_eq!(names(&g, "cards.discard.1"), vec!["breakthrough_leak", "spoofed_credentials"], "then it went to the discard");
+    assert!(g.pile("cards.deck.1").is_empty() && g.pile("cards.resolving.1").is_empty());
+    // With the deck empty a draw has nothing to take, so a card that only draws is not offered.
+    let w = rules.world();
+    assert!(!effects::feasible(&w, &g, 1, &[Op::Draw { count: 2 }]));
 }

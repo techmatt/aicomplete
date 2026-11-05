@@ -59,49 +59,74 @@ pub(super) fn remove_botnet(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     Ok(())
 }
 
-pub(super) fn remove_ambassadors_country(g: &mut GameState, cx: &mut Cx, seat: usize, unity_per: i64, max: i64) -> Res {
+pub(super) fn remove_ambassadors_country(
+    g: &mut GameState,
+    cx: &mut Cx,
+    seat: usize,
+    unity_per: i64,
+    max: i64,
+    reach: bool,
+) -> Res {
     let w = cx.world;
-    let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
-    let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = || format!("Seat {seat}: remove adversary ambassadors in which country?");
-    if let Some(i) = cx.choose(seat, prompt, opts)? {
-        let removed = if max > 0 {
-            up_to_in_country(g, cx, seat, cs[i], max, ADV_AMBASSADOR)?
+    let removed = if reach {
+        // 111 (Matt's ruling 3): in reach, across countries; no country to name.
+        let area = reach_hexes(&w, g, seat);
+        up_to_in(g, cx, seat, &area, max, ADV_AMBASSADOR)?
+    } else {
+        let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
+        let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
+        let prompt = || format!("Seat {seat}: remove adversary ambassadors in which country?");
+        let Some(i) = cx.choose(seat, prompt, opts)? else {
+            return Ok(());
+        };
+        if max > 0 {
+            up_to_in(g, cx, seat, &w.map.countries[cs[i]].hexes, max, ADV_AMBASSADOR)?
         } else {
             adversary::remove_all_in_country(g, cx, cs[i])
-        };
-        if unity_per > 0 {
-            alignment::sway(g, cx, Side::Unity, removed / unity_per);
         }
+    };
+    if unity_per > 0 {
+        alignment::sway(g, cx, Side::Unity, removed / unity_per);
     }
     Ok(())
 }
 
-/// 076 (ruling 6): up to `count` adversary troops in one country, any country.
-pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
+/// 076 (ruling 6): up to `count` adversary troops in one country, any country;
+/// with `reach` (111, ruling 3), in reach instead.
+pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, reach: bool) -> Res {
     let w = cx.world;
-    let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, 0, 1));
-    let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-    let prompt = || format!("Seat {seat}: remove adversary troops in which country?");
-    if let Some(i) = cx.choose(seat, prompt, opts)? {
-        let removed = up_to_in_country(g, cx, seat, cs[i], count, TROOP)?;
-        // 093: what "up to N" removes in play, for the effect ledger.
-        cx.tally(g, &format!("cards.remove_troops.{count}"), 1);
-        cx.tally(g, &format!("cards.troops_removed.{count}"), removed);
-    }
+    let removed = if reach {
+        let area = reach_hexes(&w, g, seat);
+        up_to_in(g, cx, seat, &area, count, TROOP)?
+    } else {
+        let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, 0, 1));
+        let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
+        let prompt = || format!("Seat {seat}: remove adversary troops in which country?");
+        let Some(i) = cx.choose(seat, prompt, opts)? else {
+            return Ok(());
+        };
+        up_to_in(g, cx, seat, &w.map.countries[cs[i]].hexes, count, TROOP)?
+    };
+    // 093: what "up to N" removes in play, for the effect ledger.
+    cx.tally(g, &format!("cards.remove_troops.{count}"), 1);
+    cx.tally(g, &format!("cards.troops_removed.{count}"), removed);
     Ok(())
 }
 
-/// Removes up to `max` pieces of `kind` in country `c`, hex by hex: all of them
-/// with no question when they are `max` or fewer, else the player picks each
-/// hex, which gives up as many as it holds and the card has left.
-fn up_to_in_country(g: &mut GameState, cx: &mut Cx, seat: usize, c: usize, max: i64, kind: &'static str) -> Res<i64> {
+/// The hexes in seat `seat`'s reach (111).
+fn reach_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| in_reach(w, g, seat, h)).collect()
+}
+
+/// Removes up to `max` pieces of `kind` in the hexes of `area`, hex by hex: all
+/// of them with no question when they are `max` or fewer, else the player picks
+/// each hex, which gives up as many as it holds and the card has left.
+fn up_to_in(g: &mut GameState, cx: &mut Cx, seat: usize, area: &[usize], max: i64, kind: &'static str) -> Res<i64> {
     let w = cx.world;
     let mut left = max;
     let mut removed = 0;
     while left > 0 {
-        let held: Vec<usize> = w.map.countries[c]
-            .hexes
+        let held: Vec<usize> = area
             .iter()
             .copied()
             .filter(|&h| if kind == TROOP { adversary::can_damage(&w, g, h, 0, 1) } else { g.tokens(h, kind) > 0 })
@@ -200,7 +225,7 @@ pub(super) fn liberate_city(
         }
         if troops > 0 {
             let c = w.map.hexes[h].country as usize;
-            let n = up_to_in_country(g, cx, seat, c, troops, TROOP)?;
+            let n = up_to_in(g, cx, seat, &w.map.countries[c].hexes, troops, TROOP)?;
             cx.tally(g, "board.liberated_troops", n);
         }
         if botnet {

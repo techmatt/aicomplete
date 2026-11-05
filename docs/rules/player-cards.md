@@ -5,7 +5,7 @@
 The cards config lists which cards are in the game (baseline: all of them).
 
 - **Decks:** a tier-1 and a tier-2 deck of the listed cards (one copy of each), shuffled at setup; discards reshuffle
-  into a deck when it runs out. When both decks and their discards are empty (every card is in a hand or
+  into a deck when the draft finds it empty, never for a draw (r44: a draw from an empty deck gets nothing). When both decks and their discards are empty (every card is in a hand or
   in play), the draft hands are what has been dealt.
 - **The opening (round 1).** Each player is dealt `opening_deal` tier-1 cards and keeps `opening_free` free; each
   further tier-1 card kept costs `opening_keep_credits` credits. Each is also dealt `opening_deal_tier2` tier-2 cards
@@ -42,14 +42,14 @@ The cards config lists which cards are in the game (baseline: all of them).
   one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
   income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), or flat on a strong tier-2 one. **An engine
   pays up front (108, Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
-  when built, worth about two of its fires (Terraforming Mars' production plus a matching stock): draw 3 cards (4 on
-  Foundation Model Campus and Vertical Monopoly), 2 energy on the Power ones, 2 troops removed on the Security ones, or its first tokens here
+  when built, worth about two of its fires (Terraforming Mars' production plus a matching stock): draw 2-3 cards (4 on
+  Foundation Model Campus, Vertical Monopoly, Capital Projects Office and Orbital Embassy), 2 energy on the Power ones, or its first tokens here
   (Telemetry Archive, Retained Earnings, Open Assembly, Intrusion Lab, Conglomerate HQ), so its own play fills the
   first threshold. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger (when you play a card of the tag) and a tier-2 one that counts every tag on the played card, and its
   engines' payoffs: fight triggers, teammate triggers, discounts, rebates, thresholds, copy and reuse
-  ([card-grammar.md](card-grammar.md), *The engine wording*). Industry and Cyber keep a standing automatic
-  counter (Market Stabilization Board, Autonomous Defense Grid); Diplomacy's and Security's were cut. No capstone prints a shield or a delay. Reasoning and
+  ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber keeps a standing automatic counter
+  (Autonomous Defense Grid); the others' were cut (Industry's at r44). No capstone prints a shield or a delay. Reasoning and
   prices: [card-pricing.md](../card-pricing.md).
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
@@ -57,17 +57,18 @@ The cards config lists which cards are in the game (baseline: all of them).
 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
-  | The Nuclear Option | antimatter | event | sway 2 toward Discord |
-  | Power to the People | power + chips | building (over Power, needs 3) | income: 1 credit per Power tag on your cards |
-  | Hostile Buyout | Diplomacy, credits | event | your cube goes on the city, and you gain 1 ambassador |
-  | Forensic Audit | research cubes | event | none |
+  | The Nuclear Option | antimatter | event | sway 1 toward Discord |
+  | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
+  | Hostile Buyout | Diplomacy, credits | event | your cube goes on the city, and you gain 3 ambassadors |
+  | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
-  | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 3 adversary troops in the city's country |
+  | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 2 adversary troops in the city's country |
   | Popular Uprising | Followers | building (over Diplomacy, arrives with 4 Followers) | Action: add 2 Followers here, or spend 6 to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), about 18-42 credits, well under the fallback's ~100 and
-  out of reach before mid-game. Great Liberation (Diplomacy, three cleanses in one country, cities included)
+  a corrupted city costs in play; the extra at its own row), 14-36 credits, well under the fallback's ~100 and
+  out of reach before mid-game. They read 1.2-1.5 at Matt's unit anchors, under the tier-2 band, on purpose: the deck's
+  late credit sinks (r44, Matt's default, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising (106) liberates every third round at

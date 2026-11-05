@@ -71,9 +71,9 @@ resolved (or been discarded), the next row is dealt.
   3-player numbers; a per-player cost keeps the timing at 2 and 4 players). The table
   prints each cost.
 - **Counterplay:** a player ambassador on a botnet stops its compute and is not used up;
-  Cyber's hacks drain compute from one project (Zero-Click Breach, Threat Hunt, ...) or
-  from every visible one (Adaptive Malware), or discard one with its compute (Killswitch
-  Directive, Singularity Exploit); the drain standard project ([economy.md](economy.md)) does it for credits.
+  Cyber's hacks drain 3-6 compute from one project (Threat Hunt, Logic Bomb, Bug Bounty Board, ...) or
+  discard one with its compute (Killswitch Directive, Singularity Exploit); the drain standard project
+  ([economy.md](economy.md)) does it for credits. No card drains every project (r44: compute sits on the cheapest).
 
 <!-- generated: projects -->
 | Project | Stage | Compute per player | Resolves | Text |

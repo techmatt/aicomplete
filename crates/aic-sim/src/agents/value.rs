@@ -408,12 +408,12 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DamageCountry { ambassadors, troops } => Worth::now(row("damage_country") * damage(t, *ambassadors, *troops)),
         Op::DestroyAll => Worth::now(row("destroy_all")),
         Op::RemoveBotnet => Worth::now(row("remove_botnet")),
-        Op::RemoveAmbassadorsCountry { unity_per, max } => {
+        Op::RemoveAmbassadorsCountry { unity_per, max, .. } => {
             let n = if *max == 0 { t.rate("token_pile") } else { *max as f64 };
             let sway = if *unity_per > 0 { (n / *unity_per as f64).floor() * t.rate("sway") } else { 0.0 };
             Worth::now(row("remove_ambassadors_country") * n + sway)
         }
-        Op::RemoveTroops { count } => Worth::now(row("remove_troops") * t.troops_removed(*count)),
+        Op::RemoveTroops { count, .. } => Worth::now(row("remove_troops") * t.troops_removed(*count)),
         Op::BuildFactory => Worth::now(row("build_factory")),
         Op::Cleanse { amount, one_country, cities, only } => {
             let share = if *one_country { 0.8 } else { 1.0 };

@@ -1,98 +1,96 @@
 effect,slot,status,cards,fitted,beta,beta_se,reasoned,min,min_card,max,max_card,spread,max_over_min,all_cards
-add_tokens agents [play],play,fitted,4,3.18,1.59,0.54,2.0,1.54,deep_state_ledger,1.64,recruit_operatives,0.1,1.06,agency_directorate deep_state_ledger intrusion_lab recruit_operatives
-add_tokens capital [play],play,fitted,5,2.72,0.91,0.23,3.0,1.72,conglomerate_headquarters,3.02,retained_earnings,1.3,1.76,conglomerate_headquarters materials_hedge_desk payroll_automation retained_earnings vendor_financing
+"add_tokens agents [action, unused branch]","action, unused branch",no value,0,,,,,,,,,,,safehouse_network
+add_tokens agents [play],play,fitted,5,4.02,2.01,0.83,2.0,0.91,deep_state_ledger,2.53,intrusion_lab,1.62,2.79,agency_directorate deep_state_ledger intrusion_lab recruit_operatives safehouse_network
+add_tokens capital [play],play,fitted,4,2.24,0.75,0.59,3.0,1.37,payroll_automation,3.99,retained_earnings,2.62,2.91,conglomerate_headquarters materials_hedge_desk payroll_automation retained_earnings
 "add_tokens datasets [action, unused branch]","action, unused branch",no value,0,,,,,,,,,,,synthetic_data_forge
-add_tokens datasets [play],play,unidentified,2,,,,3.0,1.89,dataset_scraper,2.12,telemetry_archive,0.23,1.12,dataset_scraper telemetry_archive
+add_tokens datasets [play],play,fitted,3,6.19,2.06,0.86,3.0,1.44,dataset_scraper,3.82,telemetry_archive,2.38,2.65,dataset_scraper synthetic_data_forge telemetry_archive
 "add_tokens followers [action, unused branch]","action, unused branch",no value,0,,,,,,,,,,,popular_uprising
-add_tokens followers [play],play,fitted,3,3.49,1.4,0.4,2.5,1.33,manifesto_leak,2.69,popular_uprising,1.36,2.02,manifesto_leak open_assembly popular_uprising
-auto_counter [passive],passive,unidentified,2,,,,3.75,2.18,autonomous_defense_grid,2.18,market_stabilization_board,0.0,1.0,autonomous_defense_grid market_stabilization_board
+add_tokens followers [play],play,fitted,3,5.83,2.33,0.59,2.5,1.38,manifesto_leak,3.06,open_assembly,1.68,2.22,manifesto_leak open_assembly popular_uprising
+auto_counter [passive],passive,unidentified,2,,,,3.75,1.33,autonomous_defense_grid,2.18,market_stabilization_board,0.85,1.64,autonomous_defense_grid market_stabilization_board
 build_factory [play],play,unidentified,1,,,,4.0,2.42,prefab_plant_kit,2.42,prefab_plant_kit,0.0,1.0,prefab_plant_kit
-card_discount credits [passive],passive,fitted,4,2.55,1.42,0.44,1.8,1.1,grad_student_pool,1.19,darknet_exchange,0.08,1.07,darknet_exchange grad_student_pool protocol_office standardized_tooling
-card_discount insight [passive],passive,unidentified,1,,,,2.34,1.13,hyperscale_botnet,1.13,hyperscale_botnet,0.0,1.0,hyperscale_botnet
+card_discount credits [passive],passive,fitted,4,1.99,1.11,0.35,1.8,1.35,darknet_exchange,1.35,standardized_tooling,0.0,1.0,darknet_exchange grad_student_pool protocol_office standardized_tooling
 cash_out credits capital [play],play,unidentified,1,,,,3.0,1.9,liquidity_event,1.9,liquidity_event,0.0,1.0,liquidity_event
-cash_out energy capital [play],play,unidentified,1,,,,13.5,5.92,collateralized_grid,5.92,collateralized_grid,0.0,1.0,collateralized_grid
-cleanse cities [play],play,unidentified,1,,,,36.0,11.0,great_liberation,11.0,great_liberation,0.0,1.0,great_liberation
-cleanse factory [play],play,unidentified,1,,,,6.0,2.78,back_channel_talks,2.78,back_channel_talks,0.0,1.0,back_channel_talks
-cleanse station [play],play,unidentified,1,,,,15.0,11.36,station_prefab_order,11.36,station_prefab_order,0.0,1.0,station_prefab_order
-clear_city [play],play,unidentified,2,,,,2.0,1.21,amnesty_decree,1.21,liberation_accords,0.0,1.0,amnesty_decree liberation_accords
-clear_markers [play],play,fitted,3,4.88,1.16,0.34,4.2,2.81,open_weights_release,3.17,shadow_broker_feed,0.36,1.13,field_sensor_grid open_weights_release shadow_broker_feed
-consolidate [play],play,unidentified,1,,,,1.0,0.66,summit_caucus,0.66,summit_caucus,0.0,1.0,summit_caucus
+cash_out energy capital [play],play,unidentified,1,,,,13.5,5.11,collateralized_grid,5.11,collateralized_grid,0.0,1.0,collateralized_grid
+cleanse cities [play],play,unidentified,1,,,,36.0,14.67,great_liberation,14.67,great_liberation,0.0,1.0,great_liberation
+cleanse factory [play],play,unidentified,1,,,,6.0,3.0,back_channel_talks,3.0,back_channel_talks,0.0,1.0,back_channel_talks
+cleanse station [play],play,unidentified,1,,,,15.0,7.73,station_prefab_order,7.73,station_prefab_order,0.0,1.0,station_prefab_order
+clear_city [play],play,unidentified,1,,,,2.0,1.59,amnesty_decree,1.59,amnesty_decree,0.0,1.0,amnesty_decree
+clear_markers [play],play,fitted,3,1.87,0.45,0.31,4.2,1.28,open_weights_release,1.53,shadow_broker_feed,0.25,1.19,field_sensor_grid open_weights_release shadow_broker_feed
+consolidate [play],play,unidentified,1,,,,1.0,0.5,summit_caucus,0.5,summit_caucus,0.0,1.0,summit_caucus
 cordon [play],play,unidentified,1,,,,5.0,3.21,hardpoint_lockdown,3.21,hardpoint_lockdown,0.0,1.0,hardpoint_lockdown
-damage troops [play],play,fitted,5,8.88,0.81,0.24,11.0,1.83,ceasefire_monitors,9.17,bounty_board,7.33,5.0,bounty_board ceasefire_monitors force_protection_order logic_bomb peacekeeper_rotation
-delay_threat [play],play,unidentified,2,,,,2.5,1.52,predictive_modeling,2.03,threat_forecast_engine,0.51,1.34,predictive_modeling threat_forecast_engine
-discard_project [play],play,unidentified,2,,,,8.0,4.9,killswitch_directive,6.1,singularity_exploit,1.2,1.24,killswitch_directive singularity_exploit
-drain_all [play],play,unidentified,2,,,,1.65,0.99,adaptive_malware,1.01,killswitch_directive,0.02,1.02,adaptive_malware killswitch_directive
-drain_project [play],play,fitted,6,1.09,0.99,0.26,1.1,0.63,threat_hunt,0.8,zero_knowledge_exploit,0.17,1.27,botnet_takedown logic_bomb shared_exploit_kit threat_hunt zero_click_breach zero_knowledge_exploit
-draw [action],action,fitted,3,8.51,1.22,0.28,7.0,4.61,orbital_observatory_array,4.9,patent_library,0.29,1.06,orbital_observatory_array parts_exchange patent_library
-draw [play],play,fitted,26,1.91,0.48,0.16,4.0,1.4,consulate_tower,3.02,shadow_broker_feed,1.62,2.15,breakthrough_leak capital_projects_office citation_engine command_and_control_grid consulate_tower darknet_exchange data_licensing_deal exploit_broker foundation_model_campus grad_student_pool honeypot_relay hyperscale_botnet interdisciplinary_institute lights_out_assembly orbital_mass_driver protocol_office reconciliation_office recursive_self_improvement red_team_audit security_contractor_hq security_ops_floor shadow_broker_feed shared_compute_grant standardized_tooling vertical_monopoly zero_knowledge_exploit
-gain chips [play],play,unidentified,1,,,,1.5,0.97,joint_fabrication_pact,0.97,joint_fabrication_pact,0.0,1.0,joint_fabrication_pact
-gain credits [action],action,unidentified,1,,,,0.91,0.69,demand_response_grid,0.69,demand_response_grid,0.0,1.0,demand_response_grid
-gain energy [play],play,fitted,5,2.72,0.6,0.3,4.5,1.68,substation_hub,3.57,pumped_hydro_storage,1.89,2.13,dispatch_control_room positron_storage_ring pumped_hydro_storage smart_grid_backbone substation_hub
-gain_ambassadors [play],play,fitted,11,3.78,0.95,0.19,4.0,1.92,fact_check_network,2.97,peace_conference,1.05,1.55,amnesty_decree ceasefire_monitors exodus_corridors fact_check_network liaison_corps liberation_accords mutual_aid_pact orbital_embassy peace_conference summit_caucus trade_delegation
-gain_per_node energy [play],play,unidentified,2,,,,22.5,15.8,grid_census,18.98,beamed_power_constellation,3.18,1.2,beamed_power_constellation grid_census
-gain_per_tag ambassadors [play],play,unidentified,1,,,,12.0,10.62,consular_pouch,10.62,consular_pouch,0.0,1.0,consular_pouch
-gain_per_tag antimatter [play],play,unidentified,1,,,,21.0,14.32,zero_day_auction,14.32,zero_day_auction,0.0,1.0,zero_day_auction
+damage troops [play],play,fitted,3,8.71,0.79,0.23,11.0,1.83,ceasefire_monitors,9.17,bounty_board,7.33,5.0,bounty_board ceasefire_monitors peacekeeper_rotation
+delay_threat [play],play,unidentified,2,,,,2.5,1.25,predictive_modeling,1.45,threat_forecast_engine,0.2,1.16,predictive_modeling threat_forecast_engine
+discard_project [play],play,unidentified,2,,,,8.0,5.14,singularity_exploit,6.25,killswitch_directive,1.11,1.22,killswitch_directive singularity_exploit
+drain_all [play],play,unidentified,1,,,,1.65,0.99,adaptive_malware,0.99,adaptive_malware,0.0,1.0,adaptive_malware
+drain_project [action],action,unidentified,1,,,,1.39,1.7,bug_bounty_board,1.7,bug_bounty_board,0.0,1.0,bug_bounty_board
+drain_project [play],play,fitted,7,1.17,1.06,0.26,1.1,0.33,botnet_takedown,1.01,eviction_worm,0.69,3.11,botnet_takedown eviction_worm logic_bomb shared_exploit_kit threat_hunt zero_click_breach zero_knowledge_exploit
+draw [action],action,fitted,6,6.62,1.22,0.2,5.45,3.8,safehouse_network,6.18,bug_bounty_board,2.38,1.63,bug_bounty_board demand_response_grid orbital_observatory_array parts_exchange patent_library safehouse_network
+draw [play],play,fitted,50,3.58,0.89,0.11,4.0,1.28,zero_day_auction,5.24,agency_field_station,3.96,4.09,agency_field_station breach_and_clear breakthrough_leak capital_projects_office citation_engine command_and_control_grid consulate_tower darknet_exchange data_licensing_deal dataset_scraper envoy_briefings exploit_broker field_sensor_grid force_protection_order forensic_audit foundation_model_campus fusion_research_campus gigafactory_charter grad_student_pool headquarters_raid honeypot_relay hyperscale_botnet interdisciplinary_institute joint_task_force lights_out_assembly logic_bomb materials_hedge_desk moonshot_grant orbital_embassy orbital_mass_driver predictive_modeling preprint_server protocol_office quick_reaction_force reconciliation_office recruit_operatives recursive_self_improvement red_team_audit relay_mast_rollout security_contractor_hq security_ops_floor shadow_broker_feed shared_compute_grant simulation_cluster standardized_tooling supplier_network vertical_monopoly wartime_retooling zero_day_auction zero_knowledge_exploit
+gain antimatter [play],play,unidentified,1,,,,7.0,2.24,zero_day_auction,2.24,zero_day_auction,0.0,1.0,zero_day_auction
+gain chips [play],play,unidentified,1,,,,1.5,1.3,joint_fabrication_pact,1.3,joint_fabrication_pact,0.0,1.0,joint_fabrication_pact
+gain energy [play],play,fitted,4,2.77,0.62,0.28,4.5,2.48,smart_grid_backbone,3.6,dispatch_control_room,1.12,1.45,dispatch_control_room pumped_hydro_storage smart_grid_backbone substation_hub
+gain_ambassadors [play],play,fitted,11,3.13,0.78,0.18,4.0,1.92,fact_check_network,3.18,amnesty_decree,1.26,1.65,amnesty_decree ceasefire_monitors envoy_briefings exodus_corridors fact_check_network liaison_corps liberation_accords mutual_aid_pact peace_conference summit_caucus trade_delegation
+gain_per_node energy [play],play,unidentified,2,,,,22.5,10.3,beamed_power_constellation,13.88,grid_census,3.58,1.35,beamed_power_constellation grid_census
+gain_per_tag ambassadors [play],play,unidentified,1,,,,12.0,7.85,consular_pouch,7.85,consular_pouch,0.0,1.0,consular_pouch
 gain_per_tag chips [play],play,unidentified,1,,,,4.5,3.0,antitrust_action,3.0,antitrust_action,0.0,1.0,antitrust_action
 gain_per_tag credits [play],play,unidentified,1,,,,3.0,2.5,bounty_board,2.5,bounty_board,0.0,1.0,bounty_board
-gain_per_tag energy [play],play,fitted,3,14.89,1.1,0.31,13.5,8.17,prefab_plant_kit,11.5,plant_overdrive,3.33,1.41,capacitor_discharge plant_overdrive prefab_plant_kit
-gain_per_tag insight [play],play,unidentified,2,,,,7.5,5.0,spoofed_credentials,10.0,cryo_compute_burn,5.0,2.0,cryo_compute_burn spoofed_credentials
-gain_per_tokens insight datasets [action],action,unidentified,1,,,,5.25,8.82,synthetic_data_forge,8.82,synthetic_data_forge,0.0,1.0,synthetic_data_forge
-harden [play],play,unidentified,1,,,,1.5,1.09,faraday_yard,1.09,faraday_yard,0.0,1.0,faraday_yard
-income antimatter [passive],passive,unidentified,1,,,,17.5,10.7,positron_storage_ring,10.7,positron_storage_ring,0.0,1.0,positron_storage_ring
+gain_per_tag energy [play],play,fitted,3,11.96,0.89,0.27,13.5,8.0,capacitor_discharge,8.17,prefab_plant_kit,0.17,1.02,capacitor_discharge plant_overdrive prefab_plant_kit
+gain_per_tag insight [play],play,unidentified,2,,,,7.5,6.5,cryo_compute_burn,7.0,spoofed_credentials,0.5,1.08,cryo_compute_burn spoofed_credentials
+gain_per_tokens insight datasets [action],action,unidentified,1,,,,5.25,5.96,synthetic_data_forge,5.96,synthetic_data_forge,0.0,1.0,synthetic_data_forge
+harden [play],play,unidentified,1,,,,1.5,0.64,faraday_yard,0.64,faraday_yard,0.0,1.0,faraday_yard
+income antimatter [passive],passive,unidentified,1,,,,17.5,14.06,positron_storage_ring,14.06,positron_storage_ring,0.0,1.0,positron_storage_ring
 income chips [passive],passive,unidentified,1,,,,3.75,2.08,orbital_mass_driver,2.08,orbital_mass_driver,0.0,1.0,orbital_mass_driver
 income credits [passive],passive,unidentified,1,,,,2.5,1.39,orbital_mass_driver,1.39,orbital_mass_driver,0.0,1.0,orbital_mass_driver
-income insight [passive],passive,unidentified,1,,,,6.25,3.02,hyperscale_botnet,3.02,hyperscale_botnet,0.0,1.0,hyperscale_botnet
-income_per_tag credits [passive],passive,fitted,3,8.88,1.18,0.24,7.5,3.99,vertical_monopoly,5.97,power_to_the_people,1.98,1.5,foundation_model_campus power_to_the_people vertical_monopoly
-jam any [play],play,unidentified,2,,,,1.0,0.62,shared_threat_intel,0.66,red_team_audit,0.03,1.05,red_team_audit shared_threat_intel
-jam typed [action],action,fitted,4,2.35,1.2,0.32,1.96,1.4,sentinel_mesh,1.46,market_watchdog,0.06,1.04,civic_watch garrison_command market_watchdog sentinel_mesh
-jam typed [play],play,fitted,6,0.86,1.23,0.82,0.7,0.34,fact_check_network,0.5,supply_chain_audit,0.17,1.5,antitrust_action fact_check_network force_protection_order supply_chain_audit threat_hunt truth_commission
-liberate [action],action,unidentified,1,,,,19.69,21.17,popular_uprising,21.17,popular_uprising,0.0,1.0,popular_uprising
-liberate [play],play,fitted,3,47.32,1.05,0.1,45.0,34.66,nuclear_option,41.5,forensic_audit,6.84,1.2,forensic_audit nuclear_option power_to_the_people
-liberate align ambassadors [play],play,unidentified,1,,,,54.0,44.5,hostile_buyout,44.5,hostile_buyout,0.0,1.0,hostile_buyout
-liberate botnet [play],play,unidentified,1,,,,52.0,42.5,root_access,42.5,root_access,0.0,1.0,root_access
-liberate troops [play],play,unidentified,1,,,,54.0,44.5,peacekeeping_mission,44.5,peacekeeping_mission,0.0,1.0,peacekeeping_mission
-move_ambassadors [play],play,unidentified,2,,,,1.5,1.02,transmission_corridor,1.05,liaison_corps,0.03,1.03,liaison_corps transmission_corridor
+income insight [passive],passive,unidentified,1,,,,6.25,3.37,hyperscale_botnet,3.37,hyperscale_botnet,0.0,1.0,hyperscale_botnet
+income_per_tag credits [passive],passive,fitted,3,9.48,1.26,0.2,7.5,4.75,vertical_monopoly,5.35,power_to_the_people,0.6,1.13,foundation_model_campus power_to_the_people vertical_monopoly
+jam any [play],play,unidentified,2,,,,1.0,0.44,shared_threat_intel,0.53,red_team_audit,0.09,1.2,red_team_audit shared_threat_intel
+jam typed [action],action,fitted,4,1.42,0.72,0.27,1.96,0.74,sentinel_mesh,0.77,market_watchdog,0.03,1.04,civic_watch garrison_command market_watchdog sentinel_mesh
+jam typed [play],play,fitted,6,0.74,1.06,0.68,0.7,0.3,force_protection_order,0.52,threat_hunt,0.22,1.72,antitrust_action fact_check_network force_protection_order supply_chain_audit threat_hunt truth_commission
+liberate [action],action,unidentified,1,,,,19.69,17.32,popular_uprising,17.32,popular_uprising,0.0,1.0,popular_uprising
+liberate [play],play,fitted,3,41.59,0.92,0.08,45.0,25.79,nuclear_option,32.08,power_to_the_people,6.29,1.24,forensic_audit nuclear_option power_to_the_people
+liberate align ambassadors [play],play,unidentified,1,,,,62.0,38.5,hostile_buyout,38.5,hostile_buyout,0.0,1.0,hostile_buyout
+liberate botnet [play],play,unidentified,1,,,,52.0,34.5,root_access,34.5,root_access,0.0,1.0,root_access
+liberate troops [play],play,unidentified,1,,,,51.0,32.5,peacekeeping_mission,32.5,peacekeeping_mission,0.0,1.0,peacekeeping_mission
+move_ambassadors [play],play,unidentified,2,,,,1.5,0.75,liaison_corps,1.02,transmission_corridor,0.27,1.36,liaison_corps transmission_corridor
 move_one [play],play,unidentified,1,,,,1.5,0.87,peacekeeper_rotation,0.87,peacekeeper_rotation,0.0,1.0,peacekeeper_rotation
-other_gain chips [play],play,unidentified,1,,,,1.12,0.73,joint_fabrication_pact,0.73,joint_fabrication_pact,0.0,1.0,joint_fabrication_pact
-other_gain credits [play],play,fitted,3,0.59,0.78,0.77,0.75,0.39,mutual_aid_pact,0.47,vendor_financing,0.08,1.2,coalition_charter mutual_aid_pact vendor_financing
-other_gain energy [play],play,unidentified,2,,,,3.38,2.22,shared_grid_accord,2.56,interconnector_treaty,0.33,1.15,interconnector_treaty shared_grid_accord
-other_gain insight [play],play,fitted,4,2.19,1.17,0.68,1.88,1.17,shared_threat_intel,1.27,shared_compute_grant,0.11,1.09,open_weights_release shared_compute_grant shared_exploit_kit shared_threat_intel
-peek [play],play,unidentified,1,,,,1.0,0.61,predictive_modeling,0.61,predictive_modeling,0.0,1.0,predictive_modeling
-place_node [play],play,unidentified,2,,,,4.0,2.72,transmission_corridor,2.94,relay_mast_rollout,0.22,1.08,relay_mast_rollout transmission_corridor
-place_node free [play],play,unidentified,2,,,,6.0,3.32,aegis_grid_lockdown,5.06,beamed_power_constellation,1.74,1.53,aegis_grid_lockdown beamed_power_constellation
+other_gain chips [play],play,unidentified,2,,,,1.12,0.61,vendor_financing,0.98,joint_fabrication_pact,0.36,1.59,joint_fabrication_pact vendor_financing
+other_gain energy [play],play,unidentified,2,,,,3.38,1.14,shared_grid_accord,2.17,interconnector_treaty,1.03,1.9,interconnector_treaty shared_grid_accord
+other_gain insight [play],play,fitted,6,1.81,0.97,0.41,1.88,0.52,coalition_charter,1.65,shared_exploit_kit,1.13,3.17,coalition_charter mutual_aid_pact open_weights_release shared_compute_grant shared_exploit_kit shared_threat_intel
+place_node [play],play,unidentified,1,,,,4.0,2.72,transmission_corridor,2.72,transmission_corridor,0.0,1.0,transmission_corridor
+place_node free [play],play,fitted,3,3.73,0.62,0.24,6.0,2.75,beamed_power_constellation,3.32,aegis_grid_lockdown,0.57,1.21,aegis_grid_lockdown beamed_power_constellation relay_mast_rollout
 production chips [play],play,unidentified,2,,,,4.88,2.54,arcology_foundry,4.41,peaker_turbines,1.87,1.74,arcology_foundry peaker_turbines
-production credits [play],play,fitted,15,3.94,0.99,0.09,4.0,1.69,arcology_foundry,3.47,gigafactory_charter,1.78,2.05,arcology_foundry counterinsurgency_campaign cryptojacking_campaign deep_state_ledger dyson_swarm_tranche fusion_startup_stake gigafactory_charter hardened_bunker_complex interconnector_treaty multiyear_defense_budget payroll_automation robotic_foundry supply_chain_audit trade_delegation university_spinout
-production energy [play],play,fitted,10,15.4,1.07,0.14,14.4,7.28,dyson_swarm_tranche,11.88,multiyear_defense_budget,4.6,1.63,baseload_contract continental_supergrid dyson_swarm_tranche faraday_yard fusion_startup_stake hardened_bunker_complex homeland_security_act multiyear_defense_budget peaker_turbines pumped_hydro_storage
-production insight [play],play,unidentified,2,,,,8.12,4.26,recursive_self_improvement,6.9,endowed_research_chair,2.64,1.62,endowed_research_chair recursive_self_improvement
+production credits [play],play,fitted,15,3.31,0.83,0.07,4.0,1.4,dyson_swarm_tranche,3.16,hardened_bunker_complex,1.76,2.25,arcology_foundry counterinsurgency_campaign cryptojacking_campaign dyson_swarm_tranche fusion_startup_stake gigafactory_charter hardened_bunker_complex interconnector_treaty multiyear_defense_budget payroll_automation robotic_foundry supply_chain_audit trade_delegation university_spinout vendor_financing
+production energy [play],play,fitted,12,11.6,0.81,0.1,14.4,3.41,collateralized_grid,11.38,hardened_bunker_complex,7.98,3.34,baseload_contract collateralized_grid continental_supergrid dyson_swarm_tranche faraday_yard fusion_startup_stake hardened_bunker_complex homeland_security_act multiyear_defense_budget peaker_turbines pumped_hydro_storage wartime_retooling
+production insight [play],play,fitted,3,6.3,1.01,0.17,6.25,2.84,deep_state_ledger,6.9,endowed_research_chair,4.07,2.44,deep_state_ledger endowed_research_chair recursive_self_improvement
 production research_cubes [play],play,unidentified,1,,,,12.0,7.38,sample_repository,7.38,sample_repository,0.0,1.0,sample_repository
-production_per_tag credits [play],play,fitted,8,19.28,1.61,0.26,12.0,6.39,homeland_security_act,11.54,research_royalties,5.15,1.81,capacity_market continental_supergrid defense_appropriations economies_of_scale homeland_security_act peace_dividend ransomware_syndicate research_royalties
-production_per_tag energy [play],play,unidentified,1,,,,43.2,46.83,tidal_barrage,46.83,tidal_barrage,0.0,1.0,tidal_barrage
-production_per_tag insight [play],play,unidentified,1,,,,30.0,14.55,neural_mirror,14.55,neural_mirror,0.0,1.0,neural_mirror
-project_cube [play],play,unidentified,1,,,,6.0,1.89,field_grant,1.89,field_grant,0.0,1.0,field_grant
-remove_ambassadors_country [play],play,fitted,3,1.99,0.99,0.24,2.0,1.16,diplomatic_expulsion,1.47,eviction_worm,0.31,1.26,diplomatic_expulsion eviction_worm martial_cordon
-remove_botnet [play],play,unidentified,2,,,,12.0,7.5,botnet_takedown,9.14,singularity_exploit,1.64,1.22,botnet_takedown singularity_exploit
-remove_troops [action],action,unidentified,1,,,,8.2,4.95,interceptor_battery,4.95,interceptor_battery,0.0,1.0,interceptor_battery
-remove_troops [play],play,fitted,7,4.38,1.06,0.18,4.15,2.64,total_containment,3.57,agency_field_station,0.92,1.35,agency_field_station breach_and_clear counterinsurgency_campaign joint_task_force kinetic_interdiction signal_hijack total_containment
-reuse [action],action,unidentified,2,,,,14.0,10.39,simulation_cluster,10.73,quick_reaction_force,0.35,1.03,quick_reaction_force simulation_cluster
-shelter [play],play,fitted,3,4.79,1.71,1.55,2.8,1.55,aegis_grid_lockdown,1.79,hardpoint_lockdown,0.25,1.16,aegis_grid_lockdown hardpoint_lockdown total_containment
-shield_node [play],play,unidentified,2,,,,2.8,2.09,benchmark_suite,2.28,threat_forecast_engine,0.19,1.09,benchmark_suite threat_forecast_engine
-spread_ambassadors [play],play,unidentified,1,,,,3.0,1.89,exodus_corridors,1.89,exodus_corridors,0.0,1.0,exodus_corridors
-sway discord [play],play,unidentified,1,,,,-4.0,-3.08,nuclear_option,-3.08,nuclear_option,0.0,,nuclear_option
-sway unity [play],play,fitted,8,3.57,0.89,0.17,4.0,1.85,back_channel_talks,2.97,peace_conference,1.12,1.6,back_channel_talks coalition_charter diplomatic_expulsion martial_cordon peace_conference planetary_referendum shared_grid_accord truth_commission
-tags [card],card,fixed,131,,,,1.0,0.28,substation_hub,1.68,synthetic_data_forge,1.4,6.0,adaptive_malware agency_directorate agency_field_station amnesty_decree antitrust_action arcology_foundry autonomous_defense_grid back_channel_talks baseload_contract beamed_power_constellation benchmark_suite bounty_board capacity_market capital_projects_office ceasefire_monitors citation_engine civic_watch coalition_charter collateralized_grid command_and_control_grid conglomerate_headquarters consular_pouch consulate_tower continental_supergrid counterinsurgency_campaign cryptojacking_campaign darknet_exchange data_licensing_deal dataset_scraper deep_state_ledger defense_appropriations demand_response_grid diplomatic_expulsion dispatch_control_room dyson_swarm_tranche economies_of_scale endowed_research_chair eviction_worm exodus_corridors exploit_broker fact_check_network faraday_yard field_grant field_sensor_grid force_protection_order foundation_model_campus fusion_startup_stake garrison_command gigafactory_charter grad_student_pool grid_census hardened_bunker_complex homeland_security_act honeypot_relay hyperscale_botnet interceptor_battery interconnector_treaty interdisciplinary_institute intrusion_lab joint_fabrication_pact joint_task_force liaison_corps liberation_accords lights_out_assembly logic_bomb market_stabilization_board market_watchdog martial_cordon multiyear_defense_budget mutual_aid_pact neural_mirror open_assembly open_weights_release orbital_embassy orbital_mass_driver orbital_observatory_array parts_exchange patent_library payroll_automation peace_conference peace_dividend peacekeeper_rotation peaker_turbines popular_uprising positron_storage_ring power_to_the_people predictive_modeling prefab_plant_kit protocol_office pumped_hydro_storage quick_reaction_force ransomware_syndicate reconciliation_office recruit_operatives recursive_self_improvement red_team_audit relay_mast_rollout research_royalties retained_earnings robotic_foundry sample_repository security_contractor_hq security_ops_floor sentinel_mesh shadow_broker_feed shared_compute_grant shared_exploit_kit shared_grid_accord shared_threat_intel simulation_cluster singularity_exploit smart_grid_backbone standardized_tooling station_prefab_order substation_hub summit_caucus supply_chain_audit synthetic_data_forge telemetry_archive threat_forecast_engine threat_hunt tidal_barrage total_containment trade_delegation transmission_corridor truth_commission university_spinout vendor_financing vertical_monopoly zero_click_breach zero_day_auction
-threshold [passive],passive,fitted,6,13.5,1.09,0.2,12.35,5.44,retained_earnings,17.14,agency_directorate,11.7,3.15,agency_directorate conglomerate_headquarters intrusion_lab open_assembly retained_earnings telemetry_archive
+production_per_tag credits [play],play,fitted,8,16.48,1.37,0.22,12.0,4.17,continental_supergrid,7.85,research_royalties,3.68,1.88,capacity_market continental_supergrid defense_appropriations economies_of_scale homeland_security_act peace_dividend ransomware_syndicate research_royalties
+production_per_tag energy [play],play,unidentified,1,,,,43.2,25.81,tidal_barrage,25.81,tidal_barrage,0.0,1.0,tidal_barrage
+production_per_tag insight [play],play,unidentified,1,,,,30.0,21.82,neural_mirror,21.82,neural_mirror,0.0,1.0,neural_mirror
+project_cube [play],play,unidentified,2,,,,6.0,2.53,field_grant,3.27,moonshot_grant,0.74,1.29,field_grant moonshot_grant
+remove_ambassadors_country [action],action,unidentified,1,,,,2.8,6.15,interceptor_battery,6.15,interceptor_battery,0.0,1.0,interceptor_battery
+remove_ambassadors_country [play],play,fitted,8,3.18,1.59,0.25,2.0,0.84,martial_cordon,2.35,headquarters_raid,1.51,2.8,counterinsurgency_campaign diplomatic_expulsion eviction_worm headquarters_raid killswitch_directive kinetic_interdiction liberation_accords martial_cordon
+remove_botnet [play],play,unidentified,2,,,,12.0,3.55,botnet_takedown,7.71,singularity_exploit,4.17,2.17,botnet_takedown singularity_exploit
+remove_troops [play],play,fitted,4,5.15,0.99,0.31,5.18,1.5,signal_hijack,2.66,kinetic_interdiction,1.16,1.78,breach_and_clear kinetic_interdiction signal_hijack total_containment
+reuse [action],action,unidentified,2,,,,14.0,8.04,simulation_cluster,8.22,quick_reaction_force,0.17,1.02,quick_reaction_force simulation_cluster
+shelter [play],play,fitted,3,6.56,2.34,1.52,2.8,1.55,aegis_grid_lockdown,1.79,hardpoint_lockdown,0.25,1.16,aegis_grid_lockdown hardpoint_lockdown total_containment
+shield_node [play],play,unidentified,2,,,,2.8,1.49,benchmark_suite,1.63,threat_forecast_engine,0.14,1.09,benchmark_suite threat_forecast_engine
+spread_ambassadors [play],play,unidentified,1,,,,3.0,1.46,exodus_corridors,1.46,exodus_corridors,0.0,1.0,exodus_corridors
+sway discord [play],play,unidentified,1,,,,-4.0,-2.29,nuclear_option,-2.29,nuclear_option,0.0,,nuclear_option
+sway unity [play],play,fitted,9,3.15,0.79,0.13,4.0,1.11,coalition_charter,3.7,diplomatic_expulsion,2.6,3.34,back_channel_talks coalition_charter diplomatic_expulsion manifesto_leak martial_cordon peace_conference planetary_referendum shared_grid_accord truth_commission
+tags [card],card,fixed,139,,,,1.0,0.23,open_weights_release,2.2,interceptor_battery,1.97,9.62,adaptive_malware agency_directorate agency_field_station amnesty_decree antitrust_action arcology_foundry autonomous_defense_grid back_channel_talks baseload_contract beamed_power_constellation benchmark_suite bounty_board bug_bounty_board capacity_market capital_projects_office ceasefire_monitors citation_engine civic_watch coalition_charter collateralized_grid command_and_control_grid conglomerate_headquarters consular_pouch consulate_tower continental_supergrid counterinsurgency_campaign cryptojacking_campaign darknet_exchange data_licensing_deal dataset_scraper deep_state_ledger defense_appropriations demand_response_grid diplomatic_expulsion dispatch_control_room dyson_swarm_tranche economies_of_scale endowed_research_chair envoy_briefings eviction_worm exodus_corridors exploit_broker fact_check_network faraday_yard field_grant field_sensor_grid force_protection_order foundation_model_campus fusion_research_campus fusion_startup_stake garrison_command gigafactory_charter grad_student_pool grid_census hardened_bunker_complex homeland_security_act honeypot_relay hyperscale_botnet interceptor_battery interconnector_treaty interdisciplinary_institute intrusion_lab joint_fabrication_pact joint_task_force liaison_corps liberation_accords lights_out_assembly logic_bomb market_stabilization_board market_watchdog martial_cordon moonshot_grant multiyear_defense_budget mutual_aid_pact neural_mirror open_assembly open_weights_release orbital_embassy orbital_mass_driver orbital_observatory_array parts_exchange patent_library payroll_automation peace_conference peace_dividend peacekeeper_rotation peaker_turbines popular_uprising positron_storage_ring power_to_the_people predictive_modeling prefab_plant_kit preprint_server protocol_office pumped_hydro_storage quick_reaction_force ransomware_syndicate reconciliation_office recruit_operatives recursive_self_improvement red_team_audit relay_mast_rollout research_royalties retained_earnings robotic_foundry safehouse_network sample_repository security_contractor_hq security_ops_floor sentinel_mesh shadow_broker_feed shared_compute_grant shared_exploit_kit shared_grid_accord shared_threat_intel simulation_cluster singularity_exploit smart_grid_backbone standardized_tooling station_prefab_order substation_hub summit_caucus supplier_network supply_chain_audit synthetic_data_forge telemetry_archive threat_forecast_engine threat_hunt tidal_barrage total_containment trade_delegation transmission_corridor truth_commission university_spinout vendor_financing vertical_monopoly wartime_retooling zero_click_breach zero_day_auction
+threshold [passive],passive,fitted,6,12.33,1.41,0.26,8.77,7.08,intrusion_lab,14.69,agency_directorate,7.62,2.08,agency_directorate conglomerate_headquarters intrusion_lab open_assembly retained_earnings telemetry_archive
 when place_tokens datasets [passive],passive,unidentified,1,,,,12.5,8.58,data_licensing_deal,8.58,data_licensing_deal,0.0,1.0,data_licensing_deal
-when play cyber [passive],passive,unidentified,1,,,,10.8,6.58,exploit_broker,6.58,exploit_broker,0.0,1.0,exploit_broker
+when play cyber [passive],passive,unidentified,1,,,,7.2,6.44,exploit_broker,6.44,exploit_broker,0.0,1.0,exploit_broker
 when play diplomacy [passive],passive,no value,0,,,,,,,,,,,open_assembly
-when play industry [passive],passive,no value,0,,,,,,,,,,,retained_earnings
-when play power [passive],passive,unidentified,2,,,,13.16,6.19,positron_storage_ring,11.44,dispatch_control_room,5.25,1.85,dispatch_control_room positron_storage_ring
-when play science [passive],passive,unidentified,1,,,,12.6,8.12,citation_engine,8.12,citation_engine,0.0,1.0,citation_engine telemetry_archive
-when play security [passive],passive,unidentified,1,,,,12.6,8.68,agency_field_station,8.68,agency_field_station,0.0,1.0,agency_field_station
-when play_cost 10 [passive],passive,unidentified,2,,,,19.69,7.62,lights_out_assembly,11.6,capital_projects_office,3.98,1.52,capital_projects_office lights_out_assembly
-when play_tag [passive],passive,fitted,4,27.08,1.17,0.17,23.11,8.53,interdisciplinary_institute,17.75,smart_grid_backbone,9.22,2.08,agency_directorate command_and_control_grid conglomerate_headquarters interdisciplinary_institute orbital_embassy smart_grid_backbone
-when remove_ambassadors [passive],passive,unidentified,2,,,,22.4,9.05,reconciliation_office,9.18,honeypot_relay,0.13,1.01,honeypot_relay reconciliation_office
-when remove_compute [passive],passive,unidentified,1,,,,16.0,8.0,security_ops_floor,8.0,security_ops_floor,0.0,1.0,intrusion_lab security_ops_floor
+when play industry [passive],passive,unidentified,1,,,,7.2,8.56,supplier_network,8.56,supplier_network,0.0,1.0,retained_earnings supplier_network
+when play power [passive],passive,fitted,3,20.71,2.3,0.41,9.0,6.49,dispatch_control_room,8.4,fusion_research_campus,1.91,1.29,dispatch_control_room fusion_research_campus positron_storage_ring
+when play science [passive],passive,unidentified,2,,,,9.9,7.78,preprint_server,13.12,citation_engine,5.35,1.69,citation_engine preprint_server telemetry_archive
+when play security [passive],passive,unidentified,1,,,,3.6,4.71,agency_field_station,4.71,agency_field_station,0.0,1.0,agency_field_station
+when play_cost 10 [passive],passive,unidentified,2,,,,19.69,8.75,lights_out_assembly,10.41,capital_projects_office,1.66,1.19,capital_projects_office lights_out_assembly
+when play_tag [passive],passive,fitted,4,26.33,1.14,0.15,23.11,8.53,interdisciplinary_institute,15.56,command_and_control_grid,7.03,1.82,agency_directorate command_and_control_grid conglomerate_headquarters interdisciplinary_institute orbital_embassy smart_grid_backbone
+when remove_ambassadors [passive],passive,unidentified,2,,,,11.2,6.45,honeypot_relay,9.47,reconciliation_office,3.02,1.47,honeypot_relay reconciliation_office
+when remove_compute [passive],passive,unidentified,1,,,,4.0,4.46,security_ops_floor,4.46,security_ops_floor,0.0,1.0,intrusion_lab security_ops_floor
 when remove_troop [passive],passive,unidentified,1,,,,12.0,7.92,security_contractor_hq,7.92,security_contractor_hq,0.0,1.0,security_contractor_hq
-when team_play diplomacy True [passive],passive,unidentified,1,,,,28.35,9.94,consulate_tower,9.94,consulate_tower,0.0,1.0,consulate_tower
-when team_play power True [passive],passive,unidentified,1,,,,28.35,10.58,substation_hub,10.58,substation_hub,0.0,1.0,substation_hub
-when team_play security [passive],passive,unidentified,1,,,,12.6,7.63,joint_task_force,7.63,joint_task_force,0.0,1.0,joint_task_force
+when team_play diplomacy True [passive],passive,unidentified,1,,,,18.9,8.59,consulate_tower,8.59,consulate_tower,0.0,1.0,consulate_tower
+when team_play power True [passive],passive,unidentified,1,,,,14.17,8.33,substation_hub,8.33,substation_hub,0.0,1.0,substation_hub
+when team_play security [passive],passive,unidentified,1,,,,7.2,7.33,joint_task_force,7.33,joint_task_force,0.0,1.0,joint_task_force

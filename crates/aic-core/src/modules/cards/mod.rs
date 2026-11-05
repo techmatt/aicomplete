@@ -1,5 +1,6 @@
 //! Cards and draft (021): the tier-1 and tier-2 decks (one copy of each
-//! card; discards reshuffle when a deck runs out), the opening deal, the
+//! card; discards reshuffle when the draft finds a deck empty, never for a
+//! draw, 111), the opening deal, the
 //! Terraforming Mars-style draft with the tier chosen card by card, keeping
 //! drafted cards for insight, playing buildings (slots that stack and splay
 //! down), programs (they stay in your play area) and events, token engines,
@@ -108,6 +109,12 @@ pub fn built(seat: usize) -> KeyBuf {
 /// their effects are off, their tags still count.
 pub fn under(seat: usize, top: &str) -> KeyBuf {
     KeyBuf::new("cards.under.").num(seat).text(".").text(top)
+}
+
+/// The event seat `s` is resolving (111): out of the hand, not yet discarded,
+/// so its own draw can't reshuffle it back.
+pub fn resolving(seat: usize) -> KeyBuf {
+    KeyBuf::new("cards.resolving.").num(seat)
 }
 
 /// Seat `s`'s play area: programs played (their tags count).

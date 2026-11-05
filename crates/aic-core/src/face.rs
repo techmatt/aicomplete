@@ -305,8 +305,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             "remove every adversary ambassador and troop in one hex",
         )),
         Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet in reach")),
-        Op::RemoveAmbassadorsCountry { unity_per, max } => {
-            let (mut icons, what) = if *max > 0 {
+        Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
+            // 111: "in reach" prints no place, as a botnet or a marker in reach.
+            let (mut icons, what) = if *max > 0 && *reach {
+                (adversary(minus(*max, "ambassador")), format!("remove {} in reach", plural(*max, "adversary ambassador")))
+            } else if *max > 0 {
                 let mut p = minus(*max, "ambassador");
                 p.push(w("country"));
                 (adversary(p), format!("remove {} in one country", plural(*max, "adversary ambassador")))
@@ -323,8 +326,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             icons.extend(adversary(vec![Part::Word(unity_per.to_string()), w("ambassador")]));
             one(clause(icons, format!("{what}, and sway 1 toward Unity per {unity_per} removed")))
         }
-        Op::RemoveTroops { count } => {
+        Op::RemoveTroops { count, reach } => {
             let mut parts = minus(*count, "troop");
+            if *reach {
+                return one(clause(adversary(parts), format!("remove {} in reach", plural(*count, "troop"))));
+            }
             parts.push(w("country"));
             one(clause(adversary(parts), format!("remove {} in one country", plural(*count, "troop"))))
         }

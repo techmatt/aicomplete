@@ -30,8 +30,9 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
         let cities = c.effects.iter().any(|e| matches!(e, Op::Cleanse { cities: true, .. }));
         assert_eq!(cities, c.id == "great_liberation", "{}", c.id);
     }
-    // A tier-1 cleanse is not offered for a city, and does nothing to one.
-    let (rules, mut g) = lab_actions();
+    // A tier-1 cleanse is not offered for a city, and does nothing to one. The test pins the
+    // ultimate's price under what `fund` gives (r44 prints 32).
+    let (rules, mut g) = lab_actions_with(&["cards.great_liberation.cost=21"]);
     let (h, _) = city(&rules, &mut g);
     let others: Vec<usize> = (0..g.hexes.len()).filter(|&x| x != h).collect();
     for x in others {
@@ -64,7 +65,7 @@ fn clearing_a_city_takes_the_ones_the_player_picks() {
     pick(&rules, &mut g, h);
     answer_all(&rules, &mut g);
     let left = g.tokens(n, ADV_AMBASSADOR) + g.tokens(h, ADV_AMBASSADOR);
-    assert_eq!(left, 2, "the card takes 5 of the 7, on or next to the city");
+    assert_eq!(left, 3, "the card takes 4 of the 7, on or next to the city");
     let mut k = g.clone();
     put(&mut k, n, ADV_AMBASSADOR, 3);
     // It needs a Diplomacy tag in play.

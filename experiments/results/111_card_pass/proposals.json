@@ -1,0 +1,4896 @@
+[
+ [
+  "propose:Power",
+  {
+   "cards": [
+    {
+     "id": "baseload_contract",
+     "name": "Baseload Contract",
+     "verdict": "change",
+     "reason": "At 20 credits it only broke even (1.0) for a plain +2 energy income. The effect is unchanged and the price drops to 14.",
+     "anchor": "pay 14+4+4=22; get +2 energy income 28 = 1.27",
+     "text": "Tier 1 program, 14 cr, 1 insight. Raise your energy income by 2.",
+     "card": {
+      "id": "baseload_contract",
+      "name": "Baseload Contract",
+      "tier": 1,
+      "kind": "program",
+      "cost": 14,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "capacitor_discharge",
+     "name": "Capacitor Discharge",
+     "verdict": "change",
+     "reason": "A Power tag payoff that read 0.96 at a typical 3 Power tags (an event doesn't count itself). Cost cut from 10 to 6.",
+     "anchor": "pay 6+4+0=10; get 3 Power tags x 1 energy 13.5 = 1.35 (4 tags 1.8, tag payoff)",
+     "text": "Tier 1 event, 6 cr, 0 insight. Gain 1 energy per Power tag on your cards.",
+     "card": {
+      "id": "capacitor_discharge",
+      "name": "Capacitor Discharge",
+      "tier": 1,
+      "kind": "event",
+      "cost": 6,
+      "insight": 0,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "gain_per_tag",
+        "resource": "energy",
+        "tag": "power",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "capacity_market",
+     "name": "Capacity Market",
+     "verdict": "change",
+     "reason": "The per-tag credit-income program read 0.67-0.89 at 3-4 Power tags (itself included). Cost cut from 10 to 5. The same shape on the other tags has the same problem; see notes.",
+     "anchor": "pay 5+4+4=13; get 4 Power tags x +1 credit income 16 = 1.23 (3 tags 0.92, 5 tags 1.54)",
+     "text": "Tier 1 program, 5 cr, needs 2 Power, 1 insight. Raise your credit income by 1 per Power tag on your cards.",
+     "card": {
+      "id": "capacity_market",
+      "name": "Capacity Market",
+      "tier": 1,
+      "kind": "program",
+      "cost": 5,
+      "insight": 1,
+      "needs": [
+       [
+        "power",
+        2
+       ]
+      ],
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "power",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "demand_response_grid",
+     "name": "Grid Analytics Desk",
+     "verdict": "change",
+     "reason": "It turned scarce energy (3 = 13.5) into credits, which pile up, at about 0.7. It becomes Matt's throughput lever: spare energy into cards, the Power twin of Patent Library and Parts Exchange. Renamed (id kept).",
+     "anchor": "pay 8+4+4=16; get (2 cards 10 - 1 energy 4.5) x 3.5 uses 19.3 = 1.2",
+     "text": "Tier 1 building, 8 cr, 1 insight. Action: pay 1 energy, draw 2 cards.",
+     "card": {
+      "id": "demand_response_grid",
+      "name": "Grid Analytics Desk",
+      "tier": 1,
+      "kind": "building",
+      "cost": 8,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "ability": {
+       "cost": [
+        [
+         "energy",
+         1
+        ]
+       ],
+       "effects": [
+        {
+         "op": "draw",
+         "count": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "dispatch_control_room",
+     "name": "Dispatch Control Room",
+     "verdict": "change",
+     "reason": "With its self-fire it read 2.06 at tier 1 (4 energy on build, then 2 per Power card), and it duplicated Positron Storage Ring's trigger. The trigger drops to 1 energy and the cost to 12, which makes it the tier-1 step below Positron.",
+     "anchor": "pay 12+4+4=20; get build 2+self-fire 1 energy 13.5 + 3.5 Power plays x 1 energy 15.8 = 29.3 = 1.46",
+     "text": "Tier 1 building, 12 cr, needs 2 Power, 1 insight. Effect: when you play a Power card, gain 1 energy. Gain 2 energy.",
+     "card": {
+      "id": "dispatch_control_room",
+      "name": "Dispatch Control Room",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "needs": [
+       [
+        "power",
+        2
+       ]
+      ],
+      "tags": [
+       "power"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "power"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "energy",
+          "amount": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "gain",
+        "resource": "energy",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "faraday_yard",
+     "name": "Faraday Yard",
+     "verdict": "change",
+     "reason": "Read 0.93. Harden 3 is worth little (1.5 each) and a seat often has fewer than 3 facilities in reach. Effect kept, cost cut from 12 to 6.",
+     "anchor": "pay 6+4+4=14; get +1 energy income 14 + 3 harden 4.5 = 18.5 = 1.32 (2 hardened 1.21)",
+     "text": "Tier 1 program, 6 cr, 1 insight. Raise your energy income by 1. Harden 3 facilities in reach.",
+     "card": {
+      "id": "faraday_yard",
+      "name": "Faraday Yard",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 1
+       },
+       {
+        "op": "harden",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "fusion_startup_stake",
+     "name": "Fusion Startup Stake",
+     "verdict": "change",
+     "reason": "Read 1.07, under the tier-1 band. Effect kept, cost cut from 20 to 16.",
+     "anchor": "pay 16+4+4=24; get +1 energy income 14 + 4 credit income 16 = 30 = 1.25",
+     "text": "Tier 1 program, 16 cr, 1 insight. Raise your energy income by 1. Raise your credit income by 4.",
+     "card": {
+      "id": "fusion_startup_stake",
+      "name": "Fusion Startup Stake",
+      "tier": 1,
+      "kind": "program",
+      "cost": 16,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 1
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "grid_census",
+     "name": "Grid Census",
+     "verdict": "change",
+     "reason": "Read 1.02 at the median 5 nodes. Cost cut from 14 to 12. It stays a card that grows with your node count, played mid to late.",
+     "anchor": "pay 12+4+4=20; get 6 nodes x 1 energy 27 = 1.35 (5 nodes 1.13)",
+     "text": "Tier 1 program, 12 cr, 1 insight. Gain 1 energy per node you have on the board.",
+     "card": {
+      "id": "grid_census",
+      "name": "Grid Census",
+      "tier": 1,
+      "kind": "program",
+      "cost": 12,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "gain_per_node",
+        "resource": "energy"
+       }
+      ]
+     }
+    },
+    {
+     "id": "interconnector_treaty",
+     "name": "Interconnector Treaty",
+     "verdict": "change",
+     "reason": "Read 1.05 with the gift at 0.75. Cost cut from 24 to 20.",
+     "anchor": "pay 20+4+4=28; get gift 4 energy 13.5 (0.75 x 18) + 5 credit income 20 = 33.5 = 1.2 (gift at face 1.36)",
+     "text": "Tier 1 program (help), 20 cr, needs 2 Power, 1 insight. Another player gains 4 energy. Raise your credit income by 5.",
+     "card": {
+      "id": "interconnector_treaty",
+      "name": "Interconnector Treaty",
+      "tier": 1,
+      "kind": "program",
+      "cost": 20,
+      "insight": 1,
+      "needs": [
+       [
+        "power",
+        2
+       ]
+      ],
+      "tags": [
+       "power",
+       "diplomacy"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "energy",
+        "amount": 4
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 5
+       }
+      ]
+     }
+    },
+    {
+     "id": "peaker_turbines",
+     "name": "Peaker Turbines",
+     "verdict": "keep",
+     "reason": "It sits in the tier-1 band and reads plainly: a small energy income plus a chip income.",
+     "anchor": "pay 18+4+4=26; get +1 energy income 14 + 2 chip income 20 = 34 = 1.31",
+     "text": "Tier 1 program, 18 cr, 1 insight, Power/Industry. Raise your energy income by 1. Raise your chip income by 2."
+    },
+    {
+     "id": "pumped_hydro_storage",
+     "name": "Pumped Hydro Storage",
+     "verdict": "change",
+     "reason": "Read 1.0. Effect kept (income plus a stored charge), cost cut from 24 to 18.",
+     "anchor": "pay 18+4+4=26; get +1 energy income 14 + 4 energy 18 = 32 = 1.23",
+     "text": "Tier 1 program, 18 cr, 1 insight. Raise your energy income by 1. Gain 4 energy.",
+     "card": {
+      "id": "pumped_hydro_storage",
+      "name": "Pumped Hydro Storage",
+      "tier": 1,
+      "kind": "program",
+      "cost": 24,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 1
+       },
+       {
+        "op": "gain",
+        "resource": "energy",
+        "amount": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "relay_mast_rollout",
+     "name": "Relay Mast Rollout",
+     "verdict": "change",
+     "reason": "Four paid nodes mid-game cost about 6-8 energy in track steps, far more than a seat holds (1-3), so the 4 was a number a seat can't reach, and it read 0.89. It becomes 3 nodes placed free, which a seat can always use.",
+     "anchor": "pay 7+4+4=15; get 3 free nodes 18 (4+2 each) = 1.2",
+     "text": "Tier 1 program, 7 cr, 1 insight. Place 3 nodes free.",
+     "card": {
+      "id": "relay_mast_rollout",
+      "name": "Relay Mast Rollout",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "place_node",
+        "count": 3,
+        "free": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "shared_grid_accord",
+     "name": "Shared Grid Accord",
+     "verdict": "change",
+     "reason": "Read 0.97, and its 1-credit cost was noise. Credit cost goes to 0 and the Unity sway rises from 1 to 2, so the help card pays the helper something they can see.",
+     "anchor": "pay 0+4+4+2 energy 9=17; get gift 4 energy 13.5 + sway 2 8 = 21.5 = 1.26",
+     "text": "Tier 1 program (help), 0 cr, 2 energy, 1 insight, Power/Diplomacy. Pay 2 energy. Another player gains 4 energy. Sway 2 toward Unity.",
+     "card": {
+      "id": "shared_grid_accord",
+      "name": "Shared Grid Accord",
+      "tier": 1,
+      "kind": "program",
+      "cost": 0,
+      "energy": 2,
+      "insight": 1,
+      "tags": [
+       "power",
+       "diplomacy"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "energy",
+        "amount": 4
+       },
+       {
+        "op": "sway",
+        "side": "unity",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "substation_hub",
+     "name": "Substation Hub",
+     "verdict": "change",
+     "reason": "At about 0.7 teammate Power plays a round, 2 energy each for both seats read 2.4 at tier 1. The shared gain drops to 1 energy each.",
+     "anchor": "pay 12+4+4=20; get build 2 energy 9 + 2.45 fires x (1 energy 4.5 + gift 3.4) 19.3 = 28.3 = 1.42",
+     "text": "Tier 1 building, 12 cr, 1 insight, Power/Industry. Effect: when another player plays a Power card, you both gain 1 energy. Gain 2 energy.",
+     "card": {
+      "id": "substation_hub",
+      "name": "Substation Hub",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "tags": [
+       "power",
+       "industry"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "team_play",
+         "tag": "power",
+         "both": true
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "energy",
+          "amount": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "gain",
+        "resource": "energy",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "tidal_barrage",
+     "name": "Tidal Barrage",
+     "verdict": "change",
+     "reason": "With needs 2, play usually lands at 3 Power tags, which is +1 energy income for 22 credits (0.47). Needs rises to 3, so the floor is +2, and the cost drops to 15. It stays a tag-chain payoff that pulls ahead for a committed Power seat.",
+     "anchor": "pay 15+4+4=23; get 4-5 Power tags +2 energy income 28 = 1.22 (6 tags +3, 42 = 1.83, the tag payoff's ceiling)",
+     "text": "Tier 1 program, 15 cr, needs 3 Power, 1 insight. Raise your energy income by 1 per 2 Power tags on your cards.",
+     "card": {
+      "id": "tidal_barrage",
+      "name": "Tidal Barrage",
+      "tier": 1,
+      "kind": "program",
+      "cost": 15,
+      "insight": 1,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "energy",
+        "tag": "power",
+        "per": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "transmission_corridor",
+     "name": "Transmission Corridor",
+     "verdict": "cut",
+     "reason": "Two paid nodes plus a 2-ambassador move read 0.79, and it duplicates Relay Mast Rollout with a small rider. Cut to make room for Fusion Research Campus.",
+     "anchor": "pay 6+4+4=14; get 2 nodes 8 + 2 moves 3 = 11 = 0.79",
+     "text": "(cut) Tier 1 program, 6 cr, 1 insight, Power/Diplomacy. Place 2 nodes. Move up to 2 ambassadors onto pieces in reach."
+    },
+    {
+     "id": "aegis_grid_lockdown",
+     "name": "Aegis Grid Lockdown",
+     "verdict": "change",
+     "reason": "At tier 2 it read 1.05 (shelter is conditional, worth 4). By efficiency it is a tier-1 card, so it moves to tier 1 at the same price. Tier is efficiency, not size.",
+     "anchor": "pay 9+4+4=17; get shelter 4 + 3 free nodes 18 = 22 = 1.29",
+     "text": "Tier 1 event, 9 cr, 1 insight, Power/Diplomacy/Security. Shelter one country this round. Place 3 nodes free.",
+     "card": {
+      "id": "aegis_grid_lockdown",
+      "name": "Aegis Grid Lockdown",
+      "tier": 1,
+      "kind": "event",
+      "cost": 9,
+      "insight": 1,
+      "tags": [
+       "power",
+       "diplomacy",
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "shelter"
+       },
+       {
+        "op": "place_node",
+        "count": 3,
+        "free": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "beamed_power_constellation",
+     "name": "Beamed Power Constellation",
+     "verdict": "change",
+     "reason": "Read 1.17 at tier 2: 30 credits for 3 free nodes plus about 8 energy. Effect kept, cost cut from 30 to 14 to reach the tier-2 band.",
+     "anchor": "pay 14+8+8=30; get 3 free nodes 18 + 8 nodes x 1 energy 36 = 54 = 1.8 (9 nodes 1.95)",
+     "text": "Tier 2 program, 14 cr, needs 3 Power, 2 insight. Place 3 nodes free. Gain 1 energy per node you have on the board.",
+     "card": {
+      "id": "beamed_power_constellation",
+      "name": "Beamed Power Constellation",
+      "tier": 2,
+      "kind": "program",
+      "cost": 14,
+      "insight": 2,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "place_node",
+        "count": 3,
+        "free": true
+       },
+       {
+        "op": "gain_per_node",
+        "resource": "energy"
+       }
+      ]
+     }
+    },
+    {
+     "id": "continental_supergrid",
+     "name": "Continental Supergrid",
+     "verdict": "change",
+     "reason": "Read 1.22-1.33 at tier 2. Effect kept, cost cut from 20 to 10.",
+     "anchor": "pay 10+8+8=26; get +2 energy income 28 + 5 Power tags x +1 credit income 20 = 48 = 1.85 (4 tags 1.69)",
+     "text": "Tier 2 program, 10 cr, needs 3 Power, 2 insight, Power/Diplomacy. Raise your energy income by 2. Raise your credit income by 1 per Power tag on your cards.",
+     "card": {
+      "id": "continental_supergrid",
+      "name": "Continental Supergrid",
+      "tier": 2,
+      "kind": "program",
+      "cost": 10,
+      "insight": 2,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power",
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       },
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "power",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "dyson_swarm_tranche",
+     "name": "Dyson Swarm Tranche",
+     "verdict": "change",
+     "reason": "Read 1.45 at tier 2. The 2-energy extra cost goes (a shorter face; needs 3 Power already gates it) and the cost drops from 22 to 20.",
+     "anchor": "pay 20+8+8=36; get +2 energy income 28 + 10 credit income 40 = 68 = 1.89",
+     "text": "Tier 2 program, 20 cr, needs 3 Power, 2 insight, Power/Industry. Raise your energy income by 2. Raise your credit income by 10.",
+     "card": {
+      "id": "dyson_swarm_tranche",
+      "name": "Dyson Swarm Tranche",
+      "tier": 2,
+      "kind": "program",
+      "cost": 20,
+      "insight": 2,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power",
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 10
+       }
+      ]
+     }
+    },
+    {
+     "id": "positron_storage_ring",
+     "name": "Positron Storage Ring",
+     "verdict": "keep",
+     "reason": "In the tier-2 band. Now that Dispatch Control Room pays 1 energy, this is Dispatch's tier-2 step (2 energy a Power card) plus antimatter, and it stays the Power engine's ultimate. The antimatter's 7 is inflated; see notes.",
+     "anchor": "pay 18+8+8=34; get 1 antimatter x 3.5 rounds 24.5 + build 2+self-fire 2 energy 18 + 3.5 Power plays x 2 energy 31.5 = 74 = 2.18 (antimatter at 0: 1.46)",
+     "text": "Tier 2 building, 18 cr, needs 2 Power, 2 insight. Each round, 1 antimatter. Effect: when you play a Power card, gain 2 energy. Gain 2 energy."
+    },
+    {
+     "id": "power_to_the_people",
+     "name": "Power to the People",
+     "verdict": "change",
+     "reason": "Credits, 4 energy and 3 chips for one liberation plus a per-tag income read 1.1, and it also covers a Power building. Chips are dropped and credits cut from 18 to 6, so it is paid mostly in energy, its engine's resource.",
+     "anchor": "pay 6+4+8+4 energy 18=36; get liberate 45 + 4-5 Power tags x 1 credit a round 16-20 = 61-65 = 1.7-1.8 (before the covered building)",
+     "text": "Tier 2 building, 6 cr, 4 energy, needs 2 Power, built over a Power building, 1 insight, Power/Industry. Each round, 1 credit per Power tag on your cards. Pay 4 energy. Liberate a corrupted city in reach.",
+     "card": {
+      "id": "power_to_the_people",
+      "name": "Power to the People",
+      "tier": 2,
+      "kind": "building",
+      "cost": 6,
+      "energy": 4,
+      "insight": 1,
+      "needs": [
+       [
+        "power",
+        2
+       ]
+      ],
+      "replaces": "power",
+      "tags": [
+       "power",
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "liberate"
+       }
+      ],
+      "passives": [
+       {
+        "op": "income_per_tag",
+        "resource": "credits",
+        "tag": "power",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "smart_grid_backbone",
+     "name": "Smart Grid Backbone",
+     "verdict": "change",
+     "reason": "Read 1.69 at tier 2, low for the deck's strongest Power engine. Effect kept, cost cut from 20 to 14.",
+     "anchor": "pay 14+8+8=30; get build 2+self-fire 1 energy 13.5 + 3 tags a round x 3.5 rounds x 1 energy 47.3 = 60.8 = 2.03",
+     "text": "Tier 2 building, 14 cr, needs 3 Power, 2 insight. Effect: when you play a card, gain 1 energy per tag on it. Gain 2 energy.",
+     "card": {
+      "id": "smart_grid_backbone",
+      "name": "Smart Grid Backbone",
+      "tier": 2,
+      "kind": "building",
+      "cost": 14,
+      "insight": 2,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play_tag"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "energy",
+          "amount": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "gain",
+        "resource": "energy",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "nuclear_option",
+     "name": "The Nuclear Option",
+     "verdict": "change",
+     "reason": "19 credits, antimatter and insight for a liberation, less 2 Discord sway, read 0.97 at tier 2. Antimatter stays the gate, the Discord sway drops to 1 so it is still a price you see, and credits drop to 4.",
+     "anchor": "pay 4+4+8+1 antimatter 7=23; get liberate 45 - sway 1 to Discord 4 = 41 = 1.78",
+     "text": "Tier 2 event, 4 cr, 1 antimatter, 1 insight. Pay 1 antimatter. Liberate a corrupted city in reach. Sway 1 toward Discord.",
+     "card": {
+      "id": "nuclear_option",
+      "name": "The Nuclear Option",
+      "tier": 2,
+      "kind": "event",
+      "cost": 4,
+      "antimatter": 1,
+      "insight": 1,
+      "tags": [
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "liberate"
+       },
+       {
+        "op": "sway",
+        "side": "discord",
+        "amount": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "fusion_research_campus",
+     "name": "Fusion Research Campus",
+     "verdict": "new",
+     "reason": "Card throughput for Power, which had no draw: a tier-2 engine that draws on each Power card played, the Terraforming Mars 'Mars University' pattern. It draws when built, like the other engines. It replaces the cut Transmission Corridor and keeps tier 2 at 8 after Aegis moved down.",
+     "anchor": "pay 16+8+8=32; get build 3 cards 15 + self-fire 2 cards 10 + 3.5 Power plays x 2 cards 35 = 60 = 1.88",
+     "text": "Tier 2 building, 16 cr, needs 3 Power, 2 insight, Power/Science. Effect: when you play a Power card, draw 2 cards. Draw 3 cards.",
+     "card": {
+      "id": "fusion_research_campus",
+      "name": "Fusion Research Campus",
+      "tier": 2,
+      "kind": "building",
+      "cost": 16,
+      "insight": 2,
+      "needs": [
+       [
+        "power",
+        3
+       ]
+      ],
+      "tags": [
+       "power",
+       "science"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "power"
+        },
+        "then": [
+         {
+          "op": "draw",
+          "count": 2
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 3
+       }
+      ]
+     }
+    }
+   ],
+   "notes": "1. Correction: the card object I gave for pumped_hydro_storage still says \"cost\": 24. It should be 18, as the reason, the anchor check and the printed text say. Use 18.\n\n2. Most changes lower prices. At the anchors, almost every Power income card read 0.9-1.1 at tier 1 and 1.1-1.5 at tier 2, so most of the fixes are lower credit costs rather than new effects. Lower prices cut against \"credits pile up\". The real disagreement is that the anchors value income and energy below what the printed prices assumed. If you would rather keep prices high, the anchors (+1 energy income 14, +1 credit income 4) are what has to move.\n\n3. Per-tag income programs, across all six tags. Capacity Market's shape (10 credits, needs 2) reads 0.67-0.89 at 3-4 tags. I took Power's to 5 credits; Research Royalties and the other tags' versions have the same problem and should move together, or the rule \"one shape for one job\" breaks.\n\n4. The liberate capstones. The 080 design prices them at their own value, which is about 1.0. Your tier-2 band of 1.8-2.5 forced The Nuclear Option down to 4 credits plus 1 antimatter, and Power to the People to 6 credits plus 4 energy (chips dropped). That is a family-wide call for you. If you approve it, the other capstones (Hostile Buyout, Forensic Audit, Root Access, Peacekeeping Mission, Popular Uprising) need the same treatment. player-cards.md's capstone table (\"power + chips\", \"needs 3\") and economy.md (Dyson Swarm Tranche named as an energy-cost card, Tidal Barrage's line) would go stale.\n\n5. Antimatter at 7 inflates Positron Storage Ring (2.18 with it, 1.46 without). An antimatter income of 1 a round yields 3-4 antimatter over a game, but only about 4 cards spend one. I kept the card. If you accept card-pricing's note that antimatter is really worth about 3, its income should become something else.\n\n6. Tidal Barrage is a tag payoff, so its tier-1 ceiling is above 1.5 on purpose: 1.83 at 6 Power tags (+3 energy income). That breaks card-pricing's \"no card above +2 energy income\", which I read as superseded by your ruling 5.\n\n7. Assumptions behind the checks:\n- Substation Hub assumes about 0.7 teammate Power plays a round. Its sizing depends on table size.\n- Action buildings are counted at 3.5 uses with no 0.7 share.\n- A node is 4 (values.json), or 6 if placed free.\n- A gift is 0.75 of face.\n- Grid Census and Beamed Power Constellation assume 5-8 nodes.\n\n8. No 30-50 credit late-game card. At these anchors, nothing Power can print at 30-50 credits reaches 1.8. Income late in the game counts few rounds, and a removal is 5 each. I spent the new slot on throughput instead (Fusion Research Campus, plus Grid Analytics Desk turning spare energy into cards). If you want a late-game card worth 30-50 credits, the anchors for liberation and sway need to rise, or that card is a liberation plus a sweep.\n\n9. Deck and section shape. The deck stays at 154: Transmission Corridor cut, Fusion Research Campus added. The new card needs configs/baseline.json and `shared_row.py`. The section ends at 16 tier 1 and 8 tier 2, with 14 programs, 7 buildings and 3 events (was 15, 6, 3).\n\n10. Renamed: Demand Response Grid becomes Grid Analytics Desk; the id is kept. Each changed card needs its plays per game re-read after the edit."
+  }
+ ],
+ [
+  "propose:Cyber",
+  {
+   "cards": [
+    {
+     "id": "adaptive_malware",
+     "name": "Adaptive Malware",
+     "verdict": "cut",
+     "reason": "The '8 from each project' is misleading. Compute only ever fills the cheapest visible project (adversary.rs gain_compute), so 'each' hits one project, and 8 removes all of it: a disguised wipe. It is also the fifth near-duplicate tier-1 drain.",
+     "anchor": "pay 6+4+4=14; get ~6 compute held on the one loaded project 12 = 0.86 (the 'each' adds nothing)",
+     "text": "(cut)"
+    },
+    {
+     "id": "zero_click_breach",
+     "name": "Zero-Click Breach",
+     "verdict": "cut",
+     "reason": "Removing 18 compute is a disguised discard, and the discard cards (Killswitch, Singularity) own that effect at tier 2. Rebuilt honestly as a tier-1 'Discard a project' it reads 1.09 and makes stopping projects easy. It is a near-duplicate of Threat Hunt and Logic Bomb.",
+     "anchor": "pay 10+4+8=22; get a discard in practice 24 = 1.09",
+     "text": "(cut)"
+    },
+    {
+     "id": "credential_harvest_keep",
+     "name": "Credential Harvest",
+     "verdict": "keep",
+     "reason": "A tag payoff, so it is exempt from 'useful alone'. It is a clean one-off: insight now, per Cyber tag, at a fair rate for a committed seat.",
+     "anchor": "pay 5+4=9; get 3-4 insight at 3-4 Cyber tags 12-16 = 1.33-1.78 (the top end is a 4-tag seat; kept on purpose as a tag payoff)",
+     "text": "Credential Harvest (tier 1 event, 5 cr, 0 insight; id spoofed_credentials): Gain 1 insight per Cyber tag on your cards."
+    },
+    {
+     "id": "cryptojacking_campaign",
+     "name": "Cryptojacking Campaign",
+     "verdict": "change",
+     "reason": "At 1.03 it was weak: 18 credits plus 2 energy for +9 income. Repriced down rather than given a bigger number. The energy cost stays because it is the flavor (stolen power).",
+     "anchor": "pay 13+4+4+2 energy 9=30; get +9 credit income 36 = 1.20",
+     "text": "Cryptojacking Campaign (tier 1 program, 13 cr, 1 insight): Pay 2 energy. Raise your credit income by 9.",
+     "card": {
+      "id": "cryptojacking_campaign",
+      "name": "Cryptojacking Campaign",
+      "tier": 1,
+      "kind": "program",
+      "cost": 13,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 9
+       }
+      ],
+      "energy": 2
+     }
+    },
+    {
+     "id": "darknet_exchange",
+     "name": "Darknet Exchange",
+     "verdict": "keep",
+     "reason": "A clean tag discount that is useful alone because of its draw. After this pass most Cyber cards cost 3-7 credits, so with the floor of 1 the discount is worth about 4 a play.",
+     "anchor": "pay 12+4+4=20; get ~4 cr off 1 Cyber play a round x3.5 = 14 + draw 3 = 15, total 29 = 1.45",
+     "text": "Darknet Exchange (tier 1 building, 12 cr, 1 insight): Effect: your Cyber cards cost 5 credits less to play. Draw 3 cards."
+    },
+    {
+     "id": "eviction_worm",
+     "name": "Eviction Worm",
+     "verdict": "change",
+     "reason": "Matt's named example: 8 in one country is a disguised remove-all (median 6 a country). Ruling 3 puts it in reach, and the number is cut to 4 so it stays below the 6 in a seat's reach. Repriced to the smaller effect.",
+     "anchor": "pay 8+4+4=16; get 4 ambassadors 20 = 1.25",
+     "text": "Eviction Worm (tier 1 program, 8 cr, 1 insight): Remove up to 4 adversary ambassadors in reach.",
+     "card": {
+      "id": "eviction_worm",
+      "name": "Eviction Worm",
+      "tier": 1,
+      "kind": "program",
+      "cost": 8,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "remove_ambassadors_country",
+        "unity_per": 0,
+        "max": 4,
+        "reach": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "exploit_broker",
+     "name": "Exploit Broker",
+     "verdict": "change",
+     "reason": "It counts itself, so at a committed seat (1 Cyber card a round) it read 2.1, above the tier-1 cap. The payout drops to 4 credits a Cyber play and the when-built draw to 2 (two fires' worth).",
+     "anchor": "pay 12+4+4=20; get its own play 4 + 4 x 3.5 rounds = 14 + draw 2 = 10, total 28 = 1.40",
+     "text": "Exploit Broker (tier 1 building, 12 cr, 1 insight; needs 2 Cyber): Effect: when you play a Cyber card, gain 4 credits. Draw 2 cards.",
+     "card": {
+      "id": "exploit_broker",
+      "name": "Exploit Broker",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "needs": [
+       [
+        "cyber",
+        2
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "cyber"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "credits",
+          "amount": 4
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "honeypot_relay",
+     "name": "Honeypot Relay",
+     "verdict": "change",
+     "reason": "7 credits a fire plus draw 3 read about 1.85 now that removals are in reach and more common. The payout drops to 6 and the draw to 2 (two fires' worth).",
+     "anchor": "pay 12+4+4=20; get 6 x ~0.9 fires x 3.5 = 19 + draw 2 = 10, total 29 = 1.45",
+     "text": "Honeypot Relay (tier 1 building, 12 cr, 1 insight): Effect: when you remove adversary ambassadors, gain 6 credits. Draw 2 cards.",
+     "card": {
+      "id": "honeypot_relay",
+      "name": "Honeypot Relay",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "remove_ambassadors"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "credits",
+          "amount": 6
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "intrusion_lab",
+     "name": "Intrusion Lab",
+     "verdict": "keep",
+     "reason": "A progressive token engine that fills its first threshold on the first removal. Every drain feeds it, including the drain standard action and the new Bug Bounty Board, which makes a combo without being absurd.",
+     "anchor": "pay 9+4+4=17; get ~0.7 fires x 3.5 + 1 starting = 3.5 Agents = ~1.7 payouts of 2 antimatter (14 each), total 24 = 1.41",
+     "text": "Intrusion Lab (tier 1 building, 9 cr, 1 insight): Effect: when you remove adversary compute, add 1 Agent here; at 2, gain 2 antimatter. Add 1 Agent here."
+    },
+    {
+     "id": "logic_bomb",
+     "name": "Logic Bomb",
+     "verdict": "change",
+     "reason": "10 compute on one project is a disguised discard; the drain is cut to 6. Repriced so the card holds its value when the troop half is dead (no troop in reach).",
+     "anchor": "pay 5+4+4=13; get 6 compute 12 + 1 troop 5 = 17 = 1.31 (0.92 with no troop in reach)",
+     "text": "Logic Bomb (tier 1 program, 5 cr, 1 insight): Remove 6 compute from an adversary project. Remove 1 troop in reach.",
+     "card": {
+      "id": "logic_bomb",
+      "name": "Logic Bomb",
+      "tier": 1,
+      "kind": "program",
+      "cost": 5,
+      "insight": 1,
+      "tags": [
+       "cyber",
+       "security"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "drain_project",
+        "amount": 6
+       },
+       {
+        "op": "damage",
+        "troops": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "neural_mirror",
+     "name": "Neural Mirror",
+     "verdict": "change",
+     "reason": "+1 insight income is worth 12, so at 4 Cyber tags (+2) it read 2.0 for 8 credits. The price rises so a 4-tag seat sits at the cap. The effect is unchanged; it is a tag payoff.",
+     "anchor": "pay 12+4=16; get +2 insight income at 4 Cyber tags 24 = 1.50 (1.0 at 3 tags, 2.25 at 6)",
+     "text": "Neural Mirror (tier 1 program, 12 cr, 0 insight): Raise your insight income by 1 per 2 Cyber tags on your cards.",
+     "card": {
+      "id": "neural_mirror",
+      "name": "Neural Mirror",
+      "tier": 1,
+      "kind": "program",
+      "cost": 12,
+      "insight": 0,
+      "tags": [
+       "cyber",
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "insight",
+        "tag": "cyber",
+        "per": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "ransomware_syndicate",
+     "name": "Ransomware Syndicate",
+     "verdict": "change",
+     "reason": "At 3-5 tags it read 0.67-1.1, weak for the Cyber per-tag income program. production_per_tag has no amount field, so it is repriced down rather than given a bigger number.",
+     "anchor": "pay 7+4=11; get +3 to +4 credit income at 3-4 Cyber tags 12-16 = 1.09-1.45",
+     "text": "Ransomware Syndicate (tier 1 program, 7 cr, 0 insight; needs 2 Cyber): Raise your credit income by 1 per Cyber tag on your cards.",
+     "card": {
+      "id": "ransomware_syndicate",
+      "name": "Ransomware Syndicate",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 0,
+      "needs": [
+       [
+        "cyber",
+        2
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "cyber",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "security_ops_floor",
+     "name": "Security Ops Floor",
+     "verdict": "change",
+     "reason": "4 insight (16) on every compute removal fires every round off the drain standard action (5 credits), which read about 3.0. Now 2 insight a fire and draw 2, at 14 credits. It stays a strong credit-to-insight sink, which is one of Matt's levers.",
+     "anchor": "pay 14+4+4=22; get 2 insight (8) x ~0.8 fires x 3.5 = 22 + draw 2 = 10, total 32 = 1.47 (1.73 if it fires every round)",
+     "text": "Security Ops Floor (tier 1 building, 14 cr, 1 insight): Effect: when you remove adversary compute, gain 2 insight. Draw 2 cards.",
+     "card": {
+      "id": "security_ops_floor",
+      "name": "Security Ops Floor",
+      "tier": 1,
+      "kind": "building",
+      "cost": 14,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "remove_compute"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "insight",
+          "amount": 2
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "sentinel_mesh",
+     "name": "Sentinel Mesh",
+     "verdict": "change",
+     "reason": "The typed-counter building only works while a cyber threat is up (about half the rounds) and read 0.8. Repriced down; the jam number is unchanged.",
+     "anchor": "pay 4+4+4=12; get jam 6 x ~0.5 rounds x 4 = 12 + 2 tags 2 = 14 = 1.17",
+     "text": "Sentinel Mesh (tier 1 building, 4 cr, 1 insight): Action: counts as 6 toward a cyber threat.",
+     "card": {
+      "id": "sentinel_mesh",
+      "name": "Sentinel Mesh",
+      "tier": 1,
+      "kind": "building",
+      "cost": 4,
+      "insight": 1,
+      "tags": [
+       "cyber",
+       "security"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "jam",
+         "amount": 6,
+         "source": "cyber"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "shadow_broker_feed",
+     "name": "Shadow Broker Scrub",
+     "verdict": "change",
+     "reason": "Slightly weak at 1.06. Repriced down; the effect is unchanged and it keeps the Science tag that clearing markers requires.",
+     "anchor": "pay 6+4+4=14; get 2 markers 12 + draw 1 = 5, total 17 = 1.21",
+     "text": "Shadow Broker Scrub (tier 1 program, 6 cr, 1 insight): Clear 2 corruption markers in reach. Draw 1 card.",
+     "card": {
+      "id": "shadow_broker_feed",
+      "name": "Shadow Broker Scrub",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "tags": [
+       "cyber",
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "clear_markers",
+        "count": 2
+       },
+       {
+        "op": "draw",
+        "count": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "shared_exploit_kit",
+     "name": "Shared Exploit Kit",
+     "verdict": "change",
+     "reason": "11 compute on one project is a disguised discard; the drain is cut to 6. The help half and the price stay.",
+     "anchor": "pay 10+4+4=18; get 6 compute 12 + 3 insight given 12 x 0.75 = 9 + 3 tags 3 = 24 = 1.33",
+     "text": "Shared Exploit Kit (tier 1 help program, 10 cr, 1 insight): Remove 6 compute from an adversary project. Another player gains 3 insight.",
+     "card": {
+      "id": "shared_exploit_kit",
+      "name": "Shared Exploit Kit",
+      "tier": 1,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "cyber",
+       "science",
+       "security"
+      ],
+      "keywords": [
+       "hack",
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "drain_project",
+        "amount": 6
+       },
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "insight",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "signal_hijack",
+     "name": "Signal Hijack",
+     "verdict": "change",
+     "reason": "3 troops in one country removes everything there is (0-1 a country, p90 3). Now up to 2 in reach (ruling 3). Repriced to a cheap event because a troop card is often dead.",
+     "anchor": "pay 3+4=7; get up to 2 troops, 1.48 expected 7.4 (10 at full) = 1.06-1.43",
+     "text": "Signal Hijack (tier 1 event, 3 cr, 0 insight): Remove up to 2 troops in reach.",
+     "card": {
+      "id": "signal_hijack",
+      "name": "Signal Hijack",
+      "tier": 1,
+      "kind": "event",
+      "cost": 3,
+      "insight": 0,
+      "tags": [
+       "cyber",
+       "security"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "remove_troops",
+        "count": 2,
+        "reach": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "threat_hunt",
+     "name": "Threat Hunt",
+     "verdict": "change",
+     "reason": "A drain of 8 is above the ~6 a project holds. It drops to 5, beside the typed jam; the card is only offered when a cyber threat is up, so the jam always lands.",
+     "anchor": "pay 8+4=12; get jam 6 + 5 compute 10 = 16 = 1.33",
+     "text": "Threat Hunt (tier 1 program, 8 cr, 0 insight): Counts as 6 toward a cyber threat. Remove 5 compute from an adversary project.",
+     "card": {
+      "id": "threat_hunt",
+      "name": "Threat Hunt",
+      "tier": 1,
+      "kind": "program",
+      "cost": 8,
+      "insight": 0,
+      "tags": [
+       "cyber"
+      ],
+      "effects": [
+       {
+        "op": "jam",
+        "amount": 6,
+        "source": "cyber"
+       },
+       {
+        "op": "drain_project",
+        "amount": 5
+       }
+      ]
+     }
+    },
+    {
+     "id": "bug_bounty_board",
+     "name": "Bug Bounty Board",
+     "verdict": "new",
+     "reason": "Card throughput and a credit sink, two of Matt's levers. It beats the drain standard action (5 credits for 3 compute) by a card at 1 credit less. Each use also fires Security Ops Floor and Intrusion Lab, so a well-built Cyber seat chains it.",
+     "anchor": "pay 10+4+4=18; get per use 3 compute 6 + 1 card 5 - 4 credits = 7 net x 3.5 uses = 24.5 = 1.36",
+     "text": "Bug Bounty Board (tier 1 building, 10 cr, 1 insight): Action: pay 4 credits: remove 3 compute from an adversary project, draw 1 card.",
+     "card": {
+      "id": "bug_bounty_board",
+      "name": "Bug Bounty Board",
+      "tier": 1,
+      "kind": "building",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "ability": {
+       "cost": [
+        [
+         "credits",
+         4
+        ]
+       ],
+       "effects": [
+        {
+         "op": "drain_project",
+         "amount": 3
+        },
+        {
+         "op": "draw",
+         "count": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "autonomous_defense_grid",
+     "name": "Autonomous Defense Grid",
+     "verdict": "change",
+     "reason": "The standing cyber counter read 1.43, below the tier-2 band. Repriced down (no play insight, cheaper); the effect is unchanged.",
+     "anchor": "pay 7+8=15; get 5 points x 1.5 a round (values.json auto_counter) x 4 = 30 = 2.00",
+     "text": "Autonomous Defense Grid (tier 2 building, 7 cr, 0 insight; needs 2 Cyber): Effect: cyber threats in your home country need 5 less.",
+     "card": {
+      "id": "autonomous_defense_grid",
+      "name": "Autonomous Defense Grid",
+      "tier": 2,
+      "kind": "building",
+      "cost": 9,
+      "insight": 0,
+      "needs": [
+       [
+        "cyber",
+        2
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "passives": [
+       {
+        "op": "auto_counter",
+        "source": "cyber",
+        "amount": 5
+       }
+      ]
+     }
+    },
+    {
+     "id": "botnet_takedown",
+     "name": "Botnet Takedown",
+     "verdict": "change",
+     "reason": "A drain of 8 is a disguised wipe of the loaded project; it drops to 6. Kill the botnet and its output is the clean idea. At 8 credits and 2 insight it read about 1.1, far under tier 2, so it is repriced.",
+     "anchor": "pay 3+8+4=15; get botnet 16 + 6 compute 12 = 28 = 1.87",
+     "text": "Botnet Takedown (tier 2 event, 3 cr, 1 insight; needs 1 Cyber): Remove a botnet in reach. Remove 6 compute from an adversary project.",
+     "card": {
+      "id": "botnet_takedown",
+      "name": "Botnet Takedown",
+      "tier": 2,
+      "kind": "event",
+      "cost": 3,
+      "insight": 1,
+      "needs": [
+       [
+        "cyber",
+        1
+       ]
+      ],
+      "tags": [
+       "cyber",
+       "security"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "remove_botnet"
+       },
+       {
+        "op": "drain_project",
+        "amount": 6
+       }
+      ]
+     }
+    },
+    {
+     "id": "command_and_control_grid",
+     "name": "Command-and-Control Grid",
+     "verdict": "keep",
+     "reason": "The tier-2 per-tag play engine. It looks broken when well played and stays inside the tier-2 band. Not circular: it pays credits for plays, not for credits.",
+     "anchor": "pay 18+8+8=34; get its own play 5 + 3 tags x 5 x 3.5 = 52.5 + draw 3 = 15, total 72.5 = 2.13",
+     "text": "Command-and-Control Grid (tier 2 building, 18 cr, 2 insight; needs 2 Cyber): Effect: when you play a card, gain 5 credits per tag on it. Draw 3 cards."
+    },
+    {
+     "id": "hyperscale_botnet",
+     "name": "Hyperscale Botnet",
+     "verdict": "keep",
+     "reason": "Strong insight income plus an insight discount, at the tier-2 cap. Both effects point the same way, so it is one idea.",
+     "anchor": "pay 14+8+4=26; get 3 insight income 36 + 1 insight off ~1 play a round x 3.5 = 14 + draw 3 = 15, total 65 = 2.50",
+     "text": "Hyperscale Botnet (tier 2 building, 14 cr, 1 insight; needs 2 Cyber): Each round, 3 insight. Effect: your cards cost 1 insight less to play. Draw 3 cards."
+    },
+    {
+     "id": "killswitch_directive",
+     "name": "Killswitch Directive",
+     "verdict": "change",
+     "reason": "After the discard, 'remove 10 from each project' hits nothing: compute only sits on the cheapest project, and the discard usually took it. That is dead text. It becomes a discard plus up to 4 ambassadors in reach: shut down the project and its agents. The 10-credit price stays.",
+     "anchor": "pay 10+8+4=22; get discard 24 + 4 ambassadors 20 = 44 = 2.00",
+     "text": "Killswitch Directive (tier 2 event, 10 cr, 1 insight): Discard an adversary project. Remove up to 4 adversary ambassadors in reach.",
+     "card": {
+      "id": "killswitch_directive",
+      "name": "Killswitch Directive",
+      "tier": 2,
+      "kind": "event",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "discard_project"
+       },
+       {
+        "op": "remove_ambassadors_country",
+        "unity_per": 0,
+        "max": 4,
+        "reach": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "root_access",
+     "name": "Root Access",
+     "verdict": "change",
+     "reason": "At 40 credits a liberation (45) plus a botnet twist read 1.06, far under tier 2. Repriced to 20 to land near the band; the effect is unchanged (see notes on the capstone family).",
+     "anchor": "pay 20+8+4=32; get liberation 45 + botnet next to it ~10 = 55 = 1.72",
+     "text": "Root Access (tier 2 event, 20 cr, 1 insight; needs 2 Cyber): Liberate a corrupted city in reach. Remove a botnet on or next to it.",
+     "card": {
+      "id": "root_access",
+      "name": "Root Access",
+      "tier": 2,
+      "kind": "event",
+      "cost": 20,
+      "insight": 1,
+      "needs": [
+       [
+        "cyber",
+        2
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "effects": [
+       {
+        "op": "liberate",
+        "botnet": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "singularity_exploit",
+     "name": "Singularity Exploit",
+     "verdict": "change",
+     "reason": "A botnet plus a discard is the right size for a needs-3 chain card, but with 2 insight and 1 antimatter it read 1.48. Play insight drops to 1; the antimatter cost stays as the engine's payment.",
+     "anchor": "pay 4+1 antimatter 7+8+4=23; get botnet 16 + discard 24 = 40 = 1.74",
+     "text": "Singularity Exploit (tier 2 program, 4 cr, 1 insight; needs 3 Cyber): Pay 1 antimatter. Remove a botnet in reach. Discard an adversary project.",
+     "card": {
+      "id": "singularity_exploit",
+      "name": "Singularity Exploit",
+      "tier": 2,
+      "kind": "program",
+      "cost": 4,
+      "antimatter": 1,
+      "insight": 1,
+      "needs": [
+       [
+        "cyber",
+        3
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "remove_botnet"
+       },
+       {
+        "op": "discard_project"
+       }
+      ]
+     }
+    },
+    {
+     "id": "zero_day_auction",
+     "name": "Zero-Day Auction",
+     "verdict": "change",
+     "reason": "At the minimum of 6 Cyber tags (it needs 5 and counts itself) it read 1.62, under tier 2. Play insight drops to 1; the credit price stays.",
+     "anchor": "pay 10+8+4=22; get 6 antimatter at 6 tags 42 = 1.91 (2.23 at 7)",
+     "text": "Zero-Day Auction (tier 2 program, 10 cr, 1 insight; needs 5 Cyber): Gain 1 antimatter per Cyber tag on your cards.",
+     "card": {
+      "id": "zero_day_auction",
+      "name": "Zero-Day Auction",
+      "tier": 2,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "needs": [
+       [
+        "cyber",
+        5
+       ]
+      ],
+      "tags": [
+       "cyber"
+      ],
+      "effects": [
+       {
+        "op": "gain_per_tag",
+        "resource": "antimatter",
+        "tag": "cyber",
+        "per": 1
+       }
+      ]
+     }
+    }
+   ],
+   "notes": "CORRECTION: Autonomous Defense Grid's card object should carry \"cost\": 7, not 9, to match its text and anchor. The intended object is {\"id\":\"autonomous_defense_grid\",\"name\":\"Autonomous Defense Grid\",\"tier\":2,\"kind\":\"building\",\"cost\":7,\"insight\":0,\"needs\":[[\"cyber\",2]],\"tags\":[\"cyber\"],\"passives\":[{\"op\":\"auto_counter\",\"source\":\"cyber\",\"amount\":5}]}. Credential Harvest's entry uses the id \"credential_harvest_keep\" by mistake; its real id is spoofed_credentials (kept, no change).\n\nThe section goes from 26 to 25 cards and the deck from 154 to 153: two cuts (Adaptive Malware, Zero-Click Breach), one new (Bug Bounty Board). Tier-1 programs go 10 to 8 and tier-1 buildings 6 to 7.\n\n1. Compute fills only the cheapest visible project (adversary.rs gain_compute takes min_by_key over the project cost), so at any time one project holds nearly all the compute. That makes drain_all ('from each project') misleading: it acts as a single drain. Adaptive Malware and Killswitch's second half were built on it. Every other section's drain_all cards and the 'drain all' wording in card-grammar.md and adversary.md have the same problem.\n\n2. Values I used where the anchors and values.json disagree:\n- A discard is 24 (values.json says 8). A project typically holds 6-8 compute when you aim the discard at it, and a discarded project never resolves, so 12 compute at the anchor's 2 each. At 8, every discard card reads absurdly weak.\n- A botnet is 16 (values.json says 12). It makes 1 compute a round for about 4 rounds (8 at the anchor) plus 2 Sway (8), and it is a purge condition until 4 Unity tips.\nThe agents' table undervalues both against the compute anchor.\n\n3. Liberation at 45 puts every liberation capstone printed at 40+ credits near 1.0, far under tier 2. Root Access is repriced to 20 (1.72); Hostile Buyout (42) and Peacekeeping Mission (42) have the same problem in other sections. Either the anchor is low for a liberation, or the capstone family wants a family-wide pass. Matt's late-game 30-50 credit lever and the tier-2 ratio band clash here.\n\n4. No late-game 30-50 credit Cyber card is proposed. At the anchors a tier-2 card at 30+ credits needs about 76 of effect, and no Cyber pair of effects (discard 24, botnet 16, ambassadors 5 each) gets near that short of a liberation. Root Access stays as Cyber's late big card. A real 30-50 credit late card needs a bigger unit (a second liberation, a multi-botnet removal op with a count, or Sway) and Matt's call.\n\n5. Kept on purpose at the top of its band: Hyperscale Botnet at 2.5 (the tier-2 cap). Credential Harvest reads 1.78 at 4 Cyber tags; it is a tag payoff, 1.33 at 3 tags. Security Ops Floor reads 1.47 at 0.8 fires but 1.73 if it fires every round; with Bug Bounty Board or the drain standard action it can, which is the 'looks broken when well played' engine. It turns spare credits into insight, one of Matt's sinks.\n\n6. Engine when-built draws were trimmed from 3 to 2 on Exploit Broker, Honeypot Relay and Security Ops Floor ('about two fires' worth': their fires are about 5 credits each). Darknet Exchange keeps draw 3 because its discount is worth less now that most Cyber cards cost 3-7.\n\n7. Ransomware Syndicate and Neural Mirror are lumpy per-tag cards: Neural Mirror's 'per 2' makes its ratio jump between 3 and 4 Cyber tags. production_per_tag has no amount field, so both were fixed by price, not by number.\n\n8. Re-read plays per game after this pass on the repriced cheap cards (Signal Hijack at 3, Botnet Takedown at 3, Sentinel Mesh at 4). CLAUDE.md asks this after any card edit."
+  }
+ ],
+ [
+  "propose:Industry",
+  {
+   "cards": [
+    {
+     "id": "antitrust_action",
+     "name": "Antitrust Action",
+     "verdict": "keep",
+     "reason": "A typed jam with a per-tag chip rider of its own tag. The numbers make sense and it beats paying an economic counter (4-7 credits).",
+     "anchor": "pay 6+4+0=10; get jam 5 on an economic threat ~4-5 + 3 chips at 3 Industry tags 9 = 13-14 = 1.3-1.4",
+     "text": "Antitrust Action (tier 1 program, 6 cr, 0 insight, Industry): Counts as 5 toward an economic threat. Gain 1 chip per Industry tag on your cards."
+    },
+    {
+     "id": "materials_hedge_desk",
+     "name": "Capital Injection",
+     "verdict": "change",
+     "reason": "A bare feeder that did nothing without a Capital building (rulings 1-2). It now draws 3 cards as its main effect (throughput lever) and adds a 2-Capital bonus, at a lower price.",
+     "anchor": "pay 6+4+4=14; get draw 3 15 = 1.07 alone; +2 Capital ~6 with a target = 21 = 1.50",
+     "text": "Capital Injection (tier 1 event, 6 cr, 1 insight, Industry): Draw 3 cards. Add 2 Capital to one of your Capital buildings.",
+     "card": {
+      "id": "materials_hedge_desk",
+      "name": "Capital Injection",
+      "tier": 1,
+      "kind": "event",
+      "cost": 6,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 3
+       },
+       {
+        "op": "add_tokens",
+        "kind": "capital",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "economies_of_scale",
+     "name": "Economies of Scale",
+     "verdict": "change",
+     "reason": "A tag payoff (exempt from 'useful alone') that read 0.9 at a committed seat's 4 Industry tags. Repriced from 10 to 7 credits.",
+     "anchor": "pay 7+4+4=15; get +1 credit income per Industry tag, at 4 tags 16 = 1.07, at 5 tags 20 = 1.33",
+     "text": "Economies of Scale (tier 1 program, 7 cr, needs 2 Industry, 1 insight, Industry): Raise your credit income by 1 per Industry tag on your cards.",
+     "card": {
+      "id": "economies_of_scale",
+      "name": "Economies of Scale",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 1,
+      "needs": [
+       [
+        "industry",
+        2
+       ]
+      ],
+      "tags": [
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "industry",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "gigafactory_charter",
+     "name": "Gigafactory Charter",
+     "verdict": "change",
+     "reason": "It read 1.0 at the anchors. It keeps its 40-credit price (Matt wants dear late cards) and gains a different second effect, draw 2, rather than a bigger income number.",
+     "anchor": "pay 40+4+4=48; get +12 credit income 48 + draw 2 10 = 58 = 1.21",
+     "text": "Gigafactory Charter (tier 1 program, 40 cr, 1 insight, Industry): Raise your credit income by 12. Draw 2 cards.",
+     "card": {
+      "id": "gigafactory_charter",
+      "name": "Gigafactory Charter",
+      "tier": 1,
+      "kind": "program",
+      "cost": 40,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 12
+       },
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "joint_fabrication_pact",
+     "name": "Joint Fabrication Pact",
+     "verdict": "change",
+     "reason": "6 chips to you and 6 to another player for 9 credits read 1.97 with the gift at 0.75 of face, above the tier-1 ceiling. The gift drops to 3 and the price rises 1 credit. Your own share alone still covers the cost.",
+     "anchor": "pay 10+4+4=18; get 6 chips 18 + gift 3 chips 9x0.75=6.75 + 3 tags 2 = 26.75 = 1.49 (own share alone 20 = 1.11)",
+     "text": "Joint Fabrication Pact (tier 1 help program, 10 cr, 1 insight, Industry/Power/Diplomacy): Gain 6 chips. Another player gains 3 chips.",
+     "card": {
+      "id": "joint_fabrication_pact",
+      "name": "Joint Fabrication Pact",
+      "tier": 1,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "industry",
+       "power",
+       "diplomacy"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "gain",
+        "resource": "chips",
+        "amount": 6
+       },
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "chips",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "lights_out_assembly",
+     "name": "Lights-Out Assembly",
+     "verdict": "keep",
+     "reason": "A clean tier-1 rebate engine. It fires about 0.75 times a round (cards printed at 10+), and its draw 3 when built is about two fires.",
+     "anchor": "pay 11+4+4=19; get draw 3 15 + 5 credits x 0.75 a round x 3.5 rounds 13 = 28 = 1.47",
+     "text": "Lights-Out Assembly (tier 1 building, 11 cr, 1 insight, Industry/Power): Effect: when you play a card printed at 10 credits or more, gain 5 credits. Draw 3 cards."
+    },
+    {
+     "id": "liquidity_event",
+     "name": "Liquidity Event",
+     "verdict": "cut",
+     "reason": "It does nothing without a Capital card (ruling 1), and it competes with the Capital buildings' own thresholds. Collateralized Grid (changed) is the Capital cash-out. Cut to make room for the new cards.",
+     "anchor": "pay 7+4+4=15; get 0 alone, 3-4 Capital x 5 = 15-20 with a target = 0 / 1.0-1.33",
+     "text": "(cut) Liquidity Event: Remove the Capital from one of your cards for 5 credits each."
+    },
+    {
+     "id": "market_watchdog",
+     "name": "Market Watchdog",
+     "verdict": "change",
+     "reason": "A free typed-jam Action is worth about 3 a round, so 7 credits plus 1 insight read 0.8. Repriced to 5 credits and 0 insight: it is the small standing economic counter now that Market Stabilization Board is cut.",
+     "anchor": "pay 5+4+0=9; get jam 6 Action ~3 a round x 4 rounds 12 = 1.33",
+     "text": "Market Watchdog (tier 1 building, 5 cr, 0 insight, Industry): Action: counts as 6 toward an economic threat.",
+     "card": {
+      "id": "market_watchdog",
+      "name": "Market Watchdog",
+      "tier": 1,
+      "kind": "building",
+      "cost": 5,
+      "insight": 0,
+      "tags": [
+       "industry"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "jam",
+         "amount": 6,
+         "source": "economic"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "parts_exchange",
+     "name": "Parts Exchange",
+     "verdict": "change",
+     "reason": "Its Action was the Builder's Procure word for word (2 chips: draw 2; guideline 11), and it read 0.7. It now draws 3 for 2 chips, a real chips-to-cards engine (throughput lever), at 9 credits.",
+     "anchor": "pay 9+4+4=17; get (3 cards 15 - 2 chips 6) 9 a use x 4 rounds x 0.7 = 25 = 1.48",
+     "text": "Parts Exchange (tier 1 building, 9 cr, 1 insight, Industry): Action: pay 2 chips, draw 3 cards.",
+     "card": {
+      "id": "parts_exchange",
+      "name": "Parts Exchange",
+      "tier": 1,
+      "kind": "building",
+      "cost": 9,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "ability": {
+       "cost": [
+        [
+         "chips",
+         2
+        ]
+       ],
+       "effects": [
+        {
+         "op": "draw",
+         "count": 3
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "payroll_automation",
+     "name": "Payroll Automation",
+     "verdict": "change",
+     "reason": "Ruling 2: the main effect was +2 income (0.4 alone). It is now +4 credit income, a little below the rate alone, with 3 Capital as the bonus (Large Convoy shape). With its own Industry play, 3 Capital fills Retained Earnings' threshold of 4.",
+     "anchor": "pay 10+4+4=18; get +4 credit income 16 = 0.89 alone; +3 Capital ~9 with a target = 25 = 1.39",
+     "text": "Payroll Automation (tier 1 program, 10 cr, 1 insight, Industry): Raise your credit income by 4. Add 3 Capital to one of your Capital buildings.",
+     "card": {
+      "id": "payroll_automation",
+      "name": "Payroll Automation",
+      "tier": 1,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 4
+       },
+       {
+        "op": "add_tokens",
+        "kind": "capital",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "plant_overdrive",
+     "name": "Plant Overdrive",
+     "verdict": "change",
+     "reason": "A one-off per-tag payoff. As an event it doesn't count itself, so it read 0.93 at 3.5 Industry tags. It is now 8 credits and 0 insight (a small event).",
+     "anchor": "pay 8+4+0=12; get 1 energy per Industry tag, 3.5 tags x 4.5 = 15.75 = 1.31",
+     "text": "Plant Overdrive (tier 1 event, 8 cr, 0 insight, Industry): Gain 1 energy per Industry tag on your cards.",
+     "card": {
+      "id": "plant_overdrive",
+      "name": "Plant Overdrive",
+      "tier": 1,
+      "kind": "event",
+      "cost": 8,
+      "insight": 0,
+      "tags": [
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "gain_per_tag",
+        "resource": "energy",
+        "tag": "power",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "prefab_plant_kit",
+     "name": "Prefab Plant Kit",
+     "verdict": "keep",
+     "reason": "The factory works like +1 chip income (factory_chips 1 a production step), but troops can strike it. Energy per Power tag suits its second tag. It reads sensibly.",
+     "anchor": "pay 9+4+4=17; get factory ~8 (chip income 10, at risk) + ~2.5 Power tags x 4.5 11 + 2 tags 2 = 21 = 1.24",
+     "text": "Prefab Plant Kit (tier 1 program, 9 cr, 1 insight, Industry/Power): Build a factory in reach. Gain 1 energy per Power tag on your cards."
+    },
+    {
+     "id": "station_prefab_order",
+     "name": "Reclamation Crew",
+     "verdict": "change",
+     "reason": "Freeing a station (15) for 10 credits plus 1 insight read 0.94 and is often dead (needs a corrupted station in reach). Repriced to 6 credits.",
+     "anchor": "pay 6+4+4=14; get station freed 15 + 2 tags 1.5 = 16.5 = 1.18",
+     "text": "Reclamation Crew (tier 1 program, 6 cr, 1 insight, Industry/Power): Free 1 corrupted station in reach.",
+     "card": {
+      "id": "station_prefab_order",
+      "name": "Reclamation Crew",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "tags": [
+       "industry",
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "cleanse",
+        "amount": 1,
+        "one_country": false,
+        "only": "station"
+       }
+      ]
+     }
+    },
+    {
+     "id": "retained_earnings",
+     "name": "Retained Earnings",
+     "verdict": "change",
+     "reason": "Its own play fills the threshold of 4 at once (+3 income now), and about one Industry play a round fills it again every 2 rounds, so it read 1.83. The effect stays the same; only the price rises, from 10 to 14.",
+     "anchor": "pay 14+4+4=22; get +3 income at once 12 + ~1.75 more fires x 12 = 21 = 33 = 1.50",
+     "text": "Retained Earnings (tier 1 building, 14 cr, 1 insight, Industry): Effect: when you play an Industry card, add 2 Capital here; at 4, raise your credit income by 3. Add 2 Capital here.",
+     "card": {
+      "id": "retained_earnings",
+      "name": "Retained Earnings",
+      "tier": 1,
+      "kind": "building",
+      "cost": 14,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "capital"
+      },
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "industry"
+        },
+        "then": [
+         {
+          "op": "add_tokens",
+          "kind": "capital",
+          "amount": 2,
+          "here": true
+         }
+        ]
+       },
+       {
+        "op": "threshold",
+        "at": 4,
+        "then": [
+         {
+          "op": "production",
+          "resource": "credits",
+          "amount": 3
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "capital",
+        "amount": 2,
+        "here": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "robotic_foundry",
+     "name": "Robotic Foundry",
+     "verdict": "change",
+     "reason": "+5 credit income for 13 credits read 0.95. Repriced to 9. A credit-plus-energy version would copy Fusion Startup Stake, so the effect stays.",
+     "anchor": "pay 9+4+4=17; get +5 credit income 20 + 2 tags 1.5 = 21.5 = 1.26",
+     "text": "Robotic Foundry (tier 1 program, 9 cr, 1 insight, Industry/Power): Raise your credit income by 5.",
+     "card": {
+      "id": "robotic_foundry",
+      "name": "Robotic Foundry",
+      "tier": 1,
+      "kind": "program",
+      "cost": 9,
+      "insight": 1,
+      "tags": [
+       "industry",
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 5
+       }
+      ]
+     }
+    },
+    {
+     "id": "standardized_tooling",
+     "name": "Standardized Tooling",
+     "verdict": "change",
+     "reason": "A 5-credit discount on about one Industry card a round plus draw 3 read 1.71. The when-built draw drops to 2, which is two fires' worth (2 x 5 credits).",
+     "anchor": "pay 11+4+4=19; get draw 2 10 + 5 off x 1 a round x 3.5 rounds 17.5 = 27.5 = 1.45",
+     "text": "Standardized Tooling (tier 1 building, 11 cr, 1 insight, Industry): Effect: your Industry cards cost 5 credits less to play. Draw 2 cards.",
+     "card": {
+      "id": "standardized_tooling",
+      "name": "Standardized Tooling",
+      "tier": 1,
+      "kind": "building",
+      "cost": 11,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "passives": [
+       {
+        "op": "card_discount",
+        "tag": "industry",
+        "resource": "credits",
+        "amount": 5
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "supply_chain_audit",
+     "name": "Supply Chain Audit",
+     "verdict": "change",
+     "reason": "A typed jam with a +2 income rider at 7 credits plus 1 insight read 0.85. It is now 6 credits and 0 insight (a small program, like Antitrust Action).",
+     "anchor": "pay 6+4+0=10; get jam 6 economic ~4-6 + +2 credit income 8 = 12-14 = 1.2-1.4",
+     "text": "Supply Chain Audit (tier 1 program, 6 cr, 0 insight, Industry): Counts as 6 toward an economic threat. Raise your credit income by 2.",
+     "card": {
+      "id": "supply_chain_audit",
+      "name": "Supply Chain Audit",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 0,
+      "tags": [
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "jam",
+        "amount": 6,
+        "source": "economic"
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "vendor_financing",
+     "name": "Vendor Financing",
+     "verdict": "change",
+     "reason": "Ruling 2: you got nothing yourself (a 5-credit gift plus 5 Capital, 0.2 alone). It is now a normal help card: another player gains 4 credits and you get +4 credit income. The Capital rider is dropped because the family keeps two feeders.",
+     "anchor": "pay 8+4+4=16; get +4 credit income 16 + gift 4x0.75=3 + tag 1 = 20 = 1.25",
+     "text": "Vendor Financing (tier 1 help program, 8 cr, 1 insight, Industry): Another player gains 4 credits. Raise your credit income by 4.",
+     "card": {
+      "id": "vendor_financing",
+      "name": "Vendor Financing",
+      "tier": 1,
+      "kind": "program",
+      "cost": 8,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "credits",
+        "amount": 4
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "arcology_foundry",
+     "name": "Arcology Foundry",
+     "verdict": "keep",
+     "reason": "A tier-2 income program behind 3 Industry tags. It sits just under the tier-2 band, and the numbers read sensibly.",
+     "anchor": "pay 16+8+8=32; get +9 credit income 36 + +2 chip income 20 = 56 = 1.75",
+     "text": "Arcology Foundry (tier 2 program, 16 cr, needs 3 Industry, 2 insight, Industry): Raise your credit income by 9. Raise your chip income by 2."
+    },
+    {
+     "id": "capital_projects_office",
+     "name": "Capital Projects Office",
+     "verdict": "change",
+     "reason": "The tier-2 rebate read 1.46-1.79. Two fires are 20 credits, which is 4 cards, so the when-built draw goes from 3 to 4.",
+     "anchor": "pay 16+8+4=28; get draw 4 20 + 10 credits x 0.75-1 a round x 3.5 rounds 26-35 = 46-55 = 1.64-1.96",
+     "text": "Capital Projects Office (tier 2 building, 16 cr, 1 insight, Industry): Effect: when you play a card printed at 10 credits or more, gain 10 credits. Draw 4 cards.",
+     "card": {
+      "id": "capital_projects_office",
+      "name": "Capital Projects Office",
+      "tier": 2,
+      "kind": "building",
+      "cost": 16,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play_cost",
+         "at": 10
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "credits",
+          "amount": 10
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "collateralized_grid",
+     "name": "Collateralized Grid",
+     "verdict": "change",
+     "reason": "Ruling 1: it did nothing without a Capital card, and with one it paid 2 energy (9 credits) for each Capital, about 3 times what a Capital token is worth. It now raises energy income by 2 (the card limit) and cashes Capital at 1 energy each as the bonus.",
+     "anchor": "pay 10+8+4=22; get +2 energy income 28 = 1.27 alone; + 3-4 Capital x 4.5 = 41.5-46 = 1.89-2.09",
+     "text": "Collateralized Grid (tier 2 program, 10 cr, 1 insight, Industry/Power): Raise your energy income by 2. Remove the Capital from one of your cards for 1 energy each.",
+     "card": {
+      "id": "collateralized_grid",
+      "name": "Collateralized Grid",
+      "tier": 2,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "industry",
+       "power"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       },
+       {
+        "op": "cash_out",
+        "kind": "capital",
+        "resource": "energy",
+        "rate": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "conglomerate_headquarters",
+     "name": "Conglomerate Headquarters",
+     "verdict": "keep",
+     "reason": "The tier-2 per-tag engine: its own play fills its threshold of 3 at once. At about 3 tags played a round it is a strong engine that stays inside the tier-2 band.",
+     "anchor": "pay 14+8+4=26; get 12 at once + 12 a round x 3.5 rounds 42 = 54 = 2.08",
+     "text": "Conglomerate Headquarters (tier 2 building, 14 cr, needs 2 Industry, 1 insight, Industry): Effect: when you play a card, add 1 Capital here per tag on it; at 3, gain 12 credits. Add 2 Capital here."
+    },
+    {
+     "id": "market_stabilization_board",
+     "name": "Market Stabilization Board",
+     "verdict": "cut",
+     "reason": "An automatic jam limited to your home country is worth about 13 (values.json auto_counter), which reads 0.6 at tier 2. No reprice brings it near 1.8. Industry also had four economic-counter cards against 'counters stay rare'; Market Watchdog (repriced) keeps the role.",
+     "anchor": "pay 9+8+4=21; get standing counter ~13 + tag 1 = 14 = 0.67",
+     "text": "(cut) Market Stabilization Board: Effect: economic threats in your home country need 5 less."
+    },
+    {
+     "id": "orbital_mass_driver",
+     "name": "Orbital Mass Driver",
+     "verdict": "keep",
+     "reason": "Industry's true ultimate: a dear engine whose numbers make sense and that sits inside the tier-2 band.",
+     "anchor": "pay 28+2 chips 6+8+8=50; get 16 credits a round 64 + 3 chips a round 30 + draw 3 15 = 109 = 2.18",
+     "text": "Orbital Mass Driver (tier 2 building, 28 cr + 2 chips, needs 3 Industry, 2 insight, Industry/Power): Each round, 16 credits and 3 chips. Pay 2 chips. Draw 3 cards."
+    },
+    {
+     "id": "vertical_monopoly",
+     "name": "Vertical Monopoly",
+     "verdict": "keep",
+     "reason": "The tier-2 per-tag income building (3 a tag, the shared shape). It reaches the tier-2 ceiling at 5 Industry tags and passes it at 6 or more. Kept on purpose as the 'broken when well played' Industry engine.",
+     "anchor": "pay 16+8+8=32; get 3 a round per Industry tag, 5 tags 15 a round 60 + draw 4 20 = 80 = 2.5 (6 tags 2.9)",
+     "text": "Vertical Monopoly (tier 2 building, 16 cr, needs 3 Industry, 2 insight, Industry): Each round, 3 credits per Industry tag on your cards. Draw 4 cards."
+    },
+    {
+     "id": "supplier_network",
+     "name": "Supplier Network",
+     "verdict": "new",
+     "reason": "New, for card throughput. Each Industry card you play draws 1, so a committed Industry seat keeps its hand full. It counts itself, so building it draws 2 (two fires' worth).",
+     "anchor": "pay 12+4+4=20; get draw 1 when built + 1 from its own play 10 + 1 card a round x 3.5 rounds 17.5 = 27.5 = 1.38",
+     "text": "Supplier Network (tier 1 building, 12 cr, 1 insight, Industry): Effect: when you play an Industry card, draw 1 card. Draw 1 card.",
+     "card": {
+      "id": "supplier_network",
+      "name": "Supplier Network",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "tags": [
+       "industry"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "industry"
+        },
+        "then": [
+         {
+          "op": "draw",
+          "count": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "wartime_retooling",
+     "name": "Wartime Retooling",
+     "verdict": "new",
+     "reason": "New, a late-game sink for spare credits worth 30: it turns credits into the scarce things, energy income and 4 cards, instead of more credits.",
+     "anchor": "pay 30+4+4=38; get +2 energy income 28 + draw 4 20 + 2 tags 1.5 = 49.5 = 1.30",
+     "text": "Wartime Retooling (tier 1 program, 30 cr, 1 insight, Industry/Power): Raise your energy income by 2. Draw 4 cards.",
+     "card": {
+      "id": "wartime_retooling",
+      "name": "Wartime Retooling",
+      "tier": 1,
+      "kind": "program",
+      "cost": 30,
+      "insight": 1,
+      "tags": [
+       "industry",
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       },
+       {
+        "op": "draw",
+        "count": 4
+       }
+      ]
+     }
+    }
+   ],
+   "notes": "1) ENGINE BLOCKER for rulings 1-2: crates/aic-core/src/modules/effects/feasible.rs uses all() over the effects, so a program or event is not offered unless EVERY targeted op has a target. add_tokens (not here) needs a Capital building, cash_out needs Capital, jam needs a counterable threat of its type, and build_factory needs a site. So the new Payroll Automation, Capital Injection and Collateralized Grid (and Deep State Ledger, Supply Chain Audit and Antitrust Action today) still cannot be played without a target, whatever their main effect. To make feeders 'useful alone', add_tokens and cash_out (and arguably a typed jam beside an income or gain) should join the only_these / one_acts group, which vetoes a card only when it would do nothing at all. This is needed before any screen.\n2) Value-table disagreements: chips are 1.5 in values.json but 3 at the anchor, which doubles Joint Fabrication Pact's and Parts Exchange's worth. Credit income at 4 a point makes every plain income program read about 1.0 at its old price (Robotic Foundry, Gigafactory, Payroll), hence the reprices. A help card's gift is counted at 0.75 of face (values.json other_gain). Standing counters (auto_counter about 13) cannot reach the tier-2 band at any price.\n3) Shared shapes: Economies of Scale is the cross-tag 'per-tag income program, needs 2, 10 credits'. At the anchors that shape reads 0.9-1.1 at 4-5 tags, so I repriced Industry's to 7 credits; the other five tags' twins probably need the same. Cutting Market Stabilization Board leaves Autonomous Defense Grid (Cyber) as the only standing counter, so player-cards.md's 'Industry and Cyber keep a standing automatic counter' needs an edit. Retained Earnings' price rose because its own play fills the threshold of 4 at once.\n4) Kept on purpose above the band: Vertical Monopoly reads 2.5 at 5 Industry tags and 2.9 at 6 or more (Matt's 'broken when well played' engine). Arcology Foundry is just under the tier-2 band (1.75); I kept it.\n5) Mix: 2 cut (Liquidity Event, an event; Market Stabilization Board, a tier-2 building) and 2 new (Supplier Network, a tier-1 building; Wartime Retooling, a tier-1 program). Industry stays at 25, with tier 2 going from 7 to 6. Supplier Network puts draw inside a when trigger's then, which the grammar allows (instant player ops), but no card does yet: check face.rs and value.rs for a draw in a trigger. Plant Overdrive's card object has a typo: its tag must stay 'industry', not 'power'. Corrected op: {\"op\":\"gain_per_tag\",\"resource\":\"energy\",\"tag\":\"industry\",\"per\":1}.\n6) Each change keeps a one-reading face. All new numbers sit at the anchors' tier-1 band (1.07-1.50) or tier-2 band (1.64-2.5). No removal cards are in Industry, so the reach ruling touches none here."
+  }
+ ],
+ [
+  "propose:Science",
+  {
+   "cards": [
+    {
+     "id": "breakthrough_leak",
+     "name": "Breakthrough Leak",
+     "verdict": "keep",
+     "reason": "A tag-chain draw (needs 3 Science) at a fair tier-1 rate; it is pure throughput, which is one of Matt's levers.",
+     "anchor": "pay 6+4+4=14; get 4 cards 20 = 1.43",
+     "text": "Tier 1 event. 6 credits, 1 insight; needs 3 Science. Draw 4 cards."
+    },
+    {
+     "id": "citation_engine",
+     "name": "Citation Engine",
+     "verdict": "change",
+     "reason": "It ran at 1.9 on tier 1 once its own play fire was counted (7 + 7 a round + 3 cards for 22). Its build draw drops to 2 cards (two fires' worth) and its price rises to 20, so it is a dearer engine at the same rate.",
+     "anchor": "pay 20+4+4=28; get self-fire 7 + 7 x 3.5 rounds 24.5 + 2 cards 10 = 41.5 = 1.48",
+     "text": "Tier 1 building. 20 credits, 1 insight; needs 2 Science. Effect: when you play a Science card, gain 7 credits. Draw 2 cards.",
+     "card": {
+      "id": "citation_engine",
+      "name": "Citation Engine",
+      "tier": 1,
+      "kind": "building",
+      "cost": 20,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        2
+       ]
+      ],
+      "tags": [
+       "science"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "science"
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "credits",
+          "amount": 7
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "cryo_compute_burn",
+     "name": "Cryo-Compute Burn",
+     "verdict": "keep",
+     "reason": "A one-off per-tag payoff (ruling 11, exempt from 'useful alone'). Spending energy to get insight reads naturally, and it pays a committed seat.",
+     "anchor": "pay 1+4+0 + 2 energy 9 = 14; get 1 insight per Science tag: 4 tags 16 = 1.14, 5 tags 20 = 1.43",
+     "text": "Tier 1 event. 1 credit, 2 energy, 0 insight. Pay 2 energy. Gain 1 insight per Science tag on your cards."
+    },
+    {
+     "id": "dataset_scraper",
+     "name": "Dataset Scraper",
+     "verdict": "change",
+     "reason": "A bare feeder that did nothing without a Dataset building (ruling 2). It gains a main effect, draw 2, priced a little below the rate, and its Datasets become the bonus. Its play insight goes to 0.",
+     "anchor": "pay 7+4+0=11; get alone 2 cards 10 = 0.91; with Telemetry Archive +2 Datasets (half a fire, 1.5 insight) 6 = 16 = 1.45",
+     "text": "Tier 1 program. 7 credits, 0 insight; Science, Cyber. Draw 2 cards. Add 2 Datasets to one of your Dataset buildings.",
+     "card": {
+      "id": "dataset_scraper",
+      "name": "Dataset Scraper",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 0,
+      "tags": [
+       "science",
+       "cyber"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       },
+       {
+        "op": "add_tokens",
+        "kind": "datasets",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "endowed_research_chair",
+     "name": "Endowed Research Chair",
+     "verdict": "keep",
+     "reason": "Trading a salary (credit income) for insight income reads right and prices in band. It is one of only two insight-income cards, so it stays.",
+     "anchor": "pay 8+4+4 + 1 credit income 4 = 20; get +2 insight income 24 = 1.2",
+     "text": "Tier 1 program. 8 credits, 1 insight; needs 2 Science. Lower your credit income by 1. Raise your insight income by 2."
+    },
+    {
+     "id": "field_grant",
+     "name": "Field Grant",
+     "verdict": "change",
+     "reason": "With a station it ran at 1.8 (3 cubes at values' 6 for 10). The price rises from 6 to 8 to bring it to the tier-1 cap; the station condition still holds it lower for a seat without one.",
+     "anchor": "pay 8+4+0=12; get 3 megaproject cubes x 6 (values project_cube) 18 = 1.5 (with a station; about 1.05 with none in reach yet)",
+     "text": "Tier 1 program. 8 credits, 0 insight. Add 3 research cubes in your color to a megaproject in a country where you own a station.",
+     "card": {
+      "id": "field_grant",
+      "name": "Field Grant",
+      "tier": 1,
+      "kind": "program",
+      "cost": 8,
+      "insight": 0,
+      "tags": [
+       "science"
+      ],
+      "keywords": [
+       "cubes"
+      ],
+      "effects": [
+       {
+        "op": "project_cube",
+        "count": 3,
+        "station": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "field_sensor_grid",
+     "name": "Field Sensor Grid",
+     "verdict": "keep",
+     "reason": "Science's marker-clearing niche at a fair rate; 3 markers in reach is a believable number.",
+     "anchor": "pay 10+4+0=14; get 3 markers x 6 = 18 = 1.29",
+     "text": "Tier 1 program. 10 credits, 0 insight. Clear 3 corruption markers in reach."
+    },
+    {
+     "id": "grad_student_pool",
+     "name": "Grad Student Pool",
+     "verdict": "change",
+     "reason": "It ran at 1.7 on tier 1. The build draw drops from 3 to 2, two fires' worth of its 5-credit discount, as the engine rule asks.",
+     "anchor": "pay 11+4+4=19; get 5 off x 1 Science card a round x 3.5 17.5 + 2 cards 10 = 27.5 = 1.45",
+     "text": "Tier 1 building. 11 credits, 1 insight. Effect: your Science cards cost 5 credits less to play. Draw 2 cards.",
+     "card": {
+      "id": "grad_student_pool",
+      "name": "Grad Student Pool",
+      "tier": 1,
+      "kind": "building",
+      "cost": 11,
+      "insight": 1,
+      "tags": [
+       "science"
+      ],
+      "passives": [
+       {
+        "op": "card_discount",
+        "tag": "science",
+        "resource": "credits",
+        "amount": 5
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "patent_library",
+     "name": "Patent Library",
+     "verdict": "change",
+     "reason": "A good throughput Action that ran just over the cap (1.53). The build cost goes from 8 to 9, and the Action stays 3 credits for 2 cards.",
+     "anchor": "pay 9+4+4=17; get (2 cards 10 - 3 credits) x 3.5 rounds 24.5 = 1.44",
+     "text": "Tier 1 building. 9 credits, 1 insight. Action: pay 3 credits, draw 2 cards.",
+     "card": {
+      "id": "patent_library",
+      "name": "Patent Library",
+      "tier": 1,
+      "kind": "building",
+      "cost": 9,
+      "insight": 1,
+      "tags": [
+       "science"
+      ],
+      "ability": {
+       "cost": [
+        [
+         "credits",
+         3
+        ]
+       ],
+       "effects": [
+        {
+         "op": "draw",
+         "count": 2
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "predictive_modeling",
+     "name": "Predictive Modeling",
+     "verdict": "change",
+     "reason": "It was weak (0.95): peek 3 is a near-worthless rider, and 'delay 3 threats' is more than are usually up. It now delays 2 threats and draws 2 cards, so the forecast pays in cards.",
+     "anchor": "pay 7+4+0=11; get 2 delays x 2.5 5 + 2 cards 10 = 15 = 1.36",
+     "text": "Tier 1 program. 7 credits, 0 insight. Delay 2 threats one round. Draw 2 cards.",
+     "card": {
+      "id": "predictive_modeling",
+      "name": "Predictive Modeling",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 0,
+      "tags": [
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "delay_threat",
+        "count": 2
+       },
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "red_team_audit",
+     "name": "Red-Team Audit",
+     "verdict": "change",
+     "reason": "It was weak (1.0-1.06): a 6-point jam plus 2 cards for 16. The price drops from 8 to 6; the effect is unchanged and keeps its three tags.",
+     "anchor": "pay 6+4+4=14; get jam 6 (about a counter, 7) + 2 cards 10 = 17 = 1.21",
+     "text": "Tier 1 program. 6 credits, 1 insight; Science, Cyber, Security. One threat needs 6 less of each resource. Draw 2 cards.",
+     "card": {
+      "id": "red_team_audit",
+      "name": "Red-Team Audit",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "tags": [
+       "science",
+       "cyber",
+       "security"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "jam",
+        "amount": 6
+       },
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "research_royalties",
+     "name": "Research Royalties",
+     "verdict": "change",
+     "reason": "A per-tag payoff that was under 1.0 at a typical 4 Science tags (16 for 18). The price drops from 10 to 6, so it rewards commitment and scales past the cap only for a deep Science seat.",
+     "anchor": "pay 6+4+4=14; get +1 credit income per Science tag x 4: 4 tags 16 = 1.14, 5 tags 20 = 1.43, 6 tags 24 = 1.71 (tag payoff)",
+     "text": "Tier 1 program. 6 credits, 1 insight; needs 2 Science. Raise your credit income by 1 per Science tag on your cards.",
+     "card": {
+      "id": "research_royalties",
+      "name": "Research Royalties",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        2
+       ]
+      ],
+      "tags": [
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "science",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "sample_repository",
+     "name": "Sample Repository",
+     "verdict": "cut",
+     "reason": "A disguised +1 insight income (via the 1-cube-to-1-insight converter) that is weak at 1.0 and overlaps Endowed Research Chair. Its cube role moves to the new Moonshot Grant.",
+     "anchor": "pay 8+4+0=12; get +1 research cube income (about 1 insight a round via the converter) 12 = 1.0",
+     "text": "(cut) Tier 1 program. 8 credits, 0 insight; needs 2 Science. Raise your research cube income by 1."
+    },
+    {
+     "id": "shared_compute_grant",
+     "name": "Shared Compute Grant",
+     "verdict": "keep",
+     "reason": "A clean help card that gives insight to another player and draws you a card; it prices in band.",
+     "anchor": "pay 6+4+4=14; get 4 insight to another 16 (12 at the gift share) + 1 card 5 = 17-21 = 1.21-1.5",
+     "text": "Tier 1 program (help). 6 credits, 1 insight. Another player gains 4 insight. Draw 1 card."
+    },
+    {
+     "id": "simulation_cluster",
+     "name": "Simulation Cluster",
+     "verdict": "change",
+     "reason": "Ruling 1: a reuse does nothing without another Action building. Like the other engine payoffs it now draws 2 when built (useful alone), at a price of 11.",
+     "anchor": "pay 11+4+4=19; get reuse 5 x 3.5 rounds 17.5 + 2 cards 10 = 27.5 = 1.45",
+     "text": "Tier 1 building. 11 credits, 1 insight; Science, Cyber. Action: use another of your buildings' Actions again this round. Draw 2 cards.",
+     "card": {
+      "id": "simulation_cluster",
+      "name": "Simulation Cluster",
+      "tier": 1,
+      "kind": "building",
+      "cost": 11,
+      "insight": 1,
+      "tags": [
+       "science",
+       "cyber"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "reuse"
+        }
+       ]
+      },
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "benchmark_suite",
+     "name": "Stress Test Suite",
+     "verdict": "change",
+     "reason": "It was weak (1.09) for 3 shields that only pay on a destruction. The price drops from 7 to 5; the effect is unchanged.",
+     "anchor": "pay 5+4+0=9; get 3 shields x 4 = 12 = 1.33",
+     "text": "Tier 1 program. 5 credits, 0 insight. Shield 3 of your nodes.",
+     "card": {
+      "id": "benchmark_suite",
+      "name": "Stress Test Suite",
+      "tier": 1,
+      "kind": "program",
+      "cost": 5,
+      "insight": 0,
+      "tags": [
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "shield_node",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "synthetic_data_forge",
+     "name": "Synthetic Data Forge",
+     "verdict": "change",
+     "reason": "Alone it ran near 1.0 over 3-4 Actions, because its first use had to be an add. It now arrives with 1 Dataset (its first tokens, as on Telemetry Archive), so it can cash from round one.",
+     "anchor": "pay 8+4+4=16; get 4 Actions (add to 2, cash 2 x 3) 6 insight 24 = 1.5; 3 Actions about 20 = 1.25",
+     "text": "Tier 1 building. 8 credits, 1 insight; needs 2 Science. Action: add 1 Dataset here, OR get 1 insight per Dataset here. Add 1 Dataset here.",
+     "card": {
+      "id": "synthetic_data_forge",
+      "name": "Synthetic Data Forge",
+      "tier": 1,
+      "kind": "building",
+      "cost": 8,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        2
+       ]
+      ],
+      "tags": [
+       "science"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "datasets"
+      },
+      "ability": {
+       "effects": [
+        {
+         "op": "add_tokens",
+         "kind": "datasets",
+         "amount": 1,
+         "here": true
+        }
+       ],
+       "or": {
+        "effects": [
+         {
+          "op": "gain_per_tokens",
+          "resource": "insight",
+          "kind": "datasets",
+          "per": 1,
+          "here": true
+         }
+        ]
+       }
+      },
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "datasets",
+        "amount": 1,
+        "here": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "telemetry_archive",
+     "name": "Telemetry Archive",
+     "verdict": "change",
+     "reason": "It ran at 3.3: its own play fills At 4 at once (6 insight, 24, for 20), then pays 3 insight per Science card. The reward drops to 3 insight and the price rises to 15; it still fires on being built.",
+     "anchor": "pay 15+4+4=23; get first fire 3 insight 12 + 2 Datasets a round x 3.5 / 4 x 12 = 21 = 33 = 1.43",
+     "text": "Tier 1 building. 15 credits, 1 insight. Effect: when you play a Science card, add 2 Datasets here; at 4, gain 3 insight. Add 2 Datasets here.",
+     "card": {
+      "id": "telemetry_archive",
+      "name": "Telemetry Archive",
+      "tier": 1,
+      "kind": "building",
+      "cost": 15,
+      "insight": 1,
+      "tags": [
+       "science"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "datasets"
+      },
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "science"
+        },
+        "then": [
+         {
+          "op": "add_tokens",
+          "kind": "datasets",
+          "amount": 2,
+          "here": true
+         }
+        ]
+       },
+       {
+        "op": "threshold",
+        "at": 4,
+        "then": [
+         {
+          "op": "gain",
+          "resource": "insight",
+          "amount": 3
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "datasets",
+        "amount": 2,
+        "here": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "university_spinout",
+     "name": "University Spinout",
+     "verdict": "change",
+     "reason": "It was weak at exactly 1.0 (32 for +8 income worth 32). The price drops from 24 to 19, still a dear tier-1 income card in the Terraforming Mars style.",
+     "anchor": "pay 19+4+4=27; get +8 credit income x 4 = 32 = 1.19",
+     "text": "Tier 1 program. 19 credits, 1 insight; needs 2 Science; Science, Industry. Raise your credit income by 8.",
+     "card": {
+      "id": "university_spinout",
+      "name": "University Spinout",
+      "tier": 1,
+      "kind": "program",
+      "cost": 19,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        2
+       ]
+      ],
+      "tags": [
+       "science",
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 8
+       }
+      ]
+     }
+    },
+    {
+     "id": "zero_knowledge_exploit",
+     "name": "Zero-Knowledge Exploit",
+     "verdict": "change",
+     "reason": "Removing 7 compute from one project is a disguised discard (a project usually holds well under 10). The drain drops to 5 and the price to 4, keeping 2 credits a compute.",
+     "anchor": "pay 4+4+4=12; get 5 compute x 2 10 + 1 card 5 = 15 = 1.25",
+     "text": "Tier 1 event. 4 credits, 1 insight; Science, Cyber. Remove 5 compute from an adversary project. Draw 1 card.",
+     "card": {
+      "id": "zero_knowledge_exploit",
+      "name": "Zero-Knowledge Exploit",
+      "tier": 1,
+      "kind": "event",
+      "cost": 4,
+      "insight": 1,
+      "tags": [
+       "science",
+       "cyber"
+      ],
+      "keywords": [
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "drain_project",
+        "amount": 5
+       },
+       {
+        "op": "draw",
+        "count": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "data_licensing_deal",
+     "name": "Data Licensing Deal",
+     "verdict": "cut",
+     "reason": "Ruling 1: a Dataset payoff that does nothing past its build draw without another Dataset building (the Collateralized Grid problem), and it reads only 1.5-1.85 for tier 2 even with Telemetry Archive. Its slot goes to Preprint Server, a self-contained Science draw engine.",
+     "anchor": "pay 15+8+4=27; get 3 cards 15 + about 1.5 Datasets a round x 5 x 3.5 26 = 41 = 1.52 (0.56 alone)",
+     "text": "(cut) Tier 2 building. 15 credits, 1 insight. Effect: when you place a Dataset on one of your cards, gain 5 credits. Draw 3 cards."
+    },
+    {
+     "id": "forensic_audit",
+     "name": "Forensic Audit",
+     "verdict": "keep",
+     "reason": "The research-cube liberate capstone, a late credit sink of the kind Matt asks for. At the 45 anchor it reads 0.88, far under the tier-2 band, but the whole capstone family is priced together (18-42 credits), so it is flagged in notes rather than repriced alone.",
+     "anchor": "pay 27+8+4 + 4 cubes 12 = 51; get a city liberated 45 = 0.88",
+     "text": "Tier 2 event. 27 credits, 4 research cubes, 1 insight. Pay 4 research cubes. Liberate a corrupted city in reach."
+    },
+    {
+     "id": "foundation_model_campus",
+     "name": "Foundation Model Campus",
+     "verdict": "keep",
+     "reason": "The tier-2 per-tag income building (needs 3) is in band, and it is the 'looks broken when well played' engine Matt wants.",
+     "anchor": "pay 22+8+8=38; get about 5.5 Science tags x 3 a round x 3.5 58 + 4 cards 20 = 78 = 2.05",
+     "text": "Tier 2 building. 22 credits, 2 insight; needs 3 Science; Science, Cyber. Each round, 3 credits per Science tag on your cards. Draw 4 cards."
+    },
+    {
+     "id": "interdisciplinary_institute",
+     "name": "Interdisciplinary Institute",
+     "verdict": "keep",
+     "reason": "The tier-2 any-tag play trigger is in band near the top, with a clear one reading.",
+     "anchor": "pay 12+8+8=28; get self-fire 2 insight 8 + 3 tags a round x 4 x 3.5 42 + 3 cards 15 = 65 = 2.32",
+     "text": "Tier 2 building. 12 credits, 2 insight; needs 2 Science; Science, Cyber. Effect: when you play a card, gain 1 insight per tag on it. Draw 3 cards."
+    },
+    {
+     "id": "open_weights_release",
+     "name": "Open-Weights Release",
+     "verdict": "change",
+     "reason": "It was 1.33 for tier 2 (27 to clear 4 markers and gift 3 insight). The price drops from 11 to 4, the 2-insight play still marking it tier 2. It stays as Science's one tier-2 niche card (player-cards.md counts it).",
+     "anchor": "pay 4+8+8=20; get 4 markers x 6 24 + 3 insight to another 12 = 36 = 1.8",
+     "text": "Tier 2 program (help). 4 credits, 2 insight; Science, Cyber. Clear 4 corruption markers in reach. Another player gains 3 insight.",
+     "card": {
+      "id": "open_weights_release",
+      "name": "Open-Weights Release",
+      "tier": 2,
+      "kind": "program",
+      "cost": 4,
+      "insight": 2,
+      "tags": [
+       "science",
+       "cyber"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "clear_markers",
+        "count": 4
+       },
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "insight",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "orbital_observatory_array",
+     "name": "Orbital Observatory Array",
+     "verdict": "keep",
+     "reason": "The tier-2 throughput Action (2 credits for 3 cards) turns spare credits into cards, as Matt's lever asks. It reads just under the band, and is distinct enough from Patent Library by rate.",
+     "anchor": "pay 10+8+8=26; get (3 cards 15 - 2) x 3.5 rounds 45.5 = 1.75",
+     "text": "Tier 2 building. 10 credits, 2 insight; needs 1 Cyber; Science, Cyber. Action: pay 2 credits, draw 3 cards."
+    },
+    {
+     "id": "recursive_self_improvement",
+     "name": "Recursive Self-Improvement",
+     "verdict": "keep",
+     "reason": "A big insight-income ultimate that is a dear late card; it sits just under the tier-2 band and reads right.",
+     "anchor": "pay 24+8+8=40; get +4 insight income 48 + 4 cards 20 = 68 = 1.7",
+     "text": "Tier 2 program. 24 credits, 2 insight; needs 2 Science; Science, Cyber. Raise your insight income by 4. Draw 4 cards."
+    },
+    {
+     "id": "preprint_server",
+     "name": "Preprint Server",
+     "verdict": "new",
+     "reason": "A card-throughput lever: Science's draw engine, the card twin of Citation Engine's credits. It is self-contained and fires on its own play, replacing Data Licensing Deal's building slot.",
+     "anchor": "pay 15+4+4=23; get self-fire 1 card 5 + 1 card a round x 3.5 17.5 + 2 cards 10 = 32.5 = 1.41",
+     "text": "Tier 1 building. 15 credits, 1 insight; needs 2 Science. Effect: when you play a Science card, draw 1 card. Draw 2 cards.",
+     "card": {
+      "id": "preprint_server",
+      "name": "Preprint Server",
+      "tier": 1,
+      "kind": "building",
+      "cost": 15,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        2
+       ]
+      ],
+      "tags": [
+       "science"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "science"
+        },
+        "then": [
+         {
+          "op": "draw",
+          "count": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "moonshot_grant",
+     "name": "Moonshot Grant",
+     "verdict": "new",
+     "reason": "A late high-impact credit sink (28 credits) that pushes a megaproject most of the way to completion (6 of an 8-cube card, each paying at completion) and draws 2. It replaces Sample Repository as the cube card.",
+     "anchor": "pay 28+4+4=36; get 6 megaproject cubes x 6 36 + 2 cards 10 = 46 = 1.28",
+     "text": "Tier 1 program. 28 credits, 1 insight; needs 3 Science. Add 6 research cubes in your color to a megaproject. Draw 2 cards.",
+     "card": {
+      "id": "moonshot_grant",
+      "name": "Moonshot Grant",
+      "tier": 1,
+      "kind": "program",
+      "cost": 28,
+      "insight": 1,
+      "needs": [
+       [
+        "science",
+        3
+       ]
+      ],
+      "tags": [
+       "science"
+      ],
+      "keywords": [
+       "cubes"
+      ],
+      "effects": [
+       {
+        "op": "project_cube",
+        "count": 6
+       },
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    }
+   ],
+   "notes": "I reviewed all 27 Science cards: 9 kept, 16 changed, 2 cut, 2 new. The section stays at 27 cards: tier 1 goes from 20 to 21 and tier 2 from 7 to 6, with buildings and programs one-for-one. I edited no files.\n\nHow I priced:\n- **Engines** are counted over 3.5 rounds (the middle of the 3-4 the brief gives). Each engine's fire on its own play counts too, because the rules say a building counts itself.\n- **A Dataset** is worth 3 (the feed_datasets rate in values.json). That matches Telemetry Archive's new rate of 3 insight per 4 Datasets.\n- **A megaproject cube** is worth 6 (values.json). The Researcher's Grant power is a plain route at 3 credits a cube.\n\nFindings and flags:\n1. **Telemetry Archive was the worst outlier, at 3.3.** Its 2 Datasets when built plus the 2 from its own Science play fill the At 4 threshold at once (6 insight, worth 24, for a 20 pay). After that it paid 3 insight, worth 12, per Science card. The fix halves the reward and raises the price to 15.\n2. **The ratio cap pushes engines' build draws to two fires' worth** (2 cards on Citation Engine and Grad Student Pool), and Citation Engine's price up to 20. Both readings counted the self-fire.\n3. **Synthetic Data Forge with Dataset Scraper is a deliberate two-card combo above the cap.** The Forge keeps its tokens, so 2 Datasets add 2 insight to every later cash, about 3.1 on Scraper's pay. That fits the \"looks broken when well played\" direction, but Matt should confirm it. Telemetry Archive is the at-rate target.\n4. **Forensic Audit reads 0.88 on the anchors, far under the tier-2 band.** The anchor of 45 for a city cannot carry tier 2: reaching 1.8 would need the card to cost about 1 credit. Every liberate capstone (18-42 credits) has the same gap. Either the city anchor is low (the plain route costs about 100 and play is near 50), or the capstones are exempt from the band as credit sinks. I kept it for Matt to rule on rather than repricing one capstone alone.\n5. **A 30-50 credit card cannot reach the tier-2 band (1.8 or more).** It would need 83-125 of value, which only liberation-sized effects reach. So the late-game card, Moonshot Grant (28 credits), is a dear tier 1 at 1.28, as ruling 5 allows.\n6. **Research cubes are worth about 4, not 3.** The cube converter (1 cube for 1 insight) gives every cube at least the insight anchor. Sample Repository's cube income was effectively an insight income, which is why it was cut.\n7. **Cuts leave stale references.** These need cleaning up in the same change:\n   - Data Licensing Deal is card-grammar.md's example for the `place_tokens` trigger, so the trigger has no card left and the example needs replacing.\n   - Both cut ids appear in `crates/aic-core/src/tests/engine.rs` and `tests/researcher.rs`.\n   - Both also appear in `configs/agents/strategies.json`, `docs/card-pricing-notes.json`, `docs/rules/ai-powers.md` and `docs/rules/economy.md`.\n   - player-cards.md's \"five tier-1 and one tier-2\" niche count is still right, because Open-Weights Release stays.\n8. **Two numbers the board-state brief doesn't size.** Predictive Modeling now delays 2 threats; it was 3, which may exceed the threats usually up. Open-Weights Release clears 4 markers. I couldn't measure either.\n9. **Orbital Observatory Array (1.75) and Recursive Self-Improvement (1.7) are kept just under the tier-2 band** on purpose. Interdisciplinary Institute (2.32) and Foundation Model Campus (2.05) are in band.\n10. **Moonshot Grant prints `project_cube` without `station`**, so any incomplete megaproject counts. Late in the game it can be dead if every megaproject is complete. Six cubes on an 8-cube card is meant as a big push, not a disguised \"complete it\"."
+  }
+ ],
+ [
+  "propose:Diplomacy",
+  {
+   "cards": [
+    {
+     "id": "amnesty_decree",
+     "name": "Amnesty Decree",
+     "verdict": "change",
+     "reason": "At 5 removals for 9 credits it read 1.94, over the tier-1 cap, and was the base Liberation Accords scaled up from. Now 4 removals at 11 credits.",
+     "anchor": "pay 11+4+4=19; get 4 ambassadors removed 20 + 2 ambassadors 8 = 28 = 1.47",
+     "text": "Amnesty Decree (tier 1 program, 11 cr, 1 insight, Diplomacy): Remove 4 adversary ambassadors on or next to one corrupted city in reach. Gain 2 ambassadors.",
+     "card": {
+      "id": "amnesty_decree",
+      "name": "Amnesty Decree",
+      "tier": 1,
+      "kind": "program",
+      "cost": 11,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "move"
+      ],
+      "effects": [
+       {
+        "op": "clear_city",
+        "max": 4
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "back_channel_talks",
+     "name": "Back-Channel Talks",
+     "verdict": "keep",
+     "reason": "It prices in band with 3 factories. Flag: how many corrupted factories sit in reach is not in the board-state brief. If it is usually 1, the card reads 0.78 and is often dead, because cleanse needs a target to play.",
+     "anchor": "pay 10+4+4=18; get 3 factories freed 18 + sway 2 8 = 26 = 1.44 (1 factory: 14 = 0.78)",
+     "text": "Back-Channel Talks (tier 1 program, 10 cr, 1 insight, Diplomacy): Free 3 corrupted factories in reach. Sway 2 toward Unity."
+    },
+    {
+     "id": "ceasefire_monitors",
+     "name": "Ceasefire Monitors",
+     "verdict": "keep",
+     "reason": "A single-hex removal in reach with a real rider. It is in band and reads cleanly.",
+     "anchor": "pay 8+4+4=16; get 3 ambassadors removed 15 (or 1 troop 5) + 2 ambassadors 8 = 23 = 1.44",
+     "text": "Ceasefire Monitors (tier 1 program, 8 cr, 1 insight, Diplomacy/Security/Cyber): Remove 3 adversary ambassadors or 1 troop from a hex in reach. Gain 2 ambassadors."
+    },
+    {
+     "id": "civic_watch",
+     "name": "Civic Watch",
+     "verdict": "change",
+     "reason": "A free influence jam each round pays only when an influence threat hits your country (about half the rounds), so it read about 1.07 at 7 credits. Repriced down to 5.",
+     "anchor": "pay 5+4+4=13; get jam 6 about 0.5 a round x ~8 (counters 4-8 cr or 5 insight) x 4 rounds = 16 = 1.23",
+     "text": "Civic Watch (tier 1 building, 5 cr, 1 insight, Diplomacy): Action: counts as 6 toward an influence threat.",
+     "card": {
+      "id": "civic_watch",
+      "name": "Civic Watch",
+      "tier": 1,
+      "kind": "building",
+      "cost": 5,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "jam",
+         "amount": 6,
+         "source": "influence"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "consular_pouch",
+     "name": "Consular Pouch",
+     "verdict": "change",
+     "reason": "This tag payoff read 0.94-1.18 at the 4-5 Diplomacy tags a committed seat holds when it plays it. Repriced down to 6 credits so it is worth its keep.",
+     "anchor": "pay 6+4+4=14; get 4-5 ambassadors 16-20 = 1.14-1.43",
+     "text": "Consular Pouch (tier 1 program, 6 cr, needs 2 Diplomacy, 1 insight): Gain 1 ambassador per Diplomacy tag on your cards.",
+     "card": {
+      "id": "consular_pouch",
+      "name": "Consular Pouch",
+      "tier": 1,
+      "kind": "program",
+      "cost": 6,
+      "insight": 1,
+      "needs": [
+       [
+        "diplomacy",
+        2
+       ]
+      ],
+      "tags": [
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "gain_per_tag",
+        "resource": "ambassadors",
+        "tag": "diplomacy",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "consulate_tower",
+     "name": "Consulate Tower",
+     "verdict": "change",
+     "reason": "9 credits each per fire puts 18 credits on the table, more than any own-play trigger (Citation Engine 6). It read about 1.6-2.6 depending on the table, and credits already pile up. Now 6 each.",
+     "anchor": "pay 12+4+4=20; get draw 3 15 + ~1.4 teammate Diplomacy plays (0.4 a round x 3.5) x (6 + 6x0.75 gift) 15 = 30 = 1.5",
+     "text": "Consulate Tower (tier 1 building, 12 cr, needs 2 Diplomacy, 1 insight): Effect: when another player plays a Diplomacy card, you both gain 6 credits. Draw 3 cards.",
+     "card": {
+      "id": "consulate_tower",
+      "name": "Consulate Tower",
+      "tier": 1,
+      "kind": "building",
+      "cost": 12,
+      "insight": 1,
+      "needs": [
+       [
+        "diplomacy",
+        2
+       ]
+      ],
+      "tags": [
+       "diplomacy"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "team_play",
+         "tag": "diplomacy",
+         "both": true
+        },
+        "then": [
+         {
+          "op": "gain",
+          "resource": "credits",
+          "amount": 6
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "fact_check_network",
+     "name": "Fact-Check Network",
+     "verdict": "keep",
+     "reason": "A cheap typed jam with a real rider, in band. Diplomacy's one typed-counter program once Truth Commission is cut.",
+     "anchor": "pay 6+4+0=10; get jam 5 on an influence threat ~5 + 2 ambassadors 8 = 13 = 1.3",
+     "text": "Fact-Check Network (tier 1 program, 6 cr, 0 insight, Diplomacy): Counts as 5 toward an influence threat. Gain 2 ambassadors."
+    },
+    {
+     "id": "liaison_corps",
+     "name": "Liaison Corps",
+     "verdict": "change",
+     "reason": "It read 0.88: 2 ambassadors and 4 short moves for 16 all-in. Now 3 ambassadors at 7 credits, so it pays its keep.",
+     "anchor": "pay 7+4+4=15; get 3 ambassadors 12 + 4 moved 6 = 18 = 1.2",
+     "text": "Liaison Corps (tier 1 program, 7 cr, 1 insight, Diplomacy): Gain 3 ambassadors. Move up to 4 ambassadors onto pieces in reach.",
+     "card": {
+      "id": "liaison_corps",
+      "name": "Liaison Corps",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "move"
+      ],
+      "effects": [
+       {
+        "op": "gain_ambassadors",
+        "count": 3
+       },
+       {
+        "op": "move_ambassadors",
+        "max": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "manifesto_leak",
+     "name": "Manifesto Leak",
+     "verdict": "change",
+     "reason": "Ruling 2 feeder: it did nothing without one of the two Follower buildings, and 6 Followers on Popular Uprising was an instant liberation for 8 credits (3.75x). Now Sway 3 as the main effect, slightly below rate, and 3 Followers as the bonus.",
+     "anchor": "pay 9+4+0=13; get sway 3 12 = 0.92 alone; with a Follower building +3 Followers 7.5 (values feed_followers 2.5) = 19.5 = 1.5",
+     "text": "Manifesto Leak (tier 1 event, 9 cr, 0 insight, Diplomacy): Sway 3 toward Unity. Add 3 Followers to one of your Follower buildings.",
+     "card": {
+      "id": "manifesto_leak",
+      "name": "Manifesto Leak",
+      "tier": 1,
+      "kind": "event",
+      "cost": 9,
+      "insight": 0,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "effects": [
+       {
+        "op": "sway",
+        "side": "unity",
+        "amount": 3
+       },
+       {
+        "op": "add_tokens",
+        "kind": "followers",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "mutual_aid_pact",
+     "name": "Mutual Aid Pact",
+     "verdict": "keep",
+     "reason": "A help card with a clear give / get, in band.",
+     "anchor": "pay 10+4+0=14; get gift 8 credits x0.75 6 + 3 ambassadors 12 = 18 = 1.29",
+     "text": "Mutual Aid Pact (tier 1 program, help, 10 cr, 0 insight, Diplomacy): Another player gains 8 credits. Gain 3 ambassadors."
+    },
+    {
+     "id": "open_assembly",
+     "name": "Open Assembly",
+     "verdict": "change",
+     "reason": "Its built Follower plus its own play fill the 2-token threshold at once, then it sways 3 every two Diplomacy plays: about 1.83 at 10 credits, over the tier-1 cap. Kept the strong engine and made it dearer.",
+     "anchor": "pay 15+4+4=23; get sway 3 at build 12 + 3.5 Diplomacy plays = 1.75 more fires x 12 = 21; total 33 = 1.43",
+     "text": "Open Assembly (tier 1 building, 15 cr, 1 insight, Diplomacy): Effect: when you play a Diplomacy card, add 1 Follower here; at 2, sway 3 toward Unity. Add 1 Follower here.",
+     "card": {
+      "id": "open_assembly",
+      "name": "Open Assembly",
+      "tier": 1,
+      "kind": "building",
+      "cost": 15,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "followers"
+      },
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "diplomacy"
+        },
+        "then": [
+         {
+          "op": "add_tokens",
+          "kind": "followers",
+          "amount": 1,
+          "here": true
+         }
+        ]
+       },
+       {
+        "op": "threshold",
+        "at": 2,
+        "then": [
+         {
+          "op": "sway",
+          "side": "unity",
+          "amount": 3
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "followers",
+        "amount": 1,
+        "here": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "peace_conference",
+     "name": "Peace Conference",
+     "verdict": "change",
+     "reason": "A needs-3 chain card at 22 credits read 1.07. Ruling 16 says the requirement is the price, so the credit cost comes down to 16.",
+     "anchor": "pay 16+4+4=24; get sway 5 20 + 3 ambassadors 12 = 32 = 1.33",
+     "text": "Peace Conference (tier 1 program, 16 cr, needs 3 Diplomacy, 1 insight): Sway 5 toward Unity. Gain 3 ambassadors.",
+     "card": {
+      "id": "peace_conference",
+      "name": "Peace Conference",
+      "tier": 1,
+      "kind": "program",
+      "cost": 16,
+      "insight": 1,
+      "needs": [
+       [
+        "diplomacy",
+        3
+       ]
+      ],
+      "tags": [
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "sway",
+        "side": "unity",
+        "amount": 5
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "peace_dividend",
+     "name": "Peace Dividend",
+     "verdict": "keep",
+     "reason": "This is the shared per-tag income shape (10 credits, needs 2, one per tag), and ruling 1 exempts tag payoffs. Flag: at the anchors the whole shape reads under 1.1 at 4 tags, in every tag.",
+     "anchor": "pay 10+4+4=18; get +4-5 credit income 16-20 = 0.89-1.11",
+     "text": "Peace Dividend (tier 1 program, 10 cr, needs 2 Diplomacy, 1 insight): Raise your credit income by 1 per Diplomacy tag on your cards."
+    },
+    {
+     "id": "protocol_office",
+     "name": "Protocol Office",
+     "verdict": "change",
+     "reason": "Read 1.53-1.71, over the cap. The engine rule says it draws two fires' worth when built: two 5-credit discounts are 2 cards, not 3.",
+     "anchor": "pay 11+4+4=19; get 3.5 Diplomacy plays x ~4 off (the floor bites on cheap cards) 14 + draw 2 10 = 24 = 1.26",
+     "text": "Protocol Office (tier 1 building, 11 cr, 1 insight, Diplomacy): Effect: your Diplomacy cards cost 5 credits less to play. Draw 2 cards.",
+     "card": {
+      "id": "protocol_office",
+      "name": "Protocol Office",
+      "tier": 1,
+      "kind": "building",
+      "cost": 11,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "passives": [
+       {
+        "op": "card_discount",
+        "tag": "diplomacy",
+        "resource": "credits",
+        "amount": 5
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "reconciliation_office",
+     "name": "Reconciliation Office",
+     "verdict": "change",
+     "reason": "7 credits a removal read 1.73 and fed the credit pile. It now draws 1 card a removal, which is Matt's throughput lever. When built it draws 2 cards, two fires' worth, and it costs 10.",
+     "anchor": "pay 10+4+4=18; get ~0.8 removals a round x 3.5 = 2.8 cards 14 + draw 2 10 = 24 = 1.33",
+     "text": "Reconciliation Office (tier 1 building, 10 cr, 1 insight, Diplomacy/Security): Effect: when you remove adversary ambassadors, draw 1 card. Draw 2 cards.",
+     "card": {
+      "id": "reconciliation_office",
+      "name": "Reconciliation Office",
+      "tier": 1,
+      "kind": "building",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "diplomacy",
+       "security"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "remove_ambassadors"
+        },
+        "then": [
+         {
+          "op": "draw",
+          "count": 1
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "summit_caucus",
+     "name": "Summit Caucus",
+     "verdict": "change",
+     "reason": "Read 1.0. It is the only consolidate card: stacking pieces is a different decision from Liaison Corps' spreading, so it is repriced down to 7 rather than cut.",
+     "anchor": "pay 7+4+4=15; get 6 gathered 6 + 3 ambassadors 12 = 18 = 1.2",
+     "text": "Summit Caucus (tier 1 program, 7 cr, 1 insight, Diplomacy): Move up to 6 ambassadors in reach onto one piece. Gain 3 ambassadors.",
+     "card": {
+      "id": "summit_caucus",
+      "name": "Summit Caucus",
+      "tier": 1,
+      "kind": "program",
+      "cost": 7,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "consolidate"
+      ],
+      "effects": [
+       {
+        "op": "consolidate",
+        "max": 6
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "trade_delegation",
+     "name": "Trade Delegation",
+     "verdict": "change",
+     "reason": "Read 1.0: +3 income plus 2 ambassadors for 12 credits behind a needs-2. Now +4 income at 11 credits.",
+     "anchor": "pay 11+4+4=19; get +4 credit income 16 + 2 ambassadors 8 = 24 = 1.26",
+     "text": "Trade Delegation (tier 1 program, 11 cr, needs 2 Diplomacy, 1 insight, Diplomacy/Industry): Raise your credit income by 4. Gain 2 ambassadors.",
+     "card": {
+      "id": "trade_delegation",
+      "name": "Trade Delegation",
+      "tier": 1,
+      "kind": "program",
+      "cost": 11,
+      "insight": 1,
+      "needs": [
+       [
+        "diplomacy",
+        2
+       ]
+      ],
+      "tags": [
+       "diplomacy",
+       "industry"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 4
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "truth_commission",
+     "name": "Truth Commission",
+     "verdict": "cut",
+     "reason": "A near-duplicate of Fact-Check Network: same cost, same insight, same jam 5, and a sway-2 rider worth exactly Fact-Check's 2 ambassadors. Cut to make room for Envoy Briefings.",
+     "anchor": "pay 6+4+0=10; get jam 5 ~5 + sway 2 8 = 13 = 1.3",
+     "text": "Truth Commission (tier 1 program, 6 cr, 0 insight, Diplomacy): Counts as 5 toward an influence threat. Sway 2 toward Unity."
+    },
+    {
+     "id": "coalition_charter",
+     "name": "Coalition Charter",
+     "verdict": "change",
+     "reason": "Read 1.05 at tier 2, and its 10-credit gift lands on a pile that is already idle. The gift is now 4 insight, which buys keeps and plays, and the cost drops to 4 so the card reaches the tier-2 band.",
+     "anchor": "pay 4+8+8=20; get gift 4 insight 16x0.75 12 + sway 6 24 = 36 = 1.8",
+     "text": "Coalition Charter (tier 2 program, help, 4 cr, 2 insight, Diplomacy): Another player gains 4 insight. Sway 6 toward Unity.",
+     "card": {
+      "id": "coalition_charter",
+      "name": "Coalition Charter",
+      "tier": 2,
+      "kind": "program",
+      "cost": 4,
+      "insight": 2,
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "help"
+      ],
+      "effects": [
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "insight",
+        "amount": 4
+       },
+       {
+        "op": "sway",
+        "side": "unity",
+        "amount": 6
+       }
+      ]
+     }
+    },
+    {
+     "id": "exodus_corridors",
+     "name": "Exodus Corridors",
+     "verdict": "change",
+     "reason": "Read about 1.1-1.3 at tier 2. Repriced down to 5 credits; the effect is unique (a mass step for every ambassador) and stays.",
+     "anchor": "pay 5+8+8=21; get 6 ambassadors 24 + ~10 board ambassadors stepping x1.5 15 = 39 = 1.86",
+     "text": "Exodus Corridors (tier 2 program, 5 cr, needs 1 Diplomacy, 2 insight, Diplomacy/Security): Each of your ambassadors on the board may move 1 hex onto an adjacent piece. Gain 6 ambassadors.",
+     "card": {
+      "id": "exodus_corridors",
+      "name": "Exodus Corridors",
+      "tier": 2,
+      "kind": "program",
+      "cost": 5,
+      "insight": 2,
+      "needs": [
+       [
+        "diplomacy",
+        1
+       ]
+      ],
+      "tags": [
+       "diplomacy",
+       "security"
+      ],
+      "keywords": [
+       "spread"
+      ],
+      "effects": [
+       {
+        "op": "spread_ambassadors"
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 6
+       }
+      ]
+     }
+    },
+    {
+     "id": "great_liberation",
+     "name": "Great Liberation",
+     "verdict": "keep",
+     "reason": "A big tier-2 sweep that keeps 'in one country' as a deliberate power step (ruling 3), paid in antimatter and a 4-tag chain. Typically in band.",
+     "anchor": "pay 21+7(1 antimatter)+8+8=44; get ~1.5 cities 68 + ~1.5 stations or factories 15 = 83 = 1.9 (2 cities + 1 station 105 = 2.4; 1 city + 2 factories 57 = 1.3)",
+     "text": "Great Liberation (tier 2 event, 21 cr + 1 antimatter, needs 4 Diplomacy, 2 insight): Pay 1 antimatter. Free 3 corrupted cities, stations or factories in reach, in one country."
+    },
+    {
+     "id": "hostile_buyout",
+     "name": "Hostile Buyout",
+     "verdict": "change",
+     "reason": "At 42 credits it read 1.0, and its 1-ambassador twist was a trivial rider. Now 36 credits with a 3-ambassador twist. It stays the deck's dear late-game Diplomacy card, within Matt's 30-50 credits, and is below the tier-2 band on purpose (see notes).",
+     "anchor": "pay 36+4x(2+1)=48; get city liberated 45 + your cube 5 + 3 ambassadors 12 = 62 = 1.29",
+     "text": "Hostile Buyout (tier 2 event, 36 cr, 1 insight, Diplomacy): Liberate a corrupted city in reach; your cube goes on it. Gain 3 ambassadors.",
+     "card": {
+      "id": "hostile_buyout",
+      "name": "Hostile Buyout",
+      "tier": 2,
+      "kind": "event",
+      "cost": 36,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "liberate",
+        "align": true,
+        "ambassadors": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "liberation_accords",
+     "name": "Liberation Accords",
+     "verdict": "change",
+     "reason": "It was Amnesty Decree with the number multiplied (5 to 8, the Diplomatic Expulsion mistake), and 8 around one city removes everything. Now a different effect, ruling 3's reach sweep: up to 6 across your reach (the tier-2 ceiling for the median 6 in reach), at 9 credits.",
+     "anchor": "pay 9+8+8=25; get 6 ambassadors removed 30 + 4 ambassadors 16 = 46 = 1.84",
+     "text": "Liberation Accords (tier 2 program, 9 cr, needs 1 Diplomacy, 2 insight): Remove up to 6 adversary ambassadors in reach. Gain 4 ambassadors.",
+     "card": {
+      "id": "liberation_accords",
+      "name": "Liberation Accords",
+      "tier": 2,
+      "kind": "program",
+      "cost": 9,
+      "insight": 2,
+      "needs": [
+       [
+        "diplomacy",
+        1
+       ]
+      ],
+      "tags": [
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "remove_ambassadors_country",
+        "unity_per": 0,
+        "max": 6,
+        "reach": true
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "orbital_embassy",
+     "name": "Orbital Embassy",
+     "verdict": "change",
+     "reason": "Its when-built 2 ambassadors was well under the engine rule (two fires is about 6 ambassadors). It now draws 4 cards when built, as the other tier-2 engines do, which brings it into the tier-2 band.",
+     "anchor": "pay 18+8+8=34 (+ the Diplomacy building it covers); get 3 tags a round x 4 x 3.5 rounds 42 + draw 4 20 = 62 = 1.82",
+     "text": "Orbital Embassy (tier 2 building, 18 cr, needs 2 Diplomacy, over Diplomacy, 2 insight, Diplomacy/Power): Effect: when you play a card, gain 1 ambassador per tag on it. Draw 4 cards.",
+     "card": {
+      "id": "orbital_embassy",
+      "name": "Orbital Embassy",
+      "tier": 2,
+      "kind": "building",
+      "cost": 18,
+      "insight": 2,
+      "needs": [
+       [
+        "diplomacy",
+        2
+       ]
+      ],
+      "replaces": "diplomacy",
+      "tags": [
+       "diplomacy",
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 4
+       }
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play_tag"
+        },
+        "then": [
+         {
+          "op": "gain_ambassadors",
+          "count": 1
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "planetary_referendum",
+     "name": "Planetary Referendum",
+     "verdict": "cut",
+     "reason": "A single-effect sway event that read 1.07 at tier 2 and overlaps Coalition Charter and Peace Conference. Sway 8 is also a whole Unity tip at 4 players, and the whole Undecided pool at 2. Cut to keep the deck near 150.",
+     "anchor": "pay 14+8+8=30; get sway 8 32 = 1.07",
+     "text": "Planetary Referendum (tier 2 event, 14 cr, 2 insight, Diplomacy/Power): Sway 8 toward Unity."
+    },
+    {
+     "id": "popular_uprising",
+     "name": "Popular Uprising",
+     "verdict": "change",
+     "reason": "At 28 credits its about 1.3 liberations in the rounds left read 1.3. Capstones are paid mostly in their engine's resource (Followers here) behind a needs-3, so the credits drop to 16.",
+     "anchor": "pay 16+8+8=32 (+ the Diplomacy building it covers); get ~1.3 liberations (built with 4, add 2, liberate; again 3 rounds later) 58 = 1.81",
+     "text": "Popular Uprising (tier 2 building, 16 cr, needs 3 Diplomacy, over Diplomacy, 2 insight): Action: add 2 Followers here, OR pay 6 Followers, liberate a corrupted city in reach. Add 4 Followers here.",
+     "card": {
+      "id": "popular_uprising",
+      "name": "Popular Uprising",
+      "tier": 2,
+      "kind": "building",
+      "cost": 16,
+      "insight": 2,
+      "needs": [
+       [
+        "diplomacy",
+        3
+       ]
+      ],
+      "replaces": "diplomacy",
+      "tags": [
+       "diplomacy"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "followers"
+      },
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "followers",
+        "amount": 4,
+        "here": true
+       }
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "add_tokens",
+         "kind": "followers",
+         "amount": 2,
+         "here": true
+        }
+       ],
+       "or": {
+        "tokens": 6,
+        "effects": [
+         {
+          "op": "liberate"
+         }
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "envoy_briefings",
+     "name": "Envoy Briefings",
+     "verdict": "new",
+     "reason": "Throughput lever: Diplomacy has no plain draw card. A one-shot 3-card draw with the tag's own rider, useful at any point in the game.",
+     "anchor": "pay 9+4+4=17; get draw 3 15 + 2 ambassadors 8 = 23 = 1.35",
+     "text": "Envoy Briefings (tier 1 program, 9 cr, 1 insight, Diplomacy): Draw 3 cards. Gain 2 ambassadors.",
+     "card": {
+      "id": "envoy_briefings",
+      "name": "Envoy Briefings",
+      "tier": 1,
+      "kind": "program",
+      "cost": 9,
+      "insight": 1,
+      "tags": [
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 3
+       },
+       {
+        "op": "gain_ambassadors",
+        "count": 2
+       }
+      ]
+     }
+    }
+   ],
+   "notes": "The Diplomacy section: 26 cards → 25. Truth Commission and Planetary Referendum are cut and Envoy Briefings is added, so the deck goes 154 → 153. Tier-2 count goes 8 → 7.\n\n1. Engine blocker for ruling 2. In crates/aic-core/src/modules/effects/feasible.rs, the `Op::AddTokens { kind, .. }` arm (not `here`) vetoes the whole card when the seat has no token card of that kind. As things stand, the new Manifesto Leak is never offered without a Follower building, so it is still useless alone. Every tag's feeder has the same problem. Fix: treat AddTokens like Draw and OtherGain in that file's `only_these` group: veto it only when it is the card's only effect.\n\n2. A play-feasibility catch. Every targeted effect on a card must have a target (`.all`). That is why I didn't pair a removal with a cleanse on Liberation Accords: the card would be dead unless both targets were present.\n\n3. Reconciliation Office now has a `draw` inside a `when` trigger. content.rs checks trigger `then` ops at Slot::Player, and Draw is a Player op, but no card has printed this before. Check its face text and how the agents value it.\n\n4. Cards below band on purpose:\n   - Hostile Buyout reads 1.29 at tier 2. It is the dear late-game credit card Matt asked for. Late credits are idle (25-63 a seat at game end), so at about 0.5 a late credit it reads about 2.\n   - Peace Dividend reads 0.89-1.11. That is the shared per-tag income shape across all six tags, so any fix belongs to all of them, not just this card.\n   - Back-Channel Talks reads 1.44 only if 3 corrupted factories are in reach. That count isn't in the board-state brief; if it is usually 1, the card is weak and often unplayable.\n\n5. Value-table disagreements:\n   - values.json prices an ambassador removal at 2.2 and clear_city at 2 per ambassador, against the anchor's 5. The agents will undervalue every removal card here by about half.\n   - Sway at 4 is cheap near a tip: a Unity tip is 2 x players, and the Undecided pool is 4 x players. I kept printed sway at 6 or less for that reason.\n   - Followers have no anchor. I used values feed_followers 2.5; Popular Uprising pays about 7.5 a Follower toward a liberation.\n\n6. Out of my section but tagged Diplomacy: Diplomatic Expulsion (8 in one country, 10 credits) and Martial Cordon (10 in one country) are Security primaries. They are exactly the cases Matt flagged; Liberation Accords now owns the 6-in-reach tier-2 job. Whoever fixes them shouldn't repeat it.\n\n7. Prose that will go stale:\n   - card-grammar.md: the clear_city line says \"Liberation Accords: 6\"; Liberation Accords no longer uses clear_city.\n   - player-cards.md, typed counters: says Diplomacy has two programs and an Action building; it is one program now that Truth Commission is cut.\n   - player-cards.md, capstone table: Hostile Buyout's extra is now 3 ambassadors.\n   - The generated sway-sources row names Planetary Referendum.\n   - configs/baseline.json needs the 2 cuts and 1 add, followed by shared_row.py.\n\n8. Two pricing assumptions:\n   - Consulate Tower assumes about 0.4 teammate Diplomacy plays a round.\n   - Civic Watch assumes an influence threat you can counter about half the rounds."
+  }
+ ],
+ [
+  "propose:Security",
+  {
+   "cards": [
+    {
+     "id": "agency_field_station",
+     "name": "Agency Field Station",
+     "verdict": "change",
+     "reason": "Its trigger and when-built removal were troops 'in one country', which breaks ruling 3. Troops in reach are 0-1, so a troop trigger in reach would mostly fizzle. The trigger now removes 1 ambassador in reach, and the when-built effect is draw 2, the engine's two fires as cards.",
+     "anchor": "pay 14+4+4=22; get ~1 Security card a round x 3.5 rounds x 1 ambassador 5 = 17.5 + its own play fires once 5 + draw 2 cards 10 = 32.5 = 1.48",
+     "text": "Agency Field Station. Tier 1 building, 14 cr, 1 insight. Security. Effect: when you play a Security card, remove 1 adversary ambassador in reach. Draw 2 cards.",
+     "card": {
+      "id": "agency_field_station",
+      "name": "Agency Field Station",
+      "tier": 1,
+      "kind": "building",
+      "cost": 14,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play",
+         "tag": "security"
+        },
+        "then": [
+         {
+          "op": "remove_ambassadors_country",
+          "max": 1,
+          "reach": true
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "bounty_board",
+     "name": "Bounty Board",
+     "verdict": "cut",
+     "reason": "Its credits back are a circular payment (pay 10, get 3-5 credits back). Its 1 troop in reach usually has no target, which blocks the whole program, and it reads 0.5. Breach and Clear and Garrison Command now feed the troop trigger.",
+     "anchor": "pay 10+4+4=18; get 1 troop 5 + ~4 credits per tag = 9 = 0.50",
+     "text": "(cut) Remove 1 troop in reach. Gain 1 credit per Security tag on your cards."
+    },
+    {
+     "id": "breach_and_clear",
+     "name": "Breach and Clear",
+     "verdict": "change",
+     "reason": "'Remove 4 troops in one country' is a disguised remove-all (0-1 a country, p90 3) and breaks ruling 3. It is now a cheap 0-insight event that removes 2 troops in reach: held until a troop shows up, then it feeds Security Contractor HQ.",
+     "anchor": "pay 4+4+0=8; get 2 troops 10 = 1.25 (with HQ +20)",
+     "text": "Breach and Clear. Tier 1 event, 4 cr, 0 insight. Security. Remove 2 troops in reach.",
+     "card": {
+      "id": "breach_and_clear",
+      "name": "Breach and Clear",
+      "tier": 1,
+      "kind": "event",
+      "cost": 4,
+      "insight": 0,
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "remove_troops",
+        "count": 2,
+        "reach": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "counterinsurgency_campaign",
+     "name": "Counterinsurgency Campaign",
+     "verdict": "change",
+     "reason": "Matt named it under ruling 3. Its 3 troops in one country removes every troop there, and with no troop on the board the program can't be played. It now takes a choice in one hex in reach (3 ambassadors or 2 troops), so it is almost always live, and the income rises to 3.",
+     "anchor": "pay 12+4+4=20; get 3 ambassadors from a hex ~12-15 + credit income 3 at 4 = 12; 24-27 = 1.2-1.35",
+     "text": "Counterinsurgency Campaign. Tier 1 program, 12 cr, 1 insight. Security. Remove 3 adversary ambassadors or 2 troops from a hex in reach. Raise your credit income by 3.",
+     "card": {
+      "id": "counterinsurgency_campaign",
+      "name": "Counterinsurgency Campaign",
+      "tier": 1,
+      "kind": "program",
+      "cost": 12,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "damage",
+        "ambassadors": 3,
+        "troops": 2
+       },
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "defense_appropriations",
+     "name": "Defense Appropriations",
+     "verdict": "keep",
+     "reason": "The standard per-tag income program, the same shape in every tag (10 cr, needs 2). A tag payoff is the ruling-1 exception.",
+     "anchor": "pay 10+4+4=18; get at 5 Security tags 5 credit income x 4 = 20 = 1.11 (6 tags: 24 = 1.33)",
+     "text": "Defense Appropriations. Tier 1 program, 10 cr, needs 2 Security, 1 insight. Security. Raise your credit income by 1 per Security tag on your cards."
+    },
+    {
+     "id": "diplomatic_expulsion",
+     "name": "Diplomatic Expulsion",
+     "verdict": "change",
+     "reason": "Matt's example of a wrong number: 8 ambassadors in one country for 10 credits, scaled up from 4. It is now 4 in reach (ruling 3; a tier-1 removal stays at 5 or fewer) at the same price.",
+     "anchor": "pay 10+4+4=18; get 4 ambassadors 20 + sway 1 4 = 24 = 1.33",
+     "text": "Diplomatic Expulsion. Tier 1 program, 10 cr, 1 insight. Security, Diplomacy. Remove 4 adversary ambassadors in reach. Sway 1 toward Unity.",
+     "card": {
+      "id": "diplomatic_expulsion",
+      "name": "Diplomatic Expulsion",
+      "tier": 1,
+      "kind": "program",
+      "cost": 10,
+      "insight": 1,
+      "tags": [
+       "security",
+       "diplomacy"
+      ],
+      "effects": [
+       {
+        "op": "remove_ambassadors_country",
+        "max": 4,
+        "reach": true
+       },
+       {
+        "op": "sway",
+        "side": "unity",
+        "amount": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "threat_forecast_engine",
+     "name": "Early Warning Drill",
+     "verdict": "change",
+     "reason": "It read about 0.9 at 8 credits: a delay plus shields that pay only when a destruction comes. The effect is sound (its Science tag allows the delay and shields), so only the price drops, 8 to 5.",
+     "anchor": "pay 5+4+4=13; get delay 1 threat ~2.5 + shield 3 nodes 12 (conditional) = 14.5 = 1.12",
+     "text": "Early Warning Drill. Tier 1 program, 5 cr, 1 insight. Security, Cyber, Science. Delay 1 threat one round. Shield 3 of your nodes.",
+     "card": {
+      "id": "threat_forecast_engine",
+      "name": "Early Warning Drill",
+      "tier": 1,
+      "kind": "program",
+      "cost": 5,
+      "insight": 1,
+      "tags": [
+       "security",
+       "cyber",
+       "science"
+      ],
+      "effects": [
+       {
+        "op": "delay_threat",
+        "count": 1
+       },
+       {
+        "op": "shield_node",
+        "count": 3
+       }
+      ]
+     }
+    },
+    {
+     "id": "force_protection_order",
+     "name": "Force Protection Order",
+     "verdict": "change",
+     "reason": "It read 0.7. Its troop-in-reach rider made the program unplayable with no troop near. Now it jams 6 (a tier-1 military threat's full price) and draws 1 card as the rider, at 0 insight.",
+     "anchor": "pay 4+4+0=8; get typed jam 6 ~5 (military only) + draw 1 card 5 = 10 = 1.25",
+     "text": "Force Protection Order. Tier 1 program, 4 cr, 0 insight. Security. Counts as 6 toward a military threat. Draw 1 card.",
+     "card": {
+      "id": "force_protection_order",
+      "name": "Force Protection Order",
+      "tier": 1,
+      "kind": "program",
+      "cost": 4,
+      "insight": 0,
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "jam",
+        "amount": 6,
+        "source": "military"
+       },
+       {
+        "op": "draw",
+        "count": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "garrison_command",
+     "name": "Garrison Command",
+     "verdict": "change",
+     "reason": "A military-only free jam sat idle most rounds (about 0.8). An OR half removes 1 troop in reach, so the Action does something most rounds and feeds HQ.",
+     "anchor": "pay 7+4+4=15; get ~1 use a round x 3.5 x ~5 = 17.5 = 1.17",
+     "text": "Garrison Command. Tier 1 building, 7 cr, 1 insight. Security. Action: counts as 6 toward a military threat. OR remove 1 troop in reach.",
+     "card": {
+      "id": "garrison_command",
+      "name": "Garrison Command",
+      "tier": 1,
+      "kind": "building",
+      "cost": 7,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "jam",
+         "amount": 6,
+         "source": "military"
+        }
+       ],
+       "or": {
+        "effects": [
+         {
+          "op": "remove_troops",
+          "count": 1,
+          "reach": true
+         }
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "hardened_bunker_complex",
+     "name": "Hardened Bunker Complex",
+     "verdict": "cut",
+     "reason": "A smaller near-duplicate of Multiyear Defense Budget (credit plus energy income), reading under 1 (0.92). Its slot goes to the new cards.",
+     "anchor": "pay 16+4+4=24; get energy income 1 14 + credit income 2 8 = 22 = 0.92",
+     "text": "(cut) Raise your energy income by 1. Raise your credit income by 2."
+    },
+    {
+     "id": "hardpoint_lockdown",
+     "name": "Hardpoint Lockdown",
+     "verdict": "keep",
+     "reason": "A cheap, clear defensive event: two tactical choices and one reading.",
+     "anchor": "pay 5+4+0=9; get shelter ~2 (only when a destruction comes) + cordon about 2 arrivals stopped at 5 = 10; 12 = 1.33",
+     "text": "Hardpoint Lockdown. Tier 1 event, 5 cr, 0 insight. Security. Shelter one country this round. In one country, no arrivals land next round."
+    },
+    {
+     "id": "interceptor_battery",
+     "name": "Checkpoint Network",
+     "verdict": "change",
+     "reason": "'1 energy: 2 troops in one country' breaks ruling 3. In reach it is mostly dead, and it spends rare energy. It is now a credit sink with real impact (Matt's lever, not a flat sink): pay 4 credits, remove 2 ambassadors in reach. The display name changes to fit; the id stays.",
+     "anchor": "pay 8+4+4=16; get (2 ambassadors 10 - 4 credits) x 3.5 rounds = 21 = 1.31",
+     "text": "Checkpoint Network. Tier 1 building, 8 cr, 1 insight. Security. Action: pay 4 credits, remove 2 adversary ambassadors in reach.",
+     "card": {
+      "id": "interceptor_battery",
+      "name": "Checkpoint Network",
+      "tier": 1,
+      "kind": "building",
+      "cost": 8,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "ability": {
+       "cost": [
+        [
+         "credits",
+         4
+        ]
+       ],
+       "effects": [
+        {
+         "op": "remove_ambassadors_country",
+         "max": 2,
+         "reach": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "joint_task_force",
+     "name": "Joint Task Force",
+     "verdict": "change",
+     "reason": "Its troop removals were in one country (ruling 3), and a teammate trigger that removes 1 rare troop read about 0.9. The trigger now removes 2 ambassadors in reach, which is nearly always live, and the when-built effect is draw 2. Cost 12 to 14.",
+     "anchor": "pay 14+4+4=22; get ~0.6 fires a round x 3.5 x 2 ambassadors 10 = 21 + draw 2 cards 10 = 31 = 1.41",
+     "text": "Joint Task Force. Tier 1 building, 14 cr, needs 2 Security, 1 insight. Security. Effect: when another player plays a Security card, remove 2 adversary ambassadors in reach. Draw 2 cards.",
+     "card": {
+      "id": "joint_task_force",
+      "name": "Joint Task Force",
+      "tier": 1,
+      "kind": "building",
+      "cost": 14,
+      "insight": 1,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "tags": [
+       "security"
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "team_play",
+         "tag": "security"
+        },
+        "then": [
+         {
+          "op": "remove_ambassadors_country",
+          "max": 2,
+          "reach": true
+         }
+        ]
+       }
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "multiyear_defense_budget",
+     "name": "Multiyear Defense Budget",
+     "verdict": "change",
+     "reason": "It read 1.0 at 30 credits. It keeps its dear tier-1 price (tier is efficiency, not magnitude) and shifts toward energy, which is rare, where credits pile up: +5 credits and +2 energy.",
+     "anchor": "pay 30+4+4=38; get credit income 5 at 4 = 20 + energy income 2 at 14 = 28; 48 = 1.26",
+     "text": "Multiyear Defense Budget. Tier 1 program, 30 cr, 1 insight. Security. Raise your credit income by 5. Raise your energy income by 2.",
+     "card": {
+      "id": "multiyear_defense_budget",
+      "name": "Multiyear Defense Budget",
+      "tier": 1,
+      "kind": "program",
+      "cost": 30,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "credits",
+        "amount": 5
+       },
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "peacekeeper_rotation",
+     "name": "Peacekeeper Rotation",
+     "verdict": "cut",
+     "reason": "'2 troops from a hex in reach' almost never has 2 troops, and with none the program can't be played. It reads 0.33, and Ceasefire Monitors (Diplomacy) already does 'ambassadors or a troop in a hex plus ambassadors'.",
+     "anchor": "pay 12+4+4=20; get ~1 troop 5 + move 1 ambassador ~1.5 = 6.5 = 0.33",
+     "text": "(cut) Remove 2 troops from a hex in reach. Move 1 ambassador on the board up to 2 hexes."
+    },
+    {
+     "id": "quick_reaction_force",
+     "name": "Quick Reaction Force",
+     "verdict": "change",
+     "reason": "A reuse does nothing without another Action building, which breaks ruling 1. It now draws 2 when built, so it is never empty. Cost 9 to 11.",
+     "anchor": "pay 11+4+4=19; get reuse ~5 a use x 3.5 = 17.5 + draw 2 cards 10 = 27.5 = 1.45",
+     "text": "Quick Reaction Force. Tier 1 building, 11 cr, needs 2 Security, 1 insight. Security. Action: use another of your buildings' Actions again this round. Draw 2 cards.",
+     "card": {
+      "id": "quick_reaction_force",
+      "name": "Quick Reaction Force",
+      "tier": 1,
+      "kind": "building",
+      "cost": 11,
+      "insight": 1,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "tags": [
+       "security"
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "reuse"
+        }
+       ]
+      },
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "recruit_operatives",
+     "name": "Recruit Operatives",
+     "verdict": "change",
+     "reason": "A bare feeder, dead without an Agent building (rulings 1 and 2). Its main effect is now draw 2 (throughput), priced a little below the rate alone, with 2 Agents as the bonus. Feeding Safehouse Network, those 2 Agents are one more 3-card spend.",
+     "anchor": "pay 8+4+0=12; alone draw 2 cards 10 = 0.83; with an Agent building +2 Agents ~4 each 8 = 18 = 1.5",
+     "text": "Recruit Operatives. Tier 1 program, 8 cr, 0 insight. Security. Draw 2 cards. Add 2 Agents to one of your Agent buildings.",
+     "card": {
+      "id": "recruit_operatives",
+      "name": "Recruit Operatives",
+      "tier": 1,
+      "kind": "program",
+      "cost": 8,
+      "insight": 0,
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "draw",
+        "count": 2
+       },
+       {
+        "op": "add_tokens",
+        "kind": "agents",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "security_contractor_hq",
+     "name": "Security Contractor HQ",
+     "verdict": "keep",
+     "reason": "The troop fight trigger is the payoff that makes Security's scarce troop removals (Breach and Clear, Garrison Command, Kinetic Interdiction, Peacekeeping Mission) worth taking. 10 a troop is strong but limited by how few troops there are.",
+     "anchor": "pay 14+4+4=22; get draw 3 cards 15 + ~0.5 troop a round x 3.5 x 10 = 17.5; 32.5 = 1.48",
+     "text": "Security Contractor HQ. Tier 1 building, 14 cr, needs 2 Security, 1 insight. Security. Effect: when you remove a troop, gain 10 credits. Draw 3 cards."
+    },
+    {
+     "id": "shared_threat_intel",
+     "name": "Shared Threat Intel",
+     "verdict": "change",
+     "reason": "It read about 1.1. The jam and gift are sound, so only the price drops, 7 to 5.",
+     "anchor": "pay 5+4+0=9; get jam 6 on any threat ~6 (a tier-1 counter) + 2 insight gift 8 x 0.75 = 6; 12 = 1.33",
+     "text": "Shared Threat Intel. Tier 1 program (help), 5 cr, 0 insight. Security, Cyber. One threat needs 6 less of each resource. Another player gains 2 insight.",
+     "card": {
+      "id": "shared_threat_intel",
+      "name": "Shared Threat Intel",
+      "tier": 1,
+      "kind": "program",
+      "cost": 5,
+      "insight": 0,
+      "tags": [
+       "security",
+       "cyber"
+      ],
+      "keywords": [
+       "help",
+       "hack"
+      ],
+      "effects": [
+       {
+        "op": "jam",
+        "amount": 6
+       },
+       {
+        "op": "choose_player"
+       },
+       {
+        "op": "other_gain",
+        "resource": "insight",
+        "amount": 2
+       }
+      ]
+     }
+    },
+    {
+     "id": "agency_directorate",
+     "name": "Agency Directorate",
+     "verdict": "change",
+     "reason": "Its threshold paid '3 troops in one country' about once a round, a repeated disguised remove-all (troops p90 3 a country) that is often empty. It now pays 3 ambassadors in reach. It still holds Agents, so it is a feeder target.",
+     "anchor": "pay 16+8+8=32 (+ the building covered); get ~3 tags a round = 1 fire x 15 x 3-3.5 rounds = 45-52.5 + its 2 Agents ~10 = 55-62.5 = 1.7-1.95",
+     "text": "Agency Directorate. Tier 2 building, 16 cr, needs 2 Security, over Security, 2 insight. Security. Effect: when you play a card, add 1 Agent here per tag on it; at 3, remove 3 adversary ambassadors in reach. Add 2 Agents here.",
+     "card": {
+      "id": "agency_directorate",
+      "name": "Agency Directorate",
+      "tier": 2,
+      "kind": "building",
+      "cost": 16,
+      "insight": 2,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "replaces": "security",
+      "tags": [
+       "security"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "agents"
+      },
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "agents",
+        "amount": 2,
+        "here": true
+       }
+      ],
+      "passives": [
+       {
+        "op": "when",
+        "on": {
+         "event": "play_tag"
+        },
+        "then": [
+         {
+          "op": "add_tokens",
+          "kind": "agents",
+          "amount": 1,
+          "here": true
+         }
+        ]
+       },
+       {
+        "op": "threshold",
+        "at": 3,
+        "then": [
+         {
+          "op": "remove_ambassadors_country",
+          "max": 3,
+          "reach": true
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "deep_state_ledger",
+     "name": "Deep State Ledger",
+     "verdict": "change",
+     "reason": "Ruling 2 feeder: +4 credit income alone read 0.6 and 1.2 with a target, under tier 2. Its main effect is now +2 insight income, which doesn't pile up the way credits do and fits a cyber 'ledger'. The 4 Agents stay as the bonus. Cost 10 to 6.",
+     "anchor": "pay 6+8+8=22; alone insight income 2 at 12 = 24 = 1.09; with an Agent building +4 Agents ~16 = 40 = 1.82",
+     "text": "Deep State Ledger. Tier 2 program, 6 cr, needs 2 Security, 2 insight. Security, Cyber. Raise your insight income by 2. Add 4 Agents to one of your Agent buildings.",
+     "card": {
+      "id": "deep_state_ledger",
+      "name": "Deep State Ledger",
+      "tier": 2,
+      "kind": "program",
+      "cost": 6,
+      "insight": 2,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "tags": [
+       "security",
+       "cyber"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "insight",
+        "amount": 2
+       },
+       {
+        "op": "add_tokens",
+        "kind": "agents",
+        "amount": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "homeland_security_act",
+     "name": "Homeland Security Act",
+     "verdict": "change",
+     "reason": "It read 1.4, under the tier-2 band. The effect is right (the tier-2 per-tag income with energy, needs 3), so only the price drops, 18 to 10.",
+     "anchor": "pay 10+8+8=26; get energy income 2 at 14 = 28 + 5 Security tags x 4 = 20; 48 = 1.85",
+     "text": "Homeland Security Act. Tier 2 program, 10 cr, needs 3 Security, 2 insight. Security, Power. Raise your energy income by 2. Raise your credit income by 1 per Security tag on your cards.",
+     "card": {
+      "id": "homeland_security_act",
+      "name": "Homeland Security Act",
+      "tier": 2,
+      "kind": "program",
+      "cost": 10,
+      "insight": 2,
+      "needs": [
+       [
+        "security",
+        3
+       ]
+      ],
+      "tags": [
+       "security",
+       "power"
+      ],
+      "effects": [
+       {
+        "op": "production",
+        "resource": "energy",
+        "amount": 2
+       },
+       {
+        "op": "production_per_tag",
+        "resource": "credits",
+        "tag": "security",
+        "per": 1
+       }
+      ]
+     }
+    },
+    {
+     "id": "kinetic_interdiction",
+     "name": "Kinetic Interdiction",
+     "verdict": "change",
+     "reason": "'Remove 6 troops in one country' is a disguised remove-all (p90 3). It stays the troop sweep in one country (the 3 allowed to one tier-2 sweep) and adds 6 ambassadors in reach. It is paid in energy and antimatter, now 0 credits.",
+     "anchor": "pay 0+4.5 energy+7 antimatter+4x(2+1)=23.5; get 3 troops 15 (realistic ~10) + 6 ambassadors 30 = 40-45 = 1.7-1.9",
+     "text": "Kinetic Interdiction. Tier 2 event, 0 cr + 1 energy + 1 antimatter, needs 2 Security, 1 insight. Security. Pay 1 energy and 1 antimatter. Remove 3 troops in one country. Remove 6 adversary ambassadors in reach.",
+     "card": {
+      "id": "kinetic_interdiction",
+      "name": "Kinetic Interdiction",
+      "tier": 2,
+      "kind": "event",
+      "cost": 0,
+      "energy": 1,
+      "antimatter": 1,
+      "insight": 1,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "remove_troops",
+        "count": 3
+       },
+       {
+        "op": "remove_ambassadors_country",
+        "max": 6,
+        "reach": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "martial_cordon",
+     "name": "Martial Cordon",
+     "verdict": "change",
+     "reason": "'10 ambassadors in one country' is above p90 (a disguised remove-all). It stays one of the few tier-2 one-country sweeps, at 7, near a median country's 6. The rider is now the cordon its name promises, in place of sway. Cost 14 to 8.",
+     "anchor": "pay 8+8+8=24; get 7 ambassadors 35 + cordon ~2 arrivals 10 = 45 = 1.88",
+     "text": "Martial Cordon. Tier 2 program, 8 cr, needs 1 Diplomacy, 2 insight. Security, Diplomacy. Remove 7 adversary ambassadors in one country. In one country, no arrivals land next round.",
+     "card": {
+      "id": "martial_cordon",
+      "name": "Martial Cordon",
+      "tier": 2,
+      "kind": "program",
+      "cost": 8,
+      "insight": 2,
+      "needs": [
+       [
+        "diplomacy",
+        1
+       ]
+      ],
+      "tags": [
+       "security",
+       "diplomacy"
+      ],
+      "keywords": [
+       "move"
+      ],
+      "effects": [
+       {
+        "op": "remove_ambassadors_country",
+        "unity_per": 0,
+        "max": 7
+       },
+       {
+        "op": "cordon"
+       }
+      ]
+     }
+    },
+    {
+     "id": "peacekeeping_mission",
+     "name": "Peacekeeping Mission",
+     "verdict": "keep",
+     "reason": "The Security liberate capstone is exactly the late-game 30-50 credit card Matt wants, and its 3-troop twist in the city's own country is a deliberate tier-2 sweep. It reads under the tier-2 band only because the liberation anchor is 45; its credit-paid siblings cost 40-42 too (see notes).",
+     "anchor": "pay 42+4+8=54; get liberation 45 + ~2 troops in its country 10 = 55 = 1.02",
+     "text": "Peacekeeping Mission. Tier 2 event, 42 cr, needs 2 Security, 1 insight. Security. Liberate a corrupted city in reach. Remove up to 3 troops in its country."
+    },
+    {
+     "id": "safehouse_network",
+     "name": "Safehouse Network",
+     "verdict": "new",
+     "reason": "Card throughput, and a third Agent building, so the feeders (Recruit Operatives, Deep State Ledger) have a target outside the tier-2 Directorate and Cyber's Intrusion Lab. A progressive token card under ruling 12: grow, or spend 2 to draw 3. It arrives loaded, so the first spend comes at once.",
+     "anchor": "pay 14+4+4=22; get 2 spends over ~4 rounds = 6 cards 30 = 1.36 (feeders add spends)",
+     "text": "Safehouse Network. Tier 1 building, 14 cr, 1 insight. Security. Action: add 1 Agent here. OR spend 2 Agents here: draw 3 cards. Add 2 Agents here.",
+     "card": {
+      "id": "safehouse_network",
+      "name": "Safehouse Network",
+      "tier": 1,
+      "kind": "building",
+      "cost": 14,
+      "insight": 1,
+      "tags": [
+       "security"
+      ],
+      "keywords": [
+       "tokens"
+      ],
+      "tokens": {
+       "kind": "agents"
+      },
+      "effects": [
+       {
+        "op": "add_tokens",
+        "kind": "agents",
+        "amount": 2,
+        "here": true
+       }
+      ],
+      "ability": {
+       "effects": [
+        {
+         "op": "add_tokens",
+         "kind": "agents",
+         "amount": 1,
+         "here": true
+        }
+       ],
+       "or": {
+        "tokens": 2,
+        "effects": [
+         {
+          "op": "draw",
+          "count": 3
+         }
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "headquarters_raid",
+     "name": "Headquarters Raid",
+     "verdict": "new",
+     "reason": "A dear late-game card for the credits that pile up, plus throughput: clear a seat's whole reach (5, the tier-1 line) and seize intelligence (draw 4). It is tier 1 because tier is efficiency; needs 2 Security keeps it a Security seat's card.",
+     "anchor": "pay 28+4+4=36; get 5 ambassadors 25 + draw 4 cards 20 = 45 = 1.25",
+     "text": "Headquarters Raid. Tier 1 event, 28 cr, needs 2 Security, 1 insight. Security. Remove 5 adversary ambassadors in reach. Draw 4 cards.",
+     "card": {
+      "id": "headquarters_raid",
+      "name": "Headquarters Raid",
+      "tier": 1,
+      "kind": "event",
+      "cost": 28,
+      "insight": 1,
+      "needs": [
+       [
+        "security",
+        2
+       ]
+      ],
+      "tags": [
+       "security"
+      ],
+      "effects": [
+       {
+        "op": "remove_ambassadors_country",
+        "max": 5,
+        "reach": true
+       },
+       {
+        "op": "draw",
+        "count": 4
+       }
+      ]
+     }
+    },
+    {
+     "id": "total_containment",
+     "name": "Total Containment",
+     "verdict": "cut",
+     "reason": "'4 troops in one country' is a disguised remove-all, and it duplicates Kinetic Interdiction's sweep. Brought into reach (2 troops plus shelter) it reads about 0.6, and with no troop the program can't be played. Hardpoint Lockdown already carries shelter.",
+     "anchor": "pay 8+8+8=24; get 4 troops face 20 (realistic ~1.5 troops 7.5) + shelter 4 = 11.5-24 = 0.48-1.0",
+     "text": "(cut) Remove 4 troops in one country. Shelter one country this round."
+    }
+   ],
+   "notes": "The Security section goes from 26 cards to 24: 4 cut (Bounty Board, Hardened Bunker Complex, Peacekeeper Rotation, Total Containment) and 2 new (Safehouse Network, Headquarters Raid). Deck 154 to 152. Kinds go from 15 programs, 7 buildings, 4 events to 10, 8, 6; tiers from 19/7 to 18/6. Insight-0 cards go from 3 to 5.\n\n1. ENGINE BLOCKER FOR RULING 2. In `crates/aic-core/src/modules/effects/feasible.rs`, AddTokens without `here` is a strict veto: a card whose feeder has no Agent building can't be played at all, main effect included. Recruit Operatives and Deep State Ledger (and every other tag's feeders under ruling 2) stay dead alone until AddTokens joins the list that only vetoes a card that would otherwise do nothing (beside Harden, MoveOne, Draw). Without that change ruling 2 isn't met, whatever the card text says.\n\n2. Removals and the same veto. Any program or event with a removal plus another effect can't be played when the removal has no target. That is why every troop-only card in reach is a cut or a cheap event, and why the mixed cards use `damage` (ambassadors OR troops, one hex) or ambassadors in reach. Troops are 0-1 a country, so I moved most Security removal to ambassadors in reach. Troops stay on Breach and Clear and Garrison Command (in reach, 1-2), Kinetic Interdiction (3 in one country, the deliberate tier-2 sweep), Peacekeeping Mission's twist and Counterinsurgency's choice. They feed Security Contractor HQ. The tier-2 one-country sweeps left are Kinetic Interdiction (troops), Martial Cordon (7 ambassadors) and Peacekeeping Mission (its city's country).\n\n3. Value-table disagreements with the anchors:\n- Troop removal is 11 in values.json (7 in one country) against the anchor's 5; the heuristic reads about 20. At 5, HQ's 10 a troop is a 3x boost. I kept HQ because troops are scarce.\n- For cordon I used about 2 arrivals stopped x 5 = 10; values.json says 5. Hardpoint Lockdown reads 1.0 at values and 1.33 at mine.\n- I valued an Agent at about 4: Safehouse spends 2 for 3 cards, and Directorate's 3 fill a 15 fire. values.json feed_agents is 2. At 2 the feeders' with-target ratios fall about 0.3.\n- Typed jam: I used about 5 for jam 6 on military (values: 0.7 x 6 = 4.2).\n\n4. Kept below band on purpose: Peacekeeping Mission at 1.02 (tier 2). The whole liberate family prices under the tier-2 band at the 45 anchor: Hostile Buyout 42, Root Access 40, Forensic Audit 27 plus cubes. The fix is the liberation anchor (play reads about 50, the fallback about 100), not one card. I kept 42 for consistency with its siblings, and because it is the late-game credit sink Matt wants. Defense Appropriations at 1.11 is the shared per-tag shape (10 cr, needs 2) in every tag, kept for consistency. Kinetic Interdiction now costs 0 credits (paid in energy and antimatter).\n\n5. Changes the implementer must make (in the same change as these cards):\n- interceptor_battery is renamed to Checkpoint Network (id kept), so its scene and art no longer match. It needs new art (guideline 10), or keep the old name if Matt prefers.\n- Cutting Peacekeeper Rotation leaves card-grammar.md's `move_one` range 2 exception stale.\n- player-cards.md says the Security engines remove '2 troops when built'. Field Station and Joint Task Force now draw 2, and Quick Reaction Force draws 2 when built.\n- The typed-counter paragraph (Security: one program and one Action building) still holds: Force Protection Order and Garrison Command.\n- player-cards.md's feeder list gains Agent targets: Safehouse Network joins Intrusion Lab and Agency Directorate.\n\n6. Text fit to check with `cards:fit`. Agency Directorate's Effect, now ending 'remove 3 adversary ambassadors in reach', is about 105 characters above the art, over the 80 budget; it was already long. Garrison Command and Joint Task Force are near 80.\n\n7. The Field Station and Joint Task Force triggers and Directorate's payoff all remove ambassadors in reach, so they fire Reconciliation Office and Honeypot Relay (when you remove adversary ambassadors, gain 7 credits). That is a deliberate cross-tag combo, but a seat holding Field Station, Checkpoint Network and Reconciliation Office will look broken, which the locked direction allows. Read its uses per game in the smoke read.\n\n8. Martial Cordon keeps its stale \"move\" keyword, unchanged; it has no move op."
+  }
+ ],
+ [
+  "review:2",
+  {
+   "flags": [
+    {
+     "id": "synthetic_data_forge",
+     "problem": "The cash-out reads \"get 1 insight per Dataset here\", which is GainPerTokens. That op does not remove the tokens, so the building pays its whole pile again every round after a few adds: an unbounded engine. The proposer's math (\"add to 2, cash 2 x 3\") assumes the Datasets are spent. Their own math and the printed text are two different readings.",
+     "fix": "Use CashOut {kind: dataset, resource: insight, rate: 1, here: true}. Text: \"Action: add 1 Dataset here, OR remove the Datasets here: gain 1 insight each. Add 1 Dataset here.\" That keeps their 1.25-1.5 check true."
+    },
+    {
+     "id": "martial_cordon",
+     "problem": "\"Remove 7 adversary ambassadors in one country\" is above the median of 6 per country, so it is a disguised remove-all. It is the same shape as Matt's own example (8 in one country). It is also the card that 'scaled the number' rather than changing the effect.",
+     "fix": "Use {\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true} plus the cordon. Text: \"Remove up to 5 adversary ambassadors in reach. In one country, no arrivals land next round.\" Check: pay 8+8+8=24; get 25+10=35 = 1.46, under the tier-2 band. So also drop play insight to 1: pay 20, 1.75. Or keep 8 cr and add sway 1 toward Unity via unity_per."
+    },
+    {
+     "id": "collateralized_grid",
+     "problem": "A tier-2 program that is 1.27 alone breaks ruling 1 in spirit: 'useful alone' should not mean tier-1 efficiency on a tier-2 keep. With Liquidity Event cut, it is now the only Capital outlet besides the Capital buildings' own thresholds.",
+     "fix": "Make it tier 1 (keep 1 insight, play 1 insight), 14 cr: +2 energy income, then remove the Capital from one of your cards for 1 energy each. Check: pay 14+4+4=22; alone 28 = 1.27; with 3 Capital 41.5 = 1.89. That is a combo top, like other feeder pairings. Or keep tier 2 and raise energy income to 3: 42/22 = 1.91 alone, which makes the Capital the bonus."
+    },
+    {
+     "id": "deep_state_ledger",
+     "problem": "Its feeder main effect alone is 1.09 at tier 2, far below the tier-2 'usual rate' of 1.8. Ruling 2 says a little below the usual rate.",
+     "fix": "Raise insight income by 3 and keep +4 Agents. Check: pay 22; alone 36 = 1.64; with an Agent building 52 = 2.36."
+    },
+    {
+     "id": "recruit_operatives_intrusion_lab",
+     "problem": "Agents are priced at ~4 each, but in Intrusion Lab 2 Agents are a full 2-antimatter payout (14). Recruit Operatives with Intrusion Lab is 10+14=24 on 12 = 2.0 at tier 1, above the 1.5 cap. Alone it is 0.83, too weak a main effect. Deep State Ledger's +4 Agents into the Lab gives 4 antimatter (28), not 16.",
+     "fix": "Recruit Operatives: 6 cr, Draw 2 cards, add 1 Agent. Alone 10/10 = 1.0; with Safehouse/Directorate about 1.4; with Intrusion Lab 1.7 (half a payout). Or raise Intrusion Lab's threshold to 3 Agents and keep Recruit at 2 Agents."
+    },
+    {
+     "id": "payroll_automation_manifesto_leak",
+     "problem": "Their feeder main effects alone are 0.89 (Payroll) and 0.92 (Manifesto Leak), below ~1.0. The 'a little below the usual rate' floor needs a standalone that is still a fair buy.",
+     "fix": "Payroll Automation: 8 cr, +4 credit income, add 2 Capital. Pay 16; alone 1.0; with a target 22 = 1.38. Manifesto Leak: 8 cr, Sway 3 toward Unity, add 2 Followers. Pay 12; alone 1.0; with a target 17 = 1.42."
+    },
+    {
+     "id": "tier2_liberations_underpriced_efficiency",
+     "problem": "Three tier-2 liberation cards sit at tier-1 or worse efficiency: Forensic Audit 0.88, Peacekeeping Mission 1.02, Hostile Buyout 1.29. Tier is efficiency (ruling 5), so these are tier-1 late-game sinks mislabeled as tier 2. Forensic Audit at 0.88 is under the 1.1 weak line.",
+     "fix": "Make all three tier 1 (keep 1 insight). Hostile Buyout: 34 cr, 1 insight. Pay 42; 62 = 1.48. Peacekeeping Mission: 38 cr. Pay 46; 55 = 1.20. Forensic Audit: 16 cr + 4 cubes. Pay 16+4+4+12=36; 45 = 1.25. All stay 30-40 credit late sinks, per Matt's lever."
+    },
+    {
+     "id": "vertical_monopoly",
+     "problem": "At 6 Industry tags it reaches 2.9, over the 2.5 tier-2 ceiling. A committed Industry seat reaches 6 tags.",
+     "fix": "Raise it to 20 cr. Pay 36; 5 tags 80 = 2.22; 6 tags 92 = 2.56. Or make it 'per 2 Industry tags... 5 credits'. Simplest: 20 cr."
+    },
+    {
+     "id": "capacitor_discharge_credential_harvest",
+     "problem": "Tier-1 tag payoffs reach 1.78-1.8 at 4 tags, over the 1.5 never-above cap. The tag-payoff exemption covers usefulness alone, not the efficiency ceiling.",
+     "fix": "Capacitor Discharge: 8 cr. Pay 12; 3 tags 1.13; 4 tags 1.5. Credential Harvest: 7 cr. Pay 11; 3 tags 1.09; 4 tags 1.45."
+    },
+    {
+     "id": "signal_hijack_vs_breach_and_clear",
+     "problem": "Signal Hijack (Cyber, 3 cr event, up to 2 troops in reach) and Breach and Clear (Security, 4 cr event, 2 troops in reach) are the same card. Troops are 0-1 per country, so both are often dead. Two copies of a frequently dead effect is a wasted slot.",
+     "fix": "Give Signal Hijack a second effect that is never dead: \"Remove 1 troop in reach. Remove 3 compute from an adversary project.\" 4 cr; pay 8; get 5+6=11 = 1.38. Logic Bomb already does the 6-compute version, so this is its smaller sibling."
+    },
+    {
+     "id": "three_effect_buildings",
+     "problem": "Positron Storage Ring (Each round antimatter + Power trigger + gain 2 energy) and Hyperscale Botnet (Each round 3 insight + discount + draw 3) print three effects. The rule is at most two, and their boxes are likely over ~80 characters each.",
+     "fix": "Positron: drop 'Gain 2 energy' on build and draw 2 cards in its place (the build tail is the standard draw). Better, drop the Power trigger and raise the build gain. Hyperscale: drop the 1-insight discount and raise Each round to 4 insight. Pay 26; 48+15 = 2.42. Run cards:fit on both."
+    }
+   ]
+  }
+ ],
+ [
+  "review:0",
+  {
+   "flags": [
+    {
+     "id": "martial_cordon",
+     "problem": "\"Remove 7 adversary ambassadors in one country\" is more than the median 6 a country holds, so it reads as a disguised remove-all. It is also the one-country wording Matt objected to.",
+     "fix": "\"Remove up to 5 adversary ambassadors in reach. In one country, no arrivals land next round.\" Use {\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}. pay 8+8+8=24; get 25 + cordon 10 = 35 = 1.46. Lower the price to 4 cr to get pay 20, 1.75."
+    },
+    {
+     "id": "kinetic_interdiction",
+     "problem": "Both numbers clear the board. \"Remove 3 troops in one country\" is the p90 count (troops run 0-1 a country), and 6 ambassadors in reach is the median in reach. The check counts the troops at face value (15) when they are realistically about 5.",
+     "fix": "\"Remove up to 2 troops in reach. Remove up to 5 adversary ambassadors in reach.\" Both use reach:true. Keep the energy and antimatter cost. pay 23.5; get about 7 + 25 = 32 = 1.36. Drop the credit price to 0 with no energy (pay 19) for 1.7."
+    },
+    {
+     "id": "counterinsurgency_campaign",
+     "problem": "Matt named this card for the reach ruling, but it still removes from one hex. \"2 troops from a hex\" never happens, since troops run 0-1 a country.",
+     "fix": "\"Remove up to 3 adversary ambassadors in reach. Raise your credit income by 3.\" Use {\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}. pay 20; get 15+12 = 27 = 1.35."
+    },
+    {
+     "id": "peacekeeping_mission",
+     "problem": "A tier-2 card at 42 cr with a ratio of 1.02. Root Access liberates a city for 20 cr and adds a botnet, so a player sees Peacekeeping as twice the price for less. \"Up to 3 troops in its country\" is also a disguised remove-all.",
+     "fix": "16 cr. \"Liberate a corrupted city in reach. Remove up to 2 troops in reach.\" pay 16+8+4=28; get 45+7 = 52 = 1.86."
+    },
+    {
+     "id": "hostile_buyout",
+     "problem": "A tier-2 card at 36 cr with a ratio of 1.29, which is below even the tier-1 band. It costs nearly twice what Root Access does for the same liberation.",
+     "fix": "22 cr. pay 22+8+4=34; get 62 = 1.82."
+    },
+    {
+     "id": "forensic_audit",
+     "problem": "Kept as a tier-2 card at a ratio of 0.88. It costs 27 cr plus 4 research cubes for a liberation that Root Access gives for 20 cr. It is the weakest liberation card in the deck while being the most expensive.",
+     "fix": "6 cr and 2 research cubes. \"Pay 2 research cubes. Liberate a corrupted city in reach.\" pay 6+6+8+4=24; get 45 = 1.88."
+    },
+    {
+     "id": "manifesto_leak",
+     "problem": "The check prices Followers at 2.5 (values.json). The buildings pay far more per Follower: Popular Uprising liberates a city (45) for 6 Followers, about 7.5 each, and Open Assembly gives sway 3 (12) for 2, about 6 each. With Popular Uprising, +3 Followers is half a city: pay 13; get 12+22.5 = 2.65 at tier 1, over the 1.5 cap.",
+     "fix": "\"Sway 3 toward Unity. Add 1 Follower to one of your Follower buildings.\" pay 13; get 12 + 6-7.5 = 1.38-1.5."
+    },
+    {
+     "id": "recruit_operatives",
+     "problem": "The check prices Agents at about 4. Safehouse Network turns 2 Agents into 3 cards (7.5 per Agent), so +2 Agents there is 15: pay 12; get 25 = 2.08 at tier 1, over the cap.",
+     "fix": "7 cr. \"Draw 2 cards. Add 1 Agent to one of your Agent buildings.\" pay 11; alone 10 = 0.91; with Safehouse 17.5 = 1.59. Or keep 2 Agents and make Safehouse spend 3 Agents to draw 3."
+    },
+    {
+     "id": "synthetic_data_forge",
+     "problem": "\"Get 1 insight per Dataset here\" does not say the Datasets are spent. Read literally, you add once and then cash the same pile every round, which breaks the one-reading rule. The check (add 2, cash 2 x 3) assumes they are spent.",
+     "fix": "\"Action: add 1 Dataset here, OR remove all Datasets here: gain 1 insight per Dataset removed.\" If the op does not spend the tokens, add that before printing."
+    },
+    {
+     "id": "quick_reaction_force",
+     "problem": "Exact near-duplicate of Simulation Cluster: same 11 cr and 1 insight, same \"use another of your buildings' Actions again this round. Draw 2 cards.\" Only the tag requirement differs.",
+     "fix": "Cut Quick Reaction Force (the deck stays near 150), or give it a Security effect: \"Action: pay 3 credits, remove 1 troop or 2 adversary ambassadors from a hex in reach.\""
+    },
+    {
+     "id": "signal_hijack",
+     "problem": "Near-duplicate of Breach and Clear: both events remove 2 troops in reach for 3-4 cr. Both are also dead whenever no troop is in reach, which breaks ruling 1 (useful alone).",
+     "fix": "Signal Hijack (4 cr): \"Remove 1 troop in reach. Remove 4 compute from an adversary project.\" pay 8; get 5+8 = 1.63, so price it at 5 cr for 1.44. Breach and Clear (6 cr): \"Remove up to 2 troops in reach. Draw 1 card.\" pay 10; get 7-10 + 5 = 1.2-1.5."
+    },
+    {
+     "id": "eviction_worm",
+     "problem": "Near-duplicate of Diplomatic Expulsion: \"Remove up to 4 adversary ambassadors in reach\" at 8 cr, against 10 cr for the same plus sway 1. The Cyber card has no Cyber angle.",
+     "fix": "\"Remove up to 3 adversary ambassadors in reach. Remove 4 compute from an adversary project.\" Keep 8 cr: pay 16; get 15+8 = 1.44."
+    },
+    {
+     "id": "liaison_corps",
+     "problem": "Near-duplicate of Summit Caucus: same 7 cr and 1 insight, both gain 3 ambassadors and then move ambassadors (4 onto pieces against 6 onto one piece). Envoy Briefings also overlaps.",
+     "fix": "Cut Liaison Corps (the deck is near 150), or make it \"Gain 3 ambassadors. Free 1 corrupted factory in reach.\" pay 15; get 12+6 = 18 = 1.2."
+    },
+    {
+     "id": "aegis_grid_lockdown",
+     "problem": "Near-duplicate of Relay Mast Rollout: the same \"Place 3 nodes free\" plus a shelter for 2 cr more. Early Warning Drill and Stress Test Suite are a second pair, both printing \"Shield 3 of your nodes\" at 5 cr.",
+     "fix": "Aegis: \"Shelter one country this round. Harden 2 facilities in reach.\" 5 cr: pay 13; get 4+3+tags = about 1.1, so a cut is cleaner. Early Warning Drill: \"Delay 1 threat one round. Draw 2 cards.\" pay 13; get 2.5+10 = 0.96, so price it at 3 cr for 1.14. Or cut one of each pair."
+    },
+    {
+     "id": "hyperscale_botnet",
+     "problem": "At 14 cr it dominates Recursive Self-Improvement (24 cr plus needs 2 Science for +4 insight income and draw 4). Hyperscale gives 3 insight a round, a discount and draw 3 for 10 cr less, and sits at the 2.50 ceiling.",
+     "fix": "22 cr: pay 22+8+4=34; get 65 = 1.91."
+    },
+    {
+     "id": "vertical_monopoly",
+     "problem": "Reaches 2.9 at 6 Industry tags, over the 2.5 tier-2 ceiling. 3 credits per tag a round is a printed number that runs away on a committed seat.",
+     "fix": "2 credits per Industry tag a round, 12 cr: pay 28; 5 tags 60 = 2.14, 6 tags 68 = 2.43."
+    },
+    {
+     "id": "credential_harvest_keep",
+     "problem": "Reaches 1.78 at 4 Cyber tags. That is over the tier-1 cap of 1.5, and the cap has no tag-payoff exception.",
+     "fix": "7 cr: pay 11; 3-4 tags 12-16 = 1.09-1.45."
+    },
+    {
+     "id": "peace_dividend",
+     "problem": "The \"+1 credit income per X tag\" cards are one effect printed at four prices: Capacity Market 5 cr, Research Royalties 6, Economies of Scale 7 (all with 1 insight), and Ransomware Syndicate 7 cr with 0 insight. Peace Dividend and Defense Appropriations charge 10 cr plus 1 insight, putting them at 0.89-1.11, which is weak at tier 1. A player comparing the family sees arbitrary prices.",
+     "fix": "Print all six at 6 cr, 1 insight, needs 2 of the tag. Peace Dividend and Defense Appropriations then become pay 14; 16-20 = 1.14-1.43."
+    },
+    {
+     "id": "university_spinout",
+     "problem": "Needs 2 Science yet gives less than Cryptojacking Campaign, which has no requirement: 19 cr for +8 credit income against 13 cr + 2 energy for +9.",
+     "fix": "15 cr: pay 23; get 32 = 1.39."
+    },
+    {
+     "id": "back_channel_talks",
+     "problem": "\"Free 3 corrupted factories in reach\": the check's own 1-factory case (0.78) suggests 3 is more than is usually in reach, so it is a disguised free-all and is often weak.",
+     "fix": "8 cr. \"Free 2 corrupted factories in reach. Sway 2 toward Unity.\" Check the measured corrupted factories in reach first. pay 16; get 12+8 = 1.25 with 2 freed."
+    }
+   ]
+  }
+ ],
+ [
+  "review:1",
+  {
+   "flags": [
+    {
+     "id": "manifesto_leak",
+     "problem": "Followers are worth far more than values' 2.5 in the deck's own Follower buildings: Open Assembly turns 2 Followers into sway 3 (12), so 6 each, and Popular Uprising turns 6 into a liberation (45), so 7.5 each. With Open Assembly, Manifesto Leak's 3 Followers are 1.5 fires (18): 12+18=30/13 = 2.31. With Popular Uprising, 12+22.5=34.5/13 = 2.65. A tier-1 card above 2.5. Alone it is 0.92, which is also under the 1.0-1.1 floor for a feeder's main effect.",
+     "fix": "8 credits, 0 insight. Sway 3 toward Unity. Add 1 Follower to one of your Follower buildings. Check: pay 8+4+0=12; alone sway 3 12 = 1.0; with Open Assembly +1 Follower 6 = 18 = 1.5; with Popular Uprising 19.5 = 1.63 (the edge case, accepted)."
+    },
+    {
+     "id": "recruit_operatives",
+     "problem": "Agents are underpriced at ~4. Safehouse Network turns 2 Agents into draw 3 (15), so 7.5 each, and Intrusion Lab turns 2 into 2 antimatter (14), so 7 each. With either, Recruit Operatives is 10+14..15 = 24-25/12 = 2.0-2.08 at tier 1. Alone it is 0.83, which is below the 'a little below the rate' floor.",
+     "fix": "7 credits, 0 insight. Draw 2 cards. Add 1 Agent to one of your Agent buildings. Check: pay 7+4=11; alone 10 = 0.91; with 1 Agent at Directorate 5, Intrusion Lab 7 or Safehouse 7.5 = 15-17.5 = 1.36-1.59."
+    },
+    {
+     "id": "deep_state_ledger",
+     "problem": "Alone it is 24/22 = 1.09, a tier-2 card near tier-1 weak, so the main effect is far below the tier-2 rate rather than 'a little below'. With Safehouse, 4 Agents are 2 spends = 6 cards (30): 54/22 = 2.45, so all of its value is in the tokens.",
+     "fix": "Raise your insight income by 3. Add 2 Agents to one of your Agent buildings (6 credits, 2 insight). Check: pay 6+8+8=22; alone +3 insight income 36 = 1.64; with 2 Agents at Safehouse 15 = 51 = 2.32."
+    },
+    {
+     "id": "dataset_scraper",
+     "problem": "A Dataset is worth 4, not 3, at Synthetic Data Forge (1 insight each). That makes the with-target ratio 10+8=18/11 = 1.64 at tier 1, while alone it is 0.91.",
+     "fix": "6 credits, 0 insight. Draw 2 cards. Add 1 Dataset to one of your Dataset buildings. Check: pay 6+4=10; alone 10 = 1.0; with Forge +1 Dataset 4 = 14 = 1.4; with Telemetry Archive 3 = 13 = 1.3."
+    },
+    {
+     "id": "payroll_automation",
+     "problem": "Alone it is 16/18 = 0.89, too far below the rate: it is strictly worse than Robotic Foundry (9 credits for +5 income, 1.26). With Conglomerate HQ (3 Capital gives 12 credits, so Capital is 4 each), 3 Capital is 12: 28/18 = 1.56, over 1.5.",
+     "fix": "8 credits, 1 insight. Raise your credit income by 4. Add 2 Capital to one of your Capital buildings. Check: pay 8+4+4=16; alone 16 = 1.0; with Conglomerate HQ +8 = 24 = 1.5; with Retained Earnings +6 = 22 = 1.38."
+    },
+    {
+     "id": "materials_hedge_desk",
+     "problem": "Capital Injection: at Conglomerate HQ, Capital is worth 4 each (3 for 12 credits), so 2 Capital is 8. That gives 15+8=23/14 = 1.64 at tier 1.",
+     "fix": "7 credits, 1 insight, same text. Check: pay 7+4+4=15; alone draw 3 15 = 1.0; with HQ 23 = 1.53; with Retained Earnings 21 = 1.4."
+    },
+    {
+     "id": "collateralized_grid",
+     "problem": "The with-target check counts each Capital at its full 4.5 (1 energy), but removing the Capital also gives up its value on the engine it sits on: 3-4 at Conglomerate HQ or Retained Earnings. The real gain is about 1 a Capital, about 3-5 in total. Its true range is 28-33/22 = 1.27-1.5, under the tier-2 target either way. It is close to a break-even conversion.",
+     "fix": "4 credits, 1 insight, same text. Check: pay 4+8+4=16; alone +2 energy income 28 = 1.75; with 3-4 Capital converted, net +3-5 = 31-33 = 1.94-2.06."
+    },
+    {
+     "id": "forensic_audit",
+     "problem": "A tier-2 card at 45/51 = 0.88, under 1.0. Kept unchanged although it is the weakest card in the deck by the anchors.",
+     "fix": "6 credits, 4 research cubes, 1 insight. Pay 4 research cubes. Liberate a corrupted city in reach. Draw 2 cards. Check: pay 6+8+4+12=30; get 45+10 = 55 = 1.83."
+    },
+    {
+     "id": "hostile_buyout",
+     "problem": "A tier-2 card at 62/48 = 1.29, well under the tier-2 target of 1.8-2.5. Tier is efficiency, and this card's efficiency is tier 1.",
+     "fix": "Make it tier 1 at the same 36 credits and 1 insight, same text. Check: pay 36+4+4=44; get 62 = 1.41. It stays a late-game credit sink at tier-1 efficiency."
+    },
+    {
+     "id": "peacekeeping_mission",
+     "problem": "A tier-2 card at 55/54 = 1.02 (kept). Below even the tier-1 floor.",
+     "fix": "Tier 1 at 34 credits, 1 insight, same text. Check: pay 34+4+4=42; get liberation 45 + ~2 troops 10 = 55 = 1.31."
+    },
+    {
+     "id": "martial_cordon",
+     "problem": "'Remove 7 adversary ambassadors in one country' prints a number above the median of 6 a country, so it is a disguised remove-all (ruling 4). Realistically it removes about 5-6 (27.5), so the true check is 27.5+10=37.5/24 = 1.56, under the tier-2 target. The 35 at face overstates it.",
+     "fix": "4 credits, 2 insight, needs 1 Diplomacy. Remove up to 6 adversary ambassadors in one country. In one country, no arrivals land next round. Check: pay 4+8+8=20; get ~5.5 removed 27.5 + cordon 10 = 37.5 = 1.88."
+    },
+    {
+     "id": "kinetic_interdiction",
+     "problem": "'Remove 3 troops in one country': troops run 0-1 a country, so the check's 'realistic ~10' (2 troops) is generous. At about 1 troop it is 5+30=35/23.5 = 1.49, under the tier-2 target, and the number 3 reads as a remove-all.",
+     "fix": "Pay 1 energy and 1 antimatter. Remove up to 2 troops in reach. Remove 6 adversary ambassadors in reach. Troops in reach across countries make 2 achievable. Check: pay 23.5; get ~1.5-2 troops 7.5-10 + 30 = 37.5-40 = 1.6-1.7. If that is still short, also cut the cost to 0 energy (pay 19: 1.97-2.1)."
+    },
+    {
+     "id": "vertical_monopoly",
+     "problem": "The check uses 4 rounds where every other engine uses 3.5, and at a 6-tag Industry seat it reaches 2.9, above the 2.5 cap. Its twin, Foundation Model Campus (the same 3 credits per tag a round, draw 4), costs 22 credits to this card's 16.",
+     "fix": "20 credits, 2 insight, same text. Check at 3.5 rounds: pay 20+8+8=36; 5 tags 52.5+20 = 72.5 = 2.01; 6 tags 83 = 2.31."
+    },
+    {
+     "id": "parts_exchange",
+     "problem": "The check discounts uses by an ad hoc 0.7 that no other Action building gets. At the deck's standard 3.5 uses it is 9 net x 3.5 = 31.5/17 = 1.85 at tier 1. It is strictly better than Patent Library (2 cards for 3 credits, 1.44) at the same cost.",
+     "fix": "9 credits, 1 insight. Action: pay 1 chip, draw 2 cards. Check: pay 17; get (10-3) x 3.5 = 24.5 = 1.44, matching Patent Library."
+    },
+    {
+     "id": "civic_watch",
+     "problem": "It prices a jam at ~8 where the same-checked Sentinel Mesh and Market Watchdog price the identical 'counts as 6' Action at about 6 x 0.5 a round. At that shared rate it is 12+1/13 = 1.0, a weak tier-1 card. The arithmetic is inconsistent across the three jam buildings.",
+     "fix": "4 credits, 1 insight. Action: counts as 6 toward an influence threat, OR gain 1 ambassador. Check: pay 12; get jam ~3 a round x 2 rounds 6 + ambassador 4 x 2 rounds 8 + tag 1 = 15 = 1.25."
+    },
+    {
+     "id": "peace_dividend",
+     "problem": "Weak: 0.89-1.11 at 4-5 Diplomacy tags (kept). The same 'credit income per tag' family runs from 5 credits (Capacity Market) to 10 (this card and Defense Appropriations, 1.11 at 5 tags) for an identical effect.",
+     "fix": "Price Peace Dividend and Defense Appropriations at 6 credits, 1 insight, needs 2. Check: pay 14; 4 tags 16 = 1.14, 5 tags 20 = 1.43, the same as Research Royalties."
+    },
+    {
+     "id": "capacitor_discharge",
+     "problem": "A tag payoff above the cap at a committed seat: 4 Power tags is 18/10 = 1.8 at tier 1. Plant Overdrive, the same effect for Industry, costs 8.",
+     "fix": "8 credits, 0 insight, same text. Check: pay 12; 3 tags 13.5 = 1.13, 4 tags 18 = 1.5."
+    },
+    {
+     "id": "credential_harvest_keep",
+     "problem": "1.78 at a 4-Cyber-tag seat, above the tier-1 cap of 1.5. Ruling 1 exempts tag payoffs only from being useful alone, not from the cap, which says report anything beyond it.",
+     "fix": "7 credits, 0 insight, same text. Check: pay 11; 3 tags 12 = 1.09, 4 tags 16 = 1.45."
+    }
+   ]
+  }
+ ]
+]

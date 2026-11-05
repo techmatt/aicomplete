@@ -1006,7 +1006,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             {
                 return Err(format!("{what}: a removal names at least one piece"));
             }
-            Op::RemoveTroops { count } if *count < 1 => {
+            Op::RemoveTroops { count, .. } if *count < 1 => {
                 return Err(format!("{what}: remove_troops needs count >= 1"));
             }
             Op::GainPerTag { resource: r, per, .. } => {

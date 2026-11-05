@@ -136,8 +136,8 @@ fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two diffe
 included, so a rename that plays the same moves it with no bump. The test also pins
 `GOLDEN_CONTENT_HASH`, and wasm-smoke `GOLDEN_CONTENT`: the content hash, over raw bytes. A
 content-only edit (price, name, whitespace) moves it with no fingerprint move and no bump unless
-play changes: update both constants. The revision is recorded with every sim result, so old and new results are
-never mixed up.
+play changes: update both constants (the new hash is in any run's `games.jsonl` first line, `content_hash`). The
+revision is recorded with every sim result, so old and new results are never mixed up.
 
 **This machine.**
 

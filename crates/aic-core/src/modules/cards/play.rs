@@ -227,7 +227,10 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
         place_building(g, cx, seat, id, d)?;
         cx.move_card(g, id, &hand(seat), &built(seat), false)?;
     } else if d.is_event() {
-        discard(g, cx, id, &hand(seat));
+        // 111: an event sits aside while it resolves and is discarded after, as
+        // at the table: discarded first, a draw on an empty deck reshuffled it
+        // back into the hand (Breakthrough Leak drew itself, a 2061-play loop).
+        cx.move_card(g, id, &hand(seat), &resolving(seat), false)?;
     } else {
         cx.move_card(g, id, &hand(seat), &played(seat), false)?;
     }
@@ -235,10 +238,13 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     let mut ctx = if d.is_building() { effects::Ctx::ability(seat, Key::new(id)) } else { effects::Ctx::seat(seat) };
     effects::run(g, cx, &d.effects, &mut ctx)?;
     // 105: then every seat's play triggers (a building counts itself).
-    if g.is_over() {
-        return Ok(());
+    if !g.is_over() {
+        on_play(g, cx, seat, d)?;
     }
-    on_play(g, cx, seat, d)
+    if d.is_event() {
+        discard(g, cx, id, &resolving(seat));
+    }
+    Ok(())
 }
 
 /// A card's costs beyond credits, and the income it lowers.

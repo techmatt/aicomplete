@@ -114,7 +114,8 @@ def render(cards):
         '',
         '## Shape',
         '',
-        shape(cards),
+        # 111: the shape is the draft decks' (the baseline's cards), not every card in the content.
+        shape([c for c in cards if c['id'] in deck] if deck else cards),
         '',
     ]
     def key(c):

@@ -37,15 +37,15 @@ and text in [cards.md](../cards.md) (generated) and priced in [card-pricing.md](
 card does; how each primitive resolves:
 
 - **Reach:** a card's map target is in your reach (within 1 of your node) where its text says so; a removal in one
-  country (troops or ambassadors by number) is not. A removal (`damage`) takes a hex in reach holding adversary
+  country (a tier-2 sweep) is not. A removal (`damage`) takes a hex in reach holding adversary
   pieces; a country removal any country holding them. A card names the pieces it removes: where it says "2 adversary
   ambassadors or 1 troop" you choose one kind.
 - **Hardening:** a different facility in reach for each token, each one a token can protect ([ai-powers.md](ai-powers.md)).
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
-  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. `move_one`'s `range` 2 on
-  Peacekeeper Rotation is an exception to reach 1 kept on purpose: moving is that card's point.
+  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. No deck card prints `move_one`
+  since r44 (Peacekeeper Rotation was cut).
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded.
@@ -56,7 +56,7 @@ card does; how each primitive resolves:
 - **Liberate:** liberate one corrupted city in your reach ([ambassadors.md](ambassadors.md)): it is clean; with `align` your cube goes on it. Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
-- **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Liberation Accords: 6) around one corrupted
+- **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Amnesty Decree: 4) around one corrupted
   city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Those next to the city don't raise the fallback, so clearing them only
   thins the city's build before it spreads; each on the city costs the fallback one more ambassador ([ambassadors.md](ambassadors.md)).
 - **Card text:** generated from the card's ops (*The card grammar*, above), extra costs and lowered income included; a
@@ -66,21 +66,22 @@ card does; how each primitive resolves:
   discard takes one with its compute (if the row is then empty, the next row is dealt).
 - **Botnets:** removing a botnet (tier 2, in reach) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
   one ([adversary.md](adversary.md)); cutting one off (a hack) makes it produce no compute in the next build.
-- **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid (the deck reshuffles its
-  discards when empty). Science's card draw.
+- **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. **A draw never
+  reshuffles** (r44): from an empty deck it gets nothing until the draft reshuffles the discards, so an event played
+  this round can't come back this round (Breakthrough Leak and Capital Injection drew each other back forever).
 - **Count as power (`gain_per_tokens`; here only):** gain 1 of a resource per N tokens here, on the Action's own
   card; the tokens stay.
 - **Cash out (`cash_out`; one card):** remove every token of a type from one card (an Action's own, "here"; a
   program's, one of your cards you pick); gain the card's rate of a resource for each.
 - **Per tag (`gain_per_tag`):** once, 1 of a resource per N tags of a kind on your cards in play; a program counts
   itself (it enters play before it resolves), an event doesn't.
-- **Troops in one country (`remove_troops`):** remove up to N troops in one country, any country, your pick of hexes
-  when there are more than N. **Ambassadors in one country** (`remove_ambassadors_country` with a number): up to N
-  there, the same way. Neither reads "per hex": Matt's ruling 6.
-- **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. Without
-  another player, a card that gives from your own stock (`transfer`; no card prints it) is not offered, nor is one
-  whose only effect is another player's gain (r39: the energy gift Actions took their energy at one country and gave nothing); other help cards are (their own gain still applies). Likewise a
-  draw with both tier-1 piles empty (Fieldwork) is not offered on its own.
+- **Troops or ambassadors in reach (`remove_troops`, `remove_ambassadors_country` with `reach`; r44, Matt's ruling
+  of 2026-11-04):** remove up to N from any hexes in your reach, across countries, your pick of hexes when there are
+  more than N. **In one country** (the same ops without `reach`): up to N in one country, any country, the same way;
+  only a few big tier-2 sweeps print it, as a deliberate power step. Neither reads "per hex": Matt's ruling 6.
+- **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
+  1-player game, "another player" means you** (r44, Matt's ruling of 2026-11-04): the gift is yours. A draw with both
+  tier-1 piles empty (Fieldwork) is not offered on its own.
 - **Moves of "up to 2 hexes"** count hex distance (`Map::distance`, over land and sea); the destination must be a
   piece.
 - **Cordon (`cordon`):** in one country, no arrivals land in the next round's build (an out-of-turn build before it
@@ -100,16 +101,17 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   form, once for each tag of any kind on the played card (106; the empty ring), or per tag of one kind, the
   ringed tag after `/` on the right of the `:`.
 - **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 1 troop in one country" (Joint Task
-  Force); with `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them.
+  Force); with `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them, except in a 1-player game, where
+  "another player" means you (r44): they fire on your plays and a shared gain lands once.
 - **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 4 credits" (Lights-Out Assembly):
   the printed cost, before discounts. `≥`N is at least N.
 - **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove adversary
   compute" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
   the card, Action, power, converter or standard action that removed any, canceling an arrival included.
-- **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a token (Data
-  Licensing Deal); a trigger's own tokens count too.
-- **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight
-  (Hyperscale Botnet: every card, 1 insight). A card with the tag twice is discounted once. Like every discount, never
+- **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a token (no deck card
+  prints it since r44, when Data Licensing Deal was cut); a trigger's own tokens count too.
+- **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight (no
+  deck card since r44, when Hyperscale Botnet dropped it). A card with the tag twice is discounted once. Like every discount, never
   below `discount_floor`, and a cost under it stays.
 - **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): when the tokens here reach
   N, N come off and the reward happens (Telemetry Archive: a Science card played adds 2 Datasets; at 4, 5 insight).

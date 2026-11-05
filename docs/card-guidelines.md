@@ -72,6 +72,60 @@ never a quiet exception.
     verdict on every card is the table in
     [experiments/results/screen-076-cards/cards.md](../experiments/results/screen-076-cards/cards.md).
 
+## Matt's rulings of 2026-11-04 (111)
+
+Read every card as an experienced Terraforming Mars or Spirit Island player: a card that prices out on the value table
+but reads absurd is a bug (*Eviction Worm*: "remove 8 adversary ambassadors in one country" for 10 credits).
+
+19. **Useful alone.** A card is never useless alone, even if it is better with others; tag payoffs ("1 income per X
+    tag") are the exception (*Collateralized Grid* did nothing without a Capital card).
+20. **Feeders carry a main effect.** A token feeder ("add N X to one of your X buildings") has a standalone main effect
+    (credit or insight income, say) priced a little below the rate; its tokens are a bonus that makes it better than the
+    rate with a target, as Terraforming Mars' Large Convoy does (*Dataset Scraper*, *Recruit Operatives*).
+21. **Removal is in reach.** Removing troops or ambassadors is "in reach" (any hexes within reach of your nodes), not
+    "in one country". A few big tier-2 sweeps keep "in one country" as a deliberate power step
+    (*Counterinsurgency Campaign*).
+22. **Numbers make sense, not only price out.** A card beats its anchors (below) by about 1.5× at tier 1 and about 2.5×
+    at tier 2, never more: beyond that, report it rather than ship it. A dearer card has a stronger or different effect,
+    never the same effect with a multiplied number (*Diplomatic Expulsion* went from 4 to 8 ambassadors that way). A
+    printed number larger than what is usually within reach is a disguised "remove all", or the piece is too common:
+    size every removal against the board state below.
+23. **Tier is efficiency, not magnitude.** Tier 1 is not "cheap": a tier-1 card at 40 credits for more than +4 income is
+    fine. Tier 2 is about efficiency and relative potency. Don't cap numbers or income by tier.
+24. **Exchanges are one use.** A major exchange on a card is a fixed Action, "Action: spend X, gain Y" (once a round),
+    never "convert X to Y freely at a ratio". The megacorp converters are the exception (a board rule, not a card);
+    a one-shot program that empties one card's tokens (*Collateralized Grid*) is one use, so it stays.
+25. **Gifts stay "another player"; loops count the team.** Help cards keep "another player". In a 1-player game,
+    "another player" means you: a gift is yours, and a card that fires on another player's play fires on yours (a
+    shared gain lands once). Trace every loop with the team as one pool, as if each gift reached the giver: two
+    cooperating players can pass a gift back and forth.
+
+**Unit anchors** (Matt, candidates). Price every card against them; where `values.json` or the effect ledger disagrees,
+the anchor wins for the printed price and the table stays the agents'.
+
+| Unit | Credits | | Unit | Credits |
+|---|---|---|---|---|
+| Remove 1 adversary ambassador | 5 | | 1 chip | 3 |
+| Remove 1 troop | 5 | | +1 credit income | 4 at mid-game |
+| 1 energy | 4.5 | | +1 insight income | 12 at mid-game |
+| 1 insight | 4 | | Remove 1 compute from a project | 2 (stopping projects is hard) |
+| Draw 1 card | 5 | | | |
+
+Derived (111): the keep, 4 a tier-1 card and 8 a tier-2 one (1 and 2 insight); +1 energy income 14 (4 rounds × 4.5 ×
+0.8); +1 chip income 10. Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 4, antimatter
+7) or [card-pricing.md](card-pricing.md) (a city liberated 45).
+
+**The anchor check**, one line per card in its item's write-up: pay = credits + 4 × (keep + play insight) + other
+costs at the anchors; get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its tag
+and 3 tags a round, for 3-4 rounds); the ratio get ÷ pay sits near 1.2-1.5 at tier 1 and 1.8-2.5 at tier 2.
+
+**Every targeted effect needs a target** (feasibility): a program or event is offered only when each removal, jam,
+drain, discard or cleanse on it has one; draws, gifts, feeders' tokens, harden and moves never veto. A removal rider
+beside another targeted effect makes the card dead whenever the rider is (*Logic Bomb*'s troop went for that, 111).
+
+**Board state to size removals against** (r43, the strategist, 109): adversary ambassadors median 6 a country (p90 10)
+and 6 in a seat's reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-10 compute a player).
+
 ## House wording
 
 Use these, and let the rulebook carry the rest. The terms (facility, shield, ambassador, troop,

@@ -60,7 +60,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Here**: on a building: on this card, where its tokens sit.
 - **Remove N**: as many as there are, up to N.
 - **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.
-- **Draw**: from the tier-1 deck, with no keep to pay.
+- **Draw**: from the tier-1 deck, never its discards, with no keep to pay.
 - **On your cards**: on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 <!-- /generated -->
@@ -76,9 +76,9 @@ The rest:
   meet on a piece. Nodes are always the players', botnets always the adversary's.
 - **Reach**: every map target of a standard action is in the acting player's reach, and so
   are most of a card's. The exceptions are a card's single ambassador move and Spread
-  (measured from the ambassador), Total Containment's hex, and country effects such as a
-  sweep or Shelter (any country; [card-grammar.md](card-grammar.md)). Reach is 1 unless a rule gives a reason: Embassy
-  Compound's and Peacekeeper Rotation's moves go 2 ([card-grammar.md](card-grammar.md), moving is their point), and the
+  (measured from the ambassador), and country effects such as a tier-2 sweep or Shelter (any country;
+  [card-grammar.md](card-grammar.md)). Reach is 1 unless a rule gives a reason: Embassy
+  Compound's move goes 2 ([card-grammar.md](card-grammar.md), moving is its point), and the
   adversary's distances (`spread_range`, the spread twists, `war_reach`) are its dials, not
   a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter is not a map target: it needs a node in a city of
   its country ([board.md](board.md)).

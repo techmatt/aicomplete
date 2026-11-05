@@ -45,19 +45,31 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
     // none of its own; a program, which counts itself, carries other effects).
     // 099: a gift with no other player (one country: the energy gift Actions took
     // their energy and gave nothing) and a draw with both tier-1 piles empty
-    // (Fieldwork) are of them too.
+    // (Fieldwork) are of them too. 111 (Matt's ruling 2): a feeder's tokens on
+    // one of your cards, and a cash-out from one, are a bonus beside the card's
+    // main effect, so neither vetoes it.
     let only_these = effects.iter().all(|e| {
         matches!(
             e,
-            Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } | Op::ChoosePlayer | Op::OtherGain { .. } | Op::Draw { .. }
+            Op::Harden { .. }
+                | Op::MoveOne { .. }
+                | Op::GainPerTag { .. }
+                | Op::ChoosePlayer
+                | Op::OtherGain { .. }
+                | Op::Draw { .. }
+                | Op::AddTokens { here: false, .. }
+                | Op::CashOut { here: false, .. }
         )
     });
-    let one_acts = effects.iter().any(|e| match e {
+    let one_acts = effects.iter().enumerate().any(|(at, e)| match e {
         Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
         Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
         Op::GainPerTag { tag, per, .. } => cards::tags(w, g, seat, *tag) >= *per,
-        Op::OtherGain { .. } => g.seats.len() > 1,
-        Op::Draw { .. } => cards::tier_open(g, 1),
+        // 111: alone, "another player" means you, so a gift always lands.
+        Op::OtherGain { .. } => true,
+        Op::Draw { .. } => cards::can_draw(g),
+        Op::AddTokens { kind, here: false, .. } => cards::has_token_card(w, g, seat, Some(*kind)),
+        Op::CashOut { kind, here: false, .. } => cash_out_feasible(w, g, seat, kind, added(kind, at)),
         _ => false,
     });
     effects.iter().enumerate().all(|(at, e)| match e {
@@ -71,12 +83,16 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
         Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
         Op::AddTokens { here: true, .. } => card.is_some(),
-        Op::AddTokens { kind, .. } => cards::has_token_card(w, g, seat, Some(*kind)),
-        Op::RemoveTroops { .. } => any_hex(g, |h| adversary::can_damage(w, g, h, 0, 1)),
+        Op::AddTokens { here: false, .. } | Op::CashOut { here: false, .. } => !only_these || one_acts,
+        Op::RemoveTroops { reach, .. } => {
+            any_hex(g, |h| adversary::can_damage(w, g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))
+        }
         Op::Consolidate { .. } => ambassador_hexes(g, seat)
             .iter()
             .any(|&h| in_reach(w, g, seat, h)),
-        Op::RemoveAmbassadorsCountry { .. } => any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0),
+        Op::RemoveAmbassadorsCountry { reach, .. } => {
+            any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && (!*reach || in_reach(w, g, seat, h)))
+        }
         Op::BuildFactory => !factory_sites(w, g, seat).is_empty(),
         Op::Cleanse { cities, only, .. } => {
             any_hex(g, |h| cleansable(w, g, h, *cities, *only) && in_reach(w, g, seat, h))
@@ -95,12 +111,6 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::GainPerTokens { kind, per, .. } => {
             let cards = cards::token_cards(w, g, seat, Some(*kind));
             cards.iter().map(|c| g.var(&cards::tokens_key(seat, c))).max().unwrap_or(0) + added(kind, at) >= *per
-        }
-        Op::CashOut { kind, .. } => {
-            added(kind, at) > 0
-                || cards::token_cards(w, g, seat, Some(*kind))
-                    .iter()
-                    .any(|c| g.var(&cards::tokens_key(seat, c)) > 0)
         }
         Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } | Op::OtherGain { .. } | Op::Draw { .. } => {
             !only_these || one_acts
@@ -122,4 +132,13 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::Transfer { .. } => g.seats.len() > 1,
         _ => true,
     })
+}
+
+/// A cash-out from one of your cards has tokens to take: on a card, or added by
+/// the same effects first (044).
+fn cash_out_feasible(w: &World, g: &GameState, seat: usize, kind: &TokenKind, added: i64) -> bool {
+    added > 0
+        || cards::token_cards(w, g, seat, Some(*kind))
+            .iter()
+            .any(|c| g.var(&cards::tokens_key(seat, c)) > 0)
 }

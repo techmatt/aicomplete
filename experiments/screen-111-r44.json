@@ -1,0 +1,35 @@
+{
+  "name": "screen-111-r44",
+  "note": "111: the ballpark read of r44 against r43, paired on fresh seeds 33836-33883: the three pairs at d2, the strategist and greedy, 48 a cell. Run r43's binary (ffefde2) from a folder holding it and a git archive of ffefde2's configs, with this spec copied there.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33836,
+  "records": 0
+}

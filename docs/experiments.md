@@ -156,7 +156,8 @@ the judge off the value table.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run with `SPEC --games 1 --out
   out/preflight` (its own `--out`, so no stream is moved aside): a crash, bad override or dead agent shows in minutes.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and the other read scripts in
-  [scripts.md](scripts.md).
+  [scripts.md](scripts.md). Credits a seat left at game end are `margin.unspent[seat][0]` in `games.jsonl` (111's
+  `experiments/results/111_card_pass/credits_read.py OLD NEW` pairs them).
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, planner and engine); read its win mix (purge vs.
 Unity deck) before any rule touching the end state. `experiments/sanity-line.json`: after a change to the rollout
@@ -169,7 +170,9 @@ policy or `prune`, the line alone should read near the engine.
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump: r43: 33452-33547 108's dev screens (`out/dev-*`, seeds earlier revisions spent);
 33644-33691 108's engine probe, r42 and r43 on 107's probe seeds (`screen-108-rush.json`, both binaries); 33692-33739
-108's read of r43 against r42 (`screen-108-r43.json`, both binaries). Next free: 33740.
+108's read of r43 against r42 (`screen-108-r43.json`, both binaries); 33740-33787 109's read and counterfactuals;
+33788-33835 109's share confirmation. r44: 33836-33883 111's read of r44 against r43 (`screen-111-r44.json`, both
+binaries). Next free: 33884.
 
 ## Reading prices
 

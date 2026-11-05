@@ -70,8 +70,8 @@ Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes
 keeps it), but four threats now take 5 insight to counter, so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
-(a trigger, an income) is capped by plays and slots. Cubes → insight → cards → cubes (Sample Repository)
-is capped by the cards. Onyx's converter keeps its once a round: 1 cube → 2 chips → a 2-chip station → 1 cube a round
+(a trigger, an income) is capped by plays and slots. No card makes research cubes since r44 (Sample Repository
+was cut), so cubes → insight → cards → cubes has no card in it. Onyx's converter keeps its once a round: 1 cube → 2 chips → a 2-chip station → 1 cube a round
 once the station's card is complete, a loop that would double its cubes each round, capped only by open hexes in reach.
 The other three converters drop the limit (Horizon's needs 2 energy a use; Biomia's 2 cubes a Sway; Cintamani's only
 makes insight).

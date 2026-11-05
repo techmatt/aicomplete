@@ -152,8 +152,11 @@ fn security_cards_drain_or_discard_a_project() {
             card: "zero_knowledge_exploit".into(),
         },
     );
-    // The only project holding compute: 8 - 7 (Zero-Knowledge Exploit).
-    assert_eq!(g.var(&adversary::project_key("false_flag")), 1);
+    // The only project holding compute: 8 - 5 (Zero-Knowledge Exploit).
+    assert_eq!(g.var(&adversary::project_key("false_flag")), 3);
+    // 111: Killswitch also removes adversary ambassadors in reach, so one stands there.
+    let here = node_of(&g, 0)[0];
+    put(&mut g, here, ADV_AMBASSADOR, 1);
     act(
         &rules,
         &mut g,

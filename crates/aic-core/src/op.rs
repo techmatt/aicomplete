@@ -216,16 +216,23 @@ pub enum Op {
     RemoveBotnet,
     /// Remove up to `max` adversary ambassadors in one country (0: every one);
     /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
+    /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
+    /// of your nodes, across countries.
     RemoveAmbassadorsCountry {
         #[serde(default)]
         unity_per: i64,
         #[serde(default)]
         max: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        reach: bool,
     },
     /// Remove up to `count` adversary troops in one country, any country
-    /// (076, Matt's ruling 6: a printed number, never "per hex").
+    /// (076, Matt's ruling 6: a printed number, never "per hex"); with `reach`
+    /// (111), in reach instead.
     RemoveTroops {
         count: i64,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        reach: bool,
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,

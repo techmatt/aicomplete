@@ -150,7 +150,9 @@ fn discounts_by_tag_take_credits_or_insight_off_down_to_the_floor() {
     assert!(!science.tags.contains(&Tag::Cyber));
     assert_eq!(cards::play_cost(&w, &g, 0, cyber), (cyber.cost - off.unwrap()).max(cyber.cost.min(floor)));
     assert_eq!(cards::play_cost(&w, &g, 0, science), science.cost);
-    let (rules, mut g) = table(&["planetary_referendum"], &["hyperscale_botnet"]);
+    // 111: no deck card prints an insight discount now (Hyperscale Botnet dropped it): the test gives it one.
+    let insight_off = r#"cards.hyperscale_botnet.passives=[{"op":"card_discount","resource":"insight","amount":1}]"#;
+    let (rules, mut g) = table_with(&[insight_off], &["planetary_referendum"], &["hyperscale_botnet"]);
     let w = rules.world();
     let d = cards::def(&w, "simulation_cluster");
     assert_eq!(cards::play_insight(&w, &g, 0, d), (d.insight - 1).max(d.insight.min(floor)));
