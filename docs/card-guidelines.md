@@ -86,7 +86,8 @@ but reads absurd is a bug (*Eviction Worm*: "remove 8 adversary ambassadors in o
     "in one country". A few big tier-2 sweeps keep "in one country" as a deliberate power step
     (*Counterinsurgency Campaign*).
 22. **Numbers make sense, not only price out.** A card beats its anchors (below) by about 1.5× at tier 1 and about 2.5×
-    at tier 2, never more: beyond that, report it rather than ship it. A dearer card has a stronger or different effect,
+    at tier 2, never more: beyond that, report it rather than ship it. That is a ceiling, not a target: a card at 1.0-1.5
+is fair, and its price is not cut to reach the ceiling. A dearer card has a stronger or different effect,
     never the same effect with a multiplied number (*Diplomatic Expulsion* went from 4 to 8 ambassadors that way). A
     printed number larger than what is usually within reach is a disguised "remove all", or the piece is too common:
     size every removal against the board state below.
@@ -117,7 +118,9 @@ Derived (111): the keep, 4 a tier-1 card and 8 a tier-2 one (1 and 2 insight); +
 
 **The anchor check**, one line per card in its item's write-up: pay = credits + 4 × (keep + play insight) + other
 costs at the anchors; get = the effects at the anchors (an engine at a committed seat's rate: about 1 card of its tag
-and 3 tags a round, for 3-4 rounds); the ratio get ÷ pay sits near 1.2-1.5 at tier 1 and 1.8-2.5 at tier 2.
+and 3 tags a round, for 3-4 rounds); the ratio get ÷ pay is at most about 1.5 at tier 1 and 2.5 at tier 2. **A
+maximum, not a target** (112): a fair card reads about 1.0-1.5 at either tier; never lower a fair card's price to move
+it toward the maximum. Under 1.0 the card is too dear.
 
 **Every targeted effect needs a target** (feasibility): a program or event is offered only when each removal, jam,
 drain, discard or cleanse on it has one; draws, gifts, feeders' tokens, harden and moves never veto. A removal rider

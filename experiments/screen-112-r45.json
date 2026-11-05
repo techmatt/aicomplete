@@ -1,0 +1,35 @@
+{
+  "name": "screen-112-r45",
+  "note": "112: the ballpark read of r45 (111's price cuts undone) against r44, paired on fresh seeds 33884-33931: the three pairs at d2, the strategist and greedy, 48 a cell. Run r44's binary (ff00f7d) from a folder holding it and a git archive of ff00f7d's configs, with this spec copied there.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33884,
+  "records": 0
+}

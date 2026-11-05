@@ -107,39 +107,38 @@ Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, o
 
 ## Strategies
 
-`configs/agents/strategies.json`, read by `agents/strategy.rs`. Each seat commits at its
-round-1 keep, from its board and its opening hand, to the strategy of its board's menu whose
-multipliers add most to what those cards are worth, and its board's powers, each read as a
-card at one use's worth (`strat_powers`, `strat_power_uses` 1) (`strategy=1`; `strat0`,
-`strat1`, `strat2` fix a seat's, 1-based in its board's menu). A strategy is a weight vector
+`configs/agents/strategies.json`, read by `agents/strategy.rs`. At its round-1 keep each seat
+commits to the strategy of its board's menu whose multipliers add most to its opening hand and
+its board's powers, a power read as a card at one use's worth (`strat_powers`,
+`strat_power_uses` 1) (`strategy=1`; `strat0`-`strat2` fix a seat's, 1-based). A strategy is a weight vector
 over a card's tags, the resources and tokens it pays in or out, its kind and its categories;
 a card's multiplier is 1 plus the weights it matches, times the **phase schedule** for its
 categories (early, mid and late multipliers in `strategies.json`; a card takes its
-categories' largest). The multiplier reaches drafting and keeping, not a card in hand (a
-multiplied hand would beat playing it). The planner hands the choice to every rollout's policy.
+categories' largest). It reaches drafting and keeping, not a card in hand (a multiplied
+hand would beat playing it). The planner hands the choice to every rollout's policy.
 
 The strategies as a player says them (the config's `says`; a test requires each line verbatim):
 
 **The Builder**
 
-- *Industry income.* Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Rush Build.
-- *Power grid.* Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Dyson Swarm and the Supergrid, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
+- *Industry income.* Play Industry income early (Gigafactory Charter, Robotic Foundry, Economies of Scale), draw on them with Supplier Network, and stack Industry tags toward Arcology Foundry and Vertical Monopoly; spend two spent Industry cards on Rush Build.
+- *Power grid.* Take Power cards and energy income (Baseload Contract, Fusion Startup Stake), climb the Power tags to Fusion Research Campus and Dyson Swarm, and cash spent Power cards with Overcharge; Power to the People frees a city at the end.
 - *Capital finance.* Build Capital piles (Retained Earnings, Conglomerate Headquarters, Capital Injection), let them pay out, and save the credits for Hostile Buyout.
 - *Wide build.* Fill five slots with Action buildings, use one a round, and push the card-play track to Master Plan.
 
 **The Protector**
 
-- *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Interceptor Battery, Agency Field Station, Security Contractor HQ) and finish with Total Containment or Kinetic Interdiction.
+- *Troop wall.* Stand your nodes in the troops' way, take the troop removals (Breach and Clear, Security Contractor HQ, Agency Field Station) and finish with Kinetic Interdiction.
 - *Counter desk.* Answer threats with the typed jams and counters, build Garrison Command and Joint Task Force, and send Peacekeeping Mission to a corrupted city.
-- *Diplomacy and liberation.* Take Diplomacy and Followers (Liaison Corps, Open Assembly, Accord's node), and free cities with Great Liberation and Popular Uprising.
-- *Civic shelter.* Keep what you have standing: Bulwark, Hardened Bunker Complex, Hardpoint Lockdown and the Shelter power, toward Aegis Doctrine.
+- *Diplomacy and liberation.* Take Diplomacy and Followers (Liaison Corps, Envoy Briefings, Open Assembly, Accord's node), and free cities with Great Liberation and Popular Uprising.
+- *Civic shelter.* Keep what you have standing: Bulwark, Faraday Yard, Hardpoint Lockdown, Aegis Grid Lockdown and the Shelter power, toward Aegis Doctrine.
 
 **The Researcher**
 
-- *Cubes and stations.* Build stations early (Field Station), Grant cubes onto megaprojects, Peer Review your nodes, and spend the cubes on Forensic Audit.
-- *Science chain.* Stack Science tags: Research Royalties and Citation Engine first, then Interdisciplinary Institute and Foundation Model Campus.
+- *Cubes and stations.* Build stations early (Field Station), Grant cubes onto megaprojects (Moonshot Grant late), Peer Review your nodes, and spend the cubes on Forensic Audit.
+- *Science chain.* Stack Science tags: Research Royalties, Citation Engine and Preprint Server first, then Interdisciplinary Institute and Foundation Model Campus.
 - *Patience burst.* Save your insight under Patience and spend it in a big round on draws (Fieldwork, Simulation Cluster, Orbital Observatory Array).
-- *Datasets.* Grow Dataset piles (Telemetry Archive, Synthetic Data Forge, Dataset Scraper) and cash them through Data Licensing Deal.
+- *Datasets.* Grow Dataset piles (Telemetry Archive, Synthetic Data Forge, Dataset Scraper) and cash them through Synthetic Data Forge.
 - *Team support.* Feed your partner: gifts, Open Science's insight, Coalition Charter's Sway, Audit against projects, and Root Access for a corrupted city.
 
 ## Strategy-guide heuristics

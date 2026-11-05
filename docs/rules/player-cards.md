@@ -66,9 +66,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Popular Uprising | Followers | building (over Diplomacy, arrives with 4 Followers) | Action: add 2 Followers here, or spend 6 to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), 14-36 credits, well under the fallback's ~100 and
-  out of reach before mid-game. They read 1.2-1.5 at Matt's unit anchors, under the tier-2 band, on purpose: the deck's
-  late credit sinks (r44, Matt's default, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
+  a corrupted city costs in play; the extra at its own row), 18-42 credits, well under the fallback's ~100 and
+  out of reach before mid-game. They read 1.0-1.35 at Matt's unit anchors, inside the margin like any fair card: the
+  deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising (106) liberates every third round at

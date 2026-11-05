@@ -1,4 +1,4 @@
-# Card pricing (r44)
+# Card pricing (r45)
 
 How a card's price is set, as the set stands. Every price is a **candidate**. The cards themselves are
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are
@@ -39,8 +39,10 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 
 - **Matt's unit anchors set the printed price** (111, 2026-11-04; the table and the anchor check are in
   [card-guidelines.md](card-guidelines.md), rulings 19-25): a card's anchor value over what it costs (credits, 4 an
-  insight of keep and play, other costs at the anchors) sits near 1.2-1.5 at tier 1 and 1.8-2.5 at tier 2, never more,
-  and every removal number fits the board (3-6 ambassadors, 1-2 troops, 3-6 compute). Where the table disagrees, the
+  insight of keep and play, other costs at the anchors) is at most about 1.5 at tier 1 and 2.5 at tier 2. **Those are
+  maximums, not a target band** (112): a fair card reads about 1.0-1.5, and a price is never cut only to move a fair card
+  toward the maximum (111 did, and 112 put 80 prices back). A card under 1.0 is too dear; one over its maximum is
+  repriced or reported. Every removal number fits the board (3-6 ambassadors, 1-2 troops, 3-6 compute). Where the table disagrees, the
   anchor wins for the price and the table stays the agents': `values.json` has chips 1.5 (anchor 3), insight 2.5 (4),
   a drawn card 4 (5), an ambassador removed about 2.2 and a troop 11 (5 each), a project discard 8 (about 24 at 2 a
   compute). The recipe and fit below are the agents' view and the effect ledger's.
@@ -50,11 +52,10 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   insight to play − about 1, so the card beats the plain route it replaces (ruling 7).
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction: 1 antimatter per Cyber tag).
-- **The cost curve** (r44, Terraforming Mars scale): tier 1 median 9 (r43: 10; most 6-12; the big income and
-  late cards 16-40, Gigafactory Charter's "40 credits, +12 credit income, draw 2" the top), tier 2 median 14 (r43: 16;
-  most 9-20; the liberate capstones 14-36). 20 cards cost 5 or less (r43: 6): the anchors read most flat-income and
-  niche cards under 1.1 at r43's prices. The deck's median is 10. Nine credits is about a third of a round's printed
-  credits on the boards (25 / 21 / 18).
+- **The cost curve** (r45, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
+  median 10 (most 6-20; the big income and late cards 20-40, Gigafactory Charter's "40 credits, +12 credit income,
+  draw 2" the top), tier 2 median 18 (most 10-30; the liberate capstones 27-42). 5 cards cost 5 or less. The deck's
+  median is 11. Nine credits is about a third of a round's printed credits on the boards (25 / 21 / 18).
 - **Engines are priced at their seat's fire rate** (106, Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
   not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their
@@ -79,9 +80,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards; no deck card prints
   one since r44 (Hyperscale Botnet took 4 insight a round instead). Science's discount prints credits (Grad Student Pool).
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per X tag"),
-  needs 2 of X (r43), 6 credits, one per tag (r44); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
-  (`auto_counter`, Cyber's alone since r44) 7 credits, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam
-  Action building 5 credits and no play insight (r44), about 3 a round.
+  needs 2 of X (r43), 10 credits, one per tag (r45); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
+  (`auto_counter`, Cyber's alone since r44) 9 credits and 1 insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam
+  Action building 7 credits and no play insight (r45), about 3 a round.
 - **Income has a horizon** (r35): an income, of credits, energy or anything, counts for the rounds left at a typical
   purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
@@ -97,8 +98,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **The liberate capstones**: priced at their own value, at least half in their engine's resource, out of reach
   before mid-game: a city liberated is 45 (5 Sway, the city and the ambassadors and Discord it stops; play reads about
   50), against the fallback's 5 ambassadors at about 100; each engine's twist at its own row (3 ambassadors; up to 2
-  troops in the city's country; a botnet next to it; a draw 2). At r44 they read 1.2-1.5 at the anchors, under the
-  tier-2 band on purpose: the deck's late credit sinks, pending Matt's liberation anchor.
+  troops in the city's country; a botnet next to it; a draw 2). They read 1.0-1.5 at the anchors (r45), inside the
+  margin like any fair card: the deck's late credit sinks, pending Matt's liberation anchor.
 
 ## Rates known to be off at r36
 
