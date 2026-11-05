@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, alignment, economy, effects};
+use super::{adversary, ai, alignment, economy, effects, threats};
 
 mod deck;
 mod play;
@@ -214,6 +214,11 @@ impl Module for Cards {
                 .map(|c| Key::new(&c.id))
                 .collect();
             shuffle(&mut ids, cx.rng(g, "cards"));
+            // 118: off means no player cards at all (the rules' off-variants): the board's
+            // draw powers drew from a full deck, and what they drew was played.
+            if self.off {
+                ids.clear();
+            }
             cx.set_pile(g, &deck(tier), ids);
         }
     }

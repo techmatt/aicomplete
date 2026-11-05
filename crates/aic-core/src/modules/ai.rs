@@ -167,6 +167,10 @@ fn power_blocked(w: &World, g: &GameState, seat: usize, k: usize) -> Option<&'st
     }
     // 066: a power that places pays its energy first, and the step after it.
     let spent: i64 = p.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n).sum();
+    // 118: with every node token placed the power read "unaffordable".
+    if power_places(w, seat, k) && !can_place(w, g, seat) {
+        return Some("no node left");
+    }
     if power_places(w, seat, k) && !board::can_pay_placement(w, g, seat, board::Placing::Step, -spent) {
         return Some("unaffordable");
     }
@@ -235,7 +239,7 @@ pub fn tally_dear_powers(g: &mut GameState, cx: &mut Cx, seat: usize) {
             None => "idle",
             Some("used") => continue,
             Some("needs tags") => "no_tags",
-            Some("no target") => "no_target",
+            Some("no target") | Some("no node left") => "no_target",
             Some(_) => "unpaid",
         };
         cx.tally(g, &format!("ai.dear.{}.{k}.{key}", b.id), 1);
@@ -311,10 +315,16 @@ fn power_cost(p: &Power) -> String {
 }
 
 fn power_text(p: &Power) -> String {
+    let cap = |s: &str| {
+        let mut first = s.chars();
+        first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect::<String>())
+    };
     let cost = power_cost(p);
-    let mut first = cost.chars();
-    let cost: String = first.next().map_or(String::new(), |c| c.to_uppercase().chain(first).collect());
-    format!("{cost}: {} (once a round)", p.text)
+    // 118: a power with no price (Synthesis) printed ": discard a card...".
+    if cost.is_empty() {
+        return format!("{} (once a round)", cap(&p.text));
+    }
+    format!("{}: {} (once a round)", cap(&cost), p.text)
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -428,7 +438,16 @@ impl Module for Ai {
                         marks.push(TrackMark {
                             key: "tier2".into(),
                             label: "T2 keep".into(),
-                            doc: "uncovering this lowers a tier-2 keep (cards.keep_tier2_upgraded insight)".into(),
+                            // 118: the hover printed the config key, not the price.
+                            // With the cards module off there is no keep to price.
+                            doc: match w.variant("cards") {
+                                Some(v) if v != "off" => format!(
+                                    "uncovering this lowers a tier-2 keep from {} to {} insight, before Science discounts",
+                                    w.int("cards.keep_tier2"),
+                                    w.int("cards.keep_tier2_upgraded")
+                                ),
+                                _ => "uncovering this lowers a tier-2 keep".into(),
+                            },
                         });
                     }
                     for t in &u.tags {

@@ -148,7 +148,8 @@ pub fn income_with(w: &World, g: &GameState, seat: usize, counts: &[i64; TAGS.le
 /// nothing, and what lands is the receiver's next insight.
 fn supply_insight(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     let w = cx.world;
-    let others: Vec<usize> = (0..g.seats.len()).filter(|&o| o != s).collect();
+    // 118: alone, "other players" means you (Matt's ruling 7, r44): it gave nothing.
+    let others: Vec<usize> = if g.seats.len() == 1 { vec![s] } else { (0..g.seats.len()).filter(|&o| o != s).collect() };
     let amount: i64 = cards::passives(&w, g, s)
         .iter()
         .map(|p| match p {

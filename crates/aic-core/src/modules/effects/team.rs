@@ -4,10 +4,13 @@ use super::*;
 
 pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each_country: bool, destroy: bool) -> Res {
     let w = cx.world;
-    let prompt = ctx.says(
+    let base = ctx.says(
         "Threat: an adversary troop lands on which hex?",
         "An adversary troop lands on which hex?",
     );
+    // 118: named for what lands it (a threat's, a Discord card's).
+    let named = ctx.why.as_deref().map(|n| format!("{n}: an adversary troop lands on which hex?"));
+    let prompt = named.as_deref().unwrap_or(base);
     let tally = ctx.says("threats.troops", "adversary.project_troops");
     for hexes in ctx.regions(&w, each_country) {
         let kills = destroy.then_some(ctx.label);
@@ -18,10 +21,12 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
 
 pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> Res {
     let w = cx.world;
-    let prompt = ctx.says(
+    let base = ctx.says(
         "Threat: which research station flips to the adversary?",
         "Which research station flips to the adversary?",
     );
+    let named = ctx.why.as_deref().map(|n| format!("{n}: which research station flips to the adversary?"));
+    let prompt = named.as_deref().unwrap_or(base);
     for hexes in ctx.regions(&w, each_country) {
         let spots: Vec<usize> = hexes
             .into_iter()
@@ -58,7 +63,7 @@ pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count
     let hexes = scope_hexes(&w, ctx.scope);
     for s in ctx.seats(&w, g) {
         for _ in 0..count {
-            board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label))?;
+            board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label), ctx.why.as_deref())?;
         }
     }
     Ok(())

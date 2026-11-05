@@ -254,6 +254,73 @@ fn fight_triggers_fire_once_an_action_or_once_a_troop() {
 }
 
 #[test]
+fn a_teammate_triggers_removal_fires_its_owners_fight_triggers() {
+    // 118: seat 0 plays a Security card; seat 1's Joint Task Force removes ambassadors in
+    // seat 1's reach. Seat 1's Honeypot Relay pays; seat 0's, which removed nothing, doesn't.
+    let (rules, mut g) = table(&["recruit_operatives"], &["honeypot_relay"]);
+    out_of_decks(&mut g, "joint_task_force");
+    set_pile(&mut g, "cards.built.1", &["joint_task_force", "honeypot_relay"]);
+    let m = &rules.map;
+    let home = m.numbered(1, piece(1).node);
+    put(&mut g, home, ADV_AMBASSADOR, 3);
+    let (r, n) = trigger_gain(&rules, "honeypot_relay");
+    let w = rules.world();
+    let (mine, theirs) = (g.resource(0, r), g.resource(1, r));
+    let cost = cards::play_cost(&w, &g, 0, cards::def(&w, "recruit_operatives"));
+    play(&rules, &mut g, 0, "recruit_operatives");
+    answer_all(&rules, &mut g);
+    assert!(g.tokens(home, ADV_AMBASSADOR) < 3, "Joint Task Force removed");
+    assert_eq!(g.resource(1, r), theirs + n, "the owner's fight trigger");
+    assert_eq!(g.resource(0, r), mine - cost, "not the player's");
+}
+
+#[test]
+fn a_threshold_pays_when_a_feeder_fills_it() {
+    // 118: Recruit Operatives' Agent onto Intrusion Lab (1 of 2) reaches its At 2 at once.
+    let (rules, mut g) = table(&["recruit_operatives"], &["intrusion_lab"]);
+    g.vars.insert(cards::tokens_key(0, "intrusion_lab").as_str().into(), 1);
+    let before = g.resource(0, Resource::Antimatter);
+    play(&rules, &mut g, 0, "recruit_operatives");
+    answer_all(&rules, &mut g);
+    assert_eq!(g.var(&cards::tokens_key(0, "intrusion_lab")), 0);
+    assert_eq!(g.resource(0, Resource::Antimatter), before + 1);
+}
+
+#[test]
+fn a_move_up_to_n_does_not_veto_a_card_that_also_gains() {
+    // 118: Summit Caucus with no ambassador of yours in reach still gains its 3.
+    let (rules, mut g) = table(&["summit_caucus"], &[]);
+    for h in 0..g.hexes.len() {
+        put(&mut g, h, crate::modules::common::ambassador(0), 0);
+    }
+    assert!(rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { seat: 0, card } if card == "summit_caucus")));
+    let before = g.resource(0, Resource::Ambassadors);
+    play(&rules, &mut g, 0, "summit_caucus");
+    assert!(g.pending.is_none(), "no piece to pick with nothing to bring");
+    assert_eq!(g.resource(0, Resource::Ambassadors), before + 3);
+}
+
+#[test]
+fn a_program_counts_its_own_tag_toward_its_gain_per_tag() {
+    // 118: Consular Pouch (1 ambassador a Diplomacy tag) with none in play still has its
+    // own tag once it enters play: it is offered, and pays 1.
+    let (rules, mut g) = table_with(&["cards.consular_pouch.needs=[]"], &["consular_pouch"], &[]);
+    assert_eq!(cards::tags(&rules.world(), &g, 0, Tag::Diplomacy), 0);
+    assert!(rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { seat: 0, card } if card == "consular_pouch")));
+    let before = g.resource(0, Resource::Ambassadors);
+    play(&rules, &mut g, 0, "consular_pouch");
+    assert_eq!(g.resource(0, Resource::Ambassadors), before + 1);
+}
+
+#[test]
+fn a_sale_paying_nothing_is_refused_not_only_hidden() {
+    // 118: at `sell_credits` 0 no Sell is offered, and one sent anyway is refused.
+    let (rules, g) = table_with(&["board.sell_credits=0"], &["consular_pouch"], &[]);
+    assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Sell { .. })));
+    assert!(rules.apply(&g, &Action::Sell { seat: 0, card: "consular_pouch".into() }).is_err());
+}
+
+#[test]
 fn placing_a_dataset_pays_data_licensing_deal() {
     let (rules, mut g) = table(&[], &["data_licensing_deal", "synthetic_data_forge"]);
     let (r, n) = trigger_gain(&rules, "data_licensing_deal");

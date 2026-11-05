@@ -34,11 +34,20 @@ pub struct Ctx {
     pub label: &'static str,
     /// The building whose Action this is: what "here" names (076).
     pub card: Option<Key>,
+    /// What is resolving, by name, for prompts (a threat's).
+    pub why: Option<String>,
 }
 
 impl Ctx {
     pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card", card: None }
+        Ctx { source, scope, other: None, label: "card", card: None, why: None }
+    }
+
+    /// Names what is resolving in its prompts (118: a threat's "discard which card?"
+    /// named no threat).
+    pub fn why(mut self, name: &str) -> Ctx {
+        self.why = Some(name.to_string());
+        self
     }
 
     /// The Action of seat `seat`'s building `card`: "here" is that card (076).

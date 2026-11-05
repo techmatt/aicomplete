@@ -44,8 +44,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
     // per tag with too few tags on your cards is one of them (an event counts
     // none of its own; a program, which counts itself, carries other effects).
     // 099: a gift with no other player (one country: the energy gift Actions took
-    // their energy and gave nothing) and a draw with both tier-1 piles empty
-    // (Fieldwork) are of them too. 111 (Matt's ruling 2): a feeder's tokens on
+    // their energy and gave nothing) and a draw with the tier-1 deck empty
+    // (Fieldwork; r44: a draw never reshuffles its discards) are of them too. 111 (Matt's ruling 2): a feeder's tokens on
     // one of your cards, and a cash-out from one, are a bonus beside the card's
     // main effect, so neither vetoes it.
     let only_these = effects.iter().all(|e| {
@@ -59,6 +59,13 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
                 | Op::Draw { .. }
                 | Op::AddTokens { here: false, .. }
                 | Op::CashOut { here: false, .. }
+                // 118: "move up to N" (Summit Caucus, Liaison Corps) is a "you may move" too.
+                | Op::Consolidate { .. }
+                | Op::MoveAmbassadors { .. }
+                // 118: a delay with no threat you may counter doesn't veto the draw or
+                // shields beside it (Predictive Modeling, Early Warning Drill).
+                | Op::DelayThreat { .. }
+                | Op::Sway { .. }
         )
     });
     let one_acts = effects.iter().enumerate().any(|(at, e)| match e {
@@ -70,6 +77,13 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::Draw { .. } => cards::can_draw(g),
         Op::AddTokens { kind, here: false, .. } => cards::has_token_card(w, g, seat, Some(*kind)),
         Op::CashOut { kind, here: false, .. } => cash_out_feasible(w, g, seat, kind, added(kind, at)),
+        Op::Consolidate { .. } => {
+            let mine: Vec<usize> = ambassador_hexes(g, seat).into_iter().filter(|&h| in_reach(w, g, seat, h)).collect();
+            pieces_in_reach(w, g, seat).iter().any(|d| mine.iter().any(|a| a != d))
+        }
+        Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
+        Op::DelayThreat { .. } => !undelayed_threats(w, g, seat).is_empty(),
+        Op::Sway { .. } => w.variant("alignment") != Some("off"),
         _ => false,
     });
     effects.iter().enumerate().all(|(at, e)| match e {
@@ -87,9 +101,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::RemoveTroops { reach, .. } => {
             any_hex(g, |h| adversary::can_damage(w, g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))
         }
-        Op::Consolidate { .. } => ambassador_hexes(g, seat)
-            .iter()
-            .any(|&h| in_reach(w, g, seat, h)),
+        Op::Consolidate { .. } | Op::MoveAmbassadors { .. } => !only_these || one_acts,
         Op::RemoveAmbassadorsCountry { reach, .. } => {
             any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && (!*reach || in_reach(w, g, seat, h)))
         }
@@ -115,7 +127,6 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         Op::Harden { .. } | Op::MoveOne { .. } | Op::GainPerTag { .. } | Op::OtherGain { .. } | Op::Draw { .. } => {
             !only_these || one_acts
         }
-        Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
         // 105: a copy needs a building with an income, a reuse an Action used
         // this round, a discard a card in hand.
         Op::CopyIncome => !cards::income_buildings(w, g, seat).is_empty(),
@@ -127,9 +138,12 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         }
         Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),
         Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),
-        Op::DelayThreat { .. } => !undelayed_threats(g).is_empty(),
+        Op::DelayThreat { .. } => !only_these || one_acts,
         // Giving needs someone to give to (Vendor Financing and Development Loan still pay you).
         Op::Transfer { .. } => g.seats.len() > 1,
+        // 118: with alignment off a Sway moves nothing: a card that only sways (or sways beside
+        // another "you may" op with nothing to act on) does nothing; beside a real effect it plays.
+        Op::Sway { .. } => !only_these || one_acts,
         _ => true,
     })
 }

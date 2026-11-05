@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The economy and card-throughput read (078): per cell, pooled across DIRs, per seat and game:
 draft cards kept (opening keeps apart) and played, kept and never played, nodes placed, credit
-income a round, credits and insight left unspent a round, and each board's dear power
+income a round, credits and insight left unspent a round (these three per seat-round that reached
+upkeep, 118), and each board's dear power
 (the one costing 2 or more of a tag) used a game with the seat-rounds it lacked the tags. Then the
 tags by round: each seat's most-held tag on its cards in play when the action phase ends
 (`ai.tag_top.<seat>`, 078; older binaries lack it), as a mean and the share of seats holding 3 or more.
@@ -59,7 +60,8 @@ def main():
             pooled[key].extend(gs)
 
     print('| cell | games | win % | rounds | kept / seat (opening) | played / seat '
-          '| kept, never played / seat | node / seat | credit income / seat-round | credits left / seat-round | insight left / seat-round |')
+          '| kept, never played / seat | node / seat | credit income / upkeep seat-round | credits left / upkeep seat-round '
+          '| insight left / upkeep seat-round |')
     print('|---|' + '---|' * 10)
     for key, gs in sorted(pooled.items()):
         seats = len(seats_of[key])
@@ -73,7 +75,11 @@ def main():
                     idle += c['kept']
         opening = sum(cnt(g, 'cards.kept.r01') for g in gs)
         node = sum(cnt(g, 'board.node_placed') for g in gs)
-        seat_rounds = sum(g['rounds'] for g in gs) * seats
+        # 118: the three columns are tallied at upkeep, so divide by the rounds that reached it
+        # (an `economy.credits_unspent.rNN` key, zeros included since 100), not every round
+        # begun: a game ends inside its last round, which read the columns about 14% low.
+        seat_rounds = max(1, sum(1 for g in gs for k in g['counters']
+                                 if k.startswith('economy.credits_unspent.r')) * seats)
         income = sum(cnt(g, 'economy.credits_income') for g in gs)
         left = sum(cnt(g, k) for g in gs for k in g['counters'] if k.startswith('economy.credits_unspent.r'))
         insight_left = sum(cnt(g, k) for g in gs for k in g['counters'] if k.startswith('economy.insight_unspent.r'))
@@ -83,6 +89,8 @@ def main():
         print(f"| {key[0]} {key[1]} | {len(gs)} | {100 * p:.1f} ±{se:.1f} | {sum(g['rounds'] for g in gs) / len(gs):.1f} "
               f"| {kept / n:.1f} ({opening / n:.1f}) | {played / n:.1f} | {idle / n:.1f} | {node / n:.1f} "
               f"| {income / seat_rounds:.1f} | {left / seat_rounds:.1f} | {insight_left / seat_rounds:.1f} |")
+    print('\nThe last three columns are per seat-round that reached upkeep, where they are tallied '
+          '(a game ending inside its last round leaves that round out).')
 
     print('\nDear powers (the first of each board: 2+ tags, or a tag and an energy since r35), a game per seat of that board: used, and seat-rounds it '
           'lacked the tags.\n')

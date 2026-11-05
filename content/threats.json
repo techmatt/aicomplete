@@ -512,11 +512,11 @@
     "count": 2
    },
    {
-    "op": "lose_ambassador"
-   },
-   {
     "op": "each_destroy_node",
     "count": 2
+   },
+   {
+    "op": "lose_ambassador"
    },
    {
     "op": "compute",

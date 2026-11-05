@@ -53,8 +53,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction: 1 antimatter per Cyber tag).
 - **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
-  median 10 (most 6-20; the big income and late cards 20-40, Gigafactory Charter's "40 credits, +12 credit income,
-  draw 2" the top), tier 2 median 18 (most 10-30; the liberate capstones 27-42). 4 cards cost 5 or less, 12 cost 30
+  median 10 (most 6-20; the big income and late cards 20-46, Moonshot Grant's 46 the top, Gigafactory Charter's "40 credits, +12
+  credit income, draw 2" next), tier 2 median 18 (most 10-30; the liberate capstones 18-42). 4 cards cost 5 or less, 12 cost 30
   or more. The deck's median is 12. Nine credits is about half a round's printed credits on the boards (18 / 16 / 14).
 - **Big early and late cards** (r46, Matt): early jump-starts at 26-34 credits, no `needs`, playable in rounds 1-3 from
   the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
@@ -80,7 +80,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   cards and more of them: engines draw when built, Action buildings turn spare credits (Patent Library, Bug Bounty
   Board), chips (Parts Exchange), energy (Grid Analytics Desk) or Agents (Safehouse Network) into cards, three engines
   draw on their tag's plays (Preprint Server, Supplier Network, Fusion Research Campus), and two board powers do the
-  same (the Builder's Procure, the Protector's Debrief). Late cards worth 28-40 credits (Moonshot Grant, Headquarters
+  same (the Builder's Procure, the Protector's Debrief). Late cards costing 28-46 credits (Moonshot Grant, Headquarters
   Raid, Wartime Retooling, Gigafactory Charter) take spare credits (111). A flat credit sink stays the last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays (107): the floor below.
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already

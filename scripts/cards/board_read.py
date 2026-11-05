@@ -17,8 +17,25 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from corp_read import cnt, load  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
-CUBE_CARDS = ('field_grant', 'sample_repository', 'preprint_exchange', 'inference_cluster',
-              'breakthrough_lab', 'policy_institute')
+
+
+def cube_cards():
+    """The deck's research-cube cards (118: was a hard-coded six, five of them gone or out of the
+    deck since 106): a card in the baseline's cards module whose content projects a cube or pays
+    or makes research cubes. Each with whether it has an Action (only then a use to read)."""
+    with open(os.path.join(ROOT, 'configs', 'baseline.json'), encoding='utf-8') as f:
+        deck = next(m['cards'] for m in json.load(f)['modules'] if m.get('module') == 'cards')
+    with open(os.path.join(ROOT, 'content', 'cards.json'), encoding='utf-8') as f:
+        cards = json.load(f)
+    cards = cards['cards'] if isinstance(cards, dict) else cards
+    by_id = {c['id']: c for c in cards}
+    out = []
+    for cid in deck:
+        c = by_id.get(cid)
+        s = json.dumps(c) if c else ''
+        if '"project_cube"' in s or '"research_cubes"' in s:
+            out.append((cid, 'ability' in c))
+    return out
 
 
 def se(p, n):
@@ -30,7 +47,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('dirs', nargs='+')
     ap.add_argument('--powers', action='store_true', help='every power, a game')
-    ap.add_argument('--cards', action='store_true', help="the new cards' plays and uses, a game")
+    ap.add_argument('--cards', action='store_true', help="the research-cube cards' keeps, plays and uses, a game")
     a = ap.parse_args()
     ais = json.load(open(os.path.join(ROOT, 'content', 'ais.json'), encoding='utf-8'))
     cells = load(a.dirs)
@@ -60,12 +77,14 @@ def main():
                     parts.append(f"{p['name']} {v:.2f}")
             print(f"{variant} {agent[:40]}: " + ', '.join(parts))
     if a.cards:
-        print()
+        cubes = cube_cards()
+        print('\nThe research-cube cards in the deck, a game: kept, played, and used (cards with an Action only).\n')
         for (variant, agent), gs in sorted(cells.items()):
             n = len(gs)
             per = lambda k: sum(cnt(g, k) for g in gs) / n
             got = lambda c, k: sum(g['cards'].get(c, {}).get(k, 0) for g in gs) / n
-            parts = [f"{c}: kept {got(c, 'kept'):.2f} played {got(c, 'played'):.2f} used {per('cards.used.' + c):.2f}" for c in CUBE_CARDS]
+            parts = [f"{c}: kept {got(c, 'kept'):.2f} played {got(c, 'played'):.2f}"
+                     + (f" used {per('cards.used.' + c):.2f}" if act else '') for c, act in cubes]
             print(f"{variant} {agent[:40]}: " + '; '.join(parts))
 
 

@@ -484,7 +484,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
             "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".to_string(),
         ],
         [
-            "Harden a facility (a card prints it: Faraday Yard)".to_string(),
+            "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)".to_string(),
             "the chips the card prints, per token".to_string(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike".to_string(),
         ],
@@ -548,7 +548,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Unity".to_string(),
-            "cards (Peace Conference, Coalition Charter, Open Assembly), AI boards, Unity cards".to_string(),
+            "cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards".to_string(),
             "card text".to_string(),
         ],
         [

@@ -40,7 +40,8 @@ pub(super) fn shield_node(g: &mut GameState, cx: &mut Cx, seat: usize, count: i6
 
 pub(super) fn delay_threat(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64) -> Res {
     for k in 0..count {
-        let active = undelayed_threats(g);
+        let w = cx.world;
+        let active = undelayed_threats(&w, g, seat);
         if active.is_empty() {
             break;
         }

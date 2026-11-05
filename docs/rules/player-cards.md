@@ -23,29 +23,30 @@ The cards config lists which cards are in the game (baseline: all of them).
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2, 30 of 45 (the draft set: 18 / 105 / 31 cards at 0 / 1 / 2); it
+  events included), 2 for big effects and most tier 2, 29 of 42 (the draft set: 23 / 97 / 29 cards at 0 / 1 / 2); it
   comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
-  the tag or on a power, save the Protector's Recovery, which clears a marker. Five tier-1 cards and one tier-2 card do it.
+  the tag or on a power, save the Protector's Recovery, which clears a marker. Four tier-1 cards and one tier-2 card do it.
   No card `needs` Science for it: a team without the tag still has the Clear standard action, its counters and the
   board.
-- **Typed counters (candidate).** Ten tier-1 cards fight one source type, and count for more than they cost toward
+- **Typed counters (candidate).** Nine tier-1 cards fight one source type, and count for more than they cost toward
   threats of it that the player may counter: Security for military, Diplomacy for influence, Cyber for cyber, Industry
-  for economic (Science's and Power's tools stay general). Diplomacy and Industry have two programs and an Action
-  building, Cyber and Security one of each (106 made Security's third a troop removal).
+  for economic (Science's and Power's tools stay general). Industry has two programs and an Action building;
+  Security, Diplomacy and Cyber one of each.
 - **Engines (candidate; 106, the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
   permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per Science tag on your cards",
   one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
   income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), or flat on a strong tier-2 one. **An engine
   pays up front (108, Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
   when built, worth about two of its fires (Terraforming Mars' production plus a matching stock): draw 2-3 cards (4 on
-  Foundation Model Campus, Vertical Monopoly, Capital Projects Office and Orbital Embassy), 2 energy on the Power ones, or its first tokens here
-  (Telemetry Archive, Retained Earnings, Open Assembly, Intrusion Lab, Conglomerate HQ), so its own play fills the
-  first threshold. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
+  Foundation Model Campus, Vertical Monopoly, Capital Projects Office and Orbital Embassy), 2 energy on three Power ones (not Positron Storage Ring), or its first tokens here
+  (Telemetry Archive, Retained Earnings, Open Assembly, Conglomerate HQ, Agency Directorate), so its own play fills the
+  first threshold; Intrusion Lab's 1 Agent fills its "at 2" on the first removal of compute,
+  or a feeder's Agent (118: At N pays whatever put the tokens there). A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger (when you play a card of the tag) and a tier-2 one that counts every tag on the played card, and its
   engines' payoffs: fight triggers, teammate triggers, discounts, rebates, thresholds, copy and reuse
   ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber keeps a standing automatic counter
@@ -71,8 +72,10 @@ The cards config lists which cards are in the game (baseline: all of them).
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising (106) liberates every third round at
-  most, capped by its once-a-round Action, 6 Followers a liberation and corrupted cities in reach.
+  liberation → clean city → energy → more liberation is capped; Popular Uprising (106) repeats, capped by its
+  once-a-round Action, 6 Followers a liberation and corrupted cities in reach: alone it adds 2 a round between
+  liberations; Simulation Cluster's Reuse can repeat either half of an Action, so with it a liberation every other
+  round is possible.
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";
@@ -95,14 +98,14 @@ The cards config lists which cards are in the game (baseline: all of them).
   better building of its tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
   (Industry), Agents (Security). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
-  card gains tokens by itself. A token
-  card's Action is "add N here, OR spend or count what is here"; a few tier-2 ones arrive loaded ("Add 2 Agents here"
-  when built); a covered one holds its tokens and its Action stops; Actions may cost tokens from their own card;
-  feeder cards (Dataset Scraper, Capital Injection, Vendor Financing, Payroll Automation, Manifesto Leak, Recruit Operatives) add tokens to
-  one of your cards of a type; Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a
+  card gains tokens except as it prints. Each arrives loaded ("Add 2 Agents here" when built), then grows one of
+  two ways: an OR Action that adds N here or spends or counts what is here (Synthetic Data Forge, Safehouse Network,
+  Popular Uprising), or an Effect that adds tokens when something happens, with an **At N** that takes N off and pays
+  by itself (the other six in the deck: Telemetry Archive, Retained Earnings, Intrusion Lab, Open Assembly, Agency
+  Directorate, Conglomerate Headquarters); a covered one holds its tokens and its Action stops; Actions may cost tokens from their own card;
+  feeder cards (Dataset Scraper, Capital Injection, Payroll Automation, Manifesto Leak, Recruit Operatives, Deep State
+  Ledger) add tokens to one of your cards of a type, and its At N pays if they reach it (118); Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a
   card loses its tokens.
-- **A one-shot Action (`once`):** an Action, or a half of one, may take its card out of play once it resolves, with
-  the stack under it (Popular Uprising: spend its 6 Followers, liberate, then discard it and what it's built over).
 - **Actions** (abilities: `ability`, buildings only) are used with `Use` once a round, pay their cost, and refresh at
   the start of a round. **An OR Action (`or`)** has two halves: one use a round, the player picks a half it can pay
   and that has a target (a half that counts tokens here needs one there). **Ongoing abilities live only on
@@ -111,9 +114,10 @@ The cards config lists which cards are in the game (baseline: all of them).
 Effects needing choices ask the acting player: hexes, countries, players, threats, amounts ("up to N" offers 0..N), or
 "stop".
 
-**Token cards, for new players.** A building that holds Agents, Datasets, Followers or Capital grows only when you
-choose: its Action is "add 1 Agent here, OR get 1 credit per Agent here" (or pay some of them for an effect). Each
-round you either grow the pile or cash in, and a few cards add tokens to one of your piles. A card only ever counts
+**Token cards, for new players.** A building that holds Agents, Datasets, Followers or Capital starts with a few.
+Most then grow by themselves: each time you do what the card names (play a Science card, say), tokens go on it, and
+when they reach its number it pays and empties by that many. Three have an Action instead: each round you either add
+a token or spend or count them for an effect. A few cards add tokens to one of your piles. A card only ever counts
 the tokens on itself, so there is nothing to total across your cards.
 
 (Variant `off`: no draft, [README.md](README.md#off-variants).)

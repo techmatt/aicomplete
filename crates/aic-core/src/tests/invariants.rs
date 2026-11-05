@@ -122,6 +122,11 @@ fn broken(rules: &Rules, g: &GameState) -> Vec<String> {
                 out.push(format!("raw token key in a choice: {text:?}"));
             }
         }
+        // 118: a prompt names a card, not its id ("build joint_task_force where?");
+        // options may carry ids, which replays match on.
+        if p.ask.prompt.contains('_') {
+            out.push(format!("raw id in a prompt: {:?}", p.ask.prompt));
+        }
     }
     // The view is what clients draw: building it must not panic.
     let v = rules.view(g);

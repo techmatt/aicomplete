@@ -265,13 +265,14 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let buyers: Vec<usize> = (0..g.seats.len())
                 .filter(|&s| g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h))
                 .collect();
-            if buyers.is_empty() {
+            // 118: a city making no energy (`corp_energy` 0) sold nothing for its price.
+            if buyers.is_empty() || energy <= 0 {
                 continue;
             }
             let mut opts: Vec<_> = buyers.iter().map(|&s| opt(format!("seat {s} buys"))).collect();
             opts.push(opt("nobody".to_string()));
             let prompt = || format!(
-                "The energy of {} ({energy}) can be bought for {price} credits: by whom?",
+                "The energy of {} ({energy} energy) can be bought for {price} credits: by whom?",
                 hex_name(&w, h)
             );
             if let Some(i) = cx.choose(0, prompt, opts)? {

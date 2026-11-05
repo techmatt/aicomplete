@@ -184,6 +184,19 @@ fn an_auto_counter_works_its_home_country() {
     assert_eq!(threats::requirement(&w, &g, "station_seizure")[0].1, 7 - n);
 }
 
+/// 118: a threat a standing counter pays in full is countered, not left face up at 0
+/// holding its sources until execute.
+#[test]
+fn a_threat_an_auto_counter_pays_in_full_is_countered() {
+    let (rules, mut g) = threat_lab();
+    let w = rules.world();
+    deal(&mut g, "blackout", 0);
+    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());
+    assert!(threats::requirement(&w, &g, "blackout").iter().all(|(_, n)| *n == 0), "{:?}", threats::requirement(&w, &g, "blackout"));
+    with_cx(&rules, |cx| threats::complete_paid(&mut g, cx));
+    assert!(!threats::active(&g).iter().any(|(t, _)| t == "blackout"), "countered at once");
+}
+
 #[test]
 fn project_drain_takes_compute_off_each_project_each_upkeep() {
     // No card prints a standing project drain since r42: a building is given it here.

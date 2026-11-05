@@ -675,6 +675,13 @@ impl Content {
             }
         }
         check_ops(&b.innate.passives, Slot::Standing, &what)?;
+        // 118: a capstone is read only on a track's last space; elsewhere it was shown as
+        // uncovered and counted, and never applied.
+        for t in [&b.economy_track, &b.play_track] {
+            if t.iter().rev().skip(1).any(|u| u.capstone.is_some()) {
+                return Err(format!("{what}: a capstone goes on a track's last space"));
+            }
+        }
         for u in b.economy_track.iter().chain(&b.play_track) {
             if let Some(c) = &u.capstone {
                 check_ops(&c.passives, Slot::Standing, &what)?;
@@ -828,6 +835,14 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     }
     if c.passives.iter().any(|p| matches!(p, Op::Threshold { .. })) && c.tokens.is_none() {
         return Err(format!("{what}: a threshold counts tokens here but the card holds none"));
+    }
+    // 118: an "add N here" of another kind printed one token, counted toward the card's
+    // own and fired no trigger of either.
+    if let Some(t) = &c.tokens {
+        let all = c.effects.iter().chain(branches.iter().flat_map(|a| &a.effects)).chain(triggered.clone());
+        if all.clone().any(|o| matches!(o, Op::AddTokens { here: true, kind, .. } if *kind != t.kind)) {
+            return Err(format!("{what}: adds tokens here of a kind the card doesn't hold"));
+        }
     }
     if c.effects.iter().chain(triggered).any(|o| matches!(o, Op::Reuse)) {
         return Err(format!("{what}: reuse is an Action's (a building's ongoing use, never a one-off)"));

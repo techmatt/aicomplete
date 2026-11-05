@@ -422,7 +422,9 @@ fn fresh_confirmation(md: &Md, w: &mut String) {
     if let Some(sel) = &spec.selection_seeds {
         let _ = writeln!(w, "## Fresh-seed confirmation\n");
         let fresh = run.fresh_confirmation;
-        let _ = writeln!(w, "Selection seeds {}..{} picked the winner; fresh seeds are every other seed played. Variant minus base, ± the standard error of the per-seed difference, with p from the exact sign test. The two are never pooled: only the fresh row confirms.\n", sel.first, sel.first.saturating_add(sel.games));
+        // 118: inclusive, as the header prints seeds; none when the spec picks on none.
+        let picked = if sel.games == 0 { "No selection seeds".to_string() } else { format!("Selection seeds {}..={}", sel.first, sel.first.saturating_add(sel.games - 1)) };
+        let _ = writeln!(w, "{picked} picked the winner; fresh seeds are every other seed played. Variant minus base, ± the standard error of the per-seed difference, with p from the exact sign test. The two are never pooled: only the fresh row confirms.\n");
         if fresh.is_empty() {
             let _ = writeln!(w, "Nothing to confirm: no variant after the base has a pair.\n");
         } else if fresh.iter().all(|f| f.fresh.games == 0) {
@@ -817,7 +819,10 @@ fn timing(md: &Md, w: &mut String) {
 fn saved_records(md: &Md, w: &mut String) {
     let run = md.run;
     let _ = writeln!(w, "\n## Saved records\n");
-    if run.records.is_empty() {
+    // 118: a spec with records off read "None matched", as if no game had qualified.
+    if run.spec.records == 0 {
+        let _ = writeln!(w, "Records are off in this spec (`records`: 0).");
+    } else if run.records.is_empty() {
         let _ = writeln!(w, "None matched.");
     } else {
         let _ = writeln!(w, "Open in the viewer (*Open record…* or drop the file), or check with `aic-sim replay`.\n");

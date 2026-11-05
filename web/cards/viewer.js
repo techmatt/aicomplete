@@ -282,7 +282,7 @@ function detail(id) {
   dlg.innerHTML = `<div class="detail" tabindex="-1">
     <div class="left"><div class="scaled">${face(c)}</div></div>
     <div>
-      <div class="top"><div><h2>${esc(c.name)}</h2><div class="sub">${esc(label(c.kind))} · ${esc(c.tierLabel)}${c.costLabel ? ` · ${esc(c.costLabel)}` : ''} · <code>${esc(c.id)}</code></div></div>
+      <div class="top"><div><h2>${esc(c.name)}</h2><div class="sub">${esc(label(c.kind))}${c.tierLabel ? ` · ${esc(c.tierLabel)}` : ''}${c.costLabel ? ` · ${esc(c.costLabel)}` : ''} · <code>${esc(c.id)}</code></div></div>
         <div class="nav"><button data-go="-1" title="Previous (←)">←</button><button data-go="1" title="Next (→)">→</button><button data-close title="Close (Esc)">✕</button></div></div>
       ${c.text ? `<h4>Text</h4><div>${esc(c.text)}</div>` : ''}
       ${c.sections.map((s) => `<h4>${esc(s.head)}</h4><div>${esc(s.text)}</div>`).join('')}

@@ -224,7 +224,9 @@ impl Module for Board {
                 });
             }
         }
-        for id in g.pile(&cards::hand(s)) {
+        // 118: at `sell_credits` 0 a sale pays nothing: not offered.
+        let sells = w.int("board.sell_credits") > 0;
+        for id in g.pile(&cards::hand(s)).iter().filter(|_| sells) {
             out.push(Action::Sell {
                 seat,
                 card: *id,
@@ -249,6 +251,10 @@ impl Module for Board {
                 let hand = cards::hand(s);
                 if !g.pile(&hand).contains(card) {
                     return Err(Halt::Illegal("not in your hand".into()));
+                }
+                // 118: refused here too, not only hidden (a record or client could send it).
+                if w.int("board.sell_credits") <= 0 {
+                    return Err(Halt::Illegal("selling pays nothing here".into()));
                 }
                 cards::discard(g, cx, card, &hand);
                 cx.add_resource(g, s, Resource::Credits, w.int("board.sell_credits"));
@@ -333,6 +339,10 @@ pub fn converter_blocked(w: &World, g: &GameState, s: usize, c: usize) -> Option
     let cost = &conv.cost;
     if cost.iter().any(|(r, n)| g.resource(s, *r) < *n) {
         return Some(CANT_PAY);
+    }
+    // 118: a converter that does nothing here (Biomia's Sway with alignment off) isn't offered.
+    if !effects::feasible(w, g, s, &conv.effects) {
+        return Some("does nothing here");
     }
     None
 }

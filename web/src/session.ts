@@ -79,6 +79,8 @@ export class Timeline {
       note: record.note ?? '',
     });
     t.cursor = 0;
+    // 118: kept, so a reload still says it is another revision's game (0: not recorded).
+    if (record.rules_revision) t.savedRules = record.rules_revision;
     return t;
   }
 
@@ -132,6 +134,8 @@ export class Timeline {
   private changed(step: number) {
     if (this.source.kind === 'record') {
       this.source = { kind: 'play', file: `${this.source.file} (changed at step ${step})` };
+      // 118: the record's warnings (its fingerprint, its hashes) were about the record.
+      this.warning = null;
     }
   }
 
@@ -144,16 +148,26 @@ export class Timeline {
     // autoplay wrote its replayed prefix, and the next load showed it as whole);
     // the first action or undo on it clears `replayError` and saves.
     if (this.replayError) return;
-    // 099: with the rules revision, so a session from other rules can say so.
-    storageSet(SAVE_KEY, JSON.stringify({ config: this.configJson, seed: this.seed, actions: this.actions, cursor: this.cursor, source: this.source, rules: rulesRevision }));
+    // 099: with the rules revision, so a session from other rules can say so. 118: the
+    // revision the game came from, not this engine's: the first save stamped an older
+    // record or session as this revision, so after a reload it showed as clean.
+    storageSet(SAVE_KEY, JSON.stringify({
+      config: this.configJson, seed: this.seed, actions: this.actions, cursor: this.cursor, source: this.source,
+      rules: this.savedRules ?? rulesRevision, warning: this.warning,
+    }));
   }
 
-  /** The rules revision a restored session was saved under (undefined before 099). */
+  /**
+   * The rules revision this game came from, when it isn't this engine's: a loaded
+   * record's (118) or a restored session's (undefined before 099, or for a game begun here).
+   */
   savedRules?: number;
+  /** 118: a loaded record's 'loaded with warnings' line, kept so a reload still shows it. */
+  warning: string | null = null;
 
   /** The saved session, replayed; null if there is none. Throws if its config no longer loads. */
   static restore(): Timeline | null {
-    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string }; rules?: number };
+    let saved: { config: string; seed: string; actions: Action[]; cursor: number; source: Source & { note?: string }; rules?: number; warning?: string | null };
     const raw = storageGet(SAVE_KEY);
     if (!raw) return null;
     try {
@@ -164,10 +178,38 @@ export class Timeline {
     const source: Source = saved.source?.kind === 'record'
       ? { kind: 'record', file: saved.source.file, note: saved.source.note ?? '' }
       : { kind: 'play', file: saved.source?.file ?? '?' };
-    const t = Timeline.replay(saved.config, saved.seed, saved.actions, source);
+    let t: Timeline;
+    try {
+      t = Timeline.replay(saved.config, saved.seed, saved.actions, source);
+    } catch (e) {
+      // 118: the replacement game's first save overwrote this session at once, so its
+      // actions were lost for good: keep it under its own key (see `keptSession`).
+      storageSet(KEPT_KEY, raw);
+      throw e;
+    }
     t.seek(saved.cursor ?? t.last);
     t.savedRules = saved.rules;
+    t.warning = saved.warning ?? null;
     return t;
+  }
+}
+
+/** 118: a saved session that could not be restored, kept for `keptSession`. */
+const KEPT_KEY = 'aic.session.unloadable';
+
+/**
+ * The kept session as record text (an older aic-sim may replay it), or null. Its config
+ * no longer loads here, so it can't be opened in this viewer.
+ */
+export function keptSession(): string | null {
+  const raw = storageGet(KEPT_KEY);
+  if (!raw) return null;
+  try {
+    const s = JSON.parse(raw);
+    const note = s.source?.kind === 'record' ? s.source.note : `kept session (${s.source?.file ?? '?'})`;
+    return JSON.stringify({ note, config: JSON.parse(s.config), seed: s.seed, actions: s.actions, ...(s.rules ? { rules_revision: s.rules } : {}) }, null, 1);
+  } catch {
+    return raw;
   }
 }
 

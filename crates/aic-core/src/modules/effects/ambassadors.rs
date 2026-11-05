@@ -16,7 +16,14 @@ pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max:
         if movable_ambassadors(g, seat) == 0 {
             break;
         }
-        let dest = pieces_in_reach(&w, g, seat);
+        // 118 (D8): a piece is a destination only if an ambassador can come to it: from the
+        // supply, or from another hex (the hex holding the seat's only one moved nothing).
+        let supply = g.resource(seat, Resource::Ambassadors) > 0;
+        let mine = ambassador_hexes(g, seat);
+        let dest: Vec<usize> = pieces_in_reach(&w, g, seat).into_iter().filter(|d| supply || mine.iter().any(|a| a != d)).collect();
+        if dest.is_empty() {
+            break;
+        }
         let mut opts: Vec<_> = dest.iter().map(|&h| hex_opt(&w, h)).collect();
         opts.push(opt("stop"));
         let prompt = || format!(
@@ -85,7 +92,15 @@ pub(super) fn spread_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize) ->
 
 pub(super) fn consolidate(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
     let w = cx.world;
-    let dest = pieces_in_reach(&w, g, seat);
+    // 118: with no ambassador of yours in reach there is nothing to bring (Summit
+    // Caucus still gains its ambassadors): no piece to pick.
+    let mine: Vec<usize> = ambassador_hexes(g, seat).into_iter().filter(|&h| in_reach(&w, g, seat, h)).collect();
+    // A piece is a destination only if some ambassador in reach stands elsewhere: the hex
+    // holding all of them moved nothing (D8's pattern).
+    let dest: Vec<usize> = pieces_in_reach(&w, g, seat).into_iter().filter(|d| mine.iter().any(|a| a != d)).collect();
+    if dest.is_empty() {
+        return Ok(());
+    }
     let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: consolidate up to {max} ambassadors onto which piece?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {

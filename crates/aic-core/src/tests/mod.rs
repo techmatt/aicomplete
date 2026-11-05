@@ -167,6 +167,15 @@ fn run(rules: &Rules, g: &mut GameState) {
     rules.enter(g, None);
 }
 
+/// Deals Manhunt (military) to country 0 with a troop on a hex holding seat 0's
+/// node, so seat 0 may counter it (118: a delay reaches only such threats).
+fn counterable_manhunt(rules: &Rules, g: &mut GameState) {
+    let h = rules.map.numbered(0, piece(0).node);
+    put(g, h, crate::modules::common::node(0), 1);
+    put(g, h, crate::modules::common::TROOP, 1);
+    deal(g, "manhunt", 0);
+}
+
 fn put(g: &mut GameState, h: usize, kind: &str, n: i64) {
     if n == 0 {
         Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.remove(kind);
@@ -419,6 +428,7 @@ fn with_cx_picks<T>(
         purposes: &[],
         events: None,
         choices: &mut choices,
+        fought: [0; 3],
     };
     f(&mut cx)
 }
@@ -511,9 +521,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 46;
-const GOLDEN_FINGERPRINT: &str = "92ebcd9672daa30e";
-const GOLDEN_CONTENT_HASH: &str = "f5ce777ba46cd3c7";
+const GOLDEN_REVISION: u32 = 47;
+const GOLDEN_FINGERPRINT: &str = "06dfd5668ad825ef";
+const GOLDEN_CONTENT_HASH: &str = "7e61b15f7507e8c5";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

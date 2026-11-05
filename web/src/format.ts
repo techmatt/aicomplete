@@ -100,7 +100,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       const paid = (p.cost ?? []).map(([r, n]) => amount(n, r));
       const tags = p.tags.map(([t, n]) => `${n} ${t}`).join(' + ');
       const cost = [...paid, ...(tags ? [`sacrifice ${tags}`] : [])].join(', ');
-      return `power: ${p.name} (${cost}): ${p.text ?? ''}`;
+      // 118: Synthesis has no price: no empty "()".
+      return `power: ${p.name}${cost ? ` (${cost})` : ''}: ${p.text ?? ''}`;
     }
     case 'pay':
       return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(String(a.threat))}`;
@@ -108,7 +109,8 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       return `take back ${a.resource} ← ${threatName(String(a.threat))}`;
     case 'give': {
       const n = param(cx.config, 'economy', 'give_insight');
-      return `give ${typeof n === 'number' ? `${n} ` : ''}insight → seat ${a.to}`;
+      // 118: the giver pays 1; `give_insight` is what the receiver gains (the label gave it as the price).
+      return `give 1 insight → seat ${a.to}${typeof n === 'number' && n !== 1 ? ` (they gain ${n})` : ''}`;
     }
     case 'antimatter': {
       const n = param(cx.config, 'alignment', 'antimatter_discord');

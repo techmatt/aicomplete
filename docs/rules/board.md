@@ -101,15 +101,18 @@ megaproject is the corp's defining card.
   adversary cube after* column); none does.
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with a **node in a city of that country** (Matt, r37: any city, owned or not; a node
-  elsewhere in the country no longer counts), as often as the player can pay (r41); only Onyx's
+  elsewhere in the country no longer counts), as often as the player can pay (r41; the
+  printed texts say so since 118, and Cintamani's prints its 2 insight a cube); only Onyx's
   is once a round per player, its loop ([ai-powers.md](ai-powers.md)). Every player also has the cube converter, a
   standard action: 1 cube for `cube_insight` insight ([economy.md](economy.md)). A converter
   is a reason to hold a city node. Cubes
-  reach a board only after completion, so no converter feeds another within a round.
+  reach a board from stations after completion, or 1 a round from the Researcher's Open Archive
+  capstone; no converter makes cubes, so none feeds another within a round.
   Research cubes and converters are a resource every player reaches eventually, like
   antimatter. The Researcher's board ([ai-boards.md](ai-boards.md)) and several Science cards (cards.md) name them too.
-- **Bought and carded cubes.** The Researcher's Grant power (3 credits) and Field Grant (in
-  a country where you own a station) put research cubes in your color onto an
+- **Bought and carded cubes.** The Researcher's Grant power (3 credits), Field Grant (in
+  a country where you own a station) and Moonshot Grant (8 cubes on any megaproject that
+  isn't complete, no station needed: 8 complete one) put research cubes in your color onto an
   **incomplete** megaproject. They pay at completion like any cube and are spent then, so
   credits never reach a converter this way: a bought cube earns its card's player payout
   and brings the completion a cube nearer.

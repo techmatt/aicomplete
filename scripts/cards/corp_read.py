@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The research cubes and corps readout (074): per agent and cell, wins, completions and their
 rounds, cubes paid by color, cubes stored and converted, converter uses per corp, stations claimed
-and built, and adversary compute by source. Reads the `games.jsonl` of each experiment output.
+and built, and adversary compute by source (118: no 'Cintamani after' part: no content has
+written `adversary.compute_every` since 075). Reads the `games.jsonl` of each experiment output.
 
     python scripts/cards/corp_read.py DIR [DIR ...]
 
@@ -35,7 +36,7 @@ def main():
     ap.add_argument('dirs', nargs='+')
     a = ap.parse_args()
     cells = load(a.dirs)
-    print('| cell | games | win % | purge % | completions | mean round | paid P / A / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | claimed | built | adv after | compute all / botnets / corp / Cintamani after | rounds |')
+    print('| cell | games | win % | purge % | completions | mean round | paid P / A / N | stored | converted | Horizon / Cintamani / Onyx / Biomia uses | idle / no city / unpaid | claimed | built | adv after | compute all / botnets / corp | rounds |')
     print('|---|' + '---|' * 15)
     rounds = collections.Counter()
     for (variant, agent), gs in sorted(cells.items()):
@@ -57,7 +58,7 @@ def main():
               f"| {per('board.cubes_stored'):.1f} | {per('board.cubes_converted'):.1f} | {uses} "
               f"| {per('board.converter_idle'):.2f} / {per('board.converter_no_city'):.2f} / {per('board.converter_unpaid'):.2f} "
               f"| {per('board.stations_owned'):.2f} | {per('board.std.station'):.2f} | {per('board.cubes_after'):.1f} "
-              f"| {per('adversary.compute_made'):.1f} / {per('adversary.compute_botnets'):.1f} / {per('adversary.compute_corp'):.1f} / {per('adversary.compute_every'):.1f} "
+              f"| {per('adversary.compute_made'):.1f} / {per('adversary.compute_botnets'):.1f} / {per('adversary.compute_corp'):.1f} "
               f"| {sum(g.get('rounds', 0) for g in gs) / n:.1f} |")
     print()
     print('Completions by round, all cells: ' + ', '.join(f'{r}: {v}' for r, v in sorted(rounds.items())))

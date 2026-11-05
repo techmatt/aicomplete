@@ -45,12 +45,15 @@ function cardChip(c: CardView, where: string, printed = false): string {
   const extra = c.cost !== undefined ? extraCosts(c.text).map((x) => ` <small title="also costs">+${esc(x)}</small>`).join('') : '';
   const cost = (c.cost !== undefined ? ` <small title="cost">${c.cost}</small>` : '') + extra;
   const status = c.status && !['draft', 'built', 'resolved', 'done', 'ongoing'].includes(c.status) ? `<em>${esc(c.status)}</em>` : '';
+  // 118: a draft or keep tile says what the card needs (keeps were picked blind to it).
+  const need = /^(draft|keep)/.test(c.status) ? /needs ([^\]]*?)(?:, built over|\])/.exec(c.text ?? '')?.[1] : undefined;
+  const needs = need ? ` <small class="needs" title="tags it needs on your cards to play">needs ${esc(need)}</small>` : '';
   // 024: a card repeats its rules text under its name, as Terraforming Mars' do.
   // The view's text starts with a bracketed line ("[building, tier 1, industry, +1 insight]
   // ..."): kind, tags and every cost but credits. Printed chips show the rules text only.
   const rules = (c.text ?? '').replace(/^\[[^\]]*\]\s*/, '');
   const text = printed && rules ? `<span class="ctext">${esc(rules)}</span>` : '';
-  return `<span class="card${printed ? ' printed' : ''} ${esc(c.status.replace(/\s+/g, '-'))}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${status}${text}</span>`;
+  return `<span class="card${printed ? ' printed' : ''} ${esc(c.status.replace(/\s+/g, '-'))}" data-card="${esc(c.id)}" data-where="${where}">${esc(c.name)}${cost}${needs}${status}${text}</span>`;
 }
 
 /** "1/2 energy, 0/3 credits" → bars. */
@@ -133,7 +136,7 @@ function lossesHtml(v: View, config: Config): string[] {
   const counts = v.seats.map((s) => s.values.find((x) => x.key === 'board.node')?.value);
   if (param(config, 'alignment', 'node_loss') && counts.every((n) => n !== undefined) && counts.length) {
     const least = Math.min(...(counts as number[]));
-    loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (early on, nothing destroys a last node)"><span class="label">node gone</span> <b>${least}</b></span>`);
+    loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (early on, nothing destroys a last node)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
   // The clock's step is a name, not a count: "clock: war" (020: it read "war 2").

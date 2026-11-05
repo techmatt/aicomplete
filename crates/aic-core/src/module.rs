@@ -395,6 +395,10 @@ pub struct Cx<'a> {
     pub(crate) purposes: &'static [&'static str],
     pub(crate) events: Option<&'a mut Vec<Event>>,
     pub(crate) choices: &'a mut Choices,
+    /// What another seat's trigger removed inside the action resolving (118: a
+    /// teammate's Joint Task Force): ambassadors, troops, compute. Its fight
+    /// triggers fired for it, so the acting seat's don't (`cards::fight_fire`).
+    pub(crate) fought: [i64; 3],
 }
 
 impl<'a> Cx<'a> {

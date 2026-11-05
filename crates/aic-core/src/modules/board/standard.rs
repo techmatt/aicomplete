@@ -258,7 +258,10 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             }
         }
         // Gaining an ambassador, credits or insight needs no target.
-        StandardAction::Ambassador | StandardAction::Chips => vec![usize::MAX],
+        StandardAction::Ambassador => vec![usize::MAX],
+        // 118: at `chips_credits` 0 selling a chip pays nothing: no such action, as `cube_insight` 0.
+        StandardAction::Chips if w.int("board.chips_credits") > 0 => vec![usize::MAX],
+        StandardAction::Chips => Vec::new(),
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
         StandardAction::Insight => Vec::new(),
     }

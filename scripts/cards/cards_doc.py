@@ -52,7 +52,7 @@ def deck_ids():
 
 def cost_text(c):
     parts = [f"{c.get('cost', 0)} cr"]
-    for k, short in [('energy', 'en'), ('chips', 'ch'), ('antimatter', 'am')]:
+    for k, short in [('energy', 'en'), ('chips', 'ch'), ('antimatter', 'am'), ('research_cubes', 'rc')]:
         if c.get(k):
             parts.append(f'{c[k]} {short}')
     for r, n in c.get('lowers', []):
@@ -107,7 +107,7 @@ def render(cards):
         f'edit by hand. Rules revision {revision()}. Every card is a **candidate**. One section',
         'per primary tag (the first printed tag; *other tags* lists the rest), sorted by tier',
         'then name. Cost: credits (cr), energy (en),',
-        'chips (ch), antimatter (am), income lowered for the game, tags needed on your cards in',
+        'chips (ch), antimatter (am), research cubes (rc), income lowered for the game, tags needed on your cards in',
         'play, and the tag of the building a replacement goes *over*. Insight is the cost to',
         f"play; keeping a drafted card costs {params['keep_tier1']} (tier 1) or {params['keep_tier2']} (tier 2) more.",
         '*(not in deck)*: in the content, not in the baseline config.',

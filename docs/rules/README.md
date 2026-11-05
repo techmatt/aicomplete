@@ -21,7 +21,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 46 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 47 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -75,11 +75,10 @@ The rest:
 - **Botnet**: the adversary's persistent token ([adversary.md](adversary.md)), made where two adversary ambassadors
   meet on a piece. Nodes are always the players', botnets always the adversary's.
 - **Reach**: every map target of a standard action is in the acting player's reach, and so
-  are most of a card's. The exceptions are a card's single ambassador move and Spread
-  (measured from the ambassador), and country effects such as a tier-2 sweep or Shelter (any country;
-  [card-grammar.md](card-grammar.md)). Reach is 1 unless a rule gives a reason: Embassy
-  Compound's move goes 2 ([card-grammar.md](card-grammar.md), moving is its point), and the
-  adversary's distances (`spread_range`, the spread twists, `war_reach`) are its dials, not
+  are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
+  the ambassador), and country effects such as a tier-2 sweep or Shelter (any country;
+  [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
+  move goes further. The adversary's distances (`spread_range`, the spread twists, `war_reach`) are its dials, not
   a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter is not a map target: it needs a node in a city of
   its country ([board.md](board.md)).
 - **Site claim**: aligning a city, or claiming a research station or factory, needs the

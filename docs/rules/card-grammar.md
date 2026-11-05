@@ -31,8 +31,9 @@ the same order, and opens with the box's word.
 
 Card details beyond the card text:
 
-The card set: 154 cards, all in the draft decks: 109 tier 1 and 45 tier 2; 53% programs, 31% buildings and 16% events
-(income raises are on programs, the engines' triggers, Actions and Effects on buildings); each tag primary on 24 to 30. Every card is listed with its cost, insight, tags, kind
+The card set: 149 cards in the draft decks (`configs/baseline.json`; content holds 18 more, marked "not in deck" in
+cards.md): 107 tier 1 and 42 tier 2; 51% programs, 35% buildings and 14% events (income raises are on programs, the
+engines' triggers, Actions and Effects on buildings); each tag primary on 23 to 28. Every card is listed with its cost, insight, tags, kind
 and text in [cards.md](../cards.md) (generated) and priced in [card-pricing.md](../card-pricing.md). Card text says what a
 card does; how each primitive resolves:
 
@@ -44,11 +45,15 @@ card does; how each primitive resolves:
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
-  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. No deck card prints `move_one`
+  base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit
+  Caucus, Liaison Corps) is a "you may move": it never vetoes a card that does something else (118). No deck card prints `move_one`
   since r44 (Peacekeeper Rotation was cut).
-- **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
+- **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal. No
+  content prints `peek` since 111.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
-  is countered at once. **Counter a threat:** partial payments on it are refunded.
+  is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats** (Predictive
+  Modeling, Early Warning Drill): only threats you may counter, as countering and jamming; with none, the card still
+  plays for its draw or shields (118).
 - **Cleanse:** take the adversary cube off a corrupted research station or factory in reach, one hex at a time (some
   cards: all in the first hex's country). A station becomes neutral. `only` limits it to stations (Reclamation Crew,
   priced as a station flip) or to factories (Back-Channel Talks, cheap); its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a corrupted
@@ -65,7 +70,7 @@ card does; how each primitive resolves:
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a
   discard takes one with its compute (if the row is then empty, the next row is dealt).
 - **Botnets:** removing a botnet (tier 2, in reach) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
-  one ([adversary.md](adversary.md)); cutting one off (a hack) makes it produce no compute in the next build.
+  one ([adversary.md](adversary.md)); cutting one off (`cut_botnet`; no content prints it) makes it produce no compute in the next build.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. **A draw never
   reshuffles** (r44): from an empty deck it gets nothing until the draft reshuffles the discards, so an event played
   this round can't come back this round (Breakthrough Leak and Capital Injection drew each other back forever).
@@ -80,12 +85,12 @@ card does; how each primitive resolves:
   more than N. **In one country** (the same ops without `reach`): up to N in one country, any country, the same way;
   only a few big tier-2 sweeps print it, as a deliberate power step. Neither reads "per hex": Matt's ruling 6.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
-  1-player game, "another player" means you** (r44, Matt's ruling of 2026-11-04): the gift is yours. A draw with both
-  tier-1 piles empty (Fieldwork) is not offered on its own.
-- **Moves of "up to 2 hexes"** count hex distance (`Map::distance`, over land and sea); the destination must be a
-  piece.
-- **Cordon (`cordon`):** in one country, no arrivals land in the next round's build (an out-of-turn build before it
-  brings none either); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
+  1-player game, "another player" means you** (r44, Matt's ruling of 2026-11-04): the gift is yours. A draw with the
+  tier-1 deck empty (Fieldwork) is not offered on its own, whatever its discards hold: a draw never reshuffles.
+- **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
+  over land and sea); the destination must be a piece.
+- **Cordon (`cordon`):** in one country, no arrivals land from its play through the next round: that build, and any build a project
+  brings that round (118); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
   ambassador's job.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
   so a building that needed those tags or the sacrificed stack can't then be played; its other costs and requirements
@@ -96,14 +101,15 @@ card does; how each primitive resolves:
 event happens, with no limit a round, and resolves after what caused it. A building counts itself: playing a Science
 building with a Science trigger fires it. The `play` mark is a card you play.
 
-- **Play triggers (`when`, `play`):** "When you play a Science card, gain 6 credits" (Citation Engine); with no tag, any
+- **Play triggers (`when`, `play`):** "When you play a Science card, gain 7 credits" (Citation Engine); with no tag, any
   card. **Per tag** (`play_tag`): "when you play a card, gain 1 insight per tag on it" (Interdisciplinary Institute), the tier-2
   form, once for each tag of any kind on the played card (106; the empty ring), or per tag of one kind, the
   ringed tag after `/` on the right of the `:`.
-- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 1 troop in one country" (Joint Task
-  Force); with `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them, except in a 1-player game, where
+- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 adversary ambassadors in reach"
+  (Joint Task Force): what it removes is the owner's, so the owner's "when you remove adversary ambassadors" triggers
+  fire for it, not the player's whose card set it off (118). With `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them, except in a 1-player game, where
   "another player" means you (r44): they fire on your plays and a shared gain lands once.
-- **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 4 credits" (Lights-Out Assembly):
+- **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 5 credits" (Lights-Out Assembly):
   the printed cost, before discounts. `≥`N is at least N.
 - **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove adversary
   compute" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
@@ -113,8 +119,9 @@ building with a Science trigger fires it. The `play` mark is a card you play.
 - **Discounts (`card_discount`):** "your Cyber cards cost 5 credits less to play" (Darknet Exchange), or insight (no
   deck card since r44, when Hyperscale Botnet dropped it). A card with the tag twice is discounted once. Like every discount, never
   below `discount_floor`, and a cost under it stays.
-- **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): when the tokens here reach
-  N, N come off and the reward happens (Telemetry Archive: a Science card played adds 2 Datasets; at 4, 5 insight).
+- **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): whenever the tokens here reach
+  N, whatever put them there (a feeder card's too, 118), N come off and the reward happens (Telemetry Archive: a
+  Science card played adds 2 Datasets; at 4, 3 insight).
 - **Copy (`copy_income`, a program):** raise your income by one of your buildings' Each round output, as it pays when
   you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later. No card
   prints it since r43 (108 made Payroll Automation a Capital feeder: few buildings print an income to copy).
@@ -123,7 +130,7 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   once).
 - **Per-tag income (106):** a program's "raise your credit income by 1 per Science tag on your cards"
   (`production_per_tag`, Research Royalties) counts once, when it resolves, the program itself included; later tags
-  don't raise it. A building's "each round, 2 credits per Science tag on your cards" (`income_per_tag` with an
+  don't raise it. A building's "each round, 3 credits per Science tag on your cards" (`income_per_tag` with an
   `amount`, Foundation Model Campus) counts again every round while it is active.
 - **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
   that tag, a teammate does, you remove a troop. A minus after the colon makes those cards cheaper. Discs and a

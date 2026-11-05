@@ -64,6 +64,8 @@ main.grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; 
 .plain .body p { margin: 0 0 1.1mm; }
 .plain .body b { font-family: 'Saira Condensed', sans-serif; }
 .tone-ai .body { font-size: 6pt; line-height: 1.16; padding-top: .6mm; }
+/* 118: an AI board's face holds more than fits (the Researcher's capstones were cut): it scrolls. */
+.tone-ai .body { overflow-y: auto; }
 .tone-ai .body p { margin-bottom: .6mm; }
 .plain .foot { padding: 1mm 2.4mm; font: 600 7.5pt 'Saira Condensed', sans-serif; background: #0001; }
 .tone-threat { --tone: #8a2a22; } .tone-adversary { --tone: #33363d; } .tone-discord { --tone: #6c2a7c; } .tone-unity { --tone: #1f7e88; }

@@ -140,7 +140,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
         let close = mean(tops.iter().map(|s| s.close_share)).unwrap_or(0.0);
         let forced = mean(tops.iter().map(|s| s.forced_share)).unwrap_or(0.0);
         f.push(format!(
-            "Decisions (strongest agent): {} forced, {} of real choices close (best two within {} points).",
+            "Decisions (strongest agent, mean over its cells): {} forced, {} of real choices close (best two within {} points).",
             pct(forced),
             pct(close),
             run.spec.closeness.gap
@@ -217,7 +217,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
     )
     .unwrap_or(0.0);
     f.push(format!(
-        "Help and counters (strongest agent): {gives:.2} gifts per game; {} of threats countered.",
+        "Help and counters (strongest agent, mean over its cells): {gives:.2} gifts per game; {} of threats countered.",
         pct(countered)
     ));
     f.extend(comparison_findings(run));

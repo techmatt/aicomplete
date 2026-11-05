@@ -47,7 +47,8 @@ Procure turns 2 spare chips into 2 cards, as the Researcher's Fieldwork turns an
 ## Insight conversions (candidate, r41)
 
 Insight is the turn's attention: it pays keeps and plays ([player-cards.md](player-cards.md)), and keeps stay in insight
-(credits stand in only for keeps, at `insight_credits` an insight). Each board prints 5 a round. Every player has the
+(credits stand in only for keeps, at `insight_credits` an insight). Each board prints 5 a round, and the economy track's first space,
+uncovered from setup, adds 1: 6 from round 1. Every player has the
 cube converter, a standard action with no limit a round ([economy.md](economy.md)); each board adds one conversion of its
 own currency:
 
@@ -61,9 +62,9 @@ own currency:
 - **Researcher, Synthesis** (a power, once a round, no price but the card): discard a card from your hand, gain 2
   insight; Patience banks it. With Fieldwork (1 energy → 3 cards) it turns 1 energy into 2 cards and 2 insight: about 4.5
   credits into 13 at the agents' values. Each is once a round, which caps the loop. A tier-1 card kept for 1 insight and never
-  played returns 2; a tier-2 keep (3, or 2 upgraded) is not refunded in full.
+  played returns 2; a tier-2 keep (2, or 1 upgraded) is refunded in full, +1 when upgraded.
 
-**For new players.** Insight is what you spend to keep and play cards, and every board now gets 5 a round. When you
+**For new players.** Insight is what you spend to keep and play cards, and every board gets 6 a round (5 printed, 1 from the economy track's first space). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time its Wall stops a troop (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher

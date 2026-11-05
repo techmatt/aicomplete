@@ -5,7 +5,7 @@
 //! troops, which cards, threats and Alignment use, and the board conditions
 //! for winning and losing.
 
-use crate::content::{AdversaryCard, Op, ProjectCard, RoundFlag};
+use crate::content::{AdversaryCard, Op, ProjectCard};
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World};
 use crate::rng::shuffle;
@@ -330,7 +330,7 @@ impl Module for Adversary {
                     match t {
                         // These resolve as they do anywhere (034, 044).
                         Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
-                            effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist"))?
+                            effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
                         // Read where they act: the build, spread, corrupt and arrivals
                         // steps, and the war step.
@@ -355,15 +355,14 @@ impl Module for Adversary {
                 }
                 // Ongoing projects act, in the order they came into play.
                 for id in g.pile(PROJECTS_ONGOING).to_vec() {
-                    effects::run(g, cx, &project(&w, &id).effects, &mut effects::Ctx::team().named("project"))?;
+                    effects::run(g, cx, &project(&w, &id).effects, &mut effects::Ctx::team().named("project").why(&project(&w, &id).name))?;
                     if g.is_over() {
                         return Ok(());
                     }
                 }
-                // 068: a cordon stopped this build's arrivals, and is done.
-                for c in 0..w.map.countries.len() {
-                    cx.set_key(g, &board::flag(RoundFlag::Cordon, c), 0);
-                }
+                // 118: a cordon lasts the round, as its card says ("no arrivals land next
+                // round"), and counts down at cleanup with the other flags: cleared here
+                // (068), it let the build's own compute (Rapid Buildout) land arrivals.
                 // Botnets make compute, except under a player ambassador.
                 let per = w.int("adversary.botnet_compute");
                 let (mut made, mut blocked) = (0, 0);
@@ -488,7 +487,7 @@ impl Module for Adversary {
             g.var(COMPUTE),
             None,
             &format!(
-                "adversary compute made so far: each botnet makes {} a round (none under a player ambassador, or in the build after a hack cuts it); it fills the cheapest visible project",
+                "adversary compute made so far: each botnet makes {} a round (none under a player ambassador); it fills the cheapest visible project",
                 w.int("adversary.botnet_compute")
             ),
         );
@@ -670,7 +669,7 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
         deal_projects(g, cx);
     }
     if !p.ongoing {
-        effects::run(g, cx, &p.effects, &mut effects::Ctx::team().named("project"))?;
+        effects::run(g, cx, &p.effects, &mut effects::Ctx::team().named("project").why(&p.name))?;
     }
     Ok(())
 }

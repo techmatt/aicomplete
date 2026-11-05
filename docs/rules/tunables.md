@@ -86,7 +86,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.adversary_discord` | 0 | 0..10 | Sway toward Discord the adversary adds at the start of every round |
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
-| `alignment.unity_ease` | 2, 2, 4 | 0..50 | Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards) |
+| `alignment.unity_ease` | 2, 2, 4 | 1..50 | Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards) |
 | `alignment.unity_cards` | 3, 3 | 1..6 | Unity cards a game deals from the printed deck, tier 1 then tier 2 (drawing the last one wins) |
 | `alignment.discord_tier2` | 2 | 1..50 | Discord tip count from which a Discord tip draws the stronger tier |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |

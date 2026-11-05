@@ -86,10 +86,17 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
         if !progs.is_empty() {
             out.cards(s, "played", "programs in play", progs);
         }
+        // 118: an event waiting on a choice has left the hand and isn't discarded yet:
+        // it showed nowhere while its prompt was open.
+        let res: Vec<CardView> = g.pile(&resolving(s)).iter().map(|id| card(s, id, "resolving", None)).collect();
+        if !res.is_empty() {
+            out.cards(s, "resolving", "playing now", res);
+        }
         let pk: Vec<CardView> = g
             .pile(&packet(s))
             .iter()
-            .map(|id| card(s, id, "draft", None))
+            // 118: a draft or keep tile names its price (keeps were picked blind to it).
+            .map(|id| card(s, id, "draft", Some(play_cost(w, g, s, def(w, id)))))
             .collect();
         if !pk.is_empty() {
             out.cards(s, "packet", "draft hand", pk);
@@ -106,7 +113,7 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
                     (0, c) => format!("keep {c} credits"),
                     (i, c) => format!("keep {i} insight + {c} credits"),
                 };
-                card(s, id, &st, None)
+                card(s, id, &st, Some(play_cost(w, g, s, def(w, id))))
             })
             .collect();
         if !dr.is_empty() {

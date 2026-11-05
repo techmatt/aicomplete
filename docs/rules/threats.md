@@ -5,7 +5,7 @@
 - Variant **`countries`** (default): each threat sits on one country and acts there; who may pay toward it is set by
   its **sources** (below), and "each player" in its text means each player with a node there.
 - Variant **`shared_row`**: threats sit in one row, anyone may pay, and each acts on the whole board: an effect per
-  country (Blackout, Sabotage, Overrun, Mass Production) hits every country, "each player" is every player, and a
+  country (Blackout, Sabotage, Embargo, Overrun, Mass Production) hits every country, "each player" is every player, and a
   placement (Infiltration's, Agitators', Sleeper Cells' and Insurrection's ambassadors, Orbital Strike's, Siege's and
   Total War's troops and ambassadors, Station Seizure's station) is that many on the whole board, players choosing
   where. The row is still dealt `per_country` threats per country, so more countries deal more threats.
@@ -35,8 +35,10 @@ Military bases and adversary ambassadors are never sources.
   the lowest site one would be built on; for troops the country's lowest base a Wall leaves open. While the threat is
   face up the target is its source: anyone with it in reach, or with an ambassador on it, may counter.
   **Countered, nothing is created.** Uncountered, as part of its execution and before its own effect, the target is
-  corrupted, built then corrupted, or the troop lands (a Wall on the base stops it). At most one piece a country a
-  round. Nothing is set aside for lack of a source. A country with nothing to name (no base at 1 country) leaves the
+  corrupted, built then corrupted, or the troop lands (a Wall on the base stops it). A player's station named as a
+  cyber target flips only as an effect would ([board.md](board.md): `station_flip_at`); short of that one adversary
+  ambassador lands on it, the station holds, and no source appears. At most one piece a country a round, and a
+  station that held uses up that round's piece. Nothing is set aside for lack of a source. A country with nothing to name (no base at 1 country) leaves the
   threat with no source: nobody can pay it, and it makes nothing.
 - **A source that leaves:** the rule reads the map now, so a threat whose sources are gone can't be paid
   until one is back, and it still executes. Marches come before the deal, so this takes a troop spent or a piece gone
@@ -45,13 +47,14 @@ Military bases and adversary ambassadors are never sources.
   or liberated until it is countered: removal and liberate cards skip them, and player ambassadors at a corrupted
   city's fallback wait, and liberate it the moment the threat is countered. An adversary ambassador is never shielded.
 - **Standing counters:** while a player has a tier-2 capstone with an automatic counter, each threat of its type in
-  their home country needs that much less, whenever it was dealt.
+  their home country needs that much less, whenever it was dealt; one it pays in full is countered at once, as dealt
+  or as the counter comes into play (118). Under `shared_row` no threat has a country, so it counters none (D54).
 
 **For new players.** Every threat grows out of something on the map. Find what its badge names in its country: a
 corrupted city (influence), a corrupted station or botnet (cyber), an adversary factory (economic), a troop
 (military). You can pay only with one of those next to your nodes, or with your own ambassador on one. If the country
 has none, the threat names a target on the map, and that counts as its source: counter it and nothing happens, leave
-it and the adversary gets a new piece there. Until a threat is countered, you can't remove its sources, so counter
+it and the adversary gets a new piece there (a player's station usually holds, taking an adversary ambassador). Until a threat is countered, you can't remove its sources, so counter
 first and clear after.
 
 **Dealing.** In `threats.deal` each country gets `per_country` threat (plus difficulty 1's extra, [adversary.md](adversary.md)), face up: tier 1

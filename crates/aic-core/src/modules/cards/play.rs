@@ -25,6 +25,27 @@ fn requirements_met(w: &World, g: &GameState, seat: usize, d: &CardDef) -> bool 
     d.needs.iter().all(|(t, n)| have[*t as usize] >= *n)
 }
 
+/// 118: `d`'s effects as feasibility should judge them: a program enters play before it
+/// resolves, so its own tags count toward its gain per tag (Consular Pouch was refused
+/// with the one Diplomacy tag it brings). The engine's play check and the agents' plan share it.
+/// Borrowed unless it changes something: `blocked` runs for every card in hand on every
+/// legal-action pass.
+pub fn own_counted(d: &CardDef) -> std::borrow::Cow<'_, [Op]> {
+    let own = |tag: Tag| if d.is_event() { 0 } else { d.tags.iter().filter(|t| **t == tag).count() as i64 };
+    if !d.effects.iter().any(|e| matches!(e, Op::GainPerTag { tag, .. } if own(*tag) > 0)) {
+        return std::borrow::Cow::Borrowed(&d.effects);
+    }
+    std::borrow::Cow::Owned(
+        d.effects
+            .iter()
+            .map(|e| match e {
+                Op::GainPerTag { resource, tag, per } => Op::GainPerTag { resource: *resource, tag: *tag, per: (*per - own(*tag)).max(0) },
+                other => other.clone(),
+            })
+            .collect(),
+    )
+}
+
 /// Why a card can't be played now, or `None` if it can.
 pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option<&'static str> {
     let d = def(w, id);
@@ -36,8 +57,15 @@ pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option
     if let Some(why) = blocked_beyond_credits(w, g, seat, d, &p, short) {
         return Some(why);
     }
-    if !d.is_building() && !effects::feasible(w, g, seat, &d.effects) {
-        return Some("no target");
+    if d.is_building() {
+        return None;
+    }
+    let counted = own_counted(d);
+    if !effects::feasible(w, g, seat, &counted) {
+        // 118: a gain per tag with too few tags read "no target" (Capacitor Discharge).
+        // Only on a card that does nothing else: beside another op, that op vetoed it.
+        let few = counted.iter().all(|e| matches!(e, Op::GainPerTag { tag, per, .. } if tags(w, g, seat, *tag) < *per));
+        return Some(if few { "too few tags" } else { "no target" });
     }
     None
 }
@@ -241,6 +269,11 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
     if !g.is_over() {
         on_play(g, cx, seat, d)?;
     }
+    // 118: a standing counter (Autonomous Defense Grid) counters at once what it
+    // now pays in full.
+    if d.passives.iter().any(|p| matches!(p, Op::AutoCounter { .. })) {
+        threats::complete_paid(g, cx);
+    }
     if d.is_event() {
         discard(g, cx, id, &resolving(seat));
     }
@@ -279,7 +312,7 @@ fn place_building(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &Car
         opts.push(opt("a new slot".to_string()));
     }
     opts.extend(targets.iter().map(|t| opt(format!("over {t}"))));
-    let prompt = || format!("Seat {seat}: build {id} where?");
+    let prompt = || format!("Seat {seat}: build {} where?", def(&w, id).name);
     let k = cx.choose(seat, prompt, opts)?;
     let over = match k {
         Some(0) if free => None,
@@ -345,7 +378,7 @@ pub(super) fn use_ability(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) 
         [one] => *one,
         _ => {
             let opts = usable.iter().map(|b| opt(branch_label(b))).collect();
-            let prompt = || format!("Seat {s}: {card}, which half of the Action?");
+            let prompt = || format!("Seat {s}: {}, which half of the Action?", def(&w, card).name);
             usable[cx.choose(s, prompt, opts)?.unwrap_or(0)]
         }
     };

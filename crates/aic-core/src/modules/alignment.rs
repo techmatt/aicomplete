@@ -34,7 +34,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("adversary_discord", 0, 10, "Sway toward Discord the adversary adds at the start of every round"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
-    ParamSpec::list("unity_ease", 0, 50, "Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards)"),
+    ParamSpec::list("unity_ease", 1, 50, "Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards)"),
     ParamSpec::list("unity_cards", 1, 6, "Unity cards a game deals from the printed deck, tier 1 then tier 2 (drawing the last one wins)"),
     ParamSpec::int("discord_tier2", 1, 50, "Discord tip count from which a Discord tip draws the stronger tier"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
@@ -93,8 +93,17 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     if v.is_empty() || v.iter().any(|&x| x < 1) || v.windows(2).any(|p| p[0] > p[1]) {
         return Err("alignment.unity_ease: give tip counts of 1 or more, in order".into());
     }
-    if b.list("unity_cards")?.len() != 2 {
+    let unity = b.list("unity_cards")?;
+    if unity.len() != 2 {
         return Err("alignment.unity_cards: give two counts, tier 1 and tier 2".into());
+    }
+    // 118: more than the printed deck was dealt as the deck, unsaid, while the agents
+    // and the docs read the config's count.
+    for (k, &n) in unity.iter().enumerate() {
+        let have = b.world.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier as usize == k + 1).count() as i64;
+        if n > have {
+            return Err(format!("alignment.unity_cards: tier {} prints only {have} Unity cards", k + 1));
+        }
     }
     // Sway only moves between the Undecided and the buckets: with less than a
     // tip in all, nothing could ever tip (020).
@@ -395,7 +404,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
         .find(|st| before >= st.at)
         .map_or(&c.effects, |st| &st.effects);
     let source = if side == Side::Discord { "discord" } else { "unity" };
-    effects::run(g, cx, effects, &mut effects::Ctx::team().named(source))?;
+    effects::run(g, cx, effects, &mut effects::Ctx::team().named(source).why(&c.name))?;
     cx.tally(g, &KeyBuf::new("alignment.card.").text(&id), 1);
     Ok(())
 }

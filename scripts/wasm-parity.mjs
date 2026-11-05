@@ -57,7 +57,10 @@ let bad = 0;
 let hashes = 0;
 try {
   for (const [i, sets] of VARIANTS.entries()) {
-    for (const agent of ['random', 'greedy']) {
+    // 118: the engine agent plays the r41+ engines (triggers, At N, reuse, discounts)
+    // the random and greedy games barely reach: on the baseline and at 3 countries.
+    const agents = i === 0 || sets.join() === 'countries=3' ? ['random', 'greedy', 'engine'] : ['random', 'greedy'];
+    for (const agent of agents) {
       const dir = path.join(out, `${i}-${agent}`);
       const r = spawnSync(sim, ['run', path.join(root, 'configs', 'baseline.json'), '--games', games, '--seed', '50',
         '--agent', agent, ...sets.flatMap((s) => ['--set', s]), '--save', dir, '--save-when', 'all'], { encoding: 'utf8' });

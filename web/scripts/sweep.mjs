@@ -57,6 +57,10 @@ const CASES = [
   { name: 'c3-d0-engine', config: 'baseline.json', set: ['countries=3'], agent: 'engine' },
   { name: 'c4-d2-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=2'], agent: 'engine' },
   { name: 'cubes-3', config: 'baseline.json', set: ['countries=3', 'board.station_cubes=3'], agent: 'engine' },
+  // 118: r41-r46's engines (triggers, At N, reuse, discounts) as the strategist plays them, and
+  // the 1-player game's "another player means you" with the engine agent.
+  { name: 'c2-d2-strategist', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'engine:strategy=1' },
+  { name: 'c1-d2-engine', config: 'baseline.json', set: ['countries=1', 'adversary.difficulty=2'], agent: 'engine' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -108,9 +112,12 @@ const PAGE_LIB = String.raw`(() => {
    *  that rose in the step names a key moment (a station freed, a liberation and its
    *  twist, a dark city, a converter, a one-shot Action discarded, troops removed). */
   const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|threats\.sources_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
+  // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
+  // discard from hand, a discount, insight bought, given or paid for a counter.
+  const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|economy\.insight_given|threats\.counter_paid\.insight)$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => COUNTER_EVENTS.test(k) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k)) &&(c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -232,8 +239,19 @@ const PAGE_LIB = String.raw`(() => {
       const hit = document.elementFromPoint(cx, cy);
       if (!hit || !(hit === b || b.contains(hit))) add('hidden-target', label(b) + ' under ' + (hit ? label(hit) : 'nothing'));
     }
+    // 118: each button as it shows, clipped to its scroll pane: one scrolled out of the seat
+    // pane sat "over" the toolbar above it (925 false overlaps once a choice scrolled the pane).
+    const shown = (b) => {
+      const r = b.getBoundingClientRect();
+      const sp = scrollParent(b);
+      if (!sp) return r;
+      const pr = sp.getBoundingClientRect();
+      const left = Math.max(r.left, pr.left + sp.clientLeft), top = Math.max(r.top, pr.top + sp.clientTop);
+      const right = Math.min(r.right, pr.left + sp.clientLeft + sp.clientWidth), bottom = Math.min(r.bottom, pr.top + sp.clientTop + sp.clientHeight);
+      return { left, top, right: Math.max(left, right), bottom: Math.max(top, bottom) };
+    };
     for (let i = 0; i < buttons.length; i++) for (let j = i + 1; j < buttons.length; j++) {
-      const a = buttons[i].getBoundingClientRect(), c = buttons[j].getBoundingClientRect();
+      const a = shown(buttons[i]), c = shown(buttons[j]);
       const w = Math.min(a.right, c.right) - Math.max(a.left, c.left), h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
       if (w > 2 && h > 2) add('overlap', label(buttons[i]) + ' and ' + label(buttons[j]));
     }

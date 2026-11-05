@@ -213,7 +213,19 @@ fn deal(g: &mut GameState, cx: &mut Cx, tier: u8, scope: Option<usize>) -> bool 
     if after_counter(g) {
         cx.set_key(g, &late_key(&id), g.round as i64);
     }
+    // 118: a threat a standing counter cuts to nothing is countered as it lands
+    // (Autonomous Defense Grid): face up at 0, nobody could pay it, and it held its
+    // sources all round.
+    try_complete(g, cx, &id);
     true
+}
+
+/// 118: counters every face-up threat that now needs nothing (a standing counter
+/// came into play).
+pub fn complete_paid(g: &mut GameState, cx: &mut Cx) {
+    for (t, _) in active(g) {
+        try_complete(g, cx, &t);
+    }
 }
 
 /// Refills the `tier` deck if it may and deals one threat into `scope`. False
@@ -503,7 +515,7 @@ impl Module for Threats {
                 make_source(g, cx, c, d.source, h);
             }
             let source = if d.tier == 1 { "threat1" } else { "threat2" };
-            effects::run(g, cx, &d.effects, &mut effects::Ctx::threat(scope).named(source))?;
+            effects::run(g, cx, &d.effects, &mut effects::Ctx::threat(scope).named(source).why(&d.name))?;
             alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
             clear(g, cx, &t, scope);
         }

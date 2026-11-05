@@ -8,7 +8,7 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Shelter => "Sheltered: facilities and nodes here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Cordon => "Cordon: no arrivals land here in the next build",
+        RoundFlag::Cordon => "Cordon: no arrivals land here this round",
     }
 }
 
@@ -23,7 +23,13 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     for c in 0..w.map.countries.len() {
         for f in FLAGS {
             if flagged(g, f, c) {
-                out.country(c, f.name(), f.name(), 1, None, flag_doc(f));
+                // 118: a Cordon at 2 (played this round, or renewed) lasts through the next.
+                let doc = if f == RoundFlag::Cordon && g.var(&flag(f, c)) >= 2 {
+                    "Cordon: no arrivals land here this round or next"
+                } else {
+                    flag_doc(f)
+                };
+                out.country(c, f.name(), f.name(), 1, None, doc);
             }
         }
         // 102 (D29): dark cities, named, so a dark city reads as one off the hover.
@@ -217,7 +223,8 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 &label,
                 blocked.is_none() as i64,
                 None,
-                &format!("{}: once a round, with a node in a city of {}", m.converter.words(), country_name(w, c)),
+                // 118: `words` says "(once a round)" where the converter is (Onyx's); the rest have no limit.
+                &format!("{}, with a node in a city of {}", m.converter.words(), country_name(w, c)),
             );
         }
         let b = ai::board(w, s);

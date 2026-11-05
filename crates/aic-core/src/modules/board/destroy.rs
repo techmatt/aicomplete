@@ -105,6 +105,7 @@ pub fn destroy_own_node(
     s: usize,
     hexes: &[usize],
     cause: Cause,
+    why: Option<&str>,
 ) -> Res {
     let w = cx.world;
     let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect();
@@ -116,7 +117,11 @@ pub fn destroy_own_node(
         return Ok(());
     }
     let opts = mine.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = || format!("Seat {s}: destroy which of your nodes?");
+    // 118: named for what destroys it (Agitators, Orbital Strike, Offensive).
+    let prompt = || match why {
+        Some(n) => format!("{n}: seat {s}: destroy which of your nodes?"),
+        None => format!("Seat {s}: destroy which of your nodes?"),
+    };
     if let Some(i) = cx.choose_loss(s, prompt, opts)? {
         destroy_piece(g, cx, mine[i], node(s), cause);
     }

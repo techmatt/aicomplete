@@ -114,7 +114,7 @@
  "vertical_monopoly": {"top":[[{"income":["3","credits","/","#industry"]}]],"top_text":"Each round, 3 credits per Industry tag on your cards.","effect":[["4","cards"]],"text":"Draw 4 cards."},
  "market_stabilization_board": {"top":[[{"adversary":["−5","jam"]}]],"top_text":"Effect: economic threats in your home country need 5 less.","effect":[],"text":""},
  "autonomous_defense_grid": {"top":[[{"adversary":["−5","jam"]}]],"top_text":"Effect: cyber threats in your home country need 5 less.","effect":[],"text":""},
- "field_grant": {"top":[],"top_text":"","effect":[["3","research_cubes","megaproject"]],"text":"Add 3 research cubes in your color to a megaproject in a country where you own a station."},
+ "field_grant": {"top":[],"top_text":"","effect":[["3","research_cubes","megaproject"]],"text":"Add 3 research cubes in your color to a megaproject that isn't complete, in a country where you own a station."},
  "sample_repository": {"top":[],"top_text":"","effect":[[{"income":["+1","research_cubes"]}]],"text":"Raise your research cube income by 1."},
  "nuclear_option": {"top":[],"top_text":"","effect":[["−1","antimatter"],[{"adversary":["−1","cube","city"]}],["sway"]],"text":"Pay 1 antimatter. Liberate a corrupted city in reach. Sway 1 toward Discord."},
  "power_to_the_people": {"top":[[{"income":["credits","/","#power"]}]],"top_text":"Each round, 1 credit per Power tag on your cards.","effect":[["−4","energy"],[{"adversary":["−1","cube","city"]}]],"text":"Pay 4 energy. Liberate a corrupted city in reach."},
@@ -162,7 +162,7 @@
  "envoy_briefings": {"top":[],"top_text":"","effect":[["3","cards"],["2","ambassador"]],"text":"Draw 3 cards. Gain 2 ambassadors."},
  "safehouse_network": {"top":[["→","+1","agents"],["OR","2","agents","→","3","cards"]],"top_text":"Action: add 1 Agent here, OR pay 2 Agents, draw 3 cards.","effect":[["+2","agents"]],"text":"Add 2 Agents here."},
  "headquarters_raid": {"top":[],"top_text":"","effect":[[{"adversary":["−5","ambassador"]}],["4","cards"]],"text":"Remove 5 adversary ambassadors in reach. Draw 4 cards."},
- "fabrication_megaplex": {"top":[[{"income":["7","credits","chips"]}]],"top_text":"Each round, 7 credits and 1 chip.","effect":[["3","cards"]],"text":"Draw 3 cards."},
+ "fabrication_megaplex": {"top":[[{"income":["7","credits","1","chips"]}]],"top_text":"Each round, 7 credits and 1 chip.","effect":[["3","cards"]],"text":"Draw 3 cards."},
  "frontier_lab_charter": {"top":[],"top_text":"","effect":[[{"income":["+2","insight"]}],[{"income":["+3","credits"]}]],"text":"Raise your insight income by 2. Raise your credit income by 3."},
  "national_grid_buildout": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],["3","free_node"]],"text":"Raise your energy income by 2. Place 3 nodes free."},
  "decapitation_strike": {"top":[],"top_text":"","effect":[[{"adversary":["−1","botnet"]}],[{"adversary":["−6","ambassador"]}]],"text":"Remove a botnet in reach. Remove 6 adversary ambassadors in reach."}

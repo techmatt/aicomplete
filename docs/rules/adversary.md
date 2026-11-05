@@ -26,7 +26,7 @@
    (node, an aligned city, an owned station or factory); it is not ocean, and it holds no
    adversary ambassador unless it is a city that isn't corrupted, clean or aligned (which
    collects any number), or a piece without a botnet (below); a hex holding nodes of a seat
-   with `spread_shield` (a card's Effect, or the Sanctuary capstone) is no destination.
+   with `spread_shield` (the Sanctuary capstone; no card prints it) is no destination.
    **Priority:** player-owned hexes, then clean cities, then other pieces; then the nearest;
    players choose among equals. A city that is not corrupted never spreads: it holds its
    ambassadors. Each ambassador moves at most once a spread, in hex order. **A surplus with nowhere to go returns to the supply.**
@@ -107,8 +107,8 @@ rounds as cards, **the round cap** (**locked** that a cap exists and can shorten
 a candidate). **11 rounds through d2:** difficulty 2 swaps a stage-I card for a stage-III
 card (`stage1_removed`, `stage3_added`), so the cap bites through a harder end, not a
 shorter game; difficulty 3 removes a stage-II card (`stage2_removed`): 10. Some adversaries
-may shorten it too. The next round's card is always face up a round ahead (peek cards show
-more). Each card's twists change its round.
+may shorten it too. The next round's card is always face up a round ahead (the `peek` op
+shows more; no content prints it). Each card's twists change its round.
 
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
@@ -153,7 +153,7 @@ military base. Arrivals and Escalation reach only that one, so what reaches base
 countries, not fronts (a country has one front at 2 countries and two at 3 and 4). The count
 is fixed by the printed board, so it can't feed back. A base's other rules hold: an
 ambassador that spreads onto a second base still diverts it, and a threat that lands on
-bases here (Total War) lands on all of them.
+bases here (Total War) may use any base in the country, players choosing each landing (both may go on one).
 
 **For new players.** An adversary card may name military bases, and stage II cards send an
 extra ambassador to them. Either way it lands on one base in each country, the

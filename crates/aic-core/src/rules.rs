@@ -298,6 +298,7 @@ impl Rules {
             purposes: i.variant.rng,
             events,
             choices,
+            fought: [0; 3],
         }
     }
 

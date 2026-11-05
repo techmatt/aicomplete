@@ -113,7 +113,8 @@ fn replay_record(path: &str) -> bool {
     match rec.replay() {
         Err(e) => {
             // 099: a record from other rules fails for that reason: say it first.
-            let other = if rec.rules_revision != aic_core::RULES_REVISION {
+            // 118: 0 is "not recorded" (a hand-written record), not a revision.
+            let other = if rec.rules_revision != 0 && rec.rules_revision != aic_core::RULES_REVISION {
                 format!(" (recorded at rules revision {}, this engine plays {})", rec.rules_revision, aic_core::RULES_REVISION)
             } else {
                 String::new()

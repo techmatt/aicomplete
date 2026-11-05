@@ -16,7 +16,7 @@
 use std::sync::Arc;
 
 use aic_core::content::{CardDef, CardKind, Op, Resource, Tag, TAGS};
-use aic_core::modules::{adversary, ai, cards, common, economy, effects, threats};
+use aic_core::modules::{adversary, ai, board, cards, common, economy, effects, threats};
 use aic_core::module::World;
 use aic_core::state::AskKind;
 use aic_core::{fnv1a64, Action, Agent, GameState, Key, Rules};
@@ -507,7 +507,9 @@ fn troops_up(g: &GameState) -> bool {
 /// troop but not on it, where a wall blocks nothing.
 fn wall_hex(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     let p = g.pending.as_ref()?;
-    if !p.ask.prompt.contains("place nodes") {
+    // 118: the prompt reads "place a node (...)" (it said "place nodes"; the rename
+    // turned this off unseen: one const now writes and reads it).
+    if !p.ask.prompt.contains(board::NODE_PROMPT) {
         return None;
     }
     let troops: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, common::TROOP) > 0).collect();
@@ -1004,8 +1006,9 @@ fn niche_jobs(w: &World, g: &GameState, s: usize, d: &CardDef) -> i64 {
                 let open = |h: &usize| g.tokens(*h, common::MARKER) > 0 && common::in_reach(w, g, s, *h);
                 (*count).min((0..g.hexes.len()).filter(open).count() as i64)
             }
+            // 118: only threats the seat may counter, as the engine delays (F136).
             Op::DelayThreat { count } => {
-                (*count).min(threats::active(g).iter().filter(|(t, _)| !threats::waits(g, t)).count() as i64)
+                (*count).min(threats::counterable(w, g, s, None).iter().filter(|t| !threats::waits(g, t)).count() as i64)
             }
             Op::ShieldNode { count } => {
                 (*count).min((0..g.hexes.len()).filter(|&h| effects::shieldable(g, s, h)).count() as i64)
@@ -1287,7 +1290,8 @@ fn plan(
             }
             let d = cards::def(w, id);
             let credits = cards::play_cost(w, g, s, d);
-            let target = d.is_building() || effects::feasible(w, g, s, &d.effects);
+            // 118: as the engine judges a play (a program counts its own tags: F183).
+            let target = d.is_building() || effects::feasible(w, g, s, &cards::own_counted(d));
             let later = if pc.table {
                 round > 0 && pile_ok(w, g, s, d, &planned) && (!f.plan_copy || copy_ok(w, g, s, d, &planned))
             } else {

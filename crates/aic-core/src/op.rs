@@ -190,8 +190,8 @@ pub enum Op {
     ShieldNode {
         count: i64,
     },
-    /// Up to `count` active threats wait: they don't execute this round, and
-    /// can be countered next round (041).
+    /// Up to `count` active threats the seat may counter wait (118): they
+    /// don't execute this round, and can be countered next round (041).
     DelayThreat {
         count: i64,
     },
@@ -266,7 +266,8 @@ pub enum Op {
         botnet: bool,
     },
     /// Remove up to `max` adversary ambassadors (0: all) on or next to one
-    /// corrupted city in your reach, the ones next to it first (024).
+    /// corrupted city in your reach (024), your choice which while more stand
+    /// than it takes (059).
     ClearCity {
         max: i64,
     },
@@ -285,8 +286,8 @@ pub enum Op {
     },
     /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
-    /// In one country, no arrivals land in the next build (068: a Security
-    /// card does an ambassador's job).
+    /// In one country, no arrivals land through the next round, its build and any
+    /// build a project brings (118; 068: a Security card does an ambassador's job).
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
@@ -587,8 +588,9 @@ pub enum Op {
         on: Event,
         then: Vec<Op>,
     },
-    /// A threshold counter (105): whenever a trigger of this card leaves
-    /// `at` or more tokens here, remove `at` of them and resolve `then`.
+    /// A threshold counter (105): whenever its tokens here reach `at`,
+    /// whatever put them there (a feeder card's too, 118), remove `at` of
+    /// them and resolve `then`.
     Threshold {
         at: i64,
         then: Vec<Op>,

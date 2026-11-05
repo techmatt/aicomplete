@@ -6,6 +6,10 @@ use crate::content::Uncover;
 
 use super::*;
 
+/// What a node placement's hex prompt says (118: the agents' wall turtle matches
+/// on it; a rename once turned it off unseen).
+pub const NODE_PROMPT: &str = "place a node";
+
 /// Nodes seat `s` has taken off its AI board's track (the
 /// starting one included); AI boards read their uncovered spaces from it.
 pub fn track_key(seat: usize) -> KeyBuf {
@@ -152,7 +156,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || {
         let what = format!("uncovers {}{}", ai::uncover_words(tracks[k].1), price_words(how, step));
-        format!("Seat {seat}: place nodes ({what}) on which hex?")
+        format!("Seat {seat}: {NODE_PROMPT} ({what}) on which hex?")
     };
     let Some(j) = cx.choose(seat, prompt, opts)? else {
         return Ok(false);

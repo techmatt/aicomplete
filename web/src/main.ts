@@ -17,7 +17,7 @@ import {
   countriesHtml, legendHtml, pilesHtml, pipelineHtml, seatCardsHtml, seatValuesHtml,
   statusHtml, varsHtml,
 } from './panels';
-import { Timeline, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
+import { Timeline, keptSession, parseSeed, randomSeed, readRecord, revisionNote, storageGet, storageSet } from './session';
 import './style.css';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -116,12 +116,16 @@ function newGame(file: string, seed: string) {
 function loadRecordText(text: string, file: string) {
   const rec = readRecord(text);
   const t = Timeline.fromRecord(rec, file);
-  setTimeline(t);
-  // A record dropped or opened under the dialog: the dialog's old text would be stale.
-  if (ui.recordDialog.open) ui.recordDialog.close();
   const check = checkRecord(text);
   const warn = [...(check.warnings ?? []), ...(check.error ? [check.error] : [])];
-  if (warn.length && !t.replayError) showError(`record loaded with warnings: ${warn.join('; ')}`);
+  // 118: on the timeline before its first save, so a reload still shows it (it was gone).
+  if (warn.length && !t.replayError) t.warning = `record loaded with warnings: ${warn.join('; ')}`;
+  setTimeline(t);
+  // 118: the seed box showed the last new game's seed while a record played.
+  ui.seed.value = String(rec.seed);
+  // A record dropped or opened under the dialog: the dialog's old text would be stale.
+  if (ui.recordDialog.open) ui.recordDialog.close();
+  if (t.warning) showError(t.warning);
   // A record that stops replaying: say first if it is from another rules revision (020:
   // only the rejected action showed).
   else if (t.replayError && revisionNote(rec)) showError(`${revisionNote(rec)}${t.replayError}`);
@@ -189,6 +193,10 @@ function render() {
   renderLog();
   renderTimeline();
   renderTab();
+  // 118: the hover was redone only when the mouse moved, so autoplay, the keys or an
+  // action left it showing the old step's values (or a removed button's) under a still mouse.
+  if (mouse) hover(document.elementFromPoint(mouse.x, mouse.y), mouse.x, mouse.y);
+  else ui.tip.hidden = true;
 }
 
 /** Who the game waits for, and the open choice's question, above the board. */
@@ -205,8 +213,8 @@ function renderPrompt(targets: number) {
   }
   if (v.choice) {
     ui.prompt.className = 'choice';
-    const how = targets ? `click one of the ${targets} highlighted hexes` : `answer in ${seatName(v.choice.seat)}'s panel`;
-    ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '')))} <span class="how">— ${how}</span>`;
+    const how = targets === 1 ? `click the highlighted hex` : targets ? `click one of the ${targets} highlighted hexes` : `answer in ${seatName(v.choice.seat)}'s panel`;
+    ui.prompt.innerHTML = `<b>${seatName(v.choice.seat)} decides:</b> ${escapeHtml(contentIds(v.choice.prompt.replace(/^Seat \d+:\s*/, '').replace(/^([^:]+): seat \d+:\s*/, '$1: ')))} <span class="how">— ${how}</span>`;
     return;
   }
   const acting = [...new Set(legal.map((a) => a.seat))];
@@ -238,6 +246,9 @@ function renderPhase() {
   ui.phaseBar.innerHTML = `<b>Round ${v.round}</b> <span class="order">${order}</span> ${status}`;
 }
 
+/** The choice the seat panels last showed, so a new one scrolls into view once. */
+let lastAsked = '';
+
 function renderSeats() {
   const v = shown;
   ui.seats.innerHTML = '';
@@ -261,6 +272,14 @@ function renderSeats() {
     if (mine.length) box.append(actionButtons(mine));
     ui.seats.append(box);
   }
+  // 118: a choice is answered in its seat's panel: bring its buttons into view when it
+  // opens (they sat below the fold of another seat's panel, "answer in Seat 1's panel").
+  const asked = v.choice ? `${v.round}:${v.choice.seat}:${v.choice.prompt}` : '';
+  // Only at the live end of the timeline: stepping back to an old choice leaves the pane where the user put it.
+  if (asked && asked !== lastAsked && tl.cursor === tl.last) {
+    ui.seats.querySelector(`.seat[data-seat="${v.choice!.seat}"] .actions`)?.scrollIntoView({ block: 'nearest' });
+  }
+  lastAsked = asked;
   const passers = (v.phase?.waiting ?? []).filter((s) => legal.some((a) => a.seat === s && a.type === 'pass'));
   if (!v.outcome && !v.choice && passers.length > 1) {
     const all = document.createElement('button');
@@ -421,10 +440,13 @@ function highlight(hexes: string[]) {
   for (const h of hexes) ui.board.querySelector(`.hex[data-hex="${h}"]`)?.classList.add('hl');
 }
 
-document.addEventListener('mousemove', (e) => {
-  const target = (e.target as Element).closest?.('[data-token],[data-hex][data-index],[data-value],[data-card],[data-pile],[data-track],[data-board-seat],[data-action]') as HTMLElement | null;
+/** Where the mouse last was over the page, so `render` can redo the hover (118). */
+let mouse: { x: number; y: number } | null = null;
+
+function hover(el: Element | null, cx: number, cy: number) {
+  const target = el?.closest?.('[data-token],[data-hex][data-index],[data-value],[data-card],[data-pile],[data-track],[data-board-seat],[data-action]') as HTMLElement | null;
   const html = target ? details(target, shown, legal, labels()) : null;
-  const hl = (e.target as Element).closest?.('[data-hexes]') as HTMLElement | null;
+  const hl = el?.closest?.('[data-hexes]') as HTMLElement | null;
   highlight(hl?.dataset.hexes ? hl.dataset.hexes.split(' ').filter(Boolean) : []);
   if (!html) {
     ui.tip.hidden = true;
@@ -435,10 +457,19 @@ document.addEventListener('mousemove', (e) => {
   const pad = 14;
   const w = ui.tip.offsetWidth;
   const h = ui.tip.offsetHeight;
-  const x = e.clientX + pad + w > innerWidth ? e.clientX - pad - w : e.clientX + pad;
-  const y = e.clientY + pad + h > innerHeight ? Math.max(4, e.clientY - pad - h) : e.clientY + pad;
+  const x = cx + pad + w > innerWidth ? cx - pad - w : cx + pad;
+  const y = cy + pad + h > innerHeight ? Math.max(4, cy - pad - h) : cy + pad;
   ui.tip.style.left = `${x}px`;
   ui.tip.style.top = `${y}px`;
+}
+
+document.addEventListener('mousemove', (e) => {
+  mouse = { x: e.clientX, y: e.clientY };
+  hover(e.target as Element, e.clientX, e.clientY);
+});
+// 118: off the page there is nothing to redo.
+document.addEventListener('mouseout', (e) => {
+  if (!e.relatedTarget) mouse = null;
 });
 
 // ---------- input ----------
@@ -468,18 +499,24 @@ document.getElementById('tabs')!.addEventListener('click', (e) => {
 
 ui.newForm.addEventListener('submit', (e) => {
   e.preventDefault();
+  // 118: before the engine loads (or after it failed to) this replaced the reason with another error.
+  if (!tl) return;
   const seed = parseSeed(ui.seed.value);
   if (seed === null) return showError('the seed must be a whole number from 0 to 18446744073709551615');
   guard(() => newGame(ui.config.value, seed));
 });
 
 $('random-seed').onclick = () => {
+  if (!tl) return; // 118: as New game
   ui.seed.value = randomSeed();
   guard(() => newGame(ui.config.value, ui.seed.value));
 };
 
 $('undo').onclick = () => {
   if (!tl) return;
+  // 118: undo drops the game's last action, not the shown step's: at an earlier step it
+  // dropped one the player couldn't see, unasked (acting there asks, `confirmDropLater`).
+  if (tl.cursor < tl.last && !confirm(`Undo drops the game's last action (step ${tl.last}), not the step shown (${tl.cursor}). Go on?`)) return;
   tl.undo();
   commit();
 };
@@ -640,11 +677,32 @@ $('record').onclick = () => {
   // 099: a game that stopped replaying copies only the actions that replayed.
   ui.recordMsg.textContent = tl.replayError
     ? `This game stopped replaying (the error bar names the action): the copy holds only the ${tl.last} actions that replayed.`
-    : '';
+    : restamped();
   ui.recordDialog.showModal();
 };
-$('record-copy').onclick = () => void copy(currentRecord(false));
-$('record-copy-cursor').onclick = () => void copy(currentRecord(true));
+
+/**
+ * 118: a copy is stamped with this engine's revision and its own replay's fingerprint,
+ * so an older or diverged record copied here checked clean, unsaid.
+ */
+function restamped(): string {
+  const old = tl.savedRules !== undefined && tl.savedRules !== rulesRevision;
+  return old || tl.warning
+    ? `This game was ${old ? `recorded under rules revision ${tl.savedRules}` : 'loaded with warnings'}: a copy is stamped as this engine's revision ${rulesRevision} replay, so it may not be the game recorded.`
+    : '';
+}
+
+/** 118: the caveat stays beside 'Copied' (it was replaced). */
+const copyWithCaveat = async (text: string, toCursor = false) => {
+  await copy(text);
+  // A copy of a game that stopped replaying holds only the actions that replayed: say so too
+  // (up to the shown step, that many).
+  const cut = tl.replayError ? `The copy holds only the ${toCursor ? tl.cursor : tl.last} actions that replayed.` : '';
+  const c = [cut, restamped()].filter(Boolean).join(' ');
+  if (c) ui.recordMsg.textContent += ` ${c}`;
+};
+$('record-copy').onclick = () => void copyWithCaveat(currentRecord(false));
+$('record-copy-cursor').onclick = () => void copyWithCaveat(currentRecord(true), true);
 $('record-close').onclick = () => ui.recordDialog.close();
 $('record-load').onclick = () => {
   try {
@@ -656,6 +714,7 @@ $('record-load').onclick = () => {
 
 /** Loads a chosen or dropped file. An unreadable one (a folder, a locked file) says so (020: nothing happened). */
 function openFile(f: File) {
+  if (!tl) return; // 118: as New game (an unloaded wasm threw a raw TypeError)
   void f.text().then((t) => guard(() => loadRecordText(t, f.name)), (e) => showError(`could not read ${f.name}: ${e}`));
 }
 
@@ -697,7 +756,9 @@ async function main() {
   try {
     restored = Timeline.restore();
   } catch (e) {
-    restoreError = `could not restore the saved session (a config from an older engine?): ${e}`;
+    // 118: the session is kept (`Timeline.restore`), not lost under the new game: say how to get it.
+    restoreError = `could not restore the saved session (a config from an older engine?): ${e}. `
+      + 'Its actions are kept in this browser: run copy(aic.keptSession()) in the console to copy them as a record';
   }
   if (restored) {
     const file = restored.source.file;
@@ -709,6 +770,8 @@ async function main() {
       ? `saved session from rules revision ${restored.savedRules}, this engine plays ${rulesRevision}: `
       : '';
     if (restored.replayError) showError(`saved session: ${other}${restored.replayError}`);
+    // 118: a watched record's warnings (they name its revision too) come back on a reload.
+    else if (restored.warning) showError(`saved session: ${restored.warning}`);
     else if (other) showError(`${other}it replayed, but may not be the game it was`);
     // The session keeps the config it started with: say so when the file has changed
     // since (a retuned baseline), or the game shown is not what the file now plays.
@@ -739,6 +802,7 @@ Object.assign(window, {
     open: (text: string, file = 'script') => loadRecordText(text, file),
     act,
     seek,
+    keptSession,
     get error() { return ui.error.hidden ? null : ui.error.textContent; },
   },
 });

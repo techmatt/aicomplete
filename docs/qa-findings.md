@@ -3,7 +3,9 @@
 What a bug hunt reads first: the findings still open, the reports ruled won't-fix (never re-report one), and the
 faults past hunts kept finding. Fixed findings are in git (the 020 hunt, r10 → 11, and the 044 hunt, r20 → 21, numbered
 F1–F100; the full ledger is `git show 1617d75:docs/qa-findings.md`: don't re-report one; the 099 hunt's, r38 → 39, F101–F131, are in
-`experiments/results/099_bug_hunt_r38/fixed.md`). A new finding takes the next number: F132, D43, W19. Each is **fixed** (one line, the change in git),
+`experiments/results/099_bug_hunt_r38/fixed.md`, the 118 hunt's, r46 → 47, F132 on, in `experiments/results/118_bug_hunt_r46/fixed.md`, its D43 on and W19 on in full
+in `deferred.md` there).
+A new finding takes the next number after the last in either list (D, W below). Each is **fixed** (one line, the change in git),
 **deferred** to Matt (options and a recommendation) or **won't fix** (the reason).
 
 ## Checkers
@@ -23,6 +25,8 @@ rules revision, step time). What they already catch, so a hunt needn't hand-chec
 - The adversary's twist loop names where each twist op is read; an unread one panics (a catch-all arm once hid a
   twist that never ran).
 - The sweep's `no-control` (099) flags a legal action with no button or hex pick on screen.
+- 118: `scripts/cards/runaway_read.py` (loops in a run's counters), `aic-sim docs --check` on a rules quote a card no
+  longer prints, wasm-parity's engine games (r41+ engines), the sweep's r41+ moments and strategist and 1-player cases.
 
 ## Where hunts found faults
 
@@ -44,6 +48,10 @@ Each hunt found most of its faults in the same places. Look there first:
 - **Measures gone quiet** (099): a definition matching nothing after a rules change, a counter under the module that ran
   it, 2 seats written in. An empty column reads as a measurement.
 - **Kept, never played** (099): keep plan and play check price a card differently. `play_read.py`, then `npm run probe`.
+- **Rules prose quoting a card** (118): each card pass leaves the rules' examples a revision behind (fifteen in one
+  hunt); `docs --check` now catches a quoted face.
+- **Who an effect belongs to** (118): a trigger inside a teammate's action, a counter fed by another card.
+- **Agents matching words** (118): a prompt's rewording turned an agent heuristic off; grep the agents for a prompt.
 
 ## Open, deferred to Matt
 
@@ -51,12 +59,25 @@ Each hunt found most of its faults in the same places. Look there first:
 |---|---|---|---|
 | D2 | variants | The off-variants don't measure what a module adds (the rules say so): with `alignment.variant=off` nothing tips, so botnets always count against the purge; with `cards.variant=off` only Decommission removes a botnet; `threats.variant=off` reads low because Unity leans on the threats' churn. | (a) Leave them, documented; (b) a stand-in (alignment off: botnets never count; cards off: a botnet-removal standard action); (c) retire them. **Open:** (b) for alignment only if Matt still uses it to measure Alignment. |
 | D6 | agents | After a mid-step reshuffle of a drawn-out deck, the pending-choice guess keeps the true RNG for **every** stream, not just the one that reshuffled (`determinize.rs`, the `drawn_out` branch). Rare; the comment admits one reshuffled order is shown. | (a) Keep the true stream only for the pile that reshuffled (map pile to RNG purpose); (b) leave it. **Pick (b)** until a balance verdict hinges on late Discord or Unity draws. |
-| D8 | cards | `move_ambassadors` (Transmission Corridor, up to 2) offers every piece in reach (`targets::pieces_in_reach`), including the hex the seat's only ambassador already holds: picking it spends a move on nothing. `move_one` filters with `move_one_dest`; this loop doesn't. | (a) Share the board move's destination test and use it in the loop; (b) leave it. **Pick (a)**: a two-line fix. |
 | D16 | rules text | A Harden or a "you may move" with no target doesn't veto a card that also does something else (Storm Hardening, Peacekeeper Rotation, Transmission Corridor): the card plays and that clause does nothing. Only a card that would do nothing at all is not offered, as card-grammar.md says. | (a) Keep that reading; (b) the strict reading, a veto, which would keep such cards unplayable until their clause has a target. **Pick (a)**: (b) is a balance change for no gain in clarity. |
 | D32 | rules | Any lost Follower (Sabotage, Purge Protocols) leaves Popular Uprising short of 6 for good unless Manifesto Leak refills it; Hostile Buyout's cube lands on a city the liberation's own adversary ambassador darkens. Both follow the rules as written. | Design notes. **Matt's call**. |
 | D41 | rules | Aligning a dark city cancels one adversary ambassador (r40, D38), but Remove costs the same ambassador, clears up to 3 and stays: no agent took the cancel in 1,200 r40 games (102). | (a) Leave it: the rule reads as a site claim does; (b) let Align on a dark city both cancel and align; (c) price Remove up. **Matt's call**; (a) until a player asks for it. |
 | D42 | cards | Data Licensing Deal (10 a Dataset at r40) is still unplayed: it needs a Dataset on a card, and the agents spend Grad Student Pool's and Telemetry Archive's at once, so the 4-Dataset pile it pays back from never stands; cost 1 or 12 a Dataset played it 0.01 a game (102). | (a) A Dataset building that holds its pile (a cap, no spend branch); (b) cash from every pile at once; (c) leave it. **Matt's call**. |
 | D21 | picks | `picks/card_frames_r2.json` and `scene_style_r1.json` point at images that are gone: opening those pickers shows broken tiles. Superseded rounds. | (a) Delete the two manifests; (b) leave them as a record. **Pick (b)** unless they confuse: their rulings are in the frames and the preamble. |
+| D43 | rules | Patience banks the team's insight given to the Researcher (400 held by round 11, seed 34304). | Cap what Patience carries, or expire given insight. **Matt's call**. |
+| D44 | cards | Reuse takes Popular Uprising's other half the same round: a liberation every other round. | Reuse repeats the half used. **Matt's call**. |
+| D45 | engine | Fight triggers read the board's net count: a removal plus a placement in one action fires nothing. | Count at the removal ops. **Pick** when common. |
+| D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits, while projects hold compute. | Leave it: compute caps it. **Pick**. |
+| D47 | agents | Agents misprice r41's engines (teammate triggers, trigger contents, At N tokens; a 2-seat table solo). | One agent item, screened. **Pick**. |
+| D48 | faces | Icons drop words: Great Liberation's city, Field Grant's station, Hostile Buyout's align. | Add the marks. **Matt's call**. |
+| D49 | scripts | `card_ranks.py`'s keep rate counts opening keeps (over 100%); speed.md's bar sits on it. | A draft-keep counter, re-measure. **Pick**. |
+| D51 | threats | Total War's 2 base ambassadors may share one base. | One a base while one is free. **Matt's call**. |
+| D52 | viewer | The timeline keeps a state a step (~200 MB a 4-country game; a blocking reload). | Keep every Nth snapshot. **Pick** if needed. |
+| D53 | agents | Hyperscale Botnet kept 40%, played 2%: legal 138 steps, played 0. | Read the play value of insight income. **Pick**. |
+| D54 | threats | Autonomous Defense Grid counters nothing under `shared_row`. | The row's threats of its type. **Matt's call**. |
+| D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
+| D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
+| D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
 
 ## Won't fix
 
@@ -79,3 +100,10 @@ Each hunt found most of its faults in the same places. Look there first:
 | W16 | viewer | The sweep's `truncated` issues (thousands): threat and project text and adversary lines cut to fit, with a hover. | The no-scroll budget at 1366×768 (W10); every one has a hover or an ellipsis. |
 | W17 | cards | "Liquidity Event is dominated by Bonded Warehouse's cash-out." | It cashes a pile without spending the Action, which can then add. |
 | W18 | report | A one-agent run's findings say "skill gap +0 pts; the ladder is ordered". | True of a one-rung ladder. |
+| W19 | ops | `copy_income` has no card; the agents' copy check is off. | Fix with its card. |
+| W21 | viewer | A card's hover shows its id and pile key. | A developer aid, as W9. |
+| W22 | sim, viewer | A run keeps every game's final state; the kept unloadable session is one slot. | Bounded; the newest loss is the one. |
+| W23 | config | `stage_cards`, `project_cards` read 0..20; more than the content holds is refused. | The refusal says so. |
+| W24 | measures | Unspent read before threat refunds; `insight_lost` tallies the debt; `Transfer` vetoes solo (no card). | Fix with the read that needs it. |
+| W25 | report | "adversary ops/round" counts a game's last, partial round; "Agents (weakest first)" prints the spec's aliases. | Small (1 game in 48); the tables name agents by label. |
+| W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |

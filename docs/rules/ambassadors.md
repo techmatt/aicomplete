@@ -56,7 +56,7 @@ Player ambassadors move only through cards and the standard actions (Move, Remov
 **Liberating a city, for new players.** A corrupted city pours Discord and adversary
 ambassadors into the world until someone liberates it. You need to stand next to it: your
 nodes on the city or a hex beside it. Then either play a liberate card, the tier-2 capstone
-of your engine (antimatter, power and chips, credits, research cubes, Cyber, Security or
+of your engine (antimatter, energy, credits, research cubes, Cyber, Security or
 Followers), or, the expensive way, land 5 of your ambassadors on it (at 20 credits each from
 the standard project), one more for each adversary ambassador standing there, since the first
 cancels it. The city is clean again (some cards also put your cube on it), the
@@ -67,8 +67,8 @@ next to the city, and an influence threat face up on the city holds it until it 
 
 **For new players.** Ambassadors you spend change the board for good: aligning a city,
 claiming a station or factory, liberating a city. Ambassadors you place hold a position: one
-that evicts adversary ambassadors from a piece stays on it, and on a base, factory or botnet
-it keeps working every round. The next adversary ambassador to land there cancels it, so a
+that evicts adversary ambassadors from a piece stays on it, and keeps working: on a botnet every
+round, on a base or factory each production round of the clock (not rounds 2 and 4). The next adversary ambassador to land there cancels it, so a
 position lasts until the adversary answers it.
 
 **Evicting is capped by supply:** Remove takes the ambassador from your supply, never from

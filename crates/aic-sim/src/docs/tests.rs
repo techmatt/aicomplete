@@ -2,7 +2,7 @@ use aic_core::content::{content, Resource, Uncover};
 use aic_core::{Config, Rules};
 
 use super::blocks::*;
-use super::run::{block, card_note_failures, op_docs, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET};
+use super::run::{block, card_note_failures, card_quote_failures, op_docs, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET};
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
 
@@ -109,6 +109,22 @@ fn check_wants_each_block_once_and_files_in_budget() {
     assert_eq!(rules_file_failures(&twice).len(), 1);
     let big = vec![("docs/rules/a.md".to_string(), all + &"x".repeat(RULES_BUDGET))];
     assert_eq!(rules_file_failures(&big).len(), 1);
+}
+
+/// 118: a rules file quoting a card's words its face no longer prints fails the check.
+#[test]
+fn check_flags_a_card_quote_its_face_no_longer_prints() {
+    let faces = vec![("Citation Engine".to_string(), "Effect: when you play a Science card, gain 7 credits.".to_string())];
+    let ok = vec![("docs/rules/a.md".to_string(), r#"Say "When you play a Science card, gain 7 credits" (Citation Engine)."#.to_string())];
+    assert!(card_quote_failures(&ok, &faces).is_empty());
+    let stale = vec![("docs/rules/a.md".to_string(), r#"Say "When you play a Science card, gain 6 credits" (Citation Engine)."#.to_string())];
+    assert_eq!(card_quote_failures(&stale, &faces).len(), 1);
+    let other = vec![("docs/rules/a.md".to_string(), r#"A "house term" (not a card) and "x" (Citation Engine)."#.to_string())];
+    assert!(card_quote_failures(&other, &faces).is_empty(), "no card named, or too short to be a quote");
+    let pattern = vec![("docs/rules/a.md".to_string(), r#""Gain up to N credits" (Citation Engine)"#.to_string())];
+    assert!(card_quote_failures(&pattern, &faces).is_empty(), "a pattern with N is no quote");
+    let wrapped = vec![("docs/rules/a.md".to_string(), "\"When you play a Science card, gain 6 credits\" (Citation\n  Engine)".to_string())];
+    assert_eq!(card_quote_failures(&wrapped, &faces).len(), 1, "a name wrapped across a line");
 }
 
 #[test]

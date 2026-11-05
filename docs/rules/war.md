@@ -52,8 +52,9 @@ territory and wait at its bases.
   front are spent.
 
 **Adversary troops (candidate): the march.** Adversary troops come from adversary
-ambassadors on factories, from adversary-owned factories (production steps), and from
-projects and threats (Armored Columns, Orbital Strike, Total War). They are the adversary's
+ambassadors on factories, from adversary-owned factories (production steps), from the build's
+`wall_troops` landing where the Protector stands, and from projects and threats (Armored Columns, Orbital Strike,
+Total War). They are the adversary's
 mobile threat to player infrastructure. **Targets:** player-owned research stations and
 factories, **not nodes** (`troop_node`; a troop on or next to a node only stands there).
 Cities are never targets (corruption is the adversary's way into cities), nor are neutral or
@@ -92,7 +93,9 @@ pays by stopping its harm, so the Sway counted it twice); a card meant to build 
 prints its Sway (none does).
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on adversary
-factories (and from some threats and projects), and every round, in the adversary's turn,
+factories and on any factory holding an adversary ambassador (production rounds), from some threats and
+projects, and every round 1 lands on a factory (else a city) in each country where the Protector has a node.
+Every round, in the adversary's turn,
 each troop takes two steps. If a research station or factory you own is on or next to the
 troop's hex, it destroys that piece and leaves the board; otherwise it walks one hex toward
 the nearest such piece. So a troop two hexes from your piece hits it next round, and one

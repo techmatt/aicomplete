@@ -42,7 +42,7 @@ tip's card may fill a bucket again, which then tips too.
 | Unity | removing a botnet | `alignment.botnet` 2 |
 | Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 1 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
-| Unity | cards (Peace Conference, Coalition Charter, Open Assembly), AI boards, Unity cards | card text |
+| Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |
 | Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
 | Discord | an adversary ambassador on a producing base | `base_discord` 1 |
 | Discord | a facility destroyed in war (not by an adversary troop) | `destruction_discord` 0 |
@@ -55,7 +55,7 @@ tip's card may fill a bucket again, which then tips too.
 per-round drip (1 per corrupted city).
 
 The round's Sway is the phase `alignment.sway`, first in the round: the adversary's
-`adversary_discord`, then each AI board's `unity` ([ai-boards.md](ai-boards.md)).
+`adversary_discord`, and nothing else (no AI board prints a Unity Sway).
 
 **More Unity.** Unity should tip in most games while Discord stays the main pressure:
 liberating a corrupted city sways `alignment.free_city`, removing a botnet

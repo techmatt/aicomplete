@@ -89,6 +89,8 @@ try {
 
   await scenario('mash-buttons', async () => {
     const ids = ['undo', 'random-action', 'first', 'back', 'fwd', 'end', 'play', 'random-seed'];
+    // 118: undo at an earlier step asks first, as acting there does: say yes.
+    await page.js('(window.confirm = () => true, true)');
     for (let i = 0; i < 300; i++) await page.js(`(document.getElementById('${ids[(i * 5) % ids.length]}').click(), true)`);
     await sleep(100);
   });

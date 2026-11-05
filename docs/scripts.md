@@ -21,9 +21,12 @@ Current:
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds.
+- `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150]`: loops (118): each trigger, threshold, reuse,
+  discount, gift or converter counter whose per-game maximum is over `--times` its mean where used, and the games whose
+  insight after the keep grew three rounds running past `--held`. Seconds. A bug hunt runs it on its fresh seeds.
 - `cards/slots_read.py DIR... [--rounds N]`: per cell, each seat's build-overs a game and its
   buildings standing as each round starts, from the `slots.*` counters the experiment loop records (092).
-- `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's carried insight, cubes bought, free stations, the Researcher's second node, strikes a Wall stopped, troop hits, nodes lost and what seats leave unspent; `--powers` every board power a game, `--cards` the six research-cube cards kept, played and used
+- `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's carried insight, cubes bought, free stations, the Researcher's second node, strikes a Wall stopped, troop hits, nodes lost and what seats leave unspent; `--powers` every board power a game, `--cards` the deck's research-cube cards (read from content) kept, played and used
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled over DIRs: wins, each dear
   power's uses a game (`ai::power_is_dear`: two tags or more, or a tag and an energy and no node), Grant, Action buildings' uses, tokens gained / spent,
   each liberate card kept / played (Popular Uprising's Action uses); then per agent the draft cards kept in over `--min`
@@ -36,7 +39,7 @@ Current:
   capstones out of the deck (the liberation-off arm of `screen-080-off.json`); rerun after editing the baseline.
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards
   kept (opening keeps apart) and played, kept and never played, nodes placed, credit income a round, credits and
-  insight left unspent a round; each board's first dear power (as `use_read.py`) used a game with the seat-rounds it
+  insight left unspent a round (these three per seat-round that reached upkeep); each board's first dear power (as `use_read.py`) used a game with the seat-rounds it
   lacked the tags; then tags by round: each seat's most-held tag on its cards in play (`ai.tag_top.<seat>`),
   mean and share at 3 or more. A variant's seats follow its `ai.boards=` override. Reads r32 outputs too (no tag
   table). Seconds.
@@ -48,8 +51,8 @@ Current:
   Supergrid plays; then dark neutral city-rounds (`board.city_dark`), energy bought, end energy, nodes placed, corruptions.
 - `cards/energy_read.py DIR...` (090): per cell, pooled across DIRs: win %, the energy a seat holds as the action
   phase ends at rounds 3 and 6 and at its last round (`unspent.<seat>.energy.rNN`, exported from 090), then the use per
-  game of each r35 mechanic: energy paid to counters, energy-cost cards, the energy gift Actions, stations freed and
-  flips held, the capstones and their twists, Popular Uprising's liberation, Rush Build, Shelter and Particle Run.
+  game of each r35 mechanic: energy paid to counters, energy-cost cards, stations freed and
+  flips held, the capstones and their twists, Popular Uprising's plays and Action uses (either half), Rush Build, Shelter and Particle Run.
   Seconds.
 - `cards/corp_read.py DIR...`: per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl

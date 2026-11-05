@@ -166,7 +166,7 @@ fn a_choice_threat_never_takes_a_last_node() {
     set_res(&mut g, 0, Resource::Credits, 2);
     // No option is left: the player pays what they have and keeps the node.
     with_cx(&rules, |cx| {
-        threats::lose_node_or(&mut g, cx, Some(0), Resource::Credits, 6, "threat1")
+        threats::lose_node_or(&mut g, cx, Some(0), Resource::Credits, 6, "threat1", None)
     })
     .unwrap();
     assert_eq!(g.tokens(h, node(0)), 1);
@@ -195,7 +195,7 @@ fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
     g.vars.insert(STAGE.into(), 1);
     let hit = |g: &mut GameState, cx: &mut module::Cx, s: usize, h: usize| {
         let hexes = [h, b];
-        board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect("discord")).unwrap();
+        board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect("discord"), None).unwrap();
     };
     with_cx(&rules, |cx| hit(&mut g, cx, 1, last));
     assert_eq!(g.tokens(last, node(1)), 1, "stage I: it stays");

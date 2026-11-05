@@ -57,8 +57,9 @@ fn fire(g: &mut GameState, cx: &mut Cx, owner: usize, card: Option<Key>, then: &
 }
 
 /// A threshold counter: while `card` holds `at` or more tokens, `at` come off
-/// and its ops resolve.
-fn threshold(g: &mut GameState, cx: &mut Cx, owner: usize, card: Key) -> Res {
+/// and its ops resolve. Checked after a trigger of the card and after any op adds
+/// tokens to it (118: a feeder card's, Recruit Operatives onto Intrusion Lab).
+pub fn threshold(g: &mut GameState, cx: &mut Cx, owner: usize, card: Key) -> Res {
     let w = cx.world;
     for p in &def(&w, &card).passives {
         if let Op::Threshold { at, then } = p {
@@ -105,7 +106,19 @@ pub fn on_play(g: &mut GameState, cx: &mut Cx, player: usize, d: &CardDef) -> Re
             if times == 0 {
                 continue;
             }
-            fire(g, cx, owner, card, then, times)?;
+            if mine {
+                fire(g, cx, owner, card, then, times)?;
+            } else {
+                // 118: what a teammate's trigger removes (Joint Task Force) is the
+                // owner's: its fight triggers fire, the player's don't.
+                let b = watch_now(g);
+                fire(g, cx, owner, card, then, times)?;
+                let removed = removed_since(b, watch_now(g));
+                (0..3).for_each(|i| cx.fought[i] += removed[i]);
+                if !g.is_over() && has_trigger(&w, g, owner, fights) {
+                    fire_fights(g, cx, owner, removed)?;
+                }
+            }
             if let (Event::TeamPlay { both: true, .. }, false) = (on, solo) {
                 // Content::check: gains only, so the player's share asks nothing.
                 for _ in 0..times {
@@ -147,22 +160,35 @@ pub fn fight_watch(w: &World, g: &GameState, seat: usize) -> Option<Watch> {
     has_trigger(w, g, seat, fights).then(|| watch_now(g))
 }
 
+/// What came off the board between `b` and `now`: ambassadors, troops, compute.
+fn removed_since(b: Watch, now: Watch) -> [i64; 3] {
+    [(b.ambassadors - now.ambassadors).max(0), (b.troops - now.troops).max(0), (b.compute - now.compute).max(0)]
+}
+
 /// After seat `s`'s action: its fight triggers fire for what it removed (a
-/// troop: each; compute or ambassadors: once for the action).
+/// troop: each; compute or ambassadors: once for the action), less what a
+/// teammate's trigger removed inside it (`Cx::fought`).
 pub fn fight_fire(g: &mut GameState, cx: &mut Cx, seat: usize, before: Option<Watch>) -> Res {
+    let others = std::mem::take(&mut cx.fought);
     let Some(b) = before else {
         return Ok(());
     };
     if g.is_over() {
         return Ok(());
     }
+    let mut removed = removed_since(b, watch_now(g));
+    (0..3).for_each(|i| removed[i] = (removed[i] - others[i]).max(0));
+    fire_fights(g, cx, seat, removed)
+}
+
+/// Seat `s`'s fight triggers for `removed` (ambassadors, troops, compute).
+fn fire_fights(g: &mut GameState, cx: &mut Cx, seat: usize, removed: [i64; 3]) -> Res {
     let w = cx.world;
-    let now = watch_now(g);
     for (card, on, then) in triggers(&w, g, seat) {
         let times = match on {
-            Event::RemoveTroop => (b.troops - now.troops).max(0),
-            Event::RemoveCompute => (b.compute > now.compute) as i64,
-            Event::RemoveAmbassadors => (b.ambassadors > now.ambassadors) as i64,
+            Event::RemoveTroop => removed[1],
+            Event::RemoveCompute => (removed[2] > 0) as i64,
+            Event::RemoveAmbassadors => (removed[0] > 0) as i64,
             _ => 0,
         };
         if times > 0 {

@@ -35,7 +35,7 @@ fn a_placements_prompt_names_what_it_charges() {
     let prompt_for = |ops: &[Op]| {
         let mut gg = g.clone();
         let mut choices = module::Choices::new(Vec::new());
-        let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices };
+        let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices, fought: [0; 3] };
         let _ = effects::run(&mut gg, &mut cx, ops, &mut effects::Ctx::seat(0));
         let ask = choices.asked.take().expect("two tracks to choose from");
         ask.options.iter().map(|o| o.option.clone()).collect::<Vec<_>>().join(" | ")

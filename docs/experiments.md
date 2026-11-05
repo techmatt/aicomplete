@@ -173,10 +173,10 @@ policy or `prune`, the line alone should read near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump (seeds below 33836 went to r43 and earlier): r44: 33836-33883 111's read of r44 against
-r43 (`screen-111-r44.json`, both binaries). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`, both binaries); 33932-34031 116's agent
+r43 (`screen-111-r44.json`). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`); 33932-34031 116's agent
 sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. r46: 34224-34271
-117's reads (`screen-117-r45.json` on both binaries; `screen-117-income.json`, r46's incomes as overlays on r45's binary:
-the income step alone). Next free: 34272.
+117's reads (`screen-117-r45.json`, both binaries; `screen-117-income.json`, r46's incomes as overlays on r45:
+the income step alone). r47: 34272-351, 34400-1, 34500-47, 34600-2, 34700-7 118. Next free: 34708.
 
 ## Reading prices
 

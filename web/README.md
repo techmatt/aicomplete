@@ -66,8 +66,9 @@ npm run e2e:researcher         # the Researcher's board, the same way
   phase's hexes.
 - **The header** shows the engine version and rules revision. A saved session (kept in
   `localStorage`, replayed on load) whose config changed or no longer loads, or a record
-  from another revision, says so in the error bar. Data tabs show the event log, raw
-  state, generic view and resolved config with its hash.
+  from another revision, says so in the error bar; one that no longer loads is kept
+  (`copy(aic.keptSession())`). Data tabs show the event log, raw
+  state, generic view and resolved config.
 
 ## Game records
 
@@ -122,10 +123,10 @@ engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   records; the sweep **watches** each record step by step and **plays** as many fresh
   games of the resolved config through the page, picking legal actions at random (choices,
   hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
-  simulated ones from seed `AIC_SWEEP_SEED` (100). The engine-agent cases at 2-4 countries and
-  `cubes-3` (`station_cubes` 3) reach r35-r38's stations, cubes, converters and liberations.
-- **Moments:** new rounds, prompts, war steps, the first of each key event (and each first
-  rise of an r35-r38 counter: `COUNTER_EVENTS`), the end. At
+  simulated ones from seed `AIC_SWEEP_SEED` (100). Engine-agent cases reach stations, cubes,
+  liberations; `c2-d2-strategist` the engines, `c1-d2-engine` 1 player.
+- **Moments:** new rounds, prompts, war steps, the first of each key event and counter rise
+  (`COUNTER_EVENTS`, `_R41`: triggers, At N, reuse), the end. At
   each, the checks at 1366×768, layout checks at 1920×1080 and 2560×1440, and a
   screenshot (at most 14 a game, plus the end and anything failing).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
@@ -165,7 +166,7 @@ colors), `panels.ts`, `hover.ts`, `log.ts`, and `main.ts` (wiring).
 
 `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
 (`cards/`), not by this game viewer: see [tools/card-art/README.md](../tools/card-art/README.md).
-`scripts/shots-NNN.mjs`: past items' viewer shots (see their write-ups; 105's opens each demo card's large view).
+`scripts/shots-NNN.mjs`: past items' viewer shots (see their write-ups).
 
 ## Card viewer
 

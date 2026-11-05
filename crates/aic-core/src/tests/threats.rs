@@ -254,7 +254,7 @@ fn a_seat_that_lost_its_node_there_can_take_back_a_payment() {
 #[test]
 fn a_delayed_threat_skips_this_round() {
     let (rules, mut g) = at_step(&[], 1);
-    deal(&mut g, "smear_campaign", 0);
+    counterable_manhunt(&rules, &mut g);
     let t = threats::active(&g)[0].0;
     assert!(!threats::waits(&g, &t));
     run_ops(&rules, &mut g, &[content::Op::DelayThreat { count: 1 }]);

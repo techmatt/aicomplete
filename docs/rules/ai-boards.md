@@ -19,7 +19,8 @@ an Industry card pays out chips, a Power card energy, and an Industry card with 
 hand for no credits.
 
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
-strike into it, so where you stand is a barrier and a facility under you is safe. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
+strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build lands 1 troop on a factory
+(else a city) in every country you're in (anyone's factory, never your node's hex), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
 facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (16 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each). Late in the game, sacrifice
@@ -57,7 +58,7 @@ more, and the economy track is how a seat's income grows; it comes down as engin
 credits down (from 25, 21 and 18) as engines now pay: the Builder, the biggest hoarder, most; the track's credit
 spaces are unchanged. **The reasoning:**
 round 1 deals 10, so a board at 40 that keeps 2-4 extra cards (10-20 credits) has 20-30 left for its first plays at a
-tier-1 median of 6 credits and 4 insight: keeping more and playing less is a real choice, as in Terraforming Mars'
+tier-1 median of 10 credits and 1 insight: keeping more and playing less is a real choice, as in Terraforming Mars'
 first generation. The Protector earns 2 less than the Builder and starts 6 ahead. A credit space pays 2-3 a round for
 a placement of 1 energy plus its step (0-3), energy at about 2 credits: the early spaces pay back in a round or two,
 the cost-3 space in about three, so a space placed by round 6 of 8-10 pays for itself and the last ones are a
@@ -65,11 +66,11 @@ late-game choice. **The pressure that keeps it honest is the adversary's:** a pl
 (`board.ambassador_credits`) and a corrupted city makes 2 adversary ambassadors a build.
 
 **One payment path (locked).** Every space prints a **cost** in energy, the last ones more. Every placement pays it,
-on top of what a node power costs; a card pays only the step, and a card that prints "free" pays nothing (three
-cards). Only tracks whose next step you can pay are offered, and a placement you can't pay doesn't happen.
+on top of what a node power costs; a card pays only the step, and a card that prints "free" pays nothing (all four
+deck cards that place a node). Only tracks whose next step you can pay are offered, and a placement you can't pay doesn't happen.
 
 **Hard to explain to a new player:** a placement's price is two numbers, the power's and the space's; Harden has two
-prices, Bulwark's energy and a card's chips; "bound" is a new word for a city that is otherwise only aligned.
+prices, Bulwark's energy and the standard project's credits (`harden_credits`), and Faraday Yard hardens when played; "bound" is a new word for a city that is otherwise only aligned.
 
 **Node powers (candidate).** There is no growth phase. Nodes come from the board's two **node powers**, used in the
 action phase, each once a round, so the powers place 0-2 nodes a round (cards that place nodes add to that: cards
@@ -117,18 +118,18 @@ once, as programs) has no loop left: a gift is one-shot. Energy bought from a ne
 (a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). Nothing turns the gift back
 into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2 insight; everyone's
-standard action, a cube for 1) is the intended engine, with no limit a round: capped by how many stations make cubes and,
+standard action, a cube for 1) is the intended engine, with no limit a round: capped by how many stations make cubes (and Open Archive's 1 a round) and,
 for Cintamani's, by the city node in its country. Bought cubes go only onto incomplete cards and are spent at completion, so credits never reach a converter.
 Open Science's insight comes from the supply, not the Researcher's bank, and goes only to other players, so Patience
-can't bank it. Fieldwork's three cards are paid for again to keep in play (credits and insight); sold, they are 3
+can't bank it; alone (118, ruling 7) it is the Researcher's own, and Patience keeps it. Fieldwork's three cards are paid for again to keep in play (credits and insight); sold, they are 3
 credits for 1 energy once a round. Followers → ambassadors → alignment → city energy → node is capped by building
 count and the Followers each ambassador costs. Evicting ambassadors stay on the map, capped by the supply, and the next
 arrival there cancels one. Wall has no loop, but it takes troops away as a harm where the Protector stands;
 `docs/harms.md`'s checks count sources, so they hold.
 
 `ai.boards` (`[0, 1, 2]`: Builder, Protector, Researcher) gives each seat its board; the list repeats for more seats,
-so 4 players repeat the Builder. The engine reads a board's `cards` and `start` (one copy each, so a repeated AI's
-second seat would have neither); no content prints them.
+so 4 players repeat the Builder. A board has no unique cards or starting building (091), and content that prints
+`cards` or `start` on a board is refused.
 
 <!-- generated: board_details -->
 | Board | Special rule |

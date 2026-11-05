@@ -536,7 +536,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let mut icons = counted(*count, "research_cubes");
             icons.push(w("megaproject"));
             let what = amount(Resource::ResearchCubes, *count);
-            let place = if *station { "in a country where you own a station" } else { "that isn't complete" };
+            // 118: both kinds need an incomplete megaproject (Field Grant's said nothing of it).
+            let place = if *station { "that isn't complete, in a country where you own a station" } else { "that isn't complete" };
             one(clause(icons, format!("add {what} in your color to a megaproject {place}")))
         }
         // 105: a brown box below the art moves the track; the solid outline is
@@ -835,8 +836,20 @@ fn above_art(c: &CardDef, f: &mut Face) {
         match standing(op, c.tokens.as_ref().map(|t| t.kind)) {
             Standing::Income(parts, say) => {
                 let this_plain = matches!(op, Op::Income { .. });
+                // 118: in a box of two incomes a lone icon ("1 chip") keeps its 1:
+                // Fabrication Megaplex read "7 credits chips".
+                let one = |mut p: Vec<Part>| {
+                    if p.len() == 1 {
+                        p.insert(0, Part::Word("1".to_string()));
+                    }
+                    p
+                };
                 match boxes.last_mut() {
-                    Some(b) if plain && this_plain => b.extend(parts),
+                    Some(b) if plain && this_plain => {
+                        let first = std::mem::take(b);
+                        *b = one(first);
+                        b.extend(one(parts));
+                    }
                     _ => boxes.push(parts),
                 }
                 plain = this_plain;

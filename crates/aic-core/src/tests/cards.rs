@@ -250,9 +250,14 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [Op::DelayThreat { count: 1 }];
     deal(&mut g, "smear_campaign", 0);
+    assert!(!effects::feasible(&w, &g, 0, &delay), "118: a threat seat 0 may not counter can't be delayed");
+    counterable_manhunt(&rules, &mut g);
     assert!(effects::feasible(&w, &g, 0, &delay));
     run_ops(&rules, &mut g, &delay);
     assert!(!effects::feasible(&w, &g, 0, &delay), "every threat already waits");
+    // 118: beside a draw (Predictive Modeling) the delay with no target is no veto.
+    let with_draw = [Op::DelayThreat { count: 2 }, Op::Draw { count: 2 }];
+    assert!(effects::feasible(&w, &g, 0, &with_draw));
 }
 
 #[test]
@@ -263,6 +268,27 @@ fn hand_written_card_text_is_refused() {
     }
     c.cards[0].text = "Gain a thousand credits.".to_string();
     assert!(c.check().unwrap_err().contains("generated"));
+}
+
+/// 118: a capstone off a track's last space was shown and counted but never read; an
+/// "add N here" of another kind than the card holds counted toward the wrong token.
+#[test]
+fn a_capstone_off_the_last_space_and_a_here_of_another_kind_are_refused() {
+    let fresh = || {
+        let mut c = content().clone();
+        c.cards.iter_mut().for_each(|card| card.text.clear());
+        c
+    };
+    let mut c = fresh();
+    let cap = c.ais[0].economy_track.iter().rev().find_map(|u| u.capstone.clone()).expect("a capstone");
+    c.ais[0].economy_track[0].capstone = Some(cap);
+    let e = c.check().unwrap_err();
+    assert!(e.contains("last space"), "{e}");
+    let mut c = fresh();
+    let i = c.cards.iter().position(|x| x.id == "telemetry_archive").unwrap();
+    c.cards[i].effects = vec![Op::AddTokens { kind: crate::content::TokenKind::Agents, amount: 1, here: true }];
+    let e = c.check().unwrap_err();
+    assert!(e.contains("kind the card doesn't hold"), "{e}");
 }
 
 #[test]
@@ -405,7 +431,7 @@ fn a_gift_lands_alone_and_a_draw_needs_a_card() {
     assert!(effects::feasible(&w, &g, 0, &draw));
     set_pile(&mut g, "cards.deck.1", &[]);
     set_pile(&mut g, "cards.discard.1", &[]);
-    assert!(!effects::feasible(&w, &g, 0, &draw), "both tier-1 piles empty");
+    assert!(!effects::feasible(&w, &g, 0, &draw), "tier-1 deck empty: a draw never reshuffles");
     let draw_and_more = [Op::Draw { count: 2 }, Op::Gain { resource: Resource::Credits, amount: 1 }];
     assert!(effects::feasible(&w, &g, 0, &draw_and_more), "a card that also gains still plays");
 }

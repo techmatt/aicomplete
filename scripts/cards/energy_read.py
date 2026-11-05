@@ -3,9 +3,10 @@
 the energy each seat holds as the action phase ends (`unspent.<seat>.energy`, exported per
 round from 090) at rounds 3 and 6 and at its last round, and the use per game of each energy
 sink and r35 mechanic: energy paid to threat counters, the energy-cost cards played, the
-energy gift Actions, stations freed (and player stations an effect could not flip), the three
-capstones and their twists, Popular Uprising's one liberation and the three formerly dear
-powers.
+energy gift Actions (only while a card has one: none since 106), stations freed (and player
+stations an effect could not flip), the three capstones and their twists, Popular Uprising's
+plays and Action uses (either half: no counter splits off its liberations) and the three
+formerly dear powers.
 
     python scripts/cards/energy_read.py DIR [DIR ...] [--md]
 
@@ -60,9 +61,11 @@ def rows(games):
         ('energy-cost cards played', m(lambda g: sum(cnt(g, f'cards.played.{c}') for c in pay))),
     ]
     out += [(f'  {c}', m(lambda g, c=c: cnt(g, f'cards.played.{c}'))) for c in pay]
-    out += [('energy gift Actions used', m(lambda g: sum(cnt(g, f'cards.used.{c}') for c in gift)))]
-    out += [(f'  {c} (played / used)', m(lambda g, c=c: cnt(g, f'cards.played.{c}')),
-             m(lambda g, c=c: cnt(g, f'cards.used.{c}'))) for c in gift]
+    # 118: no card has had an energy gift Action since 106; the row shows only if one returns.
+    if gift:
+        out += [('energy gift Actions used', m(lambda g: sum(cnt(g, f'cards.used.{c}') for c in gift)))]
+        out += [(f'  {c} (played / used)', m(lambda g, c=c: cnt(g, f'cards.played.{c}')),
+                 m(lambda g, c=c: cnt(g, f'cards.used.{c}'))) for c in gift]
     out += [
         ('stations freed (standard action)', m(lambda g: cnt(g, 'board.stations_freed'))),
         ('player stations an effect could not flip', m(lambda g: cnt(g, 'adversary.station_flip_held'))),
@@ -75,8 +78,10 @@ def rows(games):
         ('  twist: ambassadors gained', m(lambda g: cnt(g, 'board.liberated_ambassadors'))),
         ('  twist: troops cleared', m(lambda g: cnt(g, 'board.liberated_troops'))),
         ('  twist: botnets removed', m(lambda g: cnt(g, 'board.liberated_botnet'))),
-        ('Popular Uprising played / liberations', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
-         m(lambda g: cnt(g, 'cards.once_discarded'))),
+        # 118: this read `cards.once_discarded`, 0 since 106 took `once` off its liberate half.
+        # No counter splits that half from its token half, so this is the Action's uses, both halves.
+        ('Popular Uprising played / Action uses (either half)', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
+         m(lambda g: cnt(g, 'cards.used.popular_uprising'))),
         ('cities liberated by a card / fallback', m(lambda g: cnt(g, 'board.liberated_card')),
          m(lambda g: cnt(g, 'board.liberated_fallback'))),
     ]

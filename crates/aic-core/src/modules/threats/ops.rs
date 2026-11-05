@@ -2,9 +2,18 @@
 
 use super::*;
 
+/// Who a prompt asks, and for which threat when one is resolving (118: "discard which
+/// card?" named nothing).
+fn head(why: Option<&str>, s: usize) -> String {
+    match why {
+        Some(n) => format!("{n}: seat {s}"),
+        None => format!("Seat {s}"),
+    }
+}
+
 /// `count` adversary ambassadors from the supply, each onto a piece of kind
 /// `at` in `scope` (players choose each).
-pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, at: Spot, count: i64) -> Res {
+pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, at: Spot, count: i64, why: Option<&str>) -> Res {
     let w = cx.world;
     let hexes = scope_hexes(&w, scope);
     for _ in 0..count {
@@ -19,7 +28,8 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
             })
             .collect();
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose_loss(0, "Threat: an adversary ambassador goes on which piece?", opts)? else {
+        let prompt = || format!("{}: an adversary ambassador goes on which piece?", why.unwrap_or("Threat"));
+        let Some(i) = cx.choose_loss(0, prompt, opts)? else {
             break;
         };
         adversary::place(g, cx, spots[i], 1);
@@ -28,7 +38,7 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
 }
 
 /// Each player in `scope` loses `amount` tokens off their cards, their choice.
-pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount: i64) -> Res {
+pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount: i64, why: Option<&str>) -> Res {
     let w = cx.world;
     for s in seats_in_scope(&w, g, scope) {
         for _ in 0..amount {
@@ -37,7 +47,7 @@ pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount:
                 .filter(|c| g.var(&cards::tokens_key(s, c)) > 0)
                 .collect();
             let opts = cards.iter().map(|c| opt(*c)).collect();
-            let prompt = || format!("Seat {s}: lose a token from which card?");
+            let prompt = || format!("{}: lose a token from which card?", head(why, s));
             let Some(i) = cx.choose_loss(s, prompt, opts)? else {
                 break;
             };
@@ -57,6 +67,7 @@ pub fn requisition(
     resource: Resource,
     amount: i64,
     n: i64,
+    why: Option<&str>,
 ) -> Res {
     let w = cx.world;
     for s in seats_in_scope(&w, g, scope) {
@@ -68,7 +79,7 @@ pub fn requisition(
         if g.pile(&cards::hand(s)).len() as i64 >= n {
             opts.push(opt(format!("discard {n} cards")));
         }
-        let prompt = || format!("Seat {s}: pay {} or discard {n} cards?", resource.amount(amount));
+        let prompt = || format!("{}: pay {} or discard {n} cards?", head(why, s), resource.amount(amount));
         match cx.choose(s, prompt, opts)? {
             Some(0) if can_pay => {
                 cx.add_resource(g, s, resource, -amount);
@@ -77,7 +88,7 @@ pub fn requisition(
                 for k in 0..n {
                     let hand = g.pile(&cards::hand(s)).to_vec();
                     let opts = hand.iter().map(|c| opt(*c)).collect();
-                    let prompt = || format!("Seat {s}: discard which card ({} of {n})?", k + 1);
+                    let prompt = || format!("{}: discard which card ({} of {n})?", head(why, s), k + 1);
                     if let Some(j) = cx.choose(s, prompt, opts)? {
                         cards::discard(g, cx, &hand[j], &cards::hand(s));
                     }
@@ -98,7 +109,7 @@ pub fn requisition(
 
 /// Each player in `scope` loses a player ambassador: from their supply, else
 /// one of theirs on the board (their choice).
-pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
+pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, why: Option<&str>) -> Res {
     let w = cx.world;
     for s in seats_in_scope(&w, g, scope) {
         if g.resource(s, Resource::Ambassadors) > 0 {
@@ -108,7 +119,7 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> 
         let k = ambassador(s);
         let on = ambassador_hexes(g, s);
         let opts = on.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = || format!("Seat {s}: lose the ambassador on which hex?");
+        let prompt = || format!("{}: lose the ambassador on which hex?", head(why, s));
         if let Some(i) = cx.choose_loss(s, prompt, opts)? {
             cx.add_tokens(g, on[i], k, -1);
         }
@@ -126,6 +137,7 @@ pub fn lose_node_or(
     resource: Resource,
     amount: i64,
     source: &'static str,
+    why: Option<&str>,
 ) -> Res {
     let w = cx.world;
     let hexes = scope_hexes(&w, scope);
@@ -142,7 +154,7 @@ pub fn lose_node_or(
         }
         let off = opts.len();
         opts.extend(mine.iter().map(|&h| labeled_hex_opt(&w, "lose nodes", h)));
-        let prompt = || format!("Seat {s}: pay {amount} {resource} or lose a node?");
+        let prompt = || format!("{}: pay {amount} {resource} or lose a node?", head(why, s));
         match cx.choose_loss(s, prompt, opts)? {
             Some(i) if i < off => cx.add_resource(g, s, resource, -amount),
             Some(i) => {
@@ -159,7 +171,7 @@ pub fn lose_node_or(
 
 /// Each player in `scope` discards their dearest card in hand (their choice
 /// on a tie).
-pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
+pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, why: Option<&str>) -> Res {
     let w = cx.world;
     for s in seats_in_scope(&w, g, scope) {
         let hand = g.pile(&cards::hand(s)).to_vec();
@@ -169,7 +181,7 @@ pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usiz
         };
         let tied: Vec<Key> = hand.into_iter().filter(|c| cost(c) == top).collect();
         let opts = tied.iter().map(|c| opt(c.as_str())).collect();
-        let prompt = || format!("Purge Protocols: seat {s} discards which card?");
+        let prompt = || format!("{}: discard which of your dearest cards?", head(why, s));
         if let Some(i) = cx.choose(s, prompt, opts)? {
             cards::discard(g, cx, &tied[i], &cards::hand(s));
         }

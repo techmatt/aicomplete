@@ -111,11 +111,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Cordon => {
-            let cs: Vec<usize> = (0..w.map.countries.len()).filter(|&c| !board::flagged(g, RoundFlag::Cordon, c)).collect();
+            // 118: a country cordoned only this round (the flag at 1) may be cordoned for the next.
+            let cs: Vec<usize> = (0..w.map.countries.len()).filter(|&c| g.var(&board::flag(RoundFlag::Cordon, c)) < 2).collect();
             let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
             let prompt = || format!("Seat {seat}: cordon which country?");
             if let Some(i) = cx.choose(seat, prompt, opts)? {
-                // Up through the next round's build: cleanup counts it down.
+                // Through the next round: cleanup counts it down (118: no longer cleared at the build).
                 cx.set_key(g, &board::flag(RoundFlag::Cordon, cs[i]), 2);
             }
         }
@@ -201,6 +202,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 if cards::def(&w, &c).tokens.as_ref().is_some_and(|t| t.kind == *kind) {
                     cards::on_tokens(g, cx, seat, *kind, *amount)?;
                 }
+                // 118: At N pays when its tokens reach N, whatever put them there.
+                cards::threshold(g, cx, seat, c)?;
             }
         }
         Op::AddTokens { kind, amount, here: false } => {
@@ -210,6 +213,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             if let Some(i) = cx.choose(seat, prompt, opts)? {
                 cards::add_tokens(g, cx, seat, &ids[i], *amount);
                 cards::on_tokens(g, cx, seat, *kind, *amount)?;
+                cards::threshold(g, cx, seat, ids[i])?;
             }
         }
         Op::CopyIncome => cards::copy_income(g, cx, seat)?,
@@ -249,7 +253,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
 
         // Threats.
-        Op::Ambassadors { at, count } => threats::place_ambassadors(g, cx, ctx.scope, *at, *count)?,
+        Op::Ambassadors { at, count } => threats::place_ambassadors(g, cx, ctx.scope, *at, *count, ctx.why.as_deref())?,
         Op::Flag { name } => {
             // Threats execute after production and upkeep: the flag lasts through
             // the next round (cleanup counts it down), or it would never land (020).
@@ -258,13 +262,13 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::Requisition { resource, amount, cards: n } => {
-            threats::requisition(g, cx, ctx.scope, *resource, *amount, *n)?
+            threats::requisition(g, cx, ctx.scope, *resource, *amount, *n, ctx.why.as_deref())?
         }
-        Op::LoseAmbassador => threats::lose_ambassador(g, cx, ctx.scope)?,
+        Op::LoseAmbassador => threats::lose_ambassador(g, cx, ctx.scope, ctx.why.as_deref())?,
         Op::LoseNodeOr { resource, amount } => {
-            threats::lose_node_or(g, cx, ctx.scope, *resource, *amount, ctx.label)?
+            threats::lose_node_or(g, cx, ctx.scope, *resource, *amount, ctx.label, ctx.why.as_deref())?
         }
-        Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, ctx.scope)?,
+        Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, ctx.scope, ctx.why.as_deref())?,
         Op::Compute { amount } => {
             if ctx.label == "megaproject" {
                 cx.tally(g, "adversary.compute_corp", *amount);
@@ -272,7 +276,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             adversary::gain_compute(g, cx, *amount)?
         }
         Op::ComputeEvery { amount } => adversary::compute_every(g, cx, *amount)?,
-        Op::LoseTokens { amount } => threats::lose_tokens(g, cx, ctx.scope, *amount)?,
+        Op::LoseTokens { amount } => threats::lose_tokens(g, cx, ctx.scope, *amount, ctx.why.as_deref())?,
 
         // The team.
         Op::TeamIncome { resource, amount } => alignment::add_team_income(g, cx, *resource, *amount),

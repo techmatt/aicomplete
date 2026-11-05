@@ -28,7 +28,9 @@ function stable(v) {
 }
 export const contentHash = (...parts) => createHash('sha256').update(stable(parts)).digest('hex').slice(0, 16);
 
-const costs = (list = []) => list.map(([r, n]) => `${n} ${r}`).join(', ');
+// 118: in words, not the raw key ('3 research_cubes').
+// 118: one of a resource is singular ("1 credit", not "1 credits").
+const costs = (list = []) => list.map(([r, n]) => { const w = r.replaceAll('_', ' '); return `${n} ${n === 1 ? w.replace(/s$/, '') : w}`; }).join(', ');
 
 // ---------- docs/card-pricing-notes.json ----------
 
@@ -361,17 +363,21 @@ function megaproject(country, i) {
 }
 
 function aiBoard(b, cardName) {
-  const step = (u) => [costs(u.income), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
+  // 118: a step's effects were dropped, so the Researcher's free-station space read '—'.
+  const effect = (e) => (e.op === 'build_station' ? 'builds a free research station in reach' : e.op.replaceAll('_', ' '));
+  // 118: a space's income reads +N, apart from the energy that places it.
+  const step = (u) => [(u.income ?? []).map((x) => `+${costs([x])}`).join(", "), ...(u.effects ?? []).map(effect), u.cost && `${u.cost} energy to place`, u.keep2 && 'tier-2 keep upgrade', ...(u.tags ?? []).map((t) => `${t} tag`), u.capstone && `capstone: ${u.capstone.name}`];
   const track = (l) => l.map((u) => step(u).filter(Boolean).join('; ') || '—').join(' · ');
   const capstones = [...b.economy_track, ...(b.play_track ?? [])].flatMap((u) => u.capstone ?? []);
   return frameless('ai', b, {
     tier: null,
-    tierLabel: 'AI board',
+    tierLabel: '', // 118: the kind already says 'AI board' (it printed twice)
     tags: b.tags ?? [],
     price: [
       ['Credits a round', b.credits],
       ...(b.income?.length ? [['Income', costs(b.income)]] : []),
-      ...(b.powers ?? []).map((p) => [`Power: ${p.name}`, [p.tags.map(([t, n]) => `sacrifice ${n} ${t}`).join(', '), costs(p.cost)].filter(Boolean).join('; ')]),
+      // 118: a power with no cost and no tags (Synthesis) priced as an empty string.
+      ...(b.powers ?? []).map((p) => [`Power: ${p.name}`, [(p.tags ?? []).map(([t, n]) => `sacrifice ${n} ${t}`).join(', '), costs(p.cost)].filter(Boolean).join('; ') || 'free']),
     ],
     sections: [
       { head: `Innate: ${b.innate.name}`, text: b.innate.text ?? '' },

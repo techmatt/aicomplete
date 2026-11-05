@@ -108,7 +108,7 @@ fn op_uses() -> BTreeMap<String, usize> {
     for d in &c.cards {
         add(&d.effects, &mut out);
         add(&d.passives, &mut out);
-        if let Some(a) = &d.ability {
+        for a in d.ability.iter().flat_map(|a| a.branches()) {
             add(&a.effects, &mut out);
         }
     }
@@ -135,8 +135,11 @@ fn op_uses() -> BTreeMap<String, usize> {
     }
     for b in &c.ais {
         add(&b.innate.passives, &mut out);
-        for c in b.economy_track.iter().chain(&b.play_track).filter_map(|u| u.capstone.as_ref()) {
-            add(&c.passives, &mut out);
+        for u in b.economy_track.iter().chain(&b.play_track) {
+            add(&u.effects, &mut out);
+            if let Some(c) = &u.capstone {
+                add(&c.passives, &mut out);
+            }
         }
         for p in &b.powers {
             add(&p.effects, &mut out);
@@ -291,6 +294,41 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     out
 }
 
+/// 118: a rules file quoting a card, `"words" (Card Name)`, whose face no longer says
+/// the words (a card pass changed the number: four such quotes in one hunt). `faces` is
+/// (name, full face text). Case and punctuation are ignored.
+pub(super) fn card_quote_failures(files: &[(String, String)], faces: &[(String, String)]) -> Vec<String> {
+    let norm = |s: &str| {
+        let t: String = s.chars().map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { ' ' }).collect();
+        t.split_whitespace().collect::<Vec<_>>().join(" ")
+    };
+    let mut out = Vec::new();
+    for (path, text) in files {
+        let quotes: Vec<&str> = text.split('"').collect();
+        // Odd pieces are inside quotes; the next piece starts with what follows the quote.
+        for i in (1..quotes.len().saturating_sub(1)).step_by(2) {
+            let (q, after) = (quotes[i], quotes[i + 1].trim_start());
+            let Some(names) = after.strip_prefix('(').and_then(|a| a.split(')').next()) else {
+                continue;
+            };
+            // Too short to be a quote, or a pattern ("move up to N"), not a card's words.
+            if q.len() < 6 || q.split_whitespace().any(|w| w == "N") {
+                continue;
+            }
+            // A name may wrap across a line.
+            let names = names.split_whitespace().collect::<Vec<_>>().join(" ");
+            for name in names.split(", ").flat_map(|n| n.split(" and ")).map(str::trim) {
+                if let Some((_, face)) = faces.iter().find(|(n, _)| n == name) {
+                    if !norm(face).contains(&norm(q)) {
+                        out.push(format!("{path}: quotes \"{q}\" ({name}), which its face doesn't say: {face}"));
+                    }
+                }
+            }
+        }
+    }
+    out
+}
+
 /// 102: README.md, CLAUDE.md and every `docs/*.md` page but the generated cards.md over
 /// [`RULES_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/` is [`rules_file_failures`]'s).
 fn page_budget_failures() -> Vec<String> {
@@ -422,6 +460,8 @@ pub fn run(o: &Options) {
     let stale: Vec<&(String, String, String)> = files.iter().filter(|(_, new, old)| new != old).collect();
     let mut failures: Vec<String> = harm_failures().into_iter().map(|f| format!("{HARMS_MD}: {f}")).collect();
     failures.extend(rules_file_failures(&rules_new));
+    let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
+    failures.extend(card_quote_failures(&rules_new, &faces));
     failures.extend(page_budget_failures());
     for f in &failures {
         eprintln!("{f}");
