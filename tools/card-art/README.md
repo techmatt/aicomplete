@@ -105,8 +105,11 @@ browser; `npm ci` first):
   drawn are the row ids in `picks/scene_batch_<n>.json`. Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
-- Every one of the 159 deck cards has a suggested scene, drawn. A scene whose card was cut or
-  redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. The viewer
+- Every one of the 154 deck cards has a suggested scene, drawn. A scene whose card was cut or
+  redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. A scene with
+  both was drawn for `was` and reused on `card`: an unused scene that broadly fits a new card's
+  name goes there before a new draw (Matt, 110). `npm run cards:check` in `web/` fails on a deck
+  card with no scene or no served image. The viewer
   serves a scene id from the newest `scenes/b<n>/` that has it. Three ids (`armored_conduit_trench`,
   `grant_check_racks`, `data_license_handover`) were respelled by copying the drawn files to the
   new name; the old files stay for the old pickers.

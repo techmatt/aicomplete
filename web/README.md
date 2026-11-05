@@ -221,9 +221,9 @@ says so and exits.
   *Pricing* in the large view (format and rules: root CLAUDE.md). `aic-sim docs --check`
   refuses an id that is no player card.
 - **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser
-  through all of the above on a copy under `out/cards-check/` (screenshots there; content
-  and real notes untouched). It also fails on a card overflowing at the last text size or
-  title floor, a title leaving its plate, or text wrapping differently between zooms.
+  through all that on a copy in `out/cards-check/` (screenshots there, content
+  untouched). It fails on a card overflowing at the last size or title floor, a title off its
+  plate, text wrapping apart between zooms, or a deck card with no scene or no scene image.
 - **Card rules** (box capacity, the 7.5 pt goal) are in
   [docs/card-guidelines.md](../docs/card-guidelines.md). A test refuses any face printing
   `*` or "worth".

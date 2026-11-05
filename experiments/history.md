@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 110 missing card art (a scene for each of 31 deck cards: 18 reused from cut cards, 13 drawn in batch 6; cut cards' scenes marked `was`) | r43 | [110_missing_card_art/art.md](results/110_missing_card_art/art.md) |
 | 108 engines worth playing (engines pay up front and back within 2 rounds, needs 2-3, no antimatter on three, five not built over, the Capital engine, card throughput, tier-2 keeps 2 / 1, the opening deals 2 tier-2 cards; the engine probe and the r42 → r43 read) | r43 | [108_engines_worth_playing/r43.md](results/108_engines_worth_playing/r43.md), [cards.md](results/108_engines_worth_playing/cards.md), [probe.md](results/108_engines_worth_playing/probe.md) |
 | 107 agents play the engines (why each engine went unplayed; keep-plan and value-code fixes, each on/off; play counts and the r42 read against r42's agents) | r42 | [107_agents_play_engines/engines.md](results/107_agents_play_engines/engines.md), [play-counts.md](results/107_agents_play_engines/play-counts.md) |
 | 106 card overhaul (TM-style engines: income on programs, triggers on buildings, 154 cards; three op extensions; r41 → r42 read; board-credit and dearer-deck levers) | r42 | [106_card_overhaul/r42.md](results/106_card_overhaul/r42.md), [cards.md](results/106_card_overhaul/cards.md), [play-counts.md](results/106_card_overhaul/play-counts.md) |

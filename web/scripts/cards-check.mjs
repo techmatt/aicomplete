@@ -73,6 +73,11 @@ try {
   // The copy's stats are from an older revision, so there is at least that one notice.
   check(await page.js(`(() => { const n = document.getElementById('notice'); return !n.hidden && !n.open && /^\\d+ warnings?$/.test(n.querySelector('summary').textContent); })()`), 'warnings sit on one collapsed line');
   check(!(await page.js(`!!document.getElementById('reviews')`)), 'no Review filter row');
+  // Art: every deck card names a scene (tools/card-art/scenes.json) and the server has its image.
+  const sceneless = await page.js(`window.cardViewer.data.cards.filter((c) => c.inDeck && !c.scene).map((c) => c.id)`);
+  check(!sceneless.length, `every deck card names a scene${sceneless.length ? ` (not: ${sceneless.join(', ')})` : ''}`);
+  const unserved = await page.js(`Promise.all(window.cardViewer.data.cards.filter((c) => c.inDeck && c.scene).map((c) => fetch('/scene/' + c.scene + '.png').then((r) => (r.ok ? null : c.id)))).then((a) => a.filter(Boolean))`);
+  check(!unserved.length, `every deck card's scene image is served${unserved.length ? ` (not: ${unserved.join(', ')})` : ''}`);
 
   // Fitted: run again it finds nothing left to do, and a card's lines stay put at any zoom.
   const fit = await page.js(`import('/card/card.js').then((m) => m.fitCards(document.getElementById('cards')))`);

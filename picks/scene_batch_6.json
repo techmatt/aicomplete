@@ -1,0 +1,503 @@
+{
+ "name": "scene_batch_6",
+ "title": "Card scenes, batch 6",
+ "intro": "Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window. For true size, print art-originals/scenes/b6/cards.pdf at 100%. Use the notes for what to change. Rows marked Reused are scenes already drawn for a card that was cut or never used, now on a new card (110): the card on the left, the whole scene on the right.",
+ "rows": [
+  {
+   "id": "royalties_from_inventions",
+   "label": "1. Science: A sunlit university workshop of small working inventions on display plinths, a thin ribbon of gold coins trickling from each one into a shared brass tray that a smiling researcher is emptying into a satchel.",
+   "note": "Written for Research Royalties. Shown on Research Royalties and Patent Library. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/royalties_from_inventions.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "matched_tool_wall",
+   "label": "2. Industry: A long factory wall of identical tool heads, jigs and wrenches hung in neat matching rows, a machinist lifting one down to fit the nearest of a line of identical machines.",
+   "note": "Written for Standardized Tooling. Shown on Economies of Scale and Standardized Tooling. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/matched_tool_wall.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "gigafactory_groundbreaking",
+   "label": "3. Industry: A colossal new factory hall rising on an open plain, its roof running out of sight, officials cutting a ribbon at the gate while cranes and trucks swarm the site beyond.",
+   "note": "Written for Gigafactory Charter. Shown on Gigafactory Charter and Capital Projects Office. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/gigafactory_groundbreaking.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "conglomerate_tower_plaza",
+   "label": "4. Industry: A tall glass corporate headquarters at the heart of a business park, a factory, a lab, a warehouse and a shipyard crane around it all joined to the tower by covered walkways, executives crossing the bright plaza.",
+   "note": "Written for Conglomerate Headquarters. Shown on Capital Injection and Conglomerate Headquarters. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/conglomerate_tower_plaza.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "cash_into_the_works",
+   "label": "5. Industry: An armored bank truck backed up to a busy factory loading bay, workers wheeling heavy cases of gold bars off its tail into the plant while a manager waves them in.",
+   "note": "Written for Capital Injection. Shown on Capital Injection and Conglomerate Headquarters. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/cash_into_the_works.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "padlocked_server_room",
+   "label": "6. Cyber: A server room door wrapped in heavy glowing green chains and a giant padlock, a nervous manager in the corridor handing a briefcase to a masked courier.",
+   "note": "Written for Ransomware Syndicate. Shown on Ransomware Syndicate and Exploit Broker. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/padlocked_server_room.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "zero_day_bidders",
+   "label": "7. Cyber: A hushed back-room auction, masked bidders on folding chairs raising paddles while an auctioneer holds up a small glowing green key in a glass case.",
+   "note": "Written for Zero-Day Auction. Shown on Zero-Day Auction and Exploit Broker. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/zero_day_bidders.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "loft_command_console",
+   "label": "8. Cyber: A hidden warehouse loft with one operator at a central console, bright green threads fanning out from it through the tall windows to thousands of rooftop devices across the city.",
+   "note": "Written for Command-and-Control Grid. Shown on Cryptojacking Campaign and Command-and-Control Grid. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/loft_command_console.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "mountain_reservoir_pipes",
+   "label": "9. Power: A reservoir high on a mountain shoulder above a lower lake, giant pipes running straight down the slope to a turbine hall at the water, white water rushing out below it.",
+   "note": "Written for Pumped Hydro Storage. Shown on Pumped Hydro Storage and Smart Grid Backbone. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/mountain_reservoir_pipes.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "dispatch_wall_map",
+   "label": "10. Power: A bright grid dispatch room, operators at curved desks before a huge wall map of power lines drawn as lines of light, one pushing a lever up as a line on the map brightens.",
+   "note": "Written for Dispatch Control Room. Shown on Capacity Market and Dispatch Control Room. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/dispatch_wall_map.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "budget_before_the_dais",
+   "label": "11. Security: A legislative committee room, members at a curved wooden dais raising their hands to approve, crates of military equipment and a model jet set out on the floor before them.",
+   "note": "Written for Defense Appropriations. Shown on Defense Appropriations and Joint Task Force. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/budget_before_the_dais.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "depot_rows_to_horizon",
+   "label": "12. Security: A vast military depot yard with rows of new armored vehicles stretching to the horizon, an officer and a budget clerk walking the nearest row with a thick bound plan.",
+   "note": "Written for Multiyear Defense Budget. Shown on Multiyear Defense Budget and Quick Reaction Force. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/depot_rows_to_horizon.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "act_on_the_capitol_steps",
+   "label": "13. Security: A capitol's broad steps where officials hold up a freshly signed act, guards, emergency crews and power engineers in plain unmarked uniforms, no emblems or crosses, lined up together in the plaza below.",
+   "note": "Written for Homeland Security Act. Shown on Homeland Security Act and Joint Task Force. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/act_on_the_capitol_steps.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-founder_pitch",
+   "label": "14. Reused, Industry: Investors in a bright glass office gathered round a small working prototype on a table, a founder gesturing beside it.",
+   "note": "Drawn for venture_capital; now on University Spinout. Tile on: keep the reuse. Tile off: draw a new scene for University Spinout.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-founder_pitch.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-policy_institute_hall",
+   "label": "15. Reused, Science: A round meeting hall where scientists present a glowing cube model to seated delegates, a banner of linked hands on the wall.",
+   "note": "Drawn for policy_institute; now on Interdisciplinary Institute. Tile on: keep the reuse. Tile off: draw a new scene for Interdisciplinary Institute.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-policy_institute_hall.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-crawler_in_the_stacks",
+   "label": "16. Reused, Science: A spider-legged robot walking the tall shelves of a great library, pulling down volumes and scanning them.",
+   "note": "Drawn for literature_crawler; now on Patent Library. Tile on: keep the reuse. Tile off: draw a new scene for Patent Library.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-crawler_in_the_stacks.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-stacked_container_wing",
+   "label": "17. Reused, Industry: A crane lowering a prefabricated factory module onto the end of a row of identical modules.",
+   "note": "Drawn for modular_expansion; now on Economies of Scale. Tile on: keep the reuse. Tile off: draw a new scene for Economies of Scale.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-stacked_container_wing.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-arc_furnace",
+   "label": "18. Reused, Industry: Three massive graphite electrodes lowered into a furnace bowl, a blinding contained arc and a shower of sparks.",
+   "note": "Drawn for arc_furnace_complex; now on Plant Overdrive. Tile on: keep the reuse. Tile off: draw a new scene for Plant Overdrive.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-arc_furnace.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-fund_site_plans",
+   "label": "19. Reused, Industry: A surveyor's stakes across an empty lot beside a working plant, a small team unrolling expansion plans on a car bonnet.",
+   "note": "Drawn for expansion_fund; now on Capital Projects Office. Tile on: keep the reuse. Tile off: draw a new scene for Capital Projects Office.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-fund_site_plans.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-chip_market_stalls",
+   "label": "20. Reused, Industry: A crowded open-air market where traders haggle over trays of bright chips on long tables.",
+   "note": "Drawn for chip_spot_market; now on Parts Exchange. Tile on: keep the reuse. Tile off: draw a new scene for Parts Exchange.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-chip_market_stalls.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-siphon_pipes",
+   "label": "21. Reused, Cyber: A clear pipeline tapped into the side of a huge compute tower, glowing liquid light draining out into a small hidden tank.",
+   "note": "Drawn for compute_siphon; now on Cryptojacking Campaign. Tile on: keep the reuse. Tile off: draw a new scene for Cryptojacking Campaign.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-siphon_pipes.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-broker_in_the_cafe",
+   "label": "22. Reused, Cyber: A shadowed figure in a sunlit cafe sliding a slim folder across the table to a seated stranger seen from behind.",
+   "note": "Drawn for shadow_broker_feed; now on Exploit Broker. Tile on: keep the reuse. Tile off: draw a new scene for Exploit Broker.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-broker_in_the_cafe.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-power_auction",
+   "label": "23. Reused, Power: An auctioneer on a podium before a room of bidders, a large model turbine on the block beside them.",
+   "note": "Drawn for surplus_auction; now on Capacity Market. Tile on: keep the reuse. Tile off: draw a new scene for Capacity Market.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-power_auction.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-armored_conduit_trench",
+   "label": "24. Reused, Power: An open trench with workers lowering a thick armored power conduit into a concrete channel.",
+   "note": "Drawn for hardened_conduits; now on Smart Grid Backbone. Tile on: keep the reuse. Tile off: draw a new scene for Smart Grid Backbone.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-armored_conduit_trench.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-envoy_jet",
+   "label": "25. Reused, Diplomacy: A small white government jet on a sunny apron, an envoy climbing the stairs with a document case, a second jet landing behind.",
+   "note": "Drawn for shuttle_diplomacy; now on Trade Delegation. Tile on: keep the reuse. Tile off: draw a new scene for Trade Delegation.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-envoy_jet.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-council_chamber",
+   "label": "26. Reused, Diplomacy: A curved council chamber seen from the gallery, delegates as small figures.",
+   "note": "Drawn for planetary_assembly; now on Peace Conference. Tile on: keep the reuse. Tile off: draw a new scene for Peace Conference.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-council_chamber.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-trust_bureau_counters",
+   "label": "27. Reused, Diplomacy: A bright public atrium of open service counters, citizens queuing calmly while clerks hand back papers, a tall glass wall full of daylight behind them.",
+   "note": "Drawn for civic_trust_bureau; now on Reconciliation Office. Tile on: keep the reuse. Tile off: draw a new scene for Reconciliation Office.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-trust_bureau_counters.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-walled_embassy",
+   "label": "28. Reused, Diplomacy: A walled embassy with a garden courtyard and a guarded gate, a black car waiting at the steps.",
+   "note": "Drawn for embassy_compound; now on Protocol Office. Tile on: keep the reuse. Tile off: draw a new scene for Protocol Office.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-walled_embassy.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-shoulder_to_shoulder_shields",
+   "label": "29. Reused, Security: Two nations' soldiers manning one sandbag wall together, two different flags planted at either end.",
+   "note": "Drawn for mutual_defense_pact; now on Joint Task Force. Tile on: keep the reuse. Tile off: draw a new scene for Joint Task Force.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-shoulder_to_shoulder_shields.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-strike_team_rooftop",
+   "label": "30. Reused, Security: A four-person strike team fast-roping from a helicopter onto a rooftop, dust blowing, figures seen from behind.",
+   "note": "Drawn for strike_team; now on Quick Reaction Force. Tile on: keep the reuse. Tile off: draw a new scene for Quick Reaction Force.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-strike_team_rooftop.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "reuse-triage_ops_table",
+   "label": "31. Reused, Security: An operations room's huge map table, officers pushing a few markers forward and sweeping others aside.",
+   "note": "Drawn for threat_triage; now on Counterinsurgency Campaign. Tile on: keep the reuse. Tile off: draw a new scene for Counterinsurgency Campaign.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_6/reuse-triage_ops_table.jpg",
+     "label": "keep"
+    }
+   ]
+  }
+ ]
+}
