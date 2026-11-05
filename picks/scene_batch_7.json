@@ -1,0 +1,151 @@
+{
+ "name": "scene_batch_7",
+ "title": "Card scenes, batch 7",
+ "intro": "Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window. For true size, print art-originals/scenes/b7/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "bounty_board_hunters",
+   "label": "1. Cyber: A big corkboard of bounty notices in a bright open co-working loft, each notice pinned with a painted beetle sketch and a cash envelope, two hackers with laptops pulling a notice down to claim it.",
+   "note": "Written for Bug Bounty Board. Shown on Adaptive Malware and Bug Bounty Board. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/bounty_board_hunters.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "envoy_briefing_room",
+   "label": "2. Diplomacy: A sunlit briefing room where a handful of envoys in travel coats sit at a long table with open folders and a large plain world map on the wall, a senior diplomat pointing at it, suitcases waiting by the door.",
+   "note": "Written for Envoy Briefings. Shown on Envoy Briefings and Civic Watch. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/envoy_briefing_room.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "supplier_roads_converge",
+   "label": "3. Industry: Seen from a hill, small workshops and parts plants dotted across green farmland, delivery trucks on every road converging on one big modern assembly plant at the center.",
+   "note": "Written for Supplier Network. Shown on Antitrust Action and Supplier Network. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/supplier_roads_converge.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "retooled_assembly_line",
+   "label": "4. Industry: A modern car assembly line being refitted in a hurry, workers swapping robot arms and wheeling in new heavy power generators and transformer units, half the line already turning out olive-drab utility vehicles.",
+   "note": "Written for Wartime Retooling. Shown on Wartime Retooling and Capital Projects Office. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/retooled_assembly_line.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "fusion_campus_torus",
+   "label": "5. Power: A modern university campus of glass buildings on a green lawn around a big doughnut-shaped fusion reactor hall with its roof cut away, scientists crossing the lawn, the reactor's ring glowing softly inside.",
+   "note": "Written for Fusion Research Campus. Shown on Aegis Grid Lockdown and Fusion Research Campus. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/fusion_campus_torus.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "moonshot_rocket_lawn",
+   "label": "6. Science: A tall gleaming research rocket on a launch pad at the edge of a university research park, a pale moon in the daytime sky above it, scientists in shirtsleeves wheeling crates of glowing sky-blue research cubes to its base.",
+   "note": "Written for Moonshot Grant. Shown on Moonshot Grant and Citation Engine. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/moonshot_rocket_lawn.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "raid_on_the_tower_lobby",
+   "label": "7. Security: A security team in coral-trimmed tactical gear sweeping through the glass doors of a sleek corporate headquarters lobby in daylight, startled suited figures with raised hands, papers drifting off a reception desk.",
+   "note": "Written for Headquarters Raid. Shown on Headquarters Raid and Agency Directorate. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/raid_on_the_tower_lobby.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "grid_analytics_desk",
+   "label": "8. Power: A bright analysts' desk overlooking a city, three people at a long curved desk studying large painted charts of the city's power use with a model of the grid's pylons and substations laid out on the table in front of them.",
+   "note": "Written for Grid Analytics Desk. Shown on Aegis Grid Lockdown and Grid Analytics Desk. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/grid_analytics_desk.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "checkpoint_chain_road",
+   "label": "9. Security: A road winding over green hills with a small checkpoint on each rise, each a booth and a striped barrier with two guards checking a car, the chain of checkpoints running away to the horizon.",
+   "note": "Written for Checkpoint Network. Shown on Bounty Board and Checkpoint Network. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_7/checkpoint_chain_road.jpg",
+     "label": "keep"
+    }
+   ]
+  }
+ ]
+}
