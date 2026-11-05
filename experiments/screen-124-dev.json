@@ -1,0 +1,22 @@
+{
+  "name": "screen-124-dev",
+  "note": "124: the r49 re-read before any agent change, on dev seeds 34756-34899 (144 a cell): the three pairs at d2, the strategist and greedy.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}

@@ -91,11 +91,28 @@ pub fn phase(round: u32) -> usize {
     }
 }
 
-/// Which of [`CATEGORIES`] card `d` falls in.
-pub fn categories(d: &CardDef) -> [bool; CATEGORIES.len()] {
+/// 124 (D47, `w.strat_contents`): `ops`, and with `contents` the ops a
+/// trigger or a threshold among them resolves ("a trigger that pays credits is a
+/// credits card").
+fn with_contents<'a>(ops: impl Iterator<Item = &'a Op>, contents: bool) -> Vec<&'a Op> {
+    let mut out = Vec::new();
+    for o in ops {
+        out.push(o);
+        if contents {
+            if let Op::When { then, .. } | Op::Threshold { then, .. } = o {
+                out.extend(then.iter());
+            }
+        }
+    }
+    out
+}
+
+/// Which of [`CATEGORIES`] card `d` falls in (124: with `contents`, its
+/// triggers' and thresholds' ops read too).
+pub fn categories(d: &CardDef, contents: bool) -> [bool; CATEGORIES.len()] {
     let mut c = [false; CATEGORIES.len()];
     let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
-    let all: Vec<&Op> = d.effects.iter().chain(&d.passives).chain(ability.iter().copied()).collect();
+    let all: Vec<&Op> = with_contents(d.effects.iter().chain(&d.passives).chain(ability.iter().copied()), contents);
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
     op_categories(&all, &mut c);
     c[1] = d.is_building() && (d.ability.is_some() || d.tokens.is_some() || any(&|o| matches!(o, Op::ConvertUpkeep { .. } | Op::Slots { .. })));
@@ -142,9 +159,10 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
 }
 
 /// The resources card `d` pays out or (beyond credits and insight) costs.
-fn resources(d: &CardDef) -> Vec<Resource> {
+fn resources(d: &CardDef, contents: bool) -> Vec<Resource> {
     let ability: Vec<&Op> = d.ability.iter().flat_map(|a| a.branches()).flat_map(|b| &b.effects).collect();
-    let mut out = op_resources(d.effects.iter().chain(&d.passives).chain(ability.iter().copied()));
+    let mut out =
+        op_resources(with_contents(d.effects.iter().chain(&d.passives).chain(ability.iter().copied()), contents).into_iter());
     for (r, n) in [
         (Resource::Energy, d.energy),
         (Resource::Chips, d.chips),
@@ -181,9 +199,10 @@ fn op_resources<'a>(ops: impl Iterator<Item = &'a Op>) -> Vec<Resource> {
 }
 
 /// The token kinds card `d` holds or feeds.
-fn token_kinds(d: &CardDef) -> Vec<TokenKind> {
+fn token_kinds(d: &CardDef, contents: bool) -> Vec<TokenKind> {
     let mut out: Vec<TokenKind> = d.tokens.iter().map(|t| t.kind).collect();
-    out.extend(d.effects.iter().filter_map(|o| match o {
+    let ops = if contents { with_contents(d.effects.iter().chain(&d.passives), true) } else { d.effects.iter().collect() };
+    out.extend(ops.into_iter().filter_map(|o| match o {
         Op::AddTokens { kind, .. } => Some(*kind),
         _ => None,
     }));
@@ -201,15 +220,15 @@ fn kind_name(k: CardKind) -> &'static str {
 }
 
 impl Spec {
-    /// 1 plus the weights card `d` matches.
-    pub fn fit(&self, d: &CardDef) -> f64 {
+    /// 1 plus the weights card `d` matches (124: `contents`, as [`categories`]).
+    pub fn fit(&self, d: &CardDef, contents: bool) -> f64 {
         let get = |m: &BTreeMap<String, f64>, k: &str| m.get(k).copied().unwrap_or(0.0);
         let mut f = 1.0;
         f += d.tags.iter().map(|t| get(&self.tags, t.name())).sum::<f64>();
-        f += resources(d).iter().map(|r| get(&self.resources, r.name())).sum::<f64>();
-        f += token_kinds(d).iter().map(|k| get(&self.tokens, k.name())).sum::<f64>();
+        f += resources(d, contents).iter().map(|r| get(&self.resources, r.name())).sum::<f64>();
+        f += token_kinds(d, contents).iter().map(|k| get(&self.tokens, k.name())).sum::<f64>();
         f += get(&self.kinds, kind_name(d.kind));
-        let cats = categories(d);
+        let cats = categories(d, contents);
         f += CATEGORIES.iter().zip(cats).filter(|(_, on)| *on).map(|(c, _)| get(&self.categories, c)).sum::<f64>();
         f
     }
@@ -271,10 +290,10 @@ impl Spec {
 
 /// The schedule's multiplier for card `d` in phase `p`: the largest of its
 /// categories' (1 with none).
-pub fn schedule(d: &CardDef, p: usize) -> f64 {
+pub fn schedule(d: &CardDef, p: usize, contents: bool) -> f64 {
     let s = &strategies().schedule;
     let m = [&s.early, &s.mid, &s.late][p];
-    let cats = categories(d);
+    let cats = categories(d, contents);
     let hits: Vec<f64> = CATEGORIES.iter().zip(cats).filter(|(_, on)| *on).filter_map(|(c, _)| m.get(*c).copied()).collect();
     if hits.is_empty() {
         1.0
@@ -294,7 +313,7 @@ pub fn schedule(d: &CardDef, p: usize) -> f64 {
 pub struct Mults(Vec<Vec<[f64; 3]>>);
 
 impl Mults {
-    pub fn new(w: &World, scale: f64) -> Mults {
+    pub fn new(w: &World, scale: f64, contents: bool) -> Mults {
         let list = &strategies().strategies;
         // At 1 the multiplier as it was, bit for bit (1 + (m − 1) can round).
         let scaled = |m: f64| if scale == 1.0 { m } else { 1.0 + scale * (m - 1.0) };
@@ -305,8 +324,8 @@ impl Mults {
                         .cards
                         .iter()
                         .map(|d| {
-                            let f = s.fit(d);
-                            [0, 1, 2].map(|p| scaled(f * schedule(d, p)))
+                            let f = s.fit(d, contents);
+                            [0, 1, 2].map(|p| scaled(f * schedule(d, p, contents)))
                         })
                         .collect()
                 })
@@ -343,6 +362,7 @@ pub fn choose(
     fixed: usize,
     value: &dyn Fn(&CardDef) -> f64,
     power: PowerWorth,
+    contents: bool,
 ) -> Option<u16> {
     let menu = menu(w, s);
     if fixed > 0 {
@@ -358,7 +378,7 @@ pub fn choose(
     let mut best: Option<(f64, u16)> = None;
     for &k in &menu {
         let spec = &list[k as usize];
-        let mut score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d) * schedule(d, phase(g.round)) - 1.0)).sum();
+        let mut score: f64 = seen.iter().map(|d| value(d).max(0.0) * (spec.fit(d, contents) * schedule(d, phase(g.round), contents) - 1.0)).sum();
         if let Some(power) = power {
             for p in &ai::board(w, s).powers {
                 let (worth, rounds) = power(p);
@@ -406,7 +426,7 @@ mod tests {
             assert!(menu(&w, s).len() >= 3, "seat {s}");
         }
         // docs/agents.md's lines are `aic-sim docs`'s `strategies` block (119), checked by `docs --check`.
-        let m = Mults::new(&w, 1.0);
+        let m = Mults::new(&w, 1.0, false);
         let payroll = w.content.card_index("payroll_automation").unwrap();
         let k = by_id("industry_income").unwrap();
         assert!(m.get(k, payroll, 0) > m.get(by_id("power_grid").unwrap(), payroll, 0));

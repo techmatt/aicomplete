@@ -11,19 +11,17 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   replay from seed + actions whatever `--threads`.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
-- **`choices` counts prompts, not effects:** one placement is two (a track, a hex).
-- **A free multi-pick rule costs N²:** with `answers` 99, a rule open at every decision with N
-  picks costs about N² evaluations.
-- **Heuristic** (`agents/eval.rs`; hand-set, each weight a field of `Weights`).
-  It scores win/loss, cities, a seat's last nodes (`node_danger`), the adversary's pieces, the
-  decks' last three cards, Alignment, projects, holdings and unpaid threats. Less obvious:
+- **`choices` counts prompts** (a placement is two: track, hex); with `answers` 99 a free
+  multi-pick rule of N picks costs about N² evaluations.
+- **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
+  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats; and:
   - botnets −25 (D9): agents make none when an equal free choice exists;
   - `research_cube` 0.3, under what every converter nets; `research_cube_power` 1.2 for a
     seat whose board spends cubes on a power (Peer Review); `converter_city` 2 for a seat with a
-    node in a city of a completed megaproject's country, whatever its cubes (`w.converter_any`);
+    node in a city of a completed megaproject's country, whatever its cubes;
   - a corrupted station's `station_flip` 20, scaled by its country's megaproject still open
-    (0 once completed; `w.flip_open`);
-  - the liberation push needs `liberate_at` plus the city's own adversary ambassadors (`w.push_adv`);
+    (0 once completed);
+  - the liberation push needs `liberate_at` plus the city's own adversary ambassadors;
   - a city an adversary ambassador darkens: `city_dark` 4 for a neutral one in some seat's
     reach, `city_dark_aligned` 6 for an aligned one;
   - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
@@ -52,34 +50,32 @@ a card with no target now may be planned from round 2 at `target_share`, unless 
 of the seat's own none stands or is planned for (`pile_ok`), or copies an income with no income
 building built or planned (`plan_copy`); a building over one of the seat's (built, or planned
 first: `plan_under`) adds only what it beats the weakest by (`plan_cover`), the covered one at
-what it would still earn (`plan_cover_spent`); each credit paid for keeps costs `plan_credit`.
+what it would still earn; each credit paid for keeps costs `plan_credit`.
 `plan_chain` (off) credits a chain card the plan brings within `plan_short` tags.
 
-Priced like the play check: a card worth no more than its price is not planned
-(`plan_net`), one that is adds its **gross value** (`plan_gross`; 0: value less price);
-credits over `w.credit_cap` cost `w.credit_idle` (`plan_idle`); energy and antimatter at the
-heuristic's rates (about 1.3 and 3.3 credits), a building's Action at the table's
-(`plan_rates`); a project discard or drain at the heuristic's charge for the projects up.
+Priced like the play check (102): a card worth no more than its price is not planned, one
+that is adds its **gross value**; credits over `w.credit_cap` cost `w.credit_idle`; energy and
+antimatter at the heuristic's rates (about 1.3 and 3.3 credits), a building's Action at the
+table's; a project discard or drain at the heuristic's charge for the projects up.
 
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
-Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a keep-plan
-or strategy switch goes bare (`strategist:plan_bury=0`). Any agent can use horizon mode
-(`greedy:w.horizon=1,...`); `engine` only changes the defaults. Sweeps:
+Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a plan or
+strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat terms (any agent can
+take horizon mode: `greedy:w.horizon=1,...`), so the table's and horizon's levers reach only its
+keep plan, which reads the table (`plan_table` 1). Sweeps:
 [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
-`configs/agents/values.json`, read by `agents/value.rs`: one value in credits for each
-resource, tag left in play, token and op: prices' one home (the search's `Weights` are points;
-card-pricing.md, *The rates*, says which shadow a row). Every op has its arm (no catch-all) and
-its row (`every_op_has_a_row`). A card is worth its ops: its effects now, its standing
-effects a round times the rounds it counts for, a use of its Action times `uses_share` of
-those rounds (a progressive token card's spend over the uses its cycle of adds takes), and its
-tags. Those rounds are the rounds left in a game; in the table's typical context (the
-opening's strategy choice, the effect ledger), its tier's horizon: `horizon_t1` 4,
-`horizon_t2` 2.5 (the rounds left at a typical purchase, less a tempo discount). "Remove up to
-N troops" counts the troops it removes in play, `troops_removed` (D26; the ledger reads it too).
+`configs/agents/values.json`, read by `agents/value.rs`: a value in credits for each resource,
+tag left in play, token and op, prices' one home (`Weights` are points; card-pricing.md, *The
+rates*). Every op has its arm and row (`every_op_has_a_row`). A card is worth its effects now,
+its standing effects a round times the rounds it counts for, a use of its Action times
+`uses_share` of them (a token card's spend over its cycle of adds), and its tags. The rounds are
+those left in a game; in the typical context (the opening's choice, the effect ledger) its
+tier's horizon, `horizon_t1` 4, `horizon_t2` 2.5. "Remove up to N troops" counts
+`troops_removed` (D26).
 
 The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greedy`):
 
@@ -95,7 +91,7 @@ The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greed
   an income a firing raises counts `raised_rounds` rounds; insight off every card counts
   `insight_discount_share` of the plays (the discount floor).
 - **A token:** what its card's spend pays per token, else the held rate; on a card whose
-  Action cashes its own pile out, the cash-out's rate (`w.token_cash`, D24). A supply
+  Action cashes its own pile out, the cash-out's rate (D24). A supply
   ambassador: its row.
 - **Energy:** `energy` 0.8 points, not the table's 4.5 (`w.table_energy` 1 played worse).
 - **An action** is credited what the board terms can't see after it: a cordon, a peek, a
@@ -104,14 +100,12 @@ The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greed
 ## Strategies
 
 `configs/agents/strategies.json`, read by `agents/strategy.rs`. With `strategy=1`, at its round-1
-keep each seat commits to the strategy of its board's menu whose multipliers add most to its
-opening hand and its board's powers, a power read as a card at one use's worth (`strat_powers`,
-`strat_power_uses` 1); `strat0`-`strat2` fix a seat's, 1-based. A strategy weights a card's
-tags, the resources and tokens it pays in or out, its kind and its categories; a card's
-multiplier is 1 plus the weights it matches, times its categories' largest **phase schedule**
-multiplier (early, mid, late; `w.strat_scale`, 1, stretches its distance from 1). It reaches
-drafting and keeping, not a card in hand (a multiplied hand would beat playing it). Planner
-rollouts keep the choice.
+keep a seat commits to its board's strategy whose multipliers add most to its opening hand and
+powers (a power at one use's worth, `strat_powers`); `strat0`-`strat2` fix one, 1-based. A
+strategy weights a card's tags, the resources and tokens it pays in or out (its triggers' too),
+its kind and categories; a multiplier is 1 plus the weights matched, times its categories'
+largest **phase schedule** multiplier (`w.strat_scale` stretches it). It reaches drafting and
+keeping, not a card in hand. Planner rollouts keep the choice.
 
 As a player says them (the config's `says`):
 
@@ -141,8 +135,9 @@ As a player says them (the config's `says`):
 
 ## Strategy-guide heuristics
 
-Rules a player could say where a one-step search misses a card's point, each a switch,
-all on (`experiments/results/screen-092/`).
+Rules a player could say where a one-step search misses a card's point, each a switch, on
+(`experiments/results/screen-092/`); 124's spare-insight and limit rules are every agent's (a new
+player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 
 - *Shelter what a destruction showing would take, once you can't counter it.* A sheltered
   country is worth the nodes and player factories this round's destroying threats and war
@@ -153,27 +148,34 @@ all on (`experiments/results/screen-092/`).
   full, the keep plan charges a plain building what the top it buries would earn).
 - *Count your research cubes like credits* (`plan_cubes`: a budget in the keep plan).
 - *Pick the strategy your board's powers feed* (`strat_powers`).
+- *Insight you can't spend is cheap: keep with it* (124): insight over `w.insight_cap` (10) is
+  worth `w.insight_idle` (0.1), held or (Patience) as income, and so is a keep paid from it; the
+  plan keeps any pick worth its price that spare insight pays for (`keep_spare`).
+- *What you can't hold you lose* (124): credits and energy upkeep and production would push past
+  a limit are worth nothing held (`w.upkeep_loss`); the plan's budget and room stop at the limits
+  (`plan_limits`, with a heuristic that reads the limits). The play check sees the engine's clamp.
+- *A trigger that pays credits is a credits card* (124): strategies read triggers' and
+  thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
+  Off (no gain read): teammate triggers at the teammates' share (`w.team_share`, `plan_team`),
+  At N tokens at the threshold's pay (`w.threshold_tokens`).
 
 ## The progress term and the draft
 
-- **`needs`:** a card whose `needs` aren't met counts `needs_floor` (0.25) of its worth,
-  plus the rest times the square of the share of the tags held toward them, so each tag toward
-  a chain card adds more than the last.
-- **Dear powers:** a dear board power (`ai::power_is_dear`; `w.power_dear`) counts
-  `power_progress` (0.5) of one use's worth, times the square of the share of its tags held.
-- **Drafting for the neighbor:** a passed hand's cards count for the next seat, by its
-  strategy (unkept cards are discarded).
+- **`needs`:** a card short of its `needs` counts `needs_floor` (0.25) of its worth plus the
+  rest times the square of the share of the tags held.
+- **Dear powers** (`ai::power_is_dear`): `power_progress` (0.5) of a use, times the square of
+  the share of its tags held.
+- **Drafting for the neighbor:** a passed hand's cards count for the next seat, by its strategy.
 
 ## The tiers
 
 | Tier | Stands for | Spec | Target win % |
 |---|---|---|---|
-| Greedy without strategy | A new player | `engine` | d0 70-85 |
-| Greedy with strategy | A moderately skilled player | `strategist` | d2 45-85 |
-| Planner with strategy rollouts | A strong player; ceiling spot checks | `planner:strategy=1` | none |
+| Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
+| Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
+| Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
 
-Last read ([102](../experiments/results/102_agents_and_r40/r40.md), r40, bp / br / pr): d0 56 / 73 / 60,
-d2 28 / 42 / 32; every d2 pair under band, not retuned. The strategist judges (within about 5 points of `sweep` a pair on the same seeds)
-at a tenth of its time a game; `sweep` spot-checks.
+The strategist judges (within about 5 points of `sweep` a pair on the same seeds) at a tenth of
+its time a game; `sweep` spot-checks. Last read: [124](../experiments/results/124_agents_engines/r49-agents.md).
 A strategy pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them;
 `aic-sim strategies CONFIG` prints the choices.

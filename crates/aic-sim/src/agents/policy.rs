@@ -216,24 +216,6 @@ macro_rules! forced_table {
             (strat1: usize, true, 0.0, "082: seat 1's strategy, fixed (as strat0)")
             /// 082: seat 2's strategy, fixed.
             (strat2: usize, true, 0.0, "082: seat 2's strategy, fixed (as strat0)")
-            /// 102 (D34): the keep plan adds a card's value less its price, and plans
-            /// no card worth no more than it costs (the play check nets the price).
-            (plan_net: bool, false, 1.0, "102 (D34): keep plan: a card adds its value less its price, and one worth no more than it costs is not planned")
-            /// 102 (D23): the keep plan prices energy and antimatter at the
-            /// heuristic's own rates (its `energy` and `antimatter` over a table
-            /// credit), as the play check does, not at the value table's.
-            (plan_rates: bool, false, 1.0, "102 (D23): keep plan: energy and antimatter at the heuristic's rates, as the play check prices them")
-            /// 102 (100's finding): a building that must go over one of the seat's
-            /// is charged what the covered one would still earn (`buried_value`),
-            /// not its play effects, which are spent either way.
-            (plan_cover_spent: bool, false, 1.0, "102: keep plan: a covering building is charged what the covered one would still earn, as plan_bury")
-            /// 102 (with `plan_net`): a price paid from credits beyond the heuristic's
-            /// `credit_cap` costs its `credit_idle` rate, as the play check counts them.
-            (plan_idle: bool, false, 1.0, "102 (with plan_net): credits beyond the heuristic's credit_cap cost its idle rate in a net price")
-            /// 104 (Matt, 2026-11-04; 102's probe): with `plan_net`, the plan still
-            /// drops a card worth no more than its price but adds its gross value
-            /// (099's patch's form). 0 is the net form: it adds value less price.
-            (plan_gross: bool, false, 1.0, "104 (with plan_net): drop a card worth no more than its price, but add its gross value (099's form); 0 adds value less price")
             /// 107: a chain card's `needs` are short counted against the tags in
             /// play and those of the cards in hand and kept ("keep the top of a
             /// chain when the cards in your hand get you there"), not the tags in
@@ -256,6 +238,15 @@ macro_rules! forced_table {
             /// threshold, a per-tag income or discount, a copy) and play one the
             /// moment it is legal: what the engines win when they are played.
             (engine_rush: usize, true, 0.0, "107, a probe: 1 drafts and keeps every engine card and plays one as soon as it is legal; 2 only plays a kept one at once")
+            /// 124: insight beyond the heuristic's `insight_cap` buys the picks the
+            /// plan can't fit, each worth its price at the table, while it pays the
+            /// whole keep ("with insight to burn, keep every card worth having").
+            (keep_spare: bool, false, 1.0, "124: keep plan: a pick worth its price is kept when insight beyond the heuristic's insight_cap pays its whole keep")
+            /// 124: the keep plan's budget holds no more than the holding limits
+            /// (122), and a card's gain past the seat's room is worth nothing.
+            (plan_limits: bool, false, 1.0, "124: keep plan: the budget is held at the holding limits, and a gain past the room is worth nothing (with a heuristic that reads the limits: upkeep_loss)")
+            /// 124 (D47): the keep plan reads a teammate trigger at the teammates' tag share.
+            (plan_team: bool, false, 0.0, "124 (D47): keep plan: a trigger on a teammate's plays fires at the teammates' share of the tag")
         }
     };
 }
@@ -367,7 +358,7 @@ impl Policy {
     /// 082: each seat's strategy, chosen at the round-1 keep from its board and
     /// opening deal (a pure function of the table), and handed to the agent inside.
     fn choose_strategies(&mut self, w: &World, g: &GameState) {
-        let c = opening_choice(w, g, &self.forced);
+        let c = opening_choice(w, g, &self.forced, self.inner.strat_contents());
         self.set_strategies(c);
     }
 
@@ -383,19 +374,29 @@ impl Policy {
         let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
         let strat = self.strat.get(s).copied().flatten();
         if strat.is_some() && self.mults.is_none() {
-            self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale())));
+            self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale(), self.inner.strat_contents())));
         }
-        let super::eval::PlanRates { energy, antimatter, project, cap, idle } = self.inner.plan_rates().unwrap_or_else(|| {
+        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, limits } = self.inner.plan_rates().unwrap_or_else(|| {
             let t = value::table();
-            super::eval::PlanRates { energy: t.res(Resource::Energy), antimatter: t.res(Resource::Antimatter), project: 0.0, cap: f64::MAX, idle: 1.0 }
+            super::eval::PlanRates {
+                energy: t.res(Resource::Energy),
+                antimatter: t.res(Resource::Antimatter),
+                project: 0.0,
+                cap: f64::MAX,
+                idle: 1.0,
+                insight_cap: 0.0,
+                limits: false,
+            }
         });
-        if self.forced.plan_rates && self.rates.is_none() {
+        // 102 (D23): energy and antimatter at the heuristic's own rates, as the play check prices them.
+        if self.rates.is_none() {
             self.rates = Some(Arc::new(value::table().repriced(energy, antimatter)));
         }
         let t = self.rates.as_deref().unwrap_or_else(|| value::table());
-        let project = if self.forced.plan_net { project } else { 0.0 };
-        let idle = if self.forced.plan_idle { (cap, idle) } else { (f64::MAX, 1.0) };
-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle };
+        let idle = (cap, idle);
+        let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
+        let limits = self.forced.plan_limits && limits;
+        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, limits };
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -573,6 +574,9 @@ impl Strategic for Policy {
     fn strat_scale(&self) -> f64 {
         self.inner.strat_scale()
     }
+    fn strat_contents(&self) -> bool {
+        self.inner.strat_contents()
+    }
 }
 
 impl Agent for Policy {
@@ -710,7 +714,7 @@ impl Agent for Policy {
 
 /// 082: each seat's strategy on the table at its round-1 keep, from its board and
 /// opening deal, with `f`'s fixed ones (`strat0`..`strat2`) standing.
-pub fn opening_choice(w: &World, g: &GameState, f: &Forced) -> Choice {
+pub fn opening_choice(w: &World, g: &GameState, f: &Forced, contents: bool) -> Choice {
     let t = value::table();
     let worth = |d: &CardDef| {
         let typical = Ctx::typical_for(t, d.tier);
@@ -727,7 +731,7 @@ pub fn opening_choice(w: &World, g: &GameState, f: &Forced) -> Choice {
     let fixed = [f.strat0, f.strat1, f.strat2, 0];
     let mut c: Choice = [None; 4];
     for (s, slot) in c.iter_mut().enumerate().take(g.seats.len().min(4)) {
-        *slot = strategy::choose(w, g, s, fixed[s], &worth, power);
+        *slot = strategy::choose(w, g, s, fixed[s], &worth, power, contents);
     }
     c
 }
@@ -756,7 +760,7 @@ pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: 
                 break;
             }
         }
-        let c = opening_choice(&w, &g, &spec.forced());
+        let c = opening_choice(&w, &g, &spec.forced(), spec.weights().strat_contents > 0.0);
         for (s, k) in c.iter().enumerate().take(g.seats.len()) {
             let name = k.map_or("none", |k| strategy::strategies().strategies[k as usize].id.as_str());
             println!("{seed},{s},{},{name}", ai::board(&w, s).id);
@@ -872,15 +876,19 @@ pub struct PlanCtx<'a> {
     pub table: bool,
     pub strat: Option<u16>,
     pub mults: Option<&'a Mults>,
-    /// The value table the plan prices by (102: repriced under `plan_rates`).
+    /// The value table the plan prices by (102, D23: repriced at the heuristic's rates).
     pub t: &'a value::Table,
-    /// 102 (D34, `plan_net`): what the heuristic charges for an adversary project
+    /// 102 (D34): what the heuristic charges for an adversary project
     /// wholly filled, in table credits (0: no situational project value).
     pub project: f64,
-    /// 102 (`plan_idle`): the credits the heuristic counts in full and an idle
+    /// 102: the credits the heuristic counts in full and an idle
     /// credit's share of one beyond them; a net price pays from the idle ones
     /// first (`(f64::MAX, 1.0)`: every credit in full).
     pub idle: (f64, f64),
+    /// 124 (`keep_spare`): insight beyond this is spare (0: off).
+    pub spare_at: f64,
+    /// 124 (`plan_limits`, with a heuristic that reads the limits).
+    pub limits: bool,
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
@@ -893,11 +901,32 @@ struct PlanTable {
     projects: Vec<(f64, i64)>,
     /// 107 (`rates.own_mix`): the share of the seat's cards carrying each tag.
     share: [f64; TAGS.len()],
+    /// 124 (`plan_team`): the teammates' share (`None`: the seat's own).
+    team: Option<[f64; TAGS.len()]>,
+    /// 124 (`plan_limits`): the seat's room under the holding limits now, and
+    /// the room left in its credit production (no limit: infinite).
+    room: [f64; 7],
+    prod_room: f64,
 }
 
 impl PlanTable {
-    fn read(w: &World, g: &GameState, s: usize) -> PlanTable {
+    fn read(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> PlanTable {
+        let roomed = if pc.limits { Ctx::typical(value::table()).with_room(w, g, s) } else { Ctx::typical(value::table()) };
         PlanTable {
+            team: (f.plan_team && g.seats.len() > 1).then(|| {
+                let (mut counts, mut n) = ([0i64; TAGS.len()], 0i64);
+                for o in (0..g.seats.len()).filter(|&o| o != s) {
+                    let tags = cards::tag_counts(w, g, o);
+                    let mix = super::eval::own_mix_counts(w, g, o, &tags);
+                    for (c, m) in counts.iter_mut().zip(mix.0) {
+                        *c += m;
+                    }
+                    n += mix.1;
+                }
+                Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share
+            }),
+            room: roomed.room,
+            prod_room: roomed.prod_room,
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,
             corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
@@ -955,7 +984,7 @@ fn situational(d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
 /// The drafted cards seat `s` keeps: each, best value per cost first, if
 /// the plan with it is worth more than the plan without it.
 pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
-    let pt = PlanTable::read(w, g, s);
+    let pt = PlanTable::read(w, g, s, f, pc);
     let mut drafted = g.pile(&cards::drafted(s)).to_vec();
     let tags = cards::tag_counts(w, g, s);
     by_ratio(w, g, s, f, pc, &pt, &tags, &mut drafted);
@@ -970,6 +999,40 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) 
         if v > best + 1e-9 {
             best = v;
             kept = with;
+        }
+    }
+    // 124 (`keep_spare`): insight beyond the heuristic's cap buys the picks the
+    // plan can't fit yet: each worth its price at the table, best first, while
+    // the spare insight pays its whole keep ("with insight to burn, keep every
+    // card worth having").
+    if pc.spare_at > 0.0 {
+        let mut count = g.var(&cards::kept_key(s));
+        let mut spare = g.resource(s, Resource::Insight) as f64 - pc.spare_at;
+        for id in &kept {
+            let tier = cards::def(w, id).tier;
+            spare -= cards::keep_need(w, g, s, tier, count).0 as f64;
+            count += cards::counts_as_kept(g, tier) as i64;
+        }
+        let mut rest: Vec<Key> = g.pile(&cards::drafted(s)).iter().filter(|c| !kept.contains(c)).cloned().collect();
+        by_ratio(w, g, s, f, pc, &pt, &tags, &mut rest);
+        for c in rest {
+            let d = cards::def(w, &c);
+            let (ins, cr) = cards::keep_need(w, g, s, d.tier, count);
+            if cr > 0 || ins as f64 > spare {
+                continue;
+            }
+            let worth = if pc.table {
+                let typical = Ctx::typical_for(pc.t, d.tier);
+                CardValue::of(pc.t, d).total(pc.t, &typical) - pc.t.cost(d, d.cost, d.insight, typical.horizon)
+            } else {
+                1.0
+            };
+            if worth <= 0.0 {
+                continue;
+            }
+            spare -= ins as f64;
+            count += cards::counts_as_kept(g, d.tier) as i64;
+            kept.push(c);
         }
     }
     kept
@@ -1098,13 +1161,21 @@ fn value(
     round: usize,
     tags: &[i64; TAGS.len()],
     planned: &[Key],
+    room: Option<&[f64; 7]>,
 ) -> f64 {
     let jobs = f.plan_niche * niche_jobs(w, g, s, d) as f64;
     if !pc.table {
         return 1.0 + credit_cost(d) as f64 + jobs + f.plan_niche * capstone_jobs(d) as f64;
     }
     let t = pc.t;
-    let ctx = Ctx { share: pt.share, ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted) };
+    let ctx = Ctx {
+        share: pt.share,
+        team: pt.team,
+        room: *room.unwrap_or(&pt.room),
+        prod_room: pt.prod_room,
+        ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted)
+    }
+    .paying(d, cards::play_cost(w, g, s, d));
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
             let i = w.content.card_index(&d.id).unwrap_or(0);
@@ -1125,14 +1196,8 @@ fn value(
             };
             under
                 .into_iter()
-                .map(|b| {
-                    if f.plan_cover_spent {
-                        // 102: what it would still earn; what playing it did is spent.
-                        buried_value(t, b, &ctx)
-                    } else {
-                        CardValue::of(t, b).total(t, &ctx) - t.tags_value(b)
-                    }
-                })
+                // 102: what it would still earn; what playing it did is spent.
+                .map(|b| buried_value(t, b, &ctx))
                 .fold(f64::INFINITY, f64::min)
         }
         _ => f64::INFINITY,
@@ -1188,7 +1253,7 @@ fn spend(w: &World, g: &GameState, s: usize, d: &CardDef, pc: &PlanCtx, pt: &Pla
 #[allow(clippy::too_many_arguments)]
 fn ratio(w: &World, g: &GameState, s: usize, id: &str, f: &Forced, pc: &PlanCtx, pt: &PlanTable, tags: &[i64; TAGS.len()]) -> f64 {
     let d = cards::def(w, id);
-    value(w, g, s, d, f, pc, pt, 0, tags, &[]) / (1.0 + spend(w, g, s, d, pc, pt))
+    value(w, g, s, d, f, pc, pt, 0, tags, &[], None) / (1.0 + spend(w, g, s, d, pc, pt))
 }
 
 /// `ids`, best value per cost first.
@@ -1295,6 +1360,13 @@ fn plan(
                 antimatter: b.antimatter + inc(Resource::Antimatter),
                 research_cubes: b.research_cubes + inc(Resource::ResearchCubes),
             };
+            // 124 (`plan_limits`): what upkeep brings past a holding limit is lost (122).
+            if pc.limits {
+                let cap = |r: Resource, n: i64| w.hold(r).map_or(n, |c| n.min(c));
+                b.credits = cap(Resource::Credits, b.credits);
+                b.chips = cap(Resource::Chips, b.chips);
+                b.energy = cap(Resource::Energy, b.energy);
+            }
         }
         for id in &pool {
             if planned.contains(id) {
@@ -1325,9 +1397,19 @@ fn plan(
             // worth no more than it costs is no plan: the play check nets the price,
             // so spare credits kept cards it never played (099).
             let (v, price) = if fits {
-                let v = value(w, g, s, d, f, pc, pt, round, &tags, &planned);
-                let price = if f.plan_net && pc.table {
-                    // 102 (`plan_idle`): credits over the heuristic's cap are worth its
+                // 124 (`plan_limits`): the room the plan's budget leaves at this point.
+                let room = pc.limits.then(|| {
+                    let mut room = pt.room;
+                    for (r, held) in [(Resource::Credits, b.credits), (Resource::Energy, b.energy), (Resource::Chips, b.chips)] {
+                        if let Some(cap) = w.hold(r) {
+                            room[r as usize] = (cap - held).max(0) as f64;
+                        }
+                    }
+                    room
+                });
+                let v = value(w, g, s, d, f, pc, pt, round, &tags, &planned, room.as_ref());
+                let price = if pc.table {
+                    // 102: credits over the heuristic's cap are worth its
                     // idle rate to it, so a price paid from them costs that much.
                     let (cap, share) = pc.idle;
                     let idle_paid = (credits as f64).min((b.credits as f64 - cap).max(0.0));
@@ -1339,7 +1421,7 @@ fn plan(
             } else {
                 (0.0, 0.0)
             };
-            if fits && f.plan_net && pc.table && v <= price {
+            if fits && pc.table && v <= price {
                 continue;
             }
             if fits {
@@ -1379,8 +1461,9 @@ fn plan(
                 } else {
                     0.0
                 };
-                let netted = if f.plan_gross { 0.0 } else { price };
-                total += found * (v - netted - buried) * (1.0 - WAIT * round as f64).max(0.1);
+                // 104 (Matt, 2026-11-04): a card worth no more than its price is
+                // dropped above, and one that is adds its gross value (099's form).
+                total += found * (v - buried) * (1.0 - WAIT * round as f64).max(0.1);
                 planned.push(*id);
                 if pc.table && !d.is_event() {
                     // 082: what it leaves in play counts toward later cards' needs.
@@ -1407,7 +1490,7 @@ fn plan(
             }
             let want: i64 = d.needs.iter().map(|(_, n)| *n).sum();
             let share = (want - short) as f64 / want.max(1) as f64;
-            let v = value(w, g, s, d, f, pc, pt, last, &tags, &planned) - spend(w, g, s, d, pc, pt);
+            let v = value(w, g, s, d, f, pc, pt, last, &tags, &planned, None) - spend(w, g, s, d, pc, pt);
             if v > 0.0 {
                 total += share * share * v * (1.0 - WAIT * last as f64).max(0.1);
                 planned.push(*id);

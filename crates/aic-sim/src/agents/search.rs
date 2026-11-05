@@ -464,6 +464,9 @@ impl super::Strategic for Greedy {
     fn strat_scale(&self) -> f64 {
         self.ev.w.strat_scale
     }
+    fn strat_contents(&self) -> bool {
+        self.ev.w.strat_contents > 0.0
+    }
 }
 
 impl super::Strategic for Beam {
@@ -476,6 +479,9 @@ impl super::Strategic for Beam {
     }
     fn strat_scale(&self) -> f64 {
         self.ev.w.strat_scale
+    }
+    fn strat_contents(&self) -> bool {
+        self.ev.w.strat_contents > 0.0
     }
 }
 

@@ -56,6 +56,7 @@ Each hunt found most of its faults in the same places. Look there first:
 ## Open, deferred to Matt
 
 Ruled and built in r48 (121), so gone from the list: D16 (generalized: nothing to act on never blocks a card), D43, D44 (either half), D48, D51, D54.
+Built by 124 (agents, r49): D47 (strategies read trigger contents; the teammate share and At N tokens screened and left off, switches `w.team_share`, `w.threshold_tokens`), D53 (insight income at its table rate: Hyperscale Botnet played 0.02 → 0.15 a game).
 
 | # | Area | Finding | Options, and the pick |
 |---|---|---|---|
@@ -67,10 +68,8 @@ Ruled and built in r48 (121), so gone from the list: D16 (generalized: nothing t
 | D21 | picks | `picks/card_frames_r2.json` and `scene_style_r1.json` point at images that are gone: opening those pickers shows broken tiles. Superseded rounds. | (a) Delete the two manifests; (b) leave them as a record. **Pick (b)** unless they confuse: their rulings are in the frames and the preamble. |
 | D45 | engine | Fight triggers read the board's net count: a removal plus a placement in one action fires nothing. | Count at the removal ops. **Pick** when common. |
 | D46 | loops | Drain with Security Ops Floor and Intrusion Lab: ~12 for 10 credits, while projects hold compute. | Leave it: compute caps it. **Pick**. |
-| D47 | agents | Agents misprice r41's engines (teammate triggers, trigger contents, At N tokens; a 2-seat table solo). | One agent item, screened. **Pick**. |
 | D49 | scripts | `card_ranks.py`'s keep rate counts opening keeps (over 100%); speed.md's bar sits on it. | A draft-keep counter, re-measure. **Pick**. |
 | D52 | viewer | The timeline keeps a state a step (~200 MB a 4-country game; a blocking reload). | Keep every Nth snapshot. **Pick** if needed. |
-| D53 | agents | Hyperscale Botnet kept 40%, played 2%: legal 138 steps, played 0. | Read the play value of insight income. **Pick**. |
 | D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
 | D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |

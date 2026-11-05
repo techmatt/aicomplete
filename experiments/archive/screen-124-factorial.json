@@ -1,0 +1,34 @@
+{
+  "name": "screen-124-factorial",
+  "note": "124: the second dev screen (seeds 34756-34899, 144 a cell, the three pairs at d2) on the build with the review's fixes and 102's Phase A folded in (base games identical): the insight levers as a factorial (income weight 1 or 1.5 by the spare-insight cap), the two limit levers as a factorial, all levers on (income 1) and all on less each of the two neutral D47 levers; greedy with the fixed levers. Pairs against screen-124-levers' base cells (same games).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.insight_income=1",
+    "strategist:w.insight_cap=10,keep_spare=1",
+    "strategist:w.insight_income=1,w.insight_cap=10,keep_spare=1",
+    "strategist:w.insight_income=1.5,w.insight_cap=10,keep_spare=1",
+    "strategist:w.limit_room=1,plan_limits=1",
+    "strategist:w.limit_room=1,plan_limits=1,w.upkeep_loss=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,w.limit_room=1,plan_limits=1,w.upkeep_loss=1,w.team_share=1,plan_team=1,w.threshold_tokens=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,w.limit_room=1,plan_limits=1,w.upkeep_loss=1,w.threshold_tokens=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,w.limit_room=1,plan_limits=1,w.upkeep_loss=1,w.team_share=1,plan_team=1",
+    "greedy",
+    "greedy:w.insight_cap=10,keep_spare=1",
+    "greedy:plan_limits=1",
+    "greedy:w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}

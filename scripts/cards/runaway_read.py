@@ -16,9 +16,12 @@ hundreds where the mean is a handful; a long game alone is about 2x.
 
 Then the peak check, from each game's `peaks` (a seat's highest holding after any action) and
 `gained` (its rises summed over the game; over `rounds`, a round's income), per cell, seat and
-resource: the mean and maximum peak, the mean income a round, the worst peak / income and its
-seed, and the games flagged for a peak over `--peak-times` x the income and over
+resource: the mean and maximum peak, the mean income a round, the worst rise / income and its
+seed, and the games flagged for a rise over `--peak-times` x the income and over
 `--peak-floor`; and each seat's mean peak per resource per cell, which every read reports.
+The rise is the peak less the seat's `start` holding (setup's, 124), so a 40-credit opening
+held through a 3-round game is no runaway; a run from before 124 has no `start` and flags the
+peak itself.
 A resource a seat never gains (income 0: only what setup gave) is never flagged. Runs from before 121 have
 no `peaks`: the section is skipped with a note. Seconds.
 """
@@ -39,11 +42,22 @@ LOOPY = re.compile(r'^(cards\.(trigger\.|threshold\.|triggers$|thresholds$|reuse
 PEAKS = ['credits', 'insight', 'energy', 'chips', 'antimatter', 'research_cubes', 'card_tokens', 'ambassadors']
 
 
+def rise_of(peak, start, s, i):
+    """A peak's rise above the seat's setup holding (124's `start`); the peak itself without one."""
+    return peak - start[s][i] if start and s < len(start) else peak
+
+
+def flagged_peak(peak, start, s, i, income, times=3.0, floor=10):
+    """The peak rule: a rise over `times` x a round's income and over `floor`; a holding never gained never."""
+    rise = rise_of(peak, start, s, i)
+    return income > 0 and rise > floor and rise > times * income
+
+
 def peak_section(cells, a):
-    """cells: (dir order, cell id, label) -> list of (seed, peaks, gained, rounds)."""
-    print(f'\n## Peaks: a seat\'s highest holding against its income a round '
+    """cells: (dir order, cell id, label) -> list of (seed, peaks, gained, rounds, start)."""
+    print(f'\n## Peaks: a seat\'s highest holding, less its start, against its income a round '
           f'(flag over {a.peak_times:g}x and over {a.peak_floor})\n')
-    seats = max((len(p) for rows in cells.values() for _, p, _, _ in rows), default=0)
+    seats = max((len(p) for rows in cells.values() for _, p, _, _, _ in rows), default=0)
     for (_, _, label), rows in sorted(cells.items()):
         print(f'### {label} ({len(rows)} games)\n')
         print('| resource | ' + ' | '.join(f'seat {s} mean peak' for s in range(seats)) + ' |')
@@ -51,14 +65,14 @@ def peak_section(cells, a):
         for i, res in enumerate(PEAKS):
             means = []
             for s in range(seats):
-                vals = [p[s][i] for _, p, _, _ in rows if s < len(p)]
+                vals = [p[s][i] for _, p, _, _, _ in rows if s < len(p)]
                 means.append(f'{sum(vals) / len(vals):.1f}' if vals else '-')
             print(f'| {res} | ' + ' | '.join(means) + ' |')
         table = []
         for s in range(seats):
             for i, res in enumerate(PEAKS):
                 peaks, incomes, flagged, worst = [], [], 0, (0.0, None)
-                for seed, p, gained, rounds in rows:
+                for seed, p, gained, rounds, start in rows:
                     if s >= len(p):
                         continue
                     pk = p[s][i]
@@ -66,15 +80,15 @@ def peak_section(cells, a):
                     peaks.append(pk)
                     incomes.append(inc)
                     # A holding never gained (what setup gave) is no engine: it isn't flagged.
-                    ratio = pk / inc if inc > 0 else 0.0
+                    ratio = rise_of(pk, start, s, i) / inc if inc > 0 else 0.0
                     if ratio > worst[0] or worst[1] is None:
                         worst = (ratio, seed)
-                    if inc > 0 and pk > a.peak_floor and pk > a.peak_times * inc:
+                    if flagged_peak(pk, start, s, i, inc, a.peak_times, a.peak_floor):
                         flagged += 1
                 if peaks:
                     table.append((res, s, sum(peaks) / len(peaks), max(peaks), sum(incomes) / len(incomes),
                                   worst, flagged))
-        print('\n| resource | seat | mean peak | max peak | mean income / round | worst peak / income (seed) | flagged |')
+        print('\n| resource | seat | mean peak | max peak | mean income / round | worst rise / income (seed) | flagged |')
         print('|---|---|---|---|---|---|---|')
         for res, s, mean, top, inc, (ratio, seed), flagged in table:
             r = f'{ratio:.1f}'
@@ -120,7 +134,7 @@ def main():
                 growing.append((held[-1], where, runs))
             if g.get('peaks') and g.get('gained'):
                 label = labels[g['cell']] if g['cell'] < len(labels) else f"cell {g['cell']}"
-                cells[(di, g['cell'], lead + label)].append((g['seed'], g['peaks'], g['gained'], g['rounds']))
+                cells[(di, g['cell'], lead + label)].append((g['seed'], g['peaks'], g['gained'], g['rounds'], g.get('start')))
             else:
                 missing += 1
         if missing:

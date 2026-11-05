@@ -105,6 +105,11 @@ pub trait Strategic: Agent {
     fn strat_scale(&self) -> f64 {
         1.0
     }
+    /// 124 (D47): the heuristic's `strat_contents`, for the keep plan's
+    /// multipliers and the strategy choice.
+    fn strat_contents(&self) -> bool {
+        false
+    }
 }
 
 impl Strategic for RandomAgent {}

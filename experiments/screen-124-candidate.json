@@ -1,0 +1,29 @@
+{
+  "name": "screen-124-candidate",
+  "note": "124: the third dev screen (seeds 34756-34899, 144 a cell, the three pairs at d2) after the limit lever moved to the keep plan's budget (the play check sees the engine's clamp): the candidate (strategy reads trigger contents, insight income at 1, spare insight beyond 10 keeps, the plan's budget and room at the limits, upkeep's loss spent) with and without each part, and the two neutral D47 levers on top; greedy with its candidate.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1,w.team_share=1,plan_team=1",
+    "strategist:w.strat_contents=1,w.insight_income=1,w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1,w.threshold_tokens=1",
+    "strategist:plan_limits=1",
+    "strategist:plan_limits=1,w.upkeep_loss=1",
+    "greedy",
+    "greedy:w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}

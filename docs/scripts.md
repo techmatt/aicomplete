@@ -34,8 +34,12 @@ Current:
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
   where used; the games whose insight after the keep grew three rounds running past `--held`; per cell, seat and
-  resource the mean peak held, and games whose peak is over `--peak-times` its income a round and `--peak-floor`. A
-  bug hunt runs it on its fresh seeds.
+  resource the mean peak held, and games whose rise (peak less `start`, setup's holding; before 124 the peak) is over
+  `--peak-times` its income a round and `--peak-floor`. A bug hunt runs it on its fresh seeds.
+- `cards/source_read.py DIR... [--top 5] [--pool] [--resource credits,insight,energy,chips|all]`: per cell (`--pool`:
+  per agent) and board, each resource's top sources of gains a game (`sources`: `own:`/`other:` an action, `phase:`
+  an automatic phase), and the keep counters (`keeps`: picks offered, kept, keep rate, tier-2 share, insight at the
+  keep) split by runaway_read's insight flag. Runs from 124 on. Seconds.
 - `cards/slots_read.py DIR... [--rounds N]`: per cell, each seat's build-overs a game and its buildings standing as
   each round starts, from the `slots.*` counters.
 - `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's

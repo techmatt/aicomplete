@@ -1,0 +1,22 @@
+{
+  "name": "screen-124-r49",
+  "note": "124: the final read, the frozen agents against the build before this item (main 27da088), paired on fresh seeds 34948-34995: the three pairs at d2, the strategist and greedy, 48 a cell. Same rules (r49): the same configs on both.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34948,
+  "records": 0
+}

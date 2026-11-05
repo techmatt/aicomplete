@@ -1,0 +1,27 @@
+{
+  "name": "screen-124-disproof",
+  "note": "124: the cheap disproof rows for the two named cards, on dev seeds 34756-34899 (144 a cell), the strategist at d2: Hyperscale Botnet and Moonshot Grant made nearly free (price: if still unplayed, not price) or freed of their needs (legality).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-cheap", "set": ["cards.hyperscale_botnet.cost=1", "cards.moonshot_grant.cost=6"]},
+    {"name": "br-cheap", "set": ["ai.boards=0,2", "cards.hyperscale_botnet.cost=1", "cards.moonshot_grant.cost=6"]},
+    {"name": "pr-cheap", "set": ["ai.boards=1,2", "cards.hyperscale_botnet.cost=1", "cards.moonshot_grant.cost=6"]},
+    {"name": "bp-noneeds", "set": ["cards.hyperscale_botnet.needs=[]", "cards.moonshot_grant.needs=[]"]},
+    {"name": "br-noneeds", "set": ["ai.boards=0,2", "cards.hyperscale_botnet.needs=[]", "cards.moonshot_grant.needs=[]"]},
+    {"name": "pr-noneeds", "set": ["ai.boards=1,2", "cards.hyperscale_botnet.needs=[]", "cards.moonshot_grant.needs=[]"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}

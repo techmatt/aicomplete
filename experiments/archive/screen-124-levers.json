@@ -1,0 +1,35 @@
+{
+  "name": "screen-124-levers",
+  "note": "124: each agent lever on and off on dev seeds 34756-34899 (144 a cell), the three pairs at d2: the strategist with each lever alone and all on, greedy with the levers it reads; the Patience disproof row (a Patience seat's insight at the plain insight weight).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.insight_income=1.5",
+    "strategist:w.team_share=1,plan_team=1",
+    "strategist:w.strat_contents=1",
+    "strategist:w.threshold_tokens=1",
+    "strategist:w.insight_cap=10,keep_spare=1",
+    "strategist:w.limit_room=1,plan_limits=1",
+    "strategist:w.upkeep_loss=1",
+    "strategist:w.insight_income=1.5,w.team_share=1,plan_team=1,w.strat_contents=1,w.threshold_tokens=1,w.insight_cap=10,keep_spare=1,w.limit_room=1,plan_limits=1,w.upkeep_loss=1",
+    "strategist:w.patience=0.5",
+    "greedy",
+    "greedy:w.insight_cap=10,keep_spare=1",
+    "greedy:plan_limits=1",
+    "greedy:w.upkeep_loss=1",
+    "greedy:w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}

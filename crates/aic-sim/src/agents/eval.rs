@@ -290,25 +290,13 @@ pub struct Weights {
     /// 082, the progress term: a board power that sacrifices two tags or more
     /// counts this share of one use, times the square of the share of the tags
     /// the seat has toward it.
+    /// (102's Phase A switches, folded in by 124 and always on: the dear-power
+    /// term reads `ai::power_is_dear` (D33); a token on a card that cashes its own
+    /// pile out is worth its cash-out rate (D24); `converter_city` counts a city
+    /// node whatever the cubes held (D27); `station_flip` is scaled by the share
+    /// of its country's megaproject still open (D28); the liberation push needs
+    /// the city's own adversary ambassadors on top of `liberate_at` (D35).)
     pub power_progress: f64,
-    /// 102 (D33): above 0, the dear-power progress term reads the rules' own test
-    /// (`ai::power_is_dear`: two tags or more, or a tag and energy without
-    /// placing a node); at 0 it counts powers needing two tags or more, which
-    /// since r35 is none.
-    pub power_dear: f64,
-    /// 102 (D24): above 0, a token on a card whose Action cashes its own pile
-    /// out (Exabyte Archive, Bonded Warehouse, Sovereign Capital Fund) is worth
-    /// its cash-out rate, not the held rate.
-    pub token_cash: f64,
-    /// 102 (D27): above 0, `converter_city` counts a city node in a completed
-    /// megaproject's country whatever the cubes the seat holds.
-    pub converter_any: f64,
-    /// 102 (D28): above 0, a corrupted station's `station_flip` is scaled by the
-    /// share of its country's megaproject still open (0 once completed).
-    pub flip_open: f64,
-    /// 102 (D35): above 0, the liberation push needs the city's own adversary
-    /// ambassadors on top of `liberate_at` (each cancels an arrival).
-    pub push_adv: f64,
     /// The deck clock (011), any mode: per round the team's projected win
     /// (Unity still needed at its rate so far, plus `win_lag`) comes
     /// after the adversary deck runs out. 0 = off.
@@ -318,6 +306,30 @@ pub struct Weights {
     /// strategy is still chosen, and `plan_reach` still reads its tags). A sweep
     /// knob (scripts/tune/agent_sweep.py).
     pub strat_scale: f64,
+    /// 124 (D47), above 0: a strategy reads the ops a card's triggers and
+    /// thresholds resolve ("a trigger that pays credits is a credits card").
+    pub strat_contents: f64,
+    /// 124 (D47), above 0 (table mode): a trigger on a teammate's plays of a tag
+    /// fires at the teammates' share of cards with it, not the owner's.
+    pub team_share: f64,
+    /// 124 (D47), above 0: a token on a card with a threshold (At N) is worth
+    /// what the threshold pays per token, when that beats the held rate.
+    pub threshold_tokens: f64,
+    /// 124, above 0: what a seat holds of credits or energy that next upkeep's
+    /// income (and, for energy, its cities' production) would push past its
+    /// limit is worth nothing ("spend what upkeep would take"). Chips held aren't
+    /// valued in horizon mode and ambassadors have no income, so neither is read.
+    /// The income is `economy::income`'s: Sabotage's lost energy isn't seen.
+    pub upkeep_loss: f64,
+    /// 124 (D53), above 0: an insight a round of income is worth this, in place
+    /// of the held `insight` weight (horizon mode).
+    pub insight_income: f64,
+    /// 124, above 0: insight a seat holds beyond this is spare: worth
+    /// `insight_idle` each held (and, under Patience, as income onto the pile),
+    /// and a keep paid from it costs that ("insight you can't spend is cheap:
+    /// keep with it").
+    pub insight_cap: f64,
+    pub insight_idle: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -496,13 +508,23 @@ impl Default for Weights {
             pick_cost: 0.0,
             needs_floor: 0.25,
             power_progress: 0.5,
-            power_dear: 1.0,
-            token_cash: 1.0,
-            converter_any: 1.0,
-            flip_open: 1.0,
-            push_adv: 1.0,
             clock: 0.0,
             strat_scale: 1.0,
+            // 124: the strategy and insight-income levers are the engine's (see
+            // `engine`; greedy has no strategy and no horizon).
+            strat_contents: 0.0,
+            // 124: off; on, neither moved the screen (team_share −0.9 ±1.9 alone and
+            // −2.1 on the candidate; threshold_tokens 0.0 ±0.9 and −1.4).
+            team_share: 0.0,
+            threshold_tokens: 0.0,
+            // 124: every agent reads the r49 limits ("what you can't hold you lose",
+            // with the plan's `plan_limits`) and keeps with spare insight (with the
+            // plan's `keep_spare`): what a new player would do (Matt, 2026-11-05,
+            // message 5216). Greedy on dev seeds 34756-34899 (432 games): 49.1% → 48.1%.
+            upkeep_loss: 1.0,
+            insight_income: 0.0,
+            insight_cap: 10.0,
+            insight_idle: 0.1,
         }
     }
 }
@@ -531,6 +553,13 @@ impl Weights {
             // none (w.packet_keep=0) led it by +4.9 ±4.0 (30700) and +12.5 ±5.9
             // (31000), and 0.5 by +13.9 ±5.3 (31000).
             packet_keep: 0.5,
+            // 124 (dev seeds 34756-34899, the strategist, 432 games a cell): the
+            // strategy reads trigger contents (alone +2.5 ±1.2); an insight a round
+            // at its table rate in points, 2.5 × `table` 0.6 (D53: Hyperscale Botnet
+            // played 0.009 → 0.14 a game; alone −2.8 ±2.2, with `insight_cap` +2.3
+            // ±2.3). With every agent's spare insight and limit rules: +3.7 ±2.5.
+            strat_contents: 1.0,
+            insight_income: 1.5,
             ..Weights::default()
         }
     }
@@ -726,8 +755,9 @@ impl Eval {
         let seats = rules.config.countries as usize;
         // 028: the Unity deck's last card wins, and it comes before the last bar drop.
         let target_tips = world.list("alignment.unity_cards").iter().sum();
-        let token_cash = w.token_cash > 0.0;
         let strat_scale = w.strat_scale;
+        let strat_contents = w.strat_contents > 0.0;
+        let threshold_tokens = w.threshold_tokens > 0.0;
         Eval {
             w,
             id: next_eval_id(),
@@ -755,10 +785,14 @@ impl Eval {
                             index: i,
                             cost: Self::cost(d),
                             value: CardValue::of(value::table(), d),
-                            token: if token_cash {
-                                value::token_worth_cash(value::table(), d)
-                            } else {
-                                value::token_worth(value::table(), d)
+                            token: {
+                                // 102 (D24): a token on a card that cashes its own pile out is worth that.
+                                let base = value::token_worth_cash(value::table(), d);
+                                if threshold_tokens {
+                                    value::token_worth_threshold(value::table(), d, base)
+                                } else {
+                                    base
+                                }
                             },
                             pile: if d.is_building() { None } else { pile_kind(d) },
                         };
@@ -766,7 +800,7 @@ impl Eval {
                     })
                     .collect(),
             ),
-            mults: Arc::new(Mults::new(&world, strat_scale)),
+            mults: Arc::new(Mults::new(&world, strat_scale, strat_contents)),
             strat: [None; 4],
             powers: Arc::new(
                 (0..seats)
@@ -904,7 +938,15 @@ impl Eval {
         };
         let cap = if w.credit_cap > 0.0 { w.credit_cap } else { f64::MAX };
         let idle = if w.credits > 0.0 { w.credit_idle / w.credits } else { 1.0 };
-        PlanRates { energy: self.energy_unit() / credit, antimatter: antimatter / credit, project: w.project / credit, cap, idle }
+        PlanRates {
+            energy: self.energy_unit() / credit,
+            antimatter: antimatter / credit,
+            project: w.project / credit,
+            cap,
+            idle,
+            insight_cap: w.insight_cap,
+            limits: w.upkeep_loss > 0.0,
+        }
     }
 
     /// An energy a round to come (income, a city's production; 093): as held,
@@ -1017,7 +1059,7 @@ impl Eval {
                         .sum();
                     // 102 (D35): the city's own adversary ambassadors each cancel
                     // an arrival first (F122's rule).
-                    let cancel = if w.push_adv > 0.0 { adv as f64 } else { 0.0 };
+                    let cancel = adv as f64;
                     let need = board::liberate_at(&world) as f64 + cancel;
                     // Gathering counts a little; landing, once enough are at
                     // hand to meet the hold, counts more each step, so a push
@@ -1067,7 +1109,7 @@ impl Eval {
                 if bad {
                     // 102 (D28): the flip counts what its cubes still change: none
                     // once its country's megaproject has completed.
-                    let flip = if w.flip_open > 0.0 { w.station_flip * open_share(&world, g, h) } else { w.station_flip };
+                    let flip = w.station_flip * open_share(&world, g, h);
                     v -= w.station + flip;
                     // r35: ambassadors gathering to free it, worth their supply
                     // value while they stand there (as on a city).
@@ -1159,10 +1201,8 @@ impl Eval {
                 // r37: the converter needs a node in a city of its country.
                 if w.converter_city != 0.0 {
                     for s in 0..self.seats {
-                        // 102 (D27): with `converter_any`, whatever the cubes, so the
-                        // last cube is worth spending there.
-                        let cubes = w.converter_any > 0.0 || g.resource(s, Resource::ResearchCubes) > 0;
-                        if cubes && common::has_city_node_in(&world, g, s, c) {
+                        // 102 (D27): whatever the cubes, so the last cube is worth spending there.
+                        if common::has_city_node_in(&world, g, s, c) {
                             v += w.converter_city;
                         }
                     }
@@ -1202,7 +1242,7 @@ impl Eval {
         if w.horizon > 0.0 {
             v += self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left);
         } else {
-            self.flat_value(rules, g, &mut v);
+            self.flat_value(rules, g, &tokens, &mut v);
         }
         for share in unpaid {
             v -= w.threat * share;
@@ -1321,15 +1361,38 @@ impl Eval {
     }
 
     /// Per-seat resources, income, hands and buildings, by flat weights.
-    fn flat_value(&self, rules: &Rules, g: &GameState, v: &mut f64) {
+    fn flat_value(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens], v: &mut f64) {
         let w = &self.w;
         let world = rules.world();
+        // 124 (`upkeep_loss`): the cities' energy, read once.
+        let prod = if w.upkeep_loss > 0.0 { self.board_production(rules, tokens) } else { Vec::new() };
         for s in 0..self.seats {
             let res = |k: Resource| g.resource(s, k) as f64;
-            *v += self.credit_value(res(Resource::Credits))
-                + self.energy_unit() * res(Resource::Energy)
+            // 124 (`upkeep_loss`): what upkeep would push past a limit is lost unless spent.
+            let (lost_cr, lost_en) = if w.upkeep_loss > 0.0 {
+                // The seat terms the horizon reads, from the same store (103).
+                let terms = || {
+                    let tags = cards::tag_counts(&world, g, s);
+                    let mut required = tags;
+                    for t in ai::board_tags(&world, g, s) {
+                        required[*t as usize] += 1;
+                    }
+                    let income = economy::income_with(&world, g, s, &tags);
+                    (tags, required, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
+                };
+                let inc = seat_terms_cached(self.id, g, s, terms).3;
+                let made = prod.get(s).copied().unwrap_or(0);
+                (
+                    self.upkeep_lost(&world, Resource::Credits, g.resource(s, Resource::Credits), inc[Resource::Credits]),
+                    self.upkeep_lost(&world, Resource::Energy, g.resource(s, Resource::Energy), inc[Resource::Energy] + made),
+                )
+            } else {
+                (0.0, 0.0)
+            };
+            *v += self.credit_value(res(Resource::Credits) - lost_cr)
+                + self.energy_unit() * (res(Resource::Energy) - lost_en)
                 + w.antimatter * res(Resource::Antimatter)
-                + self.insight_unit(s) * res(Resource::Insight)
+                + self.insight_value(s, res(Resource::Insight))
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
             for (r, n) in ai::track_income(&world, g, s) {
                 let unit = match r {
@@ -1350,7 +1413,7 @@ impl Eval {
             });
             let packet = g.pile(&cards::packet(s)).iter().map(|id| {
                 let d = cards::def(&world, id);
-                let keep = keep_insight(&world, d.tier);
+                let keep = self.keep_price(&world, g, s, d.tier, keep_insight(&world, d.tier));
                 let v = w.hand + w.hand_cost * (Self::cost(d) - w.packet_keep * keep);
                 (w.drafted * v.max(0.0), d.tier)
             });
@@ -1458,6 +1521,66 @@ impl Eval {
         out
     }
 
+    /// 107: seat `s`'s cards in play and in hand counted by tag, and how many.
+    fn mix_counts(
+        &self,
+        world: &aic_core::module::World,
+        g: &GameState,
+        s: usize,
+        tags: [i64; TAGS.len()],
+        n: i64,
+    ) -> ([i64; TAGS.len()], i64) {
+        let (mut counts, mut cards_n) = (tags, n);
+        for id in g.pile(&cards::hand(s)) {
+            cards_n += 1;
+            for t in &self.fact(world, id).0.tags {
+                counts[*t as usize] += 1;
+            }
+        }
+        (counts, cards_n)
+    }
+
+    /// 124 (`insight_cap`): the insight seat `s` holds beyond the cap (0: off).
+    fn spare_insight(&self, g: &GameState, s: usize) -> f64 {
+        if self.w.insight_cap <= 0.0 {
+            return 0.0;
+        }
+        (g.resource(s, Resource::Insight) as f64 - self.w.insight_cap).max(0.0)
+    }
+
+    /// What seat `s`'s `held` insight is worth: its unit each, and (124,
+    /// `insight_cap`) `insight_idle` each beyond the cap.
+    fn insight_value(&self, s: usize, held: f64) -> f64 {
+        let w = &self.w;
+        if w.insight_cap > 0.0 && held > w.insight_cap {
+            self.insight_unit(s) * w.insight_cap + w.insight_idle * (held - w.insight_cap)
+        } else {
+            self.insight_unit(s) * held
+        }
+    }
+
+    /// 124 (`insight_cap`): what a keep of `tier` costs seat `s`, `keep` at full:
+    /// the share of its insight its spare insight pays costs the idle rate.
+    fn keep_price(&self, world: &aic_core::module::World, g: &GameState, s: usize, tier: u8, keep: f64) -> f64 {
+        let spare = self.spare_insight(g, s);
+        if spare <= 0.0 {
+            return keep;
+        }
+        let need = keep_insight(world, tier).max(1.0);
+        let covered = (spare / need).min(1.0);
+        let unit = self.insight_unit(s).max(1e-9);
+        keep * (1.0 - covered * (1.0 - (self.w.insight_idle / unit).min(1.0)))
+    }
+
+    /// 124 (`upkeep_loss`): of the `held` `r` seat `s` has, what next upkeep's
+    /// `income` of it would push past its holding limit (122): lost unless spent.
+    fn upkeep_lost(&self, world: &aic_core::module::World, r: Resource, held: i64, income: i64) -> f64 {
+        if self.w.upkeep_loss <= 0.0 || income <= 0 {
+            return 0.0;
+        }
+        world.hold(r).map_or(0.0, |cap| (held + income - cap).clamp(0, held.max(0)) as f64)
+    }
+
     /// Per-seat resources, income, hands and buildings in horizon mode.
     fn horizon_value(
         &self,
@@ -1523,18 +1646,31 @@ impl Eval {
                 let mut ctx = Ctx::at(left, node, tags, corrupted);
                 if table && self.mix {
                     // 107: the share of the seat's cards, in play and in hand, by tag.
-                    let (mut counts, mut cards_n) = (tags, n);
-                    for id in g.pile(&cards::hand(s)) {
-                        cards_n += 1;
-                        for t in &self.fact(&world, id).0.tags {
-                            counts[*t as usize] += 1;
-                        }
-                    }
+                    let (counts, cards_n) = self.mix_counts(&world, g, s, tags, n);
                     ctx = ctx.with_mix(&counts, cards_n);
                 }
                 SeatData { s, tags, required, prices, income, ctx }
             })
             .collect();
+        // 124 (D47, `team_share`): a trigger on a teammate's plays fires at the
+        // other seats' share of their cards with the tag.
+        let mut seats = seats;
+        if table && self.mix && w.team_share > 0.0 && self.seats > 1 {
+            let mixes: Vec<([i64; TAGS.len()], i64)> =
+                seats.iter().map(|sd| self.mix_counts(&world, g, sd.s, sd.tags, in_play(g, sd.s))).collect();
+            for sd in seats.iter_mut() {
+                let (mut counts, mut n) = ([0i64; TAGS.len()], 0);
+                for (o, (c, k)) in mixes.iter().enumerate() {
+                    if o != sd.s {
+                        for i in 0..TAGS.len() {
+                            counts[i] += c[i];
+                        }
+                        n += k;
+                    }
+                }
+                sd.ctx.team = Some(Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share);
+            }
+        }
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
         let step = if g.round % 2 == 1 { 1 } else { self.seats - 1 };
         for s in 0..self.seats {
@@ -1542,6 +1678,7 @@ impl Eval {
             for id in g.pile(&cards::packet(s)) {
                 let tier = cards::def(&world, id).tier;
                 let keep = if table { w.table * tbl.keep(tier) } else { w.hand_cost * keep_insight(&world, tier) };
+                let keep = self.keep_price(&world, g, to, tier, keep);
                 let worth = self.hand_worth(&world, g, &seats[to], left, id, true);
                 packets[to].push((w.drafted * (worth - w.packet_keep * keep).max(0.0), tier));
             }
@@ -1552,13 +1689,17 @@ impl Eval {
             // Insight is reset each round, so what is held now only counts this round.
             for (i, r) in RESOURCES.iter().enumerate() {
                 if *r == Resource::Credits {
-                    v += fade * self.credit_value(res(*r) as f64);
+                    // 124 (`upkeep_loss`): what upkeep's income would push past the
+                    // limit is lost unless spent: worth nothing held (the idle ones go first).
+                    let lost = self.upkeep_lost(&world, *r, res(*r), sd.income[*r]);
+                    v += fade * self.credit_value(res(*r) as f64 - lost);
                 } else if *r == Resource::Insight {
-                    v += fade * self.insight_unit(s) * res(*r) as f64;
+                    v += fade * self.insight_value(s, res(*r) as f64);
                 } else if *r == Resource::ResearchCubes {
                     v += fade * self.cube_unit(s) * res(*r) as f64;
                 } else if *r == Resource::Energy {
-                    v += fade * self.energy_unit() * res(*r) as f64;
+                    let lost = self.upkeep_lost(&world, *r, res(*r), sd.income[*r] + *made);
+                    v += fade * self.energy_unit() * (res(*r) as f64 - lost);
                 } else if *r != Resource::Chips {
                     v += fade * unit[i] * res(*r) as f64;
                 }
@@ -1573,6 +1714,13 @@ impl Eval {
                     w.table * w.table_income * tbl.res(r)
                 } else if r == Resource::ResearchCubes {
                     self.cube_unit(s)
+                } else if r == Resource::Insight && self.patient[s] && self.spare_insight(g, s) > 0.0 {
+                    // 124 (`insight_cap`): under Patience the pile carries, so more
+                    // insight on a spare pile is spare too (without it the pile resets).
+                    w.insight_idle
+                } else if r == Resource::Insight && w.insight_income > 0.0 {
+                    // 124 (D53): an insight a round at its own weight.
+                    w.insight_income
                 } else {
                     unit[i]
                 };
@@ -1687,7 +1835,7 @@ impl Eval {
         for p in powers {
             let need: i64 = p.tags.iter().map(|(_, n)| n).sum();
             // 102 (D33): the rules' own test, which since r35 is what makes a power dear.
-            let dear = if self.w.power_dear > 0.0 { p.dear && need > 0 } else { need >= 2 };
+            let dear = p.dear && need > 0;
             if !dear || p.worth <= 0.0 {
                 continue;
             }
@@ -1803,6 +1951,12 @@ fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
 /// 107: `ctx` with each tag's share read from seat `s`'s cards, in play (its
 /// `tags`, one a card) and in hand.
 pub(crate) fn own_mix(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()], ctx: Ctx) -> Ctx {
+    let (counts, n) = own_mix_counts(w, g, s, tags);
+    ctx.with_mix(&counts, n)
+}
+
+/// 107: seat `s`'s cards in play and in hand counted by tag, and how many.
+pub(crate) fn own_mix_counts(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()]) -> ([i64; TAGS.len()], i64) {
     let mut counts = *tags;
     let mut n = in_play(g, s);
     for id in g.pile(&cards::hand(s)) {
@@ -1811,7 +1965,7 @@ pub(crate) fn own_mix(w: &aic_core::module::World, g: &GameState, s: usize, tags
             counts[*t as usize] += 1;
         }
     }
-    ctx.with_mix(&counts, n)
+    (counts, n)
 }
 
 /// 107: seat `s`'s cards in play: its tops, the cards under them and its programs.
@@ -1845,6 +1999,11 @@ pub struct PlanRates {
     pub project: f64,
     pub cap: f64,
     pub idle: f64,
+    /// 124: the heuristic's `insight_cap` (0: none), for `keep_spare`.
+    pub insight_cap: f64,
+    /// 124: whether the heuristic reads the holding limits (`upkeep_loss`), for
+    /// `plan_limits`: the plan honors them when its heuristic does.
+    pub limits: bool,
 }
 
 #[cfg(test)]

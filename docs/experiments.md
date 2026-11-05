@@ -69,9 +69,11 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
   thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`. `margin.held_after_actions`: what each
   seat held after its last *completed* action phase, never mid-round.
 - **The runaway check**: every read reports each resource's peak per seat (`peaks` in `games.jsonl`, in
-  `PEAKS` order; the report's *Peak holdings*). A peak far above a round's income (`gained / rounds`) is an engine
-  running away: `scripts/cards/runaway_read.py` flags it. Holding limits count what they cut as
-  `economy.hold_lost.<resource>`; a 3-4 round game's starting credits flag too (not an engine).
+  `PEAKS` order; the report's *Peak holdings*). A peak's rise over setup's `start` far above a round's income
+  (`gained / rounds`) is an engine running away: `scripts/cards/runaway_read.py` flags it. `sources` splits a
+  seat's `gained` by the action or phase it came in; `keeps` counts picks, keeps and tiers after the opening
+  (`source_read.py`). Holding limits count what they cut as
+  `economy.hold_lost.<resource>`.
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -142,7 +144,8 @@ the judge off the value table.
 - **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
 - **Current recipe:** `screen-102-c.json` (the three pairs at d2, 200 seeds each, about 2 min on 6 threads) and
   `-c-d0` ("greedy" is the `greedy` agent; "greedy at d0" is the `engine` spec, no strategy);
-  `screen-102-a*.json` screen agent switches on and off as agent cells of one spec. A worked read: spec
+  agent switches screen on and off as agent cells of one spec (`screen-124-candidate.json` did, on the
+  build before its levers were defaults; `read124.py` in its results folder reads one). A worked read: spec
   `experiments/screen-121-r48.json`, then `python experiments/results/121_loose_threads/read121.py OLD NEW` (122's
   fresh read: `experiments/screen-122-r49.json`).
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
@@ -184,6 +187,6 @@ on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 ## Past runs
 
 Write-ups: index in [experiments/history.md](../experiments/history.md). Specs the binary refuses are in
-`experiments/archive/`. Tuning sweeps: `scripts/tune/sweep.py
+`experiments/archive/` (a fast-lane test parses every other spec: removing a switch moves its specs there). Tuning sweeps: `scripts/tune/sweep.py
 --agents "greedy;beam" --games 64 --tag T --var "base=" --var "name=<sets;...>"` runs `aic-sim run --json` per variant
 and agent into `out/tune/log.jsonl`; `log_table.py TAG...` makes a markdown table.

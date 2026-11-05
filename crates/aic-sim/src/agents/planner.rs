@@ -330,6 +330,9 @@ impl super::Strategic for Planner {
     fn strat_scale(&self) -> f64 {
         self.ev.w.strat_scale
     }
+    fn strat_contents(&self) -> bool {
+        self.ev.w.strat_contents > 0.0
+    }
 }
 
 impl Agent for Planner {

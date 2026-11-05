@@ -216,7 +216,21 @@ pub struct Ctx {
     /// 107: the share of the seat's cards carrying each tag (`rates.tag_share`
     /// each, unless the caller reads the seat's own: [`Ctx::with_mix`]).
     pub share: [f64; TAGS.len()],
+    /// 124 (D47, `w.team_share`): the teammates' share of cards carrying each
+    /// tag, which a trigger on a teammate's plays fires at; `None`: the seat's own
+    /// `share`, as before.
+    pub team: Option<[f64; TAGS.len()]>,
+    /// 124 (the keep plan's `plan_limits`): how much more of each resource (by
+    /// `Resource as usize`) the seat may hold under its limit (122), and how much
+    /// more its credit production may be raised by cards; a gain past it is lost,
+    /// so it is worth nothing. Infinite: no limit (the table's typical context).
+    /// The play check needs none: the engine clamps the gain in the state it scores.
+    pub room: [f64; 7],
+    pub prod_room: f64,
 }
+
+/// No limit on any resource.
+pub const NO_ROOM_LIMIT: [f64; 7] = [f64::INFINITY; 7];
 
 impl Ctx {
     /// The context the table's own defaults stand for.
@@ -228,6 +242,9 @@ impl Ctx {
             tags: [t.rate("tag_count") as i64; TAGS.len()],
             corrupted: true,
             share: [t.fast.tag_share; TAGS.len()],
+            team: None,
+            room: NO_ROOM_LIMIT,
+            prod_room: f64::INFINITY,
         }
     }
 
@@ -257,9 +274,49 @@ impl Ctx {
 
     /// A context in a game: income counts every round left.
     pub fn at(left: f64, node: f64, tags: [i64; TAGS.len()], corrupted: bool) -> Ctx {
-        Ctx { left, horizon: left, node, tags, corrupted, share: [table().fast.tag_share; TAGS.len()] }
+        Ctx {
+            left,
+            horizon: left,
+            node,
+            tags,
+            corrupted,
+            share: [table().fast.tag_share; TAGS.len()],
+            team: None,
+            room: NO_ROOM_LIMIT,
+            prod_room: f64::INFINITY,
+        }
+    }
+
+    /// 124 (`plan_limits`): the context with seat `s`'s room under the holding
+    /// limits and the credit production cap (122) read from the state.
+    pub fn with_room(mut self, w: &aic_core::module::World, g: &aic_core::GameState, s: usize) -> Ctx {
+        for r in LIMITED {
+            let room = w.room(g, s, r);
+            self.room[r as usize] = if room == i64::MAX { f64::INFINITY } else { room as f64 };
+        }
+        if let Some(aic_core::config::ParamValue::Int(cap)) = w.params.get("economy.credit_production") {
+            let key = aic_core::modules::economy::production_key(s, Resource::Credits);
+            self.prod_room = (*cap - g.var(key.as_str())).max(0) as f64;
+        }
+        self
     }
 }
+
+impl Ctx {
+    /// 124: the room a seat has once it has paid `credits` and card `d`'s other
+    /// costs to play it: a gain counts against what the payment frees.
+    pub fn paying(mut self, d: &CardDef, credits: i64) -> Ctx {
+        for (r, n) in [(Resource::Credits, credits), (Resource::Energy, d.energy), (Resource::Chips, d.chips)] {
+            if self.room[r as usize].is_finite() {
+                self.room[r as usize] += n.max(0) as f64;
+            }
+        }
+        self
+    }
+}
+
+/// The resources a holding limit may cap (122).
+pub const LIMITED: [Resource; 4] = [Resource::Credits, Resource::Energy, Resource::Chips, Resource::Ambassadors];
 
 /// An op's (or a list's) value in credits, split by what it depends on.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -287,6 +344,20 @@ pub struct Worth {
     /// 107: a round, standing, per share of the seat's cards carrying a tag (a
     /// trigger or discount on one tag's plays), times [`Ctx::share`].
     pub standing_tag: [f64; TAGS.len()],
+    /// 124 (D47): as `standing_tag`, on a teammate's plays: times the teammates'
+    /// share ([`Ctx::team`]; the seat's own without one).
+    pub team_tag: [f64; TAGS.len()],
+    /// 124 (`plan_limits`): of `now`, what a gain of each limited resource adds
+    /// (`gain_v`, by `Resource as usize`) and how much it gains (`gain_n`); a
+    /// gain past [`Ctx::room`] is lost. Of `income`, what a credit production
+    /// raise adds a round (`prod_v`) and by how much (`prod_n`).
+    pub gain_v: [f64; 7],
+    pub gain_n: [f64; 7],
+    pub prod_v: f64,
+    pub prod_n: f64,
+    /// 124: as `prod_v` / `prod_n`, per tag the seat has (a per-tag raise).
+    pub prod_tag_v: [f64; TAGS.len()],
+    pub prod_tag_n: [f64; TAGS.len()],
 }
 
 impl std::ops::AddAssign for Worth {
@@ -302,7 +373,16 @@ impl std::ops::AddAssign for Worth {
             self.per_tag[t] += o.per_tag[t];
             self.income_per_tag[t] += o.income_per_tag[t];
             self.standing_tag[t] += o.standing_tag[t];
+            self.team_tag[t] += o.team_tag[t];
+            self.prod_tag_v[t] += o.prod_tag_v[t];
+            self.prod_tag_n[t] += o.prod_tag_n[t];
         }
+        for r in 0..7 {
+            self.gain_v[r] += o.gain_v[r];
+            self.gain_n[r] += o.gain_n[r];
+        }
+        self.prod_v += o.prod_v;
+        self.prod_n += o.prod_n;
     }
 }
 
@@ -336,8 +416,53 @@ impl Worth {
             self.per_tag[t] *= k;
             self.income_per_tag[t] *= k;
             self.standing_tag[t] *= k;
+            self.team_tag[t] *= k;
+            self.prod_tag_v[t] *= k;
         }
+        // A scaled gain is a share of one gain: its value scales, its size stands.
+        for r in 0..7 {
+            self.gain_v[r] *= k;
+        }
+        self.prod_v *= k;
         self
+    }
+
+    /// 124: a gain of `n` of `res` worth `v`, now (`plan_limits` caps it).
+    fn gain(res: Resource, n: f64, v: f64) -> Worth {
+        let mut w = Worth::now(v);
+        if LIMITED.contains(&res) {
+            w.gain_v[res as usize] = v;
+            w.gain_n[res as usize] = n;
+        }
+        w
+    }
+
+    /// 124: what the limits take from `now` in this context: each limited gain's
+    /// value beyond the seat's room for it.
+    fn lost_now(&self, c: &Ctx) -> f64 {
+        let mut lost = 0.0;
+        for r in 0..7 {
+            let n = self.gain_n[r];
+            if n > 0.0 && c.room[r] < n {
+                lost += self.gain_v[r] * (1.0 - c.room[r] / n);
+            }
+        }
+        lost
+    }
+
+    /// 124: what the credit production cap takes from `income` a round: a
+    /// raise, flat and per tag at the seat's tags, past the room left under it.
+    fn lost_round(&self, c: &Ctx) -> f64 {
+        if c.prod_room == f64::INFINITY {
+            return 0.0;
+        }
+        let tags = |x: &[f64; TAGS.len()]| (0..TAGS.len()).map(|i| x[i] * c.tags[i] as f64).sum::<f64>();
+        let (v, n) = (self.prod_v + tags(&self.prod_tag_v), self.prod_n + tags(&self.prod_tag_n));
+        if n > 0.0 && c.prod_room < n {
+            v * (1.0 - c.prod_room / n)
+        } else {
+            0.0
+        }
     }
 
     /// 107: a standing rate on one tag's plays (`rates.fires_play` plays a round
@@ -353,12 +478,12 @@ impl Worth {
         let node = if c.left <= t.fast.late_rounds { t.fast.node_late } else { t.fast.node };
         let city = if c.corrupted { 1.0 } else { t.fast.no_city_share };
         let tags: f64 = (0..TAGS.len()).map(|i| self.per_tag[i] * c.tags[i] as f64).sum();
-        self.now + self.node * node + self.per_node * c.node + self.city * city + tags
+        self.now - self.lost_now(c) + self.node * node + self.per_node * c.node + self.city * city + tags
     }
 
     /// What it pays a round, in this context: income and standing.
     pub fn per_round(&self, c: &Ctx) -> f64 {
-        self.income + self.unseen_round(c) + self.income_round_tags(c)
+        self.income - self.lost_round(c) + self.unseen_round(c) + self.income_round_tags(c)
     }
 
     fn income_round_tags(&self, c: &Ctx) -> f64 {
@@ -367,7 +492,9 @@ impl Worth {
 
     /// The standing part the heuristic's income doesn't count, a round.
     pub fn unseen_round(&self, c: &Ctx) -> f64 {
-        self.standing + (0..TAGS.len()).map(|i| self.standing_tag[i] * c.share[i]).sum::<f64>()
+        let team = c.team.as_ref().unwrap_or(&c.share);
+        self.standing
+            + (0..TAGS.len()).map(|i| self.standing_tag[i] * c.share[i] + self.team_tag[i] * team[i]).sum::<f64>()
     }
 }
 
@@ -385,7 +512,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
     let row = |k: &str| t.op(k);
     let tag_i = |tag: aic_core::content::Tag| tag as usize;
     match op {
-        Op::Gain { resource, amount } => Worth::now(row("gain") * r(*resource) * *amount as f64),
+        Op::Gain { resource, amount } => Worth::gain(*resource, *amount as f64, row("gain") * r(*resource) * *amount as f64),
         Op::GainPerNode { resource } => Worth { per_node: row("gain_per_node") * r(*resource), ..Worth::default() },
         Op::ChoosePlayer => Worth::now(row("choose_player")),
         Op::OtherGain { resource, amount } => Worth::now(row("other_gain") * r(*resource) * *amount as f64),
@@ -434,7 +561,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::Harden { count } => Worth::now(row("harden") * *count as f64),
         Op::MoveAmbassadors { max } => Worth::now(row("move_ambassadors") * *max as f64),
-        Op::GainAmbassadors { count } => Worth::now(row("gain_ambassadors") * r(Resource::Ambassadors) * *count as f64),
+        Op::GainAmbassadors { count } => {
+            Worth::gain(Resource::Ambassadors, *count as f64, row("gain_ambassadors") * r(Resource::Ambassadors) * *count as f64)
+        }
         Op::Shelter => Worth::unseen(row("shelter") * t.rate("target_share")),
         Op::Cordon => Worth::unseen(row("cordon")),
         Op::FreeBuilding => Worth::now(row("free_building")),
@@ -448,11 +577,24 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterThreat => Worth::now(row("counter_threat")),
         Op::DrainProject { amount } => Worth::now(row("drain_project") * *amount as f64),
         Op::DiscardProject => Worth::now(row("discard_project")),
-        Op::Production { resource, amount } => Worth::income(row("production") * income_rate(t, *resource) * *amount as f64),
+        Op::Production { resource, amount } => {
+            let mut w = Worth::income(row("production") * income_rate(t, *resource) * *amount as f64);
+            // 124 (`plan_limits`): credit production past its cap (122) is lost.
+            if *resource == Resource::Credits {
+                w.prod_v = w.income;
+                w.prod_n = *amount as f64;
+            }
+            w
+        }
         // 106: an income per tag fixed at play, valued as one at the seat's count.
         Op::ProductionPerTag { resource, tag, per } => {
             let mut w = Worth::default();
             w.income_per_tag[tag_i(*tag)] = row("production_per_tag") * income_rate(t, *resource) / (*per).max(1) as f64;
+            // 124 (`plan_limits`): a credit raise per tag stops at the cap too (122).
+            if *resource == Resource::Credits {
+                w.prod_tag_v[tag_i(*tag)] = w.income_per_tag[tag_i(*tag)];
+                w.prod_tag_n[tag_i(*tag)] = 1.0 / (*per).max(1) as f64;
+            }
             w
         }
         Op::AddTokens { kind, amount, .. } => Worth::now(row("add_tokens") * t.feed(*kind) * *amount as f64),
@@ -560,6 +702,13 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let both = if matches!(on, Event::TeamPlay { both: true, .. }) { 1.0 + row("other_gain") } else { 1.0 };
             let each = row("when") * triggered(t, then) * both;
             match on_tag(on) {
+                // 124 (D47): one on a teammate's plays of a tag fires at the
+                // teammates' share of them (`Ctx::team`), not the owner's.
+                Some(tag) if matches!(on, Event::TeamPlay { .. }) => {
+                    let mut w = Worth::default();
+                    w.team_tag[tag as usize] = each * fires(t, on) / t.rate("tag_share");
+                    w
+                }
                 // 107: a trigger on one tag's plays fires at the seat's share of them.
                 Some(tag) => Worth::on_tag(tag, each * fires(t, on) / t.rate("tag_share")),
                 None => Worth::standing(each * fires(t, on)),
@@ -728,6 +877,24 @@ pub fn token_worth(t: &Table, d: &CardDef) -> Worth {
         a.branches().into_iter().filter(|b| b.tokens > 0).map(|b| list_worth(t, &b.effects).scaled(1.0 / b.tokens as f64)).next()
     });
     spend.unwrap_or(Worth::now(t.token_held()))
+}
+
+/// 124 (D47, `w.threshold_tokens`): `base`, or on a card with a threshold (At
+/// N) what the threshold pays per token when that is more ("a token toward an
+/// At 4 that pays 12 is worth 3").
+pub fn token_worth_threshold(t: &Table, d: &CardDef, base: Worth) -> Worth {
+    let at = d
+        .passives
+        .iter()
+        .filter_map(|p| match p {
+            Op::Threshold { at, then } => Some(t.op("threshold") * triggered(t, then) / (*at).max(1) as f64),
+            _ => None,
+        })
+        .reduce(f64::max);
+    match at {
+        Some(v) if v > base.now => Worth::now(v),
+        _ => base,
+    }
 }
 
 /// 102 (D24): [`token_worth`], but a token on a card whose Action cashes its own

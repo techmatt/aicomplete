@@ -1,0 +1,22 @@
+{
+  "name": "screen-124-candidate15",
+  "note": "124: the candidate with insight income at the table's rate (1.5 points: 2.5 credits at the table's 0.6), which plays Hyperscale Botnet at greedy's rate, alone and with the two D47 levers; dev seeds 34756-34899, 144 a cell, the three pairs at d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist:w.strat_contents=1,w.insight_income=1.5,w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1",
+    "strategist:w.strat_contents=1,w.insight_income=1.5,w.insight_cap=10,keep_spare=1,plan_limits=1,w.upkeep_loss=1,w.team_share=1,plan_team=1,w.threshold_tokens=1"
+  ],
+  "games": 144,
+  "first_seed": 34756,
+  "records": 0
+}
