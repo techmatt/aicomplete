@@ -7,7 +7,7 @@ Current:
 - `wasm-smoke.mjs`: plays one game through the wasm package in Node. `wasm-parity.mjs`:
   replays aic-sim records of every variant in wasm.
 - `regen.py [--no-build] [--check]`: builds release, then `aic-sim docs`, `cards_doc.py`, `effect_ledger.py`,
-  `shared_row.py`; prints the content hash, rules revision and `git status`. `--check`: the two `--check`s only.
+  `shared_row.py`, `no_liberate.py`; prints the content hash, rules revision and `git status`. `--check`: the two `--check`s only.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read

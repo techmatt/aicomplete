@@ -574,7 +574,9 @@ impl Module for Threats {
                         amount,
                     });
                 }
-                if g.var(&paid_key(&t, s, r)) > 0 {
+                // 122: a stake coming back is a gain, so it stops at the holding
+                // limit; with no room at all, withdrawing would only lose it.
+                if g.var(&paid_key(&t, s, r)) > 0 && w.room(g, s, r) > 0 {
                     out.push(Action::Withdraw {
                         seat,
                         threat: t,

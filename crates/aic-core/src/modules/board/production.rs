@@ -262,8 +262,11 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         } else {
             // A neutral city's cube: a player with a node next to it may buy
             // it (players choose who), otherwise it is lost (021).
+            // 122: a seat holding its limit of energy has no room: it can't buy.
             let buyers: Vec<usize> = (0..g.seats.len())
-                .filter(|&s| g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h))
+                .filter(|&s| {
+                    g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h) && w.room(g, s, Resource::Energy) > 0
+                })
                 .collect();
             // 118: a city making no energy (`corp_energy` 0) sold nothing for its price.
             if buyers.is_empty() || energy <= 0 {

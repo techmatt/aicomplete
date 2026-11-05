@@ -1,0 +1,179 @@
+{
+  "name": "screen-122-caps",
+  "note": "122: the holding limits on and off (gen_caps.py), the three pairs at d2, the strategist and greedy, 48 a cell from seed 34708.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": [
+        "economy.hold_credits=9999",
+        "economy.hold_energy=999",
+        "economy.hold_chips=999",
+        "economy.hold_ambassadors=999",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2",
+        "economy.hold_credits=9999",
+        "economy.hold_energy=999",
+        "economy.hold_chips=999",
+        "economy.hold_ambassadors=999",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2",
+        "economy.hold_credits=9999",
+        "economy.hold_energy=999",
+        "economy.hold_chips=999",
+        "economy.hold_ambassadors=999",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "bp-caps",
+      "set": [
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "br-caps",
+      "set": [
+        "ai.boards=0,2",
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "pr-caps",
+      "set": [
+        "ai.boards=1,2",
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "bp-caps_nocr",
+      "set": [
+        "economy.hold_credits=9999",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "br-caps_nocr",
+      "set": [
+        "ai.boards=0,2",
+        "economy.hold_credits=9999",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "pr-caps_nocr",
+      "set": [
+        "ai.boards=1,2",
+        "economy.hold_credits=9999",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "bp-caps_cr120",
+      "set": [
+        "economy.hold_credits=120",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "br-caps_cr120",
+      "set": [
+        "ai.boards=0,2",
+        "economy.hold_credits=120",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "pr-caps_cr120",
+      "set": [
+        "ai.boards=1,2",
+        "economy.hold_credits=120",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=999"
+      ]
+    },
+    {
+      "name": "bp-caps_pat10",
+      "set": [
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=10"
+      ]
+    },
+    {
+      "name": "br-caps_pat10",
+      "set": [
+        "ai.boards=0,2",
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=10"
+      ]
+    },
+    {
+      "name": "pr-caps_pat10",
+      "set": [
+        "ai.boards=1,2",
+        "economy.hold_credits=150",
+        "economy.hold_energy=10",
+        "economy.hold_chips=10",
+        "economy.hold_ambassadors=10",
+        "economy.patience_carry=10"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

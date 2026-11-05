@@ -71,7 +71,8 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
   seat held after its last *completed* action phase (121), never mid-round.
 - **The runaway check** (Matt, 121): every read reports each resource's peak per seat (`peaks` in `games.jsonl`, in
   `PEAKS` order; the report's *Peak holdings*). A peak far above a round's income (`gained / rounds`) is an engine
-  running away (any resource may get a sink later): `scripts/cards/runaway_read.py` flags it.
+  running away (any resource may get a sink later): `scripts/cards/runaway_read.py` flags it. r49's holding limits
+  count what they cut as `economy.hold_lost.<resource>`; a 3-4 round game's starting credits flag too (not an engine).
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -109,7 +110,8 @@ agent is one stderr line and a missing cell, so an `engine:samples=2` you meant 
 a path through fields and list indexes (`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.passives.0.amount=2`,
 `ais.*.economy_track.4.cost=2`, `threats.<id>.counter=[["credits",3]]`; `corps.horizon.project.after=[]` reaches the
 map's country pieces by lowercase name, the only part of the map an overlay reaches; `null` clears an optional field,
-`cards.<id>.ability=null`). It is checked like `content/`
+`cards.<id>.ability=null`; an op's `amount` can't be 0: to switch an income off, rewrite its list without it, as 122's
+`gen_disproof.py` does). It is checked like `content/`
 and lands in the config, so the hashes and records name it and `replay` needs nothing else
 (`experiments/overlay-card-cost.json` is a worked sweep). Only player-card text is generated: other text and the
 viewer's faces show printed values while the game plays the overlay. `experiment` refuses `--set` and a spec has no
@@ -173,12 +175,10 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump (seeds below 33836 went to r43 and earlier): r44: 33836-33883 111's read of r44 against
-r43 (`screen-111-r44.json`). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`); 33932-34031 116's agent
-sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. r46: 34224-34271
-117's reads (`screen-117-r45.json`, both binaries; `screen-117-income.json`, r46's incomes as overlays on r45:
-the income step alone). r47: 34272-351, 34400-1, 34500-47, 34600-2, 34700-7 118. r48: 34272-34319 121's read of r48 against r47
-(`screen-121-r48.json`, both binaries; at r47 118 had played them). Next free: 34708.
+seeds and reset at each bump (seeds below 34224 went to r45 and earlier: 111, 112, 116). r46: 34224-34271
+117's reads (`screen-117-r45.json`, `screen-117-income.json`). r47: 34272-351, 34400-1, 34500-47, 34600-2, 34700-7 118.
+r48: 34272-34319 121's read. r49: 34708-34755 122's dev screens (`screen-122-dev`, `-disproof`,
+`-insight`, `-production`, `-factorial`, archive's `-caps`), 34900-34947 its fresh read (`screen-122-r49.json`). Next free: 34756-34899, 34948.
 
 ## Reading prices
 

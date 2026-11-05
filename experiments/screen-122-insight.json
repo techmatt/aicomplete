@@ -1,0 +1,25 @@
+{
+  "name": "screen-122-insight",
+  "note": "122: what feeds the Researcher's insight bank (Matt, message 5117: Patience stays uncapped). The holding limits on in every cell; Neural Mirror's per-Cyber insight income off, or flat +2 at 3 Cyber needed; the Researcher's pairs at d2, the strategist and greedy, 48 a cell on dev seeds 34708-34755.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "br-caps", "set": ["ai.boards=0,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10"]},
+    {"name": "pr-caps", "set": ["ai.boards=1,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10"]},
+    {"name": "br-nm_off", "set": ["ai.boards=0,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10", "cards.neural_mirror.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":1}]"]},
+    {"name": "pr-nm_off", "set": ["ai.boards=1,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10", "cards.neural_mirror.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":1}]"]},
+    {"name": "br-nm_flat2", "set": ["ai.boards=0,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10", "cards.neural_mirror.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]", "cards.neural_mirror.needs=[[\"cyber\",3]]"]},
+    {"name": "pr-nm_flat2", "set": ["ai.boards=1,2", "economy.hold_credits=150", "economy.hold_energy=10", "economy.hold_chips=10", "economy.hold_ambassadors=10", "cards.neural_mirror.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]", "cards.neural_mirror.needs=[[\"cyber\",3]]"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

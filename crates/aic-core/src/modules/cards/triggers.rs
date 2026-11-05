@@ -267,9 +267,7 @@ pub fn copy_income(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
             Op::IncomePerTag { resource, tag, per, amount } => (*resource, amount * (counts[*tag as usize] / (*per).max(1))),
             _ => continue,
         };
-        if n != 0 {
-            cx.add_key(g, &economy::production_key(seat, r), n);
-        }
+        economy::raise_production(g, cx, seat, r, n);
     }
     cx.tally(g, "cards.copied", 1);
     Ok(())

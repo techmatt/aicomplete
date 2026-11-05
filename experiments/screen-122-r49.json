@@ -1,0 +1,35 @@
+{
+  "name": "screen-122-r49",
+  "note": "122: the final read, r49 against r48 paired on fresh seeds 34900-34947: the three pairs at d2, the strategist and greedy, 48 a cell. Run by r48 (e7edb0a, its configs) and by r49.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34900,
+  "records": 0
+}

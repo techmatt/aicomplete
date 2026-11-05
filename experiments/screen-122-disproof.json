@@ -1,0 +1,272 @@
+{
+  "name": "screen-122-disproof",
+  "note": "122: each named engine off by overlays beside the base, the three pairs at d2, the strategist, 48 a cell on dev seeds 34708-34755 (gen_disproof.py writes it).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-base",
+      "set": []
+    },
+    {
+      "name": "br-base",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr-base",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-vm_omd",
+      "set": [
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.vertical_monopoly.passives=[]"
+      ]
+    },
+    {
+      "name": "br-vm_omd",
+      "set": [
+        "ai.boards=0,2",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.vertical_monopoly.passives=[]"
+      ]
+    },
+    {
+      "name": "pr-vm_omd",
+      "set": [
+        "ai.boards=1,2",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.vertical_monopoly.passives=[]"
+      ]
+    },
+    {
+      "name": "bp-prog_cr",
+      "set": [
+        "cards.foundation_model_campus.passives=[]",
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.vertical_monopoly.passives=[]",
+        "cards.power_to_the_people.passives=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.university_spinout.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":1}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "br-prog_cr",
+      "set": [
+        "ai.boards=0,2",
+        "cards.foundation_model_campus.passives=[]",
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.vertical_monopoly.passives=[]",
+        "cards.power_to_the_people.passives=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.university_spinout.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":1}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "pr-prog_cr",
+      "set": [
+        "ai.boards=1,2",
+        "cards.foundation_model_campus.passives=[]",
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":3}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.vertical_monopoly.passives=[]",
+        "cards.power_to_the_people.passives=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.university_spinout.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"chips\",\"amount\":1}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "bp-embassy",
+      "set": [
+        "cards.orbital_embassy.passives=[]"
+      ]
+    },
+    {
+      "name": "br-embassy",
+      "set": [
+        "ai.boards=0,2",
+        "cards.orbital_embassy.passives=[]"
+      ]
+    },
+    {
+      "name": "pr-embassy",
+      "set": [
+        "ai.boards=1,2",
+        "cards.orbital_embassy.passives=[]"
+      ]
+    },
+    {
+      "name": "bp-prog_en",
+      "set": [
+        "cards.collateralized_grid.effects=[{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]",
+        "cards.baseload_contract.effects=[]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":4}]",
+        "cards.tidal_barrage.effects=[]",
+        "cards.faraday_yard.effects=[{\"op\":\"harden\",\"count\":3}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":10}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"power\",\"per\":1}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":2}]",
+        "cards.pumped_hydro_storage.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"security\",\"per\":1}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"draw\",\"count\":4}]",
+        "cards.national_grid_buildout.effects=[{\"op\":\"place_node\",\"count\":3,\"free\":true}]"
+      ]
+    },
+    {
+      "name": "br-prog_en",
+      "set": [
+        "ai.boards=0,2",
+        "cards.collateralized_grid.effects=[{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]",
+        "cards.baseload_contract.effects=[]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":4}]",
+        "cards.tidal_barrage.effects=[]",
+        "cards.faraday_yard.effects=[{\"op\":\"harden\",\"count\":3}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":10}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"power\",\"per\":1}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":2}]",
+        "cards.pumped_hydro_storage.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"security\",\"per\":1}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"draw\",\"count\":4}]",
+        "cards.national_grid_buildout.effects=[{\"op\":\"place_node\",\"count\":3,\"free\":true}]"
+      ]
+    },
+    {
+      "name": "pr-prog_en",
+      "set": [
+        "ai.boards=1,2",
+        "cards.collateralized_grid.effects=[{\"op\":\"cash_out\",\"kind\":\"capital\",\"resource\":\"energy\",\"rate\":1}]",
+        "cards.baseload_contract.effects=[]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":4}]",
+        "cards.tidal_barrage.effects=[]",
+        "cards.faraday_yard.effects=[{\"op\":\"harden\",\"count\":3}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":10}]",
+        "cards.continental_supergrid.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"power\",\"per\":1}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":2}]",
+        "cards.pumped_hydro_storage.effects=[{\"op\":\"gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":5}]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production_per_tag\",\"resource\":\"credits\",\"tag\":\"security\",\"per\":1}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"draw\",\"count\":4}]",
+        "cards.national_grid_buildout.effects=[{\"op\":\"place_node\",\"count\":3,\"free\":true}]"
+      ]
+    },
+    {
+      "name": "bp-chip_inc",
+      "set": [
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":9}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":16}]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":7}]",
+        "board.factory_chips=0"
+      ]
+    },
+    {
+      "name": "br-chip_inc",
+      "set": [
+        "ai.boards=0,2",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":9}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":16}]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":7}]",
+        "board.factory_chips=0"
+      ]
+    },
+    {
+      "name": "pr-chip_inc",
+      "set": [
+        "ai.boards=1,2",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":9}]",
+        "cards.orbital_mass_driver.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":16}]",
+        "cards.peaker_turbines.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.fabrication_megaplex.passives=[{\"op\":\"income\",\"resource\":\"credits\",\"amount\":7}]",
+        "board.factory_chips=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

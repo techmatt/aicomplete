@@ -4,13 +4,13 @@
 
 | Resource | Comes from | Spent on |
 |---|---|---|
-| Credits | Credit production on the AI board ([ai-boards.md](ai-boards.md)), the node track, cards and Unity cards, in upkeep; megaproject payouts; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters |
-| Energy (keeps between rounds; rare, candidate: about 1-3 held mid-game, near 0 at the end) | Cities' cubes in production (*The round* below); Horizon's completion payout; the node tracks; Power programs (106: energy income lives on programs, +2 at most on any card: Baseload Contract; Tidal Barrage per 2 Power tags); the Power engines' when-built 2 (Substation Hub, Dispatch Control Room, Smart Grid Backbone; 108) and Power triggers (Positron Storage Ring's 2 a Power card); the Builder's Overcharge; the Protector's printed energy; `ai.start_energy` at the start | The node powers and every track step ([ai-boards.md](ai-boards.md)); the dear powers (Rush Build, Shelter, Particle Run); cards' `energy` cost (three: Cryptojacking Campaign, Power to the People, Cryo-Compute Burn); Blackout's, Sabotage's and Commandeer's counters; Bulwark's hardening |
-| Chips | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; cards (chip income: Peaker Turbines, Arcology Foundry, Orbital Mass Driver, Fabrication Megaplex; Antitrust Action's chips per Industry tag; Joint Fabrication Pact) | Some buildings' `chips` cost; draw 2 cards: the Builder's Procure (2 chips) and Parts Exchange's Action (1 chip); research stations (`station_chips`); the Harden action a card grants (`harden_chips`; no card does); sold at `chips_credits` |
+| Credits (at most `hold_credits` 150) | Credit production on the AI board ([ai-boards.md](ai-boards.md)), the node track, cards and Unity cards, in upkeep; megaproject payouts; selling cards and chips | Card costs; keeps beyond the opening's free ones (`opening_keep_credits` each); insight for keeps (`insight_credits` each); neutral cities' energy; standard projects, Clear and Move; the Builder's Buy In; threat counters |
+| Energy (keeps between rounds, at most `hold_energy` 10; rare, candidate: about 1-3 held mid-game, near 0 at the end) | Cities' cubes in production (*The round* below); Horizon's completion payout; the node tracks; Power programs (106: energy income lives on programs, +2 at most on any card: Baseload Contract; Tidal Barrage per 2 Power tags); the Power engines' when-built 2 (Substation Hub, Dispatch Control Room, Smart Grid Backbone; 108) and Power triggers (Positron Storage Ring's 2 a Power card); the Builder's Overcharge; the Protector's printed energy; `ai.start_energy` at the start | The node powers and every track step ([ai-boards.md](ai-boards.md)); the dear powers (Rush Build, Shelter, Particle Run); cards' `energy` cost (three: Cryptojacking Campaign, Power to the People, Cryo-Compute Burn); Blackout's, Sabotage's and Commandeer's counters; Bulwark's hardening |
+| Chips (at most `hold_chips` 10) | Player-owned factories on production steps (`factory_chips` each); Onyx's converter; the Builder's tracks and its Mint and Scrap; cards (chip income: Peaker Turbines, Arcology Foundry, Orbital Mass Driver, Fabrication Megaplex; Antitrust Action's chips per Industry tag; Joint Fabrication Pact) | Some buildings' `chips` cost; draw 2 cards: the Builder's Procure (2 chips) and Parts Exchange's Action (1 chip); research stations (`station_chips`); the Harden action a card grants (`harden_chips`; no card does); sold at `chips_credits` |
 | Antimatter | Cards (Positron Storage Ring, Zero-Day Auction, Intrusion Lab's threshold); the antimatter action; Horizon's converter; the Researcher's Particle Run | Tier-2 cards |
 | Research cubes (keep between rounds) | Your stations, once their country's megaproject is complete; the Researcher's Open Archive capstone | The cube converter (a standard action: 1 cube for `cube_insight` insight, no limit a round); the corps' converters ([board.md](board.md)); the Researcher's Peer Review ([ai-boards.md](ai-boards.md)); Forensic Audit |
 | Insight | Each round, set to the AI board's insight (5 printed, [ai-boards.md](ai-boards.md)) plus the node track's uncovers, buildings and programs' insight production (Endowed Research Chair, Frontier Lab Charter, Deep State Ledger, Recursive Self-Improvement) and the Unity card Think Tank's 1; less 1 per adversary ambassador that drained your nodes, and less what Smear Campaign and Deepfake Wave took. Mid-round: the cube converter (a standard action, 1 cube for `cube_insight`) and Cintamani's (1 cube for 2), both with no limit a round; each board's conversion (Focus, Vigil, Synthesis: [ai-powers.md](ai-powers.md)); card triggers (Interdisciplinary Institute, Telemetry Archive, Security Ops Floor); the Researcher's Open Science capstone gives others 2 a round | Keeping drafted cards; playing cards; the four threats countered in insight ([threats.md](threats.md)). It passes between players only through cards that print it (help cards such as Shared Compute Grant and Mutual Aid Pact, at their cost; r48: no standard action gives it). It expires at the round's end, but the Researcher's own carries over: Patience, [ai-boards.md](ai-boards.md) |
-| Ambassadors | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Peace Conference), Followers through a card's Action, Orbital Embassy's 1 a tag on each card you play; the standard project | Moving onto pieces and evicting (they stay, [ambassadors.md](ambassadors.md)); aligning cities, claiming sites, freeing cities (consumed) |
+| Ambassadors (at most `hold_ambassadors` 10 in supply) | `start_ambassadors` at the start; Diplomacy cards (Consular Pouch, Peace Conference), Followers through a card's Action, Orbital Embassy's 1 a tag on each card you play; the standard project | Moving onto pieces and evicting (they stay, [ambassadors.md](ambassadors.md)); aligning cities, claiming sites, freeing cities (consumed) |
 
 **Cities' energy.** Each city makes `corp_energy` (a megacorp parameter, more for a richer
 corp) energy cubes a round. An aligned city's go free to the player who aligned it (+
@@ -32,6 +32,24 @@ every round until someone removes the ambassador, and more of them corrupt the c
 a dark city spends your ambassador knocking one of theirs off; align again once it is clean. If
 enemy ambassadors get that close to your city, work to stop them: clear them early. A Blackout stops a country's cities
 in the production after the threat executes.
+
+**Holding limits** (r49, 122; Matt: a pile far above a round's income is a runaway engine). A player holds at most
+`economy.hold_credits` 150 credits, `hold_energy` 10 energy, `hold_chips` 10 chips and `hold_ambassadors` 10
+ambassadors in supply; a gain past a limit is lost (ambassadors on the board don't count), setup's and a threat
+stake coming back included. With no room at all, an offer whose only gain it is isn't made: a card or power whose
+every part is a capped gain, the gain-an-ambassador project, selling a chip or a card at the credit limit, Withdraw,
+buying a city's energy. A card with any other part that acts is still offered, its capped part lost. Each limit is about a round's use: 10 energy places two late
+nodes (1 + 5 and 1 + 3), 10 chips are five stations, 10 ambassadors two fallback liberations, 150 credits three or
+four big cards. Insight has none: it expires, and Patience stays uncapped (Matt, 122).
+
+**The credit loop's cap.** Credit production that cards raise (programs, Copy)
+stops at `economy.credit_production` 60; a raise past it is lost (counted as `production_lost.credits`). The board's
+printed credits, track spaces and buildings' income come on top. Programs stacked by draw chains reached +128 to +148
+in 9-11 round games at r48 (a typical strong engine +35-50 by round 7), paying 250-290 a round; the holding limit took
+what a seat could hold, this caps the loop that fed it.
+
+**Holding limits, for new players.** Nobody holds more than 150 credits, 10 energy, 10 chips or 10 ambassadors in
+supply: anything past that is lost, so spend it. Cards can raise your credit income by 60 at most.
 
 **Each resource is paid in its home domain (principle accepted):** energy for nodes and
 Power, credits for the market, chips for facilities, ambassadors for influence, insight for

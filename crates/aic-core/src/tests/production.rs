@@ -66,7 +66,11 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
     run(&rules, &mut g);
     // 9 cubes on an 8-cube card: all pay. Horizon (075): 3 energy and 3 credits
     // a player cube, 1 Discord an adversary cube, nothing for a neutral cube.
-    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), (12, 3));
+    // 122: seat 0's 12 stop at its holding limit of 10 energy; the rest is lost.
+    let room = rules.world().int("economy.hold_energy") - e0;
+    assert!(room < 12);
+    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), (room, 3));
+    assert_eq!(g.stats.counters["economy.hold_lost.energy"], 12 - room);
     assert_eq!(g.var("alignment.discord") - discord, 2);
     assert_eq!(g.var(&board::project_done(0)), 1);
     for k in [board::project_key(0, Some(0)), board::project_key(0, Some(1)), board::project_key(0, None), board::project_neutral(0)] {

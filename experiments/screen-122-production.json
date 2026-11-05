@@ -1,0 +1,31 @@
+{
+  "name": "screen-122-production",
+  "note": "122 (Matt, message 5134): a cap on the credit loop itself, credit production raised by cards at most 40 / 60 / 80, beside none, the holding limits on in every cell; the three pairs at d2, the strategist and greedy, 48 a cell on dev seeds 34708-34755.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": ["economy.credit_production=9999"]},
+    {"name": "br", "set": ["ai.boards=0,2", "economy.credit_production=9999"]},
+    {"name": "pr", "set": ["ai.boards=1,2", "economy.credit_production=9999"]},
+    {"name": "bp-prod40", "set": ["economy.credit_production=40"]},
+    {"name": "br-prod40", "set": ["ai.boards=0,2", "economy.credit_production=40"]},
+    {"name": "pr-prod40", "set": ["ai.boards=1,2", "economy.credit_production=40"]},
+    {"name": "bp-prod60", "set": ["economy.credit_production=60"]},
+    {"name": "br-prod60", "set": ["ai.boards=0,2", "economy.credit_production=60"]},
+    {"name": "pr-prod60", "set": ["ai.boards=1,2", "economy.credit_production=60"]},
+    {"name": "bp-prod80", "set": ["economy.credit_production=80"]},
+    {"name": "br-prod80", "set": ["ai.boards=0,2", "economy.credit_production=80"]},
+    {"name": "pr-prod80", "set": ["ai.boards=1,2", "economy.credit_production=80"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

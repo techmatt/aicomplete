@@ -77,3 +77,7 @@ loop. Adversary ambassadors can stand with no piece under them (on an empty
 industrial zone; on a hex whose node was lost), so an evicting ambassador can too: it does
 nothing there until a piece comes or it moves. An adversary ambassador left on a hex by a
 lost node stays until removed.
+
+**Your supply holds at most 10** (`economy.hold_ambassadors`, r49, 122): an ambassador gained past it is lost, and
+the gain-an-ambassador project isn't offered while you are at it ([economy.md](economy.md), *Holding limits*). It
+was Orbital Embassy's pile: 1 ambassador a tag on each card you play reached 52-81 held at r48.

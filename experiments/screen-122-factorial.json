@@ -1,0 +1,25 @@
+{
+  "name": "screen-122-factorial",
+  "note": "122 (Matt, message 5146): the other half of the credit factorial, the 150 holding limit off (hold_credits 9999) with credit production uncapped or at 60; the energy, chip and ambassador limits on. screen-122-production.json holds the half with the limit on. The three pairs at d2, the strategist and greedy, 48 a cell on dev seeds 34708-34755.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-nohold", "set": ["economy.hold_credits=9999", "economy.credit_production=9999"]},
+    {"name": "br-nohold", "set": ["ai.boards=0,2", "economy.hold_credits=9999", "economy.credit_production=9999"]},
+    {"name": "pr-nohold", "set": ["ai.boards=1,2", "economy.hold_credits=9999", "economy.credit_production=9999"]},
+    {"name": "bp-nohold_prod60", "set": ["economy.hold_credits=9999", "economy.credit_production=60"]},
+    {"name": "br-nohold_prod60", "set": ["ai.boards=0,2", "economy.hold_credits=9999", "economy.credit_production=60"]},
+    {"name": "pr-nohold_prod60", "set": ["ai.boards=1,2", "economy.hold_credits=9999", "economy.credit_production=60"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

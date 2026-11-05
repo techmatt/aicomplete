@@ -1,0 +1,35 @@
+{
+  "name": "screen-122-dev",
+  "note": "122: the runaway engines' dev read, the three pairs at d2, the strategist and greedy, 48 a cell on dev seeds 34708-34755. Run by r48's binary and by each candidate.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34708,
+  "records": 0
+}

@@ -188,15 +188,11 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::RemoveTroops { count, reach } => removal::remove_troops(g, cx, seat, *count, *reach)?,
         Op::Sway { side: Side::Discord, amount } => alignment::discord_from(g, cx, ctx.label, *amount),
         Op::Sway { side, amount } => alignment::sway(g, cx, *side, *amount),
-        Op::Production { resource, amount } => {
-            cx.add_key(g, &economy::production_key(seat, *resource), *amount)
-        }
+        Op::Production { resource, amount } => economy::raise_production(g, cx, seat, *resource, *amount),
         // 106: counted once, now; a program is in play when it resolves.
         Op::ProductionPerTag { resource, tag, per } => {
             let n = cards::tags(&w, g, seat, *tag) / (*per).max(1);
-            if n != 0 {
-                cx.add_key(g, &economy::production_key(seat, *resource), n)
-            }
+            economy::raise_production(g, cx, seat, *resource, n);
         }
         Op::AddTokens { kind, amount, here: true } => {
             if let Some(c) = ctx.card {

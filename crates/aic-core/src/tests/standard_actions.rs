@@ -120,6 +120,47 @@ fn standard_actions_cost_what_the_config_says() {
 
 }
 
+/// 122: a seat holds at most `economy.hold_*` of credits, energy, chips and
+/// ambassadors. A gain past a limit is lost and tallied; a gain with no room is
+/// nothing to act on; the ambassador project isn't offered at the limit.
+#[test]
+fn holding_limits_lose_the_excess_and_offer_no_gain_without_room() {
+    use crate::content::Op;
+    use crate::modules::effects;
+    let (rules, mut g) = actions_with_room();
+    rich(&mut g);
+    set_res(&mut g, 0, Resource::Energy, 5);
+    let w = rules.world();
+    let cap = w.int("economy.hold_ambassadors");
+    for (r, key) in [
+        (Resource::Credits, "credits"),
+        (Resource::Energy, "energy"),
+        (Resource::Chips, "chips"),
+        (Resource::Ambassadors, "ambassadors"),
+    ] {
+        let limit = w.int(&format!("economy.hold_{key}"));
+        let mut h = g.clone();
+        set_res(&mut h, 0, r, limit - 1);
+        run_ops(&rules, &mut h, &[Op::Gain { resource: r, amount: 3 }]);
+        assert_eq!(h.resource(0, r), limit, "{key}: 1 of 3 fits");
+        assert_eq!(h.stats.counters[format!("economy.hold_lost.{key}").as_str()], 2);
+        let gain = Op::Gain { resource: r, amount: 1 };
+        assert!(!effects::feasible(&w, &h, 0, std::slice::from_ref(&gain)), "{key}: no room, nothing to act on");
+        assert!(effects::feasible(&w, &g, 0, std::slice::from_ref(&gain)), "{key}: room");
+    }
+    assert!(standard_offered(&rules, &g, 0).contains("ambassador"));
+    set_res(&mut g, 0, Resource::Ambassadors, cap);
+    assert!(!standard_offered(&rules, &g, 0).contains("ambassador"), "a full supply buys none");
+    // Selling pays only credits: at the credit limit neither sale is offered.
+    let sells = |g: &GameState| rules.legal_actions(g).iter().any(|a| matches!(a, Action::Sell { seat: 0, .. }));
+    set_pile(&mut g, &crate::modules::cards::hand(0), &["open_assembly"]);
+    assert!(standard_offered(&rules, &g, 0).contains("chips") && sells(&g));
+    set_res(&mut g, 0, Resource::Credits, w.int("economy.hold_credits"));
+    assert!(!standard_offered(&rules, &g, 0).contains("chips") && !sells(&g), "no room for the credits");
+    // Insight has no limit (Patience stays uncapped, Matt, 122).
+    assert_eq!(w.hold(Resource::Insight), None);
+}
+
 #[test]
 fn a_card_s_harden_action_costs_chips() {
     // No card prints a chip Harden since r42: a building is given it here.

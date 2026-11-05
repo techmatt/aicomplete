@@ -7,7 +7,7 @@
 use crate::content::{Op, PerResource, Resource, RoundFlag, RESOURCES, TAGS};
 use crate::key::KeyBuf;
 use crate::module::{
-    Build, Cx, Module, ModuleDef, PhaseSpec, Res, VariantDef, World,
+    Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
 use crate::state::GameState;
 use crate::view::ViewOut;
@@ -22,7 +22,13 @@ pub static DEF: ModuleDef = ModuleDef {
     variants: &[VariantDef {
         name: "standard",
         summary: "Income in upkeep, insight at the start of each round",
-        params: &[],
+        params: &[
+            ParamSpec::int("hold_credits", 1, 9999, "the most credits a player may hold: a gain past it is lost (122)"),
+            ParamSpec::int("hold_energy", 1, 999, "the most energy a player may hold: a gain past it is lost (122)"),
+            ParamSpec::int("hold_chips", 1, 999, "the most chips a player may hold: a gain past it is lost (122)"),
+            ParamSpec::int("hold_ambassadors", 1, 999, "the most ambassadors a player may hold in supply: a gain past it is lost (122)"),
+            ParamSpec::int("credit_production", 0, 9999, "the most a player's credit production may be raised by cards (programs, Copy): a raise past it is lost (122)"),
+        ],
         phases: &[
             PhaseSpec::auto(
                 "upkeep",
@@ -39,6 +45,26 @@ pub static DEF: ModuleDef = ModuleDef {
 /// gains (021).
 pub fn production_key(seat: usize, resource: Resource) -> KeyBuf {
     KeyBuf::new("economy.production.").num(seat).text(".").text(resource.name())
+}
+
+/// Raises seat `s`'s production of `r` by `n` (a program, Copy). 122: credit
+/// production stops at `economy.credit_production`; a raise past it is lost
+/// (`economy.production_lost.credits`). Without the economy module, no limit.
+pub fn raise_production(g: &mut GameState, cx: &mut Cx, seat: usize, r: Resource, n: i64) {
+    let key = production_key(seat, r);
+    let mut n = n;
+    if n > 0 && r == Resource::Credits {
+        if let Some(crate::config::ParamValue::Int(cap)) = cx.world.params.get("economy.credit_production") {
+            let room = (*cap - g.var(key.as_str())).max(0);
+            if n > room {
+                cx.tally(g, "economy.production_lost.credits", n - room);
+                n = room;
+            }
+        }
+    }
+    if n != 0 {
+        cx.add_key(g, &key, n);
+    }
 }
 
 /// Insight seat `s` loses next round (021: an adversary ambassador on its nodes).

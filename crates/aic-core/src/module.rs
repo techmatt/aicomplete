@@ -247,10 +247,14 @@ pub enum Hot {
     TroopNode,
     LiberateAt,
     LastSafeStage,
+    HoldCredits,
+    HoldEnergy,
+    HoldChips,
+    HoldAmbassadors,
 }
 
 impl Hot {
-    const ALL: [Hot; 8] = [
+    const ALL: [Hot; 12] = [
         Hot::NodeLoss,
         Hot::ClearWinStage,
         Hot::TipPerPlayer,
@@ -259,6 +263,10 @@ impl Hot {
         Hot::TroopNode,
         Hot::LiberateAt,
         Hot::LastSafeStage,
+        Hot::HoldCredits,
+        Hot::HoldEnergy,
+        Hot::HoldChips,
+        Hot::HoldAmbassadors,
     ];
 
     /// The parameter's name.
@@ -272,6 +280,10 @@ impl Hot {
             Hot::TroopNode => "board.troop_node",
             Hot::LiberateAt => "board.liberate_at",
             Hot::LastSafeStage => "board.last_safe_stage",
+            Hot::HoldCredits => "economy.hold_credits",
+            Hot::HoldEnergy => "economy.hold_energy",
+            Hot::HoldChips => "economy.hold_chips",
+            Hot::HoldAmbassadors => "economy.hold_ambassadors",
         }
     }
 }
@@ -317,6 +329,27 @@ impl World<'_> {
             Some(ParamValue::List(_)) => panic!("parameter {key} is not an int"),
             None => panic!("parameter {key} is not configured"),
         }
+    }
+
+    /// The most of `r` a seat may hold (122, `economy.hold_*`): `None` for a
+    /// resource with no limit, or with the economy module off.
+    #[inline]
+    pub fn hold(&self, r: Resource) -> Option<i64> {
+        let h = match r {
+            Resource::Credits => Hot::HoldCredits,
+            Resource::Energy => Hot::HoldEnergy,
+            Resource::Chips => Hot::HoldChips,
+            Resource::Ambassadors => Hot::HoldAmbassadors,
+            _ => return None,
+        };
+        self.hot.ints[h as usize]
+    }
+
+    /// How much more of `r` seat `seat` may hold under its limit (122):
+    /// `i64::MAX` with none. An offer whose only gain has no room is not made.
+    #[inline]
+    pub fn room(&self, g: &GameState, seat: usize, r: Resource) -> i64 {
+        self.hold(r).map_or(i64::MAX, |cap| (cap - g.resource(seat, r)).max(0))
     }
 
     /// A [`Hot`] parameter: `self.int(h.key())`, from its slot.
@@ -500,7 +533,20 @@ impl<'a> Cx<'a> {
         next - cur
     }
 
+    /// Adds `delta` of `r` to `seat`. A gain stops at the seat's holding limit
+    /// (122, `economy.hold_*`): what would pass it is lost (`economy.hold_lost.<r>`).
+    /// Every gain counts, setup's and a threat stake coming back included; a
+    /// holding already over the limit (a test's) is never cut by a gain.
     pub fn add_resource(&mut self, g: &mut GameState, seat: usize, r: Resource, delta: i64) {
+        let mut delta = delta;
+        if delta > 0 {
+            let room = self.world.room(g, seat, r);
+            if delta > room {
+                let key = KeyBuf::new("economy.hold_lost.").text(r.name());
+                self.tally(g, key.as_str(), delta - room);
+                delta = room;
+            }
+        }
         if delta == 0 {
             return;
         }

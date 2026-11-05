@@ -4,7 +4,8 @@
 
 Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), then runs
 `aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and
-`scripts/configs/shared_row.py`, prints the content hash and rules revision from `aic-sim show
+`scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the derived configs: 122 left
+no_liberate.json stale when the baseline gained params), prints the content hash and rules revision from `aic-sim show
 configs/baseline.json` and then `git status --short`. Stops at the first failing step, naming
 it. `--no-build` uses the binary already built. `--check` writes nothing: it runs `aic-sim docs
 --check` and `cards_doc.py --check` only and exits 1 if either is stale. Each step prints its
@@ -66,6 +67,7 @@ def main():
     step('cards_doc.py', [PY, os.path.join('scripts', 'cards', 'cards_doc.py')])
     step('effect_ledger.py', [PY, os.path.join('scripts', 'cards', 'effect_ledger.py')])
     step('shared_row.py', [PY, os.path.join('scripts', 'configs', 'shared_row.py')])
+    step('no_liberate.py', [PY, os.path.join('scripts', 'configs', 'no_liberate.py')])
     out = step('aic-sim show', [SIM, 'show', os.path.join('configs', 'baseline.json')], capture=True)
     first = out.splitlines()[0] if out else ''
     m = re.search(r'content hash (\S+)\s+rules revision (\S+)', first)
