@@ -149,7 +149,7 @@
     "slots": {"credits": 1, "per": "slot, a round"},
     "logistics": {"credits": 0.3, "per": "the resource at its rate, a round (a counter you paid toward lands about a third of rounds)"},
     "project_drain": {"credits": 1.65, "per": "compute off each project in upkeep, a round: 1.1 x 1.5"},
-    "auto_counter": {"credits": 2.5, "per": "point off a threat of its type its holder can pay toward, a round (r48: any country or the row, not only home): about 0.5 fires x 5"},
+    "auto_counter": {"credits": 1.5, "per": "point off a threat of its type its holder can pay toward, a round (r48: any country or the row, not only home): 0.3 fires x 5 (126: 0.30 a holder-round measured in play at r50, the strategist)"},
     "unity_bonus": {"credits": 1.2, "per": "extra Sway a troop removal, a round: about 0.3 removals x rates.sway"},
     "spread_shield": {"credits": 2, "per": "a round: about one ambassador kept off your nodes"},
     "civic_shelter": {"credits": 1.6, "per": "a round: shelter's 4 x about 0.4 destructions stopped"},

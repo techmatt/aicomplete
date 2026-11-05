@@ -1,0 +1,33 @@
+diff --git a/crates/aic-core/src/modules/threats/mod.rs b/crates/aic-core/src/modules/threats/mod.rs
+index a282b79..56a7c56 100644
+--- a/crates/aic-core/src/modules/threats/mod.rs
++++ b/crates/aic-core/src/modules/threats/mod.rs
+@@ -436,6 +436,28 @@ fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool {
+         let unaided = requirement_less(&w, threat, g.var(&jam_key(threat)));
+         let cut: i64 = unaided.iter().zip(req.iter()).map(|((_, a), (_, b))| a - b).sum();
+         cx.tally(g, "threats.auto_countered", cut);
++        // 126 measure (not committed): fires, the cut by resource, and the holders.
++        cx.tally(g, "m126.fires", 1);
++        for ((r, a), (_, b)) in unaided.iter().zip(req.iter()) {
++            cx.tally(g, &format!("m126.cut.{r}"), a - b);
++        }
++        let src = sources::source_of(&w, threat);
++        for s in 0..g.seats.len() {
++            if !sources::may_counter(&w, g, s, threat, scope) {
++                continue;
++            }
++            let mut n = 0;
++            cards::each_passive(&w, g, s, |p| {
++                if let Op::AutoCounter { source: x, amount } = p {
++                    if *x == src {
++                        n += *amount;
++                    }
++                }
++            });
++            if n > 0 {
++                cx.tally(g, &format!("m126.fires.seat{s}"), 1);
++            }
++        }
+     }
+     clear(g, cx, threat, scope);
+     tally_countered(g, cx, threat);

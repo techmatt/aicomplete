@@ -1,0 +1,22 @@
+{
+  "name": "screen-126-dev",
+  "note": "126: the auto_counter read and screen on dev seeds 35200-35343 (144 a cell, the three pairs at d2, the strategist and greedy). Run on main at r50 (the entry at 2.5, the measure and the off arm) and on the build with the measured entry (the on arm); the table is compiled in, so the two arms are two binaries on the same configs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 144,
+  "first_seed": 35200,
+  "records": 0
+}

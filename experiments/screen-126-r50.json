@@ -1,0 +1,22 @@
+{
+  "name": "screen-126-r50",
+  "note": "126: the final read, the measured auto_counter entry against the build before this item (main 9c37655, the entry at 2.5), paired on fresh seeds 35344-35391: the three pairs at d2, the strategist and greedy, 48 a cell. Same rules (r50): the same configs on both.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 35344,
+  "records": 0
+}

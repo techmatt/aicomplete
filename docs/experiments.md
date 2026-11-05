@@ -174,7 +174,7 @@ policy or `prune`, the line alone should read near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
 ledger. Used through r48 (specs in the write-ups): below 34352, 34400-1, 34500-47, 34600-2, 34700-7. r49: 34708-34995
-(122, 124). r50 (125): 34996-35199. Next free: 35200.
+(122, 124). r50 (125, 126): 34996-35391. Next free: 35392.
 
 ## Reading prices
 
