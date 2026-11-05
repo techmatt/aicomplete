@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 125 energy sinks: energy a second cost on five power-hungry buildings, credits cut to match; Particle Accelerator and Citywide Microgrid as late sinks; per-seat loss, spending and its phase in `games.jsonl` | r50 | [125_energy_sinks/r50.md](results/125_energy_sinks/r50.md) |
 | 124 agents play the engines: strategies read trigger contents, insight income at its table rate (D53), spare insight keeps, the limits in the keep plan, upkeep's loss spent; per-seat keeps and gain sources in `games.jsonl`; 102's Phase A switches folded in | r49 | [124_agents_engines/r49-agents.md](results/124_agents_engines/r49-agents.md) |
 | 122 runaway engines: holding limits (150 credits, 10 energy, chips, ambassadors); each pile's engine with its disproof row; Patience uncapped (the agents decline keeps) | r49 | [122_runaway_engines/r49.md](results/122_runaway_engines/r49.md) |
 | 121 the loose threads: Unity overflow (Unity only), no insight giving, played-events pile and the reshuffle, Popular Uprising tier 1, no 1-credit amounts, nothing to act on never blocks, peaks per seat (the runaway check); 117's four cards get scenes | r48 | [121_loose_threads/r48.md](results/121_loose_threads/r48.md), [read.md](results/121_loose_threads/read.md), [carry.md](results/121_loose_threads/carry.md), [art.md](results/121_loose_threads/art.md), [pricing-notes.md](results/121_loose_threads/pricing-notes.md) |

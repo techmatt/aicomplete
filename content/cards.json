@@ -429,7 +429,7 @@
   "name": "Foundation Model Campus",
   "tier": 2,
   "kind": "building",
-  "cost": 22,
+  "cost": 13,
   "insight": 2,
   "needs": [
    [
@@ -455,7 +455,8 @@
     "op": "draw",
     "count": 4
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "orbital_observatory_array",
@@ -792,7 +793,7 @@
   "name": "Lights-Out Assembly",
   "tier": 1,
   "kind": "building",
-  "cost": 14,
+  "cost": 10,
   "insight": 1,
   "tags": [
    "industry",
@@ -819,7 +820,8 @@
     "op": "draw",
     "count": 2
    }
-  ]
+  ],
+  "energy": 1
  },
  {
   "id": "materials_hedge_desk",
@@ -921,7 +923,7 @@
   "name": "Orbital Mass Driver",
   "tier": 2,
   "kind": "building",
-  "cost": 28,
+  "cost": 15,
   "chips": 2,
   "insight": 2,
   "needs": [
@@ -951,7 +953,8 @@
     "op": "draw",
     "count": 3
    }
-  ]
+  ],
+  "energy": 3
  },
  {
   "id": "eviction_worm",
@@ -1709,7 +1712,7 @@
   "name": "Positron Storage Ring",
   "tier": 2,
   "kind": "building",
-  "cost": 18,
+  "cost": 9,
   "insight": 2,
   "needs": [
    [
@@ -1740,7 +1743,8 @@
      }
     ]
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "dyson_swarm_tranche",
@@ -4575,7 +4579,7 @@
   "name": "Fabrication Megaplex",
   "tier": 1,
   "kind": "building",
-  "cost": 34,
+  "cost": 25,
   "insight": 1,
   "tags": [
    "industry"
@@ -4597,7 +4601,8 @@
     "op": "draw",
     "count": 3
    }
-  ]
+  ],
+  "energy": 2
  },
  {
   "id": "frontier_lab_charter",
@@ -4672,5 +4677,61 @@
     "reach": true
    }
   ]
+ },
+ {
+  "id": "citywide_microgrid",
+  "name": "Citywide Microgrid",
+  "tier": 2,
+  "kind": "building",
+  "cost": 4,
+  "energy": 8,
+  "insight": 2,
+  "tags": [
+   "power",
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "liberate"
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "particle_accelerator",
+  "name": "Particle Accelerator",
+  "tier": 1,
+  "kind": "building",
+  "cost": 16,
+  "insight": 1,
+  "tags": [
+   "science",
+   "power"
+  ],
+  "keywords": [
+   "cubes"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "project_cube",
+     "count": 3
+    }
+   ]
+  }
  }
 ]

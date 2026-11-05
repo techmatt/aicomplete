@@ -72,8 +72,9 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
   `PEAKS` order; the report's *Peak holdings*). A peak's rise over setup's `start` far above a round's income
   (`gained / rounds`) is an engine running away: `scripts/cards/runaway_read.py` flags it. `sources` splits a
   seat's `gained` by the action or phase it came in; `keeps` counts picks, keeps and tiers after the opening
-  (`source_read.py`). Holding limits count what they cut as
-  `economy.hold_lost.<resource>`.
+  (`source_read.py`); `spent` and `uses` split falls (125). The holding limits' cuts: `economy.hold_lost.<r>` (by
+  round), `hold_lost_seat.<seat>.<r>`, `hold_lost_phase.<i>.<r>`, `board.completion_lost.energy` (payouts);
+  `energy_cards.held|short.<seat>` (125's `read125.py`, `lost_read.py`).
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -142,12 +143,9 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `screen-102-c.json` (the three pairs at d2, 200 seeds each, about 2 min on 6 threads) and
-  `-c-d0` ("greedy" is the `greedy` agent; "greedy at d0" is the `engine` spec, no strategy);
-  agent switches screen on and off as agent cells of one spec (`screen-124-candidate.json` did, on the
-  build before its levers were defaults; `read124.py` in its results folder reads one). A worked read: spec
-  `experiments/screen-121-r48.json`, then `python experiments/results/121_loose_threads/read121.py OLD NEW` (122's
-  fresh read: `experiments/screen-122-r49.json`).
+- **Current recipe:** the three pairs at d2, strategist and greedy (`screen-125-dev.json`: 936 games, about 2 min
+  on 6 threads; `-r50.json` its fresh read, `read125.py` in its results folder reads both). Agent switches screen
+  on and off as agent cells of one spec (`screen-124-candidate.json`).
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
   an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load.
 - **A before/after read is paired**: run the old binary, with its configs from `git archive <main> configs | tar -x`,
@@ -175,8 +173,8 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger. Used through r48 (specs in the write-ups): below 34352, 34400-1, 34500-47, 34600-2, 34700-7. r49: 34708-34755
-122's dev screens (`screen-122-*`), 34900-34947 its fresh read. Next free: 34756-34899, 34948.
+ledger. Used through r48 (specs in the write-ups): below 34352, 34400-1, 34500-47, 34600-2, 34700-7. r49: 34708-34995
+(122, 124). r50 (125): 34996-35199. Next free: 35200.
 
 ## Reading prices
 

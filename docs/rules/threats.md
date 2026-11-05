@@ -104,7 +104,7 @@ Choice threats are preferred; a destroyed node leaves the game, so a tier-1 thre
 | Overrun | 2 | influence | The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their nodes here. | 8 credits |
 | Mass Production | 2 | economic | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
 | Purge Protocols | 2 | cyber | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 5 insight |
-| Total War | 2 | military | 2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute. | 8 credits |
+| Total War | 2 | military | 2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here, one a base while a base has none. The adversary gains 4 compute. | 8 credits |
 | Conscription | 2 | economic | Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute. | 7 credits |
 | Sleeper Cells | 2 | cyber | 4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
 | Insurrection | 2 | influence | 4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their nodes here. | 7 credits |

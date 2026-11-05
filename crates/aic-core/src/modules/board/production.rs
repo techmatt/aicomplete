@@ -414,10 +414,16 @@ fn complete_projects(g: &mut GameState, cx: &mut Cx) -> Res {
         cx.note(None, || {
             format!("{} completes: {} cubes pay ({paid} player, {adv} adversary, {neutral} neutral)", p.name, paid + adv + neutral)
         });
+        // 125: the energy the payouts lose at the holding limit, the measure's.
+        let lost_before = g.stats.counters.get("economy.hold_lost.energy").copied().unwrap_or(0);
         for (s, &n) in mine.iter().enumerate() {
             for _ in 0..n {
                 effects::run(g, cx, &p.player, &mut effects::Ctx::seat(s))?;
             }
+        }
+        let lost = g.stats.counters.get("economy.hold_lost.energy").copied().unwrap_or(0) - lost_before;
+        if lost > 0 {
+            cx.tally(g, "board.completion_lost.energy", lost);
         }
         for _ in 0..adv {
             effects::run(g, cx, &p.adversary, &mut effects::Ctx::team().named("megaproject"))?;

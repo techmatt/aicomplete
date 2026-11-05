@@ -353,6 +353,14 @@ pub struct GameResult {
     /// phase), in [`PEAKS`] order; a label whose row is all zero is left out.
     #[serde(default)]
     pub sources: Vec<BTreeMap<String, Vec<i64>>>,
+    /// 125: what each seat spent or lost over the game, in [`PEAKS`] order
+    /// (falls between actions summed): `start + gained - spent` is the end.
+    #[serde(default)]
+    pub spent: Vec<Vec<i64>>,
+    /// 125: per seat, `spent` split by where each fall went, labeled as
+    /// `sources` labels a rise.
+    #[serde(default)]
+    pub uses: Vec<BTreeMap<String, Vec<i64>>>,
     /// 124: per seat, its draft and keep decisions after the opening.
     #[serde(default)]
     pub keeps: Vec<KeepCounts>,
@@ -722,6 +730,25 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
                 *slots.entry(format!("slots.over.{seat}.r{:02}", g.round)).or_default() += 1;
             }
         }
+        // 125: as a seat ends its action phase, each card in its hand that
+        // costs energy, and those it can't play for want of energy.
+        if let Action::Pass { seat } = &a {
+            if rules.phase(&g).is_some_and(|p| p.name.starts_with("cards.play")) {
+                let s = *seat as usize;
+                let held = g.seats[s].resources.get(&Resource::Energy).copied().unwrap_or(0);
+                let w = rules.world();
+                for c in g.pile(&cards::hand(s)).iter() {
+                    let need = w.content.card(c).energy;
+                    if need > 0 {
+                        *slots.entry(format!("energy_cards.held.{s}")).or_default() += 1;
+                        if need > held {
+                            *slots.entry(format!("energy_cards.short.{s}")).or_default() += 1;
+                            *slots.entry(format!("energy_cards.short.{s}.{c}")).or_default() += 1;
+                        }
+                    }
+                }
+            }
+        }
         tally_action(&mut r, &a, &mut picks);
         let src = source_of(rules, &g, &a);
         tally_keeps(&mut r, rules, &g, &a);
@@ -933,7 +960,7 @@ fn source_of(rules: &Rules, g: &GameState, a: &Action) -> Source {
 /// `(seat, PEAKS index, phase, sum of rises)`, `None` for the action itself,
 /// before any phase it set running began (the last pass of a phase earns
 /// nothing itself; the production it runs does).
-fn gains_by_phase(events: &[aic_core::Event]) -> Vec<(usize, usize, Option<&str>, i64)> {
+fn gains_by_phase(events: &[aic_core::Event], sign: i64) -> Vec<(usize, usize, Option<&str>, i64)> {
     use aic_core::Event;
     type Gain<'e> = (usize, usize, Option<&'e str>, i64);
     fn add<'e>(out: &mut Vec<Gain<'e>>, s: usize, i: usize, ph: Option<&'e str>, d: i64) {
@@ -947,7 +974,7 @@ fn gains_by_phase(events: &[aic_core::Event]) -> Vec<(usize, usize, Option<&str>
     for e in events {
         match e {
             Event::PhaseStarted { phase: p } => phase = Some(p.as_str()),
-            Event::ResourceChanged { seat, resource, delta, .. } if *delta > 0 => {
+            Event::ResourceChanged { seat, resource, delta, .. } if *delta * sign > 0 => {
                 let i = match resource {
                     Resource::Credits => 0,
                     Resource::Insight => 1,
@@ -957,12 +984,12 @@ fn gains_by_phase(events: &[aic_core::Event]) -> Vec<(usize, usize, Option<&str>
                     Resource::ResearchCubes => 5,
                     Resource::Ambassadors => 7,
                 };
-                add(&mut out, *seat as usize, i, phase, *delta);
+                add(&mut out, *seat as usize, i, phase, *delta * sign);
             }
-            Event::VarChanged { key, delta, .. } if *delta > 0 => {
+            Event::VarChanged { key, delta, .. } if *delta * sign > 0 => {
                 let seat = key.strip_prefix("cards.tokens.").and_then(|k| k.split('.').next()?.parse().ok());
                 if let Some(s) = seat {
-                    add(&mut out, s, 6, phase, *delta);
+                    add(&mut out, s, 6, phase, *delta * sign);
                 }
             }
             _ => {}
@@ -977,15 +1004,19 @@ fn gains_by_phase(events: &[aic_core::Event]) -> Vec<(usize, usize, Option<&str>
 /// events), each rise also goes to its source: `phase:<name>` when an
 /// automatic phase the action set running gave the most of it (production,
 /// upkeep, the next round's opening), else `own:` or `other:` the label (the
-/// label alone for a choice an automatic phase asked).
+/// label alone for a choice an automatic phase asked). 125: falls the same
+/// way, into `spent` and `uses`.
 fn track_holdings(r: &mut GameResult, g: &GameState, src: Option<(&Source, &[aic_core::Event])>) {
-    let by_phase = src.map(|(_, ev)| gains_by_phase(ev)).unwrap_or_default();
+    let by_phase = src.map(|(_, ev)| gains_by_phase(ev, 1)).unwrap_or_default();
+    let falls_by_phase = src.map(|(_, ev)| gains_by_phase(ev, -1)).unwrap_or_default();
     let seats = g.seats.len();
     if r.peaks.len() != seats {
         r.peaks = (0..seats).map(|s| holdings(g, s).to_vec()).collect();
         r.gained = vec![vec![0; PEAKS.len()]; seats];
+        r.spent = vec![vec![0; PEAKS.len()]; seats];
         r.start = r.peaks.clone();
         r.sources = vec![BTreeMap::new(); seats];
+        r.uses = vec![BTreeMap::new(); seats];
         r.last_held = r.peaks.clone();
         return;
     }
@@ -993,16 +1024,19 @@ fn track_holdings(r: &mut GameResult, g: &GameState, src: Option<(&Source, &[aic
         let now = holdings(g, s);
         for (i, &n) in now.iter().enumerate() {
             let rise = (n - r.last_held[s][i]).max(0);
+            let fall = (r.last_held[s][i] - n).max(0);
             r.peaks[s][i] = r.peaks[s][i].max(n);
             r.gained[s][i] += rise;
+            r.spent[s][i] += fall;
             r.last_held[s][i] = n;
-            if rise == 0 {
-                continue;
-            }
-            if let Some(((actor, label), _)) = src {
-                // The part of the action that gave the most of the rise (the first on a tie).
+            let Some(((actor, label), _)) = src else { continue };
+            for (amount, parts, out) in [(rise, &by_phase, &mut r.sources), (fall, &falls_by_phase, &mut r.uses)] {
+                if amount == 0 {
+                    continue;
+                }
+                // The part of the action that moved it most (the first on a tie).
                 let mut best: Option<(Option<&str>, i64)> = None;
-                for &(s2, i2, ph, d) in &by_phase {
+                for &(s2, i2, ph, d) in parts {
                     if s2 == s && i2 == i && best.is_none_or(|(_, b)| d > b) {
                         best = Some((ph, d));
                     }
@@ -1013,7 +1047,7 @@ fn track_holdings(r: &mut GameResult, g: &GameState, src: Option<(&Source, &[aic
                     (_, Some(a)) if *a as usize == s => format!("own:{label}"),
                     (_, Some(_)) => format!("other:{label}"),
                 };
-                r.sources[s].entry(key).or_insert_with(|| vec![0; PEAKS.len()])[i] += rise;
+                out[s].entry(key).or_insert_with(|| vec![0; PEAKS.len()])[i] += amount;
             }
         }
     }
@@ -1353,6 +1387,16 @@ mod tests {
             let sum: Vec<i64> = (0..PEAKS.len()).map(|i| src.values().map(|v| v[i]).sum()).collect();
             assert_eq!(sum, r.gained[s], "seat {s}: {src:?}");
             assert!(src.values().all(|v| v.iter().any(|&x| x > 0)), "seat {s}: a zero row");
+        }
+        // 125: `uses` splits `spent` the same way, and start + gained - spent is the end.
+        let end = r.final_state.as_ref().unwrap();
+        for (s, u) in r.uses.iter().enumerate() {
+            let sum: Vec<i64> = (0..PEAKS.len()).map(|i| u.values().map(|v| v[i]).sum()).collect();
+            assert_eq!(sum, r.spent[s], "seat {s}: {u:?}");
+            let held = holdings(end, s);
+            for i in 0..PEAKS.len() {
+                assert_eq!(r.start[s][i] + r.gained[s][i] - r.spent[s][i], held[i], "seat {s}, {}", PEAKS[i]);
+            }
         }
         let drafted = r.actions.iter().filter(|a| matches!(a, Action::Draft { .. })).count() as u32;
         assert_eq!(r.keeps.iter().map(|k| k.offered).sum::<u32>(), drafted);

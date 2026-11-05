@@ -6,7 +6,8 @@ Each FILE holds overlay entries, one a line: `cards.<id>.<path>=<JSON>`, the key
 takes (a line starting `#` is a comment; blank lines are skipped). The paths follow `apply_entry` in
 `crates/aic-core/src/content.rs`: `<table>.<id>.<path>`, the table one of corps (the map's
 countries, by lowercase name), cards, threats, adversary, ais, alignment, projects; `id` may
-be `*` (every row); the path walks object fields and list indexes, its last step may add a
+be `*` (every row); `<table>.<id>=<JSON object>` with no path writes a whole row (125: a new card
+is appended, an existing row replaced); the path walks object fields and list indexes, its last step may add a
 field; the value is JSON, or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
@@ -50,6 +51,8 @@ def apply_entry(files, entry):
     """Apply one entry to the loaded files; returns True if it changed a value."""
     key, sep, value = entry.partition('=')
     parts = key.strip().split('.')
+    if sep and len(parts) == 2 and parts[0] in TABLES and parts[0] != 'corps' and parts[1] != '*':
+        return put_row(files, parts[0], parts[1], parse_value(value.strip()), entry)
     if not sep or parts[0] not in TABLES or len(parts) < 3:
         raise ValueError(f'{entry!r}: expected <table>.<id>.<path>=<value>')
     table, ident, path = parts[0], parts[1], parts[2:]
@@ -89,6 +92,21 @@ def apply_entry(files, entry):
     if not hit:
         raise ValueError(f'{entry!r}: no id {ident!r} in {table}')
     return changed
+
+
+def put_row(files, table, ident, row, entry):
+    """125: `<table>.<id>=<JSON object>` writes a whole row: a new id is appended
+    (a new card), an existing one replaced. Returns True if it changed anything."""
+    if not isinstance(row, dict) or row.get('id', ident) != ident:
+        raise ValueError(f'{entry!r}: a whole row is a JSON object whose id, if given, is {ident!r}')
+    row = {'id': ident, **{k: v for k, v in row.items() if k != 'id'}}
+    rows = files[TABLES[table]]
+    for i, old in enumerate(rows):
+        if old.get('id') == ident:
+            rows[i] = row
+            return old != row
+    rows.append(row)
+    return True
 
 
 def read_entries(paths, sets):

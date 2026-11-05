@@ -376,7 +376,7 @@
   "name": "Total War",
   "tier": 2,
   "source": "military",
-  "text": "2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here. The adversary gains 4 compute.",
+  "text": "2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here, one a base while a base has none. The adversary gains 4 compute.",
   "counter": [
    [
     "credits",

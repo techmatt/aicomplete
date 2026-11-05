@@ -1,0 +1,22 @@
+{
+  "name": "screen-125-dev",
+  "note": "125: the energy-sink card pass (r50) on the dev seeds 35044-35199 (156 a cell): the three pairs at d2, the strategist and greedy. The base is the r49 build (main 8ffdb96 plus 125's measures, same games) with r49's configs.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 156,
+  "first_seed": 35044,
+  "records": 0
+}

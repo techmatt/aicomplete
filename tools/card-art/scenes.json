@@ -56,7 +56,7 @@
       "bounty_board_hunters": { "card": "bug_bounty_board", "subject": "A big corkboard of bounty notices in a bright open co-working loft, each notice pinned with a painted beetle sketch and a cash envelope, two hackers with laptops pulling a notice down to claim it." }
     },
     "diplomacy": {
-      "shared_rooftop_grid": { "was": "commons_grid", "subject": "A neighborhood's rooftops linked by shared solar panels, residents together hauling a cable across a street." },
+      "shared_rooftop_grid": { "card": "citywide_microgrid", "was": "commons_grid", "subject": "A neighborhood's rooftops linked by shared solar panels, residents together hauling a cable across a street." },
       "consulate_tower": { "card": "consulate_tower", "subject": "A slender glass and stone tower with a line of many flagpoles at its foot, unmarked flags flying in the wind." },
       "walled_embassy": { "card": "protocol_office", "was": "embassy_compound", "subject": "A walled embassy with a garden courtyard and a guarded gate, a black car waiting at the steps." },
       "liaison_officers": { "card": "liaison_corps", "subject": "A line of uniformed liaison officers with satchels boarding small aircraft on a sunny airstrip." },
@@ -156,7 +156,7 @@
       "dyson_swarm_panels": { "card": "dyson_swarm_tranche", "subject": "Thousands of mirror-bright collector panels unfolding in a curving swarm around a huge sun, a tug placing the next one." },
       "positron_ring": { "card": "positron_storage_ring", "subject": "A vast ring-shaped accelerator tunnel curving out of sight, magnets in amber housings and one worker on a bicycle." },
       "aegis_grid_shutters": { "card": "aegis_grid_lockdown", "subject": "A great power station with blast shutters closing across it and a shimmering shield line rising over the surrounding grid." },
-      "antiproton_flask": { "was": "antiproton_offtake_deal", "subject": "A shielded magnetic flask holding one bright point of antimatter, carried on a padded cradle by two suited technicians." },
+      "antiproton_flask": { "card": "particle_accelerator", "was": "antiproton_offtake_deal", "subject": "A shielded magnetic flask holding one bright point of antimatter, carried on a padded cradle by two suited technicians." },
       "beamed_power_rectenna": { "card": "beamed_power_constellation", "subject": "Satellites strung across a pale sky sending soft amber beams down to a huge mesh receiving dish in the desert." },
       "interconnector_ship": { "card": "interconnector_treaty", "subject": "A cable-laying ship at sea paying out a heavy subsea power link, a coastal converter station on each horizon." },
       "antimatter_flash_on_fortress": { "card": "nuclear_option", "subject": "A blinding white antimatter flash engulfing a captured fortress tower at a city's edge, seen from a distant hillside where onlookers shield their eyes, no mushroom cloud." },

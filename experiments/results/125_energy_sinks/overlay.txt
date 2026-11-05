@@ -1,0 +1,17 @@
+# 125: energy sinks (r50). Rerun with: python scripts/cards/apply_overlay.py experiments/results/125_energy_sinks/overlay.txt
+# Power-hungry buildings: an energy cost, credits cut about 4.5 an energy (the anchor), so pay holds.
+cards.fabrication_megaplex.cost=25
+cards.fabrication_megaplex.energy=2
+cards.lights_out_assembly.cost=10
+cards.lights_out_assembly.energy=1
+cards.orbital_mass_driver.cost=15
+cards.orbital_mass_driver.energy=3
+cards.foundation_model_campus.cost=13
+cards.foundation_model_campus.energy=2
+cards.positron_storage_ring.cost=9
+cards.positron_storage_ring.energy=2
+# Late sinks: an Action that spends energy, and a tier-2 building with a very big energy cost.
+cards.particle_accelerator={"name": "Particle Accelerator", "tier": 1, "kind": "building", "cost": 16, "insight": 1, "tags": ["science", "power"], "keywords": ["cubes"], "ability": {"cost": [["energy", 2]], "effects": [{"op": "project_cube", "count": 3}]}}
+cards.citywide_microgrid={"name": "Citywide Microgrid", "tier": 2, "kind": "building", "cost": 4, "energy": 8, "insight": 2, "tags": ["power", "diplomacy"], "effects": [{"op": "liberate"}], "ability": {"effects": [{"op": "sway", "side": "unity", "amount": 2}]}}
+# D51 (118): Total War's face says what r48 built, one ambassador a base while a base is free.
+threats.total_war.text="2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here, one a base while a base has none. The adversary gains 4 compute."

@@ -326,7 +326,9 @@
         "fabrication_megaplex",
         "frontier_lab_charter",
         "national_grid_buildout",
-        "decapitation_strike"
+        "decapitation_strike",
+        "particle_accelerator",
+        "citywide_microgrid"
       ]
     }
   ],

@@ -54,6 +54,9 @@ ceasefire_monitors,tags [card],card,diplomacy security cyber,3.0,2.0,0.67,1.0,0.
 citation_engine,draw [play],play,count=2,2.0,8.0,4.0,8.33,4.17
 citation_engine,when play science [passive],passive,"on={'event': 'play', 'tag': 'science'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 7}]",1.0,12.6,12.6,13.12,13.12
 citation_engine,tags [card],card,science,1.0,1.0,1.0,1.04,1.04
+citywide_microgrid,liberate [play],play,,1.0,45.0,45.0,33.47,33.47
+citywide_microgrid,sway unity [action],action,"side=unity, amount=2",2.0,14.0,7.0,10.41,5.21
+citywide_microgrid,tags [card],card,power diplomacy,2.0,1.5,0.75,1.12,0.56
 civic_watch,jam typed [action],action,"amount=6, source=influence",6.0,11.76,1.96,6.45,1.08
 civic_watch,tags [card],card,diplomacy,1.0,1.0,1.0,0.55,0.55
 coalition_charter,other_gain insight [play],play,"resource=insight, amount=4; to a chosen player",4.0,7.5,1.88,4.38,1.1
@@ -214,9 +217,9 @@ liaison_corps,tags [card],card,diplomacy,1.0,1.0,1.0,0.55,0.55
 liberation_accords,remove_ambassadors_country [play],play,"unity_per=0, max=6, reach=True",6.0,12.0,2.0,8.28,1.38
 liberation_accords,gain_ambassadors [play],play,count=4,4.0,16.0,4.0,11.03,2.76
 liberation_accords,tags [card],card,diplomacy,1.0,1.0,1.0,0.69,0.69
-lights_out_assembly,draw [play],play,count=2,2.0,8.0,4.0,4.89,2.44
-lights_out_assembly,when play_cost 10 [passive],passive,"on={'event': 'play_cost', 'at': 10}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 5}]",1.0,17.5,17.5,10.69,10.69
-lights_out_assembly,tags [card],card,industry power,2.0,1.5,0.75,0.92,0.46
+lights_out_assembly,draw [play],play,count=2,2.0,8.0,4.0,5.04,2.52
+lights_out_assembly,when play_cost 10 [passive],passive,"on={'event': 'play_cost', 'at': 10}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 5}]",1.0,17.5,17.5,11.02,11.02
+lights_out_assembly,tags [card],card,industry power,2.0,1.5,0.75,0.94,0.47
 liquidity_event,cash_out credits capital [play],play,"kind=capital, resource=credits, rate=5",5.0,15.0,3.0,9.5,1.9
 logic_bomb,drain_project [play],play,amount=6,6.0,6.6,1.1,6.27,1.05
 logic_bomb,draw [play],play,count=1,1.0,4.0,4.0,3.8,3.8
@@ -258,12 +261,14 @@ open_weights_release,tags [card],card,science cyber,2.0,1.5,0.75,0.76,0.38
 orbital_embassy,draw [play],play,count=4,4.0,16.0,4.0,9.38,2.34
 orbital_embassy,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'gain_ambassadors', 'count': 1}]",1.0,21.75,21.75,12.75,12.75
 orbital_embassy,tags [card],card,diplomacy power,2.0,1.5,0.75,0.88,0.44
-orbital_mass_driver,draw [play],play,count=3,3.0,12.0,4.0,6.67,2.22
-orbital_mass_driver,income credits [passive],passive,"resource=credits, amount=16",16.0,40.0,2.5,22.24,1.39
-orbital_mass_driver,income chips [passive],passive,"resource=chips, amount=3",3.0,11.25,3.75,6.25,2.08
-orbital_mass_driver,tags [card],card,industry power,2.0,1.5,0.75,0.83,0.42
+orbital_mass_driver,draw [play],play,count=3,3.0,12.0,4.0,6.76,2.25
+orbital_mass_driver,income credits [passive],passive,"resource=credits, amount=16",16.0,40.0,2.5,22.55,1.41
+orbital_mass_driver,income chips [passive],passive,"resource=chips, amount=3",3.0,11.25,3.75,6.34,2.11
+orbital_mass_driver,tags [card],card,industry power,2.0,1.5,0.75,0.85,0.42
 orbital_observatory_array,draw [action],action,count=3; pays 2 credits,3.0,17.5,5.83,13.82,4.61
 orbital_observatory_array,tags [card],card,science cyber,2.0,1.5,0.75,1.18,0.59
+particle_accelerator,project_cube [action],action,count=3; pays 2 energy,3.0,25.2,8.4,17.46,5.82
+particle_accelerator,tags [card],card,science power,2.0,1.5,0.75,1.04,0.52
 parts_exchange,draw [action],action,count=2; pays 1 chips,2.0,18.2,9.1,10.9,5.45
 parts_exchange,tags [card],card,industry,1.0,1.0,1.0,0.6,0.6
 patent_library,draw [action],action,count=2; pays 3 credits,2.0,14.0,7.0,10.73,5.37

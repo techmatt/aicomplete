@@ -534,7 +534,8 @@ impl<'a> Cx<'a> {
     }
 
     /// Adds `delta` of `r` to `seat`. A gain stops at the seat's holding limit
-    /// (122, `economy.hold_*`): what would pass it is lost (`economy.hold_lost.<r>`).
+    /// (122, `economy.hold_*`): what would pass it is lost (`economy.hold_lost.<r>`,
+    /// and per seat `economy.hold_lost_seat.<seat>.<r>`, 125).
     /// Every gain counts, setup's and a threat stake coming back included; a
     /// holding already over the limit (a test's) is never cut by a gain.
     pub fn add_resource(&mut self, g: &mut GameState, seat: usize, r: Resource, delta: i64) {
@@ -543,6 +544,14 @@ impl<'a> Cx<'a> {
             let room = self.world.room(g, seat, r);
             if delta > room {
                 let key = KeyBuf::new("economy.hold_lost.").text(r.name());
+                self.tally(g, key.as_str(), delta - room);
+                // 125: the same, per seat (`economy.hold_lost_seat.<seat>.<r>`).
+                let key = KeyBuf::new("economy.hold_lost_seat.").num(seat).text(".").text(r.name());
+                self.tally(g, key.as_str(), delta - room);
+                // 125: by round, and by the phase it happened in (`g.phase`, the round's step).
+                let key = KeyBuf::new("economy.hold_lost.").text(r.name());
+                self.per_round(g, key.as_str(), delta - room);
+                let key = KeyBuf::new("economy.hold_lost_phase.").num(g.phase).text(".").text(r.name());
                 self.tally(g, key.as_str(), delta - room);
                 delta = room;
             }

@@ -1,0 +1,22 @@
+{
+  "name": "screen-125-light",
+  "note": "125: a lighter energy lever on the r50 build, dev seeds 35044-35199: the four re-costed cards that lost plays at 2-3 energy, at 1 less energy each and 4.5 credits more an energy (Fabrication Megaplex 1 and 30, Orbital Mass Driver 2 and 19, Foundation Model Campus 1 and 18, Positron Storage Ring 1 and 14), against r50 as frozen (screen-125-dev.json's games).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-light", "set": ["cards.fabrication_megaplex.energy=1", "cards.fabrication_megaplex.cost=30", "cards.orbital_mass_driver.energy=2", "cards.orbital_mass_driver.cost=19", "cards.foundation_model_campus.energy=1", "cards.foundation_model_campus.cost=18", "cards.positron_storage_ring.energy=1", "cards.positron_storage_ring.cost=14"]},
+    {"name": "br-light", "set": ["ai.boards=0,2", "cards.fabrication_megaplex.energy=1", "cards.fabrication_megaplex.cost=30", "cards.orbital_mass_driver.energy=2", "cards.orbital_mass_driver.cost=19", "cards.foundation_model_campus.energy=1", "cards.foundation_model_campus.cost=18", "cards.positron_storage_ring.energy=1", "cards.positron_storage_ring.cost=14"]},
+    {"name": "pr-light", "set": ["ai.boards=1,2", "cards.fabrication_megaplex.energy=1", "cards.fabrication_megaplex.cost=30", "cards.orbital_mass_driver.energy=2", "cards.orbital_mass_driver.cost=19", "cards.foundation_model_campus.energy=1", "cards.foundation_model_campus.cost=18", "cards.positron_storage_ring.energy=1", "cards.positron_storage_ring.cost=14"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 156,
+  "first_seed": 35044,
+  "records": 0
+}

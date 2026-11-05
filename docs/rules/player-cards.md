@@ -25,10 +25,17 @@ The cards config lists which cards are in the game (baseline: all of them).
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2, 29 of 42 (the draft set: 23 / 97 / 29 cards at 0 / 1 / 2); it
+  events included), 2 for big effects and most tier 2, 29 of 42 (the draft set: 23 / 99 / 29 cards at 0 / 1 / 2); it
   comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
+- **Energy costs (candidate; Matt, r50).** Energy is a second cost on a building whose title reads power-hungry, its
+  credits cut to match (about 4.5 an energy): mostly the Builder's heavy machinery, Industry and Power (Fabrication
+  Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
+  compute (Foundation Model Campus 2). Energy costs stay uncommon: 9 of the 151 deck cards (7 of 54 buildings), so a
+  seat that makes little energy still has plenty to play. Two late sinks are for a seat whose node tracks are full:
+  Particle Accelerator (Action: pay 2 energy, put 3 research cubes on a megaproject) and Citywide Microgrid (tier 2, 8 energy: liberate
+  a city in reach; Action: 2 Sway toward Unity).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
@@ -62,6 +69,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   |---|---|---|---|
   | The Nuclear Option | antimatter | event | sway 1 toward Discord |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
+  | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
   | Hostile Buyout | Diplomacy, credits | event | your cube goes on the city, and you gain 3 ambassadors |
   | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
@@ -69,7 +77,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), 18-42 credits (Popular Uprising 22, tier 1, its liberation four Actions away), well under the fallback's ~100 and
+  a corrupted city costs in play; the extra at its own row), 4-42 credits (Citywide Microgrid 4 and 8 energy; Popular Uprising 22, tier 1, its liberation four Actions away), well under the fallback's ~100 and
   out of reach before mid-game. They read 1.0-1.35 at Matt's unit anchors, inside the margin like any fair card: the
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the

@@ -12,7 +12,8 @@ Current:
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/apply_overlay.py FILE... [--check]`: writes content overlays (`cards.<id>.<path>=JSON` lines, the keys
   `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a card pass
-  keeps its edits as one overlay file and reruns it. `--check` prints what would change. Run `regen.py` after.
+  keeps its edits as one overlay file and reruns it. `cards.<id>=<JSON object>` writes a whole row: a new card is
+  appended, an existing one replaced (125). `--check` prints what would change. Run `regen.py` after.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
   (runs `use-090.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
