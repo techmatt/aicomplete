@@ -500,7 +500,7 @@
   "name": "Recursive Self-Improvement",
   "tier": 2,
   "kind": "program",
-  "cost": 24,
+  "cost": 29,
   "insight": 2,
   "needs": [
    [
@@ -1345,7 +1345,7 @@
   "name": "Killswitch Directive",
   "tier": 2,
   "kind": "event",
-  "cost": 10,
+  "cost": 14,
   "insight": 2,
   "tags": [
    "cyber"
@@ -1753,7 +1753,7 @@
   "name": "Dyson Swarm Tranche",
   "tier": 2,
   "kind": "program",
-  "cost": 22,
+  "cost": 29,
   "insight": 2,
   "needs": [
    [
@@ -2276,7 +2276,7 @@
   "name": "Exodus Corridors",
   "tier": 2,
   "kind": "program",
-  "cost": 13,
+  "cost": 14,
   "insight": 2,
   "needs": [
    [
@@ -2786,7 +2786,7 @@
   "name": "Deep State Ledger",
   "tier": 2,
   "kind": "program",
-  "cost": 10,
+  "cost": 18,
   "insight": 2,
   "needs": [
    [
@@ -2819,7 +2819,7 @@
   "name": "Kinetic Interdiction",
   "tier": 2,
   "kind": "event",
-  "cost": 3,
+  "cost": 6,
   "antimatter": 1,
   "insight": 1,
   "needs": [
@@ -3780,7 +3780,7 @@
   "name": "Zero-Day Auction",
   "tier": 2,
   "kind": "program",
-  "cost": 10,
+  "cost": 14,
   "insight": 2,
   "needs": [
    [
@@ -3934,7 +3934,7 @@
   "name": "Smart Grid Backbone",
   "tier": 2,
   "kind": "building",
-  "cost": 20,
+  "cost": 25,
   "insight": 2,
   "needs": [
    [
@@ -4346,7 +4346,7 @@
   "name": "Moonshot Grant",
   "tier": 1,
   "kind": "program",
-  "cost": 23,
+  "cost": 46,
   "insight": 1,
   "needs": [
    [
@@ -4363,7 +4363,7 @@
   "effects": [
    {
     "op": "project_cube",
-    "count": 6
+    "count": 8
    },
    {
     "op": "draw",
@@ -4587,6 +4587,109 @@
    {
     "op": "draw",
     "count": 4
+   }
+  ]
+ },
+ {
+  "id": "fabrication_megaplex",
+  "name": "Fabrication Megaplex",
+  "tier": 1,
+  "kind": "building",
+  "cost": 34,
+  "insight": 1,
+  "tags": [
+   "industry"
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "credits",
+    "amount": 7
+   },
+   {
+    "op": "income",
+    "resource": "chips",
+    "amount": 1
+   }
+  ],
+  "effects": [
+   {
+    "op": "draw",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "frontier_lab_charter",
+  "name": "Frontier Lab Charter",
+  "tier": 1,
+  "kind": "program",
+  "cost": 26,
+  "insight": 1,
+  "tags": [
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "insight",
+    "amount": 2
+   },
+   {
+    "op": "production",
+    "resource": "credits",
+    "amount": 3
+   }
+  ]
+ },
+ {
+  "id": "national_grid_buildout",
+  "name": "National Grid Buildout",
+  "tier": 1,
+  "kind": "program",
+  "cost": 34,
+  "insight": 1,
+  "tags": [
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "production",
+    "resource": "energy",
+    "amount": 2
+   },
+   {
+    "op": "place_node",
+    "count": 3,
+    "free": true
+   }
+  ]
+ },
+ {
+  "id": "decapitation_strike",
+  "name": "Decapitation Strike",
+  "tier": 2,
+  "kind": "event",
+  "cost": 30,
+  "insight": 1,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "remove_botnet"
+   },
+   {
+    "op": "remove_ambassadors_country",
+    "unity_per": 0,
+    "max": 6,
+    "reach": true
    }
   ]
  }

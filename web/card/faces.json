@@ -154,12 +154,16 @@
  "patent_library": {"top":[["3","credits","→","2","cards"]],"top_text":"Action: pay 3 credits, draw 2 cards.","effect":[],"text":""},
  "parts_exchange": {"top":[["chips","→","2","cards"]],"top_text":"Action: pay 1 chip, draw 2 cards.","effect":[],"text":""},
  "preprint_server": {"top":[["play","#science",":","cards"]],"top_text":"Effect: when you play a Science card, draw 1 card.","effect":[["2","cards"]],"text":"Draw 2 cards."},
- "moonshot_grant": {"top":[],"top_text":"","effect":[["6","research_cubes","megaproject"],["2","cards"]],"text":"Add 6 research cubes in your color to a megaproject that isn't complete. Draw 2 cards."},
+ "moonshot_grant": {"top":[],"top_text":"","effect":[["8","research_cubes","megaproject"],["2","cards"]],"text":"Add 8 research cubes in your color to a megaproject that isn't complete. Draw 2 cards."},
  "supplier_network": {"top":[["play","#industry",":","cards"]],"top_text":"Effect: when you play an Industry card, draw 1 card.","effect":[["cards"]],"text":"Draw 1 card."},
  "wartime_retooling": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],["4","cards"]],"text":"Raise your energy income by 2. Draw 4 cards."},
  "bug_bounty_board": {"top":[["4","credits","→",{"adversary":["−3","compute","project"]},"cards"]],"top_text":"Action: pay 4 credits, remove 3 compute from an adversary project, draw 1 card.","effect":[],"text":""},
  "fusion_research_campus": {"top":[["play","#power",":","2","cards"]],"top_text":"Effect: when you play a Power card, draw 2 cards.","effect":[["3","cards"]],"text":"Draw 3 cards."},
  "envoy_briefings": {"top":[],"top_text":"","effect":[["3","cards"],["2","ambassador"]],"text":"Draw 3 cards. Gain 2 ambassadors."},
  "safehouse_network": {"top":[["→","+1","agents"],["OR","2","agents","→","3","cards"]],"top_text":"Action: add 1 Agent here, OR pay 2 Agents, draw 3 cards.","effect":[["+2","agents"]],"text":"Add 2 Agents here."},
- "headquarters_raid": {"top":[],"top_text":"","effect":[[{"adversary":["−5","ambassador"]}],["4","cards"]],"text":"Remove 5 adversary ambassadors in reach. Draw 4 cards."}
+ "headquarters_raid": {"top":[],"top_text":"","effect":[[{"adversary":["−5","ambassador"]}],["4","cards"]],"text":"Remove 5 adversary ambassadors in reach. Draw 4 cards."},
+ "fabrication_megaplex": {"top":[[{"income":["7","credits","chips"]}]],"top_text":"Each round, 7 credits and 1 chip.","effect":[["3","cards"]],"text":"Draw 3 cards."},
+ "frontier_lab_charter": {"top":[],"top_text":"","effect":[[{"income":["+2","insight"]}],[{"income":["+3","credits"]}]],"text":"Raise your insight income by 2. Raise your credit income by 3."},
+ "national_grid_buildout": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],["3","free_node"]],"text":"Raise your energy income by 2. Place 3 nodes free."},
+ "decapitation_strike": {"top":[],"top_text":"","effect":[[{"adversary":["−1","botnet"]}],[{"adversary":["−6","ambassador"]}]],"text":"Remove a botnet in reach. Remove 6 adversary ambassadors in reach."}
 }

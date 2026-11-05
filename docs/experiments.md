@@ -140,7 +140,7 @@ the judge off the value table.
 - **Current recipe:** `screen-102-c.json` (the three pairs at d2, 200 seeds each, about 2 min on 6 threads) and
   `-c-d0` ("greedy at d0" is the `engine` spec, no strategy); `screen-102-a*.json` screen agent switches on and off as
   agent cells of one spec. `screen-098*.json` hold r38's cells: `-terms` (an agent term off, per cell), `-split` / `-t0`
-  (each ruling alone), read with `scripts/cards/r38_read.py`. `screen-096*.json` hold r37's cells, `screen-093*.json` r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
+  (each ruling alone), read with `scripts/cards/r38_read.py`; `screen-096*` and `-093*` hold r37's and r36's cells.
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
   an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load (r45: 1.2-2 games/s).
 - **A before/after read is paired** (Matt, 093): run the old binary, with its configs from `git archive <main> configs
@@ -157,8 +157,11 @@ the judge off the value table.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run with `SPEC --games 1 --out
   out/preflight` (its own `--out`, so no stream is moved aside): a crash, bad override or dead agent shows in minutes.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and the other read scripts in
-  [scripts.md](scripts.md). Credits a seat left at game end are `margin.unspent[seat][0]` in `games.jsonl` (111's
-  `experiments/results/111_card_pass/credits_read.py OLD NEW` pairs them).
+  [scripts.md](scripts.md). Credits a seat left at game end are `margin.unspent[seat][0]` in `games.jsonl` (117's
+  `experiments/results/117_big_cards_and_income/read.py pair OLD NEW` pairs them). **A won game ends inside a round,
+  before upkeep, holding the last upkeep's income** (r45-r46 strategist: about 62 a seat in won games, 8-11 after every
+  completed action phase), so the mean mostly tracks late income and the win rate: read what seats hold after their
+  last completed action phase (`economy.credits_unspent.rNN`, `117_big_cards_and_income/end_credits.py`).
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, planner and engine); read its win mix (purge vs.
 Unity deck) before any rule touching the end state. `experiments/sanity-line.json`: after a change to the rollout
@@ -171,7 +174,9 @@ policy or `prune`, the line alone should read near the engine.
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump (seeds below 33836 went to r43 and earlier): r44: 33836-33883 111's read of r44 against
 r43 (`screen-111-r44.json`, both binaries). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`, both binaries); 33932-34031 116's agent
-sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. Next free: 34224.
+sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. r46: 34224-34271
+117's reads (`screen-117-r45.json` on both binaries; `screen-117-income.json`, r46's incomes as overlays on r45's binary:
+the income step alone). Next free: 34272.
 
 ## Reading prices
 

@@ -226,7 +226,6 @@
         "eviction_worm",
         "logic_bomb",
         "honeypot_relay",
-        "shadow_broker_feed",
         "shared_exploit_kit",
         "neural_mirror",
         "spoofed_credentials",
@@ -240,7 +239,6 @@
         "baseload_contract",
         "relay_mast_rollout",
         "demand_response_grid",
-        "grid_census",
         "peaker_turbines",
         "shared_grid_accord",
         "fusion_startup_stake",
@@ -295,7 +293,6 @@
         "interdisciplinary_institute",
         "standardized_tooling",
         "economies_of_scale",
-        "plant_overdrive",
         "gigafactory_charter",
         "capital_projects_office",
         "conglomerate_headquarters",
@@ -327,7 +324,11 @@
         "fusion_research_campus",
         "envoy_briefings",
         "safehouse_network",
-        "headquarters_raid"
+        "headquarters_raid",
+        "fabrication_megaplex",
+        "frontier_lab_charter",
+        "national_grid_buildout",
+        "decapitation_strike"
       ]
     }
   ],

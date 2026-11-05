@@ -1,4 +1,4 @@
-# Card pricing (r45)
+# Card pricing (r46)
 
 How a card's price is set, as the set stands. Every price is a **candidate**. The cards themselves are
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are
@@ -52,10 +52,17 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   insight to play − about 1, so the card beats the plain route it replaces (ruling 7).
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction: 1 antimatter per Cyber tag).
-- **The cost curve** (r45, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
+- **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
   median 10 (most 6-20; the big income and late cards 20-40, Gigafactory Charter's "40 credits, +12 credit income,
-  draw 2" the top), tier 2 median 18 (most 10-30; the liberate capstones 27-42). 5 cards cost 5 or less. The deck's
-  median is 11. Nine credits is about a third of a round's printed credits on the boards (25 / 21 / 18).
+  draw 2" the top), tier 2 median 18 (most 10-30; the liberate capstones 27-42). 4 cards cost 5 or less, 12 cost 30
+  or more. The deck's median is 12. Nine credits is about half a round's printed credits on the boards (18 / 16 / 14).
+- **Big early and late cards** (r46, Matt): early jump-starts at 26-34 credits, no `needs`, playable in rounds 1-3 from
+  the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
+  Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
+  about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
+  when they complete it), Decapitation Strike takes a botnet and 6 ambassadors in reach, the liberate capstones.
+- **Sway past one tip is lost:** a tip empties the whole bucket (alignment.md), so a card's Sway is worth at most
+  one tip (4 at two players, 6 at three); a bigger Unity swing needs a rule, not a bigger number.
 - **Engines are priced at their seat's fire rate** (106, Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
   not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their

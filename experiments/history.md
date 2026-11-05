@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 117 lower income (18 / 16 / 14), big early and late cards, the strongest tier-2 cards to 1.5×; "credits left at game end" is the last upkeep's income in won games | r46 | [117_big_cards_and_income/r46.md](results/117_big_cards_and_income/r46.md), [cards.md](results/117_big_cards_and_income/cards.md) |
 | 116 agent sweep (the strategist's ten parameters, coordinate search on fixed seeds, held-out confirm; `scripts/tune/agent_sweep.py`) | r45 | [116_agent_sweep/sweep.md](results/116_agent_sweep/sweep.md), [summary-r45.md](results/116_agent_sweep/summary-r45.md) |
 | 114 art for borrowed scenes (11 cards off a cut card's or old name's scene: 2 reused, 9 drawn in batch 7) | r44 | [114_art_borrowed_scenes/art.md](results/114_art_borrowed_scenes/art.md) |
 | 112 price correction (111's cuts to reach a band undone: the anchor margins are a maximum; strategies' card names) | r45 | [112_price_correction/r45.md](results/112_price_correction/r45.md) |

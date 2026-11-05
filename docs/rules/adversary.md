@@ -44,8 +44,9 @@ piece. Each board starts with a botnet (on its research station). A botnet stays
 removed: it makes `botnet_compute` adversary compute a round, it **blocks site claims** (a
 site with a botnet on or next to it can't be claimed), and it counts against the purge until
 Unity eases it ([alignment.md](alignment.md)). **Botnets are hard to remove (candidate, Matt):** no standard action
-does it, only tier-2 effects: the tier-2 cards **Botnet Takedown** and **Singularity
-Exploit** (which also discards a project), each removing a botnet in your reach; **Root Access**, one on or next to the city it liberates; and the
+does it, only tier-2 effects: the tier-2 cards **Botnet Takedown**, **Singularity
+Exploit** (which also discards a project) and **Decapitation Strike** (which also removes 6 adversary ambassadors),
+each removing a botnet in your reach; **Root Access**, one on or next to the city it liberates; and the
 tier-2 Unity card **Decommission** (a botnet anywhere, players choose). Removing a botnet
 sways `alignment.botnet` Unity ([alignment.md](alignment.md)).
 

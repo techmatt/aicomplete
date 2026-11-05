@@ -92,9 +92,11 @@ data_licensing_deal,tags [card],card,science,1.0,1.0,1.0,0.69,0.69
 dataset_scraper,draw [play],play,count=2,2.0,8.0,4.0,5.44,2.72
 dataset_scraper,add_tokens datasets [play],play,"kind=datasets, amount=1",1.0,3.0,3.0,2.04,2.04
 dataset_scraper,tags [card],card,science cyber,2.0,1.5,0.75,1.02,0.51
-deep_state_ledger,production insight [play],play,"resource=insight, amount=3",3.0,18.75,6.25,11.6,3.87
-deep_state_ledger,add_tokens agents [play],play,"kind=agents, amount=2",2.0,4.0,2.0,2.47,1.24
-deep_state_ledger,tags [card],card,security cyber,2.0,1.5,0.75,0.93,0.46
+decapitation_strike,remove_botnet [play],play,,1.0,12.0,12.0,16.25,16.25
+decapitation_strike,remove_ambassadors_country [play],play,"unity_per=0, max=6, reach=True",6.0,12.0,2.0,16.25,2.71
+deep_state_ledger,production insight [play],play,"resource=insight, amount=3",3.0,18.75,6.25,17.78,5.93
+deep_state_ledger,add_tokens agents [play],play,"kind=agents, amount=2",2.0,4.0,2.0,3.79,1.9
+deep_state_ledger,tags [card],card,security cyber,2.0,1.5,0.75,1.42,0.71
 defense_appropriations,production_per_tag credits [play],play,"resource=credits, tag=security, per=1",1.0,12.0,12.0,11.54,11.54
 defense_appropriations,tags [card],card,security,1.0,1.0,1.0,0.96,0.96
 demand_response_grid,draw [action],action,count=2; pays 1 energy,2.0,9.8,4.9,12.25,6.12
@@ -105,9 +107,9 @@ diplomatic_expulsion,tags [card],card,security diplomacy,2.0,1.5,0.75,1.39,0.69
 dispatch_control_room,gain energy [play],play,"resource=energy, amount=2",2.0,9.0,4.5,9.2,4.6
 dispatch_control_room,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 1}]",1.0,8.1,8.1,8.28,8.28
 dispatch_control_room,tags [card],card,power,1.0,1.0,1.0,1.02,1.02
-dyson_swarm_tranche,production energy [play],play,"resource=energy, amount=2",2.0,18.0,9.0,10.92,5.46
-dyson_swarm_tranche,production credits [play],play,"resource=credits, amount=10",10.0,25.0,2.5,15.17,1.52
-dyson_swarm_tranche,tags [card],card,power industry,2.0,1.5,0.75,0.91,0.46
+dyson_swarm_tranche,production energy [play],play,"resource=energy, amount=2",2.0,18.0,9.0,13.75,6.88
+dyson_swarm_tranche,production credits [play],play,"resource=credits, amount=10",10.0,25.0,2.5,19.1,1.91
+dyson_swarm_tranche,tags [card],card,power industry,2.0,1.5,0.75,1.15,0.57
 economies_of_scale,production_per_tag credits [play],play,"resource=credits, tag=industry, per=1",1.0,12.0,12.0,11.54,11.54
 economies_of_scale,tags [card],card,industry,1.0,1.0,1.0,0.96,0.96
 endowed_research_chair,production insight [play],play,"resource=insight, amount=2",2.0,20.0,10.0,13.81,6.9
@@ -118,12 +120,16 @@ envoy_briefings,tags [card],card,diplomacy,1.0,1.0,1.0,0.55,0.55
 eviction_worm,remove_ambassadors_country [play],play,"max=3, reach=True",3.0,6.0,2.0,6.58,2.19
 eviction_worm,drain_project [play],play,amount=4,4.0,4.4,1.1,4.82,1.21
 eviction_worm,tags [card],card,cyber,1.0,1.0,1.0,1.1,1.1
-exodus_corridors,spread_ambassadors [play],play,,1.0,3.0,3.0,2.63,2.63
-exodus_corridors,gain_ambassadors [play],play,count=4,4.0,16.0,4.0,14.05,3.51
-exodus_corridors,tags [card],card,diplomacy security,2.0,1.5,0.75,1.32,0.66
+exodus_corridors,spread_ambassadors [play],play,,1.0,3.0,3.0,2.78,2.78
+exodus_corridors,gain_ambassadors [play],play,count=4,4.0,16.0,4.0,14.83,3.71
+exodus_corridors,tags [card],card,diplomacy security,2.0,1.5,0.75,1.39,0.7
 exploit_broker,draw [play],play,count=2,2.0,8.0,4.0,7.16,3.58
 exploit_broker,when play cyber [passive],passive,"on={'event': 'play', 'tag': 'cyber'}, then=[{'op': 'gain', 'resource': 'credits', 'amount': 4}]",1.0,7.2,7.2,6.44,6.44
 exploit_broker,tags [card],card,cyber,1.0,1.0,1.0,0.9,0.9
+fabrication_megaplex,draw [play],play,count=3,3.0,12.0,4.0,9.32,3.11
+fabrication_megaplex,income credits [passive],passive,"resource=credits, amount=7",7.0,28.0,4.0,21.74,3.11
+fabrication_megaplex,income chips [passive],passive,"resource=chips, amount=1",1.0,6.0,6.0,4.66,4.66
+fabrication_megaplex,tags [card],card,industry,1.0,1.0,1.0,0.78,0.78
 fact_check_network,jam typed [play],play,"amount=5, source=influence",5.0,3.5,0.7,1.68,0.34
 fact_check_network,gain_ambassadors [play],play,count=2,2.0,8.0,4.0,3.84,1.92
 fact_check_network,tags [card],card,diplomacy,1.0,1.0,1.0,0.48,0.48
@@ -143,6 +149,9 @@ forensic_audit,draw [play],play,count=2,2.0,8.0,4.0,6.26,3.13
 foundation_model_campus,draw [play],play,count=4,4.0,16.0,4.0,10.8,2.7
 foundation_model_campus,income_per_tag credits [passive],passive,"resource=credits, tag=science, per=1, amount=3",3.0,22.5,7.5,15.19,5.06
 foundation_model_campus,tags [card],card,science cyber,2.0,1.5,0.75,1.01,0.51
+frontier_lab_charter,production insight [play],play,"resource=insight, amount=2",2.0,20.0,10.0,17.27,8.64
+frontier_lab_charter,production credits [play],play,"resource=credits, amount=3",3.0,12.0,4.0,10.36,3.45
+frontier_lab_charter,tags [card],card,science,1.0,1.0,1.0,0.86,0.86
 fusion_research_campus,draw [play],play,count=3,3.0,12.0,4.0,11.2,3.73
 fusion_research_campus,when play power [passive],passive,"on={'event': 'play', 'tag': 'power'}, then=[{'op': 'draw', 'count': 2}]",1.0,9.0,9.0,8.4,8.4
 fusion_research_campus,tags [card],card,power science,2.0,1.5,0.75,1.4,0.7
@@ -195,10 +204,10 @@ joint_fabrication_pact,tags [card],card,industry power diplomacy,3.0,2.0,0.67,1.
 joint_task_force,draw [play],play,count=2,2.0,8.0,4.0,8.15,4.07
 joint_task_force,when team_play security [passive],passive,"on={'event': 'team_play', 'tag': 'security'}, then=[{'op': 'remove_ambassadors_country', 'max': 2, 'reach': True}]",1.0,7.2,7.2,7.33,7.33
 joint_task_force,tags [card],card,security,1.0,1.0,1.0,1.02,1.02
-killswitch_directive,discard_project [play],play,,1.0,8.0,8.0,7.5,7.5
-killswitch_directive,remove_ambassadors_country [play],play,"unity_per=0, max=4, reach=True",4.0,8.0,2.0,7.5,1.88
-kinetic_interdiction,remove_troops [play],play,count=2,2.0,10.36,5.18,5.79,2.9
-kinetic_interdiction,remove_ambassadors_country [play],play,"max=6, reach=True",6.0,12.0,2.0,6.71,1.12
+killswitch_directive,discard_project [play],play,,1.0,8.0,8.0,9.5,9.5
+killswitch_directive,remove_ambassadors_country [play],play,"unity_per=0, max=4, reach=True",4.0,8.0,2.0,9.5,2.38
+kinetic_interdiction,remove_troops [play],play,count=2,2.0,10.36,5.18,7.18,3.59
+kinetic_interdiction,remove_ambassadors_country [play],play,"max=6, reach=True",6.0,12.0,2.0,8.32,1.39
 liaison_corps,gain_ambassadors [play],play,count=3,3.0,12.0,4.0,6.63,2.21
 liaison_corps,move_ambassadors [play],play,max=4,4.0,6.0,1.5,3.32,0.83
 liaison_corps,tags [card],card,diplomacy,1.0,1.0,1.0,0.55,0.55
@@ -223,15 +232,18 @@ martial_cordon,sway unity [play],play,"side=unity, amount=2",2.0,8.0,4.0,7.07,3.
 martial_cordon,tags [card],card,security diplomacy,2.0,1.5,0.75,1.33,0.66
 materials_hedge_desk,draw [play],play,count=3,3.0,12.0,4.0,9.67,3.22
 materials_hedge_desk,add_tokens capital [play],play,"kind=capital, amount=2",2.0,6.0,3.0,4.83,2.42
-moonshot_grant,project_cube [play],play,count=6,6.0,36.0,6.0,20.4,3.4
-moonshot_grant,draw [play],play,count=2,2.0,8.0,4.0,4.53,2.27
-moonshot_grant,tags [card],card,science,1.0,1.0,1.0,0.57,0.57
+moonshot_grant,project_cube [play],play,count=8,8.0,48.0,6.0,40.84,5.11
+moonshot_grant,draw [play],play,count=2,2.0,8.0,4.0,6.81,3.4
+moonshot_grant,tags [card],card,science,1.0,1.0,1.0,0.85,0.85
 multiyear_defense_budget,production credits [play],play,"resource=credits, amount=5",5.0,20.0,4.0,13.05,2.61
 multiyear_defense_budget,production energy [play],play,"resource=energy, amount=2",2.0,28.8,14.4,18.8,9.4
 multiyear_defense_budget,tags [card],card,security,1.0,1.0,1.0,0.65,0.65
 mutual_aid_pact,other_gain insight [play],play,"resource=insight, amount=3; to a chosen player",3.0,5.62,1.88,3.02,1.01
 mutual_aid_pact,gain_ambassadors [play],play,count=3; to a chosen player,3.0,12.0,4.0,6.44,2.15
 mutual_aid_pact,tags [card],card,diplomacy,1.0,1.0,1.0,0.54,0.54
+national_grid_buildout,production energy [play],play,"resource=energy, amount=2",2.0,28.8,14.4,21.99,11.0
+national_grid_buildout,place_node free [play],play,"count=3, free=True",3.0,18.0,6.0,13.74,4.58
+national_grid_buildout,tags [card],card,power,1.0,1.0,1.0,0.76,0.76
 neural_mirror,production_per_tag insight [play],play,"resource=insight, tag=cyber, per=2",0.5,15.0,30.0,10.91,21.82
 neural_mirror,tags [card],card,cyber science,2.0,1.5,0.75,1.09,0.55
 nuclear_option,liberate [play],play,,1.0,45.0,45.0,31.28,31.28
@@ -309,9 +321,9 @@ reconciliation_office,tags [card],card,diplomacy security,2.0,1.5,0.75,1.31,0.66
 recruit_operatives,draw [play],play,count=2,2.0,8.0,4.0,6.55,3.27
 recruit_operatives,add_tokens agents [play],play,"kind=agents, amount=1",1.0,2.0,2.0,1.64,1.64
 recruit_operatives,tags [card],card,security,1.0,1.0,1.0,0.82,0.82
-recursive_self_improvement,production insight [play],play,"resource=insight, amount=4",4.0,25.0,6.25,17.06,4.26
-recursive_self_improvement,draw [play],play,count=4,4.0,16.0,4.0,10.92,2.73
-recursive_self_improvement,tags [card],card,science cyber,2.0,1.5,0.75,1.02,0.51
+recursive_self_improvement,production insight [play],play,"resource=insight, amount=4",4.0,25.0,6.25,20.0,5.0
+recursive_self_improvement,draw [play],play,count=4,4.0,16.0,4.0,12.8,3.2
+recursive_self_improvement,tags [card],card,science cyber,2.0,1.5,0.75,1.2,0.6
 red_team_audit,jam any [play],play,amount=6,6.0,6.0,1.0,3.94,0.66
 red_team_audit,draw [play],play,count=2,2.0,8.0,4.0,5.25,2.62
 red_team_audit,tags [card],card,science cyber security,3.0,2.0,0.67,1.31,0.44
@@ -363,9 +375,9 @@ simulation_cluster,tags [card],card,science cyber,2.0,1.5,0.75,0.86,0.43
 singularity_exploit,remove_botnet [play],play,,1.0,12.0,12.0,9.14,9.14
 singularity_exploit,discard_project [play],play,,1.0,8.0,8.0,6.1,6.1
 singularity_exploit,tags [card],card,cyber,1.0,1.0,1.0,0.76,0.76
-smart_grid_backbone,gain energy [play],play,"resource=energy, amount=2",2.0,9.0,4.5,6.53,3.26
-smart_grid_backbone,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 1}]",1.0,24.47,24.47,17.75,17.75
-smart_grid_backbone,tags [card],card,power,1.0,1.0,1.0,0.73,0.73
+smart_grid_backbone,gain energy [play],play,"resource=energy, amount=2",2.0,9.0,4.5,7.83,3.92
+smart_grid_backbone,when play_tag [passive],passive,"on={'event': 'play_tag'}, then=[{'op': 'gain', 'resource': 'energy', 'amount': 1}]",1.0,24.47,24.47,21.3,21.3
+smart_grid_backbone,tags [card],card,power,1.0,1.0,1.0,0.87,0.87
 spoofed_credentials,gain_per_tag insight [play],play,"resource=insight, tag=cyber, per=1",1.0,7.5,7.5,7.0,7.0
 standardized_tooling,draw [play],play,count=2,2.0,8.0,4.0,6.0,3.0
 standardized_tooling,card_discount credits [passive],passive,"tag=industry, resource=credits, amount=5",5.0,9.0,1.8,6.75,1.35
@@ -425,8 +437,8 @@ wartime_retooling,draw [play],play,count=4,4.0,16.0,4.0,11.23,2.81
 wartime_retooling,tags [card],card,industry power,2.0,1.5,0.75,1.05,0.53
 zero_click_breach,drain_project [play],play,amount=18,18.0,19.8,1.1,14.28,0.79
 zero_click_breach,tags [card],card,cyber,1.0,1.0,1.0,0.72,0.72
-zero_day_auction,gain antimatter [play],play,"resource=antimatter, amount=2",2.0,14.0,7.0,5.38,2.69
-zero_day_auction,draw [play],play,count=6,6.0,24.0,4.0,9.23,1.54
-zero_day_auction,tags [card],card,cyber,1.0,1.0,1.0,0.38,0.38
+zero_day_auction,gain antimatter [play],play,"resource=antimatter, amount=2",2.0,14.0,7.0,6.82,3.41
+zero_day_auction,draw [play],play,count=6,6.0,24.0,4.0,11.69,1.95
+zero_day_auction,tags [card],card,cyber,1.0,1.0,1.0,0.49,0.49
 zero_knowledge_exploit,drain_project [play],play,amount=5,5.0,5.5,1.1,4.92,0.98
 zero_knowledge_exploit,draw [play],play,count=1,1.0,4.0,4.0,3.58,3.58

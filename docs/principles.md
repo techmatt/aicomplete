@@ -28,11 +28,11 @@ The standards every module and every rules change is judged against.
 played should sit near credit income ÷ insight income: about 25-35 credits ÷ 5-7 insight ≈ 5 (read at r33),
 and tier-1 cards have a median of 6 credits with tier 2 about 12.
 
-- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 25 / 21 / 18 a
-  round printed on the Builder, Protector and Researcher (Foundry Core's +1 folded in), plus 2-3 a
-  node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 250 to 350 credits
-  over a 9-round game before cards, so totals reach the hundreds. Card costs run 0–21 (Great Liberation 21, Orbital
-  Mass Driver 20): within "about 50", but the income is not "produce
+- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 18 / 16 / 14 a
+  round printed on the Builder, Protector and Researcher (r46; 25 / 21 / 18 before), plus 2-3 a
+  node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 200 to 250 credits
+  over a 9-round game before cards, so totals reach the hundreds. Card costs run 2–42 (Hostile Buyout 42, Peacekeeping Mission
+  41, Gigafactory Charter 40): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 4–8; a research cube is worth about 3
   credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); chips sell
