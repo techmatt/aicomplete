@@ -63,7 +63,9 @@ experiments, speed, scripts, web, card art.
   cards:fit` in `web/` checks the fit). A display rename keeps the card's id: notes,
   `scenes.json` and records key on it. An id changes only to fix a spelling `docs --check`
   refuses, and only in a rules item: card id order feeds play (087 kept 086's two ids for it),
-  so it bumps `RULES_REVISION` and strands any note on the old id.
+  so it bumps `RULES_REVISION` and strands any note on the old id. A pass editing many cards
+  keeps its edits as one overlay file and writes them with `scripts/cards/apply_overlay.py`,
+  rerunnable from any revision (111 rebuilt `cards.json` by hand three times).
 
 ## Working rules
 
@@ -120,9 +122,9 @@ experiments, speed, scripts, web, card art.
   `README.md`; a run's cost and recipe in `docs/experiments.md`; a script's flags in
   `docs/scripts.md`. Never leave one only in a report. A number from a past revision goes in
   its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
-- **Each doc keeps to a 15 KB budget** (README, CLAUDE.md and every `docs/` page, each
-  `docs/rules/` file included: `docs --check` refuses one over), except the generated
-  `docs/cards.md`. Trim before you add past it.
+- **Each doc keeps to a 15 KB budget** (README, CLAUDE.md, web/ and card-art READMEs and every
+  `docs/` page, each `docs/rules/` file included: `docs --check` refuses one over), except the
+  generated `docs/cards.md`. Leave about 1 KB free: an item that fills a page trims it first.
 - **Docs state the current game.** An item updates the current text in place, never appends an
   'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a
   heading like `## 080's changes`. A card's pricing note for the viewer is one current line in

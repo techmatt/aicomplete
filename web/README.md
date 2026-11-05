@@ -26,13 +26,12 @@ npm run e2e:researcher         # the Researcher's board, the same way
 
 - **The wasm build:** `scripts/build-wasm.mjs` runs `wasm-pack build crates/aic-wasm
   --target web --release` into `web/src/wasm/` (git-ignored): about 20 s cold, 9 s warm,
-  74 s in a fresh target dir, over 60 s under load, so background it there.
+  74 s in a fresh target dir (background it there).
   `AIC_WASM_PROFILE=dev` builds unoptimized.
-- **While the dev server runs**, editing anything under `crates/` (any `.rs`, tests and
-  `aic-sim` included) or `content/` rebuilds the wasm and reloads the page; editing or
-  adding a file in `configs/` reloads it (configs are read at build time,
-  `import.meta.glob`). A failed rebuild keeps the last good engine; the error is in the
-  dev server's terminal.
+- **While the dev server runs**, editing anything under `crates/` (tests and `aic-sim`
+  included) or `content/` rebuilds the wasm and reloads the page; a new or edited file in
+  `configs/` reloads it (`import.meta.glob`). A failed rebuild keeps the last good engine;
+  the error is in the dev server's terminal.
 
 ## Using it
 
@@ -41,34 +40,30 @@ npm run e2e:researcher         # the Researcher's board, the same way
   plays every seat, in any order during a simultaneous phase. Draft phases offer no pass.
   *Pass every seat*, *Random action* (R) and *Random to end* are for quick debugging.
 - **Choices:** the question shows in the amber bar above the board. A hex answer
-  highlights its hexes at once: click one. When two answers name the same hex (a
-  sacrifice: the ambassador or the node there), each also gets a button (the hex takes
-  the first). Other answers are buttons in the seat's panel. Text names hexes by country
+  highlights its hexes: click one. Two answers on one hex (a sacrifice: the ambassador
+  or the node there) also get a button each (the hex takes the first). Other answers are
+  buttons in the seat's panel. Text names hexes by country
   (`Cintamani #13`) and cards by name.
 - **The board:** hexes filled by `kind` (key at the bottom left), base pennants in their
   `facing` country's color, fronts dashed dark red; on a war step (`board.war` = 1) fronts
-  turn solid red and pulse and the adversary row shows a **war round** badge. Player
-  pieces sit on a hex's upper row in the seat's (its country's) color, the adversary's on
-  the lower row in purple. Hover anything for its details; hexes the shown step changed
-  have an amber outline.
+  turn solid red and pulse, with a **war round** badge. Player pieces sit on a hex's upper
+  row in the seat's color, the adversary's on the lower row in purple. Hover anything for
+  details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers cards, threats, gifts, the view's `standard`
-  actions with the rules' words and costs, a *power* button per AI-board power,
-  *antimatter* and one *sell* per card in hand. The AI board's tracks come from the
-  generic `seats[].board` shape: solid spaces uncovered, dashed under nodes, boxed the
-  last uncovered.
-- **Globals:** a `vars` track no module labels folds under *Unlabeled tracks* (the
-  baseline has none).
+  actions, a *power* button per AI-board power, *antimatter* and a *sell* per card in
+  hand. AI board tracks (`seats[].board`): solid spaces uncovered, dashed under nodes,
+  boxed the last uncovered.
+- **Globals:** a `vars` track no module labels folds under *Unlabeled tracks*.
 - **Timeline:** Ctrl+Z undoes (every state is a replay of config + seed + actions). ⏮ ◀
   ▶ ⏭, the slider, ← → Home End, Space to auto-play at 1x (4 steps a second), 4x or 16x.
   **Page Up / Page Down** jump between round starts. Clicking a log entry jumps to its
-  step; acting from an earlier step drops the later actions, after asking. A step that
-  runs through phases folds its log events by phase; hovering a heading outlines that
-  phase's hexes.
-- **The header** shows the engine version and rules revision. A saved session (kept in
-  `localStorage`, replayed on load) whose config changed or no longer loads, or a record
+  step; acting from an earlier step drops the later actions, after asking. Log events
+  fold by phase; hovering a heading outlines that phase's hexes.
+- **The header** shows the engine version and rules revision. A saved session
+  (`localStorage`, replayed on load) whose config changed or no longer loads, or a record
   from another revision, says so in the error bar; one that no longer loads is kept
-  (`copy(aic.keptSession())`). Data tabs show the event log, raw
-  state, generic view and resolved config.
+  (`copy(aic.keptSession())`). Data tabs: event log, raw state, generic view, resolved
+  config.
 
 ## Game records
 
@@ -87,21 +82,22 @@ revision) and the saved outcome and final fingerprint (`aic_core::SavedGame`, fo
 
 `npm run e2e [-- <record.json>]` (`scripts/e2e.mjs`) drives headless Edge or Chrome over
 the DevTools protocol, no extra packages. `AIC_URL` points it at the server (default
-`http://localhost:5173/`), `AIC_BROWSER` at a browser off the usual path. It checks every
-panel and the board, plays a baseline game (seed 1) to the end through the page, then
-the interactions above, no page scroll at 1366×768, 1920×1080 and 2560×1440, words
-rather than ids on screen, under 100 ms a step, a 4-country game (may scroll at 1366×768), the shared row
-(`configs/shared_row.json`) and the given record; each `check(...)` names itself.
+`http://localhost:5173/`), `AIC_BROWSER` at a browser off the usual path. It checks the
+panels and board, a baseline game (seed 1) played to the end, the interactions above, no
+page scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a
+4-country game (may scroll at 1366×768), the shared row (`configs/shared_row.json`) and
+the given record; each `check(...)` names itself.
 About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` also saves
 `viewer-mid.png` and `viewer-end.png` there.
 
 The face-up adversary card and threat checks run at round 2 (a fresh game has neither).
 `board fills its pane` measures a fixed game (baseline seed 11, first legal action): a rules
-change can move it, so remeasure before reading a layout change into a failure.
+change can move it, so remeasure before reading a layout change into a failure: `npm run panes`
+(same `AIC_URL`) prints that game's pane heights at the three sizes; diff two revisions' output.
 
 The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the baseline
 at `station_cubes` 3 on a quiet board (no arrivals, city builds or marches, `corrupt_at` 20)
-for cubes, converters (a node on a city, since r37) and the Researcher's board; `e2e:sources`
+for cubes, converters (a node on a city) and the Researcher's board; `e2e:sources`
 checks a face-up threat's sources and a forged payment refused.
 
 **Against a built site:** a dev-server rebuild breaks a run mid-way (`reading 'view'`), so
@@ -109,6 +105,10 @@ while the engine is edited serve a snapshot: `node scripts/build-wasm.mjs && npx
 && npx vite preview --port $PORT --strictPort`, `AIC_URL=http://localhost:$PORT/`
 (`npx vite build` alone, about 1 s, after a `web/src/` edit). A killed wrapper's `node` can
 hold the port (`--strictPort` fails): kill it.
+
+**An old revision side by side** (about 3 min): `git archive REV | tar -x -C out/rREV`,
+then in its `web/` `npm ci`, `node scripts/build-wasm.mjs`, `npx vite build`, and a
+preview on another port (`AIC_URL`).
 
 ## The sweep
 
@@ -119,30 +119,26 @@ engine is edited) and a release `aic-sim` (`AIC_SIM`, default
 `../target/release/aic-sim[.exe]`).
 
 - **Cases:** `CASES` in the script (`--quick` keeps the first four, `--case c4-d0` picks
-  one). For each, `aic-sim` plays games (greedy unless the case names an agent) and saves
-  records; the sweep **watches** each record step by step and **plays** as many fresh
-  games of the resolved config through the page, picking legal actions at random (choices,
-  hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
-  simulated ones from seed `AIC_SWEEP_SEED` (100). Engine-agent cases reach stations, cubes,
-  liberations; `c2-d2-strategist` the engines, `c1-d2-engine` 1 player.
+  one). For each, `aic-sim` saves records (greedy unless the case names an agent); the
+  sweep **watches** each record step by step and **plays** as many fresh games through the page
+  at random (choices, hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
+  simulated ones from seed `AIC_SWEEP_SEED` (100).
 - **Moments:** new rounds, prompts, war steps, the first of each key event and counter rise
-  (`COUNTER_EVENTS`, `_R41`: triggers, At N, reuse), the end. At
-  each, the checks at 1366×768, layout checks at 1920×1080 and 2560×1440, and a
-  screenshot (at most 14 a game, plus the end and anything failing).
+  (`COUNTER_EVENTS`, `_R41`), the end. At each, the checks at 1366×768, layout at the two
+  larger sizes, and a screenshot (at most 14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
   without an outcome), the error bar, page scroll, placeholder text (`undefined`, `NaN`),
   elements off screen with no scroll to them, `hidden-target`, `clipped` (no ellipsis),
   `token-unknown`, `case` (`aic-sim` could not play it). **Reported for a look:** `no-control`
-  (a legal action with no button or hex pick on screen), `raw-id`,
-  `truncated-no-hover`, `truncated`, overlapping buttons, hex numbers and counts on each
-  other, tokens in the view not drawn, step spikes over 150 ms, heap growth over 50 MB.
+  (a legal action with no control on screen), `raw-id`, `truncated-no-hover`, `truncated`,
+  overlaps, undrawn view tokens, steps over 150 ms, heap growth over 50 MB.
 - **Output** in `web/sweep-out/` (`AIC_SWEEP_OUT`): `shots/`, `issues.json` (game, step,
   moment), `index.html`, `sheet-N.png` contact sheets (failures framed red), the records.
   `AIC_SWEEP_VERBOSE=1` times each moment. Hooks: `window.aic` (main.ts), `scripts/cdp.mjs`.
 - **Running it:** background it, the viewer served by a process that outlives it; don't
   rebuild `aic-sim` mid-sweep. Rules twin: `invariants_hold_in_random_games`. At most one
-  sweep beside one browser test lane. Five cases at one seed (541 captures) took 12 min at
-  r38: a step 14-46 ms (p50), a capture about 1.3 s (three sizes).
+  sweep beside one browser test lane. Five cases at one seed (541 captures) take about 12
+  min: a capture about 1.3 s (three sizes).
 
 ## Kept, never played
 
@@ -152,10 +148,9 @@ each card was held, legal to play and played. Legal, never played: the agents' v
 ## Odd input
 
 `npm run odd` (`scripts/odd.mjs`) runs twelve scenarios against a served viewer
-(`AIC_URL`), reloading between them: mashing, mid-choice reloads, resizes during
-autoplay, full storage, broken records and sessions, bad seeds and the like. Fails on a
-console error, a stuck game, a page scroll or a scenario's own check, and prints what
-each bad input said. `--only NAME`, `--seeds N`. About 30 s; it counts as one browser
+(`AIC_URL`): mashing, mid-choice reloads, resizes during autoplay, full storage, broken
+records and sessions, bad seeds. Fails on a console error, a stuck game, a page scroll
+or a scenario's own check, and prints what each bad input said. `--only NAME`, `--seeds N`. About 30 s; it counts as one browser
 lane. Failure shots go to `sweep-out/odd/`.
 
 ## Source
@@ -180,10 +175,9 @@ over its checkout. The export takes about 0.4 s. `--port N` serves elsewhere; a 
 says so and exits.
 
 - **Every card in content** (country pieces are map, not cards). Player cards go through
-  `web/card/card.js` with their scene from `art-originals/`, the one
-  `tools/card-art/scenes.json` names for that card (no scene: drawn without one); a kind
-  with no frame gets a plain face from the same export. Scenes are full-size PNGs of
-  about 3.6 MB, loaded as they scroll in, so a fast scroll shows gray for a second or two.
+  `web/card/card.js` with the `art-originals/` scene `tools/card-art/scenes.json` names
+  (none: drawn without); a kind with no frame gets a plain face. Scenes are 3.6 MB PNGs
+  loaded as they scroll in, so a fast scroll shows gray for a second or two.
 - **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads
   `content/`, `web/card/faces.json`, `configs/baseline.json`,
   `docs/card-pricing-notes.json` and `experiments/results/`. It never runs `aic-sim docs`:
@@ -191,30 +185,24 @@ says so and exits.
   0.1 s.
 - **Stats** come from the newest `results.json` of 100+ games with a per-card `cards`
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision,
-  then most plain agents, then most games); now r34's `screen-080`. Each label carries its
-  revision; the page warns (one collapsed *N warnings ▸* line) when it is behind the
-  rules. The default agent is the ladder's highest. An item whose screen should feed the
-  viewer commits its `results.json`, not only a report.
-  - Kept % is keeps per 100 games, about the share of games a one-copy card was kept in
-    (the report's kept ÷ offered counts draft packets only, but the opening deal is kept
-    undrafted, so that ratio can pass 100%). Played % is played ÷ (kept + drawn). Win Δ comes
-    from `games.csv`, which names only buildings standing at the end: blank for other
-    cards, a correlation for buildings.
-  - A CSV under `experiments/results/` with a `card` (or `id`) column, a row a card, and a column with
-    `reason` in its name (`card-prices.csv` by convention) adds the reasoned price and
-    printed minus reasoned. One whose `revision` is older than `RULES_REVISION` is passed
-    over (no columns, no warnings; the CLI export names it). The only one,
-    `screen-055-prices/card-prices.csv`, is at r23, so these columns are off until a price
-    read at the current revision commits its own.
+  then most plain agents, then most games). Each label carries its revision; the page
+  warns (one collapsed *N warnings ▸* line) when it is behind the rules. The default agent
+  is the ladder's highest. An item whose screen should feed the viewer commits its
+  `results.json`, not only a report.
+  - Kept % is keeps per 100 games (the opening deal is kept undrafted, so a report's kept
+    ÷ offered can pass 100%). Played % is played ÷ (kept + drawn). Win Δ comes from
+    `games.csv`, which names only buildings standing at the end: blank for other cards.
+  - A CSV under `experiments/results/` with a `card` (or `id`) column, a row a card, and a
+    column with `reason` in its name (`card-prices.csv` by convention) adds the reasoned
+    price and printed minus reasoned. One whose `revision` is older than `RULES_REVISION`
+    is passed over silently (the CLI export names it); none is current now.
 - **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
   cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is
   empty or one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the
-  card's text at saving; `hash` is a SHA-256 prefix of the card's content row and face,
-  key order aside (`contentHash` in the export). A planner reads this file directly; a
-  note is stale when its `hash` differs from the card's in `out/cards-export.json`. Matt
-  reviews in the planner chat, so the page has no *Review* filter. Closing or stepping
-  saves the note, keeping the previous file as `review/card-notes.json.bak`; a broken
-  notes file shows on the page and refuses saves.
+  card's text at saving; `hash` is a SHA-256 prefix of its content row and face, key
+  order aside (`contentHash` in the export). A note is stale when its `hash` differs from
+  the card's in `out/cards-export.json`. Closing or stepping saves the note (previous
+  file kept as `.bak`); a broken notes file shows on the page and refuses saves.
 - **Badges:** *changed since your note* when the hash moved (saving again clears it).
   *New* for a card missing from `review/card-seen.json`, until opened, noted or *Mark all
   seen*; the first run seeds that ledger with the whole set.
@@ -222,14 +210,14 @@ says so and exits.
   *Pricing* in the large view (format and rules: root CLAUDE.md). `aic-sim docs --check`
   refuses an id that is no player card.
 - **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser
-  through all that on a copy in `out/cards-check/` (screenshots there, content
-  untouched). It fails on a card overflowing at the last size or title floor, a title off its
-  plate, text wrapping apart between zooms, or a deck card with no scene or no scene image.
+  through all that on a copy in `out/cards-check/` (screenshots there). It fails on a card
+  overflowing at the last size or title floor, a title off its plate, text wrapping apart
+  between zooms, or a deck card with no scene or scene image.
 - **Card rules** (box capacity, the 7.5 pt goal) are in
   [docs/card-guidelines.md](../docs/card-guidelines.md). A test refuses any face printing
   `*` or "worth".
-- **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) puts every player card
-  through the real renderer and `fitCards` headless and writes `out/card-fit.json`: per id,
+- **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card
+  headless with the real renderer and writes `out/card-fit.json`: per id,
   `top` and `effect` box sizes in pt (null: empty box), `title` in pt, `overflow` and
   `where`, and `tight` for a box inside its panel but short of the clearance. It prints
   cards below 7.5 pt and exits 1 on any overflow. It reads the working tree: re-run after

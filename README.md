@@ -17,9 +17,9 @@ Where to look: how to build and test is below. The rest has its own page.
 - [experiments/history.md](experiments/history.md): an index of past items' write-ups.
 - [docs/principles.md](docs/principles.md): design pillars, difficulty targets, lenses,
   measures.
-- [docs/cards.md](docs/cards.md): every player card (its *Shape* table counts the content and the deck), generated
-  from content and `web/card/faces.json` by `python scripts/cards/cards_doc.py`, after `aic-sim docs` (a fast-lane test fails if it is stale);
-  the pricing method is [docs/card-pricing.md](docs/card-pricing.md); the rates live in `configs/agents/values.json`.
+- [docs/cards.md](docs/cards.md): every player card, generated from content and `web/card/faces.json`
+  by `python scripts/cards/cards_doc.py` after `aic-sim docs` (the fast lane fails if stale);
+  pricing method in [docs/card-pricing.md](docs/card-pricing.md), rates in `configs/agents/values.json`.
 - [docs/rules/](docs/rules/README.md): the rules as implemented, at `RULES_REVISION`, one file
   per area; its `README.md` maps them. Its tables of content and tunables are generated (`aic-sim
   docs`; see [docs/architecture.md](docs/architecture.md), *Generated docs*).
@@ -43,20 +43,16 @@ Where to look: how to build and test is below. The rest has its own page.
 | `crates/aic-core` | The rules engine. No I/O, no clock, seeded per-purpose RNG streams in the state, serde state, exact replay. `Rules::new(config)` then `new_game` / `legal_actions_into` / `apply_mut`, plus the convenient free functions `new_game`, `legal_actions`, `apply`. |
 | `crates/aic-core/src/modules/` | One file per rules area (`adversary`, `alignment`, `economy`, `ai`), or a directory for the big ones (`board/`, `cards/`, `threats/`), shared code (`common`, `effects/`), the adversary build's placement rule (`plan`; its `next_build` forecast only tests call), the registry in `mod.rs`. |
 | `crates/aic-sim` | Native CLI: seeded games over a seed range, one config or two side by side, with every game replay-checked; the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `cli.rs` parses the arguments; `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates the docs; `spelling.rs` is the American-spelling check; `current_docs.rs` refuses an 'NNN's changes' heading; `prof.rs` is the `profile` feature. |
-| `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports. Records under `results/` from old revisions (`screen-014-board`, `-016-`, `-017-`, `-023-`, r6 to r14) don't load; `payback-009-records/` holds only its README. At the top level: the standing specs (`band`, `gate`, `smoke`, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `archive/`: specs of past revisions (every spec not tied to the current one) and those the binary refuses today. [`history.md`](experiments/history.md): an index of past items' write-ups. |
+| `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports (old-revision records there, r6 to r14, don't load). At the top level: the standing specs (`band`, `gate`, `smoke`, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `archive/`: specs of past revisions (every spec not tied to the current one) and those the binary refuses today. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
 | `content/` | Data embedded at compile time: `map.json` (piece shape, layouts for 1–4 countries, the four printed country pieces with their cities, ocean, setup buildings and megaproject), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. |
-| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate (what each revision changed: [docs/rules-history.md](docs/rules-history.md)); `shared_row.json` differs only in the threat variant (and name): it is derived, so after editing the baseline run `python scripts/configs/shared_row.py`; a core test fails until you do. Other country counts and difficulties: `--set countries=N`, `--set adversary.difficulty=N`. Off-variants (docs/rules/README.md): `--set threats.variant=off`, `alignment.variant=off`, `cards.variant=off`. Alignment's options (docs/rules/alignment.md): `alignment.variant=still`, `alignment.momentum_every=2`, `alignment.antimatter_discord=0`. Optional modules switch off whole: `--set threats=off`, `cards=off`, `economy=off`. `configs/agents/` is agent numbers, not a game config: `values.json` (the value table) and `strategies.json`, built into `aic-sim`; changing one changes no rule (docs/agents.md). |
+| `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate; `shared_row.json` differs only in the threat variant (and name): it is derived, so after editing the baseline run `python scripts/configs/shared_row.py`; a core test fails until you do. Other country counts and difficulties: `--set countries=N`, `--set adversary.difficulty=N`. Off-variants (docs/rules/README.md): `--set threats.variant=off`, `alignment.variant=off`, `cards.variant=off`. Alignment's options (docs/rules/alignment.md): `alignment.variant=still`, `alignment.momentum_every=2`, `alignment.antimatter_discord=0`. Optional modules switch off whole: `--set threats=off`, `cards=off`, `economy=off`. `configs/agents/` is agent numbers, not a game config: `values.json` (the value table) and `strategies.json`, built into `aic-sim`; changing one changes no rule (docs/agents.md). |
 | `scripts/` | See [docs/scripts.md](docs/scripts.md). |
-| `docs/` | The rules, architecture and how-to pages listed above; several are generated. |
+| `docs/` | The pages listed above. |
 | `tools/card-art/` | Card frames, icons, scene drawing and print composition. See its [README](tools/card-art/README.md). |
 | `art/` | Committed frame masters and guides. Scenes live in `art-originals/`, a git-ignored junction. |
 | `picks/` | Matt's picks: manifests of the pickers' rounds. |
 | `web/` | Browser viewer (Vite + TS on `aic-wasm`): play any config and seed, watch and step through sim game records, copy bug reports. See [web/README.md](web/README.md). |
-
-## Scripts
-
-Every script, with its flags and run times: [docs/scripts.md](docs/scripts.md).
 
 ## Viewer
 
@@ -65,10 +61,9 @@ cd web && npm install && npm run dev               # builds the wasm (~9 s warm)
 npm run dev -- --port 61870                        # another port
 ```
 
-The dev server rebuilds the wasm and reloads when `crates/` or `content/` change; an edit
-under `configs/` reloads with no rebuild (only `content/` and `configs/agents/` are compiled in). Open a
-record from `aic-sim --save` with *Open record…* or by dropping the file on the page.
-Details, and the browser check (`npm run e2e`), are in [web/README.md](web/README.md).
+The dev server rebuilds the wasm and reloads when `crates/` or `content/` change; a `configs/`
+edit reloads with no rebuild. Open an `aic-sim --save` record with *Open record…* or by
+dropping it on the page. More, and `npm run e2e`, in [web/README.md](web/README.md).
 
 ## Card viewer
 
@@ -106,20 +101,16 @@ search-agent games, the greedy experiment grid, and more seeds of the replay che
 whose first seed runs in the fast lane. `test-all` and `test-slow` are cargo aliases
 (`.cargo/config.toml`) for `cargo test --workspace -- --include-ignored` and
 `-- --ignored`; one slow test runs with `cargo test -p aic-sim -- --ignored <name>`.
-`cargo test-all -- --test-threads=2` is the wrong form: the second `--` turns the flag into a
-test-name filter, every binary runs nothing and passes, so `tests/args_guard.rs`, a test
-with no harness that sees the same arguments, fails it. It can't catch a filter that merely
-matches nothing. Anything after an alias goes to the test binary: `cargo test-all -j 3` stops in about a
-second with "Unrecognized option: 'j'", which reads as a very fast pass if you only see
-the background task end, so check the exit code. To cap build jobs use `cargo test
---workspace -j 3 -- --include-ignored`; `cargo test-all --test-threads=3` caps test
-threads. A new test that takes more than about a second goes in the slow lane, ideally with a
-cheaper fast-lane twin (fewer seeds, fewer actions). Times measured on this 12-thread
-machine with nothing else heavy running (lanes measured at r29); the first build of the test profile takes about 80 s.
+`cargo test-all -- --test-threads=2` is the wrong form: the second `--` makes the flag a
+test-name filter that runs nothing and passes; `tests/args_guard.rs` fails it (but not a filter
+that merely matches nothing). Anything after an alias goes to the test binary: `cargo test-all -j 3`
+stops in a second with "Unrecognized option: 'j'", which looks like a fast pass, so check the
+exit code. Cap build jobs with `cargo test --workspace -j 3 -- --include-ignored` (or
+`CARGO_BUILD_JOBS=3`); `cargo test-all --test-threads=3` caps test threads. Times are on this
+12-thread machine with nothing else heavy running; the first test-profile build takes about 80 s.
 
-- The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`;
-  debug assertions and overflow checks stay on): unoptimized, the same tests took
-  4 min. `opt-level = 2` built 6 s slower and ran no faster.
+- The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`; debug
+  assertions and overflow checks stay on). Unoptimized took 4 min; `opt-level = 2` ran no faster.
 - `cargo test` runs test binaries one after another, so the fast lane's wall clock
   is roughly the sum of each binary's slowest test. Today that is
   `experiment_streams_games_and_resumes` and `experiment_reports_comparisons` (~1 s
@@ -132,12 +123,12 @@ machine with nothing else heavy running (lanes measured at r29); the first build
 first action" can pay and withdraw a threat counter forever). If a rules change is
 intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update
 `GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and the
-fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two differ). The fingerprint covers the whole final state, config `name`
-included, so a rename that plays the same moves it with no bump. The test also pins
-`GOLDEN_CONTENT_HASH`, and wasm-smoke `GOLDEN_CONTENT`: the content hash, over raw bytes. A
-content-only edit (price, name, whitespace) moves it with no fingerprint move and no bump unless
-play changes: update both constants (the new hash is in any run's `games.jsonl` first line, `content_hash`). The
-revision is recorded with every sim result, so old and new results are never mixed up.
+fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two differ). The
+fingerprint covers the whole final state, config `name` included, so a rename that plays the
+same moves it with no bump. The test also pins `GOLDEN_CONTENT_HASH` (wasm-smoke
+`GOLDEN_CONTENT`), the content hash over raw bytes: a content-only edit (price, name,
+whitespace) moves it with no bump unless play changes; update both (the new hash is
+`content_hash` in any run's `games.jsonl` first line). Every sim result records the revision.
 
 **This machine.**
 
@@ -163,12 +154,11 @@ revision is recorded with every sim result, so old and new results are never mix
   source during a build: it breaks the build or bakes in a mix of old and new.
 - Concurrent builds in one target dir corrupt incremental objects (LNK2019 on anon symbols):
   `cargo clean -p aic-core -p aic-sim -p aic-wasm` clears it.
-- Two checkouts sharing a `CARGO_TARGET_DIR` share `release/aic-sim.exe` and its fingerprints:
-  one read a 0.08 s `Finished` and an old-against-new comparison ran one binary twice. Give
-  each checkout its own target dir, and `md5sum` both binaries before a `pair` or `same_play`.
-- Bash heredocs holding Python fail here (triple quotes, and backslashes get mangled even
-  with a quoted delimiter), and a long one fails on size (ENAMETOOLONG). Write scripts with the
-  editor, not with `cat <<'EOF'`.
+- Two checkouts sharing a `CARGO_TARGET_DIR` share `release/aic-sim.exe` and its fingerprints,
+  so an old-against-new run can compare one binary with itself. Give each checkout its own
+  target dir, and `md5sum` both binaries before a `pair` or `same_play`.
+- Bash heredocs holding Python fail here (backslashes get mangled even with a quoted
+  delimiter; a long one hits ENAMETOOLONG). Write scripts with the editor.
 - Python writes cp1252 and CRLF here, to `open(p, 'w')` and to a redirected stdout: scripts
   `sys.stdout.reconfigure(encoding='utf-8', newline='\n')` and open with `encoding='utf-8',
   newline='\n'`. A CRLF list read by a Bash `read -r` loop hands on `20\r`.

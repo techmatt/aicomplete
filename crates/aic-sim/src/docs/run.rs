@@ -353,10 +353,13 @@ pub(super) fn card_quote_failures(files: &[(String, String)], faces: &[(String, 
     out
 }
 
-/// 102: README.md, CLAUDE.md and every `docs/*.md` page but the generated cards.md over
-/// [`RULES_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/` is [`rules_file_failures`]'s).
+/// 102: README.md, CLAUDE.md, the web and card-art READMEs (123) and every `docs/*.md` page
+/// but the generated cards.md over [`RULES_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/`
+/// is [`rules_file_failures`]'s).
 fn page_budget_failures() -> Vec<String> {
-    let mut paths = vec!["README.md".to_string(), "CLAUDE.md".to_string()];
+    let mut paths: Vec<String> = ["README.md", "CLAUDE.md", "web/README.md", "tools/card-art/README.md"]
+        .map(String::from)
+        .into();
     if let Ok(dir) = fs::read_dir("docs") {
         let mut pages: Vec<String> = dir
             .flatten()
