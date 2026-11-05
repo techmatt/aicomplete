@@ -8,7 +8,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   into a deck when it runs out. When both decks and their discards are empty (every card is in a hand or
   in play), the draft hands are what has been dealt.
 - **The opening (round 1).** Each player is dealt `opening_deal` tier-1 cards and keeps `opening_free` free; each
-  further card kept costs `opening_keep_credits` credits. No draft in round 1 (as Terraforming Mars'
+  further tier-1 card kept costs `opening_keep_credits` credits. Each is also dealt `opening_deal_tier2` tier-2 cards
+  (108, Matt), each kept for `opening_keep_tier2` insight from round 1's insight and taking none of the free keeps:
+  a card to plan toward, played later once its `needs` and costs are met. No draft in round 1 (as Terraforming Mars'
   first generation).
 - **The draft (rounds 2+).** `cards.tier`: each player builds a hand of `deal` cards **card by card**, choosing for
   each card which deck it comes from; it is dealt face up into the hand, so the next choice sees it. `cards.draft`:
@@ -21,7 +23,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2, 30 of 45 (the draft set: 21 / 101 / 32 cards at 0 / 1 / 2); it
+  events included), 2 for big effects and most tier 2, 30 of 45 (the draft set: 18 / 105 / 31 cards at 0 / 1 / 2); it
   comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
@@ -37,9 +39,13 @@ The cards config lists which cards are in the game (baseline: all of them).
   building, Cyber and Security one of each (106 made Security's third a troop removal).
 - **Engines (candidate; 106, the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
   permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per Science tag on your cards",
-  one such program per tag, needs 3 of it). Buildings are the blue cards: triggers, Actions and Effects, never a
-  one-off; a building's income is per tag, 2 a tag (Foundation Model Campus, Vertical Monopoly), or on a strong
-  tier-2 building built over its tag, the only kind that may also carry a one-off. Each tag has a tier-1 play
+  one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
+  income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), or flat on a strong tier-2 one. **An engine
+  pays up front (108, Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
+  when built, worth about two of its fires (Terraforming Mars' production plus a matching stock): draw 3 cards (4 on
+  Foundation Model Campus and Vertical Monopoly), 2 energy on the Power ones, 2 troops removed on the Security ones, or its first tokens here
+  (Telemetry Archive, Retained Earnings, Open Assembly, Intrusion Lab, Conglomerate HQ), so its own play fills the
+  first threshold. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger (when you play a card of the tag) and a tier-2 one that counts every tag on the played card, and its
   engines' payoffs: fight triggers, teammate triggers, discounts, rebates, thresholds, copy and reuse
   ([card-grammar.md](card-grammar.md), *The engine wording*). Industry and Cyber keep a standing automatic
@@ -82,13 +88,16 @@ The cards config lists which cards are in the game (baseline: all of them).
   itself; no card prints it). With a slot free you choose a new slot or **build over** one of your buildings; with
   none free you must build over one. The building underneath is **splayed down**: its passives and ability stop, its
   tags still count, and it is sacrificed with the stack. A building with `replaces` (most tier-2 buildings, over their
-  own tag) must be built over one whose top card carries that tag.
+  own tag: Orbital Embassy, Agency Directorate, Power to the People, Popular Uprising, each a capstone with a big
+  one-off) must be built over one whose top card carries that tag. 108 took it off the engines (Foundation Model
+  Campus, Orbital Mass Driver, Capital Projects Office, Hyperscale Botnet, Positron Storage Ring): an engine goes in a free slot or over whichever building its owner chooses, so it never buries a
+  better building of its tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
   (Industry), Agents (Security). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
   card gains tokens by itself. A token
   card's Action is "add N here, OR spend or count what is here"; a few tier-2 ones arrive loaded ("Add 2 Agents here"
   when built); a covered one holds its tokens and its Action stops; Actions may cost tokens from their own card;
-  feeder cards (Dataset Scraper, Capital Injection, Vendor Financing, Manifesto Leak, Recruit Operatives) add tokens to
+  feeder cards (Dataset Scraper, Capital Injection, Vendor Financing, Payroll Automation, Manifesto Leak, Recruit Operatives) add tokens to
   one of your cards of a type; Sabotage and Purge Protocols make each player lose tokens. Sacrificing or discarding a
   card loses its tokens.
 - **A one-shot Action (`once`):** an Action, or a half of one, may take its card out of play once it resolves, with

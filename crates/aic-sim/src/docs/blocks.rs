@@ -615,8 +615,9 @@ pub(super) fn new_players_block(r: &Rules) -> String {
     };
     let insight: Vec<i64> = c.cards.iter().map(|d| d.insight).collect();
     format!(
-        "**For new players.** In the first round you are dealt {} cards and keep {} free (more \
-         at {} credits each). From then on, each round you build a hand of {} cards one at a time, \
+        "**For new players.** In the first round you are dealt {} tier-1 cards and keep {} free (more \
+         at {} credits each), and {} tier-2 cards, each kept for {} insight, to play once you meet \
+         its needs: something to plan toward. From then on, each round you build a hand of {} cards one at a time, \
          choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 \
          deck; you take one card and pass the rest to your neighbor until the hands are gone, then \
          pay insight to keep what you drafted ({} for tier 1, {} for tier 2). Insight is this round's \
@@ -636,6 +637,8 @@ pub(super) fn new_players_block(r: &Rules) -> String {
         n("cards.opening_deal"),
         n("cards.opening_free"),
         n("cards.opening_keep_credits"),
+        n("cards.opening_deal_tier2"),
+        n("cards.opening_keep_tier2"),
         n("cards.deal"),
         n("cards.keep_tier1"),
         n("cards.keep_tier2"),

@@ -21,12 +21,14 @@ still help.
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 5 credits | gain 1 insight |
+| Builder | Procure | 2 chips | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
 | Protector | Deploy | 1 energy | place 1 node |
 | Protector | Accord | 1 Diplomacy + 1 energy | place 1 node |
 | Protector | Stand Down | 1 Security | gain 3 credits |
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
 | Protector | Shelter | 1 Security + 1 energy | in one country this round, no nodes or facility can be destroyed |
+| Protector | Debrief | 1 Diplomacy | draw 2 cards |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
 | Researcher | Deploy | 1 energy | place 1 node |
 | Researcher | Peer Review | 3 research cubes | place 1 node |
@@ -38,8 +40,9 @@ still help.
 <!-- /generated -->
 
 **Sacrifice is late-game liquidation.** Once the cards needing a tag are played, its tags turn into engine rewards,
-each payoff priced to be worth the card: 2 chips, 2 energy, 3 credits, a marker with its Sway; a tag and an energy buy a
-building, a sheltered country or an antimatter (r35).
+each payoff priced to be worth the card: 2 chips, 2 energy, 3 credits, a marker with its Sway, 2 cards (Debrief, 108); a
+tag and an energy buy a building, a sheltered country or an antimatter (r35). **Card throughput (108):** the Builder's
+Procure turns 2 spare chips into 2 cards, as the Researcher's Fieldwork turns an energy into 3.
 
 ## Insight conversions (candidate, r41)
 

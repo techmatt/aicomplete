@@ -59,9 +59,17 @@ fn a_play_trigger_fires_for_its_tag_and_counts_itself() {
     play(&rules, &mut g, 0, "darknet_exchange");
     assert_eq!(g.resource(0, r), before - cost, "no Science tag, no trigger");
     // Telemetry Archive is a Science card: playing it fires its own trigger (2 Datasets).
-    let (rules, mut g) = table(&["telemetry_archive"], &[]);
+    // Pinned to arrive empty (r43 arrives with 2, so its own play fills it at once).
+    let (rules, mut g) = table_with(&["cards.telemetry_archive.effects=[]"], &["telemetry_archive"], &[]);
     play(&rules, &mut g, 0, "telemetry_archive");
     assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 2);
+    // As printed (r43): 2 when built and 2 from its own play reach its At 4, which pays and empties it.
+    let (rules, mut g) = table(&["telemetry_archive"], &[]);
+    let insight = g.resource(0, Resource::Insight);
+    let paid = cards::def(&rules.world(), "telemetry_archive").insight;
+    play(&rules, &mut g, 0, "telemetry_archive");
+    assert_eq!(g.var(&cards::tokens_key(0, "telemetry_archive")), 0);
+    assert!(g.resource(0, Resource::Insight) > insight - paid, "the threshold paid at once");
 }
 
 #[test]
@@ -176,7 +184,9 @@ fn a_threshold_cashes_the_tokens_its_trigger_leaves() {
 
 #[test]
 fn copy_raises_income_by_a_buildings_output() {
-    let (rules, mut g) = table(&["payroll_automation"], &["orbital_mass_driver"]);
+    // No card prints the copy since r43 (Payroll Automation became a Capital feeder): pinned to it here.
+    let copy = r#"cards.payroll_automation.effects=[{"op":"copy_income"}]"#;
+    let (rules, mut g) = table_with(&[copy], &["payroll_automation"], &["orbital_mass_driver"]);
     let w = rules.world();
     let before = economy::income(&w, &g, 0)[Resource::Credits];
     let foundry: i64 = cards::def(&w, "orbital_mass_driver")
@@ -190,7 +200,7 @@ fn copy_raises_income_by_a_buildings_output() {
     play(&rules, &mut g, 0, "payroll_automation");
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], before + foundry);
     // With no building paying an income, there is nothing to copy.
-    let (rules, g) = table(&["payroll_automation"], &[]);
+    let (rules, g) = table_with(&[copy], &["payroll_automation"], &[]);
     assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { seat: 0, card } if card == "payroll_automation")));
 }
 
@@ -276,11 +286,12 @@ fn production_per_tag_counts_once_at_play_and_counts_itself() {
     assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], raised);
 }
 
-/// 106: Foundation Model Campus pays 2 credits a round per Science tag, its
-/// own included, and a copy of it raises income by the same.
+/// 106: Foundation Model Campus pays 3 credits a round per Science tag (r43; 2 at
+/// r42), its own included, and a copy of it raises income by the same.
 #[test]
 fn income_per_tag_pays_its_amount_per_tag() {
-    let (rules, mut g) = table(&["payroll_automation"], &[]);
+    let copy = r#"cards.payroll_automation.effects=[{"op":"copy_income"}]"#;
+    let (rules, mut g) = table_with(&[copy], &["payroll_automation"], &[]);
     let w = rules.world();
     let base = economy::income(&w, &g, 0)[Resource::Credits];
     set_pile(&mut g, &cards::built(0), &["foundation_model_campus"]);
@@ -291,10 +302,10 @@ fn income_per_tag_pays_its_amount_per_tag() {
         Op::IncomePerTag { resource: Resource::Credits, tag: Tag::Science, per: 1, amount } => Some(*amount),
         _ => None,
     });
-    assert_eq!(per, Some(2));
-    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 2 * science);
+    assert_eq!(per, Some(3));
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 3 * science);
     play(&rules, &mut g, 0, "payroll_automation");
-    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 4 * science, "the copy pays 2 a tag too");
+    assert_eq!(economy::income(&w, &g, 0)[Resource::Credits], base + 6 * science, "the copy pays 3 a tag too");
 }
 
 /// 106: Interdisciplinary Institute's trigger names no tag: it fires once per

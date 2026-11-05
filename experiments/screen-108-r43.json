@@ -1,0 +1,35 @@
+{
+  "name": "screen-108-r43",
+  "note": "108: the ballpark read of r43 against r42 on 107's agents, paired on fresh seeds 33692-33739: the three pairs at d2, the strategist and greedy, 48 a cell. Run r42's binary (57469c6) from a folder holding it and a git archive of 57469c6's configs, with this spec copied there.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 33692,
+  "records": 0
+}

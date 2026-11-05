@@ -216,6 +216,23 @@
       "amount": 1
      }
     ]
+   },
+   {
+    "name": "Procure",
+    "tags": [],
+    "cost": [
+     [
+      "chips",
+      2
+     ]
+    ],
+    "text": "draw 2 cards",
+    "effects": [
+     {
+      "op": "draw",
+      "count": 2
+     }
+    ]
    }
   ],
   "play_track": [
@@ -519,6 +536,22 @@
       "energy",
       1
      ]
+    ]
+   },
+   {
+    "name": "Debrief",
+    "tags": [
+     [
+      "diplomacy",
+      1
+     ]
+    ],
+    "text": "draw 2 cards",
+    "effects": [
+     {
+      "op": "draw",
+      "count": 2
+     }
     ]
    }
   ],

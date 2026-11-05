@@ -11,13 +11,13 @@ fn a_face_opens_with_its_boxes_word() {
     assert_eq!(f.text, "");
     let f = face_of("orbital_mass_driver");
     assert_eq!(f.top_text, "Each round, 16 credits and 3 chips.");
-    assert_eq!(f.text, "Pay 2 chips and 1 antimatter.");
+    assert_eq!(f.text, "Pay 2 chips. Draw 3 cards.");
 }
 
 #[test]
 fn a_bare_arrow_is_a_free_action() {
     let f = face_of("sentinel_mesh");
-    assert_eq!(f.top_text, "Action: counts as 4 toward a cyber threat.");
+    assert_eq!(f.top_text, "Action: counts as 6 toward a cyber threat.");
     // 076: an OR Action prints each half; the second line opens with OR.
     let f = face_of("synthetic_data_forge");
     let json = serde_json::to_string(&f.top).unwrap();
@@ -76,7 +76,7 @@ fn harden_says_facility_and_a_shield_says_shield() {
 #[test]
 fn each_mark_has_one_reading() {
     let json = |id: &str| serde_json::to_string(&face_of(id)).unwrap();
-    assert!(json("red_team_audit").contains(r#""−4","jam""#));
+    assert!(json("red_team_audit").contains(r#""−6","jam""#));
     assert!(json("beamed_power_constellation").contains(r#""3","free_node""#));
     // Dashed is another player; the solid box is one of your cards (076: never a count across them).
     assert!(json("vendor_financing").contains(r#"{"other":["5","credits"]}"#));

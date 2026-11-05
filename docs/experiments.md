@@ -121,7 +121,7 @@ cheaper than the planner; the planner confirms (an engine read is a direction).
 **Seeds are noisy.** 24 seeds is about ±10 and 48 about ±7; 16 seeds about ±15, too few to separate levers under
 about 20 points. Seed sets alone move a pair 10-25 points at 48 seeds.
 
-`cards.csv` splits by variant; `report.md`'s card table pools per agent. `kept` and `drawn` in `games.jsonl` include
+`cards.csv` splits by variant; `report.md`'s card table pools per agent. `games.jsonl` names agents as the spec writes them (`strategist`), `cards.csv` as resolved (`engine:strategy=1`): map them when joining the two. `kept` and `drawn` in `games.jsonl` include
 the opening deal and `offered` doesn't, so kept ÷ offered passes 100%: use share of games. An agent's keeps are its
 plan, not a human table's.
 
@@ -167,11 +167,9 @@ policy or `prune`, the line alone should read near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
-seeds and reset at each bump: r42: 33548-33595 the r41 → r42 read (`screen-106-r42.json`, both binaries; 106's
-levers on r42 on the same seeds: `screen-106-boards.json`, `-dear`, `-newops`; 107's dev screens, `screen-107-dev.json`
-and `-onoff`); 33596-33643 107's read of its agents against r42's (`screen-107-r42.json`, both binaries); 33452-33547
-107's dev screens (`-dev96`, `-onoff96`, `-rush`; seeds earlier revisions spent); 33644-33691 107's probe confirmed
-(`screen-107-rush-fresh.json`). Next free: 33692.
+seeds and reset at each bump: r43: 33452-33547 108's dev screens (`out/dev-*`, seeds earlier revisions spent);
+33644-33691 108's engine probe, r42 and r43 on 107's probe seeds (`screen-108-rush.json`, both binaries); 33692-33739
+108's read of r43 against r42 (`screen-108-r43.json`, both binaries). Next free: 33740.
 
 ## Reading prices
 

@@ -1378,7 +1378,7 @@ impl Eval {
             let (need, _) = cards::keep_need(world, g, s, tier, kept);
             if need <= left {
                 left -= need;
-                kept += 1;
+                kept += cards::counts_as_kept(g, tier) as i64;
                 cards.push(v);
             }
         }

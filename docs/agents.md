@@ -108,7 +108,7 @@ Where the heuristic reads it in table mode (`w.table`; the `engine`'s default, o
 ## Strategies
 
 `configs/agents/strategies.json`, read by `agents/strategy.rs`. Each seat commits at its
-round-1 keep, from its board and its opening 10, to the strategy of its board's menu whose
+round-1 keep, from its board and its opening hand, to the strategy of its board's menu whose
 multipliers add most to what those cards are worth, and its board's powers, each read as a
 card at one use's worth (`strat_powers`, `strat_power_uses` 1) (`strategy=1`; `strat0`,
 `strat1`, `strat2` fix a seat's, 1-based in its board's menu). A strategy is a weight vector

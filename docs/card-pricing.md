@@ -1,4 +1,4 @@
-# Card pricing (r42)
+# Card pricing (r43)
 
 How a card's price is set, as the set stands. Every price is a **candidate**. The cards themselves are
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are
@@ -39,25 +39,37 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 
 - **Tier is power** (ruling 4): costs and effects go up a lot with tier, few cards cost 0, and tier is not a proxy for
   cost.
-- **The recipe:** value the effect at the rates; then credits = value − the keep (tier 1 2.5, tier 2 6.5) − 2.5 × the
+- **The recipe:** value the effect at the rates; then credits = value − the keep (tier 1 2.5, tier 2 5 at r43's 2 insight) − 2.5 × the
   insight to play − about 1, so the card beats the plain route it replaces (ruling 7).
-- **A `needs` chain is the price** (ruling 10): needs 3-4 of a tag sits 2-4 under the recipe, needs 6 about half.
-- **The cost curve** (r42, 106's overhaul, Terraforming Mars scale): tier 1 median 9 (most 6-10; the big income
-  programs 18-40, Gigafactory Charter's "40 credits, +12 credit income" the top), tier 2 median 14 (most 10-19; the
-  liberate capstones 18-42). The deck's median is 10 (r41: 7). Nine credits is about a third of a round's printed
+- **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
+  recipe, needs 5-6 about half and much bigger (Zero-Day Auction: 1 antimatter per Cyber tag).
+- **The cost curve** (r43, Terraforming Mars scale): tier 1 median 10 (r42: 9; most 7-12; the big income
+  programs 18-40, Gigafactory Charter's "40 credits, +12 credit income" the top), tier 2 median 16 (r42: 14; most
+  12-22; the liberate capstones 18-42). Six cards cost 5 or less (r42: 17). The deck's median is 10. Nine credits is about a third of a round's printed
   credits on the boards (25 / 21 / 18).
 - **Engines are priced at their seat's fire rate** (106, Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
   not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their
-  printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. In a game the
+  printed price. That gap is the point; a card that nets below 0 for its own seat is still a bug. **Payback within 2
+  rounds** (108): give (credits, insight to play and keep, other costs) less the when-built gain and the card's own
+  first fire, over a round's yield at that rate, is 2 or less for every engine building
+  (`experiments/results/108_engines_worth_playing/payback.py`). **Engines pay up front** (108): the when-built gain is
+  about two fires, in cards (draw 3, 4 on Foundation Model Campus and Vertical Monopoly) where the fire pays credits, since a credit gain on a
+  credit cost would be a circular payment (guideline 5). In a game the
   agents read a one-tag trigger at the seat's own share of the tag's cards (107, `rates.own_mix`), and a threshold
   at its own trigger's fill (`own_fill`).
+- **Antimatter only on true ultimates** (108): Orbital Mass Driver and Recursive Self-Improvement pay its 7 in credits,
+  Dyson Swarm Tranche 2 energy; the liberate and removal ultimates keep it.
+- **Card throughput** (108): credits pile up (the strategist ends r42's games on 13-21), so the fix is dearer, bigger
+  cards and more of them: engines draw when built, two Action buildings turn spare credits (Patent Library) or chips
+  (Parts Exchange) into 2 cards a round, and two board powers do the same (the Builder's Procure, the Protector's
+  Debrief). A flat credit sink stays the last resort.
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays (107): the floor below.
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already
   takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards (Hyperscale Botnet).
   Science's discount card prints credits instead (Grad Student Pool).
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per X tag"),
-  needs 3 of X, 10 credits, one per tag (r42); a building's per-tag income pays 2 a tag (Foundation Model Campus); a standing counter
+  needs 2 of X (r43), 10 credits, one per tag (r42); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
   (`auto_counter`) 13 credits, needs 2; a typed jam 5 and a rider of its tag, a free typed-jam Action 3 a round.
 - **Income has a horizon** (r35): an income, of credits, energy or anything, counts for the rounds left at a typical
   purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).

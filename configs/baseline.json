@@ -166,12 +166,14 @@
       "variant": "draft",
       "params": {
         "deal": 4,
-        "opening_deal": 10,
+        "opening_deal": 8,
         "opening_free": 4,
         "opening_keep_credits": 5,
+        "opening_deal_tier2": 2,
+        "opening_keep_tier2": 1,
         "keep_tier1": 1,
-        "keep_tier2": 3,
-        "keep_tier2_upgraded": 2,
+        "keep_tier2": 2,
+        "keep_tier2_upgraded": 1,
         "insight_credits": 5,
         "science_every": 2,
         "industry_every": 2,
@@ -223,7 +225,6 @@
         "lights_out_assembly",
         "materials_hedge_desk",
         "liquidity_event",
-        "bridge_loan",
         "robotic_foundry",
         "arcology_foundry",
         "orbital_mass_driver",
@@ -256,7 +257,6 @@
         "substation_hub",
         "faraday_yard",
         "capacitor_discharge",
-        "surplus_auction",
         "positron_storage_ring",
         "dyson_swarm_tranche",
         "continental_supergrid",
@@ -331,7 +331,9 @@
         "defense_appropriations",
         "multiyear_defense_budget",
         "counterinsurgency_campaign",
-        "homeland_security_act"
+        "homeland_security_act",
+        "patent_library",
+        "parts_exchange"
       ]
     }
   ],

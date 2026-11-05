@@ -97,12 +97,14 @@ Every parameter of the baseline config, with its value and range, generated from
 | `ai.start_energy` | 1 | 0..20 | energy each player starts with |
 | `ai.slots` | 5, 4, 3 | 1..10 | building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `cards.deal` | 4 | 0..10 | cards each player drafts from each round after the first, choosing each one's tier |
-| `cards.opening_deal` | 10 | 0..20 | cards dealt to each player in round 1 (the opening) |
+| `cards.opening_deal` | 8 | 0..20 | cards dealt to each player in round 1 (the opening) |
 | `cards.opening_free` | 4 | 0..20 | opening cards each player keeps free |
 | `cards.opening_keep_credits` | 5 | 0..20 | credits for each opening card kept beyond the free ones |
+| `cards.opening_deal_tier2` | 2 | 0..10 | tier-2 cards also dealt to each player in the opening (108) |
+| `cards.opening_keep_tier2` | 1 | 0..10 | insight to keep an opening tier-2 card; tier-2 keeps take none of the free ones (108) |
 | `cards.keep_tier1` | 1 | 0..10 | insight to keep a drafted tier-1 card |
-| `cards.keep_tier2` | 3 | 0..10 | insight to keep a drafted tier-2 card |
-| `cards.keep_tier2_upgraded` | 2 | 0..10 | insight to keep a tier-2 card once the AI board's keep upgrade is uncovered |
+| `cards.keep_tier2` | 2 | 0..10 | insight to keep a drafted tier-2 card |
+| `cards.keep_tier2_upgraded` | 1 | 0..10 | insight to keep a tier-2 card once the AI board's keep upgrade is uncovered |
 | `cards.insight_credits` | 5 | 1..20 | credits for 1 insight, usable only for keep costs |
 | `cards.science_every` | 2 | 0..10 | 1 insight off tier-2 keeps and card plays per this many Science tags (0: off) |
 | `cards.industry_every` | 2 | 0..10 | 1 credit off buildings per this many Industry tags (0: off) |

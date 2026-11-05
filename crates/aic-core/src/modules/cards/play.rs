@@ -204,7 +204,9 @@ impl Cards {
                 cx.tally(g, "cards.insight_bought", cr / self.insight_credits);
             }
         }
-        cx.add_key(g, &kept_key(s), 1);
+        if counts_as_kept(g, def(&w, card).tier) {
+            cx.add_key(g, &kept_key(s), 1);
+        }
         cx.move_card(g, card, &drafted(s), &hand(s), false)?;
         cx.count(g, &format!("kept.{card}"), 1);
         cx.per_round(g, "cards.kept", 1);

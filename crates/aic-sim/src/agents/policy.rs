@@ -1211,8 +1211,12 @@ fn plan(
     // Pay the keeps: insight first, the shortfall in credits.
     let rate = w.int("cards.insight_credits");
     let mut paid = 0;
-    for (count, id) in (g.var(&cards::kept_key(s))..).zip(kept) {
-        let (ins, cr) = cards::keep_need(w, g, s, cards::def(w, id).tier, count);
+    let mut count = g.var(&cards::kept_key(s));
+    for id in kept {
+        let tier = cards::def(w, id).tier;
+        let (ins, cr) = cards::keep_need(w, g, s, tier, count);
+        // 108: an opening tier-2 keep takes none of the free tier-1 keeps.
+        count += cards::counts_as_kept(g, tier) as i64;
         let from_insight = ins.min(now.insight);
         now.insight -= from_insight;
         paid += cr + (ins - from_insight) * rate;

@@ -169,6 +169,8 @@
         "opening_deal": 10,
         "opening_free": 4,
         "opening_keep_credits": 5,
+        "opening_deal_tier2": 2,
+        "opening_keep_tier2": 1,
         "keep_tier1": 1,
         "keep_tier2": 3,
         "keep_tier2_upgraded": 2,

@@ -114,8 +114,11 @@ building with a Science trigger fires it. The `play` mark is a card you play.
 - **Threshold counter (`threshold`):** a trigger adds a token here; **At N** (a house term): when the tokens here reach
   N, N come off and the reward happens (Telemetry Archive: a Science card played adds 2 Datasets; at 4, 5 insight).
 - **Copy (`copy_income`, a program):** raise your income by one of your buildings' Each round output, as it pays when
-  you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later (Payroll
-  Automation).
+  you play the copy (a per-tag income at its count then); the building may be covered or sacrificed later. No card
+  prints it since r43 (108 made Payroll Automation a Capital feeder: few buildings print an income to copy).
+- **When built (108):** an engine building's one-time gain prints below the art and resolves when it is built,
+  before its own play fires its trigger (Telemetry Archive's 2 Datasets then the 2 its Science play adds: At 4 pays at
+  once).
 - **Per-tag income (106):** a program's "raise your credit income by 1 per Science tag on your cards"
   (`production_per_tag`, Research Royalties) counts once, when it resolves, the program itself included; later tags
   don't raise it. A building's "each round, 2 credits per Science tag on your cards" (`income_per_tag` with an

@@ -51,7 +51,8 @@ fn rush_build_pays_tags_and_no_credits() {
 #[test]
 fn rush_build_needs_a_building_left_once_paid() {
     // Open Assembly pinned to 4 energy: no building prints energy and no needs since r42.
-    let (rules, mut g) = lab_actions_with(&["cards.open_assembly.energy=4"]);
+    // Vertical Monopoly pinned to needs Industry 4 (r43 printed 3).
+    let (rules, mut g) = lab_actions_with(&["cards.open_assembly.energy=4", r#"cards.vertical_monopoly.needs=[["industry",4]]"#]);
     let rush = power(&rules, 0, "Rush Build");
     let offered = |g: &GameState| rules.legal_actions(g).contains(&rush);
     builder_with_tags(&mut g);
@@ -76,7 +77,8 @@ fn rush_build_needs_a_building_left_once_paid() {
 /// stack Capital Projects Office would go over is not offered while a program can go.
 #[test]
 fn rush_build_offers_no_sacrifice_that_strands_it() {
-    let (rules, mut g) = lab_actions();
+    // Capital Projects Office pinned to built over Industry (r43 dropped it).
+        let (rules, mut g) = lab_actions_with(&[r#"cards.capital_projects_office.replaces="industry""#]);
     set_pile(&mut g, &cards::played(0), &["payroll_automation"]);
     set_pile(&mut g, &cards::built(0), &["retained_earnings"]);
     set_pile(&mut g, &cards::hand(0), &["capital_projects_office"]);

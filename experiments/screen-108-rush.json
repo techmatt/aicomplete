@@ -1,0 +1,35 @@
+{
+  "name": "screen-108-rush",
+  "note": "108: 107's engine_rush probe (the strategist made to draft, keep and play every engine card at once) against the plain strategist, on 107's fresh probe seeds 33644-33691 (48 a cell), run on r42's binary (5601d22's configs, 57469c6) and on r43's: what r43's engines win when played, and per-engine play counts before and after on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:engine_rush=1"
+  ],
+  "games": 48,
+  "first_seed": 33644,
+  "records": 0
+}

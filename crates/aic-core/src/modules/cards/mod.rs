@@ -41,6 +41,8 @@ const DRAFT_PARAMS: &[ParamSpec] = &[
     ParamSpec::int("opening_deal", 0, 20, "cards dealt to each player in round 1 (the opening)"),
     ParamSpec::int("opening_free", 0, 20, "opening cards each player keeps free"),
     ParamSpec::int("opening_keep_credits", 0, 20, "credits for each opening card kept beyond the free ones"),
+    ParamSpec::int("opening_deal_tier2", 0, 10, "tier-2 cards also dealt to each player in the opening (108)"),
+    ParamSpec::int("opening_keep_tier2", 0, 10, "insight to keep an opening tier-2 card; tier-2 keeps take none of the free ones (108)"),
     ParamSpec::int("keep_tier1", 0, 10, "insight to keep a drafted tier-1 card"),
     ParamSpec::int("keep_tier2", 0, 10, "insight to keep a drafted tier-2 card"),
     ParamSpec::int("keep_tier2_upgraded", 0, 10, "insight to keep a tier-2 card once the AI board's keep upgrade is uncovered"),
@@ -162,6 +164,8 @@ pub fn def<'w>(w: &World<'w>, id: &str) -> &'w CardDef {
 struct Cards {
     deal: i64,
     opening_deal: i64,
+    /// 108: tier-2 cards dealt in the opening besides `opening_deal` tier-1 ones.
+    opening_deal_tier2: i64,
     insight_credits: i64,
     /// Selected cards (content indices).
     cards: Vec<usize>,
@@ -173,6 +177,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     Ok(Box::new(Cards {
         deal: b.int("deal")?,
         opening_deal: b.int("opening_deal")?,
+        opening_deal_tier2: b.int("opening_deal_tier2")?,
         insight_credits: b.int("insight_credits")?,
         cards: b.cards.clone(),
         off: false,
@@ -183,6 +188,7 @@ fn build_off(b: &Build) -> Result<Box<dyn Module>, String> {
     Ok(Box::new(Cards {
         deal: 0,
         opening_deal: 0,
+        opening_deal_tier2: 0,
         insight_credits: 1,
         cards: b.cards.clone(),
         off: true,
@@ -260,9 +266,11 @@ impl Module for Cards {
             return Ok(());
         }
         for s in 0..g.seats.len() {
-            for _ in 0..self.opening_deal {
-                if !deal_top(g, cx, 1, &drafted(s))? {
-                    break;
+            for (tier, n) in [(1, self.opening_deal), (2, self.opening_deal_tier2)] {
+                for _ in 0..n {
+                    if !deal_top(g, cx, tier, &drafted(s))? {
+                        break;
+                    }
                 }
             }
         }
