@@ -1,0 +1,15 @@
+{
+  "name": "check-116-steps",
+  "note": "116: the profile's two large one-way steps (w.horizon 1.25, w.credits 0.75), each alone against the hand-set strategist, on the held-out confirm seeds 34032-34127 that did not pick them.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist", "strategist:w.horizon=1.25", "strategist:w.credits=0.75", "strategist:w.horizon=0.75"],
+  "games": 96,
+  "first_seed": 34032,
+  "records": 0
+}

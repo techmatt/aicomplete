@@ -12,8 +12,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, read
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
 - **`choices` counts prompts, not effects:** one placement is two (a track, a hex).
-- **Heuristic** (`agents/eval.rs`; every weight, its default and what it does is a field of
-  `Weights`, set by `w.<name>=V` in a spec; hand-set, not swept). It scores win/loss; cities
+- **Heuristic** (`agents/eval.rs`; each weight, its default and use a field of
+  `Weights`, set by `w.<name>=V` in a spec; hand-set). It scores win/loss; cities
   (corrupted, aligned, the pressure on the rest); a seat's last nodes (`node_danger`); the
   adversary's pieces; the decks' last three cards; Alignment and project fill; the players'
   board, income, resources and cards; unpaid threats. Choices that aren't obvious:
@@ -62,12 +62,11 @@ planned (`plan_net`), and one that is adds its **gross value** (`plan_gross`, Ma
 building's Action at the table's (`plan_rates`); a project discard or drain at what the
 heuristic charges for the projects up.
 
-**Dominance checks** are the same agents with one behavior forced: each is a row of
-`forced_table!` in `agents/policy.rs`, with its description (`docs/principles.md`,
-*Dominance checks*, lists them).
+**Dominance checks**: the same agents with one behavior forced, each a row of
+`forced_table!` in `agents/policy.rs` (`docs/principles.md`, *Dominance checks*).
 
 Any agent can use horizon mode (`greedy:w.horizon=1,...`); `engine` only changes the
-defaults. Agent sweeps: `scripts/tune/engine_sweep.py` ([scripts.md](scripts.md)).
+defaults. Its weights' sweep: `scripts/tune/agent_sweep.py` ([README](../scripts/tune/README.md)).
 
 Spec syntax: `kind[:key=value,...]`: a weight takes `w.` (`greedy:w.corrupted=40`), a keep-plan
 or strategy switch goes bare (`strategist:plan_bury=0`).
@@ -114,7 +113,7 @@ its board's powers, a power read as a card at one use's worth (`strat_powers`,
 over a card's tags, the resources and tokens it pays in or out, its kind and its categories;
 a card's multiplier is 1 plus the weights it matches, times the **phase schedule** for its
 categories (early, mid and late multipliers in `strategies.json`; a card takes its
-categories' largest). It reaches drafting and keeping, not a card in hand (a multiplied
+categories' largest; `w.strat_scale`, 1, stretches its distance from 1). It reaches drafting and keeping, not a card in hand (a multiplied
 hand would beat playing it). The planner hands the choice to every rollout's policy.
 
 The strategies as a player says them (the config's `says`; a test requires each line verbatim):

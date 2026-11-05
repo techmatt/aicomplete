@@ -141,7 +141,8 @@ the judge off the value table.
   `-c-d0` ("greedy at d0" is the `engine` spec, no strategy); `screen-102-a*.json` screen agent switches on and off as
   agent cells of one spec. `screen-098*.json` hold r38's cells: `-terms` (an agent term off, per cell), `-split` / `-t0`
   (each ruling alone), read with `scripts/cards/r38_read.py`. `screen-096*.json` hold r37's cells, `screen-093*.json` r36's lever cells. Older specs' seat-ordered triples need only `ai.boards=` now.
-- **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision).
+- **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
+  an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load (r45: 1.2-2 games/s).
 - **A before/after read is paired** (Matt, 093): run the old binary, with its configs from `git archive <main> configs
   | tar -x`, on the same seeds. Build and copy the old binary before the first edit (096 did, at a minute), or build
   it from a `git archive` with its own `CARGO_TARGET_DIR`. Run it from its own folder, with the spec copied there:
@@ -169,7 +170,8 @@ policy or `prune`, the line alone should read near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. The ledger, updated by any item that spends
 seeds and reset at each bump (seeds below 33836 went to r43 and earlier): r44: 33836-33883 111's read of r44 against
-r43 (`screen-111-r44.json`, both binaries). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`, both binaries). Next free: 33932.
+r43 (`screen-111-r44.json`, both binaries). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`, both binaries); 33932-34031 116's agent
+sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. Next free: 34224.
 
 ## Reading prices
 

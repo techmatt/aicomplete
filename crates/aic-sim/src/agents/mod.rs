@@ -101,6 +101,10 @@ pub trait Strategic: Agent {
     fn plan_rates(&self) -> Option<[f64; 5]> {
         None
     }
+    /// 116: the heuristic's `strat_scale`, for the keep plan's multipliers.
+    fn strat_scale(&self) -> f64 {
+        1.0
+    }
 }
 
 impl Strategic for RandomAgent {}

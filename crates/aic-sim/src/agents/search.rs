@@ -461,6 +461,9 @@ impl super::Strategic for Greedy {
     fn plan_rates(&self) -> Option<[f64; 5]> {
         Some(self.ev.plan_rates())
     }
+    fn strat_scale(&self) -> f64 {
+        self.ev.w.strat_scale
+    }
 }
 
 impl super::Strategic for Beam {
@@ -470,6 +473,9 @@ impl super::Strategic for Beam {
 
     fn plan_rates(&self) -> Option<[f64; 5]> {
         Some(self.ev.plan_rates())
+    }
+    fn strat_scale(&self) -> f64 {
+        self.ev.w.strat_scale
     }
 }
 

@@ -1,0 +1,32 @@
+{
+  "note": "116: the strategist's parameter sweep (scripts/tune/agent_sweep.py, scripts/tune/README.md). Each parameter is an agent-spec key, its hand-set value (the strategist's default: the script checks it plays the same as plain `strategist`) and the grid the search walks. Seeds come from the ledger in docs/experiments.md: give a later revision fresh ones with --sweep-seed and --confirm-seed.",
+  "agent": "strategist",
+  "reference": "greedy",
+  "config": "configs/baseline.json",
+  "difficulty": 2,
+  "pairs": {"bp": [], "br": ["ai.boards=0,2"], "pr": ["ai.boards=1,2"]},
+  "sweep_seeds": {"first": 33932, "games": 100},
+  "confirm_seeds": {"first": 34032, "games": 96},
+  "params": [
+    {"key": "w.insight", "hand": 0.5, "grid": [0.2, 0.35, 0.5, 0.75, 1.0],
+     "says": "an insight a seat holds, in heuristic points"},
+    {"key": "w.energy", "hand": 0.8, "grid": [0.4, 0.6, 0.8, 1.1, 1.5],
+     "says": "an energy held (and, through plan_rates, the keep plan's price of energy)"},
+    {"key": "w.credits", "hand": 0.6, "grid": [0.35, 0.45, 0.6, 0.75, 0.9],
+     "says": "a credit held, up to credit_cap"},
+    {"key": "w.chips", "hand": 2.0, "grid": [1.0, 1.5, 2.0, 2.75, 3.5],
+     "says": "a chip held"},
+    {"key": "w.table", "hand": 0.6, "grid": [0.35, 0.45, 0.6, 0.75, 0.9],
+     "says": "a card's worth: heuristic points per value-table credit (cards in hand, drafted, built)"},
+    {"key": "w.horizon", "hand": 1.0, "grid": [0.5, 0.75, 1.0, 1.25, 1.5],
+     "says": "income valued over the rounds left: this x its weight x the rounds"},
+    {"key": "w.credit_cap", "hand": 12.0, "grid": [6, 9, 12, 16, 20],
+     "says": "credits a seat holds beyond this are worth credit_idle (0.15) each"},
+    {"key": "w.packet_keep", "hand": 0.5, "grid": [0.0, 0.25, 0.5, 0.75, 1.0],
+     "says": "keep threshold: the share of a card's keep price charged against drafting it"},
+    {"key": "plan_credit", "hand": 3.0, "grid": [1.0, 2.0, 3.0, 4.0, 5.0],
+     "says": "keep threshold: what a credit paid for a keep costs the keep plan"},
+    {"key": "w.strat_scale", "hand": 1.0, "grid": [0.0, 0.5, 1.0, 1.5, 2.0],
+     "says": "the strategy weights: how far a strategy's multipliers reach from 1 (0: every multiplier 1; the strategy is still chosen and plan_reach still reads its tags)"}
+  ]
+}

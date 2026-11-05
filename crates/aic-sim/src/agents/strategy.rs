@@ -285,12 +285,19 @@ pub fn schedule(d: &CardDef, p: usize) -> f64 {
 
 /// Each strategy's multiplier for each card in each phase, worked out once for a
 /// game's content: `[strategy][card][phase]`.
+/// 116: `scale` (the heuristic's `strat_scale`, 1 by default) stretches each
+/// multiplier's distance from 1: `1 + scale × (m − 1)`; at 0 every multiplier is
+/// one. Only the multipliers read it: the choice itself (`choose`) and the keep
+/// plan's `plan_reach` and `plan_chain` (policy.rs, `committed`) still follow
+/// the chosen strategy's tags, so 0 is not quite `strategy=0`.
 #[derive(Debug)]
 pub struct Mults(Vec<Vec<[f64; 3]>>);
 
 impl Mults {
-    pub fn new(w: &World) -> Mults {
+    pub fn new(w: &World, scale: f64) -> Mults {
         let list = &strategies().strategies;
+        // At 1 the multiplier as it was, bit for bit (1 + (m − 1) can round).
+        let scaled = |m: f64| if scale == 1.0 { m } else { 1.0 + scale * (m - 1.0) };
         Mults(
             list.iter()
                 .map(|s| {
@@ -299,7 +306,7 @@ impl Mults {
                         .iter()
                         .map(|d| {
                             let f = s.fit(d);
-                            [f * schedule(d, 0), f * schedule(d, 1), f * schedule(d, 2)]
+                            [0, 1, 2].map(|p| scaled(f * schedule(d, p)))
                         })
                         .collect()
                 })
@@ -404,7 +411,7 @@ mod tests {
             let line = format!("- *{}.* {}", s.name, s.says);
             assert!(doc.contains(&line), "docs/agents.md, *Strategies*, lacks {line:?}");
         }
-        let m = Mults::new(&w);
+        let m = Mults::new(&w, 1.0);
         let payroll = w.content.card_index("payroll_automation").unwrap();
         let k = by_id("industry_income").unwrap();
         assert!(m.get(k, payroll, 0) > m.get(by_id("power_grid").unwrap(), payroll, 0));

@@ -327,6 +327,9 @@ impl super::Strategic for Planner {
     fn plan_rates(&self) -> Option<[f64; 5]> {
         Some(self.ev.plan_rates())
     }
+    fn strat_scale(&self) -> f64 {
+        self.ev.w.strat_scale
+    }
 }
 
 impl Agent for Planner {

@@ -313,6 +313,11 @@ pub struct Weights {
     /// (Unity still needed at its rate so far, plus `win_lag`) comes
     /// after the adversary deck runs out. 0 = off.
     pub clock: f64,
+    /// 116: how far a strategy's multipliers reach from 1 (`agents/strategy.rs`,
+    /// `Mults`): 1 as written in `strategies.json`, 0 every multiplier 1 (the
+    /// strategy is still chosen, and `plan_reach` still reads its tags). A sweep
+    /// knob (scripts/tune/agent_sweep.py).
+    pub strat_scale: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -497,6 +502,7 @@ impl Default for Weights {
             flip_open: 1.0,
             push_adv: 1.0,
             clock: 0.0,
+            strat_scale: 1.0,
         }
     }
 }
@@ -721,6 +727,7 @@ impl Eval {
         // 028: the Unity deck's last card wins, and it comes before the last bar drop.
         let target_tips = world.list("alignment.unity_cards").iter().sum();
         let token_cash = w.token_cash > 0.0;
+        let strat_scale = w.strat_scale;
         Eval {
             w,
             id: next_eval_id(),
@@ -759,7 +766,7 @@ impl Eval {
                     })
                     .collect(),
             ),
-            mults: Arc::new(Mults::new(&world)),
+            mults: Arc::new(Mults::new(&world, strat_scale)),
             strat: [None; 4],
             powers: Arc::new(
                 (0..seats)

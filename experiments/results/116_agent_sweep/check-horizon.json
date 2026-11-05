@@ -1,0 +1,15 @@
+{
+  "name": "check-116-horizon",
+  "note": "116: w.horizon 0.75 read +5.9 ±2.7 on the confirm seeds after the profile, a post-hoc pick; this replays it alone against the hand-set strategist on fresh seeds 34128-34223.",
+  "configs": ["configs/baseline.json"],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": ["strategist", "strategist:w.horizon=0.75"],
+  "games": 96,
+  "first_seed": 34128,
+  "records": 0
+}

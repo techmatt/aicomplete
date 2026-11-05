@@ -383,7 +383,7 @@ impl Policy {
         let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
         let strat = self.strat.get(s).copied().flatten();
         if strat.is_some() && self.mults.is_none() {
-            self.mults = Some(Arc::new(Mults::new(&world)));
+            self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale())));
         }
         let [energy, antimatter, project, cap, idle] = self.inner.plan_rates().unwrap_or_else(|| {
             let t = value::table();
@@ -567,6 +567,9 @@ impl Strategic for Policy {
 
     fn plan_rates(&self) -> Option<[f64; 5]> {
         self.inner.plan_rates()
+    }
+    fn strat_scale(&self) -> f64 {
+        self.inner.strat_scale()
     }
 }
 

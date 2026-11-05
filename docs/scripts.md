@@ -139,6 +139,11 @@ Current:
   (as `cards.csv` names them: the strategist is `engine:strategy=1`); an approximation's bar.
 - `bench/item_time.py ITEM...`: how a done conductor item's wall time split between sims, builds, tests and
   the rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls (103).
+- `tune/agent_sweep.py [--sweep-seed S --confirm-seed T] [--phase sweep|profile|confirm|read] [--threads N]
+  [--reach K] [--max-passes N] [--budget MIN] [--profile-reach K] [--best k=v,...]`: the strategist's parameter
+  sweep (116): coordinate search over `tune/agent_sweep.json`'s grids on fixed seeds, a profile around the best,
+  a paired confirm on fresh seeds against hand-set and greedy, and the counters that differ. Resumes from its
+  cache; flags and recipe in [scripts/tune/README.md](../scripts/tune/README.md).
 - `tune/`: `sweep.py`, `log_table.py`, `engine_sweep.py`.
 
 `--preset 016` and `018` cover what `scripts/board/` and `scripts/alignment/` read; git has those for the
