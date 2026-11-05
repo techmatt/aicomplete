@@ -1,7 +1,7 @@
 {
   "_note": "Card scenes: the pool. One scene for every real card, grouped under the tag of the card it was written for, its first tag. `scenes` is keyed by scene id; `card` is a suggestion, not a binding, and any card may end up with any scene. Scenes with a `from` keep a round-2 subject word for word; the rest are new. `adversary`, `discord` and `unity` are no card tags and their cards have no frame yet, so those groups hold only the scenes in a batch. A draw is `preamble`, `emphasis`, `lighting`, `framing`, the subject, then the tag's `accent`: `preamble` mixes round 2's styles C and E, `emphasis` is what stops a draw reading as a photograph, `framing` keeps the subject inside the middle 76% the building window crops to. `batch` is the current draw list: scene id to the two real cards it is composited on, one program or event and one building, so each scene is seen in both art windows; for the groups with no frame they are the nearest fit by name. Earlier batches are in picks/scene_batch_<n>.json, whose row ids are the scenes already drawn. A scene with `was` in place of `card` is drawn but suggested for no card: its card was retired, or (083) redesigned and drawn again in batch 5. A scene with both `card` and `was` was written for `was` and reused (110) on `card`.",
-  "round": "b7",
-  "picker": "scene_batch_7",
+  "round": "b8",
+  "picker": "scene_batch_8",
   "preamble": "Stylized painterly board-game illustration in textured gouache, simplified forms and clean brush shapes, visible paper grain, soft clear warm natural light, moderately saturated palette, a confident silhouette with crisp detail on the subject and loose backgrounds, near-future setting: clean modern machinery, clothes and buildings, never historical.",
   "emphasis": "A hand-painted illustration on a board-game box, never a photograph or a 3D render: matte opaque paint, broad visible brush shapes, few details, large simple masses grouped by color, dry brush texture and paper grain everywhere, no glossy reflections.",
   "lighting": "Mid-key lighting, even daylight or clear interior light, never night-dark or blown-out; the scene's tag color as its accent; a strong silhouette that reads at card size. No text, logos, UI, or close-up faces.",
@@ -90,7 +90,7 @@
       "envoy_briefing_room": { "card": "envoy_briefings", "subject": "A sunlit briefing room where a handful of envoys in travel coats sit at a long table with open folders and a large plain world map on the wall, a senior diplomat pointing at it, suitcases waiting by the door." }
     },
     "industry": {
-      "foundry_furnace_hall": { "card": "fabrication_megaplex", "was": "foundry_core", "subject": "The heart of a foundry, one great crucible tipping a stream of molten metal into a mold, workers small beside it." },
+      "foundry_furnace_hall": { "was": "foundry_core", "subject": "The heart of a foundry, one great crucible tipping a stream of molten metal into a mold, workers small beside it." },
       "stacked_container_wing": { "card": "economies_of_scale", "was": "modular_expansion", "subject": "A crane lowering a prefabricated factory module onto the end of a row of identical modules." },
       "factory_on_a_flatbed": { "was": "turnkey_factory", "subject": "A compact new factory unfolding from a line of flatbed trucks on a cleared industrial lot, its chimney rising into place." },
       "founder_pitch": { "card": "university_spinout", "was": "venture_capital", "subject": "Investors in a bright glass office gathered round a small working prototype on a table, a founder gesturing beside it." },
@@ -130,7 +130,8 @@
       "conglomerate_tower_plaza": { "card": "conglomerate_headquarters", "subject": "A tall glass corporate headquarters at the heart of a business park, a factory, a lab, a warehouse and a shipyard crane around it all joined to the tower by covered walkways, executives crossing the bright plaza." },
       "cash_into_the_works": { "card": "materials_hedge_desk", "subject": "An armored bank truck backed up to a busy factory loading bay, workers wheeling heavy cases of gold bars off its tail into the plant while a manager waves them in." },
       "supplier_roads_converge": { "card": "supplier_network", "subject": "Seen from a hill, small workshops and parts plants dotted across green farmland, delivery trucks on every road converging on one big modern assembly plant at the center." },
-      "retooled_assembly_line": { "card": "wartime_retooling", "subject": "A modern car assembly line being refitted in a hurry, workers swapping robot arms and wheeling in new heavy power generators and transformer units, half the line already turning out olive-drab utility vehicles." }
+      "retooled_assembly_line": { "card": "wartime_retooling", "subject": "A modern car assembly line being refitted in a hurry, workers swapping robot arms and wheeling in new heavy power generators and transformer units, half the line already turning out olive-drab utility vehicles." },
+      "megaplex_fabrication_floor": { "card": "fabrication_megaplex", "subject": "A vast modern fabrication megaplex seen from a high gantry, rows of robotic assembly cells under a long sawtooth roof running to the far wall, conveyor lines carrying finished parts and trays of green circuit chips, small workers on the floor below; no flags or emblems." }
     },
     "power": {
       "demand_dial": { "was": "demand_response_grid", "subject": "A wall of giant analog dials in a grid office, an operator turning one down, a daytime city through the window." },
@@ -150,7 +151,7 @@
       "pylon_from_helicopter": { "was": "pylon_drop", "subject": "A heavy helicopter lowering a complete pylon onto a remote ridge, a small crew reaching for its legs." },
       "relay_masts_ridge": { "card": "relay_mast_rollout", "subject": "A line of new relay masts marching over green hills to the horizon, a crew raising the nearest with a truck winch." },
       "grid_accord_crossing": { "card": "shared_grid_accord", "subject": "Two crews from opposite sides of a border fence joining the ends of one power cable at a shared pylon." },
-      "corridor_through_forest": { "card": "national_grid_buildout", "was": "transmission_corridor", "subject": "A straight wide cleared corridor through dark forest, giant pylons striding down it toward a distant city." },
+      "corridor_through_forest": { "was": "transmission_corridor", "subject": "A straight wide cleared corridor through dark forest, giant pylons striding down it toward a distant city." },
       "supergrid_continent": { "card": "continental_supergrid", "subject": "A high aerial view of a coastline and continent with huge bright transmission lines knitting its cities together." },
       "dyson_swarm_panels": { "card": "dyson_swarm_tranche", "subject": "Thousands of mirror-bright collector panels unfolding in a curving swarm around a huge sun, a tug placing the next one." },
       "positron_ring": { "card": "positron_storage_ring", "subject": "A vast ring-shaped accelerator tunnel curving out of sight, magnets in amber housings and one worker on a bicycle." },
@@ -163,14 +164,15 @@
       "mountain_reservoir_pipes": { "card": "pumped_hydro_storage", "subject": "A reservoir high on a mountain shoulder above a lower lake, giant pipes running straight down the slope to a turbine hall at the water, white water rushing out below it." },
       "dispatch_wall_map": { "card": "dispatch_control_room", "subject": "A bright grid dispatch room, operators at curved desks before a huge wall map of power lines drawn as lines of light, one pushing a lever up as a line on the map brightens." },
       "fusion_campus_torus": { "card": "fusion_research_campus", "subject": "A modern university campus of glass buildings on a green lawn around a big doughnut-shaped fusion reactor hall with its roof cut away, scientists crossing the lawn, the reactor's ring glowing softly inside." },
-      "grid_analytics_desk": { "card": "demand_response_grid", "subject": "A bright analysts' desk overlooking a city, three people at a long curved desk studying large painted charts of the city's power use with a model of the grid's pylons and substations laid out on the table in front of them." }
+      "grid_analytics_desk": { "card": "demand_response_grid", "subject": "A bright analysts' desk overlooking a city, three people at a long curved desk studying large painted charts of the city's power use with a model of the grid's pylons and substations laid out on the table in front of them." },
+      "grid_buildout_crews": { "card": "national_grid_buildout", "subject": "A national power grid being built across open country, crews and cranes raising a long line of new lattice pylons over farmland toward the horizon, cable drums on trucks, three fresh substations taking shape along the route, a power station far off; no flags or emblems." }
     },
     "science": {
       "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
       "sample_repository_shelves": { "was": "sample_repository", "subject": "A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place." },
       "preprint_exchange_board": { "card": "preprint_server", "was": "preprint_exchange", "subject": "A crowded corkboard wall of pinned papers in a bright corridor, two scientists swapping a printout and a small glowing cube." },
       "inference_cluster_racks": { "was": "inference_cluster", "subject": "A compact server rack in a bright university machine room, fed by a chute of small glowing cubes, a technician watching its status lamps wake row by row." },
-      "breakthrough_lab_flash": { "card": "frontier_lab_charter", "was": "breakthrough_lab", "subject": "A glass-walled hilltop laboratory, a beam from an instrument on its bench lancing out through the open roof and shattering a dark crystal node on the next ridge, researchers shielding their eyes." },
+      "breakthrough_lab_flash": { "was": "breakthrough_lab", "subject": "A glass-walled hilltop laboratory, a beam from an instrument on its bench lancing out through the open roof and shattering a dark crystal node on the next ridge, researchers shielding their eyes." },
       "policy_institute_hall": { "card": "interdisciplinary_institute", "was": "policy_institute", "subject": "A round meeting hall where scientists present a glowing cube model to seated delegates, a banner of linked hands on the wall." },
       "paper_engine": { "card": "citation_engine", "subject": "A great whirring machine of brass and paper, journals feeding in one end and threads of references spinning out to a wall." },
       "graduate_lab": { "card": "grad_student_pool", "subject": "A cluttered university lab full of students bent over benches and whiteboards, coffee cups and cables everywhere." },
@@ -202,13 +204,14 @@
       "dish_fed_archive": { "card": "telemetry_archive", "subject": "A long hall of humming storage cabinets fed by cables from antenna dishes outside the windows, an archivist holding up a printed chart to warn the room." },
       "vault_drives_to_market": { "was": "exabyte_archive", "subject": "A vast vault of glowing storage drawers cut into a mountainside, a forklift hauling crates of drives out to a buyer's waiting truck." },
       "royalties_from_inventions": { "card": "research_royalties", "subject": "A sunlit university workshop of small working inventions on display plinths, a thin ribbon of gold coins trickling from each one into a shared brass tray that a smiling researcher is emptying into a satchel." },
-      "moonshot_rocket_lawn": { "card": "moonshot_grant", "subject": "A tall gleaming research rocket on a launch pad at the edge of a university research park, a pale moon in the daytime sky above it, scientists in shirtsleeves wheeling crates of glowing sky-blue research cubes to its base." }
+      "moonshot_rocket_lawn": { "card": "moonshot_grant", "subject": "A tall gleaming research rocket on a launch pad at the edge of a university research park, a pale moon in the daytime sky above it, scientists in shirtsleeves wheeling crates of glowing sky-blue research cubes to its base." },
+      "frontier_lab_opening": { "card": "frontier_lab_charter", "subject": "A brand-new frontier research lab of glass and white steel opening on a hilltop campus, scientists in lab coats carrying the first crates of glowing sky-blue research cubes through its tall doors while a founder holds up a blank rolled charter to a small cheering crowd; no flags or emblems." }
     },
     "security": {
       "point_defense_turret": { "was": "point_defense", "subject": "A compact automated gun turret on a factory roof, its barrels tracking a small drone in the sky." },
       "sentinel_watch_post": { "was": "sentinel_post", "subject": "A lone watchtower with a small solar array on a high ridge, one sentry looking out over the valley below." },
       "shelter_blast_doors": { "was": "shelter_order", "subject": "Families filing down into a public shelter past heavy open blast doors, a warden waving them on under a siren pole." },
-      "strike_team_rooftop": { "card": "decapitation_strike", "was": "quick_reaction_force", "subject": "A four-person strike team fast-roping from a helicopter onto a rooftop, dust blowing, figures seen from behind." },
+      "strike_team_rooftop": { "was": "quick_reaction_force", "subject": "A four-person strike team fast-roping from a helicopter onto a rooftop, dust blowing, figures seen from behind." },
       "field_station_tent": { "card": "agency_field_station", "subject": "A discreet field station in a desert: a tent, radio mast and two parked trucks, an operative studying a map." },
       "bunker_in_the_hillside": { "was": "hardened_bunker_complex", "subject": "A concrete bunker entrance set into a grassy hillside, thick steel doors, ventilation stacks and an access road." },
       "interceptor_launchers": { "was": "interceptor_battery", "subject": "A battery of missile launchers angled up on a plateau, one interceptor rising on a clean white trail." },
@@ -244,7 +247,8 @@
       "depot_rows_to_horizon": { "card": "multiyear_defense_budget", "subject": "A vast military depot yard with rows of new armored vehicles stretching to the horizon, an officer and a budget clerk walking the nearest row with a thick bound plan." },
       "act_on_the_capitol_steps": { "card": "homeland_security_act", "subject": "A capitol's broad steps where officials hold up a freshly signed act, guards, emergency crews and power engineers in plain unmarked uniforms, no emblems or crosses, lined up together in the plaza below." },
       "raid_on_the_tower_lobby": { "card": "headquarters_raid", "subject": "A security team in coral-trimmed tactical gear sweeping through the glass doors of a sleek corporate headquarters lobby in daylight, startled suited figures with raised hands, papers drifting off a reception desk." },
-      "checkpoint_chain_road": { "card": "interceptor_battery", "subject": "A road winding over green hills with a small checkpoint on each rise, each a booth and a striped barrier with two guards checking a car, the chain of checkpoints running away to the horizon." }
+      "checkpoint_chain_road": { "card": "interceptor_battery", "subject": "A road winding over green hills with a small checkpoint on each rise, each a booth and a striped barrier with two guards checking a car, the chain of checkpoints running away to the horizon." },
+      "strike_on_the_rogue_hub": { "card": "decapitation_strike", "subject": "A security team in coral-trimmed tactical gear storming a hijacked rooftop server hub in daylight, one pulling the thick cables from a glowing cold-blue machine core while others lead a line of dark-suited adversary envoys away, figures seen from behind; no flags or emblems." }
     },
     "adversary": {
       "marching_columns": { "card": "adv_s1_war_drums", "subject": "Faceless ranks of identical machine troops massing on a military base's parade ground, great war drums beating on a gantry above them." },
@@ -260,14 +264,9 @@
     }
   },
   "batch": {
-    "bounty_board_hunters": ["adaptive_malware", "bug_bounty_board"],
-    "envoy_briefing_room": ["envoy_briefings", "civic_watch"],
-    "supplier_roads_converge": ["antitrust_action", "supplier_network"],
-    "retooled_assembly_line": ["wartime_retooling", "capital_projects_office"],
-    "fusion_campus_torus": ["aegis_grid_lockdown", "fusion_research_campus"],
-    "moonshot_rocket_lawn": ["moonshot_grant", "citation_engine"],
-    "raid_on_the_tower_lobby": ["headquarters_raid", "agency_directorate"],
-    "grid_analytics_desk": ["aegis_grid_lockdown", "demand_response_grid"],
-    "checkpoint_chain_road": ["bounty_board", "interceptor_battery"]
+    "megaplex_fabrication_floor": ["antitrust_action", "fabrication_megaplex"],
+    "frontier_lab_opening": ["frontier_lab_charter", "citation_engine"],
+    "grid_buildout_crews": ["national_grid_buildout", "demand_response_grid"],
+    "strike_on_the_rogue_hub": ["decapitation_strike", "agency_directorate"]
   }
 }

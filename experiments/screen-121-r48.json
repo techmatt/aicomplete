@@ -1,0 +1,35 @@
+{
+  "name": "screen-121-r48",
+  "note": "121: the ballpark read, r48 against r47 paired on seeds 34272-34319: the three pairs at d2, the strategist and greedy, 48 a cell. Run by r47's binary (09c47fc plus 121's sim-only measures: peaks, held after actions) on r47's configs, and by r48's.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34272,
+  "records": 0
+}

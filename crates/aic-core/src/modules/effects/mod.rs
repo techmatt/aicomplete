@@ -70,6 +70,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::OtherGain { resource, amount } => {
             if let Some(o) = ctx.other {
                 cx.add_resource(g, o, *resource, *amount);
+                if *resource == Resource::Insight && o != seat {
+                    cx.add_key(g, &economy::insight_received(o), *amount);
+                }
             }
         }
         Op::Transfer { resource, max } => resources::transfer(g, cx, ctx, seat, *resource, *max)?,
@@ -318,7 +321,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::ProjectDrain { .. }
         | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
-        | Op::GiveBonus { .. }
         | Op::SpreadShield
         | Op::CivicShelter
         | Op::Wall

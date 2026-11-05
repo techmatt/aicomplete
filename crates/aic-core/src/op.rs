@@ -613,19 +613,14 @@ pub enum Op {
     ProjectDrain {
         amount: i64,
     },
-    /// Each threat of `source` in your home country needs `amount` less of each
-    /// resource (070).
+    /// Each threat of `source` you can pay toward (you may counter it) needs
+    /// `amount` less of each resource (070; r48: any country, or the row).
     AutoCounter {
         source: ThreatSource,
         amount: i64,
     },
     /// Extra Sway toward Unity when you remove an adversary troop.
     UnityBonus {
-        amount: i64,
-    },
-    /// When you give insight, the receiver also gains this.
-    GiveBonus {
-        resource: Resource,
         amount: i64,
     },
     /// The adversary's spread places no ambassador on hexes holding your nodes.
@@ -745,7 +740,6 @@ impl Op {
             | Op::ProjectDrain { .. }
             | Op::AutoCounter { .. }
             | Op::UnityBonus { .. }
-            | Op::GiveBonus { .. }
             | Op::SpreadShield
             | Op::CivicShelter
             | Op::Wall

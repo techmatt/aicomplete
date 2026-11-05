@@ -92,6 +92,11 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
         if !res.is_empty() {
             out.cards(s, "resolving", "playing now", res);
         }
+        // r48: played events stay face up in their player's played pile (tags don't count).
+        let ev: Vec<CardView> = g.pile(&events(s)).iter().map(|id| card(s, id, "played", None)).collect();
+        if !ev.is_empty() {
+            out.cards(s, "events", "events played", ev);
+        }
         let pk: Vec<CardView> = g
             .pile(&packet(s))
             .iter()

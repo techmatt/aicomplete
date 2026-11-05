@@ -68,7 +68,7 @@ megaproject is the corp's defining card.
 | Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter | lost |
 | Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight | lost |
 | Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) | lost |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card, 1 credit / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity | lost |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity | lost |
 <!-- /generated -->
 
 - **Stations.** Every research station makes `station_cubes` research cube a round, in

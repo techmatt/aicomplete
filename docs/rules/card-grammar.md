@@ -57,8 +57,8 @@ card does; how each primitive resolves:
 - **Cleanse:** take the adversary cube off a corrupted research station or factory in reach, one hex at a time (some
   cards: all in the first hex's country). A station becomes neutral. `only` limits it to stations (Reclamation Crew,
   priced as a station flip) or to factories (Back-Channel Talks, cheap); its cube icon then carries that facility's glyph. With `cities` (Great Liberation) a corrupted
-  city counts too, and it is liberated ([ambassadors.md](ambassadors.md)).
-- **Liberate:** liberate one corrupted city in your reach ([ambassadors.md](ambassadors.md)): it is clean; with `align` your cube goes on it. Each
+  city counts too (its cube carries the city glyph), and it is liberated ([ambassadors.md](ambassadors.md)).
+- **Liberate:** liberate one corrupted city in your reach ([ambassadors.md](ambassadors.md)): it is clean; with `align` your cube goes on it (its icon line adds → cube). Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Amnesty Decree: 4) around one corrupted
@@ -86,7 +86,8 @@ card does; how each primitive resolves:
   only a few big tier-2 sweeps print it, as a deliberate power step. Neither reads "per hex": Matt's ruling 6.
 - **Help cards** (keyword `help`, ~10%): the player chooses another player; both gain, the helper paying. **In a
   1-player game, "another player" means you** (r44, Matt's ruling of 2026-11-04): the gift is yours. A draw with the
-  tier-1 deck empty (Fieldwork) is not offered on its own, whatever its discards hold: a draw never reshuffles.
+  tier-1 deck empty reshuffles its discard (r48); with both empty it does nothing, and a card that only draws
+  (Fieldwork) is not offered.
 - **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
   over land and sea); the destination must be a piece.
 - **Cordon (`cordon`):** in one country, no arrivals land from its play through the next round: that build, and any build a project
@@ -136,4 +137,5 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   that tag, a teammate does, you remove a troop. A minus after the colon makes those cards cheaper. Discs and a
   number before the colon count up on the card and pay when they reach it.
 - **Reuse (`reuse`, an Action):** use again another of your buildings' Actions you used this round, paying its cost
-  again; never one whose own Action is a reuse (two would loop) (Simulation Cluster).
+  again, either half of an "A, OR B" Action, not only the half you used (Matt, r48: a combo with a strong Action is
+  fine; a card it breaks is redesigned); never one whose own Action is a reuse (two would loop) (Simulation Cluster).

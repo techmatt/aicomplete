@@ -1,13 +1,13 @@
 //! Economy: insight each round, income in upkeep (AI credit production,
-//! AI tracks, buildings, Unity cards), building upkeep, and giving insight
-//! to another player. What the board produces (energy, chips, megaproject
+//! AI tracks, buildings, Unity cards) and building upkeep. Insight passes
+//! between players only through cards that print it (r48: no give action).
+//! What the board produces (energy, chips, megaproject
 //! cubes) is the board's production phase.
 
-use crate::action::Action;
 use crate::content::{Op, PerResource, Resource, RoundFlag, RESOURCES, TAGS};
 use crate::key::KeyBuf;
 use crate::module::{
-    Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
+    Build, Cx, Module, ModuleDef, PhaseSpec, Res, VariantDef, World,
 };
 use crate::state::GameState;
 use crate::view::ViewOut;
@@ -17,22 +17,13 @@ use super::{ai, alignment, board, cards};
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "economy",
-    summary: "Insight, income and upkeep; giving insight",
+    summary: "Insight, income and upkeep",
     requires: &["ai"],
     variants: &[VariantDef {
         name: "standard",
         summary: "Income in upkeep, insight at the start of each round",
-        params: &[ParamSpec::int(
-            "give_insight",
-            0,
-            10,
-            "insight the receiver gains for 1 given",
-        )],
+        params: &[],
         phases: &[
-            PhaseSpec::decision(
-                "give",
-                "give 1 insight to another player (combine with the action phase)",
-            ),
             PhaseSpec::auto(
                 "upkeep",
                 "collect income (credit production, tracks, buildings); pay building upkeep",
@@ -60,6 +51,12 @@ pub fn insight_gift(seat: usize) -> String {
     format!("economy.insight_gift.{seat}")
 }
 
+/// Insight seat `s` got from other seats this round (r48): another seat's card
+/// or capstone. Patience never carries it over.
+pub fn insight_received(seat: usize) -> KeyBuf {
+    KeyBuf::new("economy.insight_received.").num(seat)
+}
+
 /// Insight seat `s` carried into this round by Patience (075).
 pub fn insight_carried(seat: usize) -> String {
     format!("economy.insight_carried.{seat}")
@@ -72,14 +69,10 @@ pub fn patient(w: &World, seat: usize) -> bool {
 }
 
 #[derive(Debug)]
-struct Economy {
-    give_insight: i64,
-}
+struct Economy;
 
-fn build(b: &Build) -> Result<Box<dyn Module>, String> {
-    Ok(Box::new(Economy {
-        give_insight: b.int("give_insight")?,
-    }))
+fn build(_b: &Build) -> Result<Box<dyn Module>, String> {
+    Ok(Box::new(Economy))
 }
 
 /// What the next upkeep pays seat `s`: its `income`, with no energy for a
@@ -171,24 +164,17 @@ fn supply_insight(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
     Ok(())
 }
 
-impl Economy {
-    /// Whether seat `s` can give insight now. `give_insight` 0 switches giving
-    /// off (docs/rules/README.md, *Off-variants*; 020: it was still offered and cost the giver an
-    /// insight for nothing).
-    fn can_give(&self, g: &GameState, seat: usize) -> bool {
-        g.resource(seat, Resource::Insight) >= 1 && self.give_insight > 0
-    }
-}
-
 impl Module for Economy {
     fn round_start(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
         for s in 0..g.seats.len() {
-            // Unspent insight is lost, but under Patience (075).
+            // Unspent insight is lost, but under Patience (075), which keeps
+            // only the seat's own: what others gave it this round goes (r48).
             let have = g.resource(s, Resource::Insight);
             let debt = g.var(&insight_debt(s));
             let gift = g.var(&insight_gift(s));
-            let carried = if patient(&w, s) { have } else { 0 };
+            let received = g.var(&insight_received(s));
+            let carried = if patient(&w, s) { (have - received).max(0) } else { 0 };
             let n = (income(&w, g, s)[Resource::Insight] + gift + carried - debt).max(0);
             cx.add_resource(g, s, Resource::Insight, n - have);
             if debt > 0 {
@@ -197,47 +183,18 @@ impl Module for Economy {
             if gift > 0 {
                 cx.set_key(g, &insight_gift(s), 0);
             }
+            // A capstone's gift lands now: this round's pool, but not the seat's
+            // own (alone, a gift is yours: ruling 7).
+            let landed = if g.seats.len() > 1 { gift } else { 0 };
+            if received != landed {
+                cx.set_key(g, &insight_received(s), landed);
+            }
             if patient(&w, s) {
                 cx.set_key(g, &insight_carried(s), carried);
                 cx.tally(g, "economy.insight_carried", carried);
                 cx.per_round(g, "economy.insight_carried", carried);
             }
         }
-    }
-
-    fn legal(&self, _phase: usize, g: &GameState, _w: &World, seat: u8, out: &mut Vec<Action>) {
-        if !self.can_give(g, seat as usize) {
-            return;
-        }
-        for to in 0..g.seats.len() as u8 {
-            if to != seat {
-                out.push(Action::Give { seat, to });
-            }
-        }
-    }
-
-    fn owns(&self, _phase: usize, a: &Action) -> bool {
-        matches!(a, Action::Give { .. })
-    }
-
-    fn act(&self, _phase: usize, g: &mut GameState, cx: &mut Cx, a: &Action) -> Res {
-        let w = cx.world;
-        let Action::Give { seat, to } = *a else {
-            return Err(Halt::Illegal("not a give".into()));
-        };
-        let (s, t) = (seat as usize, to as usize);
-        if s == t || t >= g.seats.len() || !self.can_give(g, s) {
-            return Err("can't give insight there".into());
-        }
-        cx.add_resource(g, s, Resource::Insight, -1);
-        cx.add_resource(g, t, Resource::Insight, self.give_insight);
-        for p in cards::passives(&w, g, s) {
-            if let Op::GiveBonus { resource, amount } = p {
-                cx.add_resource(g, t, *resource, *amount);
-            }
-        }
-        cx.count(g, "insight_given", 1);
-        Ok(())
     }
 
     fn run(&self, _phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
@@ -331,6 +288,12 @@ impl Module for Economy {
                 );
             }
         }
-        out.bookkeeping(&["economy.production.", "economy.insight_debt.", "economy.insight_gift.", "economy.insight_carried."]);
+        out.bookkeeping(&[
+            "economy.production.",
+            "economy.insight_debt.",
+            "economy.insight_gift.",
+            "economy.insight_carried.",
+            "economy.insight_received.",
+        ]);
     }
 }

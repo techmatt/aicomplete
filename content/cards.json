@@ -379,14 +379,8 @@
   "name": "Endowed Research Chair",
   "tier": 1,
   "kind": "program",
-  "cost": 8,
+  "cost": 12,
   "insight": 1,
-  "lowers": [
-   [
-    "credits",
-    1
-   ]
-  ],
   "needs": [
    [
     "science",
@@ -3368,17 +3362,10 @@
  {
   "id": "popular_uprising",
   "name": "Popular Uprising",
-  "tier": 2,
+  "tier": 1,
   "kind": "building",
-  "cost": 28,
-  "insight": 2,
-  "needs": [
-   [
-    "diplomacy",
-    3
-   ]
-  ],
-  "replaces": "diplomacy",
+  "cost": 22,
+  "insight": 1,
   "tags": [
    "diplomacy"
   ],
@@ -3388,25 +3375,18 @@
   "tokens": {
    "kind": "followers"
   },
-  "effects": [
-   {
-    "op": "add_tokens",
-    "kind": "followers",
-    "amount": 4,
-    "here": true
-   }
-  ],
+  "effects": [],
   "ability": {
    "effects": [
     {
      "op": "add_tokens",
      "kind": "followers",
-     "amount": 2,
+     "amount": 1,
      "here": true
     }
    ],
    "or": {
-    "tokens": 6,
+    "tokens": 4,
     "effects": [
      {
       "op": "liberate"
@@ -4002,7 +3982,7 @@
   "name": "Peace Conference",
   "tier": 1,
   "kind": "program",
-  "cost": 22,
+  "cost": 28,
   "insight": 1,
   "needs": [
    [
@@ -4017,7 +3997,7 @@
    {
     "op": "sway",
     "side": "unity",
-    "amount": 5
+    "amount": 8
    },
    {
     "op": "gain_ambassadors",

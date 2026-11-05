@@ -27,8 +27,8 @@ more: 46. Each credit space of your economy track adds 2 or 3 credits, the first
 cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
 cards (Debrief), and a Security card with an energy shelters a whole country for the round.
 
-**The Researcher, for new players.** Your special rule is Patience: insight you don't spend stays with you into the
-next round, so you can save up for a big round. You start with 40 credits and earn 14 a round, 3 more for each credit
+**The Researcher, for new players.** Your special rule is Patience: your own insight you don't spend stays with you
+into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 14 a round, 3 more for each credit
 space of your economy track; round 1 deals you 8 tier-1 cards, 4 of them free to keep and 5 credits each after, and 2 tier-2 cards at 1 insight each. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 1 energy into 3 cards, a card from your hand into 2 insight (Synthesis), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and no energy,
@@ -103,9 +103,9 @@ have tokens).
 | 1 | +1 insight | +1 insight | +1 insight |
 | 2 | **keep upgrade**, Industry tag | **keep upgrade**, Security tag | +2 insight |
 | 3 | +2 insight (cost 1) | +2 insight (cost 1) | **keep upgrade**, Science tag (cost 1) |
-| 4 | +1 credit, Science tag (cost 2) | +1 credit, Cyber tag (cost 2) | +1 insight, Cyber tag (cost 2) |
+| 4 | +2 credits, Science tag (cost 2) | +2 credits, Cyber tag (cost 2) | +1 insight, Cyber tag (cost 2) |
 | 5 | +2 insight (cost 2) | +2 insight (cost 2) | +2 insight (cost 2) |
-| 6 | +1 insight, Cyber tag (cost 3) | +1 insight, Diplomacy tag (cost 3) | +1 credit, Industry tag (cost 3) |
+| 6 | +1 insight, Cyber tag (cost 3) | +1 insight, Diplomacy tag (cost 3) | +2 credits, Industry tag (cost 3) |
 | 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Each round, stop the first destruction in a country you're in. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
 <!-- /generated -->
 
@@ -120,8 +120,10 @@ into energy. **Energy counters**
 spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2 insight; everyone's
 standard action, a cube for 1) is the intended engine, with no limit a round: capped by how many stations make cubes (and Open Archive's 1 a round) and,
 for Cintamani's, by the city node in its country. Bought cubes go only onto incomplete cards and are spent at completion, so credits never reach a converter.
-Open Science's insight comes from the supply, not the Researcher's bank, and goes only to other players, so Patience
-can't bank it; alone (118, ruling 7) it is the Researcher's own, and Patience keeps it. Fieldwork's three cards are paid for again to keep in play (credits and insight); sold, they are 3
+Patience banks only the Researcher's own insight (r48, Matt): what other players' cards or capstones gave it this
+round expires as anyone's does, and no standard action gives insight (D43: teammates had banked theirs on the Researcher,
+400 by round 11). It is uncapped; every read reports its peak. Open Science's insight comes from the supply and goes only
+to other players; alone (118, ruling 7) it is the Researcher's own, and Patience keeps it. Fieldwork's three cards are paid for again to keep in play (credits and insight); sold, they are 3
 credits for 1 energy once a round. Followers → ambassadors → alignment → city energy → node is capped by building
 count and the Followers each ambassador costs. Evicting ambassadors stay on the map, capped by the supply, and the next
 arrival there cancels one. Wall has no loop, but it takes troops away as a harm where the Protector stands;

@@ -13,6 +13,9 @@ pub(super) fn transfer(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, seat: usize, r
         if k > 0 {
             cx.add_resource(g, seat, resource, -k);
             cx.add_resource(g, o, resource, k);
+            if resource == Resource::Insight && o != seat {
+                cx.add_key(g, &economy::insight_received(o), k);
+            }
         }
     }
     Ok(())

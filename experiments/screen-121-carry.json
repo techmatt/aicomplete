@@ -1,0 +1,59 @@
+{
+  "name": "screen-121-carry",
+  "note": "121: Sway carried past a tip on Unity's side only (carry 1, the baseline: Matt, in screen-121-r48), both sides (carry 2, the prompt's first rule) or neither (carry 0, r47's rule), on r48 and the same seeds 34272-34319.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp-c2",
+      "set": [
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "br-c2",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "pr-c2",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "bp-c0",
+      "set": [
+        "alignment.carry=0"
+      ]
+    },
+    {
+      "name": "br-c0",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=0"
+      ]
+    },
+    {
+      "name": "pr-c0",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 34272,
+  "records": 0
+}

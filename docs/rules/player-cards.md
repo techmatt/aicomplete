@@ -4,9 +4,11 @@
 
 The cards config lists which cards are in the game (baseline: all of them).
 
-- **Decks:** a tier-1 and a tier-2 deck of the listed cards (one copy of each), shuffled at setup; discards reshuffle
-  into a deck when the draft finds it empty, never for a draw (r44: a draw from an empty deck gets nothing). When both decks and their discards are empty (every card is in a hand or
-  in play), the draft hands are what has been dealt.
+- **Decks and zones** (r48, Matt; as in Terraforming Mars): a tier-1 and a tier-2 deck of the listed cards (one copy
+  of each), shuffled at setup. The **discard** holds sacrificed cards, drafted cards not kept and cards discarded from a
+  hand. A played event goes to its player's **played pile**, never the discard. If you must draw and can't, reshuffle
+  the discard into the deck and draw; the draft does the same. When both decks and their discards are empty (every card
+  is in a hand or in play), the draft hands are what has been dealt.
 - **The opening (round 1).** Each player is dealt `opening_deal` tier-1 cards and keeps `opening_free` free; each
   further tier-1 card kept costs `opening_keep_credits` credits. Each is also dealt `opening_deal_tier2` tier-2 cards
   (108, Matt), each kept for `opening_keep_tier2` insight from round 1's insight and taking none of the free keeps:
@@ -64,18 +66,18 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 2 adversary troops in the city's country |
-  | Popular Uprising | Followers | building (over Diplomacy, arrives with 4 Followers) | Action: add 2 Followers here, or spend 6 to liberate, again and again |
+  | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), 18-42 credits, well under the fallback's ~100 and
+  a corrupted city costs in play; the extra at its own row), 18-42 credits (Popular Uprising 22, tier 1, its liberation four Actions away), well under the fallback's ~100 and
   out of reach before mid-game. They read 1.0-1.35 at Matt's unit anchors, inside the margin like any fair card: the
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
   liberation → clean city → energy → more liberation is capped; Popular Uprising (106) repeats, capped by its
-  once-a-round Action, 6 Followers a liberation and corrupted cities in reach: alone it adds 2 a round between
-  liberations; Simulation Cluster's Reuse can repeat either half of an Action, so with it a liberation every other
-  round is possible.
+  once-a-round Action, 4 Followers a liberation and corrupted cities in reach: alone it adds 1 a round, a liberation
+  every fifth round, an early investment that pays as a cheap late liberation (r48); Simulation Cluster's Reuse may
+  repeat either half of an Action (Matt, r48), so with it about one every 2-3 rounds.
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";
@@ -83,16 +85,19 @@ The cards config lists which cards are in the game (baseline: all of them).
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Your tags are those on every card you
   have in play: active buildings, the cards splayed under them, and programs. Events' tags don't stay.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them). **Events** resolve
-  and are discarded. A program or event (or ability) is only offered when each of its targeted effects has a target (a
-  Harden, a move or a gain per tag counts only on a card that does nothing else; an event paying per tag needs one of
-  those tags on your cards). A removal's target is a hex with a piece the card names: "remove 1 adversary ambassador"
-  can't name a hex holding only a troop. A building's when-built effect is not checked: with no target it does
-  nothing.
+  and go to your played pile (their tags don't count). **Nothing to act on never blocks a card** (r48, Matt): a part
+  of a card with nothing to act on (a removal with no target in reach, a move, a gain per tag with too few tags, a draw
+  with no card left) does nothing, and the rest resolves. A program, event or ability is offered when at least one of
+  its parts acts; one that would do nothing at all is not. A removal's target is a hex with a piece the card names:
+  "remove 1 adversary ambassador" can't name a hex holding only a troop. A building's when-built effect is not checked.
+- **Own tags:** a card's own tags never count toward its own `needs` (r48, Matt, as in Terraforming Mars): it is still
+  in your hand. Once played, a program's tags count for its own gain per tag (it enters play before it resolves); an
+  event's never do.
 - **Buildings** go into a slot: your AI board's `ai.slots` (a building printing `slots` adds them and sits in one
   itself; no card prints it). With a slot free you choose a new slot or **build over** one of your buildings; with
   none free you must build over one. The building underneath is **splayed down**: its passives and ability stop, its
   tags still count, and it is sacrificed with the stack. A building with `replaces` (most tier-2 buildings, over their
-  own tag: Orbital Embassy, Agency Directorate, Power to the People, Popular Uprising, each a capstone with a big
+  own tag: Orbital Embassy, Agency Directorate, Power to the People, each a capstone with a big
   one-off) must be built over one whose top card carries that tag. 108 took it off the engines (Foundation Model
   Campus, Orbital Mass Driver, Capital Projects Office, Hyperscale Botnet, Positron Storage Ring): an engine goes in a free slot or over whichever building its owner chooses, so it never buries a
   better building of its tag.

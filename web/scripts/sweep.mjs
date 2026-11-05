@@ -114,7 +114,7 @@ const PAGE_LIB = String.raw`(() => {
   const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|threats\.sources_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
   // discard from hand, a discount, insight bought, given or paid for a counter.
-  const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|economy\.insight_given|threats\.counter_paid\.insight)$/;
+  const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k)) &&(c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

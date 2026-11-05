@@ -1056,8 +1056,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::PlayersLose { resource: r, .. }
             | Op::LoseNodeOr { resource: r, .. }
             | Op::Requisition { resource: r, .. }
-            | Op::Logistics { resource: r, .. }
-            | Op::GiveBonus { resource: r, .. } => resource(r, what)?,
+            | Op::Logistics { resource: r, .. } => resource(r, what)?,
             // 068: income can print ambassadors, as effects do.
             Op::Income { resource: r, .. } => seat_resource(r, what)?,
             Op::TeamIncome { resource: r, .. } => {

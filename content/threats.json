@@ -28,10 +28,6 @@
   "text": "Each player here discards 2 cards or pays 4 energy.",
   "counter": [
    [
-    "credits",
-    1
-   ],
-   [
     "energy",
     1
    ]
@@ -73,10 +69,6 @@
   "text": "Cities here produce no energy next round; the adversary gains 3 compute.",
   "counter": [
    [
-    "credits",
-    1
-   ],
-   [
     "energy",
     1
    ]
@@ -100,12 +92,8 @@
   "text": "Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute.",
   "counter": [
    [
-    "credits",
-    1
-   ],
-   [
     "energy",
-    1
+    2
    ]
   ],
   "effects": [

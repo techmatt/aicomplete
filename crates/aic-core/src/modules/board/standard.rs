@@ -201,6 +201,75 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
     text.to_string()
 }
 
+/// What a standard action does, in the rule book's longer words: its name,
+/// cost and effect, the row `aic-sim docs` prints in docs/rules/economy.md
+/// (121: one home for them, beside the view's [`std_text`]). `t` prints a
+/// tunable by its key (the docs print `` `remove_count` 3 ``).
+pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String; 3] {
+    let (name, cost, what): (&str, String, String) = match act {
+        StandardAction::Station => (
+            "Build a research station",
+            format!("{} chips", t("board.station_chips")),
+            "on an open hex in reach that is not an industrial zone; it is yours (your cube)".into(),
+        ),
+        StandardAction::Remove => (
+            "Remove adversary ambassadors",
+            format!("{} of your ambassadors, from your supply", t("board.remove_ambassadors")),
+            format!("it goes onto one hex in reach, removes up to {} there and stays", t("board.remove_count")),
+        ),
+        StandardAction::Clear => (
+            "Clear a corruption marker",
+            format!("{} credits", t("board.clear_cost")),
+            format!("in reach: sway {} toward Unity, gain {} credits", t("board.clear_unity"), t("board.clear_credits")),
+        ),
+        StandardAction::Move => (
+            "Move a player ambassador",
+            format!("{} credit", t("board.move_credits")),
+            "from your supply or the board onto a piece in reach (not the hex it comes from)".into(),
+        ),
+        StandardAction::Ambassador => (
+            "Gain a player ambassador",
+            format!("{} credits", t("board.ambassador_credits")),
+            "into your supply; a standard project too".into(),
+        ),
+        // r40 (D38): on a dark city it cancels, as an ambassador arriving on a piece does.
+        StandardAction::Align => (
+            "Align a clean city",
+            "1 ambassador".into(),
+            "in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean".into(),
+        ),
+        // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
+        StandardAction::FreeStation => (
+            "Free a research station",
+            format!("{} credits; {} of your ambassadors on it, used up", t("board.free_station_credits"), t("board.free_station_ambassadors")),
+            "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".into(),
+        ),
+        StandardAction::HardenChips => (
+            "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)",
+            "the chips the card prints, per token".into(),
+            "a player-owned station or factory in reach that is not corrupted, one a troop can strike".into(),
+        ),
+        StandardAction::Chips => ("Sell chips", "1 chip".into(), format!("gain {}", t("board.chips_credits"))),
+        StandardAction::HardenBuy => (
+            "Project: harden (`harden_buy`)",
+            format!("{} credits", t("board.harden_credits")),
+            "any player: a hardening token on a player-owned station or factory in reach".into(),
+        ),
+        StandardAction::Drain => (
+            "Project: drain (`drain`)",
+            format!("{} credits", t("board.drain_credits")),
+            format!("remove up to {} compute from one visible adversary project", t("board.drain_amount")),
+        ),
+        // 105: the general converter every player has.
+        StandardAction::Insight => (
+            "Turn a cube into insight",
+            "1 research cube".into(),
+            format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
+        ),
+    };
+    [name.to_string(), cost, what]
+}
+
 /// Where seat `s` may build a research station: an open hex in reach that is
 /// not an industrial zone.
 pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {

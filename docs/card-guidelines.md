@@ -123,9 +123,12 @@ and 3 tags a round, for 3-4 rounds); the ratio get ÷ pay is at most about 1.5 a
 maximum, not a target** (112): a fair card reads about 1.0-1.5 at either tier; never lower a fair card's price to move
 it toward the maximum. Under 1.0 the card is too dear.
 
-**Every targeted effect needs a target** (feasibility): a program or event is offered only when each removal, jam,
-drain, discard or cleanse on it has one; draws, gifts, feeders' tokens, harden and moves never veto. A removal rider
-beside another targeted effect makes the card dead whenever the rider is (*Logic Bomb*'s troop went for that, 111).
+**Nothing to act on never blocks a card** (Matt, r48): a part with no target does nothing and the rest resolves; only
+a card that would do nothing at all is not offered. A removal rider is a bonus, never a veto (111 cut *Logic Bomb*'s).
+
+**Tracked amounts matter** (Matt, 2026-11-05): anything a player tracks or pays moves the game. No threat counter,
+card cost or rider prints 1 credit: fold it into the price or raise it. A counter is 5+ credits or energy (1 or 2);
+a per-tag rate of 1 is a rate, not an amount.
 
 **Board state to size removals against** (r43, the strategist, 109): adversary ambassadors median 6 a country (p90 10)
 and 6 in a seat's reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-10 compute a player).

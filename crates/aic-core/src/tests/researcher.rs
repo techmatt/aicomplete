@@ -160,3 +160,26 @@ fn the_new_cards_can_be_played() {
         assert!(legal.iter().any(|a| matches!(a, Action::Play { card, .. } if card.as_str() == id)), "{id}: {legal:?}");
     }
 }
+
+/// r48 (Matt, D43): Patience banks only the Researcher's own insight. What another
+/// player's card gave it this round expires; its own unspent insight carries.
+#[test]
+fn patience_never_banks_insight_another_player_gave() {
+    let (rules, mut g) = c3();
+    let w = rules.world();
+    let inc = economy::income(&w, &g, 2)[Resource::Insight];
+    set_res(&mut g, 0, Resource::Credits, 30);
+    set_res(&mut g, 2, Resource::Insight, 3);
+    // Seat 0's help card gives the Researcher 4 insight.
+    let gift = [Op::ChoosePlayer, Op::OtherGain { resource: Resource::Insight, amount: 4 }];
+    with_cx_picks(&rules, vec![crate::state::Pick { option: "seat 2".into(), target: None }], |cx| {
+        crate::modules::effects::run(&mut g, cx, &gift, &mut crate::modules::effects::Ctx::seat(0))
+    })
+    .unwrap();
+    assert_eq!(g.resource(2, Resource::Insight), 7);
+    assert_eq!(g.var(&economy::insight_received(2)), 4);
+    next_round(&rules, &mut g);
+    assert_eq!(g.resource(2, Resource::Insight), inc + 3, "only its own 3 carried");
+    assert_eq!(g.var(&economy::insight_carried(2)), 3);
+    assert_eq!(g.var(&economy::insight_received(2)), 0, "a new round: nothing given yet");
+}

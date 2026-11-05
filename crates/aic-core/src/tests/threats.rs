@@ -13,7 +13,7 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
     }
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 6);
-        set_res(&mut g, s, Resource::Energy, 1);
+        set_res(&mut g, s, Resource::Energy, 2);
     }
     let legal = rules.legal_actions(&g);
     // Only players with one of its sources in reach may pay.
@@ -30,40 +30,38 @@ fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
         resource,
         amount,
     };
-    // Blackout: 1 credit and 1 energy (r35). Pay 1, withdraw, then pay in full.
-    rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
-        .unwrap();
-    assert_eq!(g.resource(1, Resource::Credits), 5);
-    let withdraw = Action::Withdraw {
-        seat: 1,
-        threat: "blackout".into(),
-        resource: Resource::Credits,
-    };
-    rules.apply_mut(&mut g, &withdraw, None).unwrap();
-    assert_eq!(g.resource(1, Resource::Credits), 6);
+    // r48 (Matt): no counter prints 1 credit. Blackout: 1 energy; credits don't pay it.
     assert!(rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 5), None)
+        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
         .is_err());
     assert!(rules
-        .apply_mut(&mut g, &pay(0, "blackout", Resource::Credits, 1), None)
+        .apply_mut(&mut g, &pay(0, "blackout", Resource::Energy, 1), None)
         .is_err());
-    rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
-        .unwrap();
-    assert_eq!(g.pile("threats.on.1"), ["blackout"], "the energy is still owed");
     rules
         .apply_mut(&mut g, &pay(1, "blackout", Resource::Energy, 1), None)
         .unwrap();
     assert!(g.pile("threats.on.1").is_empty());
     assert_eq!(g.pile("threats.discard.1")[0], "blackout");
-    assert_eq!(g.resource(1, Resource::Credits), 5);
-    assert_eq!(g.resource(1, Resource::Energy), 0);
-    // Sabotage: 1 credit and 1 energy (r35). Pay only part; it comes back.
+    assert_eq!((g.resource(1, Resource::Credits), g.resource(1, Resource::Energy)), (6, 1));
+    // Sabotage: 2 energy. Pay 1, withdraw, then pay only part again; it comes back.
     rules
-        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Credits, 1), None)
+        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 1), None)
         .unwrap();
-    assert_eq!(g.pile("threats.on.0"), ["sabotage"]);
+    assert_eq!(g.resource(0, Resource::Energy), 1);
+    let withdraw = Action::Withdraw {
+        seat: 0,
+        threat: "sabotage".into(),
+        resource: Resource::Energy,
+    };
+    rules.apply_mut(&mut g, &withdraw, None).unwrap();
+    assert_eq!(g.resource(0, Resource::Energy), 2);
+    assert!(rules
+        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 3), None)
+        .is_err());
+    rules
+        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 1), None)
+        .unwrap();
+    assert_eq!(g.pile("threats.on.0"), ["sabotage"], "an energy is still owed");
     let discord = g.var("alignment.discord");
     for s in 0..2 {
         rules
@@ -87,20 +85,20 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
         "cards.red_team_audit.insight=1",
         r#"cards.red_team_audit.effects=[{"op":"jam","amount":6},{"op":"draw","count":2}]"#,
     ]);
-    // Blackout needs 1 credit and 1 energy (r35); with the credit paid, Red-Team
-    // Audit's jam 4 (076: Threat Triage's jam 2 merged away; a jam takes every
-    // entry) takes it to 0: countered at once, and the credit paid comes back,
-    // as a counter's partial payments do.
-    deal(&mut g, "blackout", 0);
+    // Sabotage needs 2 energy (r48); with 1 paid, Red-Team Audit's jam takes it to 0:
+    // countered at once, and the energy paid comes back, as a counter's partial
+    // payments do.
+    deal(&mut g, "sabotage", 0);
     put(&mut g, rules.map.numbered(0, piece(0).node), BOTNET, 1);
     set_res(&mut g, 0, Resource::Credits, 12);
+    set_res(&mut g, 0, Resource::Energy, 2);
     rules
         .apply_mut(
             &mut g,
             &Action::Pay {
                 seat: 0,
-                threat: "blackout".into(),
-                resource: Resource::Credits,
+                threat: "sabotage".into(),
+                resource: Resource::Energy,
                 amount: 1,
             },
             None,
@@ -120,9 +118,10 @@ fn jamming_a_threat_down_to_what_is_paid_counters_it() {
     assert!(g.pile("threats.on.0").is_empty());
     assert!(g
         .pile("threats.discard.1")
-        .contains(&Key::new("blackout")));
+        .contains(&Key::new("sabotage")));
     let triage = rules.world().content.cards.iter().find(|c| c.id == "red_team_audit").unwrap().cost;
     assert_eq!(g.resource(0, Resource::Credits), 12 - triage);
+    assert_eq!(g.resource(0, Resource::Energy), 2, "the energy paid came back");
 }
 
 #[test]
@@ -266,4 +265,25 @@ fn a_delayed_threat_skips_this_round() {
     assert!(threats::waits(&g, &t));
     g.round += 1;
     assert!(!threats::waits(&g, &t), "it comes back next round");
+}
+
+/// r48 (D51): Total War's ambassadors land one a base while a base is free.
+#[test]
+fn total_war_lands_one_ambassador_a_base_while_one_is_free() {
+    let (rules, mut g) = threat_lab();
+    let w = rules.world();
+    let bases: Vec<usize> = w.map.countries[0].hexes.iter().copied().filter(|&h| crate::modules::common::is_base(&w, h)).collect();
+    for &b in &bases {
+        put(&mut g, b, ADV_AMBASSADOR, 0);
+    }
+    let before: i64 = bases.iter().map(|&b| g.tokens(b, ADV_AMBASSADOR)).sum();
+    let n = 2.min(bases.len() as i64);
+    with_cx(&rules, |cx| {
+        crate::modules::threats::place_ambassadors(&mut g, cx, Some(0), crate::content::Spot::Bases, n, None)
+    })
+    .unwrap();
+    answer_all(&rules, &mut g);
+    let on: Vec<i64> = bases.iter().map(|&b| g.tokens(b, ADV_AMBASSADOR)).collect();
+    assert_eq!(on.iter().sum::<i64>() - before, n);
+    assert!(on.iter().all(|&k| k <= 1), "one a base while one is free: {on:?}");
 }

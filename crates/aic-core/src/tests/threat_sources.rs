@@ -171,29 +171,47 @@ fn a_cyber_threat_reads_botnets_and_corrupted_stations() {
 /// 119: Autonomous Defense Grid's standing counter pinned to r46's 5 (cyber).
 const GRID: &str = r#"cards.autonomous_defense_grid.passives=[{"op":"auto_counter","source":"cyber","amount":5}]"#;
 
+/// r48 (D54): "Cyber threats you can pay toward need 5 less": every cyber threat its
+/// holder may counter, in any country (not only its home) and on the shared row.
 #[test]
-fn an_auto_counter_works_its_home_country() {
+fn an_auto_counter_cuts_the_threats_its_holder_can_pay_toward() {
     let (rules, mut g) = threat_lab_with(&[GRID]);
     let w = rules.world();
-    // Two cyber threats printing 7 credits.
+    // Two cyber threats printing 7 credits, one by each country.
     deal(&mut g, "station_seizure", 0);
     deal(&mut g, "fifth_column", 1);
     Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());
-    let n = 7 - threats::requirement(&w, &g, "station_seizure")[0].1;
-    assert!(n > 0 && n < 7, "a standing counter stays below a typical counter");
-    assert_eq!(threats::requirement(&w, &g, "fifth_column")[0].1, 7, "only its home country");
+    for (t, c) in [("station_seizure", 0), ("fifth_column", 1)] {
+        let may = threats::may_counter(&w, &g, 0, t, Some(c));
+        let need = threats::requirement(&w, &g, t)[0].1;
+        assert_eq!(need, if may { 2 } else { 7 }, "{t}: may pay toward it {may}");
+    }
+    // A cyber source in seat 0's reach in country 1 opens that threat to it, and the cut.
+    let home = rules.map.numbered(0, piece(0).node);
+    only_node(&mut g, 0, home);
+    let far = rules.map.numbered(1, piece(1).node);
+    put(&mut g, far, node(0), 1);
+    put(&mut g, far, BOTNET, 1);
+    assert!(threats::may_counter(&w, &g, 0, "fifth_column", Some(1)));
+    assert_eq!(threats::requirement(&w, &g, "fifth_column")[0].1, 2, "abroad too");
     // Read, not stored: a delayed threat keeps the same cut.
-    with_cx(&rules, |cx| threats::delay(&mut g, cx, "station_seizure"));
-    assert_eq!(threats::requirement(&w, &g, "station_seizure")[0].1, 7 - n);
+    with_cx(&rules, |cx| threats::delay(&mut g, cx, "fifth_column"));
+    assert_eq!(threats::requirement(&w, &g, "fifth_column")[0].1, 2);
+    // The shared row: every seat may pay toward a row threat, so the cut applies.
+    let (rules, mut g) = threat_lab_with(&[GRID, "threats.variant=shared_row"]);
+    let w = rules.world();
+    set_pile(&mut g, "threats.row", &["station_seizure"]);
+    Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());
+    assert_eq!(threats::requirement(&w, &g, "station_seizure")[0].1, 2, "on the row");
 }
 
 /// 118: a threat a standing counter pays in full is countered, not left face up at 0
-/// holding its sources until execute.
+/// holding its sources until execute (r48: Blackout's counter is 1 energy).
 #[test]
 fn a_threat_an_auto_counter_pays_in_full_is_countered() {
-    let (rules, mut g) = threat_lab_with(&[GRID]);
+    let (rules, mut g) = threat_lab_with(&[GRID, "threats.variant=shared_row"]);
     let w = rules.world();
-    deal(&mut g, "blackout", 0);
+    set_pile(&mut g, "threats.row", &["blackout"]);
     Arc::make_mut(g.piles.entry(cards::built(0)).or_default()).push("autonomous_defense_grid".into());
     assert!(threats::requirement(&w, &g, "blackout").iter().all(|(_, n)| *n == 0), "{:?}", threats::requirement(&w, &g, "blackout"));
     with_cx(&rules, |cx| threats::complete_paid(&mut g, cx));

@@ -67,7 +67,11 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 - **Economy buildings standing**: passive `income` or `income_per_tag` at the end, overlay included.
 - **Early lock-in**: p ≤ 0.05 or ≥ 0.95 from round 2 to the end; uncertain checkpoints are 0.1 < p < 0.9.
 - **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>` in `per_round`); the flag
-  thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`.
+  thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`. `margin.held_after_actions`: what each
+  seat held after its last *completed* action phase (121), never mid-round.
+- **The runaway check** (Matt, 121): every read reports each resource's peak per seat (`peaks` in `games.jsonl`, in
+  `PEAKS` order; the report's *Peak holdings*). A peak far above a round's income (`gained / rounds`) is an engine
+  running away (any resource may get a sink later): `scripts/cards/runaway_read.py` flags it.
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -78,13 +82,11 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
 `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
-`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, and `unspent.<seat>.energy` (per seat: energy held
-as the action phase ends). Add a pair there for another; an aic-sim rebuild, no script change. A zero is written for
-every round up to the key's last record (100), so an absent `unspent.*.rNN` means the round's action phase never ended. A read that takes a key's presence as
-"reached" (`ai.tag_top`, in `energy_read.py`, `r37_read.py`, `economy_read.py`) reads a seat with no tagged card
-differently on an older games.jsonl: don't diff such reads across 100. In the core `cx.count(g, "x", n)` writes
-`<module>.x` while `cx.tally` and `cx.per_round` take the full key, so a power use is `ai.power.builder.0`: a screen
-column on the bare name prints zeros.
+`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, and `unspent.<seat>.energy` (energy held as the
+action phase ends); add a pair there for another (a rebuild). A zero is written for every round up to the key's last
+record (100), so an absent `unspent.*.rNN` means the round's action phase never ended; a read taking a key's presence
+as "reached" (`ai.tag_top`) can't be diffed across 100. `cx.count(g, "x", n)` writes `<module>.x`; `cx.tally` and
+`cx.per_round` take the full key (`ai.power.builder.0`).
 
 **Saved records** (`records/`, reason in `note`): close losses (fewest pieces over the bar, top difficulty), early
 lock-ins, surprising wins (the weakest agent's, or at playout p ≤ 0.25), ranked by measured win rate at the top
@@ -158,11 +160,9 @@ the judge off the value table.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run with `SPEC --games 1 --out
   out/preflight`: a crash, bad override or dead agent shows in minutes.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and the other read scripts in
-  [scripts.md](scripts.md). Credits a seat left at game end are `margin.unspent[seat][0]` in `games.jsonl` (117's
-  `experiments/results/117_big_cards_and_income/read.py pair OLD NEW` pairs them). **A won game ends inside a round,
-  before upkeep, holding the last upkeep's income** (r45-r46 strategist: about 62 a seat in won games, 8-11 after every
-  completed action phase), so the mean mostly tracks late income and the win rate: read what seats hold after their
-  last completed action phase (`economy.credits_unspent.rNN`, `117_big_cards_and_income/end_credits.py`).
+  [scripts.md](scripts.md). **A won game ends inside a round, holding the last upkeep's income**
+  (r46: about 62 credits a seat in won games, 8-11 after a completed action phase), so `margin.unspent` tracks late
+  income: read credits held as `margin.held_after_actions[seat][0]`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, planner and engine); read its win mix (purge vs.
 Unity deck) before any rule touching the end state. `experiments/sanity-line.json`: after a change to the rollout
@@ -177,7 +177,8 @@ seeds and reset at each bump (seeds below 33836 went to r43 and earlier): r44: 3
 r43 (`screen-111-r44.json`). r45: 33884-33931 112's read of r45 against r44 (`screen-112-r45.json`); 33932-34031 116's agent
 sweep (every setting, `scripts/tune/agent_sweep.py`); 34032-34127 116's held-out confirm and step check; 34128-34223 116's `w.horizon=0.75` check. r46: 34224-34271
 117's reads (`screen-117-r45.json`, both binaries; `screen-117-income.json`, r46's incomes as overlays on r45:
-the income step alone). r47: 34272-351, 34400-1, 34500-47, 34600-2, 34700-7 118. Next free: 34708.
+the income step alone). r47: 34272-351, 34400-1, 34500-47, 34600-2, 34700-7 118. r48: 34272-34319 121's read of r48 against r47
+(`screen-121-r48.json`, both binaries; at r47 118 had played them). Next free: 34708.
 
 ## Reading prices
 

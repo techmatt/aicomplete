@@ -549,7 +549,6 @@ fn moves_cost(seq: &[Action]) -> f64 {
 /// Moves that only undo an earlier move of the same sequence.
 pub(crate) fn undoes(seq: &[Action], a: &Action) -> bool {
     match a {
-        Action::Give { seat, to } => seq.iter().any(|b| matches!(b, Action::Give { seat: s, to: t } if s == to && t == seat)),
         Action::Withdraw { seat, threat, resource } => seq.iter().any(|b| {
             matches!(b, Action::Pay { seat: s, threat: t, resource: r, .. } if s == seat && t == threat && r == resource)
         }),

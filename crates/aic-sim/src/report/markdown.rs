@@ -6,7 +6,7 @@ use std::fmt::Write as _;
 
 use aic_core::content_hash;
 
-use crate::experiment::{UNSPENT, UNSPENT_HIGH};
+use crate::experiment::{PEAKS, UNSPENT, UNSPENT_HIGH};
 use crate::gate::{Decided, GateState};
 
 use super::findings::findings;
@@ -526,14 +526,14 @@ fn decisions(md: &Md, w: &mut String) {
     let sums = md.run.sums;
     let _ = writeln!(
         w,
-        "\n## Decisions, adversary operations, help and counters\n"
+        "\n## Decisions, adversary operations and counters\n"
     );
-    let _ = writeln!(w, "| cell | decisions/game | options/decision | forced | close (of real choices) | mean gap | adversary ops/round (max) | gives/game | pays/game | withdraws/game | threats countered/dealt per game |");
-    let _ = writeln!(w, "|---|---|---|---|---|---|---|---|---|---|---|");
+    let _ = writeln!(w, "| cell | decisions/game | options/decision | forced | close (of real choices) | mean gap | adversary ops/round (max) | pays/game | withdraws/game | threats countered/dealt per game |");
+    let _ = writeln!(w, "|---|---|---|---|---|---|---|---|---|---|");
     for s in sums {
         let _ = writeln!(
             w,
-            "| {} | {:.1} | {:.2} | {} | {} | {} | {:.2} ({}) | {:.2} | {:.2} | {:.2} | {:.2} / {:.2} ({}) |",
+            "| {} | {:.1} | {:.2} | {} | {} | {} | {:.2} ({}) | {:.2} | {:.2} | {:.2} / {:.2} ({}) |",
             md.short(s),
             s.decisions_mean,
             s.options_per_decision,
@@ -542,7 +542,6 @@ fn decisions(md: &Md, w: &mut String) {
             if spec.closeness.every > 0 { format!("{:.1}", s.gap_mean) } else { "–".into() },
             s.adversary_ops_per_round,
             s.adversary_ops_max_round,
-            s.gives_per_game,
             s.pays_per_game,
             s.withdraws_per_game,
             s.threats_countered_per_game,
@@ -675,6 +674,44 @@ fn unspent(md: &Md, w: &mut String) {
         let _ = writeln!(w, "| {cell}d{} | {} | {} |", s.difficulty, s.agent, seats.join(" | "));
     }
     let _ = writeln!(w, "\n{flagged} seat means over the flag.\n");
+    seat_table(
+        md,
+        w,
+        "Held after the last completed action phase",
+        &format!("Mean per seat ({}); unlike the table above, never what a seat holds mid-round when a game ends in one (121).", names.join(" / ")),
+        |s| &s.held_after,
+    );
+    let peaks = PEAKS.join(" / ");
+    seat_table(
+        md,
+        w,
+        "Peak holdings",
+        &format!("Mean of each seat's highest holding after any action ({peaks}): the runaway check (121; `scripts/cards/runaway_read.py` sets it against a round's income)."),
+        |s| &s.peaks,
+    );
+    seat_table(md, w, "Peak holdings, highest game", &format!("The highest peak over the cell's games ({peaks})."), |s| &s.peaks_max);
+}
+
+/// A per-seat table of one summary field, each cell its columns joined by `/`.
+fn seat_table(md: &Md, w: &mut String, head: &str, what: &str, field: impl Fn(&CellSummary) -> &Vec<Vec<f64>>) {
+    let sums = md.run.sums;
+    if sums.iter().all(|s| field(s).is_empty()) {
+        return;
+    }
+    let _ = writeln!(w, "\n## {head}\n\n{what}\n");
+    let most = sums.iter().map(|s| field(s).len()).max().unwrap_or(0);
+    let seat_heads: String = (0..most).map(|i| format!(" seat {i} |")).collect();
+    let _ = writeln!(w, "| cell | agent |{seat_heads}");
+    let _ = writeln!(w, "|---|---|{}", "---|".repeat(most));
+    for s in sums {
+        let mut seats: Vec<String> = field(s)
+            .iter()
+            .map(|seat| seat.iter().map(|x| format!("{x:.1}")).collect::<Vec<_>>().join(" / "))
+            .collect();
+        seats.resize(most, String::new());
+        let cell = md.prefix(&s.config, &s.variant);
+        let _ = writeln!(w, "| {cell}d{} | {} | {} |", s.difficulty, s.agent, seats.join(" | "));
+    }
 }
 
 fn strategy_health(md: &Md, w: &mut String) {

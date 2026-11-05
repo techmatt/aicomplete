@@ -534,7 +534,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::ProjectDrain { amount } => Worth::standing(row("project_drain") * *amount as f64),
         Op::AutoCounter { amount, .. } => Worth::standing(row("auto_counter") * *amount as f64),
         Op::UnityBonus { amount } => Worth::standing(row("unity_bonus") * *amount as f64),
-        Op::GiveBonus { resource, amount } => Worth::standing(row("give_bonus") * r(*resource) * *amount as f64),
         Op::SpreadShield => Worth::standing(row("spread_shield")),
         Op::CivicShelter => Worth::standing(row("civic_shelter")),
         Op::Wall => Worth::standing(row("wall")),

@@ -1,0 +1,71 @@
+{
+ "name": "scene_batch_8",
+ "title": "Card scenes, batch 8",
+ "intro": "Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window. For true size, print art-originals/scenes/b8/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "megaplex_fabrication_floor",
+   "label": "1. Industry: A vast modern fabrication megaplex seen from a high gantry, rows of robotic assembly cells under a long sawtooth roof running to the far wall, conveyor lines carrying finished parts and trays of green circuit chips, small workers on the floor below; no flags or emblems.",
+   "note": "Written for Fabrication Megaplex. Shown on Antitrust Action and Fabrication Megaplex. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_8/megaplex_fabrication_floor.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "frontier_lab_opening",
+   "label": "2. Science: A brand-new frontier research lab of glass and white steel opening on a hilltop campus, scientists in lab coats carrying the first crates of glowing sky-blue research cubes through its tall doors while a founder holds up a blank rolled charter to a small cheering crowd; no flags or emblems.",
+   "note": "Written for Frontier Lab Charter. Shown on Frontier Lab Charter and Citation Engine. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_8/frontier_lab_opening.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "grid_buildout_crews",
+   "label": "3. Power: A national power grid being built across open country, crews and cranes raising a long line of new lattice pylons over farmland toward the horizon, cable drums on trucks, three fresh substations taking shape along the route, a power station far off; no flags or emblems.",
+   "note": "Written for National Grid Buildout. Shown on National Grid Buildout and Grid Analytics Desk. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_8/grid_buildout_crews.jpg",
+     "label": "keep"
+    }
+   ]
+  },
+  {
+   "id": "strike_on_the_rogue_hub",
+   "label": "4. Security: A security team in coral-trimmed tactical gear storming a hijacked rooftop server hub in daylight, one pulling the thick cables from a glowing cold-blue machine core while others lead a line of dark-suited adversary envoys away, figures seen from behind; no flags or emblems.",
+   "note": "Written for Decapitation Strike. Shown on Decapitation Strike and Agency Directorate. Tile on: keep. Tile off: reject.",
+   "kind": "many",
+   "default": [
+    "keep"
+   ],
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/scene_batch_8/strike_on_the_rogue_hub.jpg",
+     "label": "keep"
+    }
+   ]
+  }
+ ]
+}

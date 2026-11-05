@@ -22,7 +22,7 @@ fn a_discord_tip_with_an_empty_deck_loses_and_nothing_reshuffles() {
     empty_deck(&mut g, "discord");
     set_pile(&mut g, "alignment.resolved.discord", &["blight"]);
     fill_bucket(&rules, &mut g, Side::Discord);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a loss");
     assert_eq!((o.won, o.reason.as_str()), (false, "discord_deck"));
     assert_eq!(g.pile("alignment.resolved.discord"), ["blight"]);
@@ -34,7 +34,7 @@ fn drawing_the_last_unity_card_wins_outright() {
     empty_deck(&mut g, "unity");
     set_pile(&mut g, "alignment.deck.unity.1", &["civil_defense"]);
     fill_bucket(&rules, &mut g, Side::Unity);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a win");
     assert_eq!((o.won, o.reason.as_str()), (true, "unity_deck"));
 }
@@ -45,7 +45,7 @@ fn a_player_with_no_node_loses_the_game_for_everyone() {
     for h in 0..g.hexes.len() {
         put(&mut g, h, node(1), 0);
     }
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a loss");
     assert_eq!((o.won, o.reason.as_str()), (false, "node"));
 }
@@ -66,7 +66,7 @@ fn the_supply_is_a_cap_not_a_loss() {
 fn every_corrupted_city_is_no_loss() {
     let (rules, mut g) = lab(&[]);
     corrupt_cities_except(&rules.map, &mut g, &[]);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert!(!g.is_over());
 }
 
@@ -97,11 +97,11 @@ fn the_fallback_is_a_flat_count_whatever_the_adversary_holds_nearby() {
     put(&mut g, n, node(1), 1);
     put(&mut g, h, ambassador(0), 2);
     put(&mut g, h, ambassador(1), 2);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 1, "4 of 5");
     put(&mut g, h, ambassador(1), 3);
     // The next end check liberates it: any players, adversary ambassadors next to it don't count.
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
     assert_eq!(g.tokens(h, ambassador(0)) + g.tokens(h, ambassador(1)), 0);
     // Down the ladder, not off the board.
@@ -115,10 +115,10 @@ fn the_fallback_counts_only_seats_with_node_on_or_next_to_the_city() {
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, ADV_CUBE, 1);
     put(&mut g, h, ambassador(0), 5);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 1, "no nodes near it");
     put(&mut g, rules.map.hexes[h].neighbors[0], node(0), 1);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
 }
 
@@ -237,7 +237,7 @@ fn a_lost_last_node_comes_before_a_unity_tip_in_the_same_check() {
     set_pile(&mut g, "alignment.deck.unity.1", &["civil_defense"]);
     fill_bucket(&rules, &mut g, Side::Discord);
     fill_bucket(&rules, &mut g, Side::Unity);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     let o = g.outcome.as_ref().expect("a loss");
     assert_eq!((o.won, o.reason.as_str()), (false, "node"));
 }

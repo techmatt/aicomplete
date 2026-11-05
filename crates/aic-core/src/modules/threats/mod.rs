@@ -171,6 +171,20 @@ pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
     out
 }
 
+/// Where active `threat` sits: `Some(None)` on the shared row, `Some(Some(c))`
+/// beside country `c`, `None` if it isn't face up.
+fn scope_of(g: &GameState, threat: &str) -> Option<Option<usize>> {
+    if g.pile(ROW).iter().any(|t| t == threat) {
+        return Some(None);
+    }
+    g.piles
+        .from_key("threats.on.")
+        .map_while(|(k, v)| Some((k.strip_prefix("threats.on.")?, v)))
+        .find(|(_, v)| v.iter().any(|t| t == threat))
+        .and_then(|(k, _)| k.parse().ok())
+        .map(Some)
+}
+
 fn pile_of(scope: Option<usize>) -> KeyBuf {
     scope.map_or(KeyBuf::new(ROW), on)
 }
@@ -353,12 +367,17 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
 }
 
 /// What standing counters take off `threat` (070): the Auto Counters of its
-/// type held by the seat whose home country it sits on. Read, not stored, so
-/// a delayed threat isn't cut twice and an extra deal is cut too.
+/// type held by every seat that may pay toward it (r48, D54: "Cyber threats
+/// you can pay toward need 5 less", in any country or on the shared row; it
+/// was the holder's home country, so under `shared_row` it cut nothing). Read,
+/// not stored, so a delayed threat isn't cut twice and an extra deal is cut too.
 fn standing(w: &World, g: &GameState, threat: &str) -> i64 {
     let source = source_of(w, threat);
+    let Some(scope) = scope_of(g, threat) else {
+        return 0;
+    };
     let mut n = 0;
-    for s in (0..g.seats.len()).filter(|&s| g.pile(&on(home_country(w, s))).iter().any(|t| t == threat)) {
+    for s in (0..g.seats.len()).filter(|&s| may_counter(w, g, s, threat, scope)) {
         // A walk, not a list: the heuristic asks this of every threat a position (103).
         cards::each_passive(w, g, s, |p| {
             if let Op::AutoCounter { source: x, amount } = p {

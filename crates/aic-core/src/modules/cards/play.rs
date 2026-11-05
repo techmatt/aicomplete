@@ -25,27 +25,6 @@ fn requirements_met(w: &World, g: &GameState, seat: usize, d: &CardDef) -> bool 
     d.needs.iter().all(|(t, n)| have[*t as usize] >= *n)
 }
 
-/// 118: `d`'s effects as feasibility should judge them: a program enters play before it
-/// resolves, so its own tags count toward its gain per tag (Consular Pouch was refused
-/// with the one Diplomacy tag it brings). The engine's play check and the agents' plan share it.
-/// Borrowed unless it changes something: `blocked` runs for every card in hand on every
-/// legal-action pass.
-pub fn own_counted(d: &CardDef) -> std::borrow::Cow<'_, [Op]> {
-    let own = |tag: Tag| if d.is_event() { 0 } else { d.tags.iter().filter(|t| **t == tag).count() as i64 };
-    if !d.effects.iter().any(|e| matches!(e, Op::GainPerTag { tag, .. } if own(*tag) > 0)) {
-        return std::borrow::Cow::Borrowed(&d.effects);
-    }
-    std::borrow::Cow::Owned(
-        d.effects
-            .iter()
-            .map(|e| match e {
-                Op::GainPerTag { resource, tag, per } => Op::GainPerTag { resource: *resource, tag: *tag, per: (*per - own(*tag)).max(0) },
-                other => other.clone(),
-            })
-            .collect(),
-    )
-}
-
 /// Why a card can't be played now, or `None` if it can.
 pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option<&'static str> {
     let d = def(w, id);
@@ -60,7 +39,7 @@ pub(super) fn blocked(w: &World, g: &GameState, seat: usize, id: &str) -> Option
     if d.is_building() {
         return None;
     }
-    let counted = own_counted(d);
+    let counted = effects::own_counted(d);
     if !effects::feasible(w, g, seat, &counted) {
         // 118: a gain per tag with too few tags read "no target" (Capacitor Discharge).
         // Only on a card that does nothing else: beside another op, that op vetoed it.
@@ -255,9 +234,10 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
         place_building(g, cx, seat, id, d)?;
         cx.move_card(g, id, &hand(seat), &built(seat), false)?;
     } else if d.is_event() {
-        // 111: an event sits aside while it resolves and is discarded after, as
-        // at the table: discarded first, a draw on an empty deck reshuffled it
-        // back into the hand (Breakthrough Leak drew itself, a 2061-play loop).
+        // 111: an event sits aside while it resolves, then goes to its
+        // player's played events (r48), never the discard: a draw that
+        // reshuffles can't bring it back (Breakthrough Leak drew itself, a
+        // 2061-play loop, when events were discarded first).
         cx.move_card(g, id, &hand(seat), &resolving(seat), false)?;
     } else {
         cx.move_card(g, id, &hand(seat), &played(seat), false)?;
@@ -275,7 +255,7 @@ fn enter_play(g: &mut GameState, cx: &mut Cx, seat: usize, id: &str, d: &CardDef
         threats::complete_paid(g, cx);
     }
     if d.is_event() {
-        discard(g, cx, id, &resolving(seat));
+        cx.move_card(g, id, &resolving(seat), &events(seat), false)?;
     }
     Ok(())
 }

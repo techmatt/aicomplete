@@ -47,8 +47,6 @@ pub enum Action {
         threat: Key,
         resource: Resource,
     },
-    /// Give 1 insight to another seat (module `economy`).
-    Give { seat: u8, to: u8 },
     /// Sway toward Discord to produce one antimatter (module `alignment`).
     Antimatter { seat: u8 },
     /// A standard action (module `board`): deliberately poorly priced.
@@ -72,7 +70,6 @@ impl Action {
             | Action::Power { seat, .. }
             | Action::Pay { seat, .. }
             | Action::Withdraw { seat, .. }
-            | Action::Give { seat, .. }
             | Action::Antimatter { seat }
             | Action::Standard { seat, .. }
             | Action::Sell { seat, .. }

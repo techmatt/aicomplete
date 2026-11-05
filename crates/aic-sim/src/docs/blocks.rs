@@ -39,7 +39,7 @@ pub const HOUSE_TERMS: [(&str, &str); 14] = [
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
-    ("Draw", "from the tier-1 deck, never its discards, with no keep to pay"),
+    ("Draw", "from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first"),
     ("On your cards", "on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
 ];
@@ -450,87 +450,16 @@ pub(super) fn powers_block(c: &Content) -> String {
     table(&["Board", "Power", "Cost", "Effect"], rows)
 }
 
-/// The standard actions and projects, with their prices.
+/// The standard actions and projects, with their prices: each action's words
+/// are `std_rule_text`'s, beside the view's `std_text` in standard.rs (121).
 pub(super) fn standard_actions_block(r: &Rules) -> String {
+    use aic_core::modules::board::{std_rule_text, StandardAction as A};
     let t = |key: &str| tick(r, key);
-    let rows: Vec<[String; 3]> = vec![
-        [
-            "Build a research station".to_string(),
-            format!("{} chips", t("board.station_chips")),
-            "on an open hex in reach that is not an industrial zone; it is yours (your cube)".to_string(),
-        ],
-        [
-            "Remove adversary ambassadors".to_string(),
-            format!("{} of your ambassadors, from your supply", t("board.remove_ambassadors")),
-            format!("it goes onto one hex in reach, removes up to {} there and stays", t("board.remove_count")),
-        ],
-        [
-            "Clear a corruption marker".to_string(),
-            format!("{} credits", t("board.clear_cost")),
-            format!(
-                "in reach: sway {} toward Unity, gain {} credits",
-                t("board.clear_unity"),
-                t("board.clear_credits")
-            ),
-        ],
-        [
-            "Move a player ambassador".to_string(),
-            format!("{} credit", t("board.move_credits")),
-            "from your supply or the board onto a piece in reach (not the hex it comes from)".to_string(),
-        ],
-        [
-            "Gain a player ambassador".to_string(),
-            format!("{} credits", t("board.ambassador_credits")),
-            "into your supply; a standard project too".to_string(),
-        ],
-        [
-            "Align a clean city".to_string(),
-            "1 ambassador".to_string(),
-            // r40 (D38): on a dark city it cancels, as an ambassador arriving on a piece does.
-            "in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean".to_string(),
-        ],
-        // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
-        [
-            "Free a research station".to_string(),
-            format!(
-                "{} credits; {} of your ambassadors on it, used up",
-                t("board.free_station_credits"),
-                t("board.free_station_ambassadors")
-            ),
-            "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".to_string(),
-        ],
-        [
-            "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)".to_string(),
-            "the chips the card prints, per token".to_string(),
-            "a player-owned station or factory in reach that is not corrupted, one a troop can strike".to_string(),
-        ],
-        [
-            "Sell chips".to_string(),
-            "1 chip".to_string(),
-            format!("gain {}", t("board.chips_credits")),
-        ],
-        [
-            "Sell a card".to_string(),
-            format!("gain {}", t("board.sell_credits")),
-            "from your hand".to_string(),
-        ],
-        [
-            "Project: harden (`harden_buy`)".to_string(),
-            format!("{} credits", t("board.harden_credits")),
-            "any player: a hardening token on a player-owned station or factory in reach".to_string(),
-        ],
-        [
-            "Project: drain (`drain`)".to_string(),
-            format!("{} credits", t("board.drain_credits")),
-            format!("remove up to {} compute from one visible adversary project", t("board.drain_amount")),
-        ],
-        // 105: the general converter every player has.
-        [
-            "Turn a cube into insight".to_string(),
-            "1 research cube".to_string(),
-            format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
-        ],
-    ];
+    // The rule book's order; selling a card is no standard action, but sits by the chips.
+    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Align, A::FreeStation, A::HardenChips, A::Chips];
+    let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
+    rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
+    rows.extend([A::HardenBuy, A::Drain, A::Insight].iter().map(|&a| std_rule_text(a, &t)));
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 

@@ -12,12 +12,15 @@ fn head(why: Option<&str>, s: usize) -> String {
 }
 
 /// `count` adversary ambassadors from the supply, each onto a piece of kind
-/// `at` in `scope` (players choose each).
+/// `at` in `scope` (players choose each). r48 (D51): on military bases, one a
+/// base while a base is free of this threat's ambassadors (Total War's two go
+/// on two bases where there are two).
 pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, at: Spot, count: i64, why: Option<&str>) -> Res {
     let w = cx.world;
     let hexes = scope_hexes(&w, scope);
+    let mut used: Vec<usize> = Vec::new();
     for _ in 0..count {
-        let spots: Vec<usize> = hexes
+        let mut spots: Vec<usize> = hexes
             .iter()
             .copied()
             .filter(|&h| match at {
@@ -27,12 +30,16 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
                 Spot::Bases => is_base(&w, h),
             })
             .collect();
+        if at == Spot::Bases && spots.iter().any(|h| !used.contains(h)) {
+            spots.retain(|h| !used.contains(h));
+        }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: an adversary ambassador goes on which piece?", why.unwrap_or("Threat"));
         let Some(i) = cx.choose_loss(0, prompt, opts)? else {
             break;
         };
         adversary::place(g, cx, spots[i], 1);
+        used.push(spots[i]);
     }
     Ok(())
 }

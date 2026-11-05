@@ -30,7 +30,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     let undecided = g.var("alignment.undecided");
     fill_bucket(&rules, &mut g, Side::Unity);
     next_alignment_card(&mut g, Side::Unity, "civil_defense");
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     // The tip: each country removes an ambassador.
     assert_eq!(total(&g, ADV_AMBASSADOR), 2);
     assert_eq!(g.var("alignment.unity_tips"), 2);
@@ -84,7 +84,7 @@ fn the_board_clear_win_and_the_bar_easing() {
         if let Some(p) = piece_left {
             put(&mut g, cities(&rules.map)[0], p, 1);
         }
-        give(&rules, &mut g);
+        any_action(&rules, &mut g);
         let won = g
             .outcome
             .as_ref()
@@ -153,7 +153,7 @@ fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
     let (rules, mut g) = action_only(&[EASE]);
     g.vars.insert("alignment.discord_tips".into(), 1);
     fill_bucket(&rules, &mut g, Side::Discord);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.var("alignment.discord_tips"), 2);
     let w = rules.world();
     assert!(!adversary::level(&w, 1));
@@ -176,6 +176,49 @@ fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
     }
 }
 
+/// r48: Sway past a tip stays in the bucket toward the next tip; twice a tip's worth
+/// tips twice. `alignment.carry` 1 (the baseline, Matt): Unity's only, a Discord tip
+/// empties its bucket as at r47; 2 both sides, 0 neither.
+#[test]
+fn sway_past_a_tip_carries_over_to_the_next_tip() {
+    for (carry, side, carries) in [
+        (1, Side::Unity, true),
+        (1, Side::Discord, false),
+        (2, Side::Discord, true),
+        (0, Side::Unity, false),
+    ] {
+        let set = format!("alignment.carry={carry}");
+        let (rules, mut g) = action_only(&[EASE, &set]);
+        uncorrupt_cities(&rules, &mut g);
+        g.vars.insert(STAGE.into(), 1);
+        let cap = alignment::capacity(&rules.world(), &g, side);
+        let key = format!("alignment.{}", side.name());
+        let tips = alignment::tips_key(side);
+        let what = format!("carry {carry}, {side:?}");
+        // One tip and 3 over: one tip, and 3 left in the bucket if it carries.
+        g.vars.insert(key.as_str().into(), cap + 3);
+        g.vars.insert("alignment.undecided".into(), 1);
+        any_action(&rules, &mut g);
+        answer_all(&rules, &mut g);
+        assert_eq!(g.var(tips), 1, "{what}");
+        let left = if carries { 3 } else { 0 };
+        assert_eq!(g.var(&key), left, "{what}");
+        assert_eq!(g.var("alignment.undecided"), 1 + cap + 3 - left, "{what}");
+        // Two tips' worth: two tips (and the bucket empty) only if it carries.
+        let (rules, mut g) = action_only(&[EASE, &set]);
+        uncorrupt_cities(&rules, &mut g);
+        g.vars.insert(STAGE.into(), 1);
+        g.vars.insert(key.as_str().into(), 2 * cap);
+        g.vars.insert("alignment.undecided".into(), 0);
+        any_action(&rules, &mut g);
+        answer_all(&rules, &mut g);
+        if !g.is_over() {
+            assert_eq!(g.var(tips), if carries { 2 } else { 1 }, "{what}");
+            assert_eq!(g.var(&key), 0, "{what}");
+        }
+    }
+}
+
 #[test]
 fn a_discord_tip_no_longer_moves_troops() {
     // 019: the march replaced 017's Discord-tip advance.
@@ -189,7 +232,7 @@ fn a_discord_tip_no_longer_moves_troops() {
     put(&mut g, t, TROOP, 1);
     next_alignment_card(&mut g, Side::Discord, "propaganda");
     fill_bucket(&rules, &mut g, Side::Discord);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.var("alignment.discord_tips"), 1);
     assert_eq!((g.tokens(t, TROOP), g.tokens(p, node(0))), (1, 1));
@@ -202,7 +245,7 @@ fn discord_cards_step_up_with_the_discord_tip_count() {
         g.vars.insert("alignment.discord_tips".into(), tips);
         next_alignment_card(&mut g, Side::Discord, "blight");
         fill_bucket(&rules, &mut g, Side::Discord);
-        give(&rules, &mut g);
+        any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
         assert_eq!(total(&g, ADV_AMBASSADOR), 2 * each, "{tips} tips");
     }

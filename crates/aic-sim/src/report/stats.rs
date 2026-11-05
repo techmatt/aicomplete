@@ -52,7 +52,6 @@ pub struct CellSummary {
     pub adversary_ops_per_round: f64,
     pub adversary_ops_max_round: u32,
     pub setup_ops: f64,
-    pub gives_per_game: f64,
     pub pays_per_game: f64,
     pub withdraws_per_game: f64,
     pub threats_dealt_per_game: f64,
@@ -71,6 +70,12 @@ pub struct CellSummary {
     pub cities_aligned_mean: f64,
     /// Mean left at game end, per seat, in [`crate::experiment::UNSPENT`] order (068).
     pub unspent: Vec<Vec<f64>>,
+    /// 121: mean held after the last completed action phase, per seat, in
+    /// [`crate::experiment::UNSPENT`] order; and each seat's peak holding in
+    /// [`crate::experiment::PEAKS`] order, its mean and its highest over games.
+    pub held_after: Vec<Vec<f64>>,
+    pub peaks: Vec<Vec<f64>>,
+    pub peaks_max: Vec<Vec<f64>>,
     /// Mean win probability at the start of round r (index r-1), with the
     /// number of games that reached it.
     pub winprob_by_round: Vec<(f64, usize)>,
@@ -162,11 +167,28 @@ fn buildings(sig: &str) -> BTreeSet<String> {
 
 /// Mean of each seat's unspent resources over games (seats as in the games).
 fn unspent_means<'a>(games: impl Iterator<Item = &'a [Vec<i64>]> + Clone) -> Vec<Vec<f64>> {
+    seat_means(games, crate::experiment::UNSPENT.len())
+}
+
+/// Per seat and column (`width` of them), the mean over games.
+fn seat_means<'a>(games: impl Iterator<Item = &'a [Vec<i64>]> + Clone, width: usize) -> Vec<Vec<f64>> {
     let seats = games.clone().map(<[_]>::len).max().unwrap_or(0);
     (0..seats)
         .map(|s| {
-            (0..crate::experiment::UNSPENT.len())
+            (0..width)
                 .map(|r| mean(games.clone().filter_map(|g| g.get(s)?.get(r)).map(|&n| n as f64)).unwrap_or(0.0))
+                .collect()
+        })
+        .collect()
+}
+
+/// Per seat and column (`width` of them), the highest over games.
+fn seat_maxes<'a>(games: impl Iterator<Item = &'a [Vec<i64>]> + Clone, width: usize) -> Vec<Vec<f64>> {
+    let seats = games.clone().map(<[_]>::len).max().unwrap_or(0);
+    (0..seats)
+        .map(|s| {
+            (0..width)
+                .map(|r| games.clone().filter_map(|g| g.get(s)?.get(r)).max().map_or(0.0, |&n| n as f64))
                 .collect()
         })
         .collect()
@@ -732,7 +754,6 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                     .max()
                     .unwrap_or(0),
                 setup_ops: avg(&|g| g.setup_ops as f64),
-                gives_per_game: avg(&|g| g.gives as f64),
                 pays_per_game: avg(&|g| g.pays as f64),
                 withdraws_per_game: avg(&|g| g.withdraws as f64),
                 threats_dealt_per_game: dealt,
@@ -751,6 +772,9 @@ pub fn summarize(cells: &[Cell], games: &[GameResult]) -> Vec<CellSummary> {
                 cities_aligned_mean: mean(gs.iter().map(|g| g.margin.cities_aligned_end as f64))
                     .unwrap_or(0.0),
                 unspent: unspent_means(gs.iter().map(|g| g.margin.unspent.as_slice())),
+                held_after: unspent_means(gs.iter().map(|g| g.margin.held_after_actions.as_slice())),
+                peaks: seat_means(gs.iter().map(|g| g.peaks.as_slice()), crate::experiment::PEAKS.len()),
+                peaks_max: seat_maxes(gs.iter().map(|g| g.peaks.as_slice()), crate::experiment::PEAKS.len()),
                 winprob_by_round,
                 uncertain_share: mean(
                     checkpoints

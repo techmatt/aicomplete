@@ -136,7 +136,7 @@ fn tips(g: &GameState) -> i64 {
 /// paid in pieces is one idea; insight gifts and withdrawals are not tried.
 fn idea(a: &Action) -> Option<String> {
     match a {
-        Action::Give { .. } | Action::Withdraw { .. } => None,
+        Action::Withdraw { .. } => None,
         Action::Pay { seat, threat, .. } => Some(format!("pay {seat} {threat}")),
         _ => Some(format!("{a:?}")),
     }

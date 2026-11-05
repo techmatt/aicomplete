@@ -1,0 +1,158 @@
+[A] autonomous_defense_grid: r45 (112): back to r43's price (9 cr, 1 ins; 111 had cut it to 7 cr, 0 ins to reach a band); anchors: pay 21; get 30.0 = 1.43.
+[A] back_channel_talks: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 18; get 20.0 = 1.11.
+[A] baseload_contract: r45 (112): back to r43's price (20 cr, 1 ins; 111 had cut it to 14 cr, 1 ins to reach a band); anchors: pay 28; get 27.9 = 1.00.
+[A] continental_supergrid: r45 (112): back to r43's price (20 cr, 2 ins; 111 had cut it to 10 cr, 2 ins to reach a band); anchors: pay 36; get 48.1 = 1.34.
+[?] dyson_swarm_tranche: r46 (117): raised toward 1.5x (r45: 22 cr, 2 ins (1.79)); anchors: pay 29 + 16 = 45; get 68 = 1.51.
+[A] forensic_audit: r45 (112): back to r43's price (27 cr, 1 ins; 111 had cut it to 20 cr, 1 ins to reach a band); anchors: pay 51; get 55.0 = 1.08.
+[A] hostile_buyout: r45 (112): back to r43's price (42 cr, 1 ins; 111 had cut it to 36 cr, 1 ins to reach a band); anchors: pay 54; get 61.9 = 1.15.
+[?] interceptor_battery: r44 (111): anchors: pay 12+4+4=20; (2 ambassadors 10 - 2) x 3.5 = 28 = 1.4.
+[?] killswitch_directive: r46 (117): raised toward 1.5x (r45: 10 cr, 2 ins (1.69)); anchors: pay 14 + 16 = 30; get 44 = 1.47.
+[?] market_stabilization_board: r42 (106): Pay 9+2.5+6.5 = 18. Get 5 × 1.5 × 2.5 + 1 = 19.75 (+1.75). Home-country economic threats
+[A] nuclear_option: r45 (112): back to r43's price (19 cr, 1 ins; 111 had cut it to 14 cr, 1 ins to reach a band); anchors: pay 38; get 40.9 = 1.08.
+[A] peacekeeping_mission: r45 (112): 41 cr, 1 ins, between r44's 30 cr, 1 ins and r43's 42 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 53; get 52.9 = 1.00.
+[?] peaker_turbines: r42 (106): Pay 23. Get 14.4 + 2 x 1.5 x 4 + 1.5 = 27.9, so +4.9. The Builder in rounds 1-4.
+[A] popular_uprising: r45 (112): back to r43's price (28 cr, 2 ins; 111 had cut it to 22 cr, 2 ins to reach a band); anchors: pay 44; get 58.1 = 1.32.
+[?] positron_storage_ring: r44 (111): anchors: pay 18+8+8=34; antimatter income 24.5 + self-fire 9 + 3.5 Power plays x 9 = 31.5 = 65 = 1.91.
+[?] power_to_the_people: r44 (111): anchors: pay 18+4+8+4 energy 18=48; get city 45 + 4-5 Power tags x 1 a round 16-20 = 61-65 = 1.27-1.35 (recorded).
+[A] root_access: r45 (112): back to r43's price (40 cr, 1 ins; 111 had cut it to 32 cr, 1 ins to reach a band); anchors: pay 52; get 57.2 = 1.10.
+[A] singularity_exploit: r45 (112): back to r43's price (4 cr, 2 ins; 111 had cut it to 4 cr, 1 ins to reach a band); anchors: pay 27; get 40.0 = 1.48.
+[A] station_prefab_order: r45 (112): 8 cr, 1 ins, between r44's 6 cr, 1 ins and r43's 10 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 16; get 16.5 = 1.03.
+[?] substation_hub: r44 (111): anchors: pay 12+4+4=20; get build 2 energy 9 + 2.45 fires x (1 energy 4.5 + gift 3.4) 19.3 = 28.3 = 1.42.
+[A] tidal_barrage: r45 (112): 20 cr, 1 ins, between r44's 11 cr, 1 ins and r43's 22 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 28; get 27.9 = 1.00.
+[A] fusion_startup_stake: r45 (112): back to r43's price (20 cr, 1 ins; 111 had cut it to 16 cr, 1 ins to reach a band); anchors: pay 28; get 30.0 = 1.07.
+[A] faraday_yard: r45 (112): 10 cr, 1 ins, between r44's 6 cr, 1 ins and r43's 12 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 18; get 18.5 = 1.03.
+[?] hardened_bunker_complex: r42 (106): Pay 16+5 = 21. Get 14.4 + 8 + 1 = 23.4. Protector early.
+[A] logic_bomb: r45 (112): 9 cr, 1 ins, between r44's 6 cr, 1 ins and r43's 11 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 17; get 16.9 = 1.00.
+[?] signal_hijack: r43 (108): 8: fewer cheap cards, bigger and dearer. Give 11 (credits, insight to play and keep at 2.5); get 12 at the table (effect ledger, reasoned).
+[?] ceasefire_monitors: r38: a troop off is 11 (15 less its Sway, alignment.troop 0), 7 in a country; value 25 to 21, 10 to 8 at its ratio (0.5).
+[?] bounty_board: r42 (106): Pay 10+5 = 15. Get 11 + about 5 (Security seat) + 1 = 17, plus HQ 10.
+[A] breach_and_clear: r45 (112): 6 cr, 0 ins, between r44's 4 cr, 0 ins and r43's 9 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 10; get 10.0 = 1.00.
+[?] agency_directorate: r44 (111): anchors: pay 16+8+8=32; first fire 15 + 0.75 fires a round x 15 x 3.5 = 39 = 54 = 1.7.
+[?] kinetic_interdiction: r46 (117): raised toward 1.5x (r45: 3 cr, 1 am, 1 ins (1.73)); anchors: pay 6 + 12 + 7 = 25; get 38 = 1.52.
+[?] total_containment: r42 (106): Pay 8+5+6.5 = 19.5. Get 16.6 + 4 + 1 = 21.6, plus HQ 23.7.
+[A] force_protection_order: r45 (112): 6 cr, 0 ins, between r44's 4 cr, 0 ins and r43's 6 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 10; get 10.0 = 1.00.
+[A] demand_response_grid: r45 (112): 11 cr, 1 ins, between r44's 8 cr, 1 ins and r43's 12 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 19; get 19.2 = 1.01.
+[?] simulation_cluster: r44 (111): anchors: pay 11+4+4=19; get reuse 5 x 3.5 rounds 17.5 + 2 cards 10 = 27.5 = 1.45.
+[?] data_licensing_deal: r43 (108): 2-3: pays up front, back within 2 rounds. Give 22 (credits, insight to play and keep at 2.5). Get 12 when built + 0 on its own play, then 10.0 a round at a committed seat: pays back in 1.1 rounds. a Dataset seat (Telemetry Archive, Synthetic Data Forge)
+[?] citation_engine: r44 (111): anchors: pay 20+4+4=28; get self-fire 7 + 7 x 3.5 rounds 24.5 + 2 cards 10 = 41.5 = 1.48.
+[?] consulate_tower: r44 (111): anchors: pay 12+4+4=20; get draw 3 15 + ~1.4 teammate Diplomacy plays (0.4 a round x 3.5) x (6 + 6x0.75 gift) 15 = 30 = 1.5.
+[A] darknet_exchange: r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 11 cr, 1 ins to reach a band); anchors: pay 20; get 27.6 = 1.38.
+[A] honeypot_relay: r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 10 cr, 1 ins to reach a band); anchors: pay 20; get 25.7 = 1.29.
+[?] hyperscale_botnet: r44 (111): anchors: pay 18+8+4=30; get 4 insight income 48 + draw 3 15 = 63 = 2.1.
+[A] lights_out_assembly: r45 (112): 14 cr, 1 ins (from 11 cr, 1 ins), over its maximum margin at r44 (1.71); anchors: pay 22; get 32.5 = 1.48.
+[A] payroll_automation: r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 20; get 24.0 = 1.20.
+[?] security_contractor_hq: r43 (108): 4: needs lowered; 2-3: pays up front, back within 2 rounds. Give 19 (credits, insight to play and keep at 2.5). Get 12 when built + 0 on its own play, then 10.0 a round at a committed seat: pays back in 0.7 rounds. Security seat removing troops
+[A] security_ops_floor: r45 (112): 13 cr, 1 ins (from 12 cr, 1 ins), over its maximum margin at r44 (1.55); anchors: pay 21; get 31.0 = 1.48.
+[?] telemetry_archive: r44 (111): anchors: pay 15+4+4=23; get first fire 3 insight 12 + 2 Datasets a round x 3.5 / 4 x 12 = 21 = 33 = 1.43.
+[?] grad_student_pool: r44 (111): anchors: pay 11+4+4=19; get 5 off x 1 Science card a round x 3.5 17.5 + 2 cards 10 = 27.5 = 1.45.
+[A] dataset_scraper: r45 (112): back to r43's price (6 cr, 1 ins; 111 had cut it to 6 cr, 0 ins to reach a band); anchors: pay 14; get 14.0 = 1.00.
+[?] predictive_modeling: r44 (111): anchors: pay 7+4+0=11; get 2 delays x 2.5 5 + 2 cards 10 = 15 = 1.36.
+[?] endowed_research_chair: r42 (106): Pay 8 + 2.5 + 2.5 = 13. Get 2 × 2.5 × 4 = 20 − 4 (credit income lowered by 1) + 1 = +4. Researcher, early.
+[?] foundation_model_campus: r43 (108): 6: not built over, so it buries nothing it should not; 4: needs lowered; 2-3: pays up front, back within 2 rounds. Give 32 (credits, insight to play and keep at 2.5). Get 16 when built + 0 on its own play, then 12.0 a round at a committed seat: pays back in 1.3 rounds. Researcher, rounds 4-6
+[?] orbital_observatory_array: r42 (106): Pay 10 + 5 + 6.5 = 21.5. Get (12 − 2) × 2.5 × 0.9 = 22.5 + 1.5 = +2.5. With a reuse each round, +25. Researcher (insight to keep is not needed: drawn cards cost no keep).
+[?] recursive_self_improvement: r46 (117): raised toward 1.5x (r45: 24 cr, 2 ins (1.70)); anchors: pay 29 + 16 = 45; get 68 = 1.51.
+[?] retained_earnings: r44 (111): anchors: pay 14+4+4=22; get +3 income at once 12 + ~1.75 more fires x 12 = 21 = 33 = 1.50.
+[?] collateralized_grid: r44 (111): anchors: pay 10+8+4=22; alone 28 = 1.27; with 3-4 Capital 1.89-2.09.
+[?] joint_fabrication_pact: r44 (111): anchors: pay 10+4+4=18; get 6 chips 18 + gift 3 chips 9x0.75=6.75 + 3 tags 2 = 26.75 = 1.49 (own share alone 20 = 1.11).
+[A] vendor_financing: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 18; get 20.5 = 1.14.
+[A] materials_hedge_desk: r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 7 cr, 1 ins to reach a band); anchors: pay 20; get 22.9 = 1.15.
+[?] liquidity_event: r43 (108): 7: the Capital engine; 8: fewer cheap cards, bigger and dearer. Give 12 (credits, insight to play and keep at 2.5); get 15 at the table (effect ledger, reasoned).
+[A] robotic_foundry: r45 (112): back to r43's price (13 cr, 1 ins; 111 had cut it to 9 cr, 1 ins to reach a band); anchors: pay 21; get 21.4 = 1.02.
+[?] arcology_foundry: r42 (106): Pay 16+5+6.5 = 27.5. Get (9 + 3) × 2.5 = 30 + 1 (+3.5). Rounds 4-6, Industry seat
+[?] orbital_mass_driver: r43 (108): 5: antimatter only on ultimates; 6: not built over, so it buries nothing it should not; 4: needs lowered. Give 41 (credits, insight to play and keep at 2.5). Get 12 when built + 0 on its own play, then 20.5 a round at a committed seat: pays back in 1.4 rounds. Builder, rounds 4-6
+[A] eviction_worm: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 18; get 23.0 = 1.28.
+[?] shared_exploit_kit: r44 (111): anchors: pay 10+4+4=18; get 6 compute 12 + 3 insight given 12 x 0.75 = 9 + 3 tags 3 = 24 = 1.33.
+[?] zero_click_breach: r42 (106): 10+5+2.5 = 17.5 vs 19.8 + 1 = 20.8 (+3.3). With Darknet and Hyperscale, 5 + 2.5 + 2.5 = 10 (+10.8), and Ops Floor adds 7.5
+[?] neural_mirror: r44 (111): anchors: pay 12+4=16; get +2 insight income at 4 Cyber tags 24 = 1.50 (1.0 at 3 tags, 2.25 at 6).
+[?] adaptive_malware: r42 (106): 6+2.5+2.5 = 11 vs 8 × 1.65 + 1 = 14.2 (+3.2). Cyber seat, mid-game
+[?] intrusion_lab: r44 (111): anchors: pay 9+4+4=17; ~2 drains a round: 3.5 fires x 7 = 24.5 = 1.44.
+[A] sentinel_mesh: r45 (112): 7 cr, 0 ins, between r44's 5 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 12.0 = 1.09.
+[A] relay_mast_rollout: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 18; get 22.1 = 1.23.
+[A] capacitor_discharge: r45 (112): back to r43's price (10 cr, 0 ins; 111 had cut it to 8 cr, 0 ins to reach a band); anchors: pay 14; get 15.8 = 1.13.
+[A] beamed_power_constellation: r45 (112): back to r43's price (30 cr, 2 ins; 111 had cut it to 14 cr, 2 ins to reach a band); anchors: pay 46; get 54.0 = 1.17.
+[A] interconnector_treaty: r45 (112): back to r43's price (24 cr, 1 ins; 111 had cut it to 20 cr, 1 ins to reach a band); anchors: pay 32; get 33.6 = 1.05.
+[A] consular_pouch: r45 (112): back to r43's price (9 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 17; get 18.0 = 1.06.
+[A] summit_caucus: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 7 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[A] liaison_corps: r45 (112): back to r43's price (8 cr, 1 ins; 111 had cut it to 7 cr, 1 ins to reach a band); anchors: pay 16; get 18.0 = 1.12.
+[?] open_assembly: r44 (111): anchors: pay 15+4+4=23; get sway 3 at build 12 + 3.5 Diplomacy plays = 1.75 more fires x 12 = 21; total 33 = 1.43.
+[?] mutual_aid_pact: r44 (111): anchors: pay 10+4=14; gift 3 insight 9 + 3 ambassadors 12 = 21 = 1.5.
+[?] amnesty_decree: r44 (111): anchors: pay 11+4+4=19; get 4 ambassadors removed 20 + 2 ambassadors 8 = 28 = 1.47.
+[A] peace_dividend: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[A] coalition_charter: r45 (112): back to r43's price (14 cr, 2 ins; 111 had cut it to 4 cr, 2 ins to reach a band); anchors: pay 30; get 36.0 = 1.20.
+[A] liberation_accords: r45 (112): back to r43's price (15 cr, 2 ins; 111 had cut it to 9 cr, 2 ins to reach a band); anchors: pay 31; get 46.0 = 1.48.
+[?] exodus_corridors: r46 (117): raised toward 1.5x (r45: 13 cr, 2 ins (1.55)); anchors: pay 14 + 16 = 30; get 45 = 1.50.
+[?] planetary_referendum: r42 (106): Pay 14+5+6.5=25.5. Get 32.
+[?] orbital_embassy: r44 (111): anchors: pay 18+8+8=34 (+ the Diplomacy building it covers); get 3 tags a round x 4 x 3.5 rounds 42 + draw 4 20 = 62 = 1.82.
+[A] recruit_operatives: r45 (112): back to r43's price (9 cr, 0 ins; 111 had cut it to 7 cr, 0 ins to reach a band); anchors: pay 13; get 17.5 = 1.35.
+[A] shared_threat_intel: r45 (112): back to r43's price (7 cr, 0 ins; 111 had cut it to 5 cr, 0 ins to reach a band); anchors: pay 11; get 12.0 = 1.09.
+[?] peacekeeper_rotation: r42 (106): Pay 12 + 2.5 + 2.5 = 17. Get 22 (2 troops in reach) + 1.5 + 1.5 = 25 (+8), plus 20 with Security Contractor HQ. Protector.
+[?] diplomatic_expulsion: r44 (111): anchors: pay 10+4+4=18; get 4 ambassadors 20 + sway 1 4 = 24 = 1.33.
+[A] threat_forecast_engine: r45 (112): 6 cr, 1 ins, between r44's 5 cr, 1 ins and r43's 8 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 14; get 14.6 = 1.04.
+[?] agency_field_station: r44 (111): anchors: pay 14+4+4=22; get ~1 Security card a round x 3.5 rounds x 1 ambassador 5 = 17.5 + its own play fires once 5 + draw 2 cards 10 = 32.5 = 1.48.
+[A] martial_cordon: r45 (112): back to r43's price (14 cr, 2 ins; 111 had cut it to 4 cr, 2 ins to reach a band); anchors: pay 30; get 35.6 = 1.19.
+[?] deep_state_ledger: r46 (117): raised toward 1.5x (r45: 10 cr, 2 ins (1.96)); anchors: pay 18 + 16 = 34; get 51 = 1.50.
+[A] garrison_command: r45 (112): 7 cr, 0 ins, between r44's 5 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 12.0 = 1.09.
+[?] fact_check_network: r42 (106): Pay 6+2.5=8.5. Get 3.5+8+1=12.5. On an influence threat, a jam of 5 often counters it outright.
+[?] truth_commission: r42 (106): Pay 8.5. Get 3.5+8+1=12.5.
+[A] civic_watch: r45 (112): 7 cr, 0 ins, between r44's 5 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 12.0 = 1.09.
+[A] market_watchdog: r45 (112): 7 cr, 0 ins, between r44's 5 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 12.0 = 1.09.
+[?] vertical_monopoly: r44 (111): anchors: pay 20+8+8=36; 5 tags 52.5 + draw 4 20 = 72.5 = 2.01; 6 tags 2.31.
+[?] sample_repository: r42 (106): Pay 8 + 2.5 = 10.5. Get 3 × 4 + 1 = 13, +2.5. Researcher, early.
+[A] research_royalties: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[A] university_spinout: r45 (112): back to r43's price (24 cr, 1 ins; 111 had cut it to 16 cr, 1 ins to reach a band); anchors: pay 32; get 31.9 = 1.00.
+[?] interdisciplinary_institute: r43 (108): 4: needs lowered; 2-3: pays up front, back within 2 rounds. Give 22 (credits, insight to play and keep at 2.5). Get 12 when built + 5 on its own play, then 7.5 a round at a committed seat: pays back in 0.7 rounds. any multi-tag seat, mid-game
+[?] standardized_tooling: r44 (111): anchors: pay 11+4+4=19; get draw 2 10 + 5 off x 1 a round x 3.5 rounds 17.5 = 27.5 = 1.45.
+[A] economies_of_scale: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[?] gigafactory_charter: r44 (111): anchors: pay 40+4+4=48; get +12 credit income 48 + draw 2 10 = 58 = 1.21.
+[?] capital_projects_office: r44 (111): anchors: pay 16+8+4=28; get draw 4 20 + 10 credits x 0.75-1 a round x 3.5 rounds 26-35 = 46-55 = 1.64-1.96.
+[?] conglomerate_headquarters: r43 (108): 4: needs lowered; 7: the Capital engine; 2-3: pays up front, back within 2 rounds. Give 22 (credits, insight to play and keep at 2.5). Get 8 when built + 4 on its own play, then 12.0 a round at a committed seat: pays back in 0.8 rounds. a multi-tag Industry seat, mid-game
+[A] ransomware_syndicate: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[A] cryptojacking_campaign: r45 (112): back to r43's price (18 cr, 1 ins; 111 had cut it to 13 cr, 1 ins to reach a band); anchors: pay 35; get 36.0 = 1.03.
+[?] exploit_broker: r44 (111): anchors: pay 12+4+4=20; get its own play 4 + 4 x 3.5 rounds = 14 + draw 2 = 10, total 28 = 1.40.
+[?] zero_day_auction: r46 (117): raised toward 1.5x (r45: 10 cr, 2 ins (1.69)); anchors: pay 14 + 16 = 30; get 44 = 1.47.
+[?] command_and_control_grid: r43 (108): 4: needs lowered; 2-3: pays up front, back within 2 rounds. Give 28 (credits, insight to play and keep at 2.5). Get 12 when built + 5 on its own play, then 15.0 a round at a committed seat: pays back in 0.7 rounds. any multi-tag seat, mid-game
+[A] pumped_hydro_storage: r45 (112): back to r43's price (24 cr, 1 ins; 111 had cut it to 18 cr, 1 ins to reach a band); anchors: pay 32; get 32.0 = 1.00.
+[A] capacity_market: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[A] dispatch_control_room: r45 (112): back to r43's price (16 cr, 1 ins; 111 had cut it to 12 cr, 1 ins to reach a band); anchors: pay 24; get 29.2 = 1.22.
+[?] smart_grid_backbone: r46 (117): raised toward 1.5x (r45: 20 cr, 2 ins (1.69)); anchors: pay 25 + 16 = 41; get 61 = 1.49.
+[A] trade_delegation: r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 11 cr, 1 ins to reach a band); anchors: pay 20; get 23.9 = 1.20.
+[A] peace_conference: r48 (121): Sway 8 (from 5), two Unity tips at two players now that Sway carries over a tip; 28 cr (from 22); anchors: pay 36; get 44 = 1.22.
+[A] reconciliation_office: r45 (112): 17 cr, 1 ins (from 14 cr, 1 ins), over its maximum margin at r44 (1.65); anchors: pay 25; get 36.3 = 1.45.
+[?] protocol_office: r44 (111): anchors: pay 11+4+4=19; get 3.5 Diplomacy plays x ~4 off (the floor bites on cheap cards) 14 + draw 2 10 = 24 = 1.26.
+[?] joint_task_force: r44 (111): anchors: pay 14+4+4=22; get ~0.6 fires a round x 3.5 x 2 ambassadors 10 = 21 + draw 2 cards 10 = 31 = 1.41.
+[?] quick_reaction_force: r42 (106): Pay 9+2.5+2.5 = 14. Get at the table 5 × 0.7 × 4 + 1 = 15 (+1). With Interceptor Battery and HQ: (10.4 - 4.5) + 14.8 = 20.7 a use, × 0.7 × 4 = 58. Rounds 3-8.
+[A] defense_appropriations: r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 18; get 18.0 = 1.00.
+[?] multiyear_defense_budget: r44 (111): anchors: pay 30+4+4=38; get credit income 5 at 4 = 20 + energy income 2 at 14 = 28; 48 = 1.26.
+[A] counterinsurgency_campaign: r45 (112): back to r43's price (13 cr, 1 ins; 111 had cut it to 12 cr, 1 ins to reach a band); anchors: pay 21; get 27.0 = 1.29.
+[A] homeland_security_act: r45 (112): back to r43's price (18 cr, 2 ins; 111 had cut it to 10 cr, 2 ins to reach a band); anchors: pay 34; get 48.1 = 1.41.
+[A] red_team_audit: r45 (112): back to r43's price (8 cr, 1 ins; 111 had cut it to 6 cr, 1 ins to reach a band); anchors: pay 16; get 16.9 = 1.06.
+[?] manifesto_leak: r44 (111): anchors: pay 8+4=12; alone sway 3 12 = 1.0; with Open Assembly 18 = 1.5.
+[?] threat_hunt: r44 (111): anchors: pay 8+4=12; get jam 6 + 5 compute 10 = 16 = 1.33.
+[A] supply_chain_audit: r45 (112): 7 cr, 0 ins, between r44's 6 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 13.0 = 1.18.
+[?] patent_library: r44 (111): anchors: pay 9+4+4=17; get (2 cards 10 - 3 credits) x 3.5 rounds 24.5 = 1.44.
+[?] parts_exchange: r44 (111): anchors: pay 9+4+4=17; (2 cards 10 - 1 chip 3) x 3.5 = 24.5 = 1.44.
+[A] botnet_takedown: r45 (112): back to r43's price (8 cr, 2 ins; 111 had cut it to 3 cr, 1 ins to reach a band); anchors: pay 24; get 28.1 = 1.17.
+[?] spoofed_credentials: r44 (111): anchors: pay 7+4=11; 3-4 Cyber tags 12-16 = 1.09-1.45.
+[?] great_liberation: r44 (111): anchors: pay 32+7 am+8+8=55; 2 cities + a station 105 = 1.91; 3 cities 2.45; 1 city + 2 stations 1.36.
+[?] aegis_grid_lockdown: r44 (111): anchors: pay 9+4+4=17; get shelter 4 + 3 free nodes 18 = 22 = 1.29.
+[?] shared_grid_accord: r44 (111): anchors: pay 3+4+4=11; gift 2 energy 6.75 + sway 2 8 = 14.75 = 1.34.
+[?] cryo_compute_burn: r44 (111): anchors: pay 2+4+4.5=10.5; 3-4 Science tags 12-16 = 1.14-1.52.
+[?] field_grant: r44 (111): anchors: pay 8+4+0=12; get 3 megaproject cubes x 6 (values project_cube) 18 = 1.5 (with a station; about 1.05 with none in reach yet).
+[A] field_sensor_grid: r45 (112): back to r43's price (10 cr, 0 ins; 111 had cut it to 7 cr, 0 ins to reach a band); anchors: pay 14; get 15.9 = 1.14.
+[A] open_weights_release: r45 (112): 10 cr, 2 ins, between r44's 4 cr, 2 ins and r43's 11 cr, 2 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 26; get 26.0 = 1.00.
+[A] benchmark_suite: r45 (112): back to r43's price (7 cr, 0 ins; 111 had cut it to 5 cr, 0 ins to reach a band); anchors: pay 11; get 12.0 = 1.09.
+[?] synthetic_data_forge: r44 (111): anchors: pay 8+4+4=16; get 4 Actions (add to 2, cash 2 x 3) 6 insight 24 = 1.5; 3 Actions about 20 = 1.25.
+[A] zero_knowledge_exploit: r45 (112): back to r43's price (6 cr, 1 ins; 111 had cut it to 4 cr, 1 ins to reach a band); anchors: pay 14; get 15.0 = 1.07.
+[?] bug_bounty_board: r44 (111): anchors: pay 10+4+4=18; get per use 3 compute 6 + 1 card 5 - 4 credits = 7 net x 3.5 uses = 24.5 = 1.36.
+[?] envoy_briefings: r44 (111): anchors: pay 9+4+4=17; get draw 3 15 + 2 ambassadors 8 = 23 = 1.35.
+[?] supplier_network: r44 (111): anchors: pay 12+4+4=20; get draw 1 when built + 1 from its own play 10 + 1 card a round x 3.5 rounds 17.5 = 27.5 = 1.38.
+[?] wartime_retooling: r44 (111): anchors: pay 30+4+4=38; get +2 energy income 28 + draw 4 20 + 2 tags 1.5 = 49.5 = 1.30.
+[?] fusion_research_campus: r44 (111): anchors: pay 16+8+8=32; get build 3 cards 15 + self-fire 2 cards 10 + 3.5 Power plays x 2 cards 35 = 60 = 1.88.
+[?] moonshot_grant: r46 (117): raised as a late objective (r45: 23 cr, 1 ins: 6 research cubes on a megaproject, draw 2); anchors: pay 46 + 4 x 2 = 54; get 8 x 9 = 72 + draw 2 10 = 82 = 1.52.
+[?] preprint_server: r44 (111): anchors: pay 15+4+4=23; get self-fire 1 card 5 + 1 card a round x 3.5 17.5 + 2 cards 10 = 32.5 = 1.41.
+[?] headquarters_raid: r44 (111): anchors: pay 28+4+4=36; get 5 ambassadors 25 + draw 4 cards 20 = 45 = 1.25.
+[?] safehouse_network: r44 (111): anchors: pay 14+4+4=22; get 2 spends over ~4 rounds = 6 cards 30 = 1.36 (feeders add spends).
+[?] fabrication_megaplex: r46 (117): new, an early jump-start; anchors: pay 34 + 4 x 2 = 42; get 7 x 4 = 28 + chip income 10 + draw 3 15 = 53 = 1.26.
+[?] frontier_lab_charter: r46 (117): new, an early jump-start; anchors: pay 26 + 4 x 2 = 34; get 2 x 12 = 24 + 3 x 4 = 12 = 36 = 1.06.
+[?] national_grid_buildout: r46 (117): new, an early jump-start; anchors: pay 34 + 4 x 2 = 42; get 2 x 14 = 28 + 3 nodes 18 = 46 = 1.10.
+[?] decapitation_strike: r46 (117): new, a late objective; anchors: pay 30 + 4 x 3 = 42; get botnet 16 + 6 x 5 = 30 = 46 = 1.10.

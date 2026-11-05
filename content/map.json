@@ -429,7 +429,7 @@
    "project": {
     "name": "Delta Seawall",
     "cubes": 8,
-    "text": "At completion each player cube pays 1 Sway to Unity, 1 drawn card and 1 credit, each adversary cube 1 Sway to Discord. Afterward, with a node in a city here: 2 research cubes for 1 Sway to Unity, as often as you can pay. An adversary cube made here afterward is lost.",
+    "text": "At completion each player cube pays 1 Sway to Unity and 1 drawn card, each adversary cube 1 Sway to Discord. Afterward, with a node in a city here: 2 research cubes for 1 Sway to Unity, as often as you can pay. An adversary cube made here afterward is lost.",
     "player": [
      {
       "op": "sway",
@@ -439,11 +439,6 @@
      {
       "op": "draw",
       "count": 1
-     },
-     {
-      "op": "gain",
-      "resource": "credits",
-      "amount": 1
      }
     ],
     "adversary": [

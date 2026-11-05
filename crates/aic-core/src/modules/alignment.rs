@@ -26,6 +26,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("undecided_per_player", 1, 50, "Sway in the Undecided at the start, per player"),
     ParamSpec::int("tip_per_player", 1, 50, "the Unity bucket tips when it holds this many Sway per player"),
     ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord bucket tips when it holds this many Sway per player"),
+    ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its bucket)"),
     ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
@@ -374,8 +375,13 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let round = g.round;
     cx.note(None, || format!("The {} bucket tips", side.name()));
     let before = g.var(tips_key(side));
-    let back = g.var(bucket(side));
-    cx.set_key(g, bucket(side), 0);
+    // r48 (Matt, 2026-11-05): a tip takes one tip's worth of Sway back to the
+    // Undecided; the overflow stays in the bucket toward the next tip.
+    let carry = w.int("alignment.carry");
+    let carries = carry >= 2 || (carry == 1 && side == Side::Unity);
+    let held = g.var(bucket(side));
+    let back = if carries { capacity(&w, g, side).min(held) } else { held };
+    cx.add_key(g, bucket(side), -back);
     cx.add_key(g, UNDECIDED, back);
     cx.set_key(g, tips_key(side), before + 1);
     cx.tally(g, &KeyBuf::new("alignment.tips_").text(side.name()), 1);

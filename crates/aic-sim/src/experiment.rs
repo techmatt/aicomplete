@@ -333,11 +333,20 @@ pub struct GameResult {
     pub counters: BTreeMap<String, i64>,
     /// Per card: how it was offered, drafted, kept, played and drawn.
     pub cards: BTreeMap<String, CardCounts>,
-    pub gives: u32,
     pub pays: u32,
     pub withdraws: u32,
     /// Each seat's AI and buildings at the end, `builder:a+b|protector:c`.
     pub build: String,
+    /// 121: each seat's highest holding after any action, in [`PEAKS`] order
+    /// (the runaway check, `scripts/cards/runaway_read.py`).
+    #[serde(default)]
+    pub peaks: Vec<Vec<i64>>,
+    /// 121: what each seat gained over the game, in [`PEAKS`] order (rises
+    /// between actions summed); over `rounds`, a round's income.
+    #[serde(default)]
+    pub gained: Vec<Vec<i64>>,
+    #[serde(skip)]
+    pub last_held: Vec<Vec<i64>>,
     /// Win probability at the start of each round (round 1 first), from playouts.
     pub winprob: Vec<f64>,
     pub ms: f64,
@@ -463,6 +472,24 @@ pub struct Margin {
     /// What each seat left unspent, in [`UNSPENT`] order (068): [`left_unspent`].
     #[serde(default)]
     pub unspent: Vec<Vec<i64>>,
+    /// 121: what each seat held when its last completed action phase ended, in
+    /// [`UNSPENT`] order (0 if none completed). Unlike `unspent`, never "now".
+    #[serde(default)]
+    pub held_after_actions: Vec<Vec<i64>>,
+}
+
+/// What seat `s` held when its last completed action phase ended (121).
+fn held_after_actions(g: &GameState, s: usize) -> Vec<i64> {
+    UNSPENT
+        .iter()
+        .map(|r| {
+            g.stats
+                .per_round
+                .get(format!("unspent.{s}.{r}").as_str())
+                .and_then(|v| v.last().copied())
+                .unwrap_or(0)
+        })
+        .collect()
 }
 
 /// What seat `s` left unspent, in [`UNSPENT`] order: what it held when its last
@@ -517,6 +544,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
         botnets_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::BOTNET)).sum(),
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),
         unspent: (0..g.seats.len()).map(|s| left_unspent(g, s)).collect(),
+        held_after_actions: (0..g.seats.len()).map(|s| held_after_actions(g, s)).collect(),
     }
 }
 
@@ -614,6 +642,7 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
     let mut fill_round = 0u32;
     let mut slots: BTreeMap<String, i64> = BTreeMap::new();
     r.setup_ms = ms_since(start);
+    track_holdings(&mut r, &g);
     while r.actions.len() < spec.max_actions {
         let t = Instant::now();
         rules.legal_actions_into(&g, &mut legal);
@@ -682,6 +711,7 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
         }
         tally_action(&mut r, &a, &mut picks);
         apply_counting_draws(&mut r, rules, &mut g, &a);
+        track_holdings(&mut r, &g);
         r.actions.push(a);
         r.apply_ms += ms_since(t);
     }
@@ -727,7 +757,6 @@ fn tally_action(r: &mut GameResult, a: &Action, picks: &mut [u32]) {
         }
         Action::Keep { card, .. } => r.cards.entry(card.to_string()).or_default().kept += 1,
         Action::Play { card, .. } => r.cards.entry(card.to_string()).or_default().played += 1,
-        Action::Give { .. } => r.gives += 1,
         Action::Pay { .. } => r.pays += 1,
         Action::Withdraw { .. } => r.withdraws += 1,
         _ => {}
@@ -753,6 +782,61 @@ fn apply_counting_draws(r: &mut GameResult, rules: &Rules, g: &mut GameState, a:
                 }
                 None => r.cards.entry(c.to_string()).or_default().drawn += 1,
             }
+        }
+    }
+}
+
+/// What [`GameResult::peaks`] and [`GameResult::gained`] measure, in order
+/// (121, the runaway check): each resource a seat holds, its tokens on cards
+/// (summed over its cards) and its ambassadors in supply.
+pub const PEAKS: [&str; 8] = [
+    "credits",
+    "insight",
+    "energy",
+    "chips",
+    "antimatter",
+    "research_cubes",
+    "card_tokens",
+    "ambassadors",
+];
+
+/// Seat `s`'s holdings in [`PEAKS`] order.
+fn holdings(g: &GameState, s: usize) -> [i64; 8] {
+    let prefix = format!("cards.tokens.{s}.");
+    let tokens: i64 = g
+        .vars
+        .from_key(prefix.as_str())
+        .take_while(|(k, _)| k.starts_with(prefix.as_str()))
+        .map(|(_, v)| (*v).max(0))
+        .sum();
+    [
+        g.resource(s, Resource::Credits),
+        g.resource(s, Resource::Insight),
+        g.resource(s, Resource::Energy),
+        g.resource(s, Resource::Chips),
+        g.resource(s, Resource::Antimatter),
+        g.resource(s, Resource::ResearchCubes),
+        tokens,
+        g.resource(s, Resource::Ambassadors),
+    ]
+}
+
+/// After each action: each seat's peak holding and what it has gained (the
+/// sum of rises between actions), sim-side so no rule or state moves.
+fn track_holdings(r: &mut GameResult, g: &GameState) {
+    let seats = g.seats.len();
+    if r.peaks.len() != seats {
+        r.peaks = (0..seats).map(|s| holdings(g, s).to_vec()).collect();
+        r.gained = vec![vec![0; PEAKS.len()]; seats];
+        r.last_held = r.peaks.clone();
+        return;
+    }
+    for s in 0..seats {
+        let now = holdings(g, s);
+        for (i, &n) in now.iter().enumerate() {
+            r.peaks[s][i] = r.peaks[s][i].max(n);
+            r.gained[s][i] += (n - r.last_held[s][i]).max(0);
+            r.last_held[s][i] = n;
         }
     }
 }

@@ -110,6 +110,7 @@
         "undecided_per_player": 4,
         "tip_per_player": 2,
         "discord_tip_per_player": 2,
+        "carry": 1,
         "momentum_every": 0,
         "troop": 0,
         "free_city": 5,
@@ -135,9 +136,7 @@
     {
       "module": "economy",
       "variant": "standard",
-      "params": {
-        "give_insight": 1
-      }
+      "params": {}
     },
     {
       "module": "ai",
@@ -344,7 +343,7 @@
     "cards.deal",
     "cards.draft",
     "cards.keep",
-    "cards.play+threats.counter+economy.give+alignment.act+board.act+ai.power",
+    "cards.play+threats.counter+alignment.act+board.act+ai.power",
     "board.bases",
     "board.war",
     "board.produce",

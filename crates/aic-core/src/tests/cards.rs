@@ -56,7 +56,7 @@ fn off_variants_remove_threats_alignment_and_the_draft() {
         .iter()
         .all(|a| !matches!(a, Action::Antimatter { .. })));
     g.vars.insert("alignment.unity".into(), 4);
-    give(&rules, &mut g);
+    any_action(&rules, &mut g);
     assert_eq!(g.var("alignment.unity_tips"), 0);
 
     let rules = Rules::new(&baseline_with(&["cards.variant=off"])).unwrap();
@@ -434,17 +434,19 @@ fn a_gift_lands_alone_and_a_draw_needs_a_card() {
     let draw = [Op::Draw { count: 2 }];
     assert!(effects::feasible(&w, &g, 0, &draw));
     set_pile(&mut g, "cards.deck.1", &[]);
+    set_pile(&mut g, "cards.discard.1", &["spoofed_credentials"]);
+    assert!(effects::feasible(&w, &g, 0, &draw), "r48: an empty deck reshuffles its discard to draw");
     set_pile(&mut g, "cards.discard.1", &[]);
-    assert!(!effects::feasible(&w, &g, 0, &draw), "tier-1 deck empty: a draw never reshuffles");
+    assert!(!effects::feasible(&w, &g, 0, &draw), "deck and discard empty: nothing to draw");
     let draw_and_more = [Op::Draw { count: 2 }, Op::Gain { resource: Resource::Credits, amount: 1 }];
     assert!(effects::feasible(&w, &g, 0, &draw_and_more), "a card that also gains still plays");
 }
 
-/// 111: an event is discarded after it resolves, and a draw never reshuffles the
-/// discards (only the draft does). With either, Breakthrough Leak played on a
-/// thin deck drew itself, or Capital Injection, back: with Credential Harvest
-/// and sells it looped to the 5000-action cap (109 at r43; 2308 plays at r44's
-/// first read).
+/// 111: Breakthrough Leak played on a thin deck drew itself, or Capital Injection,
+/// back: with Credential Harvest and sells it looped to the 5000-action cap (109 at
+/// r43; 2308 plays at r44's first read). r48 (Matt): a played event goes to its
+/// player's played pile, never the discard, and a draw that finds the deck empty
+/// reshuffles the discard: the event still can't come back.
 #[test]
 fn a_draw_event_cannot_draw_itself_back() {
     let (rules, mut g) = lab_actions_with(&[
@@ -463,10 +465,84 @@ fn a_draw_event_cannot_draw_itself_back() {
         .apply_mut(&mut g, &Action::Play { seat: 1, card: "breakthrough_leak".into() }, None)
         .unwrap();
     let names = |g: &GameState, p: &str| -> Vec<String> { g.pile(p).iter().map(|c| c.as_str().to_string()).collect() };
-    assert_eq!(names(&g, "cards.hand.1"), vec!["materials_hedge_desk"], "the deck's one card, no reshuffle");
-    assert_eq!(names(&g, "cards.discard.1"), vec!["breakthrough_leak", "spoofed_credentials"], "then it went to the discard");
-    assert!(g.pile("cards.deck.1").is_empty() && g.pile("cards.resolving.1").is_empty());
-    // With the deck empty a draw has nothing to take, so a card that only draws is not offered.
+    assert_eq!(
+        names(&g, "cards.hand.1"),
+        vec!["materials_hedge_desk", "spoofed_credentials"],
+        "the deck's one card, then the reshuffled discard's"
+    );
+    assert_eq!(names(&g, "cards.events.1"), vec!["breakthrough_leak"], "the event is in its player's played pile");
+    assert!(g.pile("cards.discard.1").is_empty() && g.pile("cards.deck.1").is_empty() && g.pile("cards.resolving.1").is_empty());
+    // With deck and discard empty a draw has nothing to take, so a card that only draws is not offered.
     let w = rules.world();
     assert!(!effects::feasible(&w, &g, 1, &[Op::Draw { count: 2 }]));
+}
+
+/// r48: the Breakthrough Leak / Capital Injection pair (`materials_hedge_desk`) that
+/// drew each other back at r44 plays each card once: each goes to the played pile, the
+/// discard reshuffles only what else is there, and the loop ends with both played.
+#[test]
+fn breakthrough_leak_and_capital_injection_cannot_loop() {
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.breakthrough_leak.needs=[]",
+        "cards.breakthrough_leak.cost=0",
+        r#"cards.breakthrough_leak.effects=[{"op":"draw","count":4}]"#,
+        "cards.materials_hedge_desk.needs=[]",
+        "cards.materials_hedge_desk.cost=0",
+        "cards.materials_hedge_desk.insight=0",
+    ]);
+    let pair = ["breakthrough_leak", "materials_hedge_desk"];
+    let fillers = ["spoofed_credentials", "consular_pouch", "dataset_scraper", "field_grant", "relay_mast_rollout"];
+    for c in pair.iter().chain(&fillers) {
+        out_of_decks(&mut g, c);
+    }
+    set_pile(&mut g, "cards.deck.1", &[]);
+    set_pile(&mut g, "cards.discard.1", &fillers);
+    set_pile(&mut g, "cards.hand.1", &pair);
+    let mut plays = 0;
+    for _ in 0..20 {
+        fund(&mut g, 1);
+        let next = rules
+            .legal_actions(&g)
+            .into_iter()
+            .find(|a| matches!(a, Action::Play { seat: 1, card } if pair.contains(&card.as_str())));
+        let Some(a) = next else { break };
+        rules.apply_mut(&mut g, &a, None).unwrap();
+        answer_all(&rules, &mut g);
+        plays += 1;
+    }
+    assert_eq!(plays, 2, "each event played once");
+    let mut events: Vec<String> = g.pile("cards.events.1").iter().map(|c| c.as_str().to_string()).collect();
+    events.sort();
+    assert_eq!(events, vec!["breakthrough_leak", "materials_hedge_desk"]);
+    for p in ["cards.hand.1", "cards.deck.1", "cards.discard.1"] {
+        assert!(!g.pile(p).iter().any(|c| pair.contains(&c.as_str())), "{p}");
+    }
+    // The fillers came back through the reshuffle; the events' tags don't count.
+    assert!(fillers.iter().all(|f| g.pile("cards.hand.1").iter().any(|c| c == f)));
+}
+
+/// r48 (Matt): nothing to act on never blocks a card. A removal with no target beside
+/// a gain plays for the gain; a list where nothing acts is not offered; an own tag
+/// never counts toward the card's own `needs`.
+#[test]
+fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
+    let (rules, g) = lab_actions();
+    let w = rules.world();
+    let none_in_reach = (0..g.hexes.len()).all(|h| g.tokens(h, TROOP) == 0);
+    assert!(none_in_reach, "the lab starts with no troop");
+    let remove = Op::RemoveTroops { count: 1, reach: true };
+    assert!(!effects::feasible(&w, &g, 0, std::slice::from_ref(&remove)), "alone it would do nothing");
+    let with_gain = [remove, Op::Gain { resource: Resource::Credits, amount: 5 }];
+    assert!(effects::feasible(&w, &g, 0, &with_gain), "beside a gain, the removal is a bonus");
+    // Own tags: a Diplomacy card needing 1 Diplomacy isn't playable on its own tag.
+    let (rules, mut g) = lab_actions_with(&[r#"cards.consular_pouch.needs=[["diplomacy",1]]"#]);
+    out_of_decks(&mut g, "consular_pouch");
+    set_pile(&mut g, "cards.hand.0", &["consular_pouch"]);
+    fund(&mut g, 0);
+    set_pile(&mut g, "cards.played.0", &[]);
+    set_pile(&mut g, "cards.built.0", &[]);
+    let w = rules.world();
+    let have = cards::required_tags(&w, &g, 0)[crate::content::Tag::Diplomacy as usize];
+    let offered = rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { card, .. } if card == "consular_pouch"));
+    assert_eq!(offered, have >= 1, "its own Diplomacy tag doesn't count ({have} in play)");
 }

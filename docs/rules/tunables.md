@@ -78,6 +78,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.undecided_per_player` | 4 | 1..50 | Sway in the Undecided at the start, per player |
 | `alignment.tip_per_player` | 2 | 1..50 | the Unity bucket tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 2 | 1..50 | the Discord bucket tips when it holds this many Sway per player |
+| `alignment.carry` | 1 | 0..2 | Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its bucket) |
 | `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
 | `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
@@ -91,7 +92,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.discord_tier2` | 2 | 1..50 | Discord tip count from which a Discord tip draws the stronger tier |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
-| `economy.give_insight` | 1 | 0..10 | insight the receiver gains for 1 given |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
 | `ai.start_credits` | 40, 46, 40 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `ai.start_energy` | 1 | 0..20 | energy each player starts with |

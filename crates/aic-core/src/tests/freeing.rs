@@ -42,8 +42,14 @@ fn only_a_tier_2_ultimate_frees_a_city_outright() {
     Arc::make_mut(g.piles.entry(crate::modules::cards::hand(0)).or_default()).push("back_channel_talks".into());
     set_res(&mut g, 0, Resource::Credits, 30);
     set_res(&mut g, 0, Resource::Insight, 5);
+    // r48: nothing to act on never blocks a card, so the factory cleanse plays for its
+    // Sway, and leaves the city corrupted.
     let plays = rules.legal_actions(&g);
-    assert!(!plays.iter().any(|a| matches!(a, Action::Play { card, .. } if card == "back_channel_talks")));
+    assert!(plays.iter().any(|a| matches!(a, Action::Play { card, .. } if card == "back_channel_talks")));
+    let mut t = g.clone();
+    play_card(&rules, &mut t, 0, "back_channel_talks");
+    answer_all(&rules, &mut t);
+    assert_eq!(t.tokens(h, ADV_CUBE), 1, "a tier-1 cleanse does nothing to a city");
     // The ultimate frees it.
     let mut k = g.clone();
     // It needs 4 Diplomacy tags in play (076: a chain).

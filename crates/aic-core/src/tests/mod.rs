@@ -45,7 +45,7 @@ const BASELINE: &str = include_str!("../../../../configs/baseline.json");
 const SHARED_ROW: &str = include_str!("../../../../configs/shared_row.json");
 
 /// The action phase of the baseline round.
-const ACTIONS: &str = "cards.play+threats.counter+economy.give+alignment.act+board.act+ai.power";
+const ACTIONS: &str = "cards.play+threats.counter+alignment.act+board.act+ai.power";
 
 /// The baseline playing only the action phase, after setup.
 fn action_only(sets: &[&str]) -> (Rules, GameState) {
@@ -340,10 +340,12 @@ fn pass_round(rules: &Rules, g: &mut GameState) {
     answer_all(rules, g);
 }
 
-/// Gives 1 insight from seat 0 to seat 1: an action, so the end checks run.
-fn give(rules: &Rules, g: &mut GameState) {
-    set_res(g, 0, Resource::Insight, 1);
-    act(rules, g, Action::Give { seat: 0, to: 1 });
+/// Seat 0 turns 1 research cube into insight (the cube converter): an action
+/// that touches nothing else, so the end checks run (r48: it was a gift of
+/// insight, an action since removed).
+fn any_action(rules: &Rules, g: &mut GameState) {
+    set_res(g, 0, Resource::ResearchCubes, 1);
+    act(rules, g, std_act(0, "insight"));
 }
 
 /// A lab with seat 0's node on the board and both tracks at `taken` steps.
@@ -534,9 +536,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 47;
-const GOLDEN_FINGERPRINT: &str = "06dfd5668ad825ef";
-const GOLDEN_CONTENT_HASH: &str = "7e61b15f7507e8c5";
+const GOLDEN_REVISION: u32 = 48;
+const GOLDEN_FINGERPRINT: &str = "99f01df824ce6db9";
+const GOLDEN_CONTENT_HASH: &str = "cb03d4f0dd67bea4";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

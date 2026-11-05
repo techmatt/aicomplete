@@ -1303,7 +1303,7 @@ fn plan(
             let d = cards::def(w, id);
             let credits = cards::play_cost(w, g, s, d);
             // 118: as the engine judges a play (a program counts its own tags: F183).
-            let target = d.is_building() || effects::feasible(w, g, s, &cards::own_counted(d));
+            let target = d.is_building() || effects::feasible(w, g, s, &effects::own_counted(d));
             let later = if pc.table {
                 round > 0 && pile_ok(w, g, s, d, &planned) && (!f.plan_copy || copy_ok(w, g, s, d, &planned))
             } else {

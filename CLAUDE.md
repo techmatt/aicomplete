@@ -33,7 +33,8 @@ experiments, speed, scripts, web, card art.
   token type: its held-value term in `agents/eval.rs`), and a 2-minute engine smoke read (16 seeds; `scripts/cards/play_read.py`
   for cards kept and never played, `board_read.py --powers` for powers never used) before any
   band read: 075 lost a whole screen to six cards and Grant that no agent valued. **Before a freeze**, read
-  each new mechanic's use per game and its on/off gap on the same seeds (080: `liberation_read.py`).
+  each new mechanic's use per game and its on/off gap on the same seeds (080: `liberation_read.py`). Before a full
+  read, `python scripts/cards/loop_smoke.py --run` (16 seeds: timeouts, most plays of one card a game) catches a loop.
 - **A new decision type for the agents** (a new kind of card to keep, a new action to take): review the
   agent code that makes that decision (keep plan, eval term, fixed policies) before the first screen, not
   after it reads low. **A new agent heuristic** gets a 16-seed engine smoke, on and off, on the dev seeds
@@ -48,7 +49,8 @@ experiments, speed, scripts, web, card art.
   [docs/rules-history.md](docs/rules-history.md) in the same commit.
 - **After changing threats, cards, adversary rules, content or tunables:** run `aic-sim docs`,
   then `python scripts/cards/cards_doc.py`; after a card or `values.json` edit also `python
-  scripts/cards/effect_ledger.py` (a fast-lane test reads its `cards.csv`). What they generate, and what a fast-lane test
+  scripts/cards/effect_ledger.py` (a fast-lane test reads its `cards.csv`); `python scripts/regen.py` runs the build, all
+  three and `shared_row.py`, and prints the content hash. What they generate, and what a fast-lane test
   refuses, is in *Generated docs* in docs/architecture.md; change the source, not the output.
   What [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.

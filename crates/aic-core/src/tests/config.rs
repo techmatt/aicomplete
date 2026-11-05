@@ -167,7 +167,6 @@ fn tunables_list_every_module_parameter() {
         "threats.per_country",
         "alignment.tip_per_player",
         "alignment.discord_tip_per_player",
-        "economy.give_insight",
         "cards.keep_tier1",
     ] {
         assert_eq!(find(k).kind, "int", "{k}");
@@ -188,21 +187,10 @@ fn tunables_list_every_module_parameter() {
     assert_eq!(keys.len(), t.len());
 }
 
-/// 020: the documented off-switches switch their part off. `economy.give_insight`
-/// 0 still offered giving (it cost the giver an insight for nothing); free
-/// standard actions and an Undecided smaller than a tip are rejected.
+/// 020: free standard actions and an Undecided smaller than a tip are
+/// rejected (r48: the give-insight off-switch went with the action).
 #[test]
 fn off_switches_and_degenerate_values() {
-    let (rules, mut g) = lab_actions();
-    set_res(&mut g, 0, Resource::Insight, 2);
-    let gives = |r: &Rules, g: &GameState| r.legal_actions(g).iter().any(|a| matches!(a, Action::Give { .. }));
-    assert!(gives(&rules, &g));
-    let mut c = lab_config(&[ACTIONS]);
-    c.apply_override("economy.give_insight=0").unwrap();
-    let off = Rules::new(&c).unwrap();
-    let mut g0 = off.new_game(1);
-    set_res(&mut g0, 0, Resource::Insight, 2);
-    assert!(!gives(&off, &g0));
     let mut c = baseline();
     assert!(c.apply_override("board.ambassador_credits=0").is_err() || Rules::new(&c).is_err());
     let mut c = baseline();

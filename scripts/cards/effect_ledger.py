@@ -284,7 +284,7 @@ def op_worth(t, o):
         return Worth(standing=row(op) * n('amount'))
     if op == 'harden_action':
         return Worth(standing=max(row(op) - 0.5 * r('chips') * n('chips') / 2.0, 0.0))
-    if op == 'logistics' or op == 'give_bonus':
+    if op == 'logistics':
         return Worth(standing=row(op) * r(o['resource']) * n('amount'))
     if op in ('spread_shield', 'civic_shelter', 'tags_from_hand'):
         return Worth(standing=row(op))

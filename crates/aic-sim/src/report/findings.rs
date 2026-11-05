@@ -203,12 +203,6 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
             run.spec.winprob.agent
         ));
     }
-    let gives = mean(
-        sums.iter()
-            .filter(|s| strongest(s))
-            .map(|s| s.gives_per_game),
-    )
-    .unwrap_or(0.0);
     // Over the cells that dealt threats (020: a threats-off cell's 0% halved it).
     let countered = mean(
         sums.iter()
@@ -217,7 +211,7 @@ pub(super) fn findings(run: &Run) -> Vec<String> {
     )
     .unwrap_or(0.0);
     f.push(format!(
-        "Help and counters (strongest agent, mean over its cells): {gives:.2} gifts per game; {} of threats countered.",
+        "Counters (strongest agent, mean over its cells): {} of threats countered.",
         pct(countered)
     ));
     f.extend(comparison_findings(run));

@@ -19,10 +19,13 @@ bucket. With the Undecided empty, the variant decides:
 | `off` | (for measuring Alignment, [README.md](README.md#off-variants)) no Sway ever moves and nothing tips |
 
 **Tipping.** The Unity bucket holding `tip_per_player` × players Sway, or the Discord bucket
-holding `discord_tip_per_player` × players, **tips**, in this order: all the bucket's Sway
-returns to the Undecided; that side's tip count goes up by one; one card of its side is
+holding `discord_tip_per_player` × players, **tips**, in this order: one tip's worth of the bucket's Sway
+returns to the Undecided and, on the Unity side, the rest stays in the bucket toward the next tip (r48: a big
+Sway can tip more than once; `carry` 1). A Discord tip still empties its bucket: carrying Discord's too (`carry` 2)
+is an adversary-side lever for the adversary redesign (Matt: it shortened games and cut the strategist's lead over
+greedy from about 25 points to 2); 0 carries neither, r47's rule; that side's tip count goes up by one; one card of its side is
 drawn and resolves (at the step printed for the tip count before this tip, below).
-The bucket empties before the card, so a card's own Sway counts. Unity tips and
+The Sway returns before the card, so a card's own Sway counts. Unity tips and
 Discord tips are counted separately and only count up; there is no net meter. Buckets are checked when an action or automatic phase finishes resolving (with win and loss,
 below), so a bucket may overfill within one action. If both are full, Discord tips first; a
 tip's card may fill a bucket again, which then tips too.

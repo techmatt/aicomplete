@@ -203,8 +203,12 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
         seat: 0,
         card: "singularity_exploit".into(),
     };
-    // Only a botnet within reach.
-    assert!(!rules.legal_actions(&g).contains(&play));
+    // Only a botnet within reach. r48: nothing to act on never blocks a card, so with
+    // a project to discard it plays with no botnet in reach; with neither it doesn't.
+    assert!(rules.legal_actions(&g).contains(&play));
+    let mut none = g.clone();
+    row(&mut none, &[]);
+    assert!(!rules.legal_actions(&none).contains(&play));
     put(&mut g, near, BOTNET, 1);
     assert!(rules.legal_actions(&g).contains(&play));
     act(&rules, &mut g, play);

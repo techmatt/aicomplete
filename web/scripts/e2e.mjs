@@ -314,7 +314,10 @@ try {
   for (const [w, h] of [[1366, 768], [1920, 1080], [2560, 1440]]) {
     await size(w, h);
     const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
-    check(svg[0] > w * 0.3 && svg[1] > h * 0.43, `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
+    // 121: at r48 this game reaches round 2 (r47's stayed in round 1) and the countries panel grows 92 -> 112 px at
+    // 1366x768, leaving the board 315 px (r47: 337): the 1366 floor is the 4-country check's 0.4 (Matt: the threshold,
+    // not the pane).
+    check(svg[0] > w * 0.3 && svg[1] > h * (w === 1366 ? 0.4 : 0.43), `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
   }
   await size(1366, 768);
 
@@ -334,7 +337,9 @@ try {
   for (const [w, h] of [[1366, 768], [1920, 1080]]) {
     await size(w, h);
     const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
-    check(await noScroll() && svg[1] > h * 0.4, `4 countries: no page scroll, board ${svg.map(Math.round).join('x')} at ${w}x${h}`);
+    // 121 (Matt): four countries may scroll at 1366x768; the pane stays as it is.
+    const small = w === 1366;
+    check((small || await noScroll()) && svg[1] > h * 0.4, `4 countries: ${small ? 'may scroll' : 'no page scroll'}, board ${svg.map(Math.round).join('x')} at ${w}x${h}`);
     await shot(`four-countries-${w}x${h}`);
   }
   await size(1366, 768);

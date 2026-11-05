@@ -153,7 +153,7 @@ military base. Arrivals and Escalation reach only that one, so what reaches base
 countries, not fronts (a country has one front at 2 countries and two at 3 and 4). The count
 is fixed by the printed board, so it can't feed back. A base's other rules hold: an
 ambassador that spreads onto a second base still diverts it, and a threat that lands on
-bases here (Total War) may use any base in the country, players choosing each landing (both may go on one).
+bases here (Total War) may use any base in the country, players choosing each landing, one a base while a base is free (r48).
 
 **For new players.** An adversary card may name military bases, and stage II cards send an
 extra ambassador to them. Either way it lands on one base in each country, the

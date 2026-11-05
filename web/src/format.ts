@@ -107,11 +107,6 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
       return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(String(a.threat))}`;
     case 'withdraw':
       return `take back ${a.resource} ← ${threatName(String(a.threat))}`;
-    case 'give': {
-      const n = param(cx.config, 'economy', 'give_insight');
-      // 118: the giver pays 1; `give_insight` is what the receiver gains (the label gave it as the price).
-      return `give 1 insight → seat ${a.to}${typeof n === 'number' && n !== 1 ? ` (they gain ${n})` : ''}`;
-    }
     case 'antimatter': {
       const n = param(cx.config, 'alignment', 'antimatter_discord');
       return `+1 antimatter${typeof n === 'number' ? ` (${n} Sway → Discord)` : ' (Sway → Discord)'}`;

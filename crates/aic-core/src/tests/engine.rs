@@ -232,6 +232,20 @@ fn reuse_uses_another_action_again_but_never_a_reuse() {
     assert!(!cards::reusable(&w, &g, 0, None).iter().any(|c| c == "simulation_cluster"), "a reuse building is never reused");
 }
 
+/// r48 (Matt, D44): Reuse may take either half of an "A, OR B" Action, not only the half
+/// used: the forge adds a Dataset, then the Cluster's Reuse takes its other half.
+#[test]
+fn reuse_may_take_the_other_half() {
+    let (rules, mut g) = table_with(&[FORGE_ABILITY], &[], &["simulation_cluster", "synthetic_data_forge"]);
+    act(&rules, &mut g, Action::Use { seat: 0, card: "synthetic_data_forge".into() });
+    assert_eq!(g.var(&cards::tokens_key(0, "synthetic_data_forge")), 1);
+    let insight = g.resource(0, Resource::Insight);
+    rules.apply_mut(&mut g, &Action::Use { seat: 0, card: "simulation_cluster".into() }, None).unwrap();
+    answer_with(&rules, &mut g, "GainPerTokens");
+    assert_eq!(g.resource(0, Resource::Insight), insight + 1, "the other half: 1 insight per Dataset");
+    assert_eq!(g.var(&cards::tokens_key(0, "synthetic_data_forge")), 1, "no Dataset added");
+}
+
 #[test]
 fn fight_triggers_fire_once_an_action_or_once_a_troop() {
     // 119: Signal Hijack's 2 troops pinned (r46), so both troops near go.

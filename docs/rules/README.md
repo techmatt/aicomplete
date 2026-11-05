@@ -21,7 +21,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 47 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 48 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -60,7 +60,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Here**: on a building: on this card, where its tokens sit.
 - **Remove N**: as many as there are, up to N.
 - **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.
-- **Draw**: from the tier-1 deck, never its discards, with no keep to pay.
+- **Draw**: from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first.
 - **On your cards**: on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 <!-- /generated -->
@@ -108,4 +108,4 @@ adversary deck-out stay; with no tips the Unity-deck win and the Discord-deck lo
 Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission removes a
 botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
 `cards=off` and `economy=off` remove the module. Parts switch off by parameters (`factory_units` 0, `factory_chips` 0,
-`escalation_ambassadors` 0, `board.troop_steps` 0 (no march), `adversary.botnet_compute` 0, `economy.give_insight` 0).
+`escalation_ambassadors` 0, `board.troop_steps` 0 (no march), `adversary.botnet_compute` 0).

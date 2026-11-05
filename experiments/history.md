@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 121 the loose threads: Unity overflow (Unity only), no insight giving, played-events pile and the reshuffle, Popular Uprising tier 1, no 1-credit amounts, nothing to act on never blocks, peaks per seat (the runaway check); 117's four cards get scenes | r48 | [121_loose_threads/r48.md](results/121_loose_threads/r48.md), [read.md](results/121_loose_threads/read.md), [carry.md](results/121_loose_threads/carry.md), [art.md](results/121_loose_threads/art.md), [pricing-notes.md](results/121_loose_threads/pricing-notes.md) |
 | 117 lower income (18 / 16 / 14), big early and late cards, the strongest tier-2 cards to 1.5×; "credits left at game end" is the last upkeep's income in won games | r46 | [117_big_cards_and_income/r46.md](results/117_big_cards_and_income/r46.md), [cards.md](results/117_big_cards_and_income/cards.md) |
 | 116 agent sweep (the strategist's ten parameters, coordinate search on fixed seeds, held-out confirm; `scripts/tune/agent_sweep.py`) | r45 | [116_agent_sweep/sweep.md](results/116_agent_sweep/sweep.md), [summary-r45.md](results/116_agent_sweep/summary-r45.md) |
 | 114 art for borrowed scenes (11 cards off a cut card's or old name's scene: 2 reused, 9 drawn in batch 7) | r44 | [114_art_borrowed_scenes/art.md](results/114_art_borrowed_scenes/art.md) |

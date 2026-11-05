@@ -61,8 +61,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
   about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
   when they complete it), Decapitation Strike takes a botnet and 6 ambassadors in reach, the liberate capstones.
-- **Sway past one tip is lost:** a tip empties the whole bucket (alignment.md), so a card's Sway is worth at most
-  one tip (4 at two players, 6 at three); a bigger Unity swing needs a rule, not a bigger number.
+- **Sway past a tip carries over** (r48): a tip returns one tip's worth and the rest waits for the next (alignment.md),
+  so a big Sway can tip twice (8 at two players, where the whole pool is 8; Peace Conference). Sway is priced at the
+  anchor per point, up to what the pool can hold.
 - **Engines are priced at their seat's fire rate** (106, Matt: err toward strong engines that look broken when played
   well): a trigger at the rate a seat built around its tag sees (about 1 card of the tag a round, 3 tags of any kind),
   not the table's generic `fires_play` × `tag_share`, so the effect ledger reads most engine cards under their

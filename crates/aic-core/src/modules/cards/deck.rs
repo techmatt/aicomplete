@@ -11,24 +11,23 @@ pub fn discard(g: &mut GameState, cx: &mut Cx, card: &str, from: &str) {
 }
 
 /// Seat `s` draws up to `n` tier-1 cards into its hand, no keep paid (023's
-/// `draw`). 111: a draw never reshuffles the discards; only the draft does. A
-/// draw that reshuffled brought back the events just played (Breakthrough Leak
-/// and Capital Injection drew each other back, a 2308-play loop at r44's first
-/// read), so from an empty deck a draw gets nothing until the next draft.
+/// `draw`). r48 (Matt, 2026-11-05): if you must draw and can't, reshuffle the
+/// discard and draw. 111's loop (Breakthrough Leak and Capital Injection drew
+/// each other back from the discard) can't return: a played event goes to its
+/// player's played-events pile ([`events`]), never the discard.
 pub fn draw(g: &mut GameState, cx: &mut Cx, seat: usize, n: i64) -> Res {
     for _ in 0..n.max(0) {
-        let Some(id) = g.pile(&deck(1)).first().cloned() else {
+        if !deal_top(g, cx, 1, &hand(seat))? {
             break;
-        };
-        cx.move_card(g, &id, &deck(1), &hand(seat), false)?;
+        }
         cx.tally(g, "cards.drawn", 1);
     }
     Ok(())
 }
 
-/// A draw has a card to take (111: the tier-1 deck itself, not its discards).
+/// A draw has a card to take: the tier-1 deck, or its discard to reshuffle (r48).
 pub(crate) fn can_draw(g: &GameState) -> bool {
-    !g.pile(&deck(1)).is_empty()
+    tier_open(g, 1)
 }
 
 /// The top card of a tier's deck, reshuffling its discards if it is empty.

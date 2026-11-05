@@ -18,7 +18,7 @@ fn q(s: &str) -> String {
 
 pub fn games_csv(cells: &[Cell], games: &[GameResult]) -> String {
     let mut s = String::from(
-        "config,variant,difficulty,agent,seed,won,reason,rounds,decisions,options,forced,probed,close,gap_mean,deck_left,supply_left,supply_start,cities_corrupted_end,cities_aligned_end,blockers,level,unity_tips,adversary_ops,adversary_ops_max,setup_ops,gives,pays,withdraws,threats_dealt,threats_countered,corruptions,first_corruption_round,std_actions,war_destroyed,cards_played,buildings_played,tier2_played,buildings_standing,economy_buildings_standing,build,winprob,ms,replay_ok\n",
+        "config,variant,difficulty,agent,seed,won,reason,rounds,decisions,options,forced,probed,close,gap_mean,deck_left,supply_left,supply_start,cities_corrupted_end,cities_aligned_end,blockers,level,unity_tips,adversary_ops,adversary_ops_max,setup_ops,pays,withdraws,threats_dealt,threats_countered,corruptions,first_corruption_round,std_actions,war_destroyed,cards_played,buildings_played,tier2_played,buildings_standing,economy_buildings_standing,build,winprob,ms,replay_ok\n",
     );
     for g in games {
         let c = &cells[g.cell];
@@ -28,7 +28,7 @@ pub fn games_csv(cells: &[Cell], games: &[GameResult]) -> String {
         let pl = plays(g, c.rules.world().content);
         let _ = writeln!(
             s,
-            "{},{},{},{},{},{},{},{},{},{},{},{},{},{:.3},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.1},{}",
+            "{},{},{},{},{},{},{},{},{},{},{},{},{},{:.3},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.1},{}",
             q(&c.config_path),
             q(&c.variant),
             c.difficulty,
@@ -54,7 +54,6 @@ pub fn games_csv(cells: &[Cell], games: &[GameResult]) -> String {
             ops,
             g.adversary_ops.iter().max().unwrap_or(&0),
             g.setup_ops,
-            g.gives,
             g.pays,
             g.withdraws,
             cnt("threats.dealt"),

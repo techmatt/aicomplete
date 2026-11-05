@@ -361,6 +361,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             match (*cities, only) {
                 (false, Some(Facility::Station)) => parts.push(w("station")),
                 (false, Some(Facility::Factory)) => parts.push(w("factory")),
+                // D48 (r48): a cleanse that frees cities shows the city it frees (Great Liberation).
+                (true, _) => parts.push(w("city")),
                 _ => {}
             }
             if *one_country {
@@ -375,7 +377,12 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             if *align {
                 say.push_str("; your cube goes on it");
             }
-            let mut out = vec![clause(adversary(parts), say)];
+            let mut icons = adversary(parts);
+            // D48 (r48): the align mark, your cube onto the city (Hostile Buyout).
+            if *align {
+                icons.extend([w("→"), w("cube")]);
+            }
+            let mut out = vec![clause(icons, say)];
             if *ambassadors > 0 {
                 let n = *ambassadors;
                 let noun = if n == 1 { "ambassador" } else { "ambassadors" };
@@ -535,6 +542,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         Op::ProjectCube { count, station } => {
             let mut icons = counted(*count, "research_cubes");
             icons.push(w("megaproject"));
+            // D48 (r48): the station limit shows (Field Grant).
+            if *station {
+                icons.extend([w("/"), w("station")]);
+            }
             let what = amount(Resource::ResearchCubes, *count);
             // 118: both kinds need an incomplete megaproject (Field Grant's said nothing of it).
             let place = if *station { "that isn't complete, in a country where you own a station" } else { "that isn't complete" };
@@ -595,7 +606,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::ProjectDrain { .. }
         | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
-        | Op::GiveBonus { .. }
         | Op::SpreadShield
         | Op::CivicShelter
         | Op::Wall
@@ -748,15 +758,11 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         ),
         Op::AutoCounter { source, amount: n } => effect(
             adversary(minus(*n, "jam")),
-            format!("{source} threats in your home country need {n} less"),
+            format!("{source} threats you can pay toward need {n} less"),
         ),
         Op::UnityBonus { amount: n } => effect(
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },
             format!("when you remove an adversary troop, sway {n} more toward Unity"),
-        ),
-        Op::GiveBonus { resource, amount: n } => effect(
-            { let mut p = vec![Part::Other { other: vec![w("insight")] }, w(":")]; p.extend(counted(*n, icon(*resource))); p },
-            format!("when you give insight, the receiver also gains {}", amount(*resource, *n)),
         ),
         Op::SpreadShield => effect(
             { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("harden"), w("node")]); p },

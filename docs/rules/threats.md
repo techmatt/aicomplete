@@ -46,9 +46,10 @@ Military bases and adversary ambassadors are never sources.
 - **Shield:** while a threat is face up, the adversary's pieces of its source type in its country can't be destroyed
   or liberated until it is countered: removal and liberate cards skip them, and player ambassadors at a corrupted
   city's fallback wait, and liberate it the moment the threat is countered. An adversary ambassador is never shielded.
-- **Standing counters:** while a player has a tier-2 capstone with an automatic counter, each threat of its type in
-  their home country needs that much less, whenever it was dealt; one it pays in full is countered at once, as dealt
-  or as the counter comes into play (118). Under `shared_row` no threat has a country, so it counters none (D54).
+- **Standing counters:** while a player has a tier-2 capstone with an automatic counter, each threat of its type they
+  can pay toward (they may counter it: any country, or the shared row) needs that much less, whenever it was dealt
+  (r48; it was their home country's alone, which under `shared_row` meant none); one it pays in full is countered at
+  once, as dealt or as the counter comes into play (118).
 
 **For new players.** Every threat grows out of something on the map. Find what its badge names in its country: a
 corrupted city (influence), a corrupted station or botnet (cyber), an adversary factory (economic), a troop
@@ -64,8 +65,9 @@ deck holds enough threats that a deal doesn't run short at 4 countries and diffi
 discards can't supply deals what it can and counts the rest as `threats.short`.
 
 **Energy counters (candidate).** A counter is one cost, each resource it prints paid in full. Most print credits alone;
-the grid's own harms, Blackout, Sabotage and Commandeer, take 1 credit and 1 energy, so energy has a use every round
-a threat lands. Any resource a seat gets without a specific card may be a counter's; the full threat redesign waits
+the grid's own harms take energy alone (Blackout and Commandeer 1, Sabotage 2), so energy has a use every round a
+threat lands. **No counter prints 1 credit** (Matt, r48: tracking it costs more than it moves the game): a counter is
+5 or more credits, or energy. Any resource a seat gets without a specific card may be a counter's; the full threat redesign waits
 for the adversary pass. **Insight counters (r41):** Smear Campaign, Infiltration (tier 1), Deepfake Wave and Purge
 Protocols (tier 2) take 5 insight and nothing else, about one round's printed insight: a sink for the insight a seat
 didn't spend on cards. Insight is pooled like any payment; the players bring it through their converters (the cube
@@ -81,16 +83,16 @@ upkeep, False Flag) waits beside its country (or the row) and executes next roun
 can be paid (Matt).
 
 Choice threats are preferred; a destroyed node leaves the game, so a tier-1 threat's loss can be permanent too.
-**Counters cost credits (candidate),** 4-8 by tier and harm, or 5 insight on four of them (the table prints them):
+**Counters cost credits (candidate),** 4-8 by tier and harm, or 5 insight on four of them, or energy on three (the table prints them):
 
 <!-- generated: threats -->
 | Threat | Tier | Source | If not countered | Counter |
 |---|---|---|---|---|
 | Requisition | 1 | economic | Each player here discards 2 cards or pays 6 credits. | 4 credits |
-| Commandeer | 1 | economic | Each player here discards 2 cards or pays 4 energy. | 1 credit + 1 energy |
+| Commandeer | 1 | economic | Each player here discards 2 cards or pays 4 energy. | 1 energy |
 | Supply Raid | 1 | economic | Each player here loses 6 credits. | 5 credits |
-| Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 credit + 1 energy |
-| Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 1 credit + 1 energy |
+| Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 energy |
+| Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 2 energy |
 | Infiltration | 1 | cyber | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 insight |
 | Agitators | 1 | influence | 3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their nodes here. | 5 credits |
 | Orbital Strike | 1 | military | 1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their nodes here. | 6 credits |

@@ -90,7 +90,7 @@ the DevTools protocol, no extra packages. `AIC_URL` points it at the server (def
 `http://localhost:5173/`), `AIC_BROWSER` at a browser off the usual path. It checks every
 panel and the board, plays a baseline game (seed 1) to the end through the page, then
 the interactions above, no page scroll at 1366×768, 1920×1080 and 2560×1440, words
-rather than ids on screen, under 100 ms a step, a 4-country game, the shared row
+rather than ids on screen, under 100 ms a step, a 4-country game (may scroll at 1366×768), the shared row
 (`configs/shared_row.json`) and the given record; each `check(...)` names itself.
 About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` also saves
 `viewer-mid.png` and `viewer-end.png` there.
@@ -107,8 +107,8 @@ checks a face-up threat's sources and a forged payment refused.
 **Against a built site:** a dev-server rebuild breaks a run mid-way (`reading 'view'`), so
 while the engine is edited serve a snapshot: `node scripts/build-wasm.mjs && npx vite build
 && npx vite preview --port $PORT --strictPort`, `AIC_URL=http://localhost:$PORT/`
-(`npx vite build` alone, about 1 s, after a `web/src/` edit). A killed wrapper can leave its
-`node` holding the port, failing `--strictPort`: kill that process.
+(`npx vite build` alone, about 1 s, after a `web/src/` edit). A killed wrapper's `node` can
+hold the port (`--strictPort` fails): kill it.
 
 ## The sweep
 
