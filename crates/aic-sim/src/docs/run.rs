@@ -221,8 +221,9 @@ fn fill(text: &str, block: &dyn Fn(&str) -> Option<String>) -> String {
 }
 
 /// Every generated block of `docs/rules/`; each must stand in exactly one file there.
-pub(super) const BLOCKS: [&str; 20] = [
+pub(super) const BLOCKS: [&str; 21] = [
     "new_players",
+    "draft_set",
     "house_terms",
     "countries",
     "corps",
@@ -248,6 +249,7 @@ pub(super) const BLOCKS: [&str; 20] = [
 pub(super) fn block(name: &str, r: &Rules) -> Option<String> {
     Some(match name {
         "house_terms" => house_terms(),
+        "draft_set" => draft_set_block(r, content()),
         "threats" => threats_block(),
         "adversary" => adversary_block(),
         "alignment" => alignment_block(),

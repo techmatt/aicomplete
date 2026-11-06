@@ -13,7 +13,8 @@ Current:
 - `cards/apply_overlay.py FILE... [--check]`: writes content overlays (`cards.<id>.<path>=JSON` lines, the keys
   `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a card pass
   keeps its edits as one overlay file and reruns it. `cards.<id>=<JSON object>` writes a whole row: a new card is
-  appended, an existing one replaced (125). `--check` prints what would change. Run `regen.py` after.
+  appended, an existing one replaced (125; `--set` has no such form). Nothing deletes: drop a card from the
+  baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check` prints what would change. Run `regen.py` after.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
   (runs `use-090.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
@@ -75,7 +76,8 @@ Current:
   per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`;
   rerun at each card revision. `--stdout` writes nothing and prints each card's fit and fair credit price
   (card-pricing.md, *A fair price*); `--cards FILE` and `--values FILE` read a proposed `cards.json` or
-  `values.json`; `--hold-ratio OLD.csv` adds the credit price that keeps each card's printed / reasoned ratio of an
+  `values.json`; `--overlay FILE` (with `--stdout`) applies a card pass's overlay first, to price it before
+  writing it; `--hold-ratio OLD.csv` adds the credit price that keeps each card's printed / reasoned ratio of an
   older `cards.csv` (`git show REV:experiments/results/effect-ledger/cards.csv`), for repricing after a value change.
   Its Python mirror of `agents/value.rs` must change with it (the fast-lane `effect_ledger_mirrors_the_table` checks
   the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`values.json`

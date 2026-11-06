@@ -1,6 +1,8 @@
 """125's read: energy (lost at the limit, spent, where it goes), peaks, wins, and the plays of the cards 125 changed,
 per agent cell of one or more experiment dirs, pooled over the pairs.
 
+Reads r49-r50 runs only: 127 (r51) removed the holding limits and the `economy.hold_lost*` counters.
+
     python experiments/results/125_energy_sinks/read125.py DIR[=TAG[@REV]]... [--base LABEL] [--top 8] [--pairs]
 
 Each DIR's `games.jsonl` (an `aic-sim experiment` output, 125's measures: `spent`, `uses`,

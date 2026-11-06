@@ -1,5 +1,7 @@
 """124's read: per agent cell (the spec's agent label) of one or more experiment dirs, pooled over the pairs.
 
+Reads r49-r50 runs only: 127 (r51) removed the holding limits and the `economy.hold_lost*` counters.
+
     python experiments/results/124_agents_engines/read124.py DIR[=TAG]... [--base LABEL] [--cards all|engine|none]
         [--md] [--pairs]
 

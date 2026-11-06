@@ -96,19 +96,12 @@ pub(crate) fn credit_cost(d: &CardDef) -> i64 {
 /// [`policy::Policy`] wraps.
 pub trait Strategic: Agent {
     fn set_strategies(&mut self, _c: strategy::Choice) {}
-    /// 102 (D23): energy and antimatter in table credits as this agent's
-    /// heuristic prices them, for the keep plan (`None`: the value table's).
-    fn plan_rates(&self) -> Option<eval::PlanRates> {
+    /// The agent's heuristic, which the keep plan reads for its rates
+    /// (`Eval::plan_rates`, 102), its strategy multipliers (`Eval::mults`, 116)
+    /// and `strat_contents` (124). `None` (random): the value table's rates and
+    /// plain multipliers.
+    fn eval(&self) -> Option<&eval::Eval> {
         None
-    }
-    /// 116: the heuristic's `strat_scale`, for the keep plan's multipliers.
-    fn strat_scale(&self) -> f64 {
-        1.0
-    }
-    /// 124 (D47): the heuristic's `strat_contents`, for the keep plan's
-    /// multipliers and the strategy choice.
-    fn strat_contents(&self) -> bool {
-        false
     }
 }
 

@@ -243,9 +243,11 @@ macro_rules! forced_table {
             /// whole keep ("with insight to burn, keep every card worth having").
             (keep_spare: bool, false, 1.0, "124: keep plan: a pick worth its price is kept when insight beyond the heuristic's insight_cap pays its whole keep")
             /// 124 (D47): the keep plan reads a teammate trigger at the teammates' tag share.
+            /// The play check's twin is `w.team_share`: screen the two together.
             (plan_team: bool, false, 0.0, "124 (D47): keep plan: a trigger on a teammate's plays fires at the teammates' share of the tag")
             /// 128: the keep plan counts an Action that places project cubes only
             /// while a megaproject is open to the seat (Particle Accelerator).
+            /// The play check's twin is `w.cube_target`: screen the two together.
             (plan_cube_target: bool, false, 1.0, "128: keep plan: a project-cube Action counts no uses once no megaproject is open")
         }
     };
@@ -358,7 +360,8 @@ impl Policy {
     /// 082: each seat's strategy, chosen at the round-1 keep from its board and
     /// opening deal (a pure function of the table), and handed to the agent inside.
     fn choose_strategies(&mut self, w: &World, g: &GameState) {
-        let c = opening_choice(w, g, &self.forced, self.inner.strat_contents());
+        let contents = self.inner.eval().is_some_and(|e| e.w.strat_contents > 0.0);
+        let c = opening_choice(w, g, &self.forced, contents);
         self.set_strategies(c);
     }
 
@@ -373,23 +376,13 @@ impl Policy {
         let drafted = g.pile(&cards::drafted(s)).to_vec();
         let full = self.forced.plan_hand > 0 && g.pile(&cards::hand(s)).len() >= self.forced.plan_hand;
         let strat = self.strat.get(s).copied().flatten();
+        let ev = self.inner.eval();
         if strat.is_some() && self.mults.is_none() {
-            self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale(), self.inner.strat_contents())));
+            // The heuristic's own multipliers (116 `strat_scale`, 124 `strat_contents`).
+            self.mults = Some(ev.map_or_else(|| Arc::new(Mults::new(&world, 1.0, false)), |e| e.mults()));
         }
         let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, energy_cap, energy_share } =
-            self.inner.plan_rates().unwrap_or_else(|| {
-                let t = value::table();
-                super::eval::PlanRates {
-                    energy: t.res(Resource::Energy),
-                    antimatter: t.res(Resource::Antimatter),
-                    project: 0.0,
-                    cap: f64::MAX,
-                    idle: 1.0,
-                    insight_cap: 0.0,
-                    energy_cap: 0.0,
-                    energy_share: 1.0,
-                }
-            });
+            ev.map_or_else(super::eval::PlanRates::table, |e| e.plan_rates());
         // 128 (`energy_cap`): a seat whose energy piles up keeps what spends it.
         let held = g.resource(s, Resource::Energy) as f64;
         let energy_rate = if energy_cap > 0.0 && held > energy_cap { energy_share } else { 1.0 };
@@ -572,14 +565,8 @@ impl Strategic for Policy {
         self.inner.set_strategies(c);
     }
 
-    fn plan_rates(&self) -> Option<super::eval::PlanRates> {
-        self.inner.plan_rates()
-    }
-    fn strat_scale(&self) -> f64 {
-        self.inner.strat_scale()
-    }
-    fn strat_contents(&self) -> bool {
-        self.inner.strat_contents()
+    fn eval(&self) -> Option<&super::eval::Eval> {
+        self.inner.eval()
     }
 }
 
@@ -915,16 +902,10 @@ impl PlanTable {
     fn read(w: &World, g: &GameState, s: usize, f: &Forced) -> PlanTable {
         PlanTable {
             team: (f.plan_team && g.seats.len() > 1).then(|| {
-                let (mut counts, mut n) = ([0i64; TAGS.len()], 0i64);
-                for o in (0..g.seats.len()).filter(|&o| o != s) {
-                    let tags = cards::tag_counts(w, g, o);
-                    let mix = super::eval::own_mix_counts(w, g, o, &tags);
-                    for (c, m) in counts.iter_mut().zip(mix.0) {
-                        *c += m;
-                    }
-                    n += mix.1;
-                }
-                Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share
+                let others = (0..g.seats.len())
+                    .filter(|&o| o != s)
+                    .map(|o| super::eval::own_mix_counts(w, g, o, &cards::tag_counts(w, g, o)));
+                super::eval::team_share(others)
             }),
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,

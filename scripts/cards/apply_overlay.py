@@ -7,7 +7,10 @@ takes (a line starting `#` is a comment; blank lines are skipped). The paths fol
 `crates/aic-core/src/content.rs`: `<table>.<id>.<path>`, the table one of corps (the map's
 countries, by lowercase name), cards, threats, adversary, ais, alignment, projects; `id` may
 be `*` (every row); `<table>.<id>=<JSON object>` with no path writes a whole row (125: a new card
-is appended, an existing row replaced); the path walks object fields and list indexes, its last step may add a
+is appended, an existing row replaced; this form is apply_overlay's own, the engine's `--set` has
+none). Nothing deletes a row: to drop a card, take it out of the deck in configs/baseline.json and
+run scripts/configs/shared_row.py, then edit content/cards.json and tools/card-art/scenes.json by
+hand. The path walks object fields and list indexes, its last step may add a
 field; the value is JSON, or a bare word taken as a string. An entry setting a value already
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 

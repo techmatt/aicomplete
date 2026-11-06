@@ -1,6 +1,8 @@
 """Matt's credit check (122, message 5134): credits gained per game per seat (`gained`, rises after the limit),
 credits lost at the limit (`economy.hold_lost.credits`), and per round, per agent and run.
 
+Reads r49-r50 runs only: 127 (r51) removed the holding limits and the `economy.hold_lost*` counters.
+
     python experiments/results/122_runaway_engines/credit_read.py DIR... [--top 5]
 """
 import argparse

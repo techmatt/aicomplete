@@ -103,17 +103,16 @@ an action against one guess (`deals=1,lead=0`), and `deals=4,lead=60` about 1.25
 
 **The agent tiers at r40.** One thread, a quiet box, c2 (Builder + Protector), d2, from seed 1000, the best
 of two passes of `python scripts/bench/per_decision.py OLD NEW --agent A` (16 games for the greedy rows, 8
-for the planners). Before is the build 104 started from (`plan_gross=1` the default); the games are the
-same games, so the ratio is the code. 103's table (before `plan_gross=1`, other games) is in
+for the planners). 104's before/after on the same games, and 103's table, are in
 [104's write-up](../experiments/results/104_agent_speed_2/speed.md):
 
-| agent | ms / decision | ms / game | before (ms / game) | after / before | rounds | decisions / game |
-|---|---|---|---|---|---|---|
-| engine (greedy, no strategy) | 0.69 | 305 | 322 | 0.95 | 7.12 | 445 |
-| strategist (greedy with strategy) | 0.69 | 274 | 286 | 0.96 | 6.50 | 400 |
-| sweep (`planner:deals=1,lead=0`) | 7.4 | 3214 | 3347 | 0.96 | 7.50 | 436 |
-| planner (4 deals) | 10.4 | 4596 | 4898 | 0.94 | 7.25 | 440 |
-| planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 5578 | 0.95 | 7.25 | 424 |
+| agent | ms / decision | ms / game | rounds | decisions / game |
+|---|---|---|---|---|
+| engine (greedy, no strategy) | 0.69 | 305 | 7.12 | 445 |
+| strategist (greedy with strategy) | 0.69 | 274 | 6.50 | 400 |
+| sweep (`planner:deals=1,lead=0`) | 7.4 | 3214 | 7.50 | 436 |
+| planner (4 deals) | 10.4 | 4596 | 7.25 | 440 |
+| planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 7.25 | 424 |
 
 The strategist is about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
 threads beside another item, the read of `experiments/screen-082.json` (1,152 games: four greedy agents and

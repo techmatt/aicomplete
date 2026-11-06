@@ -5,6 +5,9 @@ pricing formula.
     python scripts/cards/effect_ledger.py          # rewrites experiments/results/effect-ledger/
     python scripts/cards/effect_ledger.py --stdout [--cards PROPOSED.json] [--values VALUES.json]
                                                    # prints each card's fit and fair price; writes nothing
+    python scripts/cards/effect_ledger.py --stdout --overlay PASS.txt
+                                                   # the same, with a card pass's overlay (apply_overlay.py's
+                                                   # `cards.` entries) applied in memory first
 
 Re-run it at each card revision; it reads only content/cards.json,
 configs/agents/values.json and RULES_REVISION, and writes the same files for the same
@@ -598,12 +601,30 @@ def load_path(path):
         return json.load(f)
 
 
-def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None):
+def overlaid(cards, paths):
+    """`cards` with the `cards.` entries of overlay files applied, as
+    apply_overlay.py would write them (in memory; a whole row adds a card)."""
+    import apply_overlay
+    files = {'cards.json': cards}
+    for entry in apply_overlay.read_entries(paths, []):
+        if not entry.startswith('cards.'):
+            sys.exit(f'{entry!r}: the ledger reads cards only; --overlay takes `cards.` entries')
+        try:
+            apply_overlay.apply_entry(files, entry)
+        except (ValueError, KeyError) as e:
+            sys.exit(str(e))
+    return files['cards.json']
+
+
+def main(stdout=False, cards_path=None, values_path=None, hold_ratio=None, overlays=()):
     raw = load_path(values_path) if values_path else load_json('configs', 'agents', 'values.json')
     t = Table(raw)
     TROOPS_REMOVED.clear()
     TROOPS_REMOVED.update({int(k): v for k, v in raw.get('troops_removed', {}).items() if k != 'note'})
-    cards = sorted(load_path(cards_path) if cards_path else load_json('content', 'cards.json'), key=lambda c: c['id'])
+    cards = load_path(cards_path) if cards_path else load_json('content', 'cards.json')
+    if overlays:
+        cards = overlaid(cards, overlays)
+    cards = sorted(cards, key=lambda c: c['id'])
     if not stdout:
         os.makedirs(OUT, exist_ok=True)
     out = (lambda *_: None) if stdout else write_csv
@@ -899,12 +920,17 @@ def args():
     p.add_argument('--hold-ratio', metavar='OLD_CARDS_CSV',
                    help='with --stdout: add each card\'s credit price at its printed / reasoned ratio in an older '
                         'cards.csv (git show REV:experiments/results/effect-ledger/cards.csv > out/old.csv)')
+    p.add_argument('--overlay', action='append', default=[], metavar='FILE',
+                   help='with --stdout: an overlay file (apply_overlay.py format, `cards.` entries) applied to the '
+                        'cards before pricing; repeatable')
     a = p.parse_args()
     if a.hold_ratio and not a.stdout:
         p.error('--hold-ratio prints: pass --stdout')
+    if a.overlay and not a.stdout:
+        p.error('--overlay prints: pass --stdout (the committed ledger reads content/)')
     return a
 
 
 if __name__ == '__main__':
     a = args()
-    main(stdout=a.stdout, cards_path=a.cards, values_path=a.values, hold_ratio=a.hold_ratio)
+    main(stdout=a.stdout, cards_path=a.cards, values_path=a.values, hold_ratio=a.hold_ratio, overlays=a.overlay)

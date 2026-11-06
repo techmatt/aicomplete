@@ -1,6 +1,8 @@
 """124: where energy is lost at the limit: per agent cell, energy lost a game by round (`economy.hold_lost.energy.rNN`),
 and the energy gained per seat-game by source (the `sources` field, 124), top N.
 
+Reads r49-r50 runs only: 127 (r51) removed the holding limits and the `economy.hold_lost*` counters.
+
     python experiments/results/124_agents_engines/energy_read.py DIR [--agent LABEL] [--top 8] [--res energy]
 """
 import argparse

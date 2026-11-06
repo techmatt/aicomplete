@@ -324,14 +324,8 @@ impl super::Strategic for Planner {
         self.ev.set_strategies(c);
     }
 
-    fn plan_rates(&self) -> Option<super::eval::PlanRates> {
-        Some(self.ev.plan_rates())
-    }
-    fn strat_scale(&self) -> f64 {
-        self.ev.w.strat_scale
-    }
-    fn strat_contents(&self) -> bool {
-        self.ev.w.strat_contents > 0.0
+    fn eval(&self) -> Option<&super::eval::Eval> {
+        Some(&self.ev)
     }
 }
 

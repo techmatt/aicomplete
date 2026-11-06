@@ -2,6 +2,8 @@
 happened in (`economy.hold_lost_phase.<phase index>.energy`, named from `aic-sim`'s phase list order), and the part
 megaproject completion payouts lost (`board.completion_lost.energy`).
 
+Reads r49-r50 runs only: 127 (r51) removed the holding limits and the `economy.hold_lost*` counters.
+
     python experiments/results/125_energy_sinks/lost_read.py DIR [--res energy]
 """
 import argparse

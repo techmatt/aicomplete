@@ -310,7 +310,8 @@ pub struct Weights {
     /// thresholds resolve ("a trigger that pays credits is a credits card").
     pub strat_contents: f64,
     /// 124 (D47), above 0 (table mode): a trigger on a teammate's plays of a tag
-    /// fires at the teammates' share of cards with it, not the owner's.
+    /// fires at the teammates' share of cards with it, not the owner's. The keep
+    /// plan's twin is the forced row `plan_team` (policy.rs).
     pub team_share: f64,
     /// 124 (D47), above 0: a token on a card with a threshold (At N) is worth
     /// what the threshold pays per token, when that beats the held rate.
@@ -335,7 +336,8 @@ pub struct Weights {
     pub energy_cap: f64,
     pub energy_idle: f64,
     /// 128, above 0: an Action that places project cubes counts nothing once no
-    /// megaproject is open to the seat (`Ctx::cubes_open`).
+    /// megaproject is open to the seat (`Ctx::cubes_open`). The keep plan's twin
+    /// is the forced row `plan_cube_target` (policy.rs).
     pub cube_target: f64,
 }
 
@@ -566,7 +568,8 @@ impl Weights {
             // strategy reads trigger contents (alone +2.5 ±1.2); an insight a round
             // at its table rate in points, 2.5 × `table` 0.6 (D53: Hyperscale Botnet
             // played 0.009 → 0.14 a game; alone −2.8 ±2.2, with `insight_cap` +2.3
-            // ±2.3). With every agent's spare insight and limit rules: +3.7 ±2.5.
+            // ±2.3). With every agent's spare insight and the r49 limit
+            // rules (gone at r51): +3.7 ±2.5.
             strat_contents: 1.0,
             insight_income: 1.5,
             // 128: per-tag ops at the count they're played at; spare energy cheap.
@@ -955,6 +958,12 @@ impl Eval {
         } else {
             1.0
         }
+    }
+
+    /// The strategy multipliers this heuristic was built with (`strat_scale`,
+    /// `strat_contents`), which the keep plan shares.
+    pub fn mults(&self) -> Arc<Mults> {
+        Arc::clone(&self.mults)
     }
 
     /// 102: for the keep plan, in table credits as this heuristic prices them
@@ -1690,16 +1699,8 @@ impl Eval {
             let mixes: Vec<([i64; TAGS.len()], i64)> =
                 seats.iter().map(|sd| self.mix_counts(&world, g, sd.s, sd.tags, in_play(g, sd.s))).collect();
             for sd in seats.iter_mut() {
-                let (mut counts, mut n) = ([0i64; TAGS.len()], 0);
-                for (o, (c, k)) in mixes.iter().enumerate() {
-                    if o != sd.s {
-                        for i in 0..TAGS.len() {
-                            counts[i] += c[i];
-                        }
-                        n += k;
-                    }
-                }
-                sd.ctx.team = Some(Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share);
+                let others = mixes.iter().enumerate().filter(|&(o, _)| o != sd.s).map(|(_, m)| *m);
+                sd.ctx.team = Some(team_share(others));
             }
         }
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
@@ -1997,6 +1998,19 @@ pub(crate) fn own_mix_counts(w: &aic_core::module::World, g: &GameState, s: usiz
     (counts, n)
 }
 
+/// 124 (D47, `team_share` / `plan_team`): each tag's share of the other seats'
+/// cards together, from their `own_mix_counts`.
+pub(crate) fn team_share(others: impl Iterator<Item = ([i64; TAGS.len()], i64)>) -> [f64; TAGS.len()] {
+    let (mut counts, mut n) = ([0i64; TAGS.len()], 0i64);
+    for (c, k) in others {
+        for (sum, m) in counts.iter_mut().zip(c) {
+            *sum += m;
+        }
+        n += k;
+    }
+    Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share
+}
+
 /// 107: seat `s`'s cards in play: its tops, the cards under them and its programs.
 fn in_play(g: &GameState, s: usize) -> i64 {
     let tops = g.pile(&cards::built(s));
@@ -2034,6 +2048,24 @@ pub struct PlanRates {
     /// energy price an energy beyond it costs (`Ctx::energy_rate`).
     pub energy_cap: f64,
     pub energy_share: f64,
+}
+
+impl PlanRates {
+    /// The value table's own rates, for an agent with no heuristic (random):
+    /// no project charge, no credit cap, no insight or energy cap.
+    pub fn table() -> PlanRates {
+        let t = value::table();
+        PlanRates {
+            energy: t.res(Resource::Energy),
+            antimatter: t.res(Resource::Antimatter),
+            project: 0.0,
+            cap: f64::MAX,
+            idle: 1.0,
+            insight_cap: 0.0,
+            energy_cap: 0.0,
+            energy_share: 1.0,
+        }
+    }
 }
 
 #[cfg(test)]

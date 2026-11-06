@@ -4,8 +4,8 @@ How a card's price is set, as the set stands. Every price is a **candidate**. Th
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are
 [card-guidelines.md](card-guidelines.md). What each pass changed and why is in git and in the pass's write-up under
 `experiments/results/screen-NNN/` (076's card-by-card verdicts: `screen-076-cards/cards.md`). A card whose price needs
-a word in the card viewer gets one current line in `docs/card-pricing-notes.json`, keyed by card id, written by the item
-that sets the price.
+a word in the card viewer gets one current line in `docs/card-pricing-notes.json`, keyed by card id (keys sorted),
+written by the item that sets the price.
 
 ## The rates
 
@@ -100,8 +100,10 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
   a progressive token card (uses × payoff) × 0.7, counting adds as uses (ruling 12).
   A conversion Action passes both the anchor ceiling and a gain at `values.json` only when its output is priced alike
-  in both (Sway, a liberation, research cubes): the anchors put insight at 4 and a draw at 5, the table 2.5 and 4, so
-  energy into insight or cards reads over 1.5 at the anchors or a loss at the table (125).
+  in both (Sway, a liberation, a megaproject cube: `project_cube` 6, not the `research_cubes` resource at 3): the
+  anchors put insight at 4 and a draw at 5, the table 2.5 and 4. At tier 1, energy into insight reads over 1.5 at the
+  anchors or a loss at the table (a gain needs over 1.8 insight an energy, the ceiling under 1.69); into cards only
+  1.13-1.35 cards an energy passes both (3 energy for 4 cards). Tier 2's 2.5 ceiling passes either at 1:2 (125).
 - **Energy is rare** (r35): about 4.5 credits an energy, 5 to buy from a neutral city (r36). +1 energy of income or
   production is the horizon × 4.5 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed):
   about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling; it replaced r35's 8-10 anchor), and no card above

@@ -545,6 +545,30 @@ pub(super) fn purge_ease_block(r: &Rules) -> String {
     out
 }
 
+/// The draft set's counts (the baseline's `cards` module list) that
+/// player-cards.md quotes: insight to play and energy costs.
+pub(super) fn draft_set_block(r: &Rules, c: &Content) -> String {
+    let ids = r.config.modules.iter().find(|m| m.module == "cards").map_or(&[][..], |m| &m.cards[..]);
+    let deck: Vec<_> = ids.iter().map(|id| c.card(id)).collect();
+    let count = |f: &dyn Fn(&aic_core::content::CardDef) -> bool| deck.iter().filter(|d| f(d)).count();
+    let tier2 = count(&|d| d.tier == 2);
+    let at = |i: i64| count(&|d| d.insight == i);
+    let building = |d: &aic_core::content::CardDef| d.kind == aic_core::content::CardKind::Building;
+    format!(
+        "**The draft set in numbers.** {} cards ({} tier 1, {tier2} tier 2). Insight to play: {} / {} / {} cards \
+         at 0 / 1 / 2, {} of the {tier2} tier-2 cards at 2. An energy cost: {} cards, {} of the {} buildings.\n",
+        deck.len(),
+        deck.len() - tier2,
+        at(0),
+        at(1),
+        at(2),
+        count(&|d| d.tier == 2 && d.insight == 2),
+        count(&|d| d.energy > 0),
+        count(&|d| building(d) && d.energy > 0),
+        count(&building),
+    )
+}
+
 /// The opening paragraph for new players.
 pub(super) fn new_players_block(r: &Rules) -> String {
     let c = content();

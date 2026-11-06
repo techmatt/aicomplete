@@ -25,14 +25,19 @@ The cards config lists which cards are in the game (baseline: all of them).
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
-  events included), 2 for big effects and most tier 2, 29 of 42 (the draft set: 23 / 99 / 29 cards at 0 / 1 / 2); it
+  events included), 2 for big effects and most tier 2 (counts below); it
   comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
   in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
-- **Energy costs (candidate; Matt, r50).** Energy is a second cost on a building whose title reads power-hungry, its
+
+<!-- generated: draft_set -->
+**The draft set in numbers.** 151 cards (109 tier 1, 42 tier 2). Insight to play: 24 / 98 / 29 cards at 0 / 1 / 2, 29 of the 42 tier-2 cards at 2. An energy cost: 12 cards, 7 of the 54 buildings.
+<!-- /generated -->
+
+- **Energy costs (candidate; Matt, r50).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its
   credits cut to match (about 4.5 an energy): mostly the Builder's heavy machinery, Industry and Power (Fabrication
   Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
-  compute (Foundation Model Campus 2). Energy costs stay uncommon: 9 of the 151 deck cards (7 of 54 buildings), so a
+  compute (Foundation Model Campus 2). Energy costs stay uncommon (counts above), so a
   seat that makes little energy still has plenty to play. Two late sinks are for a seat whose node tracks are full:
   Particle Accelerator (Action: pay 2 energy, put 3 research cubes on a megaproject) and Citywide Microgrid (tier 2, 8 energy: liberate
   a city in reach; Action: 2 Sway toward Unity).

@@ -10,8 +10,8 @@ $S experiment experiments/screen-102-c.json --quick --resume  # scoping; resumes
 ## The spec
 
 Configs × variants × difficulties × agents over a seed range, on every core; results never depend on the thread count
-and every game is replay-checked. Spec paths resolve against the working directory, so a spec not yet copied into a
-second checkout is refused.
+and every game is replay-checked. Spec paths resolve against the working directory (a spec not yet copied into a
+second checkout is refused).
 
 | Field | Default | Meaning |
 |---|---|---|
@@ -43,19 +43,18 @@ if listed, a bare agent with the next bare agent. *Fresh-seed confirmation* (`fr
 against the base on the seeds outside `selection_seeds` alone, never pooled; `first_seed`/`games` must reach
 past the selection range for any to exist.
 
-**Results as they go.** Each finished game is appended to `games.jsonl` (actions included), and the report is rewritten
-every `--report-every` seconds (default 60), marked **Partial: N of M games**. Games go out seed by seed across all
-cells, so a stopped run has every cell's first seeds. `--resume` (same spec, same `--out`) plays only the missing
-games and refuses a changed spec, config file, engine, rules revision or content. Without `--resume` an earlier stream
-is moved to `games.jsonl.bak`. A partial report blocked by a lock (`games.csv` open in a spreadsheet, on Windows) is
-skipped with a warning.
+**Results as they go.** Each finished game is appended to `games.jsonl` (actions included); the report is rewritten
+every `--report-every` seconds (60), marked **Partial: N of M games**. Games go out seed by seed across cells, so a
+stopped run has every cell's first seeds. `--resume` (same spec and `--out`) plays only the missing games and refuses
+a changed spec, config, engine, rules revision or content; without it an earlier stream moves to `games.jsonl.bak`. A
+partial report blocked by a lock (`games.csv` open in a spreadsheet) is skipped with a warning.
 
 - `report.md` and `results.json` exist from the start: wait on `^time:` in stderr or on the process, not on the file.
 - `run_sim.ps1` writes `out/NAME.err` as it runs (`panicked`, or the 10 s progress lines); `out/NAME.exit` marks the end.
 
 **A game that panics** fails alone: stderr and `failed.jsonl` name its seed, config, overrides and panic, `report.md`
-lists it under *Failed games* with the line that replays it, `results.json` has `games_failed`, no measure counts it,
-and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such net.
+lists it under *Failed games* with its replay line, `results.json` has `games_failed`, no measure counts it, and the
+run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such net.
 
 ## Measures
 
@@ -68,13 +67,13 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 - **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>` in `per_round`); the flag
   thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`. `margin.held_after_actions`: what each
   seat held after its last *completed* action phase, never mid-round.
-- **The runaway check**: every read reports each resource's peak per seat (`peaks` in `games.jsonl`, in
-  `PEAKS` order; the report's *Peak holdings*). A peak's rise over setup's `start` far above a round's income
-  (`gained / rounds`) is an engine running away: `scripts/cards/runaway_read.py` flags it. `sources` splits a
-  seat's `gained` by the action or phase it came in; `keeps` counts picks, keeps and tiers after the opening
-  (`source_read.py`); `spent` and `uses` split falls (125). 127's `read127.py` reads peaks, flags, credits gained,
-  energy spent and held, and what fed each flagged pile; `production_read.py` what a seat's credit production was
-  made of (both in `experiments/results/127_no_limits/`). No resource has a limit since r51 (127).
+- **The runaway check**: each resource's peak per seat (`peaks` in `games.jsonl`, `PEAKS` order; *Peak holdings*).
+  A peak's rise over setup's `start` far above a round's income (`gained / rounds`) is a runaway engine:
+  `scripts/cards/runaway_read.py` flags it. `sources` splits a seat's `gained` by action or phase; `keeps` counts
+  picks, keeps and tiers after the opening (`source_read.py`); `spent` and `uses` split falls. In
+  `experiments/results/127_no_limits/`: `read127.py` (peaks, flags, credits, energy, what fed each flagged pile:
+  `--sources N`), `production_read.py` (what made a seat's credit production), `seat_read.py DIR SEED VARIANT AGENT
+  SEAT` (one seat-game in detail). No resource has a limit since r51.
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -85,10 +84,12 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
 `adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
-`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, and `unspent.<seat>.energy` (energy held as the
-action phase ends); add a pair there for another (a rebuild). A zero is written for every round up to the key's last
-record, so an absent `unspent.*.rNN` means the round's action phase never ended. `cx.count(g, "x", n)` writes
-`<module>.x`; `cx.tally` and `cx.per_round` take the full key (`ai.power.builder.0`).
+`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, `unspent.<seat>.energy` (held as the action phase
+ends); add one there (a rebuild). A zero fills every round up to the key's last record, so an absent
+`unspent.*.rNN` means the round's action phase never ended. `cx.count(g, "x", n)` writes
+`<module>.x`; `cx.tally` and `cx.per_round` take the full key (`ai.power.builder.0`). The sim adds, as a seat
+passes: `actions.skipped|blocked[_energy].<seat>.<card>` (a building's Action offered and not taken, or not offered:
+used, unaffordable or no target; `_energy` sums energy held), `energy_cards.held|short.<seat>[.<card>]`, `slots.*`.
 
 **Saved records** (`records/`, reason in `note`): close losses (fewest pieces over the bar, top difficulty), early
 lock-ins, surprising wins (the weakest agent's, or at playout p ≤ 0.25), ranked by measured win rate at the top
@@ -97,12 +98,11 @@ difficulty on the base variant. A rerun into the same directory replaces them.
 ## Opt-in measures and `--quick`
 
 **Screen first, probe finalists.** Win-probability probes cost about 5× an experiment, closeness one greedy decision
-per probe. Probe only the finalists: `--variants keep2,uplinks --winprob 10 --closeness 1 --out
-out/experiments/x-finalists` (`--variants A,B` keeps those variants plus the base, always first).
+per probe: `--variants keep2,uplinks --winprob 10 --closeness 1` (`--variants A,B` keeps those plus the base, first).
 
-**`--quick`** (scoping runs) drops deep search (beam, rollout, `samples`/`depth` > 1, `engine:width` > 0; the planner
-stays), caps seeds at 16 a cell unless `--games` is given, and turns probes off unless asked. A dropped agent shows
-only as one stderr line and a missing cell.
+**`--quick`** (scoping) drops deep search (beam, rollout, `samples`/`depth` > 1, `engine:width` > 0; the planner
+stays), caps seeds at 16 a cell unless `--games` is given, and turns probes off unless asked; a dropped agent is one
+stderr line and a missing cell.
 
 ## Content levers
 
@@ -126,10 +126,10 @@ cheaper); the planner confirms.
 **Seeds are noisy.** 24 seeds is about ±10 and 48 about ±7; 16 about ±15, too few for levers under about 20
 points. Seed sets alone move a pair 10-25 points at 48 seeds.
 
-`cards.csv` splits by variant; `report.md`'s card table pools per agent. `games.jsonl` names agents as the spec writes
-them (`strategist`), `cards.csv` as resolved (`engine:strategy=1`): map them to join the two. `kept` and `drawn` in
-`games.jsonl` include the opening deal and `offered` doesn't, so kept ÷ offered passes 100%: use share of games. An
-agent's keeps are its plan, not a human table's.
+`cards.csv` splits by variant; `report.md`'s card table pools per agent. `games.jsonl` names agents as the spec
+writes them (`strategist`), `cards.csv` as resolved (`engine:strategy=1`): map them to join. `kept` and `drawn` in `games.jsonl`
+include the opening deal and `offered` doesn't, so kept ÷ offered passes 100%: use share of games. An agent's keeps
+are its plan, not a human table's.
 
 ## The ballpark read
 
@@ -147,27 +147,26 @@ the judge off the value table.
   threads; `-r52.json` its fresh read). 128's `read128.py` reads wins, lead, energy, credits and per-board keeps,
   plays and Action uses; `action_read.py` why an Action went unused. Agent switches are agent cells; a `values.json`
   edit needs a second binary.
-- **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
-  an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load.
-- **A before/after read is paired**: run the old binary, with its configs from `git archive <main> configs | tar -x`,
-  on the same seeds. Build and copy the old binary before the first edit, or build it from `git archive REV | tar -x
-  -C out/rREV` with its own `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` inside that
-  tree first (not `git apply`: in the worktree it resolves paths against the enclosing repo and silently applies
-  nothing). Run it from its own folder, with the spec copied there. The quickest play-neutral check: the new binary
-  with every content change reverted by overlay reproduces the old numbers exactly.
+- **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min (13 ms a planner decision); 300
+  strategist games about 4 min on 4 threads under load.
+- **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
+  same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
+  `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
+  worktree resolves paths against the enclosing repo and silently applies nothing). Run it from its own folder, spec
+  copied there. Quickest play-neutral check: the new binary with every content change reverted by overlay gives the
+  old numbers exactly. `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
 - **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
   first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
-  `corps.<name>.project.<path>`) and need no build (the old binary with the new numbers by overlay is a content
-  change's numbers-only arm); a rule or map what-if does.
-- **Copy the binary before a run, then rebuild freely.** **Preflight** a long run with `SPEC --games 1 --out
-  out/preflight` to catch a crash, bad override or dead agent.
+  `corps.<name>.project.<path>`) and need no build (a content change's numbers-only arm); a rule or map what-if does.
+- **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
+  out/preflight`) for a crash, bad override or dead agent.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and others in
   [scripts.md](scripts.md). **A won game ends inside a round, holding the last upkeep's income**, so
   `margin.unspent` tracks late income: read credits held as `margin.held_after_actions[seat][0]`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, planner and engine); read its win mix (purge vs.
-Unity deck) before any rule touching the end state. `experiments/sanity-line.json`: after a change to the rollout
-policy or `prune`, the line alone should read near the engine.
+Unity deck) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
+line alone reads near the engine.
 
 **Gates are suspended** until Matt names a milestone. The spec is `experiments/gate.json`, the early-stopping rule
 `crates/aic-sim/src/gate.rs` (`z` 2 flips about 1% of verdicts: `scripts/bench/gate_stop_rate.py`).
@@ -185,7 +184,8 @@ on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 
 ## Past runs
 
-Write-ups: index in [experiments/history.md](../experiments/history.md). Specs the binary refuses are in
-`experiments/archive/` (a fast-lane test parses every other spec: removing a switch moves its specs there). Tuning sweeps: `scripts/tune/sweep.py
---agents "greedy;beam" --games 64 --tag T --var "base=" --var "name=<sets;...>"` runs `aic-sim run --json` per variant
-and agent into `out/tune/log.jsonl`; `log_table.py TAG...` makes a markdown table.
+Write-ups: index in [experiments/history.md](../experiments/history.md). Past revisions' specs, and those the binary
+refuses, are in `experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close-*/`: removing a switch
+moves its specs there). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
+--var "name=<sets;...>"` runs `aic-sim run --json` per variant and agent into `out/tune/log.jsonl`; `log_table.py
+TAG...` makes a markdown table.
