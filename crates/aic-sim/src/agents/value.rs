@@ -16,7 +16,7 @@
 //! what any card does.
 
 use std::collections::BTreeMap;
-use std::sync::OnceLock;
+use std::sync::{Arc, Mutex, OnceLock};
 
 use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
 use serde::Deserialize;
@@ -38,6 +38,9 @@ pub struct Table {
     /// What a position reads, looked up once (the heuristic asks per card).
     #[serde(skip)]
     fast: Fast,
+    /// A [`Table::repriced`] table's own: the agent's table before repricing.
+    #[serde(skip)]
+    unpriced: Option<Arc<Table>>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -97,6 +100,85 @@ pub fn table() -> &'static Table {
     static T: OnceLock<Table> = OnceLock::new();
     T.get_or_init(|| {
         let mut t: Table = serde_json::from_str(SOURCE).expect("configs/agents/values.json parses");
+        t.refresh();
+        t
+    })
+}
+
+/// 131: the table with `sets` (an agent spec's `t.<key>=v`, see [`Table::set`])
+/// applied, made once a process for each distinct set and shared by every agent
+/// naming it; none is the table itself. A screen sets a rate per arm with no build.
+pub fn table_with(sets: &BTreeMap<String, f64>) -> Result<&'static Table, String> {
+    if sets.is_empty() {
+        return Ok(table());
+    }
+    static MADE: Mutex<Vec<(String, &'static Table)>> = Mutex::new(Vec::new());
+    let key: String = sets.iter().map(|(k, v)| format!("{k}={v};")).collect();
+    let mut made = MADE.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some((_, t)) = made.iter().find(|(k, _)| *k == key) {
+        return Ok(t);
+    }
+    let mut t = table().clone();
+    for (k, v) in sets {
+        t.set(k, *v)?;
+    }
+    t.refresh();
+    let t: &'static Table = Box::leak(Box::new(t));
+    made.push((key, t));
+    Ok(t)
+}
+
+impl Table {
+    /// 131: sets one number of the table by name: a resource (`chips`), a rate
+    /// (`tag_count`), an op row's credits (`auto_counter`), a token (`feed_agents`),
+    /// `troops_removed.<n>` or `tags.first` / `tags.more`. A name in two sections
+    /// takes its section (`resources.chips`); an unknown one is an error.
+    /// Call [`Table::refresh`] after.
+    pub fn set(&mut self, key: &str, v: f64) -> Result<(), String> {
+        if !v.is_finite() {
+            return Err(format!("t.{key}: not a finite number"));
+        }
+        let (section, name) = match key.split_once('.') {
+            Some((s, n)) => (Some(s), n),
+            None => (None, key),
+        };
+        let mut hits: Vec<&'static str> = Vec::new();
+        let want = |s: &str| section.is_none_or(|x| x == s);
+        if want("resources") && self.resources.contains_key(name) {
+            hits.push("resources");
+        }
+        if want("rates") && self.rates.contains_key(name) {
+            hits.push("rates");
+        }
+        if want("ops") && self.ops.contains_key(name) {
+            hits.push("ops");
+        }
+        if want("tokens") && self.tokens.contains_key(name) {
+            hits.push("tokens");
+        }
+        if section == Some("troops_removed") {
+            hits.push("troops_removed");
+        }
+        if section == Some("tags") && (name == "first" || name == "more") {
+            hits.push("tags");
+        }
+        match hits.as_slice() {
+            ["resources"] => _ = self.resources.insert(name.to_string(), v),
+            ["rates"] => _ = self.rates.insert(name.to_string(), v),
+            ["ops"] => self.ops.get_mut(name).expect("found").credits = v,
+            ["tokens"] => _ = self.tokens.insert(name.to_string(), v),
+            ["troops_removed"] => _ = self.troops_removed.by.insert(name.to_string(), v),
+            ["tags"] if name == "first" => self.tags.first = v,
+            ["tags"] => self.tags.more = v,
+            [] => return Err(format!("t.{key}: no such number in configs/agents/values.json")),
+            many => return Err(format!("t.{key}: in {} (name the section: t.{}.{name})", many.join(" and "), many[0])),
+        }
+        Ok(())
+    }
+
+    /// The lookups [`Fast`] keeps, read again from the table's maps.
+    fn refresh(&mut self) {
+        let t = self;
         let all = [
             Resource::Ambassadors,
             Resource::Antimatter,
@@ -121,20 +203,25 @@ pub fn table() -> &'static Table {
             own_mix: t.rate("own_mix"),
             mix_prior: t.rate("mix_prior"),
         };
-        t
-    })
-}
+    }
 
-impl Table {
     /// 102 (D23): this table with energy and antimatter at other rates (the
     /// keep plan's, priced as the heuristic prices them).
     pub fn repriced(&self, energy: f64, antimatter: f64) -> Table {
+        let own = Arc::new(self.own().clone());
         let mut t = self.clone();
         t.fast.res[Resource::Energy as usize] = energy;
         t.fast.res[Resource::Antimatter as usize] = antimatter;
         t.resources.insert(Resource::Energy.name().to_string(), energy);
         t.resources.insert(Resource::Antimatter.name().to_string(), antimatter);
+        t.unpriced = Some(own);
         t
+    }
+
+    /// The agent's table at its own rates: under [`Table::repriced`], the table
+    /// it was repriced from; else this one.
+    pub fn own(&self) -> &Table {
+        self.unpriced.as_deref().unwrap_or(self)
     }
 
     pub fn rate(&self, k: &str) -> f64 {
@@ -249,8 +336,7 @@ impl Ctx {
     /// seat's own cards, `counts` cards carrying each tag of `cards` in all, with
     /// `rates.mix_prior` cards at the table's `tag_share` added so a thin hand
     /// doesn't swing it ("a Science trigger fires as often as your cards are Science").
-    pub fn with_mix(mut self, counts: &[i64; TAGS.len()], cards: i64) -> Ctx {
-        let t = table();
+    pub fn with_mix(mut self, t: &Table, counts: &[i64; TAGS.len()], cards: i64) -> Ctx {
         if t.fast.own_mix <= 0.0 {
             return self;
         }
@@ -270,14 +356,14 @@ impl Ctx {
     }
 
     /// A context in a game: income counts every round left.
-    pub fn at(left: f64, node: f64, tags: [i64; TAGS.len()], corrupted: bool) -> Ctx {
+    pub fn at(t: &Table, left: f64, node: f64, tags: [i64; TAGS.len()], corrupted: bool) -> Ctx {
         Ctx {
             left,
             horizon: left,
             node,
             tags,
             corrupted,
-            share: [table().fast.tag_share; TAGS.len()],
+            share: [t.fast.tag_share; TAGS.len()],
             team: None,
             energy_rate: 1.0,
             cubes_open: true,
@@ -858,7 +944,7 @@ impl CardValue {
         play += passives_worth(t, &d.passives);
         // 102: an Action at the value table's own rates, even under a repriced
         // table (`Table::repriced`), as the heuristic values a building's Action.
-        let mut use_ = d.ability.as_ref().map(|a| ability_worth(table(), a)).unwrap_or_default();
+        let mut use_ = d.ability.as_ref().map(|a| ability_worth(t.own(), a)).unwrap_or_default();
         own_tags(&mut play, d);
         own_tags(&mut use_, d);
         let use_energy = d.ability.as_ref().map_or(0.0, |a| {
@@ -877,7 +963,7 @@ impl CardValue {
         if self.cube_use && !c.cubes_open {
             return 0.0;
         }
-        let rebate = self.use_energy * table().res(Resource::Energy) * (1.0 - c.energy_rate);
+        let rebate = self.use_energy * t.own().res(Resource::Energy) * (1.0 - c.energy_rate);
         (self.use_.instant(t, c) + self.use_.per_round(c) + rebate).max(0.0)
     }
 

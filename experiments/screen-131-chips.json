@@ -1,0 +1,43 @@
+{
+  "name": "screen-131-chips",
+  "note": "131 chip-rate screen: the value table's chip rate per agent cell (t.chips), seeds 36144-36191 (48 a cell), the three pairs at d2. Plain strategist and greedy are the table as it stood (1.5); t.chips=1.5 is the same table through the override, so it must play the same games.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:t.chips=1.5",
+    "strategist:t.chips=2",
+    "strategist:t.chips=2.5",
+    "strategist:t.chips=3",
+    "greedy",
+    "greedy:t.chips=1.5",
+    "greedy:t.chips=2",
+    "greedy:t.chips=2.5",
+    "greedy:t.chips=3"
+  ],
+  "games": 48,
+  "first_seed": 36144,
+  "records": 0
+}

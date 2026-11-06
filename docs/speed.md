@@ -85,7 +85,10 @@ is 8% faster than release and takes minutes to build.
 suite elsewhere on the box halved a whole table). `python scripts/bench/same_results.py DIR_A DIR_B` compares
 two experiment outputs, timing aside: the check that a speed-up or a late fix changed no game
 (`experiments/same.json`: strategist, engine, planner and `planner:strategy=1` on the three pairs, 192
-games, about 2 min on 6 threads). `same_play.py` is the wider one.
+games, about 2 min on 6 threads). `same_play.py` is the wider one. After a value-table change, other games swing a
+10-20 game ratio 0.5-2.4x (131): read the code's cost on the same games (`per_decision.py OLD NEW --old-agent greedy
+--agent "greedy:t.chips=1.5"`, the new binary's `t.` arm replaying the old table) and play's from a run's
+`agent_ms / decisions` over hundreds of games.
 
 **`sweep`, the cheap profile.** `planner:deals=1,lead=0` under the name `sweep`, for price screens. Keep and
 play rates by card hold under it (rank correlation 0.985-0.991 against the planner's;

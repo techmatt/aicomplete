@@ -361,7 +361,8 @@ impl Policy {
     /// opening deal (a pure function of the table), and handed to the agent inside.
     fn choose_strategies(&mut self, w: &World, g: &GameState) {
         let contents = self.inner.eval().is_some_and(|e| e.w.strat_contents > 0.0);
-        let c = opening_choice(w, g, &self.forced, contents);
+        let t = self.inner.eval().map_or_else(value::table, |e| e.tbl);
+        let c = opening_choice(t, w, g, &self.forced, contents);
         self.set_strategies(c);
     }
 
@@ -387,10 +388,11 @@ impl Policy {
         let held = g.resource(s, Resource::Energy) as f64;
         let energy_rate = if energy_cap > 0.0 && held > energy_cap { energy_share } else { 1.0 };
         // 102 (D23): energy and antimatter at the heuristic's own rates, as the play check prices them.
+        let own = ev.map_or_else(value::table, |e| e.tbl);
         if self.rates.is_none() {
-            self.rates = Some(Arc::new(value::table().repriced(energy, antimatter)));
+            self.rates = Some(Arc::new(own.repriced(energy, antimatter)));
         }
-        let t = self.rates.as_deref().unwrap_or_else(|| value::table());
+        let t = self.rates.as_deref().unwrap_or(own);
         let idle = (cap, idle);
         let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
         let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate };
@@ -705,8 +707,7 @@ impl Agent for Policy {
 
 /// 082: each seat's strategy on the table at its round-1 keep, from its board and
 /// opening deal, with `f`'s fixed ones (`strat0`..`strat2`) standing.
-pub fn opening_choice(w: &World, g: &GameState, f: &Forced, contents: bool) -> Choice {
-    let t = value::table();
+pub fn opening_choice(t: &value::Table, w: &World, g: &GameState, f: &Forced, contents: bool) -> Choice {
     let worth = |d: &CardDef| {
         let typical = Ctx::typical_for(t, d.tier);
         CardValue::of(t, d).total(t, &typical) - t.cost(d, d.cost, d.insight, typical.horizon)
@@ -751,7 +752,7 @@ pub fn print_choices(rules: &Rules, spec: &super::AgentSpec, first: u64, games: 
                 break;
             }
         }
-        let c = opening_choice(&w, &g, &spec.forced(), spec.weights().strat_contents > 0.0);
+        let c = opening_choice(spec.table(), &w, &g, &spec.forced(), spec.weights().strat_contents > 0.0);
         for (s, k) in c.iter().enumerate().take(g.seats.len()) {
             let name = k.map_or("none", |k| strategy::strategies().strategies[k as usize].id.as_str());
             println!("{seed},{s},{},{name}", ai::board(&w, s).id);
@@ -899,13 +900,13 @@ struct PlanTable {
 }
 
 impl PlanTable {
-    fn read(w: &World, g: &GameState, s: usize, f: &Forced) -> PlanTable {
+    fn read(t: &value::Table, w: &World, g: &GameState, s: usize, f: &Forced) -> PlanTable {
         PlanTable {
             team: (f.plan_team && g.seats.len() > 1).then(|| {
                 let others = (0..g.seats.len())
                     .filter(|&o| o != s)
                     .map(|o| super::eval::own_mix_counts(w, g, o, &cards::tag_counts(w, g, o)));
-                super::eval::team_share(others)
+                super::eval::team_share(t, others)
             }),
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,
@@ -913,7 +914,7 @@ impl PlanTable {
             cubes_open: !f.plan_cube_target || !aic_core::modules::effects::cube_projects(w, g, s, false).is_empty(),
             share: {
                 let tags = cards::tag_counts(w, g, s);
-                super::eval::own_mix(w, g, s, &tags, Ctx::at(0.0, 0.0, tags, false)).share
+                super::eval::own_mix(t, w, g, s, &tags, Ctx::at(t, 0.0, 0.0, tags, false)).share
             },
             projects: {
                 // (share filled, compute on it), fullest first.
@@ -965,7 +966,7 @@ fn situational(d: &CardDef, pc: &PlanCtx, pt: &PlanTable) -> f64 {
 /// The drafted cards seat `s` keeps: each, best value per cost first, if
 /// the plan with it is worth more than the plan without it.
 pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx) -> Vec<Key> {
-    let pt = PlanTable::read(w, g, s, f);
+    let pt = PlanTable::read(pc.t, w, g, s, f);
     let mut drafted = g.pile(&cards::drafted(s)).to_vec();
     let tags = cards::tag_counts(w, g, s);
     by_ratio(w, g, s, f, pc, &pt, &tags, &mut drafted);
@@ -1153,7 +1154,7 @@ fn value(
         team: pt.team,
         energy_rate: pc.energy_rate,
         cubes_open: pt.cubes_open,
-        ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted)
+        ..Ctx::at(t, (pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted)
     };
     let m = match (pc.strat, pc.mults) {
         (Some(k), Some(mults)) => {
@@ -1191,7 +1192,7 @@ fn value(
 fn buried_value(t: &value::Table, d: &CardDef, ctx: &Ctx) -> f64 {
     let standing = value::passives_worth(t, &d.passives);
     // An Action at the value table's own rates, as `CardValue::of` reads it.
-    let action = d.ability.as_ref().map(|a| value::ability_worth(value::table(), a)).unwrap_or_default();
+    let action = d.ability.as_ref().map(|a| value::ability_worth(t.own(), a)).unwrap_or_default();
     let use_ = (action.instant(t, ctx) + action.per_round(ctx)).max(0.0);
     // 099: a one-shot Action (Popular Uprising) buried unused loses its one use,
     // not a share of it every round left.
@@ -1413,7 +1414,7 @@ fn plan(
                         open -= 1;
                         0.0
                     } else {
-                        let ctx = Ctx { share: pt.share, ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted) };
+                        let ctx = Ctx { share: pt.share, ..Ctx::at(pc.t, (pt.left - round as f64).max(0.0), pt.node, tags, pt.corrupted) };
                         let worst = (0..tops.len()).min_by(|&i, &j| {
                             buried_value(pc.t, tops[i], &ctx).total_cmp(&buried_value(pc.t, tops[j], &ctx))
                         });

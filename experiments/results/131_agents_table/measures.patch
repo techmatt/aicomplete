@@ -1,0 +1,97 @@
+--- a/crates/aic-core/src/modules/threats/mod.rs
++++ b/crates/aic-core/src/modules/threats/mod.rs
+@@ -330,10 +330,64 @@
+         return;
+     };
+     refund(g, cx, threat);
++    m131_outcome(g, cx, threat, "countered");
+     clear(g, cx, threat, scope);
+     tally_countered(g, cx, threat);
+ }
+ 
++/// 131 measure (not committed): a resolved threat's outcome by its source and
++/// whether an auto-counter of its type stood for it then.
++fn m131_outcome(g: &mut GameState, cx: &mut Cx, threat: &str, outcome: &str) {
++    let w = cx.world;
++    let held = if standing(&w, g, threat) > 0 { "held" } else { "open" };
++    let src = format!("{:?}", source_of(&w, threat)).to_lowercase();
++    cx.tally(g, &format!("m131.out.{src}.{outcome}.{held}"), 1);
++}
++
++/// 131 measure: what one execution did, as counter and holding changes.
++fn m131_snapshot(g: &GameState) -> (Vec<(String, i64)>, Vec<[i64; 7]>, Vec<i64>) {
++    let counters = g.stats.counters.iter().map(|(k, v)| (k.as_str().to_string(), *v)).collect();
++    let all = [
++        Resource::Ambassadors,
++        Resource::Antimatter,
++        Resource::Chips,
++        Resource::Credits,
++        Resource::Energy,
++        Resource::Insight,
++        Resource::ResearchCubes,
++    ];
++    let res = (0..g.seats.len()).map(|s| std::array::from_fn(|i| g.resource(s, all[i]))).collect();
++    let nodes = (0..g.seats.len()).map(|s| node_count(g, s)).collect();
++    (counters, res, nodes)
++}
++
++fn m131_harm(g: &mut GameState, cx: &mut Cx, src: &str, held: &str, before: (Vec<(String, i64)>, Vec<[i64; 7]>, Vec<i64>)) {
++    let (after_c, after_r, after_n) = m131_snapshot(g);
++    let was: std::collections::BTreeMap<String, i64> = before.0.into_iter().collect();
++    for (k, v) in after_c {
++        if k.starts_with("m131.") {
++            continue;
++        }
++        let d = v - was.get(&k).copied().unwrap_or(0);
++        if d != 0 {
++            cx.tally(g, &format!("m131.exec.{src}.{held}.c.{k}"), d);
++        }
++    }
++    let names = ["ambassadors", "antimatter", "chips", "credits", "energy", "insight", "research_cubes"];
++    for s in 0..after_r.len() {
++        for i in 0..7 {
++            let lost = before.1[s][i] - after_r[s][i];
++            if lost != 0 {
++                cx.tally(g, &format!("m131.exec.{src}.{held}.lost.{}", names[i]), lost);
++            }
++        }
++        let nl = before.2[s] - after_n[s];
++        if nl != 0 {
++            cx.tally(g, &format!("m131.exec.{src}.{held}.lost.nodes"), nl);
++        }
++    }
++}
++
+ /// Counted in all and by source type (070: the records read who counters what).
+ fn tally_countered(g: &mut GameState, cx: &mut Cx, threat: &str) {
+     let w = cx.world;
+@@ -436,7 +490,10 @@
+         let unaided = requirement_less(&w, threat, g.var(&jam_key(threat)));
+         let cut: i64 = unaided.iter().zip(req.iter()).map(|((_, a), (_, b))| a - b).sum();
+         cx.tally(g, "threats.auto_countered", cut);
++        cx.tally(g, "m131.fires", 1);
++        cx.tally(g, &format!("m131.fires.{}", format!("{:?}", source_of(&w, threat)).to_lowercase()), 1);
+     }
++    m131_outcome(g, cx, threat, "countered");
+     clear(g, cx, threat, scope);
+     tally_countered(g, cx, threat);
+     cx.note(None, || format!("{} is countered", def(&w, threat).name));
+@@ -524,6 +581,10 @@
+                 continue;
+             }
+             executed += 1;
++            m131_outcome(g, cx, &t, "executed");
++            let m_held = if standing(&w, g, &t) > 0 { "held" } else { "open" };
++            let m_src = format!("{:?}", source_of(&w, &t)).to_lowercase();
++            let m_before = m131_snapshot(g);
+             let d = def(&w, &t);
+             cx.note(None, || match scope {
+                 Some(c) => format!("Threat {} executes in {}", d.name, country_name(&w, c)),
+@@ -536,6 +597,7 @@
+             let source = if d.tier == 1 { "threat1" } else { "threat2" };
+             effects::run(g, cx, &d.effects, &mut effects::Ctx::threat(scope).named(source).why(&d.name))?;
+             alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
++            m131_harm(g, cx, &m_src, m_held, m_before);
+             clear(g, cx, &t, scope);
+         }
+         // 070: the records' read of whether a board can stay clean.

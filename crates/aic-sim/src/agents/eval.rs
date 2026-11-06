@@ -630,6 +630,8 @@ pub struct Eval {
     facts: Arc<HashMap<usize, Fact, BuildHasherDefault<Fnv>>>,
     /// 107 (`rates.own_mix`): whether a one-tag trigger fires at the seat's own share.
     mix: bool,
+    /// 131: the value table this agent reads (`t.<key>=v` in its spec; else the table).
+    pub tbl: &'static value::Table,
     /// 082: each strategy's multiplier for each card and phase.
     mults: Arc<Mults>,
     /// 082: each seat's strategy, once chosen (none: every multiplier 1).
@@ -766,6 +768,11 @@ impl TokenKeys {
 
 impl Eval {
     pub fn new(rules: &Rules, w: Weights) -> Eval {
+        Eval::with_table(rules, w, value::table())
+    }
+
+    /// 131: an eval reading `tbl` for the value table (see [`value::table_with`]).
+    pub fn with_table(rules: &Rules, w: Weights, tbl: &'static value::Table) -> Eval {
         let world = rules.world();
         let seats = rules.config.countries as usize;
         // 028: the Unity deck's last card wins, and it comes before the last bar drop.
@@ -788,7 +795,8 @@ impl Eval {
                 s < seats && ai::board(&world, s).powers.iter().any(|p| p.cost.iter().any(|(r, _)| *r == Resource::ResearchCubes))
             }),
             keys: TokenKeys::new(),
-            mix: value::table().rate("own_mix") > 0.0,
+            mix: tbl.rate("own_mix") > 0.0,
+            tbl,
             facts: Arc::new(
                 world
                     .content
@@ -799,12 +807,12 @@ impl Eval {
                         let fact = Fact {
                             index: i,
                             cost: Self::cost(d),
-                            value: CardValue::of(value::table(), d),
+                            value: CardValue::of(tbl, d),
                             token: {
                                 // 102 (D24): a token on a card that cashes its own pile out is worth that.
-                                let base = value::token_worth_cash(value::table(), d);
+                                let base = value::token_worth_cash(tbl, d);
                                 if threshold_tokens {
-                                    value::token_worth_threshold(value::table(), d, base)
+                                    value::token_worth_threshold(tbl, d, base)
                                 } else {
                                     base
                                 }
@@ -824,11 +832,11 @@ impl Eval {
                             .powers
                             .iter()
                             .map(|p| {
-                                let wv = value::power_worth(value::table(), p);
+                                let wv = value::power_worth(tbl, p);
                                 PowerFact {
                                     dear: ai::power_is_dear(p),
                                     unseen: wv.unseen,
-                                    worth: wv.instant(value::table(), &Ctx::typical(value::table())),
+                                    worth: wv.instant(tbl, &Ctx::typical(tbl)),
                                     tags: p.tags.clone(),
                                 }
                             })
@@ -887,7 +895,7 @@ impl Eval {
     /// A supply ambassador's worth: the table's row in table mode (082).
     fn ambassador_unit(&self) -> f64 {
         if self.w.table > 0.0 {
-            self.w.table * self.w.table_ambassador * value::table().res(Resource::Ambassadors)
+            self.w.table * self.w.table_ambassador * self.tbl.res(Resource::Ambassadors)
         } else {
             self.w.ambassador
         }
@@ -932,7 +940,7 @@ impl Eval {
     fn energy_unit(&self) -> f64 {
         let w = &self.w;
         if w.table > 0.0 && w.table_energy > 0.0 {
-            w.table * w.table_energy * value::table().res(Resource::Energy)
+            w.table * w.table_energy * self.tbl.res(Resource::Energy)
         } else {
             w.energy
         }
@@ -975,7 +983,7 @@ impl Eval {
         let w = &self.w;
         let credit = if w.table > 0.0 { w.table } else { w.credits };
         let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
-            w.table * w.table_antimatter * value::table().res(Resource::Antimatter)
+            w.table * w.table_antimatter * self.tbl.res(Resource::Antimatter)
         } else {
             w.antimatter
         };
@@ -998,7 +1006,7 @@ impl Eval {
     fn energy_income_unit(&self) -> f64 {
         let w = &self.w;
         if w.table > 0.0 && w.table_energy > 0.0 {
-            self.energy_unit() * value::table().rate("energy_income_share")
+            self.energy_unit() * self.tbl.rate("energy_income_share")
         } else {
             w.energy
         }
@@ -1500,7 +1508,7 @@ impl Eval {
             for id in cards::token_cards(&world, g, s, None) {
                 let k = g.var(&cards::tokens_key(s, &id));
                 let (_, f) = self.fact(&world, &id);
-                *v += self.w.table * k as f64 * f.token.instant(value::table(), c).max(0.0);
+                *v += self.w.table * k as f64 * f.token.instant(self.tbl, c).max(0.0);
             }
             return;
         }
@@ -1640,7 +1648,7 @@ impl Eval {
         // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
         // 082, a probe: antimatter held and earned at the table's row.
         let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
-            w.table * w.table_antimatter * value::table().res(Resource::Antimatter)
+            w.table * w.table_antimatter * self.tbl.res(Resource::Antimatter)
         } else {
             w.antimatter
         };
@@ -1657,7 +1665,7 @@ impl Eval {
             let useful: i64 = owned.iter().map(|&n| n.min(STATIONS_USEFUL)).sum();
             v += w.horizon * w.production * left * w.station_round * useful as f64;
         }
-        let tbl = value::table();
+        let tbl = self.tbl;
         let table = w.table > 0.0;
         let corrupted = table && (0..g.hexes.len()).any(|h| common::corrupted_city(&world, g, h));
         // What each seat's cards are judged by, worked out once: the packet a seat
@@ -1675,11 +1683,11 @@ impl Eval {
                 };
                 let (tags, required, prices, income, n) = seat_terms_cached(self.id, g, s, terms);
                 let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
-                let mut ctx = Ctx::at(left, node, tags, corrupted);
+                let mut ctx = Ctx::at(tbl, left, node, tags, corrupted);
                 if table && self.mix {
                     // 107: the share of the seat's cards, in play and in hand, by tag.
                     let (counts, cards_n) = self.mix_counts(&world, g, s, tags, n);
-                    ctx = ctx.with_mix(&counts, cards_n);
+                    ctx = ctx.with_mix(tbl, &counts, cards_n);
                 }
                 if table && w.tag_hand > 0.0 {
                     // 128: per-tag ops at the count the seat can expect: its tags in
@@ -1700,7 +1708,7 @@ impl Eval {
                 seats.iter().map(|sd| self.mix_counts(&world, g, sd.s, sd.tags, in_play(g, sd.s))).collect();
             for sd in seats.iter_mut() {
                 let others = mixes.iter().enumerate().filter(|&(o, _)| o != sd.s).map(|(_, m)| *m);
-                sd.ctx.team = Some(team_share(others));
+                sd.ctx.team = Some(team_share(tbl, others));
             }
         }
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
@@ -1823,7 +1831,7 @@ impl Eval {
         if w.table <= 0.0 {
             return p * (w.hand + w.hand_cost * f.cost);
         }
-        let tbl = value::table();
+        let tbl = self.tbl;
         let (m, share) = if pick { (self.mult(s, f.index, g.round), w.pick_cost) } else { (1.0, 1.0) };
         // 128: its energy at the seat's rate (spare energy is cheap).
         let spare = d.energy as f64 * tbl.res(Resource::Energy) * (1.0 - sd.ctx.energy_rate);
@@ -1980,9 +1988,9 @@ fn same_terms(_: &SeatTerms, _: &SeatTerms) -> bool {
 
 /// 107: `ctx` with each tag's share read from seat `s`'s cards, in play (its
 /// `tags`, one a card) and in hand.
-pub(crate) fn own_mix(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()], ctx: Ctx) -> Ctx {
+pub(crate) fn own_mix(t: &value::Table, w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()], ctx: Ctx) -> Ctx {
     let (counts, n) = own_mix_counts(w, g, s, tags);
-    ctx.with_mix(&counts, n)
+    ctx.with_mix(t, &counts, n)
 }
 
 /// 107: seat `s`'s cards in play and in hand counted by tag, and how many.
@@ -2000,7 +2008,7 @@ pub(crate) fn own_mix_counts(w: &aic_core::module::World, g: &GameState, s: usiz
 
 /// 124 (D47, `team_share` / `plan_team`): each tag's share of the other seats'
 /// cards together, from their `own_mix_counts`.
-pub(crate) fn team_share(others: impl Iterator<Item = ([i64; TAGS.len()], i64)>) -> [f64; TAGS.len()] {
+pub(crate) fn team_share(t: &value::Table, others: impl Iterator<Item = ([i64; TAGS.len()], i64)>) -> [f64; TAGS.len()] {
     let (mut counts, mut n) = ([0i64; TAGS.len()], 0i64);
     for (c, k) in others {
         for (sum, m) in counts.iter_mut().zip(c) {
@@ -2008,7 +2016,7 @@ pub(crate) fn team_share(others: impl Iterator<Item = ([i64; TAGS.len()], i64)>)
         }
         n += k;
     }
-    Ctx::at(0.0, 0.0, counts, false).with_mix(&counts, n).share
+    Ctx::at(t, 0.0, 0.0, counts, false).with_mix(t, &counts, n).share
 }
 
 /// 107: seat `s`'s cards in play: its tops, the cards under them and its programs.

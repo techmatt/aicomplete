@@ -70,14 +70,11 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 - **The runaway check**: each resource's peak per seat (`peaks` in `games.jsonl`, `PEAKS` order; *Peak holdings*).
   A peak's rise over setup's `start` far above a round's income (`gained / rounds`) is a runaway engine:
   `scripts/cards/runaway_read.py` flags it. `sources` splits a seat's `gained` by action or phase; `keeps` counts
-  picks, keeps and tiers after the opening (`source_read.py`); `spent` and `uses` split falls. In
-  `experiments/results/127_no_limits/`: `read127.py` (peaks, flags, credits, energy, what fed each flagged pile:
-  `--sources N`), `production_read.py` (what made a seat's credit production), `seat_read.py DIR SEED VARIANT AGENT
-  SEAT` (one seat-game in detail). No resource has a limit since r51.
+  picks, keeps and tiers after the opening (`source_read.py`); `spent` and `uses` split falls. 127's
+  `read127.py`, `production_read.py` and `seat_read.py` read them (their docstrings). No resource has a limit.
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
-- **Luck share**: sums-of-squares shares of outcome variance over seeds × agents: seed (luck), agent (skill), rest.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`.
 
@@ -146,7 +143,8 @@ the judge off the value table.
 - **Current recipe:** the three pairs at d2 (`screen-130-dev.json`: 576 games, about 2.5 min on 6 threads;
   `-r53.json` its fresh read), read by 130's `read130.py` (wins, energy per board and where it went, flags paired
   seat by seat, per-board keeps, plays and Action uses) and `deck_rates.py`; 128's `action_read.py` says why an Action
-  went unused. Agent switches are agent cells; a `values.json` edit needs a second binary.
+  went unused. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
+  binary. 131's `read131.py` reads `t.` arms against their base agent, paired, with `--same` for identical games.
 - **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min (13 ms a planner decision); 300
   strategist games about 4 min on 4 threads under load.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
@@ -173,8 +171,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger. Used through r48 (specs in the write-ups): below 34352, 34400-1, 34500-47, 34600-2, 34700-7. r49: 34708-34995
-(122, 124). r50 (125, 126): 34996-35391. r51 (127): 35392-35647. r52 (128): 35648-35895. r53 (130): 35896-36143 (dev 35896-36095, fresh 36096-36143). Next free: 36144.
+ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
+36344-36391). Next free: 36392.
 
 ## Reading prices
 

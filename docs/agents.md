@@ -16,14 +16,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
   adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats; and:
   - botnets −25 (D9): agents make none when an equal free choice exists;
-  - `research_cube` 0.3; `research_cube_power` 1.2 for a seat whose board spends cubes on a
-    power; `converter_city` 2 for a node in a city of a completed megaproject's country;
-  - a corrupted station's `station_flip` 20, scaled by its megaproject still open;
-  - the liberation push needs `liberate_at` plus the city's own adversary ambassadors;
-  - a city an adversary ambassador darkens: `city_dark` 4 for a neutral one in some seat's
-    reach, `city_dark_aligned` 6 for an aligned one;
-  - a Patience seat's insight carries over, so it keeps its worth at the round's end (`patience` 1.0);
-  - credits beyond `w.credit_cap` (12) a seat are worth `w.credit_idle` (0.15).
+  - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
+    Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
@@ -58,8 +52,8 @@ table's; a project discard or drain at the heuristic's charge for the projects u
 
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
-Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a plan or
-strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat terms (any agent can
+Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
+number `t.` (*The value table*), a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat terms (any agent can
 take horizon mode: `greedy:w.horizon=1,...`), so the table's and horizon's levers reach only its
 keep plan, which reads the table (`plan_table` 1). Sweeps:
 [`scripts/tune/`](../scripts/tune/README.md).
@@ -75,6 +69,8 @@ those left in a game; in the typical context (the opening's choice, the effect l
 tier's horizon, `horizon_t1` 4, `horizon_t2` 2.5. "Remove up to N troops" counts
 `troops_removed` (D26). An `overrides` row adds flat credits to one card, with its reason: the scoped fix where the
 table under-prices a card's output against the anchors; built, the card keeps it, spread over the rounds left (130).
+A spec's `t.<key>=v` sets one number for that agent, no rebuild: a resource, rate, op row or token
+(`strategist:t.chips=2,t.auto_counter=0.7`; `t.<section>.<key>` where a name is in two, as `t.tags.first`).
 
 The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greedy`):
 

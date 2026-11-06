@@ -1,0 +1,37 @@
+{
+  "name": "screen-131-chips-confirm",
+  "note": "131 chip-rate confirm: fresh seeds 36192-36239 (48 a cell), the three pairs at d2: the table's 1.5 against the screen's pick, 2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:t.chips=2",
+    "greedy",
+    "greedy:t.chips=2"
+  ],
+  "games": 48,
+  "first_seed": 36192,
+  "records": 0
+}

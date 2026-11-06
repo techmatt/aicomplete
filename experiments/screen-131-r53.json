@@ -1,0 +1,35 @@
+{
+  "name": "screen-131-r53",
+  "note": "131 final read: fresh seeds 36344-36391 (48 a cell), the three pairs at d2, strategist and greedy, paired against main after 130 (86a7084, out/base) on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 36344,
+  "records": 0
+}

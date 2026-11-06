@@ -6,22 +6,21 @@ Values are credits per unit of the effect (printed cost shared out pro rata to 0
 ## Effects priced most unevenly across cards (max / min per unit over 2.5, 3+ cards)
 
 - **damage troops [play]** (3 cards, reasoned 11.0): 1.83 on `ceasefire_monitors` to 7.64 on `bounty_board` (x4.17).
-- **draw [action]** (7 cards, reasoned 5.06): 1.73 on `wafer_fab_line` to 6.18 on `bug_bounty_board` (x3.58).
 - **production energy [play]** (13 cards, reasoned 14.4): 3.41 on `collateralized_grid` to 11.43 on `pumped_hydro_storage` (x3.35).
 - **draw [play]** (52 cards, reasoned 4.0): 1.61 on `vertical_monopoly` to 5.24 on `agency_field_station` (x3.25).
+- **draw [action]** (7 cards, reasoned 5.06): 2.04 on `wafer_fab_line` to 6.18 on `bug_bounty_board` (x3.03).
 - **sway unity [play]** (9 cards, reasoned 4.0): 1.35 on `shared_grid_accord` to 3.7 on `diplomatic_expulsion` (x2.74).
 - **remove_troops [play]** (4 cards, reasoned 5.18): 1.5 on `signal_hijack` to 3.97 on `breach_and_clear` (x2.64).
 
 ## Effects whose fitted price is far from the reasoned one (beta outside 0.5-2.0, 4+ cards)
 
-- **add_tokens agents [play]** (5 cards): fitted 4.9 per unit vs reasoned 2.0 (beta 2.45 ± 0.86).
+- **add_tokens agents [play]** (5 cards): fitted 4.8 per unit vs reasoned 2.0 (beta 2.4 ± 0.89).
 
-## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -7.6 ± 7.9)
+## Cards whose printed cost is furthest from their summed reasoned value (gap over 2.0 SD from the mean gap -7.6 ± 8.0)
 
 - `great_liberation` (tier 2 event, needs diplomacy 4): printed 44.0 vs reasoned 108.0 (gap -64.0). cleanse cities [play] 108.0.
 - `vertical_monopoly` (tier 2 building, needs industry 3): printed 25.0 vs reasoned 62.0 (gap -37.0). draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.0.
 - `foundation_model_campus` (tier 2 building, needs science 3): printed 27.0 vs reasoned 62.5 (gap -35.5). draw [play] 16.0 + income_per_tag credits [passive] 45.0 + tags [card] 1.5.
-- `orbital_mass_driver` (tier 2 building, needs industry 3): printed 36.5 vs reasoned 64.75 (gap -28.25). draw [play] 12.0 + income credits [passive] 40.0 + income chips [passive] 11.2 + tags [card] 1.5.
-- `decapitation_strike` (tier 2 event, needs security 2): printed 32.5 vs reasoned 24.0 (gap +8.5). remove_botnet [play] 12.0 + remove_ambassadors_country [play] 12.0.
+- `orbital_mass_driver` (tier 2 building, needs industry 3): printed 37.5 vs reasoned 68.5 (gap -31.0). draw [play] 12.0 + income credits [passive] 40.0 + income chips [passive] 15.0 + tags [card] 1.5.
 
-Fit: 30 effects fitted, 66 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -4.95 ± 0.98, tier 2 -10.2 ± 1.74, -1.65 ± 0.57 cr per needed tag; residual sd 6.33 cr on 140 dof.
+Fit: 30 effects fitted, 66 unidentified (on 1-2 cards, held at reasoned); tier 1 constant -4.89 ± 1.02, tier 2 -9.5 ± 1.82, -1.57 ± 0.6 cr per needed tag; residual sd 6.59 cr on 140 dof.

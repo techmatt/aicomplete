@@ -1,0 +1,41 @@
+{
+  "name": "screen-131-factorial",
+  "note": "131 factorial: chips 1.5 / 2 x auto_counter 1.5 / 0.67 (t. agent cells), seeds 36240-36335 (96 a cell; the auto_counter measure's seeds, not used to pick a chip rate), the three pairs at d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:t.chips=2",
+    "strategist:t.auto_counter=0.67",
+    "strategist:t.auto_counter=0.67,t.chips=2",
+    "greedy",
+    "greedy:t.chips=2",
+    "greedy:t.auto_counter=0.67",
+    "greedy:t.auto_counter=0.67,t.chips=2"
+  ],
+  "games": 96,
+  "first_seed": 36240,
+  "records": 0
+}

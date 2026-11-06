@@ -140,6 +140,8 @@ pub struct AgentSpec {
     pub kind: String,
     pub params: BTreeMap<String, f64>,
     pub weights: BTreeMap<String, f64>,
+    /// 131: value-table numbers set for this agent (`t.<key>=v`, see [`value::Table::set`]).
+    pub table: BTreeMap<String, f64>,
 }
 
 /// A budget parameter: name, default, what it controls.
@@ -298,6 +300,7 @@ impl AgentSpec {
         let mut params: BTreeMap<String, f64> =
             known.iter().map(|(k, v, _)| (k.to_string(), *v)).collect();
         let mut weights = BTreeMap::new();
+        let mut table = BTreeMap::new();
         for kv in rest.split(',').filter(|s| !s.is_empty()) {
             let (k, v) = kv
                 .split_once('=')
@@ -310,6 +313,11 @@ impl AgentSpec {
                     return Err(format!("agent {spec:?}: no heuristic weight {w:?}"));
                 }
                 weights.insert(w.to_string(), v);
+            } else if let Some(t) = k.strip_prefix("t.") {
+                if kind == "random" {
+                    return Err(format!("agent {spec:?}: random reads no value table"));
+                }
+                table.insert(t.to_string(), v);
             } else if params.contains_key(k) {
                 if v < 0.0 || !v.is_finite() {
                     return Err(format!("agent {spec:?}: {k} must be >= 0"));
@@ -348,6 +356,7 @@ impl AgentSpec {
             }
         }
         eval::check_names(weights.keys().map(String::as_str)).map_err(|e| format!("agent {spec:?}: {e}"))?;
+        value::table_with(&table).map_err(|e| format!("agent {spec:?}: {e}"))?;
         if kind == "engine" {
             // What the chosen mode never reads: set, it would only be a label.
             let on = |k: &str| params[k].round() > 0.0;
@@ -368,7 +377,13 @@ impl AgentSpec {
             kind: kind.to_string(),
             params,
             weights,
+            table,
         })
+    }
+
+    /// 131: the value table this agent reads: the table with its `t.` numbers set.
+    pub fn table(&self) -> &'static value::Table {
+        value::table_with(&self.table).expect("checked in parse")
     }
 
     /// The canonical spec: the kind, then every parameter that differs from
@@ -381,6 +396,7 @@ impl AgentSpec {
             .map(|(k, _, _)| format!("{k}={}", self.params[*k]))
             .collect();
         parts.extend(self.weights.iter().map(|(k, v)| format!("w.{k}={v}")));
+        parts.extend(self.table.iter().map(|(k, v)| format!("t.{k}={v}")));
         if parts.is_empty() {
             self.kind.clone()
         } else {
@@ -448,7 +464,7 @@ impl AgentSpec {
             return Box::new(RandomAgent::new(game_seed));
         }
         let rng = agent_rng(game_seed, &self.kind);
-        let ev = eval::Eval::new(rules, self.weights());
+        let ev = eval::Eval::with_table(rules, self.weights(), self.table());
         match self.kind.as_str() {
             "greedy" => Box::new(Greedy::new(
                 ev,
@@ -531,6 +547,26 @@ mod tests {
         assert_eq!(named("sweep"), named("planner:deals=1,lead=0"));
         assert_eq!(named("sweep:budget=4"), named("planner:deals=1,lead=0,budget=4"));
         assert_eq!(named("sweep:deals=2"), named("planner:deals=2,lead=0"));
+    }
+
+    /// 131: `t.<key>=v` sets one value-table number for one agent: none is the
+    /// table itself, a name in two sections or none is refused, the label keeps it.
+    #[test]
+    fn table_numbers_set_per_agent() {
+        let spec = |s: &str| AgentSpec::parse(s);
+        let base = value::table();
+        assert!(std::ptr::eq(spec("strategist").unwrap().table(), base));
+        let a = spec("strategist:t.chips=2.25,t.auto_counter=1.2").unwrap();
+        let t = a.table();
+        assert_eq!(t.res(aic_core::content::Resource::Chips), 2.25);
+        assert_eq!(t.op("auto_counter"), 1.2);
+        assert_eq!(base.res(aic_core::content::Resource::Chips), value::table().res(aic_core::content::Resource::Chips));
+        assert!(std::ptr::eq(spec("greedy:t.auto_counter=1.2,t.chips=2.25").unwrap().table(), t), "one table a set");
+        assert_eq!(a.label(), "engine:strategy=1,t.auto_counter=1.2,t.chips=2.25");
+        assert_eq!(AgentSpec::parse(&a.label()).unwrap(), a);
+        assert_eq!(spec("greedy:t.rates.tag_count=3").unwrap().table().rate("tag_count"), 3.0);
+        assert!(spec("greedy:t.no_such_rate=1").is_err());
+        assert!(spec("random:t.chips=2").is_err());
     }
 
     /// An agent that takes the first legal action.

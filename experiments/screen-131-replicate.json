@@ -1,0 +1,41 @@
+{
+  "name": "screen-131-replicate",
+  "note": "131 replication after the final read: fresh seeds 36392-36487 (96 a cell), the three pairs at d2, on the 131 build; t. arms put each 131 row back (t.chips=1.5, t.auto_counter=1.5; both = the table before 131).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:t.chips=1.5",
+    "strategist:t.auto_counter=1.5",
+    "strategist:t.auto_counter=1.5,t.chips=1.5",
+    "greedy",
+    "greedy:t.chips=1.5",
+    "greedy:t.auto_counter=1.5",
+    "greedy:t.auto_counter=1.5,t.chips=1.5"
+  ],
+  "games": 96,
+  "first_seed": 36392,
+  "records": 0
+}

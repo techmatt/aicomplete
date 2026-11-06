@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 131 agents' value table per agent (`t.<key>=v` cells, no rebuild); chips 1.5 → 2 (Antitrust no longer a loss at the table), auto_counter 1.5 → 0.67 a point (a fire's cut plus the executions it saves); agents only | r53 | [131_agents_table/r53.md](results/131_agents_table/r53.md) |
 | 130 late energy sinks: Particle Accelerator's Action gets a research-cube half; four new sinks (Directed-Energy Array, Holographic Assembly Hall, Wafer Fab Line, tier-2 Exascale Training Cluster); Positron Storage Ring draws 2; overrides count once built; energy's anchor kept | r53 | [130_late_energy_sinks/r53.md](results/130_late_energy_sinks/r53.md) |
 | 129 cleanup: 124-128's audit notes checked against the code; agents' Strategic trait trimmed to one `eval()`, a generated draft-set block, past specs archived, ledger `--overlay`; no play change | r52 | [129_cleanup/notes-check.md](results/129_cleanup/notes-check.md) |
 | 128 draft and price: agents value per-tag ops at their played tag count, price spare energy cheap and skip dead cube Actions; 127's cheapened cards back at the anchors (16 → 5 deck cards at 5 credits or less) | r52 | [128_draft_and_price/r52.md](results/128_draft_and_price/r52.md) |

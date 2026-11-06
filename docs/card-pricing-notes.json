@@ -4,7 +4,7 @@
   "agency_directorate": "r44 (111): anchors: pay 32; get 54 = 1.69.",
   "agency_field_station": "r44 (111): anchors: pay 22; get 32.5 = 1.48.",
   "amnesty_decree": "r44 (111): anchors: pay 19; get 28 = 1.47.",
-  "antitrust_action": "r52 (128): 7 cr (was 4), priced at the anchors (Matt: never cut to make the table show a gain); played at 6-7 Industry tags (median, its own included); anchors: pay 11; get jam 5 + 3 chips 9 + tag 1 = 15 = 1.36 (127: 1.88); the table reads 9.5 / 9.0, its chip at 1.5 against the anchor 3: flagged.",
+  "antitrust_action": "r52 (128): 7 cr (was 4), priced at the anchors (Matt: never cut to make the table show a gain); played at 6-7 Industry tags (median, its own included); anchors: pay 11; get jam 5 + 3 chips 9 + tag 1 = 15 = 1.36 (127: 1.88); the table reads 9.5 / 10.5 at chips 2 (131; 9.0 at 1.5).",
   "arcology_foundry": "r51 (127): pays 2 energy, 9 cr less (7): a power-hungry factory as an energy sink; pay holds; anchors: pay 27.5; get 31 = 1.13.",
   "autonomous_defense_grid": "r51 (127, from 126): cuts the cyber threats its holder can pay toward, in any country or on the row; 126 measured 0.30 fires a holder-round (0.5 assumed), so the ledger's counter reads 18.8 (was 31.2) and get falls by 12.4; price kept at 9 cr and 1 ins; anchors: pay 21; get 27.6 = 1.31.",
   "back_channel_talks": "r45 (112): back to r43's price (10 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 18; get 20.0 = 1.11.",
@@ -163,5 +163,5 @@
   "directed_energy_array": "r53 (130): new late energy sink; a use 3 ambassadors removed (15) for 2 energy (9), x4 rounds x0.7; anchors: pay 16; get 18.3 = 1.14. values.json override +11 (the table's removal 2 an ambassador).",
   "holographic_assembly_hall": "r53 (130): new late energy sink; a use 2 Sway (8) and 2 ambassadors (8) for 2 energy (9), x4 rounds x0.7; anchors: pay 17; get 21.1 = 1.24.",
   "exascale_training_cluster": "r53 (130): new tier-2 energy sink, 8 energy (36); +3 insight a round (10 each at x2.5) 30 and 6 research cubes now 36; anchors: pay 67; get 67.5 = 1.01. values.json override +25 (the table's energy 4.5 against insight 2.5 and a cube 3).",
-  "wafer_fab_line": "r53 (130): new late energy sink, Industry's; a use draw 2 (10) and 2 chips (6) for 2 energy (9), x4 rounds x0.7; anchors: pay 20; get 21.1 = 1.06. values.json override +10 (the table's draw 4 and chip 1.5)."
+  "wafer_fab_line": "r53 (130): new late energy sink, Industry's; a use draw 2 (10) and 2 chips (6) for 2 energy (9), x4 rounds x0.7; anchors: pay 20; get 21.1 = 1.06. values.json override +10 (the table's draw 4 and chip, 1.5 then, 2 since 131)."
 }
