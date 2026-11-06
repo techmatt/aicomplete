@@ -1,0 +1,596 @@
+{
+ "deck": "projects",
+ "cards": [
+  {
+   "id": "raiding_parties",
+   "name": "Raiding Parties",
+   "tags": [
+    "military"
+   ],
+   "cost": 4,
+   "ongoing": false,
+   "text": "Every player loses a node or pays 10 credits (never their last node).",
+   "effects": [
+    {
+     "op": "lose_node_or",
+     "resource": "credits",
+     "amount": 10
+    }
+   ],
+   "harms": [
+    "node destroyed",
+    "credits or income lost"
+   ],
+   "value": "absorbs 4 a player (8 to drain); harm a node (6) or 10 credits, the player's pick: 6-10, about 8 a player; 1.5-2.5, about 2.0 a compute",
+   "check": "the first project to fill, rounds 2-4; each player picks the cheaper half, so it never strands a seat; no loop",
+   "flags": [],
+   "reuses": null
+  },
+  {
+   "id": "war_footing",
+   "name": "War Footing",
+   "tags": [
+    "military"
+   ],
+   "cost": 7,
+   "ongoing": false,
+   "text": "Every corp base fills to its troop cap now. Sway 1 toward Discord.",
+   "effects": [
+    {
+     "op": "corp_troops",
+     "fill": true,
+     "at": "every_base",
+     "when": "now",
+     "past_cap": false,
+     "new": true,
+     "why": "corp bases make corp troops (more war, more Discord); fill: each base makes troops up to its cap, once, now"
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "troops made",
+    "Discord sway"
+   ],
+   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 0 + 2-4 troops a country at 5 (10-20) + 1 sway (4) = 14-24, about 19; 2.0-3.4, about 2.7 a compute",
+   "check": "bites rounds 3-6, worth most when bases are well under cap after a war; capped by the troop cap, once; the answer is draining it or a strong war seat; no loop",
+   "flags": [
+    "new op corp_troops (fill field; past_cap false, since a fill stops at the cap by definition)",
+    "troops a base is short of its cap is a guess until a read"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "purge_the_unaligned",
+   "name": "Purge the Unaligned",
+   "tags": [
+    "military"
+   ],
+   "cost": 7,
+   "ongoing": false,
+   "text": "Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country.",
+   "effects": [
+    {
+     "op": "sacrifice"
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "harms": [
+    "ambassadors lost",
+    "node destroyed",
+    "adversary pieces placed"
+   ],
+   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 4-6 (ambassador or node, their pick) + a troop and its strike (about 10) = 14-16; 2.0-2.3 a compute",
+   "check": "mid-game, rounds 4-7; the troop is answered like any landing; the loss is everyone's pick, so it never strands a seat",
+   "flags": [],
+   "reuses": "purge_the_unaligned"
+  },
+  {
+   "id": "armored_columns",
+   "name": "Armored Columns",
+   "tags": [
+    "military"
+   ],
+   "cost": 10,
+   "ongoing": false,
+   "text": "In each country, 2 troops land on factories.",
+   "effects": [
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "node destroyed",
+    "facilities destroyed or seized"
+   ],
+   "value": "absorbs 10 a player (20 to drain); harm (a player's share + shared a country): 0 + 2 troops and their strikes (about 20) = 20; 2.0 a compute",
+   "check": "rounds 5-8; Security removals (5 a troop) and Wall answer it; troops march on, capped by the troop supply",
+   "flags": [],
+   "reuses": "armored_columns"
+  },
+  {
+   "id": "arms_race",
+   "name": "Arms Race",
+   "tags": [
+    "military"
+   ],
+   "cost": 11,
+   "ongoing": true,
+   "text": "Ongoing: each production step, every military base makes 1 more troop.",
+   "effects": [
+    {
+     "op": "corp_troops",
+     "count": 1,
+     "at": "every_base",
+     "when": "each_production",
+     "past_cap": true,
+     "new": true,
+     "why": "corp bases make extra corp troops (more war, more Discord): every base, each production step, past its cap"
+    }
+   ],
+   "harms": [
+    "troops made",
+    "Discord sway"
+   ],
+   "value": "absorbs 11 a player (22 to drain); harm (a player's share + shared a country): 0 + 1 troop (5) a base a round, 1-2 bases a country, 3-4 rounds = 15-40, about 27; 1.4-3.6, about 2.5 a compute",
+   "check": "lands rounds 5-7 and runs to the end; strong war seats fight the troops; past the cap, so capped by bases (fixed by the board) and the troop supply, not a loop",
+   "flags": [
+    "new op corp_troops",
+    "unsure: value swings with bases a country; may want cost 12-13 at 1 country"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "declaration_of_war",
+   "name": "Declaration of War",
+   "tags": [
+    "military"
+   ],
+   "cost": 18,
+   "ongoing": true,
+   "text": "In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights its war step twice.",
+   "effects": [
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    },
+    {
+     "op": "extra_war",
+     "front": "most_corp_troops",
+     "ongoing_use": true,
+     "new": true,
+     "why": "each round the war step runs twice on the front with the most corp troops (a second round of cancelling and factory strikes): live even when every round is a war round"
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "war brought forward",
+    "node destroyed"
+   ],
+   "value": "absorbs 18 a player (36 to drain); harm (a player's share + shared a country): 0 + 2 troops and their strikes now (about 20) + a second war step on one front (about 12) a round for 1-3 rounds (12-36) = 32-56, about 44; 1.8-3.1, about 2.4 a compute (the second war step is one front table-wide, so it thins at 2+ countries)",
+   "check": "the military superproject: only fills rounds 7-10, when every round is already a war round, so the second war step is what bites; game-shaping, not a loss: a war seat on that front holds it, and draining 36 a player stops it; one extra step a round, no loop",
+   "flags": [
+    "new op extra_war (ongoing form; front field: the one with the most corp troops, ties unsettled)",
+    "an ongoing project acting in the war step: today ongoing projects act only in the build step"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "disinformation",
+   "name": "Disinformation",
+   "tags": [
+    "influence"
+   ],
+   "cost": 5,
+   "ongoing": false,
+   "text": "Sway 4 toward Discord. Every player loses an ambassador.",
+   "effects": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 4
+    },
+    {
+     "op": "lose_ambassador"
+    }
+   ],
+   "harms": [
+    "Discord sway",
+    "ambassadors lost"
+   ],
+   "value": "absorbs 5 a player (10 to drain); harm 16 to the table plus 4 a player: about 12 a player at 2 players, 8 at 4; 1.6-2.4 a compute",
+   "check": "cheap, fills rounds 2-4; nobody counters a project, so the answer is draining it; no loop",
+   "flags": [
+    "sway doesn't scale with players while cost does: dearer per compute at 4 players"
+   ],
+   "reuses": "disinformation"
+  },
+  {
+   "id": "recruitment_drive",
+   "name": "Recruitment Drive",
+   "tags": [
+    "influence"
+   ],
+   "cost": 11,
+   "ongoing": true,
+   "text": "Ongoing: every round, every clean city gains 1 adversary ambassador.",
+   "effects": [
+    {
+     "op": "clean_city_ambassadors",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "adversary pieces placed"
+   ],
+   "value": "absorbs 11 a player (22 to drain); harm 1-2 clean cities a country mid-game, 5 each, 3-4 rounds: 15-40; 1.4-3.6, about 2.5 a compute",
+   "check": "lands rounds 5-7; aligning cities shrinks it, so an Influence engine answers it; capped by clean cities, which only fall",
+   "flags": [],
+   "reuses": "recruitment_drive"
+  },
+  {
+   "id": "infiltration_drive",
+   "name": "Infiltration Drive",
+   "tags": [
+    "influence"
+   ],
+   "cost": 18,
+   "ongoing": false,
+   "text": "In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted.",
+   "effects": [
+    {
+     "op": "corrupt_city"
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized",
+    "node destroyed",
+    "ambassadors lost",
+    "Discord sway"
+   ],
+   "value": "absorbs 18 a player (36 to drain); harm (a player's share + shared a country): 0 + a city corrupted (45, the liberation price, which covers the nodes next to it destroyed, the player ambassadors waiting on it lost, its energy swaying Discord and its build after) = 45; 2.5 a compute",
+   "check": "the influence superproject, rounds 7-10; one city a country is a blow, not a loss: corrupting it destroys the nodes next to it and loses the player ambassadors waiting there; liberation answers it; corrupted cities build, capped by city_build",
+   "flags": [],
+   "reuses": "infiltration_drive"
+  },
+  {
+   "id": "data_heist",
+   "name": "Data Heist",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 6,
+   "ongoing": false,
+   "text": "Every player loses 3 tokens from their cards and gets 2 less insight next round.",
+   "effects": [
+    {
+     "op": "lose_tokens",
+     "amount": 3
+    },
+    {
+     "op": "lose_insight",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "tokens stripped from cards",
+    "insight lost"
+   ],
+   "value": "absorbs 6 a player (12 to drain); harm (a player's share + shared a country): 3 tokens (about 6) + 2 insight (8) + 0 = 14; 2.3 a compute",
+   "check": "rounds 2-5, when token engines start; draining it is the answer; no loop",
+   "flags": [],
+   "reuses": null
+  },
+  {
+   "id": "botnet_swarm",
+   "name": "Botnet Swarm",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 6,
+   "ongoing": false,
+   "text": "Every botnet makes 2 adversary ambassadors on its hex.",
+   "effects": [
+    {
+     "op": "botnet_ambassadors",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "adversary pieces placed"
+   ],
+   "value": "absorbs 6 a player (12 to drain); harm 1-2 botnets a country, 2 ambassadors each at 5: 10-20; 1.7-3.3 a compute",
+   "check": "rounds 3-6; removing botnets (tier-2 Cyber) shrinks it; the ambassadors spread and can make more botnets, capped by spread rules and supply",
+   "flags": [],
+   "reuses": "botnet_swarm"
+  },
+  {
+   "id": "station_coup",
+   "name": "Station Coup",
+   "tags": [
+    "cyber"
+   ],
+   "cost": 9,
+   "ongoing": false,
+   "text": "In each country, a research station is corrupted. A player's holds unless 2 adversary and no player ambassadors are on it: 1 lands.",
+   "effects": [
+    {
+     "op": "flip_station",
+     "each_country": true
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized",
+    "adversary pieces placed"
+   ],
+   "value": "absorbs 9 a player (18 to drain); harm a corrupted station (20) a country; 2.2 a compute",
+   "check": "rounds 5-8; a player ambassador on an owned station guards it; cleanse answers it; no loop",
+   "flags": [
+    "text is 131 characters, over 130, to keep today's guard rule"
+   ],
+   "reuses": "station_coup"
+  },
+  {
+   "id": "market_crash",
+   "name": "Market Crash",
+   "tags": [
+    "economic"
+   ],
+   "cost": 5,
+   "ongoing": false,
+   "text": "Every player gets 6 fewer credits of income next round and loses all their chips.",
+   "effects": [
+    {
+     "op": "lose_income",
+     "resource": "credits",
+     "amount": 6,
+     "new": true,
+     "why": "lose_insight's twin for credits (as tier-1 Credit Crunch): income lost next round"
+    },
+    {
+     "op": "players_lose",
+     "resource": "chips",
+     "all": true,
+     "new": true,
+     "why": "players_lose gains an 'all' field: every one held"
+    }
+   ],
+   "harms": [
+    "credits or income lost"
+   ],
+   "value": "absorbs 5 a player (10 to drain); harm (a player's share + shared a country): 6 credits + 0-3 chips at 3 (0-9) + 0 = 6-15, about 12; 1.2-3.0, about 2.4 a compute",
+   "check": "rounds 2-5, while 6 is a third of a round's income; worst for a seat banking chips for a build; nobody answers it but by draining; no loop",
+   "flags": [
+    "new op lose_income (shared with tier-1 Credit Crunch)",
+    "players_lose gains an 'all' field",
+    "chips lost has no harm row of its own: listed under credits or income lost"
+   ],
+   "reuses": "market_crash"
+  },
+  {
+   "id": "shadow_factories",
+   "name": "Shadow Factories",
+   "tags": [
+    "economic"
+   ],
+   "cost": 7,
+   "ongoing": false,
+   "text": "The adversary builds a factory in the country with the most free industrial zones. None: 2 of its ambassadors land on a factory.",
+   "effects": [
+    {
+     "op": "adversary_factory",
+     "count": 1,
+     "where": "most_free_zones",
+     "fallback_ambassadors": 2,
+     "new": true,
+     "why": "the adversary takes one free industrial zone with its own factory, in the country with the most free zones (ties, the lower hex)"
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized",
+    "adversary pieces placed",
+    "actions or claims blocked"
+   ],
+   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 0 + an adversary factory (15: it makes an adversary troop on its hex each production step) + its zone blocked 1-2 rounds it would have been claimed (6-12) = 15-27, about 21; 2.1-3.9, about 3.0 a compute (one factory table-wide, so dearer per compute at 2+ countries)",
+   "check": "rounds 3-6, while zones are free; Industry seats that claim zones early blunt it; the factory makes an adversary troop on its hex each production step, and with no removal it stays to the end; one factory a fill, no loop",
+   "flags": [
+    "new op adversary_factory",
+    "an adversary factory has no removal route in today's rules: a later rules item must add one (as liberation is for a city)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "capital_flight",
+   "name": "Capital Flight",
+   "tags": [
+    "economic"
+   ],
+   "cost": 8,
+   "ongoing": false,
+   "text": "Every player's income falls by 4 credits for the rest of the game.",
+   "effects": [
+    {
+     "op": "team_income",
+     "resource": "credits",
+     "amount": -4
+    }
+   ],
+   "harms": [
+    "credits or income lost"
+   ],
+   "value": "absorbs 8 a player (16 to drain); harm 4 a round for 4-5 rounds: 16-20 a player; 2.0-2.5 a compute",
+   "check": "rounds 4-6; worth less the later it lands; nobody answers it but by draining; no loop",
+   "flags": [
+    "team_income with a negative amount: the engine may refuse it (a one-line check, not a new op)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "rolling_blackouts",
+   "name": "Rolling Blackouts",
+   "tags": [
+    "grid"
+   ],
+   "cost": 6,
+   "ongoing": false,
+   "text": "Next round, cities make no energy and research stations make no research cubes.",
+   "effects": [
+    {
+     "op": "flag",
+     "name": "blackout",
+     "everywhere": true
+    },
+    {
+     "op": "flag",
+     "name": "station_dark",
+     "everywhere": true,
+     "new": true,
+     "why": "a station makes no research cubes for a round"
+    }
+   ],
+   "harms": [
+    "production blacked out",
+    "energy lost"
+   ],
+   "value": "absorbs 6 a player (12 to drain); harm (a player's share + shared a country): about 2 energy (9) + a cube (6) + 0 = 15; 2.5 a compute",
+   "check": "rounds 2-5, worst for a Science seat; one round only; no loop",
+   "flags": [
+    "new flag station_dark (a rule must read it)",
+    "the blackout flag over every country, not one"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "grid_capture",
+   "name": "Grid Capture",
+   "tags": [
+    "grid"
+   ],
+   "cost": 9,
+   "ongoing": true,
+   "text": "Ongoing: every round, every player loses 1 energy.",
+   "effects": [
+    {
+     "op": "players_lose",
+     "resource": "energy",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "energy lost"
+   ],
+   "value": "absorbs 9 a player (18 to drain); harm 4.5 a round for 4 rounds: 18 a player; 2.0 a compute",
+   "check": "lands rounds 4-6; it acts in the build step, so it takes from energy held into the round; a player with none loses none; no loop",
+   "flags": [],
+   "reuses": null
+  },
+  {
+   "id": "false_flag",
+   "name": "False Flag",
+   "tags": [
+    "universal"
+   ],
+   "cost": 6,
+   "ongoing": false,
+   "text": "Deal 1 extra tier-2 threat in each country, any tag.",
+   "effects": [
+    {
+     "op": "deal_threats",
+     "count": 1,
+     "each_country": true,
+     "tier": 2,
+     "new": true,
+     "why": "deal_threats gains tier and each_country fields: one tier-2 threat dealt into each country now, executing next round"
+    }
+   ],
+   "harms": [
+    "extra threats"
+   ],
+   "value": "absorbs 6 a player (12 to drain); harm a tier-2 threat a country: the cheaper of its counter (9-12) or its harm uncountered (about 15-20) = 9-12, 1.5-2.0 a compute; 2.5-3.3 a compute where nobody near it pays",
+   "check": "rounds 3-6; countered like any threat by players near it; no loop: threats give compute, but a threat doesn't deal a project",
+   "flags": [
+    "deal_threats gains tier and each_country fields (today: count, one per country in turn)"
+   ],
+   "reuses": "false_flag"
+  },
+  {
+   "id": "grand_offensive",
+   "name": "Grand Offensive",
+   "tags": [
+    "universal"
+   ],
+   "cost": 10,
+   "ongoing": false,
+   "text": "The adversary builds and spreads now; sway 2 toward Discord.",
+   "effects": [
+    {
+     "op": "adversary_build"
+    },
+    {
+     "op": "adversary_spread"
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "Discord sway"
+   ],
+   "value": "absorbs 10 a player (20 to drain); harm (a player's share + shared a country): 0 + 15-25 of build and spread + 2 sway (8) = 23-33; 2.3-3.3, about 2.8 a compute",
+   "check": "rounds 5-8, when corrupted cities build 2 each; ongoing projects don't act in it; no loop",
+   "flags": [],
+   "reuses": "total_offensive"
+  },
+  {
+   "id": "propaganda_network",
+   "name": "Propaganda Network",
+   "tags": [
+    "universal"
+   ],
+   "cost": 14,
+   "ongoing": true,
+   "text": "Ongoing: every round, sway 2 toward Discord, move 1 Sway from Unity to the Undecided, and corrupted cities build 1 more.",
+   "effects": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 2
+    },
+    {
+     "op": "pull_unity",
+     "amount": 1
+    },
+    {
+     "op": "city_build",
+     "amount": 1,
+     "ongoing_use": true
+    }
+   ],
+   "harms": [
+    "Discord sway",
+    "Unity pulled back",
+    "adversary pieces placed"
+   ],
+   "value": "absorbs 14 a player (28 to drain); harm a round: 2 sway (8) + 1 Unity pull (4) = 12 to the table, about 4 a player at 3 players, + corrupted cities' extra build (about 7 a country) = about 11, for 3 rounds = about 33; 2.4 a compute",
+   "check": "the universal superproject, rounds 7-10; liberating cities shrinks it; city_build feeds corruption, capped by the deck's last rounds",
+   "flags": [
+    "the city_build twist read every round from an ongoing project: the engine reads it only off the current adversary card"
+   ],
+   "reuses": "propaganda_network"
+  }
+ ]
+}

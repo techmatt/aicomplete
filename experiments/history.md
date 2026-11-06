@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 134 adversary decks drafted for the new model (content for review, not loaded): tier-1/2/3 threats 25/28/11, projects 20, the Militarist's board and 14 events; picker `adversary_drafts` | r53 | [134_militarist_drafts/README.md](results/134_militarist_drafts/README.md) |
 | 131 agents' value table per agent (`t.<key>=v` cells, no rebuild); chips 1.5 → 2 (Antitrust no longer a loss at the table), auto_counter 1.5 → 0.67 a point (a fire's cut plus the executions it saves); agents only | r53 | [131_agents_table/r53.md](results/131_agents_table/r53.md) |
 | 130 late energy sinks: Particle Accelerator's Action gets a research-cube half; four new sinks (Directed-Energy Array, Holographic Assembly Hall, Wafer Fab Line, tier-2 Exascale Training Cluster); Positron Storage Ring draws 2; overrides count once built; energy's anchor kept | r53 | [130_late_energy_sinks/r53.md](results/130_late_energy_sinks/r53.md) |
 | 129 cleanup: 124-128's audit notes checked against the code; agents' Strategic trait trimmed to one `eval()`, a generated draft-set block, past specs archived, ledger `--overlay`; no play change | r52 | [129_cleanup/notes-check.md](results/129_cleanup/notes-check.md) |

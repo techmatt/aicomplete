@@ -1,0 +1,1319 @@
+{
+ "deck": "threats_t1",
+ "cards": [
+  {
+   "id": "orbital_strike",
+   "name": "Orbital Strike",
+   "tier": 1,
+   "tags": [
+    "military"
+   ],
+   "locations": [
+    "base"
+   ],
+   "text": "1 adversary troop lands here and stays (it doesn't march) until removed. The adversary gains 2 compute. Sway 1 toward Discord.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "nodes_near": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "security",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "troops",
+     "count": 1,
+     "at": "location",
+     "stand": true,
+     "new": true,
+     "why": "today's troops op lands on a factory in the country; this lands on the threat's base and stands (never marches or strikes) until removed"
+    },
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "Discord sway"
+   ],
+   "value": "counter a Security tag 5 (or remove 1 of your nodes on or next to it 6, or 7 credits); harm a standing troop 5 (no strike) + 2 compute 4 + sway 4 = 13 shared; 2.6 against the tag, 1.9 against credits",
+   "check": "Bites from round 1; the troop never strikes, so nothing permanent at tier 1, but it stays on the base (a piece next to sites for placement) until removed; anyone with a node by the base can pay; no loop.",
+   "flags": [
+    "troops needs `at: location` and `stand: true` fields (a standing troop that never marches)"
+   ],
+   "reuses": "orbital_strike"
+  },
+  {
+   "id": "commandeer",
+   "name": "Commandeer",
+   "tier": 1,
+   "tags": [
+    "military"
+   ],
+   "locations": [
+    "base",
+    "factory"
+   ],
+   "text": "Each player near it pays 2 energy or discards 2 cards.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "requisition",
+     "resource": "energy",
+     "amount": 2,
+     "cards": 2
+    }
+   ],
+   "harms": [
+    "cards discarded",
+    "energy lost"
+   ],
+   "value": "counter 2 energy (9) or 7 credits; harm the cheaper of 2 energy (9) and 2 cards (8), 8 a player, 12 at 1.5 near; 1.3 against energy, 1.7 against credits",
+   "check": "Bites all game (a hand of 2+ cards is near-constant); energy seats pay it, others discard; no loop.",
+   "flags": [],
+   "reuses": "commandeer"
+  },
+  {
+   "id": "supply_raid",
+   "name": "Supply Raid",
+   "tier": 1,
+   "tags": [
+    "military",
+    "economic"
+   ],
+   "locations": [
+    "factory"
+   ],
+   "text": "Each player near it loses 8 credits. The adversary gains 2 compute.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "security",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "players_lose",
+     "resource": "credits",
+     "amount": 8
+    },
+    {
+     "op": "compute",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "credits or income lost",
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Security or Industry tag 5 (or 7 credits); harm 8 a player x 1.5 = 12 + 2 compute 4 = 16; 3.2 against a tag, 2.3 against credits",
+   "check": "Bites rounds 1-5 when 8 credits is a third to half of income; fades late; anyone near a factory pays; no loop.",
+   "flags": [
+    "against a tag (5 at the anchor, dearer early) it reads 3.2; the tag options kept since a tag is worth more than 5 in rounds 1-5"
+   ],
+   "reuses": "supply_raid"
+  },
+  {
+   "id": "eviction",
+   "name": "Eviction",
+   "tier": 1,
+   "tags": [
+    "military"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "Each player near it pays 8 credits or loses 2 ambassadors.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "nodes_near": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_ambassadors_or",
+     "count": 2,
+     "resource": "credits",
+     "amount": 8,
+     "new": true,
+     "why": "lose_node_or's twin for ambassadors (lose_ambassador's from-supply-else-board rule): tier 1 takes no node"
+    }
+   ],
+   "harms": [
+    "ambassadors lost",
+    "credits or income lost"
+   ],
+   "value": "counter 6 credits (or remove 1 of your nodes on or next to it, 6); harm the cheaper of 8 credits and 2 ambassadors (8), 8 a player, 12 at 1.5 near; 2.0 against credits (and against a node)",
+   "check": "Bites all game; a player with ambassadors in supply loses those first, so it never strips a held city unless they choose; no loop.",
+   "flags": [
+    "new op lose_ambassadors_or (each player in scope loses count ambassadors, supply first, or pays amount resource; their choice)"
+   ],
+   "reuses": "eviction"
+  },
+  {
+   "id": "call_up",
+   "name": "Call-Up",
+   "tier": 1,
+   "tags": [
+    "military"
+   ],
+   "locations": [
+    "base"
+   ],
+   "text": "2 adversary ambassadors land on this base. Sway 1 toward Discord.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "nodes_near": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "security",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "ambassadors",
+     "at": "location",
+     "count": 2,
+     "new": true,
+     "why": "today's ambassadors op places on cities or player pieces; this lands on the threat's base token (an ambassador on a base sways Discord when it produces: today's rule)"
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "Discord sway"
+   ],
+   "value": "counter a Security tag 5 (or remove 1 of your nodes on or next to it 6, or 7 credits); harm 2 ambassadors placed 10 + sway 4 = 14 shared, plus a sway each production they stay; 2.8 against the tag, 2.0 against credits",
+   "check": "Bites all game; the ambassadors sway Discord at each production on the base until removed (5 each to remove), so leaving them costs more than the counter; no loop.",
+   "flags": [
+    "ambassadors needs an `at: location` value (the threat's base)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "agitators",
+   "name": "Agitators",
+   "tier": 1,
+   "tags": [
+    "influence"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "2 adversary ambassadors land on clean cities near it. Sway 1 toward Discord.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "sacrifice": "diplomacy",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "ambassadors",
+     "at": "clean_cities",
+     "count": 2
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "Discord sway"
+   ],
+   "value": "counter a Diplomacy tag 5 (or 7 credits, or 2 ambassadors 8); harm 2 ambassadors placed 10 + sway 4 = 14; 2.8 against the tag, 2.0 against credits, 1.75 against ambassadors",
+   "check": "Bites all game; worst mid-game when a city sits 1-2 short of corrupt_at; removable before the build, so nothing permanent by itself; no loop.",
+   "flags": [
+    "watch at corrupt_at 3: both ambassadors on a city that already holds one could tip it to corrupt in the next build (a permanent loss from a tier-1 card)"
+   ],
+   "reuses": "agitators"
+  },
+  {
+   "id": "defection",
+   "name": "Defection",
+   "tier": 1,
+   "tags": [
+    "influence"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "Each player near it loses an ambassador. Sway 1 toward Discord.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "diplomacy",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_ambassador"
+    },
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "ambassadors lost",
+    "Discord sway"
+   ],
+   "value": "counter 1 ambassador 4 (or a Diplomacy tag 5, or 6 credits); harm an ambassador 4 a player (6 at 1.5 near) + sway 4 = 10; 2.5 against an ambassador (the Diplomacy seat's cheap answer), 2.0 against the tag, 1.7 against credits",
+   "check": "Bites all game; Diplomacy seats pay with an ambassador; no loop.",
+   "flags": [],
+   "reuses": "defection"
+  },
+  {
+   "id": "smear_campaign",
+   "name": "Smear Campaign",
+   "tier": 1,
+   "tags": [
+    "influence"
+   ],
+   "locations": [
+    "city",
+    "station"
+   ],
+   "text": "Each player near it gets 2 less insight next round. Move 1 Sway from the Unity bucket to the Undecided.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "diplomacy",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_insight",
+     "amount": 2
+    },
+    {
+     "op": "pull_unity",
+     "amount": 1
+    }
+   ],
+   "harms": [
+    "insight lost",
+    "Unity pulled back"
+   ],
+   "value": "counter a Diplomacy tag 5 (or 7 credits, or 5 insight: 20 at the anchor, a sink for unspent insight); harm 2 insight 8 a player x 1.5 = 12 + a Unity pull 4 (priced as a sway) = 16; 3.2 against the tag, 2.3 against credits",
+   "check": "Bites rounds 1-5 when insight buys the draft; a sink for unspent insight; no loop.",
+   "flags": [],
+   "reuses": "smear_campaign"
+  },
+  {
+   "id": "propaganda_blitz",
+   "name": "Propaganda Blitz",
+   "tier": 1,
+   "tags": [
+    "influence"
+   ],
+   "locations": [
+    "coastal_city"
+   ],
+   "text": "Sway 2 toward Discord. Each player near it discards a card.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "sacrifice": "diplomacy",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 2
+    },
+    {
+     "op": "discard",
+     "count": 1,
+     "new": true,
+     "why": "requisition is a choice; no op discards a card outright (discard_most_expensive picks the dearest)"
+    }
+   ],
+   "harms": [
+    "Discord sway",
+    "cards discarded"
+   ],
+   "value": "counter a Diplomacy tag 5 (or 7 credits, or 2 ambassadors 8); harm sway 8 + a card 4 a player (6 at 1.5 near) = 14; 2.8 against the tag, 2.0 against credits, 1.75 against ambassadors",
+   "check": "Bites all game; the sway lands even with nobody near it (then nobody can pay), so it is worst on a coast the players have left; no loop.",
+   "flags": [
+    "new op discard (each player in scope discards count cards, their choice)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "provocation",
+   "name": "Border Provocation",
+   "tier": 1,
+   "tags": [
+    "influence",
+    "military"
+   ],
+   "locations": [
+    "base"
+   ],
+   "text": "Deal 1 extra tier-1 threat in this country; it executes next round. The adversary gains 2 compute.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "sacrifice": "security",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "deal_threats",
+     "count": 1,
+     "tier": 1,
+     "scope": "country",
+     "new": true,
+     "why": "deal_threats deals one per country in turn; this deals now into its own country, tier named, and the card executes next round"
+    },
+    {
+     "op": "compute",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "extra threats",
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Security tag 5 (or 6 credits, or 2 ambassadors 8); harm one more tier-1 threat (its counter about 7, uncountered about 12) + 2 compute 4 = 11-16; 2.2-3.2 against the tag, 1.8-2.7 against credits",
+   "check": "Bites rounds 1-4; the extra card is always tier 1, even into stage II; it is drawn while this card is still out of the deck, so it can't deal itself; a drawn threat that doesn't fit the country is discarded (draw rule); one deal a copy, no loop.",
+   "flags": [
+    "deal_threats needs `tier` and a `country` scope"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "sabotage",
+   "name": "Sabotage",
+   "tier": 1,
+   "tags": [
+    "cyber"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "Each player near it loses 3 tokens from their cards. The adversary gains 2 compute.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "research_cubes",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "cyber",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_tokens",
+     "amount": 3
+    },
+    {
+     "op": "compute",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "tokens stripped from cards",
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Cyber tag 5 (or 1 cube 6, or 5 insight: 20 at the anchor, a sink); harm 3 tokens about 6 a player x 1.5 = 9 + 2 compute 4 = 13; 2.6 against the tag, 2.2 against a cube",
+   "check": "Bites mid-game once token engines run (rounds 4+); early it is 4 compute and little else; no loop.",
+   "flags": [
+    "token value (about 2 each) is a guess; the anchors print none"
+   ],
+   "reuses": "sabotage"
+  },
+  {
+   "id": "insider_access",
+   "name": "Insider Access",
+   "tier": 1,
+   "tags": [
+    "cyber",
+    "influence"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "2 adversary ambassadors land on player-owned pieces near it. The adversary gains 2 compute.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 8
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 2
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "ambassadors",
+     "at": "player_pieces",
+     "count": 2
+    },
+    {
+     "op": "compute",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "production blacked out"
+   ],
+   "value": "counter 8 credits or 2 ambassadors 8 (or 5 insight: 20 at the anchor, a sink); harm 2 ambassadors placed 10 + 2 compute 4 + a darkened city or station about 2 = 16 shared; 2.0 against credits (and against ambassadors)",
+   "check": "Bites all game; an ambassador on a player's station or city darkens it, so it lands in next round's production; no loop.",
+   "flags": [],
+   "reuses": "infiltration"
+  },
+  {
+   "id": "wiper_malware",
+   "name": "Wiper Malware",
+   "tier": 1,
+   "tags": [
+    "cyber"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "Each player near it discards 2 cards or gets 2 less insight next round.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "research_cubes",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "cyber",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "requisition",
+     "resource": "insight",
+     "amount": 2,
+     "cards": 2,
+     "next_round": true,
+     "new": true,
+     "why": "requisition takes a resource now; insight is spent by the round's end, so the insight half must cut next round's (lose_insight's way)"
+    }
+   ],
+   "harms": [
+    "cards discarded",
+    "insight lost"
+   ],
+   "value": "counter a Cyber tag 5 (or 1 cube 6, or 5 insight: 20 at the anchor, a sink); harm the cheaper of 2 cards (8) and 2 insight (8), 8 a player x 1.5 = 12; 2.4 against the tag, 2.0 against a cube",
+   "check": "Bites all game; a player with an empty hand takes the insight cut; no loop.",
+   "flags": [
+    "requisition needs a next_round field (the insight half cuts next round's insight, as lose_insight)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "cryptojacking",
+   "name": "Cryptojacking",
+   "tier": 1,
+   "tags": [
+    "cyber"
+   ],
+   "locations": [
+    "station",
+    "factory"
+   ],
+   "text": "Each player near it loses 1 research cube; for each who has none, the adversary gains 4 compute.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "sacrifice": "cyber",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "players_lose",
+     "resource": "research_cubes",
+     "amount": 1
+    },
+    {
+     "op": "compute_per_missing",
+     "resource": "research_cubes",
+     "amount": 4,
+     "new": true,
+     "why": "the adversary gains amount compute for each player in scope who had none of the resource to lose"
+    }
+   ],
+   "harms": [
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Cyber tag 5 (or 6 credits, or 5 insight: 20 at the anchor, a sink); harm a cube 6 or 4 compute 8 a player, about 7 x 1.5 = 10.5; 2.1 against the tag, 1.75 against credits",
+   "check": "Bites from round 2 once stations make cubes; no choice: a seat with a cube loses it, a seat without feeds 4 compute; no loop.",
+   "flags": [
+    "new op compute_per_missing",
+    "a research cube lost has no harms-ledger row; listed under compute only"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "backdoor",
+   "name": "Backdoor",
+   "tier": 1,
+   "tags": [
+    "cyber"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "The adversary gains 2 compute on every visible project.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "research_cubes",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "cyber",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "compute_every",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Cyber tag 5 (or 1 cube 6, or 5 insight: 20 at the anchor, a sink); harm 2 compute on each of about 3 slots, 6 compute 12 shared; 2.4 against the tag, 2.0 against a cube",
+   "check": "Bites mid-game when projects are 1-2 short; can resolve two projects at once; capped by the slot count; no loop.",
+   "flags": [
+    "slot count is the Militarist board's (3 assumed); with 4 slots the harm is 16"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "requisition",
+   "name": "Requisition",
+   "tier": 1,
+   "tags": [
+    "economic"
+   ],
+   "locations": [
+    "factory",
+    "city"
+   ],
+   "text": "Each player near it discards 2 cards or pays 8 credits.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "requisition",
+     "resource": "credits",
+     "amount": 8,
+     "cards": 2
+    }
+   ],
+   "harms": [
+    "cards discarded",
+    "credits or income lost"
+   ],
+   "value": "counter an Industry tag 5 (or 6 credits); harm the cheaper of 8 credits and 2 cards (8), 8 a player, 12 at 1.5 near; 2.4 against the tag, 2.0 against credits",
+   "check": "Bites all game, most in rounds 1-4 when 8 credits is half a round's income; a real choice at every seat; no loop.",
+   "flags": [],
+   "reuses": "requisition"
+  },
+  {
+   "id": "shakedown",
+   "name": "Shakedown",
+   "tier": 1,
+   "tags": [
+    "economic",
+    "influence"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "The player near it with the most credits (ties: lowest seat) loses 8 credits. The adversary gains 4 compute.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 8
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "theft",
+     "who": "richest_near",
+     "resource": "credits",
+     "amount": 8,
+     "compute": 4,
+     "new": true,
+     "why": "theft into compute: the player with the most credits (who: richest_near, among players near it; richest, anywhere; ties the lowest seat) loses the amount and the adversary gains compute"
+    }
+   ],
+   "harms": [
+    "credits or income lost",
+    "projects advanced (compute)"
+   ],
+   "value": "counter an Industry tag 5 (or 8 credits, or 2 ambassadors 8); harm 8 credits on one player (no 1.5: one victim) + 4 compute 8 = 16; 3.2 against the tag, 2.0 against credits and against ambassadors",
+   "check": "Executes after income, so it always finds credits; the counter costs what the theft takes, so it is paid to stop the compute and to spread the loss; with nobody near it, it is 4 compute alone; no loop.",
+   "flags": [
+    "new op theft"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "embargo",
+   "name": "Embargo",
+   "tier": 1,
+   "tags": [
+    "economic"
+   ],
+   "locations": [
+    "factory"
+   ],
+   "text": "Sites on or next to it can't be claimed next round. The adversary gains 3 compute.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "flag",
+     "name": "embargo",
+     "scope": "near",
+     "new": true,
+     "why": "today's embargo flag covers a country; this covers sites within 1 hex of the token"
+    },
+    {
+     "op": "compute",
+     "amount": 3
+    }
+   ],
+   "harms": [
+    "actions or claims blocked",
+    "projects advanced (compute)"
+   ],
+   "value": "counter an Industry tag 5 (or 6 credits); harm a claim blocked 6 for about half the 1.5 players near it (4.5) + 3 compute 6 = about 11; 2.2 against the tag, 1.8 against credits",
+   "check": "Bites rounds 1-5 while sites are still being claimed; dull late; no loop.",
+   "flags": [
+    "embargo flag needs a near scope"
+   ],
+   "reuses": "embargo"
+  },
+  {
+   "id": "credit_crunch",
+   "name": "Credit Crunch",
+   "tier": 1,
+   "tags": [
+    "economic"
+   ],
+   "locations": [
+    "coastal_city"
+   ],
+   "text": "Each player near it gets 8 fewer credits of income next round.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "resource": "energy",
+      "amount": 1
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_income",
+     "resource": "credits",
+     "amount": 8,
+     "new": true,
+     "why": "lose_insight's twin for credits: the spec's 'income lost next round'"
+    }
+   ],
+   "harms": [
+    "credits or income lost"
+   ],
+   "value": "counter 1 energy 4.5 (or an Industry tag 5, or 7 credits); harm 8 a player x 1.5 = 12; 2.7 against energy, 2.4 against the tag, 1.7 against credits",
+   "check": "Bites rounds 1-5 (8 is about half of early income); can't be dodged by spending first; no loop.",
+   "flags": [
+    "new op lose_income (or generalize lose_insight to a resource field)",
+    "1 energy is the cheap answer (2.7); 2 energy (9) would sit above the 8-credit harm a player, so it stays at 1"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "chip_shortage",
+   "name": "Chip Shortage",
+   "tier": 1,
+   "tags": [
+    "economic"
+   ],
+   "locations": [
+    "factory"
+   ],
+   "text": "Each player near it loses 3 chips or 8 credits.",
+   "counters": [
+    [
+     {
+      "resource": "credits",
+      "amount": 6
+     }
+    ],
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "sacrifice": "industry",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_or",
+     "options": [
+      {
+       "op": "players_lose",
+       "resource": "chips",
+       "amount": 3
+      },
+      {
+       "op": "players_lose",
+       "resource": "credits",
+       "amount": 8
+      }
+     ],
+     "new": true,
+     "why": "each player near it picks one of the listed harms (requisition pairs only cards with a resource)"
+    }
+   ],
+   "harms": [
+    "credits or income lost"
+   ],
+   "value": "counter an Industry tag 5 (or 6 credits, or 2 energy 9); harm the cheaper of 3 chips (9) and 8 credits, 8 a player, 12 at 1.5 near; 2.4 against the tag, 2.0 against credits, 1.3 against energy",
+   "check": "Bites all game; factory seats hold chips and pay those; no loop.",
+   "flags": [
+    "new op lose_or",
+    "a chips rule: chips held must persist between rounds for the chip option to mean anything"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "blackout",
+   "name": "Blackout",
+   "tier": 1,
+   "tags": [
+    "grid",
+    "cyber"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "Cities on or next to it produce no energy next round.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "flag",
+     "name": "blackout",
+     "scope": "near",
+     "new": true,
+     "why": "today's blackout flag covers a country; this covers cities within 1 hex of the token"
+    }
+   ],
+   "harms": [
+    "production blacked out",
+    "energy lost"
+   ],
+   "value": "counter a Power tag 5 (or 7 credits, or 2 energy 9); harm about 2 energy a player (9), 13 at 1.5 near; 2.6 against the tag, 1.9 against credits, 1.4 against energy",
+   "check": "Bites all game for city-energy seats; energy stays the grid's sink (today's 1 energy read 2.9, under the spec's floor of a third of income); no loop.",
+   "flags": [
+    "blackout flag needs a near scope"
+   ],
+   "reuses": "blackout"
+  },
+  {
+   "id": "load_shedding",
+   "name": "Load Shedding",
+   "tier": 1,
+   "tags": [
+    "grid"
+   ],
+   "locations": [
+    "city",
+    "station"
+   ],
+   "text": "Players near it can't use Actions that cost energy next round.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "flag",
+     "name": "power_down",
+     "scope": "near",
+     "new": true,
+     "why": "new flag: players near it can't use Actions that cost energy next round"
+    }
+   ],
+   "harms": [
+    "actions or claims blocked"
+   ],
+   "value": "counter a Power tag 5 (or 7 credits, or 2 energy 9); harm an energy Action lost about 6-8 a player (the claim-blocked anchor 6) x 1.5 = 9-12; 1.8-2.4 against the tag, 1.3-1.7 against credits, 1.0-1.3 against energy",
+   "check": "Bites mid-game and late, once energy Actions are the engine (Power seats most); early, with few energy Actions, it is near blank; the energy is kept, not lost; no loop.",
+   "flags": [
+    "new flag power_down (near scope)",
+    "harm soft: the energy stays banked for the round after; the 2-energy counter reads about 1.0-1.3"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "power_surcharge",
+   "name": "Power Surcharge",
+   "tier": 1,
+   "tags": [
+    "grid"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "Each player near it loses 2 energy or 10 credits.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "lose_or",
+     "options": [
+      {
+       "op": "players_lose",
+       "resource": "energy",
+       "amount": 2
+      },
+      {
+       "op": "players_lose",
+       "resource": "credits",
+       "amount": 10
+      }
+     ],
+     "new": true,
+     "why": "each player near it picks one of the listed harms (requisition pairs only cards with a resource)"
+    }
+   ],
+   "harms": [
+    "energy lost",
+    "credits or income lost"
+   ],
+   "value": "counter a Power tag 5 (or 7 credits, or 2 energy 9); harm the cheaper of 2 energy (9) and 10 credits, 9 a player x 1.5 = 13.5; 2.7 against the tag, 1.9 against credits, 1.5 against energy",
+   "check": "Bites all game; a seat with spare energy pays 2 and is done, others lose 10 credits; no loop.",
+   "flags": [
+    "new op lose_or (shared with Chip Shortage)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "cooling_failure",
+   "name": "Cooling Failure",
+   "tier": 1,
+   "tags": [
+    "grid"
+   ],
+   "locations": [
+    "station"
+   ],
+   "text": "Each player near it makes no research cubes next round.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "flag",
+     "name": "station_outage",
+     "scope": "near",
+     "new": true,
+     "why": "no flag stops a station's cube; the spec's 'a station makes no research cubes', on the stations of each player near it (anywhere)"
+    }
+   ],
+   "harms": [
+    "production blacked out"
+   ],
+   "value": "counter a Power tag 5 (or 7 credits, or 2 energy 9); harm about 1.5 cubes a player (9), 13 at 1.5 near; 2.6 against the tag, 1.9 against credits, 1.4 against energy",
+   "check": "Bites from round 2 once stations are owned; a player near it with no station loses nothing, so it hits research seats; no loop.",
+   "flags": [
+    "new flag station_outage, near scope (the players near it, as Load Shedding's)"
+   ],
+   "reuses": null
+  },
+  {
+   "id": "grid_tap",
+   "name": "Grid Tap",
+   "tier": 1,
+   "tags": [
+    "grid"
+   ],
+   "locations": [
+    "city"
+   ],
+   "text": "The player near it with the most credits (ties: lowest seat) loses 2 energy. The adversary gains 4 compute.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 2
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 8
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
+      "amount": 1
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "theft",
+     "who": "richest_near",
+     "resource": "energy",
+     "amount": 2,
+     "compute": 4,
+     "new": true,
+     "why": "theft into compute: the player with the most credits (who: richest_near, among players near it; richest, anywhere; ties the lowest seat) loses the amount and the adversary gains compute"
+    }
+   ],
+   "harms": [
+    "energy lost",
+    "projects advanced (compute)"
+   ],
+   "value": "counter a Power tag 5 (or 8 credits, or 2 energy 9); harm 2 energy (9) on one player (no 1.5: one victim) + 4 compute 8 = 17; 3.4 against the tag, 2.1 against credits, 1.9 against energy",
+   "check": "Executes after production, so energy is usually there; theft picks the player near it with the most credits (so the victim can always pay a credit take), so a credit-rich seat with no energy loses what it has and the 4 compute still lands; no loop.",
+   "flags": [
+    "new op theft (shared with Shakedown)",
+    "victim by credits but the take is energy: it can miss the energy seat; Matt may prefer the take in credits"
+   ],
+   "reuses": null
+  }
+ ]
+}
