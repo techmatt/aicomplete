@@ -7,7 +7,7 @@
 //! uncountered threats and its war step. [`shelter_saves`] reads them from the
 //! open table; the eval credits a sheltered country with what it saves.
 
-use aic_core::content::{Op, RoundFlag};
+use aic_core::content::{CounterItem, Op, RoundFlag};
 use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
 use aic_core::modules::{board, threats};
@@ -37,10 +37,6 @@ fn absorbed(g: &GameState, h: usize) -> bool {
 
 /// The share of threat `t`'s counter still unpaid.
 fn unpaid(w: &World, g: &GameState, t: &str) -> f64 {
-    let req: i64 = threats::requirement(w, g, t).iter().map(|(_, n)| n).sum();
-    if req <= 0 {
-        return 1.0;
-    }
     let prefix = threats::paid_prefix(t);
     let paid: i64 = g
         .vars
@@ -48,6 +44,11 @@ fn unpaid(w: &World, g: &GameState, t: &str) -> f64 {
         .take_while(|(k, _)| k.starts_with(prefix.as_str()))
         .map(|(_, &n)| n)
         .sum();
+    // 135: against the menu's cheapest resource option.
+    let req = threats::cheapest_resource_need(w, g, t).saturating_add(paid);
+    if req <= 0 {
+        return 1.0;
+    }
     1.0 - (paid as f64 / req as f64).min(1.0)
 }
 
@@ -59,10 +60,16 @@ fn counterable(w: &World, g: &GameState, t: &str, scope: Option<usize>) -> bool 
     if seats.is_empty() {
         return false;
     }
-    threats::requirement(w, g, t).iter().all(|&(r, n)| {
-        let paid: i64 = (0..g.seats.len()).map(|s| g.var(&threats::paid_key(t, s, r))).sum();
-        let held: i64 = seats.iter().map(|&s| g.resource(s, r).max(0)).sum();
-        n - paid <= held
+    // 135: some resource-only option of the menu the near seats can cover.
+    threats::requirement(w, g, t).iter().any(|option| {
+        option.iter().all(|item| match *item {
+            CounterItem::Pay { resource: r, amount: n } => {
+                let paid: i64 = (0..g.seats.len()).map(|s| g.var(&threats::paid_key(t, s, r))).sum();
+                let held: i64 = seats.iter().map(|&s| g.resource(s, r).max(0)).sum();
+                n - paid <= held
+            }
+            CounterItem::Sacrifice { .. } | CounterItem::NodesNear { .. } => false,
+        })
     })
 }
 

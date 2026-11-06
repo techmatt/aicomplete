@@ -68,8 +68,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::DelayThreat { .. } => !undelayed_threats(w, g, seat).is_empty(),
             Op::Sway { .. } => w.variant("alignment") != Some("off"),
             Op::Damage { ambassadors, troops } => !damage_hexes(w, g, seat, *ambassadors, *troops).is_empty(),
-            Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(w, g, h, *ambassadors, *troops)),
-            Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(w, g, h)),
+            Op::DamageCountry { ambassadors, troops } => any_hex(g, |h| adversary::can_damage(g, h, *ambassadors, *troops)),
+            Op::DestroyAll => any_hex(g, |h| adversary::can_destroy_all(g, h)),
             Op::RemoveBotnet => any_hex(g, |h| botnet_in_reach(w, g, seat, h)),
             Op::CutBotnet => !cuttable_botnets(w, g, seat).is_empty(),
             Op::Shelter => !unsheltered(w, g).is_empty(),
@@ -77,7 +77,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
             Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
             Op::RemoveTroops { reach, .. } => {
-                any_hex(g, |h| adversary::can_damage(w, g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))
+                any_hex(g, |h| adversary::can_damage(g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))
             }
             Op::RemoveAmbassadorsCountry { reach, .. } => {
                 any_hex(g, |h| g.tokens(h, ADV_AMBASSADOR) > 0 && (!*reach || in_reach(w, g, seat, h)))

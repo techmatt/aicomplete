@@ -26,7 +26,15 @@ fn ops_check_the_resources_they_name() {
     assert!(check_ops(&[gives], Slot::Player, "test").is_ok());
     let income = Op::TeamIncome { resource: Resource::Energy, amount: 1 };
     assert!(check_ops(&[income], Slot::Team, "test").is_err());
-    let each = Op::Troops { count: 1, each_country: true, destroy: false };
+    let each = Op::Troops {
+        count: 1,
+        each_country: true,
+        destroy: false,
+        at: None,
+        stand: false,
+        location: None,
+        if_: None,
+    };
     assert!(check_ops(&[each], Slot::Threat, "test").is_err());
 }
 
@@ -57,16 +65,26 @@ fn resources_order_as_their_words() {
     assert_eq!(serde_json::to_string(&TagOrAny::Any).unwrap(), "\"any\"");
 }
 
-/// Every number in `v`'s ops, not its name or text.
+/// Every number in row `v`'s ops, not its name or text, nor its own tier or
+/// stage (135: a pull's tier, "a Military 2 threat", is printed and counts).
 fn op_numbers(v: &serde_json::Value, out: &mut Vec<i64>) {
+    fn nested(v: &serde_json::Value, out: &mut Vec<i64>) {
+        match v {
+            serde_json::Value::Number(n) => out.extend(n.as_i64()),
+            serde_json::Value::Array(a) => a.iter().for_each(|x| nested(x, out)),
+            serde_json::Value::Object(o) => o
+                .iter()
+                .filter(|(k, _)| !["id", "name", "text"].contains(&k.as_str()))
+                .for_each(|(_, x)| nested(x, out)),
+            _ => {}
+        }
+    }
     match v {
-        serde_json::Value::Number(n) => out.extend(n.as_i64()),
-        serde_json::Value::Array(a) => a.iter().for_each(|x| op_numbers(x, out)),
         serde_json::Value::Object(o) => o
             .iter()
             .filter(|(k, _)| !["id", "name", "text", "tier", "stage"].contains(&k.as_str()))
-            .for_each(|(_, x)| op_numbers(x, out)),
-        _ => {}
+            .for_each(|(_, x)| nested(x, out)),
+        other => nested(other, out),
     }
 }
 
@@ -98,7 +116,7 @@ fn text_numbers(text: &str) -> Vec<i64> {
 #[test]
 fn hand_written_text_prints_no_number_its_ops_lack() {
     let n = Rules::new(&baseline()).unwrap().world().int("adversary.station_flip_at");
-    let tunable = format!("unless {n} adversary ambassadors");
+    let tunable = format!("unless {n} adversary");
     fn walk(v: &serde_json::Value, tunable: &str, bad: &mut Vec<String>) {
         match v {
             serde_json::Value::Array(a) => a.iter().for_each(|x| walk(x, tunable, bad)),

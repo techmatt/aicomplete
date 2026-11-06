@@ -125,6 +125,10 @@ macro_rules! forced_table {
             (no_powers: bool, true, 0.0, "dominance check: never use an AI-board power but the node powers")
             /// Never pay toward a threat's counter.
             (no_counters: bool, true, 0.0, "dominance check: never counter a threat")
+            /// 135: counter only with credits, energy, insight or chips: no tag
+            /// sacrifice, no ambassadors, no research cubes, no nodes spent (the
+            /// off arm of the new counter kinds' read).
+            (old_counters: bool, true, 0.0, "135 read: counter only with credits, energy, insight or chips (no tags, ambassadors, research cubes or nodes)")
             /// Place no nodes beyond setup (no power or card that places one).
             (no_node: bool, true, 0.0, "dominance check: place no nodes beyond setup")
             /// Mono-tag (023): keep and play only cards carrying this tag.
@@ -454,8 +458,16 @@ impl Policy {
     fn ruled_out(&self, world: &World, g: &GameState, a: &Action) -> bool {
         let f = &self.forced;
         match a {
-            Action::Pay { threat, .. } if f.abandon && on_given_up(world, g, threat) => true,
-            Action::Pay { seat, threat, .. } if f.home_only && abroad(world, g, *seat as usize, threat) => true,
+            Action::Pay { threat, .. } | Action::CounterWith { threat, .. } if f.abandon && on_given_up(world, g, threat) => {
+                true
+            }
+            Action::Pay { seat, threat, .. } | Action::CounterWith { seat, threat, .. }
+                if f.home_only && abroad(world, g, *seat as usize, threat) =>
+            {
+                true
+            }
+            Action::Pay { resource: Resource::Ambassadors | Resource::ResearchCubes, .. } if f.old_counters => true,
+            Action::CounterWith { .. } => f.no_counters || f.ignore_threats || f.free_only || f.old_counters,
             Action::Choose { seat, option, .. } if f.home_only && abroad(world, g, *seat as usize, option) => true,
             Action::Choose { option, target, .. } if f.abandon => {
                 on_given_up(world, g, option)

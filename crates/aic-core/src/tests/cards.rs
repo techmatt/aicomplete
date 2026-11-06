@@ -253,7 +253,19 @@ fn energy_a_card_gains_first_can_pay_its_step_and_a_second_delay_is_not_offered(
     ];
     assert!(effects::feasible(&w, &g, 0, &gains));
     let delay = [Op::DelayThreat { count: 1 }];
-    deal(&mut g, "smear_campaign", 0);
+    // 135: its token far from anything of seat 0's, so seat 0 isn't near it.
+    let m = &rules.map;
+    let mine: Vec<usize> = (0..m.hexes.len())
+        .filter(|&h| g.tokens(h, node(0)) > 0 || g.tokens(h, ambassador(0)) > 0)
+        .collect();
+    let far = m.countries[0]
+        .hexes
+        .iter()
+        .copied()
+        .find(|&h| mine.iter().all(|&x| m.distance(h, x) >= 3))
+        .expect("a hex of country 0 far from seat 0");
+    deal_at(&mut g, "smear_campaign", 0, &[far]);
+    assert!(!crate::modules::threats::near(&w, &g, 0, &Key::new("smear_campaign")));
     assert!(!effects::feasible(&w, &g, 0, &delay), "118: a threat seat 0 may not counter can't be delayed");
     counterable_manhunt(&rules, &mut g);
     assert!(effects::feasible(&w, &g, 0, &delay));

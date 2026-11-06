@@ -64,7 +64,7 @@ target is in the player's reach. The view publishes each action with its cost
 | Move a player ambassador | `move_credits` 1 credit | from your supply or the board onto a piece in reach (not the hex it comes from) |
 | Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
 | Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean |
-| Free a research station | `free_station_credits` 6 credits; `free_station_ambassadors` 2 of your ambassadors on it, used up | a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays) |
+| Free a research station or factory | `free_station_credits` 6 credits; `free_station_ambassadors` 2 of your ambassadors on it, used up | a corrupted station or adversary factory in reach with no adversary ambassador on it: it becomes neutral (a botnet there stays) |
 | Harden a facility (a card that grants it; none does: Faraday Yard hardens when played) | the chips the card prints, per token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
 | Sell chips | 1 chip | gain `chips_credits` 1 |
 | Sell a card | gain `sell_credits` 1 | from your hand |
@@ -81,15 +81,16 @@ There is no "build a factory" standard action: cities build factories.
 |---|---|---|
 | | *(round start)* | Insight is set; abilities and powers refresh |
 | 1 | `alignment.sway` | AI boards sway |
-| 2–4 | `adversary.build`, `.spread`, `.corrupt` | The adversary ([adversary.md](adversary.md)): build, ongoing projects, botnet compute onto the projects; spread; corrupt |
-| 5 | `board.march` | The adversary troops march ([war.md](war.md)): `troop_steps` steps each, move or destroy |
-| 6 | `threats.deal` | Threats face up on each country |
-| 7 | `adversary.reveal` | Next round's card face up |
-| 8–11 | `cards.tier`, `.deal`, `.draft`, `.keep` | Round 1: the opening deal and keep. Later: build the draft hand card by card (tier each), draft, keep ([player-cards.md](player-cards.md)) |
-| 12 | `cards.play+threats.counter+alignment.act+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats, antimatter |
-| 13 | `board.bases` | Production 1, on a production step: bases and factories make troops (ambassadors divert), factories make chips, cities grow factories |
-| 14 | `board.war` | Production 2, on a war step: front battles |
-| 15 | `board.produce` | Production 3: cities' energy cubes (neutral ones for sale) and stations (ambassadors divert); ambassadors on nodes drain insight; full megaprojects complete |
-| 16 | `economy.upkeep` | Production 4: income; building upkeep |
-| 17 | `threats.execute` | Production 5: partial payments refunded; uncountered threats execute |
-| 18 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |
+| 2 | `adversary.event` | The face-up event card becomes this round's ([adversary.md](adversary.md)) |
+| 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
+| 4–6 | `adversary.build`, `.spread`, `.corrupt` | The rest of the card (standing lines, twists, arrivals and build, Escalation), ongoing projects, botnet compute onto the projects; spread; corrupt |
+| 7 | `board.march` | The adversary troops march ([war.md](war.md)): `troop_steps` steps each, move or destroy |
+| 8 | `adversary.reveal` | Next round's card face up |
+| 9–12 | `cards.tier`, `.deal`, `.draft`, `.keep` | Round 1: the opening deal and keep. Later: build the draft hand card by card (tier each), draft, keep ([player-cards.md](player-cards.md)) |
+| 13 | `cards.play+threats.counter+alignment.act+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats, antimatter |
+| 14 | `board.bases` | Production, on a production step: bases and factories make troops (ambassadors divert), factories make chips, cities grow factories |
+| 15 | `board.produce` | Production: cities' energy cubes (neutral ones for sale) and stations (ambassadors divert); ambassadors on nodes drain insight; full megaprojects complete |
+| 16 | `economy.upkeep` | Production: income; building upkeep |
+| 17 | `board.war` | War, on a war step: front battles; what it destroys is gone for next round's production |
+| 18 | `threats.execute` | Partial payments refunded; uncountered threats execute |
+| 19 | `board.cleanup` | Round flags removed; tips and the end checks run after every phase |

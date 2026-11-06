@@ -42,8 +42,8 @@ rules are in [rules/](rules/README.md).
 
 Compile `Rules::new(&config)` once per config; the hot path is `legal_actions_into`
 (reuses a buffer) and `apply_mut(&mut g, &action, None)` (no event log). The free
-functions `new_game`, `legal_actions` and `apply` rebuild `Rules` every call (fine for
-a UI, not a sweep) and run `check_state` first: a mismatched state errors, not panics. `driver::play` plays a game with one team `Agent` for every seat;
+functions `new_game`, `legal_actions` and `apply` rebuild `Rules` every call (a UI's, not a
+sweep's) and run `check_state` first. `driver::play` plays a game with one team `Agent` for every seat;
 `driver::replay` rebuilds one.
 
 ## Config
@@ -60,10 +60,9 @@ most one instance per module id, in one variant, with its `params` and, for
 - `round` lists `"<module>.<phase>"`, each any number of times; `"a.x+b.y"` combines
   several modules' **decision** phases into one simultaneous phase.
 - **Config hash**: `Rules::config_hash`, FNV-1a over the resolved config (`name`
-  excluded). Lists hash as written: `[1,2,3]` and `[1,2,3,3]` play alike, hash apart.
-- **Overrides** (syntax in [simulator.md](simulator.md)): `<module>=off` is rejected for
-  a module another `requires`; measure one with its `off` *variant*, which keeps its
-  phases and the parameters others read.
+  excluded); lists hash as written.
+- **Overrides** ([simulator.md](simulator.md)): `<module>=off` is rejected for a module another
+  `requires`; its `off` *variant* keeps the phases and parameters others read.
 - **Content overlay** ([experiments.md](experiments.md), *Content levers*): in the
   config's `content` list, so a config replays whole. `Rules::content_hash` is the
   overlaid hash, `aic_core::content_hash()` the embedded one; an empty overlay hashes as absent.
@@ -163,17 +162,15 @@ Everything content does is one enum, `Op` (`op.rs`), read from JSON as
   trigger: `cards/triggers.rs` fires its instant ops on its event (a play, a token placed,
   Wall stopping a troop, or what one seat's action removed, diffed by `cards::fighting`, the
   wrapper every play, Action, power, converter and standard action goes through).
-- **Twists** (an adversary card's `twists`) are read through `adversary::twists` while
-  the card is current; its `sway`, `each_destroy_node` and `pull_unity` resolve once, in
-  `adversary.build`, when it becomes this round's card.
+- **Twists** (an event card's) are read through `adversary::twists` while it is current; its immediate ones and
+  `standing` lines resolve in `adversary.build`.
 
-An op shared by threats and team cards takes wording and tally from the context;
-`each_country` is the one printed difference.
+An op shared by threats and team cards takes wording and tally from the context.
 
 **A new op parameter** touches `op.rs` (the field, `slots()`), `content.rs` (its check), `face.rs`,
-its dispatch (`effects/mod.rs`, or the rule that reads a standing op: `economy.rs`, `cards/triggers.rs`'s
-copy), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
-ledger's hand mirror, `scripts/cards/effect_ledger.py`. The compiler finds the Rust sites; only a
+its dispatch (`effects/mod.rs`, whose arm keeps the old behavior by matching the field's default and sends the
+rest to `effects/new_ops.rs`; or the rule that reads a standing op), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
+ledger's hand mirror, `scripts/cards/effect_ledger.py`. The compiler finds the Rust sites (`face.rs` lists every non-player op); a
 fast-lane mirror test finds the ledger.
 
 ### Generated docs
@@ -182,7 +179,8 @@ fast-lane mirror test finds the ledger.
 (each in one file, listed in `BLOCKS`) and the `strategies` block of [agents.md](agents.md),
 all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md), and
 `web/card/faces.json`; `python scripts/cards/cards_doc.py` reads the faces and writes
-[cards.md](cards.md). A block is a pure function of `Rules` or `Content` in
+[cards.md](cards.md); `scripts/content/load_adversary.py` writes the adversary's `content/` from
+`drafts/adversary/` and [adversary-cards.md](adversary-cards.md). A block is a pure function of `Rules` or `Content` in
 `crates/aic-sim/src/docs/blocks.rs`, named in `run` (`run.rs`), tested in `tests.rs`.
 
 `aic-sim docs` fails on a broken harm distribution (`harm_failures`). `--check`, and a

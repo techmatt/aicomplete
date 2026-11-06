@@ -14,7 +14,7 @@ use crate::module::World;
 use crate::state::GameState;
 
 use super::{adversary, board};
-use super::common::{clean_city, corrupted_city, corrupted_station, is_base, scope_hexes, FACTORY, STATION};
+use super::common::{clean_city, corrupted_city, corrupted_station, is_base, scope_hexes, BOTNET, FACTORY, STATION};
 
 /// The sites `twists`' arrivals name, one per arrivals twist.
 fn arrival_sites<'t>(twists: &'t [&'t Op]) -> impl Iterator<Item = Site> + 't {
@@ -44,7 +44,7 @@ pub fn build_plan(
         city += w.int("adversary.build_bonus");
     }
     city += sum(|t| match t {
-        Op::CityBuild { amount } => Some(*amount),
+        Op::CityBuild { amount, .. } => Some(*amount),
         _ => None,
     });
     let clean = sum(|t| match t {
@@ -135,8 +135,9 @@ pub fn escalation_hexes(w: &World, g: &GameState) -> Vec<(usize, i64)> {
 }
 
 /// The next round's build, read off the face-up adversary card (public):
-/// [`build_plan`] with that card's twists, plus its escalation when it
-/// carries one. Empty when no card is face up (the deck has run out). Read
+/// [`build_plan`] with that card's twists, plus its standing infiltration,
+/// its botnet twist and its escalation when it carries them (its standing
+/// troops place no ambassador). Empty when no card is face up (the deck has run out). Read
 /// on the table as it stands now, so anything that changes before the
 /// adversary phase (a corruption) is not foreseen, and nor are ongoing
 /// projects, which can place ambassadors during the build itself.
@@ -146,12 +147,35 @@ pub fn next_build(w: &World, g: &GameState) -> Vec<(usize, i64)> {
     };
     let twists: Vec<&Op> = card.twists.iter().collect();
     let mut plan = build_plan(w, g, &twists, None);
+    let mut add = |h: usize, n: i64| match plan.binary_search_by_key(&h, |&(x, _)| x) {
+        Ok(i) => plan[i].1 += n,
+        Err(i) => plan.insert(i, (h, n)),
+    };
+    // 135: the card's standing infiltration, before the build (it lands on a
+    // clean city, which the build leaves alone).
+    for e in &card.standing {
+        if let Op::Infiltrate { amount } = e {
+            for c in 0..w.map.countries.len() {
+                if let Some(h) = adversary::most_infiltrated_city(w, g, c, |h| clean_city(w, g, h)) {
+                    add(h, *amount);
+                }
+            }
+        }
+    }
+    // A botnet twist resolves in the build too: each botnet makes ambassadors on its hex.
+    for t in &card.twists {
+        if let Op::BotnetAmbassadors { amount } = t {
+            for h in 0..g.hexes.len() {
+                let n = g.tokens(h, BOTNET);
+                if n > 0 {
+                    add(h, n * amount);
+                }
+            }
+        }
+    }
     if card.escalation {
         for (h, n) in escalation_hexes(w, g) {
-            match plan.binary_search_by_key(&h, |&(x, _)| x) {
-                Ok(i) => plan[i].1 += n,
-                Err(i) => plan.insert(i, (h, n)),
-            }
+            add(h, n);
         }
     }
     plan

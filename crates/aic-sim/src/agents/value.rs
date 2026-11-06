@@ -592,7 +592,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let sign = if *side == Side::Unity { 1.0 } else { -1.0 };
             Worth::now(row("sway") * sign * t.rate("sway") * *amount as f64)
         }
-        Op::Troops { count, each_country, destroy } => {
+        Op::Troops { count, each_country, destroy, .. } => {
             let n = *count as f64 * if *each_country { t.rate("countries") } else { 1.0 };
             let lost = if *destroy { row("destroy_node").abs() } else { 0.0 };
             Worth::now(row("troops") * n - lost * n)
@@ -601,22 +601,22 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::EachDestroyNode { count } => Worth::now(row("each_destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
         Op::LoseInsight { amount } => Worth::unseen(row("lose_insight") * *amount as f64),
-        Op::FlipStation { each_country } => {
+        Op::FlipStation { each_country, .. } => {
             Worth::now(row("flip_station") * if *each_country { t.rate("countries") } else { 1.0 })
         }
-        Op::CorruptCity => Worth::now(row("corrupt_city")),
-        Op::PlayersLose { resource, amount } => Worth::now(row("players_lose") * r(*resource) * *amount as f64),
+        Op::CorruptCity { .. } => Worth::now(row("corrupt_city")),
+        Op::PlayersLose { resource, amount, .. } => Worth::now(row("players_lose") * r(*resource) * *amount as f64),
         Op::AdversaryBuild => Worth::now(row("adversary_build")),
         Op::Ambassadors { count, .. } => Worth::now(row("ambassadors") * *count as f64),
-        Op::LoseNodeOr { resource, amount } => {
-            Worth::now(row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node")))
-        }
-        Op::Flag { name } => Worth::unseen(match name {
+        Op::LoseNodeOr { resource, amount, count } => Worth::now(
+            row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),
+        ),
+        Op::Flag { name, .. } => Worth::unseen(match name {
             RoundFlag::Shelter => row("shelter") * t.rate("target_share"),
             RoundFlag::Cordon => row("cordon"),
-            RoundFlag::Blackout | RoundFlag::Sabotage | RoundFlag::Embargo => -row("flag"),
+            _ => -row("flag"),
         }),
-        Op::Requisition { resource, amount, cards } => Worth::now(
+        Op::Requisition { resource, amount, cards, .. } => Worth::now(
             row("requisition") * (r(*resource) * *amount as f64).min(t.rate("drawn_card") * *cards as f64),
         ),
         Op::LoseAmbassador => Worth::now(row("lose_ambassador")),
@@ -628,7 +628,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::FreePurchases { count } => Worth::now(row("free_purchases") * t.rate("keep_tier1") * *count as f64),
         Op::CounterAll => Worth::now(row("counter_all")),
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
-        Op::DealThreats { count } => Worth::now(row("deal_threats") * *count as f64),
+        Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
         Op::Infiltrate { amount } => Worth::now(row("infiltrate") * t.rate("countries") * *amount as f64),
         Op::AdversarySpread => Worth::now(row("adversary_spread")),
         Op::Sacrifice => Worth::now(row("sacrifice")),
@@ -704,6 +704,28 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Arrivals { .. } => Worth::now(row("arrivals")),
         Op::CorruptSooner { .. } => Worth::now(row("corrupt_sooner")),
         Op::War => Worth::now(row("war")),
+        // 135: the new adversary model's threat and team ops (no player card prints them).
+        Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
+        Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),
+        Op::AdversaryFactory { count, .. } => Worth::now(row("adversary_factory") * *count as f64),
+        Op::ComputePerMissing { amount, .. } => Worth::now(row("compute_per_missing") * *amount as f64),
+        Op::CorpTroops { count, .. } => Worth::now(row("corp_troops") * (*count).max(1) as f64),
+        Op::DestroyFacility { .. } => Worth::now(row("destroy_facility")),
+        Op::DisableBuilding { count, .. } => Worth::now(row("disable_building") * *count as f64),
+        Op::Discard { count } => Worth::now(row("discard") * t.rate("drawn_card") * *count as f64),
+        Op::ExtraWar { .. } => Worth::now(row("extra_war")),
+        Op::LoseAmbassadorsOr { count, resource, amount } => Worth::now(
+            row("lose_ambassadors_or") * (r(*resource) * *amount as f64).min(r(Resource::Ambassadors) * *count as f64),
+        ),
+        Op::LoseIncome { resource, amount } => Worth::unseen(row("lose_income") * r(*resource) * *amount as f64),
+        Op::LoseOr { options } => Worth::now(
+            options.iter().map(|o| op_worth(t, o).now).fold(f64::NEG_INFINITY, f64::max).max(-1e9) * row("lose_or"),
+        ),
+        Op::MarchNow { .. } => Worth::now(row("march_now")),
+        Op::OccupyFactory { .. } => Worth::now(row("occupy_factory")),
+        Op::PlaceBotnet { count } => Worth::now(row("place_botnet") * *count as f64),
+        Op::SeizeFactory => Worth::now(row("seize_factory")),
+        Op::Theft { resource, amount, .. } => Worth::now(row("theft") * r(*resource) * *amount as f64),
     }
 }
 

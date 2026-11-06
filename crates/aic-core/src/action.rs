@@ -47,6 +47,10 @@ pub enum Action {
         threat: Key,
         resource: Resource,
     },
+    /// Counter a threat alone with one of its options that asks more than
+    /// resources (tags to sacrifice, nodes near it), paid whole (module
+    /// `threats`, 135). `option` indexes the threat's counter menu.
+    CounterWith { seat: u8, threat: Key, option: u8 },
     /// Sway toward Discord to produce one antimatter (module `alignment`).
     Antimatter { seat: u8 },
     /// A standard action (module `board`): deliberately poorly priced.
@@ -70,6 +74,7 @@ impl Action {
             | Action::Power { seat, .. }
             | Action::Pay { seat, .. }
             | Action::Withdraw { seat, .. }
+            | Action::CounterWith { seat, .. }
             | Action::Antimatter { seat }
             | Action::Standard { seat, .. }
             | Action::Sell { seat, .. }

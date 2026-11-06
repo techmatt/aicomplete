@@ -56,9 +56,11 @@ fn the_supply_is_a_cap_not_a_loss() {
     let city = rules.map.numbered(0, piece(0).corrupted[0]);
     put(&mut g, city, ADV_CUBE, 1);
     g.vars.insert(SUPPLY.into(), 1);
-    set_pile(&mut g, NEXT, &["adv_s1_long_patrols"]);
-    run(&rules, &mut g);
-    assert_eq!(g.tokens(city, ADV_AMBASSADOR), 1);
+    set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
+    run_answered(&rules, &mut g);
+    // 135: the card's standing infiltration and the city's build both ask; one lands.
+    assert_eq!(total(&g, ADV_AMBASSADOR), 1);
+    assert_eq!(g.var(SUPPLY), 0);
     assert!(!g.is_over());
 }
 
@@ -74,13 +76,13 @@ fn every_corrupted_city_is_no_loss() {
 fn a_card_brings_arrivals_to_every_site_it_names_a_round_ahead() {
     let (rules, mut g) = lab_with(&["adversary.build"], &["adversary.arrivals=1"]);
     g.vars.insert(SUPPLY.into(), 40);
-    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     let w = rules.world();
     let plan = crate::modules::plan::next_build(&w, &g);
     let coast = hexes_where(&rules.map, |h| rules.map.hexes[h].coastal);
     assert_eq!(plan.iter().map(|&(h, _)| h).collect::<Vec<_>>(), coast);
     assert_eq!(coast.len(), 4, "2 a country");
-    run(&rules, &mut g);
+    run_answered(&rules, &mut g);
     for h in coast {
         assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
     }
@@ -166,7 +168,8 @@ fn a_choice_threat_never_takes_a_last_node() {
     set_res(&mut g, 0, Resource::Credits, 2);
     // No option is left: the player pays what they have and keeps the node.
     with_cx(&rules, |cx| {
-        threats::lose_node_or(&mut g, cx, Some(0), Resource::Credits, 6, "threat1", None)
+        let hexes = crate::modules::common::scope_hexes(&rules.world(), Some(0));
+        threats::lose_node_or(&mut g, cx, &[0], &hexes, Resource::Credits, 6, "threat1", None)
     })
     .unwrap();
     assert_eq!(g.tokens(h, node(0)), 1);

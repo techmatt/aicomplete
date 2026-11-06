@@ -27,7 +27,7 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 15] = [
+pub const HOUSE_TERMS: [(&str, &str); 16] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
@@ -35,7 +35,8 @@ pub const HOUSE_TERMS: [(&str, &str); 15] = [
     ("In reach", "on a hex within 1 of your nodes"),
     ("A country you're in", "a country where you have a node"),
     ("Your home country", "the country you start in"),
-    ("A threat", "on your card: one you may counter, with one of its sources in reach or your ambassador on one"),
+    ("A threat", "on your card: one you may counter, near it (your node or ambassador on or next to one of its tokens)"),
+    ("Near it", "on a threat: on or next to one of its location tokens"),
     ("Here", "on a building: on this card, where its tokens sit"),
     ("Remove N", "as many as there are, up to N"),
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
@@ -55,18 +56,33 @@ pub(super) fn house_terms() -> String {
     HOUSE_TERMS.iter().map(|(term, says)| format!("- **{term}**: {says}.\n")).collect()
 }
 
+/// 135: the threat decks by tier and tag (every card, with its text and menu,
+/// is in docs/adversary-cards.md: 64 threats would overrun this page's budget).
 pub(super) fn threats_block() -> String {
-    let rows = content()
-        .threats
-        .iter()
-        // A counter is one combined cost: " + ", so "1 credits, 1 energy" can't
-        // read as alternatives (100).
-        .map(|t| {
-            let counter: Vec<String> = t.counter.iter().map(|(r, n)| r.words(*n)).collect();
-            vec![t.name.clone(), t.tier.to_string(), t.source.to_string(), t.text.clone(), counter.join(" + ")]
+    use aic_core::content::ThreatTag;
+    const TAGS: [ThreatTag; 6] = [
+        ThreatTag::Military,
+        ThreatTag::Influence,
+        ThreatTag::Cyber,
+        ThreatTag::Economic,
+        ThreatTag::Grid,
+        ThreatTag::Universal,
+    ];
+    let c = content();
+    let rows = (1..=3u8)
+        .map(|tier| {
+            let deck: Vec<_> = c.threats.iter().filter(|t| t.tier == tier).collect();
+            let mut row = vec![tier.to_string(), deck.len().to_string()];
+            row.extend(TAGS.iter().map(|tag| deck.iter().filter(|t| t.tags.contains(tag)).count().to_string()));
+            row
         })
         .collect();
-    table(&["Threat", "Tier", "Source", "If not countered", "Counter"], rows)
+    table(&["Tier", "Cards", "Military", "Influence", "Cyber", "Economic", "Grid", "Universal"], rows)
+}
+
+fn pull_words(p: &aic_core::content::Pull) -> String {
+    let tags: Vec<String> = p.tags.iter().map(|t| String::from(*t)).collect();
+    format!("tier {} ({})", p.tier, tags.join(" or "))
 }
 
 pub(super) fn adversary_block() -> String {
@@ -74,15 +90,16 @@ pub(super) fn adversary_block() -> String {
         .adversary
         .iter()
         .map(|a| {
+            let pulls: Vec<String> = a.pulls.iter().map(pull_words).collect();
             vec![
                 a.name.clone(),
                 a.stage.to_string(),
-                a.text.clone(),
+                pulls.join("; "),
                 if a.escalation { "yes" } else { "" }.to_string(),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Twist", "Escalation"], rows)
+    table(&["Card", "Stage", "Pulls (each country)", "Escalation"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -108,16 +125,16 @@ pub(super) fn projects_block() -> String {
         .projects
         .iter()
         .map(|p| {
+            let tags: Vec<&str> = p.tags.iter().map(|t| t.name()).collect();
             vec![
                 p.name.clone(),
-                p.stage.to_string(),
+                tags.join(" + "),
                 p.cost.to_string(),
                 if p.ongoing { "ongoing" } else { "once" }.to_string(),
-                p.text.clone(),
             ]
         })
         .collect();
-    table(&["Project", "Stage", "Compute per player", "Resolves", "Text"], rows)
+    table(&["Project", "Tags", "Compute per player", "Resolves"], rows)
 }
 
 fn value(v: &ParamValue) -> String {
@@ -633,7 +650,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     };
     format!(
         "**How the game ends, for new players.** You win by purging the board or by drawing the last \
-         Unity card. Pressure comes every round: the face-up adversary card names a kind of site, \
+         Unity card. Pressure comes every round: the face-up adversary event card deals threats \
+         by your sites and names a kind of site, \
          and every such site gains an adversary ambassador, so you always know where the next wave \
          lands. Ambassadors pile up, pairs become botnets, {} on a city corrupt it, and corrupted \
          cities and uncountered threats push the Alignment track toward Discord. Each time the track \

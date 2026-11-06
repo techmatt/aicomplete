@@ -240,9 +240,9 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         ),
         // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
         StandardAction::FreeStation => (
-            "Free a research station",
+            "Free a research station or factory",
             format!("{} credits; {} of your ambassadors on it, used up", t("board.free_station_credits"), t("board.free_station_ambassadors")),
-            "a corrupted station in reach with no adversary ambassador on it and no face-up cyber threat holding it: it becomes neutral (a botnet there stays)".into(),
+            "a corrupted station or adversary factory in reach with no adversary ambassador on it: it becomes neutral (a botnet there stays)".into(),
         ),
         StandardAction::HardenChips => (
             "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)",
@@ -279,13 +279,13 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 }
 
 /// A corrupted station seat `s` can free (r35): `free_station_ambassadors` of
-/// its ambassadors on it, no adversary ambassador, no face-up cyber threat
-/// holding it. A botnet there stays, and still blocks a claim.
+/// its ambassadors on it and no adversary ambassador. A botnet there stays,
+/// and still blocks a claim. 135 (Matt's ruling 3): an adversary factory frees
+/// the same way.
 pub fn station_freeable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    corrupted_station(g, h)
+    (corrupted_station(g, h) || corrupted_factory(g, h))
         && g.tokens(h, ambassador(seat)) >= w.int("board.free_station_ambassadors")
         && g.tokens(h, ADV_AMBASSADOR) == 0
-        && !threats::shielded(w, g, h, ThreatSource::Cyber)
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -410,7 +410,8 @@ pub(super) fn std_resolve(
             if let Some(h) = on_hex(cx)? {
                 cx.add_tokens(g, h, ambassador(s), -w.int("board.free_station_ambassadors"));
                 cx.add_tokens(g, h, ADV_CUBE, -1);
-                cx.tally(g, "board.stations_freed", 1);
+                let what = if g.tokens(h, STATION) > 0 { "board.stations_freed" } else { "board.factories_freed" };
+                cx.tally(g, what, 1);
             }
         }
         StandardAction::HardenChips | StandardAction::HardenBuy => {

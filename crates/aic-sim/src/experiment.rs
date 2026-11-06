@@ -812,7 +812,7 @@ fn tally_action(r: &mut GameResult, a: &Action, picks: &mut [u32]) {
         }
         Action::Keep { card, .. } => r.cards.entry(card.to_string()).or_default().kept += 1,
         Action::Play { card, .. } => r.cards.entry(card.to_string()).or_default().played += 1,
-        Action::Pay { .. } => r.pays += 1,
+        Action::Pay { .. } | Action::CounterWith { .. } => r.pays += 1,
         Action::Withdraw { .. } => r.withdraws += 1,
         _ => {}
     }
@@ -959,6 +959,7 @@ fn source_of(rules: &Rules, g: &GameState, a: &Action) -> Source {
             }
         }
         Action::Pay { threat, .. } => format!("pay:{threat}"),
+        Action::CounterWith { threat, .. } => format!("counter:{threat}"),
         Action::Withdraw { threat, .. } => format!("withdraw:{threat}"),
         Action::Antimatter { .. } => "antimatter".to_string(),
         Action::Standard { act, .. } => format!("standard:{act}"),
@@ -1114,6 +1115,8 @@ pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
     ("economy.", ""),
     ("board.node", ""),
     ("unspent.", ".energy"),
+    // 135: threats countered and uncountered, round by round.
+    ("threats.", ""),
 ];
 
 fn ms_since(t: Instant) -> f64 {

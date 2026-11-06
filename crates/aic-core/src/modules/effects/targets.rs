@@ -8,7 +8,7 @@ use super::*;
 /// is within the seat's reach (016).
 pub fn damage_hexes(w: &World, g: &GameState, seat: usize, ambassadors: i64, troops: i64) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| adversary::can_damage(w, g, h, ambassadors, troops) && in_reach(w, g, seat, h))
+        .filter(|&h| adversary::can_damage(g, h, ambassadors, troops) && in_reach(w, g, seat, h))
         .collect()
 }
 
@@ -19,18 +19,13 @@ pub(super) fn cleansable(w: &World, g: &GameState, h: usize, cities: bool, only:
     let stations = only != Some(Facility::Factory);
     let factories = only != Some(Facility::Station);
     corrupted(g, h)
-        && ((cities && is_city(w, h) && !threats::shielded(w, g, h, ThreatSource::Influence))
-            || (stations && g.tokens(h, STATION) > 0 && !threats::shielded(w, g, h, ThreatSource::Cyber))
-            || (factories && g.tokens(h, FACTORY) > 0 && !threats::shielded(w, g, h, ThreatSource::Economic)))
+        && ((cities && is_city(w, h)) || (stations && g.tokens(h, STATION) > 0) || (factories && g.tokens(h, FACTORY) > 0))
 }
 
-/// Corrupted cities in seat `s`'s reach that a liberate card can take (080):
-/// not held by a face-up influence threat.
+/// Corrupted cities in seat `s`'s reach that a liberate card can take (080).
 pub fn liberable_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| {
-            corrupted_city(w, g, h) && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Influence)
-        })
+        .filter(|&h| corrupted_city(w, g, h) && in_reach(w, g, seat, h))
         .collect()
 }
 
@@ -80,7 +75,7 @@ pub(super) fn movable_ambassadors(g: &GameState, seat: usize) -> i64 {
 
 /// A botnet in seat `seat`'s reach.
 pub(super) fn botnet_in_reach(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    g.tokens(h, BOTNET) > 0 && in_reach(w, g, seat, h) && !threats::shielded(w, g, h, ThreatSource::Cyber)
+    g.tokens(h, BOTNET) > 0 && in_reach(w, g, seat, h)
 }
 
 /// A corruption marker in seat `seat`'s reach.

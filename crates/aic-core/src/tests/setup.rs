@@ -73,7 +73,7 @@ fn setup_places_the_printed_pieces() {
         // The next adversary card is face up, from stage I.
         let next = g.pile(NEXT);
         assert_eq!(next.len(), 1);
-        assert!(next[0].starts_with("adv_s1_"), "{next:?}");
+        assert!(next[0].starts_with("mil_s1_"), "{next:?}");
         assert_eq!(g.pile(DECK).len(), deck, "d{d}");
         assert!(g.pile(CURRENT).is_empty());
     }

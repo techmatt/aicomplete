@@ -1309,13 +1309,8 @@ impl Eval {
         let w = &self.w;
         let mut out = Vec::new();
         for (t, scope) in threats::active(g) {
-            let req: i64 = threats::requirement(&world, g, &t)
-                .iter()
-                .map(|(_, n)| n)
-                .sum();
-            if req <= 0 {
-                continue;
-            }
+            // 135: the cheapest resource option of the menu (a tag or node option
+            // is a whole payment, priced by what it removes, not pooled).
             let prefix = threats::paid_prefix(&t);
             let paid: i64 = g
                 .vars
@@ -1323,6 +1318,11 @@ impl Eval {
                 .take_while(|(k, _)| k.starts_with(prefix.as_str()))
                 .map(|(_, &n)| n)
                 .sum();
+            let need = threats::cheapest_resource_need(&world, g, &t);
+            let req = need.saturating_add(paid);
+            if need <= 0 || req <= 0 {
+                continue;
+            }
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
             let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, scope));
             let stranded = if open { 1.0 } else { w.threat_stranded };

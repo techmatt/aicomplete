@@ -14,8 +14,12 @@ pub fn passives<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<&'w Op> {
 pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl FnMut(&'w Op)) {
     ai::board(w, seat).innate.passives.iter().for_each(&mut f);
     ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()).for_each(&mut f);
+    // 135: a face-down building does nothing.
+    let down = has_disabled(g, seat);
     for id in g.pile(&built(seat)) {
-        def(w, id).passives.iter().for_each(&mut f);
+        if !(down && disabled(g, seat, id)) {
+            def(w, id).passives.iter().for_each(&mut f);
+        }
     }
 }
 
@@ -30,7 +34,9 @@ pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> boo
 /// and the tracks read only when one of the board's capstones could match.
 pub fn holds(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
     let b = ai::board(w, seat);
-    if b.innate.passives.iter().any(&f) || g.pile(&built(seat)).iter().any(|id| def(w, id).passives.iter().any(&f)) {
+    let down = has_disabled(g, seat);
+    let on = |id: &Key| !(down && disabled(g, seat, id)) && def(w, id).passives.iter().any(&f);
+    if b.innate.passives.iter().any(&f) || g.pile(&built(seat)).iter().any(on) {
         return true;
     }
     let caps = || b.economy_track.iter().chain(&b.play_track).filter_map(|u| u.capstone.as_ref());

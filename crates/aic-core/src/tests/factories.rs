@@ -249,9 +249,10 @@ fn an_adversary_factory_makes_adversary_troops() {
 }
 
 /// 022 (D1): a player ambassador on an adversary-owned factory sways
-/// `factory_unity` Unity, and the factory still makes its troop. 068: it stays.
+/// `factory_unity` Unity; 135 (Matt's ruling 3: it frees as a corrupted station
+/// does) it takes the factory's output, so no troop is made. 068: it stays.
 #[test]
-fn a_player_ambassador_on_an_adversary_factory_sways_unity_and_stays() {
+fn a_player_ambassador_on_an_adversary_factory_sways_unity_stops_its_troop_and_stays() {
     let (rules, mut g) = lab(&["board.bases"]);
     let m = &rules.map;
     let f = m.numbered(0, piece(0).factories[0]);
@@ -260,7 +261,7 @@ fn a_player_ambassador_on_an_adversary_factory_sways_unity_and_stays() {
     put(&mut g, f, ambassador(0), 1);
     let unity = g.var("alignment.unity");
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f, TROOP), g.tokens(f, ambassador(0))), (1, 1));
+    assert_eq!((g.tokens(f, TROOP), g.tokens(f, ambassador(0))), (0, 1));
     assert_eq!(g.var("alignment.unity") - unity, 1);
 }
 

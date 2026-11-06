@@ -78,7 +78,7 @@ megaproject is the corp's defining card.
   a neutral one too, takes that round's cube for the adversary and is used up. A player
   ambassador on a corrupted one takes the cube and stays ([ambassadors.md](ambassadors.md)).
 - **A station is a defended investment (candidate, Matt).** Freeing a corrupted station is
-  the standard action *Free a station* ([economy.md](economy.md)): `free_station_ambassadors` (2) of your
+  the standard action *Free a station* ([economy.md](economy.md); it frees an adversary factory the same way, 135): `free_station_ambassadors` (2) of your
   ambassadors stand on it, no adversary ambassador does, and you pay
   `free_station_credits` (6); the ambassadors are used up and the station becomes neutral
   (a botnet on it stays, and still blocks claiming it). The adversary needs the same weight

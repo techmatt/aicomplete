@@ -1,546 +1,126 @@
 [
  {
-  "id": "requisition",
-  "name": "Requisition",
+  "id": "orbital_strike",
+  "name": "Orbital Strike",
   "tier": 1,
-  "source": "economic",
-  "text": "Each player here discards 2 cards or pays 6 credits.",
-  "counter": [
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "1 adversary troop lands here and stays (it doesn't march) until removed. The adversary gains 2 compute. Sway 1 toward Discord.",
+  "counters": [
    [
-    "credits",
-    4
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "nodes_near": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 2
+    }
    ]
   ],
   "effects": [
    {
-    "op": "requisition",
-    "resource": "credits",
-    "amount": 6,
-    "cards": 2
+    "op": "troops",
+    "count": 1,
+    "at": "location",
+    "stand": true
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
    }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "projects advanced (compute)",
+   "Discord sway"
   ]
  },
  {
   "id": "commandeer",
   "name": "Commandeer",
   "tier": 1,
-  "source": "economic",
-  "text": "Each player here discards 2 cards or pays 4 energy.",
-  "counter": [
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base",
+   "factory"
+  ],
+  "text": "Each player near it pays 2 energy or discards 2 cards.",
+  "counters": [
    [
-    "energy",
-    1
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
    ]
   ],
   "effects": [
    {
     "op": "requisition",
     "resource": "energy",
-    "amount": 4,
+    "amount": 2,
     "cards": 2
    }
+  ],
+  "harms": [
+   "cards discarded",
+   "energy lost"
   ]
  },
  {
   "id": "supply_raid",
   "name": "Supply Raid",
   "tier": 1,
-  "source": "economic",
-  "text": "Each player here loses 6 credits.",
-  "counter": [
-   [
-    "credits",
-    5
-   ]
+  "tags": [
+   "military",
+   "economic"
   ],
-  "effects": [
-   {
-    "op": "players_lose",
-    "resource": "credits",
-    "amount": 6
-   }
-  ]
- },
- {
-  "id": "blackout",
-  "name": "Blackout",
-  "tier": 1,
-  "source": "cyber",
-  "text": "Cities here produce no energy next round; the adversary gains 3 compute.",
-  "counter": [
-   [
-    "energy",
-    1
-   ]
+  "locations": [
+   "factory"
   ],
-  "effects": [
-   {
-    "op": "flag",
-    "name": "blackout"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "sabotage",
-  "name": "Sabotage",
-  "tier": 1,
-  "source": "cyber",
-  "text": "Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute.",
-  "counter": [
+  "text": "Each player near it loses 8 credits. The adversary gains 2 compute.",
+  "counters": [
    [
-    "energy",
-    2
-   ]
-  ],
-  "effects": [
-   {
-    "op": "flag",
-    "name": "sabotage"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_tokens",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "infiltration",
-  "name": "Infiltration",
-  "tier": 1,
-  "source": "cyber",
-  "text": "3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute.",
-  "counter": [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
    [
-    "insight",
-    5
-   ]
-  ],
-  "effects": [
-   {
-    "op": "ambassadors",
-    "at": "player_pieces",
-    "count": 3
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "agitators",
-  "name": "Agitators",
-  "tier": 1,
-  "source": "influence",
-  "text": "3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their nodes here.",
-  "counter": [
+    {
+     "sacrifice": "security",
+     "amount": 2
+    }
+   ],
    [
-    "credits",
-    5
-   ]
-  ],
-  "effects": [
-   {
-    "op": "ambassadors",
-    "at": "clean_cities",
-    "count": 3
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "orbital_strike",
-  "name": "Orbital Strike",
-  "tier": 1,
-  "source": "military",
-  "text": "1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    6
-   ]
-  ],
-  "effects": [
-   {
-    "op": "troops",
-    "count": 1
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "defection",
-  "name": "Defection",
-  "tier": 1,
-  "source": "influence",
-  "text": "Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    4
-   ]
-  ],
-  "effects": [
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "eviction",
-  "name": "Eviction",
-  "tier": 1,
-  "source": "military",
-  "text": "Each player here pays 6 credits or loses a node here (never their last).",
-  "counter": [
-   [
-    "credits",
-    5
-   ]
-  ],
-  "effects": [
-   {
-    "op": "lose_node_or",
-    "resource": "credits",
-    "amount": 6
-   }
-  ]
- },
- {
-  "id": "embargo",
-  "name": "Embargo",
-  "tier": 1,
-  "source": "economic",
-  "text": "No site here can be claimed next round; the adversary gains 3 compute.",
-  "counter": [
-   [
-    "credits",
-    4
-   ]
-  ],
-  "effects": [
-   {
-    "op": "flag",
-    "name": "embargo"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "smear_campaign",
-  "name": "Smear Campaign",
-  "tier": 1,
-  "source": "influence",
-  "text": "Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided.",
-  "counter": [
-   [
-    "insight",
-    5
-   ]
-  ],
-  "effects": [
-   {
-    "op": "lose_insight",
-    "amount": 2
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "station_seizure",
-  "name": "Station Seizure",
-  "tier": 2,
-  "source": "cyber",
-  "text": "An uncorrupted research station here becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    7
-   ]
-  ],
-  "effects": [
-   {
-    "op": "flip_station"
-   },
-   {
-    "op": "compute",
-    "amount": 4
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "overrun",
-  "name": "Overrun",
-  "tier": 2,
-  "source": "influence",
-  "text": "The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    8
-   ]
-  ],
-  "effects": [
-   {
-    "op": "corrupt_city"
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "mass_production",
-  "name": "Mass Production",
-  "tier": 2,
-  "source": "economic",
-  "text": "The adversary builds now, here; the adversary gains 4 compute.",
-  "counter": [
-   [
-    "credits",
-    7
-   ]
-  ],
-  "effects": [
-   {
-    "op": "adversary_build"
-   },
-   {
-    "op": "compute",
-    "amount": 4
-   }
-  ]
- },
- {
-  "id": "purge_protocols",
-  "name": "Purge Protocols",
-  "tier": 2,
-  "source": "cyber",
-  "text": "Each player here discards their most expensive card in hand and loses 3 tokens from their cards.",
-  "counter": [
-   [
-    "insight",
-    5
-   ]
-  ],
-  "effects": [
-   {
-    "op": "discard_most_expensive"
-   },
-   {
-    "op": "lose_tokens",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "total_war",
-  "name": "Total War",
-  "tier": 2,
-  "source": "military",
-  "text": "2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here, one a base while a base has none. The adversary gains 4 compute.",
-  "counter": [
-   [
-    "credits",
-    8
-   ]
-  ],
-  "effects": [
-   {
-    "op": "troops",
-    "count": 2,
-    "destroy": true
-   },
-   {
-    "op": "ambassadors",
-    "at": "bases",
-    "count": 2
-   },
-   {
-    "op": "compute",
-    "amount": 4
-   }
-  ]
- },
- {
-  "id": "conscription",
-  "name": "Conscription",
-  "tier": 2,
-  "source": "economic",
-  "text": "Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute.",
-  "counter": [
-   [
-    "credits",
-    7
-   ]
-  ],
-  "effects": [
-   {
-    "op": "requisition",
-    "resource": "energy",
-    "amount": 6,
-    "cards": 3
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "fifth_column",
-  "name": "Sleeper Cells",
-  "tier": 2,
-  "source": "cyber",
-  "text": "4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    7
-   ]
-  ],
-  "effects": [
-   {
-    "op": "ambassadors",
-    "at": "player_pieces",
-    "count": 4
-   },
-   {
-    "op": "compute",
-    "amount": 4
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "insurrection",
-  "name": "Insurrection",
-  "tier": 2,
-  "source": "influence",
-  "text": "4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    7
-   ]
-  ],
-  "effects": [
-   {
-    "op": "ambassadors",
-    "at": "clean_cities",
-    "count": 4
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ]
- },
- {
-  "id": "siege",
-  "name": "Siege",
-  "tier": 2,
-  "source": "military",
-  "text": "2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their nodes here and loses an ambassador. The adversary gains 3 compute.",
-  "counter": [
-   [
-    "credits",
-    8
-   ]
-  ],
-  "effects": [
-   {
-    "op": "troops",
-    "count": 2
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   },
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   }
-  ]
- },
- {
-  "id": "manhunt",
-  "name": "Manhunt",
-  "tier": 2,
-  "source": "military",
-  "text": "Each player here destroys 2 of their nodes here.",
-  "counter": [
-   [
-    "credits",
-    8
-   ]
-  ],
-  "effects": [
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   }
-  ]
- },
- {
-  "id": "asset_freeze",
-  "name": "Asset Freeze",
-  "tier": 2,
-  "source": "economic",
-  "text": "Each player here loses 8 credits. The adversary gains 3 compute.",
-  "counter": [
-   [
-    "credits",
-    7
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
    ]
   ],
   "effects": [
@@ -551,32 +131,2952 @@
    },
    {
     "op": "compute",
-    "amount": 3
+    "amount": 2
    }
+  ],
+  "harms": [
+   "credits or income lost",
+   "projects advanced (compute)"
   ]
  },
  {
-  "id": "deepfake_wave",
-  "name": "Deepfake Wave",
-  "tier": 2,
-  "source": "influence",
-  "text": "Sway 3 toward Discord. Each player here gets 2 less insight next round.",
-  "counter": [
+  "id": "eviction",
+  "name": "Eviction",
+  "tier": 1,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "Each player near it pays 8 credits or loses 2 ambassadors.",
+  "counters": [
    [
-    "insight",
-    5
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "nodes_near": 1
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_ambassadors_or",
+    "count": 2,
+    "resource": "credits",
+    "amount": 8
+   }
+  ],
+  "harms": [
+   "ambassadors lost",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "call_up",
+  "name": "Call-Up",
+  "tier": 1,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "2 adversary ambassadors land on this base. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "nodes_near": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "ambassadors",
+    "at": "location",
+    "count": 2
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "agitators",
+  "name": "Agitators",
+  "tier": 1,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "2 adversary ambassadors land on clean cities near it. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "ambassadors",
+    "at": "clean_cities",
+    "count": 2
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "defection",
+  "name": "Defection",
+  "tier": 1,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "Each player near it loses an ambassador. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_ambassador"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "ambassadors lost",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "smear_campaign",
+  "name": "Smear Campaign",
+  "tier": 1,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city",
+   "station"
+  ],
+  "text": "Each player near it gets 2 less insight next round. Move 1 Sway from the Unity bucket to the Undecided.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_insight",
+    "amount": 2
+   },
+   {
+    "op": "pull_unity",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "insight lost",
+   "Unity pulled back"
+  ]
+ },
+ {
+  "id": "propaganda_blitz",
+  "name": "Propaganda Blitz",
+  "tier": 1,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "coastal_city"
+  ],
+  "text": "Sway 2 toward Discord. Each player near it discards a card.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 2
+    }
    ]
   ],
   "effects": [
    {
     "op": "sway",
     "side": "discord",
+    "amount": 2
+   },
+   {
+    "op": "discard",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "Discord sway",
+   "cards discarded"
+  ]
+ },
+ {
+  "id": "provocation",
+  "name": "Border Provocation",
+  "tier": 1,
+  "tags": [
+   "influence",
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "Deal 1 extra tier-1 threat in this country; it executes next round. The adversary gains 2 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "tier": 1,
+    "scope": "country"
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "extra threats",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "sabotage",
+  "name": "Sabotage",
+  "tier": 1,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Each player near it loses 3 tokens from their cards. The adversary gains 2 compute.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_tokens",
     "amount": 3
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "tokens stripped from cards",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "insider_access",
+  "name": "Insider Access",
+  "tier": 1,
+  "tags": [
+   "cyber",
+   "influence"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "2 adversary ambassadors land on player-owned pieces near it. The adversary gains 2 compute.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 8
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "ambassadors",
+    "at": "player_pieces",
+    "count": 2
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "projects advanced (compute)",
+   "production blacked out"
+  ]
+ },
+ {
+  "id": "wiper_malware",
+  "name": "Wiper Malware",
+  "tier": 1,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Each player near it discards 2 cards or gets 2 less insight next round.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "requisition",
+    "resource": "insight",
+    "amount": 2,
+    "cards": 2,
+    "next_round": true
+   }
+  ],
+  "harms": [
+   "cards discarded",
+   "insight lost"
+  ]
+ },
+ {
+  "id": "cryptojacking",
+  "name": "Cryptojacking",
+  "tier": 1,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station",
+   "factory"
+  ],
+  "text": "Each player near it loses 1 research cube; for each who has none, the adversary gains 4 compute.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "compute_per_missing",
+    "resource": "research_cubes",
+    "amount": 4
+   },
+   {
+    "op": "players_lose",
+    "resource": "research_cubes",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "backdoor",
+  "name": "Backdoor",
+  "tier": 1,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "The adversary gains 2 compute on every visible project.",
+  "counters": [
+   [
+    {
+     "resource": "insight",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "compute_every",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "requisition",
+  "name": "Requisition",
+  "tier": 1,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory",
+   "city"
+  ],
+  "text": "Each player near it discards 2 cards or pays 8 credits.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "requisition",
+    "resource": "credits",
+    "amount": 8,
+    "cards": 2
+   }
+  ],
+  "harms": [
+   "cards discarded",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "shakedown",
+  "name": "Shakedown",
+  "tier": 1,
+  "tags": [
+   "economic",
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "The player near it with the most credits (ties: lowest seat) loses 8 credits. The adversary gains 4 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 8
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "theft",
+    "who": "richest_near",
+    "resource": "credits",
+    "amount": 8,
+    "compute": 4
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "embargo",
+  "name": "Embargo",
+  "tier": 1,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "Sites on or next to it can't be claimed next round. The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "embargo",
+    "scope": "near"
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "actions or claims blocked",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "credit_crunch",
+  "name": "Credit Crunch",
+  "tier": 1,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "coastal_city"
+  ],
+  "text": "Each player near it gets 8 fewer credits of income next round.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 1
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_income",
+    "resource": "credits",
+    "amount": 8
+   }
+  ],
+  "harms": [
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "chip_shortage",
+  "name": "Chip Shortage",
+  "tier": 1,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "Each player near it loses 3 chips or 8 credits.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_or",
+    "options": [
+     {
+      "op": "players_lose",
+      "resource": "chips",
+      "amount": 3
+     },
+     {
+      "op": "players_lose",
+      "resource": "credits",
+      "amount": 8
+     }
+    ]
+   }
+  ],
+  "harms": [
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "blackout",
+  "name": "Blackout",
+  "tier": 1,
+  "tags": [
+   "grid",
+   "cyber"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "Cities on or next to it produce no energy next round.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "blackout",
+    "scope": "near"
+   }
+  ],
+  "harms": [
+   "production blacked out",
+   "energy lost"
+  ]
+ },
+ {
+  "id": "load_shedding",
+  "name": "Load Shedding",
+  "tier": 1,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "city",
+   "station"
+  ],
+  "text": "Players near it can't use Actions that cost energy next round.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "power_down",
+    "scope": "near"
+   }
+  ],
+  "harms": [
+   "actions or claims blocked"
+  ]
+ },
+ {
+  "id": "power_surcharge",
+  "name": "Power Surcharge",
+  "tier": 1,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Each player near it loses 2 energy or 10 credits.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_or",
+    "options": [
+     {
+      "op": "players_lose",
+      "resource": "energy",
+      "amount": 2
+     },
+     {
+      "op": "players_lose",
+      "resource": "credits",
+      "amount": 10
+     }
+    ]
+   }
+  ],
+  "harms": [
+   "energy lost",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "cooling_failure",
+  "name": "Cooling Failure",
+  "tier": 1,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Each player near it makes no research cubes next round.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "station_outage",
+    "scope": "near"
+   }
+  ],
+  "harms": [
+   "production blacked out"
+  ]
+ },
+ {
+  "id": "grid_tap",
+  "name": "Grid Tap",
+  "tier": 1,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "The player near it with the most credits (ties: lowest seat) loses 2 energy. The adversary gains 4 compute.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 8
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "theft",
+    "who": "richest_near",
+    "resource": "energy",
+    "amount": 2,
+    "compute": 4
+   }
+  ],
+  "harms": [
+   "energy lost",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "total_war",
+  "name": "Total War",
+  "tier": 2,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "2 troops land on the base here and march at once.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "nodes_near": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 2,
+    "at": "location"
+   },
+   {
+    "op": "march_now"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "siege",
+  "name": "Siege",
+  "tier": 2,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "1 troop lands on the factory or zone here. Each player near it destroys 1 of their nodes near it (never their last).",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "nodes_near": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 1,
+    "at": "location"
+   },
+   {
+    "op": "each_destroy_node",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "node destroyed",
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "manhunt",
+  "name": "Manhunt",
+  "tier": 2,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base",
+   "city"
+  ],
+  "text": "Each player near it pays 14 credits or destroys 2 of their nodes near it (never their last).",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 10
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_node_or",
+    "count": 2,
+    "resource": "credits",
+    "amount": 14
+   }
+  ],
+  "harms": [
+   "node destroyed",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "conscription",
+  "name": "Conscription",
+  "tier": 2,
+  "tags": [
+   "military",
+   "economic"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "For 3 rounds, the corp base here makes 1 extra troop each production step, even past its cap.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "corp_troops",
+    "count": 1,
+    "at": "location",
+    "when": "each_production",
+    "past_cap": true,
+    "rounds": 3
+   }
+  ],
+  "harms": [
+   "troops made"
+  ]
+ },
+ {
+  "id": "casus_belli",
+  "name": "Casus Belli",
+  "tier": 2,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "Next round, the fronts next to this base fight their war step twice. Sway 2 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "nodes_near": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "extra_war"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "war brought forward",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "overrun",
+  "name": "Overrun",
+  "tier": 2,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "If the city here holds 3 or more adversary ambassadors, it becomes corrupted. If not, 2 adversary ambassadors land on it.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "corrupt_city",
+    "min_ambassadors": 3,
+    "else_ambassadors": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "node destroyed",
+   "ambassadors lost",
+   "production blacked out",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "insurrection",
+  "name": "Insurrection",
+  "tier": 2,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "3 adversary ambassadors land on the city here, each canceling a player ambassador there. Sway 2 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "ambassadors",
+    "at": "location",
+    "count": 3,
+    "cancel": true
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "ambassadors lost",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "deepfake_wave",
+  "name": "Deepfake Wave",
+  "tier": 2,
+  "tags": [
+   "influence",
+   "cyber"
+  ],
+  "locations": [
+   "city",
+   "station"
+  ],
+  "text": "Sway 2 toward Discord. Move 1 Sway from Unity to the Undecided. Each player near it gets 2 less insight next round.",
+  "counters": [
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "insight",
+     "amount": 6
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   },
+   {
+    "op": "pull_unity",
+    "amount": 1
    },
    {
     "op": "lose_insight",
     "amount": 2
    }
+  ],
+  "harms": [
+   "Discord sway",
+   "Unity pulled back",
+   "insight lost"
+  ]
+ },
+ {
+  "id": "turncoats",
+  "name": "Turncoats",
+  "tier": 2,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "Each player near it loses 2 ambassadors. 2 adversary ambassadors land on player pieces near it.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_ambassador"
+   },
+   {
+    "op": "lose_ambassador"
+   },
+   {
+    "op": "ambassadors",
+    "at": "player_pieces",
+    "count": 2
+   }
+  ],
+  "harms": [
+   "ambassadors lost",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "propaganda_ministry",
+  "name": "Propaganda Ministry",
+  "tier": 2,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city",
+   "coastal_city"
+  ],
+  "text": "The adversary's next spread in this country happens twice. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 10
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "double_spread",
+    "scope": "country"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "station_seizure",
+  "name": "Station Seizure",
+  "tier": 2,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "The station here is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands). The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flip_station"
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "adversary pieces placed",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "sleeper_cells",
+  "name": "Sleeper Cells",
+  "tier": 2,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "place_botnet",
+    "count": 1
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "actions or claims blocked",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "purge_protocols",
+  "name": "Purge Protocols",
+  "tier": 2,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Each player near it discards their most expensive card in hand and loses 3 tokens from their cards.",
+  "counters": [
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "discard_most_expensive"
+   },
+   {
+    "op": "lose_tokens",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "cards discarded",
+   "tokens stripped from cards"
+  ]
+ },
+ {
+  "id": "data_breach",
+  "name": "Data Breach",
+  "tier": 2,
+  "tags": [
+   "cyber",
+   "economic"
+  ],
+  "locations": [
+   "station",
+   "factory"
+  ],
+  "text": "Each player near it loses 2 research cubes or gets 3 less insight next round. The adversary gains 2 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "insight",
+     "amount": 6
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_or",
+    "options": [
+     {
+      "op": "players_lose",
+      "resource": "research_cubes",
+      "amount": 2
+     },
+     {
+      "op": "lose_insight",
+      "amount": 3
+     }
+    ]
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "insight lost",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "zero_day",
+  "name": "Zero Day",
+  "tier": 2,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "The adversary gains 8 compute. Each player near it turns 1 of their buildings face down until the end of next round (it does nothing; its tags still count).",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "compute",
+    "amount": 8
+   },
+   {
+    "op": "disable_building",
+    "count": 1,
+    "until": "end_of_next_round"
+   }
+  ],
+  "harms": [
+   "projects advanced (compute)",
+   "production blacked out",
+   "actions or claims blocked"
+  ]
+ },
+ {
+  "id": "asset_freeze",
+  "name": "Asset Freeze",
+  "tier": 2,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "Each player near it loses 12 credits or discards 3 cards.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "requisition",
+    "resource": "credits",
+    "amount": 12,
+    "cards": 3
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "cards discarded"
+  ]
+ },
+ {
+  "id": "mass_production",
+  "name": "Mass Production",
+  "tier": 2,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "The adversary builds a factory on the free industrial zone nearest this threat's token. The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "adversary_factory"
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "actions or claims blocked",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "factory_occupation",
+  "name": "Factory Occupation",
+  "tier": 2,
+  "tags": [
+   "economic",
+   "military"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "The adversary gains 3 compute. 1 troop lands on the factory or zone here and stays: a factory makes nothing while it stands; a zone gives 3 more compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "nodes_near": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 1,
+    "at": "location"
+   },
+   {
+    "op": "occupy_factory",
+    "else_compute": 3
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "adversary pieces placed",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "skimming_operation",
+  "name": "Skimming Operation",
+  "tier": 2,
+  "tags": [
+   "economic",
+   "influence"
+  ],
+  "locations": [
+   "coastal_city"
+  ],
+  "text": "The player near it with the most credits (ties: lowest seat) loses 15 credits. The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "theft",
+    "who": "richest_near",
+    "resource": "credits",
+    "amount": 15,
+    "compute": 3
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "trade_blockade",
+  "name": "Trade Blockade",
+  "tier": 2,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "coastal_city",
+   "factory"
+  ],
+  "text": "Sites on or next to it can't be claimed through next round, and the next adversary build on or next to it happens twice.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 11
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "embargo",
+    "scope": "near",
+    "rounds": 1
+   },
+   {
+    "op": "flag",
+    "name": "double_build",
+    "scope": "near"
+   }
+  ],
+  "harms": [
+   "actions or claims blocked",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "grid_collapse",
+  "name": "Grid Collapse",
+  "tier": 2,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "city",
+   "coastal_city"
+  ],
+  "text": "Cities on or next to it produce no energy for 2 rounds. The adversary gains 3 compute.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "blackout",
+    "rounds": 2,
+    "scope": "near"
+   },
+   {
+    "op": "compute",
+    "amount": 3
+   }
+  ],
+  "harms": [
+   "production blacked out",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "power_rationing",
+  "name": "Power Rationing",
+  "tier": 2,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "Each player near it loses 3 energy or 12 credits.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 10
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_or",
+    "options": [
+     {
+      "op": "players_lose",
+      "resource": "energy",
+      "amount": 3
+     },
+     {
+      "op": "players_lose",
+      "resource": "credits",
+      "amount": 12
+     }
+    ]
+   }
+  ],
+  "harms": [
+   "energy lost",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "thermal_runaway",
+  "name": "Thermal Runaway",
+  "tier": 2,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "Research stations on or next to it make no research cubes for 2 rounds. Each player near it gets 2 less insight next round.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 2
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flag",
+    "name": "station_dark",
+    "rounds": 2,
+    "scope": "near"
+   },
+   {
+    "op": "lose_insight",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "production blacked out",
+   "insight lost"
+  ]
+ },
+ {
+  "id": "dark_cities",
+  "name": "Dark Cities",
+  "tier": 2,
+  "tags": [
+   "grid",
+   "influence"
+  ],
+  "locations": [
+   "city",
+   "coastal_city"
+  ],
+  "text": "Each city on or next to it gains 1 adversary ambassador, dark while it stands. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "ambassadors",
+    "at": "cities_near",
+    "count": 1,
+    "each": true
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "production blacked out",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "overload",
+  "name": "Overload",
+  "tier": 2,
+  "tags": [
+   "grid"
+  ],
+  "locations": [
+   "factory",
+   "station"
+  ],
+  "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses 2 energy.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "each_destroy_node",
+    "count": 1
+   },
+   {
+    "op": "players_lose",
+    "resource": "energy",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "node destroyed",
+   "energy lost"
+  ]
+ },
+ {
+  "id": "garrison_state",
+  "name": "Garrison State",
+  "tier": 2,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "base",
+   "city"
+  ],
+  "text": "1 troop lands on the base here and 2 adversary ambassadors on the city here. The adversary gains 2 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 1,
+    "at": "location",
+    "location": "base"
+   },
+   {
+    "op": "ambassadors",
+    "at": "city",
+    "count": 2
+   },
+   {
+    "op": "compute",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "shock_doctrine",
+  "name": "Shock Doctrine",
+  "tier": 2,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "city",
+   "factory"
+  ],
+  "text": "Each player near it loses 6 credits and 1 energy. Sway 2 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "insight",
+     "amount": 3
+    },
+    {
+     "resource": "ambassadors",
+     "amount": 1
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "players_lose",
+    "resource": "credits",
+    "amount": 6
+   },
+   {
+    "op": "players_lose",
+    "resource": "energy",
+    "amount": 1
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "energy lost",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "full_spectrum_assault",
+  "name": "Full Spectrum Assault",
+  "tier": 2,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). Deal 1 extra tier-1 threat in this country; it executes next round.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ],
+   [
+    {
+     "resource": "insight",
+     "amount": 8
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "place_botnet",
+    "count": 1
+   },
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "tier": 1,
+    "scope": "country"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "actions or claims blocked",
+   "extra threats",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "t3_last_ultimatum",
+  "name": "Last Ultimatum",
+  "tier": 3,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "city",
+   "base"
+  ],
+  "text": "Each player near it pays 20 credits or loses 2 nodes near it (never their last). Deal 1 extra tier-2 threat in this country; it executes next round.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 15
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "lose_node_or",
+    "resource": "credits",
+    "amount": 20,
+    "count": 2
+   },
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "tier": 2,
+    "scope": "country"
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "node destroyed",
+   "extra threats"
+  ]
+ },
+ {
+  "id": "t3_capital_siphon",
+  "name": "Capital Siphon",
+  "tier": 3,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "factory",
+   "station"
+  ],
+  "text": "The player near it with the most credits (ties: lowest seat) loses 15; the adversary gains 4 compute. Each player near it discards 1 card.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 15
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "theft",
+    "who": "richest_near",
+    "resource": "credits",
+    "amount": 15,
+    "compute": 0
+   },
+   {
+    "op": "compute",
+    "amount": 4
+   },
+   {
+    "op": "discard",
+    "count": 1
+   }
+  ],
+  "harms": [
+   "credits or income lost",
+   "projects advanced (compute)",
+   "cards discarded"
+  ]
+ },
+ {
+  "id": "t3_iron_curtain",
+  "name": "Iron Curtain",
+  "tier": 3,
+  "tags": [
+   "universal"
+  ],
+  "locations": [
+   "factory",
+   "city"
+  ],
+  "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Move 2 Sway from the Unity bucket to the Undecided.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 1,
+    "at": "location"
+   },
+   {
+    "op": "players_lose",
+    "resource": "energy",
+    "amount": 2
+   },
+   {
+    "op": "pull_unity",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "energy lost",
+   "Unity pulled back"
+  ]
+ },
+ {
+  "id": "t3_spearhead",
+  "name": "Spearhead",
+  "tier": 3,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "3 troops land on the base here and march at once, 2 steps.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 15
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "nodes_near": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "troops",
+    "count": 3,
+    "at": "location"
+   },
+   {
+    "op": "march_now",
+    "steps": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "t3_scorched_earth",
+  "name": "Scorched Earth",
+  "tier": 3,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "The factory here is destroyed, with the nodes on its hex (never their last). On an empty zone, 2 troops land there instead.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "destroy_facility",
+    "at": "factory"
+   },
+   {
+    "op": "troops",
+    "count": 2,
+    "at": "location",
+    "if": "empty_zone"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "node destroyed",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "t3_general_mobilization",
+  "name": "General Mobilization",
+  "tier": 3,
+  "tags": [
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "Next round, the fronts next to this base fight their war step twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 14
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    },
+    {
+     "resource": "energy",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "extra_war"
+   },
+   {
+    "op": "corp_troops",
+    "count": 2,
+    "at": "location",
+    "when": "now",
+    "past_cap": true
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "war brought forward",
+   "troops made",
+   "Discord sway",
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "t3_war_economy",
+  "name": "War Economy",
+  "tier": 3,
+  "tags": [
+   "military",
+   "economic"
+  ],
+  "locations": [
+   "factory",
+   "base"
+  ],
+  "text": "An adversary factory lands on the zone here, else the nearest free zone, with 1 troop on it. Each player near it loses 1 energy.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "security",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "adversary_factory"
+   },
+   {
+    "op": "troops",
+    "count": 1,
+    "at": "new_factory"
+   },
+   {
+    "op": "players_lose",
+    "resource": "energy",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "energy lost",
+   "actions or claims blocked"
+  ]
+ },
+ {
+  "id": "t3_regime_change",
+  "name": "Regime Change",
+  "tier": 3,
+  "tags": [
+   "influence"
+  ],
+  "locations": [
+   "city"
+  ],
+  "text": "The city here is corrupted: nodes on and next to it are destroyed (never their last), and player ambassadors waiting there are lost.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 27
+    }
+   ],
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 7
+    }
+   ],
+   [
+    {
+     "sacrifice": "diplomacy",
+     "amount": 5
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 14
+    },
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "corrupt_city",
+    "at": "location"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "node destroyed",
+   "ambassadors lost",
+   "Discord sway",
+   "production blacked out"
+  ]
+ },
+ {
+  "id": "t3_lab_takeover",
+  "name": "Lab Takeover",
+  "tier": 3,
+  "tags": [
+   "cyber"
+  ],
+  "locations": [
+   "station"
+  ],
+  "text": "The station here is corrupted, even a player's; the adversary gains 4 compute.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "sacrifice": "cyber",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 6
+    },
+    {
+     "resource": "insight",
+     "amount": 2
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "flip_station",
+    "force": true
+   },
+   {
+    "op": "compute",
+    "amount": 4
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "projects advanced (compute)",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "t3_hostile_takeover",
+  "name": "Hostile Takeover",
+  "tier": 3,
+  "tags": [
+   "economic"
+  ],
+  "locations": [
+   "factory"
+  ],
+  "text": "The adversary seizes the factory here, even a player's; on an empty zone, it builds one there.",
+  "counters": [
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "sacrifice": "industry",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "seize_factory"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "t3_cascade_failure",
+  "name": "Cascade Failure",
+  "tier": 3,
+  "tags": [
+   "grid",
+   "cyber"
+  ],
+  "locations": [
+   "station",
+   "city"
+  ],
+  "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). Next round, cities and stations on or next to it produce nothing.",
+  "counters": [
+   [
+    {
+     "resource": "energy",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 16
+    }
+   ],
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "research_cubes",
+     "amount": 3
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "place_botnet"
+   },
+   {
+    "op": "flag",
+    "name": "grid_down",
+    "scope": "near"
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "production blacked out",
+   "projects advanced (compute)",
+   "actions or claims blocked"
   ]
  }
 ]

@@ -1,4 +1,5 @@
-//! What the ops threats print do to players in `scope`.
+//! What the ops threats print do to the players they hit (135: a threat's,
+//! the players near it) on the hexes in reach (a threat's: near its tokens).
 
 use super::*;
 
@@ -15,9 +16,8 @@ fn head(why: Option<&str>, s: usize) -> String {
 /// `at` in `scope` (players choose each). r48 (D51): on military bases, one a
 /// base while a base is free of this threat's ambassadors (Total War's two go
 /// on two bases where there are two).
-pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, at: Spot, count: i64, why: Option<&str>) -> Res {
+pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, hexes: &[usize], at: Spot, count: i64, why: Option<&str>) -> Res {
     let w = cx.world;
-    let hexes = scope_hexes(&w, scope);
     let mut used: Vec<usize> = Vec::new();
     for _ in 0..count {
         let mut spots: Vec<usize> = hexes
@@ -28,6 +28,7 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
                 Spot::CleanCities => clean_city(&w, g, h),
                 Spot::Factories => g.tokens(h, FACTORY) > 0,
                 Spot::Bases => is_base(&w, h),
+                Spot::Location | Spot::City | Spot::CitiesNear => false,
             })
             .collect();
         if at == Spot::Bases && spots.iter().any(|h| !used.contains(h)) {
@@ -45,9 +46,9 @@ pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, a
 }
 
 /// Each player in `scope` loses `amount` tokens off their cards, their choice.
-pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount: i64, why: Option<&str>) -> Res {
+pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, seats: &[usize], amount: i64, why: Option<&str>) -> Res {
     let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
+    for &s in seats {
         for _ in 0..amount {
             let cards: Vec<Key> = cards::token_cards(&w, g, s, None)
                 .into_iter()
@@ -70,14 +71,13 @@ pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, amount:
 pub fn requisition(
     g: &mut GameState,
     cx: &mut Cx,
-    scope: Option<usize>,
+    seats: &[usize],
     resource: Resource,
     amount: i64,
     n: i64,
     why: Option<&str>,
 ) -> Res {
-    let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
+    for &s in seats {
         let mut opts = Vec::new();
         let can_pay = g.resource(s, resource) >= amount;
         if can_pay {
@@ -116,9 +116,9 @@ pub fn requisition(
 
 /// Each player in `scope` loses a player ambassador: from their supply, else
 /// one of theirs on the board (their choice).
-pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, why: Option<&str>) -> Res {
+pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Option<&str>) -> Res {
     let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
+    for &s in seats {
         if g.resource(s, Resource::Ambassadors) > 0 {
             cx.add_resource(g, s, Resource::Ambassadors, -1);
             continue;
@@ -137,18 +137,19 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, why
 /// Each player in `scope` loses a node in `scope` or pays `amount`
 /// `resource` (their choice). Losing one needs 2 or more on the board (027:
 /// this never takes a last node); with neither possible, what they have.
+#[allow(clippy::too_many_arguments)]
 pub fn lose_node_or(
     g: &mut GameState,
     cx: &mut Cx,
-    scope: Option<usize>,
+    seats: &[usize],
+    hexes: &[usize],
     resource: Resource,
     amount: i64,
     source: &'static str,
     why: Option<&str>,
 ) -> Res {
     let w = cx.world;
-    let hexes = scope_hexes(&w, scope);
-    for s in seats_in_scope(&w, g, scope) {
+    for &s in seats {
         let mine: Vec<usize> = if node_count(g, s) >= 2 {
             hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect()
         } else {
@@ -178,9 +179,9 @@ pub fn lose_node_or(
 
 /// Each player in `scope` discards their dearest card in hand (their choice
 /// on a tie).
-pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, scope: Option<usize>, why: Option<&str>) -> Res {
+pub fn discard_most_expensive(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Option<&str>) -> Res {
     let w = cx.world;
-    for s in seats_in_scope(&w, g, scope) {
+    for &s in seats {
         let hand = g.pile(&cards::hand(s)).to_vec();
         let cost = |id: &str| cards::list_cost(&w, id);
         let Some(top) = hand.iter().map(|c| cost(c)).max() else {

@@ -5,11 +5,15 @@
 ## The production/war clock
 
 A printed round track (`board.clock`) says what each round's production holds: 1 a
-**production step**, 2 a **war step**, 3 both; the last entry repeats. Cards with the War
-twist (Border War, Blitzkrieg, Iron Doctrine) make their round a war step too. As Matt
+**production step**, 2 a **war step**, 3 both; the last entry repeats. As Matt
 confirmed, the clock gates only factories, troops, chips and war; the every-round
 income (cities' energy, the node track, stations, upkeep) and the adversary troops' march
-run every round.
+run every round. **Production is one snapshot** (135): troops, chips, energy, stations, income and upkeep all read
+the board as the step starts, so their order no longer matters; **war comes after it**, so what war destroys is gone
+for next round's production. **War brought forward** (Casus Belli, General Mobilization; candidate): the fronts next
+to the threat's base fight twice in next round's war step (their troops cancel once, the surplus strikes twice); with
+no war step that round they fight once. Declaration of War (an ongoing project): every war step, the front with the
+most corp troops fights twice.
 
 ## Factories
 
@@ -34,7 +38,10 @@ run every round.
   adversary-owned factory, or one holding an adversary ambassador (used up), makes an
   adversary troop on its hex instead (**locked**). A player ambassador on a factory sways
   `factory_unity` Unity and no corp troop is made; on an adversary-owned factory it sways
-  the Unity and the troop is still made. Either way it stays.
+  the Unity and stops its troop. Either way it stays. **An adversary factory frees as a corrupted station does**
+  (Matt, 2026-11-06): the Free a station action frees it to neutral. Threats build them (Mass Production, Shadow
+  Factories, War Economy), seize them (Hostile Takeover), occupy them (a standing troop: it makes nothing) and destroy
+  them (Scorched Earth).
 - **Chips**: each player-owned factory makes `factory_chips` chip for its owner on each
   production step.
 
@@ -45,6 +52,9 @@ territory and wait at its bases.
 
 - **Peacetime:** at most `unit_cap` troops wait at each base. A troop at a base **absorbs
   an adversary-troop strike** on a facility on or next to the base: 1 troop per hit.
+- **Extra corp troops** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
+  adversary troop on or next to it), Conscription (3 rounds), Arms Race (ongoing), General Mobilization (2 now).
+  A base gains at most 1 extra a production step from all of them together (Matt, 2026-11-06).
 - **On a war step**, on each front the troops at the two bases cancel 1 for 1. The surplus
   crosses, acts at once and is used up: each destroys the rival corp's factory nearest its
   base (not an adversary-owned one; ties: lower hex number), **and any node on its hex**:
@@ -61,8 +71,9 @@ Cities are never targets (corruption is the adversary's way into cities), nor ar
 adversary-owned facilities.
 
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
-takes `troop_steps` steps**, one troop at a time, in hex-number order fixed when the march
-starts. A step is one of:
+takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, in hex-number order fixed when the
+march starts. **Standing troops** (Orbital Strike, Factory Occupation) never march or strike until removed; troops a
+threat lands to "march at once" (Total War, Spearhead) take their steps as it executes. A step is one of:
 
 - **destroy** a target on or next to its hex (players choose which), or
 - with none there, **move** one hex toward the nearest target. When several hexes are

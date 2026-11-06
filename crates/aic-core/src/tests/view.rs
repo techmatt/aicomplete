@@ -121,7 +121,6 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
     let (mut saw_track_var, mut saw_project, mut saw_choice) = (false, false, false);
     for config in variant_matrix() {
         let rules = Rules::new(&config).unwrap();
-        let shared = config.module("threats").unwrap().variant == "shared_row";
         let mut g = rules.new_game(5);
         for step in 0..300 {
             if g.is_over() {
@@ -146,18 +145,8 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
                 }
                 assert!(s.cards.iter().any(|c| c.key == "cards.hand"));
             }
-            let threats_shown: usize = if shared {
-                v.piles
-                    .iter()
-                    .find(|p| p.key == "threats.row")
-                    .map_or(0, |p| p.count)
-            } else {
-                v.countries
-                    .iter()
-                    .flat_map(|c| &c.cards)
-                    .map(|c| c.cards.len())
-                    .sum()
-            };
+            // 135: every variant shows its threats on their countries (the shared row is gone).
+            let threats_shown: usize = v.countries.iter().flat_map(|c| &c.cards).map(|c| c.cards.len()).sum();
             assert_eq!(threats_shown, threats::active(&g).len());
             for x in &v.globals {
                 // Per-seat, per-country and per-card `vars` carry a third

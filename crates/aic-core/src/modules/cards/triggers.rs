@@ -21,7 +21,8 @@ fn triggers<'w>(w: &World<'w>, g: &GameState, seat: usize) -> Vec<Trigger<'w>> {
     };
     ai::board(w, seat).innate.passives.iter().for_each(|p| push(None, p));
     ai::capstones(w, g, seat).flat_map(|c| c.passives.iter()).for_each(|p| push(None, p));
-    for id in g.pile(&built(seat)) {
+    let down = has_disabled(g, seat);
+    for id in g.pile(&built(seat)).iter().filter(|id| !(down && disabled(g, seat, id))) {
         def(w, id).passives.iter().for_each(|p| push(Some(*id), p));
     }
     out
@@ -247,7 +248,7 @@ fn copies(p: &Op) -> bool {
 
 /// Seat `s`'s active buildings whose Each round output a copy can raise income by.
 pub fn income_buildings(w: &World, g: &GameState, seat: usize) -> Vec<Key> {
-    g.pile(&built(seat)).iter().filter(|id| def(w, id).passives.iter().any(copies)).cloned().collect()
+    g.pile(&built(seat)).iter().filter(|id| !disabled(g, seat, id) && def(w, id).passives.iter().any(copies)).cloned().collect()
 }
 
 /// Copy: seat `s` raises its income by one of its buildings' Each round output,

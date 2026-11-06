@@ -111,7 +111,7 @@ const PAGE_LIB = String.raw`(() => {
   /** 099: r35-r38's rules show in the engine's counters, not in its events: a counter
    *  that rose in the step names a key moment (a station freed, a liberation and its
    *  twist, a dark city, a converter, a one-shot Action discarded, troops removed). */
-  const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|threats\.sources_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
+  const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
   // discard from hand, a discount, insight bought, given or paid for a counter.
   const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;

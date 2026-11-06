@@ -5,6 +5,7 @@
 //! read by the rule they change and never resolve.
 
 use crate::content::{Facility, Op, RoundFlag, Side};
+use crate::op::Spot;
 use crate::key::Key;
 use crate::module::{Cx, PromptText, Res, World};
 use crate::state::{GameState, Opt};
@@ -16,6 +17,7 @@ use super::{adversary, alignment, board, cards, economy, threats};
 mod ambassadors;
 mod ctx;
 mod feasible;
+mod new_ops;
 mod removal;
 mod resources;
 mod science;
@@ -224,9 +226,11 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::CutBotnet => removal::cut_botnet(g, cx, seat)?,
 
         // Threats and the team: the wordings differ, the rule doesn't.
-        Op::Troops { count, each_country, destroy } => team::troops(g, cx, ctx, *count, *each_country, *destroy)?,
-        Op::FlipStation { each_country } => team::flip_station(g, cx, ctx, *each_country)?,
-        Op::CorruptCity => {
+        Op::Troops { count, each_country, destroy, at: None, stand: false, location: None, if_: None } => {
+            team::troops(g, cx, ctx, *count, *each_country, *destroy)?
+        }
+        Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
+        Op::CorruptCity { at: None, min_ambassadors: None, else_ambassadors: 0 } => {
             for c in scope_countries(&w, ctx.scope) {
                 let city = |h: usize| collecting_city(&w, g, h);
                 if let Some(h) = adversary::most_infiltrated_city(&w, g, c, city) {
@@ -234,7 +238,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 }
             }
         }
-        Op::PlayersLose { resource, amount } => {
+        Op::PlayersLose { resource, amount, all: false } => {
             for s in ctx.seats(&w, g) {
                 let k = (*amount).min(g.resource(s, *resource));
                 cx.add_resource(g, s, *resource, -k);
@@ -252,22 +256,26 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
 
         // Threats.
-        Op::Ambassadors { at, count } => threats::place_ambassadors(g, cx, ctx.scope, *at, *count, ctx.why.as_deref())?,
-        Op::Flag { name } => {
+        Op::Ambassadors { at, count, cancel: false, each: false }
+            if matches!(at, Spot::PlayerPieces | Spot::CleanCities | Spot::Factories | Spot::Bases) =>
+        {
+            threats::place_ambassadors(g, cx, &ctx.hexes(&w, g), *at, *count, ctx.why.as_deref())?
+        }
+        Op::Flag { name, scope: None, rounds: 1, everywhere: false } => {
             // Threats execute after production and upkeep: the flag lasts through
             // the next round (cleanup counts it down), or it would never land (020).
             for c in scope_countries(&w, ctx.scope) {
                 cx.set_key(g, &board::flag(*name, c), 2);
             }
         }
-        Op::Requisition { resource, amount, cards: n } => {
-            threats::requisition(g, cx, ctx.scope, *resource, *amount, *n, ctx.why.as_deref())?
+        Op::Requisition { resource, amount, cards: n, next_round: false } => {
+            threats::requisition(g, cx, &ctx.seats(&w, g), *resource, *amount, *n, ctx.why.as_deref())?
         }
-        Op::LoseAmbassador => threats::lose_ambassador(g, cx, ctx.scope, ctx.why.as_deref())?,
-        Op::LoseNodeOr { resource, amount } => {
-            threats::lose_node_or(g, cx, ctx.scope, *resource, *amount, ctx.label, ctx.why.as_deref())?
+        Op::LoseAmbassador => threats::lose_ambassador(g, cx, &ctx.seats(&w, g), ctx.why.as_deref())?,
+        Op::LoseNodeOr { resource, amount, count: 1 } => {
+            threats::lose_node_or(g, cx, &ctx.seats(&w, g), &ctx.hexes(&w, g), *resource, *amount, ctx.label, ctx.why.as_deref())?
         }
-        Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, ctx.scope, ctx.why.as_deref())?,
+        Op::DiscardMostExpensive => threats::discard_most_expensive(g, cx, &ctx.seats(&w, g), ctx.why.as_deref())?,
         Op::Compute { amount } => {
             if ctx.label == "megaproject" {
                 cx.tally(g, "adversary.compute_corp", *amount);
@@ -275,7 +283,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             adversary::gain_compute(g, cx, *amount)?
         }
         Op::ComputeEvery { amount } => adversary::compute_every(g, cx, *amount)?,
-        Op::LoseTokens { amount } => threats::lose_tokens(g, cx, ctx.scope, *amount, ctx.why.as_deref())?,
+        Op::LoseTokens { amount } => threats::lose_tokens(g, cx, &ctx.seats(&w, g), *amount, ctx.why.as_deref())?,
 
         // The team.
         Op::TeamIncome { resource, amount } => alignment::add_team_income(g, cx, *resource, *amount),
@@ -292,7 +300,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 }
             }
         }
-        Op::DealThreats { count } => threats::deal_extra(g, cx, *count),
+        Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::Infiltrate { amount } => adversary::infiltrate(g, cx, *amount),
         Op::AdversarySpread => adversary::spread(g, cx, None)?,
         Op::Sacrifice => {
@@ -303,6 +311,32 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::BotnetAmbassadors { amount } => team::botnet_ambassadors(g, cx, *amount),
         Op::CleanCityAmbassadors { amount } => team::clean_city_ambassadors(g, cx, *amount),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
+
+        // 135: the new adversary model's ops, and the old ops with a new field set.
+        Op::Troops { .. }
+        | Op::FlipStation { .. }
+        | Op::CorruptCity { .. }
+        | Op::PlayersLose { .. }
+        | Op::Ambassadors { .. }
+        | Op::Flag { .. }
+        | Op::Requisition { .. }
+        | Op::LoseNodeOr { .. }
+        | Op::DealThreats { .. }
+        | Op::AdversaryFactory { .. }
+        | Op::ComputePerMissing { .. }
+        | Op::CorpTroops { .. }
+        | Op::DestroyFacility { .. }
+        | Op::DisableBuilding { .. }
+        | Op::Discard { .. }
+        | Op::ExtraWar { .. }
+        | Op::LoseAmbassadorsOr { .. }
+        | Op::LoseIncome { .. }
+        | Op::LoseOr { .. }
+        | Op::MarchNow { .. }
+        | Op::OccupyFactory { .. }
+        | Op::PlaceBotnet { .. }
+        | Op::SeizeFactory
+        | Op::Theft { .. } => new_ops::one(g, cx, e, ctx)?,
 
         // Read, not resolved; `Content::check` keeps them out of resolving lists.
         Op::Income { .. }
@@ -330,6 +364,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::SpreadReach { .. }
         | Op::CorruptSooner { .. }
         | Op::Arrivals { .. }
+        | Op::StandingTroopsBonus { .. }
+        | Op::TroopSteps { .. }
         | Op::War => unreachable!("{e:?} is read, not resolved"),
     }
     Ok(())

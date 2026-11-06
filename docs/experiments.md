@@ -140,10 +140,10 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** the three pairs at d2 (`screen-130-dev.json`: 576 games, about 2.5 min on 6 threads;
-  `-r53.json` its fresh read), read by 130's `read130.py` (wins, energy per board and where it went, flags paired
-  seat by seat, per-board keeps, plays and Action uses) and `deck_rates.py`; 128's `action_read.py` says why an Action
-  went unused. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
+- **Current recipe:** `read-135.json` (the three pairs, strategist and greedy, d0-d2: 864 games, about 5 min on 4
+  threads; `-counters.json` the `old_counters` off arm), read by 135's `read135.py` (wins, ends, threats per round,
+  counter kinds, peak holdings); 130's `read130.py` (energy per board, keeps, plays, Action uses), `deck_rates.py` and
+  128's `action_read.py` (why an Action went unused) still apply. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
   binary. 131's `read131.py` reads `t.` arms against their base agent, paired, with `--same` for identical games.
 - **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min (13 ms a planner decision); 300
   strategist games about 4 min on 4 threads under load.
@@ -151,8 +151,7 @@ the judge off the value table.
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
   worktree resolves paths against the enclosing repo and silently applies nothing). Run it from its own folder, spec
-  copied there. Quickest play-neutral check: the new binary with every content change reverted by overlay gives the
-  old numbers exactly. `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
+  copied there. `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
 - **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
   first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
   `corps.<name>.project.<path>`) and need no build (a content change's numbers-only arm); a rule or map what-if does.
@@ -172,7 +171,7 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
 ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
-36344-36391). Next free: 36392.
+36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read). Next free: 36440.
 
 ## Reading prices
 

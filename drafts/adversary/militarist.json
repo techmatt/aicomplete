@@ -27,7 +27,7 @@
    },
    {
     "name": "Warmongering",
-    "text": "Each production step, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap.",
+    "text": "Each production step, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each production step, whatever makes it.",
     "effects": [
      {
       "op": "corp_troops",
@@ -69,7 +69,7 @@
    "facilities destroyed or seized"
   ],
   "value": "All shared harm (no per-player term, so harm = shared). Wall troops: 1 troop (5 + its strike, about 10) a round in each country the Protector holds, against the cheapest answer, 1 removal (about 5): 2x. Warmongering: 1 extra corp troop a qualifying base each production step, past the cap, so about 1 more factory lost to war every 2 war steps (a factory plus its Discord sway, about 8 a front), against 1 removal of the adversary troop (about 5): 1.6x. No credits option (removal only).",
-  "check": "Bites from round 3 (the first production step after troops land, Factory Drive and War Drums put one on a base in stage I) and pays off on the next war step; players answer by removing the adversary troop before production. Loop: extra corp troops stack past unit_cap, 1 a qualifying base a production step; capped only by war spending them, removing the adversary troop, and the clock (1,2,1,2,1,3).",
+  "check": "Bites from round 3 (the first production step after troops land, Factory Drive and War Drums put one on a base in stage I) and pays off on the next war step; players answer by removing the adversary troop before production. Loop: extra corp troops stack past unit_cap, 1 a qualifying base a production step (at most 1 a base, Conscription included); capped only by war spending them, removing the adversary troop, and the clock (1,2,1,2,1,3).",
   "flags": [
    "Warmongering needs a new op (corp_troops): corp troops are made only by base and factory production today.",
    "Warmongering goes past the cap (extra corp troops are not held to the base's unit_cap): a base whose adversary troop is never removed stacks corp troops without limit. Read the largest stack a game before keeping it.",
@@ -79,7 +79,8 @@
    "The difficulty line needs a new op (standing_troops_bonus).",
    "Event cards' `pulls` and `standing` are new card sections: the engine reads only twists and arrivals today (threats are dealt by threats.deal, not by the card).",
    "Standing ambassadors use `infiltrate` and standing troops `troops` with `each_country`: both are team ops today, not twists.",
-   "Event faces run 150-306 characters (pull, standing, twists, arrivals, Escalation): adversary cards have no frame or budget yet (card-guidelines 9)."
+   "Event faces run 150-306 characters (pull, standing, twists, arrivals, Escalation): adversary cards have no frame or budget yet (card-guidelines 9).",
+   "135: Warmongering prints its cap, at most 1 extra corp troop a base each production step, whatever makes it (Matt's ruling 4, 2026-11-06); no op change, the engine holds the cap."
   ]
  },
  "events": [
@@ -762,6 +763,60 @@
     "Face text is 306 characters (over 130)."
    ],
    "reuses": "adv_s3_occupation"
+  },
+  {
+   "id": "mil_s3_naval_blockade",
+   "name": "Naval Blockade",
+   "stage": 3,
+   "pulls": [
+    {
+     "tier": 3,
+     "tags": [
+      "economic",
+      "grid"
+     ],
+     "per": "country"
+    },
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "cyber"
+     ],
+     "per": "country"
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "clean_factories",
+     "amount": 1
+    }
+   ],
+   "arrivals": "coastal",
+   "text": "Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Factories next to clean cities gain 1 adversary ambassador. Arrivals: coastal cities.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ],
+   "value": "All shared (global + per country): 4 compute (8) + 2 troops a country (about 20) + twist, about 1 factory ambassador a country that becomes an adversary troop at the next production step (about 10): 8 + 30 a country. Against the cheapest answer, 3 removals a country (2 troops and the factory ambassador: about 15): 2x a country (2.5x at 1 country, 2.1x at 4). No credits option (removal only). Pulls: 1 tier-3 and 1 tier-1 threat a country (cheapest counters 13 + 6 credits), priced on their own cards.",
+   "check": "Rounds 10-11 (9-11 at difficulty 2+): the coastal stage-III card, the spare difficulty 2-4 deals from; the light second pull keeps it answerable, a seat making 30+ counters both in its country (about 20) and removes troops with what is left; factory ambassadors become troops at the next production step, so a removal or a claim answers them first. No loop.",
+   "flags": [
+    "135: new card (Matt's ruling 2, 2026-11-06: stage III prints a 4th card, so it keeps a spare at difficulty 2-4); coastal arrivals, so stage III's four cards cover all four site types.",
+    "Face text is 238 characters (over 130)."
+   ],
+   "reuses": null
   }
  ]
 }

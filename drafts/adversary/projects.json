@@ -161,11 +161,6 @@
    "text": "In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights its war step twice.",
    "effects": [
     {
-     "op": "troops",
-     "count": 2,
-     "each_country": true
-    },
-    {
      "op": "extra_war",
      "front": "most_corp_troops",
      "ongoing_use": true,
@@ -182,9 +177,17 @@
    "check": "the military superproject: only fills rounds 7-10, when every round is already a war round, so the second war step is what bites; game-shaping, not a loss: a war seat on that front holds it, and draining 36 a player stops it; one extra step a round, no loop",
    "flags": [
     "new op extra_war (ongoing form; front field: the one with the most corp troops, ties unsettled)",
-    "an ongoing project acting in the war step: today ongoing projects act only in the build step"
+    "an ongoing project acting in the war step: today ongoing projects act only in the build step",
+    "135: the troops are its `resolve` line (once, when it resolves); its `effects` act every round while it stands"
    ],
-   "reuses": null
+   "reuses": null,
+   "resolve": [
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ]
   },
   {
    "id": "disinformation",
@@ -323,7 +326,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "In each country, a research station is corrupted. A player's holds unless 2 adversary and no player ambassadors are on it: 1 lands.",
+   "text": "In each country, a research station is corrupted. A player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands.",
    "effects": [
     {
      "op": "flip_station",

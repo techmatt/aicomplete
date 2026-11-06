@@ -160,7 +160,7 @@ try {
   // Content moves under it: Rebuild, no restart.
   edit('threats.json', (rows) => {
     rows.find((t) => t.id === 'requisition').text = 'Each player here discards 3 cards or pays 6 credits.';
-    rows.push({ id: 'check_new_threat', name: 'Check New Threat', tier: 1, text: 'A row the check added.', counter: [['credits', 4]], effects: rows[0].effects });
+    rows.push({ id: 'check_new_threat', name: 'Check New Threat', tier: 1, tags: ['economic'], locations: ['city'], text: 'A row the check added.', counters: [[{ resource: 'credits', amount: 6 }]], effects: rows[0].effects });
   });
   await page.js(`document.getElementById('rebuild').click()`);
   await page.until(`document.querySelector('[data-id="check_new_threat"]')`, 'the rebuild');

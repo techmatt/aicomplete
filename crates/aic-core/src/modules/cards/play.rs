@@ -130,6 +130,14 @@ pub(super) fn ability_blocked(w: &World, g: &GameState, seat: usize, id: &str) -
 
 /// Why one branch of an Action can't be used now.
 pub(super) fn branch_blocked(w: &World, g: &GameState, seat: usize, id: &str, ab: &Ability) -> Option<&'static str> {
+    // 135: a face-down building has no Action; a powered-down seat uses none
+    // that costs energy.
+    if disabled(g, seat, id) {
+        return Some("face down");
+    }
+    if board::powered_down(g, seat) && ab.cost.iter().any(|(r, n)| *r == Resource::Energy && *n > 0) {
+        return Some("powered down");
+    }
     if g.var(&tokens_key(seat, id)) < ab.tokens || ab.cost.iter().any(|(r, n)| g.resource(seat, *r) < *n) {
         return Some("unaffordable");
     }

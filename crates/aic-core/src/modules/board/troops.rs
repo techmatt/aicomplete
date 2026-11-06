@@ -20,12 +20,23 @@ pub(super) fn nearest(w: &World, from: usize, hexes: impl Iterator<Item = usize>
 /// no factory left). All units at the front are used up.
 pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
-    if !war_round(&w, g) {
+    let passes = war_steps(&w, g);
+    if passes.iter().all(|&p| p == 0) {
         return;
     }
-    cx.note(None, || "War round: the fronts fight".into());
+    let war = war_round(&w, g);
+    if war {
+        cx.note(None, || "War round: the fronts fight".into());
+    }
     let mut destroyed = 0;
-    for f in &w.map.fronts {
+    for (i, f) in w.map.fronts.iter().enumerate() {
+        let steps = passes[i];
+        if steps == 0 {
+            continue;
+        }
+        if steps > 1 || !war {
+            cx.tally(g, "board.war_extra_steps", steps - war as i64);
+        }
         let [ba, bb] = f.bases;
         let (ua, ub) = (g.tokens(ba, UNIT), g.tokens(bb, UNIT));
         cx.add_tokens(g, ba, UNIT, -ua);
@@ -35,7 +46,9 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
         } else {
             (bb, f.countries[0], ub - ua)
         };
-        for _ in 0..n {
+        // 135: a front fighting its war step twice strikes twice with its surplus
+        // (the units cancel once: a second step after the first has none left).
+        for _ in 0..n * steps {
             let hexes = &w.map.countries[rival as usize].hexes;
             let target = nearest(
                 &w,
@@ -60,8 +73,37 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
             }
         }
     }
-    cx.tally(g, "board.war_rounds", 1);
+    if war {
+        cx.tally(g, "board.war_rounds", 1);
+    }
     cx.tally(g, "board.war_destroyed", destroyed);
+}
+
+/// The war steps each front fights this round (135): 1 on a war round, 1
+/// more where a threat brought war forward on it for this round (Casus
+/// Belli), and 1 more on a war round for the front with the most corp troops
+/// (ties: the first) while an ongoing project says so (Declaration of War).
+pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
+    let war = war_round(w, g) as i64;
+    let mut out: Vec<i64> = (0..w.map.fronts.len())
+        .map(|i| war + (g.var(&extra_war_key(i)) == g.round as i64) as i64)
+        .collect();
+    let doubles = g.pile(adversary::PROJECTS_ONGOING).iter().any(|id| {
+        w.content.project(id).effects.iter().any(|e| {
+            matches!(e, Op::ExtraWar { front: Some(crate::op::FrontPick::MostCorpTroops), .. })
+        })
+    });
+    if war > 0 && doubles {
+        let units = |i: usize| {
+            let [a, b] = w.map.fronts[i].bases;
+            g.tokens(a, UNIT) + g.tokens(b, UNIT)
+        };
+        // `max_by_key` takes the last of equals: walk from the top.
+        if let Some(i) = (0..w.map.fronts.len()).rev().max_by_key(|&i| units(i)) {
+            out[i] += 1;
+        }
+    }
+    out
 }
 
 /// The adversary phase's march (019): every adversary troop, one at a time
@@ -70,14 +112,42 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
 /// or, with none there, moves one hex toward the nearest target (players
 /// choose among equally good steps; with no target on the board it stays).
 /// A troop that strikes is used up (`troop_spent`).
+/// 135: standing troops never march (they count as marched), and a Forced
+/// March twist adds its steps to every troop's.
 pub(super) fn march(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
-    let steps = w.int("board.troop_steps");
+    let extra: i64 = adversary::twists(&w, g)
+        .iter()
+        .map(|t| match t {
+            Op::TroopSteps { amount } => *amount,
+            _ => 0,
+        })
+        .sum();
+    let steps = w.int("board.troop_steps") + extra;
     let troops: Vec<usize> = (0..g.hexes.len())
         .flat_map(|h| std::iter::repeat_n(h, g.tokens(h, TROOP).max(0) as usize))
         .collect();
-    // Troops that have already marched, per hex (none marches twice).
-    let mut marched = vec![0i64; g.hexes.len()];
+    let marched: Vec<i64> = (0..g.hexes.len()).map(|h| standing(g, h)).collect();
+    march_troops(g, cx, troops, steps, marched)
+}
+
+/// 135 (Total War, Spearhead): the `n` troops just landed on hex `h` march
+/// now, `steps` steps each (none: the march's); no other troop moves.
+pub fn march_now(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, steps: Option<i64>) -> Res {
+    let w = cx.world;
+    let steps = steps.unwrap_or_else(|| w.int("board.troop_steps"));
+    let n = n.min(g.tokens(h, TROOP) - standing(g, h)).max(0);
+    let marched: Vec<i64> = (0..g.hexes.len())
+        .map(|x| if x == h { g.tokens(x, TROOP) - n } else { g.tokens(x, TROOP) })
+        .collect();
+    cx.tally(g, "board.troops_marched_now", n);
+    march_troops(g, cx, vec![h; n as usize], steps, marched)
+}
+
+/// The march of `troops` (one entry per troop, its hex), `steps` steps
+/// each; `marched` counts the troops on each hex that don't move (none marches twice).
+fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, mut marched: Vec<i64>) -> Res {
+    let w = cx.world;
     // 105: seats whose Wall pays when it stops a troop (the Protector's Vigil).
     let vigil: Vec<bool> = (0..g.seats.len()).map(|s| cards::has_wall_trigger(&w, g, s)).collect();
     for from in troops {

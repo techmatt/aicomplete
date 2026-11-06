@@ -1,123 +1,93 @@
 # Threats (module `threats`; [`content/threats.json`](../../content/threats.json))
 
-*Threat sources, dealing, countering and what threats do. Terms and conventions are in [README.md](README.md).*
+*The threat decks, dealing, location tokens, who is near, countering and what threats do. Terms and conventions are in
+[README.md](README.md). Every threat, with its text and counter menu, is in [adversary-cards.md](../adversary-cards.md).*
 
-- Variant **`countries`** (default): each threat sits on one country and acts there; who may pay toward it is set by
-  its **sources** (below), and "each player" in its text means each player with a node there.
-- Variant **`shared_row`**: threats sit in one row, anyone may pay, and each acts on the whole board: an effect per
-  country (Blackout, Sabotage, Embargo, Overrun, Mass Production) hits every country, "each player" is every player, and a
-  placement (Infiltration's, Agitators', Sleeper Cells' and Insurrection's ambassadors, Orbital Strike's, Siege's and
-  Total War's troops and ambassadors, Station Seizure's station) is that many on the whole board, players choosing
-  where. The row is still dealt `per_country` threats per country, so more countries deal more threats.
-- Variant **`off`**: no threats ([README.md](README.md#off-variants)).
+- Variant **`countries`** (default): the model below. Variant **`shared_row`** plays the same (135: the row went with
+  the old sources; it stays so its config loads). Variant **`off`**: no threats ([README.md](README.md#off-variants)).
 
-**Threat sources (candidate; design doc, Matt).** Threats come from the adversary's pieces on the map, and reaching
-those pieces decides who counters them. Every threat prints a **source type**; its sources are all the adversary
-pieces of that type in its country:
-
-| Source type | Source pieces |
-|---|---|
-| influence | corrupted cities |
-| cyber | corrupted research stations and botnets |
-| economic | adversary factories |
-| military | troops |
-
-Military bases and adversary ambassadors are never sources.
-
-- **Who may counter:** a player with any of the threat's sources in reach, or with their ambassador on one. Payments
-  are pooled, and a player who lost their access can still withdraw. A player's card that jams or counters a threat
-  ([card-grammar.md](card-grammar.md)) reaches only threats they may counter; a reward from the Unity deck reaches any threat.
-- **Countering doesn't consume the ambassador.** It holds the source and keeps access to later threats there until an
-  adversary ambassador cancels it. The rules that take ambassadors anyway still do: a facility's defense ([ambassadors.md](ambassadors.md)), and a
-  fallback liberation ([ambassadors.md](ambassadors.md)).
-- **No source when dealt: a target (Matt).** A threat with no source in its country names one: the lowest-numbered
-  clean city, station or factory of its type, neutral before player-owned; for a factory or station with none to take,
-  the lowest site one would be built on; for troops the country's lowest base a Wall leaves open. While the threat is
-  face up the target is its source: anyone with it in reach, or with an ambassador on it, may counter.
-  **Countered, nothing is created.** Uncountered, as part of its execution and before its own effect, the target is
-  corrupted, built then corrupted, or the troop lands (a Wall on the base stops it). A player's station named as a
-  cyber target flips only as an effect would ([board.md](board.md): `station_flip_at`); short of that one adversary
-  ambassador lands on it, the station holds, and no source appears. At most one piece a country a round, and a
-  station that held uses up that round's piece. Nothing is set aside for lack of a source. A country with nothing to name (no base at 1 country) leaves the
-  threat with no source: nobody can pay it, and it makes nothing.
-- **A source that leaves:** the rule reads the map now, so a threat whose sources are gone can't be paid
-  until one is back, and it still executes. Marches come before the deal, so this takes a troop spent or a piece gone
-  inside the round.
-- **Shield:** while a threat is face up, the adversary's pieces of its source type in its country can't be destroyed
-  or liberated until it is countered: removal and liberate cards skip them, and player ambassadors at a corrupted
-  city's fallback wait, and liberate it the moment the threat is countered. An adversary ambassador is never shielded.
-- **Standing counters:** while a player has a tier-2 capstone with an automatic counter, each threat of its type they
-  can pay toward (they may counter it: any country, or the shared row) needs that much less, whenever it was dealt
-  (r48; it was their home country's alone, which under `shared_row` meant none); one it pays in full is countered at
-  once, as dealt or as the counter comes into play (118).
-
-**For new players.** Every threat grows out of something on the map. Find what its badge names in its country: a
-corrupted city (influence), a corrupted station or botnet (cyber), an adversary factory (economic), a troop
-(military). You can pay only with one of those next to your nodes, or with your own ambassador on one. If the country
-has none, the threat names a target on the map, and that counts as its source: counter it and nothing happens, leave
-it and the adversary gets a new piece there (a player's station usually holds, taking an adversary ambassador). Until a threat is countered, you can't remove its sources, so counter
-first and clear after.
-
-**Dealing.** In `threats.deal` each country gets `per_country` threat (plus difficulty 1's extra, [adversary.md](adversary.md)), face up: tier 1
-until this round's adversary card is stage II or later, then tier 2 (difficulty 4: a round sooner). Each tier's deck
-holds one copy of each of its threats, shuffled at setup; its discards reshuffle when it runs out, for any deal. Each
-deck holds enough threats that a deal doesn't run short at 4 countries and difficulty 4; a deal the deck and its
-discards can't supply deals what it can and counts the rest as `threats.short`.
-
-**Energy counters (candidate).** A counter is one cost, each resource it prints paid in full. Most print credits alone;
-the grid's own harms take energy alone (Blackout and Commandeer 1, Sabotage 2), so energy has a use every round a
-threat lands. **No counter prints 1 credit** (Matt, r48: tracking it costs more than it moves the game): a counter is
-5 or more credits, or energy. Any resource a seat gets without a specific card may be a counter's; the full threat redesign waits
-for the adversary pass. **Insight counters (r41):** Smear Campaign, Infiltration (tier 1), Deepfake Wave and Purge
-Protocols (tier 2) take 5 insight and nothing else, about one round's printed insight: a sink for the insight a seat
-didn't spend on cards. Insight is pooled like any payment; the players bring it through their converters (the cube
-converter, Cintamani's, Focus, Vigil, Synthesis), and no rule lets it stand for another resource.
-
-**Countering.** A threat is countered only when fully paid. Payments are pooled across players (`Pay` 1, or
-as much as is still useful, at a time; `Withdraw` takes back everything you put on it in one resource, even after you
-lose your nodes there). The moment it is fully paid it is discarded and the payments are spent (an overpayment,
-possible after a jam, goes back, later seats first). In `threats.execute`, anything still on an uncountered threat is
-refunded, and the threats execute in order (the row, then country 0, 1, ...) and are discarded. Only threats that were
-on the board during this round's counter phase execute: one dealt later in the round (a Discord tip in production or
-upkeep, False Flag) waits beside its country (or the row) and executes next round, after a counter phase in which it
-can be paid (Matt).
-
-Choice threats are preferred; a destroyed node leaves the game, so a tier-1 threat's loss can be permanent too.
-**Counters cost credits (candidate),** 4-8 by tier and harm, or 5 insight on four of them, or energy on three (the table prints them):
+**The decks (candidate; design doc, Matt).** One threat deck per tier, each card printed once and shuffled at setup:
+tier 1 (this round's losses: credits, energy, insight, cards, a blackout, adversary ambassadors), tier 2 (lasting
+ones: nodes, facilities, corrupted sites, botnets, corp troops) and tier 3 (the last rounds' squeeze). Each card carries
+1 or 2 **tags** (Military, Influence, Cyber, Economic, Grid; **Universal** counts as every tag) and 1 or 2 **location
+types** (city, coastal city, research station, factory, military base).
 
 <!-- generated: threats -->
-| Threat | Tier | Source | If not countered | Counter |
-|---|---|---|---|---|
-| Requisition | 1 | economic | Each player here discards 2 cards or pays 6 credits. | 4 credits |
-| Commandeer | 1 | economic | Each player here discards 2 cards or pays 4 energy. | 1 energy |
-| Supply Raid | 1 | economic | Each player here loses 6 credits. | 5 credits |
-| Blackout | 1 | cyber | Cities here produce no energy next round; the adversary gains 3 compute. | 1 energy |
-| Sabotage | 1 | cyber | Players here make no energy in upkeep next round and each loses 3 tokens from their cards; the adversary gains 3 compute. | 2 energy |
-| Infiltration | 1 | cyber | 3 adversary ambassadors land on player-owned pieces here. The adversary gains 3 compute. | 5 insight |
-| Agitators | 1 | influence | 3 adversary ambassadors land on clean cities here. Each player here destroys 1 of their nodes here. | 5 credits |
-| Orbital Strike | 1 | military | 1 troop lands on a factory here, or a city if no factory. The adversary gains 3 compute. Each player here destroys 1 of their nodes here. | 6 credits |
-| Defection | 1 | influence | Each player here loses an ambassador. Sway 2 toward Discord. Each player here destroys 1 of their nodes here. | 4 credits |
-| Eviction | 1 | military | Each player here pays 6 credits or loses a node here (never their last). | 5 credits |
-| Embargo | 1 | economic | No site here can be claimed next round; the adversary gains 3 compute. | 4 credits |
-| Smear Campaign | 1 | influence | Each player here gets 2 less insight next round. Move 2 Sway from the Unity bucket to the Undecided. | 5 insight |
-| Station Seizure | 2 | cyber | An uncorrupted research station here becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
-| Overrun | 2 | influence | The uncorrupted city here with the most adversary ambassadors becomes corrupted. Each player here destroys 1 of their nodes here. | 8 credits |
-| Mass Production | 2 | economic | The adversary builds now, here; the adversary gains 4 compute. | 7 credits |
-| Purge Protocols | 2 | cyber | Each player here discards their most expensive card in hand and loses 3 tokens from their cards. | 5 insight |
-| Total War | 2 | military | 2 troops land on factories here, or cities if no factories; each destroys all nodes on its hex. 2 adversary ambassadors land on military bases here, one a base while a base has none. The adversary gains 4 compute. | 8 credits |
-| Conscription | 2 | economic | Each player here discards 3 cards or pays 6 energy; the adversary gains 3 compute. | 7 credits |
-| Sleeper Cells | 2 | cyber | 4 adversary ambassadors land on player-owned pieces here. The adversary gains 4 compute. Each player here destroys 1 of their nodes here. | 7 credits |
-| Insurrection | 2 | influence | 4 adversary ambassadors land on clean cities here. Sway 2 toward Discord. Each player here destroys 1 of their nodes here. | 7 credits |
-| Siege | 2 | military | 2 troops land on factories here, or cities if no factories. Each player here destroys 2 of their nodes here and loses an ambassador. The adversary gains 3 compute. | 8 credits |
-| Manhunt | 2 | military | Each player here destroys 2 of their nodes here. | 8 credits |
-| Asset Freeze | 2 | economic | Each player here loses 8 credits. The adversary gains 3 compute. | 7 credits |
-| Deepfake Wave | 2 | influence | Sway 3 toward Discord. Each player here gets 2 less insight next round. | 5 insight |
+| Tier | Cards | Military | Influence | Cyber | Economic | Grid | Universal |
+|---|---|---|---|---|---|---|---|
+| 1 | 25 | 6 | 7 | 6 | 6 | 5 | 0 |
+| 2 | 28 | 6 | 7 | 6 | 7 | 5 | 3 |
+| 3 | 11 | 4 | 1 | 2 | 2 | 1 | 3 |
 <!-- /generated -->
 
-**Compute.** About half the threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they execute
-uncountered: candidate amounts, printed on the threat.
+**Dealing: the event card's pulls.** The adversary's event card ([adversary.md](adversary.md)) prints its pulls on
+its top line ("each country: a Military 2 threat", "Military 1 or Cyber 1", "any tier-2 threat"); a stage-III card
+pulls twice. In `threats.deal`, for each pull and each country in order, **the draw rule**: turn up the top card of
+that tier's deck; it stays if it carries a listed tag (Universal fits any; "any" takes every card) and the country has
+a site of one of its location types; otherwise it goes to that tier's discard and the next is turned up. An empty deck
+reshuffles its discard. A pull still unfilled after one reshuffle takes the next card anyway and is counted
+(`threats.pull_forced`: a content bug, never seen in `drafts/adversary/check.py`'s 165,600 simulated pulls). Difficulty
+1 adds `extra_threats` more pulls of the card's first pull, countries in turn. A threat that deals a threat (Provocation,
+Last Ultimatum) deals it now, into its own country, at its printed tier, any tag; it executes next round.
 
-An uncountered threat also sways `threat_discord` Discord. "Pay or discard" is the player's choice; with neither
-possible, the player pays what they have and discards their hand. Purge Protocols compares printed
-credit costs; on a tie the player chooses. A lost ambassador comes from the player's supply, else from the board
-(their pick of hex).
+**Location tokens.** A dealt threat puts a token on a site of each of its location types in its country (two tokens
+never share a hex): a city or coastal-city token on an uncorrupted city (coastal for coastal), a station token on an
+uncorrupted research station, a factory token on a factory that isn't the adversary's, else a free industrial zone, a
+base token on a military base. Among those sites, the one with the most adversary pieces on or next to it (adversary
+ambassadors, troops, botnets); ties, the lower hex number. A printed game does this by eye. A location type the country
+lacks gets no token; the pull never deals a threat with none (so a base-only threat never lands at 1 country).
+
+**Near.** A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a
+player near it may pay toward it; "each player near it" is who its harm hits; a piece it places lands on its token
+unless the text says otherwise, and "near it" in its text means on or next to a token. A threat nobody is near still
+executes.
+
+**Countering: a menu.** A threat prints a few ways to pay; the table pays **one option in full**:
+
+- **Resources** (credits, energy, insight, research cubes, chips, ambassadors from your supply) are pooled across the
+  players near it (`Pay` 1, or as much as is still useful; `Withdraw` takes back everything you put on it in one
+  resource, even after you stop being near). The moment some option's resources are all covered it is countered and
+  discarded; the rest goes back, later seats first.
+- **Tags**: one player sacrifices cards in play carrying that many tags of the kind (as an AI-board power's cost,
+  [ai-powers.md](ai-powers.md)): Security for Military, Diplomacy for Influence, Cyber, Industry for Economic, Power
+  for Grid. Tier 1 asks 2 tags, tier 2 asks 3, tier 3 3 or more (Matt, 2026-11-06).
+- **Nodes**: one player removes that many of their nodes on or next to a token; they leave the game as destroyed
+  ones do, and never a player's last node.
+- A tag or node option, or an option mixing them with resources, is paid whole by one player (`CounterWith`).
+
+A player's card that jams or counters a threat reaches only threats they are near (a typed one, threats carrying its
+tag or Universal); a jam takes its amount off every resource item of every option. A Unity reward reaches any threat.
+**Standing counters:** a tier-2 capstone with an automatic counter takes its amount off each threat of its type the
+player is near, whenever it was dealt; one it pays in full is countered at once (118). Difficulty 1 adds
+`counter_bonus` to the first option's credits and `counter_bonus_all` to every resource item.
+
+**Calibration (candidate, 134).** A counter is about a third to half a round's income (tier 1: 6-8 credits, 1-2
+energy, 4-5 insight, 1-2 ambassadors, a research cube, 2 tags; tier 2: 9-12 credits, 2-3 energy, 3 tags; tier 3:
+13-18 credits, or two resources); failing costs about 1.5-2x the counter per player near it. **No counter prints 1
+credit** (Matt, r48): a credits option is 5 or more.
+
+**Executing.** Threats execute in `threats.execute`, after production and war, at the round's end: anything still on
+an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it says near its tokens, sways
+`threat_discord` toward Discord (unprinted: the floor that keeps a threat nobody is near from being free to ignore),
+and is discarded with its tokens. Only threats on the board during this round's counter phase execute: one dealt later
+waits and executes next round, after a counter phase in which it can be paid (Matt). "Pay or discard" is the player's
+choice; with neither possible, the player pays what they have and discards their hand. Theft hits the player near it
+with the most credits (ties: the lowest seat). No threat takes a player's last node.
+
+**For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
+threats: in each country, turn up cards from the named tier's threat deck until one has a listed tag (a Universal card
+has every tag), discard the misses, and put its location tokens on the board. If you have a node or an ambassador on
+or next to a token, you are *near* that threat: you may help pay it off, and its harm hits you. Each threat lists a
+few ways to pay, and the table pays one in full: credits and other resources can be pooled between players; giving up
+cards for their tags, or removing your nodes next to it, is done by one player alone. Next the card's standing lines
+land compute, ambassadors and troops, then its twists, arrivals and build, and the spread, corruption and march. You
+draft and act; production then runs from one snapshot of the board, and war comes after it. At the end of the round
+each threat nobody paid does what it says near its tokens and also sways 1 toward Discord. Tier-1 threats cost you
+this round; tier 2 can take nodes, stations and factories for good, or make the corps' troops pile up; tier 3 arrives
+in the last rounds beside a second, lighter threat. Compute fills the cheapest project on the adversary's board; a
+full project fires, and when every slot has fired they refill. **What resisted a summary:** where a token goes (the
+most-threatened uncorrupted site of its type, by count of adversary pieces), that a threat skips a country lacking
+its location, and that only resource options pool.
+
+**Compute.** Most threats also give the adversary compute, onto its projects ([adversary.md](adversary.md)), when they
+execute uncountered: printed on the threat.

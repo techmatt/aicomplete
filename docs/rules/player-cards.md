@@ -50,8 +50,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   the tag or on a power, save the Protector's Recovery, which clears a marker. Four tier-1 cards and one tier-2 card do it.
   No card `needs` Science for it: a team without the tag still has the Clear standard action, its counters and the
   board.
-- **Typed counters (candidate).** Nine tier-1 cards fight one source type, and count for more than they cost toward
-  threats of it that the player may counter: Security for military, Diplomacy for influence, Cyber for cyber, Industry
+- **Typed counters (candidate).** Nine tier-1 cards fight one threat tag, and count for more than they cost toward
+  threats carrying it (or Universal) that the player is near: Security for military, Diplomacy for influence, Cyber for cyber, Industry
   for economic (Science's and Power's tools stay general). Industry has two programs and an Action building;
   Security, Diplomacy and Cyber one of each.
 - **Engines (candidate; 106, the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where

@@ -24,13 +24,14 @@ pub const HARMS: [&str; 14] = [
     "actions or claims blocked",
 ];
 
-/// The sources of the ledger, in its column order. The first six read
+/// The sources of the ledger, in its column order. The first seven read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 12] = [
+pub const SOURCES: [&str; 13] = [
     "tier-1 threats",
     "tier-2 threats",
+    "tier-3 threats",
     "Discord cards",
-    "adversary twists",
+    "adversary events",
     "adversary projects",
     "megaprojects",
     "arrivals",
@@ -43,7 +44,7 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 21] = [
+pub const RULE_HARMS: [(&str, &str, &str); 19] = [
     ("arrivals", "adversary pieces placed", "every matching site gains an ambassador"),
     ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
     ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
@@ -57,10 +58,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 21] = [
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
-    ("uncountered threats", "adversary pieces placed", "a threat with no source that goes uncountered makes its target one: a city, station or factory goes over, or a troop lands at a base; one a country a round"),
-    ("uncountered threats", "node destroyed", "a city it corrupts takes the nodes on and next to it"),
-    ("uncountered threats", "ambassadors lost", "player ambassadors on a city it corrupts are lost"),
-    ("uncountered threats", "facilities destroyed or seized", "with no neutral one left, its target is a player's factory or station (a player's station holds unless `station_flip_at` adversary ambassadors and no player ambassador stand on it)"),
+    ("uncountered threats", "node destroyed", "a city a threat corrupts takes the nodes on and next to it"),
+    ("uncountered threats", "ambassadors lost", "player ambassadors on a city a threat corrupts are lost"),
     // 099: the board's most frequent Discord source had no mark.
     ("uncountered threats", "Discord sway", "every threat that executes uncountered sways `threat_discord` toward Discord, beside its printed effects"),
     ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
@@ -69,12 +68,12 @@ pub const RULE_HARMS: [(&str, &str, &str); 21] = [
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
-const DISCORD_CARDS: usize = 2;
-const ADVERSARY_TWISTS: usize = 3;
-const ADVERSARY_PROJECTS: usize = 4;
-const MEGAPROJECTS: usize = 5;
+const DISCORD_CARDS: usize = 3;
+const ADVERSARY_EVENTS: usize = 4;
+const ADVERSARY_PROJECTS: usize = 5;
+const MEGAPROJECTS: usize = 6;
 /// The first columns: the threats, by tier.
-const THREAT_TIERS: usize = 2;
+const THREAT_TIERS: usize = 3;
 
 /// Rows of [`HARMS`], for [`op_harms`].
 const NODE_DESTROYED: usize = 0;
@@ -98,13 +97,31 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::DestroyNode | Op::EachDestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::Sacrifice => vec![NODE_DESTROYED, AMBASSADORS_LOST],
         Op::PlayersLose { resource: Resource::Credits, .. } => vec![CREDITS_LOST],
-        Op::Requisition { .. } | Op::DiscardMostExpensive => vec![CARDS_DISCARDED],
+        Op::Requisition { .. } | Op::DiscardMostExpensive | Op::Discard { .. } => vec![CARDS_DISCARDED],
+        Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
+            vec![CREDITS_LOST]
+        }
+        Op::LoseAmbassadorsOr { .. } => vec![AMBASSADORS_LOST, CREDITS_LOST],
+        Op::LoseOr { options } => {
+            let mut all: Vec<usize> = options.iter().flat_map(op_harms).collect();
+            all.sort_unstable();
+            all.dedup();
+            all
+        }
+        Op::DestroyFacility { .. } => vec![FACILITIES_DESTROYED, NODE_DESTROYED],
+        Op::SeizeFactory | Op::OccupyFactory { .. } => vec![FACILITIES_DESTROYED],
+        Op::DisableBuilding { .. } => vec![BLOCKED],
+        Op::AdversaryFactory { .. } | Op::PlaceBotnet { .. } | Op::CorpTroops { .. } | Op::MarchNow { .. } => {
+            vec![PIECES_PLACED]
+        }
+        Op::ExtraWar { .. } => vec![FACILITIES_DESTROYED],
+        Op::ComputePerMissing { .. } => vec![PROJECTS_ADVANCED],
         Op::LoseInsight { .. } => vec![INSIGHT_LOST],
         Op::LoseAmbassador => vec![AMBASSADORS_LOST],
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
         Op::FlipStation { .. } => vec![FACILITIES_DESTROYED],
-        Op::Flag { name } => match name.name() {
-            "embargo" => vec![BLOCKED],
+        Op::Flag { name, .. } => match name.name() {
+            "embargo" | "power_down" => vec![BLOCKED],
             _ => vec![BLACKED_OUT],
         },
         Op::Ambassadors { .. }
@@ -117,7 +134,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         | Op::CleanFactories { .. }
         | Op::StationBuild { .. } => vec![PIECES_PLACED],
         // 044: a corruption takes the node and ambassadors around the city too.
-        Op::CorruptCity => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
+        Op::CorruptCity { .. } => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::Troops { destroy, .. } => {
             if *destroy {
                 vec![PIECES_PLACED, NODE_DESTROYED]
@@ -186,7 +203,10 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         add(DISCORD_CARDS, &all);
     }
     for a in &c.adversary {
-        add(ADVERSARY_TWISTS, &a.twists);
+        add(ADVERSARY_EVENTS, &[&a.standing[..], &a.twists[..]].concat());
+    }
+    for r in &c.adversary_board.rules {
+        add(ADVERSARY_EVENTS, &r.effects);
     }
     for p in &c.projects {
         add(ADVERSARY_PROJECTS, &p.effects);

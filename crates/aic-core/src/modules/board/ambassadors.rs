@@ -4,11 +4,12 @@ use crate::module::Hot;
 use super::*;
 
 /// Whether seat `s` can claim the site on hex `h` (align a city, take a
-/// station or factory): its node is on or next to `h`, and no botnet is.
+/// station or factory): its node is on or next to `h`, no botnet is, and no
+/// embargo is up on it (its country's, or 135's on the hexes near a threat).
 pub fn can_claim(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
     in_reach(w, g, seat, h)
         && !next_to(w, h, |x| g.tokens(x, BOTNET) > 0)
-        && !flagged(g, RoundFlag::Embargo, w.map.hexes[h].country as usize)
+        && !hex_flagged(w, g, RoundFlag::Embargo, h)
 }
 
 pub fn ambassadors_on_board(g: &GameState, seat: usize) -> i64 {
@@ -90,8 +91,7 @@ pub(super) fn free_cities(g: &mut GameState, cx: &mut Cx) {
             continue;
         }
         let need = liberate_at(&w);
-        // 070: a face-up influence threat here holds the city until it is countered.
-        if liberating_ambassadors(&w, g, h) < need || threats::shielded(&w, g, h, ThreatSource::Influence) {
+        if liberating_ambassadors(&w, g, h) < need {
             continue;
         }
         let mut left = need;

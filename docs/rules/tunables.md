@@ -72,9 +72,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
 | `adversary.station_flip_at` | 2 | 0..5 | adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
-| `adversary.project_cards` | 6, 6 | 0..20 | adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top |
-| `adversary.project_row` | 3 | 1..6 | adversary projects visible at once; a new row is dealt when all have resolved |
-| `threats.per_country` | 1 | 0..5 | threats dealt each round per country |
+| `adversary.board_difficulty_at` | 3 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |
 | `alignment.undecided_per_player` | 4 | 1..50 | Sway in the Undecided at the start, per player |
 | `alignment.tip_per_player` | 2 | 1..50 | the Unity bucket tips when it holds this many Sway per player |
 | `alignment.discord_tip_per_player` | 2 | 1..50 | the Discord bucket tips when it holds this many Sway per player |

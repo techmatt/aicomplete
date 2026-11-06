@@ -1,6 +1,7 @@
-"""Who counters what (070), per cell of experiment DIRs, read from games.jsonl: threats
-dealt, countered by source type, paid abroad or by ambassador alone, sources made, rounds with every threat countered, and the
-typed counters and capstones played.
+"""Who counters what (070; 135's counter menu), per cell of experiment DIRs, read from games.jsonl:
+threats dealt, countered by the kind of option paid (credits, energy, insight, ambassadors, research
+cubes, tags, nodes, a card, a standing counter), paid abroad, rounds with every threat countered, and
+the typed counters and capstones played.
 
     python scripts/cards/threat_read.py DIR [DIR ...] [--cards]
 
@@ -44,11 +45,11 @@ def main():
     ap.add_argument('--cards', action='store_true')
     a = ap.parse_args()
     typed, cap = typed_and_capstones()
-    keys = [('dealt', 'threats.dealt'), ('counter', 'threats.countered'), ('inf', 'threats.countered.influence'),
-            ('cyb', 'threats.countered.cyber'), ('eco', 'threats.countered.economic'),
-            ('mil', 'threats.countered.military'), ('exec', 'threats.executed'), ('abroad', 'threats.paid_abroad'),
-            ('byamb', 'threats.paid_by_ambassador'), ('made', 'threats.sources_made'), ('clean', 'threats.rounds_all_countered'),
-            ('typed', 'threats.typed_counters'), ('auto', 'threats.auto_countered')]
+    by = ['credits', 'energy', 'insight', 'ambassadors', 'research_cubes', 'tags', 'nodes', 'card', 'standing']
+    keys = ([('dealt', 'threats.dealt'), ('counter', 'threats.countered')]
+            + [(k[:5], f'threats.countered_by.{k}') for k in by]
+            + [('exec', 'threats.executed'), ('abroad', 'threats.paid_abroad'), ('clean', 'threats.rounds_all_countered'),
+               ('typed', 'threats.typed_counters'), ('auto', 'threats.auto_countered')])
     print('| cell | n | win | ' + ' | '.join(k for k, _ in keys) + ' | typed played | capstones played |')
     print('|' + '---|' * (len(keys) + 5))
     for d in a.dirs:

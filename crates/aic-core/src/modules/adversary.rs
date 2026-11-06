@@ -5,7 +5,7 @@
 //! troops, which cards, threats and Alignment use, and the board conditions
 //! for winning and losing.
 
-use crate::content::{AdversaryCard, Op, ProjectCard};
+use crate::content::{AdversaryCard, Op, ProjectCard, PullTag, ThreatTag};
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World};
 use crate::rng::shuffle;
@@ -13,7 +13,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{alignment, board, cards, effects, threats};
+use super::{alignment, board, cards, effects};
 
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
@@ -39,15 +39,15 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
     ParamSpec::int("station_flip_at", 0, 5, "adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
-    ParamSpec::list("project_cards", 0, 20, "adversary projects dealt from stage 1 (cheap) and stage 2 (big), cheap on top"),
-    ParamSpec::int("project_row", 1, 6, "adversary projects visible at once; a new row is dealt when all have resolved"),
+    ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's own difficulty line applies (135)"),
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the next card becomes this round's; corrupted cities and the factories next to them gain ambassadors; ongoing projects act; botnets make adversary compute onto the projects"),
+    PhaseSpec::auto("build", "the event card's standing lines and twists; corrupted cities and the factories next to them gain ambassadors; arrivals; ongoing projects act; botnets make adversary compute onto the projects"),
     PhaseSpec::auto("spread", "every hex with several adversary ambassadors keeps one and sends the rest to pieces (a second on a piece makes a botnet)"),
     PhaseSpec::auto("corrupt", "cities that are not corrupted and hold enough adversary ambassadors are corrupted"),
-    PhaseSpec::auto("reveal", "reveal the next adversary card face up, a round ahead"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead"),
+    PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -81,9 +81,11 @@ pub const STAGE: &str = "adversary.stage";
 pub const PEEK: &str = "adversary.peek";
 /// Adversary compute made so far (all of it goes onto projects).
 pub const COMPUTE: &str = "adversary.compute";
-/// The project deck (face down), the visible row, ongoing projects in
-/// play, and resolved or discarded ones.
+/// The project deck (face down), the visible row (in slot order), ongoing
+/// projects in play, and resolved or discarded ones. The draw rule's misses
+/// go to the project discard, which reshuffles into the deck (135).
 pub const PROJECT_DECK: &str = "adversary.project_deck";
+pub const PROJECT_DISCARD: &str = "adversary.project_discard";
 pub const PROJECTS: &str = "adversary.projects";
 pub const PROJECTS_ONGOING: &str = "adversary.projects_ongoing";
 pub const PROJECTS_DONE: &str = "adversary.projects_done";
@@ -146,11 +148,12 @@ pub fn start_supply(w: &World) -> i64 {
     (w.int("adversary.supply_per_country") * w.map.countries.len() as i64).max(0)
 }
 
-/// Which tier of threats is dealt now: tier 2 once this round's card is
-/// stage II or later (at difficulty 4, `tier2_early` cards sooner).
+/// The tier an extra threat comes from (an old-form `DealThreats`): this
+/// round's card's stage, at most 3 (at difficulty 4, tier 2 `tier2_early`
+/// cards sooner). Event cards' pulls name their own tiers (135).
 pub fn threat_tier(w: &World, g: &GameState) -> u8 {
     if g.var(STAGE) >= 2 {
-        return 2;
+        return g.var(STAGE).min(3) as u8;
     }
     if level(w, 4) {
         let early = w.int("adversary.tier2_early") as usize;
@@ -187,7 +190,8 @@ fn card_text(c: &AdversaryCard) -> String {
 /// the Sway phase) this round's card is still the face-up one: read it (022:
 /// that read last round's card, and none in round 1).
 pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
-    let before_build = g.phase_index("adversary.build").is_some_and(|i| g.phase < i);
+    let flip = if g.phase_index("adversary.event").is_some() { "adversary.event" } else { "adversary.build" };
+    let before_build = g.phase_index(flip).is_some_and(|i| g.phase < i);
     g.pile(if before_build { NEXT } else { CURRENT })
         .iter()
         .flat_map(|id| card(w, id).twists.iter())
@@ -207,7 +211,6 @@ pub fn war_twist(w: &World, g: &GameState) -> bool {
 struct Adversary {
     /// What this difficulty deals from stage I, II and III.
     dealt: [i64; 3],
-    project_cards: Vec<i64>,
 }
 
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
@@ -242,26 +245,72 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
             ));
         }
     }
-    let project_cards = b.list("project_cards")?;
-    if project_cards.len() != 2 {
-        return Err("project_cards: give 2 counts (stage 1, stage 2)".into());
+    Ok(Box::new(Adversary { dealt }))
+}
+
+/// The face-up event card becomes this round's (135: the `event` phase; in a
+/// round without one, the build does it). None left: the adversary wins.
+fn flip(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    for id in g.pile(CURRENT).to_vec() {
+        cx.move_card(g, &id, CURRENT, DISCARD, true)
+            .expect("current card");
     }
-    for (s, &n) in project_cards.iter().enumerate() {
-        let have = b
-            .world
-            .content
-            .projects
-            .iter()
-            .filter(|c| c.stage as usize == s + 1)
-            .count() as i64;
-        if n > have {
-            return Err(format!(
-                "project_cards: stage {} has only {have} projects",
-                s + 1
-            ));
+    let Some(id) = g.pile(NEXT).first().cloned() else {
+        cx.end(g, false, "deck_empty", "the adversary deck ran out".into());
+        return;
+    };
+    cx.move_card(g, &id, NEXT, CURRENT, true)
+        .expect("next card");
+    let c = card(&w, &id);
+    cx.set_key(g, STAGE, c.stage as i64);
+    cx.note(None, || {
+        format!("Adversary card: {} ({})", c.name, card_text(c))
+    });
+}
+
+/// The board's difficulty line's extra standing troops (135), from
+/// `adversary.board_difficulty_at`.
+fn standing_troops_bonus(w: &World) -> i64 {
+    if !level(w, w.int("adversary.board_difficulty_at")) {
+        return 0;
+    }
+    w.content
+        .adversary_board
+        .difficulty
+        .effects
+        .iter()
+        .map(|e| match e {
+            Op::StandingTroopsBonus { amount } => *amount,
+            _ => 0,
+        })
+        .sum()
+}
+
+/// The event card's standing lines (135): compute, ambassadors and troops,
+/// resolved as the team's; a line landing troops gets the difficulty bonus.
+fn standing(g: &mut GameState, cx: &mut Cx, c: &AdversaryCard) -> Res {
+    let w = cx.world;
+    let bonus = standing_troops_bonus(&w);
+    for e in &c.standing {
+        let op = match e {
+            Op::Troops { count, each_country: true, destroy, at, stand, location, if_ } if bonus > 0 => Op::Troops {
+                count: count + bonus,
+                each_country: true,
+                destroy: *destroy,
+                at: *at,
+                stand: *stand,
+                location: *location,
+                if_: *if_,
+            },
+            other => other.clone(),
+        };
+        effects::run(g, cx, std::slice::from_ref(&op), &mut effects::Ctx::team().named("standing").why(&c.name))?;
+        if g.is_over() {
+            break;
         }
     }
-    Ok(Box::new(Adversary { dealt, project_cards }))
+    Ok(())
 }
 
 impl Module for Adversary {
@@ -288,48 +337,40 @@ impl Module for Adversary {
         }
         cx.set_pile(g, DECK, deck);
         reveal(g, cx);
-        // The project deck: each stage shuffled on its own, cheap on top.
-        let mut deck = Vec::new();
-        for stage in 1..=2u8 {
-            let mut ids: Vec<Key> = w
-                .content
-                .projects
-                .iter()
-                .filter(|c| c.stage == stage)
-                .map(|c| Key::new(&c.id))
-                .collect();
-            shuffle(&mut ids, cx.rng(g, "adversary"));
-            let n = self.project_cards[stage as usize - 1];
-            deck.extend(ids.into_iter().take(n as usize));
-        }
-        cx.set_pile(g, PROJECT_DECK, deck);
+        // The project deck (135): one shuffled deck, dealt into the board's slots.
+        let mut ids: Vec<Key> = w.content.projects.iter().map(|c| Key::new(&c.id)).collect();
+        shuffle(&mut ids, cx.rng(g, "adversary"));
+        cx.set_pile(g, PROJECT_DECK, ids);
         deal_projects(g, cx);
     }
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         let w = cx.world;
         match phase {
+            4 => flip(g, cx),
             0 => {
-                // The face-up card becomes this round's.
-                for id in g.pile(CURRENT).to_vec() {
-                    cx.move_card(g, &id, CURRENT, DISCARD, true)
-                        .expect("current card");
+                // A round with no event phase flips the card here (lab rounds).
+                if g.phase_index("adversary.event").is_none() {
+                    flip(g, cx);
+                    if g.is_over() {
+                        return Ok(());
+                    }
                 }
-                let Some(id) = g.pile(NEXT).first().cloned() else {
-                    cx.end(g, false, "deck_empty", "the adversary deck ran out".into());
+                let Some(id) = g.pile(CURRENT).first().cloned() else {
                     return Ok(());
                 };
-                cx.move_card(g, &id, NEXT, CURRENT, true)
-                    .expect("next card");
                 let c = card(&w, &id);
-                cx.set_key(g, STAGE, c.stage as i64);
-                cx.note(None, || {
-                    format!("Adversary card: {} ({})", c.name, card_text(c))
-                });
+                standing(g, cx, c)?;
+                if g.is_over() {
+                    return Ok(());
+                }
                 for t in &c.twists {
                     match t {
                         // These resolve as they do anywhere (034, 044).
-                        Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
+                        Op::Sway { .. }
+                        | Op::EachDestroyNode { .. }
+                        | Op::PullUnity { .. }
+                        | Op::BotnetAmbassadors { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
                         // Read where they act: the build, spread, corrupt and arrivals
@@ -340,6 +381,7 @@ impl Module for Adversary {
                         | Op::SpreadReach { .. }
                         | Op::CorruptSooner { .. }
                         | Op::Arrivals { .. }
+                        | Op::TroopSteps { .. }
                         | Op::War => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
                         // needs a reader (044: `_ => {}` swallowed the Unity pull).
@@ -355,7 +397,9 @@ impl Module for Adversary {
                 }
                 // Ongoing projects act, in the order they came into play.
                 for id in g.pile(PROJECTS_ONGOING).to_vec() {
-                    effects::run(g, cx, &project(&w, &id).effects, &mut effects::Ctx::team().named("project").why(&project(&w, &id).name))?;
+                    let p = project(&w, &id);
+                    let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
+                    effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
                     if g.is_over() {
                         return Ok(());
                     }
@@ -389,7 +433,15 @@ impl Module for Adversary {
                 cx.tally(g, "adversary.compute_botnets", made);
                 gain_compute(g, cx, made)?;
             }
-            1 => spread(g, cx, None)?,
+            1 => {
+                spread(g, cx, None)?;
+                // 135 (Propaganda Ministry): a flagged country spreads a second time.
+                for c in 0..w.map.countries.len() {
+                    if board::take_double_spread(g, cx, c) {
+                        spread(g, cx, Some(c))?;
+                    }
+                }
+            }
             2 => {
                 let at = (w.int("adversary.corrupt_at")
                     - twist_sum(&w, g, |t| match t {
@@ -422,7 +474,8 @@ impl Module for Adversary {
                     on_board,
                 );
             }
-            _ => reveal(g, cx),
+            3 => reveal(g, cx),
+            _ => unreachable!("adversary phase {phase}"),
         }
         Ok(())
     }
@@ -501,7 +554,8 @@ impl Module for Adversary {
         // A visible project's status is its fill, "n/cost compute".
         let pshow = |id: &str, status: &str| {
             let p = project(w, id);
-            let kind = if p.stage == 1 { "cheap" } else { "big" };
+            let kind: Vec<&str> = p.tags.iter().map(|t| t.name()).collect();
+            let kind = kind.join(" + ");
             CardView {
                 id: id.to_string(),
                 name: p.name.clone(),
@@ -545,6 +599,14 @@ impl Module for Adversary {
             g.pile(PROJECT_DECK).len(),
             Vec::new(),
         );
+        let missed = g.pile(PROJECT_DISCARD);
+        out.pile(
+            "project_discard",
+            "Adversary project discard (the draw rule's misses; reshuffles)",
+            None,
+            missed.len(),
+            missed.iter().map(|id| pshow(id, "discarded")).collect(),
+        );
         out.global(
             "deck",
             "adversary cards left",
@@ -569,14 +631,61 @@ pub fn peek(g: &mut GameState, cx: &mut Cx, n: i64) {
     cx.set_key(g, PEEK, cur.max(n));
 }
 
-/// Deals a new row of projects from the top of the project deck.
-fn deal_projects(g: &mut GameState, cx: &mut Cx) {
-    let n = cx.world.int("adversary.project_row") as usize;
-    let ids: Vec<Key> = g.pile(PROJECT_DECK).iter().take(n).cloned().collect();
-    for id in ids {
-        cx.move_card(g, &id, PROJECT_DECK, PROJECTS, false)
-            .expect("top of the project deck");
+/// Draws the top of the project deck; an empty deck reshuffles the discard
+/// first (counted in `reshuffles`). None: both are empty.
+fn draw_project(g: &mut GameState, cx: &mut Cx, reshuffles: &mut u32) -> Option<Key> {
+    if g.pile(PROJECT_DECK).is_empty() {
+        let mut ids = g.pile(PROJECT_DISCARD).to_vec();
+        if ids.is_empty() {
+            return None;
+        }
+        cx.set_pile(g, PROJECT_DISCARD, Vec::new());
+        shuffle(&mut ids, cx.rng(g, "adversary"));
+        cx.set_pile(g, PROJECT_DECK, ids);
+        *reshuffles += 1;
+        cx.tally(g, "adversary.project_reshuffles", 1);
     }
+    g.pile(PROJECT_DECK).first().cloned()
+}
+
+/// Fills the board's project slots by the draw rule (135): draw; the card goes
+/// into the first empty slot it fits (a slot's tag, or any; Universal fits
+/// every slot), else to the discard; the discard reshuffles when the deck runs
+/// out; a slot still unfilled after one reshuffle takes the next card anyway
+/// (tallied: a content bug). The row is the slots in order.
+fn deal_projects(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    let slots = &w.content.adversary_board.project_slots;
+    let mut filled: Vec<Option<Key>> = vec![None; slots.len()];
+    let mut reshuffles = 0u32;
+    while filled.iter().any(Option::is_none) {
+        let Some(id) = draw_project(g, cx, &mut reshuffles) else {
+            break;
+        };
+        let tags = &project(&w, &id).tags;
+        let fits = |k: usize| {
+            filled[k].is_none()
+                && slots[k].tag.is_none_or(|t| ThreatTag::fits(tags, &[PullTag::Is(t)]))
+        };
+        let at = (0..slots.len()).find(|&k| fits(k));
+        let at = match at {
+            Some(k) => Some(k),
+            None if reshuffles >= 2 => {
+                cx.tally(g, "adversary.project_pull_forced", 1);
+                filled.iter().position(Option::is_none)
+            }
+            None => None,
+        };
+        let to = if at.is_some() { PROJECTS } else { PROJECT_DISCARD };
+        cx.move_card(g, &id, PROJECT_DECK, to, false)
+            .expect("top of the project deck");
+        if let Some(k) = at {
+            filled[k] = Some(id);
+        }
+    }
+    // The row in slot order.
+    let row: Vec<Key> = filled.into_iter().flatten().collect();
+    cx.set_pile(g, PROJECTS, row);
 }
 
 /// The adversary gains `n` compute: each point goes onto the cheapest
@@ -648,15 +757,6 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     cx.move_card(g, id, PROJECTS, to, false)
         .expect("visible project");
     cx.tally(g, "adversary.projects_resolved", 1);
-    cx.tally(
-        g,
-        if p.stage == 1 {
-            "adversary.projects_resolved.cheap"
-        } else {
-            "adversary.projects_resolved.big"
-        },
-        1,
-    );
     cx.tally(g, &KeyBuf::new("adversary.project.").text(id), 1);
     if g.var(FIRST_PROJECT) == 0 {
         cx.set_key(g, FIRST_PROJECT, g.round as i64);
@@ -668,9 +768,8 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     if g.pile(PROJECTS).is_empty() {
         deal_projects(g, cx);
     }
-    if !p.ongoing {
-        effects::run(g, cx, &p.effects, &mut effects::Ctx::team().named("project").why(&p.name))?;
-    }
+    let once = if p.ongoing { &p.resolve } else { &p.effects };
+    effects::run(g, cx, once, &mut effects::Ctx::team().named("project").why(&p.name))?;
     Ok(())
 }
 
@@ -715,13 +814,35 @@ fn reveal(g: &mut GameState, cx: &mut Cx) {
 /// gains `city_build` (+ difficulty 3, + twists), each factory next to a
 /// corrupted city `factory_build`; twists add clean-city factories and
 /// corrupted stations.
+/// An ongoing project's op that is read where it acts, not resolved each
+/// round (135): a build bonus, a front fighting twice, corp troops each production.
+fn standing_project_op(e: &Op) -> bool {
+    matches!(
+        e,
+        Op::CityBuild { ongoing_use: true, .. }
+            | Op::ExtraWar { ongoing_use: true, .. }
+            | Op::CorpTroops { when: crate::op::CorpWhen::EachProduction, .. }
+    )
+}
+
+/// This round's twists and the ongoing projects' build bonuses (135).
+fn build_mods<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
+    let mut on = twists(w, g);
+    for id in g.pile(PROJECTS_ONGOING) {
+        on.extend(project(w, id).effects.iter().filter(|e| matches!(e, Op::CityBuild { ongoing_use: true, .. })));
+    }
+    on
+}
+
 pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) {
     let w = cx.world;
     // One source for the rule: the plan is the build.
-    let on = twists(&w, g);
+    let on = build_mods(&w, g);
     cx.tally(g, "adversary.arrivals", super::plan::arrival_count(&w, g, &on, scope));
     for (h, n) in super::plan::build_plan(&w, g, &on, scope) {
-        place(g, cx, h, n);
+        // 135 (Trade Blockade): a build on or next to its flag happens twice.
+        let twice = if board::double_build_at(&w, g, h) { 2 } else { 1 };
+        place(g, cx, h, n * twice);
     }
 }
 
@@ -1063,29 +1184,23 @@ pub fn spread(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 
 /// Whether a removal of `ambassadors` or `troops` has a piece to take on hex
 /// `h` (F64: a card that names no troop can't touch one).
-pub fn can_damage(w: &World, g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
+pub fn can_damage(g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
     (ambassadors > 0 && g.tokens(h, ADV_AMBASSADOR) > 0)
-        || (troops > 0 && g.tokens(h, TROOP) > 0 && !troops_shielded(w, g, h))
-}
-
-/// A face-up military threat in `h`'s country holds the troops on it (070).
-fn troops_shielded(w: &World, g: &GameState, h: usize) -> bool {
-    threats::shielded(w, g, h, ThreatSource::Military)
+        || (troops > 0 && g.tokens(h, TROOP) > 0)
 }
 
 /// Whether a "remove everything on the hex" has a piece to take on `h`.
-pub fn can_destroy_all(w: &World, g: &GameState, h: usize) -> bool {
-    can_damage(w, g, h, 1, 1)
+pub fn can_destroy_all(g: &GameState, h: usize) -> bool {
+    can_damage(g, h, 1, 1)
 }
 
 /// In hex `h`, removes up to `ambassadors` adversary ambassadors or up to
 /// `troops` troops: one kind, seat `seat`'s choice where the hex holds both.
 pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-    let shielded = troops_shielded(&w, g, h);
     let kinds: Vec<(&str, i64)> = [(ADV_AMBASSADOR, ambassadors), (TROOP, troops)]
         .into_iter()
-        .filter(|(k, n)| *n > 0 && g.tokens(h, k) > 0 && !(shielded && *k == TROOP))
+        .filter(|(k, n)| *n > 0 && g.tokens(h, k) > 0)
         .collect();
     let chosen = match kinds.as_slice() {
         [] => return Ok(()),
@@ -1123,13 +1238,9 @@ pub fn remove_piece(g: &mut GameState, cx: &mut Cx, seat: Option<usize>, h: usiz
 
 /// Removes every adversary ambassador and troop in hex `h`.
 pub fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
-    let w = cx.world;
     let n = g.tokens(h, ADV_AMBASSADOR);
     for _ in 0..n {
         remove_piece(g, cx, Some(seat), h, ADV_AMBASSADOR);
-    }
-    if troops_shielded(&w, g, h) {
-        return;
     }
     for _ in 0..g.tokens(h, TROOP) {
         remove_piece(g, cx, Some(seat), h, TROOP);

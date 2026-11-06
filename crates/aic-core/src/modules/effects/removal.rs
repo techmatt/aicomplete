@@ -15,7 +15,7 @@ pub(super) fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i
 
 pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
-    let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, ambassadors, troops));
+    let cs = countries_where(&w, |h| adversary::can_damage(g, h, ambassadors, troops));
     let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
     let prompt = || format!("Seat {seat}: remove pieces in each adversary hex of which country?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
@@ -23,7 +23,7 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
             .hexes
             .iter()
             .copied()
-            .filter(|&h| adversary::can_damage(&w, g, h, ambassadors, troops))
+            .filter(|&h| adversary::can_damage(g, h, ambassadors, troops))
             .collect();
         for h in hexes {
             adversary::damage(g, cx, seat, h, ambassadors, troops)?;
@@ -35,7 +35,7 @@ pub(super) fn damage_country(g: &mut GameState, cx: &mut Cx, seat: usize, ambass
 pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let w = cx.world;
     let hexes: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| adversary::can_destroy_all(&w, g, h))
+        .filter(|&h| adversary::can_destroy_all(g, h))
         .collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt =
@@ -99,7 +99,7 @@ pub(super) fn remove_troops(g: &mut GameState, cx: &mut Cx, seat: usize, count: 
         let area = reach_hexes(&w, g, seat);
         up_to_in(g, cx, seat, &area, count, TROOP)?
     } else {
-        let cs = countries_where(&w, |h| adversary::can_damage(&w, g, h, 0, 1));
+        let cs = countries_where(&w, |h| adversary::can_damage(g, h, 0, 1));
         let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
         let prompt = || format!("Seat {seat}: remove adversary troops in which country?");
         let Some(i) = cx.choose(seat, prompt, opts)? else {
@@ -129,7 +129,7 @@ fn up_to_in(g: &mut GameState, cx: &mut Cx, seat: usize, area: &[usize], max: i6
         let held: Vec<usize> = area
             .iter()
             .copied()
-            .filter(|&h| if kind == TROOP { adversary::can_damage(&w, g, h, 0, 1) } else { g.tokens(h, kind) > 0 })
+            .filter(|&h| if kind == TROOP { adversary::can_damage(g, h, 0, 1) } else { g.tokens(h, kind) > 0 })
             .collect();
         let total: i64 = held.iter().map(|&h| g.tokens(h, kind)).sum();
         if held.is_empty() {
@@ -234,7 +234,7 @@ pub(super) fn liberate_city(
             near.insert(0, h);
             let hexes: Vec<usize> = near
                 .into_iter()
-                .filter(|&x| g.tokens(x, BOTNET) > 0 && !threats::shielded(&w, g, x, ThreatSource::Cyber))
+                .filter(|&x| g.tokens(x, BOTNET) > 0)
                 .collect();
             let opts = hexes.iter().map(|&x| hex_opt(&w, x)).collect();
             let prompt = || format!("Seat {seat}: remove the botnet in which hex?");

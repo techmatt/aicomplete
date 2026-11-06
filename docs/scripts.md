@@ -28,8 +28,9 @@ Current:
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
   `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`), read
   under its former name (`RENAMED`) in older runs.
-- `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by source type, paid abroad or by
-  ambassador alone, sources made, and the typed counters and capstones played, from `games.jsonl`.
+- `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by kind of option, paid abroad, and the
+  typed counters and capstones played, from `games.jsonl`.
+- `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds.
@@ -57,7 +58,7 @@ Current:
   strikes a Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played a game.
   Seconds.
 - `configs/no_liberate.py`: writes `experiments/configs/no_liberate.json`, the baseline with the seven liberate
-  capstones out of the deck (the liberation-off arm of `archive/screen-080-off.json`); rerun after editing the baseline.
+  capstones out of the deck; rerun after editing the baseline (`regen.py` does).
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards
   kept (opening keeps apart) and played, kept and never played, nodes placed, credit income a round, credits and
   insight left unspent a round (these three per seat-round that reached upkeep); each board's first dear power (as
@@ -104,13 +105,12 @@ Current:
 - `bench/speed.py`: games a minute per agent. In `table`, `pair` and `specs`, `--threads N` caps the many-thread
   column (default: leaves 4 hardware threads free) and `--games N` sets its games; each row prints its games and a
   rough time first. `pair OLD NEW --out FILE` runs each row on both binaries in turn, so the ratio holds on a busy
-  machine: use it for a before and after. An OLD built on another baseline refuses today's config: `git show
-  <rev>:configs/baseline.json > out/old-baseline.json`, then `--old-config out/old-baseline.json`. Each row hashes
-  what its games came to on both binaries: one whose games differ prints NOT LIKE FOR LIKE (its ratio is speed times
-  game length); one whose games match across a config or rules change (a key rename) prints like for like. `table SIM --out FILE` is one binary's rates (`rollout` alone ~20 min; `--only "planner c2"` for a
+  machine: use it for a before and after. An OLD built on another baseline takes `--old-config` (its
+  `configs/baseline.json`, from `git show`). A row whose games differ on the two prints NOT LIKE FOR LIKE (its ratio is
+  speed times game length). `table SIM --out FILE` is one binary's rates (`rollout` alone ~20 min; `--only "planner c2"` for a
   row, keeping the file's others). `compare BEFORE.json AFTER.json` reads two `table` files. `check SIM` is the
   standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `scripts/bench/speed_baseline.json`,
-  `--update` moves it. Its planner row is four seeds. It holds only on the same games (the baseline records its
+  `--update` moves it. It holds only on the same games (the baseline records its
   revision and a hash of each agent's check games): on other games or another revision it prints NO VERDICT, says
   which, and exits 0; read `per_decision.py`, then `--update`, then a plain `check`.
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per decision on the same seeds,

@@ -36,11 +36,20 @@ pub struct Ctx {
     pub card: Option<Key>,
     /// What is resolving, by name, for prompts (a threat's).
     pub why: Option<String>,
+    /// The threat resolving (135): its near seats are "players", its tokens
+    /// "the location".
+    pub threat: Option<Key>,
 }
 
 impl Ctx {
     pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card", card: None, why: None }
+        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None }
+    }
+
+    /// The threat whose effects these are (135).
+    pub fn with_threat(mut self, t: Key) -> Ctx {
+        self.threat = Some(t);
+        self
     }
 
     /// Names what is resolving in its prompts (118: a threat's "discard which card?"
@@ -87,7 +96,20 @@ impl Ctx {
     pub(super) fn seats(&self, w: &World, g: &GameState) -> Vec<usize> {
         match self.source {
             EffectSource::Seat(s) => vec![s],
-            EffectSource::Threat | EffectSource::Team => seats_in_scope(w, g, self.scope),
+            EffectSource::Threat => match &self.threat {
+                Some(t) => threats::near_seats(w, g, t),
+                None => seats_in_scope(w, g, self.scope),
+            },
+            EffectSource::Team => seats_in_scope(w, g, self.scope),
+        }
+    }
+
+    /// The hexes an effect on "pieces in scope" acts in (135: a threat's, the
+    /// hexes on or next to its tokens; else its country, or the board).
+    pub(super) fn hexes(&self, w: &World, g: &GameState) -> Vec<usize> {
+        match (&self.source, &self.threat) {
+            (EffectSource::Threat, Some(t)) => threats::near_hexes(w, g, t),
+            _ => scope_hexes(w, self.scope),
         }
     }
 

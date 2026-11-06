@@ -54,6 +54,12 @@ pub fn insight_debt(seat: usize) -> String {
     format!("economy.insight_debt.{seat}")
 }
 
+/// Income of `r` seat `s` loses in its next upkeep (135: Credit Crunch,
+/// Market Crash), down to none; read once, then cleared.
+pub fn income_debt(seat: usize, r: Resource) -> KeyBuf {
+    KeyBuf::new("economy.income_debt.").num(seat).text(".").text(r.name())
+}
+
 /// Insight seat `s` gains next round from another seat's capstone (075).
 pub fn insight_gift(seat: usize) -> String {
     format!("economy.insight_gift.{seat}")
@@ -94,6 +100,13 @@ fn upkeep_income(w: &World, g: &GameState, seat: usize) -> PerResource {
         board::flag_level(g, RoundFlag::Sabotage, c) >= at && has_node_in(w, g, seat, c)
     }) {
         inc[Resource::Energy] = 0;
+    }
+    // 135: income a threat took from this upkeep.
+    for r in RESOURCES {
+        let debt = g.var(&income_debt(seat, r));
+        if debt > 0 && r != Resource::Insight {
+            inc[r] = (inc[r] - debt).max(0);
+        }
     }
     inc
 }
@@ -220,6 +233,13 @@ impl Module for Economy {
             }
             cx.add_resource(g, s, Resource::Ambassadors, ambassador_income(&w, g, s));
             cx.count(g, "credits_income", inc[Resource::Credits]);
+            for r in RESOURCES {
+                let k = income_debt(s, r);
+                if r != Resource::Insight && g.var(&k) > 0 {
+                    cx.tally(g, "economy.income_lost", g.var(&k));
+                    cx.set_key(g, &k, 0);
+                }
+            }
             cards::upkeep(g, cx, s);
             supply_insight(g, cx, s)?;
         }
@@ -299,6 +319,7 @@ impl Module for Economy {
         out.bookkeeping(&[
             "economy.production.",
             "economy.insight_debt.",
+            "economy.income_debt.",
             "economy.insight_gift.",
             "economy.insight_carried.",
             "economy.insight_received.",

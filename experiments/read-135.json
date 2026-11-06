@@ -1,0 +1,37 @@
+{
+  "name": "read-135",
+  "note": "135 read: the new adversary model (r54) on fresh seeds 36392-36439 (48 a cell), the three pairs, strategist and greedy, d0-d2; paired against r53 (main cfeb4b7, out/r53) on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 36392,
+  "records": 0
+}

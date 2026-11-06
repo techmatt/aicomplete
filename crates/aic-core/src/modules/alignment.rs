@@ -609,13 +609,14 @@ impl Module for Alignment {
             Some(cities),
             "corrupted cities always count against the purge; each one builds adversary ambassadors",
         );
-        if g.var(INCOME_BONUS) > 0 {
+        // 135: Capital Flight (a project) takes it below 0.
+        if g.var(INCOME_BONUS) != 0 {
             out.global(
                 "income_bonus",
-                "Unity income bonus",
+                "team income bonus",
                 g.var(INCOME_BONUS),
                 None,
-                "credit income every player has from Unity cards",
+                "credit income every player has from Unity cards (less from adversary projects)",
             );
         }
         if g.var(INSIGHT_BONUS) > 0 {

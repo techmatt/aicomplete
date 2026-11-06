@@ -109,7 +109,8 @@ fn bad_overlays_are_errors_that_name_the_entry() {
         ("cards.orbital_embassy.effects.99.amount=1", "no \"99\""),
         ("ais.*.economy_track.99=[]", "no list entry"),
         ("cards.telemetry_archive.cost=lots", "invalid type"),
-        ("threats.*.tier=9", "tier 1 or 2"),
+        ("threats.*.tier=9", "tier 1-3"),
+        ("threats.*.counters=[]", "a counter menu"),
     ] {
         let e = match Rules::new(&baseline_with(&[entry])) {
             Err(e) => e,

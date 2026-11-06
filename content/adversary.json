@@ -1,277 +1,713 @@
-[
- {
-  "id": "adv_s1_probing_strikes",
-  "name": "Probing Strikes",
-  "stage": 1,
-  "text": "Arrivals: coastal cities.",
-  "twists": [
+{
+ "board": {
+  "id": "militarist",
+  "name": "The Militarist",
+  "project_slots": [
    {
-    "op": "arrivals",
-    "site": "coastal"
-   }
-  ]
- },
- {
-  "id": "adv_s1_factory_drive",
-  "name": "Factory Drive",
-  "stage": 1,
-  "text": "Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "industrial"
+    "tag": "military"
    },
    {
-    "op": "clean_factories",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "adv_s1_long_patrols",
-  "name": "Long Patrols",
-  "stage": 1,
-  "text": "Arrivals: research stations. Spread reaches 1 hex further.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "stations"
+    "tag": null
    },
    {
-    "op": "spread_reach",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "adv_s1_war_drums",
-  "name": "War Drums",
-  "stage": 1,
-  "text": "First, sway 1 toward Discord. Arrivals: each country's first base.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "bases"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "adv_s2_mobilization",
-  "name": "Mobilization",
-  "stage": 2,
-  "text": "Arrivals: coastal cities. Each corrupted city gains 1 more adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "coastal"
-   },
-   {
-    "op": "city_build",
-    "amount": 1
+    "tag": null
    }
   ],
-  "escalation": true
- },
- {
-  "id": "adv_s2_station_raids",
-  "name": "Station Raids",
-  "stage": 2,
-  "text": "Arrivals: research stations. Each corrupted research station gains 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
-  "twists": [
+  "rules": [
    {
-    "op": "arrivals",
-    "site": "stations"
+    "name": "Troops where the Protector stands",
+    "text": "Each build: in each country where the Protector has a node, 1 adversary troop lands.",
+    "effects": []
    },
    {
-    "op": "station_build",
-    "amount": 1
+    "name": "Warmongering",
+    "text": "Each production step, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each production step, whatever makes it.",
+    "effects": [
+     {
+      "op": "corp_troops",
+      "count": 1,
+      "at": "every_base",
+      "near": "adversary_troop",
+      "when": "each_production",
+      "past_cap": true
+     }
+    ]
    }
   ],
-  "escalation": true
- },
- {
-  "id": "adv_s2_fifth_column",
-  "name": "Fifth Column",
-  "stage": 2,
-  "text": "Arrivals: coastal cities. Cities corrupt at 1 fewer adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "coastal"
-   },
-   {
-    "op": "corrupt_sooner",
-    "amount": 1
-   }
-  ],
-  "escalation": true
- },
- {
-  "id": "adv_s2_border_war",
-  "name": "Border War",
-  "stage": 2,
-  "text": "First, each player destroys 1 of their nodes. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "bases"
-   },
-   {
-    "op": "war"
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ],
-  "escalation": true
- },
- {
-  "id": "adv_s2_supply_lines",
-  "name": "Supply Lines",
-  "stage": 2,
-  "text": "Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "industrial"
-   },
-   {
-    "op": "clean_factories",
-    "amount": 1
-   }
-  ],
-  "escalation": true
- },
- {
-  "id": "adv_s3_total_mobilization",
-  "name": "Total Mobilization",
-  "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "industrial"
-   },
-   {
-    "op": "city_build",
-    "amount": 1
-   },
-   {
-    "op": "clean_factories",
-    "amount": 1
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
+  "difficulty": {
+   "text": "Militarist, harder: every event that lands troops lands 1 more in each country.",
+   "effects": [
+    {
+     "op": "standing_troops_bonus",
+     "amount": 1
+    }
+   ]
+  },
+  "harms": [
+   "adversary pieces placed",
+   "troops made",
+   "facilities destroyed or seized"
   ]
  },
- {
-  "id": "adv_s3_blitzkrieg",
-  "name": "Blitzkrieg",
-  "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "bases"
-   },
-   {
-    "op": "war"
-   },
-   {
-    "op": "spread_reach",
-    "amount": 1
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "adv_s3_occupation",
-  "name": "Occupation",
-  "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "stations"
-   },
-   {
-    "op": "corrupt_sooner",
-    "amount": 1
-   },
-   {
-    "op": "station_build",
-    "amount": 1
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "adv_s3_iron_doctrine",
-  "name": "Iron Doctrine",
-  "stage": 3,
-  "text": "First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round.",
-  "twists": [
-   {
-    "op": "arrivals",
-    "site": "coastal"
-   },
-   {
-    "op": "war"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 2
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ]
- }
-]
+ "events": [
+  {
+   "id": "mil_s1_probing_strikes",
+   "name": "Probing Strikes",
+   "stage": 1,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "arrivals",
+     "site": "coastal"
+    }
+   ],
+   "text": "Each country: a Military 1 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Arrivals: coastal cities.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s1_factory_drive",
+   "name": "Factory Drive",
+   "stage": 1,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "economic"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true,
+     "at": "base"
+    }
+   ],
+   "twists": [
+    {
+     "op": "clean_factories",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "industrial"
+    }
+   ],
+   "text": "Each country: Military 1 or Economic 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "production blacked out",
+    "facilities destroyed or seized",
+    "troops made"
+   ]
+  },
+  {
+   "id": "mil_s1_long_patrols",
+   "name": "Long Patrols",
+   "stage": 1,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "cyber"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 3
+    },
+    {
+     "op": "infiltrate",
+     "amount": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "spread_reach",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "stations"
+    }
+   ],
+   "text": "Each country: Military 1 or Cyber 1. The adversary gains 3 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Spread reaches 1 hex further. Arrivals: research stations.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "production blacked out"
+   ]
+  },
+  {
+   "id": "mil_s1_war_drums",
+   "name": "War Drums",
+   "stage": 1,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "influence"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true,
+     "at": "base"
+    }
+   ],
+   "twists": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "bases"
+    }
+   ],
+   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Sway 1 toward Discord. Arrivals: each country's first base.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "Discord sway",
+    "troops made"
+   ]
+  },
+  {
+   "id": "mil_s1_signal_jamming",
+   "name": "Signal Jamming",
+   "stage": 1,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "grid"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "infiltrate",
+     "amount": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "botnet_ambassadors",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "coastal"
+    }
+   ],
+   "text": "Each country: Military 1 or Grid 1. The adversary gains 2 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Every botnet makes 1 adversary ambassador on its hex. Arrivals: coastal cities.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "production blacked out"
+   ]
+  },
+  {
+   "id": "mil_s2_mobilization",
+   "name": "Mobilization",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "military"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 3
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "city_build",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "coastal"
+    }
+   ],
+   "text": "Each country: a Military 2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each corrupted city gains 1 more adversary ambassador. Arrivals: coastal cities. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s2_station_raids",
+   "name": "Station Raids",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "military",
+      "cyber"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "station_build",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "stations"
+    }
+   ],
+   "text": "Each country: Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each corrupted research station gains 1 adversary ambassador. Arrivals: research stations. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "production blacked out"
+   ]
+  },
+  {
+   "id": "mil_s2_fifth_column",
+   "name": "Fifth Column",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "influence",
+      "cyber"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 3
+    },
+    {
+     "op": "infiltrate",
+     "amount": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "corrupt_sooner",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "coastal"
+    }
+   ],
+   "text": "Each country: Influence 2 or Cyber 2. The adversary gains 3 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Cities corrupt at 1 fewer adversary ambassador. Arrivals: coastal cities. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "ambassadors lost",
+    "node destroyed"
+   ]
+  },
+  {
+   "id": "mil_s2_border_war",
+   "name": "Border War",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "military"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 2
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "each_destroy_node",
+     "count": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "bases"
+    }
+   ],
+   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's first base. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "node destroyed",
+    "Discord sway"
+   ]
+  },
+  {
+   "id": "mil_s2_supply_lines",
+   "name": "Supply Lines",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "economic"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "clean_factories",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "industrial"
+    }
+   ],
+   "text": "Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s2_forced_march",
+   "name": "Forced March",
+   "stage": 2,
+   "pulls": [
+    {
+     "tier": 2,
+     "tags": [
+      "any"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 3
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "troop_steps",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "industrial"
+    }
+   ],
+   "text": "Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Arrivals: industrial zones. Escalation.",
+   "escalation": true,
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s3_total_mobilization",
+   "name": "Total Mobilization",
+   "stage": 3,
+   "pulls": [
+    {
+     "tier": 3,
+     "tags": [
+      "military"
+     ]
+    },
+    {
+     "tier": 2,
+     "tags": [
+      "economic",
+      "grid"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "city_build",
+     "amount": 1
+    },
+    {
+     "op": "pull_unity",
+     "amount": 2
+    },
+    {
+     "op": "arrivals",
+     "site": "industrial"
+    }
+   ],
+   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Move 2 Sway from Unity to the Undecided. Arrivals: industrial zones.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "Unity pulled back",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s3_blitzkrieg",
+   "name": "Blitzkrieg",
+   "stage": 3,
+   "pulls": [
+    {
+     "tier": 3,
+     "tags": [
+      "any"
+     ]
+    },
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "influence"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "sway",
+     "side": "discord",
+     "amount": 1
+    },
+    {
+     "op": "spread_reach",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "bases"
+    }
+   ],
+   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's first base.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "Discord sway"
+   ]
+  },
+  {
+   "id": "mil_s3_occupation",
+   "name": "Occupation",
+   "stage": 3,
+   "pulls": [
+    {
+     "tier": 3,
+     "tags": [
+      "military",
+      "cyber"
+     ]
+    },
+    {
+     "tier": 2,
+     "tags": [
+      "influence"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 5
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "each_country": true
+    },
+    {
+     "op": "infiltrate",
+     "amount": 1
+    }
+   ],
+   "twists": [
+    {
+     "op": "corrupt_sooner",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "stations"
+    }
+   ],
+   "text": "Each country: Military 3 or Cyber 3, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each country's clean city with the most adversary ambassadors gains 1 more. Cities corrupt at 1 fewer adversary ambassador. Arrivals: research stations.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "ambassadors lost",
+    "node destroyed",
+    "facilities destroyed or seized"
+   ]
+  },
+  {
+   "id": "mil_s3_naval_blockade",
+   "name": "Naval Blockade",
+   "stage": 3,
+   "pulls": [
+    {
+     "tier": 3,
+     "tags": [
+      "economic",
+      "grid"
+     ]
+    },
+    {
+     "tier": 1,
+     "tags": [
+      "military",
+      "cyber"
+     ]
+    }
+   ],
+   "standing": [
+    {
+     "op": "compute",
+     "amount": 4
+    },
+    {
+     "op": "troops",
+     "count": 2,
+     "each_country": true
+    }
+   ],
+   "twists": [
+    {
+     "op": "clean_factories",
+     "amount": 1
+    },
+    {
+     "op": "arrivals",
+     "site": "coastal"
+    }
+   ],
+   "text": "Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Factories next to clean cities gain 1 adversary ambassador. Arrivals: coastal cities.",
+   "harms": [
+    "adversary pieces placed",
+    "projects advanced (compute)",
+    "facilities destroyed or seized"
+   ]
+  }
+ ]
+}

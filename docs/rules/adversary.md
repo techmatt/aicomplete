@@ -4,19 +4,25 @@
 
 ## Each round
 
-1. **Build** (`adversary.build`): next round's face-up card becomes this round's card.
-   **Arrivals (candidate):** each card names a site type, and every matching site in every
-   country gains `arrivals` adversary ambassadors, whatever the board holds (below). Each
-   corrupted city gains `city_build` (2, Matt: faster than the party can easily deal with)
-   adversary ambassadors, and each factory next to a corrupted city gains `factory_build`. The card's twists add more. **Troop pressure where
-   the Protector stands (candidate):** then, in each country where a seat with Wall has a
-   node, `wall_troops` adversary troops land as any landing does (on a factory there,
-   players choose which, else a city; never a hex Wall holds), giving Wall strikes to
-   stop ([war.md](war.md)). A stage-II card's **Escalation** then gives each country's first base (below)
-   `escalation_ambassadors`. Ongoing **projects** act (below). Last, each **botnet** makes
-   `botnet_compute` **adversary compute**, onto the projects (none under a player
-   ambassador).
-2. **Spread** (`adversary.spread`): every hex holding several adversary ambassadors, fixed
+The adversary is a **board** (the Militarist's: its project slots, two rules and a difficulty line,
+[`content/adversary.json`](../../content/adversary.json)) and an **event deck** (below). Its steps, in the round
+([economy.md](economy.md)):
+
+1. **Event** (`adversary.event`): next round's face-up event card becomes this round's (none left: players lose).
+2. **Threats** (`threats.deal`): the card's top line deals its pulls ([threats.md](threats.md)).
+3. **Build** (`adversary.build`), the rest of the card top to bottom. Its **standing lines**: compute, adversary
+   ambassadors (`infiltrate`: each country's clean city with the most gains more) and troops ("in each country, 1 troop
+   lands on a factory, else a city"; "on each country's first base"). Then its **twists** (immediate ones resolve now:
+   Sway, a Unity pull, node losses, botnet ambassadors; the rest are read where they act). Then the **build**:
+   **arrivals (candidate):** the card names a site type, and every matching site in every country gains `arrivals`
+   adversary ambassadors, whatever the board holds (below); each corrupted city gains `city_build` (2, Matt: faster
+   than the party can easily deal with) and each factory next to a corrupted city `factory_build`; the twists add
+   more. **Troops where the Protector stands** (the board's rule): in each country where a seat with Wall has a node,
+   `wall_troops` troops land as any landing does (on a factory, players choose, else a city; never a hex Wall holds),
+   giving Wall strikes to stop ([war.md](war.md)). A stage-II card's **Escalation** gives each country's first base
+   `escalation_ambassadors`. Ongoing **projects** act (below). Last, each **botnet** makes `botnet_compute`
+   **adversary compute**, onto the projects (none under a player ambassador).
+4. **Spread** (`adversary.spread`): every hex holding several adversary ambassadors, fixed
    when the step starts, keeps one and sends each other one to a hex within `spread_range`.
    **Why 2:** spread is the adversary's movement, a dial on its pressure, not a player's
    reach, so the reach-1 rule doesn't bind it; Long Patrols' and Blitzkrieg's +1 is their
@@ -28,12 +34,18 @@
    with `spread_shield` (the Sanctuary capstone; no card prints it) is no destination.
    **Priority:** player-owned hexes, then clean cities, then other pieces; then the nearest;
    players choose among equals. An uncorrupted city never spreads: it holds its ambassadors. Each ambassador moves at most once a spread, in hex order. **A surplus with nowhere to go returns to the supply.**
-3. **Corrupt** (`adversary.corrupt`): an uncorrupted city holding `corrupt_at` (4)
+5. **Corrupt** (`adversary.corrupt`): an uncorrupted city holding `corrupt_at` (4)
    adversary ambassadors becomes corrupted (an aligned city loses its player cube); its
    ambassadors return to the supply; player ambassadors waiting there are lost (on any
    corruption; they would free it in the same step).
-4. **Reveal** (`adversary.reveal`, after `threats.deal`): the top card goes face up as next
-   round's card.
+6. **March** (`board.march`, [war.md](war.md)), then **reveal** (`adversary.reveal`): the top card goes face up as
+   next round's card.
+
+**The Militarist's board rules.** *Troops where the Protector stands* (above). *Warmongering:* each production step, a
+military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; a base gains at most
+1 extra corp troop a production step from every such rule together (Warmongering, Conscription, Arms Race; Matt,
+2026-11-06). Its difficulty line, from `board_difficulty_at`: every standing line that lands troops lands 1 more in
+each country.
 
 **Botnets.** A botnet is made when a spreading adversary ambassador lands on a piece that
 already holds one (not an uncorrupted city, which collects them, nor a piece that already
@@ -48,23 +60,26 @@ each removing a botnet in your reach; **Root Access**, one on or next to the cit
 tier-2 Unity card **Decommission** (any botnet, players choose). Removing a botnet
 sways `alignment.botnet` Unity ([alignment.md](alignment.md)).
 
-## The project deck (near-locked)
+## The project deck (candidate)
 
 Adversary compute is spent on **projects**, one shared deck for every adversary
-([`content/projects.json`](../../content/projects.json), placeholders), staged like the
-threat deck: `project_cards` are dealt, the cheap stage-1 projects shuffled on top of the
-big stage-2 ones. `project_row` projects are face up at once; when all have resolved (or
-been discarded), the next row is dealt.
+([`content/projects.json`](../../content/projects.json)), shuffled at setup and dealt into the adversary board's
+**slots** (the Militarist's: one Military slot and two open ones) by **the draw rule** every tagged deck uses: turn up
+the top card; it goes into the first empty slot it fits (a slot's tag, or any project in an open slot; Universal fits
+every slot), else to the project discard; the discard reshuffles when the deck runs out; a slot still empty after one
+reshuffle takes the next card anyway (counted: a content bug). When every slot's project has
+resolved (or been discarded), the slots refill.
 
 - **Compute sources:** each botnet, `botnet_compute` a round in the build (none under a
-  player ambassador); about half the threats carry compute, gained when they execute
-  uncountered ([threats.md](threats.md)); an adversary ambassador draining a lone node, 1 in production ([ambassadors.md](ambassadors.md)); the
-  corp cards, an adversary cube at Cintamani's completion ([board.md](board.md)).
+  player ambassador); most threats carry compute, gained when they execute uncountered
+  ([threats.md](threats.md)); the event cards' standing lines; an adversary ambassador draining a lone node, 1 in
+  production ([ambassadors.md](ambassadors.md)); the corp cards, an adversary cube at Cintamani's completion
+  ([board.md](board.md)).
 - **Spending:** each compute point goes onto the **cheapest** visible project (ties: the
-  first in the row); content may print `compute_every` (on every visible project); none does. When a project holds its cost it **resolves**: a one-shot effect at once, or
-  an **ongoing** one that acts in every round's build step from the next round on. Choices
-  are the players' (seat 0; Purge the Unaligned's loss, each player's own). With no project
-  left, compute is lost.
+  first slot); content may print `compute_every` (on every visible project). When a project holds its cost it **resolves**: a one-shot effect at once, or
+  an **ongoing** one that acts in every round's build step from the next round on (Arms Race and Declaration of War
+  act where they say: production and the war step). Choices are the players' (seat 0; a player's own loss, each
+  player's). With no project left, compute is lost.
 - **Cost** is printed per player (the table below), which keeps the timing at 2, 3 and 4
   players.
 - **Counterplay:** a player ambassador on a botnet stops its compute, not used up;
@@ -73,37 +88,44 @@ been discarded), the next row is dealt.
   ([economy.md](economy.md)) does it for credits. No card drains every project (compute sits on the cheapest).
 
 <!-- generated: projects -->
-| Project | Stage | Compute per player | Resolves | Text |
-|---|---|---|---|---|
-| Disinformation | 1 | 5 | once | Sway 4 toward Discord. |
-| Botnet Swarm | 1 | 5 | once | Every botnet produces 2 adversary ambassadors on its hex. |
-| Market Crash | 1 | 5 | once | Every player loses 8 credits. |
-| False Flag | 1 | 6 | once | Deal 3 extra threats. |
-| Infiltration Drive | 1 | 6 | once | In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted. |
-| Rapid Buildout | 1 | 6 | once | The adversary builds now, then spreads. |
-| Purge the Unaligned | 2 | 8 | once | Every player loses an ambassador or a node (never their last node). In each country, 1 troop lands on a factory, or a city if no factory. |
-| Recruitment Drive | 2 | 9 | ongoing | Ongoing: every round, an extra adversary ambassador at every clean city. |
-| Propaganda Network | 2 | 9 | ongoing | Ongoing: every round, sway 2 toward Discord. |
-| Total Offensive | 2 | 9 | once | The adversary builds and spreads now; sway 2 toward Discord. |
-| Armored Columns | 2 | 9 | once | In each country, 2 troops land on factories, or cities if no factories. |
-| Station Coup | 2 | 10 | once | In each country, an uncorrupted research station becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex. |
+| Project | Tags | Compute per player | Resolves |
+|---|---|---|---|
+| Raiding Parties | military | 4 | once |
+| War Footing | military | 7 | once |
+| Purge the Unaligned | military | 7 | once |
+| Armored Columns | military | 10 | once |
+| Arms Race | military | 11 | ongoing |
+| Declaration of War | military | 18 | ongoing |
+| Disinformation | influence | 5 | once |
+| Recruitment Drive | influence | 11 | ongoing |
+| Infiltration Drive | influence | 18 | once |
+| Data Heist | cyber | 6 | once |
+| Botnet Swarm | cyber | 6 | once |
+| Station Coup | cyber | 9 | once |
+| Market Crash | economic | 5 | once |
+| Shadow Factories | economic | 7 | once |
+| Capital Flight | economic | 8 | once |
+| Rolling Blackouts | grid | 6 | once |
+| Grid Capture | grid | 9 | ongoing |
+| False Flag | universal | 6 | once |
+| Grand Offensive | universal | 10 | once |
+| Propaganda Network | universal | 14 | ongoing |
 <!-- /generated -->
 
 Compute goes on one point at a time: a full project resolves before the next lands; Purge the Unaligned's loss is any one of the player's ambassadors (supply
 or a hex) or nodes, their pick, never their last node; a node lost so leaves the game like
 a destroyed one ([war.md](war.md)). Ongoing projects act in the round's build step only, not in an
-out-of-turn build (Offensive, Rapid Buildout, Mass Production).
+out-of-turn build (Grand Offensive).
 
-## The deck (the clock and the stager)
+## The event deck (the clock and the stager)
 
-[`content/adversary.json`](../../content/adversary.json) prints the cards below. A game deals
-`stage_cards` at random per stage, each stage shuffled on its own, stage I on top: as many
-rounds as cards, **the round cap** (**locked** that a cap exists and can shorten; the number
-a candidate). **11 rounds through d2:** difficulty 2 swaps a stage-I card for a stage-III
-card (`stage1_removed`, `stage3_added`), a harder end, not a shorter game; difficulty 3
-removes a stage-II card (`stage2_removed`): 10. Some adversaries may shorten it too. The
-next round's card is always face up (the `peek` op shows more; no content prints it).
-Each card's twists change its round.
+[`content/adversary.json`](../../content/adversary.json) prints the Militarist's event cards: 5 stage I, 6 stage II,
+4 stage III. A game deals `stage_cards` at random per stage, each stage shuffled on its own, stage I on top, so each
+stage deals N of its N+1 printed cards at every difficulty: as many rounds as cards, **the round cap** (**locked** that
+a cap exists and can shorten; the number a candidate). **11 rounds through d2:** difficulty 2 swaps a stage-I card for
+a stage-III card (`stage1_removed`, `stage3_added`), a harder end, not a shorter game; difficulty 3 removes a stage-II
+card (`stage2_removed`): 10. The next round's card is always face up (the `peek` op shows more; no content prints
+it). A card prints, top to bottom: its pulls, its standing lines, its twists, its arrivals and (stage II) Escalation.
 
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
@@ -116,21 +138,23 @@ Each card's twists change its round.
 <!-- /generated -->
 
 <!-- generated: adversary -->
-| Card | Stage | Twist | Escalation |
+| Card | Stage | Pulls (each country) | Escalation |
 |---|---|---|---|
-| Probing Strikes | 1 | Arrivals: coastal cities. |  |
-| Factory Drive | 1 | Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. |  |
-| Long Patrols | 1 | Arrivals: research stations. Spread reaches 1 hex further. |  |
-| War Drums | 1 | First, sway 1 toward Discord. Arrivals: each country's first base. |  |
-| Mobilization | 2 | Arrivals: coastal cities. Each corrupted city gains 1 more adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
-| Station Raids | 2 | Arrivals: research stations. Each corrupted research station gains 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
-| Fifth Column | 2 | Arrivals: coastal cities. Cities corrupt at 1 fewer adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
-| Border War | 2 | First, each player destroys 1 of their nodes. Arrivals: each country's first base. This round is a war round. Escalation: each country's first base gains an adversary ambassador. | yes |
-| Supply Lines | 2 | Arrivals: industrial zones. Factories next to clean cities gain 1 adversary ambassador. Escalation: each country's first base gains an adversary ambassador. | yes |
-| Total Mobilization | 3 | First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: industrial zones. Each corrupted city gains 1 more adversary ambassador; factories next to clean cities gain 1 too. |  |
-| Blitzkrieg | 3 | First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: each country's first base. This round is a war round, and spread reaches 1 hex further. |  |
-| Occupation | 3 | First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: research stations. Cities corrupt at 1 fewer adversary ambassador, and each corrupted research station gains 1 adversary ambassador. |  |
-| Iron Doctrine | 3 | First: sway 1 toward Discord; each player destroys 2 of their nodes; move 2 Sway from the Unity bucket to the Undecided. Arrivals: coastal cities. This round is a war round. |  |
+| Probing Strikes | 1 | tier 1 (military) |  |
+| Factory Drive | 1 | tier 1 (military or economic) |  |
+| Long Patrols | 1 | tier 1 (military or cyber) |  |
+| War Drums | 1 | tier 1 (military or influence) |  |
+| Signal Jamming | 1 | tier 1 (military or grid) |  |
+| Mobilization | 2 | tier 2 (military) | yes |
+| Station Raids | 2 | tier 2 (military or cyber) | yes |
+| Fifth Column | 2 | tier 2 (influence or cyber) | yes |
+| Border War | 2 | tier 2 (military) | yes |
+| Supply Lines | 2 | tier 1 (military or economic) | yes |
+| Forced March | 2 | tier 2 (any) | yes |
+| Total Mobilization | 3 | tier 3 (military); tier 2 (economic or grid) |  |
+| Blitzkrieg | 3 | tier 3 (any); tier 1 (military or influence) |  |
+| Occupation | 3 | tier 3 (military or cyber); tier 2 (influence) |  |
+| Naval Blockade | 3 | tier 3 (economic or grid); tier 1 (military or cyber) |  |
 <!-- /generated -->
 
 **Arrivals: the explore step that never stops.** The site types are **coastal cities**,
@@ -146,8 +170,8 @@ out-of-turn "the adversary builds now" brings the card's arrivals too, in its sc
 military base. Arrivals and Escalation reach only that one, so what reaches bases counts
 countries, not fronts (a country has one front at 2 countries, two at 3 and 4), a count
 fixed by the printed board that can't feed back. A base's other rules hold: an
-ambassador spreading onto a second base still diverts it, and a threat landing on
-bases (Total War) may use any base in the country, players choosing each landing, one a base while a base is free.
+ambassador spreading onto a second base still diverts it, and a threat's base token may go on any base in the
+country (the most threatened).
 
 **For new players.** An adversary card may name military bases, and stage II cards send an
 extra ambassador to them. Either way it lands on each country's lowest-numbered base. A
@@ -173,8 +197,9 @@ last round), a quiet backstop.
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0 |
 <!-- /generated -->
 
-Difficulty 1's extra threat goes to the countries in turn (country 0 in round 1); difficulty 4's
-"tier-2 threats sooner" looks `tier2_early` cards ahead (the face-up card first).
+Difficulty 1's extra threats are more pulls of the card's first pull, countries in turn (country 0 in round 1);
+difficulty 4's "tier-2 threats sooner" deals a stage-I card's tier-1 pulls from tier 2 once a stage-II card is
+`tier2_early` cards ahead (the face-up card first).
 
 Difficulty is only the configured level: Discord tips don't raise it ([alignment.md](alignment.md)). **The
 fallback's `liberate_at` is the same at every difficulty:** difficulty comes from the

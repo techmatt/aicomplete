@@ -26,6 +26,7 @@ mod freeing;
 mod invariants;
 mod map;
 mod march;
+mod new_ops;
 mod ops;
 mod overlay;
 mod plan;
@@ -165,6 +166,13 @@ fn actions_with_room() -> (Rules, GameState) {
 fn run(rules: &Rules, g: &mut GameState) {
     g.phase = 0;
     rules.enter(g, None);
+}
+
+/// `run`, then answers every choice with its first option (135: an event
+/// card's standing troops ask where they land, in the build).
+fn run_answered(rules: &Rules, g: &mut GameState) {
+    run(rules, g);
+    answer_all(rules, g);
 }
 
 /// Deals Manhunt (military) to country 0 with a troop on a hex holding seat 0's
@@ -385,12 +393,21 @@ const FORGE_ABILITY: &str = r#"cards.synthetic_data_forge.ability={"effects":[{"
 
 /// Puts `threat` on country `c` (out of its deck).
 fn deal(g: &mut GameState, threat: &str, c: usize) {
-    for t in [1, 2] {
+    for t in [1, 2, 3] {
         if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
             Arc::make_mut(p).retain(|x| x != threat);
         }
     }
     Arc::make_mut(g.piles.entry(format!("threats.on.{c}")).or_default()).push(threat.into());
+}
+
+/// Puts `threat` on country `c` with its location tokens on `hexes`, in its
+/// locations' order (135: `deal` leaves it token-less, near the whole country).
+fn deal_at(g: &mut GameState, threat: &str, c: usize, hexes: &[usize]) {
+    deal(g, threat, c);
+    for (i, &h) in hexes.iter().enumerate() {
+        g.vars.insert(format!("threats.loc.{threat}.{i}").into(), h as i64 + 1);
+    }
 }
 
 fn row(g: &mut GameState, ids: &[&str]) {
@@ -536,9 +553,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 53;
-const GOLDEN_FINGERPRINT: &str = "e26ba43de4e65436";
-const GOLDEN_CONTENT_HASH: &str = "5e62811594f0239b";
+const GOLDEN_REVISION: u32 = 54;
+const GOLDEN_FINGERPRINT: &str = "e10bbf03cc3667df";
+const GOLDEN_CONTENT_HASH: &str = "3b46ebf1937a3caf";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

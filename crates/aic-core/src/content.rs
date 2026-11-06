@@ -17,7 +17,8 @@ use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
 pub use crate::op::{Event, Facility, Op, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
-    PerResource, Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind, RESOURCES, TAGS,
+    Location, PerResource, PullTag, Resource, Side, Tag, TagOrAny, ThreatSource, ThreatTag, TokenKind,
+    RESOURCES, TAGS,
 };
 
 const MAP_JSON: &str = include_str!("../../../content/map.json");
@@ -46,7 +47,10 @@ pub struct Content {
     pub map: MapContent,
     pub cards: Vec<CardDef>,
     pub threats: Vec<ThreatDef>,
+    /// The adversary's event deck (135).
     pub adversary: Vec<AdversaryCard>,
+    /// The adversary's board (135).
+    pub adversary_board: AdversaryBoard,
     pub ais: Vec<AiBoard>,
     /// The Unity and Discord decks (module `alignment`).
     pub alignment: Vec<AlignmentCard>,
@@ -377,25 +381,99 @@ impl Ability {
 
 // ---------- threats ----------
 
+/// A threat card (135): one deck a tier, dealt by an event card's pulls;
+/// its location tokens say where it lands and who is near it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ThreatDef {
     pub id: String,
     pub name: String,
+    /// 1-3: its deck.
     pub tier: u8,
+    /// What pulls it fits (Universal: every one).
+    pub tags: Vec<ThreatTag>,
+    /// 1 or 2 location types: a token goes on a matching site when it is dealt.
+    pub locations: Vec<Location>,
     #[serde(default)]
     pub text: String,
-    /// What countering it costs, in order (difficulty 1 raises the first).
-    pub counter: Vec<Cost>,
-    /// The adversary pieces that feed it (070): who may counter, and what it shields.
-    pub source: ThreatSource,
+    /// The counter menu: the players near it pay one option in full (pooled).
+    pub counters: Vec<Vec<CounterItem>>,
     pub effects: Vec<Op>,
+    /// The harms ledger rows it prints (docs/harms.md).
+    #[serde(default)]
+    pub harms: Vec<String>,
+}
+
+/// One item of a threat's counter option (135).
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CounterItem {
+    /// Pay `amount` of `resource` (pooled across the players near it).
+    Pay { resource: Resource, amount: i64 },
+    /// Sacrifice cards in play carrying `amount` tags of this kind, as a power's cost.
+    Sacrifice { sacrifice: Tag, amount: i64 },
+    /// Remove `nodes_near` of your nodes on or next to a token (they leave the game).
+    NodesNear { nodes_near: i64 },
 }
 
 // ---------- adversary ----------
 
-/// An adversary deck card: the clock and the stager. Its twists change
-/// the round it is the current card of.
+/// The adversary's content file (135): its board and its event deck.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AdversaryFile {
+    pub board: AdversaryBoard,
+    pub events: Vec<AdversaryCard>,
+}
+
+/// An adversary board (135): its project slots, its persistent rules and its
+/// difficulty line. Its build numbers live in the config (`adversary.*`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AdversaryBoard {
+    pub id: String,
+    pub name: String,
+    pub project_slots: Vec<ProjectSlot>,
+    #[serde(default)]
+    pub rules: Vec<BoardRule>,
+    pub difficulty: BoardRule,
+    #[serde(default)]
+    pub harms: Vec<String>,
+}
+
+/// A project slot on the adversary board: a project must carry `tag` (or be
+/// Universal) to fill it; none: any project.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProjectSlot {
+    #[serde(default)]
+    pub tag: Option<ThreatTag>,
+}
+
+/// A rule printed on the adversary board. `effects` hold the ops it reads
+/// (empty for a rule the config's numbers already carry, such as Wall troops).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BoardRule {
+    #[serde(default)]
+    pub name: String,
+    pub text: String,
+    #[serde(default)]
+    pub effects: Vec<Op>,
+}
+
+/// One threat pull of an event card (135): in each country, a threat of
+/// `tier` carrying one of `tags` (`any`: every card fits).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Pull {
+    pub tier: u8,
+    pub tags: Vec<PullTag>,
+}
+
+/// An adversary event card (135): the clock and the stager. Top to bottom:
+/// its pulls, its standing lines, its twists (read while it is current),
+/// its arrivals (a twist) and escalation.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AdversaryCard {
@@ -403,9 +481,15 @@ pub struct AdversaryCard {
     pub name: String,
     pub stage: u8,
     #[serde(default)]
+    pub pulls: Vec<Pull>,
+    #[serde(default)]
+    pub standing: Vec<Op>,
+    #[serde(default)]
     pub text: String,
     #[serde(default)]
     pub twists: Vec<Op>,
+    #[serde(default)]
+    pub harms: Vec<String>,
     /// The Militarist's escalation: each country's first base gains an adversary
     /// ambassador when this card's round builds.
     #[serde(default)]
@@ -449,13 +533,22 @@ pub struct Step {
 pub struct ProjectCard {
     pub id: String,
     pub name: String,
-    pub stage: u8,
+    /// What slots it fits (135; Universal: every slot).
+    pub tags: Vec<ThreatTag>,
     /// Compute to fill it, per player.
     pub cost: i64,
     #[serde(default)]
     pub ongoing: bool,
     pub text: String,
+    /// A one-shot project's effect; an ongoing one's acts each round (its
+    /// standing ops, `ongoing_use` and `each_production`, are read where they act).
     pub effects: Vec<Op>,
+    /// What an ongoing project does once, when it resolves (135: Declaration of
+    /// War's troops).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub resolve: Vec<Op>,
+    #[serde(default)]
+    pub harms: Vec<String>,
 }
 
 // ---------- AI boards ----------
@@ -561,11 +654,13 @@ impl Content {
         fn p<T: for<'de> Deserialize<'de>>(name: &str, s: &str) -> Result<T, String> {
             serde_json::from_str(s).map_err(|e| format!("content/{name}: {e}"))
         }
+        let AdversaryFile { board: adversary_board, events } = p("adversary.json", adversary)?;
         let mut c = Content {
             map: p("map.json", map)?,
             cards: p("cards.json", cards)?,
             threats: p("threats.json", threats)?,
-            adversary: p("adversary.json", adversary)?,
+            adversary: events,
+            adversary_board,
             ais: p("ais.json", ais)?,
             alignment: p("alignment.json", alignment)?,
             projects: p("projects.json", projects)?,
@@ -600,6 +695,7 @@ impl Content {
         for a in &self.adversary {
             check_adversary_card(a)?;
         }
+        check_adversary_board(&self.adversary_board)?;
         for a in &self.alignment {
             check_alignment(a)?;
         }
@@ -889,12 +985,29 @@ fn check_card(c: &CardDef) -> Result<(), String> {
 }
 
 fn check_threat(t: &ThreatDef) -> Result<(), String> {
-    if !(1..=2).contains(&t.tier) || t.counter.is_empty() {
-        return Err(format!("threat {:?}: tier 1 or 2 and a counter cost", t.id));
+    if !(1..=3).contains(&t.tier) || t.counters.is_empty() || t.counters.iter().any(|o| o.is_empty()) {
+        return Err(format!("threat {:?}: tier 1-3 and a counter menu", t.id));
+    }
+    if t.tags.is_empty() || !(1..=2).contains(&t.locations.len()) {
+        return Err(format!("threat {:?}: a tag and 1 or 2 locations", t.id));
     }
     let what = format!("threat {:?}", t.id);
-    for (r, _) in &t.counter {
-        resource(r, &what)?;
+    for item in t.counters.iter().flatten() {
+        match item {
+            CounterItem::Pay { resource: r, amount } => {
+                if *r != Resource::Ambassadors {
+                    resource(r, &what)?;
+                }
+                if *amount < 1 {
+                    return Err(format!("{what}: a counter item of 1 or more"));
+                }
+            }
+            CounterItem::Sacrifice { amount, .. } | CounterItem::NodesNear { nodes_near: amount } => {
+                if *amount < 1 {
+                    return Err(format!("{what}: a counter item of 1 or more"));
+                }
+            }
+        }
     }
     check_ops(&t.effects, Slot::Threat, &what)?;
     Ok(())
@@ -904,7 +1017,22 @@ fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
     if !(1..=3).contains(&a.stage) {
         return Err(format!("adversary card {:?}: stage 1-3", a.id));
     }
+    if a.pulls.iter().any(|p| !(1..=3).contains(&p.tier) || p.tags.is_empty()) {
+        return Err(format!("adversary card {:?}: each pull a tier 1-3 and a tag", a.id));
+    }
     check_ops(&a.twists, Slot::Twist, &format!("adversary card {:?}", a.id))?;
+    check_ops(&a.standing, Slot::Team, &format!("adversary card {:?} standing", a.id))?;
+    Ok(())
+}
+
+fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
+    let what = format!("adversary board {:?}", b.id);
+    if b.project_slots.is_empty() {
+        return Err(format!("{what}: needs a project slot"));
+    }
+    for r in b.rules.iter().chain([&b.difficulty]) {
+        check_ops(&r.effects, Slot::Team, &what)?;
+    }
     Ok(())
 }
 
@@ -930,13 +1058,17 @@ fn check_alignment(a: &AlignmentCard) -> Result<(), String> {
 }
 
 fn check_project(p: &ProjectCard) -> Result<(), String> {
-    if !(1..=2).contains(&p.stage) || p.cost < 1 || p.effects.is_empty() {
+    if p.tags.is_empty() || p.cost < 1 || p.effects.is_empty() {
         return Err(format!(
-            "project {:?}: stage 1 or 2, a cost of 1 or more and an effect",
+            "project {:?}: a tag, a cost of 1 or more and an effect",
             p.id
         ));
     }
     check_ops(&p.effects, Slot::Team, &format!("project {:?}", p.id))?;
+    check_ops(&p.resolve, Slot::Team, &format!("project {:?}", p.id))?;
+    if !p.ongoing && !p.resolve.is_empty() {
+        return Err(format!("project {:?}: only an ongoing project prints a resolve line", p.id));
+    }
     Ok(())
 }
 
@@ -1064,7 +1196,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: team_income is credits or insight"));
                 }
             }
-            Op::Troops { each_country: true, .. } | Op::FlipStation { each_country: true }
+            Op::Troops { each_country: true, .. } | Op::FlipStation { each_country: true, .. }
                 if slot != Slot::Team =>
             {
                 return Err(format!("{what}: each_country is for team cards"));
@@ -1160,7 +1292,12 @@ fn apply_entry(files: &mut [serde_json::Value], entry: &str) -> Result<(), Strin
         serde_json::from_str(value).unwrap_or_else(|_| Value::String(value.to_string()));
     let ix = OVERLAY_TABLES.iter().find(|(t, _)| *t == table).expect("is_overlay_key: a table").1;
     let corps = table == "corps";
-    let rows = if corps { files[ix].get_mut("countries") } else { Some(&mut files[ix]) };
+    // 135: the adversary file is its board and its event list; an overlay reaches the events.
+    let rows = match table {
+        "corps" => files[ix].get_mut("countries"),
+        "adversary" => files[ix].get_mut("events"),
+        _ => Some(&mut files[ix]),
+    };
     let rows = rows.and_then(Value::as_array_mut).ok_or_else(|| fail("not a list".into()))?;
     let mut hit = false;
     for row in rows {

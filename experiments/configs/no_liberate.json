@@ -89,19 +89,13 @@
         "wall_troops": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
-        "project_cards": [
-          6,
-          6
-        ],
-        "project_row": 3
+        "board_difficulty_at": 3
       }
     },
     {
       "module": "threats",
       "variant": "countries",
-      "params": {
-        "per_country": 1
-      }
+      "params": {}
     },
     {
       "module": "alignment",
@@ -332,11 +326,12 @@
   ],
   "round": [
     "alignment.sway",
+    "adversary.event",
+    "threats.deal",
     "adversary.build",
     "adversary.spread",
     "adversary.corrupt",
     "board.march",
-    "threats.deal",
     "adversary.reveal",
     "cards.tier",
     "cards.deal",
@@ -344,9 +339,9 @@
     "cards.keep",
     "cards.play+threats.counter+alignment.act+board.act+ai.power",
     "board.bases",
-    "board.war",
     "board.produce",
     "economy.upkeep",
+    "board.war",
     "threats.execute",
     "board.cleanup"
   ]

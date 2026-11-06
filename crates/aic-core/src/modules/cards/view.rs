@@ -164,6 +164,8 @@ pub(super) fn cards_view(m: &Cards, g: &GameState, w: &World, out: &mut ViewOut)
         "cards.civic_used.",
         "cards.kept_round.",
         "cards.tokens.",
+        "cards.disabled.",
+        "cards.disabled_n.",
     ]);
     for tier in [1u8, 2] {
         out.pile(

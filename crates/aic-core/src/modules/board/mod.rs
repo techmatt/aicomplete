@@ -16,7 +16,7 @@ use crate::state::GameState;
 use crate::view::ViewOut;
 
 use super::common::*;
-use super::{adversary, ai, alignment, cards, economy, effects, threats};
+use super::{adversary, ai, alignment, cards, economy, effects};
 
 mod ambassadors;
 mod destroy;
@@ -101,12 +101,154 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 5] =
-    [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo, RoundFlag::Cordon];
+pub const FLAGS: [RoundFlag; 11] = [
+    RoundFlag::Blackout,
+    RoundFlag::Sabotage,
+    RoundFlag::Shelter,
+    RoundFlag::Embargo,
+    RoundFlag::Cordon,
+    RoundFlag::PowerDown,
+    RoundFlag::StationOutage,
+    RoundFlag::DoubleSpread,
+    RoundFlag::DoubleBuild,
+    RoundFlag::StationDark,
+    RoundFlag::GridDown,
+];
 
 /// The var key of a country flag.
 pub fn flag(f: RoundFlag, country: usize) -> KeyBuf {
     KeyBuf::new("board.").text(f.name()).text(".").num(country)
+}
+
+/// Prefix of the hex flags (135: a threat's flag on the hexes near it).
+pub const HEX_FLAGS: &str = "board.hflag.";
+/// Prefix of the seat flags (135: a threat's flag on the players near it).
+pub const SEAT_FLAGS: &str = "board.sflag.";
+
+/// The var key of flag `f` on hex `h` (135), counted down with the country flags.
+pub fn hex_flag(f: RoundFlag, h: usize) -> KeyBuf {
+    KeyBuf::new(HEX_FLAGS).text(f.name()).text(".").num(h)
+}
+
+/// The var key of flag `f` on seat `s` (135: power_down, station_outage).
+pub fn seat_flag(f: RoundFlag, s: usize) -> KeyBuf {
+    KeyBuf::new(SEAT_FLAGS).text(f.name()).text(".").num(s)
+}
+
+/// Whether flag `f` is up on hex `h`: on the hex, or on its country.
+pub fn hex_flagged(w: &World, g: &GameState, f: RoundFlag, h: usize) -> bool {
+    g.var(&hex_flag(f, h)) > 0 || flagged(g, f, w.map.hexes[h].country as usize)
+}
+
+/// Whether flag `f` is up on seat `s`.
+pub fn seat_flagged(g: &GameState, f: RoundFlag, s: usize) -> bool {
+    g.var(&seat_flag(f, s)) > 0
+}
+
+/// Whether seat `s` is powered down (135, Load Shedding): it can't use
+/// Actions or powers that cost energy. Read by the cards' Actions and the AI
+/// board's powers.
+pub fn powered_down(g: &GameState, s: usize) -> bool {
+    seat_flagged(g, RoundFlag::PowerDown, s)
+}
+
+/// 135 (Propaganda Ministry): whether the adversary's spread in country `c`
+/// runs twice this time; the flag is used up by the spread that reads it.
+pub fn take_double_spread(g: &mut GameState, cx: &mut Cx, c: usize) -> bool {
+    if !flagged(g, RoundFlag::DoubleSpread, c) {
+        return false;
+    }
+    cx.set_key(g, &flag(RoundFlag::DoubleSpread, c), 0);
+    cx.tally(g, "board.double_spreads", 1);
+    true
+}
+
+/// 135 (Trade Blockade): whether the adversary's build on hex `h` happens
+/// twice (the flag lasts its rounds: one build a round).
+pub fn double_build_at(w: &World, g: &GameState, h: usize) -> bool {
+    hex_flagged(w, g, RoundFlag::DoubleBuild, h)
+}
+
+/// Standing troops on hex `h` (135): they never march or strike. A removal
+/// takes them down with the hex's troops (cleanup trues the count).
+pub fn stand_key(h: usize) -> KeyBuf {
+    KeyBuf::new("board.stand.").num(h)
+}
+
+/// How many of hex `h`'s adversary troops stand.
+pub fn standing(g: &GameState, h: usize) -> i64 {
+    g.var(&stand_key(h)).min(g.tokens(h, TROOP)).max(0)
+}
+
+/// Makes `n` more of hex `h`'s troops stand.
+pub fn add_standing(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
+    let v = (standing(g, h) + n).min(g.tokens(h, TROOP));
+    cx.set_key(g, &stand_key(h), v);
+}
+
+/// Set while a troop occupies the factory on hex `h` (135, Factory Occupation).
+pub fn occupied_key(h: usize) -> KeyBuf {
+    KeyBuf::new("board.occupied.").num(h)
+}
+
+/// Whether the factory on hex `h` is occupied: it makes nothing.
+pub fn occupied(g: &GameState, h: usize) -> bool {
+    g.var(&occupied_key(h)) > 0 && g.tokens(h, TROOP) > 0
+}
+
+/// Extra corp troops base `base` makes each production step through round
+/// `until` (135, Conscription): the var holds how many.
+pub fn corp_extra_key(base: usize, until: u32) -> KeyBuf {
+    KeyBuf::new(CORP_EXTRA).num(base).text(".").num(until as usize)
+}
+
+const CORP_EXTRA: &str = "board.corp_extra.";
+
+/// Set to the round in which front `i` fights a second war step (135: Casus Belli).
+pub fn extra_war_key(front: usize) -> KeyBuf {
+    KeyBuf::new("board.extra_war.").num(front)
+}
+
+/// The factory a threat just built (135), plus 1: what "on the new factory" names.
+pub fn new_factory_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("board.new_factory.").text(threat)
+}
+
+/// Set (hex plus 1) when a threat's facility destruction emptied its zone
+/// (135): "on an empty zone ... instead" reads the zone as it was.
+pub fn destroyed_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("board.destroyed_at.").text(threat)
+}
+
+/// The hex (plus 1) a threat's troops just landed on, and how many (135):
+/// what "they march at once" moves.
+pub fn landed_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("board.landed_at.").text(threat)
+}
+
+/// How many troops a threat just landed (see [`landed_key`]).
+pub fn landed_count_key(threat: &str) -> KeyBuf {
+    KeyBuf::new("board.landed_n.").text(threat)
+}
+
+/// Var keys under `prefix` with their values, in key order.
+fn keys_under(g: &GameState, prefix: &str) -> Vec<(String, i64)> {
+    g.vars
+        .from_key(prefix)
+        .map_while(|(k, v)| k.starts_with(prefix).then(|| (k.as_str().to_string(), *v)))
+        .collect()
+}
+
+/// The registered extra corp troops (135): (base, until, count).
+pub(super) fn corp_extras(g: &GameState) -> Vec<(usize, u32, i64)> {
+    keys_under(g, CORP_EXTRA)
+        .into_iter()
+        .filter_map(|(k, n)| {
+            let rest = k.strip_prefix(CORP_EXTRA)?;
+            let (b, u) = rest.split_once('.')?;
+            Some((b.parse().ok()?, u.parse().ok()?, n))
+        })
+        .collect()
 }
 
 /// A country flag's count: above 0 while it is up.
@@ -362,6 +504,49 @@ fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
     cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s)))
 }
 
+/// 135: the hex and seat flags count down as the country flags do; standing
+/// troops and occupations follow the troops left on their hex; registrations
+/// past their round, and a threat's notes to its own later ops, go.
+fn expire_marks(g: &mut GameState, cx: &mut Cx) {
+    let round = g.round as i64;
+    for prefix in [HEX_FLAGS, SEAT_FLAGS] {
+        for (k, v) in keys_under(g, prefix) {
+            if v > 0 {
+                cx.set_key(g, &k, v - 1);
+            }
+        }
+    }
+    for (k, v) in keys_under(g, "board.stand.") {
+        let Some(h) = k.rsplit('.').next().and_then(|h| h.parse::<usize>().ok()) else { continue };
+        let left = v.min(g.tokens(h, TROOP)).max(0);
+        if left != v {
+            cx.set_key(g, &k, left);
+        }
+    }
+    for (k, _) in keys_under(g, "board.occupied.") {
+        let Some(h) = k.rsplit('.').next().and_then(|h| h.parse::<usize>().ok()) else { continue };
+        if g.tokens(h, TROOP) <= 0 {
+            cx.set_key(g, &k, 0);
+        }
+    }
+    for (b, until, _) in corp_extras(g) {
+        if until as i64 <= round {
+            cx.set_key(g, &corp_extra_key(b, until), 0);
+        }
+    }
+    for (k, v) in keys_under(g, "board.extra_war.") {
+        if v <= round {
+            cx.set_key(g, &k, 0);
+        }
+    }
+    for prefix in ["board.new_factory.", "board.destroyed_at.", "board.landed_at.", "board.landed_n."] {
+        for (k, _) in keys_under(g, prefix) {
+            cx.set_key(g, &k, 0);
+        }
+    }
+    cards::expire_disabled(g, cx);
+}
+
 /// The round-end cleanup: flags count down, then the end-of-round tallies.
 fn cleanup(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
@@ -376,6 +561,7 @@ fn cleanup(g: &mut GameState, cx: &mut Cx) {
             }
         }
     }
+    expire_marks(g, cx);
     // Rounds that end with only botnets between the players and the
     // purge (019: botnets are hard to remove).
     let level = alignment::bar_level(&w, g);

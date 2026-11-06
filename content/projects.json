@@ -1,100 +1,470 @@
 [
  {
-  "id": "disinformation",
-  "name": "Disinformation",
-  "stage": 1,
-  "cost": 5,
-  "text": "Sway 4 toward Discord.",
-  "effects": [{"op": "sway", "side": "discord", "amount": 4}]
+  "id": "raiding_parties",
+  "name": "Raiding Parties",
+  "tags": [
+   "military"
+  ],
+  "cost": 4,
+  "ongoing": false,
+  "text": "Every player loses a node or pays 10 credits (never their last node).",
+  "effects": [
+   {
+    "op": "lose_node_or",
+    "resource": "credits",
+    "amount": 10
+   }
+  ],
+  "harms": [
+   "node destroyed",
+   "credits or income lost"
+  ]
  },
  {
-  "id": "botnet_swarm",
-  "name": "Botnet Swarm",
-  "stage": 1,
-  "cost": 5,
-  "text": "Every botnet produces 2 adversary ambassadors on its hex.",
-  "effects": [{"op": "botnet_ambassadors", "amount": 2}]
- },
- {
-  "id": "market_crash",
-  "name": "Market Crash",
-  "stage": 1,
-  "cost": 5,
-  "text": "Every player loses 8 credits.",
-  "effects": [{"op": "players_lose", "resource": "credits", "amount": 8}]
- },
- {
-  "id": "false_flag",
-  "name": "False Flag",
-  "stage": 1,
-  "cost": 6,
-  "text": "Deal 3 extra threats.",
-  "effects": [{"op": "deal_threats", "count": 3}]
- },
- {
-  "id": "infiltration_drive",
-  "name": "Infiltration Drive",
-  "stage": 1,
-  "cost": 6,
-  "text": "In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted.",
-  "effects": [{"op": "corrupt_city"}]
- },
- {
-  "id": "rapid_buildout",
-  "name": "Rapid Buildout",
-  "stage": 1,
-  "cost": 6,
-  "text": "The adversary builds now, then spreads.",
-  "effects": [{"op": "adversary_build"}, {"op": "adversary_spread"}]
+  "id": "war_footing",
+  "name": "War Footing",
+  "tags": [
+   "military"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Every corp base fills to its troop cap now. Sway 1 toward Discord.",
+  "effects": [
+   {
+    "op": "corp_troops",
+    "fill": true,
+    "at": "every_base",
+    "when": "now",
+    "past_cap": false
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "troops made",
+   "Discord sway"
+  ]
  },
  {
   "id": "purge_the_unaligned",
   "name": "Purge the Unaligned",
-  "stage": 2,
-  "cost": 8,
-  "text": "Every player loses an ambassador or a node (never their last node). In each country, 1 troop lands on a factory, or a city if no factory.",
-  "effects": [{"op": "sacrifice"}, {"op": "troops", "count": 1, "each_country": true}]
- },
- {
-  "id": "recruitment_drive",
-  "name": "Recruitment Drive",
-  "stage": 2,
-  "cost": 9,
-  "ongoing": true,
-  "text": "Ongoing: every round, an extra adversary ambassador at every clean city.",
-  "effects": [{"op": "clean_city_ambassadors", "amount": 1}]
- },
- {
-  "id": "propaganda_network",
-  "name": "Propaganda Network",
-  "stage": 2,
-  "cost": 9,
-  "ongoing": true,
-  "text": "Ongoing: every round, sway 2 toward Discord.",
-  "effects": [{"op": "sway", "side": "discord", "amount": 2}]
- },
- {
-  "id": "total_offensive",
-  "name": "Total Offensive",
-  "stage": 2,
-  "cost": 9,
-  "text": "The adversary builds and spreads now; sway 2 toward Discord.",
-  "effects": [{"op": "adversary_build"}, {"op": "adversary_spread"}, {"op": "sway", "side": "discord", "amount": 2}]
+  "tags": [
+   "military"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country.",
+  "effects": [
+   {
+    "op": "sacrifice"
+   },
+   {
+    "op": "troops",
+    "count": 1,
+    "each_country": true
+   }
+  ],
+  "harms": [
+   "ambassadors lost",
+   "node destroyed",
+   "adversary pieces placed"
+  ]
  },
  {
   "id": "armored_columns",
   "name": "Armored Columns",
-  "stage": 2,
-  "cost": 9,
-  "text": "In each country, 2 troops land on factories, or cities if no factories.",
-  "effects": [{"op": "troops", "count": 2, "each_country": true}]
+  "tags": [
+   "military"
+  ],
+  "cost": 10,
+  "ongoing": false,
+  "text": "In each country, 2 troops land on factories.",
+  "effects": [
+   {
+    "op": "troops",
+    "count": 2,
+    "each_country": true
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "node destroyed",
+   "facilities destroyed or seized"
+  ]
+ },
+ {
+  "id": "arms_race",
+  "name": "Arms Race",
+  "tags": [
+   "military"
+  ],
+  "cost": 11,
+  "ongoing": true,
+  "text": "Ongoing: each production step, every military base makes 1 more troop.",
+  "effects": [
+   {
+    "op": "corp_troops",
+    "count": 1,
+    "at": "every_base",
+    "when": "each_production",
+    "past_cap": true
+   }
+  ],
+  "harms": [
+   "troops made",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "declaration_of_war",
+  "name": "Declaration of War",
+  "tags": [
+   "military"
+  ],
+  "cost": 18,
+  "ongoing": true,
+  "text": "In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights its war step twice.",
+  "effects": [
+   {
+    "op": "extra_war",
+    "front": "most_corp_troops",
+    "ongoing_use": true
+   }
+  ],
+  "resolve": [
+   {
+    "op": "troops",
+    "count": 2,
+    "each_country": true
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "war brought forward",
+   "node destroyed"
+  ]
+ },
+ {
+  "id": "disinformation",
+  "name": "Disinformation",
+  "tags": [
+   "influence"
+  ],
+  "cost": 5,
+  "ongoing": false,
+  "text": "Sway 4 toward Discord. Every player loses an ambassador.",
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 4
+   },
+   {
+    "op": "lose_ambassador"
+   }
+  ],
+  "harms": [
+   "Discord sway",
+   "ambassadors lost"
+  ]
+ },
+ {
+  "id": "recruitment_drive",
+  "name": "Recruitment Drive",
+  "tags": [
+   "influence"
+  ],
+  "cost": 11,
+  "ongoing": true,
+  "text": "Ongoing: every round, every clean city gains 1 adversary ambassador.",
+  "effects": [
+   {
+    "op": "clean_city_ambassadors",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "infiltration_drive",
+  "name": "Infiltration Drive",
+  "tags": [
+   "influence"
+  ],
+  "cost": 18,
+  "ongoing": false,
+  "text": "In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted.",
+  "effects": [
+   {
+    "op": "corrupt_city"
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "node destroyed",
+   "ambassadors lost",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "data_heist",
+  "name": "Data Heist",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Every player loses 3 tokens from their cards and gets 2 less insight next round.",
+  "effects": [
+   {
+    "op": "lose_tokens",
+    "amount": 3
+   },
+   {
+    "op": "lose_insight",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "tokens stripped from cards",
+   "insight lost"
+  ]
+ },
+ {
+  "id": "botnet_swarm",
+  "name": "Botnet Swarm",
+  "tags": [
+   "cyber"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Every botnet makes 2 adversary ambassadors on its hex.",
+  "effects": [
+   {
+    "op": "botnet_ambassadors",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed"
+  ]
  },
  {
   "id": "station_coup",
   "name": "Station Coup",
-  "stage": 2,
+  "tags": [
+   "cyber"
+  ],
+  "cost": 9,
+  "ongoing": false,
+  "text": "In each country, a research station is corrupted. A player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands.",
+  "effects": [
+   {
+    "op": "flip_station",
+    "each_country": true
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "adversary pieces placed"
+  ]
+ },
+ {
+  "id": "market_crash",
+  "name": "Market Crash",
+  "tags": [
+   "economic"
+  ],
+  "cost": 5,
+  "ongoing": false,
+  "text": "Every player gets 6 fewer credits of income next round and loses all their chips.",
+  "effects": [
+   {
+    "op": "lose_income",
+    "resource": "credits",
+    "amount": 6
+   },
+   {
+    "op": "players_lose",
+    "resource": "chips",
+    "all": true
+   }
+  ],
+  "harms": [
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "shadow_factories",
+  "name": "Shadow Factories",
+  "tags": [
+   "economic"
+  ],
+  "cost": 7,
+  "ongoing": false,
+  "text": "The adversary builds a factory in the country with the most free industrial zones. None: 2 of its ambassadors land on a factory.",
+  "effects": [
+   {
+    "op": "adversary_factory",
+    "count": 1,
+    "where": "most_free_zones",
+    "fallback_ambassadors": 2
+   }
+  ],
+  "harms": [
+   "facilities destroyed or seized",
+   "adversary pieces placed",
+   "actions or claims blocked"
+  ]
+ },
+ {
+  "id": "capital_flight",
+  "name": "Capital Flight",
+  "tags": [
+   "economic"
+  ],
+  "cost": 8,
+  "ongoing": false,
+  "text": "Every player's income falls by 4 credits for the rest of the game.",
+  "effects": [
+   {
+    "op": "team_income",
+    "resource": "credits",
+    "amount": -4
+   }
+  ],
+  "harms": [
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "rolling_blackouts",
+  "name": "Rolling Blackouts",
+  "tags": [
+   "grid"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Next round, cities make no energy and research stations make no research cubes.",
+  "effects": [
+   {
+    "op": "flag",
+    "name": "blackout",
+    "everywhere": true
+   },
+   {
+    "op": "flag",
+    "name": "station_dark",
+    "everywhere": true
+   }
+  ],
+  "harms": [
+   "production blacked out",
+   "energy lost"
+  ]
+ },
+ {
+  "id": "grid_capture",
+  "name": "Grid Capture",
+  "tags": [
+   "grid"
+  ],
+  "cost": 9,
+  "ongoing": true,
+  "text": "Ongoing: every round, every player loses 1 energy.",
+  "effects": [
+   {
+    "op": "players_lose",
+    "resource": "energy",
+    "amount": 1
+   }
+  ],
+  "harms": [
+   "energy lost"
+  ]
+ },
+ {
+  "id": "false_flag",
+  "name": "False Flag",
+  "tags": [
+   "universal"
+  ],
+  "cost": 6,
+  "ongoing": false,
+  "text": "Deal 1 extra tier-2 threat in each country, any tag.",
+  "effects": [
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "each_country": true,
+    "tier": 2
+   }
+  ],
+  "harms": [
+   "extra threats"
+  ]
+ },
+ {
+  "id": "grand_offensive",
+  "name": "Grand Offensive",
+  "tags": [
+   "universal"
+  ],
   "cost": 10,
-  "text": "In each country, an uncorrupted research station becomes corrupted (a player's holds unless 2 adversary ambassadors and no player ambassador stand on it: an adversary ambassador lands there instead). Every botnet produces 1 adversary ambassador on its hex.",
-  "effects": [{"op": "flip_station", "each_country": true}, {"op": "botnet_ambassadors", "amount": 1}]
+  "ongoing": false,
+  "text": "The adversary builds and spreads now; sway 2 toward Discord.",
+  "effects": [
+   {
+    "op": "adversary_build"
+   },
+   {
+    "op": "adversary_spread"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "adversary pieces placed",
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "propaganda_network",
+  "name": "Propaganda Network",
+  "tags": [
+   "universal"
+  ],
+  "cost": 14,
+  "ongoing": true,
+  "text": "Ongoing: every round, sway 2 toward Discord, move 1 Sway from Unity to the Undecided, and corrupted cities build 1 more.",
+  "effects": [
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   },
+   {
+    "op": "pull_unity",
+    "amount": 1
+   },
+   {
+    "op": "city_build",
+    "amount": 1,
+    "ongoing_use": true
+   }
+  ],
+  "harms": [
+   "Discord sway",
+   "Unity pulled back",
+   "adversary pieces placed"
+  ]
  }
 ]

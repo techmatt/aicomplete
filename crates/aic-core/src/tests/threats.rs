@@ -1,289 +1,153 @@
+//! Threats (135): who is near one, pooled and whole counters, execution.
+
 use super::*;
-use crate::content::RoundFlag;
-use crate::modules::{board, threats};
+use crate::content::Tag;
+use crate::modules::{cards, threats};
+
+/// Puts `threat` on country `c` (out of its deck) with its tokens on `at`,
+/// in its locations' order.
+fn land(g: &mut GameState, threat: &str, c: usize, at: &[usize]) {
+    for t in 1..=3 {
+        if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
+            Arc::make_mut(p).retain(|x| x != threat);
+        }
+    }
+    Arc::make_mut(g.piles.entry(format!("threats.on.{c}")).or_default()).push(threat.into());
+    for (i, h) in at.iter().enumerate() {
+        g.vars.insert(format!("threats.loc.{threat}.{i}").into(), *h as i64 + 1);
+    }
+}
+
+/// Clears every seat's nodes off the board.
+fn no_nodes(g: &mut GameState) {
+    for h in 0..g.hexes.len() {
+        for s in 0..g.seats.len() {
+            put(g, h, node(s), 0);
+        }
+    }
+}
+
+fn legal_has(rules: &Rules, g: &GameState, f: impl Fn(&Action) -> bool) -> bool {
+    rules.legal_actions(g).iter().any(f)
+}
+
+fn pays(rules: &Rules, g: &GameState, seat: u8, t: &str) -> bool {
+    legal_has(rules, g, |a| matches!(a, Action::Pay { seat: s, threat, .. } if *s == seat && threat == t))
+}
+
+fn counted(g: &GameState, key: &str) -> i64 {
+    g.stats.counters.get(key).copied().unwrap_or(0)
+}
+
+/// A land hex in another country than `c`, not within 1 of `h`.
+fn far_from(m: &Map, c: usize, h: usize) -> usize {
+    (0..m.hexes.len())
+        .find(|&x| m.hexes[x].country as usize != c && kind(m, x) != HexKind::Ocean && !m.hexes[h].neighbors.contains(&x))
+        .unwrap()
+}
 
 #[test]
-fn threats_are_countered_only_when_fully_paid_and_partial_payments_come_back() {
+fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     let (rules, mut g) = threat_lab();
-    deal(&mut g, "sabotage", 0);
-    deal(&mut g, "blackout", 1);
-    // 070: a source each, on the seat's own node.
+    let m = &rules.map;
+    let city = cities(m).into_iter().find(|&h| m.hexes[h].country == 0).unwrap();
+    let next = m.hexes[city].neighbors[0];
+    no_nodes(&mut g);
+    put(&mut g, next, node(0), 1);
+    put(&mut g, far_from(m, 0, city), node(1), 1);
+    land(&mut g, "eviction", 0, &[city]);
     for s in 0..2 {
-        put(&mut g, rules.map.numbered(s, piece(s).node), BOTNET, 1);
+        set_res(&mut g, s, Resource::Credits, 10);
     }
+    assert!(pays(&rules, &g, 0, "eviction"), "a node next to its token");
+    assert!(!pays(&rules, &g, 1, "eviction"), "far away");
+    let pay = |seat, amount| Action::Pay { seat, threat: "eviction".into(), resource: Resource::Credits, amount };
+    assert!(rules.apply_mut(&mut g, &pay(1, 1), None).is_err());
+    put(&mut g, city, ambassador(1), 1);
+    assert!(pays(&rules, &g, 1, "eviction"), "an ambassador on its token");
+    assert!(rules.apply_mut(&mut g, &pay(0, 7), None).is_err(), "more than its 6 credits");
+    act(&rules, &mut g, pay(0, 4));
+    assert_eq!(threats::cheapest_resource_need(&rules.world(), &g, "eviction"), 2);
+    act(&rules, &mut g, pay(1, 2));
+    assert!(threats::active(&g).is_empty());
+    assert!(threats::tokens(&g, &Key::new("eviction")).is_empty(), "its token is off");
+    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (6, 8));
+    assert_eq!(counted(&g, "threats.countered_by.credits"), 1);
+}
+
+#[test]
+fn counter_with_tags_sacrifices_cards_in_play() {
+    let (rules, mut g) = threat_lab();
+    let w = rules.world();
+    let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
+    let c = rules.map.hexes[factory].country as usize;
+    no_nodes(&mut g);
+    put(&mut g, factory, node(0), 1);
+    land(&mut g, "supply_raid", c, &[factory]);
+    let security: Vec<&str> = w
+        .content
+        .cards
+        .iter()
+        .filter(|d| d.tags.contains(&Tag::Security))
+        .map(|d| d.id.as_str())
+        .take(2)
+        .collect();
+    set_pile(&mut g, &cards::played(0), &security);
+    let with = |option| Action::CounterWith { seat: 0, threat: "supply_raid".into(), option };
+    assert!(legal_has(&rules, &g, |a| *a == with(1)), "2 security tags in play");
+    assert!(!legal_has(&rules, &g, |a| *a == with(2)), "no industry tags");
+    act(&rules, &mut g, with(1));
+    assert!(threats::active(&g).is_empty());
+    assert!(g.pile(&cards::played(0)).is_empty(), "both sacrificed");
+    assert_eq!(counted(&g, "threats.countered_by.tags"), 1);
+}
+
+#[test]
+fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
+    let (rules, mut g) = threat_lab();
+    let m = &rules.map;
+    let base = (0..m.hexes.len()).find(|&h| kind(m, h) == HexKind::Base).unwrap();
+    let c = m.hexes[base].country as usize;
+    no_nodes(&mut g);
+    put(&mut g, base, node(0), 1);
+    land(&mut g, "orbital_strike", c, &[base]);
+    let with = Action::CounterWith { seat: 0, threat: "orbital_strike".into(), option: 1 };
+    assert!(!legal_has(&rules, &g, |a| *a == with), "its last node");
+    put(&mut g, far_from(m, c, base), node(0), 1);
+    assert!(legal_has(&rules, &g, |a| *a == with));
+    act(&rules, &mut g, with);
+    assert!(threats::active(&g).is_empty());
+    assert_eq!(g.tokens(base, node(0)), 0);
+    assert_eq!(counted(&g, "board.node_lost.counter"), 1);
+    assert_eq!(counted(&g, "threats.countered_by.nodes"), 1);
+}
+
+#[test]
+fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
+    let (rules, mut g) = threat_lab();
+    let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
+    let c = rules.map.hexes[factory].country as usize;
+    no_nodes(&mut g);
+    put(&mut g, factory, node(0), 1);
+    // In the country, but not near the token.
+    let far = rules.map.countries[c]
+        .hexes
+        .iter()
+        .copied()
+        .find(|&h| h != factory && !rules.map.hexes[factory].neighbors.contains(&h))
+        .unwrap();
+    put(&mut g, far, node(1), 1);
+    land(&mut g, "supply_raid", c, &[factory]);
     for s in 0..2 {
-        set_res(&mut g, s, Resource::Credits, 6);
-        set_res(&mut g, s, Resource::Energy, 2);
+        set_res(&mut g, s, Resource::Credits, 10);
     }
-    let legal = rules.legal_actions(&g);
-    // Only players with one of its sources in reach may pay.
-    let pays = |seat: u8, t: &str| {
-        legal
-            .iter()
-            .any(|a| matches!(a, Action::Pay { seat: s, threat, .. } if *s == seat && threat == t))
-    };
-    assert!(pays(0, "sabotage") && !pays(0, "blackout"));
-    assert!(pays(1, "blackout") && !pays(1, "sabotage"));
-    let pay = |seat, threat: &str, resource: Resource, amount| Action::Pay {
-        seat,
-        threat: threat.into(),
-        resource,
-        amount,
-    };
-    // r48 (Matt): no counter prints 1 credit. Blackout: 1 energy; credits don't pay it.
-    assert!(rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Credits, 1), None)
-        .is_err());
-    assert!(rules
-        .apply_mut(&mut g, &pay(0, "blackout", Resource::Energy, 1), None)
-        .is_err());
-    rules
-        .apply_mut(&mut g, &pay(1, "blackout", Resource::Energy, 1), None)
-        .unwrap();
-    assert!(g.pile("threats.on.1").is_empty());
-    assert_eq!(g.pile("threats.discard.1")[0], "blackout");
-    assert_eq!((g.resource(1, Resource::Credits), g.resource(1, Resource::Energy)), (6, 1));
-    // Sabotage: 2 energy. Pay 1, withdraw, then pay only part again; it comes back.
-    rules
-        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 1), None)
-        .unwrap();
-    assert_eq!(g.resource(0, Resource::Energy), 1);
-    let withdraw = Action::Withdraw {
-        seat: 0,
-        threat: "sabotage".into(),
-        resource: Resource::Energy,
-    };
-    rules.apply_mut(&mut g, &withdraw, None).unwrap();
-    assert_eq!(g.resource(0, Resource::Energy), 2);
-    assert!(rules
-        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 3), None)
-        .is_err());
-    rules
-        .apply_mut(&mut g, &pay(0, "sabotage", Resource::Energy, 1), None)
-        .unwrap();
-    assert_eq!(g.pile("threats.on.0"), ["sabotage"], "an energy is still owed");
     let discord = g.var("alignment.discord");
-    for s in 0..2 {
-        rules
-            .apply_mut(&mut g, &Action::Pass { seat: s }, None)
-            .unwrap();
+    for s in 0..g.seats.len() as u8 {
+        rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
     }
     assert!(g.pending.is_none());
-    assert_eq!(g.resource(0, Resource::Credits), 6);
-    assert!(g
-        .pile("threats.discard.1")
-        .contains(&Key::new("sabotage")));
-    assert!(board::flagged(&g, RoundFlag::Sabotage, 0));
+    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (2, 10));
     assert_eq!(g.var("alignment.discord"), discord + 1);
-}
-
-#[test]
-fn jamming_a_threat_down_to_what_is_paid_counters_it() {
-    // 119: Red-Team Audit's 1 insight and its jam pinned (r46), the price under the 12 given.
-    let (rules, mut g) = threat_lab_with(&[
-        "cards.red_team_audit.cost=8",
-        "cards.red_team_audit.insight=1",
-        r#"cards.red_team_audit.effects=[{"op":"jam","amount":6},{"op":"draw","count":2}]"#,
-    ]);
-    // Sabotage needs 2 energy (r48); with 1 paid, Red-Team Audit's jam takes it to 0:
-    // countered at once, and the energy paid comes back, as a counter's partial
-    // payments do.
-    deal(&mut g, "sabotage", 0);
-    put(&mut g, rules.map.numbered(0, piece(0).node), BOTNET, 1);
-    set_res(&mut g, 0, Resource::Credits, 12);
-    set_res(&mut g, 0, Resource::Energy, 2);
-    rules
-        .apply_mut(
-            &mut g,
-            &Action::Pay {
-                seat: 0,
-                threat: "sabotage".into(),
-                resource: Resource::Energy,
-                amount: 1,
-            },
-            None,
-        )
-        .unwrap();
-    out_of_decks(&mut g, "red_team_audit");
-    set_pile(&mut g, "cards.hand.0", &["red_team_audit"]);
-    set_res(&mut g, 0, Resource::Insight, 1);
-    act(
-        &rules,
-        &mut g,
-        Action::Play {
-            seat: 0,
-            card: "red_team_audit".into(),
-        },
-    );
-    assert!(g.pile("threats.on.0").is_empty());
-    assert!(g
-        .pile("threats.discard.1")
-        .contains(&Key::new("sabotage")));
-    let triage = rules.world().content.cards.iter().find(|c| c.id == "red_team_audit").unwrap().cost;
-    assert_eq!(g.resource(0, Resource::Credits), 12 - triage);
-    assert_eq!(g.resource(0, Resource::Energy), 2, "the energy paid came back");
-}
-
-#[test]
-fn difficulty_1_raises_the_counters_and_deals_more_threats() {
-    let sets = [
-        "adversary.counter_bonus=1",
-        "adversary.counter_bonus_all=1",
-        "adversary.extra_threats=1",
-    ];
-    let at = |d: i64| {
-        let mut c = lab_config(&["threats.deal", ACTIONS]);
-        for s in sets
-            .iter()
-            .map(|s| s.to_string())
-            .chain([format!("adversary.difficulty={d}")])
-        {
-            c.apply_override(&s).unwrap();
-        }
-        Rules::new(&c).unwrap()
-    };
-    let (r0, r1) = (at(0), at(1));
-    let (g0, mut g1) = (r0.new_game(1), r1.new_game(1));
-    let req = |r: &Rules, g: &GameState| threats::requirement(&r.world(), g, "orbital_strike");
-    let credits = |c| vec![(Resource::Credits, c)];
-    assert_eq!(req(&r0, &g0), credits(6));
-    assert_eq!(req(&r1, &g1), credits(8));
-    // Every deal is dealt (070: nothing is set aside for lack of a source).
-    let drawn = |g: &GameState| g.stats.counters.get("threats.dealt").copied().unwrap_or(0);
-    assert_eq!(drawn(&g0), 2);
-    // One extra a round, one country after the other.
-    assert_eq!(drawn(&g1), 3);
-    for s in 0..2 {
-        r1.apply_mut(&mut g1, &Action::Pass { seat: s }, None)
-            .unwrap();
-    }
-    assert_eq!(g1.round, 2);
-    assert_eq!(drawn(&g1), 6);
-}
-
-/// 020: threats execute after production and upkeep, so a Blackout or
-/// Sabotage flag lasts through the next round's production and upkeep
-/// (cleared "this round", it never landed).
-#[test]
-fn blackout_and_sabotage_last_into_the_next_rounds_production() {
-    let round = [ACTIONS, "board.produce", "economy.upkeep", "threats.execute", "board.cleanup"];
-    let mut c = lab_config(&round);
-    // 021: no neutral city's energy offered for sale (that would ask).
-    c.apply_override("board.city_energy_credits=20").unwrap();
-    let rules = Rules::new(&c).unwrap();
-    let mut g = rules.new_game(3);
-    deal(&mut g, "blackout", 0);
-    deal(&mut g, "sabotage", 1);
-    // A twin with no threats: what round 2 would have paid.
-    let mut twin = rules.new_game(3);
-    pass_round(&rules, &mut g);
-    pass_round(&rules, &mut twin);
-    assert_eq!(g.round, 2);
-    assert!(board::flagged(&g, RoundFlag::Blackout, 0) && board::flagged(&g, RoundFlag::Sabotage, 1));
-    // A city of country 0 aligned to seat 0: its energy comes free in production.
-    let city = cities(&rules.map)
-        .into_iter()
-        .find(|&h| rules.map.hexes[h].country == 0 && g.tokens(h, ADV_CUBE) == 0)
-        .unwrap();
-    put(&mut g, city, cube(0), 1);
-    put(&mut twin, city, cube(0), 1);
-    let before = |g: &GameState| (0..2).map(|s| g.resource(s, Resource::Energy)).collect::<Vec<_>>();
-    let (b, bt) = (before(&g), before(&twin));
-    pass_round(&rules, &mut g);
-    pass_round(&rules, &mut twin);
-    assert_eq!(g.round, 3);
-    assert!(!board::flagged(&g, RoundFlag::Blackout, 0) && !board::flagged(&g, RoundFlag::Sabotage, 1));
-    let gain = |g: &GameState, b: &[i64], s: usize| g.resource(s, Resource::Energy) - b[s];
-    // Round 2's production paid seat 0 nothing for the blacked-out city.
-    let w = rules.world();
-    let city_energy = w.list("board.corp_energy")[0] + w.int("board.aligned_bonus");
-    assert!(city_energy > 0);
-    assert_eq!(gain(&g, &b, 0), gain(&twin, &bt, 0) - city_energy);
-    // 021: round 2's upkeep paid seat 1 (node in sabotaged country 1) no
-    // energy; its twin got its energy income.
-    let track = crate::modules::economy::income(&w, &twin, 1)[Resource::Energy];
-    assert!(track > 0);
-    assert_eq!(gain(&g, &b, 1), gain(&twin, &bt, 1) - track);
-}
-
-/// 022 (D11): a threat dealt after the counter phase (a Discord tip in
-/// production) waits beside the row: it executes next round, after a
-/// counter phase in which it could be paid.
-#[test]
-fn a_threat_dealt_after_the_counter_phase_executes_next_round() {
-    let (rules, mut g) = threat_lab();
-    deal(&mut g, "supply_raid", 1);
-    // Deal one extra as if in the execute phase (after the counter phase).
-    g.phase = 1;
-    with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 1));
-    g.phase = 0;
-    let late = g.pile("threats.on.0")[0];
-    assert_eq!(g.var(&format!("threats.late.{late}")), 1);
-    pass_round(&rules, &mut g);
-    assert_eq!(g.round, 2);
-    assert_eq!(g.stats.counters["threats.executed"], 1);
-    assert_eq!(g.pile("threats.on.0"), [late]);
-    pass_round(&rules, &mut g);
-    assert_eq!(g.stats.counters["threats.executed"], 2);
-    assert!(g.pile("threats.on.0").is_empty());
-    assert_eq!(g.var(&format!("threats.late.{late}")), 0);
-}
-
-/// 022 (D12): the tier-2 deck covers the largest round's deal (4 countries,
-/// difficulty 1+), and a deal the deck can't supply is counted.
-#[test]
-fn the_tier_2_deck_covers_four_countries_and_a_short_deal_is_counted() {
-    let base = Rules::new(&baseline()).unwrap();
-    let w = base.world();
-    let tier2 = crate::content().threats.iter().filter(|t| t.tier == 2).count() as i64;
-    let most = 4 * w.int("threats.per_country") + w.int("adversary.extra_threats");
-    assert!(tier2 > most, "{tier2} tier-2 threats for a deal of {most}");
-    let (rules, mut g) = threat_lab();
-    set_pile(&mut g, "threats.deck.1", &["smear_campaign"]);
-    with_cx(&rules, |cx| threats::deal_extra(&mut g, cx, 3));
-    assert_eq!(g.stats.counters["threats.short"], 2);
-}
-
-#[test]
-fn a_seat_that_lost_its_node_there_can_take_back_a_payment() {
-    let (rules, mut g) = lab(&[]);
-    let t = rules.world().content.threats[0].id.clone();
-    set_pile(&mut g, "threats.on.0", &[t.as_str()]);
-    g.vars.insert(format!("threats.paid.{t}.0.credits").as_str().into(), 1);
-    let legal = rules.legal_actions(&g);
-    assert!(legal.iter().any(|a| matches!(a, Action::Withdraw { seat: 0, .. })), "{legal:?}");
-    assert!(!legal.iter().any(|a| matches!(a, Action::Pay { seat: 0, .. })), "no nodes, no paying");
-}
-
-#[test]
-fn a_delayed_threat_skips_this_round() {
-    let (rules, mut g) = at_step(&[], 1);
-    counterable_manhunt(&rules, &mut g);
-    let t = threats::active(&g)[0].0;
-    assert!(!threats::waits(&g, &t));
-    run_ops(&rules, &mut g, &[content::Op::DelayThreat { count: 1 }]);
-    assert!(threats::waits(&g, &t));
-    g.round += 1;
-    assert!(!threats::waits(&g, &t), "it comes back next round");
-}
-
-/// r48 (D51): Total War's ambassadors land one a base while a base is free.
-#[test]
-fn total_war_lands_one_ambassador_a_base_while_one_is_free() {
-    let (rules, mut g) = threat_lab();
-    let w = rules.world();
-    let bases: Vec<usize> = w.map.countries[0].hexes.iter().copied().filter(|&h| crate::modules::common::is_base(&w, h)).collect();
-    for &b in &bases {
-        put(&mut g, b, ADV_AMBASSADOR, 0);
-    }
-    let before: i64 = bases.iter().map(|&b| g.tokens(b, ADV_AMBASSADOR)).sum();
-    let n = 2.min(bases.len() as i64);
-    with_cx(&rules, |cx| {
-        crate::modules::threats::place_ambassadors(&mut g, cx, Some(0), crate::content::Spot::Bases, n, None)
-    })
-    .unwrap();
-    answer_all(&rules, &mut g);
-    let on: Vec<i64> = bases.iter().map(|&b| g.tokens(b, ADV_AMBASSADOR)).collect();
-    assert_eq!(on.iter().sum::<i64>() - before, n);
-    assert!(on.iter().all(|&k| k <= 1), "one a base while one is free: {on:?}");
+    assert_eq!(counted(&g, "threats.uncountered"), 1);
+    assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
 }

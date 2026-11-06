@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, alignment, economy, effects, threats};
+use super::{adversary, ai, alignment, board, economy, effects, threats};
 
 mod deck;
 mod play;
@@ -132,6 +132,63 @@ pub fn played(seat: usize) -> KeyBuf {
 /// Tokens on seat `s`'s card `card` (021: tokens live only on cards).
 pub fn tokens_key(seat: usize, card: &str) -> KeyBuf {
     KeyBuf::new("cards.tokens.").num(seat).text(".").text(card)
+}
+
+/// The last round seat `s`'s building `card` is face down (135, Zero Day): it
+/// does nothing (no Action, Effect or income) while its tags still count.
+pub fn disabled_key(seat: usize, card: &str) -> KeyBuf {
+    KeyBuf::new("cards.disabled.").num(seat).text(".").text(card)
+}
+
+/// How many of seat `s`'s buildings are face down: the readers' early out.
+fn disabled_count_key(seat: usize) -> KeyBuf {
+    KeyBuf::new("cards.disabled_n.").num(seat)
+}
+
+/// Whether any of seat `s`'s buildings is face down: the hot paths' early out.
+pub fn has_disabled(g: &GameState, seat: usize) -> bool {
+    g.var(&disabled_count_key(seat)) > 0
+}
+
+/// Whether seat `s`'s building `card` is face down now.
+pub fn disabled(g: &GameState, seat: usize, card: &str) -> bool {
+    has_disabled(g, seat) && {
+        let v = g.var(&disabled_key(seat, card));
+        v > 0 && v >= g.round as i64
+    }
+}
+
+/// Turns seat `s`'s building `card` face down through round `until` (135).
+pub fn disable(g: &mut GameState, cx: &mut Cx, seat: usize, card: &str, until: u32) {
+    let k = disabled_key(seat, card);
+    if g.var(&k) == 0 {
+        cx.add_key(g, &disabled_count_key(seat), 1);
+    }
+    let v = g.var(&k).max(until as i64);
+    cx.set_key(g, &k, v);
+    cx.tally(g, "cards.disabled", 1);
+}
+
+/// Round-end cleanup (the board's): buildings face down through this round turn up.
+pub fn expire_disabled(g: &mut GameState, cx: &mut Cx) {
+    for s in 0..g.seats.len() {
+        let n = disabled_count_key(s);
+        if g.var(&n) == 0 {
+            continue;
+        }
+        let prefix = KeyBuf::new("cards.disabled.").num(s).text(".");
+        let done: Vec<String> = g
+            .vars
+            .from_key(prefix.as_str())
+            .map_while(|(k, v)| k.starts_with(prefix.as_str()).then_some((k, *v)))
+            .filter(|(_, v)| *v <= g.round as i64)
+            .map(|(k, _)| k.as_str().to_string())
+            .collect();
+        for k in &done {
+            cx.set_key(g, k, 0);
+        }
+        cx.add_key(g, &n, -(done.len() as i64));
+    }
 }
 
 /// Prefix of every seat's draft packet pile.

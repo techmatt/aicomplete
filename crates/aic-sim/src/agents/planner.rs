@@ -137,7 +137,8 @@ fn tips(g: &GameState) -> i64 {
 fn idea(a: &Action) -> Option<String> {
     match a {
         Action::Withdraw { .. } => None,
-        Action::Pay { seat, threat, .. } => Some(format!("pay {seat} {threat}")),
+        // 135: a menu's resources are different ideas (credits, or ambassadors).
+        Action::Pay { seat, threat, resource, .. } => Some(format!("pay {seat} {threat} {resource:?}")),
         _ => Some(format!("{a:?}")),
     }
 }

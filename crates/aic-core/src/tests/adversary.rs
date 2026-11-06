@@ -31,8 +31,8 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     let supply = g0.var(SUPPLY);
 
     let mut g = g0.clone();
-    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
-    run(&rules, &mut g);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
+    run_answered(&rules, &mut g);
     assert_eq!(
         (
             g.tokens(city, ADV_AMBASSADOR),
@@ -42,14 +42,14 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
         (2, 1, 0)
     );
     assert_eq!(g.var(SUPPLY), supply - 3);
-    assert_eq!(g.pile(CURRENT), ["adv_s1_probing_strikes"]);
+    assert_eq!(g.pile(CURRENT), ["mil_s1_probing_strikes"]);
     assert!(g.pile(NEXT).is_empty());
     assert_eq!(g.var(STAGE), 1);
 
     // Factory Drive: factories next to clean cities build too.
     let mut g = g0.clone();
-    set_pile(&mut g, NEXT, &["adv_s1_factory_drive"]);
-    run(&rules, &mut g);
+    set_pile(&mut g, NEXT, &["mil_s1_factory_drive"]);
+    run_answered(&rules, &mut g);
     assert_eq!(
         g.tokens(near, ADV_AMBASSADOR),
         1 + clean_city_next(near) as i64
@@ -60,8 +60,8 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     // escalation puts an ambassador on each country's first base (at 2
     // countries, its only one).
     let mut g = g0.clone();
-    set_pile(&mut g, NEXT, &["adv_s2_mobilization"]);
-    run(&rules, &mut g);
+    set_pile(&mut g, NEXT, &["mil_s2_mobilization"]);
+    run_answered(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_AMBASSADOR), 3);
     for f in &m.fronts {
         for &b in &f.bases {
@@ -80,8 +80,8 @@ fn arrivals_and_escalation_reach_each_countrys_first_base() {
         let (rules, mut g) = lab_with(&["adversary.build"], &["countries=3", "adversary.arrivals=1", &set]);
         let m = &rules.map;
         g.piles.remove(CURRENT);
-        set_pile(&mut g, NEXT, &["adv_s2_border_war"]);
-        run(&rules, &mut g);
+        set_pile(&mut g, NEXT, &["mil_s2_border_war"]);
+        run_answered(&rules, &mut g);
         for c in 0..3 {
             let mut bases = hexes_where(m, |h| kind(m, h) == HexKind::Base && m.hexes[h].country == c);
             bases.sort_by_key(|&h| m.hexes[h].number);
@@ -188,8 +188,9 @@ fn spread_keeps_one_and_sends_the_rest_by_priority() {
 fn a_station_flip_face_prints_station_flip_at() {
     let rules = Rules::new(&baseline()).unwrap();
     let n = rules.world().int("adversary.station_flip_at");
-    let want = format!("unless {n} adversary ambassadors");
-    let flips = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::FlipStation { .. }));
+    let want = format!("unless {n} adversary");
+    // A forced flip (135: "even a player's") reads no tunable.
+    let flips = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::FlipStation { force: false, .. }));
     let c = crate::content();
     let texts: Vec<(&str, &str)> = c
         .threats
@@ -309,15 +310,18 @@ fn botnets_start_on_the_stations_and_make_adversary_compute() {
         assert_eq!(g.tokens(m.numbered(c, piece(c).stations[0]), BOTNET), 1);
     }
     assert_eq!(total(&g, BOTNET), 2);
-    // Round 1's build has run: 3 compute a botnet (024).
-    assert_eq!(g.var(adversary::COMPUTE), 6);
-    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
-    run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), 12);
+    // Round 1's build has run: 3 compute a botnet (lab: botnet_compute 3), and
+    // (135) the event card's standing compute.
+    assert_eq!(g.stats.counters["adversary.compute_botnets"], 6);
+    // Probing Strikes and War Drums each print 2 standing compute.
+    let before = g.var(adversary::COMPUTE);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
+    run_answered(&rules, &mut g);
+    assert_eq!(g.var(adversary::COMPUTE), before + 6 + 2);
     put(&mut g, m.numbered(0, piece(0).stations[0]), BOTNET, 0);
-    set_pile(&mut g, NEXT, &["adv_s1_war_drums"]);
-    run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), 15);
+    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
+    run_answered(&rules, &mut g);
+    assert_eq!(g.var(adversary::COMPUTE), before + 8 + 3 + 2);
 }
 
 #[test]
@@ -331,10 +335,10 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
     let mut g = rules.new_game(1);
     // The last card is face up: its round plays, the one after is lost.
     g.piles.remove(DECK);
-    set_pile(&mut g, NEXT, &["adv_s3_occupation"]);
+    set_pile(&mut g, NEXT, &["mil_s3_occupation"]);
     run(&rules, &mut g);
     assert!(!g.is_over());
-    assert_eq!(g.pile(CURRENT), ["adv_s3_occupation"]);
+    assert_eq!(g.pile(CURRENT), ["mil_s3_occupation"]);
     assert!(g.pile(NEXT).is_empty());
     let deck = rules
         .view(&g)
@@ -355,8 +359,8 @@ fn the_players_lose_when_the_next_round_has_no_adversary_card() {
 fn twists_before_the_build_step_are_the_face_up_cards() {
     let (rules, mut g) = lab(&["alignment.sway", "adversary.build"]);
     let w = rules.world();
-    set_pile(&mut g, CURRENT, &["adv_s1_probing_strikes"]);
-    set_pile(&mut g, NEXT, &["adv_s1_long_patrols"]);
+    set_pile(&mut g, CURRENT, &["mil_s1_probing_strikes"]);
+    set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     let reach = |g: &GameState| {
         adversary::twists(&w, g)
             .iter()

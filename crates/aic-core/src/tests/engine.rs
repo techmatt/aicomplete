@@ -517,8 +517,13 @@ fn some_threats_take_insight() {
     let ins: Vec<&str> = crate::content()
         .threats
         .iter()
-        .filter(|t| t.counter.iter().any(|(r, _)| *r == Resource::Insight))
+        .filter(|t| {
+            t.counters.iter().flatten().any(|i| {
+                matches!(i, crate::content::CounterItem::Pay { resource: Resource::Insight, .. })
+            })
+        })
         .map(|t| t.id.as_str())
         .collect();
-    assert!((3..=4).contains(&ins.len()), "{ins:?}");
+    // 135: an insight option on most cyber threats and a few others (11 of 64).
+    assert!((8..=16).contains(&ins.len()), "{ins:?}");
 }

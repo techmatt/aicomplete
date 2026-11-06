@@ -568,7 +568,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::Troops { .. }
         | Op::FlipStation { .. }
-        | Op::CorruptCity
+        | Op::CorruptCity { .. }
         | Op::PlayersLose { .. }
         | Op::DestroyNode
         | Op::EachDestroyNode { .. }
@@ -620,6 +620,23 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::SpreadReach { .. }
         | Op::CorruptSooner { .. }
         | Op::Arrivals { .. }
+        | Op::AdversaryFactory { .. }
+        | Op::ComputePerMissing { .. }
+        | Op::CorpTroops { .. }
+        | Op::DestroyFacility { .. }
+        | Op::DisableBuilding { .. }
+        | Op::Discard { .. }
+        | Op::ExtraWar { .. }
+        | Op::LoseAmbassadorsOr { .. }
+        | Op::LoseIncome { .. }
+        | Op::LoseOr { .. }
+        | Op::MarchNow { .. }
+        | Op::OccupyFactory { .. }
+        | Op::PlaceBotnet { .. }
+        | Op::SeizeFactory
+        | Op::StandingTroopsBonus { .. }
+        | Op::Theft { .. }
+        | Op::TroopSteps { .. }
         | Op::War => panic!("{op:?} is not an instant player op: Content::check rejects it"),
     }
 }

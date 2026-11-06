@@ -5,51 +5,58 @@ use super::*;
 use crate::modules::adversary::{self, PROJECTS_DONE, PROJECTS_ONGOING, PROJECT_DECK};
 
 #[test]
-fn setup_deals_three_cheap_projects_from_a_staged_deck() {
+fn setup_deals_one_project_into_each_board_slot() {
+    // 135: one shuffled deck, dealt into the adversary board's slots by the
+    // draw rule (a tagged slot takes a card of its tag or Universal).
     let rules = Rules::new(&baseline()).unwrap();
     let w = rules.world();
-    let g = rules.new_game(3);
-    let all: Vec<Key> = g
-        .pile(PROJECTS)
-        .iter()
-        .chain(g.pile(PROJECT_DECK))
-        .chain(g.pile(PROJECTS_DONE))
-        .chain(g.pile(PROJECTS_ONGOING))
-        .cloned()
-        .collect();
-    assert_eq!(all.len(), 12);
-    let stage =
-        |id: &str| crate::content().projects[crate::content().project_index(id).unwrap()].stage;
-    // Cheap (stage 1) on top: the first six are cheap, the rest big.
-    let stages: Vec<u8> = all.iter().map(|id| stage(id)).collect();
-    assert!(stages[..6].iter().all(|&s| s == 1), "{stages:?}");
-    assert!(stages[6..].iter().all(|&s| s == 2), "{stages:?}");
-    // Cost is per player: 6–7 a player for a cheap one (12–14 at 2).
-    for id in g.pile(PROJECTS) {
-        let c = adversary::project_cost(&w, &g, id);
-        assert!((12..=14).contains(&c), "{id} costs {c}");
+    let content = crate::content();
+    let slots = &content.adversary_board.project_slots;
+    for seed in 0..8 {
+        let g = rules.new_game(seed);
+        let row = g.pile(PROJECTS);
+        assert_eq!(row.len(), slots.len(), "seed {seed}: {row:?}");
+        let all = row.len()
+            + g.pile(PROJECT_DECK).len()
+            + g.pile(adversary::PROJECT_DISCARD).len()
+            + g.pile(PROJECTS_DONE).len()
+            + g.pile(PROJECTS_ONGOING).len();
+        assert_eq!(all, content.projects.len());
+        for (slot, id) in slots.iter().zip(row) {
+            let tags = &content.project(id).tags;
+            if let Some(t) = slot.tag {
+                assert!(
+                    tags.contains(&t) || tags.contains(&crate::vocab::ThreatTag::Universal),
+                    "seed {seed}: {id} in a {t:?} slot"
+                );
+            }
+            // Cost is per player.
+            let c = adversary::project_cost(&w, &g, id);
+            assert_eq!(c, content.project(id).cost * g.seats.len() as i64);
+        }
+        assert_eq!(g.stats.counters.get("adversary.project_pull_forced"), None);
     }
 }
 
 #[test]
 fn compute_fills_the_cheapest_project_which_resolves_when_full() {
     let (rules, mut g) = lab(&[]);
-    // At 2 players: False Flag 12, Disinformation 10, Botnet Swarm 10.
-    row(&mut g, &["false_flag", "disinformation", "botnet_swarm"]);
+    // At 2 players: Botnet Swarm 12, Disinformation 10, Market Crash 10.
+    row(&mut g, &["botnet_swarm", "disinformation", "market_crash"]);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
     // Disinformation (the first of the cheapest) filled at 10 and resolved:
-    // 4 toward Discord. The 11th point went onto Botnet Swarm.
+    // 4 toward Discord. The 11th point went onto Market Crash.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 4);
-    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 1);
-    assert_eq!(g.var(&adversary::project_key("false_flag")), 0);
+    assert_eq!(g.var(&adversary::project_key("market_crash")), 1);
+    assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 0);
     assert_eq!(g.var(adversary::COMPUTE), 11);
-    assert_eq!(g.stats.counters["adversary.projects_resolved.cheap"], 1);
+    assert_eq!(g.stats.counters["adversary.project.disinformation"], 1);
     assert_eq!(g.stats.per_round["adversary.compute"][1], 11);
 }
 
 #[test]
-fn a_new_row_is_dealt_when_all_three_have_resolved() {
+fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     let (rules, mut g) = lab(&[]);
     row(&mut g, &["market_crash"]);
     g.piles.insert(
@@ -57,38 +64,46 @@ fn a_new_row_is_dealt_when_all_three_have_resolved() {
         [
             "station_coup",
             "recruitment_drive",
-            "total_offensive",
             "armored_columns",
+            "war_footing",
         ]
         .map(Key::new)
         .to_vec()
         .into(),
     );
-    set_res(&mut g, 0, Resource::Credits, 10);
+    // Setup's misses: cleared, so the deck never reshuffles here.
+    set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
+    set_res(&mut g, 0, Resource::Chips, 3);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
-    // Market Crash (10) resolved: 8 credits each (as much as they have).
-    assert_eq!(g.resource(0, Resource::Credits), 2);
+    // Market Crash (10) resolved: every player loses all their chips.
+    assert_eq!(g.resource(0, Resource::Chips), 0);
+    // 135: the slots are Military, any, any: Station Coup and Recruitment Drive
+    // take the open slots, Armored Columns the Military one; the row is slot order.
     assert_eq!(
         g.pile(PROJECTS),
-        ["station_coup", "recruitment_drive", "total_offensive"]
+        ["armored_columns", "station_coup", "recruitment_drive"]
     );
-    assert_eq!(g.pile(PROJECT_DECK), ["armored_columns"]);
-    // The 13th point went onto the cheapest of the new row (Recruitment
-    // Drive, 20).
-    assert_eq!(g.var(&adversary::project_key("recruitment_drive")), 1);
+    assert_eq!(g.pile(PROJECT_DECK), ["war_footing"]);
+    // The 11th point went onto the cheapest of the new row (Station Coup, 18).
+    assert_eq!(g.var(&adversary::project_key("station_coup")), 1);
     // An ongoing project goes into play and acts every round's build.
+    row(&mut g, &["recruitment_drive"]);
     g.vars
-        .insert(adversary::project_key("recruitment_drive").into(), 19);
+        .insert(adversary::project_key("recruitment_drive").into(), 21);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
     assert_eq!(g.pile(PROJECTS_ONGOING), ["recruitment_drive"]);
+    // The deck holds one card: it fills the Military slot, the rest stay empty.
+    assert_eq!(g.pile(PROJECTS), ["war_footing"]);
 }
 
 #[test]
 fn an_ongoing_project_acts_in_the_build() {
     let (rules, mut g) = lab(&["adversary.build"]);
     set_pile(&mut g, PROJECTS_ONGOING, &["recruitment_drive"]);
-    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     run(&rules, &mut g);
+    // 135: the card's standing troops ask where they land.
+    answer_all(&rules, &mut g);
     // Every clean city (lab: all of them) gains an adversary ambassador.
     assert_eq!(total(&g, ADV_AMBASSADOR), cities(&rules.map).len() as i64);
 }
@@ -105,15 +120,17 @@ fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
     put(&mut g, b, BOTNET, 1);
     put(&mut g, a, ambassador(0), 1);
     let before = g.var(adversary::COMPUTE);
-    set_pile(&mut g, NEXT, &["adv_s1_probing_strikes"]);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), before + 3);
+    answer_all(&rules, &mut g);
+    // The free botnet's 3 (lab), and (135) the card's 2 standing compute.
+    assert_eq!(g.var(adversary::COMPUTE), before + 3 + 2);
     assert_eq!(g.tokens(a, ambassador(0)), 1);
     assert_eq!(g.stats.counters["adversary.compute_blocked"], 3);
 }
 
 #[test]
-fn about_half_the_threats_carry_compute() {
+fn a_fifth_to_a_half_of_the_threats_carry_compute() {
     let t = crate::content()
         .threats
         .iter()
@@ -124,14 +141,16 @@ fn about_half_the_threats_carry_compute() {
         })
         .count();
     let n = crate::content().threats.len();
-    assert!(t * 3 >= n && t * 3 <= 2 * n, "{t} of {n}");
+    // 135: compute comes mostly from the event cards' standing lines now (16 of 64).
+    assert!(t * 5 >= n && t * 2 <= n, "{t} of {n}");
 }
 
 #[test]
 fn an_uncountered_threat_puts_its_compute_on_a_project() {
     let (rules, mut g) = threat_lab();
     row(&mut g, &["false_flag"]);
-    deal(&mut g, "blackout", 0);
+    // Embargo: a flag near it and 3 compute.
+    deal(&mut g, "embargo", 0);
     pass_round(&rules, &mut g);
     assert_eq!(g.stats.counters["threats.executed"], 1);
     assert_eq!(g.var(&adversary::project_key("false_flag")), 3);

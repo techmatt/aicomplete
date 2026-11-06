@@ -17,9 +17,9 @@
 //!   other position gets a card of its stage drawn from the printed cards of
 //!   that stage not seen face up, current, in the discard or the peek: the
 //!   game may deal a subset of each stage, so which ones is hidden too;
-//! - the adversary project deck (017): its size and the stage of each
-//!   position are public (cheap on top); each stage's block is shuffled.
-//!   (The baseline deals every project, so which ones were dealt is known.)
+//! - the adversary project deck (135: one shuffled deck): its contents are
+//!   known (every project not in the row, in play or discarded), its order
+//!   is not, so it is shuffled.
 //! - every RNG stream is reseeded, so later reshuffles are guesses too.
 //!
 //! A pending choice's snapshot gets the same guess, so answering it replays
@@ -35,11 +35,12 @@ use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 /// Piles whose order is hidden but whose contents are known.
-pub(crate) const SHUFFLED: [&str; 8] = [
+pub(crate) const SHUFFLED: [&str; 9] = [
     "cards.deck.1",
     "cards.deck.2",
     "threats.deck.1",
     "threats.deck.2",
+    "threats.deck.3",
     DEALT[0].2,
     DEALT[1].2,
     DEALT[2].2,
@@ -199,30 +200,15 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
     }
 }
 
-/// Shuffles the project deck within each stage's block (the stages are
-/// stacked, cheap on top, so each position's stage is public).
-fn shuffle_project_stages(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
-    let w = rules.world();
+/// Shuffles the project deck (135: one shuffled deck; its contents are
+/// public, the projects not in the row, in play or discarded).
+fn shuffle_project_stages(_rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
     let Some(deck) = g.piles.get_mut(adversary::PROJECT_DECK) else {
         return;
     };
     let deck = Arc::make_mut(deck);
-    let stage = |id: &str| {
-        w.content
-            .project_index(id)
-            .map_or(0, |i| w.content.projects[i].stage)
-    };
-    let mut start = 0;
-    while start < deck.len() {
-        let s = stage(&deck[start]);
-        let end = (start..deck.len())
-            .find(|&i| stage(&deck[i]) != s)
-            .unwrap_or(deck.len());
-        let block = &mut deck[start..end];
-        block.sort_unstable();
-        block.shuffle(rng);
-        start = end;
-    }
+    deck.sort_unstable();
+    deck.shuffle(rng);
 }
 
 fn resample_adversary_deck(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
@@ -291,21 +277,14 @@ mod tests {
                         );
                         continue;
                     }
-                    if k == adversary::PROJECT_DECK {
-                        // Same stage at every position, same contents.
-                        let w = r.world();
-                        let st = |id: &Key| {
-                            w.content.projects[w.content.project_index(id).unwrap()].stage
-                        };
-                        assert_eq!(
-                            a.iter().map(st).collect::<Vec<_>>(),
-                            b.iter().map(st).collect::<Vec<_>>()
-                        );
-                    } else if DEALT.iter().any(|(_, _, key)| key == k) {
+                    if DEALT.iter().any(|(_, _, key)| key == k) {
                         // Its size is public; which cards were dealt is not.
                         assert_eq!(a.len(), b.len(), "{k}");
                         continue;
-                    } else if !SHUFFLED.contains(&k.as_str()) {
+                    }
+                    // The project deck (135: one shuffled deck) keeps its contents
+                    // only, as SHUFFLED piles do.
+                    if k != adversary::PROJECT_DECK && !SHUFFLED.contains(&k.as_str()) {
                         assert_eq!(&a, &b, "{k}");
                     }
                     a.sort();

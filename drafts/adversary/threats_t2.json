@@ -22,7 +22,7 @@
     [
      {
       "sacrifice": "security",
-      "amount": 2
+      "amount": 3
      }
     ],
     [
@@ -49,11 +49,12 @@
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "cheapest counter 2 Security tags 10 (or 12 credits; or 2 nodes, 12); harm per player 0; shared 2 troops 10 + their strike at once ~10 expected (a facility ~15 in reach about 2 games in 3) = ~20; ratio ~2.0 (1.7 vs credits)",
+   "value": "counter 3 Security tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared 2 troops 10 + their strike at once ~10 expected (a facility ~15 in reach about 2 games in 3) = ~20; ratio ~1.3 vs tags (1.7 vs credits)",
    "check": "bites from round 5 when factories and stations sit near the fronts; the base's neighbors pay; a troop that strikes is used up, and a base's corp troops absorb strikes next to it, which caps it",
    "flags": [
     "new op march_now",
-    "new field: at location on troops"
+    "new field: at location on troops",
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "total_war"
   },
@@ -134,7 +135,7 @@
     [
      {
       "sacrifice": "security",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -152,10 +153,11 @@
     "node destroyed",
     "credits or income lost"
    ],
-   "value": "cheapest counter 10 credits or 2 Security tags, 10; harm per player 12 (2 nodes 12 or 14 credits, their pick) x 1.5 = 18; shared 0; ratio ~1.8 (vs credits and vs tags alike)",
+   "value": "cheapest counter 10 credits (or 3 Security tags, 15); harm per player 12 (2 nodes 12 or 14 credits, their pick) x 1.5 = 18; shared 0; ratio ~1.8 (1.2 vs tags)",
    "check": "any round from 5; a choice threat, so a rich seat pays credits and a poor one loses reach; the never-last guard keeps it from ending a seat",
    "flags": [
-    "new field: lose_node_or count"
+    "new field: lose_node_or count",
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "manhunt"
   },
@@ -170,7 +172,7 @@
    "locations": [
     "base"
    ],
-   "text": "For the rest of the game, the corp base here makes 1 extra troop each production step, even past its cap.",
+   "text": "For 3 rounds, the corp base here makes 1 extra troop each production step, even past its cap.",
    "counters": [
     [
      {
@@ -187,7 +189,7 @@
     [
      {
       "sacrifice": "security",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -196,22 +198,22 @@
      "op": "corp_troops",
      "count": 1,
      "at": "location",
-     "permanent": true,
      "when": "each_production",
      "past_cap": true,
+     "rounds": 3,
      "new": true,
-     "why": "corp bases make extra corp troops (more war, more Discord): at the location's base; permanent, each production step, past the base's cap"
+     "why": "corp bases make extra corp troops (more war, more Discord): at the location's base; each production step for 3 rounds, past the base's cap"
     }
    ],
    "harms": [
     "troops made"
    ],
-   "value": "cheapest counter 2 Security tags 10 (or 12 credits; or 3 energy, 13.5); harm per player 0; shared ~1 more factory and its node lost per war left (21), about 1 war left on average from the draw = ~21; ratio ~2.1 (1.75 vs credits)",
-   "check": "permanent, so worst early in stage II; every round from 6 is a war round, so it never goes dead before the end; holders of front factories counter; past the cap the troops pile up with nothing but the game's end to cap them, and the extra troops also absorb adversary strikes next to it",
+   "value": "counter 3 Security tags 15 (or 12 credits; or 3 energy, 13.5); harm per player 0; shared ~1 more factory and its node lost (21) per war step the extra troops reach, about 1 on average in its 3 rounds (war spends them as they stack) = ~21; ratio ~1.4 vs tags (1.75 vs credits)",
+   "check": "lasts 3 rounds, so its 3 production steps all feed wars from round 6 (every round a war round); holders of front factories counter; past the cap at most 3 extra troops pile up, and a base Warmongering already feeds gains no second extra (at most 1 a base a production step); the extra troops also absorb adversary strikes next to it",
    "flags": [
-    "new op corp_troops (permanent, each_production, past_cap)",
-    "priced at ~1 war left, but the war clock makes every round from 6 a war round, so the harm runs to the end of the game: re-price or cap it",
-    "ratio a little over 2 vs the 2-tag option"
+    "new op corp_troops (rounds 3, each_production, past_cap)",
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "135: lasts 3 rounds, was the rest of the game (Matt's ruling 7, 2026-11-06: Conscription lasts 3 rounds, not for good); priced at ~1 war step, read its extra troops per game."
    ],
    "reuses": "conscription"
   },
@@ -236,7 +238,7 @@
     [
      {
       "sacrifice": "security",
-      "amount": 2
+      "amount": 3
      }
     ],
     [
@@ -261,10 +263,11 @@
     "war brought forward",
     "Discord sway"
    ],
-   "value": "cheapest counter 2 Security tags 10 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a second war step on the base's fronts ~12 + 2 sway 8 = ~20; ratio ~2.0 (1.7 vs credits)",
+   "value": "counter 3 Security tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a second war step on the base's fronts ~12 + 2 sway 8 = ~20; ratio ~1.3 vs tags (1.7 vs credits)",
    "check": "any round from 4, and still live from round 6 when every round is a war round; bases sit on the fronts, so the front's factory owners counter; it lasts one round, and the second war step spends troops the first left, so it is weaker; no loop",
    "flags": [
-    "new op extra_war"
+    "new op extra_war",
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -295,7 +298,7 @@
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -315,11 +318,11 @@
     "production blacked out",
     "Discord sway"
    ],
-   "value": "cheapest counter 2 Diplomacy tags 10 (or 12 credits; or 3 ambassadors, 12); harm per player 0; shared a corrupted city 45 (its nodes, ambassadors and energy) when the gate holds, else 2 placed 10: ~22 expected; ratio ~2.2 (1.8 vs credits; 4.5 vs tags, 3.75 vs credits when the gate holds)",
+   "value": "counter 3 Diplomacy tags 15 (or 12 credits; or 3 ambassadors, 12); harm per player 0; shared a corrupted city 45 (its nodes, ambassadors and energy) when the gate holds, else 2 placed 10: ~22 expected; ratio ~1.5 vs tags (1.8 vs credits; 3.0 vs tags, 3.75 vs credits when the gate holds)",
    "check": "bites from round 4 on a crowded city; nodes on and next to it are near, so the seats that would lose them pay; clearing ambassadors below 3 first is the answer",
    "flags": [
     "new fields on corrupt_city: min_ambassadors, else_ambassadors",
-    "ratio a little over 2 vs the 2-tag option"
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "overrun"
   },
@@ -350,7 +353,7 @@
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -372,11 +375,11 @@
     "ambassadors lost",
     "Discord sway"
    ],
-   "value": "cheapest counter 2 Diplomacy tags 10 (or 11 credits; or 3 ambassadors, 12); harm per player 0; shared 3 placed or player ambassadors canceled ~14 + 2 sway 8 = ~22; ratio ~2.2 (2.0 vs credits)",
+   "value": "counter 3 Diplomacy tags 15 (or 11 credits; or 3 ambassadors, 12); harm per player 0; shared 3 placed or player ambassadors canceled ~14 + 2 sway 8 = ~22; ratio ~1.5 vs tags (2.0 vs credits)",
    "check": "any stage-II round; Diplomacy seats with ambassadors on the city counter; feeds Overrun's gate (a pair, not a loop: one copy of each a deck)",
    "flags": [
     "ambassadors at the location with cancel uses the arrival rule; confirm the field",
-    "ratio a little over 2 vs the 2-tag option"
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "insurrection"
   },
@@ -461,7 +464,7 @@
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -482,10 +485,10 @@
     "ambassadors lost",
     "adversary pieces placed"
    ],
-   "value": "cheapest counter 2 Diplomacy tags 10 (or 11 credits); harm per player 2 ambassadors 8 x 1.5 = 12; shared 2 placed 10; ~22; ratio ~2.2 (2.0 vs credits)",
+   "value": "counter 3 Diplomacy tags 15 (or 11 credits); harm per player 2 ambassadors 8 x 1.5 = 12; shared 2 placed 10; ~22; ratio ~1.5 vs tags (2.0 vs credits)",
    "check": "mid-game when seats hold ambassadors on the board; anyone near can pay; no loop",
    "flags": [
-    "ratio a little over 2 vs the 2-tag option"
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -517,7 +520,7 @@
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -539,10 +542,11 @@
     "adversary pieces placed",
     "Discord sway"
    ],
-   "value": "cheapest counter 2 ambassadors 8 (or 10 credits; or 2 Diplomacy tags, 10); harm per player 0; shared a second spread ~12 (about 2 ambassadors placed, now and then a new botnet) + 1 sway 4 = ~16; ratio ~2.0 (1.6 vs credits)",
+   "value": "cheapest counter 2 ambassadors 8 (or 10 credits; or 3 Diplomacy tags, 15); harm per player 0; shared a second spread ~12 (about 2 ambassadors placed, now and then a new botnet) + 1 sway 4 = ~16; ratio ~2.0 (1.6 vs credits)",
    "check": "any stage-II round; worst where botnet ambassadors sit close to player pieces; diplomats near the city pay; the flag is spent by one spread, so it can't stack past one doubled spread a copy",
    "flags": [
-    "new flag double_spread (country scope)"
+    "new flag double_spread (country scope)",
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -556,7 +560,7 @@
    "locations": [
     "station"
    ],
-   "text": "The station here is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it: 1 lands). The adversary gains 3 compute.",
+   "text": "The station here is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands). The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -573,7 +577,7 @@
     [
      {
       "sacrifice": "cyber",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -591,10 +595,11 @@
     "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Cyber tags 10 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a corrupted neutral station 20, or a player's that holds and takes 1 ambassador 5: ~14 expected + 3 compute 6 = ~20; ratio ~2.0 (1.7 vs cubes or credits)",
+   "value": "counter 3 Cyber tags 15 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a corrupted neutral station 20, or a player's that holds and takes 1 ambassador 5: ~14 expected + 3 compute 6 = ~20; ratio ~1.3 vs tags (1.7 vs cubes or credits)",
    "check": "rounds 4-9; the station's owner or neighbors pay, usually in cubes it makes; the bite is neutral stations and crowded player ones",
    "flags": [
-    "face 144 characters, over the 110 target"
+    "face 144 characters, over the 110 target",
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "station_seizure"
   },
@@ -625,7 +630,7 @@
     [
      {
       "sacrifice": "cyber",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -646,12 +651,12 @@
     "actions or claims blocked",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Cyber tags 10 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a botnet 16 (compute every round, claims next to it blocked) + 3 compute 6 = ~22; ratio ~2.2 (1.8 vs cubes or credits)",
+   "value": "counter 3 Cyber tags 15 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a botnet 16 (compute every round, claims next to it blocked) + 3 compute 6 = ~22; ratio ~1.5 vs tags (1.8 vs cubes or credits)",
    "check": "worst early in stage II (more rounds of botnet compute); cyber seats counter; botnets need a tier-2 card to remove, so this is a real permanent loss; no loop",
    "flags": [
     "new op place_botnet",
-    "ratio a little over 2 vs the 2-tag option",
-    "face 135 characters, over the 110 target"
+    "face 135 characters, over the 110 target",
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "fifth_column"
   },
@@ -791,7 +796,7 @@
     [
      {
       "sacrifice": "cyber",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -813,12 +818,12 @@
     "production blacked out",
     "actions or claims blocked"
    ],
-   "value": "cheapest counter 2 Cyber tags 10 (or 11 credits; or 2 cubes, 12); harm per player a building idle for one production and one round of Actions ~5 (they pick the weakest) x 1.5 = ~7.5; shared 8 compute 16; ~23.5; ratio ~2.3 (2.1 vs credits)",
+   "value": "counter 3 Cyber tags 15 (or 11 credits; or 2 cubes, 12); harm per player a building idle for one production and one round of Actions ~5 (they pick the weakest) x 1.5 = ~7.5; shared 8 compute 16; ~23.5; ratio ~1.5 vs tags (2.1 vs credits)",
    "check": "worst when a project sits near its cost (often resolves one at once); the face-down building is the player's pick, so engines with a spare building shrug it off; it lifts at the end of next round, so no loop",
    "flags": [
     "new op disable_building",
-    "ratio over 2 vs the 2-tag option, as the triage set the numbers; 6 compute would bring it to ~1.9",
-    "face 156 characters, over the 110 target"
+    "face 156 characters, over the 110 target",
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -849,7 +854,7 @@
     [
      {
       "sacrifice": "industry",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -865,9 +870,11 @@
     "credits or income lost",
     "cards discarded"
    ],
-   "value": "cheapest counter 2 Industry tags 10 (or 12 credits; or 3 energy, 13.5); harm per player 12 (12 credits or 3 cards, their pick) x 1.5 = 18; shared 0; ratio ~1.8 (1.5 vs credits)",
+   "value": "counter 3 Industry tags 15 (or 12 credits; or 3 energy, 13.5); harm per player 12 (12 credits or 3 cards, their pick) x 1.5 = 18; shared 0; ratio ~1.2 vs tags (1.5 vs credits)",
    "check": "any stage-II round, after income; anyone near pays; no loop; the project Market Crash, which it duplicated, changes instead",
-   "flags": [],
+   "flags": [
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+   ],
    "reuses": "asset_freeze"
   },
   {
@@ -897,7 +904,7 @@
     [
      {
       "sacrifice": "industry",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -917,11 +924,11 @@
     "actions or claims blocked",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Industry tags 10 (or 11 credits; or 3 energy, 13.5); harm per player 0; shared an adversary factory 15 (it takes a zone and makes an adversary troop on its hex each production step) + 3 compute 6 = ~21; ratio ~2.1 (1.9 vs credits)",
+   "value": "counter 3 Industry tags 15 (or 11 credits; or 3 energy, 13.5); harm per player 0; shared an adversary factory 15 (it takes a zone and makes an adversary troop on its hex each production step) + 3 compute 6 = ~21; ratio ~1.4 vs tags (1.9 vs credits)",
    "check": "rounds 4-7, while zones are free; industry seats near zones counter; with no free zone it does only the compute (nothing to act on never blocks)",
    "flags": [
     "new op adversary_factory",
-    "ratio a little over 2 vs the 2-tag option"
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": "mass_production"
   },
@@ -952,7 +959,7 @@
     [
      {
       "sacrifice": "industry",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -980,13 +987,13 @@
     "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Industry tags 10 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a factory idle until freed (chips and corp troops ~4 a round for ~3 rounds = ~12) + a troop 5 + 3 compute 6 = ~23 (on an empty zone: troop 5 + 6 compute 12 = ~17); ratio ~2.3 on a factory, ~1.7 on a zone (1.9 / 1.4 vs credits)",
+   "value": "counter 3 Industry tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a factory idle until freed (chips and corp troops ~4 a round for ~3 rounds = ~12) + a troop 5 + 3 compute 6 = ~23 (on an empty zone: troop 5 + 6 compute 12 = ~17); ratio ~1.5 on a factory, ~1.1 on a zone vs tags (1.9 / 1.4 vs credits)",
    "check": "bites a factory owner from round 4; the owner pays now or removes the troop later (remove_troops cards), which caps the loss; the held troop never strikes; a troop on a zone also keeps it from being claimed",
    "flags": [
     "new op occupy_factory (not Hostile Takeover's seize_factory): settles the occupied factory as idle (no output to the adversary)",
     "new field: at location on troops",
     "face 153 characters, over the 110 target",
-    "ratio over 2 vs the 2-tag option on a factory"
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1066,7 +1073,7 @@
     [
      {
       "sacrifice": "industry",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1091,11 +1098,12 @@
     "actions or claims blocked",
     "adversary pieces placed"
    ],
-   "value": "cheapest counter 2 energy 9 (or 2 Industry tags, 10; or 11 credits); harm per player a claim blocked a round 6 x 1.5 = 9; shared ~2 extra adversary ambassadors 10; ~19; ratio ~2.1 (1.9 vs tags, 1.7 vs credits)",
+   "value": "cheapest counter 2 energy 9 (or 3 Industry tags, 15; or 11 credits); harm per player a claim blocked a round 6 x 1.5 = 9; shared ~2 extra adversary ambassadors 10; ~19; ratio ~2.1 (1.3 vs tags, 1.7 vs credits)",
    "check": "early stage II, while seats still expand; expanders near it pay; no loop",
    "flags": [
     "new flag double_build",
-    "new fields on the embargo flag: near scope, rounds"
+    "new fields on the embargo flag: near scope, rounds",
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1127,7 +1135,7 @@
     [
      {
       "sacrifice": "power",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1149,10 +1157,11 @@
     "production blacked out",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Power tags 10 (or 12 credits; or 3 energy, 13.5); harm per player ~1 energy a round for 2 rounds 9 x 1.5 = 13.5; shared 3 compute 6; ~19.5; ratio ~2.0 (1.6 vs credits)",
+   "value": "counter 3 Power tags 15 (or 12 credits; or 3 energy, 13.5); harm per player ~1 energy a round for 2 rounds 9 x 1.5 = 13.5; shared 3 compute 6; ~19.5; ratio ~1.3 vs tags (1.6 vs credits)",
    "check": "worst mid-game on a seat's home grid; power seats pay energy; no loop",
    "flags": [
-    "new field: flag rounds (shared with Thermal Runaway)"
+    "new field: flag rounds (shared with Thermal Runaway)",
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1183,7 +1192,7 @@
     [
      {
       "sacrifice": "power",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1210,10 +1219,11 @@
     "energy lost",
     "credits or income lost"
    ],
-   "value": "cheapest counter 2 energy 9 (or 10 credits; or 2 Power tags, 10); harm per player 12 (3 energy 13.5 or 12 credits, their pick) x 1.5 = 18; shared 0; ratio ~2.0 (1.8 vs credits)",
+   "value": "cheapest counter 2 energy 9 (or 10 credits; or 3 Power tags, 15); harm per player 12 (3 energy 13.5 or 12 credits, their pick) x 1.5 = 18; shared 0; ratio ~2.0 (1.8 vs credits)",
    "check": "bites late, when energy engines run; a seat short of energy pays credits; no loop",
    "flags": [
-    "new op lose_or (shared with Data Breach)"
+    "new op lose_or (shared with Data Breach)",
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1244,7 +1254,7 @@
     [
      {
       "sacrifice": "power",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1266,10 +1276,11 @@
     "production blacked out",
     "insight lost"
    ],
-   "value": "cheapest counter 2 Power tags 10 (or 2 cubes, 12; or 3 energy, 13.5); harm per player ~1 cube 6 (owners lose ~1 a round for 2 rounds, not every near seat owns one) + 2 insight 8 = 14 x 1.5 = 21; shared 0; ratio ~2.1 (1.75 vs cubes; no credits option)",
+   "value": "counter 3 Power tags 15 (or 2 cubes, 12; or 3 energy, 13.5); harm per player ~1 cube 6 (owners lose ~1 a round for 2 rounds, not every near seat owns one) + 2 insight 8 = 14 x 1.5 = 21; shared 0; ratio ~1.4 vs tags (1.75 vs cubes; no credits option)",
    "check": "mid-game against science seats; a seat may pay with the cubes it would lose (a choice, not a loop)",
    "flags": [
-    "new flag station_dark with rounds"
+    "new flag station_dark with rounds",
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1355,7 +1366,7 @@
     [
      {
       "sacrifice": "power",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1374,10 +1385,10 @@
     "node destroyed",
     "energy lost"
    ],
-   "value": "cheapest counter 2 Power tags 10 (or 12 credits; or 3 energy, 13.5); harm per player a node 6 + 2 energy 9 = 15 x 1.5 = 22.5; shared 0; ratio ~2.2 (1.9 vs credits)",
+   "value": "counter 3 Power tags 15 (or 12 credits; or 3 energy, 13.5); harm per player a node 6 + 2 energy 9 = 15 x 1.5 = 22.5; shared 0; ratio ~1.5 vs tags (1.9 vs credits)",
    "check": "rounds 4-9; energy-rich seats pay; the never-last guard keeps it from ending a seat; no loop",
    "flags": [
-    "ratio a little over 2 vs the 2-tag option"
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   },
@@ -1523,7 +1534,7 @@
     [
      {
       "sacrifice": "security",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -1549,12 +1560,12 @@
     "extra threats",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 2 Security tags 10 (or 12 credits; or 8 insight, 32: a tier-2 insight option only ever sits beside a credits one); harm per player 0; shared a botnet 16 (compute every round, claims blocked) + a tier-1 threat ~8 (the cheaper of its counter or its harm) = ~24; ratio ~2.4 (2.0 vs credits)",
+   "value": "counter 3 Security tags 15 (or 12 credits; or 8 insight, 32: a tier-2 insight option only ever sits beside a credits one); harm per player 0; shared a botnet 16 (compute every round, claims blocked) + a tier-1 threat ~8 (the cheaper of its counter or its harm) = ~24; ratio ~1.6 vs tags (2.0 vs credits)",
    "check": "worst early in stage II (botnet compute every round after); a tier-1 extra threat can't chain back to this deck; no loop",
    "flags": [
     "new ops place_botnet (shared with Sleeper Cells), deal_threats tier/scope (a threat that deals a threat deals it now, into its own country, at a named tier; it executes next round)",
-    "ratio over 2 vs the 2-tag option: the tag option underprices a botnet; consider dropping it for 2 cubes",
-    "face 172 characters, over the 110 target"
+    "face 172 characters, over the 110 target",
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
    ],
    "reuses": null
   }

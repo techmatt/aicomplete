@@ -7,26 +7,27 @@ The rules are split by area. Read this page, then only the files your task touch
 - [board.md](board.md): country pieces, fronts and bases, setup, research stations, megaprojects and converters.
 - [ambassadors.md](ambassadors.md): what ambassadors do on each piece, consuming versus standing, liberating cities,
   canceling, evicting.
-- [adversary.md](adversary.md): build, spread, corrupt, botnets, the project deck, the adversary deck and round cap,
-  difficulty.
+- [adversary.md](adversary.md): the adversary board and event deck (the round cap), build, spread, corrupt, botnets,
+  the project slots, difficulty.
 - [war.md](war.md): the production/war clock, factories, corp troops and war, the adversary march, Wall, node loss.
 - [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
 - [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
 - [ai-powers.md](ai-powers.md): the boards' powers (node, sacrifice and insight), the insight conversions and loops,
   shelters, hardening and shields.
-- [threats.md](threats.md): threat sources, dealing, countering and what threats do.
+- [threats.md](threats.md): the threat decks, dealing, location tokens, who is near, the counter menu, what threats do.
 - [player-cards.md](player-cards.md): the opening, the draft, keeps, play, slots, tags, tokens, the liberate
   capstones.
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 53 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 54 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
-AI boards, threats, the Unity and Discord decks and the project deck are **placeholders**
-pending redesign. Every rule is a **candidate** unless marked **locked**; which, and what
+AI boards and the Unity and Discord decks are **placeholders** pending redesign; the adversary's
+threat decks, event deck, board and project deck are 134's drafts (`drafts/adversary/`), all in play
+until Matt's picks prune them. Every rule is a **candidate** unless marked **locked**; which, and what
 each revision changed and why, is in [rules-history.md](../rules-history.md). What content can
 print is in [ops.md](../ops.md).
 
@@ -56,7 +57,8 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **In reach**: on a hex within 1 of your nodes.
 - **A country you're in**: a country where you have a node.
 - **Your home country**: the country you start in.
-- **A threat**: on your card: one you may counter, with one of its sources in reach or your ambassador on one.
+- **A threat**: on your card: one you may counter, near it (your node or ambassador on or next to one of its tokens).
+- **Near it**: on a threat: on or next to one of its location tokens.
 - **Here**: on a building: on this card, where its tokens sit.
 - **Remove N**: as many as there are, up to N.
 - **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.

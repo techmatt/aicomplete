@@ -18,7 +18,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::vocab::{Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind};
+use crate::vocab::{Location, Resource, Side, Tag, TagOrAny, ThreatSource, TokenKind};
 
 /// The kinds of content list an op can sit in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -44,6 +44,114 @@ pub enum Spot {
     CleanCities,
     Factories,
     Bases,
+    /// The threat's own location token (135).
+    Location,
+    /// The threat's city token (135: a threat with a base and a city).
+    City,
+    /// Every city on or next to the threat's tokens (135).
+    CitiesNear,
+}
+
+/// Where a threat's flag or extra deal reaches (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Scope {
+    /// On or next to the threat's tokens.
+    Near,
+    /// The threat's country.
+    Country,
+}
+
+/// Where a threat's troops land (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TroopAt {
+    /// On the threat's location token.
+    Location,
+    /// On each country's first military base.
+    Base,
+    /// On the factory this threat just built.
+    NewFactory,
+}
+
+/// A condition on a threat's troops (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TroopIf {
+    /// Only when the token's zone holds no factory.
+    EmptyZone,
+}
+
+/// Where an adversary factory goes when not at the threat's token (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FactoryWhere {
+    /// In the country with the most free industrial zones.
+    MostFreeZones,
+}
+
+/// Which bases make extra corp troops (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CorpAt {
+    /// The threat's base token.
+    Location,
+    /// Every military base.
+    EveryBase,
+}
+
+/// A condition on a base making extra corp troops (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CorpNear {
+    /// An adversary troop on or next to the base.
+    AdversaryTroop,
+}
+
+/// When extra corp troops come (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CorpWhen {
+    Now,
+    EachProduction,
+}
+
+/// Which front fights twice (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FrontPick {
+    /// The front with the most corp troops (ties: the first).
+    MostCorpTroops,
+}
+
+/// Who a theft hits (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TheftWho {
+    /// The player near it with the most credits (ties: the lowest seat).
+    RichestNear,
+}
+
+/// What a facility destruction hits (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DestroyAt {
+    Factory,
+}
+
+/// How long a disabled building stays face down (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Until {
+    EndOfNextRound,
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
+}
+
+fn is_zero(n: &i64) -> bool {
+    *n == 0
 }
 
 /// A country marker (module `board`), up while its var is above 0: set by
@@ -62,6 +170,18 @@ pub enum RoundFlag {
     Embargo,
     /// Arrivals don't land in the country in the next build (068).
     Cordon,
+    /// Players near it can't use Actions that cost energy (135).
+    PowerDown,
+    /// Players near it make no research cubes (135).
+    StationOutage,
+    /// The adversary's next spread in the country happens twice (135).
+    DoubleSpread,
+    /// The next adversary build on or next to it happens twice (135).
+    DoubleBuild,
+    /// Research stations on or next to it make no research cubes (135).
+    StationDark,
+    /// Cities and stations on or next to it produce nothing (135).
+    GridDown,
 }
 
 /// A site type an adversary card's arrivals land on (027).
@@ -86,10 +206,6 @@ pub enum Site {
 pub enum Facility {
     Station,
     Factory,
-}
-
-fn is_zero(n: &i64) -> bool {
-    *n == 0
 }
 
 /// What a standing trigger (`Op::When`) waits for (105). Each fires as often as
@@ -142,6 +258,12 @@ impl RoundFlag {
             RoundFlag::Shelter => "shelter",
             RoundFlag::Embargo => "embargo",
             RoundFlag::Cordon => "cordon",
+            RoundFlag::PowerDown => "power_down",
+            RoundFlag::StationOutage => "station_outage",
+            RoundFlag::DoubleSpread => "double_spread",
+            RoundFlag::DoubleBuild => "double_build",
+            RoundFlag::StationDark => "station_dark",
+            RoundFlag::GridDown => "grid_down",
         }
     }
 }
@@ -195,8 +317,8 @@ pub enum Op {
     DelayThreat {
         count: i64,
     },
-    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or
-    /// `troops` troops: one kind, your choice (059; a 0 prints no such choice).
+    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or `troops` troops (one kind, your
+    /// choice).
     Damage {
         #[serde(default)]
         ambassadors: i64,
@@ -214,10 +336,8 @@ pub enum Op {
     DestroyAll,
     /// Remove one botnet within your reach (019: the tier-2 way to remove a botnet).
     RemoveBotnet,
-    /// Remove up to `max` adversary ambassadors in one country (0: every one);
-    /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
-    /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
-    /// of your nodes, across countries.
+    /// Remove up to `max` adversary ambassadors in one country (0: all; `reach`: in your reach); 1 Unity per
+    /// `unity_per` removed.
     RemoveAmbassadorsCountry {
         #[serde(default)]
         unity_per: i64,
@@ -226,9 +346,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         reach: bool,
     },
-    /// Remove up to `count` adversary troops in one country, any country
-    /// (076, Matt's ruling 6: a printed number, never "per hex"); with `reach`
-    /// (111), in reach instead.
+    /// Remove up to `count` adversary troops in one country (`reach`: in your reach).
     RemoveTroops {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -236,12 +354,8 @@ pub enum Op {
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
-    /// Take the adversary cube off up to `amount` corrupted stations or
-    /// factories, one at a time (`one_country`: all in the first one's
-    /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
-    /// does (`board::liberate`); only a tier-2 ultimate prints it. `only` (r35):
-    /// stations alone or factories alone, priced apart (a station is a flip
-    /// worth several cubes both ways, a factory stays cheap).
+    /// Take the adversary cube off up to `amount` corrupted stations or factories (`one_country`; `cities`:
+    /// cities too; `only`: one kind).
     Cleanse {
         amount: i64,
         one_country: bool,
@@ -250,11 +364,8 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         only: Option<Facility>,
     },
-    /// Liberate one corrupted city in your reach (080, r34: the liberate
-    /// capstones): its adversary cube comes off, so it is clean; with `align`
-    /// your cube goes on it. Each engine's twist (r35): `ambassadors`, you gain
-    /// that many; `troops`, up to that many adversary troops in the city's
-    /// country come off; `botnet`, a botnet on or next to the city comes off.
+    /// Liberate a corrupted city in your reach (`align`: your cube on it); gain `ambassadors`, remove `troops`
+    /// there and a `botnet` by it.
     Liberate {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         align: bool,
@@ -265,9 +376,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         botnet: bool,
     },
-    /// Remove up to `max` adversary ambassadors (0: all) on or next to one
-    /// corrupted city in your reach (024), your choice which while more stand
-    /// than it takes (059).
+    /// Remove up to `max` adversary ambassadors (0: all) on or next to a corrupted city in your reach.
     ClearCity {
         max: i64,
     },
@@ -286,17 +395,14 @@ pub enum Op {
     },
     /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
-    /// In one country, no arrivals land through the next round, its build and any
-    /// build a project brings (118; 068: a Security card does an ambassador's job).
+    /// In one country, no arrivals land through the next round.
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
     FreeBuilding,
     /// Build a research station in your reach, paying no chips (075).
     BuildStation,
-    /// `count` research cubes in your color onto one incomplete megaproject
-    /// (075): with `station`, in a country where you own a station. They pay at
-    /// completion like any cube.
+    /// `count` research cubes in your color onto an open megaproject (`station`: where you own a station).
     ProjectCube {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -329,9 +435,7 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// A one-time permanent gain per tag (106, a program's): your printed
-    /// production of `resource` rises by 1 per `per` `tag` tags on your cards
-    /// in play, counted once when it resolves (a program counts itself).
+    /// Raise your `resource` production once by 1 per `per` of your `tag` tags.
     ProductionPerTag {
         resource: Resource,
         tag: Tag,
@@ -369,10 +473,7 @@ pub enum Op {
     DrainAll {
         amount: i64,
     },
-    /// "Count as power" (023): 1 of `resource` per `per` tokens of `kind`
-    /// (the tokens stay). 076 (Matt's ruling 12, no recounting across cards):
-    /// only the tokens on one card, this building's with `here`, else one of
-    /// yours the player picks.
+    /// Gain `resource` per `per` tokens of `kind` (`here`: on this card).
     GainPerTokens {
         resource: Resource,
         kind: TokenKind,
@@ -380,9 +481,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         here: bool,
     },
-    /// Cash out (023, 059): remove every `kind` token from one card (076: one
-    /// card, never all yours; this building's with `here`, else one of yours the
-    /// player picks); gain `rate` of `resource` for each.
+    /// Turn tokens of `kind` into `resource` at `rate` each (`here`: this card's).
     CashOut {
         kind: TokenKind,
         resource: Resource,
@@ -397,16 +496,12 @@ pub enum Op {
         tag: Tag,
         per: i64,
     },
-    /// Copy (105, a program's): raise your income by one of your active
-    /// buildings' Each round output, as it pays at the time of play (a
-    /// per-tag income at its count then).
+    /// Raise your income by one of your active buildings' Each round output, as it pays now.
     CopyIncome,
     /// Reuse (105, a building's Action): use another of your buildings'
     /// Actions again this round. Not one whose own Action is a reuse.
     Reuse,
-    /// Discard a card from your hand and gain `amount` of `resource` (105: the
-    /// Researcher's Synthesis; one card a use, which keeps the agents' search
-    /// to one pick).
+    /// Discard a card from your hand and gain `amount` of `resource` (one card a use).
     DiscardHand {
         resource: Resource,
         amount: i64,
@@ -420,9 +515,8 @@ pub enum Op {
     },
 
     // ---------- instant: threats and the team ----------
-    /// `count` adversary troops, each onto a factory in scope (players
-    /// choose), or with no factory onto a city. With `each_country` (team
-    /// cards), `count` in each country instead of `count` in all.
+    /// `count` adversary troops onto factories in scope (players choose), else cities; `each_country`: in each;
+    /// `destroy`: each takes the node there; `at`, `location`: elsewhere; `stand`: they never march.
     Troops {
         count: i64,
         #[serde(default)]
@@ -430,13 +524,23 @@ pub enum Op {
         /// Each troop also destroys the node on the hex it lands on (027).
         #[serde(default)]
         destroy: bool,
+        /// Where they land instead of a factory (135).
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        at: Option<TroopAt>,
+        /// They stand: never march or strike, until removed (135).
+        #[serde(default, skip_serializing_if = "is_false")]
+        stand: bool,
+        /// Which of the threat's tokens, when it has two (135).
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        location: Option<Location>,
+        /// Only when this holds (135).
+        #[serde(default, rename = "if", skip_serializing_if = "Option::is_none")]
+        if_: Option<TroopIf>,
     },
-    /// Every node on the most threatened hex in scope (the node hex
-    /// with the most adversary ambassadors and troops; ties: the first in
-    /// board order) is destroyed, unless absorbed (027).
+    /// Every node on the most threatened node hex in scope is destroyed, unless absorbed.
     DestroyNode,
-    /// Each player in scope destroys `count` of their nodes in scope, their
-    /// choice, unless absorbed; a last node is safe in stage I (028).
+    /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed;
+    /// never a last node from a threat, nor in stage I.
     EachDestroyNode { count: i64 },
     /// Up to `amount` Sway leaves the Unity bucket for the Undecided (027).
     PullUnity {
@@ -446,50 +550,79 @@ pub enum Op {
     LoseInsight {
         amount: i64,
     },
-    /// One research station in scope that is not corrupted becomes corrupted
-    /// (players choose); a player's holds unless `adversary.station_flip_at`
-    /// adversary ambassadors and no player ambassador stand on it, and one lands
-    /// there instead (r35). With `each_country` (team cards), one per country.
+    /// A research station in scope is corrupted (a player's holds unless `adversary.station_flip_at` adversary
+    /// and no player ambassadors are on it); `each_country`: one a country; `force`: a player's too.
     FlipStation {
         #[serde(default)]
         each_country: bool,
+        /// Even a player's station flips (135).
+        #[serde(default, skip_serializing_if = "is_false")]
+        force: bool,
     },
-    /// In each country in scope, the city not corrupted with the most
-    /// adversary ambassadors (ties: lower hex number) becomes corrupted.
-    CorruptCity,
-    /// Each player in scope loses `amount` of `resource` (as much as they have).
+    /// In each country in scope the uncorrupted city with the most adversary ambassadors is corrupted (`at`: the
+    /// token's; `min_ambassadors`: only with that many, else `else_ambassadors` land).
+    CorruptCity {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        at: Option<Spot>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        min_ambassadors: Option<i64>,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        else_ambassadors: i64,
+    },
+    /// Each player in scope loses `amount` of `resource`, as much as they have (`all`: all of it).
     PlayersLose {
         resource: Resource,
+        #[serde(default)]
         amount: i64,
+        #[serde(default, skip_serializing_if = "is_false")]
+        all: bool,
     },
     /// The adversary builds now, in scope.
     AdversaryBuild,
 
     // ---------- instant: threats ----------
-    /// `count` adversary ambassadors from the supply, each onto a piece of
-    /// kind `at` in scope (players choose each).
+    /// `count` adversary ambassadors from the supply onto pieces of kind `at` in scope (players choose); `each`:
+    /// on each; `cancel`: each cancels a player ambassador.
     Ambassadors {
         at: Spot,
         count: i64,
+        /// Each cancels a player ambassador there instead of being canceled (135).
+        #[serde(default, skip_serializing_if = "is_false")]
+        cancel: bool,
+        /// `count` on each matching piece rather than `count` in all (135).
+        #[serde(default, skip_serializing_if = "is_false")]
+        each: bool,
     },
-    /// Each player in scope loses a node in scope, or pays `amount`
-    /// `resource` (their choice). Losing it needs 2 or more nodes on the
-    /// board, so this never takes a last node (027).
+    /// Each player in scope loses `count` nodes in scope or pays `amount` `resource` (their choice); never a last
+    /// node.
     LoseNodeOr {
         resource: Resource,
         amount: i64,
+        /// Nodes lost instead of paying (135; default 1).
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
     },
-    /// A round marker on each country in scope, read by the rule it names.
+    /// A round marker on each country in scope, read by the rule it names (`scope` near: the hexes or players
+    /// near the threat; `rounds`; `everywhere`).
     Flag {
         name: RoundFlag,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        scope: Option<Scope>,
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        rounds: i64,
+        #[serde(default, skip_serializing_if = "is_false")]
+        everywhere: bool,
     },
-    /// Each player in scope discards `cards` cards or pays `amount`
-    /// `resource` (their choice).
+    /// Each player in scope discards `cards` cards or pays `amount` `resource` (their choice; `next_round`: off
+    /// next round's).
     Requisition {
         resource: Resource,
         amount: i64,
         #[serde(default = "one")]
         cards: i64,
+        /// The payment comes off next round's `resource` (insight) instead (135).
+        #[serde(default, skip_serializing_if = "is_false")]
+        next_round: bool,
     },
     /// Each player in scope loses a player ambassador (from their supply,
     /// else one of theirs on the board).
@@ -511,6 +644,100 @@ pub enum Op {
     LoseTokens {
         amount: i64,
     },
+    /// The adversary builds `count` factories by the token (`where`: in the country with most free zones); none
+    /// free: `fallback_ambassadors` on a factory.
+    AdversaryFactory {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+        #[serde(default, rename = "where", skip_serializing_if = "Option::is_none")]
+        where_: Option<FactoryWhere>,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        fallback_ambassadors: i64,
+    },
+    /// The adversary gains `amount` compute per player near it with no `resource`.
+    ComputePerMissing {
+        resource: Resource,
+        amount: i64,
+    },
+    /// Bases make `count` extra corp troops, `now` or each production (`rounds`, `permanent`), `past_cap`
+    /// (`fill`: to the cap; `near`: by a troop).
+    CorpTroops {
+        #[serde(default, skip_serializing_if = "is_zero")]
+        count: i64,
+        at: CorpAt,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        near: Option<CorpNear>,
+        when: CorpWhen,
+        #[serde(default, skip_serializing_if = "is_false")]
+        past_cap: bool,
+        #[serde(default, skip_serializing_if = "is_false")]
+        permanent: bool,
+        #[serde(default, skip_serializing_if = "is_false")]
+        fill: bool,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        rounds: i64,
+    },
+    /// The factory under the token is destroyed with the nodes on its hex (never a last node).
+    DestroyFacility {
+        at: DestroyAt,
+    },
+    /// Each player near it turns `count` buildings face down until `until` (tags still count).
+    DisableBuilding {
+        count: i64,
+        until: Until,
+    },
+    /// Each player near it discards `count` cards (their choice).
+    Discard {
+        count: i64,
+    },
+    /// The fronts next to the threat's base fight twice next round; `ongoing_use`: `front` fights twice every war
+    /// step.
+    ExtraWar {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        front: Option<FrontPick>,
+        #[serde(default, skip_serializing_if = "is_false")]
+        ongoing_use: bool,
+    },
+    /// Each player near it pays `amount` `resource` or loses `count` ambassadors.
+    LoseAmbassadorsOr {
+        count: i64,
+        resource: Resource,
+        amount: i64,
+    },
+    /// Each player in scope gets `amount` less `resource` income next round.
+    LoseIncome {
+        resource: Resource,
+        amount: i64,
+    },
+    /// Each player in scope takes one of `options` (their choice).
+    LoseOr {
+        options: Vec<Op>,
+    },
+    /// The troops this threat landed march now, `steps` steps (default the march's).
+    MarchNow {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        steps: Option<i64>,
+    },
+    /// A troop occupies the factory under the token (it makes nothing while the troop stands); on a free zone,
+    /// `else_compute` compute.
+    OccupyFactory {
+        else_compute: i64,
+    },
+    /// `count` botnets on the token's station, else the nearest piece without one.
+    PlaceBotnet {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+    },
+    /// The adversary seizes the factory under the token, even a player's; a free zone gets a new one.
+    SeizeFactory,
+    /// The player near it with the most credits loses `amount` `resource`; the adversary gains `compute`.
+    Theft {
+        who: TheftWho,
+        resource: Resource,
+        amount: i64,
+        #[serde(default)]
+        compute: i64,
+    },
 
     // ---------- instant: the team (Alignment cards, projects) ----------
     /// Every player's `resource` income (credits or insight) rises by
@@ -529,9 +756,16 @@ pub enum Op {
     Pushback {
         ambassadors: i64,
     },
-    /// Deal `count` extra threats now, one per country in turn.
+    /// Deal `count` extra threats now, countries in turn (`tier`: that deck, any tag; `scope` country;
+    /// `each_country`); they execute next round.
     DealThreats {
         count: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tier: Option<u8>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        scope: Option<Scope>,
+        #[serde(default, skip_serializing_if = "is_false")]
+        each_country: bool,
     },
     /// In each country, the clean city with the most adversary ambassadors
     /// (ties: lower hex number) gains `amount` more.
@@ -555,6 +789,10 @@ pub enum Op {
     RemoveBotnets {
         count: i64,
     },
+    /// The board's difficulty line: each standing line landing troops lands `amount` more a country.
+    StandingTroopsBonus {
+        amount: i64,
+    },
 
     // ---------- standing: read while in force ----------
     /// `amount` of `resource` a round.
@@ -574,8 +812,8 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
-    /// Your cards carrying `tag` (no tag: every card) cost `amount` less of
-    /// `resource`, credits or insight, to play (105), down to `cards.discount_floor`.
+    /// Your cards carrying `tag` (none: every card) cost `amount` less `resource` (credits or insight), to
+    /// `cards.discount_floor`.
     CardDiscount {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         tag: Option<Tag>,
@@ -588,9 +826,7 @@ pub enum Op {
         on: Event,
         then: Vec<Op>,
     },
-    /// A threshold counter (105): whenever its tokens here reach `at`,
-    /// whatever put them there (a feeder card's too, 118), remove `at` of
-    /// them and resolve `then`.
+    /// When its tokens here reach `at` (whatever put them there), remove `at` and resolve `then`.
     Threshold {
         at: i64,
         then: Vec<Op>,
@@ -628,9 +864,7 @@ pub enum Op {
     /// Once a round, prevent the first facility or node destruction in a country
     /// where you have a node.
     CivicShelter,
-    /// Adversary troops can't enter or strike a hex holding your nodes
-    /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
-    /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
+    /// Adversary troops can't enter or strike a hex holding your nodes (an AI board's innate only).
     Wall,
     /// Your unspent insight carries over to the next round (075: Patience). An
     /// AI board's innate only: `economy` reads nothing else.
@@ -640,8 +874,7 @@ pub enum Op {
     SupplyInsight {
         amount: i64,
     },
-    /// While you have this building, cards discarded from hand that carry
-    /// `tag` (or any tag, `"any"`) count as those tags for AI-board powers (021).
+    /// Cards discarded from hand carrying `tag` (or `any`) count as those tags for AI-board powers.
     TagsFromHand {
         tag: TagOrAny,
     },
@@ -654,9 +887,11 @@ pub enum Op {
     },
 
     // ---------- twists: read while the adversary card is current ----------
-    /// Each corrupted city builds `amount` more.
+    /// Each corrupted city builds `amount` more (`ongoing_use`: while its project stands).
     CityBuild {
         amount: i64,
+        #[serde(default, skip_serializing_if = "is_false")]
+        ongoing_use: bool,
     },
     /// Factories next to clean cities build `amount` too.
     CleanFactories {
@@ -670,9 +905,7 @@ pub enum Op {
     SpreadReach {
         amount: i64,
     },
-    /// The round's arrivals (027): every matching site in every country gains
-    /// `adversary.arrivals` adversary ambassadors in the build, whatever the
-    /// board holds.
+    /// Every matching site in every country gains `adversary.arrivals` adversary ambassadors in the build.
     Arrivals {
         site: Site,
     },
@@ -682,6 +915,10 @@ pub enum Op {
     },
     /// This round is a war round.
     War,
+    /// Every adversary troop takes `amount` more steps this round.
+    TroopSteps {
+        amount: i64,
+    },
 }
 
 fn one() -> i64 {
@@ -703,31 +940,47 @@ impl Op {
             Op::Gain { .. } | Op::CounterThreat => &[Player, Team],
             Op::Troops { .. }
             | Op::FlipStation { .. }
-            | Op::CorruptCity
+            | Op::CorruptCity { .. }
             | Op::PlayersLose { .. }
             | Op::DestroyNode
             | Op::LoseInsight { .. }
-            | Op::AdversaryBuild => &[Threat, Team],
-            Op::Ambassadors { .. }
+            | Op::AdversaryBuild
+            | Op::AdversaryFactory { .. }
+            | Op::CorpTroops { .. }
+            | Op::ExtraWar { .. }
+            | Op::LoseIncome { .. }
             | Op::Flag { .. }
-            | Op::Requisition { .. }
-            | Op::LoseAmbassador
             | Op::LoseNodeOr { .. }
+            | Op::LoseAmbassador
+            | Op::LoseTokens { .. }
+            | Op::DealThreats { .. } => &[Threat, Team],
+            Op::Ambassadors { .. }
+            | Op::Requisition { .. }
             | Op::DiscardMostExpensive
-            | Op::LoseTokens { .. } => &[Threat],
+            | Op::ComputePerMissing { .. }
+            | Op::DestroyFacility { .. }
+            | Op::DisableBuilding { .. }
+            | Op::Discard { .. }
+            | Op::LoseAmbassadorsOr { .. }
+            | Op::LoseOr { .. }
+            | Op::MarchNow { .. }
+            | Op::OccupyFactory { .. }
+            | Op::PlaceBotnet { .. }
+            | Op::SeizeFactory
+            | Op::Theft { .. } => &[Threat],
             Op::Compute { .. } => &[Threat, Team],
             Op::TeamIncome { .. }
             | Op::FreePurchases { .. }
             | Op::CounterAll
             | Op::Pushback { .. }
-            | Op::DealThreats { .. }
             | Op::Infiltrate { .. }
             | Op::AdversarySpread
             | Op::Sacrifice
-            | Op::BotnetAmbassadors { .. }
             | Op::CleanCityAmbassadors { .. }
             | Op::RemoveBotnets { .. }
-            | Op::ComputeEvery { .. } => &[Team],
+            | Op::StandingTroopsBonus { .. } => &[Team],
+            Op::ComputeEvery { .. } => &[Threat, Team],
+            Op::BotnetAmbassadors { .. } => &[Team, Twist],
             Op::Income { .. }
             | Op::IncomePerTag { .. }
             | Op::BuildingDiscount { .. }
@@ -747,7 +1000,8 @@ impl Op {
             | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
-            Op::CityBuild { .. }
+            Op::CityBuild { .. } => &[Twist, Team],
+            Op::TroopSteps { .. }
             | Op::CleanFactories { .. }
             | Op::StationBuild { .. }
             | Op::SpreadReach { .. }

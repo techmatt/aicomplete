@@ -9,6 +9,12 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Shelter => "Sheltered: facilities and nodes here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Cordon => "Cordon: no arrivals land here this round",
+        RoundFlag::PowerDown => "Power down: players near it can't use Actions that cost energy",
+        RoundFlag::StationOutage => "Station outage: players near it make no research cubes",
+        RoundFlag::DoubleSpread => "Propaganda: the adversary's next spread here happens twice",
+        RoundFlag::DoubleBuild => "Blockade: the next adversary build on or next to it happens twice",
+        RoundFlag::StationDark => "Stations dark: research stations on or next to it make no research cubes",
+        RoundFlag::GridDown => "Grid down: cities and stations on or next to it produce nothing",
     }
 }
 
@@ -19,6 +25,19 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         .collect();
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
     keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.track.", "board.track2."]);
+    // 135: hex and seat flags, standing troops, occupations and registrations.
+    keys.extend([
+        HEX_FLAGS,
+        SEAT_FLAGS,
+        "board.stand.",
+        "board.occupied.",
+        "board.corp_extra.",
+        "board.extra_war.",
+        "board.new_factory.",
+        "board.destroyed_at.",
+        "board.landed_at.",
+        "board.landed_n.",
+    ]);
     out.bookkeeping(&keys);
     for c in 0..w.map.countries.len() {
         for f in FLAGS {

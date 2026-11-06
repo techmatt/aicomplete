@@ -29,6 +29,8 @@ fn the_build_forecast_matches_the_build_step() {
                 g.piles.insert(NEXT.into(), vec![id.into()].into());
                 let want = plan::next_build(&rules.world(), &g);
                 run(&rules, &mut g);
+                // 135: the card's standing troops ask where they land first.
+                answer_all(&rules, &mut g);
                 let got: Vec<(usize, i64)> = (0..g.hexes.len())
                     .map(|h| {
                         (

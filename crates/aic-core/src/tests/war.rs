@@ -3,7 +3,11 @@ use crate::modules::board;
 
 #[test]
 fn the_clock_sets_production_and_war_steps_and_the_war_twist() {
-    let rules = Rules::new(&baseline()).unwrap();
+    // 135: no event card prints a war twist now; one is overlaid to read the rule.
+    let rules = Rules::new(&baseline_with(&[
+        r#"adversary.mil_s2_border_war.twists=[{"op":"war"},{"op":"arrivals","site":"bases"}]"#,
+    ]))
+    .unwrap();
     let w = rules.world();
     let mut g = rules.new_game(1);
     g.piles.remove(CURRENT);
@@ -22,7 +26,7 @@ fn the_clock_sets_production_and_war_steps_and_the_war_twist() {
         .collect();
     assert_eq!(production, [1, 3, 5, 6, 7, 8]);
     g.round = 1;
-    set_pile(&mut g, CURRENT, &["adv_s2_border_war"]);
+    set_pile(&mut g, CURRENT, &["mil_s2_border_war"]);
     assert!(board::war_round(&w, &g));
     let v = rules.view(&g);
     assert_eq!(

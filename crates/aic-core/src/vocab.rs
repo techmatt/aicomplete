@@ -161,6 +161,103 @@ impl ThreatSource {
     }
 }
 
+/// A threat's or project's tag (135): what an event card's pull and a project
+/// slot ask for. Universal counts as every tag.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ThreatTag {
+    Military,
+    Influence,
+    Cyber,
+    Economic,
+    Grid,
+    Universal,
+}
+
+impl ThreatTag {
+    pub fn name(self) -> &'static str {
+        match self {
+            ThreatTag::Military => "military",
+            ThreatTag::Influence => "influence",
+            ThreatTag::Cyber => "cyber",
+            ThreatTag::Economic => "economic",
+            ThreatTag::Grid => "grid",
+            ThreatTag::Universal => "universal",
+        }
+    }
+
+    /// The tag a card's typed counter (`Jam`, `AutoCounter`) names.
+    pub fn from_source(s: ThreatSource) -> ThreatTag {
+        match s {
+            ThreatSource::Influence => ThreatTag::Influence,
+            ThreatSource::Cyber => ThreatTag::Cyber,
+            ThreatSource::Economic => ThreatTag::Economic,
+            ThreatSource::Military => ThreatTag::Military,
+        }
+    }
+
+    /// Whether a card carrying `tags` fits a pull or slot asking for `want`.
+    pub fn fits(tags: &[ThreatTag], want: &[PullTag]) -> bool {
+        want.iter().any(|w| match w {
+            PullTag::Any => true,
+            PullTag::Is(t) => tags.iter().any(|c| c == t || *c == ThreatTag::Universal),
+        })
+    }
+}
+
+/// A pull's or slot's tag: one tag, or `"any"` (135).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "String", into = "String")]
+pub enum PullTag {
+    Any,
+    Is(ThreatTag),
+}
+
+impl TryFrom<String> for PullTag {
+    type Error = String;
+    fn try_from(s: String) -> Result<Self, String> {
+        if s == "any" {
+            return Ok(PullTag::Any);
+        }
+        serde_json::from_value(serde_json::Value::String(s.clone()))
+            .map(PullTag::Is)
+            .map_err(|_| format!("unknown pull tag {s:?}"))
+    }
+}
+
+impl From<PullTag> for String {
+    fn from(t: PullTag) -> String {
+        match t {
+            PullTag::Any => "any".into(),
+            PullTag::Is(t) => t.name().into(),
+        }
+    }
+}
+
+/// A threat's location type (135): its token goes on a site of this type in
+/// the pulling country.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Location {
+    City,
+    CoastalCity,
+    Station,
+    Factory,
+    Base,
+}
+
+impl Location {
+    pub fn name(self) -> &'static str {
+        match self {
+            Location::City => "city",
+            Location::CoastalCity => "coastal city",
+            Location::Station => "research station",
+            Location::Factory => "factory",
+            Location::Base => "military base",
+        }
+    }
+}
+
 /// Token types (021): tokens live only on cards that print their type.
 /// Datasets (Science), Followers (Diplomacy), Capital (Industry), Agents
 /// (Security); a Cyber type is still to come.

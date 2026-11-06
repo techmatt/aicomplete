@@ -503,29 +503,29 @@
     [
      {
       "resource": "credits",
-      "amount": 18
+      "amount": 27
      }
     ],
     [
      {
       "resource": "ambassadors",
-      "amount": 5
+      "amount": 7
      }
     ],
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 3
+      "amount": 5
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 9
+      "amount": 14
      },
      {
       "resource": "ambassadors",
-      "amount": 2
+      "amount": 3
      }
     ]
    ],
@@ -544,13 +544,13 @@
     "Discord sway",
     "production blacked out"
    ],
-   "value": "counter 18 (credits) / 20 (5 ambassadors) / 15 (3 tags) / 17 (9 credits + 2 ambassadors); harm per player near ~6 (nodes on or next to the city, corruption_reach 1) x 1.5 = 9, plus shared a corrupted city 45 at the anchor = 54, ratio 3.6 against the cheapest (15, 3 tags), 3.0 against the credits (18); with 1-2 rounds left nobody liberates, so the city prices at its sway and lost output, ~22, = 31, ratio 2.1 against the cheapest, 1.7 against the credits",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): the city's energy sways Discord every round after and its nodes go; an Influence engine answers it with ambassadors or tags, any seat with 18 credits; no loop.",
+   "value": "counter 27 (credits) / 28 (7 ambassadors) / 25 (5 tags) / 26 (14 credits + 3 ambassadors); harm per player near ~6 (nodes on or next to the city, corruption_reach 1) x 1.5 = 9, plus shared a corrupted city 45 at the anchor = 54, ratio 2.2 against the cheapest (25, 5 tags), 2.0 against the credits (27); with 1-2 rounds left nobody liberates, so the city prices at its sway and lost output, ~22, = 31, ratio 1.2 against the cheapest, 1.1 against the credits",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): the city's energy sways Discord every round after and its nodes go; an Influence engine answers it with ambassadors or tags, any seat with 27 credits; no loop.",
    "flags": [
-    "over band at the 45 anchor (3.6); in band only at a late-game price for a corrupted city (review the anchor for rounds 10-11)",
     "the city may be corrupted between deal and execution: if so, the clean city nearest it is corrupted instead (review)",
     "new field: corrupt_city at location (the city under the token)",
-    "text is 132 characters"
+    "text is 132 characters",
+    "135: counter raised to about 27 (was 15-20) so it lands near 2x its 54 harm (Matt's ruling 5, 2026-11-06); 5 Diplomacy tags is over tier 3's 3-tag band, on purpose; at the late-game city price (31) it reads 1.1-1.2."
    ],
    "reuses": null
   },

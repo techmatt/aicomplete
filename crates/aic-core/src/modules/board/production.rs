@@ -1,6 +1,7 @@
 //! Production: units, factories, chips, city energy, research cubes and megaprojects.
 
 use super::*;
+use crate::op::{CorpAt, CorpNear, CorpWhen};
 
 /// The resources a seat is measured on at the end of each action phase (068).
 pub const LEFT: [Resource; 5] =
@@ -47,8 +48,60 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
         return Ok(());
     }
     base_units(g, cx);
+    extra_units(g, cx);
     factory_output(g, cx);
     grow_factories(g, cx)
+}
+
+/// The extra corp troops a base asks for this production step (135): (past
+/// its cap, held to it), from the threats registered on it (Conscription),
+/// the ongoing projects (Arms Race) and the adversary board's rules
+/// (Warmongering).
+fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32, i64)]) -> (i64, i64) {
+    let (mut past, mut capped) = (0, 0);
+    for &(b, until, n) in registered {
+        if b == base && until >= g.round {
+            past += n;
+        }
+    }
+    let ongoing = g.pile(adversary::PROJECTS_ONGOING).iter().flat_map(|id| w.content.project(id).effects.iter());
+    let rules = w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter());
+    for op in ongoing.chain(rules) {
+        if let Op::CorpTroops { count, at: CorpAt::EveryBase, near, when: CorpWhen::EachProduction, past_cap, .. } = op {
+            if matches!(near, Some(CorpNear::AdversaryTroop)) && !next_to(w, base, |x| g.tokens(x, TROOP) > 0) {
+                continue;
+            }
+            if *past_cap {
+                past += count;
+            } else {
+                capped += count;
+            }
+        }
+    }
+    (past, capped)
+}
+
+/// 135: bases make their extra corp troops. Matt's ruling 4: at most 1 extra a
+/// base each production step, whatever makes it; past the cap when any source
+/// goes past it.
+fn extra_units(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    let registered = corp_extras(g);
+    for h in 0..g.hexes.len() {
+        if !is_base(&w, h) {
+            continue;
+        }
+        let (past, capped) = extra_asked(&w, g, h, &registered);
+        if past > 0 {
+            cx.add_tokens(g, h, UNIT, 1);
+            cx.tally(g, "board.units_extra", 1);
+            if past > 1 {
+                cx.tally(g, "board.units_extra_capped", past - 1);
+            }
+        } else if capped > 0 {
+            add_unit(g, cx, h);
+        }
+    }
 }
 
 /// Bases make their corp's units, or an ambassador diverts them: the adversary's
@@ -81,6 +134,11 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
         if g.tokens(h, FACTORY) == 0 {
             continue;
         }
+        // 135 (Factory Occupation): a factory a troop occupies makes nothing.
+        if occupied(g, h) {
+            cx.tally(g, "board.factories_occupied", 1);
+            continue;
+        }
         if let Some(s) = cube_owner(g, h) {
             cx.add_resource(g, s, Resource::Chips, chips);
             cx.tally(g, "board.chips_made", chips);
@@ -93,9 +151,12 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
             if g.tokens(h, ADV_AMBASSADOR) > 0 {
                 adversary::remove(g, cx, h, 1);
             } else if player_ambassador(g, h).is_some() {
-                // 022 (D1): a player ambassador on an adversary-owned factory
-                // sways Unity; the troop is still made (locked). 068: it stays.
+                // 135 (Matt's ruling 3: adversary factories free as a corrupted
+                // station does): a player ambassador on one takes its output, so
+                // no troop is made, and stays (068); it sways Unity as on any factory.
                 alignment::sway(g, cx, Side::Unity, w.int("board.factory_unity"));
+                cx.tally(g, "board.factory_troops_diverted", per);
+                continue;
             }
             for _ in 0..per {
                 adversary::place_troop(g, cx, h);
@@ -239,7 +300,8 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let l = w.list("board.corp_energy");
             l[c % l.len()]
         };
-        if flagged(g, RoundFlag::Blackout, c) {
+        // A blackout on its country or (135) near a threat, or the grid down near one.
+        if hex_flagged(&w, g, RoundFlag::Blackout, h) || hex_flagged(&w, g, RoundFlag::GridDown, h) {
             continue;
         }
         if corrupted(g, h) {
@@ -307,6 +369,12 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let c = w.map.hexes[h].country as usize;
+        // 135: a dark station (Thermal Runaway, Rolling Blackouts) or the grid
+        // down near it makes nothing; an adversary ambassador on it stays.
+        if hex_flagged(&w, g, RoundFlag::StationDark, h) || hex_flagged(&w, g, RoundFlag::GridDown, h) {
+            cx.tally(g, "board.stations_dark", 1);
+            continue;
+        }
         let color = if g.tokens(h, ADV_AMBASSADOR) > 0 {
             adversary::remove(g, cx, h, 1);
             Color::Adversary
@@ -317,6 +385,13 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         } else {
             cube_owner(g, h).map_or(Color::Neutral, Color::Seat)
         };
+        // 135 (Cooling Failure): a seat with a station outage makes no cubes.
+        if let Color::Seat(s) = color {
+            if seat_flagged(g, RoundFlag::StationOutage, s) {
+                cx.tally(g, "board.station_outage", 1);
+                continue;
+            }
+        }
         if g.var(&project_done(c)) == 0 {
             let key = match color {
                 Color::Seat(s) => project_key(c, Some(s)),
