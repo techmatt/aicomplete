@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 127 no limits: r49's holding limits and credit-production cap removed, and the agents' limit rules with them; runaway engines fixed at their cards (Orbital Embassy, the per-tag credit programs, the zero-insight draw cards, Antitrust Action, energy costs on three factories) | r51 | [127_no_limits/r51.md](results/127_no_limits/r51.md) |
 | 126 auto_counter from play: the value table's entry at the fire rate measured in play (0.30 a holder-round, the strategist), 2.5 → 1.5 a point; agents only | r50 | [126_auto_counter/r50.md](results/126_auto_counter/r50.md) |
 | 125 energy sinks: energy a second cost on five power-hungry buildings, credits cut to match; Particle Accelerator and Citywide Microgrid as late sinks; per-seat loss, spending and its phase in `games.jsonl` | r50 | [125_energy_sinks/r50.md](results/125_energy_sinks/r50.md) |
 | 124 agents play the engines: strategies read trigger contents, insight income at its table rate (D53), spare insight keeps, the limits in the keep plan, upkeep's loss spent; per-seat keeps and gain sources in `games.jsonl`; 102's Phase A switches folded in | r49 | [124_agents_engines/r49-agents.md](results/124_agents_engines/r49-agents.md) |

@@ -129,7 +129,7 @@ building with a Science trigger fires it. The `play` mark is a card you play.
 - **When built (108):** an engine building's one-time gain prints below the art and resolves when it is built,
   before its own play fires its trigger (Telemetry Archive's 2 Datasets then the 2 its Science play adds: At 4 pays at
   once).
-- **Per-tag income (106):** a program's "raise your credit income by 1 per Science tag on your cards"
+- **Per-tag income (106):** a program's "raise your credit income by 1 per 2 Science tags on your cards"
   (`production_per_tag`, Research Royalties) counts once, when it resolves, the program itself included; later tags
   don't raise it. A building's "each round, 3 credits per Science tag on your cards" (`income_per_tag` with an
   `amount`, Foundation Model Campus) counts again every round while it is active.

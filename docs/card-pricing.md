@@ -53,9 +53,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **A `needs` chain is the price** (ruling 10): needs 2-3 of a tag on an engine (108), needs 3-4 sits 2-4 under the
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction: 1 antimatter per Cyber tag).
 - **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
-  median 10 (most 6-20; the big income and late cards 20-46, Moonshot Grant's 46 the top, Gigafactory Charter's "40 credits, +12
-  credit income, draw 2" next), tier 2 median 16 (most 9-30; the liberate capstones 4-42, Citywide Microgrid's 4 credits beside 8 energy). 5 cards cost 5 or less, 11 cost 30
-  or more (r50: energy took credits off five). The deck's median is 12. Nine credits is about half a round's printed credits on the boards (18 / 16 / 14).
+  median 10 (most 6-20; the big income and late cards 20-46, Moonshot Grant's 46 the top, Gigafactory Charter's "31 credits and
+  2 energy, +12 credit income, draw 2" among them), tier 2 median 15.5 (most 7-30; the liberate capstones 4-42, Citywide Microgrid's 4 credits beside 8 energy). 16 cards cost 5 or less, 11 cost 30
+  or more (r50: energy took credits off five; r51: the per-tag credit programs at 4, insight off the draw cards' credits). The deck's median is 11. Nine credits is about half a round's printed credits on the boards (18 / 16 / 14).
 - **Big early and late cards** (r46, Matt): early jump-starts at 25-34 credits (Fabrication Megaplex 25 and 2 energy, r50), no `needs`, playable in rounds 1-3 from
   the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
@@ -87,8 +87,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already
   takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards; no deck card prints
   one since r44 (Hyperscale Botnet took 4 insight a round instead). Science's discount prints credits (Grad Student Pool).
-- **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per X tag"),
-  needs 2 of X (r43), 10 credits, one per tag (r45); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
+- **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per 2 X tags"),
+  needs 2 of X (r43), 4 credits and no play insight, one per tag (r51: 1 per 2 tags, the late slope halved); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
   (`auto_counter`, Cyber's alone since r44) 9 credits and 1 insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam
   Action building 7 credits and no play insight (r45), about 3 a round.
 - **Income has a horizon** (r35): an income, of credits, energy or anything, counts for the rounds left at a typical
@@ -103,9 +103,9 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling; it replaced r35's 8-10 anchor), and no card above
   +2 a card (one tag payoff, Tidal Barrage, reaches +3 at 6 Power tags, r44). Three threats' counters, nine cards
   and two Actions (Grid Analytics Desk's draw, Particle Accelerator's cubes) take energy.
-- **Energy as a second cost** (r50, Matt): a building whose title reads power-hungry prints energy and costs 4.5 credits
-  less an energy, so pay holds at the anchors; uncommon (9 of 151 deck cards). The late sinks price energy at its 4.5
-  anchor too, though the seat they are for would lose it at the limit: Citywide Microgrid's 8 energy is 36 of its 56.
+- **Energy as a second cost** (r50, Matt): a card whose title reads power-hungry prints energy and costs 4.5 credits
+  less an energy, so pay holds at the anchors; uncommon (12 of 151 deck cards, r51 adding three factories). The late
+  sinks price energy at its 4.5 anchor too: Citywide Microgrid's 8 energy is 36 of its 56.
 - **A station is a flip** (r35): freeing one is worth a cube a round both ways, about 15 (`cleanse_station`); freeing a
   factory stays about 6.
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 1, then 0.5 each (events leave none).

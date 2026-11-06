@@ -1,0 +1,317 @@
+{
+  "name": "screen-127-levers",
+  "note": "127: the card pass by lever (overlay.txt groups) beside the base (r51, no limits), the three pairs at d2, seeds 35392-35487 (gen_screen.py writes it).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-embassy",
+      "set": [
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}"
+      ]
+    },
+    {
+      "name": "br-embassy",
+      "set": [
+        "ai.boards=0,2",
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}"
+      ]
+    },
+    {
+      "name": "pr-embassy",
+      "set": [
+        "ai.boards=1,2",
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}"
+      ]
+    },
+    {
+      "name": "bp-pertag",
+      "set": [
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4"
+      ]
+    },
+    {
+      "name": "br-pertag",
+      "set": [
+        "ai.boards=0,2",
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4"
+      ]
+    },
+    {
+      "name": "pr-pertag",
+      "set": [
+        "ai.boards=1,2",
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4"
+      ]
+    },
+    {
+      "name": "bp-cantrip",
+      "set": [
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6"
+      ]
+    },
+    {
+      "name": "br-cantrip",
+      "set": [
+        "ai.boards=0,2",
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6"
+      ]
+    },
+    {
+      "name": "pr-cantrip",
+      "set": [
+        "ai.boards=1,2",
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6"
+      ]
+    },
+    {
+      "name": "bp-antitrust",
+      "set": [
+        "cards.antitrust_action.effects.1.per=2"
+      ]
+    },
+    {
+      "name": "br-antitrust",
+      "set": [
+        "ai.boards=0,2",
+        "cards.antitrust_action.effects.1.per=2"
+      ]
+    },
+    {
+      "name": "pr-antitrust",
+      "set": [
+        "ai.boards=1,2",
+        "cards.antitrust_action.effects.1.per=2"
+      ]
+    },
+    {
+      "name": "bp-energy",
+      "set": [
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    },
+    {
+      "name": "br-energy",
+      "set": [
+        "ai.boards=0,2",
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    },
+    {
+      "name": "pr-energy",
+      "set": [
+        "ai.boards=1,2",
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    },
+    {
+      "name": "bp-all",
+      "set": [
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}",
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4",
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6",
+        "cards.antitrust_action.effects.1.per=2",
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    },
+    {
+      "name": "br-all",
+      "set": [
+        "ai.boards=0,2",
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}",
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4",
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6",
+        "cards.antitrust_action.effects.1.per=2",
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    },
+    {
+      "name": "pr-all",
+      "set": [
+        "ai.boards=1,2",
+        "cards.orbital_embassy.passives.0.on={\"event\": \"play_tag\", \"tag\": \"diplomacy\"}",
+        "cards.economies_of_scale.effects.0.per=2",
+        "cards.economies_of_scale.cost=4",
+        "cards.ransomware_syndicate.effects.0.per=2",
+        "cards.ransomware_syndicate.cost=4",
+        "cards.research_royalties.effects.0.per=2",
+        "cards.research_royalties.cost=4",
+        "cards.defense_appropriations.effects.0.per=2",
+        "cards.defense_appropriations.cost=4",
+        "cards.capacity_market.effects.0.per=2",
+        "cards.capacity_market.cost=4",
+        "cards.peace_dividend.effects.0.per=2",
+        "cards.peace_dividend.cost=4",
+        "cards.breach_and_clear.insight=1",
+        "cards.breach_and_clear.cost=2",
+        "cards.force_protection_order.insight=1",
+        "cards.force_protection_order.cost=2",
+        "cards.predictive_modeling.insight=1",
+        "cards.predictive_modeling.cost=3",
+        "cards.recruit_operatives.insight=1",
+        "cards.recruit_operatives.cost=5",
+        "cards.field_sensor_grid.insight=1",
+        "cards.field_sensor_grid.cost=6",
+        "cards.antitrust_action.effects.1.per=2",
+        "cards.gigafactory_charter.cost=31",
+        "cards.gigafactory_charter.energy=2",
+        "cards.robotic_foundry.cost=9",
+        "cards.robotic_foundry.energy=1",
+        "cards.arcology_foundry.cost=7",
+        "cards.arcology_foundry.energy=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 96,
+  "first_seed": 35392,
+  "records": 0
+}

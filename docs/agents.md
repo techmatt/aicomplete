@@ -136,7 +136,7 @@ As a player says them (the config's `says`):
 ## Strategy-guide heuristics
 
 Rules a player could say where a one-step search misses a card's point, each a switch, on
-(`experiments/results/screen-092/`); 124's spare-insight and limit rules are every agent's (a new
+(`experiments/results/screen-092/`); 124's spare-insight rule is every agent's (a new
 player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 
 - *Shelter what a destruction showing would take, once you can't counter it.* A sheltered
@@ -151,9 +151,6 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 - *Insight you can't spend is cheap: keep with it* (124): insight over `w.insight_cap` (10) is
   worth `w.insight_idle` (0.1), held or (Patience) as income, and so is a keep paid from it; the
   plan keeps any pick worth its price that spare insight pays for (`keep_spare`).
-- *What you can't hold you lose* (124): credits and energy upkeep and production would push past
-  a limit are worth nothing held (`w.upkeep_loss`); the plan's budget and room stop at the limits
-  (`plan_limits`, with a heuristic that reads the limits). The play check sees the engine's clamp.
 - *A trigger that pays credits is a credits card* (124): strategies read triggers' and
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
   Off (no gain read): teammate triggers at the teammates' share (`w.team_share`, `plan_team`),

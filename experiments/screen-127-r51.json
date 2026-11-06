@@ -1,0 +1,22 @@
+{
+  "name": "screen-127-r51",
+  "note": "127: the final read, no limits and the engine card pass (r51) against the r50 build (main 4533c6d, after 126, with r50's configs), paired on fresh seeds 35600-35647: the three pairs at d2, the strategist and greedy, 48 a cell.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 35600,
+  "records": 0
+}

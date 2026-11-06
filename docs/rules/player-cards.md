@@ -47,7 +47,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   for economic (Science's and Power's tools stay general). Industry has two programs and an Action building;
   Security, Diplomacy and Cyber one of each.
 - **Engines (candidate; 106, the Terraforming Mars pattern).** Programs are the green cards: one-shot, and where
-  permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per Science tag on your cards",
+  permanent income lives, flat ("raise your credit income by 8") or per tag ("by 1 per 2 Science tags on your cards",
   one such program per tag, needs 2 of it). Buildings are the blue cards: triggers, Actions and Effects; a building's
   income is per tag, 3 a tag (Foundation Model Campus, Vertical Monopoly), or flat on a strong tier-2 one. **An engine
   pays up front (108, Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain

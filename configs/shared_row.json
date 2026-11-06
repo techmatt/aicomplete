@@ -136,13 +136,7 @@
     {
       "module": "economy",
       "variant": "standard",
-      "params": {
-        "hold_credits": 150,
-        "hold_energy": 10,
-        "hold_chips": 10,
-        "hold_ambassadors": 10,
-        "credit_production": 60
-      }
+      "params": {}
     },
     {
       "module": "ai",

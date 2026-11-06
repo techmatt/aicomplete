@@ -224,9 +224,8 @@ impl Module for Board {
                 });
             }
         }
-        // 118: at `sell_credits` 0 a sale pays nothing: not offered; nor (122) at
-        // the credit limit, where the credits would be lost.
-        let sells = w.int("board.sell_credits") > 0 && w.room(g, s, Resource::Credits) > 0;
+        // 118: at `sell_credits` 0 a sale pays nothing: not offered.
+        let sells = w.int("board.sell_credits") > 0;
         for id in g.pile(&cards::hand(s)).iter().filter(|_| sells) {
             out.push(Action::Sell {
                 seat,

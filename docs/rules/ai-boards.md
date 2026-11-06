@@ -109,9 +109,10 @@ have tokens).
 | 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Each round, stop the first destruction in a country you're in. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
 <!-- /generated -->
 
-**Loops and caps.** Credits, energy, chips and ambassadors have holding limits (r49: 150, 10, 10, 10 in supply;
-[economy.md](economy.md); insight, antimatter and cubes have none), and credit production raised by cards stops at 60: program income stacked by draw chains (122: one Researcher's 288 credits a round) and
-energy, chips and ambassadors no sink took once the tracks filled stop there. Credits → chips → buildings → income → credits runs once a round and in 5 slots at most. Rush Build
+**Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
+limits*): a runaway is fixed at the cards that feed it. Program credit income stacked by draw chains is bounded by
+insight (every card that draws costs at least 1 to play, and credits can't buy it) and by the per-tag programs' rate
+of 1 a 2 tags (127). Credits → chips → buildings → income → credits runs once a round and in 5 slots at most. Rush Build
 takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once a round: the Industry count can hold
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
 hand cap it. **The energy gift** (106 cut the gift Actions; Shared Grid Accord and Interconnector Treaty give energy

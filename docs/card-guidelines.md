@@ -24,7 +24,9 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
 6. **Clear timing.** Each effect reads as once now (below the art), each round, or as an Action.
    "Pay N, gain M" is a one-off. Don't print a rate where a fixed trade will do.
 7. **No caps by default.** Price the uncapped effect. A card that breaks without a cap gets a
-   lower rate or a new effect, not a cap.
+   lower rate or a new effect, not a cap. Nor does the game cap it: no resource has a holding limit and no global
+   cap limits production (Matt, 127), so a runaway pile is fixed at the cards that feed it. A card that draws costs
+   at least 1 insight to play, so a round's chain of plays stops when its insight does.
 8. **One clear idea per card.** Two effects at most, unless a third is the extra cost. A building
    holds income or tokens, and one Action or Effect; an Action may be "A, OR B" when it is a token card's choice
    (rule 15).

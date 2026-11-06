@@ -1,0 +1,413 @@
+{
+  "name": "screen-127-disproof",
+  "note": "127: each named engine off by overlays beside the base (r51, no limits), the three pairs at d2, the strategist, on dev seeds 35392-35487 (gen_disproof.py writes it).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp-pertag",
+      "set": [
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "br-pertag",
+      "set": [
+        "ai.boards=0,2",
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "pr-pertag",
+      "set": [
+        "ai.boards=1,2",
+        "cards.continental_supergrid.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.peace_dividend.effects=[]",
+        "cards.research_royalties.effects=[]",
+        "cards.economies_of_scale.effects=[]",
+        "cards.ransomware_syndicate.effects=[]",
+        "cards.capacity_market.effects=[]",
+        "cards.defense_appropriations.effects=[]",
+        "cards.homeland_security_act.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "bp-flat",
+      "set": [
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.university_spinout.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "br-flat",
+      "set": [
+        "ai.boards=0,2",
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.university_spinout.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "pr-flat",
+      "set": [
+        "ai.boards=1,2",
+        "cards.payroll_automation.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.vendor_financing.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.robotic_foundry.effects=[]",
+        "cards.arcology_foundry.effects=[{\"op\":\"production\",\"resource\":\"chips\",\"amount\":2}]",
+        "cards.fusion_startup_stake.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.dyson_swarm_tranche.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.interconnector_treaty.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"energy\",\"amount\":4}]",
+        "cards.hardened_bunker_complex.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":1}]",
+        "cards.supply_chain_audit.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"economic\"}]",
+        "cards.university_spinout.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"draw\",\"count\":2}]",
+        "cards.cryptojacking_campaign.effects=[]",
+        "cards.trade_delegation.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.multiyear_defense_budget.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.counterinsurgency_campaign.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":3,\"reach\":true}]",
+        "cards.frontier_lab_charter.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":2}]"
+      ]
+    },
+    {
+      "name": "bp-drawprog",
+      "set": [
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]"
+      ]
+    },
+    {
+      "name": "br-drawprog",
+      "set": [
+        "ai.boards=0,2",
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]"
+      ]
+    },
+    {
+      "name": "pr-drawprog",
+      "set": [
+        "ai.boards=1,2",
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]"
+      ]
+    },
+    {
+      "name": "bp-drawall",
+      "set": [
+        "cards.simulation_cluster.effects=[]",
+        "cards.citation_engine.effects=[]",
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.grad_student_pool.effects=[]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.foundation_model_campus.effects=[]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.data_licensing_deal.effects=[]",
+        "cards.lights_out_assembly.effects=[]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.orbital_mass_driver.effects=[]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.honeypot_relay.effects=[]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.darknet_exchange.effects=[]",
+        "cards.hyperscale_botnet.effects=[]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.consulate_tower.effects=[]",
+        "cards.orbital_embassy.effects=[]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.agency_field_station.effects=[]",
+        "cards.security_contractor_hq.effects=[]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.security_ops_floor.effects=[]",
+        "cards.vertical_monopoly.effects=[]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.interdisciplinary_institute.effects=[]",
+        "cards.standardized_tooling.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.capital_projects_office.effects=[]",
+        "cards.exploit_broker.effects=[]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.command_and_control_grid.effects=[]",
+        "cards.reconciliation_office.effects=[]",
+        "cards.protocol_office.effects=[]",
+        "cards.joint_task_force.effects=[]",
+        "cards.quick_reaction_force.effects=[]",
+        "cards.preprint_server.effects=[]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.supplier_network.effects=[]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fusion_research_campus.effects=[]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]",
+        "cards.fabrication_megaplex.effects=[]"
+      ]
+    },
+    {
+      "name": "br-drawall",
+      "set": [
+        "ai.boards=0,2",
+        "cards.simulation_cluster.effects=[]",
+        "cards.citation_engine.effects=[]",
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.grad_student_pool.effects=[]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.foundation_model_campus.effects=[]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.data_licensing_deal.effects=[]",
+        "cards.lights_out_assembly.effects=[]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.orbital_mass_driver.effects=[]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.honeypot_relay.effects=[]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.darknet_exchange.effects=[]",
+        "cards.hyperscale_botnet.effects=[]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.consulate_tower.effects=[]",
+        "cards.orbital_embassy.effects=[]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.agency_field_station.effects=[]",
+        "cards.security_contractor_hq.effects=[]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.security_ops_floor.effects=[]",
+        "cards.vertical_monopoly.effects=[]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.interdisciplinary_institute.effects=[]",
+        "cards.standardized_tooling.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.capital_projects_office.effects=[]",
+        "cards.exploit_broker.effects=[]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.command_and_control_grid.effects=[]",
+        "cards.reconciliation_office.effects=[]",
+        "cards.protocol_office.effects=[]",
+        "cards.joint_task_force.effects=[]",
+        "cards.quick_reaction_force.effects=[]",
+        "cards.preprint_server.effects=[]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.supplier_network.effects=[]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fusion_research_campus.effects=[]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]",
+        "cards.fabrication_megaplex.effects=[]"
+      ]
+    },
+    {
+      "name": "pr-drawall",
+      "set": [
+        "ai.boards=1,2",
+        "cards.simulation_cluster.effects=[]",
+        "cards.citation_engine.effects=[]",
+        "cards.breakthrough_leak.effects=[]",
+        "cards.zero_knowledge_exploit.effects=[{\"op\":\"drain_project\",\"amount\":5}]",
+        "cards.grad_student_pool.effects=[]",
+        "cards.dataset_scraper.effects=[{\"op\":\"add_tokens\",\"kind\":\"datasets\",\"amount\":1}]",
+        "cards.shared_compute_grant.effects=[{\"op\":\"choose_player\"},{\"op\":\"other_gain\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.predictive_modeling.effects=[{\"op\":\"delay_threat\",\"count\":2}]",
+        "cards.field_sensor_grid.effects=[{\"op\":\"clear_markers\",\"count\":3}]",
+        "cards.red_team_audit.effects=[{\"op\":\"jam\",\"amount\":6}]",
+        "cards.foundation_model_campus.effects=[]",
+        "cards.recursive_self_improvement.effects=[{\"op\":\"production\",\"resource\":\"insight\",\"amount\":4}]",
+        "cards.data_licensing_deal.effects=[]",
+        "cards.lights_out_assembly.effects=[]",
+        "cards.materials_hedge_desk.effects=[{\"op\":\"add_tokens\",\"kind\":\"capital\",\"amount\":2}]",
+        "cards.orbital_mass_driver.effects=[]",
+        "cards.logic_bomb.effects=[{\"op\":\"drain_project\",\"amount\":6}]",
+        "cards.honeypot_relay.effects=[]",
+        "cards.shadow_broker_feed.effects=[{\"op\":\"clear_markers\",\"count\":2}]",
+        "cards.darknet_exchange.effects=[]",
+        "cards.hyperscale_botnet.effects=[]",
+        "cards.relay_mast_rollout.effects=[{\"op\":\"place_node\",\"count\":2,\"free\":true}]",
+        "cards.consulate_tower.effects=[]",
+        "cards.orbital_embassy.effects=[]",
+        "cards.recruit_operatives.effects=[{\"op\":\"add_tokens\",\"kind\":\"agents\",\"amount\":1}]",
+        "cards.agency_field_station.effects=[]",
+        "cards.security_contractor_hq.effects=[]",
+        "cards.breach_and_clear.effects=[{\"op\":\"remove_troops\",\"count\":1,\"reach\":true}]",
+        "cards.force_protection_order.effects=[{\"op\":\"jam\",\"amount\":6,\"source\":\"military\"}]",
+        "cards.security_ops_floor.effects=[]",
+        "cards.vertical_monopoly.effects=[]",
+        "cards.forensic_audit.effects=[{\"op\":\"liberate\"}]",
+        "cards.interdisciplinary_institute.effects=[]",
+        "cards.standardized_tooling.effects=[]",
+        "cards.gigafactory_charter.effects=[{\"op\":\"production\",\"resource\":\"credits\",\"amount\":12}]",
+        "cards.capital_projects_office.effects=[]",
+        "cards.exploit_broker.effects=[]",
+        "cards.zero_day_auction.effects=[{\"op\":\"gain\",\"resource\":\"antimatter\",\"amount\":2}]",
+        "cards.command_and_control_grid.effects=[]",
+        "cards.reconciliation_office.effects=[]",
+        "cards.protocol_office.effects=[]",
+        "cards.joint_task_force.effects=[]",
+        "cards.quick_reaction_force.effects=[]",
+        "cards.preprint_server.effects=[]",
+        "cards.moonshot_grant.effects=[{\"op\":\"project_cube\",\"count\":8}]",
+        "cards.supplier_network.effects=[]",
+        "cards.wartime_retooling.effects=[{\"op\":\"production\",\"resource\":\"energy\",\"amount\":2}]",
+        "cards.fusion_research_campus.effects=[]",
+        "cards.envoy_briefings.effects=[{\"op\":\"gain_ambassadors\",\"count\":2}]",
+        "cards.headquarters_raid.effects=[{\"op\":\"remove_ambassadors_country\",\"max\":5,\"reach\":true}]",
+        "cards.fabrication_megaplex.effects=[]"
+      ]
+    },
+    {
+      "name": "bp-embassy",
+      "set": [
+        "cards.orbital_embassy.passives=[]"
+      ]
+    },
+    {
+      "name": "br-embassy",
+      "set": [
+        "ai.boards=0,2",
+        "cards.orbital_embassy.passives=[]"
+      ]
+    },
+    {
+      "name": "pr-embassy",
+      "set": [
+        "ai.boards=1,2",
+        "cards.orbital_embassy.passives=[]"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "first_seed": 35392,
+  "records": 0
+}

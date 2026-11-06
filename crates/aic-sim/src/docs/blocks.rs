@@ -570,12 +570,12 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you and are where lasting income comes from (\"raise your credit \
-         income by 1 per Science tag on your cards\"); buildings are your engine: Actions you use once a \
+         income by 1 per 2 Science tags on your cards\"); buildings are your engine: Actions you use once a \
          round and Effects that pay each time their trigger happens; events are used and discarded. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
-         and you can sacrifice cards with the right tags to use your AI board's powers. You hold at \
-         most {} credits, {} energy, {} chips and {} ambassadors in supply: anything gained past that is lost, so spend it; \
-         cards raise your credit income by {} at most.\n\n\
+         and you can sacrifice cards with the right tags to use your AI board's powers. There is no \
+         limit on what you hold or on how far cards raise your income; energy you don't spend stays \
+         energy, so drafting cards that spend it is up to you.\n\n\
          **Nodes, for new players.** There is no growth step. In the action phase you place \
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
          round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
@@ -591,11 +591,6 @@ pub(super) fn new_players_block(r: &Rules) -> String {
         n("cards.keep_tier2"),
         range(&insight),
         range(&slots),
-        n("economy.hold_credits"),
-        n("economy.hold_energy"),
-        n("economy.hold_chips"),
-        n("economy.hold_ambassadors"),
-        n("economy.credit_production"),
         n("ai.start_energy"),
     )
 }

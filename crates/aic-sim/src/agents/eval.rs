@@ -315,12 +315,6 @@ pub struct Weights {
     /// 124 (D47), above 0: a token on a card with a threshold (At N) is worth
     /// what the threshold pays per token, when that beats the held rate.
     pub threshold_tokens: f64,
-    /// 124, above 0: what a seat holds of credits or energy that next upkeep's
-    /// income (and, for energy, its cities' production) would push past its
-    /// limit is worth nothing ("spend what upkeep would take"). Chips held aren't
-    /// valued in horizon mode and ambassadors have no income, so neither is read.
-    /// The income is `economy::income`'s: Sabotage's lost energy isn't seen.
-    pub upkeep_loss: f64,
     /// 124 (D53), above 0: an insight a round of income is worth this, in place
     /// of the held `insight` weight (horizon mode).
     pub insight_income: f64,
@@ -517,11 +511,9 @@ impl Default for Weights {
             // −2.1 on the candidate; threshold_tokens 0.0 ±0.9 and −1.4).
             team_share: 0.0,
             threshold_tokens: 0.0,
-            // 124: every agent reads the r49 limits ("what you can't hold you lose",
-            // with the plan's `plan_limits`) and keeps with spare insight (with the
-            // plan's `keep_spare`): what a new player would do (Matt, 2026-11-05,
-            // message 5216). Greedy on dev seeds 34756-34899 (432 games): 49.1% → 48.1%.
-            upkeep_loss: 1.0,
+            // 124: every agent keeps with spare insight (with the plan's
+            // `keep_spare`): what a new player would do (Matt, 2026-11-05, message
+            // 5216). 127: the limit rules that came with it are gone with the limits.
             insight_income: 0.0,
             insight_cap: 10.0,
             insight_idle: 0.1,
@@ -945,7 +937,6 @@ impl Eval {
             cap,
             idle,
             insight_cap: w.insight_cap,
-            limits: w.upkeep_loss > 0.0,
         }
     }
 
@@ -1242,7 +1233,7 @@ impl Eval {
         if w.horizon > 0.0 {
             v += self.horizon_value(rules, g, &tokens, &unpaid, thin, discord_left);
         } else {
-            self.flat_value(rules, g, &tokens, &mut v);
+            self.flat_value(rules, g, &mut v);
         }
         for share in unpaid {
             v -= w.threat * share;
@@ -1361,36 +1352,13 @@ impl Eval {
     }
 
     /// Per-seat resources, income, hands and buildings, by flat weights.
-    fn flat_value(&self, rules: &Rules, g: &GameState, tokens: &[HexTokens], v: &mut f64) {
+    fn flat_value(&self, rules: &Rules, g: &GameState, v: &mut f64) {
         let w = &self.w;
         let world = rules.world();
-        // 124 (`upkeep_loss`): the cities' energy, read once.
-        let prod = if w.upkeep_loss > 0.0 { self.board_production(rules, tokens) } else { Vec::new() };
         for s in 0..self.seats {
             let res = |k: Resource| g.resource(s, k) as f64;
-            // 124 (`upkeep_loss`): what upkeep would push past a limit is lost unless spent.
-            let (lost_cr, lost_en) = if w.upkeep_loss > 0.0 {
-                // The seat terms the horizon reads, from the same store (103).
-                let terms = || {
-                    let tags = cards::tag_counts(&world, g, s);
-                    let mut required = tags;
-                    for t in ai::board_tags(&world, g, s) {
-                        required[*t as usize] += 1;
-                    }
-                    let income = economy::income_with(&world, g, s, &tags);
-                    (tags, required, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
-                };
-                let inc = seat_terms_cached(self.id, g, s, terms).3;
-                let made = prod.get(s).copied().unwrap_or(0);
-                (
-                    self.upkeep_lost(&world, Resource::Credits, g.resource(s, Resource::Credits), inc[Resource::Credits]),
-                    self.upkeep_lost(&world, Resource::Energy, g.resource(s, Resource::Energy), inc[Resource::Energy] + made),
-                )
-            } else {
-                (0.0, 0.0)
-            };
-            *v += self.credit_value(res(Resource::Credits) - lost_cr)
-                + self.energy_unit() * (res(Resource::Energy) - lost_en)
+            *v += self.credit_value(res(Resource::Credits))
+                + self.energy_unit() * res(Resource::Energy)
                 + w.antimatter * res(Resource::Antimatter)
                 + self.insight_value(s, res(Resource::Insight))
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
@@ -1572,15 +1540,6 @@ impl Eval {
         keep * (1.0 - covered * (1.0 - (self.w.insight_idle / unit).min(1.0)))
     }
 
-    /// 124 (`upkeep_loss`): of the `held` `r` seat `s` has, what next upkeep's
-    /// `income` of it would push past its holding limit (122): lost unless spent.
-    fn upkeep_lost(&self, world: &aic_core::module::World, r: Resource, held: i64, income: i64) -> f64 {
-        if self.w.upkeep_loss <= 0.0 || income <= 0 {
-            return 0.0;
-        }
-        world.hold(r).map_or(0.0, |cap| (held + income - cap).clamp(0, held.max(0)) as f64)
-    }
-
     /// Per-seat resources, income, hands and buildings in horizon mode.
     fn horizon_value(
         &self,
@@ -1689,17 +1648,13 @@ impl Eval {
             // Insight is reset each round, so what is held now only counts this round.
             for (i, r) in RESOURCES.iter().enumerate() {
                 if *r == Resource::Credits {
-                    // 124 (`upkeep_loss`): what upkeep's income would push past the
-                    // limit is lost unless spent: worth nothing held (the idle ones go first).
-                    let lost = self.upkeep_lost(&world, *r, res(*r), sd.income[*r]);
-                    v += fade * self.credit_value(res(*r) as f64 - lost);
+                    v += fade * self.credit_value(res(*r) as f64);
                 } else if *r == Resource::Insight {
                     v += fade * self.insight_value(s, res(*r) as f64);
                 } else if *r == Resource::ResearchCubes {
                     v += fade * self.cube_unit(s) * res(*r) as f64;
                 } else if *r == Resource::Energy {
-                    let lost = self.upkeep_lost(&world, *r, res(*r), sd.income[*r] + *made);
-                    v += fade * self.energy_unit() * (res(*r) as f64 - lost);
+                    v += fade * self.energy_unit() * res(*r) as f64;
                 } else if *r != Resource::Chips {
                     v += fade * unit[i] * res(*r) as f64;
                 }
@@ -2001,9 +1956,6 @@ pub struct PlanRates {
     pub idle: f64,
     /// 124: the heuristic's `insight_cap` (0: none), for `keep_spare`.
     pub insight_cap: f64,
-    /// 124: whether the heuristic reads the holding limits (`upkeep_loss`), for
-    /// `plan_limits`: the plan honors them when its heuristic does.
-    pub limits: bool,
 }
 
 #[cfg(test)]

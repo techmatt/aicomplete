@@ -1,0 +1,22 @@
+{
+  "name": "screen-127-dev",
+  "note": "127: no holding or production limits (r51) on the dev seeds 35392-35487 (96 a cell): the three pairs at d2, the strategist and greedy. Read with the r50 build (main 4533c6d, r50's configs) on the same seeds for the pile read, and with card fixes as overlays by variant.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 96,
+  "first_seed": 35392,
+  "records": 0
+}

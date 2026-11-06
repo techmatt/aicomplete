@@ -1,0 +1,57 @@
+# 127: no limits, fix the engines (r51). Rerun with: python scripts/cards/apply_overlay.py experiments/results/127_no_limits/overlay.txt
+# Each "# lever:" line starts a group that gen_screen.py screens on and off; every entry belongs to the group above it.
+
+# lever: embassy
+# Orbital Embassy's ambassadors: one a Diplomacy tag played, not one a tag of any kind (r48's 77-81 pile).
+cards.orbital_embassy.passives.0.on={"event": "play_tag", "tag": "diplomacy"}
+# Its price falls with the trigger: 9 credits (was 18), so the table still sees a gain.
+cards.orbital_embassy.cost=9
+
+# lever: pertag
+# The six tier-1 per-tag credit programs: +1 credit income per 2 tags, at 4 credits and no play insight (was per tag,
+# at 10 credits and 1 insight).
+cards.economies_of_scale.effects.0.per=2
+cards.economies_of_scale.cost=4
+cards.economies_of_scale.insight=0
+cards.ransomware_syndicate.effects.0.per=2
+cards.ransomware_syndicate.cost=4
+cards.ransomware_syndicate.insight=0
+cards.research_royalties.effects.0.per=2
+cards.research_royalties.cost=4
+cards.research_royalties.insight=0
+cards.defense_appropriations.effects.0.per=2
+cards.defense_appropriations.cost=4
+cards.defense_appropriations.insight=0
+cards.capacity_market.effects.0.per=2
+cards.capacity_market.cost=4
+cards.capacity_market.insight=0
+cards.peace_dividend.effects.0.per=2
+cards.peace_dividend.cost=4
+cards.peace_dividend.insight=0
+
+# lever: cantrip
+# The five draw cards that cost no play insight: 1 insight, 4 credits less (pay holds at the anchors).
+cards.breach_and_clear.insight=1
+cards.breach_and_clear.cost=2
+cards.force_protection_order.insight=1
+cards.force_protection_order.cost=2
+cards.predictive_modeling.insight=1
+cards.predictive_modeling.cost=3
+cards.recruit_operatives.insight=1
+cards.recruit_operatives.cost=5
+cards.field_sensor_grid.insight=1
+cards.field_sensor_grid.cost=6
+
+# lever: antitrust
+# Antitrust Action's chips: one a 2 Industry tags (was one a tag), at 4 credits (was 6).
+cards.antitrust_action.effects.1.per=2
+cards.antitrust_action.cost=4
+
+# lever: energy
+# Power-hungry factories: an energy cost, credits cut about 4.5 an energy (125's method).
+cards.gigafactory_charter.cost=31
+cards.gigafactory_charter.energy=2
+cards.robotic_foundry.cost=9
+cards.robotic_foundry.energy=1
+cards.arcology_foundry.cost=7
+cards.arcology_foundry.energy=2

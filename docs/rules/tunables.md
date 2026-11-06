@@ -92,11 +92,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.discord_tier2` | 2 | 1..50 | Discord tip count from which a Discord tip draws the stronger tier |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
-| `economy.hold_credits` | 150 | 1..9999 | the most credits a player may hold: a gain past it is lost (122) |
-| `economy.hold_energy` | 10 | 1..999 | the most energy a player may hold: a gain past it is lost (122) |
-| `economy.hold_chips` | 10 | 1..999 | the most chips a player may hold: a gain past it is lost (122) |
-| `economy.hold_ambassadors` | 10 | 1..999 | the most ambassadors a player may hold in supply: a gain past it is lost (122) |
-| `economy.credit_production` | 60 | 0..9999 | the most a player's credit production may be raised by cards (programs, Copy): a raise past it is lost (122) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
 | `ai.start_credits` | 40, 46, 40 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `ai.start_energy` | 1 | 0..20 | energy each player starts with |

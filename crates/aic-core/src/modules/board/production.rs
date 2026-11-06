@@ -262,11 +262,8 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         } else {
             // A neutral city's cube: a player with a node next to it may buy
             // it (players choose who), otherwise it is lost (021).
-            // 122: a seat holding its limit of energy has no room: it can't buy.
             let buyers: Vec<usize> = (0..g.seats.len())
-                .filter(|&s| {
-                    g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h) && w.room(g, s, Resource::Energy) > 0
-                })
+                .filter(|&s| g.resource(s, Resource::Credits) >= price && in_reach(&w, g, s, h))
                 .collect();
             // 118: a city making no energy (`corp_energy` 0) sold nothing for its price.
             if buyers.is_empty() || energy <= 0 {
@@ -414,16 +411,10 @@ fn complete_projects(g: &mut GameState, cx: &mut Cx) -> Res {
         cx.note(None, || {
             format!("{} completes: {} cubes pay ({paid} player, {adv} adversary, {neutral} neutral)", p.name, paid + adv + neutral)
         });
-        // 125: the energy the payouts lose at the holding limit, the measure's.
-        let lost_before = g.stats.counters.get("economy.hold_lost.energy").copied().unwrap_or(0);
         for (s, &n) in mine.iter().enumerate() {
             for _ in 0..n {
                 effects::run(g, cx, &p.player, &mut effects::Ctx::seat(s))?;
             }
-        }
-        let lost = g.stats.counters.get("economy.hold_lost.energy").copied().unwrap_or(0) - lost_before;
-        if lost > 0 {
-            cx.tally(g, "board.completion_lost.energy", lost);
         }
         for _ in 0..adv {
             effects::run(g, cx, &p.adversary, &mut effects::Ctx::team().named("megaproject"))?;

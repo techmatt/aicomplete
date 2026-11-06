@@ -120,45 +120,35 @@ fn standard_actions_cost_what_the_config_says() {
 
 }
 
-/// 122: a seat holds at most `economy.hold_*` of credits, energy, chips and
-/// ambassadors. A gain past a limit is lost and tallied; a gain with no room is
-/// nothing to act on; the ambassador project isn't offered at the limit.
+/// 127 (Matt, 2026-11-05: no holding or production limit): a big holding
+/// keeps every gain, a gain is always something to act on, the ambassador
+/// project and both sales stay offered, and card raises of credit
+/// production stack without a cap.
 #[test]
-fn holding_limits_lose_the_excess_and_offer_no_gain_without_room() {
+fn no_resource_has_a_holding_limit() {
     use crate::content::Op;
-    use crate::modules::effects;
+    use crate::modules::{economy, effects};
     let (rules, mut g) = actions_with_room();
     rich(&mut g);
-    set_res(&mut g, 0, Resource::Energy, 5);
     let w = rules.world();
-    let cap = w.int("economy.hold_ambassadors");
-    for (r, key) in [
-        (Resource::Credits, "credits"),
-        (Resource::Energy, "energy"),
-        (Resource::Chips, "chips"),
-        (Resource::Ambassadors, "ambassadors"),
-    ] {
-        let limit = w.int(&format!("economy.hold_{key}"));
+    for r in [Resource::Credits, Resource::Energy, Resource::Chips, Resource::Ambassadors] {
         let mut h = g.clone();
-        set_res(&mut h, 0, r, limit - 1);
+        set_res(&mut h, 0, r, 500);
         run_ops(&rules, &mut h, &[Op::Gain { resource: r, amount: 3 }]);
-        assert_eq!(h.resource(0, r), limit, "{key}: 1 of 3 fits");
-        assert_eq!(h.stats.counters[format!("economy.hold_lost.{key}").as_str()], 2);
+        assert_eq!(h.resource(0, r), 503, "{r:?}: every gain is kept");
         let gain = Op::Gain { resource: r, amount: 1 };
-        assert!(!effects::feasible(&w, &h, 0, std::slice::from_ref(&gain)), "{key}: no room, nothing to act on");
-        assert!(effects::feasible(&w, &g, 0, std::slice::from_ref(&gain)), "{key}: room");
+        assert!(effects::feasible(&w, &h, 0, std::slice::from_ref(&gain)), "{r:?}: a gain always acts");
     }
-    assert!(standard_offered(&rules, &g, 0).contains("ambassador"));
-    set_res(&mut g, 0, Resource::Ambassadors, cap);
-    assert!(!standard_offered(&rules, &g, 0).contains("ambassador"), "a full supply buys none");
-    // Selling pays only credits: at the credit limit neither sale is offered.
+    set_res(&mut g, 0, Resource::Ambassadors, 500);
+    set_res(&mut g, 0, Resource::Credits, 5000);
     let sells = |g: &GameState| rules.legal_actions(g).iter().any(|a| matches!(a, Action::Sell { seat: 0, .. }));
     set_pile(&mut g, &crate::modules::cards::hand(0), &["open_assembly"]);
-    assert!(standard_offered(&rules, &g, 0).contains("chips") && sells(&g));
-    set_res(&mut g, 0, Resource::Credits, w.int("economy.hold_credits"));
-    assert!(!standard_offered(&rules, &g, 0).contains("chips") && !sells(&g), "no room for the credits");
-    // Insight has no limit (Patience stays uncapped, Matt, 122).
-    assert_eq!(w.hold(Resource::Insight), None);
+    let offered = standard_offered(&rules, &g, 0);
+    assert!(offered.contains("ambassador") && offered.contains("chips") && sells(&g));
+    let key = economy::production_key(0, Resource::Credits);
+    let before = g.var(key.as_str());
+    run_ops(&rules, &mut g, &[Op::Production { resource: Resource::Credits, amount: 200 }]);
+    assert_eq!(g.var(key.as_str()) - before, 200, "no cap on credit production");
 }
 
 #[test]

@@ -19,8 +19,6 @@ pub fn feasible_after(w: &World, g: &GameState, seat: usize, effects: &[Op], spe
 /// "here" counts (076).
 pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent: i64, card: Option<&str>) -> bool {
     let here_held = || card.map_or(0, |c| g.var(&cards::tokens_key(seat, c)));
-    // 122: room under the seat's holding limit of `r` (a gain past it is lost).
-    let room = |r: Resource| w.room(g, seat, r);
     // 041: energy the same effects gain first can pay a placement's step.
     let gained: i64 = effects
         .iter()
@@ -30,7 +28,6 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             _ => 0,
         })
         .sum::<i64>()
-        .min(room(Resource::Energy))
         - spent;
     // 044: tokens the same effects add first can be cashed in or counted.
     let added = |kind: &TokenKind, upto: usize| -> i64 {
@@ -54,10 +51,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
         match e {
             Op::Harden { .. } => !harden_hexes(w, g, seat).is_empty(),
             Op::MoveOne { range } => !movable_one(w, g, seat, *range).is_empty(),
-            // 122: a gain with no room under the holding limit is nothing to act on.
-            Op::Gain { resource, .. } => room(*resource) > 0,
-            Op::GainAmbassadors { .. } => room(Resource::Ambassadors) > 0,
-            Op::GainPerTag { resource, tag, per } => cards::tags(w, g, seat, *tag) >= *per && room(*resource) > 0,
+            Op::GainPerTag { tag, per, .. } => cards::tags(w, g, seat, *tag) >= *per,
             // A choice of player is the gift beside it, not an effect of its own.
             Op::ChoosePlayer => false,
             // 111: alone, "another player" means you, so a gift always lands.

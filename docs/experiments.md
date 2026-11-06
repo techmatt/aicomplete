@@ -72,9 +72,9 @@ and the run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have
   `PEAKS` order; the report's *Peak holdings*). A peak's rise over setup's `start` far above a round's income
   (`gained / rounds`) is an engine running away: `scripts/cards/runaway_read.py` flags it. `sources` splits a
   seat's `gained` by the action or phase it came in; `keeps` counts picks, keeps and tiers after the opening
-  (`source_read.py`); `spent` and `uses` split falls (125). The holding limits' cuts: `economy.hold_lost.<r>` (by
-  round), `hold_lost_seat.<seat>.<r>`, `hold_lost_phase.<i>.<r>`, `board.completion_lost.energy` (payouts);
-  `energy_cards.held|short.<seat>` (125's `read125.py`, `lost_read.py`).
+  (`source_read.py`); `spent` and `uses` split falls (125). 127's `read127.py` reads peaks, flags, credits gained,
+  energy spent and held, and what fed each flagged pile; `production_read.py` what a seat's credit production was
+  made of (both in `experiments/results/127_no_limits/`). No resource has a limit since r51 (127).
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
@@ -143,8 +143,8 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** the three pairs at d2, strategist and greedy (`screen-125-dev.json`: 936 games, about 2 min
-  on 6 threads; `-r50.json` its fresh read, `read125.py` in its results folder reads both). Agent switches screen
+- **Current recipe:** the three pairs at d2, strategist and greedy (`screen-127-dev.json`: 576 games, about 2 min
+  on 4 threads; `-r51.json` its fresh read, `read127.py` in its results folder reads both). Agent switches screen
   on and off as agent cells of one spec (`screen-124-candidate.json`).
 - **Costs:** an engine game about 0.7 s, a `sweep` screen of 432 games about 9 min (about 13 ms a planner decision);
   an agent-sweep setting (300 strategist games) about 4 min on 4 threads under load.

@@ -78,6 +78,5 @@ industrial zone; on a hex whose node was lost), so an evicting ambassador can to
 nothing there until a piece comes or it moves. An adversary ambassador left on a hex by a
 lost node stays until removed.
 
-**Your supply holds at most 10** (`economy.hold_ambassadors`, r49, 122): an ambassador gained past it is lost, and
-the gain-an-ambassador project isn't offered while you are at it ([economy.md](economy.md), *Holding limits*). It
-was Orbital Embassy's pile: 1 ambassador a tag on each card you play reached 52-81 held at r48.
+**Your supply has no limit** ([economy.md](economy.md), *No limits*). Orbital Embassy gives 1 ambassador a
+Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 in long games).
