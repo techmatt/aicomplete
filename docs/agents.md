@@ -16,11 +16,9 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
   adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats; and:
   - botnets −25 (D9): agents make none when an equal free choice exists;
-  - `research_cube` 0.3, under what every converter nets; `research_cube_power` 1.2 for a
-    seat whose board spends cubes on a power (Peer Review); `converter_city` 2 for a seat with a
-    node in a city of a completed megaproject's country, whatever its cubes;
-  - a corrupted station's `station_flip` 20, scaled by its country's megaproject still open
-    (0 once completed);
+  - `research_cube` 0.3; `research_cube_power` 1.2 for a seat whose board spends cubes on a
+    power; `converter_city` 2 for a node in a city of a completed megaproject's country;
+  - a corrupted station's `station_flip` 20, scaled by its megaproject still open;
   - the liberation push needs `liberate_at` plus the city's own adversary ambassadors;
   - a city an adversary ambassador darkens: `city_dark` 4 for a neutral one in some seat's
     reach, `city_dark_aligned` 6 for an aligned one;
@@ -139,11 +137,8 @@ Rules a player could say where a one-step search misses a card's point, each a s
 (`experiments/results/screen-092/`); 124's spare-insight rule is every agent's (a new
 player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 
-- *Shelter what a destruction showing would take, once you can't counter it.* A sheltered
-  country is worth the nodes and player factories this round's destroying threats and war
-  step would take there, less what hardening or an ambassador absorbs (`agents/guide.rs`,
-  `w.shelter_read`; `w.shelter_node` 12 a node over `node` and the danger step;
-  `w.shelter_counter` 1 skips a threat the team holds a counter to).
+- *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
+  `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`: slots
   full, the keep plan charges a plain building what the top it buries would earn).
 - *Count your research cubes like credits* (`plan_cubes`: a budget in the keep plan).
@@ -155,6 +150,11 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
   Off (no gain read): teammate triggers at the teammates' share (`w.team_share`, `plan_team`),
   At N tokens at the threshold's pay (`w.threshold_tokens`).
+- *A per-tag card pays at the count you'll play it at* (128): table `tag_count` 5 (the median
+  before such a play) plus the card's own tags; the engine adds `w.tag_hand` (0.5) of its hand's.
+- *Spare energy is cheap: draft and use what spends it* (128, engine): energy over `w.energy_cap`
+  (4) is worth `w.energy_idle` (0.2), and energy an Action or card spends costs the idle share.
+- *A cube Action with no megaproject open does nothing* (128: `w.cube_target`, `plan_cube_target`).
 
 ## The progress term and the draft
 

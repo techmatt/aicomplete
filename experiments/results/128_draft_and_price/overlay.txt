@@ -1,0 +1,43 @@
+# 128: prices back to the anchors (r52). Rerun with: python scripts/cards/apply_overlay.py experiments/results/128_draft_and_price/overlay.txt
+# Matt (2026-11-05, design doc Economy rev 23, and message 5362): the anchors set a card's price, from its played tag
+# count plus the tags it can expect to add, aimed at about 1.2-1.3; 127's effects stay; never a price cut to make the
+# value table show a gain. Anchors: insight 4, a draw 5, +1 credit income 4, a chip 3, an ambassador 4, the keep 4 / 8.
+
+# The six tier-1 per-tag credit programs (+1 credit income per 2 tags, needs 2): played at 6 tags of their own (the
+# strategist's median, the card's own tag included, 128 dev) → +3 income 12 + its tag 1 = 13; pay 6 + keep 4 = 10:
+# 1.30 (127's 4 credits read 1.63).
+cards.economies_of_scale.cost=6
+cards.ransomware_syndicate.cost=6
+cards.research_royalties.cost=6
+cards.defense_appropriations.cost=6
+cards.capacity_market.cost=6
+cards.peace_dividend.cost=6
+
+# Antitrust Action (jam 5 economic, 1 chip per 2 Industry tags): the strategist plays it at 6-7 Industry at r52 (median,
+# its own included; 5 at r51) → jam 5 + 3 chips 9 + tag 1 = 15; pay 7 + keep 4 = 11: 1.36 (1.09 at 5 Industry). At 6
+# credits it read 1.50, at the ceiling; 127's 4 read 1.88. The table reads 9.5 / 9.0 (its chip 1.5, the anchor's 3):
+# flagged, not priced to (Matt).
+cards.antitrust_action.cost=7
+
+# Orbital Embassy (tier 2: draw 4; an ambassador a Diplomacy tag played): 3 Diplomacy tags played after it is built
+# (mean 3.2-3.4, 128 dev) → draw 4 20 + 3 ambassadors 12 + tags 1.5 = 33.5; pay 10 + 4 × (2 keep + 2 play) = 26: 1.29
+# (127's 9 credits read 1.34). 11 reads 1.24 but nets −0.5 at the table (its trigger at the generic tag share).
+cards.orbital_embassy.cost=10
+
+# The five draw cards (Matt, message 5362): back at their r50 credits, keeping 127's 1 play insight (insight bounds a
+# round's chain), each drawing 1 more so it stays at or above 1.0.
+# Breach and Clear: remove a troop 5 + draw 2 10 = 15; pay 6 + 4 + 4 = 14: 1.07.
+cards.breach_and_clear.cost=6
+cards.breach_and_clear.effects.1.count=2
+# Force Protection Order: jam 6 military 4 + draw 2 10 + tag 1 = 15; pay 14: 1.07.
+cards.force_protection_order.cost=6
+cards.force_protection_order.effects.1.count=2
+# Predictive Modeling: delay 2 threats 4 + draw 3 15 + tag 1 = 20; pay 7 + 8 = 15: 1.33.
+cards.predictive_modeling.cost=7
+cards.predictive_modeling.effects.1.count=3
+# Recruit Operatives: draw 3 15 + an Agents token 6.5 + tag 1 = 22.5; pay 9 + 8 = 17: 1.32.
+cards.recruit_operatives.cost=9
+cards.recruit_operatives.effects.0.count=3
+# Field Sensor Grid: clear 3 markers 4.9 + draw 3 15 + tag 1 = 20.9; pay 10 + 8 = 18: 1.16.
+cards.field_sensor_grid.cost=10
+cards.field_sensor_grid.effects.1.count=3

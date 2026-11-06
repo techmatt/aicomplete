@@ -220,6 +220,13 @@ pub struct Ctx {
     /// tag, which a trigger on a teammate's plays fires at; `None`: the seat's own
     /// `share`, as before.
     pub team: Option<[f64; TAGS.len()]>,
+    /// 128: the share of the table's energy price an energy costs this seat: 1,
+    /// or less for a seat whose energy piles up ("energy I can't spend is cheap:
+    /// an Action that spends it is worth its whole yield"; eval.rs `energy_cap`).
+    pub energy_rate: f64,
+    /// 128: whether a megaproject is still open to the seat's project cubes (an
+    /// Action that places them has no target once none is: Particle Accelerator).
+    pub cubes_open: bool,
 }
 
 impl Ctx {
@@ -233,6 +240,8 @@ impl Ctx {
             corrupted: true,
             share: [t.fast.tag_share; TAGS.len()],
             team: None,
+            energy_rate: 1.0,
+            cubes_open: true,
         }
     }
 
@@ -270,6 +279,8 @@ impl Ctx {
             corrupted,
             share: [table().fast.tag_share; TAGS.len()],
             team: None,
+            energy_rate: 1.0,
+            cubes_open: true,
         }
     }
 }
@@ -811,6 +822,25 @@ pub struct CardValue {
     pub once: bool,
     pub tags: f64,
     pub extra: f64,
+    /// 128: the energy one use of its Action costs (a seat with spare energy
+    /// pays less than the table's price for it: [`Ctx::energy_rate`]).
+    pub use_energy: f64,
+    /// 128: its Action only places project cubes, so has no use once no
+    /// megaproject is open ([`Ctx::cubes_open`]).
+    pub cube_use: bool,
+}
+
+/// 128: a card left in play counts its own tags for its per-tag ops, as the
+/// engine does (a program "1 per 2 Science tags" counts its own Science tag).
+fn own_tags(w: &mut Worth, d: &CardDef) {
+    if d.is_event() {
+        return;
+    }
+    for tag in &d.tags {
+        let i = *tag as usize;
+        w.now += w.per_tag[i];
+        w.income += w.income_per_tag[i];
+    }
 }
 
 impl CardValue {
@@ -828,9 +858,27 @@ impl CardValue {
         play += passives_worth(t, &d.passives);
         // 102: an Action at the value table's own rates, even under a repriced
         // table (`Table::repriced`), as the heuristic values a building's Action.
-        let use_ = d.ability.as_ref().map(|a| ability_worth(table(), a)).unwrap_or_default();
+        let mut use_ = d.ability.as_ref().map(|a| ability_worth(table(), a)).unwrap_or_default();
+        own_tags(&mut play, d);
+        own_tags(&mut use_, d);
+        let use_energy = d.ability.as_ref().map_or(0.0, |a| {
+            a.cost.iter().filter(|(r, _)| *r == Resource::Energy).map(|(_, n)| *n as f64).sum()
+        });
+        let cube_use = d.ability.as_ref().is_some_and(|a| {
+            let cubes = |b: &Ability| b.effects.iter().any(|e| matches!(e, Op::ProjectCube { .. }));
+            cubes(a) && a.or.as_deref().is_none_or(cubes)
+        });
         let extra = t.overrides.iter().filter(|o| o.card == d.id).map(|o| o.credits).sum();
-        CardValue { play, use_, has_use: d.ability.is_some(), once, tags: t.tags_value(d), extra }
+        CardValue { play, use_, has_use: d.ability.is_some(), once, tags: t.tags_value(d), extra, use_energy, cube_use }
+    }
+
+    /// 128: one use of its Action in this context, its energy at the seat's rate.
+    fn one_use(&self, t: &Table, c: &Ctx) -> f64 {
+        if self.cube_use && !c.cubes_open {
+            return 0.0;
+        }
+        let rebate = self.use_energy * table().res(Resource::Energy) * (1.0 - c.energy_rate);
+        (self.use_.instant(t, c) + self.use_.per_round(c) + rebate).max(0.0)
     }
 
     /// The card's whole value in this context: now, plus a round's worth for each
@@ -845,7 +893,7 @@ impl CardValue {
         };
         self.play.instant(t, c)
             + c.horizon * self.play.per_round(c)
-            + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
+            + uses * self.one_use(t, c)
             + self.tags
             + self.extra
     }
@@ -856,7 +904,7 @@ impl CardValue {
         // 099: a one-shot Action earns nothing a round: its one use is its fuel's
         // worth (the token term), so using it no longer reads as giving up a stream.
         let uses = if self.has_use && !self.once { t.fast.uses_share } else { 0.0 };
-        self.play.unseen_round(c) + uses * (self.use_.instant(t, c) + self.use_.per_round(c)).max(0.0)
+        self.play.unseen_round(c) + uses * self.one_use(t, c)
     }
 }
 

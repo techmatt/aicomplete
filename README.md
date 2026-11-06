@@ -135,6 +135,7 @@ whitespace) moves it with no bump unless play changes; update both (the new hash
 - Content and `configs/agents/` are compiled into `aic-sim` (`include_str!`): an edit to `values.json` needs a
   rebuild. The game configs are read from the working directory, so an old binary runs from an old tree:
   `git archive <rev> configs | tar -x -C out/old`.
+- A fresh worktree has no `web/node_modules`: `npm ci` in `web/` (about a minute) before `npm run cards:fit`.
 
 - 6 cores, 12 threads: 12 workers give about 6 × one, so never read "12 threads" as 12 ×
   in an estimate.

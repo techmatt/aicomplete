@@ -244,6 +244,9 @@ macro_rules! forced_table {
             (keep_spare: bool, false, 1.0, "124: keep plan: a pick worth its price is kept when insight beyond the heuristic's insight_cap pays its whole keep")
             /// 124 (D47): the keep plan reads a teammate trigger at the teammates' tag share.
             (plan_team: bool, false, 0.0, "124 (D47): keep plan: a trigger on a teammate's plays fires at the teammates' share of the tag")
+            /// 128: the keep plan counts an Action that places project cubes only
+            /// while a megaproject is open to the seat (Particle Accelerator).
+            (plan_cube_target: bool, false, 1.0, "128: keep plan: a project-cube Action counts no uses once no megaproject is open")
         }
     };
 }
@@ -373,17 +376,23 @@ impl Policy {
         if strat.is_some() && self.mults.is_none() {
             self.mults = Some(Arc::new(Mults::new(&world, self.inner.strat_scale(), self.inner.strat_contents())));
         }
-        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap } = self.inner.plan_rates().unwrap_or_else(|| {
-            let t = value::table();
-            super::eval::PlanRates {
-                energy: t.res(Resource::Energy),
-                antimatter: t.res(Resource::Antimatter),
-                project: 0.0,
-                cap: f64::MAX,
-                idle: 1.0,
-                insight_cap: 0.0,
-            }
-        });
+        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, energy_cap, energy_share } =
+            self.inner.plan_rates().unwrap_or_else(|| {
+                let t = value::table();
+                super::eval::PlanRates {
+                    energy: t.res(Resource::Energy),
+                    antimatter: t.res(Resource::Antimatter),
+                    project: 0.0,
+                    cap: f64::MAX,
+                    idle: 1.0,
+                    insight_cap: 0.0,
+                    energy_cap: 0.0,
+                    energy_share: 1.0,
+                }
+            });
+        // 128 (`energy_cap`): a seat whose energy piles up keeps what spends it.
+        let held = g.resource(s, Resource::Energy) as f64;
+        let energy_rate = if energy_cap > 0.0 && held > energy_cap { energy_share } else { 1.0 };
         // 102 (D23): energy and antimatter at the heuristic's own rates, as the play check prices them.
         if self.rates.is_none() {
             self.rates = Some(Arc::new(value::table().repriced(energy, antimatter)));
@@ -391,7 +400,7 @@ impl Policy {
         let t = self.rates.as_deref().unwrap_or_else(|| value::table());
         let idle = (cap, idle);
         let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at };
+        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate };
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -882,6 +891,8 @@ pub struct PlanCtx<'a> {
     pub idle: (f64, f64),
     /// 124 (`keep_spare`): insight beyond this is spare (0: off).
     pub spare_at: f64,
+    /// 128: the seat's `Ctx::energy_rate` at the keep.
+    pub energy_rate: f64,
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
@@ -896,6 +907,8 @@ struct PlanTable {
     share: [f64; TAGS.len()],
     /// 124 (`plan_team`): the teammates' share (`None`: the seat's own).
     team: Option<[f64; TAGS.len()]>,
+    /// 128: `Ctx::cubes_open` for the seat.
+    cubes_open: bool,
 }
 
 impl PlanTable {
@@ -916,6 +929,7 @@ impl PlanTable {
             left: super::eval::Eval::cards_left(g) as f64,
             node: common::node_count(g, s) as f64,
             corrupted: (0..g.hexes.len()).any(|h| common::corrupted_city(w, g, h)),
+            cubes_open: !f.plan_cube_target || !aic_core::modules::effects::cube_projects(w, g, s, false).is_empty(),
             share: {
                 let tags = cards::tag_counts(w, g, s);
                 super::eval::own_mix(w, g, s, &tags, Ctx::at(0.0, 0.0, tags, false)).share
@@ -1156,6 +1170,8 @@ fn value(
     let ctx = Ctx {
         share: pt.share,
         team: pt.team,
+        energy_rate: pc.energy_rate,
+        cubes_open: pt.cubes_open,
         ..Ctx::at((pt.left - round as f64).max(0.0), pt.node, *tags, pt.corrupted)
     };
     let m = match (pc.strat, pc.mults) {
@@ -1378,7 +1394,9 @@ fn plan(
                     // idle rate to it, so a price paid from them costs that much.
                     let (cap, share) = pc.idle;
                     let idle_paid = (credits as f64).min((b.credits as f64 - cap).max(0.0));
-                    spend(w, g, s, d, pc, pt) - idle_paid * (1.0 - share)
+                    // 128: its energy at the seat's rate (spare energy is cheap).
+                    let spare = d.energy as f64 * pc.t.res(Resource::Energy) * (1.0 - pc.energy_rate);
+                    spend(w, g, s, d, pc, pt) - idle_paid * (1.0 - share) - spare
                 } else {
                     0.0
                 };

@@ -324,6 +324,19 @@ pub struct Weights {
     /// keep with it").
     pub insight_cap: f64,
     pub insight_idle: f64,
+    /// 128, table mode: a per-tag op counts the seat's tags in play plus this
+    /// share of the tags on the cards in its hand ("you'll play most of these
+    /// first": a per-tag card is worth what it pays at the count it's played at).
+    pub tag_hand: f64,
+    /// 128, above 0: energy a seat holds beyond this is spare: worth
+    /// `energy_idle` each held, and an Action or card that spends it costs the
+    /// seat that share of the table's energy price ("energy piling up is cheap:
+    /// draft and use what spends it").
+    pub energy_cap: f64,
+    pub energy_idle: f64,
+    /// 128, above 0: an Action that places project cubes counts nothing once no
+    /// megaproject is open to the seat (`Ctx::cubes_open`).
+    pub cube_target: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -517,6 +530,10 @@ impl Default for Weights {
             insight_income: 0.0,
             insight_cap: 10.0,
             insight_idle: 0.1,
+            tag_hand: 0.0,
+            energy_cap: 0.0,
+            energy_idle: 0.2,
+            cube_target: 1.0,
         }
     }
 }
@@ -552,6 +569,9 @@ impl Weights {
             // ±2.3). With every agent's spare insight and limit rules: +3.7 ±2.5.
             strat_contents: 1.0,
             insight_income: 1.5,
+            // 128: per-tag ops at the count they're played at; spare energy cheap.
+            tag_hand: 0.5,
+            energy_cap: 4.0,
             ..Weights::default()
         }
     }
@@ -915,6 +935,28 @@ impl Eval {
         }
     }
 
+    /// What `n` energy held is worth: its unit each, and (128, `energy_cap`)
+    /// `energy_idle` each beyond the cap.
+    fn energy_value(&self, n: f64) -> f64 {
+        let w = &self.w;
+        if w.energy_cap > 0.0 && n > w.energy_cap {
+            self.energy_unit() * w.energy_cap + w.energy_idle * (n - w.energy_cap)
+        } else {
+            self.energy_unit() * n
+        }
+    }
+
+    /// 128 (`energy_cap`): the share of the table's energy price an energy costs
+    /// seat `s` (`Ctx::energy_rate`): an idle one's share once its pile passes the cap.
+    pub fn energy_rate(&self, g: &GameState, s: usize) -> f64 {
+        let w = &self.w;
+        if w.energy_cap > 0.0 && g.resource(s, Resource::Energy) as f64 > w.energy_cap {
+            (w.energy_idle / self.energy_unit().max(1e-9)).min(1.0)
+        } else {
+            1.0
+        }
+    }
+
     /// 102: for the keep plan, in table credits as this heuristic prices them
     /// (its points over a table credit's): an energy held and an antimatter held
     /// (D23), and an adversary project wholly filled (D34: `project`, charged
@@ -937,6 +979,8 @@ impl Eval {
             cap,
             idle,
             insight_cap: w.insight_cap,
+            energy_cap: w.energy_cap,
+            energy_share: (w.energy_idle / self.energy_unit().max(1e-9)).min(1.0),
         }
     }
 
@@ -1358,7 +1402,7 @@ impl Eval {
         for s in 0..self.seats {
             let res = |k: Resource| g.resource(s, k) as f64;
             *v += self.credit_value(res(Resource::Credits))
-                + self.energy_unit() * res(Resource::Energy)
+                + self.energy_value(res(Resource::Energy))
                 + w.antimatter * res(Resource::Antimatter)
                 + self.insight_value(s, res(Resource::Insight))
                 + self.cube_unit(s) * res(Resource::ResearchCubes);
@@ -1508,6 +1552,26 @@ impl Eval {
         (counts, cards_n)
     }
 
+    /// 128 (`tag_hand`): seat `s`'s tags in play plus `tag_hand` of those on the
+    /// cards in its hand that stay in play (events leave none), rounded.
+    fn hand_tags(&self, world: &aic_core::module::World, g: &GameState, s: usize, tags: [i64; TAGS.len()]) -> [i64; TAGS.len()] {
+        let mut held = [0i64; TAGS.len()];
+        for id in g.pile(&cards::hand(s)) {
+            let d = self.fact(world, id).0;
+            if d.is_event() {
+                continue;
+            }
+            for t in &d.tags {
+                held[*t as usize] += 1;
+            }
+        }
+        let mut out = tags;
+        for (o, h) in out.iter_mut().zip(held) {
+            *o += (self.w.tag_hand * h as f64).round() as i64;
+        }
+        out
+    }
+
     /// 124 (`insight_cap`): the insight seat `s` holds beyond the cap (0: off).
     fn spare_insight(&self, g: &GameState, s: usize) -> f64 {
         if self.w.insight_cap <= 0.0 {
@@ -1608,6 +1672,14 @@ impl Eval {
                     let (counts, cards_n) = self.mix_counts(&world, g, s, tags, n);
                     ctx = ctx.with_mix(&counts, cards_n);
                 }
+                if table && w.tag_hand > 0.0 {
+                    // 128: per-tag ops at the count the seat can expect: its tags in
+                    // play and a share of those on the cards it holds to play.
+                    ctx.tags = self.hand_tags(&world, g, s, tags);
+                }
+                ctx.energy_rate = self.energy_rate(g, s);
+                ctx.cubes_open =
+                    w.cube_target <= 0.0 || !aic_core::modules::effects::cube_projects(&world, g, s, false).is_empty();
                 SeatData { s, tags, required, prices, income, ctx }
             })
             .collect();
@@ -1654,7 +1726,7 @@ impl Eval {
                 } else if *r == Resource::ResearchCubes {
                     v += fade * self.cube_unit(s) * res(*r) as f64;
                 } else if *r == Resource::Energy {
-                    v += fade * self.energy_unit() * res(*r) as f64;
+                    v += fade * self.energy_value(res(*r) as f64);
                 } else if *r != Resource::Chips {
                     v += fade * unit[i] * res(*r) as f64;
                 }
@@ -1752,7 +1824,9 @@ impl Eval {
         }
         let tbl = value::table();
         let (m, share) = if pick { (self.mult(s, f.index, g.round), w.pick_cost) } else { (1.0, 1.0) };
-        let net = m * f.value.total(tbl, &sd.ctx) - share * tbl.cost(d, sd.prices.credits(d), sd.prices.insight(d), left);
+        // 128: its energy at the seat's rate (spare energy is cheap).
+        let spare = d.energy as f64 * tbl.res(Resource::Energy) * (1.0 - sd.ctx.energy_rate);
+        let net = m * f.value.total(tbl, &sd.ctx) - share * (tbl.cost(d, sd.prices.credits(d), sd.prices.insight(d), left) - spare);
         // A card that works on a pile of the seat's own with none to work on counts
         // as a `needs` card with none of its tags.
         let pile = match f.pile {
@@ -1956,6 +2030,10 @@ pub struct PlanRates {
     pub idle: f64,
     /// 124: the heuristic's `insight_cap` (0: none), for `keep_spare`.
     pub insight_cap: f64,
+    /// 128: the heuristic's `energy_cap` (0: none) and the share of the table's
+    /// energy price an energy beyond it costs (`Ctx::energy_rate`).
+    pub energy_cap: f64,
+    pub energy_share: f64,
 }
 
 #[cfg(test)]

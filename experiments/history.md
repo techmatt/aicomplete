@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 128 draft and price: agents value per-tag ops at their played tag count, price spare energy cheap and skip dead cube Actions; 127's cheapened cards back at the anchors (16 → 5 deck cards at 5 credits or less) | r52 | [128_draft_and_price/r52.md](results/128_draft_and_price/r52.md) |
 | 127 no limits: r49's holding limits and credit-production cap removed, and the agents' limit rules with them; runaway engines fixed at their cards (Orbital Embassy, the per-tag credit programs, the zero-insight draw cards, Antitrust Action, energy costs on three factories) | r51 | [127_no_limits/r51.md](results/127_no_limits/r51.md) |
 | 126 auto_counter from play: the value table's entry at the fire rate measured in play (0.30 a holder-round, the strategist), 2.5 → 1.5 a point; agents only | r50 | [126_auto_counter/r50.md](results/126_auto_counter/r50.md) |
 | 125 energy sinks: energy a second cost on five power-hungry buildings, credits cut to match; Particle Accelerator and Citywide Microgrid as late sinks; per-seat loss, spending and its phase in `games.jsonl` | r50 | [125_energy_sinks/r50.md](results/125_energy_sinks/r50.md) |

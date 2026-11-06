@@ -1,0 +1,40 @@
+{
+  "name": "screen-128-dev",
+  "note": "128 Part A on the dev seeds 35648-35743 (96 a cell): the three pairs at d2. Agent cells: all on; the cube-target fix off; the energy cap off; both off (a factorial); the hand-tag projection off; greedy with and without the cube-target fix. r51 is the same spec with the r51 binary (strategist, greedy).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "greedy",
+    "greedy:w.cube_target=0,plan_cube_target=0",
+    "engine:strategy=1",
+    "engine:strategy=1,w.cube_target=0,plan_cube_target=0",
+    "engine:strategy=1,w.energy_cap=0",
+    "engine:strategy=1,w.energy_cap=0,w.cube_target=0,plan_cube_target=0",
+    "engine:strategy=1,w.tag_hand=0"
+  ],
+  "games": 96,
+  "first_seed": 35648,
+  "records": 0
+}

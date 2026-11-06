@@ -1,0 +1,36 @@
+{
+  "name": "screen-128-energy",
+  "note": "128: the spare-energy numbers on r52, dev seeds 35648-35743: energy_cap 2 / 4, energy_idle 0.05 / 0.2 (factorial; 4 / 0.2 is r52 dev).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "engine:strategy=1,w.energy_cap=2",
+    "engine:strategy=1,w.energy_idle=0.05",
+    "engine:strategy=1,w.energy_cap=2,w.energy_idle=0.05"
+  ],
+  "games": 96,
+  "first_seed": 35648,
+  "records": 0
+}

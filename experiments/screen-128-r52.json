@@ -1,0 +1,35 @@
+{
+  "name": "screen-128-r52",
+  "note": "128 final read: fresh seeds 35848-35895 (48 a cell), paired against r51 (main 8564a44).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 35848,
+  "records": 0
+}

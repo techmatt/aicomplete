@@ -317,7 +317,7 @@
   "name": "Predictive Modeling",
   "tier": 1,
   "kind": "program",
-  "cost": 3,
+  "cost": 7,
   "insight": 1,
   "tags": [
    "science"
@@ -329,7 +329,7 @@
    },
    {
     "op": "draw",
-    "count": 2
+    "count": 3
    }
   ]
  },
@@ -358,7 +358,7 @@
   "name": "Field Sensor Grid",
   "tier": 1,
   "kind": "program",
-  "cost": 6,
+  "cost": 10,
   "insight": 1,
   "tags": [
    "science"
@@ -370,7 +370,7 @@
    },
    {
     "op": "draw",
-    "count": 2
+    "count": 3
    }
   ]
  },
@@ -2105,7 +2105,7 @@
   "name": "Peace Dividend",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [
@@ -2351,7 +2351,7 @@
   "name": "Orbital Embassy",
   "tier": 2,
   "kind": "building",
-  "cost": 9,
+  "cost": 10,
   "insight": 2,
   "needs": [
    [
@@ -2391,7 +2391,7 @@
   "name": "Recruit Operatives",
   "tier": 1,
   "kind": "program",
-  "cost": 5,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "security"
@@ -2399,7 +2399,7 @@
   "effects": [
    {
     "op": "draw",
-    "count": 2
+    "count": 3
    },
    {
     "op": "add_tokens",
@@ -2659,7 +2659,7 @@
   "name": "Breach and Clear",
   "tier": 1,
   "kind": "event",
-  "cost": 2,
+  "cost": 6,
   "insight": 1,
   "tags": [
    "security"
@@ -2672,7 +2672,7 @@
    },
    {
     "op": "draw",
-    "count": 1
+    "count": 2
    }
   ]
  },
@@ -2875,7 +2875,7 @@
   "name": "Force Protection Order",
   "tier": 1,
   "kind": "program",
-  "cost": 2,
+  "cost": 6,
   "insight": 1,
   "tags": [
    "security"
@@ -2888,7 +2888,7 @@
    },
    {
     "op": "draw",
-    "count": 1
+    "count": 2
    }
   ]
  },
@@ -3036,7 +3036,7 @@
   "name": "Antitrust Action",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 7,
   "insight": 0,
   "tags": [
    "industry"
@@ -3407,7 +3407,7 @@
   "name": "Research Royalties",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [
@@ -3521,7 +3521,7 @@
   "name": "Economies of Scale",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [
@@ -3679,7 +3679,7 @@
   "name": "Ransomware Syndicate",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [
@@ -3857,7 +3857,7 @@
   "name": "Capacity Market",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [
@@ -4144,7 +4144,7 @@
   "name": "Defense Appropriations",
   "tier": 1,
   "kind": "program",
-  "cost": 4,
+  "cost": 6,
   "insight": 0,
   "needs": [
    [

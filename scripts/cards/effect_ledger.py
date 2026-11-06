@@ -104,6 +104,7 @@ class Table:
         self.horizon = self.left
         self.node_count = self.rate('node_count')
         self.tag_count = self.rate('tag_count')
+        self.own = {}  # 128: the card's own tags, counted by its per-tag ops (value.rs `own_tags`)
 
     def rate(self, k):
         return self.raw['rates'][k]
@@ -140,11 +141,12 @@ class Table:
     # a city corrupted.
     def instant(self, w):
         node = self.op('place_node') * (self.rate('node_late') if self.left <= self.rate('late_rounds') else self.rate('node'))
-        tags = sum(v * self.tag_count for v in w.per_tag.values())
+        tags = sum(v * (self.tag_count + self.own.get(k, 0)) for k, v in w.per_tag.items())
         return w.now + w.node * node + w.per_node * self.node_count + w.city + tags
 
     def per_round(self, w):
-        return w.income + w.standing + sum(v * self.tag_count for v in w.income_per_tag.values())
+        return w.income + w.standing + sum(v * (self.tag_count + self.own.get(k, 0))
+                                           for k, v in w.income_per_tag.items())
 
     def whole(self, w):
         """What a played op is worth: now plus a round's worth each round of its horizon."""
@@ -465,6 +467,7 @@ def needs_text(card):
 def decompose(t, card):
     """Each effect instance of one card: dicts with key, slot, quantity, reasoned."""
     t.at_tier(card['tier'])
+    t.own = {} if card['kind'] == 'event' else {tag: card['tags'].count(tag) for tag in card['tags']}
     rows = []
 
     def add_list(ops, slot, values=None):

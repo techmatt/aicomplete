@@ -737,6 +737,18 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
                 let s = *seat as usize;
                 let held = g.seats[s].resources.get(&Resource::Energy).copied().unwrap_or(0);
                 let w = rules.world();
+                // 128: each standing building with an Action as its seat passes:
+                // its Action offered and not taken (`skipped`), or not offered
+                // (`blocked`: used this round, unaffordable or no target), and
+                // the energy the seat held.
+                for c in g.pile(&cards::built(s)).iter() {
+                    if w.content.card(c).ability.is_some() {
+                        let offered = legal.iter().any(|x| matches!(x, Action::Use { card, .. } if card == c));
+                        let how = if offered { "skipped" } else { "blocked" };
+                        *slots.entry(format!("actions.{how}.{s}.{c}")).or_default() += 1;
+                        *slots.entry(format!("actions.{how}_energy.{s}.{c}")).or_default() += held;
+                    }
+                }
                 for c in g.pile(&cards::hand(s)).iter() {
                     let need = w.content.card(c).energy;
                     if need > 0 {
