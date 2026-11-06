@@ -31,16 +31,19 @@ The cards config lists which cards are in the game (baseline: all of them).
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 151 cards (109 tier 1, 42 tier 2). Insight to play: 24 / 98 / 29 cards at 0 / 1 / 2, 29 of the 42 tier-2 cards at 2. An energy cost: 12 cards, 7 of the 54 buildings.
+**The draft set in numbers.** 155 cards (112 tier 1, 43 tier 2). Insight to play: 24 / 101 / 30 cards at 0 / 1 / 2, 30 of the 43 tier-2 cards at 2. An energy cost: 13 cards, 8 of the 58 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt, r50).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its
   credits cut to match (about 4.5 an energy): mostly the Builder's heavy machinery, Industry and Power (Fabrication
   Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
   compute (Foundation Model Campus 2). Energy costs stay uncommon (counts above), so a
-  seat that makes little energy still has plenty to play. Two late sinks are for a seat whose node tracks are full:
-  Particle Accelerator (Action: pay 2 energy, put 3 research cubes on a megaproject) and Citywide Microgrid (tier 2, 8 energy: liberate
-  a city in reach; Action: 2 Sway toward Unity).
+  seat that makes little energy still has plenty to play. Six late sinks are for a seat whose node tracks are full,
+  open to any seat with the energy: Actions that pay 2 energy, Particle Accelerator (3 research cubes on a megaproject,
+  OR onto your board), Directed-Energy Array (remove 3 adversary ambassadors in reach), Holographic Assembly Hall
+  (2 Sway toward Unity and 2 ambassadors) and Wafer Fab Line (Industry: draw 2, 2 chips); and two tier-2 buildings with a very big energy cost, Citywide Microgrid (8
+  energy: liberate a city in reach; Action: 2 Sway toward Unity) and Exascale Training Cluster (8 energy: 6 research
+  cubes; +3 insight a round). Power is the usual tag of a sink.
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without

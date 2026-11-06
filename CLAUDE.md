@@ -74,7 +74,9 @@ experiments, speed, scripts, web, card art.
   writes a give / get line for each, priced at `configs/agents/values.json`, in its write-up. Each must show a gain a
   player can see at the values it is priced at: no break-even conversions. Loops are capped by limits (once a round,
   slots, supply), never by making the trade worthless. Fix or flag any that fails before the first read (090's energy
-  gift traded 1 energy, worth 4.5, for 2 chips, so it was never played). **At a card's creation** also check: its net
+  gift traded 1 energy, worth 4.5, for 2 chips, so it was never played). When the table and the anchors disagree, the
+  anchors set the printed price and the table is fixed (a rate, or a card's `overrides` row), never the price (Matt,
+  2026-11-05; design doc rev 23). **At a card's creation** also check: its net
   at the table is above 0 for the seat that would use it; its precondition exists in measured play (spare energy at
   round 6, say); a building beats the median building it would cover in a slot. **After any later edit to a card**
   (card fit included), re-read its plays per game (095's fit edits took the gift buildings from 0.25-0.6 uses to
@@ -124,7 +126,8 @@ experiments, speed, scripts, web, card art.
   its item's write-up under `experiments/results/`; `experiments/history.md` only indexes them.
 - **Each doc keeps to a 15 KB budget** (README, CLAUDE.md, web/ and card-art READMEs and every
   `docs/` page, each `docs/rules/` file included: `docs --check` refuses one over), except the
-  generated `docs/cards.md`. Leave about 1 KB free: an item that fills a page trims it first.
+  generated `docs/cards.md`. Leave about 1 KB free: an item that fills a page trims it first. Over budget, trim what the
+  code or a generated table already says; never move text to an archive file (git keeps the old text).
 - **Docs state the current game.** An item updates the current text in place, never appends an
   'NNN's changes' section. History goes in the item's write-up. `aic-sim docs --check` refuses a
   heading like `## 080's changes`. A card's pricing note for the viewer is one current line in

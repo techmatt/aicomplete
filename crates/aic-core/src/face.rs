@@ -548,8 +548,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             }
             let what = amount(Resource::ResearchCubes, *count);
             // 118: both kinds need an incomplete megaproject (Field Grant's said nothing of it).
-            let place = if *station { "that isn't complete, in a country where you own a station" } else { "that isn't complete" };
-            one(clause(icons, format!("add {what} in your color to a megaproject {place}")))
+            // 130: "an open megaproject" (a house term: one that isn't complete).
+            let place = if *station { ", in a country where you own a station" } else { "" };
+            one(clause(icons, format!("add {what} in your color to an open megaproject{place}")))
         }
         // 105: a brown box below the art moves the track; the solid outline is
         // one of your cards.
@@ -886,7 +887,12 @@ fn above_art(c: &CardDef, f: &mut Face) {
     if let Some(a) = &c.ability {
         // 076: an OR Action prints a line a branch, the second opening with OR.
         let mut halves: Vec<String> = Vec::new();
-        for (i, b) in a.branches().into_iter().enumerate() {
+        // 130: halves that all pay the same say it once, "pay 2 energy: A, OR B" (Particle
+        // Accelerator's two halves overran its top box).
+        let branches = a.branches();
+        let costs: Vec<_> = branches.iter().map(|b| action_cost(b, c.tokens.as_ref().map(|t| t.kind)).1).collect();
+        let shared = branches.len() > 1 && !costs[0].is_empty() && costs.iter().all(|p| *p == costs[0]);
+        for (i, b) in branches.into_iter().enumerate() {
             let (cost, paid) = action_cost(b, c.tokens.as_ref().map(|t| t.kind));
             let mut left = if i > 0 { vec![w("OR")] } else { Vec::new() };
             // r35: a gate on Unity tips and a one-shot half are said in words only
@@ -906,11 +912,30 @@ fn above_art(c: &CardDef, f: &mut Face) {
                 says.push("discard it and what it's built over".to_string());
             }
             // Call 2: a bare arrow is a free action; every Action is once a round.
-            let open = if paid.is_empty() { String::new() } else { format!("pay {}, ", listed(&paid)) };
-            f.top.push(left);
-            halves.push(format!("{open}{}", says.join(", ")));
+            let open = if paid.is_empty() || shared { String::new() } else { format!("pay {}, ", listed(&paid)) };
+            match f.top.last_mut() {
+                // 130: a shared cost prints once, the later halves on the first half's line.
+                Some(line) if shared && i > 0 => {
+                    line.push(w("OR"));
+                    line.extend(left.into_iter().skip_while(|p| *p != w("\u{2192}")).skip(1));
+                }
+                _ => f.top.push(left),
+            }
+            let mut said = format!("{open}{}", says.join(", "));
+            // 130: a later half that gets what the first half placed says "get them"
+            // (Particle Accelerator: "add 3 research cubes ... OR get them").
+            let again = shared
+                && i > 0
+                && said
+                    .strip_prefix("get ")
+                    .is_some_and(|what| halves.first().is_some_and(|h| h.starts_with(&format!("add {what} "))));
+            if again {
+                said = "get them".to_string();
+            }
+            halves.push(said);
         }
-        top_said.push(sentence(&format!("action: {}", halves.join(", OR "))));
+        let pay = if shared { format!("pay {}: ", listed(&costs[0])) } else { String::new() };
+        top_said.push(sentence(&format!("action: {pay}{}", halves.join(", OR "))));
     }
     f.top_text = top_said.join(" ");
 }

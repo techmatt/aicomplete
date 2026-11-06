@@ -1,6 +1,6 @@
 {
-  "name": "use-090",
-  "note": "090: the engine smoke read of r35 (2 players, the three board pairs, d2, 16 seeds from 31200): the engine and the strategist. Read with scripts/cards/play_read.py, board_read.py --powers, liberation_read.py --cards and use_read.py.",
+  "name": "screen-130-dev",
+  "note": "130 dev read: seeds 35896-35991 (96 a cell, of the dev range 35896-36095), the three pairs at d2, strategist and greedy. r52 is the same spec on the r52 binary (main 75057cc).",
   "configs": [
     "configs/baseline.json"
   ],
@@ -26,9 +26,10 @@
     2
   ],
   "agents": [
-    "engine",
-    "strategist"
+    "strategist",
+    "greedy"
   ],
-  "games": 16,
+  "games": 96,
+  "first_seed": 35896,
   "records": 0
 }

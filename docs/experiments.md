@@ -4,7 +4,7 @@
 S=target/release/aic-sim
 $S experiment experiments/smoke.json --out out/smoke    # a quick check (6 seeds)
 $S experiment experiments/ladder-v0.json --games 20 --seed 1000 --threads 6
-$S experiment experiments/screen-102-c.json --quick --resume  # scoping; resumes with its --out, --games, --seed
+$S experiment experiments/screen-130-dev.json --quick --resume  # scoping; resumes with its --out, --games, --seed
 ```
 
 ## The spec
@@ -142,11 +142,11 @@ chasing it.
 check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:plan_table=0,w.table=0,w.packet_keep=1`
 the judge off the value table.
 
-- **Order:** the engine smoke read (`use-090.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** the three pairs at d2 (`screen-128-dev.json`: 2,016 games in 7 agent cells, about 4 min on 6
-  threads; `-r52.json` its fresh read). 128's `read128.py` reads wins, lead, energy, credits and per-board keeps,
-  plays and Action uses; `action_read.py` why an Action went unused. Agent switches are agent cells; a `values.json`
-  edit needs a second binary.
+- **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
+- **Current recipe:** the three pairs at d2 (`screen-130-dev.json`: 576 games, about 2.5 min on 6 threads;
+  `-r53.json` its fresh read), read by 130's `read130.py` (wins, energy per board and where it went, flags paired
+  seat by seat, per-board keeps, plays and Action uses) and `deck_rates.py`; 128's `action_read.py` says why an Action
+  went unused. Agent switches are agent cells; a `values.json` edit needs a second binary.
 - **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min (13 ms a planner decision); 300
   strategist games about 4 min on 4 threads under load.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
@@ -174,7 +174,7 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
 ledger. Used through r48 (specs in the write-ups): below 34352, 34400-1, 34500-47, 34600-2, 34700-7. r49: 34708-34995
-(122, 124). r50 (125, 126): 34996-35391. r51 (127): 35392-35647. r52 (128): 35648-35895. Next free: 35896.
+(122, 124). r50 (125, 126): 34996-35391. r51 (127): 35392-35647. r52 (128): 35648-35895. r53 (130): 35896-36143 (dev 35896-36095, fresh 36096-36143). Next free: 36144.
 
 ## Reading prices
 

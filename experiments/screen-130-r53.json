@@ -1,0 +1,35 @@
+{
+  "name": "screen-130-r53",
+  "note": "130 final read: fresh seeds 36096-36143 (48 a cell), the three pairs at d2, paired against r52 (main 75057cc) on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "first_seed": 36096,
+  "records": 0
+}

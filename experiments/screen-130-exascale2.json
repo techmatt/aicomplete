@@ -1,0 +1,24 @@
+{
+  "name": "screen-130-exascale2",
+  "note": "130: Exascale Training Cluster, second screen on the dev seeds 35896-35991 (96 a pair, strategist): +3 insight a round in place of +3 research cubes, at 8 energy and 15 credits and at 6 energy and 24 credits.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp-ins3", "set": ["cards.exascale_training_cluster.passives.0.resource=insight"]},
+    {"name": "br-ins3", "set": ["ai.boards=0,2", "cards.exascale_training_cluster.passives.0.resource=insight"]},
+    {"name": "pr-ins3", "set": ["ai.boards=1,2", "cards.exascale_training_cluster.passives.0.resource=insight"]},
+    {"name": "bp-ins3e6", "set": ["cards.exascale_training_cluster.passives.0.resource=insight", "cards.exascale_training_cluster.energy=6", "cards.exascale_training_cluster.cost=24"]},
+    {"name": "br-ins3e6", "set": ["ai.boards=0,2", "cards.exascale_training_cluster.passives.0.resource=insight", "cards.exascale_training_cluster.energy=6", "cards.exascale_training_cluster.cost=24"]},
+    {"name": "pr-ins3e6", "set": ["ai.boards=1,2", "cards.exascale_training_cluster.passives.0.resource=insight", "cards.exascale_training_cluster.energy=6", "cards.exascale_training_cluster.cost=24"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "first_seed": 35896,
+  "records": 0
+}

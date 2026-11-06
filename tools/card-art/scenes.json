@@ -86,7 +86,7 @@
       "forgery_torn_in_half": { "card": "fact_check_network", "subject": "A busy newsroom of journalists pinning photographs and string across a wall, one holding up a forged photograph torn cleanly in half." },
       "keys_at_the_tower": { "card": "hostile_buyout", "subject": "Executives in sharp suits striding into a captured office tower lobby as the occupier's gray-uniformed guards are walked out, a ring of keys handed over at the door." },
       "crowd_at_the_barricade": { "card": "popular_uprising", "subject": "A vast crowd of citizens with plain unmarked banners surging up a boulevard toward a fortified city hall, the barricade across its steps giving way." },
-      "truth_hearing_tiers": { "was": "truth_commission", "subject": "A round public hearing hall, a witness speaking at a plain lectern while a seated panel listens and a hushed audience fills the tiers around them." },
+      "truth_hearing_tiers": { "card": "holographic_assembly_hall", "was": "truth_commission", "subject": "A round public hearing hall, a witness speaking at a plain lectern while a seated panel listens and a hushed audience fills the tiers around them." },
       "envoy_briefing_room": { "card": "envoy_briefings", "subject": "A sunlit briefing room where a handful of envoys in travel coats sit at a long table with open folders and a large plain world map on the wall, a senior diplomat pointing at it, suitcases waiting by the door." }
     },
     "industry": {
@@ -102,7 +102,7 @@
       "factory_robot_arms": { "card": "robotic_foundry", "from": "r2", "subject": "An automated factory floor, robot arms assembling machines." },
       "bridge_loan_span": { "was": "bridge_loan", "subject": "A half-finished bridge held up by temporary timber trestles, trucks already crossing over the gap." },
       "trading_floor_surge": { "was": "liquidity_event", "subject": "A stock exchange floor in a frenzy, traders surging toward the center, papers thrown into the air." },
-      "silicon_wafer_pallets": { "was": "bulk_silicon_procurement", "subject": "Pallets of silicon wafers and drums of raw silicon being unloaded from a cargo ship at a sunny dock." },
+      "silicon_wafer_pallets": { "card": "wafer_fab_line", "was": "bulk_silicon_procurement", "subject": "Pallets of silicon wafers and drums of raw silicon being unloaded from a cargo ship at a sunny dock." },
       "chip_market_stalls": { "card": "parts_exchange", "was": "chip_spot_market", "subject": "A crowded open-air market where traders haggle over trays of bright chips on long tables." },
       "pawned_substation": { "card": "collateralized_grid", "subject": "A banker and an engineer tagging a substation with a large paper lien label on a string." },
       "shared_cleanroom": { "card": "joint_fabrication_pact", "subject": "Two crews in differently colored cleanroom suits working together on one big chip fabrication machine." },
@@ -171,7 +171,7 @@
       "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
       "sample_repository_shelves": { "was": "sample_repository", "subject": "A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place." },
       "preprint_exchange_board": { "card": "preprint_server", "was": "preprint_exchange", "subject": "A crowded corkboard wall of pinned papers in a bright corridor, two scientists swapping a printout and a small glowing cube." },
-      "inference_cluster_racks": { "was": "inference_cluster", "subject": "A compact server rack in a bright university machine room, fed by a chute of small glowing cubes, a technician watching its status lamps wake row by row." },
+      "inference_cluster_racks": { "card": "exascale_training_cluster", "was": "inference_cluster", "subject": "A compact server rack in a bright university machine room, fed by a chute of small glowing cubes, a technician watching its status lamps wake row by row." },
       "breakthrough_lab_flash": { "was": "breakthrough_lab", "subject": "A glass-walled hilltop laboratory, a beam from an instrument on its bench lancing out through the open roof and shattering a dark crystal node on the next ridge, researchers shielding their eyes." },
       "policy_institute_hall": { "card": "interdisciplinary_institute", "was": "policy_institute", "subject": "A round meeting hall where scientists present a glowing cube model to seated delegates, a banner of linked hands on the wall." },
       "paper_engine": { "card": "citation_engine", "subject": "A great whirring machine of brass and paper, journals feeding in one end and threads of references spinning out to a wall." },
@@ -208,7 +208,7 @@
       "frontier_lab_opening": { "card": "frontier_lab_charter", "subject": "A brand-new frontier research lab of glass and white steel opening on a hilltop campus, scientists in lab coats carrying the first crates of glowing sky-blue research cubes through its tall doors while a founder holds up a blank rolled charter to a small cheering crowd; no flags or emblems." }
     },
     "security": {
-      "point_defense_turret": { "was": "point_defense", "subject": "A compact automated gun turret on a factory roof, its barrels tracking a small drone in the sky." },
+      "point_defense_turret": { "card": "directed_energy_array", "was": "point_defense", "subject": "A compact automated gun turret on a factory roof, its barrels tracking a small drone in the sky." },
       "sentinel_watch_post": { "was": "sentinel_post", "subject": "A lone watchtower with a small solar array on a high ridge, one sentry looking out over the valley below." },
       "shelter_blast_doors": { "was": "shelter_order", "subject": "Families filing down into a public shelter past heavy open blast doors, a warden waving them on under a siren pole." },
       "strike_team_rooftop": { "was": "quick_reaction_force", "subject": "A four-person strike team fast-roping from a helicopter onto a rooftop, dust blowing, figures seen from behind." },

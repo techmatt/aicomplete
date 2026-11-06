@@ -107,11 +107,16 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **Energy is rare** (r35): about 4.5 credits an energy, 5 to buy from a neutral city (r36). +1 energy of income or
   production is the horizon × 4.5 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed):
   about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling; it replaced r35's 8-10 anchor), and no card above
-  +2 a card (one tag payoff, Tidal Barrage, reaches +3 at 6 Power tags, r44). Three threats' counters, nine cards
-  and two Actions (Grid Analytics Desk's draw, Particle Accelerator's cubes) take energy.
+  +2 a card (one tag payoff, Tidal Barrage, reaches +3 at 6 Power tags, r44). Three threats' counters, thirteen
+  cards and five Actions (Grid Analytics Desk's draw, Particle Accelerator's cubes, Directed-Energy Array's removal,
+  Holographic Assembly Hall's Sway, Wafer Fab Line's draw and chips) take energy.
 - **Energy as a second cost** (r50, Matt): a card whose title reads power-hungry prints energy and costs 4.5 credits
-  less an energy, so pay holds at the anchors; uncommon (12 of 151 deck cards, r51 adding three factories). The late
-  sinks price energy at its 4.5 anchor too: Citywide Microgrid's 8 energy is 36 of its 56.
+  less an energy, so pay holds at the anchors; uncommon (13 of 155 deck cards). The late sinks price energy at its 4.5
+  anchor too: Citywide Microgrid's 8 energy is 36 of its 56, Exascale Training Cluster's 8 is 36 of its 67, and each
+  2-energy Action is a use's 9. The table prices energy at the full anchor while its insight, draw and chip rates sit
+  at about 0.6 of theirs, so an energy-for-X Action reads as a loss at `values.json` for a seat short of energy and a
+  gain only through the spare-energy rate (128); the three sinks whose output the table prices lowest (an ambassador
+  removed; insight and research cubes; a draw and chips) carry an override (130).
 - **A station is a flip** (r35): freeing one is worth a cube a round both ways, about 15 (`cleanse_station`); freeing a
   factory stays about 6.
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 1, then 0.5 each (events leave none).

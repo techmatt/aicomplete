@@ -1,6 +1,6 @@
 {
-  "name": "same-103",
-  "note": "103: the identical-games check for each pure speed-up: the strategist, engine, planner and planner with strategy rollouts on each pair, 16 seeds from 1000, d2, before and after; compare with bench/same_results.py.",
+  "name": "use",
+  "note": "090: the engine smoke read of r35 (2 players, the three board pairs, d2, 16 seeds from 31200): the engine and the strategist. Read with scripts/cards/play_read.py, board_read.py --powers, liberation_read.py --cards and use_read.py.",
   "configs": [
     "configs/baseline.json"
   ],
@@ -26,12 +26,9 @@
     2
   ],
   "agents": [
-    "strategist",
     "engine",
-    "planner",
-    "planner:strategy=1"
+    "strategist"
   ],
   "games": 16,
-  "first_seed": 1000,
   "records": 0
 }

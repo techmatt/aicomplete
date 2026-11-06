@@ -105,7 +105,7 @@ browser; `npm ci` first):
   drawn are the row ids in `picks/scene_batch_<n>.json`. Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
-- Every one of the 149 deck cards has a suggested scene, drawn. A scene whose card was cut or
+- Every one of the 155 deck cards has a suggested scene, drawn. A scene whose card was cut or
   redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. A scene with
   both was drawn for `was` and reused on `card`: an unused scene that broadly fits a new card's
   name goes there before a new draw (Matt, 110). `npm run cards:check` in `web/` fails on a deck

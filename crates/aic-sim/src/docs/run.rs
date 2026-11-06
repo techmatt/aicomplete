@@ -291,7 +291,7 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     }
     for (path, text) in files {
         if text.len() > RULES_BUDGET {
-            out.push(format!("{path}: {} bytes, over the {RULES_BUDGET}-byte doc budget: split it", text.len()));
+            out.push(format!("{path}: {} bytes, over the {RULES_BUDGET}-byte doc budget: trim what the code or a generated table already says (no archive files)", text.len()));
         }
     }
     out

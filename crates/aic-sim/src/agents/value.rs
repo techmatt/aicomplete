@@ -904,7 +904,10 @@ impl CardValue {
         // 099: a one-shot Action earns nothing a round: its one use is its fuel's
         // worth (the token term), so using it no longer reads as giving up a stream.
         let uses = if self.has_use && !self.once { t.fast.uses_share } else { 0.0 };
-        self.play.unseen_round(c) + uses * self.one_use(t, c)
+        // 130: a `values.json` override is part of the card's worth in play too, spread
+        // over the rounds left (the heuristic multiplies this by them); without it a card
+        // read higher in hand than built, and an overridden building was never played.
+        self.play.unseen_round(c) + uses * self.one_use(t, c) + self.extra / c.horizon.max(1.0)
     }
 }
 

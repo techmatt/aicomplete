@@ -1,0 +1,30 @@
+{
+  "name": "screen-130-sinks",
+  "note": "130: stronger sinks on the dev seeds 35896-35991 (96 a pair, strategist), with Wafer Fab Line in the deck. A factorial of two levers: x3, the 2-energy Actions of Directed-Energy Array and Holographic Assembly Hall at 3 energy for more (remove 4; 3 Sway and 3 ambassadors at 17 credits); exa, Exascale Training Cluster drawing 4 when built.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp-x3", "set": ["cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17"]},
+    {"name": "br-x3", "set": ["ai.boards=0,2", "cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17"]},
+    {"name": "pr-x3", "set": ["ai.boards=1,2", "cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17"]},
+    {"name": "bp-exa", "set": ["cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]},
+    {"name": "br-exa", "set": ["ai.boards=0,2", "cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]},
+    {"name": "pr-exa", "set": ["ai.boards=1,2", "cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]},
+    {"name": "bp-both", "set": ["cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17", "cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]},
+    {"name": "br-both", "set": ["ai.boards=0,2", "cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17", "cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]},
+    {"name": "pr-both", "set": ["ai.boards=1,2", "cards.directed_energy_array.ability.cost.0.1=3", "cards.directed_energy_array.ability.effects.0.max=4", "cards.holographic_assembly_hall.ability.cost.0.1=3", "cards.holographic_assembly_hall.ability.effects.0.amount=3", "cards.holographic_assembly_hall.ability.effects.1.count=3", "cards.holographic_assembly_hall.cost=17", "cards.exascale_training_cluster.effects=[{\"op\": \"gain\", \"resource\": \"research_cubes\", \"amount\": 6}, {\"op\": \"draw\", \"count\": 4}]"]}
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "first_seed": 35896,
+  "records": 0
+}

@@ -184,7 +184,7 @@ only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 4
 summarized by `scripts/cards/screen.py --gate`. The rules are judged by play that can plan.
 `experiments/gate-exploit.json` is its fast first read: the fixed strategies most likely to beat thinking,
 under the engine, capped at 32 seeds. A direction; the full gate, under the planner, gives the verdict.
-`experiments/gate-075-c3.json` holds the Researcher's own checks, at 3 countries only.
+`experiments/gate-c3.json` holds the Researcher's own checks, at 3 countries only.
 
 ## Sanity checks
 

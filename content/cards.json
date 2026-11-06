@@ -1746,7 +1746,13 @@
     ]
    }
   ],
-  "energy": 2
+  "energy": 2,
+  "effects": [
+   {
+    "op": "draw",
+    "count": 2
+   }
+  ]
  },
  {
   "id": "dyson_swarm_tranche",
@@ -4734,6 +4740,137 @@
     {
      "op": "project_cube",
      "count": 3
+    }
+   ],
+   "or": {
+    "cost": [
+     [
+      "energy",
+      2
+     ]
+    ],
+    "effects": [
+     {
+      "op": "gain",
+      "resource": "research_cubes",
+      "amount": 3
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "directed_energy_array",
+  "name": "Directed-Energy Array",
+  "tier": 1,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "security",
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "remove_ambassadors_country",
+     "max": 3,
+     "reach": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "holographic_assembly_hall",
+  "name": "Holographic Assembly Hall",
+  "tier": 1,
+  "kind": "building",
+  "cost": 9,
+  "insight": 1,
+  "tags": [
+   "diplomacy",
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "sway",
+     "side": "unity",
+     "amount": 2
+    },
+    {
+     "op": "gain_ambassadors",
+     "count": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "exascale_training_cluster",
+  "name": "Exascale Training Cluster",
+  "tier": 2,
+  "kind": "building",
+  "cost": 15,
+  "energy": 8,
+  "insight": 2,
+  "tags": [
+   "cyber",
+   "power"
+  ],
+  "passives": [
+   {
+    "op": "income",
+    "resource": "insight",
+    "amount": 3
+   }
+  ],
+  "effects": [
+   {
+    "op": "gain",
+    "resource": "research_cubes",
+    "amount": 6
+   }
+  ]
+ },
+ {
+  "id": "wafer_fab_line",
+  "name": "Wafer Fab Line",
+  "tier": 1,
+  "kind": "building",
+  "cost": 12,
+  "insight": 1,
+  "tags": [
+   "industry",
+   "power"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "draw",
+     "count": 2
+    },
+    {
+     "op": "gain",
+     "resource": "chips",
+     "amount": 2
     }
    ]
   }

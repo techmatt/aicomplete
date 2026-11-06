@@ -329,7 +329,11 @@
         "national_grid_buildout",
         "decapitation_strike",
         "particle_accelerator",
-        "citywide_microgrid"
+        "citywide_microgrid",
+        "directed_energy_array",
+        "holographic_assembly_hall",
+        "exascale_training_cluster",
+        "wafer_fab_line"
       ]
     }
   ],

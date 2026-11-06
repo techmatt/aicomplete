@@ -98,7 +98,7 @@
   "orbital_embassy": "r52 (128): 10 cr (was 9), priced at the anchors; 3 Diplomacy tags played after it a game (dev); anchors: pay 26; get draw 4 20 + 3 ambassadors 12 + tags 1.5 = 33.5 = 1.29.",
   "orbital_mass_driver": "r50 (125): power-hungry, 3 energy for 13 credits (28 cr); anchors: pay 50.5; get 83.75 = 1.66.",
   "orbital_observatory_array": "r42 (106): Researcher (insight to keep is not needed: drawn cards cost no keep); with a reuse each round, +25; anchors: pay 21.5; get 24 = 1.12.",
-  "particle_accelerator": "r50 (125): new, a late energy sink; a use 3 cubes (18 at 6) for 2 energy (9), x4 rounds x0.7; anchors: pay 24; get 26.7 = 1.11 (1.46 at 7 a cube, some uses completing).",
+  "particle_accelerator": "r53 (130): its Action's other half takes the 3 cubes onto your board, so it has a use once the megaprojects are done; either half 3 cubes (18 at 6) for 2 energy (9), x4 rounds x0.7; anchors: pay 24; get 26.7 = 1.11.",
   "parts_exchange": "r44 (111): anchors: pay 17; get 24.5 = 1.44.",
   "patent_library": "r44 (111): anchors: pay 17; get 24.5 = 1.44.",
   "payroll_automation": "r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 8 cr, 1 ins to reach a band); anchors: pay 20; get 24.0 = 1.20.",
@@ -109,7 +109,7 @@
   "peaker_turbines": "r42 (106): the Builder in rounds 1-4; anchors: pay 23; get 27.9 = 1.21.",
   "planetary_referendum": "r42 (106): anchors: pay 25.5; get 32 = 1.25.",
   "popular_uprising": "r48 (121): tier 1 (from tier 2), 22 cr and 1 insight (from 28 cr, 2 insight, needs 3 Diplomacy); Action: add 1 Follower, OR pay 4 Followers to liberate; a liberation by its fifth Action (the value table reads 1.07); anchors: pay 30; get 45 = 1.50.",
-  "positron_storage_ring": "r50 (125): power-hungry, 2 energy for 9 credits (18 cr), back on its first Power card; anchors: pay 34; get 65 = 1.91.",
+  "positron_storage_ring": "r53 (130): underplayed (0.24 plays per card in hand against 0.40), so it draws 2 when built; anchors: pay 34; get 75 = 2.21.",
   "power_to_the_people": "r44 (111): at 4-5 Power tags, priced at the midpoint (recorded); anchors: pay 48; get 63 = 1.31.",
   "predictive_modeling": "r52 (128): back to its r50 7 cr, keeping 1 play insight, and draws 3 (was 2) (Matt); anchors: pay 15; get delay 2 threats 4 + draw 3 15 + tag 1 = 20 = 1.33.",
   "preprint_server": "r44 (111): anchors: pay 23; get 32.5 = 1.41.",
@@ -159,5 +159,9 @@
   "wartime_retooling": "r44 (111): anchors: pay 38; get 49.5 = 1.30.",
   "zero_click_breach": "r42 (106): with Darknet and Hyperscale it pays 10 (+10.8), and Ops Floor adds 7.5; anchors: pay 17.5; get 20.8 = 1.19.",
   "zero_day_auction": "r46 (117): raised toward 1.5x (r45: 10 cr, 2 ins (1.69)); anchors: pay 30; get 44 = 1.47.",
-  "zero_knowledge_exploit": "r45 (112): back to r43's price (6 cr, 1 ins; 111 had cut it to 4 cr, 1 ins to reach a band); anchors: pay 14; get 15.0 = 1.07."
+  "zero_knowledge_exploit": "r45 (112): back to r43's price (6 cr, 1 ins; 111 had cut it to 4 cr, 1 ins to reach a band); anchors: pay 14; get 15.0 = 1.07.",
+  "directed_energy_array": "r53 (130): new late energy sink; a use 3 ambassadors removed (15) for 2 energy (9), x4 rounds x0.7; anchors: pay 16; get 18.3 = 1.14. values.json override +11 (the table's removal 2 an ambassador).",
+  "holographic_assembly_hall": "r53 (130): new late energy sink; a use 2 Sway (8) and 2 ambassadors (8) for 2 energy (9), x4 rounds x0.7; anchors: pay 17; get 21.1 = 1.24.",
+  "exascale_training_cluster": "r53 (130): new tier-2 energy sink, 8 energy (36); +3 insight a round (10 each at x2.5) 30 and 6 research cubes now 36; anchors: pay 67; get 67.5 = 1.01. values.json override +25 (the table's energy 4.5 against insight 2.5 and a cube 3).",
+  "wafer_fab_line": "r53 (130): new late energy sink, Industry's; a use draw 2 (10) and 2 chips (6) for 2 energy (9), x4 rounds x0.7; anchors: pay 20; get 21.1 = 1.06. values.json override +10 (the table's draw 4 and chip 1.5)."
 }

@@ -61,7 +61,7 @@
  "substation_hub": {"top":[[{"other":["play","#power"]},":","energy",{"other":["energy"]}]],"top_text":"Effect: when another player plays a Power card, you both gain 1 energy.","effect":[["2","energy"]],"text":"Gain 2 energy."},
  "faraday_yard": {"top":[],"top_text":"","effect":[[{"income":["+1","energy"]}],["3","harden"]],"text":"Raise your energy income by 1. Harden 3 facilities in reach."},
  "capacitor_discharge": {"top":[],"top_text":"","effect":[["energy","/","#power"]],"text":"Gain 1 energy per Power tag on your cards."},
- "positron_storage_ring": {"top":[[{"income":["antimatter"]}],["play","#power",":","2","energy"]],"top_text":"Each round, 1 antimatter. Effect: when you play a Power card, gain 2 energy.","effect":[["−2","energy"]],"text":"Pay 2 energy."},
+ "positron_storage_ring": {"top":[[{"income":["antimatter"]}],["play","#power",":","2","energy"]],"top_text":"Each round, 1 antimatter. Effect: when you play a Power card, gain 2 energy.","effect":[["−2","energy"],["2","cards"]],"text":"Pay 2 energy. Draw 2 cards."},
  "dyson_swarm_tranche": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],[{"income":["+10","credits"]}]],"text":"Raise your energy income by 2. Raise your credit income by 10."},
  "continental_supergrid": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],[{"income":["+1","credits","/","#power"]}]],"text":"Raise your energy income by 2. Raise your credit income by 1 per Power tag on your cards."},
  "beamed_power_constellation": {"top":[],"top_text":"","effect":[["3","free_node"],["energy","/","node"]],"text":"Place 3 nodes free. Gain 1 energy per node you have on the board."},
@@ -114,7 +114,7 @@
  "vertical_monopoly": {"top":[[{"income":["3","credits","/","#industry"]}]],"top_text":"Each round, 3 credits per Industry tag on your cards.","effect":[["4","cards"]],"text":"Draw 4 cards."},
  "market_stabilization_board": {"top":[[{"adversary":["−5","jam"]}]],"top_text":"Effect: economic threats you can pay toward need 5 less.","effect":[],"text":""},
  "autonomous_defense_grid": {"top":[[{"adversary":["−5","jam"]}]],"top_text":"Effect: cyber threats you can pay toward need 5 less.","effect":[],"text":""},
- "field_grant": {"top":[],"top_text":"","effect":[["3","research_cubes","megaproject","/","station"]],"text":"Add 3 research cubes in your color to a megaproject that isn't complete, in a country where you own a station."},
+ "field_grant": {"top":[],"top_text":"","effect":[["3","research_cubes","megaproject","/","station"]],"text":"Add 3 research cubes in your color to an open megaproject, in a country where you own a station."},
  "sample_repository": {"top":[],"top_text":"","effect":[[{"income":["+1","research_cubes"]}]],"text":"Raise your research cube income by 1."},
  "nuclear_option": {"top":[],"top_text":"","effect":[["−1","antimatter"],[{"adversary":["−1","cube","city"]}],["sway"]],"text":"Pay 1 antimatter. Liberate a corrupted city in reach. Sway 1 toward Discord."},
  "power_to_the_people": {"top":[[{"income":["credits","/","#power"]}]],"top_text":"Each round, 1 credit per Power tag on your cards.","effect":[["−4","energy"],[{"adversary":["−1","cube","city"]}]],"text":"Pay 4 energy. Liberate a corrupted city in reach."},
@@ -154,7 +154,7 @@
  "patent_library": {"top":[["3","credits","→","2","cards"]],"top_text":"Action: pay 3 credits, draw 2 cards.","effect":[],"text":""},
  "parts_exchange": {"top":[["chips","→","2","cards"]],"top_text":"Action: pay 1 chip, draw 2 cards.","effect":[],"text":""},
  "preprint_server": {"top":[["play","#science",":","cards"]],"top_text":"Effect: when you play a Science card, draw 1 card.","effect":[["2","cards"]],"text":"Draw 2 cards."},
- "moonshot_grant": {"top":[],"top_text":"","effect":[["8","research_cubes","megaproject"],["2","cards"]],"text":"Add 8 research cubes in your color to a megaproject that isn't complete. Draw 2 cards."},
+ "moonshot_grant": {"top":[],"top_text":"","effect":[["8","research_cubes","megaproject"],["2","cards"]],"text":"Add 8 research cubes in your color to an open megaproject. Draw 2 cards."},
  "supplier_network": {"top":[["play","#industry",":","cards"]],"top_text":"Effect: when you play an Industry card, draw 1 card.","effect":[["cards"]],"text":"Draw 1 card."},
  "wartime_retooling": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],["4","cards"]],"text":"Raise your energy income by 2. Draw 4 cards."},
  "bug_bounty_board": {"top":[["4","credits","→",{"adversary":["−3","compute","project"]},"cards"]],"top_text":"Action: pay 4 credits, remove 3 compute from an adversary project, draw 1 card.","effect":[],"text":""},
@@ -167,5 +167,9 @@
  "national_grid_buildout": {"top":[],"top_text":"","effect":[[{"income":["+2","energy"]}],["3","free_node"]],"text":"Raise your energy income by 2. Place 3 nodes free."},
  "decapitation_strike": {"top":[],"top_text":"","effect":[[{"adversary":["−1","botnet"]}],[{"adversary":["−6","ambassador"]}]],"text":"Remove a botnet in reach. Remove 6 adversary ambassadors in reach."},
  "citywide_microgrid": {"top":[["→","2","sway"]],"top_text":"Action: sway 2 toward Unity.","effect":[["−8","energy"],[{"adversary":["−1","cube","city"]}]],"text":"Pay 8 energy. Liberate a corrupted city in reach."},
- "particle_accelerator": {"top":[["2","energy","→","3","research_cubes","megaproject"]],"top_text":"Action: pay 2 energy, add 3 research cubes in your color to a megaproject that isn't complete.","effect":[],"text":""}
+ "particle_accelerator": {"top":[["2","energy","→","3","research_cubes","megaproject","OR","3","research_cubes"]],"top_text":"Action: pay 2 energy: add 3 research cubes in your color to an open megaproject, OR get them.","effect":[],"text":""},
+ "directed_energy_array": {"top":[["2","energy","→",{"adversary":["−3","ambassador"]}]],"top_text":"Action: pay 2 energy, remove 3 adversary ambassadors in reach.","effect":[],"text":""},
+ "holographic_assembly_hall": {"top":[["2","energy","→","2","sway","2","ambassador"]],"top_text":"Action: pay 2 energy, sway 2 toward Unity, get 2 ambassadors.","effect":[],"text":""},
+ "exascale_training_cluster": {"top":[[{"income":["3","insight"]}]],"top_text":"Each round, 3 insight.","effect":[["−8","energy"],["6","research_cubes"]],"text":"Pay 8 energy. Gain 6 research cubes."},
+ "wafer_fab_line": {"top":[["2","energy","→","2","cards","2","chips"]],"top_text":"Action: pay 2 energy, draw 2 cards, get 2 chips.","effect":[],"text":""}
 }

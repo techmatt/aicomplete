@@ -1,6 +1,6 @@
 """The loop smoke (121): a 16-seed run read for loops before any full read.
 
-    python scripts/cards/loop_smoke.py [DIR ...] [--run] [--spec experiments/use-090.json]
+    python scripts/cards/loop_smoke.py [DIR ...] [--run] [--spec experiments/use.json]
         [--games 16] [--seed S] [--max-plays 12] [--threads 6]
 
 With `--run`, or with no DIR, it first runs `aic-sim experiment SPEC --games N [--seed S]
@@ -74,7 +74,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('dirs', nargs='*')
     ap.add_argument('--run', action='store_true', help='run the smoke first (the default with no DIR)')
-    ap.add_argument('--spec', default=os.path.join('experiments', 'use-090.json'))
+    ap.add_argument('--spec', default=os.path.join('experiments', 'use.json'))
     ap.add_argument('--games', type=int, default=16)
     ap.add_argument('--seed', type=int)
     ap.add_argument('--max-plays', type=int, default=12, help='fail when one card is played this often in a game')

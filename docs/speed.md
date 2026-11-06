@@ -84,7 +84,7 @@ is 8% faster than release and takes minutes to build.
 **Comparing.** Two binaries: `speed.py pair` or `per_decision.py OLD NEW`, never two `table` runs (a test
 suite elsewhere on the box halved a whole table). `python scripts/bench/same_results.py DIR_A DIR_B` compares
 two experiment outputs, timing aside: the check that a speed-up or a late fix changed no game
-(`experiments/same-103.json`: strategist, engine, planner and `planner:strategy=1` on the three pairs, 192
+(`experiments/same.json`: strategist, engine, planner and `planner:strategy=1` on the three pairs, 192
 games, about 2 min on 6 threads). `same_play.py` is the wider one.
 
 **`sweep`, the cheap profile.** `planner:deals=1,lead=0` under the name `sweep`, for price screens. Keep and
@@ -115,5 +115,5 @@ for the planners). 104's before/after on the same games, and 103's table, are in
 | planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 7.25 | 424 |
 
 The strategist is about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
-threads beside another item, the read of `experiments/screen-082.json` (1,152 games: four greedy agents and
+threads beside another item, the read of `experiments/archive/screen-082.json` (1,152 games: four greedy agents and
 four planners) took 17 min at r34.

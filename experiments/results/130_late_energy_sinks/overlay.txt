@@ -1,0 +1,43 @@
+# 130: late energy sinks (r53). Rerun with: python scripts/cards/apply_overlay.py experiments/results/130_late_energy_sinks/overlay.txt
+# Matt (design doc Economy, revs 21-24): energy sinks are an energy cost on power-hungry titles, uncommon, plus bigger
+# late sinks on top: an Action "spend X energy: Y", or a tier-2 building with a very big energy cost and a very strong
+# effect. Unplayed cards get stronger, not cheaper; the anchors set the price. Anchors: energy 4.5, insight 4, a draw 5,
+# a research cube 6, an ambassador removed 5, a Sway 4, an ambassador gained 4, the keep 4 / 8. An Action is priced at
+# (its value less its cost) x the horizon (4 at tier 1, 2.5 at tier 2) x 0.7; tags 1, then 0.5.
+
+# Particle Accelerator: its Action had no target once the megaprojects were done (147 of 160 standing rounds at 128).
+# The other half takes the same 3 cubes onto your board, so the Action always has a use. Each half: 3 cubes 18 for 2
+# energy 9 = 9 a use, x 4 x 0.7 = 25.2 + tags 1.5 = 26.7; pay 16 + 4 + 4 = 24: 1.11 (unchanged; on a megaproject a
+# cube pays its completion reward on top, so that half stays the better one while one is open).
+cards.particle_accelerator.ability={"cost": [["energy", 2]], "effects": [{"op": "project_cube", "count": 3}], "or": {"cost": [["energy", 2]], "effects": [{"op": "gain", "resource": "research_cubes", "amount": 3}]}}
+
+# New: Directed-Energy Array (tier 1, Security and Power). Action: pay 2 energy, remove 3 adversary ambassadors in
+# reach (median 6 in a seat's reach). A use 15 for 9 = 6, x 2.8 = 16.8 + tags 1.5 = 18.3; pay 8 + 4 + 4 = 16: 1.14.
+cards.directed_energy_array={"name": "Directed-Energy Array", "tier": 1, "kind": "building", "cost": 8, "insight": 1, "tags": ["security", "power"], "ability": {"cost": [["energy", 2]], "effects": [{"op": "remove_ambassadors_country", "max": 3, "reach": true}]}}
+
+# New: Holographic Assembly Hall (tier 1, Diplomacy and Power). Action: pay 2 energy, 2 Sway toward Unity and gain 2
+# ambassadors. A use 8 + 8 = 16 for 9 = 7, x 2.8 = 19.6 + tags 1.5 = 21.1; pay 9 + 4 + 4 = 17: 1.24.
+cards.holographic_assembly_hall={"name": "Holographic Assembly Hall", "tier": 1, "kind": "building", "cost": 9, "insight": 1, "tags": ["diplomacy", "power"], "ability": {"cost": [["energy", 2]], "effects": [{"op": "sway", "side": "unity", "amount": 2}, {"op": "gain_ambassadors", "count": 2}]}}
+
+# New: Exascale Training Cluster (tier 2, Cyber and Power): 8 energy to build, a very strong insight income.
+# +3 insight a round, 10 each at tier 2's 2.5 rounds (anchor: 12 at mid-game) = 30; when built 6 research cubes 36
+# (two rounds' worth, 1 insight each at the converter: an engine pays up front); tags 1.5: 67.5. Pay 15 + 4 x (2 + 2)
+# + 8 x 4.5 = 67: 1.01. Screened on the dev seeds before this: 10 energy and 6 credits (the same pay) with +3 research
+# cubes a round, never played in 576 games; 8 energy, 0 plays; 6 energy and 24 credits, 0; +2 insight, 0.03 a
+# Builder game; +3 insight 0.05 (kept), at 6 energy 0.08. The agents hold a research cube at 0.3 points against
+# energy's 0.8, so a research income reads as nothing to them.
+cards.exascale_training_cluster={"name": "Exascale Training Cluster", "tier": 2, "kind": "building", "cost": 15, "energy": 8, "insight": 2, "tags": ["cyber", "power"], "passives": [{"op": "income", "resource": "insight", "amount": 3}], "effects": [{"op": "gain", "resource": "research_cubes", "amount": 6}]}
+
+# Underplayed energy-cost cards, more power at the same price (r52 dev 35896-35991, strategist, plays per card that
+# reached a hand, against its tier and kind's median).
+# Cryo-Compute Burn 0.09 (tier-1 events 0.37) is left as it was: at 2 credits it reads 1.33 at the 3-4 Science tags
+# 111 priced it at, so +1 insight (1.71) breaks the tier-1 ceiling; +1 insight with 2 credits more (1.44) was screened
+# on the dev seeds and its plays fell to 0.03 per card in hand. No printable raise fits its price.
+# Positron Storage Ring 0.24 (tier-2 buildings 0.40): draws 2 when built (an engine pays up front). 125's check: get
+# 65 against pay 9 + 16 + 9 = 34, 1.91; + draw 2 10 = 75: 2.21, under the tier-2 ceiling of 2.5.
+cards.positron_storage_ring.effects=[{"op": "draw", "count": 2}]
+
+# New: Wafer Fab Line (tier 1, Industry and Power), the Builder's tag's sink. Action: pay 2 energy, draw 2 cards and
+# gain 2 chips. A use 10 + 6 = 16 for 9 = 7, x 2.8 = 19.6 + tags 1.5 = 21.1; pay 12 + 4 + 4 = 20: 1.06. Grid Analytics
+# Desk (Power) draws 2 for 1 energy; this one takes 2 and pays chips on top, in Industry.
+cards.wafer_fab_line={"name": "Wafer Fab Line", "tier": 1, "kind": "building", "cost": 12, "insight": 1, "tags": ["industry", "power"], "ability": {"cost": [["energy", 2]], "effects": [{"op": "draw", "count": 2}, {"op": "gain", "resource": "chips", "amount": 2}]}}

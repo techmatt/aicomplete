@@ -16,7 +16,7 @@ Current:
   appended, an existing one replaced (125; `--set` has no such form). Nothing deletes: drop a card from the
   baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check` prints what would change. Run `regen.py` after.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
-  (runs `use-090.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
+  (runs `use.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
@@ -57,7 +57,7 @@ Current:
   strikes a Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played a game.
   Seconds.
 - `configs/no_liberate.py`: writes `experiments/configs/no_liberate.json`, the baseline with the seven liberate
-  capstones out of the deck (the liberation-off arm of `screen-080-off.json`); rerun after editing the baseline.
+  capstones out of the deck (the liberation-off arm of `archive/screen-080-off.json`); rerun after editing the baseline.
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards
   kept (opening keeps apart) and played, kept and never played, nodes placed, credit income a round, credits and
   insight left unspent a round (these three per seat-round that reached upkeep); each board's first dear power (as

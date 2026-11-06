@@ -73,7 +73,8 @@ its standing effects a round times the rounds it counts for, a use of its Action
 `uses_share` of them (a token card's spend over its cycle of adds), and its tags. The rounds are
 those left in a game; in the typical context (the opening's choice, the effect ledger) its
 tier's horizon, `horizon_t1` 4, `horizon_t2` 2.5. "Remove up to N troops" counts
-`troops_removed` (D26).
+`troops_removed` (D26). An `overrides` row adds flat credits to one card, with its reason: the scoped fix where the
+table under-prices a card's output against the anchors; built, the card keeps it, spread over the rounds left (130).
 
 The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greedy`):
 

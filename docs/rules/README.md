@@ -21,7 +21,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 52 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 53 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -63,6 +63,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Draw**: from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first.
 - **On your cards**: on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
+- **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 <!-- /generated -->
 
 The rest:
