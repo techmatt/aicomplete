@@ -13,7 +13,7 @@ const esc = escapeHtml;
 /** Global values drawn by the status strip or the adversary row; the rest are generic chips. */
 const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
-  'threats.tier', 'alignment.undecided', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
+  'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
   'alignment.discord_tips', 'alignment.bar',
   'board.war', 'board.fronts',
 ]);
@@ -76,7 +76,7 @@ function onBoard(v: View, kinds: string[]): Record<string, number> {
 
 // ---------- status: alignment and losses ----------
 
-/** A bucket of the tug of war; Unity fills toward the left, Discord toward the right. */
+/** One of the two Alignment tracks (136: independent, no Undecided pool between them). */
 function bucketBar(b: Value | undefined, side: 'unity' | 'discord', name: string): string {
   if (!b) return '';
   const pct = b.max ? Math.min(100, (100 * b.value) / b.max) : 0;
@@ -93,19 +93,15 @@ function tipsChip(t: Value | undefined, side: 'unity' | 'discord', name: string)
 /** The Alignment line, and its resolved cards and decks for the line under it; nothing without the module. */
 function alignmentHtml(v: View): { track: string; cards: string[] } {
   const g = v.globals;
-  const und = findValue(g, 'alignment.undecided');
   const unity = findValue(g, 'alignment.unity');
   const discord = findValue(g, 'alignment.discord');
   const bar = findValue(g, 'alignment.bar');
-  if (!und && !unity && !discord && !bar) return { track: '', cards: [] };
+  if (!unity && !discord && !bar) return { track: '', cards: [] };
   const level = bar?.value ?? 0;
   const max = bar?.max ?? 0;
-  const undHtml = und
-    ? `<span class="undecided" data-value="${esc(und.key)}" data-scope="global"><b>${und.value}</b><small>/${und.max ?? '?'}</small> undecided</span>`
-    : '';
   const track = `<div class="alignment">
       <span class="alabel">Alignment</span>
-      <span class="tug">${bucketBar(unity, 'unity', 'Unity')}${undHtml}${bucketBar(discord, 'discord', 'Discord')}</span>
+      <span class="tug">${bucketBar(unity, 'unity', 'Unity')}${bucketBar(discord, 'discord', 'Discord')}</span>
       ${tipsChip(findValue(g, 'alignment.unity_tips'), 'unity', 'Unity')}${tipsChip(findValue(g, 'alignment.discord_tips'), 'discord', 'Discord')}
       ${bar ? `<span class="level" data-value="${esc(bar.key)}" data-scope="global">bar <b>${level}</b>/${max}</span><span class="win">${esc(bar.doc ?? '')}</span>` : ''}
     </div>`;

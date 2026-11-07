@@ -1,8 +1,8 @@
 use super::*;
 use crate::modules::{adversary, alignment};
 
-/// This file's Unity tips come at 1, 1 and 2 cards.
-const EASE: &str = "alignment.unity_ease=1,1,2";
+/// This file's purge steps come at 1, 1 and 2 Unity cards drawn.
+const EASE: &str = "alignment.purge_at=1,1,2";
 
 /// No corrupted city and no botnet left (ambassadors and troops stay).
 fn uncorrupt_cities(rules: &Rules, g: &mut GameState) {
@@ -26,8 +26,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
         put(&mut g, m.numbered(c, piece(c).cities[1]), ADV_AMBASSADOR, 2);
     }
     g.vars.insert(STAGE.into(), 1);
-    g.vars.insert("alignment.unity_tips".into(), 1);
-    let undecided = g.var("alignment.undecided");
+    unity_drawn(&mut g, 1);
     fill_bucket(&rules, &mut g, Side::Unity);
     next_alignment_card(&mut g, Side::Unity, "civil_defense");
     any_action(&rules, &mut g);
@@ -35,23 +34,30 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     assert_eq!(total(&g, ADV_AMBASSADOR), 2);
     assert_eq!(g.var("alignment.unity_tips"), 2);
     assert_eq!(g.var("alignment.unity"), 0);
-    assert_eq!(g.var("alignment.undecided"), undecided);
-    assert_eq!(g.pile("alignment.resolved.unity"), ["civil_defense"]);
-    // Two Unity tips: bar 3 (019), where only corrupted cities count.
+    assert!(g.pile("alignment.resolved.unity").iter().any(|k| k.as_str() == "civil_defense"));
+    // Two Unity cards drawn: bar 3 (019), where only corrupted cities count.
     assert_eq!(alignment::bar_level(&rules.world(), &g), 3);
     let o = g.outcome.as_ref().expect("a win");
     assert!(o.won && o.reason == "purge", "{o:?}");
 }
 
 #[test]
-fn bar_levels_follow_the_unity_tips() {
+fn bar_levels_follow_the_unity_cards_drawn() {
     let rules = Rules::new(&baseline_with(&[EASE])).unwrap();
     let w = rules.world();
     let mut g = rules.new_game(1);
-    // 019: `unity_ease` 1, 1, 2: ambassadors and troops at 1 tip, botnets at 2.
+    // 019: `purge_at` 1, 1, 2: ambassadors and troops at 1 card, botnets at 2.
     for (tips, level) in [(0, 0), (1, 2), (2, 3), (9, 3)] {
-        g.vars.insert("alignment.unity_tips".into(), tips);
-        assert_eq!(alignment::bar_level(&w, &g), level, "{tips} tips");
+        unity_drawn(&mut g, tips);
+        assert_eq!(alignment::bar_level(&w, &g), level, "{tips} cards");
+    }
+    // 136, the baseline: 0-2 cards everything counts, 3-5 all but adversary
+    // ambassadors, 6+ only the corrupted cities.
+    let rules = Rules::new(&baseline_with(&[])).unwrap();
+    let w = rules.world();
+    for (n, level) in [(0, 0), (2, 0), (3, 1), (5, 1), (6, 3), (8, 3)] {
+        unity_drawn(&mut g, n);
+        assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
     }
     assert!(adversary::win_text(0).contains("botnet, adversary troop or adversary ambassador"));
     assert!(adversary::win_text(1).contains("ambassadors no longer count"));
@@ -80,7 +86,7 @@ fn the_board_clear_win_and_the_bar_easing() {
         let (rules, mut g) = action_only(&[EASE, &format!("alignment.clear_win_stage={rule}")]);
         uncorrupt_cities(&rules, &mut g);
         g.vars.insert(STAGE.into(), stage);
-        g.vars.insert("alignment.unity_tips".into(), tips);
+        unity_drawn(&mut g, tips as usize);
         if let Some(p) = piece_left {
             put(&mut g, cities(&rules.map)[0], p, 1);
         }
@@ -111,38 +117,83 @@ fn the_board_clear_win_and_the_bar_easing() {
     }
 }
 
-/// The antimatter action sways toward Discord; with the Undecided empty
-/// the Sway comes from the Unity bucket (`tug`) or nowhere (`still`).
+/// The antimatter action sways toward Discord, onto its own track: the
+/// Unity track is untouched (136: no tug of war).
 #[test]
-fn the_antimatter_action_and_the_empty_undecided() {
-    for (variant, from_unity) in [("tug", true), ("still", false)] {
-        let (rules, mut g) = action_only(&[EASE, &format!("alignment.variant={variant}")]);
-        g.vars.insert("alignment.undecided".into(), 0);
-        g.vars.insert("alignment.unity".into(), 2);
-        g.vars.insert("alignment.discord".into(), 0);
-        let am = g.resource(0, Resource::Antimatter);
-        let a = Action::Antimatter { seat: 0 };
-        assert!(rules.legal_actions(&g).contains(&a));
-        rules.apply_mut(&mut g, &a, None).unwrap();
-        assert_eq!(g.resource(0, Resource::Antimatter), am + 1);
-        let moved = i64::from(from_unity);
-        assert_eq!(
-            (g.var("alignment.unity"), g.var("alignment.discord")),
-            (2 - moved, moved),
-            "{variant}"
-        );
-        // Once a round per player.
-        assert!(!rules.legal_actions(&g).contains(&a));
-        assert!(rules.apply_mut(&mut g, &a, None).is_err());
-        assert!(rules
-            .legal_actions(&g)
-            .contains(&Action::Antimatter { seat: 1 }));
-    }
+fn the_antimatter_action_fills_only_the_discord_track() {
+    let (rules, mut g) = action_only(&[EASE]);
+    g.vars.insert("alignment.unity".into(), 2);
+    g.vars.insert("alignment.discord".into(), 0);
+    let am = g.resource(0, Resource::Antimatter);
+    let a = Action::Antimatter { seat: 0 };
+    assert!(rules.legal_actions(&g).contains(&a));
+    rules.apply_mut(&mut g, &a, None).unwrap();
+    assert_eq!(g.resource(0, Resource::Antimatter), am + 1);
+    assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), (2, 1));
+    // Once a round per player.
+    assert!(!rules.legal_actions(&g).contains(&a));
+    assert!(rules.apply_mut(&mut g, &a, None).is_err());
+    assert!(rules
+        .legal_actions(&g)
+        .contains(&Action::Antimatter { seat: 1 }));
     let (rules, g) = action_only(&["alignment.antimatter_discord=0"]);
     assert!(rules
         .legal_actions(&g)
         .iter()
         .all(|a| !matches!(a, Action::Antimatter { .. })));
+}
+
+/// 136: Unity swayed may hold Discord off instead, 1 for 1, as the players
+/// choose once the action resolves; with `hold_off` 0 it all goes on the
+/// Unity track and nothing is asked.
+#[test]
+fn unity_swayed_may_hold_discord_off() {
+    for (hold, pick, want) in [(1, 0, (3, 2)), (1, 2, (1, 0)), (0, 0, (3, 2))] {
+        let (rules, mut g) = action_only(&[&format!("alignment.hold_off={hold}")]);
+        g.vars.insert("alignment.discord".into(), 2);
+        // Unity swayed and not yet placed: the next action's check places it.
+        g.vars.insert("alignment.unity_new".into(), 3);
+        set_res(&mut g, 0, Resource::ResearchCubes, 1);
+        rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
+        if hold > 0 {
+            let p = g.pending.as_ref().expect("asked how much holds Discord off");
+            assert_eq!(p.ask.options.len(), 3, "0, 1 or 2 off the Discord track");
+            answer(&rules, &mut g, pick);
+        }
+        answer_all(&rules, &mut g);
+        assert_eq!(alignment::unity_pending(&g), 0);
+        assert_eq!((g.var("alignment.unity"), g.var("alignment.discord")), want, "hold_off {hold}, pick {pick}");
+    }
+}
+
+/// 136: Envoy spends an ambassador from the supply to move 1 Discord off the
+/// Discord track; with none on the track it isn't offered.
+#[test]
+fn envoy_moves_one_discord_off() {
+    let (rules, mut g) = action_only(&[]);
+    g.seats[0].resources.insert(Resource::Ambassadors, 2);
+    let envoy = |g: &GameState| {
+        rules.legal_actions(g).into_iter().find(|a| matches!(a, Action::Standard { seat: 0, act } if act == "envoy"))
+    };
+    g.vars.insert("alignment.discord".into(), 0);
+    assert!(envoy(&g).is_none());
+    g.vars.insert("alignment.discord".into(), 3);
+    let a = envoy(&g).expect("Envoy offered");
+    act(&rules, &mut g, a);
+    assert_eq!(g.var("alignment.discord"), 2);
+    assert_eq!(g.resource(0, Resource::Ambassadors), 1);
+    let (rules, g) = action_only(&["board.envoy_ambassadors=0"]);
+    assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act == "envoy")));
+}
+
+/// 136: every printed Unity card is dealt.
+#[test]
+fn the_unity_deck_deals_every_printed_card() {
+    let rules = Rules::new(&baseline_with(&[])).unwrap();
+    let g = rules.new_game(3);
+    let printed = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).count();
+    assert_eq!(printed, 9);
+    assert_eq!(alignment::cards_left(&g, Side::Unity), printed);
 }
 
 /// A Discord tip no longer escalates the difficulty (017): it resolves one
@@ -166,7 +217,7 @@ fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
         .unwrap();
     assert_eq!(d.value, 0);
 
-    let rules = Rules::new(&baseline_with(&["alignment.momentum_every=2"])).unwrap();
+    let rules = Rules::new(&baseline_with(&["alignment.momentum_every=2", "alignment.tip_per_player=2"])).unwrap();
     let w = rules.world();
     let mut g = rules.new_game(4);
     for (tips, cap) in [(0, 4), (1, 4), (2, 3), (4, 2), (9, 2)] {
@@ -176,9 +227,9 @@ fn discord_tips_do_not_escalate_and_momentum_shrinks_buckets() {
     }
 }
 
-/// r48: Sway past a tip stays in the bucket toward the next tip; twice a tip's worth
+/// r48: Sway past a tip stays on the track toward the next tip; twice a tip's worth
 /// tips twice. `alignment.carry` 1 (the baseline, Matt): Unity's only, a Discord tip
-/// empties its bucket as at r47; 2 both sides, 0 neither.
+/// empties its track as at r47; 2 both sides, 0 neither.
 #[test]
 fn sway_past_a_tip_carries_over_to_the_next_tip() {
     for (carry, side, carries) in [
@@ -197,19 +248,16 @@ fn sway_past_a_tip_carries_over_to_the_next_tip() {
         let what = format!("carry {carry}, {side:?}");
         // One tip and 3 over: one tip, and 3 left in the bucket if it carries.
         g.vars.insert(key.as_str().into(), cap + 3);
-        g.vars.insert("alignment.undecided".into(), 1);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
         assert_eq!(g.var(tips), 1, "{what}");
         let left = if carries { 3 } else { 0 };
         assert_eq!(g.var(&key), left, "{what}");
-        assert_eq!(g.var("alignment.undecided"), 1 + cap + 3 - left, "{what}");
         // Two tips' worth: two tips (and the bucket empty) only if it carries.
         let (rules, mut g) = action_only(&[EASE, &set]);
         uncorrupt_cities(&rules, &mut g);
         g.vars.insert(STAGE.into(), 1);
         g.vars.insert(key.as_str().into(), 2 * cap);
-        g.vars.insert("alignment.undecided".into(), 0);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
         if !g.is_over() {

@@ -42,7 +42,7 @@ const CASES = [
   { name: 'c2-d4', config: 'baseline.json', set: ['adversary.difficulty=4'] },
   { name: 'threats-off', config: 'baseline.json', set: ['threats.variant=off'] },
   { name: 'alignment-off', config: 'baseline.json', set: ['alignment.variant=off'] },
-  { name: 'alignment-still', config: 'baseline.json', set: ['alignment.variant=still', 'alignment.momentum_every=2'] },
+  { name: 'alignment-no-hold-off', config: 'baseline.json', set: ['alignment.hold_off=0', 'alignment.momentum_every=2'] },
   { name: 'cards-off', config: 'baseline.json', set: ['cards.variant=off'] },
   // 044: the round cap at each difficulty's deck, the engine's fuller games (markers,
   // shields, Clear, the rich action, delays), a record that overlays content.

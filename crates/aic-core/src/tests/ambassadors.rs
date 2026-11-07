@@ -97,7 +97,7 @@ fn ambassadors_divert_bases_and_factories() {
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (3, 0));
 
-    // A player ambassador on a base: no unit, 2 Unity, and it stays (068).
+    // A player ambassador on a base: no unit and it stays (068); 136: no Unity.
     let mut g = g0.clone();
     put(&mut g, base, ambassador(0), 1);
     run(&rules, &mut g);
@@ -105,7 +105,7 @@ fn ambassadors_divert_bases_and_factories() {
         (g.tokens(base, UNIT), g.tokens(base, ambassador(0))),
         (1, 1)
     );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 2));
+    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
 
     // An adversary ambassador on a factory: it builds an adversary troop.
     let mut g = g0.clone();
@@ -121,7 +121,7 @@ fn ambassadors_divert_bases_and_factories() {
     );
     assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
 
-    // A player ambassador on a factory: no unit, 1 Unity.
+    // A player ambassador on a factory: no unit; 136: no Unity.
     let mut g = g0.clone();
     put(&mut g, factory, ambassador(1), 1);
     run(&rules, &mut g);
@@ -129,7 +129,7 @@ fn ambassadors_divert_bases_and_factories() {
         (g.tokens(factory, ambassador(1)), g.tokens(base, UNIT)),
         (1, 1)
     );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 1));
+    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
 }
 
 #[test]

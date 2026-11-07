@@ -23,8 +23,6 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "base_discord": 1,
-        "base_unity": 2,
-        "factory_unity": 1,
         "liberate_at": 5,
         "last_safe_stage": 2,
         "free_leaves": 1,
@@ -41,8 +39,9 @@
         "remove_ambassadors": 1,
         "remove_count": 3,
         "clear_cost": 2,
-        "clear_unity": 1,
+        "clear_unity": 2,
         "clear_credits": 0,
+        "envoy_ambassadors": 1,
         "move_credits": 1,
         "ambassador_credits": 20,
         "sell_credits": 1,
@@ -99,29 +98,25 @@
     },
     {
       "module": "alignment",
-      "variant": "tug",
+      "variant": "tracks",
       "params": {
-        "undecided_per_player": 4,
-        "tip_per_player": 2,
-        "discord_tip_per_player": 2,
+        "tip_per_player": 3,
+        "discord_tip_per_player": 3,
         "carry": 1,
+        "hold_off": 1,
         "momentum_every": 0,
         "troop": 0,
         "free_city": 5,
-        "botnet": 2,
+        "botnet": 1,
         "threat_discord": 1,
-        "adversary_discord": 0,
         "antimatter_discord": 1,
         "antimatter_uses": 1,
-        "unity_cards": [
+        "purge_at": [
           3,
-          3
+          6,
+          6
         ],
-        "unity_ease": [
-          2,
-          2,
-          4
-        ],
+        "unity_tier2": 3,
         "discord_tier2": 2,
         "node_loss": 1,
         "clear_win_stage": 1

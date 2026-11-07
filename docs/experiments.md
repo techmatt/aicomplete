@@ -17,7 +17,7 @@ second checkout is refused).
 |---|---|---|
 | `name`, `note` | | Report title and a line on what it is for. |
 | `configs` | | Config files. |
-| `variants` | `[{"name": "base", "set": []}]` | Named override sets in `--set` syntax (lists comma-separated, `alignment.unity_ease=1,1,2`), each applied to every config. |
+| `variants` | `[{"name": "base", "set": []}]` | Named override sets in `--set` syntax (lists comma-separated, `alignment.purge_at=1,1,2`), each applied to every config. |
 | `difficulties` | `[0]` | `adversary.difficulty` levels. |
 | `agents` | | Agent specs, weakest first. |
 | `games`, `first_seed` | `first_seed` 0 | Seeds per cell. `--games`/`--seed` override. |
@@ -171,7 +171,8 @@ line alone reads near the engine.
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
 ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
-36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read). Next free: 36440.
+36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read); r55 (136): 36440-36487
+(the fresh paired read), dev 36600-36647 (screens). Next free: 36488 (skip 36600-36647).
 
 ## Reading prices
 

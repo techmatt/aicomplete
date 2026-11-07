@@ -156,7 +156,7 @@
     "factory",
     "city"
    ],
-   "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Move 2 Sway from the Unity bucket to the Undecided.",
+   "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Remove 2 Unity from the Unity track.",
    "counters": [
     [
      {

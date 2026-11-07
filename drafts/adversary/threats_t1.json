@@ -379,7 +379,7 @@
     "city",
     "station"
    ],
-   "text": "Each player near it gets 2 less insight next round. Move 1 Sway from the Unity bucket to the Undecided.",
+   "text": "Each player near it gets 2 less insight next round. Remove 1 Unity from the Unity track.",
    "counters": [
     [
      {

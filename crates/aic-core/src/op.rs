@@ -317,8 +317,8 @@ pub enum Op {
     DelayThreat {
         count: i64,
     },
-    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or `troops` troops (one kind, your
-    /// choice).
+    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or
+    /// `troops` troops: one kind, your choice (059; a 0 prints no such choice).
     Damage {
         #[serde(default)]
         ambassadors: i64,
@@ -336,8 +336,10 @@ pub enum Op {
     DestroyAll,
     /// Remove one botnet within your reach (019: the tier-2 way to remove a botnet).
     RemoveBotnet,
-    /// Remove up to `max` adversary ambassadors in one country (0: all; `reach`: in your reach); 1 Unity per
-    /// `unity_per` removed.
+    /// Remove up to `max` adversary ambassadors in one country (0: every one);
+    /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
+    /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
+    /// of your nodes, across countries.
     RemoveAmbassadorsCountry {
         #[serde(default)]
         unity_per: i64,
@@ -346,7 +348,9 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         reach: bool,
     },
-    /// Remove up to `count` adversary troops in one country (`reach`: in your reach).
+    /// Remove up to `count` adversary troops in one country, any country
+    /// (076, Matt's ruling 6: a printed number, never "per hex"); with `reach`
+    /// (111), in reach instead.
     RemoveTroops {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -354,8 +358,12 @@ pub enum Op {
     },
     /// Build a factory on a free industrial zone in your reach.
     BuildFactory,
-    /// Take the adversary cube off up to `amount` corrupted stations or factories (`one_country`; `cities`:
-    /// cities too; `only`: one kind).
+    /// Take the adversary cube off up to `amount` corrupted stations or
+    /// factories, one at a time (`one_country`: all in the first one's
+    /// country). `cities` (024): corrupted cities too, each liberated as `Liberate`
+    /// does (`board::liberate`); only a tier-2 ultimate prints it. `only` (r35):
+    /// stations alone or factories alone, priced apart (a station is a flip
+    /// worth several cubes both ways, a factory stays cheap).
     Cleanse {
         amount: i64,
         one_country: bool,
@@ -364,8 +372,11 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         only: Option<Facility>,
     },
-    /// Liberate a corrupted city in your reach (`align`: your cube on it); gain `ambassadors`, remove `troops`
-    /// there and a `botnet` by it.
+    /// Liberate one corrupted city in your reach (080, r34: the liberate
+    /// capstones): its adversary cube comes off, so it is clean; with `align`
+    /// your cube goes on it. Each engine's twist (r35): `ambassadors`, you gain
+    /// that many; `troops`, up to that many adversary troops in the city's
+    /// country come off; `botnet`, a botnet on or next to the city comes off.
     Liberate {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         align: bool,
@@ -376,7 +387,9 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         botnet: bool,
     },
-    /// Remove up to `max` adversary ambassadors (0: all) on or next to a corrupted city in your reach.
+    /// Remove up to `max` adversary ambassadors (0: all) on or next to one
+    /// corrupted city in your reach (024), your choice which while more stand
+    /// than it takes (059).
     ClearCity {
         max: i64,
     },
@@ -395,14 +408,17 @@ pub enum Op {
     },
     /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
-    /// In one country, no arrivals land through the next round.
+    /// In one country, no arrivals land through the next round, its build and any
+    /// build a project brings (118; 068: a Security card does an ambassador's job).
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
     FreeBuilding,
     /// Build a research station in your reach, paying no chips (075).
     BuildStation,
-    /// `count` research cubes in your color onto an open megaproject (`station`: where you own a station).
+    /// `count` research cubes in your color onto one incomplete megaproject
+    /// (075): with `station`, in a country where you own a station. They pay at
+    /// completion like any cube.
     ProjectCube {
         count: i64,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -435,7 +451,9 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Raise your `resource` production once by 1 per `per` of your `tag` tags.
+    /// A one-time permanent gain per tag (106, a program's): your printed
+    /// production of `resource` rises by 1 per `per` `tag` tags on your cards
+    /// in play, counted once when it resolves (a program counts itself).
     ProductionPerTag {
         resource: Resource,
         tag: Tag,
@@ -473,7 +491,10 @@ pub enum Op {
     DrainAll {
         amount: i64,
     },
-    /// Gain `resource` per `per` tokens of `kind` (`here`: on this card).
+    /// "Count as power" (023): 1 of `resource` per `per` tokens of `kind`
+    /// (the tokens stay). 076 (Matt's ruling 12, no recounting across cards):
+    /// only the tokens on one card, this building's with `here`, else one of
+    /// yours the player picks.
     GainPerTokens {
         resource: Resource,
         kind: TokenKind,
@@ -481,7 +502,9 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         here: bool,
     },
-    /// Turn tokens of `kind` into `resource` at `rate` each (`here`: this card's).
+    /// Cash out (023, 059): remove every `kind` token from one card (076: one
+    /// card, never all yours; this building's with `here`, else one of yours the
+    /// player picks); gain `rate` of `resource` for each.
     CashOut {
         kind: TokenKind,
         resource: Resource,
@@ -496,12 +519,16 @@ pub enum Op {
         tag: Tag,
         per: i64,
     },
-    /// Raise your income by one of your active buildings' Each round output, as it pays now.
+    /// Copy (105, a program's): raise your income by one of your active
+    /// buildings' Each round output, as it pays at the time of play (a
+    /// per-tag income at its count then).
     CopyIncome,
     /// Reuse (105, a building's Action): use another of your buildings'
     /// Actions again this round. Not one whose own Action is a reuse.
     Reuse,
-    /// Discard a card from your hand and gain `amount` of `resource` (one card a use).
+    /// Discard a card from your hand and gain `amount` of `resource` (105: the
+    /// Researcher's Synthesis; one card a use, which keeps the agents' search
+    /// to one pick).
     DiscardHand {
         resource: Resource,
         amount: i64,
@@ -537,12 +564,14 @@ pub enum Op {
         #[serde(default, rename = "if", skip_serializing_if = "Option::is_none")]
         if_: Option<TroopIf>,
     },
-    /// Every node on the most threatened node hex in scope is destroyed, unless absorbed.
+    /// Every node on the most threatened hex in scope (the node hex
+    /// with the most adversary ambassadors and troops; ties: the first in
+    /// board order) is destroyed, unless absorbed (027).
     DestroyNode,
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed;
     /// never a last node from a threat, nor in stage I.
     EachDestroyNode { count: i64 },
-    /// Up to `amount` Sway leaves the Unity bucket for the Undecided (027).
+    /// Up to `amount` Sway comes off the Unity track (027; 136: no Undecided).
     PullUnity {
         amount: i64,
     },
@@ -812,8 +841,8 @@ pub enum Op {
     BuildingDiscount {
         amount: i64,
     },
-    /// Your cards carrying `tag` (none: every card) cost `amount` less `resource` (credits or insight), to
-    /// `cards.discount_floor`.
+    /// Your cards carrying `tag` (no tag: every card) cost `amount` less of
+    /// `resource`, credits or insight, to play (105), down to `cards.discount_floor`.
     CardDiscount {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         tag: Option<Tag>,
@@ -826,7 +855,9 @@ pub enum Op {
         on: Event,
         then: Vec<Op>,
     },
-    /// When its tokens here reach `at` (whatever put them there), remove `at` and resolve `then`.
+    /// A threshold counter (105): whenever its tokens here reach `at`,
+    /// whatever put them there (a feeder card's too, 118), remove `at` of
+    /// them and resolve `then`.
     Threshold {
         at: i64,
         then: Vec<Op>,
@@ -864,7 +895,9 @@ pub enum Op {
     /// Once a round, prevent the first facility or node destruction in a country
     /// where you have a node.
     CivicShelter,
-    /// Adversary troops can't enter or strike a hex holding your nodes (an AI board's innate only).
+    /// Adversary troops can't enter or strike a hex holding your nodes
+    /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
+    /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
     /// Your unspent insight carries over to the next round (075: Patience). An
     /// AI board's innate only: `economy` reads nothing else.
@@ -874,7 +907,8 @@ pub enum Op {
     SupplyInsight {
         amount: i64,
     },
-    /// Cards discarded from hand carrying `tag` (or `any`) count as those tags for AI-board powers.
+    /// While you have this building, cards discarded from hand that carry
+    /// `tag` (or any tag, `"any"`) count as those tags for AI-board powers (021).
     TagsFromHand {
         tag: TagOrAny,
     },
@@ -905,7 +939,9 @@ pub enum Op {
     SpreadReach {
         amount: i64,
     },
-    /// Every matching site in every country gains `adversary.arrivals` adversary ambassadors in the build.
+    /// The round's arrivals (027): every matching site in every country gains
+    /// `adversary.arrivals` adversary ambassadors in the build, whatever the
+    /// board holds.
     Arrivals {
         site: Site,
     },

@@ -119,9 +119,6 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .alignment .bar.discord { border-color: #dfa6a1; }
 .alignment .bar.discord .fill { background: linear-gradient(90deg, #ef9a9a, var(--discord)); }
 .alignment .bar.discord .btext { display: block; text-align: right; }
-.alignment .undecided { white-space: nowrap; padding: 0 0.4em; border: 1px solid var(--line); border-radius: 3px; background: #fff; }
-.alignment .undecided b { font-size: 1.15em; }
-.alignment .undecided small { color: var(--muted); }
 .alignment .tips { white-space: nowrap; }
 .alignment .tips small { color: var(--muted); }
 .alignment .tips.unity b { color: var(--unity); }

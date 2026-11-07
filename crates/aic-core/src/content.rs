@@ -439,6 +439,10 @@ pub struct AdversaryBoard {
     pub difficulty: BoardRule,
     #[serde(default)]
     pub harms: Vec<String>,
+    /// 136: Discord the board sways at the start of every round (the
+    /// Militarist prints none).
+    #[serde(default)]
+    pub discord_drip: i64,
 }
 
 /// A project slot on the adversary board: a project must carry `tag` (or be

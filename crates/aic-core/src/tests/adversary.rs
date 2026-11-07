@@ -382,12 +382,12 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
         _ => None,
     });
     let pull = pull.expect("a stage-III card prints the pull");
-    g.vars.insert(alignment::bucket(Side::Unity).into(), pull + 1);
+    g.vars.insert(alignment::track(Side::Unity).into(), pull + 1);
     g.piles.insert(NEXT.into(), vec![card.id.as_str().into()].into());
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.stats.counters.get("alignment.unity_pulled").copied(), Some(pull));
-    assert!(g.var(alignment::bucket(Side::Unity)) <= 1, "the bucket loses the pull");
+    assert!(g.var(alignment::track(Side::Unity)) <= 1, "the bucket loses the pull");
 }
 
 /// 028: an aligned city collects spreading ambassadors as a clean one does,

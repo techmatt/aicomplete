@@ -79,7 +79,6 @@ try {
   check(toks.stacks > 0 && toks.drawn === toks.stacks, `${toks.drawn} token stacks drawn (${toks.kinds.join(', ')})`);
   check(!!toks.adv && !!toks.node0 && !!toks.node1 && toks.node0 !== toks.node1 && toks.adv !== toks.node0, `owner colors differ: adversary ${toks.adv}, seat 0 ${toks.node0}, seat 1 ${toks.node1}`);
   const panels = await js(`({ pipeline: document.querySelectorAll('#pipeline .slot-box').length, alignment: document.querySelectorAll('#status .alignment .tug .bar').length,
-                             undecided: !!document.querySelector('#status .alignment .undecided'),
                              next: document.querySelector('#pipeline .slot-box.next .acard .atext')?.textContent ?? '',
                              // 096: a fresh game may have no face-up card yet: the box then says so.
                              nextShown: (window.aic.view.piles.find((p) => p.key === 'adversary.next')?.visible.length ?? 0) > 0,
@@ -89,7 +88,7 @@ try {
                              threats: document.querySelectorAll('#countries .threat').length,
                              // 096: as many as the view deals (a fresh game may have none yet).
                              dealt: window.aic.view.countries.flatMap((c) => c.cards).filter((g) => g.key === 'threats.on').reduce((n, g) => n + g.cards.length, 0) })`);
-  check(panels.pipeline >= 4 && panels.alignment === 2 && panels.undecided, `adversary row (${panels.pipeline} boxes) and Alignment track (${panels.alignment} buckets, the Undecided) drawn`);
+  check(panels.pipeline >= 4 && panels.alignment === 2, `adversary row (${panels.pipeline} boxes) and the two Alignment tracks (${panels.alignment}) drawn`);
   check((panels.nextShown ? panels.next.length > 0 : panels.nextEmpty.length > 0) && panels.supply,
     panels.nextShown ? `face-up next adversary card shown with its text ("${panels.next}") and the ambassador supply`
       : `next adversary card box says it is not revealed ("${panels.nextEmpty}"), ambassador supply shown`);

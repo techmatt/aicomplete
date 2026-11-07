@@ -20,8 +20,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
 | `board.base_discord` | 1 | 0..10 | Discord an adversary ambassador on a producing base sways |
-| `board.base_unity` | 2 | 0..10 | Unity a player ambassador on a producing base sways |
-| `board.factory_unity` | 1 | 0..10 | Unity a player ambassador on a producing factory sways |
 | `board.liberate_at` | 5 | 1..10 | player ambassadors on a corrupted city, from seats with a node on or next to it, that liberate it (the fallback) |
 | `board.last_safe_stage` | 2 | 0..3 | while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe) |
 | `board.free_leaves` | 1 | 0..5 | adversary ambassadors left on a city as it frees (the piece ladder) |
@@ -38,8 +36,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there |
 | `board.remove_count` | 3 | 1..3 | standard action: adversary ambassadors one removal takes off its hex, at most |
 | `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
-| `board.clear_unity` | 1 | 0..5 | Sway toward Unity for clearing a corruption marker |
+| `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
+| `board.envoy_ambassadors` | 1 | 0..5 | standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action) |
 | `board.move_credits` | 1 | 0..20 | standard action: credits to move a player ambassador |
 | `board.ambassador_credits` | 20 | 1..50 | standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit) |
 | `board.sell_credits` | 1 | 0..20 | standard action: credits for selling a card from hand |
@@ -73,20 +72,19 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.station_flip_at` | 2 | 0..5 | adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.board_difficulty_at` | 3 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |
-| `alignment.undecided_per_player` | 4 | 1..50 | Sway in the Undecided at the start, per player |
-| `alignment.tip_per_player` | 2 | 1..50 | the Unity bucket tips when it holds this many Sway per player |
-| `alignment.discord_tip_per_player` | 2 | 1..50 | the Discord bucket tips when it holds this many Sway per player |
-| `alignment.carry` | 1 | 0..2 | Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its bucket) |
-| `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
+| `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |
+| `alignment.discord_tip_per_player` | 3 | 1..50 | the Discord track tips when it holds this many Sway per player |
+| `alignment.carry` | 1 | 0..2 | Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its track) |
+| `alignment.hold_off` | 1 | 0..1 | 1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice (136) |
+| `alignment.momentum_every` | 0 | 0..10 | Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off) |
 | `alignment.troop` | 0 | 0..10 | Sway toward Unity for removing an adversary troop |
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
-| `alignment.botnet` | 2 | 0..10 | Sway toward Unity for removing a botnet |
+| `alignment.botnet` | 1 | 0..10 | Sway toward Unity for removing a botnet |
 | `alignment.threat_discord` | 1 | 0..10 | Sway toward Discord when a threat executes uncountered |
-| `alignment.adversary_discord` | 0 | 0..10 | Sway toward Discord the adversary adds at the start of every round |
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
-| `alignment.unity_ease` | 2, 2, 4 | 1..50 | Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards) |
-| `alignment.unity_cards` | 3, 3 | 1..6 | Unity cards a game deals from the printed deck, tier 1 then tier 2 (drawing the last one wins) |
+| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136) |
+| `alignment.unity_tier2` | 3 | 0..50 | Unity cards drawn from which a Unity tip draws the stronger tier |
 | `alignment.discord_tier2` | 2 | 1..50 | Discord tip count from which a Discord tip draws the stronger tier |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |

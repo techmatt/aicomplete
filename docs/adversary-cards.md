@@ -25,7 +25,7 @@ Project slots: Military, Open, Open.
 | Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's first base. Escalation. Escalation. |
 | Supply Lines | 2 | Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones. Escalation. Escalation. |
 | Forced March | 2 | Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Arrivals: industrial zones. Escalation. Escalation. |
-| Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Move 2 Sway from Unity to the Undecided. Arrivals: industrial zones. |
+| Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Remove 2 Unity from the Unity track. Arrivals: industrial zones. |
 | Blitzkrieg | 3 | Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's first base. |
 | Occupation | 3 | Each country: Military 3 or Cyber 3, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each country's clean city with the most adversary ambassadors gains 1 more. Cities corrupt at 1 fewer adversary ambassador. Arrivals: research stations. |
 | Naval Blockade | 3 | Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Factories next to clean cities gain 1 adversary ambassador. Arrivals: coastal cities. |
@@ -41,7 +41,7 @@ Project slots: Military, Open, Open.
 | Call-Up | Military | base | 2 adversary ambassadors land on this base. Sway 1 toward Discord. | 7 credits; 1 nodes near it; 2 Security tags |
 | Agitators | Influence | city | 2 adversary ambassadors land on clean cities near it. Sway 1 toward Discord. | 7 credits; 2 ambassadors; 2 Diplomacy tags |
 | Defection | Influence | city | Each player near it loses an ambassador. Sway 1 toward Discord. | 6 credits; 1 ambassadors; 2 Diplomacy tags |
-| Smear Campaign | Influence | city, station | Each player near it gets 2 less insight next round. Move 1 Sway from the Unity bucket to the Undecided. | 5 insight; 7 credits; 2 Diplomacy tags |
+| Smear Campaign | Influence | city, station | Each player near it gets 2 less insight next round. Remove 1 Unity from the Unity track. | 5 insight; 7 credits; 2 Diplomacy tags |
 | Propaganda Blitz | Influence | coastal city | Sway 2 toward Discord. Each player near it discards a card. | 7 credits; 2 ambassadors; 2 Diplomacy tags |
 | Border Provocation | Influence + Military | base | Deal 1 extra tier-1 threat in this country; it executes next round. The adversary gains 2 compute. | 6 credits; 2 ambassadors; 2 Security tags |
 | Sabotage | Cyber | station | Each player near it loses 3 tokens from their cards. The adversary gains 2 compute. | 5 insight; 1 research cubes; 2 Cyber tags |
@@ -71,7 +71,7 @@ Project slots: Military, Open, Open.
 | Casus Belli | Military | base | Next round, the fronts next to this base fight their war step twice. Sway 2 toward Discord. | 12 credits; 3 Security tags; 2 nodes near it |
 | Overrun | Influence | city | If the city here holds 3 or more adversary ambassadors, it becomes corrupted. If not, 2 adversary ambassadors land on it. | 12 credits; 3 ambassadors; 3 Diplomacy tags |
 | Insurrection | Influence | city | 3 adversary ambassadors land on the city here, each canceling a player ambassador there. Sway 2 toward Discord. | 11 credits; 3 ambassadors; 3 Diplomacy tags |
-| Deepfake Wave | Influence + Cyber | city, station | Sway 2 toward Discord. Move 1 Sway from Unity to the Undecided. Each player near it gets 2 less insight next round. | 3 ambassadors; 11 credits; 6 insight |
+| Deepfake Wave | Influence + Cyber | city, station | Sway 2 toward Discord. Remove 1 Unity from the Unity track. Each player near it gets 2 less insight next round. | 3 ambassadors; 11 credits; 6 insight |
 | Turncoats | Influence | city | Each player near it loses 2 ambassadors. 2 adversary ambassadors land on player pieces near it. | 11 credits; 3 Diplomacy tags |
 | Propaganda Ministry | Influence | city, coastal city | The adversary's next spread in this country happens twice. Sway 1 toward Discord. | 10 credits; 2 ambassadors; 3 Diplomacy tags |
 | Station Seizure | Cyber | station | The station here is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands). The adversary gains 3 compute. | 2 research cubes; 12 credits; 3 Cyber tags |
@@ -99,7 +99,7 @@ Project slots: Military, Open, Open.
 |---|---|---|---|---|
 | Last Ultimatum | Universal | city, base | Each player near it pays 20 credits or loses 2 nodes near it (never their last). Deal 1 extra tier-2 threat in this country; it executes next round. | 15 credits; 4 ambassadors; 3 Security tags; 3 Diplomacy tags |
 | Capital Siphon | Universal | factory, station | The player near it with the most credits (ties: lowest seat) loses 15; the adversary gains 4 compute. Each player near it discards 1 card. | 15 credits; 4 energy; 3 research cubes; 3 Cyber tags |
-| Iron Curtain | Universal | factory, city | 1 troop lands on the factory or zone here. Each player near it loses 2 energy. Move 2 Sway from the Unity bucket to the Undecided. | 16 credits; 4 energy; 3 Security tags; 3 Power tags |
+| Iron Curtain | Universal | factory, city | 1 troop lands on the factory or zone here. Each player near it loses 2 energy. Remove 2 Unity from the Unity track. | 16 credits; 4 energy; 3 Security tags; 3 Power tags |
 | Spearhead | Military | base | 3 troops land on the base here and march at once, 2 steps. | 15 credits; 4 energy; 3 Security tags; 3 nodes near it |
 | Scorched Earth | Military | factory | The factory here is destroyed, with the nodes on its hex (never their last). On an empty zone, 2 troops land there instead. | 16 credits; 4 energy; 3 Security tags |
 | General Mobilization | Military | base | Next round, the fronts next to this base fight their war step twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord. | 14 credits; 3 energy; 3 Security tags; 6 credits + 2 energy |
@@ -132,4 +132,4 @@ Project slots: Military, Open, Open.
 | Grid Capture | Grid | 9 | ongoing | Ongoing: every round, every player loses 1 energy. |
 | False Flag | Universal | 6 | once | Deal 1 extra tier-2 threat in each country, any tag. |
 | Grand Offensive | Universal | 10 | once | The adversary builds and spreads now; sway 2 toward Discord. |
-| Propaganda Network | Universal | 14 | ongoing | Ongoing: every round, sway 2 toward Discord, move 1 Sway from Unity to the Undecided, and corrupted cities build 1 more. |
+| Propaganda Network | Universal | 14 | ongoing | Ongoing: every round, sway 2 toward Discord, remove 1 Unity from the Unity track, and corrupted cities build 1 more. |

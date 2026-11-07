@@ -368,8 +368,9 @@ fn page_budget_failures() -> Vec<String> {
             .map(|e| e.path())
             .filter(|p| p.extension().and_then(|x| x.to_str()) == Some("md"))
             .map(|p| p.to_string_lossy().replace('\\', "/"))
-            // The generated card listings (cards_doc.py, load_adversary.py).
-            .filter(|p| p != "docs/cards.md" && p != "docs/adversary-cards.md")
+            // The generated card listings (cards_doc.py, load_adversary.py) and the op
+            // listing (`aic-sim docs`, from op.rs: P1 of 136, so op docs needn't be cut to fit).
+            .filter(|p| p != "docs/cards.md" && p != "docs/adversary-cards.md" && p != "docs/ops.md")
             .collect();
         pages.sort();
         paths.extend(pages);

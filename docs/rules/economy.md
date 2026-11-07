@@ -60,7 +60,7 @@ target is in the player's reach. The view publishes each action with its cost
 |---|---|---|
 | Build a research station | `station_chips` 2 chips | on an open hex in reach that is not an industrial zone; it is yours (your cube) |
 | Remove adversary ambassadors | `remove_ambassadors` 1 of your ambassadors, from your supply | it goes onto one hex in reach, removes up to `remove_count` 3 there and stays |
-| Clear a corruption marker | `clear_cost` 2 credits | in reach: sway `clear_unity` 1 toward Unity, gain `clear_credits` 0 credits |
+| Clear a corruption marker | `clear_cost` 2 credits | in reach: sway `clear_unity` 2 toward Unity, gain `clear_credits` 0 credits |
 | Move a player ambassador | `move_credits` 1 credit | from your supply or the board onto a piece in reach (not the hex it comes from) |
 | Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
 | Align a clean city | 1 ambassador | in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean |
@@ -71,6 +71,7 @@ target is in the player's reach. The view publishes each action with its cost
 | Project: harden (`harden_buy`) | `harden_credits` 3 credits | any player: a hardening token on a player-owned station or factory in reach |
 | Project: drain (`drain`) | `drain_credits` 5 credits | remove up to `drain_amount` 3 compute from one visible adversary project |
 | Turn a cube into insight | 1 research cube | gain `cube_insight` 1 insight, as often as you have cubes |
+| Envoy | `envoy_ambassadors` 1 of your ambassadors, from your supply, used up | move 1 Discord off the Discord track |
 <!-- /generated -->
 
 There is no "build a factory" standard action: cities build factories.

@@ -444,7 +444,7 @@
   ],
   "cost": 14,
   "ongoing": true,
-  "text": "Ongoing: every round, sway 2 toward Discord, move 1 Sway from Unity to the Undecided, and corrupted cities build 1 more.",
+  "text": "Ongoing: every round, sway 2 toward Discord, remove 1 Unity from the Unity track, and corrupted cities build 1 more.",
   "effects": [
    {
     "op": "sway",

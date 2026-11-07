@@ -159,7 +159,7 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
                 );
             }
             for k in [
-                "alignment.undecided",
+                "alignment.discord",
                 "alignment.unity_tips",
                 "alignment.bar",
                 "adversary.supply",

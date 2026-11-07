@@ -21,10 +21,12 @@ pub enum StandardAction {
     Drain,
     /// 105: the general converter, a research cube for insight, no limit a round.
     Insight,
+    /// 136: spend an ambassador to move 1 Discord off the Discord track.
+    Envoy,
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 12] = [
+pub const STANDARD: [StandardAction; 13] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -37,6 +39,7 @@ pub const STANDARD: [StandardAction; 12] = [
     StandardAction::HardenBuy,
     StandardAction::Drain,
     StandardAction::Insight,
+    StandardAction::Envoy,
 ];
 
 impl StandardAction {
@@ -55,6 +58,7 @@ impl StandardAction {
             StandardAction::HardenBuy => "harden_buy",
             StandardAction::Drain => "drain",
             StandardAction::Insight => "insight",
+            StandardAction::Envoy => "envoy",
         }
     }
 
@@ -133,6 +137,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::HardenBuy => credits(i("harden_credits")),
         StandardAction::Drain => credits(i("drain_credits")),
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
+        StandardAction::Envoy => ambassadors(i("envoy_ambassadors")),
     }
 }
 
@@ -166,7 +171,7 @@ pub fn clear_marker(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     if is_city(&w, h) {
         cx.tally(g, "board.markers_removed_city", 1);
     }
-    alignment::sway(g, cx, Side::Unity, w.int("board.clear_unity"));
+    alignment::unity_from(g, cx, "clear", w.int("board.clear_unity"));
     cx.add_resource(g, seat, Resource::Credits, w.int("board.clear_credits"));
 }
 
@@ -197,6 +202,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Insight => {
             return format!("turn 1 research cube into {}", Resource::Insight.words(w.int("board.cube_insight")));
         }
+        StandardAction::Envoy => "move 1 Discord off the Discord track",
     };
     text.to_string()
 }
@@ -266,6 +272,12 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             "1 research cube".into(),
             format!("gain {} insight, as often as you have cubes", t("board.cube_insight")),
         ),
+        // 136: any seat, as often as it has ambassadors.
+        StandardAction::Envoy => (
+            "Envoy",
+            format!("{} of your ambassadors, from your supply, used up", t("board.envoy_ambassadors")),
+            "move 1 Discord off the Discord track".into(),
+        ),
     };
     [name.to_string(), cost, what]
 }
@@ -333,6 +345,11 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         StandardAction::Chips => Vec::new(),
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
         StandardAction::Insight => Vec::new(),
+        // 136: with no Discord on the track it would do nothing.
+        StandardAction::Envoy if w.int("board.envoy_ambassadors") > 0 && g.var(alignment::track(Side::Discord)) > 0 => {
+            vec![usize::MAX]
+        }
+        StandardAction::Envoy => Vec::new(),
     }
 }
 
@@ -362,6 +379,9 @@ pub(super) fn std_resolve(
         StandardAction::Insight => {
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
             cx.tally(g, "board.cubes_converted", 1);
+        }
+        StandardAction::Envoy => {
+            alignment::hold_off(g, cx, 1);
         }
         StandardAction::Station => {
             if let Some(h) = on_hex(cx)? {

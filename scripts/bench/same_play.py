@@ -5,7 +5,7 @@
     python scripts/bench/same_play.py compare SIM BASE NEW [--map OLD=NEW]...
         # SIM: the new binary
 
-The matrix covers both configs, 1-4 countries, three difficulties, the off and still
+The matrix covers both configs, 1-4 countries, three difficulties, the off and hold_off=0
 variants, with the random, greedy, engine, rollout and planner agents (030), and one
 dominance check under the planner, saving every game. `compare` checks:
 
@@ -84,7 +84,7 @@ def run(sim, out):
         play(sim, out, f"{cfg}-c2-d2-planner", "planner", 6, cfg, ["countries=2", "adversary.difficulty=2"])
         play(sim, out, f"{cfg}-c3-d2-planner", "planner", 3, cfg, ["countries=3", "adversary.difficulty=2"])
     play(sim, out, "v-planner-never_tag", "planner:never_tag=2", 3, "baseline", ["adversary.difficulty=2"])
-    for v in ("threats.variant=off", "alignment.variant=still", "alignment.variant=off", "cards.variant=off"):
+    for v in ("threats.variant=off", "alignment.hold_off=0", "alignment.variant=off", "cards.variant=off"):
         play(sim, out, "v-" + v, "greedy", 6, "baseline", [v])
 
 

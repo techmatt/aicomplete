@@ -117,8 +117,8 @@ fn base_units(g: &mut GameState, cx: &mut Cx) {
             cx.tally(g, "board.bases_diverted", 1);
             alignment::discord_from(g, cx, "base", w.int("board.base_discord"));
         } else if player_ambassador(g, h).is_some() {
+            // 136: it stops the unit and sways no Unity (it swayed `base_unity`).
             cx.tally(g, "board.bases_united", 1);
-            alignment::sway(g, cx, Side::Unity, w.int("board.base_unity"));
         } else {
             add_unit(g, cx, h);
         }
@@ -153,8 +153,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
             } else if player_ambassador(g, h).is_some() {
                 // 135 (Matt's ruling 3: adversary factories free as a corrupted
                 // station does): a player ambassador on one takes its output, so
-                // no troop is made, and stays (068); it sways Unity as on any factory.
-                alignment::sway(g, cx, Side::Unity, w.int("board.factory_unity"));
+                // no troop is made, and stays (068); 136: no Unity (it swayed `factory_unity`).
                 cx.tally(g, "board.factory_troops_diverted", per);
                 continue;
             }
@@ -169,7 +168,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
                 )
             });
         } else if player_ambassador(g, h).is_some() {
-            alignment::sway(g, cx, Side::Unity, w.int("board.factory_unity"));
+            // 136: its units are stopped, with no Unity.
         } else {
             let c = w.map.hexes[h].country;
             let bases: Vec<usize> = (0..g.hexes.len())

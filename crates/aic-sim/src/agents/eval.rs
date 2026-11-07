@@ -75,13 +75,13 @@ pub struct Weights {
     pub blocker: f64,
     /// Per Unity card short of 3 left in the deck (028: drawing the last wins).
     pub unity_deck: f64,
-    /// Each Unity tip made; Sway in the Unity bucket counts as its share of
+    /// Each Unity tip made; Sway on the Unity track counts as its share of
     /// the next tip (so a tip about to happen is worth nearly a tip).
     pub unity_tip: f64,
-    /// Each Discord tip made (a cost); Sway in the Discord bucket costs its
+    /// Each Discord tip made (a cost); Sway on the Discord track costs its
     /// share of the next one.
     pub discord_tip: f64,
-    /// Each level the clear-board bar has dropped (Unity tips).
+    /// Each level the clear-board bar has dropped (Unity cards drawn, 136).
     pub level: f64,
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
@@ -339,6 +339,12 @@ pub struct Weights {
     /// megaproject is open to the seat (`Ctx::cubes_open`). The keep plan's twin
     /// is the forced row `plan_cube_target` (policy.rs).
     pub cube_target: f64,
+    /// 136 (the death audit), above 0: a node on or next to a clean city that
+    /// is filling toward corruption counts as this share of lost, by
+    /// ((its ambassadors + marker + 1) / the corrupt threshold)², capped at 1: it
+    /// is worth less `node`, and the seat's `node_danger` reads its nodes less
+    /// the exposed ones (a corrupting city takes its whole cluster).
+    pub node_exposure: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -536,6 +542,7 @@ impl Default for Weights {
             energy_cap: 0.0,
             energy_idle: 0.2,
             cube_target: 1.0,
+            node_exposure: 0.0,
         }
     }
 }
@@ -775,8 +782,8 @@ impl Eval {
     pub fn with_table(rules: &Rules, w: Weights, tbl: &'static value::Table) -> Eval {
         let world = rules.world();
         let seats = rules.config.countries as usize;
-        // 028: the Unity deck's last card wins, and it comes before the last bar drop.
-        let target_tips = world.list("alignment.unity_cards").iter().sum();
+        // 028: the Unity deck's last card wins; 136: every printed one is dealt.
+        let target_tips = world.content.alignment.iter().filter(|c| c.side == Side::Unity).count() as i64;
         let strat_scale = w.strat_scale;
         let strat_contents = w.strat_contents > 0.0;
         let threshold_tokens = w.threshold_tokens > 0.0;
@@ -1093,6 +1100,8 @@ impl Eval {
         let seats = self.seats;
         let mut pieces = 0i64;
         let level = alignment::bar_level(&world, g);
+        // 136: clean cities filling toward corruption, with their risk.
+        let mut risky: Vec<(usize, f64)> = Vec::new();
         for h in 0..g.hexes.len() {
             let t = &tokens[h];
             let city = common::is_city(&world, h);
@@ -1138,6 +1147,10 @@ impl Eval {
                     }
                     // 034: a corruption marker counts toward corrupting.
                     let toward = adv + t.marker;
+                    if w.node_exposure > 0.0 && toward > 0 {
+                        let r = ((toward + 1) as f64 / corrupt_at.max(1) as f64).min(1.0);
+                        risky.push((h, r * r));
+                    }
                     let p = (toward as f64 / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1 >= corrupt_at {
@@ -1214,8 +1227,18 @@ impl Eval {
             v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
         }
         let mut thin = i64::MAX;
+        let blast = if risky.is_empty() { 0 } else { world.int("board.corruption_reach") as i32 };
         for s in 0..self.seats {
-            let count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
+            let mut count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
+            if !risky.is_empty() {
+                // 136: a node in a filling city's blast is that share of lost.
+                let exposed: f64 = (0..g.hexes.len())
+                    .filter(|&h| tokens[h].node[s] > 0)
+                    .map(|h| risky.iter().filter(|&&(c, _)| world.map.distance(h, c) <= blast).map(|&(_, r)| r).fold(0.0, f64::max))
+                    .sum();
+                v -= w.node_exposure * w.node * exposed;
+                count -= exposed.round() as i64;
+            }
             thin = thin.min(count);
             match count {
                 ..=1 => v -= w.node_danger,
@@ -1276,7 +1299,7 @@ impl Eval {
         // Alignment: tips made, and each bucket's share of its next tip.
         for (side, weight) in [(Side::Unity, w.unity_tip), (Side::Discord, -w.discord_tip)] {
             let cap = alignment::capacity(&world, g, side).max(1) as f64;
-            let fill = (g.var(alignment::bucket(side)) as f64 / cap).min(1.0);
+            let fill = (g.var(alignment::track(side)) as f64 / cap).min(1.0);
             v += weight * (g.var(alignment::tips_key(side)) as f64 + fill);
         }
         v += w.level * level as f64;
@@ -1377,7 +1400,7 @@ impl Eval {
     fn unity_progress(&self, g: &GameState) -> (f64, f64) {
         let per = (self.tip_per_player * self.seats as i64) as f64;
         let tips = g.var(alignment::tips_key(Side::Unity)) as f64;
-        let points = tips * per + g.var(alignment::bucket(Side::Unity)) as f64;
+        let points = tips * per + g.var(alignment::track(Side::Unity)) as f64;
         (points, self.target_tips as f64 * per)
     }
 

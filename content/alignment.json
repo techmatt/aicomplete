@@ -184,7 +184,7 @@
   "name": "Propaganda",
   "side": "discord",
   "tier": 1,
-  "text": "Every player loses 4 credits; move 2 Sway from the Unity bucket to the Undecided. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their nodes.",
+  "text": "Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their nodes.",
   "effects": [
    {
     "op": "players_lose",

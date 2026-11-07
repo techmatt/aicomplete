@@ -1,0 +1,37 @@
+{
+  "name": "read-136",
+  "note": "136 read: two Alignment tracks, the 9-card Unity deck, the purge by Unity cards drawn, Envoy (r55) on fresh seeds 36440-36487 (48 a cell), the three pairs, d0-d2; strategist, and strategist with node_exposure (the death audit's fix) for its on/off read. Paired against r54 (main db0dee8, out/r54) on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.node_exposure=1"
+  ],
+  "games": 48,
+  "first_seed": 36440,
+  "records": 0
+}

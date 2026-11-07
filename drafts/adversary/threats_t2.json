@@ -395,7 +395,7 @@
     "city",
     "station"
    ],
-   "text": "Sway 2 toward Discord. Move 1 Sway from Unity to the Undecided. Each player near it gets 2 less insight next round.",
+   "text": "Sway 2 toward Discord. Remove 1 Unity from the Unity track. Each player near it gets 2 less insight next round.",
    "counters": [
     [
      {

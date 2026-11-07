@@ -1,12 +1,13 @@
-//! Alignment and the end of the game: the Alignment track (the Undecided
-//! and the Unity and Discord buckets, fed with Sway), tipping and the Unity
-//! and Discord decks, the antimatter action, and the win and loss
+//! Alignment and the end of the game: the two Alignment tracks (Unity and
+//! Discord, each fed with its own Sway and tipping at its own threshold),
+//! the Unity and Discord decks, the antimatter action, and the win and loss
 //! conditions, checked after every action and every automatic phase.
 //!
 //! Replaces human opposition (rules revision 5). Since 017 every card is
 //! one-shot, a Discord card's strength steps up with the Discord tip count
 //! (printed steps); 017–018's Discord-tip troop advance became 019's march
-//! (module `board`).
+//! (module `board`). r55 (136): the Undecided pool and the tug of war are
+//! gone; Unity swayed may instead hold Discord off, 1 for 1 (`hold_off`).
 
 use crate::module::Hot;
 use crate::action::Action;
@@ -23,20 +24,19 @@ use super::common::*;
 use super::{adversary, board, cards, effects};
 
 const PARAMS: &[ParamSpec] = &[
-    ParamSpec::int("undecided_per_player", 1, 50, "Sway in the Undecided at the start, per player"),
-    ParamSpec::int("tip_per_player", 1, 50, "the Unity bucket tips when it holds this many Sway per player"),
-    ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord bucket tips when it holds this many Sway per player"),
-    ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its bucket)"),
-    ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's bucket holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
+    ParamSpec::int("tip_per_player", 1, 50, "the Unity track tips when it holds this many Sway per player"),
+    ParamSpec::int("discord_tip_per_player", 1, 50, "the Discord track tips when it holds this many Sway per player"),
+    ParamSpec::int("carry", 0, 2, "Sway past a tip stays toward the next tip: 1 Unity's only (Matt, r48), 2 both sides (an adversary lever), 0 neither (a tip empties its track)"),
+    ParamSpec::int("hold_off", 0, 1, "1: each Unity swayed may instead move 1 Discord off the Discord track, the players' choice (136)"),
+    ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
     ParamSpec::int("threat_discord", 0, 10, "Sway toward Discord when a threat executes uncountered"),
-    ParamSpec::int("adversary_discord", 0, 10, "Sway toward Discord the adversary adds at the start of every round"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
-    ParamSpec::list("unity_ease", 1, 50, "Unity tip counts at which the clear-board bar drops a level: ambassadors, then troops, then botnets stop counting (the first also starts the stronger Unity cards)"),
-    ParamSpec::list("unity_cards", 1, 6, "Unity cards a game deals from the printed deck, tier 1 then tier 2 (drawing the last one wins)"),
+    ParamSpec::list("purge_at", 1, 50, "Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136)"),
+    ParamSpec::int("unity_tier2", 0, 50, "Unity cards drawn from which a Unity tip draws the stronger tier"),
     ParamSpec::int("discord_tier2", 1, 50, "Discord tip count from which a Discord tip draws the stronger tier"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
@@ -45,7 +45,7 @@ const PARAMS: &[ParamSpec] = &[
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "sway",
-        "the round's Sway: the adversary toward Discord",
+        "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none)",
     ),
     PhaseSpec::decision(
         "act",
@@ -55,21 +55,12 @@ const PHASES: &[PhaseSpec] = &[
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "alignment",
-    summary: "The Alignment track (Sway, the Undecided, Unity and Discord buckets that tip into cards), and winning and losing",
+    summary: "The Alignment tracks (Unity and Discord Sway, each tipping into its own cards), and winning and losing",
     requires: &["adversary", "ai", "board"],
     variants: &[
         VariantDef {
-            name: "tug",
-            summary: "Tug of war: Sway with the Undecided empty comes from the opposite bucket",
-            params: PARAMS,
-            phases: PHASES,
-            rng: &["alignment"],
-            uses_cards: false,
-            build,
-        },
-        VariantDef {
-            name: "still",
-            summary: "Sway with the Undecided empty does nothing",
+            name: "tracks",
+            summary: "Two independent tracks: each side's Sway fills its own track and tips at its own threshold (136)",
             params: PARAMS,
             phases: PHASES,
             rng: &["alignment"],
@@ -90,26 +81,9 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Every variant is one struct: `sway` and the action read the variant.
 fn build(b: &Build) -> Result<Box<dyn Module>, String> {
-    let v = b.list("unity_ease")?;
-    if v.is_empty() || v.iter().any(|&x| x < 1) || v.windows(2).any(|p| p[0] > p[1]) {
-        return Err("alignment.unity_ease: give tip counts of 1 or more, in order".into());
-    }
-    let unity = b.list("unity_cards")?;
-    if unity.len() != 2 {
-        return Err("alignment.unity_cards: give two counts, tier 1 and tier 2".into());
-    }
-    // 118: more than the printed deck was dealt as the deck, unsaid, while the agents
-    // and the docs read the config's count.
-    for (k, &n) in unity.iter().enumerate() {
-        let have = b.world.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier as usize == k + 1).count() as i64;
-        if n > have {
-            return Err(format!("alignment.unity_cards: tier {} prints only {have} Unity cards", k + 1));
-        }
-    }
-    // Sway only moves between the Undecided and the buckets: with less than a
-    // tip in all, nothing could ever tip (020).
-    if b.int("undecided_per_player")? < b.int("tip_per_player")?.max(b.int("discord_tip_per_player")?) {
-        return Err("alignment.undecided_per_player: below a bucket's tip size, it could never tip (the Undecided must hold at least one tip)".into());
+    let v = b.list("purge_at")?;
+    if v.is_empty() || v.len() > 3 || v.iter().any(|&x| x < 1) || v.windows(2).any(|p| p[0] > p[1]) {
+        return Err("alignment.purge_at: give up to three Unity-card counts of 1 or more, in order".into());
     }
     Ok(Box::new(Alignment))
 }
@@ -117,8 +91,9 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
 #[derive(Debug)]
 struct Alignment;
 
-/// Sway in the Undecided.
-const UNDECIDED: &str = "alignment.undecided";
+/// Unity swayed during this action or phase, not yet on a track: once it
+/// resolves, the players choose how much of it holds Discord off (136).
+const UNITY_NEW: &str = "alignment.unity_new";
 /// Credit income every player has from Unity cards.
 const INCOME_BONUS: &str = "alignment.income_bonus";
 /// Free keeps left (Unity cards).
@@ -151,8 +126,8 @@ pub fn take_free_purchase(g: &mut GameState, cx: &mut Cx) -> bool {
     true
 }
 
-/// Sway in a side's bucket.
-pub fn bucket(side: Side) -> &'static str {
+/// Sway on a side's track.
+pub fn track(side: Side) -> &'static str {
     match side {
         Side::Unity => "alignment.unity",
         Side::Discord => "alignment.discord",
@@ -181,6 +156,16 @@ pub fn cards_left(g: &GameState, side: Side) -> usize {
     g.pile(&deck(side, 1)).len() + g.pile(&deck(side, 2)).len()
 }
 
+/// Unity cards drawn so far: the purge's steps (136).
+pub fn unity_drawn(g: &GameState) -> i64 {
+    g.pile(&resolved(Side::Unity)).len() as i64
+}
+
+/// Unity swayed this action or phase and still to be placed (136).
+pub fn unity_pending(g: &GameState) -> i64 {
+    g.var(UNITY_NEW)
+}
+
 fn used_key(seat: usize) -> String {
     format!("alignment.used.{seat}")
 }
@@ -189,7 +174,7 @@ fn card<'w>(w: &World<'w>, id: &str) -> &'w AlignmentCard {
     w.content.alignment_card(id)
 }
 
-/// Sway a side's bucket holds before it tips (Momentum applied).
+/// Sway a side's track holds before it tips (Momentum applied).
 pub fn capacity(w: &World, g: &GameState, side: Side) -> i64 {
     let seats = g.seats.len().max(1) as i64;
     let per = match side {
@@ -209,39 +194,65 @@ fn reached(thresholds: &[i64], tips: i64) -> i64 {
     thresholds.iter().filter(|&&t| tips >= t).count() as i64
 }
 
-/// The clear-board bar level, from Unity tips (0: no adversary pieces
-/// left; see `adversary::under_bar`).
+/// The clear-board bar level, from Unity cards drawn (136; 0: no adversary
+/// pieces left; see `adversary::under_bar`).
 pub fn bar_level(w: &World, g: &GameState) -> i64 {
-    reached(w.list("alignment.unity_ease"), g.var(tips_key(Side::Unity)))
+    reached(w.list("alignment.purge_at"), unity_drawn(g))
 }
 
-/// Moves `n` Sway toward `side`, one at a time: from the Undecided, or with
-/// it empty (variant `tug`) from the opposite bucket. A bucket that fills
-/// tips once the action or phase has resolved.
+/// Sways `n` toward `side`. Discord goes straight onto the Discord track;
+/// Unity waits until the action or phase has resolved, when the players
+/// choose how much of it holds Discord off instead ([`place_unity`]). A
+/// track that fills tips then.
 pub fn sway(g: &mut GameState, cx: &mut Cx, side: Side, n: i64) {
+    if n <= 0 || cx.world.variant("alignment") == Some("off") {
+        return;
+    }
+    let key = match side {
+        Side::Unity => UNITY_NEW,
+        Side::Discord => track(Side::Discord),
+    };
+    cx.add_key(g, key, n);
+    cx.tally(g, &KeyBuf::new("alignment.sway_").text(side.name()), n);
+}
+
+/// Moves up to `n` Discord off the Discord track (Envoy, or Unity held
+/// back); returns how many moved.
+pub fn hold_off(g: &mut GameState, cx: &mut Cx, n: i64) -> i64 {
+    let k = n.min(g.var(track(Side::Discord))).max(0);
+    if k > 0 {
+        cx.add_key(g, track(Side::Discord), -k);
+        cx.tally(g, "alignment.discord_held_off", k);
+    }
+    k
+}
+
+/// The Unity swayed this action or phase goes on the Unity track, or, as
+/// the players choose (seat 0 asks for the team), up to all of it moves
+/// Discord off the Discord track 1 for 1 (136, `hold_off`).
+fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
+    let n = g.var(UNITY_NEW);
     if n <= 0 {
-        return;
+        return Ok(());
     }
-    let variant = cx.world.variant("alignment");
-    if variant == Some("off") {
-        return;
+    let w = cx.world;
+    let most = if w.int("alignment.hold_off") > 0 { n.min(g.var(track(Side::Discord))) } else { 0 };
+    let k = if most > 0 {
+        let opts = (0..=most)
+            .map(|k| opt(if k == 0 { format!("all {n} onto the Unity track") } else { format!("{k} off the Discord track, {} onto Unity", n - k) }))
+            .collect();
+        let prompt = || format!("{n} Unity swayed: how much holds Discord off instead?");
+        cx.choose(0, prompt, opts)?.unwrap_or(0) as i64
+    } else {
+        0
+    };
+    cx.set_key(g, UNITY_NEW, 0);
+    if k > 0 {
+        hold_off(g, cx, k);
+        cx.tally(g, "alignment.unity_held_off", k);
     }
-    let tug = variant == Some("tug");
-    let mut moved = 0;
-    for _ in 0..n {
-        if g.var(UNDECIDED) > 0 {
-            cx.add_key(g, UNDECIDED, -1);
-        } else if tug && g.var(bucket(side.other())) > 0 {
-            cx.add_key(g, bucket(side.other()), -1);
-        } else {
-            continue;
-        }
-        cx.add_key(g, bucket(side), 1);
-        moved += 1;
-    }
-    if moved > 0 {
-        cx.tally(g, &KeyBuf::new("alignment.sway_").text(side.name()), moved);
-    }
+    cx.add_key(g, track(Side::Unity), n - k);
+    Ok(())
 }
 
 /// [`sway`] toward Discord, tallied by where it came from (053).
@@ -250,6 +261,14 @@ pub fn discord_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
         cx.tally(g, &KeyBuf::new("alignment.discord_from.").text(from), n);
     }
     sway(g, cx, Side::Discord, n);
+}
+
+/// [`sway`] toward Unity, tallied by where it came from (136).
+pub fn unity_from(g: &mut GameState, cx: &mut Cx, from: &str, n: i64) {
+    if n > 0 && cx.world.variant("alignment") != Some("off") {
+        cx.tally(g, &KeyBuf::new("alignment.unity_from.").text(from), n);
+    }
+    sway(g, cx, Side::Unity, n);
 }
 
 /// Sway toward Unity for a removed adversary troop (plus the remover's
@@ -266,19 +285,19 @@ pub fn for_troop_removed(g: &mut GameState, cx: &mut Cx, seat: Option<usize>) {
             })
             .sum()
     });
-    sway(g, cx, Side::Unity, base + bonus);
+    unity_from(g, cx, "troop", base + bonus);
 }
 
 /// Sway toward Unity for a freed corrupted city.
 pub fn for_city_freed(g: &mut GameState, cx: &mut Cx) {
     let n = cx.world.int("alignment.free_city");
-    sway(g, cx, Side::Unity, n);
+    unity_from(g, cx, "city", n);
 }
 
 /// Sway toward Unity for a removed botnet.
 pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
     let n = cx.world.int("alignment.botnet");
-    sway(g, cx, Side::Unity, n);
+    unity_from(g, cx, "botnet", n);
 }
 
 /// Whether the adversary's pieces are under the bar for `level`. The
@@ -303,12 +322,12 @@ pub fn add_free_purchases(g: &mut GameState, cx: &mut Cx, n: i64) {
     cx.add_key(g, FREE_LEFT, n);
 }
 
-/// Up to `n` Sway leaves the Unity bucket for the Undecided (027).
+/// Up to `n` Sway comes off the Unity track (027; 136: it used to return to
+/// the Undecided).
 pub fn pull_unity(g: &mut GameState, cx: &mut Cx, n: i64) {
-    let k = n.min(g.var(bucket(Side::Unity))).max(0);
+    let k = n.min(g.var(track(Side::Unity))).max(0);
     if k > 0 {
-        cx.add_key(g, bucket(Side::Unity), -k);
-        cx.add_key(g, UNDECIDED, k);
+        cx.add_key(g, track(Side::Unity), -k);
         cx.tally(g, "alignment.unity_pulled", k);
     }
 }
@@ -350,12 +369,12 @@ pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
 }
 
 /// Draws the next card of `side`: the stronger tier once the side's tip
-/// count has reached its first threshold, else tier 1; the other tier
-/// if that deck is empty. Neither deck ever reshuffles (027): they are
+/// count has reached `unity_tier2` / `discord_tier2`, else tier 1; the other
+/// tier if that deck is empty. Neither deck ever reshuffles (027): they are
 /// the game's clocks.
 fn draw(g: &GameState, w: &World, side: Side, tips: i64) -> Option<(Key, String)> {
     let first = match side {
-        Side::Unity => w.list("alignment.unity_ease")[0],
+        Side::Unity => w.int("alignment.unity_tier2"),
         Side::Discord => w.int("alignment.discord_tier2"),
     };
     let want: u8 = if tips >= first { 2 } else { 1 };
@@ -367,22 +386,21 @@ fn draw(g: &GameState, w: &World, side: Side, tips: i64) -> Option<(Key, String)
     None
 }
 
-/// A bucket tips: one card of its side resolves (at the strength step
+/// A track tips: one card of its side resolves (at the strength step
 /// its side's tip count has reached), the side's tip count goes up by
-/// one, and the bucket's Sway returns to the Undecided.
+/// one, and the track's Sway comes off (136: no pool to return to).
 fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let w = cx.world;
     let round = g.round;
-    cx.note(None, || format!("The {} bucket tips", side.name()));
+    cx.note(None, || format!("The {} track tips", side.name()));
     let before = g.var(tips_key(side));
-    // r48 (Matt, 2026-11-05): a tip takes one tip's worth of Sway back to the
-    // Undecided; the overflow stays in the bucket toward the next tip.
+    // r48 (Matt, 2026-11-05): a tip takes one tip's worth of Sway off; the
+    // overflow stays on the track toward the next tip.
     let carry = w.int("alignment.carry");
     let carries = carry >= 2 || (carry == 1 && side == Side::Unity);
-    let held = g.var(bucket(side));
+    let held = g.var(track(side));
     let back = if carries { capacity(&w, g, side).min(held) } else { held };
-    cx.add_key(g, bucket(side), -back);
-    cx.add_key(g, UNDECIDED, back);
+    cx.add_key(g, track(side), -back);
     cx.set_key(g, tips_key(side), before + 1);
     cx.tally(g, &KeyBuf::new("alignment.tips_").text(side.name()), 1);
     cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
@@ -423,10 +441,8 @@ fn antimatter_on(w: &World) -> bool {
 impl Module for Alignment {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
-        let start = w.int("alignment.undecided_per_player") * g.seats.len() as i64;
-        cx.set_key(g, UNDECIDED, start);
         for side in [Side::Unity, Side::Discord] {
-            cx.set_key(g, bucket(side), 0);
+            cx.set_key(g, track(side), 0);
             cx.set_key(g, tips_key(side), 0);
             for tier in [1u8, 2] {
                 let mut ids: Vec<Key> = w
@@ -442,12 +458,8 @@ impl Module for Alignment {
                     let cut = w.int("adversary.discord_removed") as usize;
                     ids.truncate(ids.len().saturating_sub(cut));
                 }
-                // 028: the game deals a few of the printed Unity cards, so the
-                // last one can be drawn.
-                if side == Side::Unity {
-                    let dealt = w.list("alignment.unity_cards");
-                    ids.truncate(dealt[tier as usize - 1] as usize);
-                }
+                // 136: every printed Unity card is dealt (028-135 dealt
+                // `unity_cards` of them); drawing the last one wins.
                 cx.set_pile(g, &deck(side, tier), ids);
             }
         }
@@ -467,8 +479,9 @@ impl Module for Alignment {
     }
 
     fn run(&self, _phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
-        let w = cx.world;
-        sway(g, cx, Side::Discord, w.int("alignment.adversary_discord"));
+        // 136: the board's printed drip (it was `adversary_discord`, 0).
+        let drip = cx.world.content.adversary_board.discord_drip;
+        discord_from(g, cx, "drip", drip);
         Ok(())
     }
 
@@ -498,15 +511,17 @@ impl Module for Alignment {
 
     fn after(&self, g: &mut GameState, cx: &mut Cx) -> Res {
         let w = cx.world;
-        // Full buckets tip, Discord first; a tip's card can fill a bucket again.
+        // The Unity just swayed is placed (or holds Discord off), then full
+        // tracks tip, Discord first; a tip's card can sway again.
         let tips = if w.hot.alignment_off {
             0
         } else {
             64
         };
         'tips: for _ in 0..tips {
+            place_unity(g, cx)?;
             for side in [Side::Discord, Side::Unity] {
-                if g.var(bucket(side)) >= capacity(&w, g, side) {
+                if g.var(track(side)) >= capacity(&w, g, side) {
                     tip(g, cx, side)?;
                     if g.is_over() {
                         return Ok(());
@@ -535,8 +550,8 @@ impl Module for Alignment {
                 true,
                 "purge",
                 format!(
-                    "the adversary fell under the bar for {} Unity tips",
-                    g.var(tips_key(Side::Unity))
+                    "the adversary fell under the bar for {} Unity cards drawn",
+                    unity_drawn(g)
                 ),
             );
         }
@@ -544,38 +559,29 @@ impl Module for Alignment {
     }
 
     fn view(&self, g: &GameState, w: &World, out: &mut ViewOut) {
-        let seats = g.seats.len() as i64;
-        let total = w.int("alignment.undecided_per_player") * seats;
-        out.global(
-            "undecided",
-            "the Undecided",
-            g.var(UNDECIDED),
-            Some(total),
-            "Sway not yet in either bucket",
-        );
         out.global(
             "unity",
-            "Unity bucket",
-            g.var(bucket(Side::Unity)),
+            "Unity track",
+            g.var(track(Side::Unity)),
             Some(capacity(w, g, Side::Unity)),
             "Sway toward the good AIs; tips into a Unity card when full",
         );
         out.global(
             "discord",
-            "Discord bucket",
-            g.var(bucket(Side::Discord)),
+            "Discord track",
+            g.var(track(Side::Discord)),
             Some(capacity(w, g, Side::Discord)),
-            "Sway toward the evil AI; tips into a Discord card when full",
+            "Sway toward the evil AI; tips into a Discord card when full (Unity swayed may move it off instead, as Envoy does)",
         );
-        let next = |list: &[i64], tips: i64| list.iter().copied().find(|&t| t > tips);
+        let next = |list: &[i64], n: i64| list.iter().copied().find(|&t| t > n);
         let ut = g.var(tips_key(Side::Unity));
         let dt = g.var(tips_key(Side::Discord));
         out.global(
             "unity_tips",
             "Unity tips",
             ut,
-            next(w.list("alignment.unity_ease"), ut),
-            "Unity tips so far; the clear-board bar drops at each Unity threshold",
+            next(w.list("alignment.purge_at"), unity_drawn(g)),
+            "Unity tips so far; the purge asks less at each step of Unity cards drawn",
         );
         let tier2 = w.int("alignment.discord_tier2");
         out.global(
@@ -595,7 +601,7 @@ impl Module for Alignment {
             "bar",
             "clear-board bar",
             level,
-            Some(w.list("alignment.unity_ease").len() as i64),
+            Some(w.list("alignment.purge_at").len() as i64),
             &text,
         );
         let cities = (0..g.hexes.len()).filter(|&h| is_city(w, h)).count() as i64;
@@ -667,7 +673,8 @@ impl Module for Alignment {
                 done.iter().map(|id| show(id, "resolved")).collect(),
             );
         }
-        out.bookkeeping(&["alignment.used."]);
+        // 136: Unity waiting to be placed lives only within one action's check.
+        out.bookkeeping(&["alignment.used.", "alignment.unity_new"]);
         let uses = w.int("alignment.antimatter_uses");
         if antimatter_on(w) {
             for s in 0..g.seats.len() {

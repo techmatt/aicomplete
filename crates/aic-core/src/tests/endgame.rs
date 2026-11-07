@@ -211,11 +211,13 @@ fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
     assert_eq!(g.tokens(last, node(1)), 0, "stage II: it goes");
 }
 
+/// 136: every printed Unity card is dealt, by tier.
 #[test]
-fn a_game_deals_the_unity_deck_it_is_told_to() {
-    let (_, g) = action_only(&["alignment.unity_cards=3,2"]);
-    assert_eq!(g.pile("alignment.deck.unity.1").len(), 3);
-    assert_eq!(g.pile("alignment.deck.unity.2").len(), 2);
+fn a_game_deals_every_printed_unity_card() {
+    let (_, g) = action_only(&[]);
+    let printed = |t: u8| crate::content().alignment.iter().filter(|c| c.side == Side::Unity && c.tier == t).count();
+    assert_eq!(g.pile("alignment.deck.unity.1").len(), printed(1));
+    assert_eq!(g.pile("alignment.deck.unity.2").len(), printed(2));
 }
 
 #[test]
@@ -343,12 +345,12 @@ fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Credits, 5);
     let credits = 5 - w.int("board.clear_cost");
-    let unity = g.var(alignment::bucket(Side::Unity));
+    let unity = g.var(alignment::track(Side::Unity));
     rules.apply_mut(&mut g, &std_act(0, "clear"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(marked, MARKER), 0);
     assert_eq!(g.resource(0, Resource::Credits), credits + w.int("board.clear_credits"));
-    assert_eq!(g.var(alignment::bucket(Side::Unity)), unity + w.int("board.clear_unity"));
+    assert_eq!(g.var(alignment::track(Side::Unity)), unity + w.int("board.clear_unity"));
 }
 
 /// 034's d4 fix: every printed step of the Discord deck acts before it ends,

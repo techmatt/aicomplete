@@ -86,7 +86,7 @@ pub(super) fn remove_ambassadors_country(
         }
     };
     if unity_per > 0 {
-        alignment::sway(g, cx, Side::Unity, removed / unity_per);
+        alignment::unity_from(g, cx, "pushback", removed / unity_per);
     }
     Ok(())
 }

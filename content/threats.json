@@ -328,7 +328,7 @@
    "city",
    "station"
   ],
-  "text": "Each player near it gets 2 less insight next round. Move 1 Sway from the Unity bucket to the Undecided.",
+  "text": "Each player near it gets 2 less insight next round. Remove 1 Unity from the Unity track.",
   "counters": [
    [
     {
@@ -1466,7 +1466,7 @@
    "city",
    "station"
   ],
-  "text": "Sway 2 toward Discord. Move 1 Sway from Unity to the Undecided. Each player near it gets 2 less insight next round.",
+  "text": "Sway 2 toward Discord. Remove 1 Unity from the Unity track. Each player near it gets 2 less insight next round.",
   "counters": [
    [
     {
@@ -2595,7 +2595,7 @@
    "factory",
    "city"
   ],
-  "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Move 2 Sway from the Unity bucket to the Undecided.",
+  "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Remove 2 Unity from the Unity track.",
   "counters": [
    [
     {

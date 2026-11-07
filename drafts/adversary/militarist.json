@@ -635,7 +635,7 @@
     }
    ],
    "arrivals": "industrial",
-   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Move 2 Sway from Unity to the Undecided. Arrivals: industrial zones.",
+   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Remove 2 Unity from the Unity track. Arrivals: industrial zones.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",

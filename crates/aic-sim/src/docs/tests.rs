@@ -55,8 +55,8 @@ fn a_config_change_changes_its_block() {
     let blocks: [(&str, Block); 8] = [
         ("adversary.build_bonus=2", difficulty_block),
         ("board.remove_count=2", standard_actions_block),
-        ("board.base_unity=3", sway_sources_block),
-        ("alignment.unity_ease=1,3,5", purge_ease_block),
+        ("board.clear_unity=3", sway_sources_block),
+        ("alignment.purge_at=1,3,5", purge_ease_block),
         ("cards.keep_tier2=5", new_players_block),
         ("adversary.corrupt_at=7", game_end_block),
         ("adversary.stage_cards=3,5,2", round_cap_block),

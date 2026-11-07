@@ -477,7 +477,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Align, A::FreeStation, A::HardenChips, A::Chips];
     let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
-    rows.extend([A::HardenBuy, A::Drain, A::Insight].iter().map(|&a| std_rule_text(a, &t)));
+    rows.extend([A::HardenBuy, A::Drain, A::Insight, A::Envoy].iter().map(|&a| std_rule_text(a, &t)));
     table(&["Action", "Cost", "What"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 
@@ -485,11 +485,6 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
 pub(super) fn sway_sources_block(r: &Rules) -> String {
     let t = |key: &str| tick(r, key);
     let rows: Vec<[String; 3]> = vec![
-        [
-            "Unity".to_string(),
-            "a player ambassador on a producing base / factory".to_string(),
-            format!("{} / {}", t("board.base_unity"), t("board.factory_unity")),
-        ],
         ["Unity".to_string(), "removing an adversary troop".to_string(), t("alignment.troop")],
         ["Unity".to_string(), "Biomia's converter".to_string(), "1 for 2 research cubes".to_string()],
         [
@@ -541,23 +536,39 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "the adversary at the start of every round".to_string(),
-            t("alignment.adversary_discord"),
+            "the adversary board's drip, at the start of every round".to_string(),
+            format!("as printed ({}: {})", content().adversary_board.name, content().adversary_board.discord_drip),
         ],
     ];
     table(&["Toward", "From", "Amount"], rows.into_iter().map(|r| r.to_vec()).collect())
 }
 
-/// What stops counting against the purge at each `unity_ease` threshold.
+/// What the purge asks at each step of `purge_at` (Unity cards drawn, 136).
 pub(super) fn purge_ease_block(r: &Rules) -> String {
-    const STEPS: [(&str, &str); 3] = [
-        ("first", "adversary ambassadors stop counting"),
-        ("second", "adversary troops stop counting"),
-        ("third", "**botnets** stop counting (candidate: with botnet removal rare, Unity buys the win)"),
-    ];
+    const PIECES: [&str; 3] = ["adversary ambassadors", "adversary troops", "botnets"];
+    let at = list(r, "alignment.purge_at");
+    // Each step's lower bound and the pieces still counting from it.
+    let mut steps: Vec<(i64, usize)> = vec![(0, 0)];
+    for (i, &n) in at.iter().enumerate() {
+        match steps.last_mut() {
+            Some(last) if last.0 == n => last.1 = i + 1,
+            _ => steps.push((n, i + 1)),
+        }
+    }
     let mut out = String::new();
-    for (tips, (which, what)) in list(r, "alignment.unity_ease").iter().zip(STEPS) {
-        out.push_str(&format!("- {which} threshold ({tips} Unity tips): {what};\n"));
+    for (k, &(from, gone)) in steps.iter().enumerate() {
+        let range = match steps.get(k + 1) {
+            Some(&(next, _)) if next - 1 > from => format!("{from}-{}", next - 1),
+            Some(_) => from.to_string(),
+            None => format!("{from}+"),
+        };
+        let left: Vec<&str> = PIECES[gone..].iter().rev().copied().collect();
+        let what = if left.is_empty() {
+            "only the corrupted cities".to_string()
+        } else {
+            format!("the corrupted cities, {}", left.join(", "))
+        };
+        out.push_str(&format!("- {range} Unity cards drawn: remove {what};\n"));
     }
     out.push_str("- corrupted cities always count.\n");
     out
@@ -639,26 +650,29 @@ pub(super) fn new_players_block(r: &Rules) -> String {
 
 /// How the game ends, for new players.
 pub(super) fn game_end_block(r: &Rules) -> String {
-    let ease = list(r, "alignment.unity_ease");
-    let easing = match ease.as_slice() {
-        [_, a, b, ..] => format!(
-            "{a} Unity tips and the purge asks only for no botnets and no corrupted cities; {b} and it \
+    let at = list(r, "alignment.purge_at");
+    let easing = match at.as_slice() {
+        [a, _, b] => format!(
+            "With {a} Unity cards drawn the purge no longer asks you to clear adversary ambassadors; with {b}, it \
              asks only for no corrupted cities."
         ),
-        [.., a] => format!("{a} Unity tips and the purge asks only for no botnets and no corrupted cities."),
+        [a, ..] => format!("With {a} Unity cards drawn the purge no longer asks you to clear adversary ambassadors."),
         [] => String::new(),
     };
+    let unity = content().alignment.iter().filter(|c| c.side == aic_core::content::Side::Unity).count();
     format!(
         "**How the game ends, for new players.** You win by purging the board or by drawing the last \
          Unity card. Pressure comes every round: the face-up adversary event card deals threats \
          by your sites and names a kind of site, \
          and every such site gains an adversary ambassador, so you always know where the next wave \
          lands. Ambassadors pile up, pairs become botnets, {} on a city corrupt it, and corrupted \
-         cities and uncountered threats push the Alignment track toward Discord. Each time the track \
-         tips, a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
-         you lose. Pushing back works the same way in your favor. Mass your ambassadors on a \
-         corrupted city to free it, which sways toward Unity, and each Unity tip brings a good card. \
-         The Unity deck is small too: a game deals only {}, and drawing the last wins at once. \
+         cities and uncountered threats fill the Discord track. Each time it \
+         fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
+         you lose. Unity has its own track, which nothing on the Discord side empties: free a corrupted \
+         city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
+         Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
+         ambassadors for the same, so you choose between racing toward Unity and holding off the next \
+         Discord card. All {unity} Unity cards are dealt, and drawing the last wins at once. \
          {easing} You also lose if any player has no nodes left on the board. \
          Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and \
          a lost token leaves the game and marks its hex, so you can't act from there any more; its income \
@@ -666,7 +680,6 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          though games rarely reach it. So there are three different pressures: the Discord deck (politics), \
          your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
-        list(r, "alignment.unity_cards").iter().sum::<i64>(),
         dealt(r, 0).iter().sum::<usize>(),
     )
 }

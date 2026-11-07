@@ -71,7 +71,7 @@ fn bad_configs_are_rejected_with_a_reason() {
         ("ai.boards=7", "no AI board 7"),
         ("adversary.stage_cards=3,4", "give 3 counts"),
         ("adversary.stage_cards=9,4,3", "stage 1 has only"),
-        ("alignment.unity_ease=5,2", "give tip counts"),
+        ("alignment.purge_at=5,2", "give up to three"),
         ("alignment=off", "needs module alignment"),
         ("board=off", "needs module board"),
     ];
@@ -176,7 +176,7 @@ fn tunables_list_every_module_parameter() {
     for k in [
         "board.clock",
         "adversary.stage_cards",
-        "alignment.unity_ease",
+        "alignment.purge_at",
         "ai.boards",
     ] {
         assert_eq!(find(k).kind, "list", "{k}");
@@ -189,14 +189,15 @@ fn tunables_list_every_module_parameter() {
     assert_eq!(keys.len(), t.len());
 }
 
-/// 020: free standard actions and an Undecided smaller than a tip are
-/// rejected (r48: the give-insight off-switch went with the action).
+/// 020: free standard actions and purge steps out of order are rejected (r48:
+/// the give-insight off-switch went with the action; 136: the Undecided, whose
+/// size was checked here, is gone).
 #[test]
 fn off_switches_and_degenerate_values() {
     let mut c = baseline();
     assert!(c.apply_override("board.ambassador_credits=0").is_err() || Rules::new(&c).is_err());
     let mut c = baseline();
-    c.apply_override("alignment.undecided_per_player=1").unwrap();
+    c.apply_override("alignment.purge_at=6,3,3").unwrap();
     assert!(Rules::new(&c).is_err());
     // An empty adversary deck is rejected; override errors name the key and the modules.
     let mut c = baseline();

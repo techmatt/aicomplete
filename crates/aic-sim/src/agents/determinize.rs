@@ -346,34 +346,27 @@ mod tests {
         }
     }
 
-    /// D20: the three tier-1 Unity cards a game dealt are hidden: the guess
-    /// reaches printed cards outside the deal, and a table holding a
-    /// different deal gives the same guess.
+    /// D20: the Unity deal's order is hidden (136: every printed card is
+    /// dealt, so only the order is unknown): the guess may put any printed card
+    /// on top, and a table holding the same cards in another order gives the
+    /// same guess.
     #[test]
     fn the_unity_deal_is_hidden() {
         let r = rules(0);
         let w = r.world();
         let key = "alignment.deck.unity.1";
         let g = r.new_game(3);
-        let printed: Vec<Key> = w
-            .content
-            .alignment
-            .iter()
-            .filter(|c| c.side == Side::Unity && c.tier == 1)
-            .map(|c| Key::new(&c.id))
-            .collect();
-        assert!(printed.len() > g.pile(key).len());
-        let outside = printed.iter().find(|id| !g.pile(key).contains(id)).unwrap();
+        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier == 1).count();
+        assert_eq!(printed, g.pile(key).len());
+        let last = *g.pile(key).last().unwrap();
         let reached = (0..40).any(|s| {
             let mut h = g.clone();
             determinize(&r, &mut h, &mut ChaCha8Rng::seed_from_u64(s));
-            h.pile(key).contains(outside)
+            h.pile(key).first() == Some(&last)
         });
-        assert!(reached, "the guess only ever held the dealt cards");
+        assert!(reached, "the guess never moved the dealt order");
         let mut other = g.clone();
-        let mut deal = g.pile(key).to_vec();
-        deal[0] = *outside;
-        other.piles.insert(key.into(), Arc::new(deal));
+        Arc::make_mut(other.piles.get_mut(key).unwrap()).reverse();
         let (mut ga, mut gb) = (g.clone(), other);
         hide_alignment_deal(&r, &mut ga, 7, 0);
         hide_alignment_deal(&r, &mut gb, 7, 0);

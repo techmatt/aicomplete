@@ -88,7 +88,10 @@ two experiment outputs, timing aside: the check that a speed-up or a late fix ch
 games, about 2 min on 6 threads). `same_play.py` is the wider one. After a value-table change, other games swing a
 10-20 game ratio 0.5-2.4x (131): read the code's cost on the same games (`per_decision.py OLD NEW --old-agent greedy
 --agent "greedy:t.chips=1.5"`, the new binary's `t.` arm replaying the old table) and play's from a run's
-`agent_ms / decisions` over hundreds of games.
+`agent_ms / decisions` over hundreds of games. **Cost a decision grows with game length**, not only with options:
+late rounds hold more cards, pieces and resources, so each option's eval costs more (136: strategist 0.07 ms an
+option at 5.5-6 rounds, 0.14 at 8.5; r54 made long by a config costs as r55 does). Across a rules change that moves
+length, split length from code by moving length on each binary with `--set` (136's write-up, *Speed*).
 
 **`sweep`, the cheap profile.** `planner:deals=1,lead=0` under the name `sweep`, for price screens. Keep and
 play rates by card hold under it (rank correlation 0.985-0.991 against the planner's;

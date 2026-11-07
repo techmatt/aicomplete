@@ -77,7 +77,6 @@ fn lab_config(round: &[&str]) -> Config {
     let mut c = baseline_with(&[
         "alignment.tip_per_player=50",
         "alignment.discord_tip_per_player=50",
-        "alignment.undecided_per_player=50",
         "alignment.clear_win_stage=3",
         // The board starts empty: no node is no loss here.
         "alignment.node_loss=0",
@@ -433,13 +432,18 @@ fn next_alignment_card(g: &mut GameState, side: Side, card: &str) {
     }
 }
 
-/// Fills `side`'s bucket from the Undecided so the next action tips it.
+/// Fills `side`'s track so the next action tips it.
 fn fill_bucket(rules: &Rules, g: &mut GameState, side: Side) {
     let cap = crate::modules::alignment::capacity(&rules.world(), g, side);
     g.vars.insert(format!("alignment.{}", side.name()).into(), cap);
-    let u = g.var("alignment.undecided");
-    g.vars
-        .insert("alignment.undecided".into(), (u - cap).max(0));
+}
+
+/// 136: `n` Unity cards drawn (the purge's steps count them), with the tip
+/// count to match.
+fn unity_drawn(g: &mut GameState, n: usize) {
+    let ids: Vec<&str> = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).map(|c| c.id.as_str()).cycle().take(n).collect();
+    set_pile(g, "alignment.resolved.unity", &ids);
+    g.vars.insert("alignment.unity_tips".into(), n as i64);
 }
 
 /// A Cx for calling module functions directly on a crafted state.
@@ -519,7 +523,7 @@ fn variant_matrix() -> Vec<Config> {
         &[],
         &["threats.variant=shared_row"],
         &["threats.variant=off"],
-        &["alignment.variant=still"],
+        &["alignment.hold_off=0"],
         &["alignment.variant=off"],
         &[
             "alignment.momentum_every=2",
@@ -539,7 +543,7 @@ fn variant_matrix() -> Vec<Config> {
         &[
             "countries=3",
             "adversary.difficulty=4",
-            "alignment.variant=still",
+            "alignment.hold_off=0",
         ],
     ];
     sets.iter()
@@ -553,9 +557,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 54;
-const GOLDEN_FINGERPRINT: &str = "e10bbf03cc3667df";
-const GOLDEN_CONTENT_HASH: &str = "3b46ebf1937a3caf";
+const GOLDEN_REVISION: u32 = 55;
+const GOLDEN_FINGERPRINT: &str = "0aab9018f5d9e929";
+const GOLDEN_CONTENT_HASH: &str = "61fe66af4a5ab5a8";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

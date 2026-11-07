@@ -36,9 +36,9 @@ most corp troops fights twice.
   makes `factory_units` troop for its megacorp **at each of that corp's bases** (Matt: at
   every front base, not just the nearest), so at 3 and 4 countries a factory makes 2. An
   adversary-owned factory, or one holding an adversary ambassador (used up), makes an
-  adversary troop on its hex instead (**locked**). A player ambassador on a factory sways
-  `factory_unity` Unity and no corp troop is made; on an adversary-owned factory it sways
-  the Unity and stops its troop. Either way it stays. **An adversary factory frees as a corrupted station does**
+  adversary troop on its hex instead (**locked**). A player ambassador on a factory stops
+  its corp troops (136: it no longer sways Unity); on an adversary-owned factory it
+  stops its troop. Either way it stays. **An adversary factory frees as a corrupted station does**
   (Matt, 2026-11-06): the Free a station action frees it to neutral. Threats build them (Mass Production, Shadow
   Factories, War Economy), seize them (Hostile Takeover), occupy them (a standing troop: it makes nothing) and destroy
   them (Scorched Earth).

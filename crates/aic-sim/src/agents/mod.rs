@@ -812,18 +812,18 @@ mod tests {
             let w = eval::Weights { clock, ..Default::default() };
             eval::Eval::new(&r, w).value(&r, g)
         };
-        // Round 4, one Unity tip (4 Sway: 1 a round), 6 tips (24 Sway) for the
-        // Unity deck's last card: 20 rounds needed. Two cards left (the
-        // face-up one and one in the deck): 2 action phases after this one.
-        // 18 short.
+        // Round 4, one Unity tip (6 Sway: 1.5 a round), 9 tips (54 Sway, 136:
+        // every printed Unity card) for the Unity deck's last card: 32 rounds
+        // needed. Two cards left (the face-up one and one in the deck): 2
+        // action phases after this one. 30 short.
         g.round = 4;
         g.vars.insert("alignment.unity_tips".into(), 1);
         assert_eq!(g.pile("adversary.next").len(), 1);
         let deck = g.pile("adversary.deck").to_vec();
         g.piles.insert("adversary.deck".into(), deck[..1].to_vec().into());
-        assert!((value(0.0, &g) - value(2.0, &g) - 2.0 * 18.0).abs() < 1e-9);
-        // On course (4 tips by round 4): no cost.
-        g.vars.insert("alignment.unity_tips".into(), 4);
+        assert!((value(0.0, &g) - value(2.0, &g) - 2.0 * 30.0).abs() < 1e-9);
+        // On course (7 tips by round 4): no cost.
+        g.vars.insert("alignment.unity_tips".into(), 7);
         assert_eq!(value(0.0, &g), value(2.0, &g));
         // The engine watches the deck by default; greedy doesn't (its
         // games, the difficulty calibration, are unchanged).
