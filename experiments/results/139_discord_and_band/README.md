@@ -6,7 +6,7 @@ Rules revision 58, bumped from the constant (57 to 58; the prompt also said r58)
 [read_discord.txt](read_discord.txt) ([read139.py](read139.py) `discord`), [death_audit.md](death_audit.md).
 Specs: `experiments/screen-139-{a,b,c,d1,d2}.json`, `read-139-r58-{a,b}.json` (written by [specs.py](specs.py)); the
 r57 side ran `read-139-r57-{a,b}.json` from a copy of main 0fa33f7's configs with its binary. The content rewrite is
-`scripts/content/discord_139.py` (rerunnable, then `load_adversary.py`).
+[discord_139.py](discord_139.py) (then `load_adversary.py`; moved here from `scripts/content/` at 144, and a rerun now reverts later edits).
 
 ## Where things stood
 

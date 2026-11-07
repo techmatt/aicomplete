@@ -1,6 +1,8 @@
 """138: bounded arrivals and Corrupt X, written into the adversary drafts and the Discord / Unity cards.
 
-    python scripts/content/arrivals_138.py      # rewrite drafts/adversary/*.json and content/alignment.json
+    python experiments/results/138_corruption_and_arrivals/arrivals_138.py      # rewrite drafts/adversary/*.json and content/alignment.json
+
+A record of 138's rewrite (moved from scripts/content/ at 144): rerunning it now reverts later items' edits.
     python scripts/content/load_adversary.py    # then write content/ and docs/adversary-cards.md
 
 Rerunnable from any revision: every card it touches is set from the tables below (its creation lines, Corrupt lines and
@@ -14,7 +16,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 DRAFTS = ROOT / "drafts" / "adversary"
 
 

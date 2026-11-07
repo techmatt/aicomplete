@@ -6,9 +6,10 @@ Current:
 
 - `wasm-smoke.mjs`: plays one game through the wasm package in Node. `wasm-parity.mjs`:
   replays aic-sim records of each `configs/variants.json` variant in wasm.
-- `regen.py [--no-build] [--check]`: builds release, then `aic-sim docs`, `cards_doc.py`, `effect_ledger.py`,
-  `shared_row.py`, `no_liberate.py`; prints the content hash and rules revision (writing it into
-  `docs/rules/README.md`) and `git status`. `--check`: the two `--check`s only.
+- `regen.py [--no-build] [--check]`: builds release, checks `content/` against `drafts/adversary/`
+  (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
+  `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
+  `--check`: the `--check`s and the revision line only.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/apply_overlay.py FILE... [--check]`: writes content overlays (`cards.<id>.<path>=JSON` lines, the keys
@@ -32,12 +33,10 @@ Current:
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by kind of option, paid abroad, and the
   typed counters and capstones played, from `games.jsonl`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
-- `content/arrivals_138.py`: 138's creation and Corrupt lines into the drafts and `content/alignment.json`; rerunnable.
-- `content/discord_139.py`: 139's node-free Discord cards, Raiding Parties, Purge and Border War; rerunnable.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds.
-- `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10]`: loops:
+- `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
   where used; the games whose insight after the keep grew three rounds running past `--held`; per cell, seat and
   resource the mean peak held, and games whose rise (peak less `start`, setup's holding; before 124 the peak) is over
@@ -90,10 +89,8 @@ Current:
 - `cards/payback.py [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
   price at a committed seat's fire rates (card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older
   deck's column.
-- `run_sim.ps1 NAME [-NoBuild] ARGS...`: builds release, stops if the build failed, copies
-  the exe to `out/NAME.exe`, starts `aic-sim ARGS` below normal and returns. Output goes to
-  `out/NAME.out` and `.err`; `out/NAME.exit` appears at the end, holding the exit code: wait on
-  that file. Use it for any long run.
+- `run_sim.ps1 NAME [-NoBuild] ARGS...`: any long run: builds, copies the exe to `out/NAME.exe`, starts it below
+  normal, detached; wait on `out/NAME.exit` (its header says more).
 - `bench/same_results.py`: compares two experiment outputs. A cell's agent string that differs
   (`strategist` against `engine:strategy=1`) is listed and is no difference when the games match. `--map OLD=NEW`
   renames in the old output first, for a rename that must play the same. To swap two names, map one to a placeholder
@@ -139,13 +136,11 @@ Current:
 - `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin: Visual Studio's collector and `xperf`
   (docs/speed.md, *Profiling*). `--runs K` on the next seeds each; `--attach S1,S2,...` reads 5 s windows of a long
   run; writes `self.csv`, `total.csv`, `callers.csv`, `edges.csv`.
-- `bench/card_ranks.py DIR A B`: Spearman of each card's keep and play rates, agent B against A (as `cards.csv` names
+- `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of each card's keep and play rates, agent B against A (as `cards.csv` names
   them: the strategist is `engine:strategy=1`); an approximation's bar.
 - `bench/item_time.py ITEM...`: how a done conductor item's wall time split between sims, builds, tests and the
   rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls.
-- `tune/agent_sweep.py`: the strategist's parameter sweep: coordinate search over `tune/agent_sweep.json`'s grids on
-  fixed seeds, a profile around the best, a paired confirm on fresh seeds against hand-set and greedy, and the
-  counters that differ. Resumes from its cache; flags and recipe in [scripts/tune/README.md](../scripts/tune/README.md).
+- `tune/agent_sweep.py`: the strategist's parameter sweep; see [scripts/tune/README.md](../scripts/tune/README.md).
 - `tune/`: `sweep.py`, `log_table.py`, `engine_sweep.py`.
 - Past-revision reads, each described at its top: `cards/r37_read.py` (096), `cards/r38_read.py` (098). Kept for
   the results docs that cite them, each saying so at its top: `cards/screen_0NN.py` (034 a shim for `--preset 034`).

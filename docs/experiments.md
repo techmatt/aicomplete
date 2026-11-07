@@ -4,7 +4,7 @@
 S=target/release/aic-sim
 $S experiment experiments/smoke.json --out out/smoke    # a quick check (6 seeds)
 $S experiment experiments/ladder-v0.json --games 20 --seed 1000 --threads 6
-$S experiment experiments/screen-130-dev.json --quick --resume  # scoping; resumes with its --out, --games, --seed
+$S experiment experiments/screen-142-s1.json --quick --resume  # scoping; resumes with its --out, --games, --seed
 ```
 
 ## The spec
@@ -144,7 +144,7 @@ the judge off the value table.
   cause), 137's `read137.py --135` (win, length, ends, war, claims, counters, peaks) and 138's `sum138.py`
   (corruptions, creation, threats by tier); screens are `<pair>_<lever>` cells (`specs.py`). 130's `read130.py`,
   128's `action_read.py` and 131's `read131.py` (agent `t.` arms, paired) still apply.
-- **Costs:** an engine game about 0.7 s; the r58 standard read (432 strategist games, 9 rounds) 87 s on 6 threads on
+- **Costs:** an engine game about 0.7 s; the r58 standard read (432 strategist games, 9 rounds) 88 s on 6 threads on
   a quiet box (141), twice that with a second run beside.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
@@ -159,7 +159,7 @@ the judge off the value table.
   [scripts.md](scripts.md). **A won game ends inside a round, holding the last upkeep's income**, so
   `margin.unspent` tracks late income: read credits held as `margin.held_after_actions[seat][0]`.
 
-`experiments/band.json` places a win rate (`--seed S --games 96`, planner and engine); read its win mix (purge vs.
+`experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (purge vs.
 Unity deck) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
 line alone reads near the engine.
 
@@ -183,7 +183,7 @@ on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 ## Past runs
 
 Write-ups: index in [experiments/history.md](../experiments/history.md). Past revisions' specs, and those the binary
-refuses, are in `experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close-*/`: removing a switch
+refuses, are in `experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close/`: removing a switch
 moves its specs there). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
 --var "name=<sets;...>"` runs `aic-sim run --json` per variant and agent into `out/tune/log.jsonl`; `log_table.py
 TAG...` makes a markdown table.

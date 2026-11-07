@@ -591,6 +591,7 @@ fn option_words(o: &Op) -> String {
         Op::PlayersLose { resource, amount, all: false } => format!("lose {}", resource.amount(*amount)),
         Op::PlayersLose { resource, all: true, .. } => format!("lose all your {resource}"),
         Op::LoseInsight { amount } => format!("{} less next round", Resource::Insight.amount(*amount)),
+        Op::Discard { count } => format!("discard {count} card{}", if *count == 1 { "" } else { "s" }),
         other => format!("{other:?}"),
     }
 }

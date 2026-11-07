@@ -85,11 +85,11 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         hexes.iter().copied().filter(|&h| g.tokens(h, k) > 0).collect()
     };
     for (t, scope) in threats::active(g) {
-        if scope != Some(country) || threats::waits(g, &t) {
+        if scope != country || threats::waits(g, &t) {
             continue;
         }
         let share = unpaid(w, g, &t);
-        if share <= 0.0 || (counter_first && counterable(w, g, &t, scope)) {
+        if share <= 0.0 || (counter_first && counterable(w, g, &t, Some(scope))) {
             continue;
         }
         for op in &w.content.threat(&t).effects {

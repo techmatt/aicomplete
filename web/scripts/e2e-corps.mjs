@@ -1,5 +1,5 @@
 // `npm run e2e:corps` (074): research cubes and the megacorps in a real browser. Plays the baseline
-// with `station_cubes` 5 so a card overflows in round 2 (137: adversary stations make compute, not cubes): seat 0 claims Horizon's neutral station,
+// with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 5 so a card overflows in round 2 (137: adversary stations make compute, not cubes): seat 0 claims Horizon's neutral station,
 // Cintamani's stays neutral. Checks the cubes by color, the completion with its overflow paid, the
 // stored cubes and a usable converter beside an unusable one. Needs the viewer running.
 //   AIC_URL  viewer URL (default http://localhost:5173/)
@@ -15,7 +15,7 @@ const out = join(web, 'e2e-out');
 mkdirSync(out, { recursive: true });
 
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 5, troop_steps: 0, claim_station: 1 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 5, owned_station_cubes: 5, troop_steps: 0, claim_station: 1 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No adversary ambassadors: a creation line would land one on the claimed station, blocking its cubes.
 Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });

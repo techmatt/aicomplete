@@ -1,6 +1,6 @@
 //! 082: the value table. One table (`configs/agents/values.json`) gives a value in
 //! credits to each resource, tag, token and effect, transcribed from
-//! `docs/card-pricing.md`'s *Current rates* as they stood at r34 (the table is
+//! `docs/card-pricing.md`'s rates as they stood at r34 (*The rates* there now explains them; the table is
 //! their home since 082; 090 corrected energy, antimatter, troop removal,
 //! liberation and the station flip against play, and gave income a horizon by
 //! tier); a card is valued by its ops.

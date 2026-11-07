@@ -9,8 +9,6 @@ fn at_war_units_cancel_and_the_surplus_destroys_rival_buildings() {
     let [f1, f2] = [0, 1].map(|i| m.numbered(1, piece(1).factories[i]));
     let d1 = m.numbered(1, piece(1).node);
     put(&mut g0, d1, node(1), 1);
-    // 137: every round is a war round (round 1 was peace).
-    g0.round = 1;
     let discord = |g: &GameState| g.var("alignment.discord") - g0.var("alignment.discord");
     let units = |g: &GameState| (g.tokens(b0, UNIT), g.tokens(b1, UNIT));
 

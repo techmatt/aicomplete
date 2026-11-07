@@ -1,5 +1,5 @@
 {
-  "note": "082: the agents' value table, in credits. Transcribed from docs/card-pricing.md, *Current rates* (r34), corrected against play at r35 (090: energy, antimatter, troop removal, liberation, the station flip, the income horizon); each op's row says what one unit is. Read by crates/aic-sim/src/agents/value.rs, whose match on Op is exhaustive: a new op does not compile without its arm, and a test fails until its row is here. Agent numbers, not rules: changing one changes no game's rules.",
+  "note": "082: the agents' value table, in credits, and the rates' one home (docs/card-pricing.md, *The rates*, describes them). First transcribed at r34, corrected against play at r35 (090: energy, antimatter, troop removal, liberation, the station flip, the income horizon); each op's row says what one unit is. Read by crates/aic-sim/src/agents/value.rs, whose match on Op is exhaustive: a new op does not compile without its arm, and a test fails until its row is here. Agent numbers, not rules: changing one changes no game's rules.",
   "resources": {
     "credits": 1,
     "chips": 2,
@@ -35,12 +35,10 @@
     "horizon_t1": 4,
     "horizon_t2": 2.5,
     "uses_share": 0.7,
-    "fire_share": 0.3,
     "token_pile": 3,
     "node_count": 5,
     "tag_count": 5,
     "no_city_share": 0.4,
-    "lowered_income": 3,
     "countries": 2,
     "fires_play": 1.5,
     "tags_per_card": 1.45,

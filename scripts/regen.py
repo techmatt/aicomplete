@@ -2,14 +2,16 @@
 
     python scripts/regen.py [--no-build] [--check]
 
-Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), then runs
+Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), checks that
+`content/` matches `drafts/adversary/` (`load_adversary.py --check`; run the loader without it to write), sets
+docs/rules/README.md's revision line from `RULES_REVISION` in the source, then runs
 `aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and
 `scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the derived configs: 122 left
 no_liberate.json stale when the baseline gained params), prints the content hash and rules revision from `aic-sim show
 configs/baseline.json`, sets docs/rules/README.md's "at rules revision N" line from it, and then
 `git status --short`. Stops at the first failing step, naming
-it. `--no-build` uses the binary already built. `--check` writes nothing: it runs `aic-sim docs
---check` and `cards_doc.py --check` only and exits 1 if either is stale. Each step prints its
+it. `--no-build` uses the binary already built. `--check` writes nothing: it runs the loader's,
+`aic-sim docs`'s and `cards_doc.py`'s `--check` and the README revision line, and exits 1 if any is stale. Each step prints its
 wall time.
 """
 import argparse
@@ -64,6 +66,17 @@ def readme_revision(revision, check):
     return True
 
 
+def source_revision():
+    """RULES_REVISION as crates/aic-core/src/lib.rs states it: `aic-sim docs` refuses a stale README line, so the
+    line is set from the source before that step (144)."""
+    with open(os.path.join(ROOT, 'crates', 'aic-core', 'src', 'lib.rs'), encoding='utf-8') as f:
+        m = re.search(r'RULES_REVISION: u32 = (\d+)', f.read())
+    if not m:
+        print('FAILED: no RULES_REVISION in crates/aic-core/src/lib.rs')
+        sys.exit(1)
+    return m.group(1)
+
+
 def need_sim():
     if not os.path.exists(SIM):
         print(f'FAILED: no binary at {SIM} (build it, or drop --no-build)')
@@ -83,11 +96,18 @@ def main():
         step(f"cargo build --release -p aic-sim (jobs {env['CARGO_BUILD_JOBS']})",
              ['cargo', 'build', '--release', '-p', 'aic-sim'], env=env)
     need_sim()
+    loader = [PY, os.path.join('scripts', 'content', 'load_adversary.py'), '--check']
     if a.check:
+        step('load_adversary.py --check', loader)
         step('aic-sim docs --check', [SIM, 'docs', '--check'])
         step('cards_doc.py --check', [PY, os.path.join('scripts', 'cards', 'cards_doc.py'), '--check'])
+        if not readme_revision(source_revision(), check=True):
+            sys.exit(1)
         print(f'docs current ({time.monotonic() - start:.1f} s)')
         return
+    # content/ must match drafts/adversary/ (its source) before the docs read it; the loader writes it.
+    step('load_adversary.py --check', loader)
+    readme_revision(source_revision(), check=False)
     step('aic-sim docs', [SIM, 'docs'])
     step('cards_doc.py', [PY, os.path.join('scripts', 'cards', 'cards_doc.py')])
     step('effect_ledger.py', [PY, os.path.join('scripts', 'cards', 'effect_ledger.py')])

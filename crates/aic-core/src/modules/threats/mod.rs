@@ -1,7 +1,7 @@
 //! Threats (135): dealt by the current adversary event card's pulls, one a
 //! pull a country, each with location tokens on the board; countered by the
 //! players near it (one option of its counter menu), executed in
-//! `threats.execute`, after war, if still uncountered.
+//! `threats.execute`, before war, if still uncountered.
 //! Variants: `countries` (each threat sits on a country), `shared_row` (135:
 //! the same as `countries`; the shared row is gone) and `off` (no threats).
 
@@ -147,7 +147,7 @@ fn def<'w>(w: &World<'w>, id: &str) -> &'w ThreatDef {
 
 /// Active threats in execution order (country by country, each in the order
 /// dealt), each with its country.
-pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
+pub fn active(g: &GameState) -> Vec<(Key, usize)> {
     let mut on: Vec<(usize, &std::sync::Arc<Vec<Key>>)> = g
         .piles
         .from_key("threats.on.")
@@ -155,7 +155,7 @@ pub fn active(g: &GameState) -> Vec<(Key, Option<usize>)> {
         .filter_map(|(k, v)| Some((k.parse().ok()?, v)))
         .collect();
     on.sort_by_key(|(c, _)| *c);
-    on.into_iter().flat_map(|(c, pile)| pile.iter().map(move |t| (*t, Some(c)))).collect()
+    on.into_iter().flat_map(|(c, pile)| pile.iter().map(move |t| (*t, c))).collect()
 }
 
 /// The country active `threat` sits on, `None` if it isn't face up.
@@ -326,6 +326,33 @@ fn build_on(_: &Build) -> Result<Box<dyn Module>, String> {
     Ok(Box::new(Threats))
 }
 
+/// Phase `deal`: the current adversary card's pulls, one threat a pull in each country.
+fn deal_round(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    let Some(id) = g.pile(adversary::CURRENT).first().copied() else {
+        return;
+    };
+    let card = w.content.adversary_card(&id);
+    let n = w.map.countries.len();
+    // Difficulty 4: a stage-I card's tier-1 pulls deal tier 2 once a
+    // stage-II card is `tier2_early` cards ahead (`adversary::threat_tier`).
+    let early = card.stage < 2 && adversary::threat_tier(&w, g) >= 2;
+    let tier = |t: u8| if early && t == 1 { 2 } else { t };
+    for p in &card.pulls {
+        for c in 0..n {
+            pull(g, cx, tier(p.tier), &p.tags, c, None);
+        }
+    }
+    // From difficulty `extra_threats_at` (4 since 142; 0 at 139, 1 before): `extra_threats` more pulls of the
+    // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
+    if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
+        let first = (g.round.max(1) as usize - 1) % n.max(1);
+        for k in 0..w.int("adversary.extra_threats").max(0) as usize {
+            pull(g, cx, tier(p.tier), &p.tags, (first + k) % n.max(1), None);
+        }
+    }
+}
+
 impl Module for Threats {
     fn setup(&self, g: &mut GameState, cx: &mut Cx) {
         let w = cx.world;
@@ -338,32 +365,15 @@ impl Module for Threats {
     }
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
-        let w = cx.world;
-        if phase == 0 {
-            let Some(id) = g.pile(adversary::CURRENT).first().copied() else {
+        match phase {
+            0 => {
+                deal_round(g, cx);
                 return Ok(());
-            };
-            let card = w.content.adversary_card(&id);
-            let n = w.map.countries.len();
-            // Difficulty 4: a stage-I card's tier-1 pulls deal tier 2 once a
-            // stage-II card is `tier2_early` cards ahead (`adversary::threat_tier`).
-            let early = card.stage < 2 && adversary::threat_tier(&w, g) >= 2;
-            let tier = |t: u8| if early && t == 1 { 2 } else { t };
-            for p in &card.pulls {
-                for c in 0..n {
-                    pull(g, cx, tier(p.tier), &p.tags, c, None);
-                }
             }
-            // From difficulty `extra_threats_at` (4 since 142; 0 at 139, 1 before): `extra_threats` more pulls of the
-            // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
-            if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
-                let first = (g.round.max(1) as usize - 1) % n.max(1);
-                for k in 0..w.int("adversary.extra_threats").max(0) as usize {
-                    pull(g, cx, tier(p.tier), &p.tags, (first + k) % n.max(1), None);
-                }
-            }
-            return Ok(());
+            2 => {}
+            _ => unreachable!("threats: no auto phase {phase}"),
         }
+        let w = cx.world;
         // Execute: anything fully paid is countered, partial payments come
         // back, then each threat in order. A threat dealt after this round's
         // counter phase waits a round (022).
@@ -379,14 +389,11 @@ impl Module for Threats {
             }
             executed += 1;
             let d = def(&w, &t);
-            cx.note(None, || match scope {
-                Some(c) => format!("Threat {} executes in {}", d.name, country_name(&w, c)),
-                None => format!("Threat {} executes", d.name),
-            });
+            cx.note(None, || format!("Threat {} executes in {}", d.name, country_name(&w, scope)));
             cx.count(g, "executed", 1);
             cx.tally(g, "threats.uncountered", 1);
             cx.per_round(g, "threats.uncountered", 1);
-            let mut ctx = effects::Ctx::threat(scope).named(label(d.tier)).why(&d.name).with_threat(t);
+            let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t);
             cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
             effects::run(g, cx, &d.effects, &mut ctx)?;
             // 138: an uncountered threat's printed node harm by tier

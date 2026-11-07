@@ -84,9 +84,9 @@ Modules (`crates/aic-core/src/modules/`) call each other's public functions and 
 each other's parameters through `World::int("<module>.<param>")` (a few hot ones also
 have a slot, `World::hot(Hot::...)`); `ModuleDef::requires` lists whose parameters one reads.
 
-**One path per piece change**, so supply, cancellation and botnet-making hold
+**One path per piece change**, so supply and cancellation hold
 everywhere: adversary ambassadors are placed and removed only through `adversary`'s
-functions, `board::liberate`/`free_cities` and effects' `cleanse`; a node is placed by
+functions, `board::liberate` and effects' `cleanse`; a node is placed by
 `board::place_node`; nodes and facilities are destroyed by `board::destroy_piece`, which
 applies every protection and sways the Discord (`board::lose_node` for losses no
 protection absorbs).
@@ -122,14 +122,15 @@ where the team talks it through.
 ### Adding a variant or module
 
 - **Variant**: a `VariantDef` in the module's `DEF.variants` with a build function and a
-  `Module` impl (or one struct with an option, as `threats::Threats` does `shared`).
+  `Module` impl.
   Compare it with `--set-b <module>.variant=<name>`.
 - **Module**: `modules/<id>.rs` with `pub static DEF: ModuleDef`, listed in `REGISTRY`
   (`modules/mod.rs`), with a config entry and its phases in `round`. For player input,
   reuse an `Action` (claimed by `owns`) and `cx.choose`; add an `Action` variant only if
   neither fits. The viewer shows its tokens, resources, `vars` and exhausted cards with
   no work; a `view` hook adds the rest.
-- Either way: add it to `variant_matrix` (`crates/aic-core/src/tests/mod.rs`), bump
+- Either way: add it to `configs/variants.json` (the core tests' `variant_matrix`, `wasm-parity.mjs` and
+  `same_play.py` read it), bump
   `RULES_REVISION` if existing games change, and document it in `docs/rules/`.
 
 ### Adding content
@@ -139,7 +140,7 @@ Content fields are the serde structs in `content.rs`. What isn't plain there:
 - **Player cards** have no `text`: `aic_core::face` generates it from the fields; a
   new op doesn't compile without a face. `tokens` names a token type only: no card
   gains tokens by itself (Matt's ruling 12); "here" in an op names this card. `keywords`
-  are never printed. Every op and where it prints: [ops.md](ops.md).
+  are never printed. Every op and where it prints: [ops.md](ops.md), whose text is each op's `///` comment in op.rs.
 - **AI boards**: printed `tags` count for requirements only. Slots and starting credits
   are config lists (`ai.slots`, `ai.start_credits`), so a board's sheet spans both files.
 - **Country pieces** (`map.json`) carry the corp's megaproject; `Megaproject::words`
@@ -186,7 +187,7 @@ all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md)
 `aic-sim docs` fails on a broken harm distribution (`harm_failures`). `--check`, and a
 fast-lane test, also refuse a stale block, a British spelling (`spelling.rs`), a
 heading like `## 080's changes` (`current_docs.rs`), an id in
-`docs/card-pricing-notes.json` that is no player card, a missing or doubled block, a `docs/rules/` file
+`docs/card-pricing-notes.json` that is no player card, a missing or doubled block, a doc page (CLAUDE.md's list)
 over 15 KB, and in a rules file a backticked `module.param` or bare `snake_case` name
 that is neither a tunable nor an op (`NOT_TUNABLES` lists the others it may print). The
 rules name a tunable rather than repeat its value. Two more fast-lane tests refuse a face

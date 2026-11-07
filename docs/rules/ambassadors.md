@@ -41,7 +41,7 @@ Cities, research stations and factories follow one set of rules and differ only 
   card ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city the same way, for its own price.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
-up instead of the next corp troop made there; an adversary ambassador on one does nothing, and no botnet forms there.
+up instead of the next corp troop made there; an adversary ambassador on one does nothing.
 A **node** alone on its hex: an adversary ambassador on it costs its owner 1 insight next round and puts 1 compute on
 the cheapest adversary project each production; it stays until removed.
 

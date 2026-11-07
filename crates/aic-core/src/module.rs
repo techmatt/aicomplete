@@ -738,9 +738,3 @@ impl Build<'_> {
         }
     }
 }
-
-/// Entry `round - 1` of a per-round schedule; the last entry repeats.
-pub fn scheduled(schedule: &[i64], round: u32) -> i64 {
-    let i = (round.max(1) as usize - 1).min(schedule.len() - 1);
-    schedule[i]
-}

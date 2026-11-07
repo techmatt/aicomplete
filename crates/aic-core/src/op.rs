@@ -7,8 +7,7 @@
 //! - **who chooses**: the acting seat on a player's card; seat 0 for the team
 //!   on threats, Alignment cards and projects;
 //! - **who it hits**: the acting seat; the seats in a threat's scope; every seat;
-//! - **where**: a threat's scope (its country, or the whole board on the
-//!   shared row); the whole board otherwise.
+//! - **where**: a threat's scope (its country); the whole board otherwise.
 //!
 //! Not every op makes sense everywhere, and the compiler no longer says so:
 //! [`Op::slots`] does, and `Content::check` enforces it when content loads.
@@ -825,8 +824,9 @@ pub enum Op {
     Pushback {
         ambassadors: i64,
     },
-    /// Deal `count` extra threats now, countries in turn (`tier`: that deck, any tag; `scope` country;
-    /// `each_country`); they execute next round.
+    /// Deal extra threats now; they execute next round. No field set: `count` in all, countries in
+    /// turn, at the tier of the card's first pull. Any field set: `count` per country (the scope's
+    /// with `scope` country, else every one), at `tier` or the round's threat tier, any tag.
     DealThreats {
         count: i64,
         #[serde(default, skip_serializing_if = "Option::is_none")]

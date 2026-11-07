@@ -215,7 +215,7 @@ fn experiment_omits_comparisons_that_do_not_apply() {
     let body = VARIANT_SPEC
         .replace(
             r#"{"name": "cards_off", "set": ["cards.variant=off"]}"#,
-            r#"{"name": "threats_on", "set": []}"#,
+            r#"{"name": "same", "set": []}"#,
         )
         .replace(r#""random", "greedy""#, r#""random""#);
     let spec = spec_in(&root, body);

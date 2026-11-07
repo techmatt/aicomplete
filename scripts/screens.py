@@ -24,6 +24,26 @@ def content(name):
         return json.load(f)
 
 
+def dealt(dirs):
+    """The card ids the runs in DIRS could deal: each cell's config's `cards` list and any card a game saw (118: a card
+    cut from the deck is still in content, and would read as "never kept")."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    out = set()
+    for d in dirs:
+        with open(os.path.join(d, 'results.json'), encoding='utf-8') as f:
+            res = json.load(f)
+        out.update(cid for per in res.get('cards', {}).values() for cid in per)
+        for path in {c.get('config') for c in res['cells'] if c.get('config')}:
+            full = path if os.path.isabs(path) else os.path.join(root, path)
+            if os.path.exists(full):
+                with open(full, encoding='utf-8') as f:
+                    modules = json.load(f).get('modules', [])
+                for m in modules:
+                    if m.get('module') == 'cards':
+                        out.update(m.get('cards', []))
+    return out
+
+
 def stream(d):
     """DIR/games.jsonl line by line: its header first, then each game. A live run or one a
     kill cut short can end in half a line: that line is dropped. Needs no results.json."""

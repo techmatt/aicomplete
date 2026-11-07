@@ -13,7 +13,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_names, content, stream  # noqa: E402
+from screens import cell_labels, content, stream  # noqa: E402
 
 
 def typed_and_capstones():
@@ -31,7 +31,8 @@ def typed_and_capstones():
 def read(d):
     """The cell names, and {cell id: games} without the action lists."""
     lines = stream(d)
-    names = cell_names(next(lines)['spec'])
+    # (lead, agent): `cell_labels` takes multi-difficulty specs (`cell_names` asserts one difficulty).
+    names = [tuple(lbl.rsplit('/', 1)) for lbl in cell_labels(next(lines)['spec'])]
     cells = defaultdict(list)
     for g in lines:
         g.pop('actions', None)

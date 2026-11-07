@@ -7,7 +7,7 @@ Where every old job went: [jobs.md](jobs.md). Tables: [read_r57_vs_r56.md](read_
 --135` on both dirs), [read_sum138.txt](read_sum138.txt) ([sum138.py](sum138.py): corruptions by site type,
 ambassadors created by source, threats by tier). Specs: `experiments/read-138.json`, `screen-138-{a,b,c,d}.json`,
 `smoke-138.json`, `smoke-138-agents.json`; the r56 side ran `out/r56src/read-138-r56.json` (main f68c760's tree).
-The content rewrite is `scripts/content/arrivals_138.py` (rerunnable over the drafts, then `load_adversary.py`).
+The content rewrite is [arrivals_138.py](arrivals_138.py) (then `load_adversary.py`; moved here from `scripts/content/` at 144, and a rerun now reverts later edits).
 
 ## Where things stood
 

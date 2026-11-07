@@ -3,7 +3,7 @@
 // land, ocean), with a band in the country's color along each country border, the
 // printed hex number, an industrial-zone mark, a pennant in the facing country's color
 // on each military base, the printed fronts (the land edges between two countries with
-// bases facing each other, and a dashed link between the two bases), and each token
+// bases facing each other, and a link between the two bases, both at war every round), and each token
 // stack drawn as a small glyph with its count. Knows no
 // rules: what to highlight is handed in. Token kinds it has no glyph for are drawn as
 // plain counters.

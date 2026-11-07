@@ -32,7 +32,7 @@ rounds, 107 / 102 / 88 of 144 games won on the Unity deck, 16-21 a cell before r
 Discord): gone, no cap; cancelling is now the players' hold-off choice and Envoy. `tug` / `still`: one variant
 `tracks` (`off` stays); `still`'s "no cancel" is `hold_off` 0. A tip returning Sway to the pool: the tip's Sway comes
 off the track. "Move N Sway from the Unity bucket to the Undecided": "Remove N Unity from the Unity track"
-(`pull_unity`; Propaganda and five adversary drafts, rewritten by `scripts/content/track_words.py`).
+(`pull_unity`; Propaganda and five adversary drafts, rewritten by [track_words.py](track_words.py)).
 `undecided_per_player`: gone, with its build check. `unity_cards`: gone.
 
 **Give / get** (configs/agents/values.json): Envoy gives 1 ambassador (4.0, `resources.ambassadors`; the Ambassador

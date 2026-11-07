@@ -50,7 +50,7 @@ experiments, speed, scripts, web, card art.
 - **After changing threats, cards, adversary rules, content or tunables:** run `aic-sim docs`,
   then `python scripts/cards/cards_doc.py`; after a card or `values.json` edit also `python
   scripts/cards/effect_ledger.py` (a fast-lane test reads its `cards.csv`); `python scripts/regen.py` runs the build, all
-  three and `shared_row.py`, and prints the content hash. What they generate, and what a fast-lane test
+  three, `shared_row.py` and `no_liberate.py`, checks `content/` against `drafts/adversary/` and prints the content hash. What they generate, and what a fast-lane test
   refuses, is in *Generated docs* in docs/architecture.md; change the source, not the output.
   What [docs/harms.md](docs/harms.md) can't read from content comes from `RULE_HARMS` in
   `crates/aic-sim/src/docs/harms.rs`.

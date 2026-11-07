@@ -68,7 +68,12 @@ def main():
     lev["M25"] = ["adversary.counter_pct=75,75,75"]
     for k in (25, 50, 75):
         lev[f"K{k}"] = [f"adversary.counter_pct={100 + k},{100 + k},{100 + k}"]
-    (HERE / "levers.json").write_text(json.dumps(lev, indent=1) + "\n", encoding="utf-8", newline="\n")
+    # levers.json is the as-run record (39 levers; 16 were added by hand after this script ran, and it reads
+    # today's content): never overwrite it. 144.
+    out = HERE / "levers.json"
+    if out.exists():
+        out = HERE / "levers.gen.json"
+    out.write_text(json.dumps(lev, indent=1) + "\n", encoding="utf-8", newline="\n")
     for k, v in lev.items():
         print(k, len(v), v[:3])
 

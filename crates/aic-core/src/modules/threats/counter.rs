@@ -39,8 +39,10 @@ pub(super) fn menu_resources(w: &World, threat: &str) -> Vec<Resource> {
     out
 }
 
-/// What countering `threat` asks now: its menu with difficulty 1 added and
-/// Jam Signals and standing Auto Counters taken off every resource item.
+/// What countering `threat` asks now: its menu scaled by `counter_pct` (and
+/// credits by `counter_credit_pct`), plus the difficulty steps from
+/// `counter_bonus_at` and `counter_more_at`, less Jam Signals and standing
+/// Auto Counters on every resource item.
 pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterItem>> {
     requirement_less(w, threat, g.var(&jam_key(threat)) + standing(w, g, threat))
 }

@@ -71,17 +71,26 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
 /// make chips, adversary factories an adversary troop; one opposing
 /// ambassador blocks either while it stands. Then the cities grow factories.
 pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
+    measure_round(g, cx);
+    extra_units(g, cx);
+    factory_output(g, cx);
+    grow_factories(g, cx)
+}
+
+/// The measure's tallies taken as production starts, not a rule: what each
+/// seat left unspent, its dear powers, its top tag, its idle converters.
+fn measure_round(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
-    // 068: what each seat left unspent, the measure's: not a rule.
+    // 068: what each seat left unspent.
     for s in 0..g.seats.len() {
         for r in LEFT {
             cx.per_round(g, &format!("unspent.{s}.{r}"), g.resource(s, r));
         }
         ai::tally_dear_powers(g, cx, s);
-        // 078: the seat's most-held tag on its cards in play, the measure's (tags by round).
+        // 078: the seat's most-held tag on its cards in play (tags by round).
         let top = crate::modules::cards::tag_counts(&w, g, s).into_iter().max().unwrap_or(0);
         cx.per_round(g, &format!("ai.tag_top.{s}"), top);
-        // 074: converters a seat holding cubes left unused, and why: the measure's.
+        // 074: converters a seat holding cubes left unused, and why.
         if g.resource(s, Resource::ResearchCubes) > 0 {
             for c in 0..w.map.countries.len() {
                 match converter_blocked(&w, g, s, c) {
@@ -93,9 +102,6 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
             }
         }
     }
-    extra_units(g, cx);
-    factory_output(g, cx);
-    grow_factories(g, cx)
 }
 
 /// The extra corp troops a base asks for this production step (135): (past

@@ -1039,12 +1039,6 @@ impl Eval {
         w.credits * n.min(cap) + w.credit_idle * (n - cap).max(0.0)
     }
 
-    /// The next corrupt step's number for `site`, read off the card ahead
-    /// (public), and whether a Corrupt line there gathers from next door (138).
-    fn corrupt_threshold(&self, rules: &Rules, g: &GameState, site: CorruptSite) -> (i64, bool) {
-        plan::next_corrupt_n(&rules.world(), g, site)
-    }
-
     /// What site `h` would count toward corrupting: its own adversary
     /// ambassadors (and a city's markers), plus, with a gathering line ahead,
     /// those next to it in its country (138).
@@ -1088,10 +1082,12 @@ impl Eval {
             };
         }
         let world = rules.world();
-        let (corrupt_at, gather) = self.corrupt_threshold(rules, g, CorruptSite::City);
+        // The next corrupt step's number for each site, read off the card ahead
+        // (public), and whether a Corrupt line there gathers from next door (138).
+        let (corrupt_at, gather) = plan::next_corrupt_n(&world, g, CorruptSite::City);
         // 138: a player's research station or factory corrupts too, by its own number.
-        let (station_at, station_gather) = self.corrupt_threshold(rules, g, CorruptSite::Station);
-        let (factory_at, factory_gather) = self.corrupt_threshold(rules, g, CorruptSite::Factory);
+        let (station_at, station_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Station);
+        let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
@@ -1367,7 +1363,7 @@ impl Eval {
                 continue;
             }
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
-            let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, scope));
+            let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, Some(scope)));
             let stranded = if open { 1.0 } else { w.threat_stranded };
             out.push(waits * stranded * (1.0 - (paid as f64 / req as f64).min(1.0)));
         }

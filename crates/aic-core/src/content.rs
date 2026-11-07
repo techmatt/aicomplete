@@ -1319,6 +1319,12 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             {
                 return Err(format!("{what}: each_country is for team cards"));
             }
+            Op::LoseOr { options } => {
+                if options.len() < 2 {
+                    return Err(format!("{what}: lose_or offers at least two options"));
+                }
+                check_ops(options, slot, what)?;
+            }
             // 105: a trigger resolves player ops; "both" hands the same gains to
             // the player who played, so it prints gains only.
             Op::When { on, then } => {

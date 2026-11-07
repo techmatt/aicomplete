@@ -29,7 +29,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
     ParamSpec::list("threat_nodes", 0, 5, "an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up)"),
-    ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent more of its amount after counter_pct (rounded up; 142's dial)"),
+    ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before)"),
     ParamSpec::int("counter_bonus_all", 0, 10, "difficulty counter_bonus_at+: added to every resource counter item of every threat"),
     ParamSpec::int("counter_bonus_credits", 0, 20, "difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142)"),

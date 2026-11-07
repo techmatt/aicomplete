@@ -141,7 +141,9 @@ export async function openPage({ width = 1366, height = 768 } = {}) {
       if (await js(expr).catch(() => false)) return true;
       await sleep(100);
     }
-    throw new Error(`timed out waiting for ${what}`);
+    // 144: a stale wasm or a refused config shows only in the page's error bar: say what it says.
+    const shown = await js(`document.getElementById('error')?.textContent ?? ''`).catch(() => '');
+    throw new Error(`timed out waiting for ${what}${shown ? ` (the page says: ${String(shown).trim().slice(0, 300)})` : ''}`);
   }
   async function size(w, h) {
     await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });

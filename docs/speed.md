@@ -6,7 +6,7 @@ What a run costs and where it goes. Current rates are in [experiments.md](experi
 strategist scores each legal action by applying it to a copy and resolving the action's own prompts
 best-first (`search::settled`, 72% of its time), and the heuristic (`Eval::value`, 54%) now outweighs the
 rules (`Rules::apply_to`, 36%). The planner's rollouts run the same search, so a speed-up to one serves all.
-The r58 standard read (`read-139-r58-{a,b}`, 432 games, 6 threads) takes 87 s at 2.14 ms a decision (141:
+The r58 standard read (`read-139-r58-{a,b}`, 432 games, 6 threads) takes 88 s at 2.14 ms a decision (141:
 146 s and 3.04 before). **A read's wall time is its slowest games:** at r58 one d0 game of 11 rounds took 62
 s of a 74 s half-read. Read `games.csv`'s `ms` column for the tail before profiling the mean. Profiles from
 103, 104 and 141 are in [103's](../experiments/results/103_agent_profiling/profile.md),

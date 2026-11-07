@@ -349,7 +349,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // The extra threats, the corrupt cut and the board's line sit at whatever level their `_at` dial names.
+    // Each of `steps`' seven dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         ("Base rules".into(), vec![]),
         (String::new(), vec![]),
@@ -380,7 +380,11 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             &["adversary.stage1_removed", "adversary.stage3_added", "adversary.stage_swap_at"]),
     ];
     for (dial, text, keys) in steps {
-        let at = (int(r, dial).clamp(0, 4)) as usize;
+        // A dial past the top level (5) never applies: it is no level's step.
+        let at = int(r, dial).max(0) as usize;
+        if at >= rows.len() {
+            continue;
+        }
         rows[at].0 = if rows[at].0.is_empty() {
             let mut c = text.chars();
             c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default()
@@ -710,6 +714,12 @@ pub(super) fn game_end_block(r: &Rules) -> String {
         [] => String::new(),
     };
     let unity = content().alignment.iter().filter(|c| c.side == aic_core::content::Side::Unity).count();
+    // `board.last_safe_stage`: a last node is safe while the adversary card is below that stage.
+    let safe = match int(r, "board.last_safe_stage") {
+        2 => "In stage I your last one is safe. ",
+        3 => "In stages I and II your last one is safe. ",
+        _ => "",
+    };
     format!(
         "**How the game ends, for new players.** You win by purging the board or by drawing the last \
          Unity card. Pressure comes every round: the face-up adversary event card deals threats \
@@ -718,7 +728,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          pulls {} of them on and next to a city into it and corrupts it, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
-         you lose. Discord cards never destroy your nodes: they deal more or stronger threats (Offensive \
+         you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
+         they bring: they deal more or stronger threats (Offensive \
          aims one at the node hex most crowded with adversary pieces), create ambassadors, run Corrupt \
          lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
@@ -730,7 +741,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
          their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
-         income stays. In stage I your last one is safe. The adversary deck is a round cap too, {} rounds at \
+         income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most, though games rarely reach it. So there are three different pressures: the Discord deck \
          (politics), your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),

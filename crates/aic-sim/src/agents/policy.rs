@@ -806,12 +806,12 @@ fn losing_pick(g: &GameState) -> bool {
 
 /// Whether `threat` is an active threat outside seat `s`'s home country.
 fn abroad(w: &World, g: &GameState, s: usize, threat: &str) -> bool {
-    threats::active(g).iter().any(|(t, c)| t == threat && c.is_some_and(|c| c != common::home_country(w, s)))
+    threats::active(g).iter().any(|(t, c)| t == threat && *c != common::home_country(w, s))
 }
 
 /// Whether `threat` sits on the country the abandon check gives up.
 fn on_given_up(w: &World, g: &GameState, threat: &str) -> bool {
-    threats::active(g).iter().any(|(t, c)| t == threat && *c == Some(last_country(w)))
+    threats::active(g).iter().any(|(t, c)| t == threat && *c == last_country(w))
 }
 
 /// Whether hex `h` pays Unity for a player ambassador when it produces and

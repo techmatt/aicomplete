@@ -4,20 +4,6 @@ use super::*;
 use crate::content::Tag;
 use crate::modules::{cards, threats};
 
-/// Puts `threat` on country `c` (out of its deck) with its tokens on `at`,
-/// in its locations' order.
-fn land(g: &mut GameState, threat: &str, c: usize, at: &[usize]) {
-    for t in 1..=3 {
-        if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
-            Arc::make_mut(p).retain(|x| x != threat);
-        }
-    }
-    Arc::make_mut(g.piles.entry(format!("threats.on.{c}")).or_default()).push(threat.into());
-    for (i, h) in at.iter().enumerate() {
-        g.vars.insert(format!("threats.loc.{threat}.{i}").into(), *h as i64 + 1);
-    }
-}
-
 /// Clears every seat's nodes off the board.
 fn no_nodes(g: &mut GameState) {
     for h in 0..g.hexes.len() {
@@ -57,7 +43,7 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     no_nodes(&mut g);
     put(&mut g, next, node(0), 1);
     put(&mut g, far_from(m, 0, city), node(1), 1);
-    land(&mut g, "eviction", 0, &[city]);
+    deal_at(&mut g,"eviction", 0, &[city]);
     for s in 0..2 {
         set_res(&mut g, s, Resource::Credits, 10);
     }
@@ -81,10 +67,12 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
 
 #[test]
 fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
-    // 142: Eviction (tier 1) prints 3 energy and 15 credits; at 150% it asks
+    // 142: Eviction (tier 1) pinned to 3 energy or 15 credits; at 150% it asks
     // 5 energy (4.5 up) and 23 credits (22.5 up), at 125% 4 (3.75 up) and 19 (18.75 up).
+    const EVICTION: &str = r#"threats.eviction.counters=[[{"resource":"energy","amount":3}],[{"resource":"credits","amount":15}]]"#;
     for (pct, want) in [("150,100,100", (5, 23)), ("125,100,100", (4, 19))] {
-        let (rules, g) = threat_lab_with(&[&format!("adversary.counter_pct={pct}")]);
+        let (rules, g) =
+            threat_lab_with(&[EVICTION, "adversary.counter_credit_pct=100", &format!("adversary.counter_pct={pct}")]);
         let need = threats::requirement(&rules.world(), &g, "eviction");
         let of = |r: Resource| {
             need.iter().flatten().find_map(|i| match i {
@@ -98,14 +86,15 @@ fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
 
 #[test]
 fn counter_with_tags_sacrifices_cards_in_play() {
-    let (rules, mut g) = threat_lab();
+    let (rules, mut g) =
+        threat_lab_with(&[r#"threats.supply_raid.counters=[[{"resource":"chips","amount":4}],[{"sacrifice":"industry","amount":2}]]"#]);
     let w = rules.world();
     let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
     let c = rules.map.hexes[factory].country as usize;
     no_nodes(&mut g);
     put(&mut g, factory, node(0), 1);
-    land(&mut g, "supply_raid", c, &[factory]);
-    // 142: Supply Raid's second option sacrifices 2 industry tags.
+    deal_at(&mut g,"supply_raid", c, &[factory]);
+    // 142: Supply Raid's second option (pinned) sacrifices 2 industry tags.
     let industry: Vec<&str> = w
         .content
         .cards
@@ -136,7 +125,7 @@ fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
     let c = m.hexes[base].country as usize;
     no_nodes(&mut g);
     put(&mut g, base, node(0), 1);
-    land(&mut g, "orbital_strike", c, &[base]);
+    deal_at(&mut g,"orbital_strike", c, &[base]);
     let with = Action::CounterWith { seat: 0, threat: "orbital_strike".into(), option: 1 };
     assert!(!legal_has(&rules, &g, |a| *a == with), "its last node");
     put(&mut g, far_from(m, c, base), node(0), 1);
@@ -150,7 +139,8 @@ fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
 
 #[test]
 fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
-    let (rules, mut g) = threat_lab();
+    let (rules, mut g) =
+        threat_lab_with(&[r#"threats.supply_raid.effects=[{"op":"players_lose","resource":"energy","amount":2}]"#]);
     let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
     let c = rules.map.hexes[factory].country as usize;
     no_nodes(&mut g);
@@ -163,7 +153,7 @@ fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
         .find(|&h| h != factory && !rules.map.hexes[factory].neighbors.contains(&h))
         .unwrap();
     put(&mut g, far, node(1), 1);
-    land(&mut g, "supply_raid", c, &[factory]);
+    deal_at(&mut g,"supply_raid", c, &[factory]);
     for s in 0..2 {
         set_res(&mut g, s, Resource::Energy, 10);
     }
@@ -172,7 +162,7 @@ fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
         rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
     }
     assert!(g.pending.is_none());
-    // 142: Supply Raid takes 2 energy from each player near it.
+    // Supply Raid, pinned to take 2 energy from each player near it.
     assert_eq!((g.resource(0, Resource::Energy), g.resource(1, Resource::Energy)), (8, 10));
     assert_eq!(g.var("alignment.discord"), discord + 1);
     assert_eq!(counted(&g, "threats.uncountered"), 1);
@@ -197,7 +187,7 @@ fn an_uncountered_threat_takes_its_tiers_nodes_from_each_player_near_it() {
     put(&mut g, factory, node(0), 1);
     put(&mut g, far[0], node(0), 1);
     put(&mut g, far[1], node(1), 1);
-    land(&mut g, "supply_raid", c, &[factory]);
+    deal_at(&mut g,"supply_raid", c, &[factory]);
     for s in 0..g.seats.len() as u8 {
         rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
     }

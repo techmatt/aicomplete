@@ -33,7 +33,8 @@ options:
   --set-a K=V       override for config A only (repeatable)
   --set-b K=V       override for config B only (repeatable)
   --agent SPEC      the team agent: random (default), greedy, beam, rollout, engine,
-                    planner, sweep (a planner profile), with budget parameters as
+                    planner, sweep (a planner profile), strategist (the engine
+                    with strategies, the screens' judge), with budget parameters as
                     kind:key=value,... (see docs/agents.md)
   --max-actions N   per-game action cap; a capped game is a timeout (default 100000)
   --threads N       worker threads (default: all cores); results do not depend on it

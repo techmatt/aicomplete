@@ -6,7 +6,8 @@ d2's stage swap to d4) and 5992 (no node counters). Tables: [confirm_r59.md](con
 seeds, with the paired gap to r58), [confirm_r58.md](confirm_r58.md), [confirm_pre_credit_lever.md](confirm_pre_credit_lever.md)
 (the build before W3 + G6 on the same seeds), [read_r59.md](read_r59.md) and [read_r58.md](read_r58.md) (the first
 fresh seeds), [death_audit.md](death_audit.md). Scripts: [specs.py](specs.py) (screens and reads), [gen_levers.py](gen_levers.py)
-and [levers.json](levers.json) (the levers as run: generated from r59's pre-freeze content, D3 and B2 added by hand),
+and [levers.json](levers.json) (the levers as run: 23 generated from r59's pre-freeze content, the other 16 added by hand; a rerun writes
+`levers.gen.json`),
 [read142.py](read142.py), [freeze_142.py](freeze_142.py) with [overlay_142.txt](overlay_142.txt) (the frozen income
 levers), [add_claim_cards.py](add_claim_cards.py), [death_runs.py](death_runs.py).
 

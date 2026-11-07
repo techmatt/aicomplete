@@ -59,7 +59,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
 | `adversary.threat_nodes` | 1, 2, 3 | 0..5 | an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it |
 | `adversary.counter_pct` | 100, 100, 100 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
-| `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent more of its amount after counter_pct (rounded up; 142's dial) |
+| `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
 | `adversary.counter_bonus_all` | 2 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
 | `adversary.counter_bonus_credits` | 6 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |

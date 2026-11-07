@@ -45,8 +45,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
   buttons in the seat's panel. Text names hexes by country
   (`Cintamani #13`) and cards by name.
 - **The board:** hexes filled by `kind` (key at the bottom left), base pennants in their
-  `facing` country's color, fronts dashed dark red; on a war step (`board.war` = 1) fronts
-  turn solid red and pulse, with a **war round** badge. Player pieces sit on a hex's upper
+  `facing` country's color, fronts solid red and pulsing (they fight every round). Player pieces sit on a hex's upper
   row in the seat's color, the adversary's on the lower row in purple. Hover anything for
   details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers cards, threats, gifts, the view's `standard`
@@ -96,7 +95,7 @@ change can move it, so remeasure before reading a layout change into a failure: 
 (same `AIC_URL`) prints that game's pane heights at the three sizes; diff two revisions' output.
 
 The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the baseline
-at `station_cubes` 3 on a quiet board (no arrivals, city builds or marches, `corrupt_at` 20)
+at `station_cubes` and `owned_station_cubes` 5 (corps) or 3 (researcher) on a quiet board (no arrivals, city builds or marches, `corrupt_at` 20)
 for cubes, converters (a node on a city) and the Researcher's board; `e2e:sources`
 checks a face-up threat's sources and a forged payment refused.
 
@@ -123,7 +122,7 @@ engine is edited) and a release `aic-sim` (`AIC_SIM`, default
   sweep **watches** each record step by step and **plays** as many fresh games through the page
   at random (choices, hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
   simulated ones from seed `AIC_SWEEP_SEED` (100).
-- **Moments:** new rounds, prompts, war steps, the first of each key event and counter rise
+- **Moments:** new rounds, prompts, the first of each key event and counter rise
   (`COUNTER_EVENTS`, `_R41`), the end. At each, the checks at 1366×768, layout at the two
   larger sizes, and a screenshot (at most 14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
@@ -219,7 +218,8 @@ says so and exits.
 - **Shots of named cards** in the viewer's large view: `node scripts/card-shots.mjs ID,ID [--port N] [--out NAME]`
   (shots in `out/NAME/`, about 1 s a card).
 - **Text sizes:** `npm run cards:fit` (about 2.5 s, no server) fits every player card
-  headless with the real renderer and writes `out/card-fit.json`: per id,
+  headless with the real renderer and writes `out/card-fit.json` (the repo root's `out/`, as for every `out/` path
+  in this section): per id,
   `top` and `effect` box sizes in pt (null: empty box), `title` in pt, `overflow` and
   `where`, and `tight` for a box inside its panel but short of the clearance. It prints
   cards below 7.5 pt and exits 1 on any overflow. It reads the working tree: re-run after

@@ -154,7 +154,7 @@ fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
     let active = threats::active(&g);
     assert_eq!(active.len(), before + 1);
     let (t, country) = *active.last().unwrap();
-    assert_eq!(country, Some(1));
+    assert_eq!(country, 1);
     assert_eq!(threats::tokens(&g, &t).first(), Some(&b));
     assert_eq!(rules.world().content.threat(&t).tier, 2);
     assert_eq!(g.stats.counters["threats.dealt_at_node"], 1);

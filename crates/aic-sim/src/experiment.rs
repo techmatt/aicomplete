@@ -1371,7 +1371,7 @@ mod tests {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../experiments");
         let mut files = json_in(&root);
         for e in std::fs::read_dir(&root).unwrap().map(|e| e.unwrap().path()) {
-            if e.file_name().is_some_and(|n| n.to_string_lossy().starts_with("gate-close-")) {
+            if e.is_dir() && e.file_name().is_some_and(|n| n.to_string_lossy().starts_with("gate-close")) {
                 files.extend(json_in(&e));
             }
         }

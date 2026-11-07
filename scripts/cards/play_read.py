@@ -15,6 +15,8 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from screens import dealt  # noqa: E402
 
 
 def main():
@@ -25,19 +27,9 @@ def main():
     a = ap.parse_args()
     content = json.load(open(os.path.join(ROOT, 'content', 'cards.json'), encoding='utf-8'))
     deck = {c['id']: c for c in content}
-    # 118: only the runs' decks (each cell's config's `cards` list, and any card a game saw):
-    # a card cut from the deck (117's three) is still in content and read as "never kept".
-    dealt = set()
-    for d in a.dirs:
-        res = json.load(open(os.path.join(d, 'results.json'), encoding='utf-8'))
-        dealt.update(cid for per in res.get('cards', {}).values() for cid in per)
-        for path in {c.get('config') for c in res['cells'] if c.get('config')}:
-            full = path if os.path.isabs(path) else os.path.join(ROOT, path)
-            if os.path.exists(full):
-                for m in json.load(open(full, encoding='utf-8')).get('modules', []):
-                    if m.get('module') == 'cards':
-                        dealt.update(m.get('cards', []))
-    deck = {k: v for k, v in deck.items() if k in dealt}
+    # 118: only the runs' decks.
+    in_runs = dealt(a.dirs)
+    deck = {k: v for k, v in deck.items() if k in in_runs}
     want = set(x for x in a.agents.split(',') if x)
     games = collections.Counter()
     idle = collections.defaultdict(collections.Counter)

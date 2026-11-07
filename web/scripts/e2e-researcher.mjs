@@ -1,5 +1,5 @@
 // `npm run e2e:researcher` (075): the Researcher's board in a real browser. Plays the baseline at
-// 3 countries with `station_cubes` 3, so a card fills in round 2: seat 2, the Researcher, claims
+// 3 countries with `station_cubes` and `owned_station_cubes` (142: a claimed station's) 3, so a card fills in round 2: seat 2, the Researcher, claims
 // Onyx's neutral station and passes its turns. Checks its tracks and powers on the page, Patience's
 // carried insight and the stored research cubes, and spends 3 cubes on its second node power.
 // Needs the viewer running.
@@ -18,7 +18,7 @@ mkdirSync(out, { recursive: true });
 const SEAT = 2;
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
 config.countries = 3;
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, troop_steps: 0, claim_station: 1 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, owned_station_cubes: 3, troop_steps: 0, claim_station: 1 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
 // No adversary ambassadors: a creation line would land one on the claimed station, blocking its cubes.
 Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });

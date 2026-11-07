@@ -103,9 +103,9 @@ pub(super) fn pieces_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usiz
 /// Active threats seat `s` may counter, not already delayed this round (118:
 /// "a threat" on a card is one you may counter, the house term; a delay reached
 /// every face-up threat).
-pub(super) fn undelayed_threats(w: &World, g: &GameState, s: usize) -> Vec<(Key, Option<usize>)> {
+pub(super) fn undelayed_threats(w: &World, g: &GameState, s: usize) -> Vec<(Key, usize)> {
     let mut active = threats::active(g);
-    active.retain(|(t, scope)| !threats::waits(g, t) && threats::may_counter(w, g, s, t, *scope));
+    active.retain(|(t, scope)| !threats::waits(g, t) && threats::may_counter(w, g, s, t, Some(*scope)));
     active
 }
 

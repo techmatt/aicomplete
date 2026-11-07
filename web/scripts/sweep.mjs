@@ -1,6 +1,6 @@
 // The viewer sweep: plays and watches many games across configs, variants and seeds at
 // test speed, screenshots only the moments that matter (a new round, a phase change, a
-// new choice, a war step, a project or Alignment tip, the end) and checks the page at
+// new choice, a project or Alignment tip, the end) and checks the page at
 // each of them. See web/README.md, *The sweep*.
 //   node scripts/sweep.mjs [--quick] [--case NAME]...
 //   AIC_URL       viewer URL (default http://localhost:5173/); serve a snapshot
@@ -49,7 +49,7 @@ const CASES = [
   { name: 'c2-d1-engine', config: 'baseline.json', set: ['adversary.difficulty=1'], agent: 'engine' },
   { name: 'c2-d2-engine', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'engine' },
   { name: 'c3-d3-engine', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=3'], agent: 'engine' },
-  { name: 'overlay', config: 'baseline.json', set: ['cards.telemetry_archive.cost=9', 'threats.*.counter=[["credits",1]]'] },
+  { name: 'overlay', config: 'baseline.json', set: ['cards.telemetry_archive.cost=9', 'threats.*.counters=[[{"resource":"credits","amount":1}]]'] },
   // 099: r35-r38's table: stations to free, research cubes and converters, liberations and
   // their twists, dark cities, the gift buildings and the one-shot Actions (engine games
   // play the most cards), and the three boards' slots at 3 and 4 countries.
@@ -110,7 +110,7 @@ const PAGE_LIB = String.raw`(() => {
   /** 099: r35-r38's rules show in the engine's counters, not in its events: a counter
    *  that rose in the step names a key moment (a station freed, a liberation and its
    *  twist, a dark city, a converter, a one-shot Action discarded, troops removed). */
-  const COUNTER_EVENTS = /^(board\.(stations_freed|liberated_[a-z]+|city_dark(_aligned)?|cubes_converted|cities_aligned)|adversary\.station_flip_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
+  const COUNTER_EVENTS = /^(board\.(liberated_[a-z]+|city_dark(_aligned)?|cubes_converted)|adversary\.station_flip_held|cards\.(once_discarded|free_built|remove_troops\.\d+))$/;
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
   // discard from hand, a discount, insight bought, given or paid for a counter.
   const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;

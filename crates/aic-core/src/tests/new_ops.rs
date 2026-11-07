@@ -26,7 +26,6 @@ fn extra_corp_troops_go_past_the_cap_but_one_a_base_a_production_step() {
     let (rules, mut g) = lab(&["board.bases"]);
     let w = rules.world();
     let cap = w.int("board.unit_cap");
-    g.round = 1;
     let [b0, b1] = rules.map.fronts[0].bases;
     put(&mut g, b0, UNIT, cap);
     put(&mut g, b1, UNIT, cap);
@@ -43,7 +42,6 @@ fn warmongering_needs_an_adversary_troop_by_the_base() {
     let (rules, mut g) = lab(&["board.bases"]);
     let w = rules.world();
     let cap = w.int("board.unit_cap");
-    g.round = 1;
     let [b0, b1] = rules.map.fronts[0].bases;
     put(&mut g, b0, UNIT, cap);
     put(&mut g, b1, UNIT, cap);
@@ -54,23 +52,17 @@ fn warmongering_needs_an_adversary_troop_by_the_base() {
 
 #[test]
 fn war_brought_forward_fights_a_front_twice() {
-    let setup = |sets: &[&str]| {
-        let (rules, mut g0) = lab_with(&["board.war"], sets);
-        let m = &rules.map;
-        let [b0, b1] = m.fronts[0].bases;
-        g0.piles.remove(CURRENT);
-        for n in &piece(1).factories {
-            put(&mut g0, m.numbered(1, *n), FACTORY, 1);
-        }
-        put(&mut g0, b0, UNIT, 2);
-        put(&mut g0, b1, UNIT, 1);
-        g0.round = 1;
-        let fs = piece(1).factories.iter().map(|&n| m.numbered(1, n)).collect::<Vec<_>>();
-        (rules, g0, fs)
-    };
-
     // 139: war every round, so it fights twice: the surplus strikes twice.
-    let (rules, g0, fs) = setup(&[]);
+    let (rules, mut g0) = lab(&["board.war"]);
+    let m = &rules.map;
+    let [b0, b1] = m.fronts[0].bases;
+    g0.piles.remove(CURRENT);
+    for n in &piece(1).factories {
+        put(&mut g0, m.numbered(1, *n), FACTORY, 1);
+    }
+    put(&mut g0, b0, UNIT, 2);
+    put(&mut g0, b1, UNIT, 1);
+    let fs = piece(1).factories.iter().map(|&n| m.numbered(1, n)).collect::<Vec<_>>();
     let left = |g: &GameState| fs.iter().map(|&f| g.tokens(f, FACTORY)).sum::<i64>();
     let mut g = g0.clone();
     // The key holds the round of the second fight: this one.

@@ -82,21 +82,6 @@ pub fn corrupted_city(w: &World, g: &GameState, h: usize) -> bool {
     is_city(w, h) && corrupted(g, h)
 }
 
-/// A research station with the adversary's cube.
-pub fn corrupted_station(g: &GameState, h: usize) -> bool {
-    g.tokens(h, STATION) > 0 && corrupted(g, h)
-}
-
-/// A factory with the adversary's cube.
-pub fn corrupted_factory(g: &GameState, h: usize) -> bool {
-    g.tokens(h, FACTORY) > 0 && corrupted(g, h)
-}
-
-/// A city that collects adversary ambassadors: clean or aligned.
-pub fn collecting_city(w: &World, g: &GameState, h: usize) -> bool {
-    is_city(w, h) && !corrupted(g, h)
-}
-
 /// A city with no cube.
 pub fn clean_city(w: &World, g: &GameState, h: usize) -> bool {
     is_city(w, h) && !corrupted(g, h) && cube_owner(g, h).is_none()
@@ -120,11 +105,6 @@ pub fn buildable(w: &World, g: &GameState, h: usize) -> bool {
 /// Whether hex `h` holds a piece an ambassador can sit on (node included).
 pub fn has_piece(w: &World, g: &GameState, h: usize) -> bool {
     is_city(w, h) || is_base(w, h) || has_building(g, h) || node_owner(g, h).is_some()
-}
-
-/// Player-owned: a node, or an aligned city or owned station or factory.
-pub fn player_owned(g: &GameState, h: usize) -> bool {
-    node_owner(g, h).is_some() || cube_owner(g, h).is_some()
 }
 
 /// A player ambassador's seat on hex `h`, if any (seat order).

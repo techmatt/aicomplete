@@ -8,7 +8,7 @@ Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits un
 list, the harms ledger's rule (every harm from 2+ kinds of source, each threat tier 5+ kinds), ops the engine lacks.
 The pull simulation plays the draw rule over random Militarist decks at 1-4 countries and every difficulty's stage
 counts and extra pulls (configs/baseline.json `adversary`), and fails if a pull would need a second reshuffle of a deck.
-`--content` rebuilds the draft shape from content/ (threats by tier, arrivals read back from the arrivals twist);
+`--content` rebuilds the draft shape from content/ (threats by tier);
 the value and check lines and `new` marks aren't loaded, so those checks are skipped.
 """
 
@@ -83,11 +83,7 @@ def load_content():
     adv = read("adversary.json")
     events = []
     for e in adv["events"]:
-        arr = [tw for tw in e["twists"] if tw.get("op") == "arrivals"]
-        events.append(dict(e, twists=[tw for tw in e["twists"] if tw.get("op") != "arrivals"],
-                           arrivals=arr[0]["site"] if arr else None))
-        if len(arr) > 1:
-            errors.append(f"{e['id']}: {len(arr)} arrivals twists")
+        events.append(dict(e))
     a = adversary_params()
     # 138: the build numbers left after creation lines replaced city_build, arrivals and escalation.
     build = {k: a[k] for k in ("corrupt_at", "corrupt_station_at", "corrupt_factory_at", "corrupt_land_at",
@@ -294,7 +290,7 @@ def simulate(t, mil, games=4000, seed=134):
         for ev in order:
             out = defaultdict(list)  # this round's threats, out of the deck until cleanup
             for i, p in enumerate(ev["pulls"]):
-                # difficulty 1+: `extra_threats` more pulls of the card's first pull, countries in turn
+                # from `extra_threats_at`: `extra_threats` more pulls of the card's first pull, countries in turn
                 for _ in range(countries * p.get("count", 1) + (extra if i == 0 else 0)):
                     pulls += 1
                     card, rs = decks[p["tier"]].pull(p["tags"], countries)
@@ -354,12 +350,6 @@ def check_militarist(mil, projects, ops, new_ops):
         for s, n in zip((1, 2, 3), deals):
             if n > stages[s]:
                 errors.append(f"difficulty {d}: deals {n} stage-{s} events, {stages[s]} printed")
-    for e in mil["events"]:
-        if e.get("arrivals") not in ("coastal", "industrial", "stations", "factory", None):
-            errors.append(f"{e['id']}: arrivals {e.get('arrivals')!r}")
-    for s in (1, 2, 3):
-        kinds = {e.get("arrivals") for e in mil["events"] if e["stage"] == s} - {None}
-        print(f"stage {s} arrivals: {sorted(kinds)}")
     for e in mil["events"]:
         check_card_common(e, "event", ops, new_ops)
     tagged = [s["tag"] for s in b["project_slots"] if s.get("tag")]
@@ -428,7 +418,7 @@ def card_lines(c, kind):
         sub = f"Project | {tag_text(c)} | {c['cost']} compute per player{' | ongoing' if c.get('ongoing') else ''}"
         body = [c["text"]]
     elif kind == "event":
-        sub = f"Militarist event, stage {c['stage']} | arrivals: {c.get('arrivals') or 'none'}"
+        sub = f"Militarist event, stage {c['stage']}"
         body = [c["text"]]
     else:
         sub = "Militarist board"
@@ -548,7 +538,7 @@ def main():
     table = ledger(t, projects, mil)
     before = len(errors)
     worst_case(t, mil)
-    print(f"Hall's condition at 1 and 4 countries (with difficulty 1's extra pulls): "
+    print(f"Hall's condition at 1 and 4 countries (with the extra pulls): "
           f"{'holds' if len(errors) == before else 'fails'}")
     print("stage deals by difficulty (stage I, II, III; extra pulls): "
           + ", ".join(f"d{d} {s} +{x}" for d, s, x in STAGE_DEALS))

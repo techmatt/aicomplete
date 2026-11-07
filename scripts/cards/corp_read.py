@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_names, cnt, stream  # noqa: E402
+from screens import cell_labels, cnt, stream  # noqa: E402
 
 CORPS = ('Horizon', 'Cintamani', 'Onyx', 'Biomia')
 
@@ -24,7 +24,8 @@ def load(dirs):
     cells = collections.defaultdict(list)
     for d in dirs:
         lines = stream(d)
-        names = cell_names(next(lines)['spec'])
+        # ([cfg/][dN/]variant, agent): cell_labels takes multi-difficulty specs.
+        names = [tuple(lbl.rsplit('/', 1)) for lbl in cell_labels(next(lines)['spec'])]
         for r in lines:
             cells[names[r['cell']]].append(r)
     return cells

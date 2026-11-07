@@ -16,7 +16,7 @@ the default sizes, so a long card overflows and a long title runs wide. The view
 after drawing the grid or the large view; `show` in `tools/card-art/lib.mjs` calls it, so
 `render`, `scene-picker` and every print get it. In Playwright, `page.evaluate(fitCards)`; it
 loads the fonts itself, and measures a copy at true size, so zoom and device scale don't change
-a card. About 110 ms for the 167 in content. **Cards are composed live, never pre-baked:** composed cards and print sheets go
+a card. About 110 ms for every card in content. **Cards are composed live, never pre-baked:** composed cards and print sheets go
 to `out/cards/` (git-ignored). Committed: frame templates (`art/frames/`), guides
 (`art/guides/`), sliced containers, fonts. Changing a card's text or numbers changes no
 asset. Picker previews are never committed: they go to the shared
@@ -69,7 +69,7 @@ browser; `npm ci` first):
 - `npm run render -- [variants] [--pdf]`: composes each variant's real card at 300 dpi
   (815×1110). With no variants named, also the splay, the icon sheet and a full check of
   every card in content (about 1.5 min: background it); with `--pdf`, `all-cards.pdf`
-  (every real card at true size, 9 to an A4 page, 19 pages for 167) and `splay.pdf`. Fails if a font fell back,
+  (every real card at true size, 9 to an A4 page) and `splay.pdf`. Fails if a font fell back,
   anything printed leaves the safe zone (x 6–63, y 6–88 mm), a panel or title overflows or a
   requirement plate reaches the tags.
 - `node sheet.mjs <out.png> <images…>`: a one-row inspection sheet.
@@ -105,7 +105,7 @@ browser; `npm ci` first):
   drawn are the row ids in `picks/scene_batch_<n>.json`. Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
-- Every one of the 155 deck cards has a suggested scene, drawn. A scene whose card was cut or
+- Every deck card has a suggested scene, drawn. A scene whose card was cut or
   redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. A scene with
   both was drawn for `was` and reused on `card`: an unused scene that broadly fits a new card's
   name goes there before a new draw (Matt, 110). `npm run cards:check` in `web/` fails on a deck

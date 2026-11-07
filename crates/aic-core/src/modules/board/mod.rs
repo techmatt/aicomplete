@@ -413,7 +413,8 @@ impl Module for Board {
             2 => battle(g, cx),
             3 => march(g, cx)?,
             4 => produce(g, cx)?,
-            _ => cleanup(g, cx),
+            5 => cleanup(g, cx),
+            _ => unreachable!("board: no auto phase {phase}"),
         }
         Ok(())
     }

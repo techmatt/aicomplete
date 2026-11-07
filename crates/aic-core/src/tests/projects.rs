@@ -40,7 +40,16 @@ fn setup_deals_one_project_into_each_board_slot() {
 
 #[test]
 fn compute_fills_the_cheapest_project_which_resolves_when_full() {
-    let (rules, mut g) = lab(&[]);
+    // Costs and Disinformation's sway pinned as printed at r58.
+    let (rules, mut g) = lab_with(
+        &[],
+        &[
+            "projects.botnet_swarm.cost=6",
+            "projects.disinformation.cost=5",
+            "projects.market_crash.cost=5",
+            r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5},{"op":"lose_ambassador"},{"op":"lose_ambassador"}]"#,
+        ],
+    );
     // At 2 players: Botnet Swarm 12, Disinformation 10, Market Crash 10.
     row(&mut g, &["botnet_swarm", "disinformation", "market_crash"]);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
@@ -166,9 +175,9 @@ fn a_fifth_to_two_thirds_of_the_threats_carry_compute() {
 
 #[test]
 fn an_uncountered_threat_puts_its_compute_on_a_project() {
-    let (rules, mut g) = threat_lab();
+    let (rules, mut g) = threat_lab_with(&[r#"threats.embargo.effects=[{"op":"compute","amount":3}]"#]);
     row(&mut g, &["false_flag"]);
-    // Embargo: a flag near it and 3 compute.
+    // Embargo, pinned to 3 compute.
     deal(&mut g, "embargo", 0);
     pass_round(&rules, &mut g);
     assert_eq!(g.stats.counters["threats.executed"], 1);

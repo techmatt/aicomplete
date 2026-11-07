@@ -71,10 +71,8 @@
    "Printed on each tier deck's back (the pull procedure): 'For each country in order, reveal threats from that tier's deck until one carries a listed tag (Universal fits any) and has a location in that country; discard the rest; reshuffle the discard when the deck runs out.'",
    "137: bases are front troop piles and the first-base term is cut: Factory Drive and War Drums land their troop on a factory (else a city), the base arrivals (War Drums, Border War, Blitzkrieg) and Escalation land on each country's lowest-numbered factory, one a country as on the first base (candidates; 137's first try put the arrivals on every industrial zone, four times the placements).",
    "Warmongering cuts both ways: a corp troop at a base absorbs an adversary strike next to it (war.md), and if both bases of a front qualify the extras cancel on the war step. Read its net effect before keeping it.",
-   "The difficulty line needs a new op (standing_troops_bonus).",
-   "Event cards' `pulls` and `standing` are new card sections: the engine reads only twists and arrivals today (threats are dealt by threats.deal, not by the card).",
    "Standing ambassadors use `infiltrate` and standing troops `troops` with `each_country`: both are team ops today, not twists.",
-   "Event faces run 150-306 characters (pull, standing, twists, arrivals, Escalation): adversary cards have no frame or budget yet (card-guidelines 9).",
+   "Event faces run 150-306 characters (pull, standing, twists, Escalation): adversary cards have no frame or budget yet (card-guidelines 9).",
    "135: Warmongering prints its cap, at most 1 extra corp troop a base each production step, whatever makes it (Matt's ruling 4, 2026-11-06); no op change, the engine holds the cap."
   ],
   "creates": [

@@ -56,12 +56,12 @@ pub const RULE_HARMS: [(&str, &str, &str); 17] = [
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
-    ("uncountered threats", "node destroyed", "a city a threat corrupts takes the nodes on and next to it"),
-    ("uncountered threats", "ambassadors lost", "player ambassadors on a city a threat corrupts are lost"),
+    ("uncountered threats", "node destroyed", "each player near a threat that executes uncountered destroys `threat_nodes` (1 / 2 / 3 by tier, `harm_bonus` more from difficulty `harm_bonus_at`) of their nodes near it"),
     // 099: the board's most frequent Discord source had no mark.
     ("uncountered threats", "Discord sway", "every threat that executes uncountered sways `threat_discord` toward Discord, beside its printed effects"),
     ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
+    ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),
     ("march", "facilities destroyed or seized", "a troop strikes player-owned facilities; it can't enter or strike a hex with the Protector's node"),
 ];
 
@@ -270,8 +270,8 @@ pub(super) fn harms_md() -> String {
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. `Discord cards` covers both tiers; `march` is the adversary \
          troops' strikes, which take facilities only at `board.troop_node` 4. The `yes` cells \
-         are true at the baseline's numbers (`board.destruction_discord` and \
-         `board.ambassador_discord` are 0, so neither war nor an ambassador darkening an aligned city sways).\n\n{}\n\
+         are true at the baseline's numbers (`board.ambassador_discord` is 0, so an ambassador \
+         darkening an aligned city doesn't sway).\n\n{}\n\
          **Checks** (`aic-sim docs --check`, and a fast test): every harm in at least 2 kinds of \
          source; each threat tier at least 5 kinds of harm; no kind of source more than about half \
          of the printed node destruction. Measured shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
