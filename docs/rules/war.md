@@ -122,8 +122,8 @@ Discord: keep neutral factories quiet and the Discord track low. **What resisted
 troops (Warmongering, Conscription, Arms Race) ignore the pile's cap, and the adversary ambassador count you pay for
 grows by one for each adversary ambassador already on the site.
 
-**This is the game's one movement rule** (an exception to "no movement rules"): spread
-places ambassadors, it does not walk them. **A Discord tip doesn't move troops**, and
+**This is the game's one movement rule** (an exception to "no movement rules"); a Corrupt line's pull is the only
+other, and it moves ambassadors one hex onto the site that corrupts ([adversary.md](adversary.md)). **A Discord tip doesn't move troops**, and
 `board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never move or strike.
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
@@ -131,8 +131,7 @@ places ambassadors, it does not walk them. **A Discord tip doesn't move troops**
 game on, from several sources: uncountered threats (Eviction offers it as a choice;
 Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper
 Cells, Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and
-Siege two), a city that becomes corrupted (nodes on its hex and, by `corruption_reach`, next
-to it), war that destroys a factory (nodes on its hex and, by `war_reach`, next to it:
+Siege two), a site that becomes corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next to it:
 0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex),
 stage-III adversary cards (each player destroys two) and Border War (one), Discord cards,
 and Purge the Unaligned. **Discord steps:** the tier-2 cards and the tier-1 card left for
@@ -145,8 +144,8 @@ otherwise end the game. Eviction goes further: it takes a node only from a playe
 more, at any stage. Offensive's target, on the board, is the node hex with the most
 adversary ambassadors and troops (ties: country, then lower hex number). Purge the Unaligned
 has each player give up any one of their ambassadors (supply or a hex) or nodes, never a last node; a node lost
-this way leaves the game. A city that corrupts takes the node unabsorbed: corruption is not
-a destruction shelters and shields answer.
+this way leaves the game. A site that corrupts destroys the node on its hex as any destruction (138): an
+ambassador there, a shield or a shelter answers it.
 
 **A lost node (locked, as in Spirit Island).** A destroyed node, or one lost to Purge the
 Unaligned, **leaves the game**: it does not go back on its track, and what it uncovered stays
@@ -156,7 +155,7 @@ your nodes out is always a tradeoff.
 **Corruption markers (candidate; `node_marker`).** A lost node leaves a corruption marker on
 its hex, unless the hex is a corrupted site, holds a botnet or already holds a marker (the
 cap on the loop: a marker adds no corruption where there is some). A marked hex can't take a
-node. On a city that is not corrupted it counts 1 toward `corrupt_at`; since no node stands
+node. On a city that is not corrupted it counts 1 toward its Corrupt number (not when gathered from next door); since no node stands
 there, a marker never destroys nodes itself. It doesn't count against the purge. **Clearing
 one is worth an action (candidate):** the Clear standard action (`clear_cost` credits) takes
 a marker off in reach and pays `clear_unity` Sway toward Unity and `clear_credits` credits;

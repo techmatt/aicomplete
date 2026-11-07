@@ -89,8 +89,9 @@ def load_content():
         if len(arr) > 1:
             errors.append(f"{e['id']}: {len(arr)} arrivals twists")
     a = adversary_params()
-    build = {k: a[k] for k in ("city_build", "factory_build", "arrivals", "corrupt_at", "spread_range", "wall_troops",
-                               "escalation_ambassadors", "botnet_compute") if k in a}
+    # 138: the build numbers left after creation lines replaced city_build, arrivals and escalation.
+    build = {k: a[k] for k in ("corrupt_at", "corrupt_station_at", "corrupt_factory_at", "corrupt_land_at",
+                               "wall_troops", "botnet_compute") if k in a}
     return t, read("projects.json"), {"board": dict(adv["board"], build=build), "events": events}
 
 

@@ -290,12 +290,20 @@ fn a_discord_tip_no_longer_moves_troops() {
 fn discord_cards_step_up_with_the_discord_tip_count() {
     for (tips, each) in [(0, 1), (5, 3)] {
         let (rules, mut g) = lab(&[]);
+        // 138: Blight creates on each country's lowest-numbered city holding one.
+        let seeded: Vec<usize> = (0..2).map(|c| rules.map.numbered(c, piece(c).cities[0])).collect();
+        for &h in &seeded {
+            put(&mut g, h, ADV_AMBASSADOR, 1);
+        }
         g.vars.insert("alignment.discord_tips".into(), tips);
         next_alignment_card(&mut g, Side::Discord, "blight");
         fill_bucket(&rules, &mut g, Side::Discord);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
-        assert_eq!(total(&g, ADV_AMBASSADOR), 2 * each, "{tips} tips");
+        assert_eq!(total(&g, ADV_AMBASSADOR), 2 + 2 * each, "{tips} tips");
+        for h in seeded {
+            assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1 + each, "{tips} tips");
+        }
     }
 }
 

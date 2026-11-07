@@ -85,6 +85,26 @@ fn pull_words(p: &aic_core::content::Pull) -> String {
     format!("tier {} ({})", p.tier, tags.join(" or "))
 }
 
+/// 138: an event card's Corrupt X lines ("cities, land (1 fewer)").
+fn corrupt_words(a: &aic_core::content::AdversaryCard) -> String {
+    a.twists
+        .iter()
+        .filter_map(|t| match t {
+            aic_core::content::Op::Corrupt { site, cut } => {
+                let name = match site.name() {
+                    "city" => "cities",
+                    "station" => "research stations",
+                    "factory" => "factories",
+                    other => other,
+                };
+                Some(if *cut > 0 { format!("{name} ({cut} fewer)") } else { name.to_string() })
+            }
+            _ => None,
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
 pub(super) fn adversary_block() -> String {
     let rows = content()
         .adversary
@@ -95,11 +115,11 @@ pub(super) fn adversary_block() -> String {
                 a.name.clone(),
                 a.stage.to_string(),
                 pulls.join("; "),
-                if a.escalation { "yes" } else { "" }.to_string(),
+                corrupt_words(a),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Pulls (each country)", "Escalation"], rows)
+    table(&["Card", "Stage", "Pulls (each country)", "Corrupt"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -338,11 +358,11 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             t(&["adversary.extra_threats", "adversary.counter_bonus", "adversary.counter_bonus_all"]),
         ),
         (
-            "A stage-I card swapped for a stage-III card: stage II (escalation, tier-2 threats) sooner and a harder end, at the same round cap (the table above)",
-            t(&["adversary.stage1_removed", "adversary.stage3_added"]),
+            "A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above); each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
+            t(&["adversary.stage1_removed", "adversary.stage3_added", "adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ),
         (
-            "Larger builds: each corrupted city gains more, and a stage-II card removed (a shorter round cap)",
+            "Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap)",
             t(&["adversary.build_bonus", "adversary.stage2_removed"]),
         ),
         (

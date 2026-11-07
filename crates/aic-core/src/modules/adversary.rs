@@ -1,11 +1,12 @@
 //! The adversary (014, 016, 017): its deck (the clock and the stager), its
-//! ambassadors (build, spread, corrupt), botnets, adversary compute and the
+//! ambassadors (creation lines, Corrupt X, natural corruption; 138), botnets, adversary compute and the
 //! project deck it fills, the ambassador supply and the difficulty levels.
 //! Also the shared rules for placing and removing adversary ambassadors and
 //! troops, which cards, threats and Alignment use, and the board conditions
 //! for winning and losing.
 
 use crate::content::{AdversaryCard, Op, ProjectCard, PullTag, ThreatTag};
+use crate::op::CorruptSite;
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World};
 use crate::rng::shuffle;
@@ -19,11 +20,15 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
     ParamSpec::list("stage_cards", 0, 20, "adversary cards dealt from stage I, II and III (before difficulty)"),
     ParamSpec::int("supply_per_country", 0, 40, "adversary ambassadors in the supply per country"),
-    ParamSpec::int("city_build", 0, 10, "build: ambassadors each corrupted city gains"),
-    ParamSpec::int("factory_build", 0, 10, "build: ambassadors each factory next to a corrupted city gains"),
-    ParamSpec::int("spread_range", 1, 6, "spread: how far (hexes) a spreading ambassador may travel"),
-    ParamSpec::int("corrupt_at", 1, 20, "corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted"),
-    ParamSpec::int("escalation_ambassadors", 0, 5, "stage-II escalation: ambassadors each country's lowest-numbered factory gains when the card builds"),
+    ParamSpec::int("corrupt_at", 1, 20, "Corrupt city: adversary ambassadors a city gathers (on it and next to it) to corrupt"),
+    ParamSpec::int("corrupt_station_at", 1, 20, "Corrupt station: adversary ambassadors a research station gathers to corrupt"),
+    ParamSpec::int("corrupt_factory_at", 1, 20, "Corrupt factory: adversary ambassadors a factory gathers to corrupt"),
+    ParamSpec::int("corrupt_land_at", 1, 20, "Corrupt land: adversary ambassadors an empty land hex gathers to take land corruption"),
+    ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
+    ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
+    ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
+    ParamSpec::list("threat_nodes", 0, 5, "an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it"),
+    ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty 1+: added to every threat's first counter requirement"),
     ParamSpec::int("counter_bonus_all", 0, 10, "difficulty 1+: added to every counter requirement of every threat"),
     ParamSpec::int("extra_threats", 0, 5, "difficulty 1+: extra threats dealt each round in all, one per country in turn"),
@@ -31,10 +36,9 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage3_added", 0, 3, "difficulty 2+: stage-III cards added (the cap holds, its end gets harder)"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
-    ParamSpec::int("build_bonus", 0, 5, "difficulty 3+: ambassadors each corrupted city gains on top of city_build"),
+    ParamSpec::int("build_bonus", 0, 5, "difficulty 3+: each site the adversary board's creation lines reach gains this many more"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
-    ParamSpec::int("arrivals", 0, 5, "build: ambassadors each site the adversary card names gains, whatever the board holds"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
     ParamSpec::int("station_flip_at", 0, 5, "adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
@@ -42,21 +46,21 @@ const PARAMS: &[ParamSpec] = &[
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the event card's standing lines and twists; corrupted cities and the factories next to them gain ambassadors; arrivals; ongoing projects act; botnets make adversary compute onto the projects"),
-    PhaseSpec::auto("spread", "every hex with several adversary ambassadors keeps one and sends the rest to pieces (a second on a piece makes a botnet)"),
-    PhaseSpec::auto("corrupt", "cities that are not corrupted and hold enough adversary ambassadors are corrupted"),
+    PhaseSpec::auto("build", "the event card's standing lines (its creation lines) and twists; the board's creation lines; ongoing projects act; botnets make adversary compute onto the projects"),
+    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of adversary ambassadors (on it and next to it) pulls them in and corrupts"),
+    PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "adversary",
-    summary: "The adversary deck (the clock), ambassadors (build, spread, corrupt), botnets, the supply, difficulty",
+    summary: "The adversary deck (the clock), ambassadors (creation lines, Corrupt X), botnets, the supply, difficulty",
     requires: &["board", "alignment"],
     variants: &[
         VariantDef {
             name: "militarist",
-            summary: "The Militarist: ambassadors spread from corrupted cities; stage II escalates at the bases",
+            summary: "The Militarist: bounded creation lines and Corrupt X; troops where the Protector stands",
             params: PARAMS,
             phases: PHASES,
             rng: &["adversary"],
@@ -195,10 +199,6 @@ pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
         .iter()
         .flat_map(|id| card(w, id).twists.iter())
         .collect()
-}
-
-fn twist_sum(w: &World, g: &GameState, f: impl Fn(&Op) -> Option<i64>) -> i64 {
-    twists(w, g).into_iter().filter_map(f).sum()
 }
 
 /// Whether this round's card makes it a war round.
@@ -366,34 +366,19 @@ impl Module for Adversary {
                 for t in &c.twists {
                     match t {
                         // These resolve as they do anywhere (034, 044).
-                        Op::Sway { .. }
-                        | Op::EachDestroyNode { .. }
-                        | Op::PullUnity { .. }
-                        | Op::BotnetAmbassadors { .. } => {
+                        Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
-                        // Read where they act: the build, spread, corrupt and arrivals
-                        // steps, and the war step.
-                        Op::CityBuild { .. }
-                        | Op::CleanFactories { .. }
-                        | Op::StationBuild { .. }
-                        | Op::SpreadReach { .. }
-                        | Op::CorruptSooner { .. }
-                        | Op::Arrivals { .. }
-                        | Op::TroopSteps { .. }
-                        | Op::War => {}
+                        // Read where they act: the corrupt step (138), the march
+                        // and the war step.
+                        Op::Corrupt { .. } | Op::TroopSteps { .. } | Op::War => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
                         // needs a reader (044: `_ => {}` swallowed the Unity pull).
                         other => unreachable!("twist with no reader: {other:?}"),
                     }
                 }
-                build_all(g, cx, None);
+                board_build(g, cx, None)?;
                 wall_pressure(g, cx)?;
-                if c.escalation {
-                    for (h, n) in super::plan::escalation_hexes(&w, g) {
-                        place(g, cx, h, n);
-                    }
-                }
                 // Ongoing projects act, in the order they came into play.
                 for id in g.pile(PROJECTS_ONGOING).to_vec() {
                     let p = project(&w, &id);
@@ -433,32 +418,18 @@ impl Module for Adversary {
                 gain_compute(g, cx, made)?;
             }
             1 => {
-                spread(g, cx, None)?;
-                // 135 (Propaganda Ministry): a flagged country spreads a second time.
-                for c in 0..w.map.countries.len() {
-                    if board::take_double_spread(g, cx, c) {
-                        spread(g, cx, Some(c))?;
+                // 138: the card's Corrupt X lines, in card order (they replace the spread).
+                for t in twists(&w, g) {
+                    if let Op::Corrupt { site, cut } = t {
+                        corrupt_sites(g, cx, *site, *cut, None);
+                        if g.is_over() {
+                            return Ok(());
+                        }
                     }
                 }
             }
             2 => {
-                let at = (w.int("adversary.corrupt_at")
-                    - twist_sum(&w, g, |t| match t {
-                        Op::CorruptSooner { amount } => Some(*amount),
-                        _ => None,
-                    }))
-                .max(1);
-                let cities: Vec<usize> = (0..g.hexes.len())
-                    .filter(|&h| {
-                        // 034: a corruption marker counts toward corrupting.
-                        is_city(&w, h)
-                            && !corrupted(g, h)
-                            && g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, MARKER) >= at
-                    })
-                    .collect();
-                for h in cities {
-                    corrupt_city(g, cx, h);
-                }
+                natural_corruption(g, cx);
                 // Botnets at their peak, per board (country).
                 for c in 0..w.map.countries.len() {
                     let n = botnet_count(g, Some(&w.map.countries[c].hexes));
@@ -809,40 +780,69 @@ fn reveal(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// The build step, in country `scope` or everywhere: each corrupted city
-/// gains `city_build` (+ difficulty 3, + twists), each factory next to a
-/// corrupted city `factory_build`; twists add clean-city factories and
-/// corrupted stations.
 /// An ongoing project's op that is read where it acts, not resolved each
-/// round (135): a build bonus, a front fighting twice, corp troops each production.
+/// round (135): a front fighting twice, corp troops each production.
 fn standing_project_op(e: &Op) -> bool {
     matches!(
         e,
-        Op::CityBuild { ongoing_use: true, .. }
-            | Op::ExtraWar { ongoing_use: true, .. }
+        Op::ExtraWar { ongoing_use: true, .. }
             | Op::CorpTroops { when: crate::op::CorpWhen::EachProduction, .. }
     )
 }
 
-/// This round's twists and the ongoing projects' build bonuses (135).
-fn build_mods<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
-    let mut on = twists(w, g);
-    for id in g.pile(PROJECTS_ONGOING) {
-        on.extend(project(w, id).effects.iter().filter(|e| matches!(e, Op::CityBuild { ongoing_use: true, .. })));
+/// The adversary board's own creation lines (138: they replace `city_build`
+/// and `factory_build`), in country `scope` or everywhere; from difficulty 3
+/// each site they reach gains `build_bonus` more.
+fn board_build(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
+    let w = cx.world;
+    let bonus = if level(&w, 3) { w.int("adversary.build_bonus") } else { 0 };
+    for op in &w.content.adversary_board.build {
+        let op = match op {
+            Op::Create { count, at, if_, sites } => Op::Create { count: count + bonus, at: *at, if_: *if_, sites: *sites },
+            other => other.clone(),
+        };
+        let mut ctx = effects::Ctx::team().named("board").why(&w.content.adversary_board.name);
+        ctx.scope = scope;
+        effects::run(g, cx, std::slice::from_ref(&op), &mut ctx)?;
     }
-    on
+    Ok(())
 }
 
-pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) {
+/// "The adversary builds now" (an out-of-turn build: Grand Offensive, the
+/// Offensive Discord card), in country `scope` or everywhere: the board's
+/// creation lines, then this round's card's.
+pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
     let w = cx.world;
-    // One source for the rule: the plan is the build.
-    let on = build_mods(&w, g);
-    cx.tally(g, "adversary.arrivals", super::plan::arrival_count(&w, g, &on, scope));
-    for (h, n) in super::plan::build_plan(&w, g, &on, scope) {
-        // 135 (Trade Blockade): a build on or next to its flag happens twice.
-        let twice = if board::double_build_at(&w, g, h) { 2 } else { 1 };
-        place(g, cx, h, n * twice);
+    board_build(g, cx, scope)?;
+    let Some(id) = g.pile(CURRENT).first().cloned() else {
+        return Ok(());
+    };
+    let c = card(&w, &id);
+    for op in c.standing.iter().filter(|e| matches!(e, Op::Create { .. })) {
+        let mut ctx = effects::Ctx::team().named("standing").why(&c.name);
+        ctx.scope = scope;
+        effects::run(g, cx, std::slice::from_ref(op), &mut ctx)?;
     }
+    Ok(())
+}
+
+/// 138, a creation line: `count` adversary ambassadors on each of the
+/// `sites` lowest-numbered matching sites in each country in scope (one
+/// source with the agents' forecast, [`super::plan::create_plan`]). A
+/// cordoned country gains none; a site on or next to a Trade Blockade flag
+/// gains twice (135). Tallied by `source` (event, board, threat, project,
+/// discord, unity).
+pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, scope: Option<usize>, near: &[usize], location: Option<usize>, source: &str) {
+    let w = cx.world;
+    let mut made = 0;
+    for (h, n) in super::plan::create_plan(&w, g, line, scope, near, location) {
+        let twice = if board::double_build_at(&w, g, h) { 2 } else { 1 };
+        let before = g.var(SUPPLY);
+        place(g, cx, h, n * twice);
+        made += before - g.var(SUPPLY);
+    }
+    cx.tally(g, "adversary.created", made);
+    cx.tally(g, &format!("adversary.created.{source}"), made);
 }
 
 /// Troop pressure where the Protector stands (080, candidate): in the round's
@@ -876,50 +876,18 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
         }
         cx.add_key(g, SUPPLY, -1);
         cx.per_round(g, OPS, 1);
-        arrive(g, cx, h, false);
+        arrive(g, cx, h);
     }
 }
 
-/// One adversary ambassador arrives on hex `h` (from the supply or by
-/// spreading): it cancels a player ambassador there (both are removed, no
-/// Unity); spreading onto a piece that already holds one (not a city that
-/// isn't corrupted, clean or aligned, which collects them, and not a botnet)
-/// makes a botnet there, and both ambassadors return to the supply.
-fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
-    let w = cx.world;
+/// One adversary ambassador arrives on hex `h` from the supply: it cancels a
+/// player ambassador there (both are removed, no Unity). 138: with the spread
+/// gone, no botnet forms by arriving (botnets come only from printed lines).
+fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) {
     if let Some(s) = player_ambassador(g, h) {
         cx.add_tokens(g, h, ambassador(s), -1);
         cx.add_key(g, SUPPLY, 1);
         cx.tally(g, "adversary.canceled", 1);
-        return;
-    }
-    // 137: a base is a front's troop pile with no ambassador rules beyond the
-    // troop rule, so no botnet forms on one.
-    if spreading
-        && g.tokens(h, ADV_AMBASSADOR) > 0
-        && !collecting_city(&w, g, h)
-        && !is_base(&w, h)
-        && g.tokens(h, BOTNET) == 0
-    {
-        remove(g, cx, h, 1);
-        cx.add_key(g, SUPPLY, 1);
-        cx.add_tokens(g, h, BOTNET, 1);
-        cx.tally(g, "adversary.botnets_made", 1);
-        // 137: where botnets form (the measure's).
-        let on = if is_city(&w, h) {
-            "city"
-        } else if g.tokens(h, STATION) > 0 {
-            "station"
-        } else if g.tokens(h, FACTORY) > 0 {
-            "factory"
-        } else if node_owner(g, h).is_some() {
-            "node"
-        } else {
-            "other"
-        };
-        cx.tally(g, &format!("adversary.botnets_made.{on}"), 1);
-        cx.peak(g, "adversary.botnets_peak", botnet_count(g, None));
-        cx.note(Some(h), || format!("A botnet forms at {}", hex_name(&w, h)));
         return;
     }
     cx.add_tokens(g, h, ADV_AMBASSADOR, 1);
@@ -987,34 +955,102 @@ pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
 }
 
 /// City `h` is corrupted: the adversary's cube goes on (a player cube
-/// comes off), its adversary ambassadors return to the supply, and any
-/// node on it is destroyed (027).
+/// comes off), its adversary ambassadors return to the supply, and a node on
+/// it is destroyed (138: only on the hex itself; an allied ambassador there is
+/// armor).
 pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
+    corrupt_hex(g, cx, h, CorruptSite::City);
+}
+
+/// 138: hex `h` corrupts as a `site`: a city, research station or factory
+/// takes the adversary's cube (a player's comes off); an empty land hex takes
+/// land corruption. Its adversary ambassadors return to the supply; a node on
+/// the hex is destroyed (its owner's ambassador there is armor, used up
+/// instead; the Sanctuary capstone keeps it); player ambassadors still there
+/// are lost (024: they would free it in the same step); a marker comes off.
+pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) {
     let w = cx.world;
-    take_for_adversary(g, cx, h);
+    if site == CorruptSite::Land {
+        cx.add_tokens(g, h, LAND_CORRUPTION, 1);
+    } else {
+        take_for_adversary(g, cx, h);
+    }
     let n = g.tokens(h, ADV_AMBASSADOR);
     remove(g, cx, h, n);
-    // 024: player ambassadors waiting here are lost, or they would free the
-    // city in the same step (and pay Unity for an adversary attack).
+    if let Some(s) = node_owner(g, h) {
+        if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
+            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"));
+        }
+    }
     for s in 0..g.seats.len() {
         let k = ambassador(s);
         let mine = g.tokens(h, k);
         cx.add_tokens(g, h, k, -mine);
     }
-    // The city's corruption replaces any marker on it.
     clear_markers_on(g, cx, h);
-    // 034: by `corruption_reach`, nodes around the city go too.
-    for x in within(&w, h, w.int("board.corruption_reach")) {
-        if let Some(s) = node_owner(g, x) {
-            board::lose_node(g, cx, x, s, "corruption");
-        }
-    }
     cx.tally(g, "adversary.corruptions", 1);
+    cx.tally(g, &format!("adversary.corruptions.{}", site.name()), 1);
     if g.round > 0 && g.var(FIRST_CORRUPTION) == 0 {
         cx.set_key(g, FIRST_CORRUPTION, g.round as i64);
         cx.tally(g, "adversary.first_corruption_round", g.round as i64);
     }
-    cx.note(Some(h), || format!("{} is corrupted", hex_name(&w, h)));
+    cx.note(Some(h), || match site {
+        CorruptSite::Land => format!("{} takes land corruption", hex_name(&w, h)),
+        _ => format!("{} is corrupted", hex_name(&w, h)),
+    });
+}
+
+/// 138: the corrupt number of `site` this game: its config number, less the
+/// difficulty's `corrupt_cut` from `corrupt_cut_at`, less a line's `cut`; at
+/// least 1.
+pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
+    let base = match site {
+        CorruptSite::City => w.int("adversary.corrupt_at"),
+        CorruptSite::Station => w.int("adversary.corrupt_station_at"),
+        CorruptSite::Factory => w.int("adversary.corrupt_factory_at"),
+        CorruptSite::Land => w.int("adversary.corrupt_land_at"),
+    };
+    let ladder = if level(w, w.int("adversary.corrupt_cut_at")) {
+        let i = CorruptSite::ALL.iter().position(|&s| s == site).unwrap_or(0);
+        w.list("adversary.corrupt_cut").get(i).copied().unwrap_or(0)
+    } else {
+        0
+    };
+    (base - ladder - cut).max(1)
+}
+
+/// 138, a Corrupt X line in country `scope` or everywhere: what
+/// [`super::plan::corrupt_plan`] says, pulled in and corrupted.
+pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) {
+    let w = cx.world;
+    let n = corrupt_n(&w, site, cut);
+    for (t, pulls) in super::plan::corrupt_plan(&w, g, site, n, scope) {
+        for (h, k) in pulls {
+            remove(g, cx, h, k);
+            cx.tally(g, "adversary.pulled", k);
+        }
+        corrupt_hex(g, cx, t, site);
+        if g.is_over() {
+            return;
+        }
+    }
+}
+
+/// 138, natural corruption at the end of the event card: every city,
+/// research station or factory already holding its corrupt number (a city's
+/// markers count, 034) corrupts, with no move, in hex order.
+fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory] {
+        let n = corrupt_n(&w, site, 0);
+        for h in super::plan::natural_targets(&w, g, site, n) {
+            corrupt_hex(g, cx, h, site);
+            cx.tally(g, "adversary.corruptions_natural", 1);
+            if g.is_over() {
+                return;
+            }
+        }
+    }
 }
 
 /// `count` adversary troops, each onto a factory among `hexes` (players
@@ -1108,95 +1144,6 @@ pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
 }
 
-/// Where an ambassador spreading from `from` may go: hexes within `range`
-/// holding a piece (never an empty hex), not shielded, and
-/// without an adversary ambassador unless a clean or aligned city (cities
-/// collect them) or a piece with no botnet (a second ambassador makes a botnet).
-/// Returns the best by priority (player owned, then clean cities, then the
-/// rest), then distance.
-fn destinations(w: &World, g: &GameState, from: usize, range: i32) -> Vec<usize> {
-    let shields: Vec<usize> = (0..g.seats.len())
-        .filter(|&s| cards::has_passive(w, g, s, |p| matches!(p, Op::SpreadShield)))
-        .collect();
-    let mut best: Option<(u8, i32)> = None;
-    let mut out = Vec::new();
-    for h in 0..g.hexes.len() {
-        let d = w.map.distance(from, h);
-        if h == from || d > range || is_ocean(w, h) {
-            continue;
-        }
-        if !has_piece(w, g, h) {
-            continue;
-        }
-        if shields.iter().any(|&s| g.tokens(h, node(s)) > 0) {
-            continue;
-        }
-        let city = collecting_city(w, g, h);
-        if g.tokens(h, ADV_AMBASSADOR) > 0 && !city && g.tokens(h, BOTNET) > 0 {
-            continue;
-        }
-        let tier = if player_owned(g, h) {
-            0
-        } else if city {
-            1
-        } else {
-            2
-        };
-        let key = (tier, d);
-        match best {
-            Some(b) if key > b => {}
-            Some(b) if key == b => out.push(h),
-            _ => {
-                best = Some(key);
-                out = vec![h];
-            }
-        }
-    }
-    out
-}
-
-/// The spread step, in country `scope` or everywhere: each hex (fixed when
-/// the step starts) holding several adversary ambassadors, except a city
-/// that is not corrupted, keeps one and sends each other one to the best
-/// destination in range (players choose among equals).
-pub fn spread(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
-    let w = cx.world;
-    let range = w.int("adversary.spread_range")
-        + twist_sum(&w, g, |t| match t {
-            Op::SpreadReach { amount } => Some(*amount),
-            _ => None,
-        });
-    let sources: Vec<usize> = scope_hexes(&w, scope)
-        .into_iter()
-        .filter(|&h| g.tokens(h, ADV_AMBASSADOR) > 1 && !collecting_city(&w, g, h))
-        .collect();
-    for from in sources {
-        let n = g.tokens(from, ADV_AMBASSADOR) - 1;
-        for _ in 0..n {
-            let dest = destinations(&w, g, from, range as i32);
-            if dest.is_empty() {
-                // Nowhere to go: the surplus returns to the supply.
-                let left = g.tokens(from, ADV_AMBASSADOR) - 1;
-                remove(g, cx, from, left);
-                cx.tally(g, "adversary.spread_returned", left);
-                break;
-            }
-            let opts = dest.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = || format!(
-                "Adversary spread: an ambassador from {} goes to which hex?",
-                hex_name(&w, from)
-            );
-            let Some(i) = cx.choose(0, prompt, opts)? else {
-                break;
-            };
-            cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
-            cx.per_round(g, OPS, 1);
-            arrive(g, cx, dest[i], true);
-        }
-    }
-    Ok(())
-}
-
 /// Whether a removal of `ambassadors` or `troops` has a piece to take on hex
 /// `h` (F64: a card that names no troop can't touch one).
 pub fn can_damage(g: &GameState, h: usize, ambassadors: i64, troops: i64) -> bool {
@@ -1280,21 +1227,6 @@ pub fn pushback(g: &mut GameState, cx: &mut Cx, c: usize) -> Res {
         remove_piece(g, cx, None, hexes[i], ADV_AMBASSADOR);
     }
     Ok(())
-}
-
-/// In each country, the clean city with the most adversary ambassadors
-/// (ties: lower hex number) gains `n` more (Discord cards, Infiltration Drive).
-pub fn infiltrate(g: &mut GameState, cx: &mut Cx, n: i64) {
-    let w = cx.world;
-    for c in 0..w.map.countries.len() {
-        if let Some(h) = most_infiltrated_city(&w, g, c, |h| clean_city(&w, g, h)) {
-            // No source in the note: a project calls this too (020: it said "Discord").
-            cx.note(Some(h), || {
-                format!("{n} adversary ambassador{} gather{} at {}", if n == 1 { "" } else { "s" }, if n == 1 { "s" } else { "" }, hex_name(&w, h))
-            });
-            place(g, cx, h, n);
-        }
-    }
 }
 
 /// In country `c`, the hex passing `pred` with the most adversary

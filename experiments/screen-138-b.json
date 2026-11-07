@@ -1,0 +1,35 @@
+{
+  "name": "screen-138-b",
+  "note": "138 screen B (dev seeds 36800-36815, 16 a cell, the three pairs, d0-d2): r57 as built (base) and S (stage_cards 4,4,3) against threat levers on S: K150 / K200 (adversary.counter_pct 150 / 200: every resource counter item of every tier costs 1.5x / 2x), T (adversary.threat_nodes 1,1,2), on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_S", "set": ["adversary.stage_cards=4,4,3"]},
+    {"name": "br_S", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "pr_S", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "bp_SK150", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150"]},
+    {"name": "br_SK150", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150"]},
+    {"name": "pr_SK150", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150"]},
+    {"name": "bp_SK150T", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "br_SK150T", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "pr_SK150T", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=150,150,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "bp_SK200T", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=200,200,200", "adversary.threat_nodes=1,1,2"]},
+    {"name": "br_SK200T", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=200,200,200", "adversary.threat_nodes=1,1,2"]},
+    {"name": "pr_SK200T", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=200,200,200", "adversary.threat_nodes=1,1,2"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

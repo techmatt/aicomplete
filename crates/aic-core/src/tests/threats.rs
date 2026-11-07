@@ -76,6 +76,20 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
 }
 
 #[test]
+fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
+    // 138: Eviction (tier 1) prints 6 credits; at 150% it asks 9, at 125% 8 (7.5 up).
+    for (pct, want) in [("150,100,100", 9), ("125,100,100", 8)] {
+        let (rules, g) = threat_lab_with(&[&format!("adversary.counter_pct={pct}")]);
+        let need = threats::requirement(&rules.world(), &g, "eviction");
+        let credits = need.iter().flatten().find_map(|i| match i {
+            crate::content::CounterItem::Pay { resource: Resource::Credits, amount } => Some(*amount),
+            _ => None,
+        });
+        assert_eq!(credits, Some(want), "{pct}");
+    }
+}
+
+#[test]
 fn counter_with_tags_sacrifices_cards_in_play() {
     let (rules, mut g) = threat_lab();
     let w = rules.world();
@@ -150,4 +164,31 @@ fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
     assert_eq!(g.var("alignment.discord"), discord + 1);
     assert_eq!(counted(&g, "threats.uncountered"), 1);
     assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
+}
+
+#[test]
+fn an_uncountered_threat_takes_its_tiers_nodes_from_each_player_near_it() {
+    // 138: `threat_nodes` 1 for tier 1: the near seat loses its node near the
+    // token (it holds another, so it is not its last); the far seat keeps its.
+    let (rules, mut g) = threat_lab_with(&["adversary.threat_nodes=1,1,2"]);
+    let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
+    let c = rules.map.hexes[factory].country as usize;
+    no_nodes(&mut g);
+    let far: Vec<usize> = rules.map.countries[c]
+        .hexes
+        .iter()
+        .copied()
+        .filter(|&h| h != factory && !rules.map.hexes[factory].neighbors.contains(&h))
+        .take(2)
+        .collect();
+    put(&mut g, factory, node(0), 1);
+    put(&mut g, far[0], node(0), 1);
+    put(&mut g, far[1], node(1), 1);
+    land(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() as u8 {
+        rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
+    }
+    assert!(g.pending.is_none());
+    assert_eq!(g.tokens(factory, node(0)), 0, "the near node goes");
+    assert_eq!((g.tokens(far[0], node(0)), g.tokens(far[1], node(1))), (1, 1));
 }

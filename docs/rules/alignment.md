@@ -88,17 +88,17 @@ tip, so "3+ earlier Discord tips" first fires on the 4th tip). Unity cards have 
 | Open Market | unity | 1 | The next 2 cards any player keeps from the draft are free. |  |
 | Think Tank | unity | 1 | Every player gains 1 insight each round for the rest of the game. |  |
 | Ceasefire | unity | 1 | Counter an active threat. |  |
-| Civil Defense | unity | 1 | In each country, remove 1 adversary ambassador. |  |
+| Civil Defense | unity | 1 | In each country, remove 1 adversary ambassador, and a neutral research station opens on its lowest-numbered empty station site. |  |
 | Volunteer Corps | unity | 1 | Sway 3 toward Unity. |  |
 | Global Coalition | unity | 2 | Counter every active threat. |  |
 | New Deal | unity | 2 | Every player gains 4 credits now, and 2 credits each round for the rest of the game. |  |
 | Decommission | unity | 2 | Remove a botnet anywhere on the board. |  |
 | Incursion | discord | 1 | Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and each player destroys 2 of their nodes. | 5 |
-| Blight | discord | 1 | In each country, the clean city with the most adversary ambassadors gains 1 more. 5+ earlier Discord tips: 3 more instead, and each player destroys 2 of their nodes. | 5 |
+| Blight | discord | 1 | Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, and each player destroys 2 of their nodes. | 5 |
 | Propaganda | discord | 1 | Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their nodes. | 5 |
-| Offensive | discord | 2 | The adversary spreads, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then spreads, and each player destroys 2. | 3, 4 |
+| Offensive | discord | 2 | Corrupt cities, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then Corrupt cities, and each player destroys 2. | 3, 4 |
 | Two Fronts | discord | 2 | Deal 2 extra threats. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: deal 3, and each player destroys 2. | 3, 4 |
-| Firestorm | discord | 2 | In each country, the clean city with the most adversary ambassadors gains 2 more. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: 3 more, and each player destroys 2. | 3, 4 |
+| Firestorm | discord | 2 | Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: create 3, and each player destroys 2. | 3, 4 |
 <!-- /generated -->
 
 A threat countered by a card is discarded and its partial payments are refunded.
@@ -113,11 +113,11 @@ A threat countered by a card is discarded and its partial payments are refunded.
   are countered or execute like any other. One dealt after the round's counter phase (a tip
   in production or upkeep, False Flag) waits beside the row and executes next round, after a
   counter phase.
-- Blight and Firestorm: ties go to the lower hex number, so with no ambassadors on any clean
-  city the lowest-numbered one gains them; a country with no clean city gains nothing. Civil
-  Defense in a country with no adversary ambassador removes nothing.
-- Offensive acts at once, out of the round's order, with this round's card's build or spread
-  twists; its build has no Escalation. Before the build step (a tip in the Sway phase, from a
+- Blight and Firestorm create on the lowest-numbered city holding adversary ambassadors (138: a creation line); a
+  country with none gains nothing. Blight and Civil Defense also open a neutral factory or research station on each
+  board. Civil Defense in a country with no adversary ambassador removes nothing.
+- Offensive acts at once, out of the round's order: Corrupt cities, and at 4+ tips the adversary builds first (the
+  board's and this round's card's creation lines). Before the build step (a tip in the Sway phase, from a
   board's drip) this round's card is the face-up one.
 
 **The purge (the win), by Unity cards drawn (r55, candidate).** What you must remove from the

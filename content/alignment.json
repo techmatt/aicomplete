@@ -57,11 +57,15 @@
   "name": "Civil Defense",
   "side": "unity",
   "tier": 1,
-  "text": "In each country, remove 1 adversary ambassador.",
+  "text": "In each country, remove 1 adversary ambassador, and a neutral research station opens on its lowest-numbered empty station site.",
   "effects": [
    {
     "op": "pushback",
     "ambassadors": 1
+   },
+   {
+    "op": "create_site",
+    "kind": "station"
    }
   ]
  },
@@ -156,11 +160,17 @@
   "name": "Blight",
   "side": "discord",
   "tier": 1,
-  "text": "In each country, the clean city with the most adversary ambassadors gains 1 more. 5+ earlier Discord tips: 3 more instead, and each player destroys 2 of their nodes.",
+  "text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, and each player destroys 2 of their nodes.",
   "effects": [
    {
-    "op": "infiltrate",
-    "amount": 1
+    "op": "create",
+    "count": 1,
+    "at": "city",
+    "if": "ambassadors"
+   },
+   {
+    "op": "create_site",
+    "kind": "factory"
    }
   ],
   "steps": [
@@ -168,8 +178,10 @@
     "at": 5,
     "effects": [
      {
-      "op": "infiltrate",
-      "amount": 3
+      "op": "create",
+      "count": 3,
+      "at": "city",
+      "if": "ambassadors"
      },
      {
       "op": "each_destroy_node",
@@ -222,10 +234,11 @@
   "name": "Offensive",
   "side": "discord",
   "tier": 2,
-  "text": "The adversary spreads, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then spreads, and each player destroys 2.",
+  "text": "Corrupt cities, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then Corrupt cities, and each player destroys 2.",
   "effects": [
    {
-    "op": "adversary_spread"
+    "op": "corrupt",
+    "site": "city"
    },
    {
     "op": "destroy_node"
@@ -236,7 +249,8 @@
     "at": 3,
     "effects": [
      {
-      "op": "adversary_spread"
+      "op": "corrupt",
+      "site": "city"
      },
      {
       "op": "destroy_node"
@@ -254,7 +268,8 @@
       "op": "adversary_build"
      },
      {
-      "op": "adversary_spread"
+      "op": "corrupt",
+      "site": "city"
      },
      {
       "op": "each_destroy_node",
@@ -310,11 +325,13 @@
   "name": "Firestorm",
   "side": "discord",
   "tier": 2,
-  "text": "In each country, the clean city with the most adversary ambassadors gains 2 more. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: 3 more, and each player destroys 2.",
+  "text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: create 3, and each player destroys 2.",
   "effects": [
    {
-    "op": "infiltrate",
-    "amount": 2
+    "op": "create",
+    "count": 2,
+    "at": "city",
+    "if": "ambassadors"
    }
   ],
   "steps": [
@@ -322,8 +339,10 @@
     "at": 3,
     "effects": [
      {
-      "op": "infiltrate",
-      "amount": 2
+      "op": "create",
+      "count": 2,
+      "at": "city",
+      "if": "ambassadors"
      },
      {
       "op": "each_destroy_node",
@@ -335,8 +354,10 @@
     "at": 4,
     "effects": [
      {
-      "op": "infiltrate",
-      "amount": 3
+      "op": "create",
+      "count": 3,
+      "at": "city",
+      "if": "ambassadors"
      },
      {
       "op": "each_destroy_node",

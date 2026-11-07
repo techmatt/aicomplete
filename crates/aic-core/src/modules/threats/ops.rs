@@ -12,39 +12,6 @@ fn head(why: Option<&str>, s: usize) -> String {
     }
 }
 
-/// `count` adversary ambassadors from the supply, each onto a piece of kind
-/// `at` in `scope` (players choose each). r48 (D51): on military bases, one a
-/// base while a base is free of this threat's ambassadors (Total War's two go
-/// on two bases where there are two).
-pub fn place_ambassadors(g: &mut GameState, cx: &mut Cx, hexes: &[usize], at: Spot, count: i64, why: Option<&str>) -> Res {
-    let w = cx.world;
-    let mut used: Vec<usize> = Vec::new();
-    for _ in 0..count {
-        let mut spots: Vec<usize> = hexes
-            .iter()
-            .copied()
-            .filter(|&h| match at {
-                Spot::PlayerPieces => player_owned(g, h),
-                Spot::CleanCities => clean_city(&w, g, h),
-                Spot::Factories => g.tokens(h, FACTORY) > 0,
-                Spot::Bases => is_base(&w, h),
-                Spot::Location | Spot::City | Spot::CitiesNear => false,
-            })
-            .collect();
-        if at == Spot::Bases && spots.iter().any(|h| !used.contains(h)) {
-            spots.retain(|h| !used.contains(h));
-        }
-        let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = || format!("{}: an adversary ambassador goes on which piece?", why.unwrap_or("Threat"));
-        let Some(i) = cx.choose_loss(0, prompt, opts)? else {
-            break;
-        };
-        adversary::place(g, cx, spots[i], 1);
-        used.push(spots[i]);
-    }
-    Ok(())
-}
-
 /// Each player in `scope` loses `amount` tokens off their cards, their choice.
 pub fn lose_tokens(g: &mut GameState, cx: &mut Cx, seats: &[usize], amount: i64, why: Option<&str>) -> Res {
     let w = cx.world;

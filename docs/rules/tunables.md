@@ -31,7 +31,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.troop_steps` | 2 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
 | `board.troop_node` | 4 | 0..4 | adversary troops strike nodes from this stage of adversary card on (0: always, 4: never) |
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
-| `board.corruption_reach` | 1 | 0..1 | a city that corrupts destroys nodes within this many hexes of it |
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
@@ -50,13 +49,17 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.drain_amount` | 3 | 1..20 | standard project: compute drained |
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
-| `adversary.stage_cards` | 4, 5, 2 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
+| `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | adversary ambassadors in the supply per country |
-| `adversary.city_build` | 2 | 0..10 | build: ambassadors each corrupted city gains |
-| `adversary.factory_build` | 0 | 0..10 | build: ambassadors each factory next to a corrupted city gains |
-| `adversary.spread_range` | 2 | 1..6 | spread: how far (hexes) a spreading ambassador may travel |
-| `adversary.corrupt_at` | 4 | 1..20 | corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted |
-| `adversary.escalation_ambassadors` | 1 | 0..5 | stage-II escalation: ambassadors each country's lowest-numbered factory gains when the card builds |
+| `adversary.corrupt_at` | 4 | 1..20 | Corrupt city: adversary ambassadors a city gathers (on it and next to it) to corrupt |
+| `adversary.corrupt_station_at` | 3 | 1..20 | Corrupt station: adversary ambassadors a research station gathers to corrupt |
+| `adversary.corrupt_factory_at` | 3 | 1..20 | Corrupt factory: adversary ambassadors a factory gathers to corrupt |
+| `adversary.corrupt_land_at` | 3 | 1..20 | Corrupt land: adversary ambassadors an empty land hex gathers to take land corruption |
+| `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
+| `adversary.corrupt_cut_at` | 2 | 0..5 | the difficulty level from which corrupt_cut applies |
+| `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
+| `adversary.threat_nodes` | 1, 2, 3 | 0..5 | an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it |
+| `adversary.counter_pct` | 150, 150, 150 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty 1+: added to every threat's first counter requirement |
 | `adversary.counter_bonus_all` | 0 | 0..10 | difficulty 1+: added to every counter requirement of every threat |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty 1+: extra threats dealt each round in all, one per country in turn |
@@ -64,10 +67,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage3_added` | 1 | 0..3 | difficulty 2+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage2_removed` | 1 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.build_bonus` | 1 | 0..5 | difficulty 3+: ambassadors each corrupted city gains on top of city_build |
+| `adversary.build_bonus` | 1 | 0..5 | difficulty 3+: each site the adversary board's creation lines reach gains this many more |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
-| `adversary.arrivals` | 1 | 0..5 | build: ambassadors each site the adversary card names gains, whatever the board holds |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
 | `adversary.station_flip_at` | 2 | 0..5 | adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |

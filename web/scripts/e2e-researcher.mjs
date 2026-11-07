@@ -20,7 +20,7 @@ const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json
 config.countries = 3;
 Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, troop_steps: 0 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
-Object.assign(config.modules.find((m) => m.module === 'adversary').params, { arrivals: 0, corrupt_at: 20, city_build: 0 });
+Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20 });
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;

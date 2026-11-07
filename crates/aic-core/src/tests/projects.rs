@@ -104,8 +104,25 @@ fn an_ongoing_project_acts_in_the_build() {
     run(&rules, &mut g);
     // 135: the card's standing troops ask where they land.
     answer_all(&rules, &mut g);
-    // Every clean city (lab: all of them) gains an adversary ambassador.
-    assert_eq!(total(&g, ADV_AMBASSADOR), cities(&rules.map).len() as i64);
+    // 138: in each country the 2 lowest-numbered clean cities (lab: all are
+    // clean) gain one, beside the card's 1 on its 2 lowest-numbered coastal cities.
+    let m = &rules.map;
+    let lowest = |c: u8, coastal: bool| {
+        let mut v: Vec<usize> =
+            cities(m).into_iter().filter(|&h| m.hexes[h].country == c && (!coastal || m.hexes[h].coastal)).collect();
+        v.sort_by_key(|&h| m.hexes[h].number);
+        v.truncate(2);
+        v
+    };
+    let mut want = vec![0; m.hexes.len()];
+    for c in 0..m.countries.len() as u8 {
+        for h in lowest(c, false).into_iter().chain(lowest(c, true)) {
+            want[h] += 1;
+        }
+    }
+    let got: Vec<i64> = (0..m.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
+    assert_eq!(got, want);
+    assert_eq!(g.stats.counters["adversary.created.project"], 4);
 }
 
 #[test]

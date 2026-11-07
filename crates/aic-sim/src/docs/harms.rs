@@ -34,8 +34,8 @@ pub const SOURCES: [&str; 13] = [
     "adversary events",
     "adversary projects",
     "megaprojects",
-    "arrivals",
-    "build and spread",
+    "creation lines",
+    "botnets",
     "corruption",
     "uncountered threats",
     "war",
@@ -44,17 +44,15 @@ pub const SOURCES: [&str; 13] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 19] = [
-    ("arrivals", "adversary pieces placed", "every matching site gains an ambassador"),
-    ("arrivals", "ambassadors lost", "an arrival cancels a player ambassador there"),
-    ("arrivals", "Discord sway", "an ambassador on a base sways Discord when it produces"),
-    ("arrivals", "production blacked out", "an ambassador on a city or station takes its output: a city is dark while one stands there (it stays), a neutral one selling no energy (r37) and an aligned one giving its owner none (r38); a station's cube goes and so does the ambassador"),
-    ("build and spread", "adversary pieces placed", "cities build; surplus spreads; two meeting make a botnet"),
-    ("build and spread", "projects advanced (compute)", "each botnet makes compute"),
-    ("build and spread", "actions or claims blocked", "a botnet blocks site claims next to it"),
-    ("build and spread", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
-    ("build and spread", "ambassadors lost", "a build or spread cancels a player ambassador there"),
-    ("corruption", "node destroyed", "a node on or next to a city that corrupts is destroyed"),
+pub const RULE_HARMS: [(&str, &str, &str); 17] = [
+    ("creation lines", "adversary pieces placed", "the board's line and each card's: N on the lowest-numbered sites of a type, each country"),
+    ("creation lines", "ambassadors lost", "a created ambassador cancels a player ambassador there"),
+    ("creation lines", "production blacked out", "an ambassador on a city or station blocks its output while it stands (137)"),
+    ("creation lines", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
+    ("botnets", "projects advanced (compute)", "each botnet makes compute"),
+    ("botnets", "actions or claims blocked", "a botnet blocks site claims next to it"),
+    ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (an allied ambassador there is armor)"),
+    ("corruption", "facilities destroyed or seized", "a research station or factory that corrupts becomes the adversary's"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
@@ -124,17 +122,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
             "embargo" | "power_down" => vec![BLOCKED],
             _ => vec![BLACKED_OUT],
         },
-        Op::Ambassadors { .. }
-        | Op::Infiltrate { .. }
-        | Op::BotnetAmbassadors { .. }
-        | Op::CleanCityAmbassadors { .. }
-        | Op::AdversaryBuild
-        | Op::AdversarySpread
-        | Op::CityBuild { .. }
-        | Op::CleanFactories { .. }
-        | Op::StationBuild { .. } => vec![PIECES_PLACED],
-        // 044: a corruption takes the node and ambassadors around the city too.
-        Op::CorruptCity { .. } => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
+        Op::Create { .. } | Op::AdversaryBuild => vec![PIECES_PLACED],
+        // 138: a corruption takes a node and the ambassadors on the hex itself.
+        Op::CorruptCity { .. } | Op::Corrupt { .. } => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::Troops { destroy, .. } => {
             if *destroy {
                 vec![PIECES_PLACED, NODE_DESTROYED]

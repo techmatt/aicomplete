@@ -155,14 +155,14 @@ export function statusHtml(v: View, config: Config): string {
 
 // ---------- the adversary row ----------
 
-/** An adversary card face under the box's title: name, stage, escalation mark, then its printed text. */
+/** An adversary card face under the box's title: name, stage, then its printed text. */
 function adversaryCard(c: CardView, where: string, title: string): string {
   const def = content.adversary.find((a) => a.id === c.id);
   // The view's text starts "stage n: "; the stage is drawn as a chip instead.
   const text = def?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
   const stage = def ? `<span class="stage">stage ${def.stage}</span>` : '';
   const war = def?.twists.some((t) => t.op === 'war') ? '<span class="war-tag">war</span>' : '';
-  return `<div class="acard" data-card="${esc(c.id)}" data-where="${where}"><div class="sline"><span class="stitle">${title}</span><span class="sname">${esc(c.name)}</span>${stage}${war}${def?.escalation ? '<span class="escal">escalation</span>' : ''}</div><div class="atext">${esc(text)}</div></div>`;
+  return `<div class="acard" data-card="${esc(c.id)}" data-where="${where}"><div class="sline"><span class="stitle">${title}</span><span class="sname">${esc(c.name)}</span>${stage}${war}</div><div class="atext">${esc(text)}</div></div>`;
 }
 
 function cardBox(p: PileView | undefined, title: string, empty: string, cls: string): string {

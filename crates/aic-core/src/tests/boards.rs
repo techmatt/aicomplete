@@ -3,7 +3,7 @@
 use super::*;
 use crate::content::{Op, RoundFlag, Tag};
 use crate::modules::{board, cards, plan};
-use crate::op::Site;
+use crate::op::{CreateAt, CreateIf};
 
 /// Three Industry programs in the Builder's play area.
 fn builder_with_tags(g: &mut GameState) {
@@ -115,13 +115,12 @@ fn rush_build_offers_no_sacrifice_that_strands_it() {
 }
 
 #[test]
-fn a_cordon_stops_arrivals_for_the_next_build() {
-    let (rules, mut g) = lab_actions_with(&["adversary.arrivals=1"]);
+fn a_cordon_stops_creation_for_the_next_build() {
+    let (rules, mut g) = lab_actions();
     let w = rules.world();
-    let site = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
-    let c = w.map.hexes[site].country as usize;
-    let op = Op::Arrivals { site: Site::Industrial };
-    let lands = |g: &GameState| plan::build_plan(&w, g, &[&op], Some(c)).iter().any(|(h, _)| *h == site);
+    let c = 0;
+    let line = plan::CreateLine { count: 1, at: CreateAt::City, if_: CreateIf::Any, sites: 1 };
+    let lands = |g: &GameState| !plan::create_plan(&w, g, line, Some(c), &[], None).is_empty();
     assert!(lands(&g));
     g.vars.insert(board::flag(RoundFlag::Cordon, c).into(), 2);
     assert!(!lands(&g));

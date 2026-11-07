@@ -575,7 +575,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PullUnity { .. }
         | Op::LoseInsight { .. }
         | Op::AdversaryBuild
-        | Op::Ambassadors { .. }
+        | Op::Create { .. }
+        | Op::CreateSite { .. }
+        | Op::Corrupt { .. }
         | Op::Flag { .. }
         | Op::Requisition { .. }
         | Op::LoseAmbassador
@@ -589,11 +591,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::CounterAll
         | Op::Pushback { .. }
         | Op::DealThreats { .. }
-        | Op::Infiltrate { .. }
-        | Op::AdversarySpread
         | Op::Sacrifice
-        | Op::BotnetAmbassadors { .. }
-        | Op::CleanCityAmbassadors { .. }
         | Op::RemoveBotnets { .. }
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
@@ -607,19 +605,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::ProjectDrain { .. }
         | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
-        | Op::SpreadShield
+        | Op::CorruptionShield
         | Op::CivicShelter
         | Op::Wall
         | Op::Patience
         | Op::SupplyInsight { .. }
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
-        | Op::CityBuild { .. }
-        | Op::CleanFactories { .. }
-        | Op::StationBuild { .. }
-        | Op::SpreadReach { .. }
-        | Op::CorruptSooner { .. }
-        | Op::Arrivals { .. }
         | Op::AdversaryFactory { .. }
         | Op::ComputePerMissing { .. }
         | Op::CorpTroops { .. }
@@ -782,9 +774,9 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },
             format!("when you remove an adversary troop, sway {n} more toward Unity"),
         ),
-        Op::SpreadShield => effect(
-            { let mut p = adversary(vec![w("move")]); p.extend([w(":"), w("harden"), w("node")]); p },
-            "when the adversary spreads, it skips your nodes".to_string(),
+        Op::CorruptionShield => effect(
+            vec![w("corrupt"), w(":"), w("harden"), w("node")],
+            "corruption never destroys your nodes".to_string(),
         ),
         // The shield stops one destruction; the roof is a whole country for the round.
         Op::CivicShelter => effect(

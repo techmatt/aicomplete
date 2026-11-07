@@ -63,7 +63,7 @@ card does; how each primitive resolves:
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Amnesty Decree: 4) around one corrupted
   city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Those next to the city don't raise the Liberate action's cost, so clearing them only
-  thins the city's build before it spreads; each on the city costs the Liberate action one more ambassador ([ambassadors.md](ambassadors.md)).
+  thins what a Corrupt line could pull into a site next to them; each on the city costs the Liberate action one more ambassador ([ambassadors.md](ambassadors.md)).
 - **Card text:** generated from the card's ops (*The card grammar*, above), extra costs and lowered income included; a
   long card sets smaller. **Harden N facilities** is N different ones (Hardening, above); **shelter one country**:
   nothing in it, facility or node, can be destroyed this round. The house words are in [README.md](README.md#terms)'s *Terms*.
@@ -90,7 +90,7 @@ card does; how each primitive resolves:
   (Fieldwork) is not offered.
 - **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
   over land and sea); the destination must be a piece.
-- **Cordon (`cordon`):** in one country, no arrivals land from its play through the next round: that build, and any build a project
+- **Cordon (`cordon`):** in one country, no creation line places ambassadors from its play through the next round: that build, and any a project
   brings that round (118); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
   ambassador's job.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,

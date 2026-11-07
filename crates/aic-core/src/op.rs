@@ -172,8 +172,6 @@ pub enum RoundFlag {
     PowerDown,
     /// Players near it make no research cubes (135).
     StationOutage,
-    /// The adversary's next spread in the country happens twice (135).
-    DoubleSpread,
     /// The next adversary build on or next to it happens twice (135).
     DoubleBuild,
     /// Research stations on or next to it make no research cubes (135).
@@ -182,19 +180,72 @@ pub enum RoundFlag {
     GridDown,
 }
 
-/// A site type an adversary card's arrivals land on (027).
+/// 138: the sites a creation line ("create N per board on the lowest-numbered
+/// X") lands on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum Site {
+pub enum CreateAt {
+    /// Cities, whoever owns them.
+    City,
     /// Cities marked coastal on the map: next to ocean, or printed `coast`.
-    Coastal,
-    /// Printed industrial zones, built on or not.
-    Industrial,
+    CoastalCity,
     /// Research stations, whoever owns them.
-    Stations,
-    /// 137: each country's lowest-numbered factory (one a country, as the
-    /// first base it replaced; Escalation lands there too).
+    Station,
+    /// Factories, whoever owns them.
     Factory,
+    /// Hexes holding a botnet.
+    Botnet,
+    /// The threat's own location token (a threat only).
+    Location,
+}
+
+/// 138: the condition a creation line's site must meet.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CreateIf {
+    #[default]
+    Any,
+    /// Holding no adversary ambassador.
+    NoAmbassadors,
+    /// Holding at least one adversary ambassador.
+    Ambassadors,
+    /// Not the adversary's (a clean or aligned city, a neutral or player site).
+    Clean,
+    /// The adversary's (a corrupted city, an adversary station or factory).
+    Adversary,
+    /// A player's (an aligned city, a player's station or factory).
+    Player,
+    /// On or next to the threat's tokens (a threat only).
+    Near,
+}
+
+impl CreateIf {
+    pub fn is_any(&self) -> bool {
+        *self == CreateIf::Any
+    }
+}
+
+/// 138: what a Corrupt X line corrupts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CorruptSite {
+    City,
+    Station,
+    Factory,
+    /// An empty land hex (no piece, not ocean): it takes the land-corruption token.
+    Land,
+}
+
+impl CorruptSite {
+    pub const ALL: [CorruptSite; 4] = [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Land];
+    pub fn name(self) -> &'static str {
+        match self {
+            CorruptSite::City => "city",
+            CorruptSite::Station => "station",
+            CorruptSite::Factory => "factory",
+            CorruptSite::Land => "land",
+        }
+    }
 }
 
 /// A facility kind a cleanse may be limited to (r35).
@@ -257,7 +308,6 @@ impl RoundFlag {
             RoundFlag::Cordon => "cordon",
             RoundFlag::PowerDown => "power_down",
             RoundFlag::StationOutage => "station_outage",
-            RoundFlag::DoubleSpread => "double_spread",
             RoundFlag::DoubleBuild => "double_build",
             RoundFlag::StationDark => "station_dark",
             RoundFlag::GridDown => "grid_down",
@@ -607,18 +657,6 @@ pub enum Op {
     AdversaryBuild,
 
     // ---------- instant: threats ----------
-    /// `count` adversary ambassadors from the supply onto pieces of kind `at` in scope (players choose); `each`:
-    /// on each; `cancel`: each cancels a player ambassador.
-    Ambassadors {
-        at: Spot,
-        count: i64,
-        /// Each cancels a player ambassador there instead of being canceled (135).
-        #[serde(default, skip_serializing_if = "is_false")]
-        cancel: bool,
-        /// `count` on each matching piece rather than `count` in all (135).
-        #[serde(default, skip_serializing_if = "is_false")]
-        each: bool,
-    },
     /// Each player in scope loses `count` nodes in scope or pays `amount` `resource` (their choice); never a last
     /// node.
     LoseNodeOr {
@@ -793,24 +831,35 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_false")]
         each_country: bool,
     },
-    /// In each country, the clean city with the most adversary ambassadors
-    /// (ties: lower hex number) gains `amount` more.
-    Infiltrate {
-        amount: i64,
+    /// 138, the one creation shape: "create `count` per board on the
+    /// lowest-numbered `at` [`if`]": in each country in scope, the `sites`
+    /// lowest-numbered matching sites each gain `count` adversary ambassadors.
+    Create {
+        count: i64,
+        at: CreateAt,
+        #[serde(default, rename = "if", skip_serializing_if = "CreateIf::is_any")]
+        if_: CreateIf,
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        sites: i64,
     },
-    /// The adversary spreads now.
-    AdversarySpread,
+    /// 138, site creation: in each country in scope, a neutral `kind` on its
+    /// lowest-numbered empty station site (a station) or free industrial zone
+    /// (a factory).
+    CreateSite {
+        kind: Facility,
+    },
+    /// 138, Corrupt X: in each country in scope, every `site` that can gather
+    /// its corrupt number (`adversary.corrupt_*`, less `cut`) of adversary
+    /// ambassadors with one move each (on it and next to it, in its country)
+    /// pulls them in, lowest-numbered hexes first, and corrupts.
+    Corrupt {
+        site: CorruptSite,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        cut: i64,
+    },
     /// Every player sacrifices one of their ambassadors (supply or board)
     /// or one of their nodes (their choice).
     Sacrifice,
-    /// Every botnet makes `amount` adversary ambassadors on its hex.
-    BotnetAmbassadors {
-        amount: i64,
-    },
-    /// Every clean city gains `amount` adversary ambassadors.
-    CleanCityAmbassadors {
-        amount: i64,
-    },
     /// Remove `count` botnets anywhere on the board, one at a time (players choose).
     RemoveBotnets {
         count: i64,
@@ -887,8 +936,8 @@ pub enum Op {
     UnityBonus {
         amount: i64,
     },
-    /// The adversary's spread places no ambassador on hexes holding your nodes.
-    SpreadShield,
+    /// 138: corruption never destroys your nodes (Sanctuary; was the spread shield).
+    CorruptionShield,
     /// Once a round, prevent the first facility or node destruction in a country
     /// where you have a node.
     CivicShelter,
@@ -918,34 +967,6 @@ pub enum Op {
     },
 
     // ---------- twists: read while the adversary card is current ----------
-    /// Each corrupted city builds `amount` more (`ongoing_use`: while its project stands).
-    CityBuild {
-        amount: i64,
-        #[serde(default, skip_serializing_if = "is_false")]
-        ongoing_use: bool,
-    },
-    /// Factories next to clean cities build `amount` too.
-    CleanFactories {
-        amount: i64,
-    },
-    /// Each corrupted research station builds `amount`.
-    StationBuild {
-        amount: i64,
-    },
-    /// Spread reaches `amount` hexes further.
-    SpreadReach {
-        amount: i64,
-    },
-    /// The round's arrivals (027): every matching site in every country gains
-    /// `adversary.arrivals` adversary ambassadors in the build, whatever the
-    /// board holds.
-    Arrivals {
-        site: Site,
-    },
-    /// Cities corrupt at `amount` fewer ambassadors.
-    CorruptSooner {
-        amount: i64,
-    },
     /// This round is a war round.
     War,
     /// Every adversary troop takes `amount` more steps this round.
@@ -987,8 +1008,7 @@ impl Op {
             | Op::LoseAmbassador
             | Op::LoseTokens { .. }
             | Op::DealThreats { .. } => &[Threat, Team],
-            Op::Ambassadors { .. }
-            | Op::Requisition { .. }
+            Op::Requisition { .. }
             | Op::DiscardMostExpensive
             | Op::ComputePerMissing { .. }
             | Op::DestroyFacility { .. }
@@ -1006,14 +1026,13 @@ impl Op {
             | Op::FreePurchases { .. }
             | Op::CounterAll
             | Op::Pushback { .. }
-            | Op::Infiltrate { .. }
-            | Op::AdversarySpread
             | Op::Sacrifice
-            | Op::CleanCityAmbassadors { .. }
             | Op::RemoveBotnets { .. }
             | Op::StandingTroopsBonus { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
-            Op::BotnetAmbassadors { .. } => &[Team, Twist],
+            Op::Create { .. } => &[Threat, Team],
+            Op::Corrupt { .. } => &[Threat, Team, Twist],
+            Op::CreateSite { .. } => &[Player, Threat, Team],
             Op::Income { .. }
             | Op::IncomePerTag { .. }
             | Op::BuildingDiscount { .. }
@@ -1026,21 +1045,14 @@ impl Op {
             | Op::ProjectDrain { .. }
             | Op::AutoCounter { .. }
             | Op::UnityBonus { .. }
-            | Op::SpreadShield
+            | Op::CorruptionShield
             | Op::CivicShelter
             | Op::Wall
             | Op::Patience
             | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
-            Op::CityBuild { .. } => &[Twist, Team],
-            Op::TroopSteps { .. }
-            | Op::CleanFactories { .. }
-            | Op::StationBuild { .. }
-            | Op::SpreadReach { .. }
-            | Op::CorruptSooner { .. }
-            | Op::Arrivals { .. }
-            | Op::War => &[Twist],
+            Op::TroopSteps { .. } | Op::War => &[Twist],
             Op::GainPerNode { .. }
             | Op::ChoosePlayer
             | Op::OtherGain { .. }

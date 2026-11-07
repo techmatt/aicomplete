@@ -34,7 +34,10 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
 /// hex in its home country).
 pub fn node_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let mine = node(seat);
-    let free = |h: usize| !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, MARKER) == 0;
+    // 138: no node goes on land corruption.
+    let free = |h: usize| {
+        !is_ocean(w, h) && node_owner(g, h).is_none() && g.tokens(h, MARKER) == 0 && g.tokens(h, LAND_CORRUPTION) == 0
+    };
     if node_count(g, seat) == 0 {
         let c = home_country(w, seat);
         return w.map.countries[c]

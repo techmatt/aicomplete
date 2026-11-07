@@ -84,7 +84,7 @@ There is no "build a factory" standard action: cities build factories.
 | 1 | `alignment.sway` | AI boards sway |
 | 2 | `adversary.event` | The face-up event card becomes this round's ([adversary.md](adversary.md)) |
 | 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
-| 4–6 | `adversary.build`, `.spread`, `.corrupt` | The rest of the card (standing lines, twists, arrivals and build, Escalation), ongoing projects, botnet compute onto the projects; spread; corrupt |
+| 4–6 | `adversary.build`, `.corrupt`, `.natural` | The rest of the card (standing lines and creation lines, twists), the board's creation line, ongoing projects, botnet compute onto the projects; the card's Corrupt lines; natural corruption |
 | 7 | `board.march` | The adversary troops march ([war.md](war.md)): `troop_steps` steps each, move or destroy |
 | 8 | `adversary.reveal` | Next round's card face up |
 | 9–12 | `cards.tier`, `.deal`, `.draft`, `.keep` | Round 1: the opening deal and keep. Later: build the draft hand card by card (tier each), draft, keep ([player-cards.md](player-cards.md)) |

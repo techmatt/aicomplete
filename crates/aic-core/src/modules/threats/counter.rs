@@ -52,8 +52,11 @@ pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<Cou
     } else {
         (0, 0)
     };
-    def(w, threat)
-        .counters
+    // 138: every resource counter item of a tier-N threat costs `counter_pct[N-1]` percent of its printed amount
+    // (rounded up), at every difficulty.
+    let d = def(w, threat);
+    let pct = w.list("adversary.counter_pct").get(d.tier as usize - 1).copied().unwrap_or(100);
+    d.counters
         .iter()
         .enumerate()
         .map(|(k, option)| {
@@ -62,7 +65,8 @@ pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<Cou
                 .map(|item| match *item {
                     CounterItem::Pay { resource, amount } => {
                         let first = if k == 0 && resource == Resource::Credits { bonus } else { 0 };
-                        CounterItem::Pay { resource, amount: (amount + first + all - cut).max(0) }
+                        let scaled = (amount * pct + 99) / 100;
+                        CounterItem::Pay { resource, amount: (scaled + first + all - cut).max(0) }
                     }
                     other => other,
                 })

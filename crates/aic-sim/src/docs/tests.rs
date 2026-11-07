@@ -28,9 +28,9 @@ fn row(block: &str, first: &str) -> Vec<String> {
 #[test]
 fn the_round_cap_comes_from_the_engines_deal() {
     let base = round_cap_block(&baseline(&[]));
-    // At the baseline: 4, 5, 2 cards; difficulty 2 swaps a stage-I card for a stage-III.
-    assert_eq!(row(&base, "0"), ["0", "4", "5", "2", "5", "11"]);
-    assert_eq!(row(&base, "2"), ["2", "3", "5", "3", "4", "11"]);
+    // At the baseline (138): 4, 4, 3 cards; difficulty 2 swaps a stage-I card for a stage-III.
+    assert_eq!(row(&base, "0"), ["0", "4", "4", "3", "5", "11"]);
+    assert_eq!(row(&base, "2"), ["2", "3", "4", "4", "4", "11"]);
     let shorter = round_cap_block(&baseline(&["adversary.stage_cards=4,4,2"]));
     assert_eq!(row(&shorter, "0")[5], "10");
     let harsher = round_cap_block(&baseline(&["adversary.stage1_removed=2"]));

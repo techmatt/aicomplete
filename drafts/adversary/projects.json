@@ -227,11 +227,14 @@
    ],
    "cost": 11,
    "ongoing": true,
-   "text": "Ongoing: every round, every clean city gains 1 adversary ambassador.",
+   "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities.",
    "effects": [
     {
-     "op": "clean_city_ambassadors",
-     "amount": 1
+     "op": "create",
+     "count": 1,
+     "at": "city",
+     "if": "clean",
+     "sites": 2
     }
    ],
    "harms": [
@@ -250,10 +253,15 @@
    ],
    "cost": 18,
    "ongoing": false,
-   "text": "In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted.",
+   "text": "Corrupt cities (1 fewer).",
    "effects": [
     {
      "op": "corrupt_city"
+    },
+    {
+     "op": "corrupt",
+     "site": "city",
+     "cut": 1
     }
    ],
    "harms": [
@@ -303,11 +311,13 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Every botnet makes 2 adversary ambassadors on its hex.",
+   "text": "Each board: create 2 adversary ambassadors on each of the 2 lowest-numbered botnet hexes.",
    "effects": [
     {
-     "op": "botnet_ambassadors",
-     "amount": 2
+     "op": "create",
+     "count": 2,
+     "at": "botnet",
+     "sites": 2
     }
    ],
    "harms": [
@@ -535,13 +545,14 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "The adversary builds and spreads now; sway 2 toward Discord.",
+   "text": "The adversary builds now, then Corrupt cities; sway 2 toward Discord.",
    "effects": [
     {
      "op": "adversary_build"
     },
     {
-     "op": "adversary_spread"
+     "op": "corrupt",
+     "site": "city"
     },
     {
      "op": "sway",
@@ -566,7 +577,7 @@
    ],
    "cost": 14,
    "ongoing": true,
-   "text": "Ongoing: every round, sway 2 toward Discord, remove 1 Unity from the Unity track, and corrupted cities build 1 more.",
+   "text": "Ongoing: every round, sway 2 toward Discord, remove 1 Unity from the Unity track. Each board: create 1 adversary ambassador on the lowest-numbered corrupted city.",
    "effects": [
     {
      "op": "sway",
@@ -578,9 +589,10 @@
      "amount": 1
     },
     {
-     "op": "city_build",
-     "amount": 1,
-     "ongoing_use": true
+     "op": "create",
+     "count": 1,
+     "at": "city",
+     "if": "adversary"
     }
    ],
    "harms": [

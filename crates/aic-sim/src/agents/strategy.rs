@@ -151,7 +151,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::HardenAction { .. }
                 | Op::ShieldNode { .. }
                 | Op::CivicShelter
-                | Op::SpreadShield
+                | Op::CorruptionShield
         )
     });
     c[8] = any(&|o| matches!(o, Op::Draw { .. }));

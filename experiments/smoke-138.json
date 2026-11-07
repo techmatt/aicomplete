@@ -1,0 +1,24 @@
+{
+  "name": "smoke-138",
+  "note": "138 engine smoke (dev seeds 36800-36807): Corrupt X and bounded arrivals at 1-4 countries, greedy and strategist, d0 and d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "c1", "set": ["countries=1"]},
+    {"name": "c2", "set": []},
+    {"name": "c3", "set": ["countries=3"]},
+    {"name": "c4", "set": ["countries=4"]}
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "greedy",
+    "strategist"
+  ],
+  "games": 8,
+  "first_seed": 36800,
+  "records": 0
+}

@@ -8,7 +8,7 @@ The source of truth is drafts/adversary/*.json (format: experiments/results/134_
 keeps the fields the engine reads and drops the review ones: every op loses `new` and `why`; cards lose `value`,
 `check`, `flags` and `reuses`; pulls lose `per` (always "country"); a board rule's entries with no `op` (notes naming
 today's rules) are dropped; the board's `build` numbers are not written (configs/baseline.json `adversary.*` is their
-one home); an event's `arrivals` becomes its last twist, `{"op": "arrivals", "site": ...}`.
+one home); the board's `creates` (its creation lines, 138) become its `build`.
 """
 
 import json
@@ -52,14 +52,12 @@ def project(c):
 
 
 def event(c):
+    if "arrivals" in c or "escalation" in c:
+        raise SystemExit(f"{c['id']}: arrivals and escalation are retired (138): print creation lines")
     twists = ops(c["twists"])
-    if c.get("arrivals"):
-        twists.append({"op": "arrivals", "site": c["arrivals"]})
     out = {"id": c["id"], "name": c["name"], "stage": c["stage"],
            "pulls": [{"tier": p["tier"], "tags": p["tags"]} for p in c["pulls"]],
            "standing": ops(c["standing"]), "twists": twists, "text": c["text"]}
-    if c.get("escalation"):
-        out["escalation"] = True
     out["harms"] = c["harms"]
     return out
 
@@ -68,7 +66,7 @@ def board(b):
     return {"id": b["id"], "name": b["name"], "project_slots": b["project_slots"],
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
-            "harms": b["harms"]}
+            "harms": b["harms"], "build": ops(b.get("creates"))}
 
 
 SACRIFICE = {"security": "Security", "diplomacy": "Diplomacy", "cyber": "Cyber", "industry": "Industry",
@@ -102,11 +100,10 @@ def cards_page(threats, projects, adversary):
     out += [f"## {b['name']} (board)", "", f"Project slots: {slots}.", ""]
     for r in b["rules"]:
         out.append(f"- **{r['name']}.** {r['text']}")
-    out += [f"- **Difficulty.** {b['difficulty']['text']}", ""]
+    out += [f"- **Build.** {b['build_text']}", f"- **Difficulty.** {b['difficulty']['text']}", ""]
     out += ["## Event deck", "", "| Card | Stage | Text |", "|---|---|---|"]
     for e in adversary["events"]:
-        esc = " Escalation." if e.get("escalation") else ""
-        out.append(f"| {cell(e['name'])} | {e['stage']} | {cell(e['text'])}{esc} |")
+        out.append(f"| {cell(e['name'])} | {e['stage']} | {cell(e['text'])} |")
     for tier in (1, 2, 3):
         out += ["", f"## Threats, tier {tier}", "", "| Threat | Tags | Locations | If not countered | Counter (one of) |",
                 "|---|---|---|---|---|"]
@@ -128,9 +125,11 @@ def build():
     projects = [project(c) for c in read("projects.json")["cards"]]
     mil = read("militarist.json")
     adversary = {"board": board(mil["board"]), "events": [event(e) for e in mil["events"]]}
+    page = {"board": dict(adversary["board"], build_text=mil["board"].get("creates_text", "")),
+            "events": adversary["events"]}
     return {"content/threats.json": dump(threats), "content/projects.json": dump(projects),
             "content/adversary.json": dump(adversary),
-            "docs/adversary-cards.md": cards_page(threats, projects, adversary)}
+            "docs/adversary-cards.md": cards_page(threats, projects, page)}
 
 
 def dump(data):

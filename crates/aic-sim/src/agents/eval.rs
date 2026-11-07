@@ -26,7 +26,8 @@ use aic_core::content::{CardDef, Op, Resource, Side, TagOrAny, RESOURCES, TAGS};
 use aic_core::modules::common::{
     self, ADV_AMBASSADOR, ADV_CUBE, FACTORY, HARDEN, STATION, TROOP,
 };
-use aic_core::modules::{adversary, ai, alignment, board, cards, economy, threats};
+use aic_core::modules::{adversary, ai, alignment, board, cards, economy, plan, threats};
+use aic_core::op::CorruptSite;
 use aic_core::key::Fnv;
 use aic_core::{GameState, Key, Rules};
 use serde::{Deserialize, Serialize};
@@ -345,6 +346,10 @@ pub struct Weights {
     /// is worth less `node`, and the seat's `node_danger` reads its nodes less
     /// the exposed ones (a corrupting city takes its whole cluster).
     pub node_exposure: f64,
+    /// 138: a player's research station or factory filling toward its
+    /// Corrupt number (what it holds, plus next door when a gathering line is
+    /// ahead) costs this share of `pressure` (0: off; cities always count).
+    pub site_pressure: f64,
     /// 137: each adversary city, station or factory a player ambassador stands
     /// on, blocking its output (a city's diversion, a station's compute, a
     /// factory's troop): about a round's output.
@@ -550,6 +555,7 @@ impl Default for Weights {
             energy_idle: 0.2,
             cube_target: 1.0,
             node_exposure: 0.0,
+            site_pressure: 1.0,
             block: 4.0,
             armor: 1.0,
         }
@@ -628,7 +634,6 @@ pub struct Eval {
     seats: usize,
     /// Unity tip count the team aims for: the deck's last card.
     target_tips: i64,
-    corrupt_at: i64,
     city_energy: i64,
     aligned_bonus: i64,
     tip_per_player: i64,
@@ -801,7 +806,6 @@ impl Eval {
             id: next_eval_id(),
             seats,
             target_tips,
-            corrupt_at: world.int("adversary.corrupt_at"),
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
@@ -1036,37 +1040,23 @@ impl Eval {
         w.credits * n.min(cap) + w.credit_idle * (n - cap).max(0.0)
     }
 
-    /// The next corrupt step's threshold, read off the face-up card (public).
-    fn corrupt_threshold(&self, rules: &Rules, g: &GameState) -> i64 {
+    /// The next corrupt step's number for `site`, read off the card ahead
+    /// (public), and whether a Corrupt line there gathers from next door (138).
+    fn corrupt_threshold(&self, rules: &Rules, g: &GameState, site: CorruptSite) -> (i64, bool) {
+        plan::next_corrupt_n(&rules.world(), g, site)
+    }
+
+    /// What site `h` would count toward corrupting: its own adversary
+    /// ambassadors (and a city's markers), plus, with a gathering line ahead,
+    /// those next to it in its country (138).
+    fn toward(rules: &Rules, t: &[HexTokens], h: usize, gather: bool) -> i64 {
         let world = rules.world();
-        let content = world.content;
-        // Between this round's build and reveal the face-up slot is empty: until
-        // this round's corrupt step has run, the corrupt step ahead is this
-        // round's card's (020: it read nothing, so a Fifth Column round's spread
-        // choices were judged at the normal threshold).
-        let corrupt_ahead = g
-            .config
-            .round
-            .iter()
-            .position(|p| p == "adversary.corrupt")
-            .is_some_and(|i| g.phase <= i);
-        let card = match g.pile(adversary::NEXT).first() {
-            None if corrupt_ahead => g.pile(adversary::CURRENT).first(),
-            next => next,
-        };
-        let sooner: i64 = card
-            .and_then(|id| content.adversary_index(id))
-            .map_or(0, |i| {
-                content.adversary[i]
-                    .twists
-                    .iter()
-                    .filter_map(|t| match t {
-                        Op::CorruptSooner { amount } => Some(*amount),
-                        _ => None,
-                    })
-                    .sum()
-            });
-        (self.corrupt_at - sooner).max(1)
+        let mut n = t[h].adv_ambassador + if common::is_city(&world, h) { t[h].marker } else { 0 };
+        if gather {
+            let c = world.map.hexes[h].country;
+            n += world.map.hexes[h].neighbors.iter().filter(|&&x| world.map.hexes[x].country == c).map(|&x| t[x].adv_ambassador).sum::<i64>();
+        }
+        n
     }
 
     /// Each seat's reach as a bit per hex (a board has at most 4 × 16 hexes),
@@ -1099,7 +1089,10 @@ impl Eval {
             };
         }
         let world = rules.world();
-        let corrupt_at = self.corrupt_threshold(rules, g);
+        let (corrupt_at, gather) = self.corrupt_threshold(rules, g, CorruptSite::City);
+        // 138: a player's research station or factory corrupts too, by its own number.
+        let (station_at, station_gather) = self.corrupt_threshold(rules, g, CorruptSite::Station);
+        let (factory_at, factory_gather) = self.corrupt_threshold(rules, g, CorruptSite::Factory);
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
@@ -1148,8 +1141,9 @@ impl Eval {
                         // to the seats that could buy its energy, until it is cleared.
                         v -= w.city_dark;
                     }
-                    // 034: a corruption marker counts toward corrupting.
-                    let toward = adv + t.marker;
+                    // 034: a corruption marker counts toward corrupting; 138: so do
+                    // the ambassadors next door when a gathering Corrupt line is ahead.
+                    let toward = Self::toward(rules, &tokens, h, gather);
                     if w.node_exposure > 0.0 && toward > 0 {
                         let r = ((toward + 1) as f64 / corrupt_at.max(1) as f64).min(1.0);
                         risky.push((h, r * r));
@@ -1201,6 +1195,9 @@ impl Eval {
                     let s = (0..self.seats).find(|&s| t.cube[s] > 0).unwrap_or(0);
                     stations[s] += 1;
                     v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
+                    // 138: a player's station filling toward its Corrupt number.
+                    let p = (Self::toward(rules, &tokens, h, station_gather) as f64 / station_at.max(1) as f64).min(1.0);
+                    v -= w.site_pressure * (w.station + w.station_flip) * w.pressure * p * p;
                 }
             }
             v += w.factory * t.factory as f64 + w.harden * t.harden as f64;
@@ -1213,6 +1210,9 @@ impl Eval {
                     }
                 } else if owned {
                     v += w.owned_factory;
+                    // 138: a player's factory filling toward its Corrupt number.
+                    let p = (Self::toward(rules, &tokens, h, factory_gather) as f64 / factory_at.max(1) as f64).min(1.0);
+                    v -= w.site_pressure * 2.0 * w.owned_factory * w.pressure * p * p;
                 }
             }
             // 137: your own ambassador on your own piece's hex is armor.
@@ -1247,7 +1247,8 @@ impl Eval {
             v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
         }
         let mut thin = i64::MAX;
-        let blast = if risky.is_empty() { 0 } else { world.int("board.corruption_reach") as i32 };
+        // 138: corruption destroys only a node on the corrupted hex itself.
+        let blast = 0;
         for s in 0..self.seats {
             let mut count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
             if !risky.is_empty() {

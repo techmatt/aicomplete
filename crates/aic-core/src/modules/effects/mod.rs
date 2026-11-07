@@ -244,7 +244,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 cx.add_resource(g, s, *resource, -k);
             }
         }
-        Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope),
+        Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope)?,
         Op::DestroyNode => team::destroy_node(g, cx, ctx),
         Op::EachDestroyNode { count } => team::each_destroy_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
@@ -256,11 +256,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
 
         // Threats.
-        Op::Ambassadors { at, count, cancel: false, each: false }
-            if matches!(at, Spot::PlayerPieces | Spot::CleanCities | Spot::Factories | Spot::Bases) =>
-        {
-            threats::place_ambassadors(g, cx, &ctx.hexes(&w, g), *at, *count, ctx.why.as_deref())?
-        }
         Op::Flag { name, scope: None, rounds: 1, everywhere: false } => {
             // Threats execute after production and upkeep: the flag lasts through
             // the next round (cleanup counts it down), or it would never land (020).
@@ -301,15 +296,11 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
-        Op::Infiltrate { amount } => adversary::infiltrate(g, cx, *amount),
-        Op::AdversarySpread => adversary::spread(g, cx, None)?,
         Op::Sacrifice => {
             for s in ctx.seats(&w, g) {
                 alignment::sacrifice(g, cx, s)?;
             }
         }
-        Op::BotnetAmbassadors { amount } => team::botnet_ambassadors(g, cx, *amount),
-        Op::CleanCityAmbassadors { amount } => team::clean_city_ambassadors(g, cx, *amount),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
 
         // 135: the new adversary model's ops, and the old ops with a new field set.
@@ -317,7 +308,9 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::FlipStation { .. }
         | Op::CorruptCity { .. }
         | Op::PlayersLose { .. }
-        | Op::Ambassadors { .. }
+        | Op::Create { .. }
+        | Op::CreateSite { .. }
+        | Op::Corrupt { .. }
         | Op::Flag { .. }
         | Op::Requisition { .. }
         | Op::LoseNodeOr { .. }
@@ -351,19 +344,13 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::ProjectDrain { .. }
         | Op::AutoCounter { .. }
         | Op::UnityBonus { .. }
-        | Op::SpreadShield
+        | Op::CorruptionShield
         | Op::CivicShelter
         | Op::Wall
         | Op::Patience
         | Op::SupplyInsight { .. }
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
-        | Op::CityBuild { .. }
-        | Op::CleanFactories { .. }
-        | Op::StationBuild { .. }
-        | Op::SpreadReach { .. }
-        | Op::CorruptSooner { .. }
-        | Op::Arrivals { .. }
         | Op::StandingTroopsBonus { .. }
         | Op::TroopSteps { .. }
         | Op::War => unreachable!("{e:?} is read, not resolved"),

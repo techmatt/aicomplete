@@ -325,7 +325,7 @@ function adversary(a) {
   return frameless('adversary', a, {
     tier: a.stage,
     tierLabel: `Stage ${a.stage}`,
-    keywords: a.escalation ? ['escalation'] : [],
+    keywords: [],
     ops: { twists: a.twists },
   });
 }

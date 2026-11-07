@@ -11,7 +11,6 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Cordon => "Cordon: no arrivals land here this round",
         RoundFlag::PowerDown => "Power down: players near it can't use Actions that cost energy",
         RoundFlag::StationOutage => "Station outage: players near it make no research cubes",
-        RoundFlag::DoubleSpread => "Propaganda: the adversary's next spread here happens twice",
         RoundFlag::DoubleBuild => "Blockade: the next adversary build on or next to it happens twice",
         RoundFlag::StationDark => "Stations dark: research stations on or next to it make no research cubes",
         RoundFlag::GridDown => "Grid down: cities and stations on or next to it produce nothing",

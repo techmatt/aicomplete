@@ -66,7 +66,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("troop_steps", 0, 5, "steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest"),
             ParamSpec::int("troop_node", 0, 4, "adversary troops strike nodes from this stage of adversary card on (0: always, 4: never)"),
             ParamSpec::int("node_marker", 0, 1, "1: a destroyed node leaves a corruption marker on its hex"),
-            ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys nodes within this many hexes of it"),
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
@@ -101,7 +100,7 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 11] = [
+pub const FLAGS: [RoundFlag; 10] = [
     RoundFlag::Blackout,
     RoundFlag::Sabotage,
     RoundFlag::Shelter,
@@ -109,7 +108,6 @@ pub const FLAGS: [RoundFlag; 11] = [
     RoundFlag::Cordon,
     RoundFlag::PowerDown,
     RoundFlag::StationOutage,
-    RoundFlag::DoubleSpread,
     RoundFlag::DoubleBuild,
     RoundFlag::StationDark,
     RoundFlag::GridDown,
@@ -150,17 +148,6 @@ pub fn seat_flagged(g: &GameState, f: RoundFlag, s: usize) -> bool {
 /// board's powers.
 pub fn powered_down(g: &GameState, s: usize) -> bool {
     seat_flagged(g, RoundFlag::PowerDown, s)
-}
-
-/// 135 (Propaganda Ministry): whether the adversary's spread in country `c`
-/// runs twice this time; the flag is used up by the spread that reads it.
-pub fn take_double_spread(g: &mut GameState, cx: &mut Cx, c: usize) -> bool {
-    if !flagged(g, RoundFlag::DoubleSpread, c) {
-        return false;
-    }
-    cx.set_key(g, &flag(RoundFlag::DoubleSpread, c), 0);
-    cx.tally(g, "board.double_spreads", 1);
-    true
 }
 
 /// 135 (Trade Blockade): whether the adversary's build on hex `h` happens

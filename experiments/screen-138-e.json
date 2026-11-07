@@ -1,0 +1,29 @@
+{
+  "name": "screen-138-e",
+  "note": "138 screen E (dev seeds 36800-36815, 16 a cell, the three pairs, d0-d2), on r57 frozen (base, threat_nodes 1,1,2): an uncountered threat's node harm raised, H123 (threat_nodes 1,2,3) and H223 (2,2,3), for the done-when 'uncountered threats take more nodes than corruption'.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_H123", "set": ["adversary.threat_nodes=1,2,3"]},
+    {"name": "br_H123", "set": ["ai.boards=0,2", "adversary.threat_nodes=1,2,3"]},
+    {"name": "pr_H123", "set": ["ai.boards=1,2", "adversary.threat_nodes=1,2,3"]},
+    {"name": "bp_H223", "set": ["adversary.threat_nodes=2,2,3"]},
+    {"name": "br_H223", "set": ["ai.boards=0,2", "adversary.threat_nodes=2,2,3"]},
+    {"name": "pr_H223", "set": ["ai.boards=1,2", "adversary.threat_nodes=2,2,3"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

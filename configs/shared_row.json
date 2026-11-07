@@ -29,7 +29,6 @@
         "troop_steps": 2,
         "troop_node": 4,
         "node_marker": 1,
-        "corruption_reach": 1,
         "war_reach": 0,
         "station_chips": 2,
         "factory_chips": 1,
@@ -60,15 +59,32 @@
         "difficulty": 0,
         "stage_cards": [
           4,
-          5,
-          2
+          4,
+          3
         ],
         "supply_per_country": 24,
-        "city_build": 2,
-        "factory_build": 0,
-        "spread_range": 2,
         "corrupt_at": 4,
-        "escalation_ambassadors": 1,
+        "corrupt_station_at": 3,
+        "corrupt_factory_at": 3,
+        "corrupt_land_at": 3,
+        "corrupt_cut": [
+          1,
+          1,
+          1,
+          0
+        ],
+        "corrupt_cut_at": 2,
+        "blight_discord": 1,
+        "threat_nodes": [
+          1,
+          2,
+          3
+        ],
+        "counter_pct": [
+          150,
+          150,
+          150
+        ],
         "counter_bonus": 0,
         "counter_bonus_all": 0,
         "extra_threats": 1,
@@ -79,7 +95,6 @@
         "build_bonus": 1,
         "tier2_early": 1,
         "discord_removed": 1,
-        "arrivals": 1,
         "wall_troops": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
@@ -327,8 +342,8 @@
     "adversary.event",
     "threats.deal",
     "adversary.build",
-    "adversary.spread",
     "adversary.corrupt",
+    "adversary.natural",
     "board.march",
     "adversary.reveal",
     "cards.tier",

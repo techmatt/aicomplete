@@ -81,7 +81,6 @@ fn lab_config(round: &[&str]) -> Config {
         // The board starts empty: no node is no loss here.
         "alignment.node_loss=0",
         // Rule tests read these numbers, not the calibration.
-        "adversary.city_build=2",
         "adversary.botnet_compute=3",
         "board.ambassador_discord=1",
         "board.troop_node=0",
@@ -92,9 +91,10 @@ fn lab_config(round: &[&str]) -> Config {
         "board.last_safe_stage=0",
         "board.troop_steps=2",
         "board.troop_spent=1",
-        // The build adds nothing unasked and asks nothing: no arrivals, no
-        // Wall-pressure landing (080). Pin any new build-step choice off here.
-        "adversary.arrivals=0",
+        // The build asks nothing: no Wall-pressure landing (080). Pin any new
+        // build-step choice off here. (138: the board's creation line lands
+        // only on adversary cities, which a lab board has none of until a test
+        // puts one.)
         "adversary.wall_troops=0",
         // 021: no credits, so no neutral city's energy is bought unasked.
         "ai.start_credits=0",
@@ -379,7 +379,9 @@ fn threat_lab() -> (Rules, GameState) {
 /// `threat_lab` with overrides on top: a test pins the card numbers it reads.
 fn threat_lab_with(sets: &[&str]) -> (Rules, GameState) {
     let mut c = lab_config(&[ACTIONS, "threats.execute"]);
-    for o in sets {
+    // 138: the threat tests read the printed counters and harms; the
+    // calibration dials have their own tests.
+    for o in ["adversary.counter_pct=100,100,100", "adversary.threat_nodes=0,0,0"].iter().chain(sets) {
         c.apply_override(o).unwrap();
     }
     let rules = Rules::new(&c).unwrap();
@@ -558,9 +560,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 56;
-const GOLDEN_FINGERPRINT: &str = "96cb7a99082b489f";
-const GOLDEN_CONTENT_HASH: &str = "83961fd41df59b75";
+const GOLDEN_REVISION: u32 = 57;
+const GOLDEN_FINGERPRINT: &str = "a842f85bc9b8e59f";
+const GOLDEN_CONTENT_HASH: &str = "b73aafe4db1e3995";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

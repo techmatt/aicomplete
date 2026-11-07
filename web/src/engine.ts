@@ -172,7 +172,7 @@ export interface CardDef { id: string; name: string; text: string; cost?: unknow
 /** One item of a threat's counter option (135): a resource, a tag sacrifice, or nodes near it. */
 export type CounterItem = { resource: string; amount: number } | { sacrifice: string; amount: number } | { nodes_near: number };
 export interface ThreatDef { id: string; name: string; tier: number; tags: string[]; locations: string[]; text: string; counters: CounterItem[][] }
-export interface AdversaryDef { id: string; name: string; stage: number; text: string; pulls?: { tier: number; tags: string[] }[]; twists: { op: string; amount?: number }[]; escalation?: boolean }
+export interface AdversaryDef { id: string; name: string; stage: number; text: string; pulls?: { tier: number; tags: string[] }[]; twists: { op: string; amount?: number }[] }
 export interface AiBoardDef {
   id: string;
   name: string;

@@ -58,7 +58,7 @@ fn the_supply_is_a_cap_not_a_loss() {
     g.vars.insert(SUPPLY.into(), 1);
     set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     run_answered(&rules, &mut g);
-    // 135: the card's standing infiltration and the city's build both ask; one lands.
+    // 138: the board's creation line asks 2 for the adversary city; one lands.
     assert_eq!(total(&g, ADV_AMBASSADOR), 1);
     assert_eq!(g.var(SUPPLY), 0);
     assert!(!g.is_over());
@@ -70,22 +70,6 @@ fn every_corrupted_city_is_no_loss() {
     corrupt_cities_except(&rules.map, &mut g, &[]);
     any_action(&rules, &mut g);
     assert!(!g.is_over());
-}
-
-#[test]
-fn a_card_brings_arrivals_to_every_site_it_names_a_round_ahead() {
-    let (rules, mut g) = lab_with(&["adversary.build"], &["adversary.arrivals=1"]);
-    g.vars.insert(SUPPLY.into(), 40);
-    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
-    let w = rules.world();
-    let plan = crate::modules::plan::next_build(&w, &g);
-    let coast = hexes_where(&rules.map, |h| rules.map.hexes[h].coastal);
-    assert_eq!(plan.iter().map(|&(h, _)| h).collect::<Vec<_>>(), coast);
-    assert_eq!(coast.len(), 4, "2 a country");
-    run_answered(&rules, &mut g);
-    for h in coast {
-        assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
-    }
 }
 
 /// 137: the Liberate action frees an adversary city for `liberate_at`
@@ -270,19 +254,6 @@ fn a_city_that_corrupts_destroys_node_on_it_and_leaves_no_marker() {
 }
 
 #[test]
-fn corruption_reach_takes_node_around_the_city() {
-    let (rules, mut g) = lab_with(&[], &["board.corruption_reach=1"]);
-    let h = rules.map.numbered(0, piece(0).cities[0]);
-    let n = rules.map.hexes[h].neighbors[0];
-    let far = rules.map.numbered(1, piece(1).cities[0]);
-    put(&mut g, n, node(0), 1);
-    put(&mut g, far, node(0), 1);
-    g.vars.insert(STAGE.into(), 2);
-    with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    assert_eq!((g.tokens(n, node(0)), g.tokens(n, MARKER)), (0, 1));
-}
-
-#[test]
 fn a_lost_node_leaves_the_game_and_its_income_stays() {
     use crate::modules::ai;
     let (rules, mut g) = lab(&[]);
@@ -317,7 +288,7 @@ fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
 
 #[test]
 fn a_marker_counts_toward_corrupting_a_city() {
-    let (rules, mut g) = lab_with(&["adversary.corrupt"], &["adversary.corrupt_at=2"]);
+    let (rules, mut g) = lab_with(&["adversary.natural"], &["adversary.corrupt_at=2"]);
     let h = rules.map.numbered(0, piece(0).cities[1]);
     put(&mut g, h, MARKER, 1);
     put(&mut g, h, ADV_AMBASSADOR, 1);

@@ -29,7 +29,14 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 cx.add_resource(g, s, *resource, -k.max(0));
             }
         }
-        Op::Ambassadors { at, count, cancel: _, each } => ambassadors(g, cx, ctx, *at, *count, *each)?,
+        Op::Create { .. } => {
+            let line = super::super::plan::CreateLine::of(e).expect("a creation line");
+            let near = if line.if_ == crate::op::CreateIf::Near { ctx.hexes(&w, g) } else { Vec::new() };
+            let location = token(&w, g, ctx, None);
+            adversary::create(g, cx, line, ctx.scope, &near, location, create_source(ctx));
+        }
+        Op::CreateSite { kind } => create_site(g, cx, ctx, *kind),
+        Op::Corrupt { site, cut } => adversary::corrupt_sites(g, cx, *site, *cut, ctx.scope),
         Op::Flag { name, scope, rounds, everywhere } => flag(g, cx, ctx, *name, *scope, *rounds, *everywhere),
         Op::Requisition { resource, amount, cards: n, next_round } => {
             requisition(g, cx, ctx, *resource, *amount, *n, *next_round)?
@@ -184,7 +191,9 @@ fn op_name(e: &Op) -> &'static str {
         Op::FlipStation { .. } => "flip_station",
         Op::CorruptCity { .. } => "corrupt_city",
         Op::PlayersLose { .. } => "players_lose",
-        Op::Ambassadors { .. } => "ambassadors",
+        Op::Create { .. } => "create",
+        Op::CreateSite { .. } => "create_site",
+        Op::Corrupt { .. } => "corrupt",
         Op::Flag { .. } => "flag",
         Op::Requisition { .. } => "requisition",
         Op::LoseNodeOr { .. } => "lose_node_or",
@@ -360,45 +369,51 @@ fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>, min
     }
 }
 
-/// Whether hex `h` is a piece of kind `at` (the placing spots).
-fn spot_fits(w: &World, g: &GameState, at: Spot, h: usize) -> bool {
-    match at {
-        Spot::PlayerPieces => player_owned(g, h),
-        Spot::CleanCities => clean_city(w, g, h),
-        Spot::Factories => g.tokens(h, FACTORY) > 0,
-        Spot::Bases => is_base(w, h),
-        Spot::CitiesNear => is_city(w, h) && !corrupted(g, h),
-        Spot::Location | Spot::City => false,
+/// Where a creation line comes from, for its tally (138): a threat, the
+/// event card (its standing lines), the board, a project, a Discord or Unity card.
+fn create_source(ctx: &Ctx) -> &'static str {
+    if ctx.threat.is_some() {
+        return "threat";
+    }
+    match ctx.label {
+        "standing" => "event",
+        "board" => "board",
+        "project" => "project",
+        "discord" => "discord",
+        "unity" => "unity",
+        _ => "other",
     }
 }
 
-/// Ambassadors (135): on the threat's token or its city; on each city near
-/// it (`cities_near`, `each`: `count` on every one, uncorrupted ones: the
-/// dark-city reading); or `count` among the pieces of kind `at` near it
-/// (players choose each). An ambassador arriving on a player's cancels it,
-/// as every arrival does (`cancel` names that).
-fn ambassadors(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Spot, count: i64, each: bool) -> Res {
+/// 138, site creation: in each country in scope, a neutral research station
+/// on the lowest-numbered empty printed station site, or a neutral factory on
+/// the lowest-numbered free industrial zone.
+fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
     let w = cx.world;
-    match at {
-        Spot::Location => {
-            if let Some(h) = token(&w, g, ctx, None) {
-                adversary::place(g, cx, h, count);
-            }
-        }
-        Spot::City => {
-            if let Some(h) = city_token(&w, g, ctx) {
-                adversary::place(g, cx, h, count);
-            }
-        }
-        _ if each || at == Spot::CitiesNear => {
-            let spots: Vec<usize> = ctx.hexes(&w, g).into_iter().filter(|&h| spot_fits(&w, g, at, h)).collect();
-            for h in spots {
-                adversary::place(g, cx, h, count);
-            }
-        }
-        _ => threats::place_ambassadors(g, cx, &ctx.hexes(&w, g), at, count, ctx.why.as_deref())?,
+    let zones = free_zones(&w, g);
+    for c in scope_countries(&w, ctx.scope) {
+        let mut spots: Vec<usize> = w.map.countries[c]
+            .hexes
+            .iter()
+            .copied()
+            .filter(|&h| match kind {
+                Facility::Station => w.map.hexes[h].station_site && !has_building(g, h) && node_owner(g, h).is_none(),
+                Facility::Factory => zones.contains(&h),
+            })
+            .collect();
+        spots.sort_by_key(|&h| w.map.hexes[h].number);
+        let Some(&h) = spots.first() else {
+            continue;
+        };
+        let (token, name) = match kind {
+            Facility::Station => (STATION, "research station"),
+            Facility::Factory => (FACTORY, "factory"),
+        };
+        cx.add_tokens(g, h, token, 1);
+        adversary::clear_markers_on(g, cx, h);
+        cx.tally(g, &format!("adversary.sites_created.{}", if kind == Facility::Station { "station" } else { "factory" }), 1);
+        cx.note(Some(h), || format!("A neutral {name} opens at {}", hex_name(&w, h)));
     }
-    Ok(())
 }
 
 /// Flag (135 fields): up for `rounds` more rounds (the var holds rounds + 1:

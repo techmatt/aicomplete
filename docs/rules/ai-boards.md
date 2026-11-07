@@ -89,7 +89,7 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 4 | +3 credits, Power tag (cost 1) | +3 credits, Diplomacy tag (cost 1) | +3 credits, Power tag (cost 1) |
 | 5 | +3 credits (cost 2) | +3 credits (cost 2) | +3 credits (cost 2) |
 | 6 | +3 credits (cost 3) | +2 credits (cost 3) | +3 credits (cost 3) |
-| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags you have. (cost 5) | **Sanctuary** (capstone): When the adversary spreads, it skips your nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
+| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags you have. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).

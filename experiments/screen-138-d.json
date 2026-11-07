@@ -1,0 +1,32 @@
+{
+  "name": "screen-138-d",
+  "note": "138 screen D (dev seeds 36800-36815, 16 a cell, the three pairs, d0-d2), on r57 frozen (base) as a factorial: U4 (alignment.tip_per_player=4, Unity tips slower), I3 (each board's credits -3: 21 / 19 / 17, data only: it reverses 137's lever), both.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_U4", "set": ["alignment.tip_per_player=4"]},
+    {"name": "br_U4", "set": ["ai.boards=0,2", "alignment.tip_per_player=4"]},
+    {"name": "pr_U4", "set": ["ai.boards=1,2", "alignment.tip_per_player=4"]},
+    {"name": "bp_I3", "set": ["ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]},
+    {"name": "br_I3", "set": ["ai.boards=0,2", "ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]},
+    {"name": "pr_I3", "set": ["ai.boards=1,2", "ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]},
+    {"name": "bp_U4I3", "set": ["alignment.tip_per_player=4", "ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]},
+    {"name": "br_U4I3", "set": ["ai.boards=0,2", "alignment.tip_per_player=4", "ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]},
+    {"name": "pr_U4I3", "set": ["ai.boards=1,2", "alignment.tip_per_player=4", "ais.builder.credits=21", "ais.protector.credits=19", "ais.researcher.credits=17"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

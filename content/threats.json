@@ -186,7 +186,7 @@
   "locations": [
    "base"
   ],
-  "text": "2 adversary ambassadors land on this base. Sway 1 toward Discord.",
+  "text": "In its country: create 2 adversary ambassadors on the lowest-numbered factory. Sway 1 toward Discord.",
   "counters": [
    [
     {
@@ -208,9 +208,9 @@
   ],
   "effects": [
    {
-    "op": "ambassadors",
-    "at": "location",
-    "count": 2
+    "op": "create",
+    "count": 2,
+    "at": "factory"
    },
    {
     "op": "sway",
@@ -233,7 +233,7 @@
   "locations": [
    "city"
   ],
-  "text": "2 adversary ambassadors land on clean cities near it. Sway 1 toward Discord.",
+  "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Sway 1 toward Discord.",
   "counters": [
    [
     {
@@ -256,9 +256,11 @@
   ],
   "effects": [
    {
-    "op": "ambassadors",
-    "at": "clean_cities",
-    "count": 2
+    "op": "create",
+    "count": 1,
+    "at": "city",
+    "if": "clean",
+    "sites": 2
    },
    {
     "op": "sway",
@@ -517,7 +519,7 @@
   "locations": [
    "station"
   ],
-  "text": "2 adversary ambassadors land on player-owned pieces near it. The adversary gains 2 compute.",
+  "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered player research stations. The adversary gains 2 compute.",
   "counters": [
    [
     {
@@ -540,9 +542,11 @@
   ],
   "effects": [
    {
-    "op": "ambassadors",
-    "at": "player_pieces",
-    "count": 2
+    "op": "create",
+    "count": 1,
+    "at": "station",
+    "if": "player",
+    "sites": 2
    },
    {
     "op": "compute",
@@ -1368,7 +1372,7 @@
   "locations": [
    "city"
   ],
-  "text": "If the city here holds 3 or more adversary ambassadors, it becomes corrupted. If not, 2 adversary ambassadors land on it.",
+  "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt cities (1 fewer).",
   "counters": [
    [
     {
@@ -1391,9 +1395,15 @@
   ],
   "effects": [
    {
-    "op": "corrupt_city",
-    "min_ambassadors": 3,
-    "else_ambassadors": 2
+    "op": "create",
+    "count": 2,
+    "at": "city",
+    "if": "ambassadors"
+   },
+   {
+    "op": "corrupt",
+    "site": "city",
+    "cut": 1
    }
   ],
   "harms": [
@@ -1414,7 +1424,7 @@
   "locations": [
    "city"
   ],
-  "text": "3 adversary ambassadors land on the city here, each canceling a player ambassador there. Sway 2 toward Discord.",
+  "text": "Create 3 adversary ambassadors here. Sway 2 toward Discord.",
   "counters": [
    [
     {
@@ -1437,10 +1447,9 @@
   ],
   "effects": [
    {
-    "op": "ambassadors",
-    "at": "location",
+    "op": "create",
     "count": 3,
-    "cancel": true
+    "at": "location"
    },
    {
     "op": "sway",
@@ -1518,7 +1527,7 @@
   "locations": [
    "city"
   ],
-  "text": "Each player near it loses 2 ambassadors. 2 adversary ambassadors land on player pieces near it.",
+  "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
   "counters": [
    [
     {
@@ -1535,15 +1544,17 @@
   ],
   "effects": [
    {
-    "op": "lose_ambassador"
+    "op": "create",
+    "count": 1,
+    "at": "factory",
+    "if": "player",
+    "sites": 2
    },
    {
     "op": "lose_ambassador"
    },
    {
-    "op": "ambassadors",
-    "at": "player_pieces",
-    "count": 2
+    "op": "lose_ambassador"
    }
   ],
   "harms": [
@@ -1562,7 +1573,7 @@
    "city",
    "coastal_city"
   ],
-  "text": "The adversary's next spread in this country happens twice. Sway 1 toward Discord.",
+  "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities. Sway 1 toward Discord.",
   "counters": [
    [
     {
@@ -1585,9 +1596,15 @@
   ],
   "effects": [
    {
-    "op": "flag",
-    "name": "double_spread",
-    "scope": "country"
+    "op": "create",
+    "count": 1,
+    "at": "city",
+    "if": "clean",
+    "sites": 2
+   },
+   {
+    "op": "corrupt",
+    "site": "city"
    },
    {
     "op": "sway",
@@ -2232,7 +2249,7 @@
    "city",
    "coastal_city"
   ],
-  "text": "Each city on or next to it gains 1 adversary ambassador, dark while it stands. Sway 1 toward Discord.",
+  "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Sway 1 toward Discord.",
   "counters": [
    [
     {
@@ -2249,10 +2266,11 @@
   ],
   "effects": [
    {
-    "op": "ambassadors",
-    "at": "cities_near",
+    "op": "create",
     "count": 1,
-    "each": true
+    "at": "city",
+    "if": "near",
+    "sites": 3
    },
    {
     "op": "sway",
@@ -2325,7 +2343,7 @@
    "base",
    "city"
   ],
-  "text": "1 troop lands on the base here and 2 adversary ambassadors on the city here. The adversary gains 2 compute.",
+  "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city on or next to it. 1 troop lands on the base here. The adversary gains 2 compute.",
   "counters": [
    [
     {
@@ -2342,15 +2360,16 @@
   ],
   "effects": [
    {
+    "op": "create",
+    "count": 2,
+    "at": "city",
+    "if": "near"
+   },
+   {
     "op": "troops",
     "count": 1,
     "at": "location",
     "location": "base"
-   },
-   {
-    "op": "ambassadors",
-    "at": "city",
-    "count": 2
    },
    {
     "op": "compute",

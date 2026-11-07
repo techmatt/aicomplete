@@ -30,6 +30,9 @@ pub const HARDEN: &str = "harden";
 pub const BOTNET: &str = "botnet";
 /// A corruption marker (034): what a destroyed node leaves on its hex.
 pub const MARKER: &str = "corruption";
+/// Land corruption (138): a rare hex token a Corrupt land line leaves on an
+/// empty land hex. No node may be placed there, and it drips Discord.
+pub const LAND_CORRUPTION: &str = "land_corruption";
 
 /// Seat keys are tables, not `format!`: the search asks for them on every hex
 /// of every position it scores (028: a tenth of the engine's time). A game has

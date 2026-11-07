@@ -22,9 +22,9 @@ Cities, research stations and factories follow one set of rules and differ only 
   covers the site and your node there.
 - **Claiming is symmetric** (the Claim action, [economy.md](economy.md)): a neutral site in reach with a site claim
   ([README.md](README.md#terms)), for as many ambassadors as the adversary's Corrupt X needs for that type:
-  `claim_city` 4 (today's `corrupt_at`), `claim_station` 2 and `claim_factory` 2 (the adversary's `station_flip_at`;
-  candidates until 138's Corrupt X), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
-  Difficulty will lower only the adversary's number. The bound city at setup is free ([board.md](board.md)).
+  `claim_city` 4 (Corrupt city's `corrupt_at` 4), `claim_station` 2 and `claim_factory` 2 (138: Corrupt X's are 3,
+  candidates; a question to Matt), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
+  Difficulty lowers only the adversary's number. The bound city at setup is free ([board.md](board.md)).
 - **Liberating an adversary site** (the Liberate action) takes massed ambassadors from one seat's supply and turns it
   neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
   for a station or factory, plus one for each adversary ambassador on it, which cancel. It needs the site **in

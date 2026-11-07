@@ -101,28 +101,15 @@ fn rng_draws_are_fixed_width_and_pinned() {
     assert_eq!(draws, GOLDEN_DRAWS);
 }
 
-/// A state waiting on a spread choice (players choose among equals).
-fn spread_choice() -> (Rules, GameState) {
-    let (rules, mut g) = lab(&["adversary.spread"]);
+/// A state waiting on a build choice: an event card's standing troops land on
+/// a factory of the players' choice (138: the spread's choice is gone).
+fn build_choice() -> (Rules, GameState) {
+    let (rules, mut g) = lab(&["adversary.build"]);
     let m = &rules.map;
-    let city = m.numbered(0, piece(0).corrupted[0]);
-    let far = cities(m)
-        .into_iter()
-        .find(|&h| m.distance(h, city) > 2)
-        .unwrap();
-    corrupt_cities_except(m, &mut g, &[far]);
-    put(&mut g, city, ADV_AMBASSADOR, 2);
-    // Two node next to it: equals, so the players choose.
-    let next: Vec<usize> = m.hexes[city]
-        .neighbors
-        .iter()
-        .copied()
-        .filter(|&h| kind(m, h) == HexKind::Open)
-        .take(2)
-        .collect();
-    for h in next {
-        put(&mut g, h, node(0), 1);
-    }
+    let open: Vec<usize> = hexes_where(m, |h| kind(m, h) == HexKind::Open && m.hexes[h].country == 0);
+    put(&mut g, open[0], FACTORY, 1);
+    put(&mut g, open[1], FACTORY, 1);
+    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     run(&rules, &mut g);
     assert!(g.pending.is_some());
     (rules, g)
@@ -130,7 +117,7 @@ fn spread_choice() -> (Rules, GameState) {
 
 #[test]
 fn malformed_and_mismatched_states_are_errors_not_panics() {
-    let (rules, g) = spread_choice();
+    let (rules, g) = build_choice();
     assert!(rules.check_state(&g).is_ok());
     // Mid-choice states survive JSON, and only answers are legal.
     let back: GameState = serde_json::from_str(&g.to_json()).unwrap();

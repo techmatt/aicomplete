@@ -2,184 +2,235 @@
 //! table, without doing it. Not a module: no phases, no state. Everything here
 //! reads public information only.
 //!
-//! The adversary's build step lives here (015's deferred call 9: the agents'
-//! heuristic used to copy it): `adversary::build_all` places what
-//! [`build_plan`] says, and the build's escalation what [`escalation_hexes`]
-//! says, so the forecast in [`next_build`] can't drift from the rule. The
-//! troops' forecast is `board::troop_plan`.
+//! The adversary's creation lines and its Corrupt X step live here (138; 015's
+//! deferred call 9: the agents' heuristic used to copy the build):
+//! `adversary::create` places what [`create_plan`] says and
+//! `adversary::corrupt_sites` corrupts what [`corrupt_plan`] says, so the
+//! forecasts in [`next_build`] and [`next_corruptions`] can't drift from the
+//! rule. The troops' forecast is `board::troop_plan`.
 
 use crate::content::{Op, RoundFlag};
-use crate::op::Site;
 use crate::module::World;
+use crate::op::{CorruptSite, CreateAt, CreateIf};
 use crate::state::GameState;
 
 use super::{adversary, board};
-use super::common::{clean_city, corrupted_city, corrupted_station, scope_hexes, BOTNET, FACTORY, STATION};
+use super::common::{
+    corrupted, cube_owner, has_building, is_city, is_ocean, ADV_AMBASSADOR, LAND_CORRUPTION, BOTNET, FACTORY, MARKER,
+    STATION,
+};
+use crate::content::HexKind;
 
-/// The sites `twists`' arrivals name, one per arrivals twist.
-fn arrival_sites<'t>(twists: &'t [&'t Op]) -> impl Iterator<Item = Site> + 't {
-    twists.iter().filter_map(|t| match t {
-        Op::Arrivals { site } => Some(*site),
-        _ => None,
-    })
+/// A creation line's printed words (138): `count` on each of the `sites`
+/// lowest-numbered `at` meeting `if_`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CreateLine {
+    pub count: i64,
+    pub at: CreateAt,
+    pub if_: CreateIf,
+    pub sites: i64,
 }
 
-/// What the adversary's build step places with `twists` in force, in country
-/// `scope` or everywhere: `(hex, ambassadors)` for every hex that gains any,
-/// in hex order. Each corrupted city gains `city_build` (plus `build_bonus`
-/// at difficulty 3 or more in play, plus city-build twists); each factory
-/// next to a corrupted city `factory_build`, and next to a clean city the
-/// clean-factory twists; each corrupted station the station twists; each
-/// site the card names its arrivals (027). The supply is not checked: the
-/// plan is what the step asks for.
-pub fn build_plan(
+impl CreateLine {
+    pub fn of(op: &Op) -> Option<CreateLine> {
+        match op {
+            Op::Create { count, at, if_, sites } => Some(CreateLine { count: *count, at: *at, if_: *if_, sites: *sites }),
+            _ => None,
+        }
+    }
+}
+
+/// Whether hex `h` is a site a creation line at `at` with `if_` lands on
+/// (`near`: the threat's hexes; `location`: its token).
+fn create_fits(w: &World, g: &GameState, h: usize, line: CreateLine, near: &[usize], location: Option<usize>) -> bool {
+    let site = match line.at {
+        CreateAt::City => is_city(w, h),
+        CreateAt::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
+        CreateAt::Station => g.tokens(h, STATION) > 0,
+        CreateAt::Factory => g.tokens(h, FACTORY) > 0,
+        CreateAt::Botnet => g.tokens(h, BOTNET) > 0,
+        CreateAt::Location => location == Some(h),
+    };
+    site && match line.if_ {
+        CreateIf::Any => true,
+        CreateIf::NoAmbassadors => g.tokens(h, ADV_AMBASSADOR) == 0,
+        CreateIf::Ambassadors => g.tokens(h, ADV_AMBASSADOR) > 0,
+        CreateIf::Clean => !corrupted(g, h),
+        CreateIf::Adversary => corrupted(g, h),
+        CreateIf::Player => cube_owner(g, h).is_some(),
+        CreateIf::Near => near.contains(&h),
+    }
+}
+
+/// What creation line `line` places in country `scope` or every country:
+/// `(hex, ambassadors)`, in hex order. In each country (not a cordoned one,
+/// 068) the `sites` lowest-numbered matching sites each gain `count`. The
+/// supply is not checked: the plan is what the line asks for.
+pub fn create_plan(
     w: &World,
     g: &GameState,
-    twists: &[&Op],
+    line: CreateLine,
     scope: Option<usize>,
+    near: &[usize],
+    location: Option<usize>,
 ) -> Vec<(usize, i64)> {
-    let sum = |f: fn(&Op) -> Option<i64>| -> i64 { twists.iter().filter_map(|t| f(t)).sum() };
-    let mut city = w.int("adversary.city_build");
-    if adversary::level(w, 3) {
-        city += w.int("adversary.build_bonus");
-    }
-    city += sum(|t| match t {
-        Op::CityBuild { amount, .. } => Some(*amount),
-        _ => None,
-    });
-    let clean = sum(|t| match t {
-        Op::CleanFactories { amount } => Some(*amount),
-        _ => None,
-    });
-    let stations = sum(|t| match t {
-        Op::StationBuild { amount } => Some(*amount),
-        _ => None,
-    });
-    let factory = w.int("adversary.factory_build");
-    let arrivals = w.int("adversary.arrivals");
-    let sites: Vec<Site> = arrival_sites(twists).collect();
+    let countries: Vec<usize> = match scope {
+        Some(c) => vec![c],
+        None => (0..w.map.countries.len()).collect(),
+    };
     let mut plan = Vec::new();
-    for h in scope_hexes(w, scope) {
-        let mut n = 0;
-        if corrupted_city(w, g, h) {
-            n += city;
+    for c in countries {
+        if board::flagged(g, RoundFlag::Cordon, c) {
+            continue;
         }
-        if g.tokens(h, FACTORY) > 0 {
-            let adj =
-                |pred: &dyn Fn(usize) -> bool| w.map.hexes[h].neighbors.iter().any(|&x| pred(x));
-            if adj(&|x| corrupted_city(w, g, x)) {
-                n += factory;
+        let mut hexes: Vec<usize> =
+            w.map.countries[c].hexes.iter().copied().filter(|&h| create_fits(w, g, h, line, near, location)).collect();
+        hexes.sort_by_key(|&h| w.map.hexes[h].number);
+        for h in hexes.into_iter().take(line.sites.max(0) as usize) {
+            if line.count > 0 {
+                plan.push((h, line.count));
             }
-            if adj(&|x| clean_city(w, g, x)) {
-                n += clean;
-            }
-        }
-        if corrupted_station(g, h) {
-            n += stations;
-        }
-        n += landing(w, g, h) * arrivals * sites.iter().filter(|&&s| is_site(w, g, h, s)).count() as i64;
-        if n > 0 {
-            plan.push((h, n));
         }
     }
+    plan.sort_unstable();
     plan
 }
 
-/// 1 if arrivals land on hex `h`, 0 in a cordoned country (068).
-fn landing(w: &World, g: &GameState, h: usize) -> i64 {
-    !board::flagged(g, RoundFlag::Cordon, w.map.hexes[h].country as usize) as i64
-}
-
-/// Whether hex `h` is a site of type `site`.
-fn is_site(w: &World, g: &GameState, h: usize, site: Site) -> bool {
+/// Whether hex `h` is a target of Corrupt `site` (not yet the adversary's;
+/// land: an empty land hex, no city, base, building or land corruption).
+pub fn corrupt_target(w: &World, g: &GameState, h: usize, site: CorruptSite) -> bool {
     match site {
-        Site::Coastal => w.map.hexes[h].coastal,
-        Site::Industrial => w.map.hexes[h].industrial,
-        Site::Stations => g.tokens(h, STATION) > 0,
-        Site::Factory => escalation_factory(w, g, w.map.hexes[h].country as usize) == Some(h),
+        CorruptSite::City => is_city(w, h) && !corrupted(g, h),
+        CorruptSite::Station => g.tokens(h, STATION) > 0 && !corrupted(g, h),
+        CorruptSite::Factory => g.tokens(h, FACTORY) > 0 && !corrupted(g, h),
+        CorruptSite::Land => {
+            !is_ocean(w, h) && w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
+        }
     }
 }
 
-/// 137: where Escalation lands in each country: its lowest-numbered factory
-/// (bases are front troop piles now; it was each country's first base).
-fn escalation_factory(w: &World, g: &GameState, c: usize) -> Option<usize> {
-    w.map.countries[c]
-        .hexes
-        .iter()
-        .copied()
-        .filter(|&h| g.tokens(h, FACTORY) > 0)
-        .min_by_key(|&h| w.map.hexes[h].number)
+/// What a city's corruption counts on its own hex (034: a marker counts).
+fn held(w: &World, g: &GameState, h: usize, counts: &[i64]) -> i64 {
+    counts[h] + if is_city(w, h) { g.tokens(h, MARKER) } else { 0 }
 }
 
-/// How many ambassadors `twists`' arrivals bring in `scope` (a tally).
-pub fn arrival_count(w: &World, g: &GameState, twists: &[&Op], scope: Option<usize>) -> i64 {
-    let per = w.int("adversary.arrivals");
-    let hexes = scope_hexes(w, scope);
-    arrival_sites(twists)
-        .map(|s| per * hexes.iter().filter(|&&h| is_site(w, g, h, s)).map(|h| landing(w, g, *h)).sum::<i64>())
-        .sum()
-}
-
-/// What an escalating card places in its build: `(hex, ambassadors)` on
-/// each country's lowest-numbered factory, in hex order (none at
-/// `escalation_ambassadors` 0, nor in a cordoned country or one with no factory).
-pub fn escalation_hexes(w: &World, g: &GameState) -> Vec<(usize, i64)> {
-    let n = w.int("adversary.escalation_ambassadors");
-    if n <= 0 {
-        return Vec::new();
+/// What a Corrupt `site` line at number `n` does in country `scope` or every
+/// country (138): `(target, pulls)` in order, each pull `(hex, ambassadors)`
+/// returned to the supply. In each country, each target in hex-number order
+/// that can gather `n` (what it holds, then its neighbors in the same
+/// country, lowest-numbered first; each ambassador moves once) pulls just
+/// enough in and corrupts; every ambassador on it goes too. An ambassador
+/// pulled is gone for the targets after it.
+pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: Option<usize>) -> Vec<(usize, Vec<(usize, i64)>)> {
+    let mut counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
+    let countries: Vec<usize> = match scope {
+        Some(c) => vec![c],
+        None => (0..w.map.countries.len()).collect(),
+    };
+    let mut out = Vec::new();
+    for c in countries {
+        let mut targets: Vec<usize> =
+            w.map.countries[c].hexes.iter().copied().filter(|&h| corrupt_target(w, g, h, site)).collect();
+        targets.sort_by_key(|&h| w.map.hexes[h].number);
+        for t in targets {
+            let mut from: Vec<usize> = w.map.hexes[t]
+                .neighbors
+                .iter()
+                .copied()
+                .filter(|&x| w.map.hexes[x].country as usize == c && counts[x] > 0)
+                .collect();
+            from.sort_by_key(|&x| w.map.hexes[x].number);
+            let own = held(w, g, t, &counts);
+            let around: i64 = from.iter().map(|&x| counts[x]).sum();
+            if own + around < n {
+                continue;
+            }
+            let mut pulls = Vec::new();
+            if counts[t] > 0 {
+                pulls.push((t, counts[t]));
+            }
+            let mut need = n - own;
+            for x in from {
+                if need <= 0 {
+                    break;
+                }
+                let k = counts[x].min(need);
+                pulls.push((x, k));
+                counts[x] -= k;
+                need -= k;
+            }
+            counts[t] = 0;
+            out.push((t, pulls));
+        }
     }
-    let mut out: Vec<(usize, i64)> = (0..w.map.countries.len())
-        .filter_map(|c| escalation_factory(w, g, c))
-        .filter(|&h| landing(w, g, h) > 0)
-        .map(|h| (h, n))
-        .collect();
-    out.sort_unstable();
     out
 }
 
-/// The next round's build, read off the face-up adversary card (public):
-/// [`build_plan`] with that card's twists, plus its standing infiltration,
-/// its botnet twist and its escalation when it carries them (its standing
-/// troops place no ambassador). Empty when no card is face up (the deck has run out). Read
-/// on the table as it stands now, so anything that changes before the
-/// adversary phase (a corruption) is not foreseen, and nor are ongoing
-/// projects, which can place ambassadors during the build itself.
+/// Natural corruption's targets (138): every `site` already holding `n` on
+/// its own hex, in hex order (land never corrupts naturally).
+pub fn natural_targets(w: &World, g: &GameState, site: CorruptSite, n: i64) -> Vec<usize> {
+    if site == CorruptSite::Land {
+        return Vec::new();
+    }
+    let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
+    (0..g.hexes.len()).filter(|&h| corrupt_target(w, g, h, site) && held(w, g, h, &counts) >= n).collect()
+}
+
+/// The card whose build and corrupt steps come next: the face-up one, or
+/// this round's until its corrupt step has run (between this round's build
+/// and reveal the face-up slot is empty).
+fn card_ahead<'w>(w: &World<'w>, g: &GameState) -> Option<&'w crate::content::AdversaryCard> {
+    let corrupt_ahead = g.config.round.iter().position(|p| p == "adversary.corrupt").is_some_and(|i| g.phase <= i);
+    let id = match g.pile(adversary::NEXT).first() {
+        None if corrupt_ahead => g.pile(adversary::CURRENT).first(),
+        next => next,
+    }?;
+    Some(adversary::card(w, id))
+}
+
+/// The next round's build, read off the face-up adversary card (public): its
+/// creation lines, then the board's (with the difficulty's `build_bonus`).
+/// Empty when no card is face up (the deck has run out). Read on the table as
+/// it stands now, so ongoing projects, which create during the build too, are
+/// not foreseen.
 pub fn next_build(w: &World, g: &GameState) -> Vec<(usize, i64)> {
     let Some(card) = g.pile(adversary::NEXT).first().map(|id| adversary::card(w, id)) else {
         return Vec::new();
     };
-    let twists: Vec<&Op> = card.twists.iter().collect();
-    let mut plan = build_plan(w, g, &twists, None);
+    let bonus = if adversary::level(w, 3) { w.int("adversary.build_bonus") } else { 0 };
+    let mut plan: Vec<(usize, i64)> = Vec::new();
     let mut add = |h: usize, n: i64| match plan.binary_search_by_key(&h, |&(x, _)| x) {
         Ok(i) => plan[i].1 += n,
         Err(i) => plan.insert(i, (h, n)),
     };
-    // 135: the card's standing infiltration, before the build (it lands on a
-    // clean city, which the build leaves alone).
-    for e in &card.standing {
-        if let Op::Infiltrate { amount } = e {
-            for c in 0..w.map.countries.len() {
-                if let Some(h) = adversary::most_infiltrated_city(w, g, c, |h| clean_city(w, g, h)) {
-                    add(h, *amount);
-                }
-            }
+    for line in card.standing.iter().filter_map(CreateLine::of) {
+        for (h, n) in create_plan(w, g, line, None, &[], None) {
+            add(h, n);
         }
     }
-    // A botnet twist resolves in the build too: each botnet makes ambassadors on its hex.
-    for t in &card.twists {
-        if let Op::BotnetAmbassadors { amount } = t {
-            for h in 0..g.hexes.len() {
-                let n = g.tokens(h, BOTNET);
-                if n > 0 {
-                    add(h, n * amount);
-                }
-            }
-        }
-    }
-    if card.escalation {
-        for (h, n) in escalation_hexes(w, g) {
+    for line in w.content.adversary_board.build.iter().filter_map(CreateLine::of) {
+        let line = CreateLine { count: line.count + bonus, ..line };
+        for (h, n) in create_plan(w, g, line, None, &[], None) {
             add(h, n);
         }
     }
     plan
+}
+
+/// The corrupt number of the coming corrupt step's lines for `site`: the
+/// lowest any Corrupt line on the card ahead prints, else natural
+/// corruption's (the agents' pressure threshold).
+pub fn next_corrupt_n(w: &World, g: &GameState, site: CorruptSite) -> (i64, bool) {
+    let lines: Vec<i64> = card_ahead(w, g)
+        .into_iter()
+        .flat_map(|c| c.twists.iter())
+        .filter_map(|t| match t {
+            Op::Corrupt { site: s, cut } if *s == site => Some(adversary::corrupt_n(w, site, *cut)),
+            _ => None,
+        })
+        .collect();
+    match lines.iter().min() {
+        Some(&n) => (n, true),
+        None => (adversary::corrupt_n(w, site, 0), false),
+    }
 }

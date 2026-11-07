@@ -145,7 +145,7 @@ the judge off the value table.
   128's `action_read.py` (why an Action went unused) still apply. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
   binary. 131's `read131.py` reads `t.` arms against their base agent, paired, with `--same` for identical games.
 - **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min; 1296 strategist games about 10
-  min on 8 threads (r56).
+  min on 8 threads (r56); r57 (9-round games) 864 in 17 min on 5 threads.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
@@ -172,7 +172,8 @@ of this revision used, or it confirms on the seeds that picked the levers. Any i
 ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
 36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read); r55 (136): 36440-36487
 (the fresh paired read), dev 36600-36647 (screens); r56 (137): 36488-36535 (the fresh paired read), dev
-36700-36747 (screens). Next free: 36536 (skip 36600-36647 and 36700-36747).
+36700-36747 (screens); r57 (138): 36536-36583 (the fresh paired read), dev 36800-36815 (screens and smokes).
+Next free: 36584 (skip 36600-36647, 36700-36747 and 36800-36815).
 
 ## Reading prices
 

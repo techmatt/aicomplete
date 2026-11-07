@@ -64,12 +64,15 @@ player is near, whenever it was dealt; one it pays in full is countered at once 
 **Calibration (candidate, 134).** A counter is about a third to half a round's income (tier 1: 6-8 credits, 1-2
 energy, 4-5 insight, 1-2 ambassadors, a research cube, 2 tags; tier 2: 9-12 credits, 2-3 energy, 3 tags; tier 3:
 13-18 credits, or two resources); failing costs about 1.5-2x the counter per player near it. **No counter prints 1
-credit** (Matt, r48): a credits option is 5 or more.
+credit** (Matt, r48): a credits option is 5 or more. **138 (candidate):** every resource item costs `counter_pct`
+percent of its printed amount by tier (150 / 150 / 150, rounded up), the adversary's dial on how many threats the table
+can answer: threats, not corruption, are the main test of an engine.
 
 **Executing.** Threats execute in `threats.execute`, after production and war, at the round's end: anything still on
 an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it says near its tokens, sways
 `threat_discord` toward Discord (unprinted: the floor that keeps a threat nobody is near from being free to ignore),
-and is discarded with its tokens. Only threats on the board during this round's counter phase execute: one dealt later
+has each player near it destroy `threat_nodes` of their nodes near it (138, candidate: 1 / 2 / 3 by tier; never a last
+node in stage I), and is discarded with its tokens. Only threats on the board during this round's counter phase execute: one dealt later
 waits and executes next round, after a counter phase in which it can be paid (Matt). "Pay or discard" is the player's
 choice; with neither possible, the player pays what they have and discards their hand. Theft hits the player near it
 with the most credits (ties: the lowest seat). No threat takes a player's last node.
@@ -80,7 +83,8 @@ has every tag), discard the misses, and put its location tokens on the board. If
 or next to a token, you are *near* that threat: you may help pay it off, and its harm hits you. Each threat lists a
 few ways to pay, and the table pays one in full: credits and other resources can be pooled between players; giving up
 cards for their tags, or removing your nodes next to it, is done by one player alone. Next the card's standing lines
-land compute, ambassadors and troops, then its twists, arrivals and build, and the spread, corruption and march. You
+land compute, troops and its new ambassadors (always on the lowest-numbered sites of a kind), then its twists, its
+Corrupt lines (each site that can gather enough adversary ambassadors from itself and next door corrupts) and the march. You
 draft and act; production then runs from one snapshot of the board, and war comes after it. At the end of the round
 each threat nobody paid does what it says near its tokens and also sways 1 toward Discord. Tier-1 threats cost you
 this round; tier 2 can take nodes, stations and factories for good, or make the corps' troops pile up; tier 3 arrives

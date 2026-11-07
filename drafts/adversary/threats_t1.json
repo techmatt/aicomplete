@@ -215,7 +215,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary ambassadors land on this base. Sway 1 toward Discord.",
+   "text": "In its country: create 2 adversary ambassadors on the lowest-numbered factory. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -237,11 +237,9 @@
    ],
    "effects": [
     {
-     "op": "ambassadors",
-     "at": "location",
+     "op": "create",
      "count": 2,
-     "new": true,
-     "why": "today's ambassadors op places on cities or player pieces; this lands on the threat's base token (an ambassador on a base sways Discord when it produces: today's rule)"
+     "at": "factory"
     },
     {
      "op": "sway",
@@ -271,7 +269,7 @@
    "locations": [
     "city"
    ],
-   "text": "2 adversary ambassadors land on clean cities near it. Sway 1 toward Discord.",
+   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -294,9 +292,11 @@
    ],
    "effects": [
     {
-     "op": "ambassadors",
-     "at": "clean_cities",
-     "count": 2
+     "op": "create",
+     "count": 1,
+     "at": "city",
+     "if": "clean",
+     "sites": 2
     },
     {
      "op": "sway",
@@ -599,7 +599,7 @@
    "locations": [
     "station"
    ],
-   "text": "2 adversary ambassadors land on player-owned pieces near it. The adversary gains 2 compute.",
+   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered player research stations. The adversary gains 2 compute.",
    "counters": [
     [
      {
@@ -622,9 +622,11 @@
    ],
    "effects": [
     {
-     "op": "ambassadors",
-     "at": "player_pieces",
-     "count": 2
+     "op": "create",
+     "count": 1,
+     "at": "station",
+     "if": "player",
+     "sites": 2
     },
     {
      "op": "compute",

@@ -24,7 +24,7 @@ pub fn each_passive<'w>(w: &World<'w>, g: &GameState, seat: usize, mut f: impl F
 }
 
 pub fn has_passive(w: &World, g: &GameState, seat: usize, f: impl Fn(&Op) -> bool) -> bool {
-    // A walk, not a list: the adversary's spread asks it of every seat (103).
+    // A walk, not a list: the agents ask it of every seat in every eval (103).
     let mut found = false;
     each_passive(w, g, seat, |p| found = found || f(p));
     found

@@ -1,0 +1,38 @@
+## out/read57 (r57)
+- asked d0 strategist: 144 games, win 82.6%, rounds 9.45 (median 9.0), ends {'unity_deck': 88, 'purge': 31, 'deck_empty': 25}
+    nodes lost 2.42 {'corruption': 1.31, 'counter': 0.19, 'discord': 0.06, 'project': 0.11, 'threat2': 0.01, 'twist': 0.46, 'war': 0.29}; corruptions {'city': 2.58, 'factory': 2.79, 'land': 0.12, 'station': 2.33} (natural 0.09, pulled 25.84)
+    created 63.24 {'board': 26.56, 'discord': 0.65, 'event': 35.6, 'project': 0.28, 'threat': 0.15}; sites {'factory': 0.51, 'station': 1.55}
+    threats dealt 20.89, countered 18.69, uncountered 0.58; by tier {'threats.dealt.t1': 10.9, 'threats.dealt.t2': 8.48, 'threats.dealt.t3': 1.51, 'threats.uncountered.t1': 0.53, 'threats.uncountered.t2': 0.04}; tier-3 in 43.8% of games
+- asked d1 strategist: 144 games, win 90.3%, rounds 9.17 (median 9.0), ends {'node': 1, 'unity_deck': 98, 'deck_empty': 13, 'purge': 32}
+    nodes lost 2.82 {'corruption': 1.43, 'counter': 0.22, 'discord': 0.24, 'project': 0.12, 'threat2': 0.03, 'twist': 0.56, 'war': 0.23}; corruptions {'city': 2.8, 'factory': 2.94, 'land': 0.04, 'station': 2.62} (natural 0.08, pulled 27.95)
+    created 65.83 {'board': 27.69, 'discord': 1.03, 'event': 36.69, 'project': 0.19, 'threat': 0.22}; sites {'factory': 0.47, 'station': 1.58}
+    threats dealt 29.37, countered 26.15, uncountered 1.07; by tier {'threats.dealt.t1': 15.67, 'threats.dealt.t2': 12.24, 'threats.dealt.t3': 1.46, 'threats.uncountered.t1': 0.77, 'threats.uncountered.t2': 0.29, 'threats.uncountered.t3': 0.01}; tier-3 in 28.5% of games
+- asked d2 strategist: 144 games, win 88.9%, rounds 8.80 (median 9.0), ends {'node': 12, 'unity_deck': 118, 'deck_empty': 4, 'purge': 10}
+    nodes lost 3.84 {'corruption': 1.85, 'counter': 0.22, 'discord': 0.58, 'project': 0.16, 'threat2': 0.05, 'twist': 0.78, 'war': 0.21}; corruptions {'city': 3.84, 'factory': 4.13, 'land': 0.19, 'station': 3.48} (natural 0.41, pulled 27.19)
+    created 68.61 {'board': 29.04, 'discord': 1.5, 'event': 37.39, 'project': 0.39, 'threat': 0.29}; sites {'factory': 0.42, 'station': 1.39}
+    threats dealt 29.69, countered 25.5, uncountered 1.35; by tier {'threats.dealt.t1': 13.2, 'threats.dealt.t2': 13.69, 'threats.dealt.t3': 2.79, 'threats.uncountered.t1': 0.88, 'threats.uncountered.t2': 0.47}; tier-3 in 67.4% of games
+- base d0 strategist: 144 games, win 89.6%, rounds 9.01 (median 9.0), ends {'unity_deck': 93, 'purge': 36, 'deck_empty': 12, 'node': 3}
+    nodes lost 3.42 {'corruption': 1.57, 'counter': 0.27, 'discord': 0.19, 'project': 0.15, 'threat1': 0.24, 'threat2': 0.14, 'threat3': 0.01, 'twist': 0.49, 'war': 0.35}; corruptions {'city': 2.84, 'factory': 2.85, 'land': 0.27, 'station': 2.56} (natural 0.08, pulled 28.45)
+    created 65.58 {'board': 27.02, 'discord': 1.1, 'event': 37.0, 'project': 0.26, 'threat': 0.2}; sites {'factory': 0.5, 'station': 1.6}
+    threats dealt 21.2, countered 18.08, uncountered 1.03; by tier {'threats.dealt.t1': 11.11, 'threats.dealt.t2': 7.78, 'threats.dealt.t3': 2.31, 'threats.uncountered.t1': 0.76, 'threats.uncountered.t2': 0.25, 'threats.uncountered.t3': 0.02}; tier-3 in 63.9% of games
+- base d1 strategist: 144 games, win 88.2%, rounds 8.81 (median 9.0), ends {'node': 14, 'unity_deck': 105, 'purge': 22, 'deck_empty': 3}
+    nodes lost 4.79 {'corruption': 1.48, 'counter': 0.62, 'discord': 0.72, 'project': 0.17, 'threat1': 0.52, 'threat2': 0.53, 'threat3': 0.08, 'twist': 0.54, 'war': 0.12}; corruptions {'city': 3.04, 'factory': 3.27, 'land': 0.35, 'station': 2.81} (natural 0.15, pulled 31.41)
+    created 70.72 {'board': 29.13, 'discord': 1.85, 'event': 38.8, 'project': 0.5, 'threat': 0.44}; sites {'factory': 0.49, 'station': 1.65}
+    threats dealt 30.14, countered 24.94, uncountered 2.41; by tier {'threats.dealt.t1': 15.76, 'threats.dealt.t2': 11.42, 'threats.dealt.t3': 2.96, 'threats.uncountered.t1': 1.51, 'threats.uncountered.t2': 0.81, 'threats.uncountered.t3': 0.09}; tier-3 in 68.8% of games
+- base d2 strategist: 144 games, win 63.9%, rounds 8.15 (median 9.0), ends {'node': 49, 'unity_deck': 88, 'deck_empty': 3, 'purge': 4}
+    nodes lost 6.32 {'corruption': 1.78, 'counter': 0.5, 'discord': 1.53, 'project': 0.22, 'threat1': 0.42, 'threat2': 0.85, 'threat3': 0.22, 'twist': 0.61, 'war': 0.17}; corruptions {'city': 3.89, 'factory': 3.88, 'land': 0.81, 'station': 3.19} (natural 0.48, pulled 27.5)
+    created 70.19 {'board': 28.57, 'discord': 2.53, 'event': 38.03, 'project': 0.56, 'threat': 0.51}; sites {'factory': 0.44, 'station': 1.42}
+    threats dealt 29.49, countered 23.93, uncountered 3.04; by tier {'threats.dealt.t1': 13.29, 'threats.dealt.t2': 11.53, 'threats.dealt.t3': 4.67, 'threats.uncountered.t1': 1.55, 'threats.uncountered.t2': 1.33, 'threats.uncountered.t3': 0.16}; tier-3 in 71.5% of games
+## out/read56 (r56)
+- base d0 strategist: 144 games, win 73.6%, rounds 8.47 (median 8.5), ends {'node': 28, 'unity_deck': 86, 'deck_empty': 10, 'purge': 20}
+    nodes lost 6.06 {'corruption': 4.61, 'counter': 0.13, 'discord': 0.22, 'project': 0.21, 'twist': 0.43, 'war': 0.45}; corruptions {} (natural 0.0, pulled 0.0)
+    created 0.0 {}; sites {}
+    threats dealt 18.74, countered 15.94, uncountered 1.1; by tier {}; tier-3 in 0.0% of games
+- base d1 strategist: 144 games, win 61.8%, rounds 7.90 (median 8.0), ends {'node': 51, 'unity_deck': 73, 'purge': 16, 'deck_empty': 4}
+    nodes lost 7.13 {'corruption': 5.26, 'counter': 0.22, 'discord': 0.44, 'project': 0.31, 'twist': 0.45, 'war': 0.46}; corruptions {} (natural 0.0, pulled 0.0)
+    created 0.0 {}; sites {}
+    threats dealt 25.62, countered 21.37, uncountered 1.84; by tier {}; tier-3 in 0.0% of games
+- base d2 strategist: 144 games, win 52.1%, rounds 7.44 (median 8.0), ends {'node': 63, 'unity_deck': 62, 'purge': 13, 'deck_empty': 6}
+    nodes lost 7.08 {'corruption': 4.97, 'counter': 0.24, 'discord': 0.49, 'project': 0.31, 'threat2': 0.03, 'threat3': 0.01, 'twist': 0.6, 'war': 0.44}; corruptions {} (natural 0.0, pulled 0.0)
+    created 0.0 {}; sites {}
+    threats dealt 24.89, countered 20.12, uncountered 1.84; by tier {}; tier-3 in 0.0% of games

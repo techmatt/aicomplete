@@ -7,7 +7,7 @@
 
 use crate::action::Action;
 use crate::content::{
-    CounterItem, Location, Op, PullTag, Resource, Spot, TagOrAny, ThreatDef, ThreatSource, ThreatTag,
+    CounterItem, Location, Op, PullTag, Resource, TagOrAny, ThreatDef, ThreatSource, ThreatTag,
 };
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Halt, Module, ModuleDef, PhaseSpec, Res, VariantDef, World};
@@ -218,6 +218,7 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize) {
     cx.move_card(g, &id, &deck(tier), &on(c), false).unwrap();
     place_tokens(g, cx, &id, c);
     cx.tally(g, "threats.dealt", 1);
+    cx.tally(g, &format!("threats.dealt.t{}", def(&w, &id).tier), 1);
     if after_counter(g) {
         cx.set_key(g, &late_key(&id), g.round as i64);
     }
@@ -372,7 +373,20 @@ impl Module for Threats {
             cx.tally(g, "threats.uncountered", 1);
             cx.per_round(g, "threats.uncountered", 1);
             let mut ctx = effects::Ctx::threat(scope).named(label(d.tier)).why(&d.name).with_threat(t);
+            cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
             effects::run(g, cx, &d.effects, &mut ctx)?;
+            // 138: an uncountered threat's printed node harm by tier
+            // (`adversary.threat_nodes`): each player near it destroys that many
+            // of their nodes near it (never a last node in stage I).
+            let k = w.list("adversary.threat_nodes").get(d.tier as usize - 1).copied().unwrap_or(0);
+            if k > 0 {
+                let hexes = near_hexes(&w, g, &t);
+                for s in near_seats(&w, g, &t) {
+                    for _ in 0..k {
+                        board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(label(d.tier)), Some(&d.name))?;
+                    }
+                }
+            }
             alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
             clear(g, cx, &t);
         }

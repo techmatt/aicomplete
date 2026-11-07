@@ -16,7 +16,7 @@ fn the_clock_sets_production_and_war_steps_and_the_war_twist() {
     // 135: no event card prints a war twist now; one is overlaid to read the rule.
     let rules = Rules::new(&baseline_with(&[
         "board.clock=1,2,1,2,1,3",
-        r#"adversary.mil_s2_border_war.twists=[{"op":"war"},{"op":"arrivals","site":"industrial"}]"#,
+        r#"adversary.mil_s2_border_war.twists=[{"op":"war"},{"op":"corrupt","site":"factory"}]"#,
     ]))
     .unwrap();
     let w = rules.world();

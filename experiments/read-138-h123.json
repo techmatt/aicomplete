@@ -1,0 +1,40 @@
+{
+  "name": "read-138-h123",
+  "note": "138 fresh confirm of screen E's H123 (adversary.threat_nodes 1,2,3) on r57 frozen, on the read's fresh seeds 36536-36583 (48 a cell), the three pairs, d0-d2: paired against read-138's frozen cells on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_H123",
+      "set": [
+        "adversary.threat_nodes=1,2,3"
+      ]
+    },
+    {
+      "name": "br_H123",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.threat_nodes=1,2,3"
+      ]
+    },
+    {
+      "name": "pr_H123",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.threat_nodes=1,2,3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 36536,
+  "records": 0
+}

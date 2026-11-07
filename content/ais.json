@@ -418,10 +418,10 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "When the adversary spreads, it skips your nodes.",
+     "text": "Corruption never destroys your nodes.",
      "passives": [
       {
-       "op": "spread_shield"
+       "op": "corruption_shield"
       }
      ]
     }

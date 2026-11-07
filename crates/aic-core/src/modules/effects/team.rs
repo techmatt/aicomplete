@@ -89,26 +89,6 @@ pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count
     Ok(())
 }
 
-pub(super) fn botnet_ambassadors(g: &mut GameState, cx: &mut Cx, amount: i64) {
-    let botnets: Vec<(usize, i64)> = (0..g.hexes.len())
-        .map(|h| (h, g.tokens(h, BOTNET)))
-        .filter(|&(_, n)| n > 0)
-        .collect();
-    for (h, n) in botnets {
-        adversary::place(g, cx, h, n * amount);
-    }
-}
-
-pub(super) fn clean_city_ambassadors(g: &mut GameState, cx: &mut Cx, amount: i64) {
-    let w = cx.world;
-    let cities: Vec<usize> = (0..g.hexes.len())
-        .filter(|&h| clean_city(&w, g, h))
-        .collect();
-    for h in cities {
-        adversary::place(g, cx, h, amount);
-    }
-}
-
 pub(super) fn remove_botnets(g: &mut GameState, cx: &mut Cx, count: i64) -> Res {
     let w = cx.world;
     for _ in 0..count {

@@ -281,7 +281,7 @@
    "locations": [
     "city"
    ],
-   "text": "If the city here holds 3 or more adversary ambassadors, it becomes corrupted. If not, 2 adversary ambassadors land on it.",
+   "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt cities (1 fewer).",
    "counters": [
     [
      {
@@ -304,11 +304,15 @@
    ],
    "effects": [
     {
-     "op": "corrupt_city",
-     "min_ambassadors": 3,
-     "else_ambassadors": 2,
-     "new": true,
-     "why": "corrupt_city on the location token, gated on its ambassadors, else a landing"
+     "op": "create",
+     "count": 2,
+     "at": "city",
+     "if": "ambassadors"
+    },
+    {
+     "op": "corrupt",
+     "site": "city",
+     "cut": 1
     }
    ],
    "harms": [
@@ -336,7 +340,7 @@
    "locations": [
     "city"
    ],
-   "text": "3 adversary ambassadors land on the city here, each canceling a player ambassador there. Sway 2 toward Discord.",
+   "text": "Create 3 adversary ambassadors here. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -359,10 +363,9 @@
    ],
    "effects": [
     {
-     "op": "ambassadors",
-     "at": "location",
+     "op": "create",
      "count": 3,
-     "cancel": true
+     "at": "location"
     },
     {
      "op": "sway",
@@ -453,7 +456,7 @@
    "locations": [
     "city"
    ],
-   "text": "Each player near it loses 2 ambassadors. 2 adversary ambassadors land on player pieces near it.",
+   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
    "counters": [
     [
      {
@@ -470,15 +473,17 @@
    ],
    "effects": [
     {
-     "op": "lose_ambassador"
+     "op": "create",
+     "count": 1,
+     "at": "factory",
+     "if": "player",
+     "sites": 2
     },
     {
      "op": "lose_ambassador"
     },
     {
-     "op": "ambassadors",
-     "at": "player_pieces",
-     "count": 2
+     "op": "lose_ambassador"
     }
    ],
    "harms": [
@@ -503,7 +508,7 @@
     "city",
     "coastal_city"
    ],
-   "text": "The adversary's next spread in this country happens twice. Sway 1 toward Discord.",
+   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -526,11 +531,15 @@
    ],
    "effects": [
     {
-     "op": "flag",
-     "name": "double_spread",
-     "scope": "country",
-     "new": true,
-     "why": "the adversary's next spread in this country runs twice (the model's 'next spread doubled')"
+     "op": "create",
+     "count": 1,
+     "at": "city",
+     "if": "clean",
+     "sites": 2
+    },
+    {
+     "op": "corrupt",
+     "site": "city"
     },
     {
      "op": "sway",
@@ -1296,7 +1305,7 @@
     "city",
     "coastal_city"
    ],
-   "text": "Each city on or next to it gains 1 adversary ambassador, dark while it stands. Sway 1 toward Discord.",
+   "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -1313,12 +1322,11 @@
    ],
    "effects": [
     {
-     "op": "ambassadors",
-     "at": "cities_near",
+     "op": "create",
      "count": 1,
-     "each": true,
-     "new": true,
-     "why": "1 on each city on or next to it, not a total"
+     "at": "city",
+     "if": "near",
+     "sites": 3
     },
     {
      "op": "sway",
@@ -1403,7 +1411,7 @@
     "base",
     "city"
    ],
-   "text": "1 troop lands on the base here and 2 adversary ambassadors on the city here. The adversary gains 2 compute.",
+   "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city on or next to it. 1 troop lands on the base here. The adversary gains 2 compute.",
    "counters": [
     [
      {
@@ -1420,17 +1428,18 @@
    ],
    "effects": [
     {
+     "op": "create",
+     "count": 2,
+     "at": "city",
+     "if": "near"
+    },
+    {
      "op": "troops",
      "count": 1,
      "at": "location",
      "location": "base",
      "new": true,
      "why": "troops land on the threat's own location, the base of its two, not on a factory in the country"
-    },
-    {
-     "op": "ambassadors",
-     "at": "city",
-     "count": 2
     },
     {
      "op": "compute",

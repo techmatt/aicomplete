@@ -1,0 +1,32 @@
+{
+  "name": "screen-138-c",
+  "note": "138 screen C (dev seeds 36800-36815, 16 a cell, the three pairs, d0-d2): counter cost by tier (adversary.counter_pct) with the uncountered node harm (adversary.threat_nodes), all on S (stage_cards 4,4,3), against S alone (base_S) on the same seeds. A: 300/200/150 + harm 1,1,2; B: 300/175/125 + harm 1,2,2; C: 250/250/150 + harm 1,1,2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp_S", "set": ["adversary.stage_cards=4,4,3"]},
+    {"name": "br_S", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "pr_S", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "bp_A", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=300,200,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "br_A", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=300,200,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "pr_A", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=300,200,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "bp_B", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=300,175,125", "adversary.threat_nodes=1,2,2"]},
+    {"name": "br_B", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=300,175,125", "adversary.threat_nodes=1,2,2"]},
+    {"name": "pr_B", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=300,175,125", "adversary.threat_nodes=1,2,2"]},
+    {"name": "bp_C", "set": ["adversary.stage_cards=4,4,3", "adversary.counter_pct=250,250,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "br_C", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=250,250,150", "adversary.threat_nodes=1,1,2"]},
+    {"name": "pr_C", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3", "adversary.counter_pct=250,250,150", "adversary.threat_nodes=1,1,2"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

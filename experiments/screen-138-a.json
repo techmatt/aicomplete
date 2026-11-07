@@ -1,0 +1,31 @@
+{
+  "name": "screen-138-a",
+  "note": "138 screen A (dev seeds 36800-36815, 16 a cell, the three pairs, d0 and d2): r57 as built (base) against each adversary lever alone and together, on the same seeds. T: an uncountered threat's node harm (adversary.threat_nodes 1,1,2). S: stage III sooner (stage_cards 4,4,3: stage III from round 9 at d0, round 8 at d2).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_T", "set": ["adversary.threat_nodes=1,1,2"]},
+    {"name": "br_T", "set": ["ai.boards=0,2", "adversary.threat_nodes=1,1,2"]},
+    {"name": "pr_T", "set": ["ai.boards=1,2", "adversary.threat_nodes=1,1,2"]},
+    {"name": "bp_S", "set": ["adversary.stage_cards=4,4,3"]},
+    {"name": "br_S", "set": ["ai.boards=0,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "pr_S", "set": ["ai.boards=1,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "bp_TS", "set": ["adversary.threat_nodes=1,1,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "br_TS", "set": ["ai.boards=0,2", "adversary.threat_nodes=1,1,2", "adversary.stage_cards=4,4,3"]},
+    {"name": "pr_TS", "set": ["ai.boards=1,2", "adversary.threat_nodes=1,1,2", "adversary.stage_cards=4,4,3"]}
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

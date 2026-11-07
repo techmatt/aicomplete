@@ -447,6 +447,10 @@ pub struct AdversaryBoard {
     /// Militarist prints none).
     #[serde(default)]
     pub discord_drip: i64,
+    /// 138: the board's own creation lines, run in every build (they replaced
+    /// `city_build` and `factory_build`).
+    #[serde(default)]
+    pub build: Vec<Op>,
 }
 
 /// A project slot on the adversary board: a project must carry `tag` (or be
@@ -480,8 +484,8 @@ pub struct Pull {
 }
 
 /// An adversary event card (135): the clock and the stager. Top to bottom:
-/// its pulls, its standing lines, its twists (read while it is current),
-/// its arrivals (a twist) and escalation.
+/// its pulls, its standing lines (compute, troops and its creation lines,
+/// 138) and its twists (read while it is current; its Corrupt X lines among them).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AdversaryCard {
@@ -498,10 +502,6 @@ pub struct AdversaryCard {
     pub twists: Vec<Op>,
     #[serde(default)]
     pub harms: Vec<String>,
-    /// The Militarist's escalation: each country's lowest-numbered factory gains
-    /// an adversary ambassador when this card's round builds (137: it was the first base).
-    #[serde(default)]
-    pub escalation: bool,
 }
 
 // ---------- alignment ----------
@@ -1040,6 +1040,10 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     }
     for r in b.rules.iter().chain([&b.difficulty]) {
         check_ops(&r.effects, Slot::Team, &what)?;
+    }
+    // 138: the board's build is creation lines only.
+    if b.build.iter().any(|e| !matches!(e, Op::Create { at, if_, .. } if *at != crate::op::CreateAt::Location && *if_ != crate::op::CreateIf::Near)) {
+        return Err(format!("{what}: its build prints creation lines only (no threat location)"));
     }
     Ok(())
 }

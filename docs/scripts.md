@@ -31,6 +31,7 @@ Current:
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by kind of option, paid abroad, and the
   typed counters and capstones played, from `games.jsonl`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
+- `content/arrivals_138.py`: 138's creation and Corrupt lines into the drafts and `content/alignment.json`; rerunnable.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
   in none, and every draft card no game kept. Seconds.

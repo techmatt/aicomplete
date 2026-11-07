@@ -607,7 +607,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CorruptCity { .. } => Worth::now(row("corrupt_city")),
         Op::PlayersLose { resource, amount, .. } => Worth::now(row("players_lose") * r(*resource) * *amount as f64),
         Op::AdversaryBuild => Worth::now(row("adversary_build")),
-        Op::Ambassadors { count, .. } => Worth::now(row("ambassadors") * *count as f64),
+        Op::Create { count, sites, .. } => Worth::now(row("create") * t.rate("countries") * (*count * *sites) as f64),
+        Op::CreateSite { .. } => Worth::now(row("create_site") * t.rate("countries")),
+        Op::Corrupt { .. } => Worth::now(row("corrupt")),
         Op::LoseNodeOr { resource, amount, count } => Worth::now(
             row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),
         ),
@@ -629,11 +631,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterAll => Worth::now(row("counter_all")),
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
         Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
-        Op::Infiltrate { amount } => Worth::now(row("infiltrate") * t.rate("countries") * *amount as f64),
-        Op::AdversarySpread => Worth::now(row("adversary_spread")),
         Op::Sacrifice => Worth::now(row("sacrifice")),
-        Op::BotnetAmbassadors { amount } => Worth::now(row("botnet_ambassadors") * *amount as f64),
-        Op::CleanCityAmbassadors { amount } => Worth::now(row("clean_city_ambassadors") * *amount as f64),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per, amount } => {
@@ -651,7 +649,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::ProjectDrain { amount } => Worth::standing(row("project_drain") * *amount as f64),
         Op::AutoCounter { amount, .. } => Worth::standing(row("auto_counter") * *amount as f64),
         Op::UnityBonus { amount } => Worth::standing(row("unity_bonus") * *amount as f64),
-        Op::SpreadShield => Worth::standing(row("spread_shield")),
+        Op::CorruptionShield => Worth::standing(row("corruption_shield")),
         Op::CivicShelter => Worth::standing(row("civic_shelter")),
         Op::Wall => Worth::standing(row("wall")),
         Op::Patience => Worth::standing(row("patience")),
@@ -697,12 +695,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DiscardHand { resource, amount } => {
             Worth::now(row("discard_hand") * t.rate("hand_discards") * (r(*resource) * *amount as f64 - t.rate("dead_card")))
         }
-        Op::CityBuild { .. } => Worth::now(row("city_build")),
-        Op::CleanFactories { .. } => Worth::now(row("clean_factories")),
-        Op::StationBuild { .. } => Worth::now(row("station_build")),
-        Op::SpreadReach { .. } => Worth::now(row("spread_reach")),
-        Op::Arrivals { .. } => Worth::now(row("arrivals")),
-        Op::CorruptSooner { .. } => Worth::now(row("corrupt_sooner")),
         Op::War => Worth::now(row("war")),
         // 135: the new adversary model's threat and team ops (no player card prints them).
         Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
