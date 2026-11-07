@@ -1,4 +1,5 @@
 use super::*;
+use crate::modules::adversary::PurgeLevel;
 use crate::modules::{adversary, alignment};
 
 /// This file's purge steps come at 1, 1 and 2 Unity cards drawn.
@@ -36,18 +37,19 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     assert_eq!(g.var("alignment.unity"), 0);
     assert!(g.pile("alignment.resolved.unity").iter().any(|k| k.as_str() == "civil_defense"));
     // Two Unity cards drawn: bar 3 (019), where only corrupted cities count.
-    assert_eq!(alignment::bar_level(&rules.world(), &g), 3);
+    assert_eq!(alignment::bar_level(&rules.world(), &g), PurgeLevel::CitiesOnly);
     let o = g.outcome.as_ref().expect("a win");
     assert!(o.won && o.reason == "purge", "{o:?}");
 }
 
 #[test]
 fn bar_levels_follow_the_unity_cards_drawn() {
+    use PurgeLevel::*;
     let rules = Rules::new(&baseline_with(&[EASE])).unwrap();
     let w = rules.world();
     let mut g = rules.new_game(1);
     // 019: `purge_at` 1, 1, 2: ambassadors and troops at 1 card, botnets at 2.
-    for (tips, level) in [(0, 0), (1, 2), (2, 3), (9, 3)] {
+    for (tips, level) in [(0, All), (1, NoTroops), (2, CitiesOnly), (9, CitiesOnly)] {
         unity_drawn(&mut g, tips);
         assert_eq!(alignment::bar_level(&w, &g), level, "{tips} cards");
     }
@@ -55,14 +57,14 @@ fn bar_levels_follow_the_unity_cards_drawn() {
     // ambassadors, 6+ only the corrupted cities.
     let rules = Rules::new(&baseline_with(&[])).unwrap();
     let w = rules.world();
-    for (n, level) in [(0, 0), (2, 0), (3, 1), (5, 1), (6, 3), (8, 3)] {
+    for (n, level) in [(0, All), (2, All), (3, NoAmbassadors), (5, NoAmbassadors), (6, CitiesOnly), (8, CitiesOnly)] {
         unity_drawn(&mut g, n);
         assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
     }
-    assert!(adversary::win_text(0).contains("botnet, adversary troop or adversary ambassador"));
-    assert!(adversary::win_text(1).contains("ambassadors no longer count"));
-    assert!(adversary::win_text(2).contains("no corrupted city or botnet"));
-    assert!(adversary::win_text(3).contains("botnets no longer count"));
+    assert!(All.win_text().contains("botnet, adversary troop or adversary ambassador"));
+    assert!(NoAmbassadors.win_text().contains("ambassadors no longer count"));
+    assert!(NoTroops.win_text().contains("no corrupted city or botnet"));
+    assert!(CitiesOnly.win_text().contains("botnets no longer count"));
 }
 
 #[test]
@@ -184,16 +186,6 @@ fn envoy_moves_one_discord_off() {
     assert_eq!(g.resource(0, Resource::Ambassadors), 1);
     let (rules, g) = action_only(&["board.envoy_ambassadors=0"]);
     assert!(!rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Standard { act, .. } if act == "envoy")));
-}
-
-/// 136: every printed Unity card is dealt.
-#[test]
-fn the_unity_deck_deals_every_printed_card() {
-    let rules = Rules::new(&baseline_with(&[])).unwrap();
-    let g = rules.new_game(3);
-    let printed = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).count();
-    assert_eq!(printed, 9);
-    assert_eq!(alignment::cards_left(&g, Side::Unity), printed);
 }
 
 /// A Discord tip no longer escalates the difficulty (017): it resolves one

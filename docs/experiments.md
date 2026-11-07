@@ -106,7 +106,7 @@ stderr line and a missing cell.
 **Content levers run on one binary.** A variant's `set` (or `--set` on `run` and `compare`) takes an overlay,
 `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`, `alignment`, `projects`; `*` for every id;
 a path through fields and list indexes (`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.passives.0.amount=2`,
-`ais.*.economy_track.4.cost=2`, `threats.<id>.counter=[["credits",3]]`; `corps.horizon.project.after=[]`: country
+`ais.*.economy_track.4.cost=2`, `threats.<id>.counter=[["credits",3]]`; `corps.horizon.project.cubes=8`: country
 pieces by lowercase name, the only part of the map it reaches; `null` clears an optional field,
 `cards.<id>.ability=null`; an op's `amount` can't be 0: to switch an income off, rewrite its list without it, as
 122's `gen_disproof.py` does). It is checked like `content/` and lands in the config, so the hashes and records name

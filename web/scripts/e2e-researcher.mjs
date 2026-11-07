@@ -18,9 +18,10 @@ mkdirSync(out, { recursive: true });
 const SEAT = 2;
 const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json'), 'utf8'));
 config.countries = 3;
-Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, troop_steps: 0 });
+Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, troop_steps: 0, claim_station: 1 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
-Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20 });
+// No adversary ambassadors: a creation line would land one on the claimed station, blocking its cubes.
+Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });
 
 const page = await openPage();
 const { send, js, until, size, consoleErrors } = page;
@@ -45,13 +46,14 @@ try {
   const innate = await js(`window.aic.view.seats[${SEAT}].board.innate?.name ?? ''`);
   check(innate === 'Patience', 'its special rule is Patience');
 
-  // Seat 2's starting ambassador claims the neutral station next to its node.
+  // Seat 2's starting ambassador claims the neutral station next to its node (137's Claim;
+  // `claim_station` 1, so the one ambassador pays for it).
   const station = await js(`(() => {
     const v = window.aic.view;
     const h = v.hexes.find((x) => x.country === 2 && x.tokens.some((t) => t.kind === 'station') && !x.tokens.some((t) => t.kind === 'cube:adversary'));
     return h?.number;
   })()`);
-  await js(`window.aic.act({ type: 'standard', seat: ${SEAT}, act: 'move' })`);
+  await js(`window.aic.act({ type: 'standard', seat: ${SEAT}, act: 'claim' })`);
   for (let i = 0; i < 4 && await js(`window.aic.legal.some((a) => a.type === 'choose')`); i++) {
     await js(`(() => {
       const l = window.aic.legal.filter((a) => a.type === 'choose');

@@ -65,7 +65,7 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// Production (137: every round, the clock's dial at 3): bases make nothing of
+/// Production (every round; 139 cut the clock): bases make nothing of
 /// their own; corp troops come from Discord tips at neutral factories
 /// ([`tip_corp_troops`]) and the extra-troop rules. Player-owned factories
 /// make chips, adversary factories an adversary troop; one opposing

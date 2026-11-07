@@ -6,12 +6,16 @@ every round, nodes placed each action phase and the placements it could still
 afford when it passed, every node removal with its cause, and whether a
 node-safe line plausibly existed.
 
-Usage (from the repo root; the binary is run from its own directory so it reads
-its configs):
+Usage (from the repo root; the binary is run from its own directory, or `--root`, so it
+reads its configs):
 
     python experiments/results/136_alignment_and_win/death_audit.py \
-        --bin out/r54/aic-sim.exe --out out/death \
+        --bin out/r54/aic-sim.exe --out out/death [--root DIR] \
         out/death/rec_d2_bp out/death/rec_d2_br out/death/rec_d2_pr ...
+
+`--root DIR` runs the binary from DIR, which holds its revision's configs/ (this checkout for
+today's binary; `git archive REV configs | tar -x -C DIR` for an older one), so the binary need
+not be copied next to a configs/ folder (default: the binary's own folder).
 
 Records come from
     aic-sim run configs/baseline.json --games 48 --seed 36392 --agent strategist \
@@ -35,6 +39,8 @@ BOARDS = ["Builder", "Protector", "Researcher"]
 TRACK_LEN = 7
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+# `--root`: where the binary runs (its configs/); None: the binary's own folder.
+RUN_ROOT = None
 
 
 def load_names():
@@ -101,7 +107,7 @@ def trace_game(binary, rec_path, out_dir):
     tpath = os.path.join(out_dir, "traces", f"{tag}-{seed}.txt")
     if not os.path.exists(tpath):
         os.makedirs(os.path.dirname(tpath), exist_ok=True)
-        bdir = os.path.dirname(os.path.abspath(binary))
+        bdir = RUN_ROOT or os.path.dirname(os.path.abspath(binary))
         cmd = ["nice", "-n", "10", os.path.abspath(binary), "run", "configs/baseline.json", "--games", "1",
                "--seed", str(seed), "--agent", "strategist", "--threads", "1", "--trace"]
         for o in over:
@@ -433,12 +439,18 @@ def audit(rec, tag, tpath, boards, corrupt_at, kinds, ais):
 
 
 def main():
+    global RUN_ROOT
     ap = argparse.ArgumentParser()
     ap.add_argument("--bin", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--jobs", type=int, default=3)
+    ap.add_argument("--root", default=None,
+                    help="where the binary runs, a folder holding its revision's configs/ (default: the "
+                         "binary's own folder); a checkout or `git archive REV configs` unpacked")
     ap.add_argument("dirs", nargs="+")
     a = ap.parse_args()
+    if a.root:
+        RUN_ROOT = os.path.abspath(a.root)
     kinds = load_names()
     ais = ai_content()
     global MAP

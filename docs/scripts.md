@@ -5,9 +5,10 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 Current:
 
 - `wasm-smoke.mjs`: plays one game through the wasm package in Node. `wasm-parity.mjs`:
-  replays aic-sim records of every variant in wasm.
+  replays aic-sim records of each `configs/variants.json` variant in wasm.
 - `regen.py [--no-build] [--check]`: builds release, then `aic-sim docs`, `cards_doc.py`, `effect_ledger.py`,
-  `shared_row.py`, `no_liberate.py`; prints the content hash, rules revision and `git status`. `--check`: the two `--check`s only.
+  `shared_row.py`, `no_liberate.py`; prints the content hash and rules revision (writing it into
+  `docs/rules/README.md`) and `git status`. `--check`: the two `--check`s only.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
 - `cards/cards_doc.py`: regenerates `docs/cards.md`.
 - `cards/apply_overlay.py FILE... [--check]`: writes content overlays (`cards.<id>.<path>=JSON` lines, the keys
@@ -98,8 +99,8 @@ Current:
   renames in the old output first, for a rename that must play the same. To swap two names, map one to a placeholder
   (`QQ1`) first and back last.
 - `bench/same_play.py`: proves a refactor left play unchanged: a matrix of configs, countries, difficulties and
-  variants, with every agent but the beam (rollout and planner included), on the old and new binaries, ~20 min a run
-  on 12 threads; every saved game replays on the new binary. `run ... --threads N` caps it on a shared machine;
+  `configs/variants.json`, with every agent but the beam (rollout and planner included), on the old and new binaries,
+  ~20 min a run on 6 threads (r58); every saved game replays on the new binary. `run ... --threads N` caps it on a shared machine;
   `compare` takes under a minute. Keep a copy of the old binary. Takes `--map` too: records are then compared by
   field, since a renamed state's fingerprint moves. Each difference prints its first differing field or trace line.
   An old binary that refuses today's configs plays its own: `mkdir -p out/old && git archive REV configs | tar -x -C

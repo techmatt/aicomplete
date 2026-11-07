@@ -633,19 +633,69 @@ mod tests {
     }
 
     /// Fast lane: the first 30 actions, which take every agent into round 2
-    /// (about 1 s; whole games are 200–300 actions).
+    /// (whole games are 200–300 actions). One test an agent, so they run side by side.
     #[test]
-    fn agents_replay_and_repeat_opening() {
-        for spec in [GREEDY, BEAM, ROLLOUT, ENGINE, PLANNER] {
-            replay_and_repeat(spec, 30, false);
-        }
+    fn greedy_replays_and_repeats_opening() {
+        replay_and_repeat(GREEDY, 30, false);
+    }
+
+    #[test]
+    fn beam_replays_and_repeats_opening() {
+        replay_and_repeat(BEAM, 30, false);
+    }
+
+    #[test]
+    fn rollout_replays_and_repeats_opening() {
+        replay_and_repeat(ROLLOUT, 30, false);
+    }
+
+    #[test]
+    fn engine_replays_and_repeats_opening() {
+        replay_and_repeat(ENGINE, 30, false);
+    }
+
+    #[test]
+    fn planner_replays_and_repeats_opening() {
+        replay_and_repeat(PLANNER, 30, false);
     }
 
     /// 022: the dominance checks parse, label and replay (into round 3,
-    /// past two keeps).
+    /// past two keeps). Split in five so the parts run side by side (the two
+    /// planner specs, the slowest, fall in different parts).
+    fn dominance_checks(part: usize) {
+        for spec in DOMINANCE.iter().skip(part).step_by(5) {
+            assert_eq!(AgentSpec::parse(spec).unwrap().label(), *spec);
+            replay_and_repeat(spec, 60, false);
+        }
+    }
+
     #[test]
-    fn dominance_checks_replay_and_repeat() {
-        for spec in [
+    fn dominance_checks_replay_and_repeat_0() {
+        dominance_checks(0);
+        assert!(AgentSpec::parse("random:keep_all=1").is_err());
+    }
+
+    #[test]
+    fn dominance_checks_replay_and_repeat_1() {
+        dominance_checks(1);
+    }
+
+    #[test]
+    fn dominance_checks_replay_and_repeat_2() {
+        dominance_checks(2);
+    }
+
+    #[test]
+    fn dominance_checks_replay_and_repeat_3() {
+        dominance_checks(3);
+    }
+
+    #[test]
+    fn dominance_checks_replay_and_repeat_4() {
+        dominance_checks(4);
+    }
+
+    const DOMINANCE: [&str; 21] = [
             "engine:keep_all=1",
             "engine:keep_k=2",
             "engine:tier2_rush=1",
@@ -668,12 +718,7 @@ mod tests {
             "engine:strat0=2,strat1=3",
             "planner:budget=2,strategy=1",
             "engine:plan_table=0,w.table=0",
-        ] {
-            assert_eq!(AgentSpec::parse(spec).unwrap().label(), spec);
-            replay_and_repeat(spec, 60, false);
-        }
-        assert!(AgentSpec::parse("random:keep_all=1").is_err());
-    }
+    ];
 
     // Slow lane: whole games, one test per agent so they run side by side
     // (014 board, 015 timings, each run alone: beam ~18 s, engine ~3 s, greedy

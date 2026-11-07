@@ -42,15 +42,8 @@ await m.default({ module_or_path: readFileSync(wasmFile) });
 const sim = process.env.AIC_SIM ?? path.join(root, 'target', 'release', process.platform === 'win32' ? 'aic-sim.exe' : 'aic-sim');
 const games = process.argv[2] ?? '3';
 
-// The variant matrix of crates/aic-core/src/tests/mod.rs, played by greedy and random.
-const VARIANTS = [
-  [], ['threats.variant=shared_row'], ['threats.variant=off'], ['alignment.hold_off=0'],
-  ['alignment.variant=off'], ['alignment.momentum_every=2', 'alignment.antimatter_discord=0'],
-  ['adversary.difficulty=4'], ['cards.variant=off'],
-  ['board.clock=3'], ['countries=1'], ['countries=3'], ['countries=4'],
-  ['adversary.difficulty=4', 'adversary.counter_bonus_all=1', 'threats.variant=shared_row'],
-  ['countries=3', 'adversary.difficulty=4', 'alignment.hold_off=0'],
-];
+// The variant matrix (configs/variants.json, which the core's tests read too), played by greedy and random.
+const VARIANTS = JSON.parse(readFileSync(path.join(root, 'configs', 'variants.json'), 'utf8')).variants;
 const out = mkdtempSync(path.join(tmpdir(), 'aic-parity-'));
 let checked = 0;
 let bad = 0;

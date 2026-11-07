@@ -155,7 +155,7 @@ const VARIANT_SPEC: &str = r#"{
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "base"},
-    {"name": "threats_off", "set": ["threats.variant=off"]}
+    {"name": "cards_off", "set": ["cards.variant=off"]}
   ],
   "difficulties": [0],
   "agents": ["random", "greedy"],
@@ -165,7 +165,8 @@ const VARIANT_SPEC: &str = r#"{
 }"#;
 
 /// Two agents and two variants, one switching a module off: the
-/// comparison sections appear, with their machine-readable twins.
+/// comparison sections appear, with their machine-readable twins. (The cards
+/// module, not threats: with threats off a debug greedy game runs ~2 s.)
 #[test]
 fn experiment_reports_comparisons() {
     let root = fresh_dir("aic-sim-experiment-variants", true);
@@ -183,7 +184,7 @@ fn experiment_reports_comparisons() {
         // greedy wins most here, so it is the top agent itself.
         "Top agent (greedy",
         "What a module is worth",
-        "| threats (threats_off) |",
+        "| cards (cards_off) |",
     ] {
         assert!(report.contains(section), "report lacks {section}\n{report}");
     }
@@ -199,7 +200,7 @@ fn experiment_reports_comparisons() {
     assert_eq!(results["variants"].as_array().unwrap().len(), 2);
     let removals = results["removals"].as_array().unwrap();
     assert_eq!(removals.len(), 2);
-    assert_eq!(removals[0]["modules"][0], "threats");
+    assert_eq!(removals[0]["modules"][0], "cards");
     assert_eq!(results["top_agent"]["agent"], "greedy");
     for c in results["cells"].as_array().unwrap() {
         assert!(c["buildings_played_per_game"].as_f64().unwrap() >= 0.0);
@@ -213,7 +214,7 @@ fn experiment_omits_comparisons_that_do_not_apply() {
     let root = fresh_dir("aic-sim-experiment-single", true);
     let body = VARIANT_SPEC
         .replace(
-            r#"{"name": "threats_off", "set": ["threats.variant=off"]}"#,
+            r#"{"name": "cards_off", "set": ["cards.variant=off"]}"#,
             r#"{"name": "threats_on", "set": []}"#,
         )
         .replace(r#""random", "greedy""#, r#""random""#);
@@ -470,11 +471,11 @@ fn experiment_killed_partway_leaves_a_partial_report() {
 fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     let dir = fresh_dir("panic-gate", true);
     let spec = spec_in(&dir, r#"{"name": "panic-gate", "configs": ["configs/baseline.json"], "difficulties": [2],
-            "agents": ["greedy", "greedy:no_counters=1"], "games": 4, "first_seed": 50, "records": 0,
+            "agents": ["greedy", "greedy:no_counters=1"], "games": 2, "first_seed": 50, "records": 0,
             "gate": {"z": 2.0, "min_games": 2, "every": 2},
             "inject_panic": {"cell": 1, "seed": 51}}"#);
     let out = dir.join("out");
-    let run = experiment(&spec, &out, &["--threads", "1"]);
+    let run = experiment(&spec, &out, &["--threads", "2"]);
     let stderr = String::from_utf8_lossy(&run.stderr);
     assert_eq!(run.status.code(), Some(1), "{stderr}");
     assert!(stderr.contains("1 game(s) PANICKED"), "{stderr}");
@@ -498,7 +499,7 @@ fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     assert_eq!(played, results["games_played"].as_u64().unwrap() as usize);
 
     // --resume plays it again, and it panics again: listed afresh, not twice.
-    let again = experiment(&spec, &out, &["--threads", "1", "--resume"]);
+    let again = experiment(&spec, &out, &["--threads", "2", "--resume"]);
     assert_eq!(again.status.code(), Some(1));
     let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();
     assert_eq!(failed.lines().count(), 1);

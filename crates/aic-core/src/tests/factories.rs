@@ -178,23 +178,19 @@ fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
 }
 
 #[test]
-fn player_factories_make_chips_on_production_steps_only() {
-    // 137: the clock is 3 (both) every round; a war-only dial makes none.
-    let setup = |sets: &[&str]| {
-        let (rules, mut g0) = lab_with(&["board.bases"], sets);
-        let m = &rules.map;
-        let f = m.numbered(0, piece(0).factories[0]);
-        put(&mut g0, f, FACTORY, 1);
-        put(&mut g0, f, cube(0), 1);
-        // Every zone taken, so nothing grows.
-        for c in 0..2 {
-            for &z in &piece(c).industry {
-                put(&mut g0, m.numbered(c, z), FACTORY, 1);
-            }
+fn player_factories_make_chips_every_round() {
+    // 139: production runs every round (no clock).
+    let (rules, mut g0) = lab(&["board.bases"]);
+    let m = &rules.map;
+    let f = m.numbered(0, piece(0).factories[0]);
+    put(&mut g0, f, FACTORY, 1);
+    put(&mut g0, f, cube(0), 1);
+    // Every zone taken, so nothing grows.
+    for c in 0..2 {
+        for &z in &piece(c).industry {
+            put(&mut g0, m.numbered(c, z), FACTORY, 1);
         }
-        (rules, g0)
-    };
-    let (rules, g0) = setup(&[]);
+    }
     for round in [1, 2] {
         let mut g = g0.clone();
         g.round = round;

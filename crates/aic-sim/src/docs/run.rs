@@ -130,7 +130,7 @@ fn op_uses() -> BTreeMap<String, usize> {
     }
     for p in &c.map.countries {
         let m = &p.megaproject;
-        for ops in [&m.player, &m.adversary, &m.after, &m.converter.effects] {
+        for ops in [&m.player, &m.adversary, &m.converter.effects] {
             add(ops, &mut out);
         }
     }

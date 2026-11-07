@@ -1323,7 +1323,7 @@ impl Eval {
             let fill = (g.var(alignment::track(side)) as f64 / cap).min(1.0);
             v += weight * (g.var(alignment::tips_key(side)) as f64 + fill);
         }
-        v += w.level * level as f64;
+        v += w.level * level.steps() as f64;
         // A resolved (or ongoing) project counts in full, so letting one
         // fill never scores better than holding it back.
         for id in adversary::projects(g) {

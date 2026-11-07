@@ -19,9 +19,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
         }
         Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
         Op::FlipStation { each_country, force: true } => force_flip(g, cx, ctx, *each_country)?,
-        Op::CorruptCity { at, min_ambassadors, else_ambassadors } => {
-            corrupt_city(g, cx, ctx, *at, *min_ambassadors, *else_ambassadors)
-        }
+        Op::CorruptCity { at } => corrupt_city(g, cx, ctx, *at),
         Op::PlayersLose { resource, amount, all } => {
             for s in ctx.seats(&w, g) {
                 let held = g.resource(s, *resource);
@@ -335,11 +333,9 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
     Ok(())
 }
 
-/// CorruptCity (135 fields): the threat's city; with `min_ambassadors`, only
-/// if it holds that many adversary ambassadors, else `else_ambassadors` land
-/// on it. `at` location (Regime Change) also destroys the nodes on and next
-/// to it, never a last one.
-fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>, min: Option<i64>, else_n: i64) {
+/// CorruptCity with `at` (135): the threat's city. `at` location (Regime
+/// Change) also destroys the nodes on and next to it, never a last one.
+fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) {
     let w = cx.world;
     let cities: Vec<usize> = match city_token(&w, g, ctx) {
         Some(h) => vec![h],
@@ -350,10 +346,6 @@ fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>, min
     };
     for h in cities {
         if corrupted(g, h) {
-            continue;
-        }
-        if min.is_some_and(|m| g.tokens(h, ADV_AMBASSADOR) < m) {
-            adversary::place(g, cx, h, else_n);
             continue;
         }
         adversary::corrupt_city(g, cx, h);

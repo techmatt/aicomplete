@@ -49,10 +49,11 @@ const SHARED_ROW: &str = include_str!("../../../../configs/shared_row.json");
 const ACTIONS: &str = "cards.play+threats.counter+alignment.act+board.act+ai.power";
 
 /// The baseline playing only the action phase, after setup.
+#[track_caller]
 fn action_only(sets: &[&str]) -> (Rules, GameState) {
     let mut c = baseline_with(sets);
     c.round = vec![ACTIONS.into()];
-    let rules = Rules::new(&c).unwrap();
+    let rules = rules_of(&c, "baseline_with", sets);
     let g = rules.new_game(4);
     (rules, g)
 }
@@ -61,18 +62,42 @@ fn baseline() -> Config {
     Config::from_json(BASELINE).unwrap()
 }
 
-/// The baseline with overrides.
+/// The baseline with overrides. A stale override names itself and the test
+/// that passed it (136: one stale `lab_config` line failed ~60 tests with a
+/// bare "not a parameter").
+#[track_caller]
 fn baseline_with(sets: &[&str]) -> Config {
     let mut c = baseline();
-    for o in sets {
-        c.apply_override(o).unwrap();
-    }
+    apply_sets(&mut c,sets);
     c
+}
+
+/// Applies `sets` to `c`, naming the override and the test on a refusal.
+#[track_caller]
+fn apply_sets(c: &mut Config, sets: &[&str]) {
+    for o in sets {
+        if let Err(e) = c.apply_override(o) {
+            panic!("override {o:?} (passed from {}): {e}", std::panic::Location::caller());
+        }
+    }
+}
+
+/// The rules of a helper's config, naming the parameter, the helper whose
+/// overrides may be stale (`helper`) and the test that called it.
+#[track_caller]
+fn rules_of(c: &Config, helper: &str, sets: &[&str]) -> Rules {
+    Rules::new(c).unwrap_or_else(|e| {
+        panic!(
+            "{e}\n  (the config from {helper}, plus this test's overrides {sets:?}; called from {})",
+            std::panic::Location::caller()
+        )
+    })
 }
 
 /// The baseline playing only `round` (give the action phase too), with
 /// buckets too roomy to tip, the clear-board win held back to stage III and
 /// no outright Unity win: a crafted state stays put until the test acts.
+#[track_caller]
 fn lab_config(round: &[&str]) -> Config {
     let mut c = baseline_with(&[
         "alignment.tip_per_player=50",
@@ -105,20 +130,20 @@ fn lab_config(round: &[&str]) -> Config {
 
 /// Rules playing `phases` then the action phase, and a game of them at the
 /// action phase of round 1 with the board emptied (no tokens anywhere).
+#[track_caller]
 fn lab(phases: &[&str]) -> (Rules, GameState) {
     lab_with(phases, &[])
 }
 
 /// `lab` with overrides on top of the lab config, whose params are not the
 /// baseline's (`liberate_at` 1): a test of a tunable's value uses `baseline_with`.
+#[track_caller]
 fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     let mut round = phases.to_vec();
     round.push(ACTIONS);
     let mut c = lab_config(&round);
-    for o in sets {
-        c.apply_override(o).unwrap();
-    }
-    let rules = Rules::new(&c).unwrap();
+    apply_sets(&mut c,sets);
+    let rules = rules_of(&c, "lab_config", sets);
     let mut g = rules.new_game(1);
     // 137: round 1's card may land troops on a factory of the players' choice.
     answer_all(&rules, &mut g);
@@ -131,18 +156,18 @@ fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
 
 /// Rules playing only the action phase (the lab config), and a game of
 /// them after setup, the board as set up.
+#[track_caller]
 fn lab_actions() -> (Rules, GameState) {
     lab_actions_with(&[])
 }
 
 /// `lab_actions` with overrides on top: a test of a mechanic pins the card
 /// numbers it reads, `cards.<id>.cost=N`, so a repricing doesn't break it.
+#[track_caller]
 fn lab_actions_with(sets: &[&str]) -> (Rules, GameState) {
     let mut c = lab_config(&[ACTIONS]);
-    for o in sets {
-        c.apply_override(o).unwrap();
-    }
-    let rules = Rules::new(&c).unwrap();
+    apply_sets(&mut c,sets);
+    let rules = rules_of(&c, "lab_config", sets);
     let g = rules.new_game(1);
     (rules, g)
 }
@@ -372,19 +397,20 @@ fn step_cost(w: &module::World, taken: usize) -> i64 {
     b.economy_track[taken].cost.min(b.play_track[taken].cost)
 }
 
+#[track_caller]
 fn threat_lab() -> (Rules, GameState) {
     threat_lab_with(&[])
 }
 
 /// `threat_lab` with overrides on top: a test pins the card numbers it reads.
+#[track_caller]
 fn threat_lab_with(sets: &[&str]) -> (Rules, GameState) {
     let mut c = lab_config(&[ACTIONS, "threats.execute"]);
     // 138: the threat tests read the printed counters and harms; the
     // calibration dials have their own tests.
-    for o in ["adversary.counter_pct=100,100,100", "adversary.threat_nodes=0,0,0"].iter().chain(sets) {
-        c.apply_override(o).unwrap();
-    }
-    let rules = Rules::new(&c).unwrap();
+    apply_sets(&mut c,&["adversary.counter_pct=100,100,100", "adversary.threat_nodes=0,0,0"]);
+    apply_sets(&mut c,sets);
+    let rules = rules_of(&c, "lab_config and threat_lab", sets);
     let g = rules.new_game(3);
     (rules, g)
 }
@@ -519,38 +545,20 @@ fn random_game(rules: &Rules, seed: u64) -> (GameState, Vec<Action>) {
     (g, rec.actions)
 }
 
-/// Threat variants, Alignment variants, difficulty 0 and 4, the
-/// draft variants and 1-4 countries.
+/// The variant matrix of `configs/variants.json` (threat and Alignment
+/// variants, difficulty 0 and 4, the draft variants and 1-4 countries), which
+/// `scripts/wasm-parity.mjs` and `scripts/bench/same_play.py` read too.
 fn variant_matrix() -> Vec<Config> {
-    let sets: &[&[&str]] = &[
-        &[],
-        &["threats.variant=shared_row"],
-        &["threats.variant=off"],
-        &["alignment.hold_off=0"],
-        &["alignment.variant=off"],
-        &[
-            "alignment.momentum_every=2",
-            "alignment.antimatter_discord=0",
-        ],
-        &["adversary.difficulty=4"],
-        &[
-            "adversary.difficulty=4",
-            "adversary.counter_bonus_all=1",
-            "threats.variant=shared_row",
-        ],
-        &["cards.variant=off"],
-        &["countries=1"],
-        &["countries=3"],
-        &["countries=4"],
-        &[
-            "countries=3",
-            "adversary.difficulty=4",
-            "alignment.hold_off=0",
-        ],
-    ];
-    sets.iter()
+    #[derive(serde::Deserialize)]
+    struct Variants {
+        variants: Vec<Vec<String>>,
+    }
+    let v: Variants = serde_json::from_str(include_str!("../../../../configs/variants.json")).unwrap();
+    v.variants
+        .iter()
         .map(|s| {
-            let c = baseline_with(s);
+            let s: Vec<&str> = s.iter().map(String::as_str).collect();
+            let c = baseline_with(&s);
             Rules::new(&c).unwrap_or_else(|e| panic!("{s:?}: {e}"));
             c
         })
@@ -561,7 +569,7 @@ fn variant_matrix() -> Vec<Config> {
 
 const GOLDEN_REVISION: u32 = 58;
 const GOLDEN_FINGERPRINT: &str = "41ba20f46d0d3a00";
-const GOLDEN_CONTENT_HASH: &str = "506adf78bab370df";
+const GOLDEN_CONTENT_HASH: &str = "978ed08fd7235651";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

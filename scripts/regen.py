@@ -6,7 +6,8 @@ Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), 
 `aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and
 `scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the derived configs: 122 left
 no_liberate.json stale when the baseline gained params), prints the content hash and rules revision from `aic-sim show
-configs/baseline.json` and then `git status --short`. Stops at the first failing step, naming
+configs/baseline.json`, sets docs/rules/README.md's "at rules revision N" line from it, and then
+`git status --short`. Stops at the first failing step, naming
 it. `--no-build` uses the binary already built. `--check` writes nothing: it runs `aic-sim docs
 --check` and `cards_doc.py --check` only and exits 1 if either is stale. Each step prints its
 wall time.
@@ -37,6 +38,30 @@ def step(name, cmd, env=None, capture=False):
         sys.exit(1)
     print(f'   {name}: {dt:.1f} s', flush=True)
     return r.stdout
+
+
+README_LINE = re.compile(r'(What the code implements, at rules revision )(\d+)')
+
+
+def readme_revision(revision, check):
+    """Sets the rules README's "at rules revision N" line to `revision`; with `check`, only
+    reports whether it is stale. Returns True when it matched already."""
+    path = os.path.join(ROOT, 'docs', 'rules', 'README.md')
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    m = README_LINE.search(text)
+    if not m:
+        print(f'FAILED: no "at rules revision N" line in {path}')
+        sys.exit(1)
+    if m.group(2) == revision:
+        return True
+    if check:
+        print(f'docs/rules/README.md says rules revision {m.group(2)}, the code {revision}')
+        return False
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(README_LINE.sub(lambda x: x.group(1) + revision, text, count=1))
+    print(f'docs/rules/README.md: rules revision {m.group(2)} -> {revision}')
+    return True
 
 
 def need_sim():
@@ -73,6 +98,7 @@ def main():
     m = re.search(r'content hash (\S+)\s+rules revision (\S+)', first)
     if m:
         print(f'content hash {m.group(1)}  rules revision {m.group(2)}')
+        readme_revision(m.group(2), check=False)
     else:
         print(f'could not read the hashes from: {first!r}')
     step('git status --short', ['git', 'status', '--short'])

@@ -1244,49 +1244,90 @@ pub fn most_infiltrated_city(
     best.map(|(h, _)| h)
 }
 
-/// What still counts against the purge at `level` (the Unity thresholds
-/// reached): corrupted cities always; adversary ambassadors below level 1;
-/// adversary troops below level 2; botnets below level 3 (019; with two
-/// thresholds, always).
-pub fn purge_count(w: &World, g: &GameState, level: i64) -> i64 {
+/// How much the purge still asks (136): each step of `alignment.purge_at`
+/// reached drops one kind of adversary piece. Corrupted cities always count.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PurgeLevel {
+    /// Every adversary piece: corrupted cities, botnets, troops, ambassadors.
+    All,
+    /// Ambassadors no longer count.
+    NoAmbassadors,
+    /// Ambassadors and troops no longer count.
+    NoTroops,
+    /// Only corrupted cities count.
+    CitiesOnly,
+}
+
+impl PurgeLevel {
+    /// The level after `steps` thresholds reached (three or more: cities only).
+    pub fn from_steps(steps: i64) -> PurgeLevel {
+        match steps {
+            ..=0 => PurgeLevel::All,
+            1 => PurgeLevel::NoAmbassadors,
+            2 => PurgeLevel::NoTroops,
+            _ => PurgeLevel::CitiesOnly,
+        }
+    }
+
+    /// The steps reached, 0-3 (the view's bar, the agents' eval term).
+    pub fn steps(self) -> i64 {
+        self as i64
+    }
+
+    pub fn counts_ambassadors(self) -> bool {
+        self < PurgeLevel::NoAmbassadors
+    }
+
+    pub fn counts_troops(self) -> bool {
+        self < PurgeLevel::NoTroops
+    }
+
+    pub fn counts_botnets(self) -> bool {
+        self < PurgeLevel::CitiesOnly
+    }
+
+    /// The win line for this level.
+    pub fn win_text(self) -> &'static str {
+        match self {
+            PurgeLevel::All => "purge: no corrupted city, botnet, adversary troop or adversary ambassador on the board",
+            PurgeLevel::NoAmbassadors => {
+                "purge: no corrupted city, botnet or adversary troop (ambassadors no longer count)"
+            }
+            PurgeLevel::NoTroops => "purge: no corrupted city or botnet (ambassadors and troops no longer count)",
+            PurgeLevel::CitiesOnly => "purge: no corrupted city (ambassadors, troops and botnets no longer count)",
+        }
+    }
+}
+
+/// What still counts against the purge at `level` (019: botnets until the
+/// last step).
+pub fn purge_count(w: &World, g: &GameState, level: PurgeLevel) -> i64 {
     (0..g.hexes.len()).map(|h| counts_against(w, g, h, level)).sum()
 }
 
 /// What hex `h` adds to [`purge_count`].
-fn counts_against(w: &World, g: &GameState, h: usize, level: i64) -> i64 {
+fn counts_against(w: &World, g: &GameState, h: usize, level: PurgeLevel) -> i64 {
     against_bar(corrupted_city(w, g, h), g.tokens(h, BOTNET), g.tokens(h, ADV_AMBASSADOR), g.tokens(h, TROOP), level)
 }
 
-/// What a hex with these pieces adds to [`purge_count`] at bar `level`.
-pub fn against_bar(corrupted_city: bool, botnets: i64, ambassadors: i64, troops: i64, level: i64) -> i64 {
+/// What a hex with these pieces adds to [`purge_count`] at `level`.
+pub fn against_bar(corrupted_city: bool, botnets: i64, ambassadors: i64, troops: i64, level: PurgeLevel) -> i64 {
     let mut n = corrupted_city as i64;
-    if level < 3 {
+    if level.counts_botnets() {
         n += botnets;
     }
-    if level < 1 {
+    if level.counts_ambassadors() {
         n += ambassadors;
     }
-    if level < 2 {
+    if level.counts_troops() {
         n += troops;
     }
     n
 }
 
 /// Whether [`purge_count`] is 0, stopping at the first piece: every action asks.
-pub fn under_bar(w: &World, g: &GameState, level: i64) -> bool {
+pub fn under_bar(w: &World, g: &GameState, level: PurgeLevel) -> bool {
     !(0..g.hexes.len()).any(|h| counts_against(w, g, h, level) > 0)
-}
-
-pub fn win_text(level: i64) -> String {
-    match level {
-        0 => "purge: no corrupted city, botnet, adversary troop or adversary ambassador on the board"
-            .into(),
-        1 => {
-            "purge: no corrupted city, botnet or adversary troop (ambassadors no longer count)".into()
-        }
-        2 => "purge: no corrupted city or botnet (ambassadors and troops no longer count)".into(),
-        _ => "purge: no corrupted city (ambassadors, troops and botnets no longer count)".into(),
-    }
 }
 
 /// A board loss, if any: a player with no nodes on the board (locked,

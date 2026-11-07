@@ -65,12 +65,12 @@ neighbors change with the country count).
 megaproject is the corp's defining card.
 
 <!-- generated: corps -->
-| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) | Each adversary cube after |
-|---|---|---|---|---|---|
-| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter | lost |
-| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight | lost |
-| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) | lost |
-| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity | lost |
+| Corp | Megaproject | Cubes | At completion: player cube / adversary cube | Converter (as often as you can pay, unless marked) |
+|---|---|---|---|---|
+| Horizon (geothermal and tidal energy) | Tidal Grid | 8 | 3 energy, 3 credits / 1 Sway to Discord | 1 research cube + 2 energy → 1 antimatter |
+| Cintamani (AI and efficiency) | Polar Compute Array | 8 | 1 drawn card, 5 credits / 1 adversary compute | 1 research cube → 2 insight |
+| Onyx (heavy industry, power plants and processors) | Mountain Fusion Works | 8 | 4 chips, 3 credits / 1 Sway to Discord | 1 research cube → 2 chips (once a round) |
+| Biomia (biopunk) | Delta Seawall | 8 | 1 Sway to Unity, 1 drawn card / 1 Sway to Discord | 2 research cubes → 1 Sway to Unity |
 <!-- /generated -->
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). Each makes `station_cubes` research cube
@@ -94,8 +94,8 @@ megaproject is the corp's defining card.
   payout, a neutral cube nothing (an adversary cube, which only a card can put there now, the card's adversary
   payout). Countries complete in piece order.
 - **After completion** that country's stations put their cubes on their owners' boards: a
-  player stores **research cubes**, kept between rounds. A neutral station's cube is lost. (The *Each adversary
-  cube after* column is read by nothing since 137: adversary stations make compute.)
+  player stores **research cubes**, kept between rounds. A neutral station's cube is lost; adversary stations
+  make compute (137).
 - **Converters.** Each completed card prints one converter, used in the action phase by any
   player with a **node in a city of that country** (Matt, r37: any city, owned or not; a node
   elsewhere in the country no longer counts), as often as the player can pay (r41; the

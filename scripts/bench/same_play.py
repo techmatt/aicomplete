@@ -5,8 +5,8 @@
     python scripts/bench/same_play.py compare SIM BASE NEW [--map OLD=NEW]...
         # SIM: the new binary
 
-The matrix covers both configs, 1-4 countries, three difficulties, the off and hold_off=0
-variants, with the random, greedy, engine, rollout and planner agents (030), and one
+The matrix covers both configs, 1-4 countries, three difficulties, the shared variant matrix
+(configs/variants.json, greedy), with the random, greedy, engine, rollout and planner agents (030), and one
 dominance check under the planner, saving every game. `compare` checks:
 
 - summaries match, timing and the content hash aside (renaming ops moves the hash);
@@ -44,6 +44,8 @@ TRACE_NOISE = ("wall ms/game", "seeds ")
 THREADS = []
 # `run --root ROOT`: where the sim runs, so where its relative config paths point.
 ROOT = "."
+# This checkout, for the variant matrix (configs/variants.json) whatever ROOT is.
+REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 # And what a rename moves in a record.
 RENAME_IGNORED = ("config_hash", "final_fingerprint")
 # How much of a difference to print.
@@ -84,8 +86,12 @@ def run(sim, out):
         play(sim, out, f"{cfg}-c2-d2-planner", "planner", 6, cfg, ["countries=2", "adversary.difficulty=2"])
         play(sim, out, f"{cfg}-c3-d2-planner", "planner", 3, cfg, ["countries=3", "adversary.difficulty=2"])
     play(sim, out, "v-planner-never_tag", "planner:never_tag=2", 3, "baseline", ["adversary.difficulty=2"])
-    for v in ("threats.variant=off", "alignment.hold_off=0", "alignment.variant=off", "cards.variant=off"):
-        play(sim, out, "v-" + v, "greedy", 6, "baseline", [v])
+    # The shared variant matrix (configs/variants.json; the base config is played above).
+    with open(os.path.join(REPO, "configs", "variants.json"), encoding="utf-8") as f:
+        variants = json.load(f)["variants"]
+    for sets in variants:
+        if sets:
+            play(sim, out, "v-" + "+".join(sets), "greedy", 6, "baseline", sets)
 
 
 def clean(v, ignored=IGNORED):

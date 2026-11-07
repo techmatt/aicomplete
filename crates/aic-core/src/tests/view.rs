@@ -107,8 +107,11 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
         .iter()
         .map(|c| c.name.as_str())
         .collect();
-    let (mut saw_track_var, mut saw_project, mut saw_choice) = (false, false, false);
-    for config in variant_matrix() {
+    let names = &names;
+    // One thread a variant: the fast lane waits on this test's wall time.
+    let seen: Vec<(bool, bool, bool)> = std::thread::scope(|scope| {
+        let runs: Vec<_> = variant_matrix().into_iter().map(|config| scope.spawn(move || {
+        let (mut saw_track_var, mut saw_project, mut saw_choice) = (false, false, false);
         let rules = Rules::new(&config).unwrap();
         let mut g = rules.new_game(5);
         for step in 0..300 {
@@ -165,7 +168,10 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
             let a = legal[step * 7919 % legal.len()].clone();
             rules.apply_mut(&mut g, &a, None).unwrap();
         }
-    }
+        (saw_track_var, saw_project, saw_choice)
+        })).collect();
+        runs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
     // The games really did hold the bookkeeping the view hides.
-    assert!(saw_track_var && saw_project && saw_choice);
+    assert!(seen.iter().any(|s| s.0) && seen.iter().any(|s| s.1) && seen.iter().any(|s| s.2));
 }

@@ -198,8 +198,8 @@ pub struct CountryPiece {
 /// it with cubes; at the end of production, if it holds `cubes` or more, every
 /// player cube pays `player` to its owner and every adversary cube `adversary`.
 /// After that a seat with a node in a city of the country has the `converter`
-/// (r37; 075: any node there; 074: an aligned city), and each adversary cube made there resolves `after`,
-/// if it prints one (075: none do).
+/// (r37; 075: any node there; 074: an aligned city). An adversary cube made after completion is lost, as a
+/// neutral one is (075).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Megaproject {
@@ -210,9 +210,6 @@ pub struct Megaproject {
     pub player: Vec<Op>,
     pub adversary: Vec<Op>,
     pub converter: Converter,
-    /// May be empty (every project prints none today).
-    #[serde(default)]
-    pub after: Vec<Op>,
 }
 
 /// What a completed megaproject prints for players (074): pay `cost` for
@@ -1130,13 +1127,11 @@ fn check_country_piece(i: usize, p: &CountryPiece, n: usize) -> Result<(), Strin
     }
     let what = format!("project of country piece {i}");
     let m = &p.megaproject;
-    // 075: `after` may be empty (an adversary cube after completion is lost, as a neutral one is).
     if !(6..=12).contains(&m.cubes) || m.player.is_empty() || m.adversary.is_empty() {
         return Err(format!("{what}: 6-12 cubes, and a payout for each color"));
     }
     check_ops(&m.player, Slot::Player, &what)?;
     check_ops(&m.adversary, Slot::Team, &what)?;
-    check_ops(&m.after, Slot::Team, &what)?;
     check_ops(&m.converter.effects, Slot::Player, &what)?;
     if m.converter.cost.is_empty() || m.converter.effects.is_empty() {
         return Err(format!("{what}: a converter has a cost and an effect"));
@@ -1262,7 +1257,7 @@ pub fn content() -> &'static Content {
 
 /// The tables an overlay reaches, each with its index in [`FILES`]. Of the
 /// map only `corps` (075): its country pieces, by lowercase name
-/// (`corps.horizon.project.after=[]`); a layout is not a number to sweep.
+/// (`corps.horizon.project.cubes=8`); a layout is not a number to sweep.
 const OVERLAY_TABLES: [(&str, usize); 7] = [
     ("corps", 0),
     ("cards", 1),

@@ -642,14 +642,10 @@ pub enum Op {
         force: bool,
     },
     /// In each country in scope the uncorrupted city with the most adversary ambassadors is corrupted (`at`: the
-    /// token's; `min_ambassadors`: only with that many, else `else_ambassadors` land).
+    /// token's; `at: location` also destroys the nodes on and next to it).
     CorruptCity {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         at: Option<Spot>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        min_ambassadors: Option<i64>,
-        #[serde(default, skip_serializing_if = "is_zero")]
-        else_ambassadors: i64,
     },
     /// Each player in scope loses `amount` of `resource`, as much as they have (`all`: all of it).
     PlayersLose {

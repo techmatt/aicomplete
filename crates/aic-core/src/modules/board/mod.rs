@@ -2,8 +2,7 @@
 //! ocean, industrial zones; military bases on the fronts), player node
 //! (owned here; AI boards read the track through `track_taken`), the setup,
 //! production every round (factories grow from cities and make chips or
-//! adversary troops, cities, stations, megaprojects; 137: the clock is a dial
-//! at 3), war at the end of every round, player ambassadors and the one site
+//! adversary troops, cities, stations, megaprojects), war at the end of every round, player ambassadors and the one site
 //! model (claim, liberate, block, armor), the standard actions and the round-end cleanup.
 
 use crate::action::Action;
@@ -533,7 +532,7 @@ fn cleanup(g: &mut GameState, cx: &mut Cx) {
     let level = alignment::bar_level(&w, g);
     let botnets = adversary::botnet_count(g, None);
     cx.peak(g, "adversary.botnets_peak", botnets);
-    if level < 3 && botnets > 0 && adversary::purge_count(&w, g, level) == botnets {
+    if level.counts_botnets() && botnets > 0 && adversary::purge_count(&w, g, level) == botnets {
         cx.tally(g, "alignment.purge_blocked_by_botnets", 1);
     }
     // Factories per side, as the game ends (the last round's level).

@@ -201,7 +201,7 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         add(ADVERSARY_PROJECTS, &p.effects);
     }
     for p in &c.map.countries {
-        add(MEGAPROJECTS, &[&p.megaproject.adversary[..], &p.megaproject.after[..]].concat());
+        add(MEGAPROJECTS, &p.megaproject.adversary);
     }
     let mut out: BTreeMap<(usize, usize), Mark> =
         counts.into_iter().map(|(k, n)| (k, Mark::Count(n))).collect();

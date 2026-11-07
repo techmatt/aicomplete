@@ -558,7 +558,7 @@ fn margin(rules: &Rules, g: &GameState) -> Margin {
             .filter(|&&h| common::cube_owner(g, h).is_some())
             .count() as i64,
         blockers,
-        level,
+        level: level.steps(),
         unity_tips: g.var(alignment::tips_key(Side::Unity)),
         botnets_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::BOTNET)).sum(),
         troops_end: (0..g.hexes.len()).map(|h| g.tokens(h, common::TROOP)).sum(),

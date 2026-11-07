@@ -195,10 +195,10 @@ fn reached(thresholds: &[i64], tips: i64) -> i64 {
     thresholds.iter().filter(|&&t| tips >= t).count() as i64
 }
 
-/// The clear-board bar level, from Unity cards drawn (136; 0: no adversary
-/// pieces left; see `adversary::under_bar`).
-pub fn bar_level(w: &World, g: &GameState) -> i64 {
-    reached(w.list("alignment.purge_at"), unity_drawn(g))
+/// The clear-board bar level, from Unity cards drawn (136; see
+/// `adversary::under_bar`).
+pub fn bar_level(w: &World, g: &GameState) -> adversary::PurgeLevel {
+    adversary::PurgeLevel::from_steps(reached(w.list("alignment.purge_at"), unity_drawn(g)))
 }
 
 /// Sways `n` toward `side`. Discord goes straight onto the Discord track;
@@ -302,10 +302,10 @@ pub fn for_botnet_removed(g: &mut GameState, cx: &mut Cx) {
 }
 
 /// Whether the adversary's pieces are under the bar for `level`. The
-/// level-0 bar (no adversary pieces) counts only once this round's adversary
+/// full bar (no adversary pieces) counts only once this round's adversary
 /// card is of stage `clear_win_stage` (the stages are stacked and public).
-fn purge_won(w: &World, g: &GameState, level: i64) -> bool {
-    if level == 0 && g.var(adversary::STAGE) < w.hot(Hot::ClearWinStage) {
+fn purge_won(w: &World, g: &GameState, level: adversary::PurgeLevel) -> bool {
+    if level == adversary::PurgeLevel::All && g.var(adversary::STAGE) < w.hot(Hot::ClearWinStage) {
         return false;
     }
     adversary::under_bar(w, g, level)
@@ -565,15 +565,15 @@ impl Module for Alignment {
             "Discord tips so far; a Discord card's stronger steps count the tips before its own: \"3+ earlier\" first fires on the 4th tip",
         );
         let level = bar_level(w, g);
-        let mut text = adversary::win_text(level);
+        let mut text = level.win_text().to_string();
         let stage = w.int("alignment.clear_win_stage");
-        if level == 0 && g.var(adversary::STAGE) < stage {
+        if level == adversary::PurgeLevel::All && g.var(adversary::STAGE) < stage {
             text += &format!(" (from adversary stage {stage})");
         }
         out.global(
             "bar",
             "clear-board bar",
-            level,
+            level.steps(),
             Some(w.list("alignment.purge_at").len() as i64),
             &text,
         );

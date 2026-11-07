@@ -86,7 +86,7 @@ command, port and path as they are. Everything else about it is in
 
 ```sh
 cargo build --workspace
-cargo test --workspace                             # fast lane: ~8 s once built, ~13 s after an edit in aic-sim (rebuild included); after every change
+cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an edit in aic-sim (rebuild included); after every change
 cargo test-all                                     # full run, slow lane included: ~40 s on 6 test threads, ~2 min with a cold test build (--test-threads=N; -j N fails fast and looks like a pass)
 cargo test-slow                                    # the slow lane alone: nearly all of that
 cargo build --release -p aic-sim                   # ~12 s
@@ -112,9 +112,9 @@ exit code. Cap build jobs with `cargo test --workspace -j 3 -- --include-ignored
 - The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`; debug
   assertions and overflow checks stay on). Unoptimized took 4 min; `opt-level = 2` ran no faster.
 - `cargo test` runs test binaries one after another, so the fast lane's wall clock
-  is roughly the sum of each binary's slowest test. Today that is
-  `experiment_streams_games_and_resumes` and `experiment_reports_comparisons` (~1 s
-  each).
+  is roughly the sum of each binary's slowest test (~1-1.5 s each in aic-sim's three
+  binaries with games). A test that loops over agents or variants splits into one test
+  each, or a scoped thread each, so they run side by side.
 - Per-test times: `RUSTC_BOOTSTRAP=1 target/debug/deps/<binary>.exe --include-ignored -Z
   unstable-options --report-time` (the binary paths are printed by `cargo test --no-run`).
 

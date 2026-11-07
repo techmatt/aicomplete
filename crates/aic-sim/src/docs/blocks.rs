@@ -285,7 +285,6 @@ pub(super) fn corps_block(c: &Content) -> String {
                 m.cubes.to_string(),
                 format!("{} / {}", Megaproject::words(&m.player), Megaproject::words(&m.adversary)),
                 m.converter.words(),
-                if m.after.is_empty() { "lost".to_string() } else { Megaproject::words(&m.after) },
             ]
         })
         .collect();
@@ -296,7 +295,6 @@ pub(super) fn corps_block(c: &Content) -> String {
             "Cubes",
             "At completion: player cube / adversary cube",
             "Converter (as often as you can pay, unless marked)",
-            "Each adversary cube after",
         ],
         rows,
     )
@@ -351,7 +349,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // 139: the extra threats and the corrupt cut sit at whatever level their `_at` dial names.
+    // The extra threats, the corrupt cut and the board's line sit at whatever level their `_at` dial names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         ("Base rules".into(), vec![]),
         (String::new(), vec!["adversary.counter_bonus", "adversary.counter_bonus_all"]),
@@ -368,11 +366,13 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];
-    let steps: [(&str, &str, [&str; 2]); 2] = [
+    let steps: [(&str, &str, &[&str]); 3] = [
         ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
-            ["adversary.extra_threats", "adversary.extra_threats_at"]),
+            &["adversary.extra_threats", "adversary.extra_threats_at"]),
         ("adversary.corrupt_cut_at", "each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
-            ["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+            &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+        ("adversary.board_difficulty_at", "the adversary board's difficulty line (from `board_difficulty_at`)",
+            &["adversary.board_difficulty_at"]),
     ];
     for (dial, text, keys) in steps {
         let at = (int(r, dial).clamp(0, 4)) as usize;
@@ -382,7 +382,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         } else {
             format!("{}; {text}", rows[at].0)
         };
-        rows[at].1.extend(keys);
+        rows[at].1.extend(keys.iter().copied());
     }
     // A level nothing moved onto says so (its counter bonuses are 0 at the baseline).
     for row in rows.iter_mut().filter(|r| r.0.is_empty()) {

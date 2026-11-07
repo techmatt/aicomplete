@@ -219,6 +219,7 @@ fn a_game_deals_every_printed_unity_card() {
     let printed = |t: u8| crate::content().alignment.iter().filter(|c| c.side == Side::Unity && c.tier == t).count();
     assert_eq!(g.pile("alignment.deck.unity.1").len(), printed(1));
     assert_eq!(g.pile("alignment.deck.unity.2").len(), printed(2));
+    assert_eq!(crate::modules::alignment::cards_left(&g, Side::Unity), printed(1) + printed(2));
 }
 
 #[test]

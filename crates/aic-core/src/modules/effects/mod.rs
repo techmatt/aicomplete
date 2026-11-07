@@ -230,7 +230,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             team::troops(g, cx, ctx, *count, *each_country, *destroy)?
         }
         Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
-        Op::CorruptCity { at: None, min_ambassadors: None, else_ambassadors: 0 } => {
+        Op::CorruptCity { at: None } => {
             for c in scope_countries(&w, ctx.scope) {
                 let city = |h: usize| collecting_city(&w, g, h);
                 if let Some(h) = adversary::most_infiltrated_city(&w, g, c, city) {

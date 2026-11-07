@@ -51,7 +51,8 @@ try {
     check(dom.hexes.length > 0, 'hovering the card highlights its sources');
     await js(`window.aic.act({ type: 'pay', seat: ${found.seat}, threat: '${found.threat}', resource: 'credits', amount: 1 })`);
     const err = await js('window.aic.error');
-    check(!!err && /sources in reach/.test(err), `a forged payment is refused: "${err}"`);
+    // 138: a seat with no source in reach is also not near the threat, which the engine checks first.
+    check(!!err && /sources in reach|only a player near the threat can pay/.test(err), `a forged payment is refused: "${err}"`);
     writeFileSync(join(out, 'threat-sources.png'), await page.shot());
   }
   check(consoleErrors.length === 0, `no page errors${consoleErrors.length ? `: ${consoleErrors.join(' | ')}` : ''}`);
