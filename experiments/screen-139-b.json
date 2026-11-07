@@ -1,0 +1,213 @@
+{
+  "name": "screen-139-b",
+  "note": "139 screen B (dev seeds 36800-36815, 16 a cell, the three pairs, d0) on r58 as built: I3 and C2 as in screen A (L1 doesn't act at d0), and L0 (corrupt_cut_at 0: the cut at every level) as a factorial.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_I3",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17"
+      ]
+    },
+    {
+      "name": "br_I3",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17"
+      ]
+    },
+    {
+      "name": "pr_I3",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17"
+      ]
+    },
+    {
+      "name": "bp_C2",
+      "set": [
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "br_C2",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "pr_C2",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "bp_L0",
+      "set": [
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_L0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_L0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "bp_I3+C2",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "br_I3+C2",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "pr_I3+C2",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2"
+      ]
+    },
+    {
+      "name": "bp_I3+L0",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_I3+L0",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_I3+L0",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "bp_C2+L0",
+      "set": [
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_C2+L0",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_C2+L0",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "bp_I3+C2+L0",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_I3+C2+L0",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_I3+C2+L0",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

@@ -557,14 +557,15 @@
    "twists": [
     {
      "op": "each_destroy_node",
-     "count": 1
+     "count": 1,
+     "bases": true
     },
     {
      "op": "corrupt",
      "site": "factory"
     }
    ],
-   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories.",
+   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player with a node on or next to a front's base destroys 1 of those nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",

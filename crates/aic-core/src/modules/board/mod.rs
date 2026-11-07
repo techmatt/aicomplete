@@ -10,7 +10,7 @@ use crate::action::Action;
 use crate::content::{Op, RoundFlag, Side};
 use crate::key::KeyBuf;
 use crate::module::{
-    scheduled, Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
+    Build, Cx, Halt, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World,
 };
 use crate::state::GameState;
 use crate::view::ViewOut;
@@ -46,7 +46,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("start_corrupted", 0, 3, "cities per country that start corrupted"),
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
             ParamSpec::int("unit_cap", 0, 20, "corp units a base holds at most"),
-            ParamSpec::list("clock", 0, 3, "the round track, per round: 1 production, 2 war, 3 both (the last entry repeats; 137: 3, every round, a dial kept to restore the clock)"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with a node next to it"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
@@ -55,7 +54,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
             ParamSpec::int("liberate_facility_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary station or factory"),
-            ParamSpec::int("blocker_stays", 0, 1, "1: an adversary ambassador blocking a station or factory stands while it blocks (137); 0: it is used up when it blocks, as before 137"),
             ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
@@ -283,20 +281,6 @@ fn converter_round(c: usize, s: usize) -> KeyBuf {
     KeyBuf::new("board.converter_round.").num(c).text(".").num(s)
 }
 
-/// The clock's step for round `round`: 1 production, 2 war, 3 both.
-fn clock_step(w: &World, round: u32) -> i64 {
-    scheduled(w.list("board.clock"), round)
-}
-
-/// Whether this round has a production step (factories, troops, chips).
-pub fn production_round(w: &World, g: &GameState) -> bool {
-    clock_step(w, g.round) & 1 != 0
-}
-
-/// Whether this round is a war step (the clock, or this round's adversary card).
-pub fn war_round(w: &World, g: &GameState) -> bool {
-    clock_step(w, g.round) & 2 != 0 || adversary::war_twist(w, g)
-}
 
 #[derive(Debug)]
 struct Board;

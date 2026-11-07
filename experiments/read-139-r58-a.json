@@ -1,0 +1,36 @@
+{
+  "name": "read-139-r58-a",
+  "note": "139 fresh paired read (r58): seeds 36584-36599 (with the other part, 48 a cell: 36584-36599 and 36648-36679), the three pairs, d0-d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36584,
+  "records": 0
+}

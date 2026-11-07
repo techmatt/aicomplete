@@ -23,7 +23,7 @@ Project slots: Military, Open, Open.
 | Mobilization | 2 | Each country: a Military 2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities. |
 | Station Raids | 2 | Each country: Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt research stations. |
 | Fifth Column | 2 | Each country: Influence 2 or Cyber 2. The adversary gains 3 compute. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities (1 fewer). |
-| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories. |
+| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player with a node on or next to a front's base destroys 1 of those nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories. |
 | Supply Lines | 2 | Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Corrupt factories. |
 | Forced March | 2 | Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Corrupt cities. |
 | Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Remove 2 Unity from the Unity track. Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt factories. Corrupt cities. |
@@ -114,9 +114,9 @@ Project slots: Military, Open, Open.
 
 | Project | Tags | Compute per player | Resolves | Text |
 |---|---|---|---|---|
-| Raiding Parties | Military | 4 | once | Every player loses a node or pays 10 credits (never their last node). |
+| Raiding Parties | Military | 4 | once | Every player loses 8 credits. |
 | War Footing | Military | 7 | once | Every corp base fills to its troop cap now. Sway 1 toward Discord. |
-| Purge the Unaligned | Military | 7 | once | Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country. |
+| Purge the Unaligned | Military | 7 | once | Every player loses an ambassador (from their supply, else one on the board). 1 troop lands on a factory in each country. |
 | Armored Columns | Military | 10 | once | In each country, 2 troops land on factories. |
 | Arms Race | Military | 11 | ongoing | Ongoing: each round, every military base makes 1 more troop. |
 | Declaration of War | Military | 18 | ongoing | In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights twice. |

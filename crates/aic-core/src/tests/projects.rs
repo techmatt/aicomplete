@@ -252,14 +252,13 @@ fn botnet_takedown_removes_a_botnet_in_reach() {
     assert_eq!(g.stats.counters["adversary.botnets_removed"], 1);
 }
 
-/// A project that sacrifices node takes each seat's ambassador instead of
-/// its last node (020, 027).
+/// 139: Purge the Unaligned takes an ambassador from each seat, never a node.
 #[test]
-fn purge_the_unaligned_never_takes_a_last_node() {
+fn purge_the_unaligned_takes_an_ambassador_never_a_node() {
     let (rules, mut g) = lab(&[]);
     let homes = [0, 1].map(|c| rules.map.numbered(c, piece(c).node));
     for (s, &h) in homes.iter().enumerate() {
-        put(&mut g, h, node(s), 1);
+        put(&mut g, h, node(s), 2);
         set_res(&mut g, s, Resource::Ambassadors, 1);
     }
     // One factory a country, so its troop asks nothing (024).
@@ -268,9 +267,8 @@ fn purge_the_unaligned_never_takes_a_last_node() {
     }
     row(&mut g, &["purge_the_unaligned"]);
     let cost = adversary::project_cost(&rules.world(), &g, "purge_the_unaligned");
-    // A last node is never offered (027): each seat's ambassador goes.
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, cost)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["purge_the_unaligned"]);
-    assert_eq!((total(&g, node(0)), total(&g, node(1))), (1, 1));
-    assert_eq!(g.stats.counters["alignment.sacrificed_ambassadors"], 2);
+    assert_eq!((total(&g, node(0)), total(&g, node(1))), (2, 2));
+    assert_eq!((g.resource(0, Resource::Ambassadors), g.resource(1, Resource::Ambassadors)), (0, 0));
 }

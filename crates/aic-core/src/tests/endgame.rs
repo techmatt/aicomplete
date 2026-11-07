@@ -135,20 +135,29 @@ fn stage_one_never_takes_a_last_node() {
     assert!(gone, "stage II: it goes");
 }
 
+/// 139 (Offensive): a Discord card deals a threat onto the board's most
+/// threatened node hex instead of destroying the nodes there.
 #[test]
-fn a_discord_card_takes_the_boards_most_threatened_hex() {
-    use crate::modules::effects;
+fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
+    use crate::modules::{effects, threats};
     let (rules, mut g) = lab(&[]);
     let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(1, piece(1).node));
     put(&mut g, a, node(0), 1);
     put(&mut g, b, node(1), 1);
     put(&mut g, b, ADV_AMBASSADOR, 2);
+    let before = threats::active(&g).len();
     with_cx(&rules, |cx| {
-        effects::run(&mut g, cx, &[Op::DestroyNode], &mut effects::Ctx::team().named("discord"))
+        effects::run(&mut g, cx, &[Op::ThreatAtNode { tier: 2 }], &mut effects::Ctx::team().named("discord"))
     })
     .unwrap();
-    assert_eq!((g.tokens(a, node(0)), g.tokens(b, node(1))), (1, 0));
-    assert_eq!(g.stats.counters["board.node_lost.discord"], 1);
+    assert_eq!((g.tokens(a, node(0)), g.tokens(b, node(1))), (1, 1), "no node destroyed");
+    let active = threats::active(&g);
+    assert_eq!(active.len(), before + 1);
+    let (t, country) = *active.last().unwrap();
+    assert_eq!(country, Some(1));
+    assert_eq!(threats::tokens(&g, &t).first(), Some(&b));
+    assert_eq!(rules.world().content.threat(&t).tier, 2);
+    assert_eq!(g.stats.counters["threats.dealt_at_node"], 1);
 }
 
 #[test]

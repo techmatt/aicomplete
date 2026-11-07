@@ -298,11 +298,20 @@ fn discord_cards_step_up_with_the_discord_tip_count() {
         g.vars.insert("alignment.discord_tips".into(), tips);
         next_alignment_card(&mut g, Side::Discord, "blight");
         fill_bucket(&rules, &mut g, Side::Discord);
+        let corrupt = |g: &GameState| (0..g.hexes.len()).filter(|&h| g.tokens(h, ADV_CUBE) > 0).count();
+        let before = corrupt(&g);
         any_action(&rules, &mut g);
         answer_all(&rules, &mut g);
-        assert_eq!(total(&g, ADV_AMBASSADOR), 2 + 2 * each, "{tips} tips");
-        for h in seeded {
-            assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1 + each, "{tips} tips");
+        if tips == 0 {
+            assert_eq!(total(&g, ADV_AMBASSADOR), 2 + 2 * each, "{tips} tips");
+            for h in seeded {
+                assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1 + each, "{tips} tips");
+            }
+        } else {
+            // 139: 5+ creates 3, then Corrupt cities: the 1 + 3 there are a city's 4,
+            // so a city in each country gathers them and corrupts; they return.
+            assert_eq!(corrupt(&g), before + 2, "{tips} tips");
+            assert_eq!(seeded.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum::<i64>(), 0, "{tips} tips");
         }
     }
 }

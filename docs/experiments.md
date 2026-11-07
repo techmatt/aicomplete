@@ -139,21 +139,20 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `read-137.json` (the three pairs, d0-d2, the prompt's numbers as `*_asked` cells, an agent
-  on/off arm: 1728 strategist games, about 20 min on 6 threads), read by 137's `read137.py` (136's and 135's tables
-  plus war, claims, liberations, blocks and armor a game) and `levers.py` (a `<pair>_<lever>` screen, paired); 130's `read130.py` (energy per board, keeps, plays, Action uses), `deck_rates.py` and
-  128's `action_read.py` (why an Action went unused) still apply. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
-  binary. 131's `read131.py` reads `t.` arms against their base agent, paired, with `--same` for identical games.
-- **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min; 1296 strategist games about 10
-  min on 8 threads (r56); r57 (9-round games) 864 in 17 min on 5 threads.
+- **Current recipe:** 139's `read-139-r58-{a,b}.json` (the three pairs, d0-d2, 48 seeds) paired with the old
+  binary's run, merged and read by `139_discord_and_band/read139.py` (`merge`; `discord`: Discord cards, nodes by
+  cause), 137's `read137.py --135` (win, length, ends, war, claims, counters, peaks) and 138's `sum138.py`
+  (corruptions, creation, threats by tier); screens are `<pair>_<lever>` cells (`specs.py`). 130's `read130.py`,
+  128's `action_read.py` and 131's `read131.py` (agent `t.` arms, paired) still apply.
+- **Costs:** an engine game about 0.7 s; r58 strategist games (9 rounds) 768 in under 7 min on 6 threads on a quiet
+  box, twice that with a second run beside.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
   worktree resolves paths against the enclosing repo and silently applies nothing). Run it from its own folder, spec
   copied there. `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
-- **Size levers:** credits feed the purge almost directly through the gain-an-ambassador project, so a size lever's
-  first read is ambassadors bought (`board.std.ambassador`). Income levers are overlays (`ais.builder.credits=16`,
-  `corps.<name>.project.<path>`) and need no build (a content change's numbers-only arm); a rule or map what-if does.
+- **Size levers:** a size lever's first read is ambassadors bought (`board.std.ambassador`). Income levers are
+  overlays (`ais.builder.credits=16`) and need no build; a rule or map what-if does.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
   out/preflight`) for a crash, bad override or dead agent.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and others in
@@ -172,8 +171,9 @@ of this revision used, or it confirms on the seeds that picked the levers. Any i
 ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
 36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read); r55 (136): 36440-36487
 (the fresh paired read), dev 36600-36647 (screens); r56 (137): 36488-36535 (the fresh paired read), dev
-36700-36747 (screens); r57 (138): 36536-36583 (the fresh paired read), dev 36800-36815 (screens and smokes).
-Next free: 36584 (skip 36600-36647, 36700-36747 and 36800-36815).
+36700-36747 (screens); r57 (138): 36536-36583 (the fresh paired read), dev 36800-36815 (screens and smokes); r58
+(139): 36584-36599 and 36648-36679 (the fresh paired read, two specs merged by `139_discord_and_band/read139.py`),
+dev 36800-36831 (screens). Next free: 36680 (skip 36700-36747 and 36800-36831).
 
 ## Reading prices
 

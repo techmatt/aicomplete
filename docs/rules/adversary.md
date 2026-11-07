@@ -113,9 +113,9 @@ resolved (or been discarded), the slots refill.
 | Propaganda Network | universal | 14 | ongoing |
 <!-- /generated -->
 
-Compute goes on one point at a time: a full project resolves before the next lands. Purge the Unaligned's loss is
-any one of the player's ambassadors or nodes, their pick, never their last node. Ongoing projects act in the round's
-build step only.
+Compute goes on one point at a time: a full project resolves before the next lands. No project destroys a node (139):
+Purge the Unaligned takes an ambassador from each player (supply first), Raiding Parties 8 credits. Ongoing projects
+act in the round's build step only.
 
 ## The event deck (the clock and the stager)
 
@@ -176,18 +176,18 @@ last round), a quiet backstop.
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules |  |
-| 1 | Extra threats each round in all, countries in turn | `extra_threats` 1, `counter_bonus` 0, `counter_bonus_all` 0 |
-| 2 | A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above); each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`) | `stage1_removed` 1, `stage3_added` 1, `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 2 |
+| 0 | Base rules; extra threats each round in all, countries in turn | `extra_threats` 1, `extra_threats_at` 0 |
+| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`) | `counter_bonus` 0, `counter_bonus_all` 0, `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1 |
+| 2 | A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above) | `stage1_removed` 1, `stage3_added` 1 |
 | 3 | Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap) | `build_bonus` 1, `stage2_removed` 1 |
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0 |
 <!-- /generated -->
 
-Difficulty 1's extra threats are more pulls of the card's first pull, countries in turn (country 0 in round 1);
+The extra threats (from `extra_threats_at`; 139 moved them from difficulty 1 to every level, and the corrupt cut
+from 2 to 1) are more pulls of the card's first pull, countries in turn (country 0 in round 1);
 difficulty 4's "tier-2 threats sooner" deals a stage-I card's tier-1 pulls from tier 2 once a stage-II card is
 `tier2_early` cards ahead (the face-up card first).
 
-Difficulty is only the configured level: Discord tips don't raise it ([alignment.md](alignment.md)). **The
-players' claim and liberate costs are the same at every difficulty** (Corrupt X's numbers fall; the claim costs don't): difficulty comes from the
-adversary and decks (Discord deck size, threat strength, round cap). The target is in
+Difficulty is only the configured level: Discord tips don't raise it. **The players' claim and liberate costs are
+the same at every difficulty**: difficulty comes from the adversary and decks. The target is in
 `docs/principles.md`; reads are indexed in [experiments/history.md](../../experiments/history.md).

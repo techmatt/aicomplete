@@ -14,7 +14,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 
 - **One opposing ambassador blocks a site's output while it stands.** An adversary ambassador on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the ambassador stays
-  (`blocker_stays` 1; at 0 an adversary blocker on a station or factory is used up as it blocks, the old way). On a
+  (137; 139 dropped the dial that used it up). On a
   clean or aligned city this is the **dark** city (r37, r38): no sale, no energy, and an aligned one sways
   `ambassador_discord` (0) a unit.
 - **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex
@@ -22,8 +22,8 @@ Cities, research stations and factories follow one set of rules and differ only 
   covers the site and your node there.
 - **Claiming is symmetric** (the Claim action, [economy.md](economy.md)): a neutral site in reach with a site claim
   ([README.md](README.md#terms)), for as many ambassadors as the adversary's Corrupt X needs for that type:
-  `claim_city` 4 (Corrupt city's `corrupt_at` 4), `claim_station` 2 and `claim_factory` 2 (138: Corrupt X's are 3,
-  candidates; a question to Matt), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
+  `claim_city` 4 (Corrupt city's `corrupt_at` 4), `claim_station` 3 and `claim_factory` 3 (139, Matt: Corrupt
+  station's and factory's 3), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
   Difficulty lowers only the adversary's number. The bound city at setup is free ([board.md](board.md)).
 - **Liberating an adversary site** (the Liberate action) takes massed ambassadors from one seat's supply and turns it
   neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
@@ -60,8 +60,8 @@ lost node stays until removed.
 Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 in long games).
 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
-and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 2 for a station or
-factory) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
+and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 3 for a station or
+factory, as many as the adversary needs to corrupt it) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
 more for each adversary ambassador sitting on it. Stand one ambassador on an adversary site to shut it off, and clear
 theirs off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
 **What resisted this summary:** a liberated city takes an adversary ambassador straight back (the ladder), and a

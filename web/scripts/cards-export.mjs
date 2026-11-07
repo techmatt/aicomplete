@@ -308,15 +308,27 @@ function frameless(kind, row, fields) {
   };
 }
 
+// 135: a threat prints a counter menu (`counters`: options, each a list of items) and tags, not one
+// `counter` list and a source (139: this read the old fields and threw).
+function counterWords(option) {
+  return option
+    .map((i) => (i.resource ? `${i.amount} ${i.resource}` : i.sacrifice ? `${i.amount} ${i.sacrifice} tags` : `${i.nodes_near} nodes near`))
+    .join(' + ');
+}
+
 function threat(t) {
-  const credits = t.counter.filter(([r]) => r === 'credits').reduce((n, [, a]) => n + a, 0);
+  const options = t.counters ?? [];
+  const first = options[0] ?? [];
+  const credits = first.filter((i) => i.resource === 'credits').reduce((n, i) => n + i.amount, 0);
+  const menu = options.map(counterWords).join(' or ');
+  const tags = (t.tags ?? []).join(', ');
   return frameless('threat', t, {
     tier: t.tier,
     tierLabel: TIER(t.tier),
-    keywords: [`source: ${t.source}`],
-    cost: credits || t.counter.reduce((n, [, a]) => n + a, 0),
-    costLabel: `counter: ${costs(t.counter)}`,
-    price: [['Counter', costs(t.counter)], ['Source', t.source]],
+    keywords: (t.tags ?? []).map((g) => `tag: ${g}`),
+    cost: credits || first.reduce((n, i) => n + (i.amount ?? i.nodes_near ?? 0), 0),
+    costLabel: `counter: ${menu}`,
+    price: [['Counter', menu], ['Tags', tags]],
     ops: { effects: t.effects },
   });
 }
@@ -423,7 +435,7 @@ export function exportCards(root = REPO) {
     ...players.map((c) => playerCard(c, faces[c.id], keep)),
     ...content('threats').map(threat),
     ...content('alignment').map(alignment),
-    ...content('adversary').map(adversary),
+    ...content('adversary').events.map(adversary), // 135: {board, events}
     ...content('projects').map(project),
     ...map.countries.map(megaproject),
     ...content('ais').map((b) => aiBoard(b, cardName)),

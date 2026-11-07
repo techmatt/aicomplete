@@ -570,7 +570,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::FlipStation { .. }
         | Op::CorruptCity { .. }
         | Op::PlayersLose { .. }
-        | Op::DestroyNode
+        | Op::ThreatAtNode { .. }
         | Op::EachDestroyNode { .. }
         | Op::PullUnity { .. }
         | Op::LoseInsight { .. }
@@ -591,7 +591,6 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::CounterAll
         | Op::Pushback { .. }
         | Op::DealThreats { .. }
-        | Op::Sacrifice
         | Op::RemoveBotnets { .. }
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
@@ -628,8 +627,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::SeizeFactory
         | Op::StandingTroopsBonus { .. }
         | Op::Theft { .. }
-        | Op::TroopSteps { .. }
-        | Op::War => panic!("{op:?} is not an instant player op: Content::check rejects it"),
+        | Op::TroopSteps { .. } => panic!("{op:?} is not an instant player op: Content::check rejects it"),
     }
 }
 

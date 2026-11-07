@@ -1,0 +1,75 @@
+{
+  "name": "screen-139-d2",
+  "note": "139 screen D2 (Matt's message 5865; dev seeds 36800-36831, 32 a cell, the three pairs, d0-d2): T1, tier-1 counters at 200% (d0 deals mostly tier 1), with L0 and with I3+L0.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_L0+T1",
+      "set": [
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    },
+    {
+      "name": "br_L0+T1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    },
+    {
+      "name": "pr_L0+T1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    },
+    {
+      "name": "bp_I3+L0+T1",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    },
+    {
+      "name": "br_I3+L0+T1",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    },
+    {
+      "name": "pr_I3+L0+T1",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0",
+        "adversary.counter_pct=200,150,150"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

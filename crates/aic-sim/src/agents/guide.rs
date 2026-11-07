@@ -94,7 +94,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         }
         for op in &w.content.threat(&t).effects {
             match op {
-                Op::EachDestroyNode { count } => {
+                Op::EachDestroyNode { count, .. } => {
                     for s in 0..seats {
                         if board::last_node_safe(w, g, s) {
                             continue;
@@ -129,12 +129,11 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             }
         }
     }
-    if board::war_round(w, g) {
-        let produce = board::production_round(w, g);
+    {
         let cap = w.int("board.unit_cap");
         let units = |b: usize| -> i64 {
             let n = g.tokens(b, UNIT);
-            if produce && common::player_ambassador(g, b).is_none() {
+            if common::player_ambassador(g, b).is_none() {
                 (n + 1).min(cap.max(n))
             } else {
                 n

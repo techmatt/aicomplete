@@ -1,0 +1,104 @@
+{
+  "name": "screen-139-c",
+  "note": "139 screen C (dev seeds 36816-36831, 16 more a cell, the three pairs, d0-d2) on r58 as built: the finalists I3+L1 and C2+L1 beside the asked cell I3+C2+L1, to cut screen A-B's noise.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_I3+L1",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "br_I3+L1",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "pr_I3+L1",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "bp_C2+L1",
+      "set": [
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "br_C2+L1",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "pr_C2+L1",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "bp_I3+C2+L1",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "br_I3+C2+L1",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    },
+    {
+      "name": "pr_I3+C2+L1",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36816,
+  "records": 0
+}

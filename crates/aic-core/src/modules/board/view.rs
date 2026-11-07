@@ -126,31 +126,6 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
             );
         }
     }
-    let step = clock_step(w, g.round);
-    let name = |k: i64| match k & 3 {
-        1 => "production",
-        2 => "war",
-        3 => "production + war",
-        _ => "—",
-    };
-    let track: Vec<String> = (1..=8u32)
-        .map(|r| format!("{r}: {}", name(clock_step(w, r))))
-        .collect();
-    out.global(
-        "clock",
-        name(step),
-        step,
-        None,
-        &format!("the production/war clock (1 production, 2 war, 3 both); this round's step; track {}…", track.join(", ")),
-    );
-    let war = war_round(w, g) as i64;
-    out.global(
-        "war",
-        "war step",
-        war,
-        None,
-        "1 on a war step (the clock or a War card): in production the fronts fight",
-    );
     out.global(
         "fronts",
         "fronts",

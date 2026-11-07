@@ -1,0 +1,26 @@
+## out/readF
+- base d0: 144 games, win 77.8%, median rounds 9.0, Discord tips 3.81
+    Discord cards drawn a game: incursion 0.79, blight 0.65, propaganda 0.64, offensive 0.54, two_fronts 0.54, firestorm 0.56
+    Offensive threats onto a node hex 0.54; ambassadors created by Discord cards 3.03
+    nodes lost a game 6.18: corruption 2.01, counter 0.67, threat1 0.60, threat2 1.53, threat3 0.51, twist 0.71, war 0.15; uncountered threats 2.65 vs corruption 2.01
+- base d1: 144 games, win 61.8%, median rounds 9.0, Discord tips 4.59
+    Discord cards drawn a game: incursion 0.88, blight 0.69, propaganda 0.72, offensive 0.68, two_fronts 0.72, firestorm 0.72
+    Offensive threats onto a node hex 0.68; ambassadors created by Discord cards 3.90
+    nodes lost a game 6.28: corruption 1.96, counter 0.73, threat1 0.62, threat2 1.67, threat3 0.52, twist 0.65, war 0.13; uncountered threats 2.82 vs corruption 1.96
+- base d2: 144 games, win 51.4%, median rounds 9.0, Discord tips 4.60
+    Discord cards drawn a game: incursion 0.85, blight 0.70, propaganda 0.74, offensive 0.74, two_fronts 0.70, firestorm 0.70
+    Offensive threats onto a node hex 0.74; ambassadors created by Discord cards 3.80
+    nodes lost a game 7.16: corruption 2.17, counter 0.60, threat1 0.49, threat2 2.12, threat3 1.02, twist 0.60, war 0.16; uncountered threats 3.63 vs corruption 2.17
+## out/readO
+- base d0: 144 games, win 91.7%, median rounds 9.0, Discord tips 2.34
+    Discord cards drawn a game: incursion 0.65, blight 0.54, propaganda 0.58, offensive 0.18, two_fronts 0.23, firestorm 0.15
+    Offensive threats onto a node hex 0.00; ambassadors created by Discord cards 1.02
+    nodes lost a game 3.50: corruption 1.72, counter 0.35, discord 0.18, project 0.03, threat1 0.17, threat2 0.19, threat3 0.03, twist 0.63, war 0.19; uncountered threats 0.39 vs corruption 1.72
+- base d1: 144 games, win 75.7%, median rounds 9.0, Discord tips 3.14
+    Discord cards drawn a game: incursion 0.75, blight 0.56, propaganda 0.62, offensive 0.47, two_fronts 0.33, firestorm 0.40
+    Offensive threats onto a node hex 0.00; ambassadors created by Discord cards 1.86
+    nodes lost a game 5.85: corruption 1.65, counter 0.71, discord 0.91, project 0.14, threat1 0.36, threat2 1.07, threat3 0.19, twist 0.72, war 0.12; uncountered threats 1.62 vs corruption 1.65
+- base d2: 144 games, win 52.8%, median rounds 8.0, Discord tips 3.72
+    Discord cards drawn a game: incursion 0.78, blight 0.57, propaganda 0.69, offensive 0.54, two_fronts 0.56, firestorm 0.56
+    Offensive threats onto a node hex 0.00; ambassadors created by Discord cards 2.27
+    nodes lost a game 6.71: corruption 1.73, counter 0.49, discord 1.53, project 0.10, threat1 0.37, threat2 1.37, threat3 0.18, twist 0.76, war 0.17; uncountered threats 1.92 vs corruption 1.73

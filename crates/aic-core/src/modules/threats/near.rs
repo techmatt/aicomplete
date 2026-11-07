@@ -87,6 +87,17 @@ pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usiz
     }
 }
 
+/// 139: moves `threat`'s first location token to hex `h`; a second token already there moves off the board.
+pub(super) fn place_first_at(g: &mut GameState, cx: &mut Cx, threat: &Key, h: usize) {
+    for i in 1..MAX_TOKENS {
+        let k = loc_key(threat, i);
+        if g.var(&k) == h as i64 + 1 {
+            cx.set_key(g, &k, 0);
+        }
+    }
+    cx.set_key(g, &loc_key(threat, 0), h as i64 + 1);
+}
+
 /// Takes `threat`'s tokens off the board.
 pub(super) fn clear_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key) {
     for i in 0..MAX_TOKENS {

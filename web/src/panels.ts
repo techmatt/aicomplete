@@ -15,7 +15,7 @@ const DRAWN_GLOBALS = new Set([
   'adversary.stage', 'adversary.difficulty', 'adversary.deck', 'adversary.compute',
   'threats.tier', 'alignment.unity', 'alignment.discord', 'alignment.unity_tips',
   'alignment.discord_tips', 'alignment.bar',
-  'board.war', 'board.fronts',
+  'board.fronts',
 ]);
 /** Piles drawn by the status strip, the adversary row or the countries strip. */
 const DRAWN_PILES = new Set([
@@ -135,10 +135,8 @@ function lossesHtml(v: View, config: Config): string[] {
     loss.push(`<span class="value${least <= 1 ? ' danger' : ''}" title="a seat with no nodes on the board loses the game (early on, nothing destroys a last node)"><span class="label">a seat's last node gone</span> <b>${least}</b><small> fewest held</small></span>`);
   }
   // Unlabeled `vars` (source "engine") are folded under the piles: see `varsHtml`.
-  // The clock's step is a name, not a count: "clock: war" (020: it read "war 2").
-  const clockChip = (x: Value) => `<span class="value" data-value="${esc(x.key)}" data-scope="global"><span class="label">clock</span> <b>${esc(x.label)}</b></span>`;
-  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => (x.key === 'board.clock' ? clockChip(x) : valueChip(x, 'global')));
-  // The other tracks (the clock's step, Unity bonuses) beside the losses, not in them
+  const other = g.filter((x) => !DRAWN_GLOBALS.has(x.key) && x.source !== 'engine').map((x) => valueChip(x, 'global'));
+  // The other tracks (Unity bonuses) beside the losses, not in them
   // (020: drawn inside the red "Lose if" group).
   return [
     ...(loss.length ? [`<span class="losses"><span class="what">Lose if</span>${loss.join('')}</span>`] : []),
@@ -161,8 +159,7 @@ function adversaryCard(c: CardView, where: string, title: string): string {
   // The view's text starts "stage n: "; the stage is drawn as a chip instead.
   const text = def?.text ?? (c.text ?? '').replace(/^stage \d+:\s*/, '');
   const stage = def ? `<span class="stage">stage ${def.stage}</span>` : '';
-  const war = def?.twists.some((t) => t.op === 'war') ? '<span class="war-tag">war</span>' : '';
-  return `<div class="acard" data-card="${esc(c.id)}" data-where="${where}"><div class="sline"><span class="stitle">${title}</span><span class="sname">${esc(c.name)}</span>${stage}${war}</div><div class="atext">${esc(text)}</div></div>`;
+  return `<div class="acard" data-card="${esc(c.id)}" data-where="${where}"><div class="sline"><span class="stitle">${title}</span><span class="sname">${esc(c.name)}</span>${stage}</div><div class="atext">${esc(text)}</div></div>`;
 }
 
 function cardBox(p: PileView | undefined, title: string, empty: string, cls: string): string {
@@ -171,13 +168,6 @@ function cardBox(p: PileView | undefined, title: string, empty: string, cls: str
     ? p.visible.map((c) => adversaryCard(c, `pile:${p.key}`, title)).join('')
     : `<div class="sline"><span class="stitle">${title}</span></div><span class="empty">${esc(empty)}</span>`;
   return `<div class="slot-box ${cls}" data-pile="${esc(p.key)}">${cards}</div>`;
-}
-
-/** The war-round badge, drawn when `board.war` is 1. */
-function warBadge(v: View): string {
-  const war = findValue(v.globals, 'board.war');
-  if (!war?.value) return '';
-  return `<span class="war-round" data-value="${esc(war.key)}" data-scope="global">⚔ war round</span>`;
 }
 
 export function pipelineHtml(v: View): string {
@@ -211,7 +201,7 @@ export function pipelineHtml(v: View): string {
   ].filter(Boolean);
   const left = onBoard(v, ['ambassador:adversary', 'troop']);
   const pieces = `<span class="left" title="adversary pieces on the board">on board: ${left['ambassador:adversary']} ambassador${left['ambassador:adversary'] === 1 ? '' : 's'} · ${left.troop} troop${left.troop === 1 ? '' : 's'}</span>`;
-  return `<div class="phead"><b>Adversary</b>${head}${pieces}${warBadge(v)}</div><div class="prow">${boxes.join(arrow)}</div>${projectsHtml(v)}`;
+  return `<div class="phead"><b>Adversary</b>${head}${pieces}</div><div class="prow">${boxes.join(arrow)}</div>${projectsHtml(v)}`;
 }
 
 /**

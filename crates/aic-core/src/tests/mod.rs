@@ -539,7 +539,6 @@ fn variant_matrix() -> Vec<Config> {
             "threats.variant=shared_row",
         ],
         &["cards.variant=off"],
-        &["board.clock=3"],
         &["countries=1"],
         &["countries=3"],
         &["countries=4"],
@@ -560,9 +559,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 57;
-const GOLDEN_FINGERPRINT: &str = "a842f85bc9b8e59f";
-const GOLDEN_CONTENT_HASH: &str = "b73aafe4db1e3995";
+const GOLDEN_REVISION: u32 = 58;
+const GOLDEN_FINGERPRINT: &str = "41ba20f46d0d3a00";
+const GOLDEN_CONTENT_HASH: &str = "506adf78bab370df";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

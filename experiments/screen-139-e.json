@@ -1,0 +1,54 @@
+{
+  "name": "screen-139-e",
+  "note": "139 screen E (dev seeds 36800-36831, 32 a cell, the three pairs, d0) on r58 frozen (I3 + L1 in the baseline): X0, the extra threats moved from d1 to d0 (extra_threats_at 0); d1 and d2 play as before.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_X0",
+      "set": [
+        "adversary.extra_threats_at=0"
+      ]
+    },
+    {
+      "name": "br_X0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.extra_threats_at=0"
+      ]
+    },
+    {
+      "name": "pr_X0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.extra_threats_at=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

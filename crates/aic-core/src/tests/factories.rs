@@ -201,12 +201,6 @@ fn player_factories_make_chips_on_production_steps_only() {
         run(&rules, &mut g);
         assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), 1, "round {round}");
     }
-    // A war step only (the dial at 2): no chips, troops or growth.
-    let (rules, g0) = setup(&["board.clock=2"]);
-    let mut g = g0.clone();
-    run(&rules, &mut g);
-    assert_eq!(g.resource(0, Resource::Chips), g0.resource(0, Resource::Chips));
-    assert_eq!(total(&g, UNIT), 0);
 }
 
 /// 137: corp troops come from Discord tips: each neutral factory makes 1 on

@@ -242,7 +242,7 @@ function renderPhase() {
     const o = v.outcome;
     // The sentence first, the reason code (what `--save-when` takes) after it.
     status = `<span class="outcome ${o.won ? 'won' : 'lost'}">${o.won ? 'WON' : 'LOST'} in round ${o.round}: ${escapeHtml(o.detail)} <code>${escapeHtml(o.reason)}</code></span>`;
-  } else status = ''; // who is to act is in #prompt; a war round is marked on the adversary row
+  } else status = ''; // who is to act is in #prompt
   ui.phaseBar.innerHTML = `<b>Round ${v.round}</b> <span class="order">${order}</span> ${status}`;
 }
 

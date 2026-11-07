@@ -7,16 +7,15 @@
   ],
   "cost": 4,
   "ongoing": false,
-  "text": "Every player loses a node or pays 10 credits (never their last node).",
+  "text": "Every player loses 8 credits.",
   "effects": [
    {
-    "op": "lose_node_or",
+    "op": "players_lose",
     "resource": "credits",
-    "amount": 10
+    "amount": 8
    }
   ],
   "harms": [
-   "node destroyed",
    "credits or income lost"
   ]
  },
@@ -56,10 +55,10 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country.",
+  "text": "Every player loses an ambassador (from their supply, else one on the board). 1 troop lands on a factory in each country.",
   "effects": [
    {
-    "op": "sacrifice"
+    "op": "lose_ambassador"
    },
    {
     "op": "troops",
@@ -69,7 +68,6 @@
   ],
   "harms": [
    "ambassadors lost",
-   "node destroyed",
    "adversary pieces placed"
   ]
  },

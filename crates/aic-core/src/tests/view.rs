@@ -47,16 +47,7 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
             .unwrap_or_else(|| panic!("{k} missing"))
     };
     assert_eq!(global("board.fronts").value, m.fronts.len() as i64);
-    let clock = global("board.clock");
-    // 137: production and war every round.
-    assert_eq!(clock.value, 3);
-    assert!(
-        clock.doc.contains("1: production + war, 2: production + war, 3: production + war"),
-        "{}",
-        clock.doc
-    );
     assert!(global("adversary.compute").value > 0);
-    assert_eq!(global("board.war").value, 1);
     let supply = global("adversary.supply");
     assert_eq!((supply.value, supply.max), (g.var(SUPPLY), Some(48)));
     assert_eq!(
@@ -163,8 +154,6 @@ fn the_view_follows_every_variant_and_keeps_bookkeeping_out_of_globals() {
                 "adversary.supply",
                 "adversary.deck",
                 "adversary.compute",
-                "board.clock",
-                "board.war",
                 "board.fronts",
             ] {
                 assert!(v.globals.iter().any(|x| x.key == k), "{k}");

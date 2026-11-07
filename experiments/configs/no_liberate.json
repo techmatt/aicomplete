@@ -9,19 +9,15 @@
         "start_corrupted": 1,
         "start_ambassadors": 1,
         "unit_cap": 2,
-        "clock": [
-          3
-        ],
         "aligned_bonus": 0,
         "station_cubes": 1,
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
         "liberate_facility_at": 3,
-        "blocker_stays": 1,
         "claim_city": 4,
-        "claim_station": 2,
-        "claim_factory": 2,
+        "claim_station": 3,
+        "claim_factory": 3,
         "last_safe_stage": 2,
         "free_leaves": 1,
         "destruction_discord": 1,
@@ -73,7 +69,7 @@
           1,
           0
         ],
-        "corrupt_cut_at": 2,
+        "corrupt_cut_at": 1,
         "blight_discord": 1,
         "threat_nodes": [
           1,
@@ -88,6 +84,7 @@
         "counter_bonus": 0,
         "counter_bonus_all": 0,
         "extra_threats": 1,
+        "extra_threats_at": 0,
         "stage1_removed": 1,
         "stage3_added": 1,
         "stage2_removed": 1,

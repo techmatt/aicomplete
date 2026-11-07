@@ -85,9 +85,8 @@ mkdirSync(join(out, 'shots'), { recursive: true });
 const PAGE_LIB = String.raw`(() => {
   const aic = window.aic;
   const rnd = (s) => () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296);
-  const war = (v) => v.globals.find((g) => g.key === 'board.war')?.value ?? 0;
   const sig = (v) => ({ round: v.round, phase: v.phase ? v.phase.index : -1, choice: v.choice ? v.choice.prompt.replace(/\d+/g, '#') : null,
-    war: war(v), outcome: v.outcome ? v.outcome.reason : null });
+    outcome: v.outcome ? v.outcome.reason : null });
   /** What an engine event means for the table, if it is a key one (events are generic:
    *  tokens_changed, var_changed, card_moved, note; 020: matching on type never fired). */
   function keyEvent(e) {
@@ -127,12 +126,9 @@ const PAGE_LIB = String.raw`(() => {
     const ev = fresh.length ? ' event: ' + fresh.join(', ') : '';
     // 099: with what was new in the last step (it was marked seen and left off).
     if (b.outcome && !a.outcome) return 'end: ' + b.outcome + ev;
-    // A war round starts with its round: say so in the round's label (020: tested after
-    // the round, so it never fired).
     // 044: the adversary's whole turn lands in that one step: say what was new in it.
-    if (b.round !== a.round) return 'round ' + b.round + (b.war ? ' (war)' : '') + ev;
+    if (b.round !== a.round) return 'round ' + b.round + ev;
     if (b.choice && b.choice !== a.choice && !seenChoices.has(b.choice)) { seenChoices.add(b.choice); return 'choice: ' + b.choice.slice(0, 60) + ev; }
-    if (b.war !== a.war && b.war) return 'war step' + ev;
     if (ev) return ev.trim();
     if (b.phase !== a.phase && !seenPhases.has(b.round + ':' + b.phase)) { seenPhases.add(b.round + ':' + b.phase); return b.round <= 1 ? 'phase ' + b.phase : null; }
     return null;

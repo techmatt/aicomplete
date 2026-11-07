@@ -122,7 +122,7 @@ speeds it: claimed, built and neutral stations all add cubes.
 **For new players.** Every research station makes a cube a round, yours or a neutral one; the adversary's make it
 compute instead. A country's cubes fill its corp's megaproject, and when the card fills, at
 the end of production, every cube on it pays, overflow included: yours pay you what the
-card says, neutral ones pay nothing. So claim the neutral station (2 ambassadors) or build one before the card
+card says, neutral ones pay nothing. So claim the neutral station (3 ambassadors) or build one before the card
 fills. After that your stations there put cubes on your board, and if you have a node on one of that country's
 cities (any city, not only yours) you can spend them on its converter, as often as you can pay (Onyx's once a
 round), or anywhere for 1 insight each. Take back an adversary station with 3 of your ambassadors; the adversary can

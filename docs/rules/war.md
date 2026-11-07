@@ -4,8 +4,7 @@
 
 ## Every round: production, then war at the end
 
-There is no production/war clock (137; restoring it is a candidate: `board.clock` is kept as a dial, at 3, both every
-round). **Production runs every round** and is one snapshot (135): chips, adversary troops, energy, stations, income
+There is no production/war clock (137; cut for good at 139, Matt). **Production runs every round** and is one snapshot (135): chips, adversary troops, energy, stations, income
 and upkeep all read the board as the step starts. **War is fought at the end of every round** on every front, after
 threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli,
 General Mobilization; candidate): the fronts next to the threat's base fight twice in next round's war (their troops
@@ -112,7 +111,7 @@ it, or put the Protector's node on it or in its way. Troops don't hit nodes.
 
 **Sites, bases and war, for new players.** Cities, research stations and factories work alike: whoever owns one gets
 its output (energy, research cubes, chips), and the adversary's make Discord, compute or raiders. Claim a neutral site
-with your ambassadors (4 for a city, 2 for a station or factory); take one back from the adversary with more (5 for a
+with your ambassadors (4 for a city, 3 for a station or factory); take one back from the adversary with more (5 for a
 city, 3 for a station or factory). One of your ambassadors standing on an adversary site shuts it off, and one of
 theirs shuts off yours; your own ambassador on your piece takes a hit for it. Each border between countries has a
 military base on each side, a pile of corp troops: every Discord tip, each neutral factory adds a troop to each of its
@@ -127,28 +126,26 @@ other, and it moves ambassadors one hex onto the site that corrupts ([adversary.
 `board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never move or strike.
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
-**It is a slide, not a cliff:** a seat loses tokens a few at a time from the middle of the
-game on, from several sources: uncountered threats (Eviction offers it as a choice;
-Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper
-Cells, Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and
-Siege two), a site that becomes corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next to it:
-0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex),
-stage-III adversary cards (each player destroys two) and Border War (one), Discord cards,
-and Purge the Unaligned. **Discord steps:** the tier-2 cards and the tier-1 card left for
-the last tip make each player destroy nodes of theirs at their printed steps ([alignment.md](alignment.md); the
-brief's 1, 2, 3; **Candidate**). A hit is each player's own pick of which token, and it is
-absorbed as any destruction is (below), so a token shielded by an ambassador is a good pick.
+**It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
+the game on, only where the board is overrun: uncountered threats near the node (`threat_nodes` by tier; Eviction
+offers it as a choice; Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper Cells,
+Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and Siege two), a site that becomes
+corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next
+to it: 0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex) and Border War (each
+player with a node on or next to a front's base destroys 1 of those; Matt's message 5847). **Nothing else destroys a
+node:** Discord cards, projects and the other event cards print board pressure instead (more or higher-tier threats,
+creation, Corrupt lines, credits, Unity or ambassadors lost; [alignment.md](alignment.md)); Offensive deals a threat
+onto the node hex with the most adversary ambassadors and troops (ties: country, then lower hex number), which
+destroys nodes only if it goes uncountered. A hit is each player's own pick of which token, and it is absorbed as any
+destruction is (below), so a token shielded by an ambassador is a good pick.
 **While this round's adversary card is stage I, a player's last node can't be destroyed**
-(candidate, **Early fragility**): each player starts with 1, and a war in round 2 would
+(candidate, **Early fragility**, kept at 139): each player starts with 1, and a war in round 2 would
 otherwise end the game. Eviction goes further: it takes a node only from a player with 2 or
-more, at any stage. Offensive's target, on the board, is the node hex with the most
-adversary ambassadors and troops (ties: country, then lower hex number). Purge the Unaligned
-has each player give up any one of their ambassadors (supply or a hex) or nodes, never a last node; a node lost
-this way leaves the game. A site that corrupts destroys the node on its hex as any destruction (138): an
+more, at any stage. A site that corrupts destroys the node on its hex as any destruction (138): an
 ambassador there, a shield or a shelter answers it.
 
-**A lost node (locked, as in Spirit Island).** A destroyed node, or one lost to Purge the
-Unaligned, **leaves the game**: it does not go back on its track, and what it uncovered stays
+**A lost node (locked, as in Spirit Island).** A destroyed node, or one paid to counter a threat,
+**leaves the game**: it does not go back on its track, and what it uncovered stays
 uncovered. Each lost token is a board location you can no longer act from, so getting all
 your nodes out is always a tradeoff.
 

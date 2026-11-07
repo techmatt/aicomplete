@@ -8,9 +8,9 @@ use crate::vocab::TokenKind;
 #[test]
 fn an_op_in_the_wrong_list_fails_to_load() {
     let bad = [
-        (Op::War, Slot::Player),
+        (Op::EachDestroyNode { count: 1, bases: false }, Slot::Team),
         (Op::HardenAction { chips: 1 }, Slot::Threat),
-        (Op::Sacrifice, Slot::Player),
+        (Op::ThreatAtNode { tier: 2 }, Slot::Player),
         (Op::CutBotnet, Slot::Team),
         (Op::Sway { side: crate::content::Side::Unity, amount: 1 }, Slot::Standing),
         (Op::Compute { amount: 1 }, Slot::Twist),

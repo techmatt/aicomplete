@@ -55,10 +55,8 @@ round's Sway is the phase `alignment.sway`, first in the round: the adversary bo
 drip (in its content; the Militarist prints none), and nothing else (no AI board
 prints a Unity Sway). An uncountered threat sways `threat_discord` (an unprinted rule, kept).
 
-**More Unity.** Unity comes from pushing the adversary back: liberating a corrupted city sways
-`alignment.free_city`, clearing a corruption marker `clear_unity`, removing a botnet
-`alignment.botnet`, and cards. A player ambassador on a producing base or factory stops its
-troop and sways nothing (r55).
+**More Unity** comes from pushing the adversary back (the table). A player ambassador on a producing base or factory
+stops its troop and sways nothing (r55).
 
 **The antimatter action.** In the action phase (`...+alignment.act`), any player may sway
 `antimatter_discord` toward Discord to gain 1 antimatter, up to `antimatter_uses` times a
@@ -73,10 +71,8 @@ on its side's resolved pile; there are no ongoing cards. **Neither deck ever res
 they are the game's two clocks.** A Discord tip that needs a card and finds the deck empty
 loses the game (**locked**, Matt); drawing the last Unity card wins it outright, and that
 card doesn't act. **Every printed Unity card is dealt** (r55: 9; drawing the 9th wins). Choices
-are asked of seat 0. "hidden like fear cards" is read as a face-down deck resolved the moment it
-tips; Spirit Island holds earned fear cards face down until a later phase, which would be a timing
-change. Grassroots Funding, Think Tank and New Deal give income "for the rest of the game": a
-one-shot card that moves a printed income marker, not a card left in play.
+are asked of seat 0. "Hidden" is read as a face-down deck resolved the moment it tips. Grassroots
+Funding, Think Tank and New Deal move a printed income marker "for the rest of the game".
 
 **Steps.** A Discord card prints its strength by the Discord tip count (counted before this
 tip, so "3+ earlier Discord tips" first fires on the 4th tip). Unity cards have no steps.
@@ -93,12 +89,12 @@ tip, so "3+ earlier Discord tips" first fires on the 4th tip). Unity cards have 
 | Global Coalition | unity | 2 | Counter every active threat. |  |
 | New Deal | unity | 2 | Every player gains 4 credits now, and 2 credits each round for the rest of the game. |  |
 | Decommission | unity | 2 | Remove a botnet anywhere on the board. |  |
-| Incursion | discord | 1 | Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and each player destroys 2 of their nodes. | 5 |
-| Blight | discord | 1 | Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, and each player destroys 2 of their nodes. | 5 |
-| Propaganda | discord | 1 | Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their nodes. | 5 |
-| Offensive | discord | 2 | Corrupt cities, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then Corrupt cities, and each player destroys 2. | 3, 4 |
-| Two Fronts | discord | 2 | Deal 2 extra threats. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: deal 3, and each player destroys 2. | 3, 4 |
-| Firestorm | discord | 2 | Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: create 3, and each player destroys 2. | 3, 4 |
+| Incursion | discord | 1 | Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and a tier-3 threat in each country. | 5 |
+| Blight | discord | 1 | Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, then Corrupt cities. | 5 |
+| Propaganda | discord | 1 | Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits and remove 4 Unity instead, and every player loses 2 ambassadors. | 5 |
+| Offensive | discord | 2 | Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: the threat is tier 3. 4+ instead: the adversary builds first, then Corrupt cities and the tier-3 threat. | 3, 4 |
+| Two Fronts | discord | 2 | Deal 2 extra threats. 3+ earlier Discord tips: a tier-3 threat in each country instead. 4+ instead: deal 3, and a tier-3 threat in each country. | 3, 4 |
+| Firestorm | discord | 2 | Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: then Corrupt cities. 4+ instead: create 3, then Corrupt cities (1 fewer). | 3, 4 |
 <!-- /generated -->
 
 A threat countered by a card is discarded and its partial payments are refunded.
@@ -106,19 +102,22 @@ A threat countered by a card is discarded and its partial payments are refunded.
 
 - Open Market's free cards are keeps of drafted cards ([player-cards.md](player-cards.md)), by any player, used before
   credits.
-- **Unity pulled back:** "Remove N Unity from the Unity track" removes up to N (r55: it
-  used to return them to the Undecided).
-- Extra threats come from the current tier's deck (an empty deck reshuffles, as for the
-  round's deal), one per country in turn from country 0 (`shared_row`: into the row), and
-  are countered or execute like any other. One dealt after the round's counter phase (a tip
-  in production or upkeep, False Flag) waits beside the row and executes next round, after a
-  counter phase.
+- **Unity pulled back:** "Remove N Unity from the Unity track" removes up to N.
+- Extra threats come from the current tier's deck (an empty deck reshuffles), one per country in turn from country 0
+  (`shared_row`: into the row), and are countered or execute like any other. One dealt after the round's counter
+  phase (a tip in production or upkeep, False Flag) waits and executes next round, after a counter phase.
 - Blight and Firestorm create on the lowest-numbered city holding adversary ambassadors (138: a creation line); a
   country with none gains nothing. Blight and Civil Defense also open a neutral factory or research station on each
   board. Civil Defense in a country with no adversary ambassador removes nothing.
-- Offensive acts at once, out of the round's order: Corrupt cities, and at 4+ tips the adversary builds first (the
-  board's and this round's card's creation lines). Before the build step (a tip in the Sway phase, from a
-  board's drip) this round's card is the face-up one.
+- **Discord cards destroy no nodes (139, Matt):** their later steps add pressure on the board instead (more or
+  tier-3 threats, creation, Corrupt lines) or strip player pieces (credits, Unity, ambassadors); nodes then fall
+  only where the board is overrun ([war.md](war.md), *Node destruction*). "A tier-3 threat in each country" pulls
+  from the tier-3 deck, any tag, one a country.
+- Offensive acts at once, out of the round's order: Corrupt cities (at 4+ tips the adversary builds first: the
+  board's and this round's card's creation lines), then a threat of its tier, any tag, is dealt into the country of
+  the node hex with the most adversary ambassadors and troops (ties: country, then lower hex number), its first
+  location token on that hex. It is countered or executes like any other; dealt after the counter phase, it waits a
+  round. Before the build step (a tip in the Sway phase, from a board's drip) this round's card is the face-up one.
 
 **The purge (the win), by Unity cards drawn (r55, candidate).** What you must remove from the
 board to win depends on how many Unity cards have been drawn (`purge_at`: ambassadors, troops,
@@ -140,12 +139,10 @@ factories every round. The level-0 purge (below the first step) counts only once
 round's adversary card is of stage `clear_win_stage` or later; at 1 (the default) that is from
 round 1's card on.
 
-**No escalation in play.** Discord tips don't raise the difficulty. Discord escalates
-through each tip's card and the Discord cards' printed steps, and from `discord_tier2` tips
-draws from the stronger tier. The view shows the configured level.
+**No escalation in play:** Discord tips don't raise the difficulty; the cards' steps and tiers escalate.
 
 <!-- generated: game_end -->
-**How the game ends, for new players.** You win by purging the board or by drawing the last Unity card. Pressure comes every round: the face-up adversary event card deals threats by your sites and names a kind of site, and every such site gains an adversary ambassador, so you always know where the next wave lands. Ambassadors pile up, pairs become botnets, 4 on a city corrupt it, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Unity has its own track, which nothing on the Discord side empties: free a corrupted city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your ambassadors for the same, so you choose between racing toward Unity and holding off the next Discord card. All 9 Unity cards are dealt, and drawing the last wins at once. With 3 Unity cards drawn the purge no longer asks you to clear adversary ambassadors; with 6, it asks only for no corrupted cities. You also lose if any player has no nodes left on the board. Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and a lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most, though games rarely reach it. So there are three different pressures: the Discord deck (politics), your nodes (the board) and the cap.
+**How the game ends, for new players.** You win by purging the board or by drawing the last Unity card. Pressure comes every round: the face-up adversary event card deals threats by your sites and says where its new adversary ambassadors land (the lowest-numbered sites of a kind), so you always know where the next wave lands. Ambassadors pile up, a card's Corrupt line pulls 4 of them on and next to a city into it and corrupts it, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create ambassadors, run Corrupt lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the Discord side empties: free a corrupted city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your ambassadors for the same, so you choose between racing toward Unity and holding off the next Discord card. All 9 Unity cards are dealt, and drawing the last wins at once. With 3 Unity cards drawn the purge no longer asks you to clear adversary ambassadors; with 6, it asks only for no corrupted cities. You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's base). A lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most, though games rarely reach it. So there are three different pressures: the Discord deck (politics), your nodes (the board) and the cap.
 <!-- /generated -->
 
 **The printed steps:** with no reshuffle the draw order is fixed, tier 1 at tips 0-1 and 5,

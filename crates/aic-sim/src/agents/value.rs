@@ -597,8 +597,8 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             let lost = if *destroy { row("destroy_node").abs() } else { 0.0 };
             Worth::now(row("troops") * n - lost * n)
         }
-        Op::DestroyNode => Worth::now(row("destroy_node")),
-        Op::EachDestroyNode { count } => Worth::now(row("each_destroy_node") * *count as f64),
+        Op::ThreatAtNode { tier } => Worth::now(row("threat_at_node") * *tier as f64),
+        Op::EachDestroyNode { count, .. } => Worth::now(row("each_destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
         Op::LoseInsight { amount } => Worth::unseen(row("lose_insight") * *amount as f64),
         Op::FlipStation { each_country, .. } => {
@@ -631,7 +631,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::CounterAll => Worth::now(row("counter_all")),
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
         Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
-        Op::Sacrifice => Worth::now(row("sacrifice")),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per, amount } => {
@@ -695,7 +694,6 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::DiscardHand { resource, amount } => {
             Worth::now(row("discard_hand") * t.rate("hand_discards") * (r(*resource) * *amount as f64 - t.rate("dead_card")))
         }
-        Op::War => Worth::now(row("war")),
         // 135: the new adversary model's threat and team ops (no player card prints them).
         Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
         Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),

@@ -10,7 +10,7 @@ is printed under it. Uncovered values add to the income every round (insight at 
 upkeep). The board module owns nodes and counts the tokens taken (`board.track.<seat>`); the AI board reads it.
 
 **The Builder, for new players.** Your special rule is Breadth: five building slots (the Protector has four, the
-Researcher three), so your engine is wider. You start with 40 credits and earn 24 a round, and each credit space of your
+Researcher three), so your engine is wider. You start with 40 credits and earn 21 a round, and each credit space of your
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each), so choose between more cards
 now and more money for the first plays. Each round you may turn credits into a chip with Mint, 5 credits into an
@@ -21,14 +21,14 @@ hand for no credits.
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
 strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build lands 1 troop on a factory
 (else a city) in every country you're in (anyone's factory, never your node's hex), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
-facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (22 a round), so you start with
+facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (19 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each). Late in the game, sacrifice
 cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
 cards (Debrief), and a Security card with an energy shelters a whole country for the round.
 
 **The Researcher, for new players.** Your special rule is Patience: your own insight you don't spend stays with you
-into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 20 a round, 3 more for each credit
+into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 17 a round, 3 more for each credit
 space of your economy track; round 1 deals you 8 tier-1 cards, 4 of them free to keep and 5 credits each after, and 2 tier-2 cards at 1 insight each. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 1 energy into 3 cards, a card from your hand into 2 insight (Synthesis), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and no energy,
@@ -48,9 +48,9 @@ placements a round it is reachable about round 8.
 <!-- generated: boards -->
 | Board | Printed income | Starting credits | Slots | Printed tags | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|
-| Builder | 24 credits, 5 insight | 40 | 5 | Industry | 7 | 7 | 14 |
-| Protector | 22 credits, 5 insight, 1 energy | 46 | 4 | Security | 7 | 7 | 14 |
-| Researcher | 20 credits, 5 insight | 40 | 3 | Science | 7 | 7 | 14 |
+| Builder | 21 credits, 5 insight | 40 | 5 | Industry | 7 | 7 | 14 |
+| Protector | 19 credits, 5 insight, 1 energy | 46 | 4 | Security | 7 | 7 | 14 |
+| Researcher | 17 credits, 5 insight | 40 | 3 | Science | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate; Matt).** Until engines carry the economy, the boards start and earn much

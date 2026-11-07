@@ -27,7 +27,6 @@ fn extra_corp_troops_go_past_the_cap_but_one_a_base_a_production_step() {
     let w = rules.world();
     let cap = w.int("board.unit_cap");
     g.round = 1;
-    assert!(board::production_round(&w, &g));
     let [b0, b1] = rules.map.fronts[0].bases;
     put(&mut g, b0, UNIT, cap);
     put(&mut g, b1, UNIT, cap);
@@ -54,7 +53,7 @@ fn warmongering_needs_an_adversary_troop_by_the_base() {
 }
 
 #[test]
-fn war_brought_forward_fights_a_front_off_the_clock_and_twice_on_it() {
+fn war_brought_forward_fights_a_front_twice() {
     let setup = |sets: &[&str]| {
         let (rules, mut g0) = lab_with(&["board.war"], sets);
         let m = &rules.map;
@@ -70,25 +69,10 @@ fn war_brought_forward_fights_a_front_off_the_clock_and_twice_on_it() {
         (rules, g0, fs)
     };
 
-    // 137: the clock is 3, war every round; a production-only dial (1) is no
-    // war round: only a front brought forward fights.
-    let (rules, g0, fs) = setup(&["board.clock=1"]);
+    // 139: war every round, so it fights twice: the surplus strikes twice.
+    let (rules, g0, fs) = setup(&[]);
     let left = |g: &GameState| fs.iter().map(|&f| g.tokens(f, FACTORY)).sum::<i64>();
-    let w = rules.world();
     let mut g = g0.clone();
-    assert!(!board::war_round(&w, &g));
-    run(&rules, &mut g);
-    assert_eq!(left(&g), fs.len() as i64);
-    let mut g = g0.clone();
-    setv(&mut g, &board::extra_war_key(0), 1);
-    run(&rules, &mut g);
-    assert_eq!(left(&g), fs.len() as i64 - 1);
-
-    // On a war round it fights twice: the surplus strikes twice.
-    let (rules, g0, _) = setup(&[]);
-    let w = rules.world();
-    let mut g = g0.clone();
-    assert!(board::war_round(&w, &g));
     // The key holds the round of the second fight: this one.
     setv(&mut g, &board::extra_war_key(0), 1);
     run(&rules, &mut g);

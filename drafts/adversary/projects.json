@@ -9,19 +9,18 @@
    ],
    "cost": 4,
    "ongoing": false,
-   "text": "Every player loses a node or pays 10 credits (never their last node).",
+   "text": "Every player loses 8 credits.",
    "effects": [
     {
-     "op": "lose_node_or",
+     "op": "players_lose",
      "resource": "credits",
-     "amount": 10
+     "amount": 8
     }
    ],
    "harms": [
-    "node destroyed",
     "credits or income lost"
    ],
-   "value": "absorbs 4 a player (8 to drain); harm a node (6) or 10 credits, the player's pick: 6-10, about 8 a player; 1.5-2.5, about 2.0 a compute",
+   "value": "absorbs 4 a player (8 to drain); harm 8 credits a player (139: the node half is gone; it was a node or 10, about 8); 2.0 a compute",
    "check": "the first project to fill, rounds 2-4; each player picks the cheaper half, so it never strands a seat; no loop",
    "flags": [],
    "reuses": null
@@ -71,10 +70,10 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country.",
+   "text": "Every player loses an ambassador (from their supply, else one on the board). 1 troop lands on a factory in each country.",
    "effects": [
     {
-     "op": "sacrifice"
+     "op": "lose_ambassador"
     },
     {
      "op": "troops",
@@ -84,10 +83,9 @@
    ],
    "harms": [
     "ambassadors lost",
-    "node destroyed",
     "adversary pieces placed"
    ],
-   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 4-6 (ambassador or node, their pick) + a troop and its strike (about 10) = 14-16; 2.0-2.3 a compute",
+   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): an ambassador (4; 139: no node option) + a troop and its strike (about 10) = 14; 2.0 a compute",
    "check": "mid-game, rounds 4-7; the troop is answered like any landing; the loss is everyone's pick, so it never strands a seat",
    "flags": [],
    "reuses": "purge_the_unaligned"

@@ -1,6 +1,5 @@
 use super::*;
 use crate::config::{ModuleConfig, ParamValue};
-use crate::modules::board;
 
 #[test]
 fn config_diff_names_a_changed_variant() {
@@ -64,7 +63,7 @@ fn bad_configs_are_rejected_with_a_reason() {
         ("adversary.variant=nope", "unknown variant"),
         ("adversary.dificulty=3", "not a parameter"),
         ("adversary.difficulty=5", "outside"),
-        ("board.clock=0,4", "outside"),
+        ("adversary.stage_cards=4,21,3", "outside"),
         ("adversary.corrupt_at=1,2", "expected an integer"),
         // 135: threats come from the event cards' pulls, not a count per country.
         ("threats.per_country=1", "not a parameter"),
@@ -109,23 +108,13 @@ fn bad_configs_are_rejected_with_a_reason() {
 
 #[test]
 fn list_parameters_accept_a_single_integer() {
-    let rules = Rules::new(&baseline_with(&["ai.boards=1", "board.clock=2"])).unwrap();
+    let rules = Rules::new(&baseline_with(&["ai.boards=1"])).unwrap();
     let params = |m: &str| rules.config.module(m).unwrap().params.clone();
     assert_eq!(params("ai")["boards"], ParamValue::List(vec![1]));
-    assert_eq!(params("board")["clock"], ParamValue::List(vec![2]));
-    // Every seat now plays the Protector, and every round is a war step only.
+    // Every seat now plays the Protector.
     let w = rules.world();
     assert_eq!(modules::ai::board(&w, 0).id, "protector");
     assert_eq!(modules::ai::board(&w, 1).id, "protector");
-    let mut g = rules.new_game(1);
-    g.piles.remove(CURRENT);
-    for r in 1..=5 {
-        g.round = r;
-        assert!(
-            board::war_round(&w, &g) && !board::production_round(&w, &g),
-            "round {r}"
-        );
-    }
 }
 
 #[test]
@@ -174,17 +163,12 @@ fn tunables_list_every_module_parameter() {
         assert_eq!(find(k).kind, "int", "{k}");
     }
     for k in [
-        "board.clock",
         "adversary.stage_cards",
         "alignment.purge_at",
         "ai.boards",
     ] {
         assert_eq!(find(k).kind, "list", "{k}");
     }
-    let clock = find("board.clock");
-    assert_eq!((clock.min, clock.max), (0, 3));
-    // 137: production and war every round.
-    assert_eq!(clock.value, ParamValue::List(vec![3]));
     // One per declared parameter: no duplicates.
     let keys: BTreeSet<&str> = t.iter().map(|x| x.key.as_str()).collect();
     assert_eq!(keys.len(), t.len());

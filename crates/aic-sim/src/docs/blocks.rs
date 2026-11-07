@@ -351,25 +351,44 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    let rows: [(&str, String); 5] = [
-        ("Base rules", String::new()),
+    // 139: the extra threats and the corrupt cut sit at whatever level their `_at` dial names.
+    let mut rows: Vec<(String, Vec<&str>)> = vec![
+        ("Base rules".into(), vec![]),
+        (String::new(), vec!["adversary.counter_bonus", "adversary.counter_bonus_all"]),
         (
-            "Extra threats each round in all, countries in turn",
-            t(&["adversary.extra_threats", "adversary.counter_bonus", "adversary.counter_bonus_all"]),
+            "A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above)".into(),
+            vec!["adversary.stage1_removed", "adversary.stage3_added"],
         ),
         (
-            "A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above); each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
-            t(&["adversary.stage1_removed", "adversary.stage3_added", "adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+            "Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap)".into(),
+            vec!["adversary.build_bonus", "adversary.stage2_removed"],
         ),
         (
-            "Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap)",
-            t(&["adversary.build_bonus", "adversary.stage2_removed"]),
-        ),
-        (
-            "A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup",
-            t(&["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"]),
+            "A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup".into(),
+            vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];
+    let steps: [(&str, &str, [&str; 2]); 2] = [
+        ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
+            ["adversary.extra_threats", "adversary.extra_threats_at"]),
+        ("adversary.corrupt_cut_at", "each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
+            ["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+    ];
+    for (dial, text, keys) in steps {
+        let at = (int(r, dial).clamp(0, 4)) as usize;
+        rows[at].0 = if rows[at].0.is_empty() {
+            let mut c = text.chars();
+            c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default()
+        } else {
+            format!("{}; {text}", rows[at].0)
+        };
+        rows[at].1.extend(keys);
+    }
+    // A level nothing moved onto says so (its counter bonuses are 0 at the baseline).
+    for row in rows.iter_mut().filter(|r| r.0.is_empty()) {
+        row.0 = "Counter bonuses only".into();
+    }
+    let rows: Vec<(String, String)> = rows.into_iter().map(|(text, keys)| (text, t(&keys))).collect();
     let rows = rows
         .into_iter()
         .enumerate()
@@ -689,22 +708,26 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     format!(
         "**How the game ends, for new players.** You win by purging the board or by drawing the last \
          Unity card. Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and names a kind of site, \
-         and every such site gains an adversary ambassador, so you always know where the next wave \
-         lands. Ambassadors pile up, pairs become botnets, {} on a city corrupt it, and corrupted \
+         by your sites and says where its new adversary ambassadors land (the lowest-numbered sites of a \
+         kind), so you always know where the next wave lands. Ambassadors pile up, a card's Corrupt line \
+         pulls {} of them on and next to a city into it and corrupts it, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
-         you lose. Unity has its own track, which nothing on the Discord side empties: free a corrupted \
+         you lose. Discord cards never destroy your nodes: they deal more or stronger threats (Offensive \
+         aims one at the node hex most crowded with adversary pieces), create ambassadors, run Corrupt \
+         lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the \
+         Discord side empties: free a corrupted \
          city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
          Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. All {unity} Unity cards are dealt, and drawing the last wins at once. \
          {easing} You also lose if any player has no nodes left on the board. \
-         Threats, war, corruption and late adversary and Discord cards destroy it, a token at a time, and \
-         a lost token leaves the game and marks its hex, so you can't act from there any more; its income \
-         stays. In stage I your last one is safe. The adversary deck is a round cap too, {} rounds at most, \
-         though games rarely reach it. So there are three different pressures: the Discord deck (politics), \
-         your nodes (the board) and the cap.\n",
+         Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
+         their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's \
+         base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
+         income stays. In stage I your last one is safe. The adversary deck is a round cap too, {} rounds at \
+         most, though games rarely reach it. So there are three different pressures: the Discord deck \
+         (politics), your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
         dealt(r, 0).iter().sum::<usize>(),
     )

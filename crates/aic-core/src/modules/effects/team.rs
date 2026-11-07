@@ -56,7 +56,8 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
     Ok(())
 }
 
-pub(super) fn destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
+/// 139 (Offensive): a `tier` threat dealt with its first token on the most threatened node hex in scope.
+pub(super) fn threat_at_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, tier: u8) -> Res {
     let w = cx.world;
     let threat = |g: &GameState, h: usize| g.tokens(h, ADV_AMBASSADOR) + g.tokens(h, TROOP);
     // `max_by_key` takes the last of equals: walk from the top.
@@ -66,17 +67,18 @@ pub(super) fn destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
         .filter(|&h| node_owner(g, h).is_some())
         .max_by_key(|&h| threat(g, h));
     if let Some(h) = top {
-        for s in 0..g.seats.len() {
-            if g.tokens(h, node(s)) > 0 {
-                board::destroy_piece(g, cx, h, node(s), board::Cause::Effect(ctx.label));
-            }
-        }
+        threats::deal_at(g, cx, tier, h)?;
     }
+    Ok(())
 }
 
-pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64) -> Res {
+pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, bases: bool) -> Res {
     let w = cx.world;
-    let hexes = ctx.hexes(&w, g);
+    let mut hexes = ctx.hexes(&w, g);
+    // 139 (Border War): only nodes on or next to a front's base.
+    if bases {
+        hexes.retain(|&h| within(&w, h, 1).into_iter().any(|x| is_base(&w, x)));
+    }
     for s in ctx.seats(&w, g) {
         for _ in 0..count {
             // 135: a threat never takes a last node.

@@ -8,7 +8,7 @@
    "text": "You have 5 building slots; the Protector has 4 and the Researcher 3.",
    "passives": []
   },
-  "credits": 24,
+  "credits": 21,
   "income": [
    [
     "insight",
@@ -343,7 +343,7 @@
     }
    ]
   },
-  "credits": 22,
+  "credits": 19,
   "income": [
    [
     "insight",
@@ -649,7 +649,7 @@
     }
    ]
   },
-  "credits": 20,
+  "credits": 17,
   "income": [
    [
     "insight",

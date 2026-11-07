@@ -146,15 +146,15 @@ try {
   let hexChoices = 0;
   let armedAtOnce = 0;
   const shots = new Set();
-  const seen = { standard: new Set(), sell: 0, war: 0, warShown: 0 };
+  const seen = { standard: new Set(), sell: 0, fronts: 0, frontsAtWar: 0 };
   while (clicks < 3000 && !(await js(`!!document.querySelector('#phase-bar .outcome')`))) {
     const st = await js(`(() => {
       const v = window.aic.view;
       const hexPick = !!v.choice && window.aic.legal.some((a) => a.type === 'choose' && a.target);
-      const war = v.globals.find((g) => g.key === 'board.war')?.value === 1;
       return { hexPick, targets: document.querySelectorAll('#board .hex.target').length, prompt: document.querySelector('#prompt.choice') ? 1 : 0,
-               phase: v.phase?.name ?? '', round: v.round, war,
-               warShown: war && !!document.querySelector('#pipeline .war-round') && !!document.querySelector('#board .fronts.war'),
+               phase: v.phase?.name ?? '', round: v.round,
+               fronts: v.hexes.some((h) => h.kind === 'base' && h.facing !== undefined),
+               frontsAtWar: !!document.querySelector('#board .fronts.war'),
                standard: [...document.querySelectorAll('#seats .actions button.a-standard')].map((b) => JSON.parse(b.dataset.action).act),
                sell: document.querySelectorAll('#seats .actions button.a-sell').length };
     })()`);
@@ -165,7 +165,7 @@ try {
     }
     for (const a of st.standard) seen.standard.add(a);
     seen.sell += st.sell ? 1 : 0;
-    if (st.war) { seen.war++; seen.warShown += st.warShown ? 1 : 0; }
+    if (st.fronts) { seen.fronts++; seen.frontsAtWar += st.frontsAtWar ? 1 : 0; }
     if (st.round >= 2 && st.phase.includes('cards.play') && !shots.has('mid')) {
       shots.add('mid');
       await shot('play-mid-1366', 'viewer-mid');
@@ -230,7 +230,8 @@ try {
   check(evictions.every((x) => x === true), `evicting leaves the ambassador on the piece (${evictions.filter((x) => x === true).length}/${evictions.length}) ${evictions.find((x) => x !== true) ?? ''}`);
   check(armedAtOnce === hexChoices, `hex choices highlight their hexes at once (${armedAtOnce}/${hexChoices})`);
   check(seen.standard.size > 0 && seen.sell > 0, `standard actions offered as buttons (${[...seen.standard].join(', ')}) and selling a card`);
-  check(seen.war === 0 || seen.warShown === seen.war, `war rounds marked on the adversary row and fronts (${seen.warShown}/${seen.war} war-round steps)`);
+  // 139: no clock, war every round: the fronts are always drawn at war.
+  check(seen.fronts > 0 && seen.frontsAtWar === seen.fronts, `fronts drawn at war (${seen.frontsAtWar}/${seen.fronts} steps)`);
   await shot('play-end-1366', 'viewer-end');
 
   // Layout: no page scroll at both ends of the supported range.

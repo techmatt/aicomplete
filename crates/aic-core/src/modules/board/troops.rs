@@ -24,18 +24,15 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
     if passes.iter().all(|&p| p == 0) {
         return;
     }
-    let war = war_round(&w, g);
-    if war {
-        cx.note(None, || "War round: the fronts fight".into());
-    }
+    cx.note(None, || "War: the fronts fight".into());
     let mut destroyed = 0;
     for (i, f) in w.map.fronts.iter().enumerate() {
         let steps = passes[i];
         if steps == 0 {
             continue;
         }
-        if steps > 1 || !war {
-            cx.tally(g, "board.war_extra_steps", steps - war as i64);
+        if steps > 1 {
+            cx.tally(g, "board.war_extra_steps", steps - 1);
         }
         let [ba, bb] = f.bases;
         let (ua, ub) = (g.tokens(ba, UNIT), g.tokens(bb, UNIT));
@@ -77,27 +74,23 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
             }
         }
     }
-    if war {
-        cx.tally(g, "board.war_rounds", 1);
-    }
     cx.tally(g, "board.war_destroyed", destroyed);
 }
 
-/// The war steps each front fights this round (135): 1 on a war round, 1
+/// The war steps each front fights this round (135): 1 every round (139: no clock), 1
 /// more where a threat brought war forward on it for this round (Casus
-/// Belli), and 1 more on a war round for the front with the most corp troops
+/// Belli), and 1 more for the front with the most corp troops
 /// (ties: the first) while an ongoing project says so (Declaration of War).
 pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
-    let war = war_round(w, g) as i64;
     let mut out: Vec<i64> = (0..w.map.fronts.len())
-        .map(|i| war + (g.var(&extra_war_key(i)) == g.round as i64) as i64)
+        .map(|i| 1 + (g.var(&extra_war_key(i)) == g.round as i64) as i64)
         .collect();
     let doubles = g.pile(adversary::PROJECTS_ONGOING).iter().any(|id| {
         w.content.project(id).effects.iter().any(|e| {
             matches!(e, Op::ExtraWar { front: Some(crate::op::FrontPick::MostCorpTroops), .. })
         })
     });
-    if war > 0 && doubles {
+    if doubles {
         let units = |i: usize| {
             let [a, b] = w.map.fronts[i].bases;
             g.tokens(a, UNIT) + g.tokens(b, UNIT)

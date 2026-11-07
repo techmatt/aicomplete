@@ -132,7 +132,7 @@
   "name": "Incursion",
   "side": "discord",
   "tier": 1,
-  "text": "Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and each player destroys 2 of their nodes.",
+  "text": "Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and a tier-3 threat in each country.",
   "effects": [
    {
     "op": "deal_threats",
@@ -148,8 +148,9 @@
       "count": 3
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "deal_threats",
+      "count": 1,
+      "tier": 3
      }
     ]
    }
@@ -160,7 +161,7 @@
   "name": "Blight",
   "side": "discord",
   "tier": 1,
-  "text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, and each player destroys 2 of their nodes.",
+  "text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, then Corrupt cities.",
   "effects": [
    {
     "op": "create",
@@ -184,8 +185,12 @@
       "if": "ambassadors"
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "create_site",
+      "kind": "factory"
+     },
+     {
+      "op": "corrupt",
+      "site": "city"
      }
     ]
    }
@@ -196,7 +201,7 @@
   "name": "Propaganda",
   "side": "discord",
   "tier": 1,
-  "text": "Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits instead, and each player destroys 2 of their nodes.",
+  "text": "Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits and remove 4 Unity instead, and every player loses 2 ambassadors.",
   "effects": [
    {
     "op": "players_lose",
@@ -218,12 +223,14 @@
       "amount": 8
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "pull_unity",
+      "amount": 4
      },
      {
-      "op": "pull_unity",
-      "amount": 2
+      "op": "lose_ambassador"
+     },
+     {
+      "op": "lose_ambassador"
      }
     ]
    }
@@ -234,14 +241,15 @@
   "name": "Offensive",
   "side": "discord",
   "tier": 2,
-  "text": "Corrupt cities, then destroy all nodes on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: the adversary builds, then Corrupt cities, and each player destroys 2.",
+  "text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: the threat is tier 3. 4+ instead: the adversary builds first, then Corrupt cities and the tier-3 threat.",
   "effects": [
    {
     "op": "corrupt",
     "site": "city"
    },
    {
-    "op": "destroy_node"
+    "op": "threat_at_node",
+    "tier": 2
    }
   ],
   "steps": [
@@ -253,11 +261,8 @@
       "site": "city"
      },
      {
-      "op": "destroy_node"
-     },
-     {
-      "op": "each_destroy_node",
-      "count": 1
+      "op": "threat_at_node",
+      "tier": 3
      }
     ]
    },
@@ -272,8 +277,8 @@
       "site": "city"
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "threat_at_node",
+      "tier": 3
      }
     ]
    }
@@ -284,7 +289,7 @@
   "name": "Two Fronts",
   "side": "discord",
   "tier": 2,
-  "text": "Deal 2 extra threats. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: deal 3, and each player destroys 2.",
+  "text": "Deal 2 extra threats. 3+ earlier Discord tips: a tier-3 threat in each country instead. 4+ instead: deal 3, and a tier-3 threat in each country.",
   "effects": [
    {
     "op": "deal_threats",
@@ -297,11 +302,8 @@
     "effects": [
      {
       "op": "deal_threats",
-      "count": 2
-     },
-     {
-      "op": "each_destroy_node",
-      "count": 1
+      "count": 1,
+      "tier": 3
      }
     ]
    },
@@ -313,8 +315,9 @@
       "count": 3
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "deal_threats",
+      "count": 1,
+      "tier": 3
      }
     ]
    }
@@ -325,7 +328,7 @@
   "name": "Firestorm",
   "side": "discord",
   "tier": 2,
-  "text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: each player also destroys 1 of their nodes. 4+ instead: create 3, and each player destroys 2.",
+  "text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: then Corrupt cities. 4+ instead: create 3, then Corrupt cities (1 fewer).",
   "effects": [
    {
     "op": "create",
@@ -345,8 +348,8 @@
       "if": "ambassadors"
      },
      {
-      "op": "each_destroy_node",
-      "count": 1
+      "op": "corrupt",
+      "site": "city"
      }
     ]
    },
@@ -360,8 +363,9 @@
       "if": "ambassadors"
      },
      {
-      "op": "each_destroy_node",
-      "count": 2
+      "op": "corrupt",
+      "site": "city",
+      "cut": 1
      }
     ]
    }

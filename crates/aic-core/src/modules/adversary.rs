@@ -31,7 +31,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty 1+: added to every threat's first counter requirement"),
     ParamSpec::int("counter_bonus_all", 0, 10, "difficulty 1+: added to every counter requirement of every threat"),
-    ParamSpec::int("extra_threats", 0, 5, "difficulty 1+: extra threats dealt each round in all, one per country in turn"),
+    ParamSpec::int("extra_threats", 0, 5, "difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn"),
+    ParamSpec::int("extra_threats_at", 0, 5, "the difficulty level from which extra_threats are dealt (139)"),
     ParamSpec::int("stage1_removed", 0, 3, "difficulty 2+: stage-I cards removed"),
     ParamSpec::int("stage3_added", 0, 3, "difficulty 2+: stage-III cards added (the cap holds, its end gets harder)"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
@@ -201,11 +202,6 @@ pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
         .collect()
 }
 
-/// Whether this round's card makes it a war round.
-pub fn war_twist(w: &World, g: &GameState) -> bool {
-    twists(w, g).iter().any(|t| matches!(t, Op::War))
-}
-
 #[derive(Debug)]
 struct Adversary {
     /// What this difficulty deals from stage I, II and III.
@@ -369,9 +365,8 @@ impl Module for Adversary {
                         Op::Sway { .. } | Op::EachDestroyNode { .. } | Op::PullUnity { .. } => {
                             effects::run(g, cx, std::slice::from_ref(t), &mut effects::Ctx::team().named("twist").why(&c.name))?
                         }
-                        // Read where they act: the corrupt step (138), the march
-                        // and the war step.
-                        Op::Corrupt { .. } | Op::TroopSteps { .. } | Op::War => {}
+                        // Read where they act: the corrupt step (138) and the march.
+                        Op::Corrupt { .. } | Op::TroopSteps { .. } => {}
                         // The load check lets no other op in: one added to `Slot::Twist`
                         // needs a reader (044: `_ => {}` swallowed the Unity pull).
                         other => unreachable!("twist with no reader: {other:?}"),

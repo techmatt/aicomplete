@@ -333,41 +333,6 @@ pub fn pull_unity(g: &mut GameState, cx: &mut Cx, n: i64) {
     }
 }
 
-/// Seat `s` sacrifices one of their ambassadors (from their supply or a
-/// hex) or one of their nodes, their choice; with none, nothing.
-/// A last node is never offered (027); a sacrificed node leaves the
-/// game, as a destroyed one does ([`board::lose_node`]).
-pub fn sacrifice(g: &mut GameState, cx: &mut Cx, s: usize) -> Res {
-    let w = cx.world;
-    let k = ambassador(s);
-    let ambs = ambassador_hexes(g, s);
-    // The hexes holding the seat's node (020: this listed `node_hexes`, the
-    // free hexes where it could place one, so a sacrificed node removed nothing).
-    let pres: Vec<usize> = node_of(g, s);
-    let pres = if pres.len() < 2 { Vec::new() } else { pres };
-    let mut opts = Vec::new();
-    if g.resource(s, Resource::Ambassadors) > 0 {
-        opts.push(opt("an ambassador from your supply"));
-    }
-    let off = opts.len();
-    opts.extend(ambs.iter().map(|&h| labeled_hex_opt(&w, "ambassador", h)));
-    opts.extend(pres.iter().map(|&h| labeled_hex_opt(&w, "node", h)));
-    let prompt = || format!("Seat {s}: sacrifice which ambassador or node?");
-    let Some(i) = cx.choose_loss(s, prompt, opts)? else {
-        return Ok(());
-    };
-    if i < off {
-        cx.add_resource(g, s, Resource::Ambassadors, -1);
-        cx.tally(g, "alignment.sacrificed_ambassadors", 1);
-    } else if i - off < ambs.len() {
-        cx.add_tokens(g, ambs[i - off], k, -1);
-        cx.tally(g, "alignment.sacrificed_ambassadors", 1);
-    } else {
-        board::lose_node(g, cx, pres[i - off - ambs.len()], s, "project");
-        cx.tally(g, "alignment.sacrificed_node", 1);
-    }
-    Ok(())
-}
 
 /// Draws the next card of `side`: the stronger tier once the side's tip
 /// count has reached `unity_tier2` / `discord_tier2`, else tier 1; the other

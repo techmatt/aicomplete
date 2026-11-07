@@ -192,8 +192,8 @@ fn refill(g: &mut GameState, cx: &mut Cx, tier: u8) -> bool {
 /// type with a site in `c`, discarding the rest; an empty deck reshuffles its
 /// discard. Still unsatisfied after one reshuffle, the pull takes the next card
 /// anyway (`threats.pull_forced`: a content bug). The dealt threat's tokens go
-/// on the board; one dealt after the counter phase waits a round.
-fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize) {
+/// on the board (`at`, 139: its first token on that hex instead); one dealt after the counter phase waits a round.
+fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize, at: Option<usize>) {
     let w = cx.world;
     let mut reshuffles = 0;
     let id = loop {
@@ -217,6 +217,10 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize) {
     };
     cx.move_card(g, &id, &deck(tier), &on(c), false).unwrap();
     place_tokens(g, cx, &id, c);
+    if let Some(h) = at {
+        near::place_first_at(g, cx, &id, h);
+        cx.tally(g, "threats.dealt_at_node", 1);
+    }
     cx.tally(g, "threats.dealt", 1);
     cx.tally(g, &format!("threats.dealt.t{}", def(&w, &id).tier), 1);
     if after_counter(g) {
@@ -231,7 +235,17 @@ fn pull(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], c: usize) {
 /// passed). Variant `off`: nothing.
 pub fn deal_tier(g: &mut GameState, cx: &mut Cx, tier: u8, tags: &[PullTag], country: usize) -> Res {
     if in_play(&cx.world) && TIERS.contains(&tier) {
-        pull(g, cx, tier, tags, country);
+        pull(g, cx, tier, tags, country, None);
+    }
+    Ok(())
+}
+
+/// 139 (Offensive): one pull of `tier` threats, any tag, into hex `h`'s country now, its first location token on
+/// `h` (a node hex, whatever its site). Variant `off`: nothing.
+pub fn deal_at(g: &mut GameState, cx: &mut Cx, tier: u8, h: usize) -> Res {
+    let w = cx.world;
+    if in_play(&w) && TIERS.contains(&tier) {
+        pull(g, cx, tier, &[PullTag::Any], w.map.hexes[h].country as usize, Some(h));
     }
     Ok(())
 }
@@ -254,7 +268,7 @@ pub fn deal_extra(g: &mut GameState, cx: &mut Cx, n: i64) {
     let tier = first_pull(&w, g).map_or_else(|| adversary::threat_tier(&w, g), |(t, _)| t);
     let countries = w.map.countries.len().max(1);
     for k in 0..n.max(0) {
-        pull(g, cx, tier, &[PullTag::Any], k as usize % countries);
+        pull(g, cx, tier, &[PullTag::Any], k as usize % countries, None);
     }
 }
 
@@ -337,15 +351,15 @@ impl Module for Threats {
             let tier = |t: u8| if early && t == 1 { 2 } else { t };
             for p in &card.pulls {
                 for c in 0..n {
-                    pull(g, cx, tier(p.tier), &p.tags, c);
+                    pull(g, cx, tier(p.tier), &p.tags, c, None);
                 }
             }
-            // Difficulty 1: `extra_threats` more pulls of the card's first pull,
-            // one per country in turn (country 0 first in round 1, then 1, ...).
-            if let (true, Some(p)) = (adversary::level(&w, 1), card.pulls.first()) {
+            // From difficulty `extra_threats_at` (139; 1 before): `extra_threats` more pulls of the
+            // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
+            if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
                 let first = (g.round.max(1) as usize - 1) % n.max(1);
                 for k in 0..w.int("adversary.extra_threats").max(0) as usize {
-                    pull(g, cx, tier(p.tier), &p.tags, (first + k) % n.max(1));
+                    pull(g, cx, tier(p.tier), &p.tags, (first + k) % n.max(1), None);
                 }
             }
             return Ok(());

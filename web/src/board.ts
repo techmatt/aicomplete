@@ -248,13 +248,13 @@ export function renderBoard(svg: SVGSVGElement, view: View, marks: Marks) {
   const at = new Map(view.hexes.map((h) => [hexKey(h.hex), h]));
   const countryColor = (c: number) => strong(view.countries[c]?.color ?? '#888888');
   const seatColor = (seat: number) => countryColor(view.seats[seat]?.country ?? seat);
-  const war = view.globals.find((g) => g.key === 'board.war')?.value === 1;
   // The printed fronts: pairs of countries with a base facing each other.
   const fronts = new Set(view.hexes.filter((h) => h.kind === 'base' && h.facing !== undefined).map((h) => `${h.country}-${h.facing}`));
 
   const hexLayer = el('g', { class: 'hexes' });
   const borderLayer = el('g', { class: 'borders' });
-  const frontLayer = el('g', { class: `fronts${war ? ' war' : ''}` });
+  // 139: no clock; the fronts fight at the end of every round, so they are always drawn at war.
+  const frontLayer = el('g', { class: 'fronts war' });
   const labelLayer = el('g', { class: 'labels' });
   const tokenLayer = el('g', { class: 'tokens' });
   const markLayer = el('g', { class: 'marks' });

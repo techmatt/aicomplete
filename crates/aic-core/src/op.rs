@@ -611,13 +611,19 @@ pub enum Op {
         #[serde(default, rename = "if", skip_serializing_if = "Option::is_none")]
         if_: Option<TroopIf>,
     },
-    /// Every node on the most threatened hex in scope (the node hex
-    /// with the most adversary ambassadors and troops; ties: the first in
-    /// board order) is destroyed, unless absorbed (027).
-    DestroyNode,
+    /// 139 (Offensive): a `tier` threat is dealt, any tag, by the draw rule, into the country of the most
+    /// threatened node hex in scope (the node hex with the most adversary ambassadors and troops; ties: the first
+    /// in board order), its first location token on that hex; it is countered or executes like any other.
+    ThreatAtNode { tier: u8 },
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed;
-    /// never a last node from a threat, nor in stage I.
-    EachDestroyNode { count: i64 },
+    /// never a last node from a threat, nor in stage I. 139: a threat's or a twist's only (Border War); the team
+    /// slot (Discord cards, projects) destroys no nodes. `bases` (139, Border War): only nodes on or next to a
+    /// front's military base, so a player with none there loses none.
+    EachDestroyNode {
+        count: i64,
+        #[serde(default, skip_serializing_if = "is_false")]
+        bases: bool,
+    },
     /// Up to `amount` Sway comes off the Unity track (027; 136: no Undecided).
     PullUnity {
         amount: i64,
@@ -857,9 +863,6 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
-    /// Every player sacrifices one of their ambassadors (supply or board)
-    /// or one of their nodes (their choice).
-    Sacrifice,
     /// Remove `count` botnets anywhere on the board, one at a time (players choose).
     RemoveBotnets {
         count: i64,
@@ -967,8 +970,6 @@ pub enum Op {
     },
 
     // ---------- twists: read while the adversary card is current ----------
-    /// This round is a war round.
-    War,
     /// Every adversary troop takes `amount` more steps this round.
     TroopSteps {
         amount: i64,
@@ -990,13 +991,12 @@ impl Op {
         match self {
             Op::Sway { .. } => &[Player, Threat, Team, Twist],
             Op::PullUnity { .. } => &[Threat, Team, Twist],
-            Op::EachDestroyNode { .. } => &[Threat, Team, Twist],
+            Op::EachDestroyNode { .. } => &[Threat, Twist],
             Op::Gain { .. } | Op::CounterThreat => &[Player, Team],
             Op::Troops { .. }
             | Op::FlipStation { .. }
             | Op::CorruptCity { .. }
             | Op::PlayersLose { .. }
-            | Op::DestroyNode
             | Op::LoseInsight { .. }
             | Op::AdversaryBuild
             | Op::AdversaryFactory { .. }
@@ -1004,12 +1004,12 @@ impl Op {
             | Op::ExtraWar { .. }
             | Op::LoseIncome { .. }
             | Op::Flag { .. }
-            | Op::LoseNodeOr { .. }
             | Op::LoseAmbassador
             | Op::LoseTokens { .. }
             | Op::DealThreats { .. } => &[Threat, Team],
             Op::Requisition { .. }
             | Op::DiscardMostExpensive
+            | Op::LoseNodeOr { .. }
             | Op::ComputePerMissing { .. }
             | Op::DestroyFacility { .. }
             | Op::DisableBuilding { .. }
@@ -1026,7 +1026,7 @@ impl Op {
             | Op::FreePurchases { .. }
             | Op::CounterAll
             | Op::Pushback { .. }
-            | Op::Sacrifice
+            | Op::ThreatAtNode { .. }
             | Op::RemoveBotnets { .. }
             | Op::StandingTroopsBonus { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
@@ -1052,7 +1052,7 @@ impl Op {
             | Op::SupplyInsight { .. }
             | Op::TagsFromHand { .. }
             | Op::ConvertUpkeep { .. } => &[Standing],
-            Op::TroopSteps { .. } | Op::War => &[Twist],
+            Op::TroopSteps { .. } => &[Twist],
             Op::GainPerNode { .. }
             | Op::ChoosePlayer
             | Op::OtherGain { .. }

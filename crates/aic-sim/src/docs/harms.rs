@@ -92,8 +92,7 @@ const BLOCKED: usize = 13;
 /// The harms one op does, as rows of [`HARMS`].
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
-        Op::DestroyNode | Op::EachDestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
-        Op::Sacrifice => vec![NODE_DESTROYED, AMBASSADORS_LOST],
+        Op::EachDestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::PlayersLose { resource: Resource::Credits, .. } => vec![CREDITS_LOST],
         Op::Requisition { .. } | Op::DiscardMostExpensive | Op::Discard { .. } => vec![CARDS_DISCARDED],
         Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
@@ -133,7 +132,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
             }
         }
         Op::Compute { .. } | Op::ComputeEvery { .. } => vec![PROJECTS_ADVANCED],
-        Op::DealThreats { .. } => vec![EXTRA_THREATS],
+        Op::DealThreats { .. } | Op::ThreatAtNode { .. } => vec![EXTRA_THREATS],
         Op::Sway { side, .. } if side.name() == "discord" => vec![DISCORD_SWAY],
         Op::PullUnity { .. } => vec![UNITY_PULLED],
         _ => Vec::new(),

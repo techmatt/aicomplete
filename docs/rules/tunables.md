@@ -11,7 +11,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.start_corrupted` | 1 | 0..3 | cities per country that start corrupted |
 | `board.start_ambassadors` | 1 | 0..10 | player ambassadors each player starts with |
 | `board.unit_cap` | 2 | 0..20 | corp units a base holds at most |
-| `board.clock` | 3 | 0..3 | the round track, per round: 1 production, 2 war, 3 both (the last entry repeats; 137: 3, every round, a dial kept to restore the clock) |
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
 | `board.city_energy_credits` | 5 | 0..20 | credits for a neutral city's energy cube, bought by a player with a node next to it |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
@@ -20,10 +19,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
 | `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
-| `board.blocker_stays` | 1 | 0..1 | 1: an adversary ambassador blocking a station or factory stands while it blocks (137); 0: it is used up when it blocks, as before 137 |
 | `board.claim_city` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at) |
-| `board.claim_station` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
-| `board.claim_factory` | 2 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
+| `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
+| `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.last_safe_stage` | 2 | 0..3 | while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe) |
 | `board.free_leaves` | 1 | 0..5 | adversary ambassadors left on a city as it frees (the piece ladder) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
@@ -56,13 +54,14 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.corrupt_factory_at` | 3 | 1..20 | Corrupt factory: adversary ambassadors a factory gathers to corrupt |
 | `adversary.corrupt_land_at` | 3 | 1..20 | Corrupt land: adversary ambassadors an empty land hex gathers to take land corruption |
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
-| `adversary.corrupt_cut_at` | 2 | 0..5 | the difficulty level from which corrupt_cut applies |
+| `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
 | `adversary.threat_nodes` | 1, 2, 3 | 0..5 | an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it |
 | `adversary.counter_pct` | 150, 150, 150 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty 1+: added to every threat's first counter requirement |
 | `adversary.counter_bonus_all` | 0 | 0..10 | difficulty 1+: added to every counter requirement of every threat |
-| `adversary.extra_threats` | 1 | 0..5 | difficulty 1+: extra threats dealt each round in all, one per country in turn |
+| `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
+| `adversary.extra_threats_at` | 0 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
 | `adversary.stage1_removed` | 1 | 0..3 | difficulty 2+: stage-I cards removed |
 | `adversary.stage3_added` | 1 | 0..3 | difficulty 2+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage2_removed` | 1 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |

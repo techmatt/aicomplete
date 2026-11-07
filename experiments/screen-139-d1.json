@@ -1,0 +1,91 @@
+{
+  "name": "screen-139-d1",
+  "note": "139 screen D1 (Matt's message 5865; dev seeds 36816-36831, 16 more a cell, the three pairs, d0-d1): the corrupt cut at every level (L0) alone, with I3 and with C2. L0's d2 is L1's (the dial is one).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_L0",
+      "set": [
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_L0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_L0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "bp_I3+L0",
+      "set": [
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_I3+L0",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_I3+L0",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=21",
+        "ais.protector.credits=19",
+        "ais.researcher.credits=17",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "bp_C2+L0",
+      "set": [
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "br_C2+L0",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    },
+    {
+      "name": "pr_C2+L0",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.carry=2",
+        "adversary.corrupt_cut_at=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36816,
+  "records": 0
+}

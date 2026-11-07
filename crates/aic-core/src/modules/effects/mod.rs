@@ -245,8 +245,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope)?,
-        Op::DestroyNode => team::destroy_node(g, cx, ctx),
-        Op::EachDestroyNode { count } => team::each_destroy_node(g, cx, ctx, *count)?,
+        Op::ThreatAtNode { tier } => team::threat_at_node(g, cx, ctx, *tier)?,
+        Op::EachDestroyNode { count, bases } => team::each_destroy_node(g, cx, ctx, *count, *bases)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
         Op::LoseInsight { amount } => {
             for s in ctx.seats(&w, g) {
@@ -296,11 +296,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
-        Op::Sacrifice => {
-            for s in ctx.seats(&w, g) {
-                alignment::sacrifice(g, cx, s)?;
-            }
-        }
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
 
         // 135: the new adversary model's ops, and the old ops with a new field set.
@@ -352,8 +347,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::StandingTroopsBonus { .. }
-        | Op::TroopSteps { .. }
-        | Op::War => unreachable!("{e:?} is read, not resolved"),
+        | Op::TroopSteps { .. } => unreachable!("{e:?} is read, not resolved"),
     }
     Ok(())
 }

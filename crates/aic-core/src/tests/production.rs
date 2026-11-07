@@ -143,19 +143,17 @@ fn an_adversary_station_makes_compute_before_and_after_completion() {
     assert_eq!(g.stats.counters["board.station_compute"] - tallied, 4 * cubes);
 }
 
-/// 137's lever: at `blocker_stays` 0 an adversary ambassador blocking a
-/// station is used up as it blocks (as before 137); at 1 it stands.
+/// 137, kept at 139 (no dial): an adversary ambassador blocking a station
+/// stands while it blocks.
 #[test]
-fn a_blocker_is_used_up_only_with_blocker_stays_off() {
-    for (stays, left) in [(1, 1), (0, 0)] {
-        let (rules, mut g) = lab_with(&["board.produce"], &[&format!("board.blocker_stays={stays}")]);
-        let h = rules.map.numbered(0, piece(0).neutral_station);
-        put(&mut g, h, STATION, 1);
-        put(&mut g, h, ADV_AMBASSADOR, 1);
-        let neutral = g.var(&board::project_neutral(0));
-        run(&rules, &mut g);
-        assert_eq!((g.var(&board::project_neutral(0)), g.tokens(h, ADV_AMBASSADOR)), (neutral, left), "stays {stays}");
-    }
+fn a_blocker_stands_while_it_blocks() {
+    let (rules, mut g) = lab(&["board.produce"]);
+    let h = rules.map.numbered(0, piece(0).neutral_station);
+    put(&mut g, h, STATION, 1);
+    put(&mut g, h, ADV_AMBASSADOR, 1);
+    let neutral = g.var(&board::project_neutral(0));
+    run(&rules, &mut g);
+    assert_eq!((g.var(&board::project_neutral(0)), g.tokens(h, ADV_AMBASSADOR)), (neutral, 1));
 }
 
 #[test]

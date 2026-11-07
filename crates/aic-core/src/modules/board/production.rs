@@ -51,9 +51,6 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
         }
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
             cx.tally(g, "board.blocked.factory_neutral", 1);
-            if w.int("board.blocker_stays") == 0 {
-                adversary::remove(g, cx, h, 1);
-            }
             continue;
         }
         if let Some(s) = player_ambassador(g, h) {
@@ -95,9 +92,6 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
                 }
             }
         }
-    }
-    if !production_round(&w, g) {
-        return Ok(());
     }
     extra_units(g, cx);
     factory_output(g, cx);
@@ -174,9 +168,6 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
         if let Some(s) = cube_owner(g, h) {
             if g.tokens(h, ADV_AMBASSADOR) > 0 {
                 cx.tally(g, "board.blocked.factory_player", 1);
-                if w.int("board.blocker_stays") == 0 {
-                    adversary::remove(g, cx, h, 1);
-                }
             } else {
                 cx.add_resource(g, s, Resource::Chips, chips);
                 cx.tally(g, "board.chips_made", chips);
@@ -405,9 +396,6 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
             let side = if cube_owner(g, h).is_some() { "player" } else { "neutral" };
             cx.tally(g, &format!("board.blocked.station_{side}"), 1);
-            if w.int("board.blocker_stays") == 0 {
-                adversary::remove(g, cx, h, 1);
-            }
             continue;
         }
         let color = cube_owner(g, h).map_or(Color::Neutral, Color::Seat);
