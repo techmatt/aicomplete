@@ -10,7 +10,7 @@
 use aic_core::content::{CounterItem, Op, RoundFlag};
 use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
-use aic_core::modules::{board, threats};
+use aic_core::modules::{adversary, board, threats};
 use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
@@ -37,19 +37,8 @@ fn absorbed(g: &GameState, h: usize) -> bool {
 
 /// The share of threat `t`'s counter still unpaid.
 fn unpaid(w: &World, g: &GameState, t: &str) -> f64 {
-    let prefix = threats::paid_prefix(t);
-    let paid: i64 = g
-        .vars
-        .from_key(prefix.as_str())
-        .take_while(|(k, _)| k.starts_with(prefix.as_str()))
-        .map(|(_, &n)| n)
-        .sum();
-    // 135: against the menu's cheapest resource option.
-    let req = threats::cheapest_resource_need(w, g, t).saturating_add(paid);
-    if req <= 0 {
-        return 1.0;
-    }
-    1.0 - (paid as f64 / req as f64).min(1.0)
+    // 145: by the best resource option, in its own currencies (135 summed units across them).
+    1.0 - threats::paid_share(w, g, t).min(1.0)
 }
 
 /// Whether the team can still counter threat `t` from what the seats who may
@@ -92,15 +81,18 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         if share <= 0.0 || (counter_first && counterable(w, g, &t, Some(scope))) {
             continue;
         }
+        // 145: each seat's nodes this threat takes, capped once at its open
+        // nodes here (its printed lines and the unprinted harm share them).
+        let mut lost = [0i64; 4];
         for op in &w.content.threat(&t).effects {
             match op {
                 Op::EachDestroyNode { count, .. } => {
-                    for s in 0..seats {
+                    for (s, l) in lost.iter_mut().enumerate().take(seats) {
                         if board::last_node_safe(w, g, s) {
                             continue;
                         }
                         let open = nodes_here(s).into_iter().filter(|&h| !absorbed(g, h)).count() as i64;
-                        out.nodes[s] += share * open.min(*count) as f64;
+                        *l += open.min(*count);
                     }
                 }
                 Op::Troops { count, destroy: true, .. } => {
@@ -119,7 +111,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                         }
                         if let Some(s) = common::node_owner(g, h) {
                             if s < seats && !board::last_node_safe(w, g, s) {
-                                out.nodes[s] += share;
+                                lost[s] += 1;
                                 hit += 1;
                             }
                         }
@@ -128,17 +120,31 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                 _ => {}
             }
         }
+        // 145: the unprinted node harm every uncountered threat deals (138:
+        // `threat_nodes` by tier, 142: `harm_bonus` more from `harm_bonus_at`):
+        // each seat near it loses that many of its nodes near it, here.
+        let tier = w.content.threat(&t).tier as usize;
+        let bonus = if adversary::level(w, w.int("adversary.harm_bonus_at")) { w.int("adversary.harm_bonus") } else { 0 };
+        let k = w.list("adversary.threat_nodes").get(tier.saturating_sub(1)).copied().unwrap_or(0) + bonus;
+        if k > 0 {
+            let near: Vec<usize> = threats::near_hexes(w, g, &t).into_iter().filter(|h| hexes.contains(h)).collect();
+            for s in threats::near_seats(w, g, &t) {
+                if s >= seats || board::last_node_safe(w, g, s) {
+                    continue;
+                }
+                let open = near.iter().filter(|&&h| g.tokens(h, common::node(s)) > 0 && !absorbed(g, h)).count() as i64;
+                lost[s] += open.min(k);
+            }
+        }
+        for (s, &n) in lost.iter().enumerate().take(seats) {
+            let open = nodes_here(s).into_iter().filter(|&h| !absorbed(g, h)).count() as i64;
+            out.nodes[s] += share * n.min(open) as f64;
+        }
     }
     {
-        let cap = w.int("board.unit_cap");
-        let units = |b: usize| -> i64 {
-            let n = g.tokens(b, UNIT);
-            if common::player_ambassador(g, b).is_none() {
-                (n + 1).min(cap.max(n))
-            } else {
-                n
-            }
-        };
+        // 145: bases make no troop of their own (137); the war forecast reads the
+        // troops standing (it added one a base every round).
+        let units = |b: usize| -> i64 { g.tokens(b, UNIT) };
         for f in &w.map.fronts {
             let [ba, bb] = f.bases;
             let (ua, ub) = (units(ba), units(bb));

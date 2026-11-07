@@ -27,7 +27,7 @@
    },
    {
     "name": "Warmongering",
-    "text": "Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each round, whatever makes it.",
+    "text": "Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base in each production, whatever makes it.",
     "effects": [
      {
       "op": "corp_troops",
@@ -295,7 +295,7 @@
      "site": "city"
     }
    ],
-   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Sway 1 toward Discord. Each board: create 1 adversary ambassador on the lowest-numbered factory. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Corrupt cities.",
+   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on the lowest-numbered factory. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -563,7 +563,7 @@
      "site": "factory"
     }
    ],
-   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player with a node on or next to a front's base destroys 1 of those nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories.",
+   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -675,7 +675,7 @@
      "site": "city"
     }
    ],
-   "text": "Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Corrupt cities.",
+   "text": "Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Every adversary troop takes 1 more step this round. Corrupt cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -747,7 +747,7 @@
      "site": "city"
     }
    ],
-   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Remove 2 Unity from the Unity track. Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt factories. Corrupt cities.",
+   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Remove 2 Unity from the Unity track. Corrupt factories. Corrupt cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -819,7 +819,7 @@
      "site": "land"
     }
    ],
-   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt cities. Corrupt land.",
+   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. Corrupt land.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",

@@ -32,7 +32,7 @@ still help.
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
 | Researcher | Deploy | 1 energy | place 1 node |
 | Researcher | Peer Review | 3 research cubes | place 1 node |
-| Researcher | Grant | 3 credits | add 1 research cube in your color to an incomplete megaproject |
+| Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
 | Researcher | Particle Run | 1 Power + 1 energy | gain 1 antimatter |
@@ -56,7 +56,7 @@ own currency:
   agents' values (a credit 1, an insight 2.5) it reads as a loss: it pays when one insight short stops a play or a keep.
 - **Protector, Vigil** (an Effect of Wall, not a power): when your Wall stops a troop, gain 1 insight. A troop is
   stopped when a hex next to it holds your node and something it would strike there but for the Wall (a facility any
-  player owns, or the node once troops strike nodes); once a troop a march. An Effect because it happens in the march (phase 5),
+  player owns, or the node once troops strike nodes); once a troop a march. An Effect because it happens in the march (phase 7),
   outside the action phase where powers are used, and the insight pays this round's keeps and plays. The adversary's
   troops cap it.
 - **Researcher, Synthesis** (a power, once a round, no price but the card): discard a card from your hand, gain 2
@@ -68,7 +68,8 @@ own currency:
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
 way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time its Wall stops a troop (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
-keeps it), but four threats now take 5 insight to counter, so spare insight can stop one.
+keeps it), but many threat counters offer insight (8 / 10 / 12 by tier, by tag: [threats.md](threats.md) *Counters*),
+so spare insight can stop one.
 
 **Insight loops (r41).** Nothing turns insight back into what makes it: insight buys cards, and a card that pays insight
 (a trigger, an income) is capped by plays and slots. No card makes research cubes since r44 (Sample Repository
@@ -79,9 +80,9 @@ makes insight).
 
 ## Shelters, hardening and shields
 
-A **shelter** (the Protector's Shelter, or a card's "shelter one country") lasts until cleanup (phase 18) of the round
+A **shelter** (the Protector's Shelter, or a card's "shelter one country") lasts until cleanup (phase 19) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: troops from bases,
-war, production and the threats that execute (phases 13-17). The march (phase 5) has already happened, so a shelter never meets it.
+production, the threats that execute and war (phases 14-18). The march (phase 7) has already happened, so a shelter never meets it.
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and
 factories that are not corrupted, and "harden N" is N different facilities, fewer if fewer qualify. A Science card's

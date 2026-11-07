@@ -15,15 +15,17 @@ pub fn corp_troops_at(g: &mut GameState, cx: &mut Cx, base: usize, n: i64, past_
     let w = cx.world;
     let mut made = 0;
     for _ in 0..n {
+        // 145: a full base makes no troop, so no ambassador is used up in its place.
+        if !past_cap && g.tokens(base, UNIT) >= w.int("board.unit_cap") {
+            break;
+        }
         if let Some(s) = player_ambassador(g, base) {
             cx.add_tokens(g, base, ambassador(s), -1);
             cx.tally(g, "board.base_ambassador_used", 1);
             continue;
         }
-        if past_cap || g.tokens(base, UNIT) < w.int("board.unit_cap") {
-            cx.add_tokens(g, base, UNIT, 1);
-            made += 1;
-        }
+        cx.add_tokens(g, base, UNIT, 1);
+        made += 1;
     }
     made
 }
@@ -51,6 +53,12 @@ pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
         }
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
             cx.tally(g, "board.blocked.factory_neutral", 1);
+            continue;
+        }
+        // 145: with every base of its corp full (or none), the factory makes no
+        // troop, so no ambassador on it is used up in a troop's place.
+        let cap = w.int("board.unit_cap");
+        if !corp_bases(&w, w.map.hexes[h].country).iter().any(|&b| g.tokens(b, UNIT) < cap) {
             continue;
         }
         if let Some(s) = player_ambassador(g, h) {
@@ -115,7 +123,8 @@ fn extra_asked(w: &World, g: &GameState, base: usize, registered: &[(usize, u32,
             past += n;
         }
     }
-    let ongoing = g.pile(adversary::PROJECTS_ONGOING).iter().flat_map(|id| w.content.project(id).effects.iter());
+    let acting = adversary::ongoing_acting(g);
+    let ongoing = acting.iter().flat_map(|id| w.content.project(id).effects.iter());
     let rules = w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter());
     for op in ongoing.chain(rules) {
         if let Op::CorpTroops { count, at: CorpAt::EveryBase, near, when: CorpWhen::EachProduction, past_cap, .. } = op {

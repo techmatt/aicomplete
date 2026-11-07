@@ -22,7 +22,7 @@ mod counter;
 mod near;
 mod ops;
 
-pub use counter::{cheapest_resource_need, requirement, resource_only, UNPAYABLE};
+pub use counter::{cheapest_resource_need, need_and_share, paid_share, requirement, resource_only, UNPAYABLE};
 use counter::*;
 pub use near::{counterable, may_counter, near, near_hexes, near_seats, token_of, tokens};
 use near::*;
@@ -252,9 +252,16 @@ pub fn deal_at(g: &mut GameState, cx: &mut Cx, tier: u8, h: usize) -> Res {
 
 /// The current adversary event card's first pull: (tier, tags).
 fn first_pull(w: &World, g: &GameState) -> Option<(u8, Vec<PullTag>)> {
-    let id = g.pile(adversary::CURRENT).first().copied()?;
-    let p = w.content.adversary_card(&id).pulls.first()?;
-    Some((p.tier, p.tags.clone()))
+    // 145: this round's card, the face-up one before the flip (a Discord tip in
+    // the Sway phase read last round's card), and d4's "tier-2 sooner" as the deal reads it.
+    let pile = adversary::round_pile(g);
+    let id = g.pile(pile).first().copied()?;
+    let c = w.content.adversary_card(&id);
+    let p = c.pulls.first()?;
+    // Before the flip this round's card heads the face-up pile: look past it, as the deal does.
+    let skip = usize::from(pile == adversary::NEXT);
+    let early = c.stage < 2 && adversary::level(w, 4) && adversary::tier2_soon(w, g, skip);
+    Some((if early && p.tier == 1 { 2 } else { p.tier }, p.tags.clone()))
 }
 
 /// Deals `n` extra threats now (old-form `DealThreats`, Discord cards): pulls
@@ -385,6 +392,8 @@ impl Module for Threats {
         let mut executed = 0;
         for (t, scope) in active(g) {
             if waits(g, &t) {
+                // 145: a waiting threat is still uncountered: not a clean round.
+                executed += 1;
                 continue;
             }
             executed += 1;
@@ -552,9 +561,10 @@ impl Module for Threats {
         out.global(
             "tier",
             "threat tier",
-            adversary::threat_tier(w, g) as i64,
+            // 145: as `deal_extra` picks it (it said the card's stage).
+            first_pull(w, g).map_or_else(|| adversary::threat_tier(w, g), |(t, _)| t) as i64,
             Some(3),
-            "the tier an extra threat comes from: this round's adversary card's stage",
+            "the tier a Discord card's extra threat comes from: this round's adversary card's first pull",
         );
     }
 }

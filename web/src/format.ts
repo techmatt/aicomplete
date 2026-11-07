@@ -106,7 +106,16 @@ function known(a: Action, withTarget: boolean, cx: LabelContext): string | null 
     case 'pay':
       return `pay ${amount(Number(a.amount), String(a.resource))} → ${threatName(String(a.threat))}`;
     case 'withdraw':
-      return `take back ${a.resource} ← ${threatName(String(a.threat))}`;
+      // 145: "research_cubes" read raw (the sweep's raw-id).
+      return `take back ${words(String(a.resource))} ← ${threatName(String(a.threat))}`;
+    case 'counter_with': {
+      // 145: a whole menu option (tags, or tags with resources), named by its priced words
+      // as the threat's card shows them (its status: the options joined by " or ").
+      const t = String(a.threat);
+      const shown = cx.view?.countries.flatMap((c) => c.cards.flatMap((g) => g.cards)).find((c) => c.id === t);
+      const option = shown?.status.split(' or ')[Number(a.option)];
+      return `counter ${threatName(t)}${option ? `: ${option}` : ''}`;
+    }
     case 'antimatter': {
       const n = param(cx.config, 'alignment', 'antimatter_discord');
       return `+1 antimatter${typeof n === 'number' ? ` (${n} Sway → Discord)` : ' (Sway → Discord)'}`;
@@ -249,6 +258,7 @@ const KNOWN: Record<string, string> = {
   'ambassador:adversary': ADVERSARY_COLOR,
   botnet: ADVERSARY_COLOR,
   corruption: ADVERSARY_COLOR,
+  land_corruption: ADVERSARY_COLOR,
   troop: '#2a0d3d',
   factory: '#7a5230',
   station: '#00796b',
@@ -269,6 +279,7 @@ const TOKEN_NAMES: Record<string, string> = {
   node: 'node',
   botnet: 'botnet',
   corruption: 'corruption marker',
+  land_corruption: 'land corruption (no node may be placed here)',
   ambassador: 'ambassador',
   station: 'research station',
   troop: 'adversary troop',

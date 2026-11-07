@@ -1315,7 +1315,11 @@ impl Eval {
         // Alignment: tips made, and each bucket's share of its next tip.
         for (side, weight) in [(Side::Unity, w.unity_tip), (Side::Discord, -w.discord_tip)] {
             let cap = alignment::capacity(&world, g, side).max(1) as f64;
-            let fill = (g.var(alignment::track(side)) as f64 / cap).min(1.0);
+            // 145: Unity swayed and waiting on the hold-off ask counts as on its
+            // track ("all onto the Unity track" is always offered); unread, a sway
+            // whose ask fell past the search's choices was worth nothing.
+            let pending = if side == Side::Unity { alignment::unity_pending(g) } else { 0 };
+            let fill = ((g.var(alignment::track(side)) + pending) as f64 / cap).min(1.0);
             v += weight * (g.var(alignment::tips_key(side)) as f64 + fill);
         }
         v += w.level * level.steps() as f64;
@@ -1350,22 +1354,16 @@ impl Eval {
         for (t, scope) in threats::active(g) {
             // 135: the cheapest resource option of the menu (a tag or node option
             // is a whole payment, priced by what it removes, not pooled).
-            let prefix = threats::paid_prefix(&t);
-            let paid: i64 = g
-                .vars
-                .from_key(prefix.as_str())
-                .take_while(|(k, _)| k.starts_with(prefix.as_str()))
-                .map(|(_, &n)| n)
-                .sum();
-            let need = threats::cheapest_resource_need(&world, g, &t);
-            let req = need.saturating_add(paid);
-            if need <= 0 || req <= 0 {
+            // 145: the share paid in each option's own currencies (summed units across
+            // currencies read 1 credit toward 15 as a third of a 3-energy counter).
+            let (need, share) = threats::need_and_share(&world, g, &t);
+            if need <= 0 {
                 continue;
             }
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
             let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, Some(scope)));
             let stranded = if open { 1.0 } else { w.threat_stranded };
-            out.push(waits * stranded * (1.0 - (paid as f64 / req as f64).min(1.0)));
+            out.push(waits * stranded * (1.0 - share.min(1.0)));
         }
         out
     }
@@ -1416,7 +1414,7 @@ impl Eval {
     fn unity_progress(&self, g: &GameState) -> (f64, f64) {
         let per = (self.tip_per_player * self.seats as i64) as f64;
         let tips = g.var(alignment::tips_key(Side::Unity)) as f64;
-        let points = tips * per + g.var(alignment::track(Side::Unity)) as f64;
+        let points = tips * per + (g.var(alignment::track(Side::Unity)) + alignment::unity_pending(g)) as f64;
         (points, self.target_tips as f64 * per)
     }
 
@@ -1991,6 +1989,13 @@ fn tableau_parts(id: u64, g: &GameState, s: usize, out: &mut Vec<u64>) {
     let prefix = aic_core::key::KeyBuf::new("economy.production.").num(s).text(".");
     for (k, n) in g.vars.from_key(prefix.as_str()).take_while(|(k, _)| k.starts_with(prefix.as_str())) {
         out.extend([k.as_str().as_ptr() as u64, *n as u64]);
+    }
+    // 145: which buildings are face down (135): their passives drop out of
+    // income and prices, and two answers to "turn which face down?" differed
+    // only here (the store gave every option the first one's terms).
+    if cards::has_disabled(g, s) {
+        out.push(4);
+        out.extend(g.pile(&cards::built(s)).iter().map(|c| cards::disabled(g, s, c.as_str()) as u64));
     }
 }
 

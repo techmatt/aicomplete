@@ -27,7 +27,7 @@ The adversary is a **board** (the Militarist's: project slots, two rules, a diff
 *create N per board on the lowest-numbered X [condition]*, or *on each of the K lowest-numbered Xs*. X is a city, coastal
 city, research station, factory or botnet hex (a threat may say "here"); the conditions are clean (not the adversary's),
 corrupted, a player's, holding adversary ambassadors, with none, or on or next to a threat. "Per board" is each country;
-a threat's line reaches its own country. Stage I creates 1 a site, later stages more. Only a Corrupt line moves them. A cordoned country gains none; Trade Blockade doubles a creation on or next to its flag.
+a threat's line reaches its own country. Stage I creates 1 a site, later stages more. Only a Corrupt line moves them. A cordoned country gains none.
 **Site creation (candidate):** a few cards open a **neutral** research station (or factory) on each board's
 lowest-numbered empty station site (free industrial zone): new targets for both sides.
 
@@ -107,14 +107,16 @@ resolved (or been discarded), the slots refill.
 | Propaganda Network | universal | 14 | ongoing |
 <!-- /generated -->
 
-Compute goes on one point at a time: a full project resolves before the next lands. No project destroys a node (139).
+Compute goes on one point at a time: a full project resolves before the next lands. No project destroys a node directly (139);
+Infiltration Drive's and Grand Offensive's Corrupt cities take a node on a hex they corrupt, as corruption does; Station
+Coup's flip only takes the station.
 142 made each about 1.5x as severe (feeding them hurts); their texts are in [adversary-cards.md](../adversary-cards.md).
 
 ## The event deck (the clock and the stager)
 
 [`content/adversary.json`](../../content/adversary.json) prints the Militarist's event cards: 5 stage I, 6 stage II,
 4 stage III. A game deals `stage_cards` at random per stage, each stage shuffled on its own, stage I on top, so each
-stage deals N of its N+1 printed cards at every difficulty: as many rounds as cards, **the round cap** (**locked** that
+stage deals some of its printed cards (the table below has each difficulty's counts): as many rounds as cards, **the round cap** (**locked** that
 a cap exists and can shorten; the number a candidate). **11 rounds through d2:** difficulty 3 removes a stage-II card
 (`stage2_removed`): 10; difficulty 4 (`stage_swap_at`) also swaps a stage-I card for a stage-III card
 (`stage1_removed`, `stage3_added`), a harder end, not a shorter game. The next round's card is always face up. A card prints, top to bottom: its pulls, its standing lines (creation lines among them), its twists and its Corrupt lines.

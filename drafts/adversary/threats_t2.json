@@ -1320,7 +1320,7 @@
    "locations": [
     "station"
    ],
-   "text": "Stations on or next to it make no research cubes for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
+   "text": "Stations on or next to it produce nothing for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
    "counters": [
     [
      {

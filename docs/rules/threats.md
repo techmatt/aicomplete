@@ -36,12 +36,13 @@ Last Ultimatum) deals it now, into its own country, at its printed tier, any tag
 never share a hex): a city or coastal-city token on an uncorrupted city (coastal for coastal), a station token on an
 uncorrupted research station, a factory token on a factory that isn't the adversary's, else a free industrial zone, a
 base token on a military base. Among those sites, the one with the most adversary pieces on or next to it (adversary
-ambassadors, troops, botnets); ties, the lower hex number. A printed game does this by eye. A location type the country
+ambassadors, troops, botnets); ties, the lower hex number. Tokens go in printed order, but if that leaves one off the
+board (a city token on the only clean coastal city), the type with fewer sites goes first. A printed game does this by eye. A location type the country
 lacks gets no token; the pull never deals a threat with none (so a base-only threat never lands at 1 country).
 
 **Near.** A player is **near** a threat with one of their nodes or ambassadors on or next to any of its tokens. Only a
 player near it may pay toward it; "each player near it" is who its harm hits; a piece it places lands on its token
-unless the text says otherwise, and "near it" in its text means on or next to a token. A threat nobody is near still
+unless the text says otherwise (with two tokens, "here" is the token of its first printed location), and "near it" in its text means on or next to a token. A threat nobody is near still
 executes.
 
 **Countering: a menu.** A threat prints a few ways to pay; the table pays **one option in full**:
@@ -53,9 +54,8 @@ executes.
 - **Tags**: one player sacrifices cards in play carrying that many tags of the kind (as an AI-board power's cost,
   [ai-powers.md](ai-powers.md)): Security for Military, Diplomacy for Influence, Cyber, Industry for Economic, Power
   for Grid. Tier 1 asks 2 tags, tier 2 asks 3, tier 3 3 or more (Matt, 2026-11-06).
-- **Nodes**: one player removes that many of their nodes on or next to a token; they leave the game as destroyed
-  ones do, and never a player's last node.
-- A tag or node option, or an option mixing them with resources, is paid whole by one player (`CounterWith`).
+- A tag option, or one mixing tags with resources, is paid whole by one player (`CounterWith`). (The engine can also
+  read a nodes item, a player's own nodes near a token; no menu prints one, below.)
 
 A player's card that jams or counters a threat reaches only threats they are near (a typed one, threats carrying its
 tag or Universal); a jam takes its amount off every resource item of every option. A Unity reward reaches any threat.
@@ -76,14 +76,15 @@ options, or 33 credits. Nothing is priced as a share of income. **A counter neve
 that counter, and since every uncountered threat destroys nodes (`threat_nodes`) **no menu offers nodes**. The load
 check and `drafts/adversary/check.py` refuse a shared currency. No counter prints 1 credit (Matt, r48).
 
-**Executing.** Threats execute in `threats.execute`, after production and war, at the round's end: anything still on
+**Executing.** Threats execute in `threats.execute`, after production and upkeep, before war, at the round's end: anything still on
 an uncountered threat is refunded, then each threat (country 0, 1, ...) does what it says near its tokens, sways
 `threat_discord` toward Discord (unprinted: the floor that keeps a threat nobody is near from being free to ignore),
 has each player near it destroy `threat_nodes` of their nodes near it (138, candidate: 1 / 2 / 3 by tier, `harm_bonus`
 2 more from difficulty `harm_bonus_at` 3; never a last node in stage I), and is discarded with its tokens. Only threats on the board during this round's counter phase execute: one dealt later
 waits and executes next round, after a counter phase in which it can be paid (Matt). "Pay or discard" is the player's
 choice; with neither possible, the player pays what they have and discards their hand. Theft hits the player near it
-with the most credits (ties: the lowest seat), whatever it takes. No threat takes a player's last node.
+with the most credits (ties: the lowest seat), whatever it takes. A threat's printed node line never takes a player's last node; a face's
+"(never their last)" covers only that line, and the `threat_nodes` harm spares a last node only in stage I.
 
 **For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
 threats: in each country, turn up cards from the named tier's threat deck until one has a listed tag (a Universal card

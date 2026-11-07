@@ -7,7 +7,7 @@
 Project slots: Military, Open, Open.
 
 - **Troops where the Protector stands.** Each build: in each country where the Protector has a node, 1 adversary troop lands.
-- **Warmongering.** Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each round, whatever makes it.
+- **Warmongering.** Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **Build.** Each board: create 2 adversary ambassadors on the lowest-numbered corrupted city.
 - **Difficulty.** Militarist, harder: every event that lands troops lands 1 more in each country.
 
@@ -18,16 +18,16 @@ Project slots: Military, Open, Open.
 | Probing Strikes | 1 | Each country: a Military 1 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Corrupt cities. |
 | Factory Drive | 1 | Each country: Military 1 or Economic 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: a neutral factory opens on its lowest-numbered free industrial zone. Corrupt factories. |
 | Long Patrols | 1 | Each country: Military 1 or Cyber 1. The adversary gains 3 compute. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Each board: a neutral research station opens on its lowest-numbered empty station site. Corrupt research stations. |
-| War Drums | 1 | Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Sway 1 toward Discord. Each board: create 1 adversary ambassador on the lowest-numbered factory. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Corrupt cities. |
+| War Drums | 1 | Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on the lowest-numbered factory. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. |
 | Signal Jamming | 1 | Each country: Military 1 or Grid 1. The adversary gains 2 compute. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered botnet hexes. Corrupt cities. |
 | Mobilization | 2 | Each country: a Military 2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities. |
 | Station Raids | 2 | Each country: Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt research stations. |
 | Fifth Column | 2 | Each country: Influence 2 or Cyber 2. The adversary gains 3 compute. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities (1 fewer). |
-| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player with a node on or next to a front's base destroys 1 of those nodes. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Corrupt factories. |
+| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt factories. |
 | Supply Lines | 2 | Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Corrupt factories. |
-| Forced March | 2 | Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Corrupt cities. |
-| Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Remove 2 Unity from the Unity track. Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt factories. Corrupt cities. |
-| Blitzkrieg | 3 | Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt cities. Corrupt land. |
+| Forced March | 2 | Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Every adversary troop takes 1 more step this round. Corrupt cities. |
+| Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Remove 2 Unity from the Unity track. Corrupt factories. Corrupt cities. |
+| Blitzkrieg | 3 | Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. Corrupt land. |
 | Occupation | 3 | Each country: Military 3 or Cyber 3, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Corrupt research stations. Corrupt cities (1 fewer). |
 | Naval Blockade | 3 | Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on each of the 2 lowest-numbered coastal cities. Corrupt cities. Corrupt land. |
 
@@ -35,7 +35,7 @@ Project slots: Military, Open, Open.
 
 | Threat | Tags | Locations | If not countered | Counter (one of) |
 |---|---|---|---|---|
-| Orbital Strike | Military | base | 1 adversary troop lands here and stays (it doesn't march) until removed. The adversary gains 3 compute. Sway 2 toward Discord. | 3 energy; 2 Security tags; 15 credits |
+| Orbital Strike | Military | base | 1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Sway 2 toward Discord. | 3 energy; 2 Security tags; 15 credits |
 | Commandeer | Military | base, factory | 1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Each player near it pays 2 energy or discards 2 cards. | 3 ambassadors; 2 Security tags; 15 credits |
 | Supply Raid | Military + Economic | factory | 1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Each player near it loses 2 energy. | 4 chips; 2 Industry tags; 15 credits |
 | Eviction | Military | city | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses an ambassador. | 3 energy; 2 Security tags; 15 credits |
@@ -53,12 +53,12 @@ Project slots: Military, Open, Open.
 | Requisition | Economic | factory, city | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it discards 2 cards or pays 3 chips. | 3 energy; 2 Industry tags; 15 credits |
 | Shakedown | Economic + Influence | city | Create 1 adversary ambassador here. The player near it with the most credits (ties: lowest seat) loses 4 chips. The adversary gains 4 compute. | 3 ambassadors; 2 Industry tags; 15 credits |
 | Embargo | Economic | factory | Create 1 adversary ambassador here. Sites on or next to it can't be claimed next round. The adversary gains 3 compute. | 4 chips; 2 Industry tags; 15 credits |
-| Credit Crunch | Economic | coastal city | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 building face down until the end of next round. | 4 chips; 2 Industry tags; 15 credits |
+| Credit Crunch | Economic | coastal city | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count). | 4 chips; 2 Industry tags; 15 credits |
 | Chip Shortage | Economic | factory | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 3 chips or discards 2 cards. | 3 energy; 2 Industry tags; 15 credits |
 | Blackout | Grid + Cyber | city | Create 1 adversary ambassador here. The adversary gains 3 compute. Cities on or next to it produce no energy next round. | 2 research cubes; 2 Power tags; 15 credits |
 | Load Shedding | Grid | city, station | Create 1 adversary ambassador here. The adversary gains 3 compute. Players near it can't use Actions that cost energy next round. | 3 energy; 2 Power tags; 15 credits |
 | Power Surcharge | Grid | station | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 2 energy or discards 2 cards. | 2 research cubes; 2 Power tags; 15 credits |
-| Cooling Failure | Grid | station | Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it makes no research cubes next round. | 3 energy; 2 Power tags; 15 credits |
+| Cooling Failure | Grid | station | Create 1 adversary ambassador here. The adversary gains 3 compute. Next round, the research stations of each player near it make no research cubes. | 3 energy; 2 Power tags; 15 credits |
 | Grid Tap | Grid | city | Create 1 adversary ambassador here. The player near it with the most credits (ties: lowest seat) loses 2 energy. The adversary gains 4 compute. | 2 research cubes; 2 Power tags; 15 credits |
 
 ## Threats, tier 2
@@ -87,7 +87,7 @@ Project slots: Military, Open, Open.
 | Trade Blockade | Economic | coastal city, factory | Create 3 adversary ambassadors here. Sites on or next to it can't be claimed for 2 rounds. | 6 chips; 4 energy; 23 credits |
 | Grid Collapse | Grid | city, coastal city | Cities on or next to it produce no energy for 2 rounds. Each player near it destroys 1 of their nodes near it (never their last). | 3 research cubes; 3 Power tags; 23 credits |
 | Power Rationing | Grid | city | Each player near it loses 3 energy and turns 1 of their buildings face down until the end of next round (tags still count). | 3 research cubes; 4 ambassadors; 23 credits |
-| Thermal Runaway | Grid | station | Stations on or next to it make no research cubes for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute. | 4 energy; 3 Power tags; 23 credits |
+| Thermal Runaway | Grid | station | Stations on or next to it produce nothing for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute. | 4 energy; 3 Power tags; 23 credits |
 | Dark Cities | Grid + Influence | city, coastal city | In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Remove 2 Unity from the Unity track. | 10 insight; 3 Power tags; 23 credits |
 | Overload | Grid | factory, station | Each player near it destroys 1 of their nodes near it (never their last). The adversary gains 5 compute. | 4 energy; 3 Power tags; 23 credits |
 | Garrison State | Universal | base, city | In its country: create 3 adversary ambassadors on the lowest-numbered city on or next to it. 2 troops land on the base here. | 2 energy + 2 research cubes; 10 insight; 23 credits |
@@ -98,7 +98,7 @@ Project slots: Military, Open, Open.
 
 | Threat | Tags | Locations | If not countered | Counter (one of) |
 |---|---|---|---|---|
-| Last Ultimatum | Universal | city, base | Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat here; it executes next round. | 3 energy + 3 research cubes; 8 chips; 4 Diplomacy tags; 33 credits |
+| Last Ultimatum | Universal | city, base | Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat in this country; it executes next round. | 3 energy + 3 research cubes; 8 chips; 4 Diplomacy tags; 33 credits |
 | Capital Siphon | Universal | factory, station | The adversary gains 6 compute. Each player near it discards 2 cards and loses 2 tokens from their cards. | 5 chips + 3 research cubes; 12 insight; 4 Cyber tags; 33 credits |
 | Iron Curtain | Universal | factory, city | 2 troops land on the factory or zone here. Each player near it loses 2 energy. Remove 3 Unity from the Unity track. | 3 ambassadors + 5 chips; 4 Security tags; 4 research cubes; 33 credits |
 | Spearhead | Military | base | 4 troops land on the base here and march at once, 2 steps. Each player near it destroys 1 of their nodes near it (never their last). | 5 energy; 5 ambassadors; 4 Security tags; 33 credits |
@@ -115,22 +115,22 @@ Project slots: Military, Open, Open.
 | Project | Tags | Compute per player | Resolves | Text |
 |---|---|---|---|---|
 | Raiding Parties | Military | 4 | once | Every player loses 12 credits. |
-| War Footing | Military | 7 | once | Every corp base fills to its troop cap now. Sway 3 toward Discord. |
-| Purge the Unaligned | Military | 7 | once | Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory in each country. Remove 1 Unity from the Unity track. |
-| Armored Columns | Military | 10 | once | In each country, 3 troops land on factories. |
-| Arms Race | Military | 11 | ongoing | Ongoing: each round, every military base makes 1 more troop; sway 1 toward Discord. |
-| Declaration of War | Military | 18 | ongoing | In each country, 3 troops land on factories; sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice. |
+| War Footing | Military | 7 | once | Every military base fills with corp troops to its cap now. Sway 3 toward Discord. |
+| Purge the Unaligned | Military | 7 | once | Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory (else a city) in each country. Remove 1 Unity from the Unity track. |
+| Armored Columns | Military | 10 | once | In each country, 3 troops land on factories (else cities). |
+| Arms Race | Military | 11 | ongoing | Ongoing: each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base in each production, whatever makes it); sway 1 toward Discord. |
+| Declaration of War | Military | 18 | ongoing | In each country, 3 troops land on factories (else cities); sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice. |
 | Disinformation | Influence | 5 | once | Sway 5 toward Discord. Every player loses 2 ambassadors. |
 | Recruitment Drive | Influence | 11 | ongoing | Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered clean cities. |
 | Infiltration Drive | Influence | 18 | once | Each board: create 3 adversary ambassadors on the lowest-numbered clean city. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord. |
 | Data Heist | Cyber | 6 | once | Every player loses 5 tokens from their cards and gets 3 less insight next round. |
 | Botnet Swarm | Cyber | 6 | once | Each board: create 3 adversary ambassadors on each of the 2 lowest-numbered botnet hexes. |
-| Station Coup | Cyber | 9 | once | Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, a research station is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it). |
+| Station Coup | Cyber | 9 | once | Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, players choose a research station that is not the adversary's; it flips to the adversary, but a player's holds unless 2 adversary ambassadors and no player ambassador are on it (those 2 return to the supply as it flips). If it holds, 1 adversary ambassador lands on it (or cancels a player ambassador there). |
 | Market Crash | Economic | 5 | once | Every player gets 9 fewer credits of income next round and loses all their chips. |
-| Shadow Factories | Economic | 7 | once | The adversary builds a factory in the country with the most free industrial zones (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. |
+| Shadow Factories | Economic | 7 | once | The adversary builds a factory in the country with the most free industrial zones (tie: the first country), on a free zone next to an adversary ambassador, else the lowest-numbered one (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. |
 | Capital Flight | Economic | 8 | once | Every player's income falls by 6 credits for the rest of the game. |
-| Rolling Blackouts | Grid | 6 | once | Every player loses 2 energy. Next round, cities make no energy and research stations make no research cubes. |
+| Rolling Blackouts | Grid | 6 | once | Every player loses 2 energy. Next round, cities make no energy and research stations produce nothing. |
 | Grid Capture | Grid | 9 | ongoing | Every player loses 2 energy. Ongoing: every round, every player loses 1 energy. |
 | False Flag | Universal | 6 | once | Deal 1 extra tier-2 threat in each country, any tag. Sway 2 toward Discord. |
-| Grand Offensive | Universal | 10 | once | The adversary builds now, then Corrupt cities; 1 troop lands on a factory in each country; sway 3 toward Discord. |
+| Grand Offensive | Universal | 10 | once | The adversary builds now, then Corrupt cities; 1 troop lands on a factory (else a city) in each country; sway 3 toward Discord. |
 | Propaganda Network | Universal | 14 | ongoing | Ongoing: every round, sway 3 toward Discord, remove 2 Unity from the Unity track. Each board: create 2 adversary ambassadors on the lowest-numbered corrupted city. |

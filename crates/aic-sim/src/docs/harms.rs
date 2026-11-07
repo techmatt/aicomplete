@@ -98,6 +98,8 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
             vec![CREDITS_LOST]
         }
+        // Capital Flight: a negative credit income for every player.
+        Op::TeamIncome { resource: Resource::Credits, amount } if *amount < 0 => vec![CREDITS_LOST],
         Op::LoseAmbassadorsOr { .. } => vec![AMBASSADORS_LOST, CREDITS_LOST],
         Op::LoseOr { options } => {
             let mut all: Vec<usize> = options.iter().flat_map(op_harms).collect();
@@ -198,7 +200,8 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         add(ADVERSARY_EVENTS, &r.effects);
     }
     for p in &c.projects {
-        add(ADVERSARY_PROJECTS, &p.effects);
+        // An ongoing project's resolve line counts too, once per harm with its effects.
+        add(ADVERSARY_PROJECTS, &[&p.effects[..], &p.resolve[..]].concat());
     }
     for p in &c.map.countries {
         add(MEGAPROJECTS, &p.megaproject.adversary);

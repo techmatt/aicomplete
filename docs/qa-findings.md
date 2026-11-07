@@ -4,7 +4,7 @@ What a bug hunt reads first: the findings still open, the reports ruled won't-fi
 faults past hunts kept finding. Fixed findings are in git (the 020 hunt, r10 → 11, and the 044 hunt, r20 → 21, numbered
 F1–F100; the full ledger is `git show 1617d75:docs/qa-findings.md`: don't re-report one; the 099 hunt's, r38 → 39, F101–F131, are in
 `experiments/results/099_bug_hunt_r38/fixed.md`, the 118 hunt's, r46 → 47, F132 on, in `experiments/results/118_bug_hunt_r46/fixed.md`, its D43 on and W19 on in full
-in `deferred.md` there).
+in `deferred.md` there; the 145 hunt's, r59 → 60, F165 on and D57 on in full in `experiments/results/145_bug_hunt/`).
 A new finding takes the next number after the last in either list (D, W below). Each is **fixed** (one line, the change in git),
 **deferred** to Matt (options and a recommendation) or **won't fix** (the reason).
 
@@ -27,6 +27,8 @@ rules revision, step time). What they already catch, so a hunt needn't hand-chec
 - The sweep's `no-control` (099) flags a legal action with no button or hex pick on screen.
 - 118: `scripts/cards/runaway_read.py` (loops in a run's counters), `aic-sim docs --check` on a rules quote a card no
   longer prints, wasm-parity's engine games (r41+ engines), the sweep's r41+ moments and strategist and 1-player cases.
+- 145: `scripts/cards/counter_names.py` (counter keys a read script quotes that no game writes), the sweep's r55-r59
+  moments (claims, liberations, Envoy, hold-offs, node loss by cause, Corrupt X by site) and d3 cases.
 
 ## Where hunts found faults
 
@@ -52,11 +54,14 @@ Each hunt found most of its faults in the same places. Look there first:
   hunt); `docs --check` now catches a quoted face.
 - **Who an effect belongs to** (118): a trigger inside a teammate's action, a counter fed by another card.
 - **Agents matching words** (118): a prompt's rewording turned an agent heuristic off; grep the agents for a prompt.
+- **Order inside a round** (145): a Discord tip in the Sway phase read last round's card; a project acted in the build
+  that filled it; a troop rule spent an ambassador where no troop came. Ask what has happened yet at each phase.
+- **One op, two wordings** (145): faces of the same op printed differently (face down, standing troops, pay or
+  discard), and a face's "here" with two tokens. Group faces by op and read them side by side.
 
 ## Open, deferred to Matt
 
-Ruled and built in r48 (121), so gone from the list: D16 (generalized: nothing to act on never blocks a card), D43, D44 (either half), D48, D51, D54.
-Built by 124 (agents, r49): D47 (strategies read trigger contents; the teammate share and At N tokens screened and left off, switches `w.team_share`, `w.threshold_tokens`), D53 (insight income at its table rate: Hyperscale Botnet played 0.02 → 0.15 a game).
+Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54.
 
 | # | Area | Finding | Options, and the pick |
 |---|---|---|---|
@@ -73,6 +78,21 @@ Built by 124 (agents, r49): D47 (strategies read trigger contents; the teammate 
 | D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
 | D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
+| D57 | cards | Exascale Training Cluster (8 energy) kept in ~45% of games, never played. | Cut its +25 agents override; energy 8 → 4-5 **Matt's call**. |
+| D62 | content | `lose_or` threats (Chip Shortage, Power Surcharge) are dodged with none of the resource; `requisition` ones aren't. | One op for both. **Matt's call**. |
+| D63 | content | Regime Change takes no node, Station Seizure / Lab Takeover flip another station, once theirs is already corrupted. | Ops follow faces. **Matt's call**. |
+| D60 | rules | Station Coup's flips skip corruption's cleanup (node, ambassadors). | Route through it, or keep. **Matt's call**. |
+| D64 | content | "Clean city" creation lines include aligned cities. | Faces say "not corrupted", or the op skips aligned. **Matt's call**. |
+| D65 | content | Rolling Blackouts / Market Crash "next round" also hits this round when filled in the build. | Faces say so. **Pick**. |
+| D71 | agents | The shelter forecast's armor (any player's ambassador; per-line). 145's fix slowed the greedy ~15×: taken back. | Profile, then land it. **Pick**. |
+| D67 | agents | Land corruption is invisible to the eval. | A land term and a drip term. **Pick**. |
+| D68 | agents | The gates' Unity-farm check farms a reward 137 removed. | Drop it. **Pick**. |
+| D70 | cards | The claim-station cards' faces omit that a station with an adversary ambassador can't be claimed by them (printing it: 5.8 pt). | **Matt's call**. |
+| D69 | card art | Power Purchase Agreement and Microgrid Lab Compact have no art scene. | Write and render them. **Matt's call**. |
+| D58 | speed | Greedy 1.63× a decision r58 → r59. | Profile its eval over the menus. **Pick**. |
+| D59 | viewer | A troop arrow ignores Forced March's +1 step. | Read the next march's card. **Pick**. |
+| D61 | engine | The doubled-build path is dead since 142. | Remove. **Pick**. |
+| D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |
 
 ## Won't fix
 
@@ -83,14 +103,12 @@ Built by 124 (agents, r49): D47 (strategies read trigger contents; the teammate 
 | W4 | plan | "`plan::next_build` leaves out ongoing projects (Recruitment Drive)." | It forecasts the build and escalation, as documented; only tests call it (no agent or client reads it), so this is no visible bug. |
 | W5 | viewer | The event log shows engine events raw (`var changed · key adversary.supply · delta +1`). | The viewer is debug-first (web/README.md); the board, panels and prompts carry the readable story. |
 | W6 | viewer | With the *View* tab open a 4-country step costs up to ~140 ms (it re-renders ~85 KB of view JSON); *Raw state* ~75 ms. | Debug tabs, closed by default; the default log tab steps in ~25–45 ms. |
-| W7 | sim | In counter rows "-" means both "never tallied" and "no game reached this round"; `adversary ops at setup` is always 0 (setup's station botnets are printed setup, not operations); a "mean where reached" carries no count of the games that reached it. | Reading aids, not wrong numbers; the per-game records and `games.jsonl` have the detail. If they bite: print the reached count beside each conditional mean. |
-| W8 | view | The seat's income in the view leaves out an upkeep conversion (`convert_upkeep`). | No card uses the op now; the income passives the view reads don't model conversions. Fix it if a card brings the op back. |
+| W7 | sim | In counter rows "-" means both "never tallied" and "no game reached this round"; a "mean where reached" carries no count of the games that reached it. | Reading aids, not wrong numbers; `games.jsonl` has the detail. |
 | W9 | viewer | A grouped hex-pick button's hover shows the raw JSON of its first action only. | A developer aid. |
-| W10 | viewer | Below the supported 1366×768 (a 1366 laptop at 150% zoom, 1024×768) the board pane has no scroll fallback: the strips take the board's height. | The stated floor is 1366×768 (style.css, web/README.md); a real 1366×768 window (about 1366×650 of viewport) measured board 248 px, no page scroll. A `min-height` on the board and a scrolling pane would extend it if smaller screens matter. |
+| W10 | viewer | Below the supported 1366×768 (a 1366 laptop at 150% zoom, 1024×768) the board pane has no scroll fallback: the strips take the board's height. | The stated floor is 1366×768 (style.css, web/README.md); a real 1366×768 window measured board 248 px, no page scroll. |
 | W11 | view | The shared discard piles print insight prices discounted by seat 0's Science tags. | Hover text on a discard pile; the price at play time is right. |
 | W12 | adversary | A station that flips keeps a marker, where a corrupted city's marker goes. | No rule says otherwise; war.md's sentence is about placing a marker. A rule to write if it ever matters. |
 | W13 | viewer | A record overlaying adversary cards or AI boards shows the printed text. | Documented in experiments.md, *Content levers*; the game plays the overlay. |
-| W14 | viewer | Growth buttons name no cost, and Expand with energy for one step places one. | ai-boards.md: a placement you can't pay doesn't happen. The cost is on the track (`pay N energy`). |
 | W15 | scripts | `scripts/cards/screen.py`'s "cap" column counts deck-out losses. | That is the round cap: adversary.md's word. |
 | W16 | viewer | The sweep's `truncated` issues (thousands): threat and project text and adversary lines cut to fit, with a hover. | The no-scroll budget at 1366×768 (W10); every one has a hover or an ellipsis. |
 | W17 | cards | "Liquidity Event is dominated by Bonded Warehouse's cash-out." | It cashes a pile without spending the Action, which can then add. |
@@ -101,4 +119,5 @@ Built by 124 (agents, r49): D47 (strategies read trigger contents; the teammate 
 | W23 | config | `stage_cards` reads 0..20; more than the content holds is refused. | The refusal says so. |
 | W24 | measures | Unspent read before threat refunds; `insight_lost` tallies the debt; `Transfer` vetoes solo (no card). | Fix with the read that needs it. |
 | W25 | report | "adversary ops/round" counts a game's last, partial round; "Agents (weakest first)" prints the spec's aliases. | Small (1 game in 48); the tables name agents by label. |
+| W26 | viewer | Two stack counts overlap on a hex holding 15+ troops (the sweep's `board-text-overlap`, random play at 95 troops). | Random play only; agents' games never stack so high. |
 | W20 | content | The place-token loop guard sees only a direct `add_tokens`. | No deck card prints such a trigger. |

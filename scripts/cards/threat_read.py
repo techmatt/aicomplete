@@ -46,7 +46,8 @@ def main():
     ap.add_argument('--cards', action='store_true')
     a = ap.parse_args()
     typed, cap = typed_and_capstones()
-    by = ['credits', 'energy', 'insight', 'ambassadors', 'research_cubes', 'tags', 'nodes', 'card', 'standing']
+    # 145: chips (142's menus) and free (an option cut to nothing) were left out.
+    by = ['credits', 'energy', 'insight', 'ambassadors', 'research_cubes', 'chips', 'tags', 'nodes', 'card', 'standing', 'jam', 'free']
     keys = ([('dealt', 'threats.dealt'), ('counter', 'threats.countered')]
             + [(k[:5], f'threats.countered_by.{k}') for k in by]
             + [('exec', 'threats.executed'), ('abroad', 'threats.paid_abroad'), ('clean', 'threats.rounds_all_countered'),

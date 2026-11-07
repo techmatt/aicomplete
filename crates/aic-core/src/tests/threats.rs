@@ -65,6 +65,64 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     assert_eq!(counted(&g, "threats.countered.t1"), 1);
 }
 
+/// 145: a [city, coastal city] threat whose city token would take the only
+/// clean coastal city places its coastal token there and the city token inland.
+#[test]
+fn a_city_token_leaves_the_only_coastal_city_to_the_coastal_token() {
+    let (rules, mut g) = threat_lab();
+    let m = &rules.map;
+    let c = (0..m.countries.len())
+        .find(|&c| {
+            let cs: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c).collect();
+            cs.iter().any(|&h| m.hexes[h].coastal) && cs.iter().any(|&h| !m.hexes[h].coastal)
+        })
+        .expect("a country with a coastal and an inland city");
+    let here: Vec<usize> = cities(m).into_iter().filter(|&h| m.hexes[h].country as usize == c).collect();
+    let coastal = *here.iter().find(|&&h| m.hexes[h].coastal).unwrap();
+    let inland = *here.iter().find(|&&h| !m.hexes[h].coastal).unwrap();
+    // Every other city corrupted; the coastal one under more pressure.
+    for &h in &here {
+        if h != coastal && h != inland {
+            put(&mut g, h, ADV_CUBE, 1);
+        }
+    }
+    put(&mut g, coastal, ADV_AMBASSADOR, 2);
+    set_pile(&mut g, "threats.deck.2", &["propaganda_ministry"]);
+    with_cx(&rules, |cx| threats::deal_tier(&mut g, cx, 2, &[crate::content::PullTag::Any], c)).unwrap();
+    let mut got = threats::tokens(&g, &Key::new("propaganda_ministry"));
+    got.sort();
+    let mut want = vec![coastal, inland];
+    want.sort();
+    assert_eq!(got, want, "both tokens on the board");
+}
+
+/// 145: the share paid reads each option in its own currencies: 1 credit
+/// toward 3 energy or 15 credits is 1/15 paid, not a quarter.
+#[test]
+fn the_share_paid_reads_each_option_in_its_own_currency() {
+    let (rules, mut g) = threat_lab_with(&[
+        r#"threats.eviction.counters=[[{"resource":"energy","amount":3}],[{"resource":"credits","amount":15}]]"#,
+        "adversary.counter_credit_pct=100",
+    ]);
+    let m = &rules.map;
+    let city = cities(m).into_iter().find(|&h| m.hexes[h].country == 0).unwrap();
+    no_nodes(&mut g);
+    put(&mut g, city, node(0), 1);
+    deal_at(&mut g, "eviction", 0, &[city]);
+    let w = rules.world();
+    let need = |g: &GameState| threats::requirement(&w, g, "eviction");
+    let (energy, credits) = (need(&g)[0][0], need(&g)[1][0]);
+    let amount = |i: &crate::content::CounterItem| match i {
+        crate::content::CounterItem::Pay { amount, .. } => *amount,
+        _ => unreachable!(),
+    };
+    assert_eq!(threats::paid_share(&w, &g, "eviction"), 0.0);
+    set_res(&mut g, 0, Resource::Credits, 10);
+    act(&rules, &mut g, Action::Pay { seat: 0, threat: "eviction".into(), resource: Resource::Credits, amount: 1 });
+    let share = threats::paid_share(&w, &g, "eviction");
+    assert!((share - 1.0 / amount(&credits) as f64).abs() < 1e-9, "{share}, energy {}", amount(&energy));
+}
+
 #[test]
 fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
     // 142: Eviction (tier 1) pinned to 3 energy or 15 credits; at 150% it asks

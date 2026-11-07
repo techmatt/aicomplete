@@ -26,21 +26,21 @@ The standards every module and every rules change is judged against.
 
 **Current check (`configs/baseline.json`, `content/`):** the average cost of what is
 played should sit near credit income ÷ insight income: about 25-35 credits ÷ 5-7 insight ≈ 5 (read at r33),
-and tier-1 cards have a median of 10 credits with tier 2 18 (r47).
+and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
 
-- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 18 / 16 / 14 a
-  round printed on the Builder, Protector and Researcher (r46; 25 / 21 / 18 before), plus 2-3 a
+- **Credits are the outlier.** 40 / 46 / 40 to start (`ai.start_credits`, the Protector higher; the starting-economy scaffold), 15 / 13 / 11 a
+  round printed on the Builder, Protector and Researcher (r59), plus 2-3 a
   node on the economy track and Unity income (Grassroots Funding, New Deal +2 each): a seat sees about 200 to 250 credits
   over a 9-round game before cards, so totals reach the hundreds. Card costs run 2–46 (Moonshot Grant 46, Hostile Buyout 42, Peacekeeping
   Mission 41): within "about 50", but the income is not "produce
   1".
-- **Credit sinks priced off that income:** threat counters 4–8; a research cube is worth about 3
+- **Credit sinks priced off that income:** threat counters 15 / 23 / 33 credits by tier (the last option on every menu); a research cube is worth about 3
   credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); chips sell
-  for `chips_credits` 1; Market Crash takes 8 and Propaganda 4–8.
-- **Adversary compute:** project costs are 5–10 *a player*, so 15–30 at 3 players and
-  20–40 at 4: the top of the range, still under 50. A botnet makes 1.
+  for `chips_credits` 1; Market Crash takes 9 of a round's income and Propaganda 4–8.
+- **Adversary compute:** project costs are 4–18 *a player*, so 12–54 at 3 players and
+  16–72 at 4: the dearest go past 50. A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs 1), chips (a factory
-  makes 1), insight, antimatter, Sway (tips at 2 a player), the supply (24 a country,
+  makes `factory_chips` 2), insight, antimatter, Sway (tips at `tip_per_player` 3 a player), the supply (24 a country,
   pieces rather than a currency).
 
 ## Difficulty targets
@@ -66,7 +66,7 @@ the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no
 measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);
 at d2 the adversary corrupts at least one new city in most games, and a won game liberates about one; at high difficulty
 expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the share of games with a new corruption is
-`adversary.corruptions` > 0).
+`adversary.corruptions.city` > 0; the bare `adversary.corruptions` counts every site since 138).
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
 main cause, and the node clock stays live. The round cap is a quiet backstop with no share target

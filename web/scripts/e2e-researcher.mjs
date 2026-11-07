@@ -69,8 +69,9 @@ try {
   check(chip.includes('insight carried'), 'the carried insight shows on its panel');
   const insight = await value('resource.insight');
   const income = await value('economy.income.insight');
-  // Keeps in round 2's draft may have spent some before the action phase: more than a reset could give is the check.
-  check(insight > income && insight <= carried + income, `insight ${insight}: more than its income ${income}, at most that plus the carried ${carried}`);
+  // Keeps in round 2's draft may have spent some before the action phase, all of the carried at r59 (145: this
+  // failed on main since 142), so the carried amount above is Patience's check; here, no more than income plus it.
+  check(insight >= income && insight <= carried + income, `insight ${insight}: at least its income ${income}, at most that plus the carried ${carried}`);
   check(await js(`${panel}.querySelector('.res.r-insight .inc')?.textContent ?? ''`) === `+${income}`, 'its insight reads as an addition, not a reset');
 
   // Round 3 stores cubes once the card has completed in round 2.

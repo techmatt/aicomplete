@@ -11,7 +11,7 @@
    "locations": [
     "base"
    ],
-   "text": "1 adversary troop lands here and stays (it doesn't march) until removed. The adversary gains 3 compute. Sway 2 toward Discord.",
+   "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -1160,7 +1160,7 @@
    "locations": [
     "coastal_city"
    ],
-   "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 building face down until the end of next round.",
+   "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
    "counters": [
     [
      {
@@ -1499,7 +1499,7 @@
    "locations": [
     "station"
    ],
-   "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it makes no research cubes next round.",
+   "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Next round, the research stations of each player near it make no research cubes.",
    "counters": [
     [
      {

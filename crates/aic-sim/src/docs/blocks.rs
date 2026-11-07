@@ -31,7 +31,7 @@ pub const HOUSE_TERMS: [(&str, &str); 16] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
-    ("Troop", "always the adversary's"),
+    ("Troop", "an adversary troop, unless it says corp troop (a megacorp's, waiting at its military bases)"),
     ("In reach", "on a hex within 1 of your nodes"),
     ("A country you're in", "a country where you have a node"),
     ("Your home country", "the country you start in"),
@@ -592,6 +592,12 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
             "Discord".to_string(),
             "the adversary board's drip, at the start of every round".to_string(),
             format!("as printed ({}: {})", content().adversary_board.name, content().adversary_board.discord_drip),
+        ],
+        // 145: the land-corruption drip (138) the table left out.
+        [
+            "Discord".to_string(),
+            "each land-corruption token (Blitzkrieg, Naval Blockade), at the start of every round".to_string(),
+            t("adversary.blight_discord"),
         ],
     ];
     table(&["Toward", "From", "Amount"], rows.into_iter().map(|r| r.to_vec()).collect())

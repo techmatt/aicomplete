@@ -25,8 +25,9 @@ import sys
 
 TIMING = ("ms", "wall", "threads", "seconds")
 # Run bookkeeping, not play (012 added the games_* counts); `countries` is a label 052 added,
-# so an output from before it still compares.
-IGNORED = ["path", "games_resumed", "games_played", "games_planned", "countries"]
+# so an output from before it still compares. A spec's `note` is prose (145: 144 reworded
+# use.json's note and the same games read as one difference).
+IGNORED = ["path", "games_resumed", "games_played", "games_planned", "countries", "note"]
 
 
 def timing(key):

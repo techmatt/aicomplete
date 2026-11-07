@@ -35,7 +35,7 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Every corp base fills to its troop cap now. Sway 3 toward Discord.",
+   "text": "Every military base fills with corp troops to its cap now. Sway 3 toward Discord.",
    "effects": [
     {
      "op": "corp_troops",
@@ -73,7 +73,7 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory in each country. Remove 1 Unity from the Unity track.",
+   "text": "Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory (else a city) in each country. Remove 1 Unity from the Unity track.",
    "effects": [
     {
      "op": "lose_ambassador"
@@ -111,7 +111,7 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "In each country, 3 troops land on factories.",
+   "text": "In each country, 3 troops land on factories (else cities).",
    "effects": [
     {
      "op": "troops",
@@ -139,7 +139,7 @@
    ],
    "cost": 11,
    "ongoing": true,
-   "text": "Ongoing: each round, every military base makes 1 more troop; sway 1 toward Discord.",
+   "text": "Ongoing: each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base in each production, whatever makes it); sway 1 toward Discord.",
    "effects": [
     {
      "op": "corp_troops",
@@ -177,7 +177,7 @@
    ],
    "cost": 18,
    "ongoing": true,
-   "text": "In each country, 3 troops land on factories; sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice.",
+   "text": "In each country, 3 troops land on factories (else cities); sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice.",
    "effects": [
     {
      "op": "extra_war",
@@ -387,7 +387,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, a research station is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it).",
+   "text": "Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, players choose a research station that is not the adversary's; it flips to the adversary, but a player's holds unless 2 adversary ambassadors and no player ambassador are on it (those 2 return to the supply as it flips). If it holds, 1 adversary ambassador lands on it (or cancels a player ambassador there).",
    "effects": [
     {
      "op": "create",
@@ -460,7 +460,7 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "The adversary builds a factory in the country with the most free industrial zones (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories.",
+   "text": "The adversary builds a factory in the country with the most free industrial zones (tie: the first country), on a free zone next to an adversary ambassador, else the lowest-numbered one (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories.",
    "effects": [
     {
      "op": "adversary_factory",
@@ -526,7 +526,7 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Every player loses 2 energy. Next round, cities make no energy and research stations make no research cubes.",
+   "text": "Every player loses 2 energy. Next round, cities make no energy and research stations produce nothing.",
    "effects": [
     {
      "op": "players_lose",
@@ -636,7 +636,7 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "The adversary builds now, then Corrupt cities; 1 troop lands on a factory in each country; sway 3 toward Discord.",
+   "text": "The adversary builds now, then Corrupt cities; 1 troop lands on a factory (else a city) in each country; sway 3 toward Discord.",
    "effects": [
     {
      "op": "adversary_build"

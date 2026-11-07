@@ -22,7 +22,7 @@ corp troops fights twice.
   player's own, on a free zone in reach. An owned factory keeps its owner if its city
   changes hands later.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
-  `factory_chips` chip for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
+  `factory_chips` (2) chips for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
   factory makes nothing, except that **on each Discord tip it makes 1 corp troop**. One opposing ambassador blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, Shadow Factories, War Economy),
   seize them (Hostile Takeover), occupy them (a standing troop: it makes nothing) and destroy them (Scorched Earth).
@@ -46,8 +46,9 @@ player troops: corp troops belong to the megacorp of their territory and wait at
 - **Peacetime:** at most `unit_cap` troops wait at each base. A troop at a base **absorbs
   an adversary-troop strike** on a facility on or next to the base: 1 troop per hit.
 - **Extra corp troops** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
-  adversary troop on or next to it), Conscription (3 rounds), Arms Race (ongoing), General Mobilization (2 now).
-  A base gains at most 1 extra a round from all of them together (Matt, 2026-11-06).
+  adversary troop on or next to it), Conscription (3 rounds), Arms Race (ongoing). A base gains at most 1 extra a
+  round from these three together (Matt, 2026-11-06). Threats that make troops now add on top, past the cap:
+  Call-Up (1) and General Mobilization (3).
 - **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus troop
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
   adversary-owned one; ties: lower hex number), **and any node on its hex** (the node goes with the factory,
@@ -127,9 +128,10 @@ other, and it moves ambassadors one hex onto the site that corrupts ([adversary.
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
-the game on, only where the board is overrun: uncountered threats near the node (`threat_nodes` by tier; Eviction
-offers it as a choice; Agitators, Orbital Strike and Defection in tier 1 and Station Seizure, Overrun, Sleeper Cells,
-Insurrection in tier 2 make each player here destroy one of theirs here; Manhunt and Siege two), a site that becomes
+the game on, only where the board is overrun: uncountered threats near the node (`threat_nodes` by tier, every one;
+and printed: Total War, Purge Protocols, Grid Collapse, Overload, Last Ultimatum and Spearhead make each player near
+destroy 1 more near it; Siege and Scorched Earth take the nodes on the factory's hex, Regime Change those on and next
+to its city), a site that becomes
 corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next
 to it: 0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex) and Border War (each
 player with a node on or next to a front's base destroys 1 of those; Matt's message 5847). **Nothing else destroys a
@@ -140,8 +142,7 @@ destroys nodes only if it goes uncountered. A hit is each player's own pick of w
 destruction is (below), so a token shielded by an ambassador is a good pick.
 **While this round's adversary card is stage I, a player's last node can't be destroyed**
 (candidate, **Early fragility**, kept at 139): each player starts with 1, and a war in round 2 would
-otherwise end the game. Eviction goes further: it takes a node only from a player with 2 or
-more, at any stage. A site that corrupts destroys the node on its hex as any destruction (138): an
+otherwise end the game. A threat's printed node line never takes a last node, at any stage. A site that corrupts destroys the node on its hex as any destruction (138): an
 ambassador there, a shield or a shelter answers it.
 
 **A lost node (locked, as in Spirit Island).** A destroyed node, or one paid to counter a threat,

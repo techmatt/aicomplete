@@ -20,6 +20,9 @@ Current:
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
   (runs `use.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
+- `cards/counter_names.py DIR... [--all]`: measures gone quiet: the counter keys the read scripts, web scripts and
+  `crates/aic-sim` (agents aside) quote that no game in DIR wrote (a key a rules change retired). A rare event, a
+  per-round prefix or a test string lists too: read it, don't gate on it.
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
   each check against its own agent in one sign, agent minus check, with the paired SE, and games

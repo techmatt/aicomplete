@@ -168,19 +168,18 @@ pub fn threat_tier(w: &World, g: &GameState) -> u8 {
     if g.var(STAGE) >= 2 {
         return g.var(STAGE).min(3) as u8;
     }
-    if level(w, 4) {
-        let early = w.int("adversary.tier2_early") as usize;
-        let soon = g
-            .pile(NEXT)
-            .iter()
-            .chain(g.pile(DECK))
-            .take(early)
-            .any(|id| card(w, id).stage >= 2);
-        if soon {
-            return 2;
-        }
+    if level(w, 4) && tier2_soon(w, g, 0) {
+        return 2;
     }
     1
+}
+
+/// Difficulty 4's look-ahead: a stage-II card within `tier2_early` cards of
+/// the face-up pile and the deck, past its first `skip` (145: in the Sway
+/// phase this round's card is still face up, so the deal's window starts one later).
+pub fn tier2_soon(w: &World, g: &GameState, skip: usize) -> bool {
+    let early = w.int("adversary.tier2_early") as usize;
+    g.pile(NEXT).iter().chain(g.pile(DECK)).skip(skip).take(early).any(|id| card(w, id).stage >= 2)
 }
 
 pub(super) fn card<'w>(w: &World<'w>, id: &str) -> &'w AdversaryCard {
@@ -203,12 +202,15 @@ fn card_text(c: &AdversaryCard) -> String {
 /// the Sway phase) this round's card is still the face-up one: read it (022:
 /// that read last round's card, and none in round 1).
 pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
+    g.pile(round_pile(g)).iter().flat_map(|id| card(w, id).twists.iter()).collect()
+}
+
+/// The pile holding this round's adversary card: the face-up one before this
+/// round's flip (a Discord tip in the Sway phase), else the current one.
+pub fn round_pile(g: &GameState) -> &'static str {
     let flip = if g.phase_index("adversary.event").is_some() { "adversary.event" } else { "adversary.build" };
     let before_build = g.phase_index(flip).is_some_and(|i| g.phase < i);
-    g.pile(if before_build { NEXT } else { CURRENT })
-        .iter()
-        .flat_map(|id| card(w, id).twists.iter())
-        .collect()
+    if before_build { NEXT } else { CURRENT }
 }
 
 #[derive(Debug)]
@@ -399,7 +401,7 @@ impl Module for Adversary {
                 board_build(g, cx, None)?;
                 wall_pressure(g, cx)?;
                 // Ongoing projects act, in the order they came into play.
-                for id in g.pile(PROJECTS_ONGOING).to_vec() {
+                for id in ongoing_acting(g) {
                     let p = project(&w, &id);
                     let acts: Vec<Op> = p.effects.iter().filter(|e| !standing_project_op(e)).cloned().collect();
                     effects::run(g, cx, &acts, &mut effects::Ctx::team().named("project").why(&p.name))?;
@@ -608,6 +610,7 @@ impl Module for Adversary {
             FIRST_CORRUPTION,
             FIRST_PROJECT,
             "adversary.project.",
+            "adversary.ongoing_from.",
             "adversary.cut.",
         ]);
     }
@@ -732,6 +735,16 @@ pub fn compute_every(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     Ok(())
 }
 
+fn ongoing_from_key(id: &str) -> KeyBuf {
+    KeyBuf::new("adversary.ongoing_from.").text(id)
+}
+
+/// The ongoing projects acting this round, in the order they came into play:
+/// one that resolved this round acts from the next (145).
+pub fn ongoing_acting(g: &GameState) -> Vec<Key> {
+    g.pile(PROJECTS_ONGOING).iter().filter(|id| g.var(&ongoing_from_key(id.as_str())) <= g.round as i64).copied().collect()
+}
+
 /// A full project resolves: once (to the resolved pile), or as an ongoing
 /// project from next round's build on. An empty row deals a new one.
 fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
@@ -739,6 +752,8 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     let p = project(&w, id);
     cx.set_key(g, &project_key(id), 0);
     let to = if p.ongoing {
+        // 145: it acts from next round on (it acted in the build that filled it).
+        cx.set_key(g, &ongoing_from_key(id), g.round as i64 + 1);
         PROJECTS_ONGOING
     } else {
         PROJECTS_DONE
@@ -848,8 +863,8 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 /// 138, a creation line: `count` adversary ambassadors on each of the
 /// `sites` lowest-numbered matching sites in each country in scope (one
 /// source with the agents' forecast, [`super::plan::create_plan`]). A
-/// cordoned country gains none; a site on or next to a Trade Blockade flag
-/// gains twice (135). Tallied by `source` (event, board, threat, project,
+/// cordoned country gains none; a site on or next to a doubled-build flag
+/// gains twice (135; no content prints one since 142's Trade Blockade). Tallied by `source` (event, board, threat, project,
 /// discord, unity).
 pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, scope: Option<usize>, near: &[usize], location: Option<usize>, source: &str) {
     let w = cx.world;

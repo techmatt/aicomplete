@@ -74,16 +74,34 @@ pub(super) fn lands_in(w: &World, g: &GameState, t: &ThreatDef, c: usize) -> boo
 /// never share a hex.
 pub(super) fn place_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key, c: usize) {
     let w = cx.world;
-    let mut used: Vec<usize> = Vec::new();
-    for (i, &loc) in def(&w, threat).locations.iter().enumerate().take(MAX_TOKENS) {
-        let best = sites(&w, g, c, loc)
-            .into_iter()
-            .filter(|h| !used.contains(h))
-            .max_by_key(|&h| (pressure(&w, g, h), std::cmp::Reverse(h)));
-        if let Some(h) = best {
-            cx.set_key(g, &loc_key(threat, i), h as i64 + 1);
-            used.push(h);
+    let locs: Vec<(usize, _)> = def(&w, threat).locations.iter().copied().enumerate().take(MAX_TOKENS).collect();
+    let assign = |order: &[(usize, _)]| {
+        let mut used: Vec<(usize, usize)> = Vec::new();
+        for &(i, loc) in order {
+            let best = sites(&w, g, c, loc)
+                .into_iter()
+                .filter(|h| !used.iter().any(|&(_, u)| u == *h))
+                .max_by_key(|&h| (pressure(&w, g, h), std::cmp::Reverse(h)));
+            if let Some(h) = best {
+                used.push((i, h));
+            }
         }
+        used
+    };
+    let mut placed = assign(&locs);
+    // 145: in printed order a city token could take the only clean coastal
+    // city and leave a coastal-city token off the board: when that leaves a
+    // token unplaced, the type with fewer sites places first.
+    if placed.len() < locs.len() {
+        let mut narrow = locs.clone();
+        narrow.sort_by_key(|&(_, loc)| sites(&w, g, c, loc).len());
+        let other = assign(&narrow);
+        if other.len() > placed.len() {
+            placed = other;
+        }
+    }
+    for (i, h) in placed {
+        cx.set_key(g, &loc_key(threat, i), h as i64 + 1);
     }
 }
 

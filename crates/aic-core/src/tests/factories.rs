@@ -286,6 +286,22 @@ fn what_stops_a_tip_troop() {
     assert_eq!((g.tokens(bases[0], UNIT), g.tokens(bases[0], ambassador(1))), (0, 0));
     assert_eq!(units(&g), n - 1);
     assert_eq!(g.stats.counters["board.base_ambassador_used"], 1);
+
+    // 145: a full base makes no troop, so its ambassador stays.
+    let mut g = g0.clone();
+    let cap = w.int("board.unit_cap");
+    put(&mut g, bases[0], UNIT, cap);
+    put(&mut g, bases[0], ambassador(1), 1);
+    tip(&mut g);
+    assert_eq!((g.tokens(bases[0], UNIT), g.tokens(bases[0], ambassador(1))), (cap, 1));
+    // ... and with every base of its corp full, the factory's ambassador stays.
+    let mut g = g0.clone();
+    for &b in &bases {
+        put(&mut g, b, UNIT, cap);
+    }
+    put(&mut g, f, ambassador(0), 1);
+    tip(&mut g);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (cap * n, 1));
 }
 
 #[test]

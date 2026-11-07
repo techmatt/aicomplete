@@ -168,6 +168,41 @@ fn unity_swayed_may_hold_discord_off() {
     }
 }
 
+/// 145: a hold-off that leaves the Discord track full is not offered (the
+/// track tips anyway and empties); with every amount too small, nothing is asked.
+#[test]
+fn only_a_hold_off_that_stops_the_tip_is_offered() {
+    let (rules, g0) = action_only(&["alignment.hold_off=1"]);
+    let cap = alignment::capacity(&rules.world(), &g0, crate::content::Side::Discord);
+    // (Discord over the cap, Unity swayed, options offered): 1 over takes 0, 2
+    // or 3 off; at the cap, 0 to 3; 3 over with 2 Unity, nothing.
+    for (over, n, offered) in [(1, 3, 3), (0, 3, 4), (3, 2, 0)] {
+        let mut g = g0.clone();
+        g.vars.insert("alignment.discord".into(), cap + over);
+        g.vars.insert("alignment.unity_new".into(), n);
+        set_res(&mut g, 0, Resource::ResearchCubes, 1);
+        rules.apply_mut(&mut g, &std_act(0, "insight"), None).unwrap();
+        let asked = g.pending.as_ref().map_or(0, |p| p.ask.options.len());
+        assert_eq!(asked, offered, "Discord {} over, {n} Unity", over);
+    }
+}
+
+/// 145: a player with no node loses before a full Unity track tips, with no
+/// Discord tip first (028's check ran only after a tip).
+#[test]
+fn a_player_with_no_node_loses_before_a_unity_tip() {
+    let (rules, mut g) = action_only(&[EASE]);
+    for h in 0..rules.map.hexes.len() {
+        put(&mut g, h, node(1), 0);
+    }
+    fill_bucket(&rules, &mut g, Side::Unity);
+    let tips = g.var("alignment.unity_tips");
+    any_action(&rules, &mut g);
+    assert_eq!(g.var("alignment.unity_tips"), tips, "no Unity card drawn");
+    let o = g.outcome.as_ref().expect("a loss");
+    assert!(!o.won && o.reason == "node", "{o:?}");
+}
+
 /// 136: Envoy spends an ambassador from the supply to move 1 Discord off the
 /// Discord track; with none on the track it isn't offered.
 #[test]

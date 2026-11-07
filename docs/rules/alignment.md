@@ -13,7 +13,8 @@ off the Discord track (`hold_off` 1), and Envoy ([economy.md](economy.md), a sta
 the same for one of your ambassadors, so the team chooses between racing toward Unity and putting
 off the next Discord card. Unity on its own track never stops a Discord tip. The choice is made once
 the action or automatic phase that swayed the Unity has resolved, before any track tips, asked of
-seat 0 for the team (one decision for the whole amount). Variant `tracks` is the rule; `off`
+seat 0 for the team (one decision for the whole amount); only an amount that keeps the Discord track
+from tipping is offered, since a tip empties it anyway. Variant `tracks` is the rule; `off`
 (for measuring Alignment, [README.md](README.md#off-variants)) moves no Sway and tips nothing.
 
 **Tipping.** The Unity track holding `tip_per_player` × players Sway, or the Discord track
@@ -48,11 +49,13 @@ set so that the Discord track fills faster than the team can hold it off without
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
 | Discord | an uncountered threat, the antimatter action, twists, Discord cards, adversary projects | `threat_discord` 1, `antimatter_discord` 1, card text |
 | Discord | the adversary board's drip, at the start of every round | as printed (The Militarist: 0) |
+| Discord | each land-corruption token (Blitzkrieg, Naval Blockade), at the start of every round | `blight_discord` 1 |
 <!-- /generated -->
 
-Corrupted cities' diverted energy is the adversary's per-round drip (1 per corrupted city). The
+Corrupted cities' diverted energy sways Discord in production (1 per corrupted city). The
 round's Sway is the phase `alignment.sway`, first in the round: the adversary board's printed
-drip (in its content; the Militarist prints none), and nothing else (no AI board
+drip (in its content; the Militarist prints none) and `blight_discord` (1) for each land-corruption
+token ([adversary.md](adversary.md)), and nothing else (no AI board
 prints a Unity Sway). An uncountered threat sways `threat_discord` (an unprinted rule, kept).
 
 **More Unity** comes from pushing the adversary back (the table). A player ambassador on a producing base or factory
@@ -103,7 +106,7 @@ A threat countered by a card is discarded and its partial payments are refunded.
 - Open Market's free cards are keeps of drafted cards ([player-cards.md](player-cards.md)), by any player, used before
   credits.
 - **Unity pulled back:** "Remove N Unity from the Unity track" removes up to N.
-- Extra threats come from the current tier's deck (an empty deck reshuffles), one per country in turn from country 0,
+- Extra threats come from the deck of the tier of this round's adversary card's first pull (an empty deck reshuffles), one per country in turn from country 0,
   and are countered or execute like any other. One dealt after the round's counter
   phase (a tip in production or upkeep, False Flag) waits and executes next round, after a counter phase.
 - Blight and Firestorm create on the lowest-numbered city holding adversary ambassadors (138: a creation line); a
@@ -117,7 +120,7 @@ A threat countered by a card is discarded and its partial payments are refunded.
   board's and this round's card's creation lines), then a threat of its tier, any tag, is dealt into the country of
   the node hex with the most adversary ambassadors and troops (ties: country, then lower hex number), its first
   location token on that hex. It is countered or executes like any other; dealt after the counter phase, it waits a
-  round. Before the build step (a tip in the Sway phase, from a board's drip) this round's card is the face-up one.
+  round. Before the build step (a tip in the Sway phase, from land-corruption tokens or a board's drip) this round's card is the face-up one.
 
 **The purge (the win), by Unity cards drawn (r55, candidate).** What you must remove from the
 board to win depends on how many Unity cards have been drawn (`purge_at`: ambassadors, troops,
@@ -163,4 +166,5 @@ corrupted board drives Discord.
 
 Win and loss are checked whenever an action or automatic phase finishes resolving: the Unity
 just swayed is placed (or holds Discord off), full tracks tip (Discord before Unity), then
-losses, then the purge. A tip that ends the game ends it there.
+losses, then the purge. A tip that ends the game ends it there, and a player with no node loses
+before a Unity tip is drawn (a Unity card can't win a game with a player off the board).

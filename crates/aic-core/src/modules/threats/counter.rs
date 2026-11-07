@@ -107,6 +107,33 @@ pub fn cheapest_resource_need(w: &World, g: &GameState, threat: &str) -> i64 {
         .unwrap_or(UNPAYABLE)
 }
 
+/// 145: the share of `threat`'s counter paid, by its best resource-only
+/// option: what is paid in that option's own currencies over what it asks
+/// (1 credit toward a 15-credit option is 1/15, not a third of 3 energy). 0
+/// with no resource option or nothing paid.
+pub fn paid_share(w: &World, g: &GameState, threat: &str) -> f64 {
+    need_and_share(w, g, threat).1
+}
+
+/// [`cheapest_resource_need`] and [`paid_share`] from one read of the menu
+/// (the agents' eval asks both of every threat).
+pub fn need_and_share(w: &World, g: &GameState, threat: &str) -> (i64, f64) {
+    let (mut need, mut share) = (UNPAYABLE, 0.0f64);
+    for o in requirement(w, g, threat).iter().filter(|o| resource_only(o)) {
+        let needs = resource_needs(o);
+        let (mut ask, mut got, mut gap) = (0, 0, 0);
+        for (r, n) in needs {
+            let p = paid(g, threat, r);
+            ask += n.max(0);
+            got += p.min(n.max(0));
+            gap += (n - p).max(0);
+        }
+        need = need.min(gap);
+        share = share.max(if ask > 0 { got as f64 / ask as f64 } else { 1.0 });
+    }
+    (need, share)
+}
+
 /// The most of `resource` a pooled payment toward `threat` may still add:
 /// the largest gap among its resource-only options naming it.
 pub(super) fn room(req: &[Vec<CounterItem>], g: &GameState, threat: &str, resource: Resource) -> i64 {
@@ -227,7 +254,13 @@ pub(super) fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool
         cx.tally(g, "threats.auto_countered", cut);
     }
     // An option a jam or standing counter cut to nothing was paid by no one.
-    let how = if needs.iter().all(|(_, n)| *n <= 0) { "standing" } else { kind(&req[k]) };
+    // 145: "jam" when the jam alone cut it (a jam read as the standing counter).
+    let how = if needs.iter().all(|(_, n)| *n <= 0) {
+        let jam_only = resource_needs(&requirement_less(&w, threat, g.var(&jam_key(threat)))[k]);
+        if jam_only.iter().all(|(_, n)| *n <= 0) { "jam" } else { "standing" }
+    } else {
+        kind(&req[k])
+    };
     tally_countered(g, cx, threat, how);
     clear(g, cx, threat);
     cx.note(None, || format!("{} is countered", def(&w, threat).name));

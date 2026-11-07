@@ -46,7 +46,7 @@ const PARAMS: &[ParamSpec] = &[
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto(
         "sway",
-        "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none)",
+        "the round's Sway: the adversary board's printed drip toward Discord (the Militarist prints none) and each land-corruption token's",
     ),
     PhaseSpec::decision(
         "act",
@@ -237,13 +237,29 @@ fn place_unity(g: &mut GameState, cx: &mut Cx) -> Res {
         return Ok(());
     }
     let w = cx.world;
-    let most = if w.int("alignment.hold_off") > 0 { n.min(g.var(track(Side::Discord))) } else { 0 };
-    let k = if most > 0 {
-        let opts = (0..=most)
-            .map(|k| opt(if k == 0 { format!("all {n} onto the Unity track") } else { format!("{k} off the Discord track, {} onto Unity", n - k) }))
+    let discord = g.var(track(Side::Discord));
+    let most = if w.int("alignment.hold_off") > 0 { n.min(discord) } else { 0 };
+    // 145: a hold-off that leaves the Discord track full still tips, and the
+    // tip empties the track (unless Discord carries), so the Unity spent on it
+    // is lost: only amounts that stop the tip are offered.
+    let cap = capacity(&w, g, Side::Discord);
+    let empties = w.int("alignment.carry") < 2;
+    let ks: Vec<i64> = (0..=most).filter(|&k| k == 0 || !empties || discord - k < cap).collect();
+    let k = if ks.len() > 1 {
+        let opts = ks
+            .iter()
+            // 145: no "all 1" and no ", 0 onto Unity" on the buttons.
+            .map(|&k| {
+                opt(match k {
+                    0 if n == 1 => "onto the Unity track".to_string(),
+                    0 => format!("all {n} onto the Unity track"),
+                    k if k == n => format!("{k} off the Discord track"),
+                    k => format!("{k} off the Discord track, {} onto Unity", n - k),
+                })
+            })
             .collect();
         let prompt = || format!("{n} Unity swayed: how much holds Discord off instead?");
-        cx.choose(0, prompt, opts)?.unwrap_or(0) as i64
+        ks[cx.choose(0, prompt, opts)?.unwrap_or(0)]
     } else {
         0
     };
@@ -495,6 +511,12 @@ impl Module for Alignment {
             place_unity(g, cx)?;
             for side in [Side::Discord, Side::Unity] {
                 if g.var(track(side)) >= capacity(&w, g, side) {
+                    // 145: a player with no node loses before a Unity tip is
+                    // drawn, whether or not a Discord tip came first (028's rule
+                    // held only after a tip).
+                    if side == Side::Unity && w.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
+                        break;
+                    }
                     tip(g, cx, side)?;
                     if g.is_over() {
                         return Ok(());

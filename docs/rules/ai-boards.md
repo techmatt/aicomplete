@@ -10,7 +10,7 @@ is printed under it. Uncovered values add to the income every round (insight at 
 upkeep). The board module owns nodes and counts the tokens taken (`board.track.<seat>`); the AI board reads it.
 
 **The Builder, for new players.** Your special rule is Breadth: five building slots (the Protector has four, the
-Researcher three), so your engine is wider. You start with 40 credits and earn 21 a round, and each credit space of your
+Researcher three), so your engine is wider. You start with 40 credits and earn 15 a round, and each credit space of your
 economy track adds 2 or 3 more, so placing a node is how your income grows; you're short of energy. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each), so choose between more cards
 now and more money for the first plays. Each round you may turn credits into a chip with Mint, 5 credits into an
@@ -21,14 +21,14 @@ hand for no credits.
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
 strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build lands 1 troop on a factory
 (else a city) in every country you're in (anyone's factory, never your node's hex), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
-facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (13 a round), so you start with
+facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each). Late in the game, sacrifice
 cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
 cards (Debrief), and a Security card with an energy shelters a whole country for the round.
 
 **The Researcher, for new players.** Your special rule is Patience: your own insight you don't spend stays with you
-into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 17 a round, 3 more for each credit
+into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 11 a round, 3 more for each credit
 space of your economy track; round 1 deals you 8 tier-1 cards, 4 of them free to keep and 5 credits each after, and 2 tier-2 cards at 1 insight each. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 1 energy into 3 cards, a card from your hand into 2 insight (Synthesis), and 3
 credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and no energy,
@@ -92,7 +92,7 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 4 | +3 credits, Power tag (cost 1) | +3 credits, Diplomacy tag (cost 1) | +3 credits, Power tag (cost 1) |
 | 5 | +3 credits (cost 2) | +3 credits (cost 2) | +3 credits (cost 2) |
 | 6 | +3 credits (cost 3) | +2 credits (cost 3) | +3 credits (cost 3) |
-| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags you have. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
+| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).
@@ -145,5 +145,5 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
 | Protector | *Wall*: Adversary troops can't enter or strike a hex with your node. Vigil: when your Wall stops a troop, gain 1 insight. |
-| Researcher | *Patience*: Your unspent insight carries over to the next round. |
+| Researcher | *Patience*: Your own unspent insight carries over to the next round; insight other players gave you this round does not. |
 <!-- /generated -->

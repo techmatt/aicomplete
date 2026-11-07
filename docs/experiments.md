@@ -78,8 +78,8 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`.
 
-**Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions`,
-`adversary.first_corruption_round`, `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
+**Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions` and
+`adversary.first_corruption_round` (any site since 138: cities alone are `adversary.corruptions.city`), `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
 `experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, `unspent.<seat>.energy` (held as the action phase
 ends); add one there (a rebuild). A zero fills every round up to the key's last record, so an absent

@@ -235,10 +235,11 @@ function sourceBadge(v: View, id: string): { badge: string; hexes: string } {
   const hexes = s.hexes.map((i) => hexKey(v.hexes[i].hex)).join(' ');
   const refused = v.seats.filter((x) => !s.seats.includes(x.index)).map((x) => x.index);
   const none = s.seats.length === 0;
-  const says = none ? 'no one can counter: no source in reach'
-    : refused.length ? `seat ${refused.join(', ')}: no source in reach, can't counter` : '';
-  const made = s.target == null ? '' : ' No source yet: its target becomes one if it goes uncountered.';
-  const title = `${s.source} source: ${s.hexes.length} on the map. Counter with one within 1 of your nodes, or your ambassador on one.${made}`;
+  // 145: the r54+ rule (threats.md, *Near*): a node or an ambassador on or next to a location token.
+  const says = none ? 'no one near it: no one can counter'
+    : refused.length ? `seat ${refused.join(', ')}: not near it, can't counter` : '';
+  const n = s.hexes.length;
+  const title = `${s.source.replace(/\+/g, ', ')}: ${n} location token${n === 1 ? '' : 's'} on the map. You are near it (you may pay toward it; its harm hits you) with a node or ambassador on or next to a token.`;
   return {
     badge: `<span class="tsource ${esc(s.source)}" title="${esc(title)}">${esc(s.source)}</span>${says ? `<span class="trefused">${esc(says)}</span>` : ''}`,
     hexes,

@@ -67,7 +67,8 @@ def rows(games):
         out += [(f'  {c} (played / used)', m(lambda g, c=c: cnt(g, f'cards.played.{c}')),
                  m(lambda g, c=c: cnt(g, f'cards.used.{c}'))) for c in gift]
     out += [
-        ('stations freed (standard action)', m(lambda g: cnt(g, 'board.stations_freed'))),
+        # 145: `board.stations_freed` was retired at 137 (read 0): the Liberate action on a station.
+        ('stations liberated (the Liberate action)', m(lambda g: cnt(g, 'board.liberated.station'))),
         ('player stations an effect could not flip', m(lambda g: cnt(g, 'adversary.station_flip_held'))),
         ('stations flipped', m(lambda g: cnt(g, 'adversary.stations_flipped'))),
         ('Reclamation Crew played (frees a station)', m(lambda g: cnt(g, 'cards.played.station_prefab_order'))),
@@ -82,8 +83,8 @@ def rows(games):
         # No counter splits that half from its token half, so this is the Action's uses, both halves.
         ('Popular Uprising played / Action uses (either half)', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
          m(lambda g: cnt(g, 'cards.used.popular_uprising'))),
-        ('cities liberated by a card / the Liberate action (r55: the fallback)', m(lambda g: cnt(g, 'board.liberated_card')),
-         m(lambda g: cnt(g, 'board.liberated.city') + cnt(g, 'board.liberated_fallback'))),
+        ('cities liberated by a card / the Liberate action', m(lambda g: cnt(g, 'board.liberated_card')),
+         m(lambda g: cnt(g, 'board.liberated.city'))),
     ]
     for name, key in powers.items():
         out.append((f'{name} used', m(lambda g, key=key: cnt(g, key))))

@@ -79,7 +79,7 @@
     "cost": 5,
     "capstone": {
      "name": "Full Capacity",
-     "text": "1 chip each round per 2 Industry tags you have.",
+     "text": "1 chip each round per 2 Industry tags on your cards.",
      "passives": [
       {
        "op": "income_per_tag",
@@ -646,7 +646,7 @@
   "text": "The scientist: plays off the board, on its turn budget and on research cubes.",
   "innate": {
    "name": "Patience",
-   "text": "Your unspent insight carries over to the next round.",
+   "text": "Your own unspent insight carries over to the next round; insight other players gave you this round does not.",
    "passives": [
     {
      "op": "patience"
@@ -796,7 +796,7 @@
       3
      ]
     ],
-    "text": "add 1 research cube in your color to an incomplete megaproject",
+    "text": "add 1 research cube in your color to an open megaproject",
     "effects": [
      {
       "op": "project_cube",

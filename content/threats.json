@@ -9,7 +9,7 @@
   "locations": [
    "base"
   ],
-  "text": "1 adversary troop lands here and stays (it doesn't march) until removed. The adversary gains 3 compute. Sway 2 toward Discord.",
+  "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Sway 2 toward Discord.",
   "counters": [
    [
     {
@@ -996,7 +996,7 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 building face down until the end of next round.",
+  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
   "counters": [
    [
     {
@@ -1283,7 +1283,7 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it makes no research cubes next round.",
+  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Next round, the research stations of each player near it make no research cubes.",
   "counters": [
    [
     {
@@ -2499,7 +2499,7 @@
   "locations": [
    "station"
   ],
-  "text": "Stations on or next to it make no research cubes for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
+  "text": "Stations on or next to it produce nothing for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -2822,7 +2822,7 @@
    "city",
    "base"
   ],
-  "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat here; it executes next round.",
+  "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat in this country; it executes next round.",
   "counters": [
    [
     {

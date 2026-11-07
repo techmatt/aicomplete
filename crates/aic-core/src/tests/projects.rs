@@ -135,6 +135,22 @@ fn an_ongoing_project_acts_in_the_build() {
     assert_eq!(g.stats.counters["adversary.created.project"], 6);
 }
 
+/// 145: an ongoing project filled this round (here by the event card's
+/// standing compute) acts from next round's build, not in the build that filled it.
+#[test]
+fn an_ongoing_project_filled_in_the_build_waits_a_round() {
+    let (rules, mut g) = lab(&["adversary.build"]);
+    let w = rules.world();
+    row(&mut g, &["recruitment_drive"]);
+    let cost = adversary::project_cost(&w, &g, "recruitment_drive");
+    g.vars.insert(adversary::project_key("recruitment_drive").into(), cost - 1);
+    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
+    assert_eq!(g.pile(PROJECTS_ONGOING), ["recruitment_drive"]);
+    assert!(adversary::ongoing_acting(&g).is_empty(), "not this round");
+    g.round += 1;
+    assert_eq!(adversary::ongoing_acting(&g).len(), 1, "from the next");
+}
+
 #[test]
 fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
     let (rules, mut g) = lab(&["adversary.build"]);

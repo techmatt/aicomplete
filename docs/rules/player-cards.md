@@ -38,10 +38,11 @@ The cards config lists which cards are in the game (baseline: all of them).
   credits cut to match (about 4.5 an energy): mostly the Builder's heavy machinery, Industry and Power (Fabrication
   Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
   compute (Foundation Model Campus 2). Energy costs stay uncommon (counts above), so a
-  seat that makes little energy still has plenty to play. Six late sinks are for a seat whose node tracks are full,
+  seat that makes little energy still has plenty to play. Seven late sinks are for a seat whose node tracks are full,
   open to any seat with the energy: Actions that pay 2 energy, Particle Accelerator (3 research cubes on a megaproject,
   OR onto your board), Directed-Energy Array (remove 3 adversary ambassadors in reach), Holographic Assembly Hall
-  (2 Sway toward Unity and 2 ambassadors) and Wafer Fab Line (Industry: draw 2, 2 chips); and two tier-2 buildings with a very big energy cost, Citywide Microgrid (8
+  (2 Sway toward Unity and 2 ambassadors), Wafer Fab Line (Industry: draw 2, 2 chips) and the tier-2 Microgrid Lab
+  Compact (claim a neutral station in reach); and two tier-2 buildings with a very big energy cost, Citywide Microgrid (8
   energy: liberate a city in reach; Action: 2 Sway toward Unity) and Exascale Training Cluster (8 energy: 6 research
   cubes; +3 insight a round). Power is the usual tag of a sink.
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening

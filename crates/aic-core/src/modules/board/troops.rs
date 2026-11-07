@@ -85,7 +85,7 @@ pub fn war_steps(w: &World, g: &GameState) -> Vec<i64> {
     let mut out: Vec<i64> = (0..w.map.fronts.len())
         .map(|i| 1 + (g.var(&extra_war_key(i)) == g.round as i64) as i64)
         .collect();
-    let doubles = g.pile(adversary::PROJECTS_ONGOING).iter().any(|id| {
+    let doubles = adversary::ongoing_acting(g).iter().any(|id| {
         w.content.project(id).effects.iter().any(|e| {
             matches!(e, Op::ExtraWar { front: Some(crate::op::FrontPick::MostCorpTroops), .. })
         })

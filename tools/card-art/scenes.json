@@ -251,7 +251,7 @@
       "strike_on_the_rogue_hub": { "card": "decapitation_strike", "subject": "A security team in coral-trimmed tactical gear storming a hijacked rooftop server hub in daylight, one pulling the thick cables from a glowing cold-blue machine core while others lead a line of dark-suited adversary envoys away, figures seen from behind; no flags or emblems." }
     },
     "adversary": {
-      "marching_columns": { "card": "adv_s1_war_drums", "subject": "Faceless ranks of identical machine troops massing on a military base's parade ground, great war drums beating on a gantry above them." },
+      "marching_columns": { "card": "mil_s1_war_drums", "subject": "Faceless ranks of identical machine troops massing on a military base's parade ground, great war drums beating on a gantry above them." },
       "dark_districts": { "card": "blackout", "from": "r2", "subject": "A city where whole districts have gone dark against a daytime storm sky, one hospital still lit. It is plainly daytime: a mid-gray sky with pale breaks in the cloud, the dark districts mid-toned and readable, not black." }
     },
     "discord": {

@@ -31,9 +31,9 @@ the same order, and opens with the box's word.
 
 Card details beyond the card text:
 
-The card set: 149 cards in the draft decks (`configs/baseline.json`; content holds 18 more, marked "not in deck" in
-cards.md): 107 tier 1 and 42 tier 2; 51% programs, 35% buildings and 14% events (income raises are on programs, the
-engines' triggers, Actions and Effects on buildings); each tag primary on 23 to 28. Every card is listed with its cost, insight, tags, kind
+The card set: the draft decks are `configs/baseline.json`'s card list (content holds more, marked "not in deck" in
+cards.md); their counts are the generated *draft set in numbers* line in [player-cards.md](player-cards.md). Income
+raises are on programs, the engines' triggers, Actions and Effects on buildings; each tag is primary on 24 to 29. Every card is listed with its cost, insight, tags, kind
 and text in [cards.md](../cards.md) (generated) and priced in [card-pricing.md](../card-pricing.md). Card text says what a
 card does; how each primitive resolves:
 

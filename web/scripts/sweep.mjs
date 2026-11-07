@@ -61,6 +61,10 @@ const CASES = [
   // the 1-player game's "another player means you" with the engine agent.
   { name: 'c2-d2-strategist', config: 'baseline.json', set: ['adversary.difficulty=2'], agent: 'engine:strategy=1' },
   { name: 'c1-d2-engine', config: 'baseline.json', set: ['countries=1', 'adversary.difficulty=2'], agent: 'engine' },
+  // 145: r55-r59's pieces: claims, liberations and Envoy, Corrupt X on land at 4 countries,
+  // war every round, d3's dearer menus and harsher harms, as the strategist and engine play them.
+  { name: 'c2-d3-strategist', config: 'baseline.json', set: ['adversary.difficulty=3'], agent: 'engine:strategy=1' },
+  { name: 'c4-d3-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=3'], agent: 'engine' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -92,7 +96,6 @@ const PAGE_LIB = String.raw`(() => {
   function keyEvent(e) {
     const up = (e.delta ?? 0) > 0;
     if (e.type === 'var_changed' && up && /^alignment\.(unity|discord)_tips$/.test(e.key)) return 'tip: ' + e.key.split('.')[1].replace('_tips', '');
-    if (e.type === 'var_changed' && up && /^board\.(blackout|sabotage)\./.test(e.key)) return 'flag: ' + e.key.split('.')[1];
     if (e.type === 'card_moved' && e.to === 'adversary.projects_done') return 'project resolved';
     if (e.type === 'card_moved' && /^alignment\.resolved/.test(e.to)) return 'alignment card';
     if (e.type === 'tokens_changed' && e.token === 'botnet') return up ? 'botnet made' : 'botnet removed';
@@ -104,7 +107,6 @@ const PAGE_LIB = String.raw`(() => {
     if (e.type === 'var_changed' && /^threats\.late\./.test(e.key)) return 'threat waits';
     if (e.type === 'var_changed' && e.key === 'adversary.stage' && up) return 'stage ' + e.total;
     if (e.type === 'note' && / destroyed$/.test(e.text ?? '')) return 'destruction';
-    if (e.type === 'note' && / is freed$/.test(e.text ?? '')) return 'city freed';
     return null;
   }
   /** 099: r35-r38's rules show in the engine's counters, not in its events: a counter
@@ -114,9 +116,13 @@ const PAGE_LIB = String.raw`(() => {
   // 118: r41-r46's engine wording and insight economy: a trigger, an At N cash-in, a reuse, a
   // discard from hand, a discount, insight bought, given or paid for a counter.
   const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;
+  // 145: r55-r59's sites, war, Corrupt X and menus: a claim or liberation by site, Envoy, a
+  // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
+  // tier-3 counter by currency. (144's blackout and sabotage flags and the "is freed" note are gone.)
+  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t3\.[a-z_]+|dealt_at_node))$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k)) &&(c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -186,7 +192,7 @@ const PAGE_LIB = String.raw`(() => {
   /** Words on screen that are code, not text: unfilled values and raw ids. */
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
-  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'botnet', 'troop']);
+  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop']);
 
   function checks() {
     const issues = [];

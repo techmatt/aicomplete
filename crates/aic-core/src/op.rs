@@ -169,11 +169,11 @@ pub enum RoundFlag {
     Cordon,
     /// Players near it can't use Actions that cost energy (135).
     PowerDown,
-    /// Players near it make no research cubes (135).
+    /// The research stations of players near it make no research cubes (135).
     StationOutage,
     /// The next adversary build on or next to it happens twice (135).
     DoubleBuild,
-    /// Research stations on or next to it make no research cubes (135).
+    /// Research stations on or next to it produce nothing (135).
     StationDark,
     /// Cities and stations on or next to it produce nothing (135).
     GridDown,
@@ -465,7 +465,7 @@ pub enum Op {
     /// Claim a neutral research station in your reach with no adversary ambassador on it, paying no
     /// ambassadors (142: the card's energy is the price).
     ClaimStation,
-    /// `count` research cubes in your color onto one incomplete megaproject
+    /// `count` research cubes in your color onto one open megaproject
     /// (075): with `station`, in a country where you own a station. They pay at
     /// completion like any cube.
     ProjectCube {
@@ -947,7 +947,7 @@ pub enum Op {
     /// (068: Wall; 075: strikes). An AI board's innate only: `board::walled`
     /// reads nothing else, and `Content::check` refuses it on a card or a capstone.
     Wall,
-    /// Your unspent insight carries over to the next round (075: Patience). An
+    /// Your own unspent insight carries over to the next round, not insight given you this round (075: Patience). An
     /// AI board's innate only: `economy` reads nothing else.
     Patience,
     /// Each round in upkeep, `amount` insight from the supply goes to other
