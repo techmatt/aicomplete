@@ -144,7 +144,7 @@ pub fn sacrifice_keeping(
     cx: &mut Cx,
     seat: usize,
     cost: &[(TagOrAny, i64)],
-    keep: &dyn Fn(&GameState, &SacrificeSource) -> bool,
+    keep: &dyn Fn(&mut GameState, &SacrificeSource) -> bool,
 ) -> Res {
     let w = cx.world;
     let mut need = TagNeed::new(cost);
@@ -158,8 +158,12 @@ pub fn sacrifice_keeping(
             .filter(|s| need.helps(&s.tags))
             .cloned()
             .collect();
-        if helping.iter().any(|s| keep(g, s)) {
-            helping.retain(|s| keep(g, s));
+        // Each source tested once (141: twice, once to see and once to keep),
+        // on the state itself: `keep` leaves it as it found it.
+        let kept: Vec<bool> = helping.iter().map(|s| keep(g, s)).collect();
+        if kept.contains(&true) {
+            let mut k = kept.iter();
+            helping.retain(|_| *k.next().expect("one test a source"));
         }
         if helping.is_empty() {
             return Err(Halt::Illegal("not enough tags to sacrifice".into()));

@@ -81,12 +81,66 @@ fn index_of<T>(list: &[T], id: impl Fn(&T) -> &str) -> FastMap<usize> {
     list.iter().enumerate().rev().map(|(i, x)| (id(x).to_string(), i)).collect()
 }
 
-type AddressMap = std::collections::HashMap<(usize, usize), usize, std::hash::BuildHasherDefault<crate::key::Fnv>>;
+/// Index by (address, length), open addressing with a multiply for a hash
+/// (141: `card_index` is called for every card a tag count, a price or a
+/// heuristic term reads, and a `HashMap` with a byte hash was a sixth of a
+/// long game's time). A slot's address 0 is empty: no `&str` lives there.
+#[derive(Debug, Clone, PartialEq, Default)]
+struct AddressMap {
+    slots: Vec<(usize, usize, usize)>,
+    shift: u32,
+}
 
-/// [`index_of`] by each id's interned key's address and length.
+impl AddressMap {
+    #[inline]
+    fn slot(&self, ptr: usize) -> usize {
+        (ptr as u64).wrapping_mul(0x9e37_79b9_7f4a_7c15).wrapping_shr(self.shift) as usize
+    }
+
+    /// Room for `n` at under a quarter full.
+    fn with_room(n: usize) -> Self {
+        let bits = (n.max(1) * 4).next_power_of_two().trailing_zeros().max(1);
+        AddressMap { slots: vec![(0, 0, 0); 1 << bits], shift: 64 - bits }
+    }
+
+    fn insert(&mut self, (ptr, len): (usize, usize), i: usize) {
+        let mask = self.slots.len() - 1;
+        let mut k = self.slot(ptr);
+        while self.slots[k].0 != 0 && (self.slots[k].0, self.slots[k].1) != (ptr, len) {
+            k = (k + 1) & mask;
+        }
+        self.slots[k] = (ptr, len, i);
+    }
+
+    #[inline]
+    fn get(&self, &(ptr, len): &(usize, usize)) -> Option<&usize> {
+        if self.slots.is_empty() {
+            return None;
+        }
+        let mask = self.slots.len() - 1;
+        let mut k = self.slot(ptr);
+        loop {
+            let s = &self.slots[k];
+            if s.0 == ptr && s.1 == len {
+                return Some(&s.2);
+            }
+            if s.0 == 0 {
+                return None;
+            }
+            k = (k + 1) & mask;
+        }
+    }
+}
+
+/// [`index_of`] by each id's interned key's address and length: the first of
+/// a repeated id wins, as in `index_of`.
 fn index_at<T>(list: &[T], id: impl Fn(&T) -> &str) -> AddressMap {
     let at = |s: &'static str| (s.as_ptr() as usize, s.len());
-    list.iter().enumerate().rev().map(|(i, x)| (at(crate::key::Key::new(id(x)).as_str()), i)).collect()
+    let mut m = AddressMap::with_room(list.len());
+    for (i, x) in list.iter().enumerate().rev() {
+        m.insert(at(crate::key::Key::new(id(x)).as_str()), i);
+    }
+    m
 }
 
 // ---------- map ----------

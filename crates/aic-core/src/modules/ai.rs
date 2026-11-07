@@ -201,18 +201,26 @@ fn free_building_after(w: &World, g: &GameState, seat: usize, p: &Power) -> bool
     if need.met() || p.tags.iter().map(|(_, n)| n).sum::<i64>() > 1 {
         return cards::free_building_exists(w, &paid, seat);
     }
-    cards::sources(w, &paid, seat).iter().filter(|s| need.helps(&s.tags)).any(|s| builds_after(w, &paid, seat, s))
+    let sources = cards::sources(w, &paid, seat);
+    sources.iter().filter(|s| need.helps(&s.tags)).any(|s| builds_after(w, &mut paid, seat, s))
 }
 
-/// Whether a building is still free to play once source `s` is sacrificed.
-fn builds_after(w: &World, g: &GameState, seat: usize, s: &cards::SacrificeSource) -> bool {
-    let mut after = g.clone();
+/// Whether a building is still free to play once source `s` is sacrificed:
+/// tried on `g` itself, its piles put back after (141: a copy of the state for
+/// each source was a sixth of a long game's time). `g` leaves as it came.
+fn builds_after(w: &World, g: &mut GameState, seat: usize, s: &cards::SacrificeSource) -> bool {
+    let mut saved = Vec::with_capacity(s.cards.len());
     for (pile, card) in &s.cards {
-        if let Some(cards_in) = after.piles.get_mut(pile.as_str()) {
+        if let Some(cards_in) = g.piles.get_mut(pile.as_str()) {
+            saved.push((pile, cards_in.clone()));
             std::sync::Arc::make_mut(cards_in).retain(|c| c != card);
         }
     }
-    cards::free_building_exists(w, &after, seat)
+    let free = cards::free_building_exists(w, g, seat);
+    for (pile, old) in saved.into_iter().rev() {
+        *g.piles.get_mut(pile.as_str()).expect("a pile just written") = old;
+    }
+    free
 }
 
 /// A dear power: one that sacrifices 2 or more tags (075), or a tag and an
@@ -402,7 +410,7 @@ impl Module for Ai {
         cx.set_key(g, &power_used(s, k), 1);
         if p.effects.iter().any(|e| matches!(e, Op::FreeBuilding)) {
             // 099: only a sacrifice that leaves a building to play (its energy is paid).
-            cards::sacrifice_keeping(g, cx, s, &p.tags, &|st, src| builds_after(&w, st, s, src))?;
+            cards::sacrifice_keeping(g, cx, s, &p.tags, &|st: &mut GameState, src| builds_after(&w, st, s, src))?;
         } else {
             cards::sacrifice_for(g, cx, s, &p.tags)?;
         }

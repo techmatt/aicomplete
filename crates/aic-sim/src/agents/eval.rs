@@ -644,11 +644,11 @@ pub struct Eval {
     /// Each seat whose board has a power paid in research cubes (075).
     cube_power: [bool; 4],
     keys: TokenKeys,
-    /// Each card by its interned id (compared by pointer, never iterated): its
-    /// index in the content, its [`Eval::cost`] and its table value. A position asks
-    /// for a hand's worth of each, and an id hashed as text was a tenth of the
-    /// heuristic (069).
-    facts: Arc<HashMap<usize, Fact, BuildHasherDefault<Fnv>>>,
+    /// Each card by its index in the content (found by `Content::card_index`,
+    /// by its interned id's address): its [`Eval::cost`] and its table value. A
+    /// position asks for a hand's worth of each: an id hashed as text was a tenth
+    /// of the heuristic (069), and a map of its own by address a tenth again (141).
+    facts: Arc<Vec<Fact>>,
     /// 107 (`rates.own_mix`): whether a one-tag trigger fires at the seat's own share.
     mix: bool,
     /// 131: the value table this agent reads (`t.<key>=v` in its spec; else the table).
@@ -823,8 +823,7 @@ impl Eval {
                     .cards
                     .iter()
                     .enumerate()
-                    .map(|(i, d)| {
-                        let fact = Fact {
+                    .map(|(i, d)| Fact {
                             index: i,
                             cost: Self::cost(d),
                             value: CardValue::of(tbl, d),
@@ -838,8 +837,6 @@ impl Eval {
                                 }
                             },
                             pile: if d.is_building() { None } else { pile_kind(d) },
-                        };
-                        (Key::new(&d.id).as_str().as_ptr() as usize, fact)
                     })
                     .collect(),
             ),
@@ -907,8 +904,10 @@ impl Eval {
     }
 
     /// A card in a pile, and what is read once about it.
-    fn fact<'w>(&self, world: &aic_core::module::World<'w>, id: &Key) -> (&'w CardDef, Fact) {
-        let f = self.facts[&(id.as_str().as_ptr() as usize)];
+    /// By reference: a `Fact` is several hundred bytes, and copying one out on
+    /// every lookup was a tenth of the strategist's time (141).
+    fn fact<'w, 's>(&'s self, world: &aic_core::module::World<'w>, id: &Key) -> (&'w CardDef, &'s Fact) {
+        let f = &self.facts[world.content.card_index(id.as_str()).expect("card in content")];
         (&world.content.cards[f.index], f)
     }
 

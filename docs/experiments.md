@@ -144,8 +144,8 @@ the judge off the value table.
   cause), 137's `read137.py --135` (win, length, ends, war, claims, counters, peaks) and 138's `sum138.py`
   (corruptions, creation, threats by tier); screens are `<pair>_<lever>` cells (`specs.py`). 130's `read130.py`,
   128's `action_read.py` and 131's `read131.py` (agent `t.` arms, paired) still apply.
-- **Costs:** an engine game about 0.7 s; r58 strategist games (9 rounds) 768 in under 7 min on 6 threads on a quiet
-  box, twice that with a second run beside.
+- **Costs:** an engine game about 0.7 s; the r58 standard read (432 strategist games, 9 rounds) 87 s on 6 threads on
+  a quiet box (141), twice that with a second run beside.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a

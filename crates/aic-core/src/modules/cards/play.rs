@@ -67,21 +67,49 @@ fn blocked_beyond_credits(w: &World, g: &GameState, seat: usize, d: &CardDef, p:
 /// Buildings in seat `s`'s hand it could play paying no credits (068): every
 /// other cost and requirement stands.
 fn free_buildings(w: &World, g: &GameState, seat: usize) -> Vec<Key> {
-    let p = prices(w, g, seat);
-    g.pile(&hand(seat))
-        .iter()
-        .filter(|id| {
-            let d = def(w, id);
-            d.is_building()
-                && requirements_met(w, g, seat, d)
-                && blocked_beyond_credits(w, g, seat, d, &p, false).is_none()
-        })
-        .cloned()
-        .collect()
+    let mut free = FreeTest::new(w, g, seat);
+    g.pile(&hand(seat)).iter().filter(|id| free.test(id)).cloned().collect()
 }
 
+/// Whether one card of `free_buildings` exists: what the Rush Build power's
+/// sacrifice asks of every source it could give up (099), so it stops at the
+/// first.
 pub fn free_building_exists(w: &World, g: &GameState, seat: usize) -> bool {
-    !free_buildings(w, g, seat).is_empty()
+    let mut free = FreeTest::new(w, g, seat);
+    g.pile(&hand(seat)).iter().any(|id| free.test(id))
+}
+
+/// [`free_buildings`]' test of one card, with the seat's tags and prices read
+/// once a hand, not once a card (141: a Rush Build sacrifice read them for
+/// every card of every source of every option, 70% of a long game's time).
+struct FreeTest<'a, 'w> {
+    w: &'a World<'w>,
+    g: &'a GameState,
+    seat: usize,
+    tags: Option<[i64; TAGS.len()]>,
+    prices: Option<Prices>,
+}
+
+impl<'a, 'w> FreeTest<'a, 'w> {
+    fn new(w: &'a World<'w>, g: &'a GameState, seat: usize) -> Self {
+        FreeTest { w, g, seat, tags: None, prices: None }
+    }
+
+    fn test(&mut self, id: &str) -> bool {
+        let (w, g, seat) = (self.w, self.g, self.seat);
+        let d = def(w, id);
+        if !d.is_building() {
+            return false;
+        }
+        if !d.needs.is_empty() {
+            let have = self.tags.get_or_insert_with(|| required_tags(w, g, seat));
+            if !d.needs.iter().all(|(t, n)| have[*t as usize] >= *n) {
+                return false;
+            }
+        }
+        let p = self.prices.get_or_insert_with(|| prices(w, g, seat));
+        blocked_beyond_credits(w, g, seat, d, p, false).is_none()
+    }
 }
 
 /// Seat `s` plays a building from its hand, paying no credits (068).

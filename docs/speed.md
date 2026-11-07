@@ -2,15 +2,16 @@
 
 What a run costs and where it goes. Current rates are in [experiments.md](experiments.md); the bench scripts are in [scripts.md](scripts.md).
 
-**Where the time goes (profiled at r40).** The agents are 99% of a run. Every agent is one machine: the
+**Where the time goes (profiled at r58, 141).** The agents are 97% of a run. Every agent is one machine: the
 strategist scores each legal action by applying it to a copy and resolving the action's own prompts
-best-first (`search::settled`, 67% of its time), and that splits about evenly between the rules
-(`Rules::apply_to`, 45%) and the heuristic (`Eval::value`, 39%). The planner's rollouts (62% of it) run the
-same search, so a speed-up to one serves all. Per 16 strategist games: 215k applies, 172k evaluations, 41.5M
-lookups by name (103). The profiles, with call counts, are in
-[103's write-up](../experiments/results/103_agent_profiling/profile.md), 104's in
-[its own](../experiments/results/104_agent_speed_2/speed.md). Legal-action generation is 0.1%: caching it
-buys nothing.
+best-first (`search::settled`, 72% of its time), and the heuristic (`Eval::value`, 54%) now outweighs the
+rules (`Rules::apply_to`, 36%). The planner's rollouts run the same search, so a speed-up to one serves all.
+The r58 standard read (`read-139-r58-{a,b}`, 432 games, 6 threads) takes 87 s at 2.14 ms a decision (141:
+146 s and 3.04 before). **A read's wall time is its slowest games:** at r58 one d0 game of 11 rounds took 62
+s of a 74 s half-read. Read `games.csv`'s `ms` column for the tail before profiling the mean. Profiles from
+103, 104 and 141 are in [103's](../experiments/results/103_agent_profiling/profile.md),
+[104's](../experiments/results/104_agent_speed_2/speed.md) and
+[141's](../experiments/results/141_speed_r58/README.md) write-ups. Legal-action generation is about 1%.
 
 **What a rule costs the agents.** The strategist resolves every prompt of every legal action it scores, so a
 free power usable at every decision with N picks (pick a card, or stop) costs about N² evaluations a decision:
@@ -30,7 +31,15 @@ free power usable at every decision with N picks (pick a card, or stop) costs ab
   counter's or pile's name is interned only when it is new (`entry_str`, `insert_str`); a counter named
   by a card or a side is built on the stack too. `ai.boards` and the int parameters read after every
   action (`alignment`'s tip sizes and loss rules, `board`'s stage gates) are read once with the rules
-  (`World::ai_boards`, `World::hot`).
+  (`World::ai_boards`, `World::hot`). `Content::card_index` is an open-addressed table on the key's
+  address with a multiply for a hash (141: the `HashMap` was a sixth of a long game), and the heuristic's
+  per-card facts are a `Vec` by that index, read by reference (copying a `Fact` out was a tenth).
+- **A rule's legality test inside a prompt:** Rush Build offers only the sacrifices that leave a free
+  building (099). That test runs for every source on every replay of the prompt, so it reads the seat's tags
+  and prices once a hand (`FreeTest` in `cards/play.rs`), stops at the first building, tests each source
+  once, and removes the source's cards from the state itself and puts them back, with no copy
+  (`ai::builds_after`). Before 141 it was 70% of a long game. A check like it in a new rule gets the same
+  treatment.
 - **The heuristic:** a seat's tags, prices and income are kept a decision long, by everything they read
   (`tableau_parts` in `eval.rs`; a debug build checks each hit against a fresh reading). Anything that makes
   those four read more must add it there. Pricing a hand goes through `cards::prices`, anything counting
@@ -44,23 +53,24 @@ free power usable at every decision with N picks (pick a card, or stop) costs ab
   same answers as a set (a loop's progress lives only in them). It costs under 1%; on every prompt it costs
   more than it saves.
 
-**What is left, by payoff** (shares of the strategist after 104, `profile_win.py`, 12 games from seed 1000):
+**What is left, by payoff** (shares of the strategist after 141, `profile_win.py`, 4 games from seed 36650,
+d1):
 
-1. **Replaying a prompt's phase for each option**: `Rules::apply_to` is 45% and most of it is the replay
-   from the snapshot under `search::settled` (67%). Resuming from the resolved part instead is a redesign
-   of how prompts resolve, and the largest payoff left.
-2. **The binary search by name**, 17.1% self (more of a smaller whole): `var` 3.1%, `pile` 1.8%, the
-   node tracks 2.0%, `alignment`'s after-trigger 0.9%, `tag_counts` 0.8%. Keys carrying their first
-   eight bytes gained nothing (103). Next: typed slots for the hottest vars (the tracks, the stage, the
-   buckets), a state-layout change: a shadow kept beside `vars` must stay out of serde and `PartialEq`.
-3. **The heuristic's own loops**, `Eval::value` 6.5% self, its hex scan 2.1%, `Eval::fact` 1.9%; an
-   incremental evaluation is a redesign.
-4. **State copies and drops**, about 7% (clone 3.1%, drops 3.5%): piles, seats and counters are still
-   copied a table at a time; most actions write all three, so sharing them saves less than the hexes did.
-5. **Cards by address** (`Content::card_index`, 2.6%) and **counters** (`Cx::tally` 2.2%, redone on
-   every replay).
-6. **Parameters by name** (`World::int`, 0.7% self) and **formatting** (2.0%, mostly option labels,
-   which must stay strings).
+1. **The heuristic's per-seat terms**, `Eval::value` 54% total: most of it is the seat terms rebuilt on every
+   call (`hand_worth` 11% over hand, draft and packet; `mix_counts`, `hand_tags`, the seat-terms store's
+   key). A hand's worth by its cards, resources and rounds left, kept a decision long as the tableau terms
+   are, is the next exact payoff. Under it, `Worth::per_round` and `CardValue::total` are about 3%.
+2. **Replaying a prompt's phase for each option**: `Rules::apply_to` is 36%, mostly the replay from the
+   snapshot under `search::settled`. Resuming from the resolved part is a redesign of how prompts resolve.
+3. **The binary search by name**, 18% self: `var`, `pile`, `troop_targets_on`, `threats::near::reach`,
+   the node tracks. Keys carrying their first eight bytes gained nothing (103). Next: typed slots for the
+   hottest vars (the tracks, the stage, the buckets), a state-layout change: a shadow kept beside `vars`
+   must stay out of serde and `PartialEq`.
+4. **Copies, allocations and drops**, about 18%: `memcpy` 7%, mimalloc 5.5%, drops 3.4%, clone 2.8%,
+   from `Eval::value`'s per-call vectors (tokens, seats, packets, hand) and the state copies.
+5. **The Rush Build test** in long games: after 141 the slowest r58 game (bp d0, seed 36589) is still 16 ms
+   a decision against 2 typical. A source's test still prices and counts the hand again after each removal.
+6. **Counters** (`Cx::tally` 1.1%, redone on every replay) and **parameters by name** (`World::int` 1.1%).
 
 **Approximations** (screened on fresh seeds, 103): none adopted. An answer to an open prompt looking one
 prompt on (`engine:answers=1`) is 0.72 × the time and lost 9.0 ±3.8 (bp, d0); keeping a seat's terms by its
