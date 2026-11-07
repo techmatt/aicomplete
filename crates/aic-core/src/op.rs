@@ -463,6 +463,9 @@ pub enum Op {
     FreeBuilding,
     /// Build a research station in your reach, paying no chips (075).
     BuildStation,
+    /// Claim a neutral research station in your reach with no adversary ambassador on it, paying no
+    /// ambassadors (142: the card's energy is the price).
+    ClaimStation,
     /// `count` research cubes in your color onto one incomplete megaproject
     /// (075): with `station`, in a country where you own a station. They pay at
     /// completion like any cube.
@@ -1075,6 +1078,7 @@ impl Op {
             | Op::Cordon
             | Op::FreeBuilding
             | Op::BuildStation
+            | Op::ClaimStation
             | Op::ProjectCube { .. }
             | Op::Peek { .. }
             | Op::Jam { .. }

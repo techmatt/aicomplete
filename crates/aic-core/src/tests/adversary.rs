@@ -179,7 +179,8 @@ fn a_station_flip_face_prints_station_flip_at() {
         .map(|t| (t.id.as_str(), t.text.as_str()))
         .chain(c.projects.iter().filter(|p| flips(&p.effects)).map(|p| (p.id.as_str(), p.text.as_str())))
         .collect();
-    assert!(texts.len() >= 2, "{texts:?}");
+    // 142: Station Coup is the one unforced flip left.
+    assert!(!texts.is_empty(), "{texts:?}");
     for (id, text) in texts {
         assert!(text.contains(&want), "{id} should say \"{want}\": {text}");
     }

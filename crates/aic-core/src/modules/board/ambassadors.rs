@@ -96,9 +96,21 @@ pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     Some(liberate_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
 }
 
-/// Seat `seat` claims neutral site `h` (the Claim action, paid): the
+/// The neutral research stations seat `seat` may claim with a card (142, `claim_station`): in its reach, a
+/// site claim on it (`can_claim`), and no adversary ambassador on it.
+pub fn card_claim_stations(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    (0..g.hexes.len())
+        .filter(|&h| {
+            site_kind(w, g, h) == Some(SiteKind::Station)
+                && claim_cost(w, g, h) == Some(claim_ambassadors(w, SiteKind::Station))
+                && can_claim(w, g, seat, h)
+        })
+        .collect()
+}
+
+/// Seat `seat` claims neutral site `h` (the Claim action, paid, or a card: `route`, 142's tally): the
 /// adversary ambassadors on it cancel, and its cube goes on.
-pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: &str) {
     let w = cx.world;
     let Some(kind) = site_kind(&w, g, h) else { return };
     let adv = g.tokens(h, ADV_AMBASSADOR);
@@ -108,6 +120,7 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     }
     cx.add_tokens(g, h, cube(seat), 1);
     cx.tally(g, &format!("board.claimed.{}", kind.name()), 1);
+    cx.tally(g, &format!("board.claimed_by.{route}.{}", kind.name()), 1);
     cx.note(Some(h), || format!("Seat {seat} claims the {} at {}", kind.name(), hex_name(&w, h)));
 }
 

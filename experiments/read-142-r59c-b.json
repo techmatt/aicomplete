@@ -1,0 +1,37 @@
+{
+  "name": "read-142-r59c-b",
+  "note": "142 fresh paired read (r59c): seeds 36832-36855 (with the other part, 48 a cell), the three pairs, d0-d3.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 24,
+  "first_seed": 36832,
+  "records": 0
+}

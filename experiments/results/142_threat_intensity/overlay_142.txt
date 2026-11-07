@@ -1,0 +1,30 @@
+# 142's frozen income levers: I3 (boards' printed credits 3 lower) and P1 (credit programs 1 less, 20% from 6
+# up; flat credit income buildings 20% less). Written by freeze_142.py from levers.json.
+ais.builder.credits=18
+ais.protector.credits=16
+ais.researcher.credits=14
+cards.payroll_automation.effects.0.amount=3
+cards.vendor_financing.effects.2.amount=3
+cards.robotic_foundry.effects.0.amount=4
+cards.arcology_foundry.effects.0.amount=7
+cards.orbital_mass_driver.passives.0.amount=13
+cards.fusion_startup_stake.effects.1.amount=3
+cards.dyson_swarm_tranche.effects.1.amount=8
+cards.interconnector_treaty.effects.2.amount=4
+cards.hardened_bunker_complex.effects.1.amount=1
+cards.supply_chain_audit.effects.1.amount=1
+cards.university_spinout.effects.0.amount=6
+cards.gigafactory_charter.effects.0.amount=10
+cards.cryptojacking_campaign.effects.0.amount=7
+cards.trade_delegation.effects.0.amount=3
+cards.multiyear_defense_budget.effects.0.amount=4
+cards.counterinsurgency_campaign.effects.1.amount=2
+cards.fabrication_megaplex.passives.0.amount=6
+cards.frontier_lab_charter.effects.1.amount=2
+# 142's second credit lever (Matt's message 6017): W3, 3 more credits off each board and 1 energy a round onto it.
+ais.builder.credits=15
+ais.protector.credits=13
+ais.researcher.credits=11
+ais.builder.income=[["insight",5],["energy",1]]
+ais.protector.income=[["insight",5],["energy",2]]
+ais.researcher.income=[["insight",5],["energy",1]]

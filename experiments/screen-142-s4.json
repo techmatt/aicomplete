@@ -1,0 +1,313 @@
+{
+  "name": "screen-142-s4",
+  "note": "142 screen s4: ['I2+C50', 'I3+C25', 'I2+P1+C25', 'I3+T1+P1', 'C50'], seeds 36800+16",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_I2+C50",
+      "set": [
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "adversary.counter_credit_pct=150"
+      ]
+    },
+    {
+      "name": "br_I2+C50",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "adversary.counter_credit_pct=150"
+      ]
+    },
+    {
+      "name": "pr_I2+C50",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "adversary.counter_credit_pct=150"
+      ]
+    },
+    {
+      "name": "bp_I3+C25",
+      "set": [
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "br_I3+C25",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "pr_I3+C25",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "bp_I2+P1+C25",
+      "set": [
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "br_I2+P1+C25",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "pr_I2+P1+C25",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=19",
+        "ais.protector.credits=17",
+        "ais.researcher.credits=15",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2",
+        "adversary.counter_credit_pct=125"
+      ]
+    },
+    {
+      "name": "bp_I3+T1+P1",
+      "set": [
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "ais.builder.economy_track.1.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.2.income=[[\"credits\",1]]",
+        "ais.builder.economy_track.3.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.4.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.5.income=[[\"credits\",2]]",
+        "ais.builder.play_track.3.income=[[\"credits\",1]]",
+        "ais.protector.economy_track.1.income=[[\"energy\",1],[\"credits\",1]]",
+        "ais.protector.economy_track.2.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.3.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.4.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.5.income=[[\"credits\",1]]",
+        "ais.protector.play_track.3.income=[[\"credits\",1]]",
+        "ais.researcher.economy_track.1.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.3.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.4.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.5.income=[[\"credits\",2]]",
+        "ais.researcher.play_track.5.income=[[\"credits\",1]]",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2"
+      ]
+    },
+    {
+      "name": "br_I3+T1+P1",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "ais.builder.economy_track.1.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.2.income=[[\"credits\",1]]",
+        "ais.builder.economy_track.3.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.4.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.5.income=[[\"credits\",2]]",
+        "ais.builder.play_track.3.income=[[\"credits\",1]]",
+        "ais.protector.economy_track.1.income=[[\"energy\",1],[\"credits\",1]]",
+        "ais.protector.economy_track.2.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.3.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.4.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.5.income=[[\"credits\",1]]",
+        "ais.protector.play_track.3.income=[[\"credits\",1]]",
+        "ais.researcher.economy_track.1.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.3.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.4.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.5.income=[[\"credits\",2]]",
+        "ais.researcher.play_track.5.income=[[\"credits\",1]]",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2"
+      ]
+    },
+    {
+      "name": "pr_I3+T1+P1",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=18",
+        "ais.protector.credits=16",
+        "ais.researcher.credits=14",
+        "ais.builder.economy_track.1.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.2.income=[[\"credits\",1]]",
+        "ais.builder.economy_track.3.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.4.income=[[\"credits\",2]]",
+        "ais.builder.economy_track.5.income=[[\"credits\",2]]",
+        "ais.builder.play_track.3.income=[[\"credits\",1]]",
+        "ais.protector.economy_track.1.income=[[\"energy\",1],[\"credits\",1]]",
+        "ais.protector.economy_track.2.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.3.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.4.income=[[\"credits\",2]]",
+        "ais.protector.economy_track.5.income=[[\"credits\",1]]",
+        "ais.protector.play_track.3.income=[[\"credits\",1]]",
+        "ais.researcher.economy_track.1.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.3.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.4.income=[[\"credits\",2]]",
+        "ais.researcher.economy_track.5.income=[[\"credits\",2]]",
+        "ais.researcher.play_track.5.income=[[\"credits\",1]]",
+        "cards.payroll_automation.effects.0.amount=3",
+        "cards.vendor_financing.effects.2.amount=3",
+        "cards.robotic_foundry.effects.0.amount=4",
+        "cards.arcology_foundry.effects.0.amount=7",
+        "cards.orbital_mass_driver.passives.0.amount=13",
+        "cards.fusion_startup_stake.effects.1.amount=3",
+        "cards.dyson_swarm_tranche.effects.1.amount=8",
+        "cards.interconnector_treaty.effects.2.amount=4",
+        "cards.hardened_bunker_complex.effects.1.amount=1",
+        "cards.supply_chain_audit.effects.1.amount=1",
+        "cards.university_spinout.effects.0.amount=6",
+        "cards.gigafactory_charter.effects.0.amount=10",
+        "cards.cryptojacking_campaign.effects.0.amount=7",
+        "cards.trade_delegation.effects.0.amount=3",
+        "cards.multiyear_defense_budget.effects.0.amount=4",
+        "cards.counterinsurgency_campaign.effects.1.amount=2",
+        "cards.fabrication_megaplex.passives.0.amount=6",
+        "cards.frontier_lab_charter.effects.1.amount=2"
+      ]
+    },
+    {
+      "name": "bp_C50",
+      "set": [
+        "adversary.counter_credit_pct=150"
+      ]
+    },
+    {
+      "name": "br_C50",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_credit_pct=150"
+      ]
+    },
+    {
+      "name": "pr_C50",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_credit_pct=150"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

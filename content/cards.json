@@ -595,7 +595,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 4
+    "amount": 3
    },
    {
     "op": "add_tokens",
@@ -784,7 +784,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 4
+    "amount": 3
    }
   ]
  },
@@ -885,7 +885,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 5
+    "amount": 4
    }
   ],
   "energy": 1
@@ -910,7 +910,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 9
+    "amount": 7
    },
    {
     "op": "production",
@@ -942,7 +942,7 @@
    {
     "op": "income",
     "resource": "credits",
-    "amount": 16
+    "amount": 13
    },
    {
     "op": "income",
@@ -1603,7 +1603,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 4
+    "amount": 3
    }
   ]
  },
@@ -1780,7 +1780,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 10
+    "amount": 8
    }
   ]
  },
@@ -1875,7 +1875,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 5
+    "amount": 4
    }
   ]
  },
@@ -2592,7 +2592,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 2
+    "amount": 1
    }
   ]
  },
@@ -3080,7 +3080,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 2
+    "amount": 1
    }
   ]
  },
@@ -3454,7 +3454,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 8
+    "amount": 6
    }
   ]
  },
@@ -3580,7 +3580,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 12
+    "amount": 10
    },
    {
     "op": "draw",
@@ -3725,7 +3725,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 9
+    "amount": 7
    }
   ],
   "energy": 2
@@ -3983,7 +3983,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 4
+    "amount": 3
    },
    {
     "op": "gain_ambassadors",
@@ -4184,7 +4184,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 5
+    "amount": 4
    },
    {
     "op": "production",
@@ -4212,7 +4212,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 3
+    "amount": 2
    }
   ]
  },
@@ -4598,7 +4598,7 @@
    {
     "op": "income",
     "resource": "credits",
-    "amount": 7
+    "amount": 6
    },
    {
     "op": "income",
@@ -4633,7 +4633,7 @@
    {
     "op": "production",
     "resource": "credits",
-    "amount": 3
+    "amount": 2
    }
   ]
  },
@@ -4871,6 +4871,49 @@
      "op": "gain",
      "resource": "chips",
      "amount": 2
+    }
+   ]
+  }
+ },
+ {
+  "id": "power_purchase_agreement",
+  "name": "Power Purchase Agreement",
+  "tier": 1,
+  "kind": "event",
+  "cost": 2,
+  "energy": 2,
+  "insight": 0,
+  "tags": [
+   "power",
+   "science"
+  ],
+  "effects": [
+   {
+    "op": "claim_station"
+   }
+  ]
+ },
+ {
+  "id": "microgrid_lab_compact",
+  "name": "Microgrid Lab Compact",
+  "tier": 2,
+  "kind": "building",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "power",
+   "science"
+  ],
+  "ability": {
+   "cost": [
+    [
+     "energy",
+     2
+    ]
+   ],
+   "effects": [
+    {
+     "op": "claim_station"
     }
    ]
   }

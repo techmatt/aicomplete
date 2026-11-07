@@ -209,7 +209,7 @@ def op_worth(t, o):
         return Worth(now=row('damage') * damage(t, o))
     if op == 'damage_country':
         return Worth(now=row('damage_country') * damage(t, o))
-    if op in ('destroy_all', 'remove_botnet', 'build_factory', 'free_building', 'build_station',
+    if op in ('destroy_all', 'remove_botnet', 'build_factory', 'free_building', 'build_station', 'claim_station',
               'counter_threat', 'discard_project', 'spread_ambassadors', 'move_one'):
         return Worth(now=row(op))
     if op == 'remove_ambassadors_country':

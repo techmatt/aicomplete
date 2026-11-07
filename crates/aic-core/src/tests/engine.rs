@@ -524,6 +524,6 @@ fn some_threats_take_insight() {
         })
         .map(|t| t.id.as_str())
         .collect();
-    // 135: an insight option on most cyber threats and a few others (11 of 64).
-    assert!((8..=16).contains(&ins.len()), "{ins:?}");
+    // 135: an insight option on most cyber threats and a few others (142: 18 of 64).
+    assert!((12..=24).contains(&ins.len()), "{ins:?}");
 }

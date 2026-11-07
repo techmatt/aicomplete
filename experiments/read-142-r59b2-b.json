@@ -1,0 +1,38 @@
+{
+  "name": "read-142-r59b2-b",
+  "note": "142 fresh confirm of B2 (build_bonus 2, d3 only): seeds 36748-36775, the three pairs, d3.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_B2",
+      "set": [
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "br_B2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "pr_B2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.build_bonus=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 28,
+  "first_seed": 36748,
+  "records": 0
+}

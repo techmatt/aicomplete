@@ -21,7 +21,7 @@ hand for no credits.
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
 strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build lands 1 troop on a factory
 (else a city) in every country you're in (anyone's factory, never your node's hex), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
-facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (19 a round), so you start with
+facilities with Bulwark, and your board prints 1 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals you
 8 tier-1 cards (4 free, each further keep 5 credits) and 2 tier-2 cards (1 insight each). Late in the game, sacrifice
 cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
@@ -48,16 +48,19 @@ placements a round it is reachable about round 8.
 <!-- generated: boards -->
 | Board | Printed income | Starting credits | Slots | Printed tags | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|
-| Builder | 21 credits, 5 insight | 40 | 5 | Industry | 7 | 7 | 14 |
-| Protector | 19 credits, 5 insight, 1 energy | 46 | 4 | Security | 7 | 7 | 14 |
-| Researcher | 17 credits, 5 insight | 40 | 3 | Science | 7 | 7 | 14 |
+| Builder | 15 credits, 5 insight, 1 energy | 40 | 5 | Industry | 7 | 7 | 14 |
+| Protector | 13 credits, 5 insight, 2 energy | 46 | 4 | Security | 7 | 7 | 14 |
+| Researcher | 11 credits, 5 insight, 1 energy | 40 | 3 | Science | 7 | 7 | 14 |
 <!-- /generated -->
 
 **The starting-economy scaffold (candidate; Matt).** Until engines carry the economy, the boards start and earn much
 more, and the economy track is how a seat's income grows; it comes down as engines take over. r46 took the printed
 credits down (from 25, 21 and 18) as engines now pay: the Builder, the biggest hoarder, most; the track's credit
 spaces are unchanged. r56 (137) raised each by 6 (to 24, 22 and 20), the player-board lever that brought d0-d1 back
-in reach once claims, liberations and blocks cost ambassadors. **The reasoning:**
+in reach once claims, liberations and blocks cost ambassadors; 139 took half back (21, 19, 17). r59 (142) took 6
+more (15, 13, 11), 3 of them into 1 energy a round on every board (the Protector's 2), with the credit programs about
+20% lower, so threat counters need the credits, and every board starts with 3 energy (`ai.start_energy`, from 1): the
+player-board levers that held d0 near 90. **The reasoning:**
 round 1 deals 10, so a board at 40 that keeps 2-4 extra cards (10-20 credits) has 20-30 left for its first plays at a
 tier-1 median of 10 credits and 1 insight: keeping more and playing less is a real choice, as in Terraforming Mars'
 first generation. The Protector earns 2 less than the Builder and starts 6 ahead. A credit space pays 2-3 a round for

@@ -1,0 +1,91 @@
+{
+  "name": "screen-142-s18",
+  "note": "142 screen s18: ['base', 'L5', 'W3b'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_L5",
+      "set": [
+        "ai.start_credits=35,41,35"
+      ]
+    },
+    {
+      "name": "br_L5",
+      "set": [
+        "ai.boards=0,2",
+        "ai.start_credits=35,41,35"
+      ]
+    },
+    {
+      "name": "pr_L5",
+      "set": [
+        "ai.boards=1,2",
+        "ai.start_credits=35,41,35"
+      ]
+    },
+    {
+      "name": "bp_W3b",
+      "set": [
+        "ais.builder.credits=12",
+        "ais.protector.credits=10",
+        "ais.researcher.credits=8",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",3]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",2]]"
+      ]
+    },
+    {
+      "name": "br_W3b",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=12",
+        "ais.protector.credits=10",
+        "ais.researcher.credits=8",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",3]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",2]]"
+      ]
+    },
+    {
+      "name": "pr_W3b",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=12",
+        "ais.protector.credits=10",
+        "ais.researcher.credits=8",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",3]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",2]]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

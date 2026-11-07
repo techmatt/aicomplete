@@ -539,6 +539,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![w("station"), w("free")],
             "build a research station in reach, paying no chips",
         )),
+        Op::ClaimStation => one(clause(
+            vec![w("station")],
+            "claim a neutral research station in reach",
+        )),
         Op::ProjectCube { count, station } => {
             let mut icons = counted(*count, "research_cubes");
             icons.push(w("megaproject"));

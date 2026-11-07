@@ -168,12 +168,11 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
-36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read); r55 (136): 36440-36487
-(the fresh paired read), dev 36600-36647 (screens); r56 (137): 36488-36535 (the fresh paired read), dev
-36700-36747 (screens); r57 (138): 36536-36583 (the fresh paired read), dev 36800-36815 (screens and smokes); r58
-(139): 36584-36599 and 36648-36679 (the fresh paired read, two specs merged by `139_discord_and_band/read139.py`),
-dev 36800-36831 (screens). Next free: 36680 (skip 36700-36747 and 36800-36831).
+ledger. Used (specs in the write-ups): everything below 36680 (r58 and before; 36600-36647 were r55's dev seeds);
+r56 dev 36700-36747; r59 (142): 36680-36699 and 36748-36775 (the fresh read, which then picked two steps),
+36776-36799, 36832-36855 and 36856-36903 (two independent reads), 36904-36951 (the d3 confirm). Next free: 36952. **The dev seeds for screens
+are 36800-36831** (138, 139, 142); screen at 32 seeds a cell (16 only scopes), and expect 48-seed sets to differ by up
+to ~10 points at d3 (r58 read 42.4 and 51.4 on 142's two sets).
 
 ## Reading prices
 

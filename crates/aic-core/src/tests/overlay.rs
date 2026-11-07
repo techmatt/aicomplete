@@ -111,6 +111,10 @@ fn bad_overlays_are_errors_that_name_the_entry() {
         ("cards.telemetry_archive.cost=lots", "invalid type"),
         ("threats.*.tier=9", "tier 1-3"),
         ("threats.*.counters=[]", "a counter menu"),
+        // 142: Supply Raid's harm takes energy, so an energy counter shares it.
+        (r#"threats.supply_raid.counters=[[{"resource":"energy","amount":3}],[{"resource":"credits","amount":12}]]"#, "share"),
+        // 142: an uncountered tier-1 threat destroys nodes (threat_nodes 1).
+        (r#"threats.eviction.counters=[[{"nodes_near":1}],[{"resource":"credits","amount":12}]]"#, "nodes counter"),
     ] {
         let e = match Rules::new(&baseline_with(&[entry])) {
             Err(e) => e,

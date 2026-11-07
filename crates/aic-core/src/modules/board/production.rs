@@ -406,17 +406,19 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
                 continue;
             }
         }
+        // 142: a player's station makes `owned_station_cubes`, a neutral one `station_cubes`.
+        let made = if matches!(color, Color::Seat(_)) { w.int("board.owned_station_cubes") } else { cubes };
         if g.var(&project_done(c)) == 0 {
             let key = match color {
                 Color::Seat(s) => project_key(c, Some(s)),
                 Color::Neutral => project_neutral(c),
             };
-            cx.add_key(g, &key, cubes);
+            cx.add_key(g, &key, made);
             continue;
         }
         if let Color::Seat(s) = color {
-            cx.add_resource(g, s, Resource::ResearchCubes, cubes);
-            cx.tally(g, "board.cubes_stored", cubes);
+            cx.add_resource(g, s, Resource::ResearchCubes, made);
+            cx.tally(g, "board.cubes_stored", made);
         }
     }
     Ok(())

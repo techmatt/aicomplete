@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 58 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 59 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -43,7 +43,7 @@ Design intent lives in [principles.md](../principles.md); the engine in
 <!-- generated: new_players -->
 **For new players.** In the first round you are dealt 8 tier-1 cards and keep 4 free (more at 5 credits each), and 2 tier-2 cards, each kept for 1 insight, to play once you meet its needs: something to plan toward. From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 2 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
 
-**Nodes, for new players.** There is no growth step. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 1 energy and one city bound to you, which makes energy every round.
+**Nodes, for new players.** There is no growth step. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
 <!-- /generated -->
 
 ## Terms

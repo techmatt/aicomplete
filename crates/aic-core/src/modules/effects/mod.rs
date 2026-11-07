@@ -127,6 +127,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::FreeBuilding => cards::play_free_building(g, cx, seat)?,
         Op::BuildStation => resources::build_station(g, cx, seat)?,
+        Op::ClaimStation => resources::claim_station(g, cx, seat)?,
         Op::ProjectCube { count, station } => resources::project_cube(g, cx, seat, *count, *station)?,
         Op::Peek { count } => adversary::peek(g, cx, *count),
         Op::Jam { amount, source } => {
@@ -230,14 +231,6 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             team::troops(g, cx, ctx, *count, *each_country, *destroy)?
         }
         Op::FlipStation { each_country, force: false } => team::flip_station(g, cx, ctx, *each_country)?,
-        Op::CorruptCity { at: None } => {
-            for c in scope_countries(&w, ctx.scope) {
-                let city = |h: usize| collecting_city(&w, g, h);
-                if let Some(h) = adversary::most_infiltrated_city(&w, g, c, city) {
-                    adversary::corrupt_city(g, cx, h);
-                }
-            }
-        }
         Op::PlayersLose { resource, amount, all: false } => {
             for s in ctx.seats(&w, g) {
                 let k = (*amount).min(g.resource(s, *resource));

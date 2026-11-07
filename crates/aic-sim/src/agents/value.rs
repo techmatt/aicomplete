@@ -556,6 +556,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Cordon => Worth::unseen(row("cordon")),
         Op::FreeBuilding => Worth::now(row("free_building")),
         Op::BuildStation => Worth::now(row("build_station")),
+        Op::ClaimStation => Worth::now(row("claim_station")),
         Op::ProjectCube { count, .. } => Worth::now(row("project_cube") * *count as f64),
         Op::Peek { count } => Worth::unseen(row("peek") * *count as f64),
         Op::Jam { amount, source } => {

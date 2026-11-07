@@ -1,6 +1,6 @@
 {
  "deck": "threats_t3",
- "note": "Tier-3 threat deck: 11 cards (3 Universal, 3 Military, Military + Economic, and one each led by Influence, Cyber, Economic, Grid). Late squeeze: tier 3 is dealt only by stage-III Militarist events, so rounds 10-11 (9-11 at difficulty 2+). Values are sane starting points, not tuned. Each counter option is a list of items, all paid in full (pooled); the players pay one option. Value method on every card: harm = per-player harm x 1.5 (about 1.5 players near) + shared harm (compute, sway, pieces placed, sites), against the counter at the anchors; each value line gives the ratio against the cheapest option and against the credits option. A sacrificed tag prices 5 (3 tags 15); a sway or a Unity pull prices 4; a troop prices 9 (5 plus its strike). The unprinted 1 sway every uncountered threat makes is left out of every value.",
+ "note": "Tier-3 threat deck: 11 cards (3 Universal, 3 Military, Military + Economic, and one each led by Influence, Cyber, Economic, Grid). Late squeeze: tier 3 is dealt only by stage-III Militarist events, so rounds 10-11 (9-11 at difficulty 2+). Values are sane starting points, not tuned. 142: counters print the real amounts paid, scarce currencies first and credits last, never a currency the card's harm takes; every uncountered tier-3 threat also destroys 3 of each near player's nodes near it (adversary.threat_nodes), so no counter takes nodes; values at configs/agents/values.json (credits 1, chips 2, energy 4.5, insight 2.5, cube 3, ambassador 4, node 4). Each counter option is a list of items, all paid in full (pooled); the players pay one option. Value method on every card: harm = per-player harm x 1.5 (about 1.5 players near) + shared harm (compute, sway, pieces placed, sites), against the counter at the anchors; each value line gives the ratio against the cheapest option and against the credits option. A sacrificed tag prices 5 (3 tags 15); a sway or a Unity pull prices 4; a troop prices 9 (5 plus its strike). The unprinted 1 sway every uncountered threat makes is left out of every value.",
  "cards": [
   {
    "id": "t3_last_ultimatum",
@@ -13,62 +13,65 @@
     "city",
     "base"
    ],
-   "text": "Each player near it pays 20 credits or loses 2 nodes near it (never their last). Deal 1 extra tier-2 threat in this country; it executes next round.",
+   "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat here; it executes next round.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 15
-     }
-    ],
-    [
-     {
-      "resource": "ambassadors",
-      "amount": 4
-     }
-    ],
-    [
-     {
-      "sacrifice": "security",
+      "resource": "energy",
       "amount": 3
+     },
+     {
+      "resource": "research_cubes",
+      "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "chips",
+      "amount": 8
      }
     ],
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
-     "op": "lose_node_or",
-     "resource": "credits",
-     "amount": 20,
-     "count": 2,
-     "new": true,
-     "why": "lose_node_or takes 1 node today; a count field lets it take 2 (still never a last node)"
+     "op": "each_destroy_node",
+     "count": 1
+    },
+    {
+     "op": "lose_ambassador"
     },
     {
      "op": "deal_threats",
      "count": 1,
      "tier": 2,
-     "scope": "country",
-     "new": true,
-     "why": "deals the extra threat now, at the named tier, into this country; it executes next round"
+     "scope": "country"
     }
    ],
    "harms": [
-    "credits or income lost",
     "node destroyed",
+    "ambassadors lost",
     "extra threats"
    ],
-   "value": "counter 15 (credits) / 16 (4 ambassadors) / 15 (3 tags); harm per player near min(20 credits, 2 nodes 12) = 12 x 1.5 = 18, plus an extra tier-2 threat ~10 shared = 28; ratio 1.9 against the cheapest (15, credits or 3 tags), 1.9 against the credits (15)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), when 2 nodes are a scoring loss and 20 credits is most of a round (harsher than tier-2 Manhunt's 14); a Military or Influence engine, or any seat with 15 spare credits, answers it; the extra threat is dealt now and executes next round, so no chain within a round; no loop.",
+   "value": "counter 22.5 (3 energy + 3 cubes) / 16 (8 chips) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 1 more node 4 + 1 ambassador 4 = 20, plus shared an extra tier-2 threat ~15 = 35 for one player near (45 at 1.5 near); ratio 2.2 against the cheapest (16, chips), 1.3 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), when 4 nodes and an ambassador are a scoring loss; any seat with spare energy and cubes, chips, Diplomacy tags or 26 credits answers it; the extra threat is dealt now and executes next round, so no chain within a round; no loop.",
    "flags": [
     "new field: lose_node_or count 2",
     "deal_threats tier and scope fields (a threat that deals a threat deals it now, into its own country, at a named tier; it executes next round)",
-    "text is 148 characters"
+    "text is 154 characters",
+    "142: counters in scarce currencies, credits last; harm 20 credits or 2 nodes became 1 node and 1 ambassador lost (no shared credits)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -83,21 +86,13 @@
     "factory",
     "station"
    ],
-   "text": "The player near it with the most credits (ties: lowest seat) loses 15; the adversary gains 4 compute. Each player near it discards 1 card.",
+   "text": "The adversary gains 6 compute. Each player near it discards 2 cards and loses 2 tokens from their cards.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 15
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 4
-     }
-    ],
-    [
+      "resource": "chips",
+      "amount": 5
+     },
      {
       "resource": "research_cubes",
       "amount": 3
@@ -105,43 +100,49 @@
     ],
     [
      {
+      "resource": "insight",
+      "amount": 12
+     }
+    ],
+    [
+     {
       "sacrifice": "cyber",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
-     "op": "theft",
-     "who": "richest_near",
-     "resource": "credits",
-     "amount": 15,
-     "compute": 0,
-     "new": true,
-     "why": "theft into compute: the player with the most credits (who: richest_near, among players near it; richest, anywhere; ties the lowest seat) loses the amount and the adversary gains compute"
-    },
-    {
      "op": "compute",
-     "amount": 4
+     "amount": 6
     },
     {
      "op": "discard",
-     "count": 1,
-     "new": true,
-     "why": "a plain discard of N cards for each player near it; requisition with amount 0 would let them pay 0 instead, so it can't stand in"
+     "count": 2
+    },
+    {
+     "op": "lose_tokens",
+     "amount": 2
     }
    ],
    "harms": [
-    "credits or income lost",
     "projects advanced (compute)",
-    "cards discarded"
+    "cards discarded",
+    "tokens stripped from cards"
    ],
-   "value": "counter 15 (credits) / 18 (4 energy) / 18 (3 cubes) / 15 (3 tags); harm per player near 1 card 4 x 1.5 = 6, plus shared 15 credits (one seat) and 4 compute 8 = 29; ratio 1.9 against the cheapest (15, credits or 3 tags), 1.9 against the credits (15)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); threats execute after income so the richest seat near it is at its peak and can pay to stop it; Economic or Cyber engines answer it; no loop.",
+   "value": "counter 19 (5 chips + 3 cubes) / 30 (12 insight) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 2 cards 8 + 2 tokens ~4 = 24, plus shared 6 compute 12 = 36 for one player near (48 at 1.5 near); ratio 1.9 against the cheapest (19, chips + cubes), 1.4 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); the compute lands on projects that resolve harder late; an Economic or Cyber engine answers it with chips and cubes or Cyber tags, a Researcher with insight, any seat with 26 credits; no loop.",
    "flags": [
     "new op: theft",
     "new op: discard (a plain discard of N cards)",
-    "text is 138 characters"
+    "142: counters in scarce currencies, credits last; harm the richest seat's 15 credits became 6 compute (was 4), 2 cards (was 1) and 2 tokens stripped",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -156,40 +157,42 @@
     "factory",
     "city"
    ],
-   "text": "1 troop lands on the factory or zone here. Each player near it loses 2 energy. Remove 2 Unity from the Unity track.",
+   "text": "2 troops land on the factory or zone here. Each player near it loses 2 energy. Remove 3 Unity from the Unity track.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 16
-     }
-    ],
-    [
+      "resource": "ambassadors",
+      "amount": 3
+     },
      {
-      "resource": "energy",
-      "amount": 4
+      "resource": "chips",
+      "amount": 5
      }
     ],
     [
      {
       "sacrifice": "security",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
-      "sacrifice": "power",
-      "amount": 3
+      "resource": "research_cubes",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "troops",
-     "count": 1,
-     "at": "location",
-     "new": true,
-     "why": "today's troops op lands on a factory in the country; this lands on the threat's factory or zone"
+     "count": 2,
+     "at": "location"
     },
     {
      "op": "players_lose",
@@ -198,7 +201,7 @@
     },
     {
      "op": "pull_unity",
-     "amount": 2
+     "amount": 3
     }
    ],
    "harms": [
@@ -206,11 +209,11 @@
     "energy lost",
     "Unity pulled back"
    ],
-   "value": "counter 16 (credits) / 18 (4 energy) / 15 (3 tags); harm per player near 2 energy 9 x 1.5 = 13.5, plus shared 1 troop 9 and 2 Unity pulled 8 = 30.5; ratio 2.0 against the cheapest (15, 3 tags), 1.9 against the credits (16)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), when Unity pulled back can cost the win; a Military or Grid engine answers it, an energy-rich seat most cheaply; paying 4 energy to save 2 each is a gain only with 2+ players near or the troop counted; no loop.",
+   "value": "counter 22 (3 ambassadors + 5 chips) / 20 (4 tags) / 12 (4 cubes) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 2 energy 9 = 21, plus shared 2 troops 18 and 3 Unity pulled 12 = 51 for one player near (61 at 1.5 near); ratio 4.3 against the cheapest (12, cubes), 2.0 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), when 3 Unity pulled back can cost the win; any seat answers it, a Researcher most cheaply with cubes, a Security engine with tags; no energy counter, since the harm takes energy; no loop.",
    "flags": [
-    "troops at: location (new field)",
-    "text is 130 characters"
+    "142: counters in scarce currencies, credits last (energy counter dropped: the harm takes energy); harm 2 troops (was 1), 3 Unity pulled (was 2)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -224,57 +227,60 @@
    "locations": [
     "base"
    ],
-   "text": "3 troops land on the base here and march at once, 2 steps.",
+   "text": "4 troops land on the base here and march at once, 2 steps. Each player near it destroys 1 of their nodes near it (never their last).",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 15
+      "resource": "energy",
+      "amount": 5
      }
     ],
     [
      {
-      "resource": "energy",
-      "amount": 4
+      "resource": "ambassadors",
+      "amount": 5
      }
     ],
     [
      {
       "sacrifice": "security",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
-      "nodes_near": 3
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "troops",
-     "count": 3,
-     "at": "location",
-     "new": true,
-     "why": "today's troops op lands on a factory in the country; this lands on the threat's base"
+     "count": 4,
+     "at": "location"
     },
     {
      "op": "march_now",
-     "steps": 2,
-     "new": true,
-     "why": "troops a threat lands take their march steps at once, before the next march; steps sets how many"
+     "steps": 2
+    },
+    {
+     "op": "each_destroy_node",
+     "count": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or seized",
+    "node destroyed"
    ],
-   "value": "counter 15 (credits) / 18 (4 energy) / 15 (3 tags) / 18 (3 nodes); harm shared 3 troops 27 plus ~5 for strikes landing this round, not a march later = ~32; ratio 2.1 against the cheapest (15, credits or 3 tags), 2.1 against the credits (15)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): three troops reach player facilities 2 hexes off before the last marches; any seat answers with credits or energy, a Security engine with tags, a node-rich seat with its garrison; corp troops at a base next to a target absorb strikes, and a troop that strikes is spent, which caps it; no loop.",
+   "value": "counter 22.5 (5 energy) / 20 (5 ambassadors) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 1 more node 4 = 16, plus shared 4 troops 36 and ~6 for strikes landing this round = 58 for one player near (66 at 1.5 near); ratio 2.9 against the cheapest (20, ambassadors or tags), 2.2 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): four troops reach player facilities 2 hexes off before the last marches; a Military engine answers it with energy, ambassadors or Security tags, any seat with 26 credits; the garrison counter is gone (nodes are the harm); a troop that strikes is spent, which caps it; no loop.",
    "flags": [
     "new op: march_now (as tier-2), with a steps field",
-    "troops at: location (new field)",
-    "tier-3 twin of tier-2's march-at-once card: 3 troops and 2 steps against 2 troops (review that they read apart)"
+    "tier-3 twin of tier-2's march-at-once card: 3 troops and 2 steps against 2 troops (review that they read apart)",
+    "142: counters in scarce currencies, credits last (nodes_near dropped: nodes are the harm); harm 4 troops (was 3) and 1 node destroyed",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -288,54 +294,64 @@
    "locations": [
     "factory"
    ],
-   "text": "The factory here is destroyed, with the nodes on its hex (never their last). On an empty zone, 2 troops land there instead.",
+   "text": "The factory here is destroyed with the nodes on its hex (never their last); on an empty zone, 3 troops land instead. Each player near it loses 3 energy.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 16
+      "resource": "ambassadors",
+      "amount": 5
      }
     ],
     [
      {
-      "resource": "energy",
-      "amount": 4
+      "resource": "chips",
+      "amount": 8
      }
     ],
     [
      {
       "sacrifice": "security",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "destroy_facility",
-     "at": "factory",
-     "new": true,
-     "why": "destroys the factory on the threat's location (placement never names the adversary's), with the nodes on its hex as a war's destruction does, never a player's last node, unless absorbed (a hardening token, shelter) like any destruction; today only war and troop strikes do it"
+     "at": "factory"
     },
     {
      "op": "troops",
-     "count": 2,
+     "count": 3,
      "at": "location",
-     "if": "empty_zone",
-     "new": true,
-     "why": "only when the location is a free industrial zone (no factory to destroy): the troops land on it instead"
+     "if": "empty_zone"
+    },
+    {
+     "op": "players_lose",
+     "resource": "energy",
+     "amount": 3
     }
    ],
    "harms": [
     "facilities destroyed or seized",
     "node destroyed",
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "energy lost"
    ],
-   "value": "counter 16 (credits) / 18 (4 energy) / 15 (3 tags); harm shared a factory ~24 (2-3 rounds of output and its war role) plus ~6 for its owner's nodes on its hex = 30 (on an empty zone, 2 troops 18); ratio 2.0 against the cheapest (15, 3 tags), 1.9 against the credits (16); on an empty zone 1.2 and 1.1",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on the factory's owner, who is near it by having a node on it and so can always pay; a neutral factory lost costs less (the site stays to rebuild); a hardening token absorbs it as any destruction; no loop.",
+   "value": "counter 20 (5 ambassadors) / 16 (8 chips) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 3 energy 13.5 = 25.5, plus shared a factory ~24 and ~4 for the nodes on its hex = 53.5 for one player near (66 at 1.5 near; on an empty zone, 3 troops 27 for the factory: 52.5); ratio 3.3 against the cheapest (16, chips), 2.1 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on the factory's owner, who is near it by having a node on it and so can always pay; an Influence or Industry seat answers with ambassadors or chips, a Security engine with tags; no energy counter, since the harm takes energy; a hardening token absorbs the destruction; no loop.",
    "flags": [
     "new op: destroy_facility",
-    "troops at: location with an if field (new): 2 troops only on an empty zone",
-    "review: whether a corp troop at a base next to it should also absorb it, as it does a strike"
+    "review: whether a corp troop at a base next to it should also absorb it, as it does a strike",
+    "text is 152 characters",
+    "142: counters in scarce currencies, credits last (energy counter dropped: the harm takes energy); harm 3 energy lost each and 3 troops on an empty zone (was 2)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -349,71 +365,72 @@
    "locations": [
     "base"
    ],
-   "text": "Next round, the fronts next to this base fight twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord.",
+   "text": "Next round, the fronts next to this base fight twice. Its corp makes 3 more troops now, past its cap; 2 troops land here. Sway 2 toward Discord.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 14
+      "resource": "ambassadors",
+      "amount": 5
      }
     ],
     [
      {
       "resource": "energy",
       "amount": 3
+     },
+     {
+      "resource": "chips",
+      "amount": 5
      }
     ],
     [
      {
       "sacrifice": "security",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 6
-     },
-     {
-      "resource": "energy",
-      "amount": 2
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
-     "op": "extra_war",
-     "new": true,
-     "why": "the war step runs twice on the fronts next to this base next round (a second round of cancelling and factory strikes): live even when every round is a war round"
+     "op": "extra_war"
     },
     {
      "op": "corp_troops",
-     "count": 2,
+     "count": 3,
      "at": "location",
      "when": "now",
-     "past_cap": true,
-     "new": true,
-     "why": "the location's base makes 2 extra corp troops at once, past the base's cap (more war, more Discord)"
+     "past_cap": true
+    },
+    {
+     "op": "troops",
+     "count": 2,
+     "at": "location"
     },
     {
      "op": "sway",
      "side": "discord",
-     "amount": 1
+     "amount": 2
     }
    ],
    "harms": [
     "war brought forward",
     "troops made",
     "Discord sway",
-    "facilities destroyed or seized"
+    "facilities destroyed or seized",
+    "adversary pieces placed"
    ],
-   "value": "counter 14 (credits) / 13.5 (3 energy) / 15 (3 tags) / 15 (6 credits + 2 energy); harm shared a second war step on the front ~12 (a second round of cancelling and factory strikes), plus 2 corp troops ~6 and sway 4 = 22; ratio 1.6 against the cheapest (13.5, 3 energy), 1.6 against the credits (14)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); every round from 6 is already a war round, so the second war step is what bites; dealt in round 10 its strikes land in round 11, dealt in round 11 its war step comes after the game ends; any seat with spare credits or energy answers it; the extra corp troops are one-off, past the cap, and spent in the war; no loop.",
+   "value": "counter 20 (5 ambassadors) / 23.5 (3 energy + 5 chips) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12, plus shared a second war step ~12, 3 corp troops ~9, 2 troops 18 and 2 sway 8 = 59 for one player near (65 at 1.5 near); ratio 3.0 against the cheapest (20, ambassadors or tags), 2.3 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); dealt in round 11 its war step comes after the game ends, but the troops, nodes and sway still land; a Military or Influence engine answers it, any seat with 26 credits; the corp troops are one-off, past the cap, and spent in the war; no loop.",
    "flags": [
-    "new op: extra_war (the fronts next to this base fight their war step twice next round)",
-    "text is 144 characters",
     "dead as a round-11 draw: the next round never comes (review whether it should run the second war step this round instead)",
-    "new op: corp_troops (when now, past_cap)"
+    "142: counters in scarce currencies, credits last; harm 3 corp troops (was 2), 2 adversary troops landed, sway 2 (was 1)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -429,62 +446,57 @@
     "factory",
     "base"
    ],
-   "text": "An adversary factory lands on the zone here, else the nearest free zone, with 1 troop on it. Each player near it loses 1 energy.",
+   "text": "An adversary factory lands on the zone here, else the nearest free zone, with 2 troops on it. The adversary gains 5 compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 16
+      "resource": "chips",
+      "amount": 8
      }
     ],
     [
      {
       "resource": "energy",
-      "amount": 4
-     }
-    ],
-    [
-     {
-      "sacrifice": "security",
-      "amount": 3
+      "amount": 5
      }
     ],
     [
      {
       "sacrifice": "industry",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
-     "op": "adversary_factory",
-     "new": true,
-     "why": "an adversary factory built on the location if it is a free zone, else on the free industrial zone nearest it; adversary_build places ambassadors, not a factory"
+     "op": "adversary_factory"
     },
     {
      "op": "troops",
-     "count": 1,
-     "at": "new_factory",
-     "new": true,
-     "why": "the troop lands on the adversary factory this card just built"
+     "count": 2,
+     "at": "new_factory"
     },
     {
-     "op": "players_lose",
-     "resource": "energy",
-     "amount": 1
+     "op": "compute",
+     "amount": 5
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "energy lost",
+    "projects advanced (compute)",
     "actions or claims blocked"
    ],
-   "value": "counter 16 (credits) / 18 (4 energy) / 15 (3 tags); harm per player near 1 energy 4.5 x 1.5 = 7, plus shared an adversary factory 15 and 1 troop 9 = 31; ratio 2.1 against the cheapest (15, 3 tags), 1.9 against the credits (16)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), the industrial zone it takes is no longer a claim; a Military or Industry engine answers it, or any seat with 16 credits; the adversary factory makes an adversary troop on its hex each production step after, capped by the rounds left; no loop.",
+   "value": "counter 16 (8 chips) / 22.5 (5 energy) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12, plus shared an adversary factory 15, 2 troops 18 and 5 compute 10 = 55 for one player near (61 at 1.5 near); ratio 3.4 against the cheapest (16, chips), 2.1 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), the industrial zone it takes is no longer a claim; an Industry or Military engine answers it with chips, energy or Industry tags, any seat with 26 credits; the adversary factory makes an adversary troop on its hex each production step after, capped by the rounds left; no loop.",
    "flags": [
-    "new op: adversary_factory",
-    "troops at: new_factory (new field)"
+    "142: counters in scarce currencies, credits last; harm 1 energy lost became 5 compute, 2 troops (was 1)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -498,43 +510,44 @@
    "locations": [
     "city"
    ],
-   "text": "The city here is corrupted: nodes on and next to it are destroyed (never their last), and player ambassadors waiting there are lost.",
+   "text": "The city here is corrupted, with the nodes on and next to it (never their last). Each player near it loses an ambassador. Remove 2 Unity from the Unity track.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 27
+      "resource": "insight",
+      "amount": 12
      }
     ],
     [
      {
-      "resource": "ambassadors",
-      "amount": 7
+      "resource": "chips",
+      "amount": 8
      }
     ],
     [
      {
       "sacrifice": "diplomacy",
-      "amount": 5
+      "amount": 4
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 14
-     },
-     {
-      "resource": "ambassadors",
-      "amount": 3
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "corrupt_city",
-     "at": "location",
-     "new": true,
-     "why": "corrupts the city under the token, not the one with the most adversary ambassadors"
+     "at": "location"
+    },
+    {
+     "op": "lose_ambassador"
+    },
+    {
+     "op": "pull_unity",
+     "amount": 2
     }
    ],
    "harms": [
@@ -542,15 +555,16 @@
     "node destroyed",
     "ambassadors lost",
     "Discord sway",
-    "production blacked out"
+    "production blacked out",
+    "Unity pulled back"
    ],
-   "value": "counter 27 (credits) / 28 (7 ambassadors) / 25 (5 tags) / 26 (14 credits + 3 ambassadors); harm per player near ~6 (nodes on or next to the city, corruption_reach 1) x 1.5 = 9, plus shared a corrupted city 45 at the anchor = 54, ratio 2.2 against the cheapest (25, 5 tags), 2.0 against the credits (27); with 1-2 rounds left nobody liberates, so the city prices at its sway and lost output, ~22, = 31, ratio 1.2 against the cheapest, 1.1 against the credits",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): the city's energy sways Discord every round after and its nodes go; an Influence engine answers it with ambassadors or tags, any seat with 27 credits; no loop.",
+   "value": "counter 30 (12 insight) / 16 (8 chips) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + ~4 more nodes on and next to the city + 1 ambassador 4 = 20, plus shared a corrupted city ~22 this late (its sway and lost output; 45 at the anchor) and 2 Unity pulled 8 = 50 for one player near (60 at 1.5 near); ratio 3.1 against the cheapest (16, chips), 1.9 against the credits (26), 1.7 against the insight",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+): the city's energy sways Discord every round after and its nodes go; an Influence engine answers it with insight or Diplomacy tags, an Industry seat with chips, any seat with 26 credits; no ambassador counter, since the harm takes ambassadors; no loop.",
    "flags": [
     "the city may be corrupted between deal and execution: if so, the clean city nearest it is corrupted instead (review)",
-    "new field: corrupt_city at location (the city under the token)",
-    "text is 132 characters",
-    "135: counter raised to about 27 (was 15-20) so it lands near 2x its 54 harm (Matt's ruling 5, 2026-11-06); 5 Diplomacy tags is over tier 3's 3-tag band, on purpose; at the late-game city price (31) it reads 1.1-1.2."
+    "text is 158 characters",
+    "142: counters in scarce currencies, credits last (ambassador counters dropped: the harm takes ambassadors; 27 credits / 7 ambassadors / 5 tags became 26 / insight / 4 tags); harm 1 ambassador lost each and 2 Unity pulled",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -564,59 +578,59 @@
    "locations": [
     "station"
    ],
-   "text": "The station here is corrupted, even a player's; the adversary gains 4 compute.",
+   "text": "The station here is corrupted, even a player's; the adversary gains 6 compute. Each player near it gets 4 less insight next round.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 16
+      "resource": "research_cubes",
+      "amount": 4
      }
     ],
     [
      {
-      "resource": "research_cubes",
-      "amount": 3
+      "resource": "chips",
+      "amount": 8
      }
     ],
     [
      {
       "sacrifice": "cyber",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 6
-     },
-     {
-      "resource": "insight",
-      "amount": 2
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "flip_station",
-     "force": true,
-     "new": true,
-     "why": "tier 3 takes a player's station outright; flip_station today holds a player's unless station_flip_at ambassadors stand on it"
+     "force": true
     },
     {
      "op": "compute",
+     "amount": 6
+    },
+    {
+     "op": "lose_insight",
      "amount": 4
     }
    ],
    "harms": [
     "facilities destroyed or seized",
     "projects advanced (compute)",
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "insight lost"
    ],
-   "value": "counter 16 (credits) / 18 (3 cubes) / 15 (3 tags) / 14 (6 credits + 2 insight); harm shared a corrupted station 20 and 4 compute 8 = 28, more to the owner of a player's station; ratio 2.0 against the cheapest (14, credits + insight), 1.8 against the credits (16)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on a Researcher whose station it names (they are near it and can pay); a Cyber engine answers it with cubes, tags or the insight pair; a corrupted station feeds the adversary's cubes and compute each round after, capped by the rounds left; no loop.",
+   "value": "counter 12 (4 cubes) / 16 (8 chips) / 20 (4 tags) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 4 insight 10 = 22, plus shared a corrupted station 20 and 6 compute 12 = 54 for one player near (65 at 1.5 near), more to the owner of a player's station; ratio 4.5 against the cheapest (12, cubes), 2.1 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on a Researcher whose station it names (they are near it and can pay); a Cyber engine answers it with cubes or Cyber tags, an Industry seat with chips; no insight counter, since the harm takes insight; a corrupted station feeds the adversary's cubes and compute each round after, capped by the rounds left; no loop.",
    "flags": [
-    "new field: flip_station force",
-    "the station may be corrupted between deal and execution: if so, the nearest clean station instead (review)"
+    "the station may be corrupted between deal and execution: if so, the nearest clean station instead (review)",
+    "142: counters in scarce currencies, credits last (the credits + insight pair dropped: the harm takes insight); harm 6 compute (was 4) and 4 insight lost",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -630,43 +644,59 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary seizes the factory here, even a player's; on an empty zone, it builds one there.",
+   "text": "The adversary seizes the factory here, even a player's; on an empty zone, it builds one there. Each player near it loses 4 chips. The adversary gains 5 compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 16
-     }
-    ],
-    [
-     {
       "resource": "energy",
-      "amount": 4
+      "amount": 5
      }
     ],
     [
      {
       "sacrifice": "industry",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "insight",
+      "amount": 12
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
-     "op": "seize_factory",
-     "new": true,
-     "why": "the factory here becomes the adversary's, a player's included; on a free zone it builds one there (adversary_factory); today only war and strikes take player factories, and they destroy them"
+     "op": "seize_factory"
+    },
+    {
+     "op": "players_lose",
+     "resource": "chips",
+     "amount": 4
+    },
+    {
+     "op": "compute",
+     "amount": 5
     }
    ],
    "harms": [
     "facilities destroyed or seized",
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "projects advanced (compute)"
    ],
-   "value": "counter 16 (credits) / 18 (4 energy) / 15 (3 tags); harm shared a player's factory lost ~17 and an adversary factory 15 = 32, ratio 2.1 against the cheapest (15, 3 tags), 2.0 against the credits (16); on a neutral factory or an empty zone ~15-21, ratio 1.0-1.4 against the cheapest, 0.9-1.3 against the credits",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on the factory's owner, who is near it and can always pay; an Industry or energy engine answers it, any seat with 16 credits; the seized factory makes an adversary troop on its hex each production step after, capped by the rounds left; no loop.",
+   "value": "counter 22.5 (5 energy) / 20 (4 tags) / 30 (12 insight) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + 4 chips 8 = 20, plus shared a player's factory lost ~17, an adversary factory 15 and 5 compute 10 = 62 for one player near (72 at 1.5 near; on a neutral factory or an empty zone ~45); ratio 3.1 against the cheapest (20, tags), 2.4 against the credits (26); 2.3 and 1.7 on a neutral factory",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+), hardest on the factory's owner, who is near it and can always pay; an energy or Industry engine answers it, a Researcher with insight, any seat with 26 credits; no chips counter, since the harm takes chips; the seized factory makes an adversary troop on its hex each production step after, capped by the rounds left; no loop.",
    "flags": [
-    "new op: seize_factory",
-    "below band on a neutral factory or empty zone: placement takes a player's factory only when it has the most adversary pieces near it"
+    "below band on a neutral factory or empty zone: placement takes a player's factory only when it has the most adversary pieces near it",
+    "text is 160 characters",
+    "142: counters in scarce currencies, credits last; harm 4 chips lost each and 5 compute added (no longer below band on a neutral factory)",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   },
@@ -682,59 +712,62 @@
     "station",
     "city"
    ],
-   "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). Next round, cities and stations on or next to it produce nothing.",
+   "text": "A botnet lands on the station here, else the nearest piece without one. Next round, cities and stations on or next to it produce nothing. Each player near it loses 3 energy.",
    "counters": [
     [
      {
-      "resource": "energy",
+      "resource": "research_cubes",
       "amount": 4
      }
     ],
     [
      {
-      "resource": "credits",
-      "amount": 16
-     }
-    ],
-    [
-     {
       "sacrifice": "power",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
-      "resource": "research_cubes",
-      "amount": 3
+      "resource": "chips",
+      "amount": 8
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 33
      }
     ]
    ],
    "effects": [
     {
      "op": "place_botnet",
-     "new": true,
-     "why": "a botnet straight onto the location, or onto the nearest piece without one if it holds one already (players choose among equals); today botnets come only from two spreading ambassadors meeting"
+     "count": 1
     },
     {
      "op": "flag",
      "name": "grid_down",
-     "scope": "near",
-     "new": true,
-     "why": "blackout covers cities' energy only; grid_down also stops stations' research cubes, for the cities and stations on or next to it, for a round"
+     "scope": "near"
+    },
+    {
+     "op": "players_lose",
+     "resource": "energy",
+     "amount": 3
     }
    ],
    "harms": [
     "adversary pieces placed",
     "production blacked out",
     "projects advanced (compute)",
-    "actions or claims blocked"
+    "actions or claims blocked",
+    "energy lost"
    ],
-   "value": "counter 18 (4 energy) / 16 (credits) / 15 (3 tags) / 18 (3 cubes); harm per player near a round of output from the cities and stations on or next to it ~10 (about 1 energy and 1 cube) x 1.5 = 15, plus shared a botnet 16 (its compute included) = 31; ratio 2.1 against the cheapest (15, 3 tags), 1.9 against the credits (16)",
-   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); dealt in the last round its blackout is wasted (no production after), leaving the botnet; a Grid engine answers it with energy or Power tags, a Researcher with cubes; the botnet blocks claims near it and makes compute until removed, and only tier-2 cards remove it, so it is the deck's most lasting harm; no loop.",
+   "value": "counter 12 (4 cubes) / 20 (4 tags) / 16 (8 chips) / 26 (credits); harm per player near it: the engine's 3 nodes near it 12 + a round of output from the cities and stations on or next to it ~10 + 3 energy 13.5 = 35.5, plus shared a botnet 16 (its compute included) = 51.5 for one player near (69 at 1.5 near); ratio 4.3 against the cheapest (12, cubes), 2.0 against the credits (26)",
+   "check": "Bites rounds 10-11 (9-11 at difficulty 2+); dealt in the last round its blackout is wasted (no production after), leaving the botnet, the nodes and the energy; a Researcher answers it with cubes, a Grid engine with Power tags; no energy counter, since the harm takes energy; the botnet blocks claims near it and makes compute until removed; no loop.",
    "flags": [
-    "new op: place_botnet",
-    "new flag: grid_down with scope near (cities and stations on or next to it produce nothing next round)",
-    "text is 170 characters (the botnet's fallback: on a location that holds one already, the nearest piece without one, players choosing among equals)"
+    "text is 173 characters",
+    "142: counters in scarce currencies, credits last (energy counter dropped: the harm takes energy); harm 3 energy lost each",
+    "142 freeze: credits counter 26 -> 33"
    ],
    "reuses": null
   }

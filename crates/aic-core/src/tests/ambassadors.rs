@@ -253,7 +253,8 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     put(&mut g, s0, STATION, 1);
     put(&mut g, s0, cube(0), 1);
     run(&rules, &mut g);
-    assert_eq!((key(&g, 0, None), key(&g, 0, Some(0))), (0, 1));
+    // 142: a player-owned station makes `owned_station_cubes`.
+    assert_eq!((key(&g, 0, None), key(&g, 0, Some(0))), (0, rules.world().int("board.owned_station_cubes")));
 }
 
 #[test]

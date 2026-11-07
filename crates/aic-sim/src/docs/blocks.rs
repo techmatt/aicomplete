@@ -352,11 +352,8 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     // The extra threats, the corrupt cut and the board's line sit at whatever level their `_at` dial names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         ("Base rules".into(), vec![]),
-        (String::new(), vec!["adversary.counter_bonus", "adversary.counter_bonus_all"]),
-        (
-            "A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above)".into(),
-            vec!["adversary.stage1_removed", "adversary.stage3_added"],
-        ),
+        (String::new(), vec![]),
+        (String::new(), vec![]),
         (
             "Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap)".into(),
             vec!["adversary.build_bonus", "adversary.stage2_removed"],
@@ -366,13 +363,21 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];
-    let steps: [(&str, &str, &[&str]); 3] = [
-        ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
-            &["adversary.extra_threats", "adversary.extra_threats_at"]),
+    let steps: [(&str, &str, &[&str]); 7] = [
         ("adversary.corrupt_cut_at", "each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
+        ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
+            &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),
+        ("adversary.counter_more_at", "counters cost more again (from `counter_more_at`)",
+            &["adversary.counter_more_all", "adversary.counter_more_credits", "adversary.counter_more_at"]),
+        ("adversary.harm_bonus_at", "an uncountered threat's harm +N: each player near it destroys more nodes near it (from `harm_bonus_at`)",
+            &["adversary.harm_bonus", "adversary.harm_bonus_at"]),
         ("adversary.board_difficulty_at", "the adversary board's difficulty line (from `board_difficulty_at`)",
             &["adversary.board_difficulty_at"]),
+        ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
+            &["adversary.extra_threats", "adversary.extra_threats_at"]),
+        ("adversary.stage_swap_at", "a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`)",
+            &["adversary.stage1_removed", "adversary.stage3_added", "adversary.stage_swap_at"]),
     ];
     for (dial, text, keys) in steps {
         let at = (int(r, dial).clamp(0, 4)) as usize;
@@ -384,9 +389,9 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         };
         rows[at].1.extend(keys.iter().copied());
     }
-    // A level nothing moved onto says so (its counter bonuses are 0 at the baseline).
+    // A level nothing moved onto says so.
     for row in rows.iter_mut().filter(|r| r.0.is_empty()) {
-        row.0 = "Counter bonuses only".into();
+        row.0 = "Nothing more".into();
     }
     let rows: Vec<(String, String)> = rows.into_iter().map(|(text, keys)| (text, t(&keys))).collect();
     let rows = rows

@@ -74,6 +74,18 @@ pub(super) fn build_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     Ok(())
 }
 
+/// Claim a neutral research station in reach with a card (142).
+pub(super) fn claim_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+    let w = cx.world;
+    let hexes = board::card_claim_stations(&w, g, seat);
+    let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
+    let prompt = || format!("Seat {seat}: claim the research station on which hex?");
+    if let Some(i) = cx.choose(seat, prompt, opts)? {
+        board::claim_site(g, cx, seat, hexes[i], "card");
+    }
+    Ok(())
+}
+
 /// `count` research cubes in `seat`'s color onto an incomplete megaproject (075).
 pub(super) fn project_cube(g: &mut GameState, cx: &mut Cx, seat: usize, count: i64, station: bool) -> Res {
     let w = cx.world;

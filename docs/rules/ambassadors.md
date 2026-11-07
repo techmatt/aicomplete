@@ -9,7 +9,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 | Owner | City | Research station | Factory |
 |---|---|---|---|
 | Neutral | sells its energy ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except **on each Discord tip it makes 1 corp troop** ([war.md](war.md)) |
-| Player | its energy to its owner | research cubes in its owner's color | `factory_chips` chips to its owner |
+| Player | its energy to its owner | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
 | Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute | 1 adversary troop on its hex |
 
 - **One opposing ambassador blocks a site's output while it stands.** An adversary ambassador on a neutral or player
@@ -25,6 +25,13 @@ Cities, research stations and factories follow one set of rules and differ only 
   `claim_city` 4 (Corrupt city's `corrupt_at` 4), `claim_station` 3 and `claim_factory` 3 (139, Matt: Corrupt
   station's and factory's 3), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
   Difficulty lowers only the adversary's number. The bound city at setup is free ([board.md](board.md)).
+  **A claim pays back in about 3 rounds** (142, Matt): a player's station makes `owned_station_cubes` 2 cubes and a
+  factory `factory_chips` 2 chips a round (a neutral station `station_cubes` 1). Give / get at `values.json`: 3
+  ambassadors (12) for 2 chips a round (4) or 2 cubes a round (6) pays back in 3 or 2 rounds.
+- **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
+  Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach with no adversary
+  ambassador on it (`claim_station`), with the Claim action's other limits (a site claim: no botnet next to it, no
+  embargo). 2 energy (9) is cheaper than 3 ambassadors (12).
 - **Liberating an adversary site** (the Liberate action) takes massed ambassadors from one seat's supply and turns it
   neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
   for a station or factory, plus one for each adversary ambassador on it, which cancel. It needs the site **in
@@ -61,7 +68,8 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
 and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 3 for a station or
-factory, as many as the adversary needs to corrupt it) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
+factory, as many as the adversary needs to corrupt it; a few cards claim a station for energy instead; a station or
+factory you own makes 2 a round, so a claim pays back in about 3 rounds) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
 more for each adversary ambassador sitting on it. Stand one ambassador on an adversary site to shut it off, and clear
 theirs off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
 **What resisted this summary:** a liberated city takes an adversary ambassador straight back (the ladder), and a

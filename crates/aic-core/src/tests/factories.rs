@@ -195,7 +195,8 @@ fn player_factories_make_chips_every_round() {
         let mut g = g0.clone();
         g.round = round;
         run(&rules, &mut g);
-        assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), 1, "round {round}");
+        let chips = rules.world().int("board.factory_chips");
+        assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), chips, "round {round}");
     }
 }
 

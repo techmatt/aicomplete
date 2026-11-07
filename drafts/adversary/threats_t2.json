@@ -11,12 +11,12 @@
    "locations": [
     "base"
    ],
-   "text": "2 troops land on the base here and march at once.",
+   "text": "3 troops land on the base here and march at once. Each player near it destroys 1 of their nodes near it (never their last).",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
+      "resource": "ambassadors",
+      "amount": 4
      }
     ],
     [
@@ -27,34 +27,38 @@
     ],
     [
      {
-      "nodes_near": 2
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
      "op": "troops",
-     "count": 2,
-     "at": "location",
-     "new": true,
-     "why": "troops land on the threat's own location (today's troops land on a factory in the country)"
+     "count": 3,
+     "at": "location"
     },
     {
-     "op": "march_now",
-     "new": true,
-     "why": "troops a threat lands take their march steps at once, before the next march"
+     "op": "march_now"
+    },
+    {
+     "op": "each_destroy_node",
+     "count": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized"
+    "facilities destroyed or seized",
+    "node destroyed"
    ],
-   "value": "counter 3 Security tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared 2 troops 10 + their strike at once ~10 expected (a facility ~15 in reach about 2 games in 3) = ~20; ratio ~1.3 vs tags (1.7 vs credits)",
-   "check": "bites from round 5 when factories and stations sit near the fronts; the base's neighbors pay; a troop that strikes is used up, and a base's corp troops absorb strikes next to it, which caps it",
+   "value": "cheapest counter 3 Security tags 15 (or 4 ambassadors 16; or 23 credits); harm per player 1 node 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 3 troops 15 + their strike at once ~15 = 30; ~48; ratio ~3.2 (2.7 vs credits)",
+   "check": "bites from round 5 when factories and stations sit near the fronts; the base's neighbors pay, diplomats in ambassadors; a troop that strikes is used up and corp troops absorb strikes next to the base, which caps it; no loop",
    "flags": [
     "new op march_now",
     "new field: at location on troops",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 3 troops, was 2; adds 1 node destroyed",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "total_war"
   },
@@ -68,48 +72,50 @@
    "locations": [
     "factory"
    ],
-   "text": "1 troop lands on the factory or zone here. Each player near it destroys 1 of their nodes near it (never their last).",
+   "text": "The factory here is destroyed with the nodes on its hex (never a last node). 2 troops land here and stay.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
+      "resource": "ambassadors",
+      "amount": 4
      }
     ],
     [
      {
       "resource": "energy",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
-      "nodes_near": 2
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location",
-     "new": true,
-     "why": "the troop lands on the threat's own factory or zone"
+     "op": "destroy_facility",
+     "at": "factory"
     },
     {
-     "op": "each_destroy_node",
-     "count": 1
+     "op": "troops",
+     "count": 2,
+     "at": "location",
+     "stand": true
     }
    ],
    "harms": [
-    "adversary pieces placed",
+    "facilities destroyed or seized",
     "node destroyed",
-    "facilities destroyed or seized"
+    "adversary pieces placed"
    ],
-   "value": "cheapest counter 12 credits (or 2 nodes, 12; or 3 energy, 13.5); harm per player a node 6 x 1.5 = 9; shared a troop 5 + its strike in the next march ~10 (when a player facility is in reach) = 15; ~24; ratio ~2.0 (the credits option is the cheapest; 1.8 vs energy)",
-   "check": "mid-game, rounds 5-8; anyone garrisoning the factory can pay; the nodes_near option trades the same nodes the harm takes, a choice not a loop",
+   "value": "cheapest counter 4 ambassadors 16 (or 4 energy 18; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a factory and its node ~20 (on a free zone 0) + 2 standing troops 10 = ~30; ~42; ratio ~2.6 (~1.4 on a free zone)",
+   "check": "rounds 4-9 on a player's factory; its owner and neighbors pay; the standing troops hold the hex until removed (remove_troops cards), so they never strike; no loop",
    "flags": [
-    "new field: at location on troops"
+    "new field: at location on troops",
+    "142: counters in scarce currencies, credits last; harm the factory is destroyed and 2 troops stand, was 1 troop and 1 node each",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "siege"
   },
@@ -124,12 +130,12 @@
     "base",
     "city"
    ],
-   "text": "Each player near it pays 14 credits or destroys 2 of their nodes near it (never their last).",
+   "text": "Each player near it loses 2 ambassadors. 1 troop lands here.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 10
+      "resource": "energy",
+      "amount": 4
      }
     ],
     [
@@ -137,27 +143,38 @@
       "sacrifice": "security",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
-     "op": "lose_node_or",
-     "count": 2,
-     "resource": "credits",
-     "amount": 14,
-     "new": true,
-     "why": "lose_node_or takes one node today; needs a count field"
+     "op": "lose_ambassador"
+    },
+    {
+     "op": "lose_ambassador"
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "at": "location"
     }
    ],
    "harms": [
-    "node destroyed",
-    "credits or income lost"
+    "ambassadors lost",
+    "adversary pieces placed"
    ],
-   "value": "cheapest counter 10 credits (or 3 Security tags, 15); harm per player 12 (2 nodes 12 or 14 credits, their pick) x 1.5 = 18; shared 0; ratio ~1.8 (1.2 vs tags)",
-   "check": "any round from 5; a choice threat, so a rich seat pays credits and a poor one loses reach; the never-last guard keeps it from ending a seat",
+   "value": "cheapest counter 3 Security tags 15 (or 4 energy 18; or 23 credits); harm per player 2 ambassadors 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared a troop 5 + its strike ~5 = 10; ~34; ratio ~2.3 (1.9 vs credits)",
+   "check": "any round from 5; seats with ambassadors on the board pay in energy or tags, not in the ambassadors it hunts; no loop",
    "flags": [
     "new field: lose_node_or count",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 2 ambassadors lost and a troop, was 14 credits or 2 nodes (credits left the harm)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "manhunt"
   },
@@ -172,24 +189,24 @@
    "locations": [
     "base"
    ],
-   "text": "For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap.",
+   "text": "For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap. Remove 2 Unity from the Unity track.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 3
+      "resource": "chips",
+      "amount": 6
      }
     ],
     [
      {
       "sacrifice": "security",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -200,20 +217,25 @@
      "at": "location",
      "when": "each_production",
      "past_cap": true,
-     "rounds": 3,
-     "new": true,
-     "why": "corp bases make extra corp troops (more war, more Discord): at the location's base; each production step for 3 rounds, past the base's cap"
+     "rounds": 3
+    },
+    {
+     "op": "pull_unity",
+     "amount": 2
     }
    ],
    "harms": [
-    "troops made"
+    "troops made",
+    "Unity pulled back"
    ],
-   "value": "counter 3 Security tags 15 (or 12 credits; or 3 energy, 13.5); harm per player 0; shared ~1 more factory and its node lost (21) per war step the extra troops reach, about 1 on average in its 3 rounds (war spends them as they stack) = ~21; ratio ~1.4 vs tags (1.75 vs credits)",
-   "check": "lasts 3 rounds, so its 3 production steps all feed wars from round 6 (every round a war round); holders of front factories counter; past the cap at most 3 extra troops pile up, and a base Warmongering already feeds gains no second extra (at most 1 a base a production step); the extra troops also absorb adversary strikes next to it",
+   "value": "cheapest counter 6 chips 12 (or 3 Security tags 15; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared ~1 factory and its node 21 per war step the extra troops reach + 2 Unity pulled back 8 = ~29; ~41; ratio ~3.4 (2.3 vs credits)",
+   "check": "lasts 3 rounds, so its production steps feed wars from round 6; front factory holders pay in chips; at most 3 extra troops past the cap, 1 a base a production step; no loop",
    "flags": [
     "new op corp_troops (rounds 3, each_production, past_cap)",
     "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "135: lasts 3 rounds, was the rest of the game (Matt's ruling 7, 2026-11-06: Conscription lasts 3 rounds, not for good); priced at ~1 war step, read its extra troops per game."
+    "135: lasts 3 rounds, was the rest of the game (Matt's ruling 7, 2026-11-06: Conscription lasts 3 rounds, not for good); priced at ~1 war step, read its extra troops per game.",
+    "142: counters in scarce currencies, credits last; harm adds 2 Unity pulled back",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "conscription"
   },
@@ -227,12 +249,12 @@
    "locations": [
     "base"
    ],
-   "text": "Next round, the fronts next to this base fight twice. Sway 2 toward Discord.",
+   "text": "2 troops land on the base here. Next round, the fronts next to it fight twice. Sway 2 toward Discord.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
+      "resource": "ambassadors",
+      "amount": 4
      }
     ],
     [
@@ -243,15 +265,19 @@
     ],
     [
      {
-      "nodes_near": 2
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "extra_war",
-     "new": true,
-     "why": "the war step runs twice on the fronts next to this base next round (a second round of cancelling and factory strikes): live even when every round is a war round"
+     "op": "troops",
+     "count": 2,
+     "at": "location"
+    },
+    {
+     "op": "extra_war"
     },
     {
      "op": "sway",
@@ -260,14 +286,18 @@
     }
    ],
    "harms": [
+    "adversary pieces placed",
     "war brought forward",
-    "Discord sway"
+    "Discord sway",
+    "facilities destroyed or seized"
    ],
-   "value": "counter 3 Security tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a second war step on the base's fronts ~12 + 2 sway 8 = ~20; ratio ~1.3 vs tags (1.7 vs credits)",
-   "check": "any round from 4, and still live from round 6 when every round is a war round; bases sit on the fronts, so the front's factory owners counter; it lasts one round, and the second war step spends troops the first left, so it is weaker; no loop",
+   "value": "cheapest counter 3 Security tags 15 (or 4 ambassadors 16; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 troops 10 + a second war step ~12 + 2 sway 8 = ~30; ~42; ratio ~2.8 (2.3 vs credits)",
+   "check": "any round from 4, live from round 6 when every round is a war round; front factory owners pay, diplomats in ambassadors; it lasts one round; no loop",
    "flags": [
     "new op extra_war",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm adds 2 troops on the base",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -281,18 +311,12 @@
    "locations": [
     "city"
    ],
-   "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Corrupt cities (1 fewer).",
+   "text": "Create 3 adversary ambassadors here. Corrupt cities (1 fewer).",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
-     }
-    ],
-    [
-     {
-      "resource": "ambassadors",
-      "amount": 3
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
@@ -300,14 +324,19 @@
       "sacrifice": "diplomacy",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
      "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "ambassadors"
+     "count": 3,
+     "at": "location"
     },
     {
      "op": "corrupt",
@@ -322,11 +351,13 @@
     "production blacked out",
     "Discord sway"
    ],
-   "value": "counter 3 Diplomacy tags 15 (or 12 credits; or 3 ambassadors, 12); harm per player 0; shared a corrupted city 45 (its nodes, ambassadors and energy) when the gate holds, else 2 placed 10: ~22 expected; ratio ~1.5 vs tags (1.8 vs credits; 3.0 vs tags, 3.75 vs credits when the gate holds)",
-   "check": "bites from round 4 on a crowded city; nodes on and next to it are near, so the seats that would lose them pay; clearing ambassadors below 3 first is the answer",
+   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed 12 + a city corrupted ~45 (its nodes, ambassadors and energy) about 2 times in 3 = ~42; ~54; ratio ~3.6 (3.0 vs credits)",
+   "check": "bites from round 4; the 3 created ambassadors usually let the corruption step take this city or one next to it; nodes on and next to it are near, so those seats pay; no loop",
    "flags": [
     "new fields on corrupt_city: min_ambassadors, else_ambassadors",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 3 ambassadors created here feed the corruption, was 2 on a city already holding some",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "overrun"
   },
@@ -340,24 +371,24 @@
    "locations": [
     "city"
    ],
-   "text": "Create 3 adversary ambassadors here. Sway 2 toward Discord.",
+   "text": "Create 3 adversary ambassadors here. Remove 2 Unity from the Unity track. Sway 1 toward Discord.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
-     }
-    ],
-    [
-     {
-      "resource": "ambassadors",
-      "amount": 3
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
      {
       "sacrifice": "diplomacy",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -368,21 +399,28 @@
      "at": "location"
     },
     {
+     "op": "pull_unity",
+     "amount": 2
+    },
+    {
      "op": "sway",
      "side": "discord",
-     "amount": 2
+     "amount": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
     "ambassadors lost",
+    "Unity pulled back",
     "Discord sway"
    ],
-   "value": "counter 3 Diplomacy tags 15 (or 11 credits; or 3 ambassadors, 12); harm per player 0; shared 3 placed or player ambassadors canceled ~14 + 2 sway 8 = ~22; ratio ~1.5 vs tags (2.0 vs credits)",
-   "check": "any stage-II round; Diplomacy seats with ambassadors on the city counter; feeds Overrun's gate (a pair, not a loop: one copy of each a deck)",
+   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed or player ambassadors canceled 12 + 2 Unity pulled back 8 + 1 sway 4 = 24; ~36; ratio ~2.4 (2.0 vs credits)",
+   "check": "any stage-II round, worst near the Unity tip; Diplomacy and science seats near the city pay; feeds Overrun's corruption (one copy of each a deck), no loop",
    "flags": [
     "ambassadors at the location with cancel uses the arrival rule; confirm the field",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm adds 2 Unity pulled back, sway 1 (was 2)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "insurrection"
   },
@@ -398,24 +436,24 @@
     "city",
     "station"
    ],
-   "text": "Sway 2 toward Discord. Remove 1 Unity from the Unity track. Each player near it gets 2 less insight next round.",
+   "text": "Sway 2 toward Discord. Remove 2 Unity from the Unity track. Each player near it gets 3 less insight next round.",
    "counters": [
     [
      {
-      "resource": "ambassadors",
+      "resource": "research_cubes",
       "amount": 3
      }
     ],
     [
      {
-      "resource": "credits",
-      "amount": 11
+      "resource": "ambassadors",
+      "amount": 4
      }
     ],
     [
      {
-      "resource": "insight",
-      "amount": 6
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -427,11 +465,11 @@
     },
     {
      "op": "pull_unity",
-     "amount": 1
+     "amount": 2
     },
     {
      "op": "lose_insight",
-     "amount": 2
+     "amount": 3
     }
    ],
    "harms": [
@@ -439,10 +477,12 @@
     "Unity pulled back",
     "insight lost"
    ],
-   "value": "cheapest counter 11 credits (or 3 ambassadors, 12; or 6 insight, 24 at the anchor); harm per player 2 insight 8 x 1.5 = 12; shared 2 sway 8 + 1 Unity pulled back 4 = 12; ~24; ratio ~2.2 (the credits option is the cheapest; 2.0 vs ambassadors)",
-   "check": "any round, worst near the Unity tip; diplomats pay ambassadors, science seats insight; no loop",
+   "value": "cheapest counter 3 cubes 9 (or 4 ambassadors 16; or 23 credits); harm per player 3 insight 7.5 + the rule's 2 nodes 8 = 15.5 x 1.5 = ~23; shared 2 sway 8 + 2 Unity pulled back 8 = 16; ~39; ratio ~4.3 (2.2 vs credits)",
+   "check": "any round, worst near the Unity tip; science seats pay cubes, diplomats ambassadors; it takes insight, so no insight option; no loop",
    "flags": [
-    "insight anchor (4) makes the 6-insight counter dearer than the credit band"
+    "insight anchor (4) makes the 6-insight counter dearer than the credit band",
+    "142: counters in scarce currencies, credits last; harm 2 Unity pulled back (was 1), 3 insight (was 2); insight left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "deepfake_wave"
   },
@@ -456,12 +496,12 @@
    "locations": [
     "city"
    ],
-   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
+   "text": "In its country: create 2 adversary ambassadors on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
@@ -469,12 +509,18 @@
       "sacrifice": "diplomacy",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
      "op": "create",
-     "count": 1,
+     "count": 2,
      "at": "factory",
      "if": "player",
      "sites": 2
@@ -490,10 +536,12 @@
     "ambassadors lost",
     "adversary pieces placed"
    ],
-   "value": "counter 3 Diplomacy tags 15 (or 11 credits); harm per player 2 ambassadors 8 x 1.5 = 12; shared 2 placed 10; ~22; ratio ~1.5 vs tags (2.0 vs credits)",
-   "check": "mid-game when seats hold ambassadors on the board; anyone near can pay; no loop",
+   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player 2 ambassadors 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 4 placed 16; ~40; ratio ~2.7 (2.2 vs credits)",
+   "check": "mid-game when seats hold ambassadors; anyone near pays, never in the ambassadors it takes; no loop",
    "flags": [
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 2 ambassadors on each factory, was 1",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -508,24 +556,24 @@
     "city",
     "coastal_city"
    ],
-   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities. Sway 1 toward Discord.",
+   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities (1 fewer). Sway 2 toward Discord.",
    "counters": [
     [
      {
-      "resource": "credits",
+      "resource": "insight",
       "amount": 10
-     }
-    ],
-    [
-     {
-      "resource": "ambassadors",
-      "amount": 2
      }
     ],
     [
      {
       "sacrifice": "diplomacy",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -539,23 +587,29 @@
     },
     {
      "op": "corrupt",
-     "site": "city"
+     "site": "city",
+     "cut": 1
     },
     {
      "op": "sway",
      "side": "discord",
-     "amount": 1
+     "amount": 2
     }
    ],
    "harms": [
     "adversary pieces placed",
+    "node destroyed",
+    "ambassadors lost",
+    "production blacked out",
     "Discord sway"
    ],
-   "value": "cheapest counter 2 ambassadors 8 (or 10 credits; or 3 Diplomacy tags, 15); harm per player 0; shared a second spread ~12 (about 2 ambassadors placed, now and then a new botnet) + 1 sway 4 = ~16; ratio ~2.0 (1.6 vs credits)",
-   "check": "any stage-II round; worst where botnet ambassadors sit close to player pieces; diplomats near the city pay; the flag is spent by one spread, so it can't stack past one doubled spread a copy",
+   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 placed 8 + a city corrupted ~45 about 1 time in 2 = ~22 + 2 sway 8 = ~38; ~50; ratio ~3.3 (2.8 vs credits)",
+   "check": "any stage-II round; worst where adversary ambassadors already gather near a city; diplomats and science seats near it pay; no loop",
    "flags": [
     "new flag double_spread (country scope)",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm corrupts with 1 fewer, sway 2 (was 1)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -569,18 +623,12 @@
    "locations": [
     "station"
    ],
-   "text": "The station here is corrupted (a player's holds unless 2 adversary and no player ambassadors are on it: an adversary ambassador lands). The adversary gains 3 compute.",
+   "text": "The station here is corrupted, even a player's. The adversary gains 4 compute.",
    "counters": [
     [
      {
-      "resource": "research_cubes",
-      "amount": 2
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 12
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
@@ -588,27 +636,35 @@
       "sacrifice": "cyber",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
-     "op": "flip_station"
+     "op": "flip_station",
+     "force": true
     },
     {
      "op": "compute",
-     "amount": 3
+     "amount": 4
     }
    ],
    "harms": [
     "facilities destroyed or seized",
-    "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "counter 3 Cyber tags 15 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a corrupted neutral station 20, or a player's that holds and takes 1 ambassador 5: ~14 expected + 3 compute 6 = ~20; ratio ~1.3 vs tags (1.7 vs cubes or credits)",
-   "check": "rounds 4-9; the station's owner or neighbors pay, usually in cubes it makes; the bite is neutral stations and crowded player ones",
+   "value": "cheapest counter 3 Cyber tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a corrupted station ~20 (a player's lost, or a neutral one turned) + 4 compute 8 = 28; ~40; ratio ~2.7 (2.2 vs credits)",
+   "check": "rounds 4-9; the station's owner and neighbors pay; it takes the station's cube output, so no cubes option; no loop",
    "flags": [
     "face 144 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm a player's station falls too (force), compute 4 (was 3); cubes left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "station_seizure"
   },
@@ -622,18 +678,12 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). The adversary gains 3 compute.",
+   "text": "A botnet lands on the station here (else the nearest piece without one). Create 2 adversary ambassadors here.",
    "counters": [
     [
      {
-      "resource": "research_cubes",
-      "amount": 2
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 12
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
@@ -641,31 +691,39 @@
       "sacrifice": "cyber",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
      "op": "place_botnet",
-     "count": 1,
-     "new": true,
-     "why": "a threat places a botnet directly (on the station, else the nearest piece without one); today only spread makes one"
+     "count": 1
     },
     {
-     "op": "compute",
-     "amount": 3
+     "op": "create",
+     "count": 2,
+     "at": "location"
     }
    ],
    "harms": [
     "adversary pieces placed",
     "actions or claims blocked",
-    "projects advanced (compute)"
+    "projects advanced (compute)",
+    "production blacked out"
    ],
-   "value": "counter 3 Cyber tags 15 (or 2 cubes, 12; or 12 credits); harm per player 0; shared a botnet 16 (compute every round, claims next to it blocked) + 3 compute 6 = ~22; ratio ~1.5 vs tags (1.8 vs cubes or credits)",
-   "check": "worst early in stage II (more rounds of botnet compute); cyber seats counter; botnets need a tier-2 card to remove, so this is a real permanent loss; no loop",
+   "value": "cheapest counter 3 Cyber tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a botnet 16 (compute every round, claims next to it blocked) + 2 placed 8 (the station dark while they stand) = 24; ~36; ratio ~2.4 (2.0 vs credits)",
+   "check": "worst early in stage II (more rounds of botnet compute); cyber seats counter; botnets need a tier-2 card to remove; no loop",
    "flags": [
     "new op place_botnet",
     "face 135 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 2 adversary ambassadors on the station, was 3 compute; cubes left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "fifth_column"
   },
@@ -679,18 +737,24 @@
    "locations": [
     "station"
    ],
-   "text": "Each player near it discards their most expensive card in hand and loses 3 tokens from their cards.",
+   "text": "Each player near it discards their most expensive card in hand, loses 3 tokens from their cards and destroys 1 node near it (never their last).",
    "counters": [
     [
      {
       "resource": "research_cubes",
-      "amount": 2
+      "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "insight",
+      "amount": 10
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 12
+      "amount": 23
      }
     ]
    ],
@@ -701,15 +765,23 @@
     {
      "op": "lose_tokens",
      "amount": 3
+    },
+    {
+     "op": "each_destroy_node",
+     "count": 1
     }
    ],
    "harms": [
     "cards discarded",
-    "tokens stripped from cards"
+    "tokens stripped from cards",
+    "node destroyed"
    ],
-   "value": "cheapest counter 2 cubes 12 (or 12 credits); harm per player a dear card ~8 + 3 tokens ~5 = 13 x 1.5 = ~20; shared 0; ratio ~1.7 (vs credits and vs cubes alike)",
+   "value": "cheapest counter 3 cubes 9 (or 10 insight 25; or 23 credits); harm per player a dear card ~8 + 3 tokens ~5 + 1 node 4 + the rule's 2 nodes 8 = 25 x 1.5 = ~37; shared 0; ratio ~4.1 (2.1 vs credits)",
    "check": "bites hand-holders and token engines, rounds 4-9; science seats near stations pay; no loop",
-   "flags": [],
+   "flags": [
+    "142: counters in scarce currencies, credits last; harm adds 1 node destroyed",
+    "142 freeze: credits counter 18 -> 23"
+   ],
    "reuses": "purge_protocols"
   },
   {
@@ -724,57 +796,52 @@
     "station",
     "factory"
    ],
-   "text": "Each player near it loses 2 research cubes or gets 3 less insight next round. The adversary gains 2 compute.",
+   "text": "Each player near it loses 2 research cubes and gets 3 less insight next round. The adversary gains 5 compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
+      "resource": "chips",
+      "amount": 6
      }
     ],
     [
      {
       "resource": "energy",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
      {
-      "resource": "insight",
-      "amount": 6
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "lose_or",
-     "options": [
-      {
-       "op": "players_lose",
-       "resource": "research_cubes",
-       "amount": 2
-      },
-      {
-       "op": "lose_insight",
-       "amount": 3
-      }
-     ],
-     "new": true,
-     "why": "each player near it picks one of the listed harms (requisition pairs only cards with a resource)"
+     "op": "players_lose",
+     "resource": "research_cubes",
+     "amount": 2
+    },
+    {
+     "op": "lose_insight",
+     "amount": 3
     },
     {
      "op": "compute",
-     "amount": 2
+     "amount": 5
     }
    ],
    "harms": [
     "insight lost",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 11 credits (or 3 energy, 13.5; or 6 insight, 24: a tier-2 insight option only ever sits beside a credits one); harm per player 12 (2 cubes or 3 insight, their pick) x 1.5 = 18; shared 2 compute 4; ~22; ratio ~2.0 (the credits option is the cheapest)",
-   "check": "mid-game when cubes pile up; a seat with no cubes takes the insight cut; no loop",
+   "value": "cheapest counter 6 chips 12 (or 4 energy 18; or 23 credits); harm per player 2 cubes 6 + 3 insight 7.5 + the rule's 2 nodes 8 = 21.5 x 1.5 = ~32; shared 5 compute 10; ~42; ratio ~3.5 (2.3 vs credits)",
+   "check": "mid-game when cubes pile up; industry seats pay chips; it takes cubes and insight, so neither is on the menu; no loop",
    "flags": [
-    "new op lose_or"
+    "new op lose_or",
+    "142: counters in scarce currencies, credits last; harm 2 cubes and 3 insight both (was their pick), 5 compute (was 2); insight left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -788,24 +855,24 @@
    "locations": [
     "station"
    ],
-   "text": "The adversary gains 8 compute. Each player near it turns 1 of their buildings face down until the end of next round (it does nothing; its tags still count).",
+   "text": "The adversary gains 8 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
-     }
-    ],
-    [
-     {
       "resource": "research_cubes",
-      "amount": 2
+      "amount": 3
      }
     ],
     [
      {
       "sacrifice": "cyber",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -817,9 +884,7 @@
     {
      "op": "disable_building",
      "count": 1,
-     "until": "end_of_next_round",
-     "new": true,
-     "why": "each player near it turns 1 building of their choice face down: no Action, no production, no ongoing effect; its tags still count for sacrifices and pulls"
+     "until": "end_of_next_round"
     }
    ],
    "harms": [
@@ -827,12 +892,14 @@
     "production blacked out",
     "actions or claims blocked"
    ],
-   "value": "counter 3 Cyber tags 15 (or 11 credits; or 2 cubes, 12); harm per player a building idle for one production and one round of Actions ~5 (they pick the weakest) x 1.5 = ~7.5; shared 8 compute 16; ~23.5; ratio ~1.5 vs tags (2.1 vs credits)",
-   "check": "worst when a project sits near its cost (often resolves one at once); the face-down building is the player's pick, so engines with a spare building shrug it off; it lifts at the end of next round, so no loop",
+   "value": "cheapest counter 3 cubes 9 (or 3 Cyber tags 15; or 23 credits); harm per player a building idle a round ~5 + the rule's 2 nodes 8 = 13 x 1.5 = ~20; shared 8 compute 16; ~36; ratio ~4.0 (2.0 vs credits)",
+   "check": "worst when a project sits near its cost (often resolves one at once, and projects are harsher when they resolve); the face-down building is the player's pick; it lifts at the end of next round; no loop",
    "flags": [
     "new op disable_building",
     "face 156 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm unchanged (8 compute already severe)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -846,18 +913,12 @@
    "locations": [
     "factory"
    ],
-   "text": "Each player near it loses 12 credits or discards 3 cards.",
+   "text": "Each player near it turns 2 of their buildings face down until the end of next round (tags still count) and discards 2 cards.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
-     }
-    ],
-    [
-     {
       "resource": "energy",
-      "amount": 3
+      "amount": 4
      }
     ],
     [
@@ -865,24 +926,36 @@
       "sacrifice": "industry",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
-     "op": "requisition",
-     "resource": "credits",
-     "amount": 12,
-     "cards": 3
+     "op": "disable_building",
+     "count": 2,
+     "until": "end_of_next_round"
+    },
+    {
+     "op": "discard",
+     "count": 2
     }
    ],
    "harms": [
-    "credits or income lost",
+    "production blacked out",
+    "actions or claims blocked",
     "cards discarded"
    ],
-   "value": "counter 3 Industry tags 15 (or 12 credits; or 3 energy, 13.5); harm per player 12 (12 credits or 3 cards, their pick) x 1.5 = 18; shared 0; ratio ~1.2 vs tags (1.5 vs credits)",
-   "check": "any stage-II round, after income; anyone near pays; no loop; the project Market Crash, which it duplicated, changes instead",
+   "value": "cheapest counter 3 Industry tags 15 (or 4 energy 18; or 23 credits); harm per player 2 buildings idle a round ~10 + 2 cards ~6 + the rule's 2 nodes 8 = 24 x 1.5 = 36; shared 0; ratio ~2.4 (2.0 vs credits)",
+   "check": "any stage-II round; engines with several buildings feel it most; anyone near pays in energy or tags, not cards; no loop",
    "flags": [
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 2 buildings face down and 2 cards, was 12 credits or 3 cards (credits left the harm)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "asset_freeze"
   },
@@ -896,18 +969,12 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary builds a factory on the free industrial zone nearest this threat's token. The adversary gains 3 compute.",
+   "text": "The adversary builds a factory on the free industrial zone nearest this threat's token. The adversary gains 5 compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 3
+      "resource": "chips",
+      "amount": 6
      }
     ],
     [
@@ -915,17 +982,21 @@
       "sacrifice": "industry",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
-     "op": "adversary_factory",
-     "new": true,
-     "why": "the adversary builds a factory on an industrial zone; adversary_build places ambassadors only"
+     "op": "adversary_factory"
     },
     {
      "op": "compute",
-     "amount": 3
+     "amount": 5
     }
    ],
    "harms": [
@@ -933,11 +1004,13 @@
     "actions or claims blocked",
     "projects advanced (compute)"
    ],
-   "value": "counter 3 Industry tags 15 (or 11 credits; or 3 energy, 13.5); harm per player 0; shared an adversary factory 15 (it takes a zone and makes an adversary troop on its hex each production step) + 3 compute 6 = ~21; ratio ~1.4 vs tags (1.9 vs credits)",
-   "check": "rounds 4-7, while zones are free; industry seats near zones counter; with no free zone it does only the compute (nothing to act on never blocks)",
+   "value": "cheapest counter 6 chips 12 (or 3 Industry tags 15; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared an adversary factory 15 (it takes a zone and makes a troop each production step) + 5 compute 10 = 25; ~37; ratio ~3.1 (2.1 vs credits)",
+   "check": "rounds 4-7, while zones are free; industry seats pay chips; with no free zone it does the compute alone; no loop",
    "flags": [
     "new op adversary_factory",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm compute 5 (was 3)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": "mass_production"
   },
@@ -952,17 +1025,12 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary gains 3 compute. 1 troop lands on the factory or zone here and stays: a factory makes nothing while it stands; a zone gives 3 more compute.",
+   "text": "The adversary gains 4 compute. 1 troop lands on the factory or zone here and stays: a factory makes nothing while it stands; a zone gives 4 more compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
-     }
-    ],
-    [
-     {
-      "nodes_near": 2
+      "resource": "energy",
+      "amount": 4
      }
     ],
     [
@@ -970,25 +1038,27 @@
       "sacrifice": "industry",
       "amount": 3
      }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
+     }
     ]
    ],
    "effects": [
     {
      "op": "troops",
      "count": 1,
-     "at": "location",
-     "new": true,
-     "why": "the troop lands on the threat's own factory or zone"
+     "at": "location"
     },
     {
      "op": "occupy_factory",
-     "else_compute": 3,
-     "new": true,
-     "why": "the troop stays (it doesn't march); a factory makes no chips or troops until the troop is removed; on an empty zone the adversary gains 3 more compute instead (distinct from tier-3 Hostile Takeover's seize_factory)"
+     "else_compute": 4
     },
     {
      "op": "compute",
-     "amount": 3
+     "amount": 4
     }
    ],
    "harms": [
@@ -996,13 +1066,15 @@
     "adversary pieces placed",
     "projects advanced (compute)"
    ],
-   "value": "counter 3 Industry tags 15 (or 12 credits; or 2 nodes, 12); harm per player 0; shared a factory idle until freed (chips and corp troops ~4 a round for ~3 rounds = ~12) + a troop 5 + 3 compute 6 = ~23 (on an empty zone: troop 5 + 6 compute 12 = ~17); ratio ~1.5 on a factory, ~1.1 on a zone vs tags (1.9 / 1.4 vs credits)",
-   "check": "bites a factory owner from round 4; the owner pays now or removes the troop later (remove_troops cards), which caps the loss; the held troop never strikes; a troop on a zone also keeps it from being claimed",
+   "value": "cheapest counter 3 Industry tags 15 (or 4 energy 18; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a factory idle ~3 rounds ~12 + a troop 5 + 4 compute 8 = ~25 (on a zone: troop 5 + 8 compute 16 = 21); ~37; ratio ~2.5 (2.1 vs credits)",
+   "check": "bites a factory owner from round 4; the owner pays now or removes the troop later, which caps it; the held troop never strikes; it idles the factory's chips, so no chips option; no loop",
    "flags": [
     "new op occupy_factory (not Hostile Takeover's seize_factory): settles the occupied factory as idle (no output to the adversary)",
     "new field: at location on troops",
     "face 153 characters, over the 110 target",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm compute 4 and 4 (was 3 and 3); the nodes option left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1017,40 +1089,48 @@
    "locations": [
     "coastal_city"
    ],
-   "text": "The player near it with the most credits (ties: lowest seat) loses 15 credits. The adversary gains 3 compute.",
+   "text": "Each player near it gets 4 less chips income next round. The adversary gains 5 compute.",
    "counters": [
     [
      {
       "resource": "ambassadors",
-      "amount": 3
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "energy",
+      "amount": 4
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 11
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "theft",
-     "who": "richest_near",
-     "resource": "credits",
-     "amount": 15,
-     "compute": 3,
-     "new": true,
-     "why": "theft into compute: the player near it with the most credits (ties the lowest seat) loses the amount and the adversary gains compute"
+     "op": "lose_income",
+     "resource": "chips",
+     "amount": 4
+    },
+    {
+     "op": "compute",
+     "amount": 5
     }
    ],
    "harms": [
     "credits or income lost",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 11 credits (or 3 ambassadors, 12); harm one player near it 15 (not x 1.5: it hits one seat) + shared 3 compute 6 = ~21; ratio ~1.9 (the credits option is the cheapest; 1.75 vs ambassadors)",
-   "check": "executes after income, so it lands on a full purse, mid to late; the victim is the richest seat near it, so the seats near it pay to shield it; with nobody near it, it is 3 compute alone; no loop",
+   "value": "cheapest counter 4 ambassadors 16 (or 4 energy 18; or 23 credits); harm per player 4 chips 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 5 compute 10; ~34; ratio ~2.1 (1.9 vs credits)",
+   "check": "mid to late, against chip engines near the coast; diplomats pay ambassadors; it takes chips, so no chips option; no loop",
    "flags": [
-    "new op theft (Matt's theft-into-compute candidate)"
+    "new op theft (Matt's theft-into-compute candidate)",
+    "142: counters in scarce currencies, credits last; harm 4 chips income and 5 compute, was 15 credits off the richest seat (credits left the harm)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1065,54 +1145,52 @@
     "coastal_city",
     "factory"
    ],
-   "text": "Sites on or next to it can't be claimed through next round, and the next adversary build on or next to it happens twice.",
+   "text": "Create 3 adversary ambassadors here. Sites on or next to it can't be claimed for 2 rounds.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 11
+      "resource": "chips",
+      "amount": 6
      }
     ],
     [
      {
       "resource": "energy",
-      "amount": 2
+      "amount": 4
      }
     ],
     [
      {
-      "sacrifice": "industry",
-      "amount": 3
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "flag",
-     "name": "embargo",
-     "scope": "near",
-     "rounds": 1,
-     "new": true,
-     "why": "today's embargo with near scope and a rounds field: sites on or next to the location tokens can't be claimed through next round"
+     "op": "create",
+     "count": 3,
+     "at": "location"
     },
     {
      "op": "flag",
-     "name": "double_build",
+     "name": "embargo",
      "scope": "near",
-     "new": true,
-     "why": "the next build on or next to the location tokens places twice"
+     "rounds": 2
     }
    ],
    "harms": [
-    "actions or claims blocked",
-    "adversary pieces placed"
+    "adversary pieces placed",
+    "actions or claims blocked"
    ],
-   "value": "cheapest counter 2 energy 9 (or 3 Industry tags, 15; or 11 credits); harm per player a claim blocked a round 6 x 1.5 = 9; shared ~2 extra adversary ambassadors 10; ~19; ratio ~2.1 (1.3 vs tags, 1.7 vs credits)",
+   "value": "cheapest counter 6 chips 12 (or 4 energy 18; or 23 credits); harm per player a claim blocked 2 rounds ~8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 3 placed 12; ~36; ratio ~3.0 (2.0 vs credits)",
    "check": "early stage II, while seats still expand; expanders near it pay; no loop",
    "flags": [
     "new flag double_build",
     "new fields on the embargo flag: near scope, rounds",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 3 ambassadors created here and claims blocked 2 rounds, was 1 round and a doubled build",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1127,24 +1205,24 @@
     "city",
     "coastal_city"
    ],
-   "text": "Cities on or next to it produce no energy for 2 rounds. The adversary gains 3 compute.",
+   "text": "Cities on or next to it produce no energy for 2 rounds. Each player near it destroys 1 of their nodes near it (never their last).",
    "counters": [
     [
      {
-      "resource": "energy",
+      "resource": "research_cubes",
       "amount": 3
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 12
      }
     ],
     [
      {
       "sacrifice": "power",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -1153,24 +1231,24 @@
      "op": "flag",
      "name": "blackout",
      "rounds": 2,
-     "scope": "near",
-     "new": true,
-     "why": "blackout lasts one round today; needs a rounds field; only cities on or next to the location tokens"
+     "scope": "near"
     },
     {
-     "op": "compute",
-     "amount": 3
+     "op": "each_destroy_node",
+     "count": 1
     }
    ],
    "harms": [
     "production blacked out",
-    "projects advanced (compute)"
+    "node destroyed"
    ],
-   "value": "counter 3 Power tags 15 (or 12 credits; or 3 energy, 13.5); harm per player ~1 energy a round for 2 rounds 9 x 1.5 = 13.5; shared 3 compute 6; ~19.5; ratio ~1.3 vs tags (1.6 vs credits)",
-   "check": "worst mid-game on a seat's home grid; power seats pay energy; no loop",
+   "value": "cheapest counter 3 cubes 9 (or 3 Power tags 15; or 23 credits); harm per player ~2 energy 9 + 1 node 4 + the rule's 2 nodes 8 = 21 x 1.5 = ~32; shared 0; ratio ~3.5 (1.8 vs credits)",
+   "check": "worst mid-game on a seat's home grid; science seats pay cubes; it takes energy output, so no energy option; no loop",
    "flags": [
     "new field: flag rounds (shared with Thermal Runaway)",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm adds 1 node destroyed, drops 3 compute; energy left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1184,55 +1262,51 @@
    "locations": [
     "city"
    ],
-   "text": "Each player near it loses 3 energy or 12 credits.",
+   "text": "Each player near it loses 3 energy and turns 1 of their buildings face down until the end of next round (tags still count).",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 10
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 2
-     }
-    ],
-    [
-     {
-      "sacrifice": "power",
+      "resource": "research_cubes",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "lose_or",
-     "options": [
-      {
-       "op": "players_lose",
-       "resource": "energy",
-       "amount": 3
-      },
-      {
-       "op": "players_lose",
-       "resource": "credits",
-       "amount": 12
-      }
-     ],
-     "new": true,
-     "why": "each player near it picks one of the listed harms (requisition pairs only cards with a resource)"
+     "op": "players_lose",
+     "resource": "energy",
+     "amount": 3
+    },
+    {
+     "op": "disable_building",
+     "count": 1,
+     "until": "end_of_next_round"
     }
    ],
    "harms": [
     "energy lost",
-    "credits or income lost"
+    "production blacked out",
+    "actions or claims blocked"
    ],
-   "value": "cheapest counter 2 energy 9 (or 10 credits; or 3 Power tags, 15); harm per player 12 (3 energy 13.5 or 12 credits, their pick) x 1.5 = 18; shared 0; ratio ~2.0 (1.8 vs credits)",
-   "check": "bites late, when energy engines run; a seat short of energy pays credits; no loop",
+   "value": "cheapest counter 3 cubes 9 (or 4 ambassadors 16; or 23 credits); harm per player 3 energy 13.5 + a building idle a round ~5 + the rule's 2 nodes 8 = 26.5 x 1.5 = ~40; shared 0; ratio ~4.4 (2.2 vs credits)",
+   "check": "bites late, when energy engines run; science seats pay cubes; it takes energy, so no energy option; no loop",
    "flags": [
     "new op lose_or (shared with Data Breach)",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 3 energy and a building face down, was 3 energy or 12 credits (credits left the harm); energy left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1246,24 +1320,24 @@
    "locations": [
     "station"
    ],
-   "text": "Research stations on or next to it make no research cubes for 2 rounds. Each player near it gets 2 less insight next round.",
+   "text": "Stations on or next to it make no research cubes for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
    "counters": [
     [
      {
       "resource": "energy",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "resource": "research_cubes",
-      "amount": 2
+      "amount": 4
      }
     ],
     [
      {
       "sacrifice": "power",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -1272,24 +1346,29 @@
      "op": "flag",
      "name": "station_dark",
      "rounds": 2,
-     "scope": "near",
-     "new": true,
-     "why": "stations on or next to the location token make no cubes for the rounds named"
+     "scope": "near"
     },
     {
      "op": "lose_insight",
-     "amount": 2
+     "amount": 3
+    },
+    {
+     "op": "compute",
+     "amount": 4
     }
    ],
    "harms": [
     "production blacked out",
-    "insight lost"
+    "insight lost",
+    "projects advanced (compute)"
    ],
-   "value": "counter 3 Power tags 15 (or 2 cubes, 12; or 3 energy, 13.5); harm per player ~1 cube 6 (owners lose ~1 a round for 2 rounds, not every near seat owns one) + 2 insight 8 = 14 x 1.5 = 21; shared 0; ratio ~1.4 vs tags (1.75 vs cubes; no credits option)",
-   "check": "mid-game against science seats; a seat may pay with the cubes it would lose (a choice, not a loop)",
+   "value": "cheapest counter 3 Power tags 15 (or 4 energy 18; or 23 credits); harm per player ~1 cube 3 + 3 insight 7.5 + the rule's 2 nodes 8 = 18.5 x 1.5 = ~28; shared 4 compute 8; ~36; ratio ~2.4 (2.0 vs credits)",
+   "check": "mid-game against science seats; power seats pay energy; it takes cubes and insight, so neither is on the menu; no loop",
    "flags": [
     "new flag station_dark with rounds",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 3 insight (was 2) and 4 compute; cubes left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1305,18 +1384,24 @@
     "city",
     "coastal_city"
    ],
-   "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Sway 1 toward Discord.",
+   "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Remove 2 Unity from the Unity track.",
    "counters": [
     [
      {
-      "resource": "energy",
+      "resource": "insight",
+      "amount": 10
+     }
+    ],
+    [
+     {
+      "sacrifice": "power",
       "amount": 3
      }
     ],
     [
      {
-      "resource": "ambassadors",
-      "amount": 3
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -1329,20 +1414,21 @@
      "sites": 3
     },
     {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1
+     "op": "pull_unity",
+     "amount": 2
     }
    ],
    "harms": [
     "adversary pieces placed",
     "production blacked out",
-    "Discord sway"
+    "Unity pulled back"
    ],
-   "value": "cheapest counter 3 ambassadors 12 (or 3 energy, 13.5; no credits option); harm per player 0; shared ~2 placed 10 + their cities dark ~2 energy 9 + 1 sway 4 = ~23; ratio ~1.9 (1.7 vs energy)",
-   "check": "any stage-II round; grid or diplomat seats counter; the darkness is today's arrival rule and lasts until the ambassador is removed; feeds Overrun's gate, capped by one copy of each",
+   "value": "cheapest counter 3 Power tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed 12 + their cities dark ~2 energy 9 + 2 Unity pulled back 8 = ~29; ~41; ratio ~2.7 (2.3 vs credits)",
+   "check": "any stage-II round; the darkness lasts until the ambassadors are removed; it darkens energy and cancels ambassadors, so neither is on the menu; feeds Overrun's corruption, capped by one copy of each",
    "flags": [
-    "new field: ambassadors each"
+    "new field: ambassadors each",
+    "142: counters in scarce currencies, credits last; harm 2 Unity pulled back, was 1 sway; energy and ambassadors left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1357,24 +1443,24 @@
     "factory",
     "station"
    ],
-   "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses 2 energy.",
+   "text": "Each player near it destroys 1 of their nodes near it (never their last). The adversary gains 5 compute.",
    "counters": [
     [
      {
       "resource": "energy",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 12
+      "amount": 4
      }
     ],
     [
      {
       "sacrifice": "power",
       "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
@@ -1384,19 +1470,20 @@
      "count": 1
     },
     {
-     "op": "players_lose",
-     "resource": "energy",
-     "amount": 2
+     "op": "compute",
+     "amount": 5
     }
    ],
    "harms": [
     "node destroyed",
-    "energy lost"
+    "projects advanced (compute)"
    ],
-   "value": "counter 3 Power tags 15 (or 12 credits; or 3 energy, 13.5); harm per player a node 6 + 2 energy 9 = 15 x 1.5 = 22.5; shared 0; ratio ~1.5 vs tags (1.9 vs credits)",
+   "value": "cheapest counter 3 Power tags 15 (or 4 energy 18; or 23 credits); harm per player 1 node 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 5 compute 10; ~28; ratio ~1.9 (1.6 vs credits)",
    "check": "rounds 4-9; energy-rich seats pay; the never-last guard keeps it from ending a seat; no loop",
    "flags": [
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm 5 compute, was 2 energy (so energy can stay on the menu)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1411,49 +1498,56 @@
     "base",
     "city"
    ],
-   "text": "In its country: create 2 adversary ambassadors on the lowest-numbered city on or next to it. 1 troop lands on the base here. The adversary gains 2 compute.",
+   "text": "In its country: create 3 adversary ambassadors on the lowest-numbered city on or next to it. 2 troops land on the base here.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
+      "resource": "energy",
+      "amount": 2
+     },
+     {
+      "resource": "research_cubes",
+      "amount": 2
      }
     ],
     [
      {
-      "resource": "ambassadors",
-      "amount": 3
+      "resource": "insight",
+      "amount": 10
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
      "op": "create",
-     "count": 2,
+     "count": 3,
      "at": "city",
      "if": "near"
     },
     {
      "op": "troops",
-     "count": 1,
+     "count": 2,
      "at": "location",
-     "location": "base",
-     "new": true,
-     "why": "troops land on the threat's own location, the base of its two, not on a factory in the country"
-    },
-    {
-     "op": "compute",
-     "amount": 2
+     "location": "base"
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)"
+    "ambassadors lost",
+    "facilities destroyed or seized"
    ],
-   "value": "cheapest counter 12 credits or 3 ambassadors, 12; harm per player 0; shared a troop 5 + a weak strike ~5 (the base's corp troops absorb strikes next to it) + 2 placed 10 + 2 compute 4 = ~24; ratio ~2.0 (vs credits and vs ambassadors alike)",
-   "check": "any stage-II round; two tokens widen who is near, so most seats can help; no loop",
+   "value": "cheapest counter 2 energy + 2 cubes 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 troops 10 + their strikes ~8 + 3 placed 12 = ~30; ~42; ratio ~2.8 (2.3 vs credits)",
+   "check": "any stage-II round; two tokens widen who is near, so most seats can help; it cancels ambassadors, so none on the menu; no loop",
    "flags": [
-    "new field: at on troops"
+    "new field: at on troops",
+    "142: counters in scarce currencies, credits last; harm 3 ambassadors and 2 troops, was 2, 1 and 2 compute; ambassadors left the counters",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1468,35 +1562,38 @@
     "city",
     "factory"
    ],
-   "text": "Each player near it loses 6 credits and 1 energy. Sway 2 toward Discord.",
+   "text": "Each player near it loses 1 ambassador. Remove 2 Unity from the Unity track. Sway 2 toward Discord.",
    "counters": [
     [
      {
-      "resource": "ambassadors",
+      "resource": "research_cubes",
+      "amount": 2
+     },
+     {
+      "resource": "chips",
       "amount": 3
      }
     ],
     [
      {
-      "resource": "insight",
-      "amount": 3
-     },
+      "resource": "energy",
+      "amount": 4
+     }
+    ],
+    [
      {
-      "resource": "ambassadors",
-      "amount": 1
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
-     "op": "players_lose",
-     "resource": "credits",
-     "amount": 6
+     "op": "lose_ambassador"
     },
     {
-     "op": "players_lose",
-     "resource": "energy",
-     "amount": 1
+     "op": "pull_unity",
+     "amount": 2
     },
     {
      "op": "sway",
@@ -1505,14 +1602,16 @@
     }
    ],
    "harms": [
-    "credits or income lost",
-    "energy lost",
+    "ambassadors lost",
+    "Unity pulled back",
     "Discord sway"
    ],
-   "value": "cheapest counter 3 ambassadors 12 (or 3 insight + 1 ambassador, 16); harm per player 6 credits + 1 energy = 10.5 x 1.5 = ~16; shared 2 sway 8; ~24; ratio ~2.0 (1.5 vs the pair; no credits option)",
-   "check": "any stage-II round; the counters avoid credits and energy on purpose, so seats pay from what the harm doesn't take; an industry table with few ambassadors may have to eat it; no loop",
+   "value": "cheapest counter 2 cubes + 3 chips 12 (or 4 energy 18; or 23 credits); harm per player 1 ambassador 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 2 Unity pulled back 8 + 2 sway 8 = 16; ~34; ratio ~2.8 (1.9 vs credits)",
+   "check": "any stage-II round, worst near the Unity tip; it takes ambassadors, so none on the menu; no loop",
    "flags": [
-    "no credits or energy option, on purpose"
+    "no credits or energy option, on purpose",
+    "142: counters in scarce currencies, credits last; harm 1 ambassador and 2 Unity pulled back, was 6 credits and 1 energy (credits left the harm)",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   },
@@ -1526,41 +1625,45 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here, else on the nearest piece without one (players choose among equals). Deal 1 extra tier-1 threat in this country; it executes next round.",
+   "text": "A botnet lands on the station here (else the nearest piece without one). Deal 1 extra tier-1 threat in this country. The adversary gains 4 compute.",
    "counters": [
     [
      {
-      "resource": "credits",
-      "amount": 12
-     }
-    ],
-    [
-     {
       "resource": "insight",
-      "amount": 8
+      "amount": 5
+     },
+     {
+      "resource": "research_cubes",
+      "amount": 2
      }
     ],
     [
      {
-      "sacrifice": "security",
-      "amount": 3
+      "resource": "ambassadors",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 23
      }
     ]
    ],
    "effects": [
     {
      "op": "place_botnet",
-     "count": 1,
-     "new": true,
-     "why": "a threat places a botnet directly (on the station, else the nearest piece without one)"
+     "count": 1
     },
     {
      "op": "deal_threats",
      "count": 1,
      "tier": 1,
-     "scope": "country",
-     "new": true,
-     "why": "deal 1 tier-1 threat now into this country; it executes next round"
+     "scope": "country"
+    },
+    {
+     "op": "compute",
+     "amount": 4
     }
    ],
    "harms": [
@@ -1569,12 +1672,14 @@
     "extra threats",
     "projects advanced (compute)"
    ],
-   "value": "counter 3 Security tags 15 (or 12 credits; or 8 insight, 32: a tier-2 insight option only ever sits beside a credits one); harm per player 0; shared a botnet 16 (compute every round, claims blocked) + a tier-1 threat ~8 (the cheaper of its counter or its harm) = ~24; ratio ~1.6 vs tags (2.0 vs credits)",
+   "value": "cheapest counter 4 ambassadors 16 (or 5 insight + 2 cubes 18.5; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a botnet 16 + a tier-1 threat ~10 + 4 compute 8 = ~34; ~46; ratio ~2.9 (2.6 vs credits)",
    "check": "worst early in stage II (botnet compute every round after); a tier-1 extra threat can't chain back to this deck; no loop",
    "flags": [
     "new ops place_botnet (shared with Sleeper Cells), deal_threats tier/scope (a threat that deals a threat deals it now, into its own country, at a named tier; it executes next round)",
     "face 172 characters, over the 110 target",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15."
+    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
+    "142: counters in scarce currencies, credits last; harm adds 4 compute",
+    "142 freeze: credits counter 18 -> 23"
    ],
    "reuses": null
   }

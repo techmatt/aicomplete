@@ -1069,7 +1069,60 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
         }
     }
     check_ops(&t.effects, Slot::Threat, &what)?;
+    // 142: a counter never pays in a currency its uncountered harm takes ("pay 7 credits or lose 8").
+    let harm = harm_currencies(&t.effects);
+    for item in t.counters.iter().flatten() {
+        let paid = match item {
+            CounterItem::Pay { resource, .. } => Currency::Resource(*resource),
+            CounterItem::NodesNear { .. } => Currency::Nodes,
+            CounterItem::Sacrifice { .. } => continue,
+        };
+        if harm.contains(&paid) {
+            return Err(format!("{what}: a counter and its uncountered harm share {paid:?}"));
+        }
+    }
     Ok(())
+}
+
+/// What a threat's harm or counter takes from a player (142's shared-currency check; check.py's twin is
+/// `harm_currencies`). Discarding from the hand is not a counter currency, so it isn't listed.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Currency {
+    Resource(Resource),
+    Nodes,
+}
+
+/// The currencies `effects` take from the players near a threat, `LoseOr`'s options included.
+pub fn harm_currencies(effects: &[Op]) -> Vec<Currency> {
+    let mut out = Vec::new();
+    for op in effects {
+        let (r, nodes) = match op {
+            Op::PlayersLose { resource, .. }
+            | Op::LoseIncome { resource, .. }
+            | Op::Theft { resource, .. }
+            | Op::Requisition { resource, .. } => (Some(*resource), false),
+            Op::LoseNodeOr { resource, .. } => (Some(*resource), true),
+            Op::LoseAmbassadorsOr { resource, .. } => {
+                out.push(Currency::Resource(Resource::Ambassadors));
+                (Some(*resource), false)
+            }
+            Op::LoseInsight { .. } => (Some(Resource::Insight), false),
+            Op::LoseAmbassador => (Some(Resource::Ambassadors), false),
+            Op::EachDestroyNode { .. } | Op::DestroyFacility { .. } => (None, true),
+            Op::Troops { destroy, .. } => (None, *destroy),
+            Op::CorruptCity { at } => (None, *at == Some(Spot::Location)),
+            Op::LoseOr { options } => {
+                out.extend(harm_currencies(options));
+                (None, false)
+            }
+            _ => (None, false),
+        };
+        out.extend(r.map(Currency::Resource));
+        if nodes {
+            out.push(Currency::Nodes);
+        }
+    }
+    out
 }
 
 fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
@@ -1216,6 +1269,10 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             }
             Op::RemoveTroops { count, .. } if *count < 1 => {
                 return Err(format!("{what}: remove_troops needs count >= 1"));
+            }
+            // 142 (P1): the no-location form (the most infiltrated city) is gone.
+            Op::CorruptCity { at: None } => {
+                return Err(format!("{what}: corrupt_city needs `at` (the threat's city); Corrupt cities is `corrupt`"));
             }
             Op::GainPerTag { resource: r, per, .. } => {
                 seat_resource(r, what)?;

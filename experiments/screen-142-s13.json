@@ -1,0 +1,142 @@
+{
+  "name": "screen-142-s13",
+  "note": "142 screen s13: ['base', 'G6', 'G6+F0', 'G8+F0', 'W4+G6+F0'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_G6",
+      "set": [
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "br_G6",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "pr_G6",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "bp_G6+F0",
+      "set": [
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "br_G6+F0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "pr_G6+F0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "bp_G8+F0",
+      "set": [
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "br_G8+F0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "pr_G8+F0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "bp_W4+G6+F0",
+      "set": [
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "br_W4+G6+F0",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    },
+    {
+      "name": "pr_W4+G6+F0",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "adversary.counter_bonus_credits=6",
+        "adversary.counter_bonus=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

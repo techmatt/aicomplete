@@ -75,6 +75,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::Shelter => !unsheltered(w, g).is_empty(),
             Op::FreeBuilding => cards::free_building_exists(w, g, seat),
             Op::BuildStation => !board::station_sites(w, g, seat).is_empty(),
+            Op::ClaimStation => !board::card_claim_stations(w, g, seat).is_empty(),
             Op::ProjectCube { station, .. } => !cube_projects(w, g, seat, *station).is_empty(),
             Op::RemoveTroops { reach, .. } => {
                 any_hex(g, |h| adversary::can_damage(g, h, 0, 1) && (!*reach || in_reach(w, g, seat, h)))

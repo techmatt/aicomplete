@@ -51,11 +51,11 @@ def stage_deals():
     out = []
     for d in range(5):
         s1, s2, s3 = a["stage_cards"]
-        if d >= 2:
+        if d >= a.get("stage_swap_at", 2):
             s1, s3 = s1 - a["stage1_removed"], s3 + a["stage3_added"]
         if d >= 3:
             s2 -= a["stage2_removed"]
-        out.append((d, (s1, s2, s3), a["extra_threats"] if d >= 1 else 0))
+        out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a.get("extra_threats_at", 1) else 0))
     return out
 
 
@@ -141,6 +141,49 @@ def check_card_common(c, kind, ops, new_ops):
             errors.append(f"{cid}: no {k}")
 
 
+# 142: what a threat's harm takes from the players near it, by op (the Rust twin is `content::harm_currencies`).
+# Sacrificing tags (cards in play) and discarding (cards in hand) are different currencies.
+HARM_CURRENCY = {
+    "lose_insight": {"insight"}, "lose_ambassador": {"ambassadors"}, "each_destroy_node": {"nodes"},
+    "discard": {"hand"}, "discard_most_expensive": {"hand"},
+}
+
+
+def harm_currencies(c, tier):
+    out = set()
+    for e in walk_effects(c.get("effects", [])):
+        op = e.get("op")
+        out |= HARM_CURRENCY.get(op, set())
+        if op in ("players_lose", "lose_income", "theft", "requisition", "lose_node_or", "lose_ambassadors_or"):
+            out.add(e.get("resource", "credits"))
+        if op == "requisition":
+            out.add("hand")
+        if op == "lose_node_or":
+            out.add("nodes")
+        if op == "lose_ambassadors_or":
+            out.add("ambassadors")
+        if op == "troops" and e.get("destroy"):
+            out.add("nodes")
+        if op == "destroy_facility" or (op == "corrupt_city" and e.get("at") == "location"):
+            out.add("nodes")
+    if adversary_params()["threat_nodes"][tier - 1] > 0:  # every uncountered threat destroys nodes near it
+        out.add("nodes")
+    return out
+
+
+def counter_currencies(c):
+    out = set()
+    for opt in c.get("counters", []):
+        for item in opt if isinstance(opt, list) else []:
+            if "resource" in item:
+                out.add(item["resource"])
+            elif "nodes_near" in item:
+                out.add("nodes")
+            elif "sacrifice" in item:
+                out.add("tags")
+    return out
+
+
 def check_threats(t, ops, new_ops):
     for tier, cards in t.items():
         tags = Counter()
@@ -174,6 +217,9 @@ def check_threats(t, ops, new_ops):
                             errors.append(f"{cid}: sacrifice {item['sacrifice']}")
                     elif "nodes_near" not in item:
                         errors.append(f"{cid}: counter item {item}")
+            shared = counter_currencies(c) & harm_currencies(c, tier)
+            if shared:
+                errors.append(f"{cid}: a counter and its uncountered harm share {sorted(shared)}")
             if tier == 1 and PERMANENT & set(c.get("harms", [])):
                 errors.append(f"{cid}: a permanent harm at tier 1")
         kinds = {h for c in cards for h in c.get("harms", [])}

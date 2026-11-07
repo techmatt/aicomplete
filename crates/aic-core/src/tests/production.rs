@@ -63,26 +63,28 @@ fn a_full_megaproject_completes_at_the_end_of_production_and_every_cube_pays() {
         g.vars.insert(k.into(), n);
     }
     let (e0, e1, discord) = (g.resource(0, Resource::Energy), g.resource(1, Resource::Energy), g.var("alignment.discord"));
+    // 142: the owned station makes `owned_station_cubes` (2 at r59).
+    let owned = rules.world().int("board.owned_station_cubes");
     run(&rules, &mut g);
-    // 9 cubes on an 8-cube card: all pay. Horizon (075): 3 energy and 3 credits
-    // a player cube, 1 Discord an adversary cube, nothing for a neutral cube.
-    // 127: no holding limit, so seat 0 keeps all 12.
-    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), (12, 3));
+    // 8 + owned cubes on an 8-cube card: all pay. Horizon (075): 3 energy and 3
+    // credits a player cube, 1 Discord an adversary cube, nothing for a neutral
+    // cube. 127: no holding limit, so seat 0 keeps all of it.
+    assert_eq!((g.resource(0, Resource::Energy) - e0, g.resource(1, Resource::Energy) - e1), ((3 + owned) * 3, 3));
     assert_eq!(g.var("alignment.discord") - discord, 2);
     assert_eq!(g.var(&board::project_done(0)), 1);
     for k in [board::project_key(0, Some(0)), board::project_key(0, Some(1)), board::project_key(0, None), board::project_neutral(0)] {
         assert_eq!(g.var(&k), 0);
     }
-    assert_eq!(g.stats.counters["board.cubes_paid.player"], 5);
+    assert_eq!(g.stats.counters["board.cubes_paid.player"], 4 + owned);
     assert_eq!(g.stats.counters["board.cubes_paid.adversary"], 2);
     assert_eq!(g.stats.counters["board.cubes_paid.neutral"], 2);
-    // Afterward the owned station's cube goes to its owner's board, and stays
+    // Afterward the owned station's cubes go to its owner's board, and stay
     // between rounds.
     run(&rules, &mut g);
-    assert_eq!(g.resource(0, Resource::ResearchCubes), 1);
+    assert_eq!(g.resource(0, Resource::ResearchCubes), owned);
     assert_eq!(g.var(&board::project_key(0, Some(0))), 0);
     run(&rules, &mut g);
-    assert_eq!(g.resource(0, Resource::ResearchCubes), 2);
+    assert_eq!(g.resource(0, Resource::ResearchCubes), 2 * owned);
 }
 
 #[test]
@@ -93,7 +95,8 @@ fn a_project_short_of_its_cubes_does_not_complete() {
     g.vars.insert(board::project_key(0, Some(0)).into(), 4);
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_done(0)), 0);
-    assert_eq!(g.var(&board::project_key(0, Some(0))), 5);
+    let owned = rules.world().int("board.owned_station_cubes");
+    assert_eq!(g.var(&board::project_key(0, Some(0))), 4 + owned);
 }
 
 #[test]

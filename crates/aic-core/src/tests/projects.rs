@@ -45,9 +45,9 @@ fn compute_fills_the_cheapest_project_which_resolves_when_full() {
     row(&mut g, &["botnet_swarm", "disinformation", "market_crash"]);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
     // Disinformation (the first of the cheapest) filled at 10 and resolved:
-    // 4 toward Discord. The 11th point went onto Market Crash.
+    // 5 (142; 4 before) toward Discord. The 11th point went onto Market Crash.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
-    assert_eq!(g.var("alignment.discord"), 4);
+    assert_eq!(g.var("alignment.discord"), 5);
     assert_eq!(g.var(&adversary::project_key("market_crash")), 1);
     assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 0);
     assert_eq!(g.var(adversary::COMPUTE), 11);
@@ -104,25 +104,26 @@ fn an_ongoing_project_acts_in_the_build() {
     run(&rules, &mut g);
     // 135: the card's standing troops ask where they land.
     answer_all(&rules, &mut g);
-    // 138: in each country the 2 lowest-numbered clean cities (lab: all are
-    // clean) gain one, beside the card's 1 on its 2 lowest-numbered coastal cities.
+    // 138: in each country the 3 (142; 2 before) lowest-numbered clean cities
+    // (lab: all are clean) gain one, beside the card's 1 on its 2
+    // lowest-numbered coastal cities.
     let m = &rules.map;
-    let lowest = |c: u8, coastal: bool| {
+    let lowest = |c: u8, coastal: bool, n: usize| {
         let mut v: Vec<usize> =
             cities(m).into_iter().filter(|&h| m.hexes[h].country == c && (!coastal || m.hexes[h].coastal)).collect();
         v.sort_by_key(|&h| m.hexes[h].number);
-        v.truncate(2);
+        v.truncate(n);
         v
     };
     let mut want = vec![0; m.hexes.len()];
     for c in 0..m.countries.len() as u8 {
-        for h in lowest(c, false).into_iter().chain(lowest(c, true)) {
+        for h in lowest(c, false, 3).into_iter().chain(lowest(c, true, 2)) {
             want[h] += 1;
         }
     }
     let got: Vec<i64> = (0..m.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
     assert_eq!(got, want);
-    assert_eq!(g.stats.counters["adversary.created.project"], 4);
+    assert_eq!(g.stats.counters["adversary.created.project"], 6);
 }
 
 #[test]
@@ -147,7 +148,7 @@ fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
 }
 
 #[test]
-fn a_fifth_to_a_half_of_the_threats_carry_compute() {
+fn a_fifth_to_two_thirds_of_the_threats_carry_compute() {
     let t = crate::content()
         .threats
         .iter()
@@ -158,8 +159,9 @@ fn a_fifth_to_a_half_of_the_threats_carry_compute() {
         })
         .count();
     let n = crate::content().threats.len();
-    // 135: compute comes mostly from the event cards' standing lines now (16 of 64).
-    assert!(t * 5 >= n && t * 2 <= n, "{t} of {n}");
+    // 135: compute comes mostly from the event cards' standing lines (142: most
+    // tier-1 threats carry 3 again, 36 of 64).
+    assert!(t * 5 >= n && t * 3 <= n * 2, "{t} of {n}");
 }
 
 #[test]

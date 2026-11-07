@@ -1,0 +1,130 @@
+{
+  "name": "screen-142-s14",
+  "note": "142 screen s14: ['W4+E5', 'W3', 'W3+E5'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_W4+E5",
+      "set": [
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    },
+    {
+      "name": "br_W4+E5",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    },
+    {
+      "name": "pr_W4+E5",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=14",
+        "ais.protector.credits=12",
+        "ais.researcher.credits=10",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    },
+    {
+      "name": "bp_W3",
+      "set": [
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]"
+      ]
+    },
+    {
+      "name": "br_W3",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]"
+      ]
+    },
+    {
+      "name": "pr_W3",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]"
+      ]
+    },
+    {
+      "name": "bp_W3+E5",
+      "set": [
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    },
+    {
+      "name": "br_W3+E5",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    },
+    {
+      "name": "pr_W3+E5",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.credits=15",
+        "ais.protector.credits=13",
+        "ais.researcher.credits=11",
+        "ais.builder.income=[[\"insight\",5],[\"energy\",1]]",
+        "ais.protector.income=[[\"insight\",5],[\"energy\",2]]",
+        "ais.researcher.income=[[\"insight\",5],[\"energy\",1]]",
+        "ai.start_energy=5"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

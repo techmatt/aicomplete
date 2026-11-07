@@ -1,0 +1,80 @@
+{
+  "name": "screen-142-s17",
+  "note": "142 screen s17: ['base', 'M13', 'M26'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_M13",
+      "set": [
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    },
+    {
+      "name": "br_M13",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    },
+    {
+      "name": "pr_M13",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    },
+    {
+      "name": "bp_M26",
+      "set": [
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "br_M26",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "pr_M26",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

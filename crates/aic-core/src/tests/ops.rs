@@ -88,6 +88,18 @@ fn op_numbers(v: &serde_json::Value, out: &mut Vec<i64>) {
     }
 }
 
+/// How many `lose_ambassador` ops row `v` holds, nested ones included.
+fn lose_ambassadors(v: &serde_json::Value) -> i64 {
+    match v {
+        serde_json::Value::Array(a) => a.iter().map(lose_ambassadors).sum(),
+        serde_json::Value::Object(o) => {
+            i64::from(o.get("op").and_then(|x| x.as_str()) == Some("lose_ambassador"))
+                + o.values().map(lose_ambassadors).sum::<i64>()
+        }
+        _ => 0,
+    }
+}
+
 /// Numbers a text prints, a "3+" (a step's tip count, read off no op) aside.
 fn text_numbers(text: &str) -> Vec<i64> {
     let b = text.as_bytes();
@@ -124,6 +136,12 @@ fn hand_written_text_prints_no_number_its_ops_lack() {
                 if let (Some(id), Some(text)) = (o.get("id"), o.get("text").and_then(|t| t.as_str())) {
                     let mut have = Vec::new();
                     op_numbers(v, &mut have);
+                    // 142: `lose_ambassador` carries no number: each takes 1,
+                    // and N of them print "loses N ambassadors".
+                    let lose = lose_ambassadors(v);
+                    if lose > 0 {
+                        have.extend([1, lose]);
+                    }
                     let text = text.replace(tunable, "");
                     let missing: Vec<i64> = text_numbers(&text).into_iter().filter(|n| !have.contains(n)).collect();
                     if !missing.is_empty() {

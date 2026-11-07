@@ -14,7 +14,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.corp_energy` | 1 | 0..10 | energy cubes each city of country i makes a round (a megacorp parameter; the list repeats) |
 | `board.city_energy_credits` | 5 | 0..20 | credits for a neutral city's energy cube, bought by a player with a node next to it |
 | `board.aligned_bonus` | 0 | 0..10 | extra energy an aligned city gives its owner |
-| `board.station_cubes` | 1 | 0..5 | research cubes a station makes a round |
+| `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: compute) |
+| `board.owned_station_cubes` | 2 | 0..5 | research cubes a player-owned station makes its owner a round (142) |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
@@ -31,7 +32,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.node_marker` | 1 | 0..1 | 1: a destroyed node leaves a corruption marker on its hex |
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
-| `board.factory_chips` | 1 | 0..5 | chips a player-owned factory makes its owner each round |
+| `board.factory_chips` | 2 | 0..5 | chips a player-owned factory makes its owner each round |
 | `board.chips_credits` | 1 | 0..50 | standard action: credits for selling 1 chip |
 | `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there |
 | `board.remove_count` | 3 | 1..3 | standard action: adversary ambassadors one removal takes off its hex, at most |
@@ -57,16 +58,25 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
 | `adversary.threat_nodes` | 1, 2, 3 | 0..5 | an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it |
-| `adversary.counter_pct` | 150, 150, 150 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
-| `adversary.counter_bonus` | 0 | 0..10 | difficulty 1+: added to every threat's first counter requirement |
-| `adversary.counter_bonus_all` | 0 | 0..10 | difficulty 1+: added to every counter requirement of every threat |
+| `adversary.counter_pct` | 100, 100, 100 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
+| `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent more of its amount after counter_pct (rounded up; 142's dial) |
+| `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
+| `adversary.counter_bonus_all` | 2 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
+| `adversary.counter_bonus_credits` | 6 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
+| `adversary.counter_more_all` | 1 | 0..10 | difficulty counter_more_at+: added again to every resource counter item but credits (142's second step) |
+| `adversary.counter_more_credits` | 3 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
+| `adversary.counter_more_at` | 3 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
+| `adversary.counter_bonus_at` | 2 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
+| `adversary.harm_bonus` | 2 | 0..5 | difficulty harm_bonus_at+: each player near an uncountered threat destroys this many more nodes near it |
+| `adversary.harm_bonus_at` | 3 | 0..5 | the difficulty level from which harm_bonus applies (142) |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
-| `adversary.extra_threats_at` | 0 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
-| `adversary.stage1_removed` | 1 | 0..3 | difficulty 2+: stage-I cards removed |
-| `adversary.stage3_added` | 1 | 0..3 | difficulty 2+: stage-III cards added (the cap holds, its end gets harder) |
+| `adversary.extra_threats_at` | 4 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
+| `adversary.stage1_removed` | 1 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
+| `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
+| `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply (142; 2 before) |
 | `adversary.stage2_removed` | 1 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.build_bonus` | 1 | 0..5 | difficulty 3+: each site the adversary board's creation lines reach gains this many more |
+| `adversary.build_bonus` | 2 | 0..5 | difficulty 3+: each site the adversary board's creation lines reach gains this many more |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
@@ -92,7 +102,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |
 | `ai.start_credits` | 40, 46, 40 | 0..100 | credits each AI board starts with, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
-| `ai.start_energy` | 1 | 0..20 | energy each player starts with |
+| `ai.start_energy` | 3 | 0..20 | energy each player starts with |
 | `ai.slots` | 5, 4, 3 | 1..10 | building slots of each AI board, by board (Builder, Protector, Researcher), whichever seat plays it; one value sets every board |
 | `cards.deal` | 4 | 0..10 | cards each player drafts from each round after the first, choosing each one's tier |
 | `cards.opening_deal` | 8 | 0..20 | cards dealt to each player in round 1 (the opening) |

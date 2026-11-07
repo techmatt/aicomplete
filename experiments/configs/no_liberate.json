@@ -11,6 +11,7 @@
         "unit_cap": 2,
         "aligned_bonus": 0,
         "station_cubes": 1,
+        "owned_station_cubes": 2,
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
@@ -27,7 +28,7 @@
         "node_marker": 1,
         "war_reach": 0,
         "station_chips": 2,
-        "factory_chips": 1,
+        "factory_chips": 2,
         "chips_credits": 1,
         "remove_ambassadors": 1,
         "remove_count": 3,
@@ -77,19 +78,28 @@
           3
         ],
         "counter_pct": [
-          150,
-          150,
-          150
+          100,
+          100,
+          100
         ],
+        "counter_credit_pct": 100,
         "counter_bonus": 0,
-        "counter_bonus_all": 0,
+        "counter_bonus_all": 2,
+        "counter_bonus_credits": 6,
+        "counter_bonus_at": 2,
+        "counter_more_all": 1,
+        "counter_more_credits": 3,
+        "counter_more_at": 3,
+        "harm_bonus": 2,
+        "harm_bonus_at": 3,
         "extra_threats": 1,
-        "extra_threats_at": 0,
+        "extra_threats_at": 4,
         "stage1_removed": 1,
         "stage3_added": 1,
+        "stage_swap_at": 4,
         "stage2_removed": 1,
         "extra_corrupted": 0,
-        "build_bonus": 1,
+        "build_bonus": 2,
         "tier2_early": 1,
         "discord_removed": 1,
         "wall_troops": 1,
@@ -149,7 +159,7 @@
           46,
           40
         ],
-        "start_energy": 1,
+        "start_energy": 3,
         "slots": [
           5,
           4,
@@ -323,7 +333,9 @@
         "directed_energy_array",
         "holographic_assembly_hall",
         "exascale_training_cluster",
-        "wafer_fab_line"
+        "wafer_fab_line",
+        "power_purchase_agreement",
+        "microgrid_lab_compact"
       ]
     }
   ],

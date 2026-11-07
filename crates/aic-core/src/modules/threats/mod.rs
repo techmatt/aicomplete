@@ -300,8 +300,8 @@ pub fn counter(g: &mut GameState, cx: &mut Cx, threat: &str) {
         return;
     }
     refund(g, cx, threat);
+    tally_countered(g, cx, threat, "card");
     clear(g, cx, threat);
-    tally_countered(g, cx, "card");
 }
 
 /// Jam Signals: `threat` needs `n` less of each resource.
@@ -354,7 +354,7 @@ impl Module for Threats {
                     pull(g, cx, tier(p.tier), &p.tags, c, None);
                 }
             }
-            // From difficulty `extra_threats_at` (139; 1 before): `extra_threats` more pulls of the
+            // From difficulty `extra_threats_at` (4 since 142; 0 at 139, 1 before): `extra_threats` more pulls of the
             // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
             if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
                 let first = (g.round.max(1) as usize - 1) % n.max(1);
@@ -392,7 +392,9 @@ impl Module for Threats {
             // 138: an uncountered threat's printed node harm by tier
             // (`adversary.threat_nodes`): each player near it destroys that many
             // of their nodes near it (never a last node in stage I).
-            let k = w.list("adversary.threat_nodes").get(d.tier as usize - 1).copied().unwrap_or(0);
+            // 142: from `harm_bonus_at` (3), `harm_bonus` more.
+            let bonus = if adversary::level(&w, w.int("adversary.harm_bonus_at")) { w.int("adversary.harm_bonus") } else { 0 };
+            let k = w.list("adversary.threat_nodes").get(d.tier as usize - 1).copied().unwrap_or(0) + bonus;
             if k > 0 {
                 let hexes = near_hexes(&w, g, &t);
                 for s in near_seats(&w, g, &t) {

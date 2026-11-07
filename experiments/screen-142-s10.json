@@ -1,0 +1,98 @@
+{
+  "name": "screen-142-s10",
+  "note": "142 screen s10: ['base', 'D3', 'B2', 'D3+B2'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_D3",
+      "set": [
+        "adversary.counter_bonus_all=3"
+      ]
+    },
+    {
+      "name": "br_D3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_all=3"
+      ]
+    },
+    {
+      "name": "pr_D3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_all=3"
+      ]
+    },
+    {
+      "name": "bp_B2",
+      "set": [
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "br_B2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "pr_B2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "bp_D3+B2",
+      "set": [
+        "adversary.counter_bonus_all=3",
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "br_D3+B2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_all=3",
+        "adversary.build_bonus=2"
+      ]
+    },
+    {
+      "name": "pr_D3+B2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_all=3",
+        "adversary.build_bonus=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

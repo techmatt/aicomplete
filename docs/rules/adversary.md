@@ -4,15 +4,14 @@
 
 ## Each round
 
-The adversary is a **board** (the Militarist's: its project slots, two rules and a difficulty line,
-[`content/adversary.json`](../../content/adversary.json)) and an **event deck** (below). Its steps, in the round
-([economy.md](economy.md)):
+The adversary is a **board** (the Militarist's: project slots, two rules, a difficulty line;
+[`content/adversary.json`](../../content/adversary.json)) and an **event deck** (below). Its steps in the round:
 
 1. **Event** (`adversary.event`): next round's face-up event card becomes this round's (none left: players lose).
 2. **Threats** (`threats.deal`): the card's top line deals its pulls ([threats.md](threats.md)).
 3. **Build** (`adversary.build`), the rest of the card top to bottom. Its **standing lines**: compute, troops ("in each
    country, 1 troop lands on a factory, else a city") and its **creation lines** (below). Then its **twists**
-   (immediate ones resolve now: Sway, a Unity pull, node losses; the rest are read where they act). Then the
+   (immediate ones resolve now; the rest act where they say). Then the
    **board's creation line** (the Militarist's: create 2 on the lowest-numbered corrupted city; `build_bonus` more
    from difficulty 3). **Troops where the Protector stands** (the board's rule): in each country where a seat with Wall
    has a node, `wall_troops` troops land as any landing does (on a factory, players choose, else a city; never a hex
@@ -28,11 +27,9 @@ The adversary is a **board** (the Militarist's: its project slots, two rules and
 *create N per board on the lowest-numbered X [condition]*, or *on each of the K lowest-numbered Xs*. X is a city, coastal
 city, research station, factory or botnet hex (a threat may say "here"); the conditions are clean (not the adversary's),
 corrupted, a player's, holding adversary ambassadors, with none, or on or next to a threat. "Per board" is each country;
-a threat's line reaches its own country. Sources: the event cards and the board each build, threats, projects and
-Discord cards; stage I creates 1 a site, later stages more. Only a Corrupt line moves them. A cordoned country gains none; Trade Blockade doubles a creation on or next to its flag.
-**Site creation (candidate):** a few tier-1 events, Discord and Unity cards open a **neutral** research station on each
-board's lowest-numbered empty station site, or a neutral factory on its lowest-numbered free industrial zone: new
-targets for both sides.
+a threat's line reaches its own country. Stage I creates 1 a site, later stages more. Only a Corrupt line moves them. A cordoned country gains none; Trade Blockade doubles a creation on or next to its flag.
+**Site creation (candidate):** a few cards open a **neutral** research station (or factory) on each board's
+lowest-numbered empty station site (free industrial zone): new targets for both sides.
 
 **Corrupt X (138, candidate).** X is a site type: **city** (`corrupt_at` 4), **research station**
 (`corrupt_station_at` 3), **factory** (`corrupt_factory_at` 3) or, rarely, **land** (`corrupt_land_at` 3; an empty land
@@ -40,8 +37,7 @@ hex: no city, base or building). In each country, take every X not already the a
 can gather its number n of adversary ambassadors with one move each (those on it plus those next to it in its country),
 it pulls them in (just enough, from the lowest-numbered hexes first) and corrupts; every ambassador on it returns to
 the supply. An ambassador pulled is gone for the next site, but **every site that qualifies corrupts**, so a crowded
-board cascades. A line may print "(1 fewer)". Content prints Corrupt lines on events (every card has one or two),
-threats, projects and Discord cards. **Difficulty lowers n** by `corrupt_cut` (city, station, factory, land) from
+board cascades. A line may print "(1 fewer)". **Difficulty lowers n** by `corrupt_cut` (city, station, factory, land) from
 `corrupt_cut_at`.
 - **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
   **Corruption destroys only a node on the corrupted hex itself**; its owner's ambassador there is armor, used up
@@ -51,8 +47,7 @@ threats, projects and Discord cards. **Difficulty lowers n** by `corrupt_cut` (c
 
 **The Militarist's board rules.** *Troops where the Protector stands* (above). *Warmongering:* each round, a
 military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; a base gains at most
-1 extra corp troop a round from every such rule together (Warmongering, Conscription, Arms Race; Matt,
-2026-11-06). Its difficulty line, from `board_difficulty_at`: every standing line that lands troops lands 1 more in
+1 extra corp troop a round from all such rules (Warmongering, Conscription, Arms Race). Its difficulty line, from `board_difficulty_at`: every standing line that lands troops lands 1 more in
 each country.
 
 **Botnets.** Each board starts with a botnet (on its research station); more come only from printed lines (Sleeper
@@ -83,10 +78,9 @@ resolved (or been discarded), the slots refill.
   an **ongoing** one that acts in every round's build step from the next round on (Arms Race and Declaration of War
   act where they say: production and war). Choices are the players' (seat 0; a player's own loss, each
   player's). With no project left, compute is lost.
-- **Cost** is printed per player (the table below), which keeps the timing at 2, 3 and 4
-  players.
-- **Counterplay:** a player ambassador on a botnet stops its compute, not used up; Cyber's hacks drain 3-6 compute
-  from one project or discard one; the drain standard project ([economy.md](economy.md)) does it for credits.
+- **Cost** is printed per player (the table below), to keep the timing at 2-4 players.
+- **Counterplay:** an ambassador on a botnet stops its compute; Cyber's hacks drain or discard a project; so does the
+  drain standard project, for credits ([economy.md](economy.md)).
 
 <!-- generated: projects -->
 | Project | Tags | Compute per player | Resolves |
@@ -113,27 +107,25 @@ resolved (or been discarded), the slots refill.
 | Propaganda Network | universal | 14 | ongoing |
 <!-- /generated -->
 
-Compute goes on one point at a time: a full project resolves before the next lands. No project destroys a node (139):
-Purge the Unaligned takes an ambassador from each player (supply first), Raiding Parties 8 credits. Ongoing projects
-act in the round's build step only.
+Compute goes on one point at a time: a full project resolves before the next lands. No project destroys a node (139).
+142 made each about 1.5x as severe (feeding them hurts); their texts are in [adversary-cards.md](../adversary-cards.md).
 
 ## The event deck (the clock and the stager)
 
 [`content/adversary.json`](../../content/adversary.json) prints the Militarist's event cards: 5 stage I, 6 stage II,
 4 stage III. A game deals `stage_cards` at random per stage, each stage shuffled on its own, stage I on top, so each
 stage deals N of its N+1 printed cards at every difficulty: as many rounds as cards, **the round cap** (**locked** that
-a cap exists and can shorten; the number a candidate). **11 rounds through d2:** difficulty 2 swaps a stage-I card for
-a stage-III card (`stage1_removed`, `stage3_added`), a harder end, not a shorter game; difficulty 3 removes a stage-II
-card (`stage2_removed`): 10. The next round's card is always face up (the `peek` op shows more; no content prints
-it). A card prints, top to bottom: its pulls, its standing lines (creation lines among them), its twists and its Corrupt lines.
+a cap exists and can shorten; the number a candidate). **11 rounds through d2:** difficulty 3 removes a stage-II card
+(`stage2_removed`): 10; difficulty 4 (`stage_swap_at`) also swaps a stage-I card for a stage-III card
+(`stage1_removed`, `stage3_added`), a harder end, not a shorter game. The next round's card is always face up. A card prints, top to bottom: its pulls, its standing lines (creation lines among them), its twists and its Corrupt lines.
 
 <!-- generated: round_cap -->
 | Difficulty | Stage I cards | Stage II | Stage III | Stage II from round | Round cap |
 |---|---|---|---|---|---|
 | 0 | 4 | 4 | 3 | 5 | 11 |
 | 1 | 4 | 4 | 3 | 5 | 11 |
-| 2 | 3 | 4 | 4 | 4 | 11 |
-| 3 | 3 | 3 | 4 | 4 | 10 |
+| 2 | 4 | 4 | 3 | 5 | 11 |
+| 3 | 4 | 3 | 3 | 5 | 10 |
 | 4 | 3 | 3 | 4 | 4 | 10 |
 <!-- /generated -->
 
@@ -176,15 +168,16 @@ last round), a quiet backstop.
 <!-- generated: difficulty -->
 | Level | Adds | Tunable |
 |---|---|---|
-| 0 | Base rules; extra threats each round in all, countries in turn | `extra_threats` 1, `extra_threats_at` 0 |
-| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`) | `counter_bonus` 0, `counter_bonus_all` 0, `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1 |
-| 2 | A stage-I card swapped for a stage-III card: stage II (tier-2 threats) sooner and a harder end, at the same round cap (the table above) | `stage1_removed` 1, `stage3_added` 1 |
-| 3 | Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap); the adversary board's difficulty line (from `board_difficulty_at`) | `build_bonus` 1, `stage2_removed` 1, `board_difficulty_at` 3 |
-| 4 | A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0 |
+| 0 | Base rules |  |
+| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1 |
+| 2 | Counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `counter_bonus_all` 2, `counter_bonus_credits` 6, `counter_bonus` 0, `counter_bonus_at` 2 |
+| 3 | Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap); counters cost more again (from `counter_more_at`); an uncountered threat's harm +N: each player near it destroys more nodes near it (from `harm_bonus_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `build_bonus` 2, `stage2_removed` 1, `counter_more_all` 1, `counter_more_credits` 3, `counter_more_at` 3, `harm_bonus` 2, `harm_bonus_at` 3, `board_difficulty_at` 3 |
+| 4 | A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 
-The extra threats (from `extra_threats_at`; 139 moved them from difficulty 1 to every level, and the corrupt cut
-from 2 to 1) are more pulls of the card's first pull, countries in turn (country 0 in round 1);
+**The ladder raises intensity, not count** (142, Matt): below d4 no level adds a threat; d4's swap moved from d2
+(message 5982: a stage-III card pulls twice). The extra threats are more pulls of the card's first pull, countries in
+turn (country 0 in round 1);
 difficulty 4's "tier-2 threats sooner" deals a stage-I card's tier-1 pulls from tier 2 once a stage-II card is
 `tier2_early` cards ahead (the face-up card first).
 

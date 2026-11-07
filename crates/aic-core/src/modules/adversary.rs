@@ -29,12 +29,21 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
     ParamSpec::list("threat_nodes", 0, 5, "an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it"),
     ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up)"),
-    ParamSpec::int("counter_bonus", 0, 10, "difficulty 1+: added to every threat's first counter requirement"),
-    ParamSpec::int("counter_bonus_all", 0, 10, "difficulty 1+: added to every counter requirement of every threat"),
+    ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent more of its amount after counter_pct (rounded up; 142's dial)"),
+    ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before)"),
+    ParamSpec::int("counter_bonus_all", 0, 10, "difficulty counter_bonus_at+: added to every resource counter item of every threat"),
+    ParamSpec::int("counter_bonus_credits", 0, 20, "difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142)"),
+    ParamSpec::int("counter_more_all", 0, 10, "difficulty counter_more_at+: added again to every resource counter item but credits (142's second step)"),
+    ParamSpec::int("counter_more_credits", 0, 20, "difficulty counter_more_at+: added again to every credits counter item (142)"),
+    ParamSpec::int("counter_more_at", 0, 5, "the difficulty level from which counter_more_all and counter_more_credits apply (142)"),
+    ParamSpec::int("counter_bonus_at", 0, 5, "the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before)"),
+    ParamSpec::int("harm_bonus", 0, 5, "difficulty harm_bonus_at+: each player near an uncountered threat destroys this many more nodes near it"),
+    ParamSpec::int("harm_bonus_at", 0, 5, "the difficulty level from which harm_bonus applies (142)"),
     ParamSpec::int("extra_threats", 0, 5, "difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn"),
     ParamSpec::int("extra_threats_at", 0, 5, "the difficulty level from which extra_threats are dealt (139)"),
-    ParamSpec::int("stage1_removed", 0, 3, "difficulty 2+: stage-I cards removed"),
-    ParamSpec::int("stage3_added", 0, 3, "difficulty 2+: stage-III cards added (the cap holds, its end gets harder)"),
+    ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
+    ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
+    ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed and stage3_added apply (142; 2 before)"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::int("build_bonus", 0, 5, "difficulty 3+: each site the adversary board's creation lines reach gains this many more"),
@@ -216,10 +225,13 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     // 044: what this difficulty deals, for setup and the check (which used to
     // add stage3_added at every level and take off no removal).
     let difficulty = b.int("difficulty")?;
+    // 142: the stage-I-for-stage-III swap adds threats (a stage-III card pulls twice), so it sits at
+    // `stage_swap_at` (4) beside the extra threat a round (Matt, message 5982).
+    let swap = difficulty >= b.int("stage_swap_at")?;
     let dealt = [
-        (stage_cards[0] - if difficulty >= 2 { b.int("stage1_removed")? } else { 0 }).max(0),
+        (stage_cards[0] - if swap { b.int("stage1_removed")? } else { 0 }).max(0),
         (stage_cards[1] - if difficulty >= 3 { b.int("stage2_removed")? } else { 0 }).max(0),
-        stage_cards[2] + if difficulty >= 2 { b.int("stage3_added")? } else { 0 },
+        stage_cards[2] + if swap { b.int("stage3_added")? } else { 0 },
     ];
     // An empty deck loses before round 1's first decision (020: it was accepted).
     if dealt.iter().sum::<i64>() < 1 {
@@ -237,6 +249,18 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
             return Err(format!(
                 "stage_cards: stage {} has only {have} cards",
                 s + 1
+            ));
+        }
+    }
+    // 142: every uncountered threat of a tier with `threat_nodes` above 0 destroys nodes near it, so a
+    // "remove N of your nodes near it" counter would share its harm's currency.
+    let threat_nodes = b.list("threat_nodes")?;
+    for t in &b.world.content.threats {
+        let destroys = threat_nodes.get(t.tier as usize - 1).copied().unwrap_or(0) > 0;
+        if destroys && t.counters.iter().flatten().any(|i| matches!(i, crate::content::CounterItem::NodesNear { .. })) {
+            return Err(format!(
+                "threat {:?}: a nodes counter, but an uncountered tier-{} threat destroys nodes (threat_nodes)",
+                t.id, t.tier
             ));
         }
     }
@@ -1222,26 +1246,6 @@ pub fn pushback(g: &mut GameState, cx: &mut Cx, c: usize) -> Res {
         remove_piece(g, cx, None, hexes[i], ADV_AMBASSADOR);
     }
     Ok(())
-}
-
-/// In country `c`, the hex passing `pred` with the most adversary
-/// ambassadors (ties: the first in the country's hex order), if any.
-pub fn most_infiltrated_city(
-    w: &World,
-    g: &GameState,
-    c: usize,
-    pred: impl Fn(usize) -> bool,
-) -> Option<usize> {
-    let mut best: Option<(usize, i64)> = None;
-    for &h in &w.map.countries[c].hexes {
-        if pred(h) {
-            let k = g.tokens(h, ADV_AMBASSADOR);
-            if best.is_none_or(|(_, b)| k > b) {
-                best = Some((h, k));
-            }
-        }
-    }
-    best.map(|(h, _)| h)
 }
 
 /// How much the purge still asks (136): each step of `alignment.purge_at`

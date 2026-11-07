@@ -93,6 +93,7 @@
     "cordon": {"credits": 5, "per": "country cordoned: about 2 arrivals stopped"},
     "free_building": {"credits": 8, "per": "building played paying no credits (a building's credits saved)"},
     "build_station": {"credits": 8, "per": "station built free (2 chips and about 3 cubes before its card completes)"},
+    "claim_station": {"credits": 20, "per": "neutral station claimed by a card (142: 2 cubes a round at 3 for about 4 rounds, less the risk; the ambassador route is 3 ambassadors, 12)"},
     "project_cube": {"credits": 6, "per": "player cube on a megaproject (about 9 at completion, x 2/3 for completing)"},
     "peek": {"credits": 1, "per": "adversary card shown"},
     "jam": {"credits": 1, "per": "point of jam (x typed_jam with a source)"},

@@ -1,0 +1,55 @@
+{
+  "name": "screen-142-s16",
+  "note": "142 screen s16: ['base', 'V2'], seeds 36800+32",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_V2",
+      "set": [
+        "adversary.counter_bonus_levels=2"
+      ]
+    },
+    {
+      "name": "br_V2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_levels=2"
+      ]
+    },
+    {
+      "name": "pr_V2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_levels=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

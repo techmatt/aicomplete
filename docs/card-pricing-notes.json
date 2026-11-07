@@ -163,5 +163,7 @@
   "directed_energy_array": "r53 (130): new late energy sink; a use 3 ambassadors removed (15) for 2 energy (9), x4 rounds x0.7; anchors: pay 16; get 18.3 = 1.14. values.json override +11 (the table's removal 2 an ambassador).",
   "holographic_assembly_hall": "r53 (130): new late energy sink; a use 2 Sway (8) and 2 ambassadors (8) for 2 energy (9), x4 rounds x0.7; anchors: pay 17; get 21.1 = 1.24.",
   "exascale_training_cluster": "r53 (130): new tier-2 energy sink, 8 energy (36); +3 insight a round (10 each at x2.5) 30 and 6 research cubes now 36; anchors: pay 67; get 67.5 = 1.01. values.json override +25 (the table's energy 4.5 against insight 2.5 and a cube 3).",
-  "wafer_fab_line": "r53 (130): new late energy sink, Industry's; a use draw 2 (10) and 2 chips (6) for 2 energy (9), x4 rounds x0.7; anchors: pay 20; get 21.1 = 1.06. values.json override +10 (the table's draw 4 and chip, 1.5 then, 2 since 131)."
+  "wafer_fab_line": "r53 (130): new late energy sink, Industry's; a use draw 2 (10) and 2 chips (6) for 2 energy (9), x4 rounds x0.7; anchors: pay 20; get 21.1 = 1.06. values.json override +10 (the table's draw 4 and chip, 1.5 then, 2 since 131).",
+  "power_purchase_agreement": "r59 (142): claims a neutral station for energy, cheaper than the Claim action's 3 ambassadors (Matt); anchors: pay 2 cr + keep 4 + 2 energy 9 = 15; get the 3-ambassador claim 15 + 2 tags = 1.07; table: claim_station 20 against 2 + 2.5 + 9 = 13.5.",
+  "microgrid_lab_compact": "r59 (142): Action, 2 energy: claim a neutral station (repeats while neutral stations last); anchors: pay 8 + 4 x 3 insight = 20 (+ 9 a use); get 15 a claim + 2 tags: 1.0 at 2 uses; table: 20 a claim against 9 energy."
 }

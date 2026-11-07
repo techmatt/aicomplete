@@ -47,15 +47,22 @@ pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterIte
 
 /// [`requirement`] less `cut` of each resource item (floor 0).
 pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<CounterItem>> {
-    let (bonus, all) = if adversary::level(w, 1) {
-        (w.int("adversary.counter_bonus"), w.int("adversary.counter_bonus_all"))
-    } else {
-        (0, 0)
-    };
+    // 142: the counter step from `counter_bonus_at` (d2), and a second one from `counter_more_at` (d3).
+    let (mut bonus, mut all, mut credits) = (0, 0, 0);
+    if adversary::level(w, w.int("adversary.counter_bonus_at")) {
+        bonus = w.int("adversary.counter_bonus");
+        all = w.int("adversary.counter_bonus_all");
+        credits = w.int("adversary.counter_bonus_credits");
+    }
+    if adversary::level(w, w.int("adversary.counter_more_at")) {
+        all += w.int("adversary.counter_more_all");
+        credits += w.int("adversary.counter_more_credits");
+    }
     // 138: every resource counter item of a tier-N threat costs `counter_pct[N-1]` percent of its printed amount
     // (rounded up), at every difficulty.
     let d = def(w, threat);
     let pct = w.list("adversary.counter_pct").get(d.tier as usize - 1).copied().unwrap_or(100);
+    let credit_pct = w.int("adversary.counter_credit_pct");
     d.counters
         .iter()
         .enumerate()
@@ -64,9 +71,15 @@ pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<Cou
                 .iter()
                 .map(|item| match *item {
                     CounterItem::Pay { resource, amount } => {
-                        let first = if k == 0 && resource == Resource::Credits { bonus } else { 0 };
-                        let scaled = (amount * pct + 99) / 100;
-                        CounterItem::Pay { resource, amount: (scaled + first + all - cut).max(0) }
+                        // 142: the first option's every resource item (was its credits only).
+                        let first = if k == 0 { bonus } else { 0 };
+                        let mut scaled = (amount * pct + 99) / 100;
+                        if resource == Resource::Credits {
+                            scaled = (scaled * credit_pct + 99) / 100;
+                        }
+                        // 142: a credits item takes `counter_bonus_credits` in place of `counter_bonus_all`.
+                        let step = if resource == Resource::Credits { credits } else { all };
+                        CounterItem::Pay { resource, amount: (scaled + first + step - cut).max(0) }
                     }
                     other => other,
                 })
@@ -156,11 +169,14 @@ fn kind(option: &[CounterItem]) -> &'static str {
     }
 }
 
-/// Counted in all, by how, and per round.
-pub(super) fn tally_countered(g: &mut GameState, cx: &mut Cx, how: &str) {
+/// Counted in all, by how, and per round; and by tier and how (142).
+pub(super) fn tally_countered(g: &mut GameState, cx: &mut Cx, threat: &str, how: &str) {
+    let tier = def(&cx.world, threat).tier;
     cx.tally(g, "threats.countered", 1);
     cx.per_round(g, "threats.countered", 1);
     cx.tally(g, &format!("threats.countered_by.{how}"), 1);
+    cx.tally(g, &format!("threats.countered.t{tier}"), 1);
+    cx.tally(g, &format!("threats.countered_by.t{tier}.{how}"), 1);
 }
 
 /// Counters `threat` if the pooled payments cover one of its resource-only
@@ -210,8 +226,8 @@ pub(super) fn try_complete(g: &mut GameState, cx: &mut Cx, threat: &str) -> bool
     }
     // An option a jam or standing counter cut to nothing was paid by no one.
     let how = if needs.iter().all(|(_, n)| *n <= 0) { "standing" } else { kind(&req[k]) };
+    tally_countered(g, cx, threat, how);
     clear(g, cx, threat);
-    tally_countered(g, cx, how);
     cx.note(None, || format!("{} is countered", def(&w, threat).name));
     for p in payers {
         for pa in cards::passives(&w, g, p) {
@@ -299,8 +315,8 @@ pub(super) fn counter_with(g: &mut GameState, cx: &mut Cx, s: usize, threat: &Ke
     }
     refund(g, cx, threat);
     let how = kind(&items);
+    tally_countered(g, cx, threat, how);
     clear(g, cx, threat);
-    tally_countered(g, cx, how);
     cx.note(None, || format!("{} is countered", def(&w, threat).name));
     Ok(())
 }

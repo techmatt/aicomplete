@@ -440,7 +440,7 @@ pub(super) fn std_resolve(
             if let Some(h) = on_hex(cx)? {
                 let n = claim_cost(&w, g, h).unwrap_or(0);
                 cx.add_resource(g, s, Resource::Ambassadors, -n);
-                claim_site(g, cx, s, h);
+                claim_site(g, cx, s, h, "ambassadors");
             }
         }
         StandardAction::Liberate => {

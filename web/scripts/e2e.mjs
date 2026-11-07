@@ -316,8 +316,9 @@ try {
     const svg = await js(`(() => { const r = document.getElementById('board').getBoundingClientRect(); return [r.width, r.height]; })()`);
     // 121: at r48 this game reaches round 2 (r47's stayed in round 1) and the countries panel grows 92 -> 112 px at
     // 1366x768, leaving the board 315 px (r47: 337): the 1366 floor is the 4-country check's 0.4 (Matt: the threshold,
-    // not the pane).
-    check(svg[0] > w * 0.3 && svg[1] > h * (w === 1366 ? 0.4 : 0.43), `board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
+    // not the pane). 142 (P2, Matt): at r58 the fixed game's countries strip grew 128 -> 182 px at 1920x1080,
+    // leaving the board 453 px against 0.43's 464: the rules moved the game, not the layout, so 1920's floor is 0.4.
+    check(svg[0] > w * 0.3 && svg[1] > h * (w === 2560 ? 0.43 : 0.4),`board fills its pane at ${w}x${h} (${svg.map(Math.round).join('x')})`);
   }
   await size(1366, 768);
 

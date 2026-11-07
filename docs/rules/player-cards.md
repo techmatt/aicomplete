@@ -31,7 +31,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 155 cards (112 tier 1, 43 tier 2). Insight to play: 24 / 101 / 30 cards at 0 / 1 / 2, 30 of the 43 tier-2 cards at 2. An energy cost: 13 cards, 8 of the 58 buildings.
+**The draft set in numbers.** 157 cards (113 tier 1, 44 tier 2). Insight to play: 25 / 102 / 30 cards at 0 / 1 / 2, 30 of the 44 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 59 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt, r50).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its

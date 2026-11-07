@@ -48,7 +48,9 @@ fn far_from(m: &Map, c: usize, h: usize) -> usize {
 
 #[test]
 fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
-    let (rules, mut g) = threat_lab();
+    // 142: Eviction pinned to one 6-credit counter, so the pooled sums below
+    // read no reprice and no cheaper option.
+    let (rules, mut g) = threat_lab_with(&[r#"threats.eviction.counters=[[{"resource":"credits","amount":6}]]"#]);
     let m = &rules.map;
     let city = cities(m).into_iter().find(|&h| m.hexes[h].country == 0).unwrap();
     let next = m.hexes[city].neighbors[0];
@@ -73,19 +75,24 @@ fn only_seats_near_a_threat_may_pay_and_pooled_credits_counter_it() {
     assert!(threats::tokens(&g, &Key::new("eviction")).is_empty(), "its token is off");
     assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (6, 8));
     assert_eq!(counted(&g, "threats.countered_by.credits"), 1);
+    assert_eq!(counted(&g, "threats.countered_by.t1.credits"), 1);
+    assert_eq!(counted(&g, "threats.countered.t1"), 1);
 }
 
 #[test]
 fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
-    // 138: Eviction (tier 1) prints 6 credits; at 150% it asks 9, at 125% 8 (7.5 up).
-    for (pct, want) in [("150,100,100", 9), ("125,100,100", 8)] {
+    // 142: Eviction (tier 1) prints 3 energy and 15 credits; at 150% it asks
+    // 5 energy (4.5 up) and 23 credits (22.5 up), at 125% 4 (3.75 up) and 19 (18.75 up).
+    for (pct, want) in [("150,100,100", (5, 23)), ("125,100,100", (4, 19))] {
         let (rules, g) = threat_lab_with(&[&format!("adversary.counter_pct={pct}")]);
         let need = threats::requirement(&rules.world(), &g, "eviction");
-        let credits = need.iter().flatten().find_map(|i| match i {
-            crate::content::CounterItem::Pay { resource: Resource::Credits, amount } => Some(*amount),
-            _ => None,
-        });
-        assert_eq!(credits, Some(want), "{pct}");
+        let of = |r: Resource| {
+            need.iter().flatten().find_map(|i| match i {
+                crate::content::CounterItem::Pay { resource, amount } if *resource == r => Some(*amount),
+                _ => None,
+            })
+        };
+        assert_eq!((of(Resource::Energy), of(Resource::Credits)), (Some(want.0), Some(want.1)), "{pct}");
     }
 }
 
@@ -98,18 +105,20 @@ fn counter_with_tags_sacrifices_cards_in_play() {
     no_nodes(&mut g);
     put(&mut g, factory, node(0), 1);
     land(&mut g, "supply_raid", c, &[factory]);
-    let security: Vec<&str> = w
+    // 142: Supply Raid's second option sacrifices 2 industry tags.
+    let industry: Vec<&str> = w
         .content
         .cards
         .iter()
-        .filter(|d| d.tags.contains(&Tag::Security))
+        .filter(|d| d.tags.contains(&Tag::Industry))
         .map(|d| d.id.as_str())
         .take(2)
         .collect();
-    set_pile(&mut g, &cards::played(0), &security);
     let with = |option| Action::CounterWith { seat: 0, threat: "supply_raid".into(), option };
-    assert!(legal_has(&rules, &g, |a| *a == with(1)), "2 security tags in play");
-    assert!(!legal_has(&rules, &g, |a| *a == with(2)), "no industry tags");
+    set_pile(&mut g, &cards::played(0), &industry[..1]);
+    assert!(!legal_has(&rules, &g, |a| *a == with(1)), "1 industry tag in play");
+    set_pile(&mut g, &cards::played(0), &industry);
+    assert!(legal_has(&rules, &g, |a| *a == with(1)), "2 industry tags in play");
     act(&rules, &mut g, with(1));
     assert!(threats::active(&g).is_empty());
     assert!(g.pile(&cards::played(0)).is_empty(), "both sacrificed");
@@ -118,7 +127,10 @@ fn counter_with_tags_sacrifices_cards_in_play() {
 
 #[test]
 fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
-    let (rules, mut g) = threat_lab();
+    // 142: no printed threat has a nodes counter (refused while `threat_nodes`
+    // takes nodes; threat_lab sets it 0), so the test gives Orbital Strike one.
+    let (rules, mut g) =
+        threat_lab_with(&[r#"threats.orbital_strike.counters=[[{"resource":"energy","amount":3}],[{"nodes_near":1}]]"#]);
     let m = &rules.map;
     let base = (0..m.hexes.len()).find(|&h| kind(m, h) == HexKind::Base).unwrap();
     let c = m.hexes[base].country as usize;
@@ -153,14 +165,15 @@ fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
     put(&mut g, far, node(1), 1);
     land(&mut g, "supply_raid", c, &[factory]);
     for s in 0..2 {
-        set_res(&mut g, s, Resource::Credits, 10);
+        set_res(&mut g, s, Resource::Energy, 10);
     }
     let discord = g.var("alignment.discord");
     for s in 0..g.seats.len() as u8 {
         rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
     }
     assert!(g.pending.is_none());
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (2, 10));
+    // 142: Supply Raid takes 2 energy from each player near it.
+    assert_eq!((g.resource(0, Resource::Energy), g.resource(1, Resource::Energy)), (8, 10));
     assert_eq!(g.var("alignment.discord"), discord + 1);
     assert_eq!(counted(&g, "threats.uncountered"), 1);
     assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));

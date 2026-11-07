@@ -333,21 +333,13 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
     Ok(())
 }
 
-/// CorruptCity with `at` (135): the threat's city. `at` location (Regime
-/// Change) also destroys the nodes on and next to it, never a last one.
+/// CorruptCity (135): the threat's city. `at` location (Regime Change) also destroys the nodes on and next
+/// to it, never a last one. The no-location form (the most infiltrated city) is gone (142, P1): the load
+/// check refuses it.
 fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) {
     let w = cx.world;
-    let cities: Vec<usize> = match city_token(&w, g, ctx) {
-        Some(h) => vec![h],
-        None => scope_countries(&w, ctx.scope)
-            .into_iter()
-            .filter_map(|c| adversary::most_infiltrated_city(&w, g, c, |h: usize| collecting_city(&w, g, h)))
-            .collect(),
-    };
-    for h in cities {
-        if corrupted(g, h) {
-            continue;
-        }
+    let Some(h) = city_token(&w, g, ctx) else { return };
+    if !corrupted(g, h) {
         adversary::corrupt_city(g, cx, h);
         if at == Some(Spot::Location) {
             for x in within(&w, h, 1) {
