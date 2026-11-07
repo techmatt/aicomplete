@@ -31,6 +31,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("momentum_every", 0, 10, "Momentum: a side's track holds 1 fewer Sway per this many of its tips, down to 1 per player (0: off)"),
     ParamSpec::int("troop", 0, 10, "Sway toward Unity for removing an adversary troop"),
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
+    ParamSpec::int("free_facility", 0, 10, "Sway toward Unity for liberating an adversary station or factory (137)"),
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
     ParamSpec::int("threat_discord", 0, 10, "Sway toward Discord when a threat executes uncountered"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
@@ -404,6 +405,10 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     cx.set_key(g, tips_key(side), before + 1);
     cx.tally(g, &KeyBuf::new("alignment.tips_").text(side.name()), 1);
     cx.tally(g, &format!("alignment.tip_{}.r{round:02}", side.name()), 1);
+    // 137: on a Discord tip each neutral factory makes 1 corp troop.
+    if side == Side::Discord {
+        board::tip_corp_troops(g, cx);
+    }
     let Some((id, from)) = draw(g, &w, side, before) else {
         // Discord tips with no card left: the players lose (locked, 027).
         if side == Side::Discord {

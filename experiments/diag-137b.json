@@ -1,0 +1,22 @@
+{
+  "name": "diag-137b",
+  "note": "137 diagnosis 2 (dev seeds 36700-36731, 32 a cell, B+P, strategist): r56 with no botnet on a base, against an adversary blocker used up as it blocks (blocker_stays 0), and that with the old clock.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "base", "set": []},
+    {"name": "blocker_used", "set": ["board.blocker_stays=0"]},
+    {"name": "blocker_used_oldclock", "set": ["board.blocker_stays=0", "board.clock=1,2,1,2,1,3"]}
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36700,
+  "records": 0
+}

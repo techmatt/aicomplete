@@ -229,6 +229,7 @@ pub(super) fn countries_block(c: &Content) -> String {
                 numbers(&p.ocean),
                 numbers(&p.stations),
                 p.neutral_station.to_string(),
+                numbers(&p.station_sites),
                 format!("{} ({})", numbers(&p.industry), numbers(&p.factories)),
                 p.node.to_string(),
             ]
@@ -242,6 +243,7 @@ pub(super) fn countries_block(c: &Content) -> String {
             "Ocean",
             "Station (botnet)",
             "Neutral station",
+            "Empty station sites",
             "Industrial zones (setup factories)",
             "Starting node",
         ],
@@ -474,7 +476,7 @@ pub(super) fn standard_actions_block(r: &Rules) -> String {
     use aic_core::modules::board::{std_rule_text, StandardAction as A};
     let t = |key: &str| tick(r, key);
     // The rule book's order; selling a card is no standard action, but sits by the chips.
-    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Align, A::FreeStation, A::HardenChips, A::Chips];
+    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::HardenChips, A::Chips];
     let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
     rows.extend([A::HardenBuy, A::Drain, A::Insight, A::Envoy].iter().map(|&a| std_rule_text(a, &t)));
@@ -489,8 +491,13 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ["Unity".to_string(), "Biomia's converter".to_string(), "1 for 2 research cubes".to_string()],
         [
             "Unity".to_string(),
-            "liberating a corrupted city (ambassadors.md: a liberate card or the fallback)".to_string(),
+            "liberating an adversary city (ambassadors.md: a liberate card or the Liberate action)".to_string(),
             t("alignment.free_city"),
+        ],
+        [
+            "Unity".to_string(),
+            "liberating an adversary station or factory (the Liberate action)".to_string(),
+            t("alignment.free_facility"),
         ],
         ["Unity".to_string(), "removing a botnet".to_string(), t("alignment.botnet")],
         // 099: two Unity sources the table left out.
@@ -518,10 +525,9 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
                 t("board.ambassador_discord")
             ),
         ],
-        ["Discord".to_string(), "an adversary ambassador on a producing base".to_string(), t("board.base_discord")],
         [
             "Discord".to_string(),
-            "a facility destroyed in war (not by an adversary troop)".to_string(),
+            "a factory destroyed in war (not by an adversary troop)".to_string(),
             t("board.destruction_discord"),
         ],
         [

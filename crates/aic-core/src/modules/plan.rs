@@ -14,7 +14,7 @@ use crate::module::World;
 use crate::state::GameState;
 
 use super::{adversary, board};
-use super::common::{clean_city, corrupted_city, corrupted_station, is_base, scope_hexes, BOTNET, FACTORY, STATION};
+use super::common::{clean_city, corrupted_city, corrupted_station, scope_hexes, BOTNET, FACTORY, STATION};
 
 /// The sites `twists`' arrivals name, one per arrivals twist.
 fn arrival_sites<'t>(twists: &'t [&'t Op]) -> impl Iterator<Item = Site> + 't {
@@ -96,20 +96,19 @@ fn is_site(w: &World, g: &GameState, h: usize, site: Site) -> bool {
         Site::Coastal => w.map.hexes[h].coastal,
         Site::Industrial => w.map.hexes[h].industrial,
         Site::Stations => g.tokens(h, STATION) > 0,
-        Site::BaseSites => site_base(w, h),
+        Site::Factory => escalation_factory(w, g, w.map.hexes[h].country as usize) == Some(h),
     }
 }
 
-/// Whether arrivals and escalation land on base hex `h` (053: each country's
-/// first base, its lowest-numbered, at `base_sites_per_country` 1, so what
-/// reaches bases counts countries, not fronts).
-fn site_base(w: &World, h: usize) -> bool {
-    let at = &w.map.hexes[h];
-    is_base(w, h)
-        && (w.int("adversary.base_sites_per_country") == 0
-            || !(0..w.map.hexes.len()).any(|x| {
-                is_base(w, x) && w.map.hexes[x].country == at.country && w.map.hexes[x].number < at.number
-            }))
+/// 137: where Escalation lands in each country: its lowest-numbered factory
+/// (bases are front troop piles now; it was each country's first base).
+fn escalation_factory(w: &World, g: &GameState, c: usize) -> Option<usize> {
+    w.map.countries[c]
+        .hexes
+        .iter()
+        .copied()
+        .filter(|&h| g.tokens(h, FACTORY) > 0)
+        .min_by_key(|&h| w.map.hexes[h].number)
 }
 
 /// How many ambassadors `twists`' arrivals bring in `scope` (a tally).
@@ -121,17 +120,21 @@ pub fn arrival_count(w: &World, g: &GameState, twists: &[&Op], scope: Option<usi
         .sum()
 }
 
-/// What an escalating card places in its build: `(hex, ambassadors)` for
-/// each base it reaches ([`site_base`]), in hex order (none at `escalation_ambassadors` 0).
+/// What an escalating card places in its build: `(hex, ambassadors)` on
+/// each country's lowest-numbered factory, in hex order (none at
+/// `escalation_ambassadors` 0, nor in a cordoned country or one with no factory).
 pub fn escalation_hexes(w: &World, g: &GameState) -> Vec<(usize, i64)> {
     let n = w.int("adversary.escalation_ambassadors");
     if n <= 0 {
         return Vec::new();
     }
-    (0..g.hexes.len())
-        .filter(|&h| site_base(w, h))
+    let mut out: Vec<(usize, i64)> = (0..w.map.countries.len())
+        .filter_map(|c| escalation_factory(w, g, c))
+        .filter(|&h| landing(w, g, h) > 0)
         .map(|h| (h, n))
-        .collect()
+        .collect();
+    out.sort_unstable();
+    out
 }
 
 /// The next round's build, read off the face-up adversary card (public):

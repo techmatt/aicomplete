@@ -194,6 +194,9 @@
     4
    ],
    "neutral_station": 10,
+   "station_sites": [
+    5
+   ],
    "industry": [
     2,
     8,
@@ -269,6 +272,9 @@
     12
    ],
    "neutral_station": 2,
+   "station_sites": [
+    11
+   ],
    "industry": [
     3,
     14,
@@ -339,6 +345,9 @@
     14
    ],
    "neutral_station": 12,
+   "station_sites": [
+    8
+   ],
    "industry": [
     1,
     6,
@@ -415,6 +424,9 @@
     12
    ],
    "neutral_station": 9,
+   "station_sites": [
+    10
+   ],
    "industry": [
     7,
     13,

@@ -82,8 +82,8 @@ def rows(games):
         # No counter splits that half from its token half, so this is the Action's uses, both halves.
         ('Popular Uprising played / Action uses (either half)', m(lambda g: cnt(g, 'cards.played.popular_uprising')),
          m(lambda g: cnt(g, 'cards.used.popular_uprising'))),
-        ('cities liberated by a card / fallback', m(lambda g: cnt(g, 'board.liberated_card')),
-         m(lambda g: cnt(g, 'board.liberated_fallback'))),
+        ('cities liberated by a card / the Liberate action (r55: the fallback)', m(lambda g: cnt(g, 'board.liberated_card')),
+         m(lambda g: cnt(g, 'board.liberated.city') + cnt(g, 'board.liberated_fallback'))),
     ]
     for name, key in powers.items():
         out.append((f'{name} used', m(lambda g, key=key: cnt(g, key))))

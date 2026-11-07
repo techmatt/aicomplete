@@ -56,40 +56,56 @@ fn the_build_step_grows_corrupted_cities_and_the_factories_next_to_them() {
     );
     assert_eq!(g.tokens(far, ADV_AMBASSADOR), 1);
 
-    // Mobilization (stage II): corrupted cities build 1 more, and the
-    // escalation puts an ambassador on each country's first base (at 2
-    // countries, its only one).
+    // Mobilization (stage II): corrupted cities build 1 more, and (137) the
+    // escalation puts an ambassador on each country's lowest-numbered factory,
+    // never on a base.
     let mut g = g0.clone();
+    let esc = crate::modules::plan::escalation_hexes(&rules.world(), &g);
+    assert!(!esc.is_empty());
+    let lands = |h: usize| esc.iter().any(|&(x, _)| x == h) as i64;
     set_pile(&mut g, NEXT, &["mil_s2_mobilization"]);
     run_answered(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_AMBASSADOR), 3);
+    assert_eq!(g.tokens(near, ADV_AMBASSADOR), 1 + lands(near));
+    assert_eq!(g.tokens(far, ADV_AMBASSADOR), lands(far));
     for f in &m.fronts {
         for &b in &f.bases {
-            assert_eq!(g.tokens(b, ADV_AMBASSADOR), 1);
+            assert_eq!(g.tokens(b, ADV_AMBASSADOR), 0);
         }
     }
     assert_eq!(g.var(STAGE), 2);
 }
 
-/// 053: arrivals and escalation count countries, not fronts: at 3 countries
-/// each has two bases, and only the lowest-numbered gains anything.
+/// 137: escalation lands on each country's lowest-numbered factory (it was
+/// each country's first base); a country with no factory gains none.
 #[test]
-fn arrivals_and_escalation_reach_each_countrys_first_base() {
-    for (sites, first, second) in [(1, 2, 0), (0, 2, 2)] {
-        let set = format!("adversary.base_sites_per_country={sites}");
-        let (rules, mut g) = lab_with(&["adversary.build"], &["countries=3", "adversary.arrivals=1", &set]);
-        let m = &rules.map;
-        g.piles.remove(CURRENT);
-        set_pile(&mut g, NEXT, &["mil_s2_border_war"]);
-        run_answered(&rules, &mut g);
-        for c in 0..3 {
-            let mut bases = hexes_where(m, |h| kind(m, h) == HexKind::Base && m.hexes[h].country == c);
-            bases.sort_by_key(|&h| m.hexes[h].number);
-            assert_eq!(bases.len(), 2);
-            assert_eq!(g.tokens(bases[0], ADV_AMBASSADOR), first);
-            assert_eq!(g.tokens(bases[1], ADV_AMBASSADOR), second);
-        }
+fn escalation_lands_on_each_countrys_lowest_numbered_factory() {
+    let (rules, mut g) = lab_with(&["adversary.build"], &["countries=3"]);
+    let w = rules.world();
+    let m = &rules.map;
+    g.piles.remove(CURRENT);
+    let open_in = |c: u8| {
+        let mut v = hexes_where(m, |h| kind(m, h) == HexKind::Open && m.hexes[h].country == c);
+        v.sort_by_key(|&h| m.hexes[h].number);
+        v
+    };
+    let (zero, one) = (open_in(0), open_in(1));
+    let (low, high, other) = (zero[0], zero[zero.len() - 1], one[0]);
+    for h in [low, high, other] {
+        put(&mut g, h, FACTORY, 1);
     }
+    let n = w.int("adversary.escalation_ambassadors");
+    let mut want = vec![(low, n), (other, n)];
+    want.sort_unstable();
+    assert_eq!(crate::modules::plan::escalation_hexes(&w, &g), want);
+    set_pile(&mut g, NEXT, &["mil_s2_border_war"]);
+    run_answered(&rules, &mut g);
+    assert_eq!(
+        (g.tokens(low, ADV_AMBASSADOR), g.tokens(high, ADV_AMBASSADOR), g.tokens(other, ADV_AMBASSADOR)),
+        (n, 0, n)
+    );
+    let bases = hexes_where(m, |h| kind(m, h) == HexKind::Base);
+    assert_eq!(bases.iter().map(|&b| g.tokens(b, ADV_AMBASSADOR)).sum::<i64>(), 0);
 }
 
 #[test]
@@ -305,6 +321,7 @@ fn a_second_ambassador_spreading_onto_a_piece_makes_a_botnet() {
 fn botnets_start_on_the_stations_and_make_adversary_compute() {
     let rules = Rules::new(&lab_config(&["adversary.build", ACTIONS])).unwrap();
     let mut g = rules.new_game(1);
+    answer_all(&rules, &mut g);
     let m = &rules.map;
     for c in 0..2 {
         assert_eq!(g.tokens(m.numbered(c, piece(c).stations[0]), BOTNET), 1);
@@ -421,6 +438,8 @@ fn each_stage_spreads_the_site_types() {
         }
         seen.sort();
         seen.dedup();
+        // 137: coastal, industrial, stations and each country's lowest-numbered
+        // factory (it took the first base's cards).
         assert_eq!(seen.len(), 4, "stage {stage}: {seen:?}");
     }
 }

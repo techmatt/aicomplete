@@ -10,9 +10,11 @@ pub enum StandardAction {
     Clear,
     Move,
     Ambassador,
-    Align,
-    /// r35: free a corrupted research station your ambassadors stand on.
-    FreeStation,
+    /// 137: claim a neutral city, station or factory (it was Align, cities only).
+    Claim,
+    /// 137: liberate an adversary site with massed ambassadors (it replaced
+    /// Free a station and the city fallback).
+    Liberate,
     /// 066: the Harden action a card grants, paid in chips.
     HardenChips,
     Chips,
@@ -32,8 +34,8 @@ pub const STANDARD: [StandardAction; 13] = [
     StandardAction::Clear,
     StandardAction::Move,
     StandardAction::Ambassador,
-    StandardAction::Align,
-    StandardAction::FreeStation,
+    StandardAction::Claim,
+    StandardAction::Liberate,
     StandardAction::HardenChips,
     StandardAction::Chips,
     StandardAction::HardenBuy,
@@ -51,8 +53,8 @@ impl StandardAction {
             StandardAction::Clear => "clear",
             StandardAction::Move => "move",
             StandardAction::Ambassador => "ambassador",
-            StandardAction::Align => "align",
-            StandardAction::FreeStation => "free_station",
+            StandardAction::Claim => "claim",
+            StandardAction::Liberate => "liberate",
             StandardAction::HardenChips => "harden_chips",
             StandardAction::Chips => "chips",
             StandardAction::HardenBuy => "harden_buy",
@@ -128,9 +130,9 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Clear => credits(i("clear_cost")),
         StandardAction::Move => credits(i("move_credits")),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
-        StandardAction::Align => ambassadors(1),
-        // r35: the ambassadors it uses up stand on the station, not in the supply.
-        StandardAction::FreeStation => credits(i("free_station_credits")),
+        // 137: the ambassadors depend on the site (`claim_cost`, `liberate_cost`):
+        // the targets list only sites the seat can pay for, and the action pays.
+        StandardAction::Claim | StandardAction::Liberate => Price::default(),
         // 080: the price is the card's (`seat_price`); none printed here.
         StandardAction::HardenChips => Price::default(),
         StandardAction::Chips => chips(1),
@@ -188,11 +190,19 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Move => "move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
-        StandardAction::Align => "align a clean city you can claim",
-        StandardAction::FreeStation => {
+        StandardAction::Claim => {
             return format!(
-                "free a corrupted research station in reach where {} of your ambassadors stand and no adversary ambassador: they are used up and it becomes neutral",
-                w.int("board.free_station_ambassadors")
+                "claim a neutral site you can claim: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each adversary ambassador on it",
+                claim_ambassadors(w, SiteKind::City),
+                claim_ambassadors(w, SiteKind::Station),
+                claim_ambassadors(w, SiteKind::Factory)
+            );
+        }
+        StandardAction::Liberate => {
+            return format!(
+                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each adversary ambassador on it; it turns neutral",
+                liberate_ambassadors(w, SiteKind::City),
+                liberate_ambassadors(w, SiteKind::Station)
             );
         }
         StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
@@ -238,17 +248,30 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("{} credits", t("board.ambassador_credits")),
             "into your supply; a standard project too".into(),
         ),
-        // r40 (D38): on a dark city it cancels, as an ambassador arriving on a piece does.
-        StandardAction::Align => (
-            "Align a clean city",
-            "1 ambassador".into(),
-            "in reach, with a site claim: your cube on it; on a dark city it cancels one adversary ambassador there instead (both removed), and a later Align aligns the city once it is clean".into(),
+        // 137: one action for every site type (it was Align, cities only, for 1).
+        StandardAction::Claim => (
+            "Claim a site",
+            format!(
+                "{} ambassadors for a city, {} for a station, {} for a factory, from your supply, used up; 1 more for each adversary ambassador on it",
+                t("board.claim_city"),
+                t("board.claim_station"),
+                t("board.claim_factory")
+            ),
+            "a neutral city, research station or factory in reach, with a site claim: the adversary ambassadors on it cancel and your cube goes on".into(),
         ),
-        // 099: board.md and ambassadors.md (docs/rules/) send readers here for it.
-        StandardAction::FreeStation => (
-            "Free a research station or factory",
-            format!("{} credits; {} of your ambassadors on it, used up", t("board.free_station_credits"), t("board.free_station_ambassadors")),
-            "a corrupted station or adversary factory in reach with no adversary ambassador on it: it becomes neutral (a botnet there stays)".into(),
+        // 137: it replaced Free a station and the city fallback.
+        StandardAction::Liberate => (
+            "Liberate a site",
+            format!(
+                "{} ambassadors for a city, {} for a station or factory, from your supply, used up; 1 more for each adversary ambassador on it",
+                t("board.liberate_at"),
+                t("board.liberate_facility_at")
+            ),
+            format!(
+                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes `free_leaves` adversary ambassadors as it frees",
+                t("alignment.free_city"),
+                t("alignment.free_facility")
+            ),
         ),
         StandardAction::HardenChips => (
             "Harden a facility (a card that grants it; none does: Faraday Yard hardens when played)",
@@ -290,14 +313,17 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .collect()
 }
 
-/// A corrupted station seat `s` can free (r35): `free_station_ambassadors` of
-/// its ambassadors on it and no adversary ambassador. A botnet there stays,
-/// and still blocks a claim. 135 (Matt's ruling 3): an adversary factory frees
-/// the same way.
-pub fn station_freeable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    (corrupted_station(g, h) || corrupted_factory(g, h))
-        && g.tokens(h, ambassador(seat)) >= w.int("board.free_station_ambassadors")
-        && g.tokens(h, ADV_AMBASSADOR) == 0
+/// Whether seat `s` can claim neutral site `h` now: a site claim on it and
+/// the ambassadors in its supply (137).
+pub fn claimable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    claim_cost(w, g, h).is_some_and(|n| g.resource(seat, Resource::Ambassadors) >= n) && can_claim(w, g, seat, h)
+}
+
+/// Whether seat `s` can liberate adversary site `h` now: in its reach (a
+/// botnet doesn't stop it: the setup station holds one) and the ambassadors
+/// in its supply (137).
+pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
+    liberate_cost(w, g, h).is_some_and(|n| g.resource(seat, Resource::Ambassadors) >= n) && in_reach(w, g, seat, h)
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -321,8 +347,8 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
             })
             .collect()
         }
-        StandardAction::Align => all.filter(|&h| clean_city(w, g, h) && can_claim(w, g, seat, h)).collect(),
-        StandardAction::FreeStation => all.filter(|&h| reach(h) && station_freeable(w, g, seat, h)).collect(),
+        StandardAction::Claim => all.filter(|&h| claimable(w, g, seat, h)).collect(),
+        StandardAction::Liberate => all.filter(|&h| liberable(w, g, seat, h)).collect(),
         StandardAction::HardenChips => {
             if harden_card_chips(w, g, seat).is_some() {
                 all.filter(|&h| reach(h) && hardenable(g, h)).collect()
@@ -410,28 +436,18 @@ pub(super) fn std_resolve(
                 move_ambassador(g, cx, s, h)?;
             }
         }
-        StandardAction::Align => {
+        StandardAction::Claim => {
             if let Some(h) = on_hex(cx)? {
-                // r40 (D38): on a dark city the ambassador cancels one adversary
-                // ambassador there, as it does arriving on any piece, and aligns
-                // nothing; the city is aligned by a later Align once it is clean.
-                if g.tokens(h, ADV_AMBASSADOR) > 0 {
-                    adversary::remove(g, cx, h, 1);
-                    cx.tally(g, "board.canceled", 1);
-                    cx.tally(g, "board.align_canceled", 1);
-                    cx.note(Some(h), || format!("Seat {s}'s ambassador cancels an adversary ambassador at {}", hex_name(&w, h)));
-                } else {
-                    cx.add_tokens(g, h, cube(s), 1);
-                    cx.tally(g, "board.cities_aligned", 1);
-                }
+                let n = claim_cost(&w, g, h).unwrap_or(0);
+                cx.add_resource(g, s, Resource::Ambassadors, -n);
+                claim_site(g, cx, s, h);
             }
         }
-        StandardAction::FreeStation => {
+        StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                cx.add_tokens(g, h, ambassador(s), -w.int("board.free_station_ambassadors"));
-                cx.add_tokens(g, h, ADV_CUBE, -1);
-                let what = if g.tokens(h, STATION) > 0 { "board.stations_freed" } else { "board.factories_freed" };
-                cx.tally(g, what, 1);
+                let n = liberate_cost(&w, g, h).unwrap_or(0);
+                cx.add_resource(g, s, Resource::Ambassadors, -n);
+                liberate_site(g, cx, h);
             }
         }
         StandardAction::HardenChips | StandardAction::HardenBuy => {

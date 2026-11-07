@@ -194,6 +194,27 @@ fn an_ocean_edge_is_not_a_front() {
 }
 
 #[test]
+fn station_sites_are_open_free_land_and_never_a_base() {
+    // 137: empty station sites are printed, 1-2 a country, on open land with no
+    // setup piece or industrial zone, and no layout puts a base on one.
+    let content = crate::content();
+    for n in 1..=4u8 {
+        let map = Map::build(content, n).unwrap();
+        for c in 0..n as usize {
+            let p = &content.map.countries[c];
+            assert!((1..=2).contains(&p.station_sites.len()), "country {c}");
+            for &s in &p.station_sites {
+                let h = map.numbered(c, s);
+                assert_eq!(map.hexes[h].kind, HexKind::Open, "{n} countries, country {c}, site {s}");
+                assert!(map.hexes[h].station_site);
+                assert!(!map.hexes[h].industrial);
+                assert!(!p.stations.contains(&s) && p.neutral_station != s && p.node != s);
+            }
+        }
+    }
+}
+
+#[test]
 fn every_piece_prints_two_coastal_cities() {
     let (rules, _) = action_only(&["countries=4"]);
     for c in 0..4 {

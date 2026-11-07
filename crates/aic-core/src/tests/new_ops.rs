@@ -55,36 +55,42 @@ fn warmongering_needs_an_adversary_troop_by_the_base() {
 
 #[test]
 fn war_brought_forward_fights_a_front_off_the_clock_and_twice_on_it() {
-    let (rules, mut g0) = lab(&["board.war"]);
-    let m = &rules.map;
-    let [b0, b1] = m.fronts[0].bases;
-    let fs = piece(1).factories.iter().map(|&n| m.numbered(1, n)).collect::<Vec<_>>();
-    g0.piles.remove(CURRENT);
-    for &f in &fs {
-        put(&mut g0, f, FACTORY, 1);
-    }
-    put(&mut g0, b0, UNIT, 2);
-    put(&mut g0, b1, UNIT, 1);
+    let setup = |sets: &[&str]| {
+        let (rules, mut g0) = lab_with(&["board.war"], sets);
+        let m = &rules.map;
+        let [b0, b1] = m.fronts[0].bases;
+        g0.piles.remove(CURRENT);
+        for n in &piece(1).factories {
+            put(&mut g0, m.numbered(1, *n), FACTORY, 1);
+        }
+        put(&mut g0, b0, UNIT, 2);
+        put(&mut g0, b1, UNIT, 1);
+        g0.round = 1;
+        let fs = piece(1).factories.iter().map(|&n| m.numbered(1, n)).collect::<Vec<_>>();
+        (rules, g0, fs)
+    };
+
+    // 137: the clock is 3, war every round; a production-only dial (1) is no
+    // war round: only a front brought forward fights.
+    let (rules, g0, fs) = setup(&["board.clock=1"]);
     let left = |g: &GameState| fs.iter().map(|&f| g.tokens(f, FACTORY)).sum::<i64>();
     let w = rules.world();
-
-    // Round 1 is no war round: only a front brought forward fights.
     let mut g = g0.clone();
-    g.round = 1;
     assert!(!board::war_round(&w, &g));
     run(&rules, &mut g);
     assert_eq!(left(&g), fs.len() as i64);
     let mut g = g0.clone();
-    g.round = 1;
     setv(&mut g, &board::extra_war_key(0), 1);
     run(&rules, &mut g);
     assert_eq!(left(&g), fs.len() as i64 - 1);
 
     // On a war round it fights twice: the surplus strikes twice.
+    let (rules, g0, _) = setup(&[]);
+    let w = rules.world();
     let mut g = g0.clone();
-    g.round = 2;
     assert!(board::war_round(&w, &g));
-    setv(&mut g, &board::extra_war_key(0), 2);
+    // The key holds the round of the second fight: this one.
+    setv(&mut g, &board::extra_war_key(0), 1);
     run(&rules, &mut g);
     assert_eq!(left(&g), fs.len() as i64 - 2.min(fs.len() as i64));
 }
@@ -129,16 +135,18 @@ fn a_hex_blackout_darkens_only_the_cities_near_it() {
 }
 
 #[test]
-fn an_adversary_factory_frees_as_a_corrupted_station_does() {
-    // Matt's ruling 3: the Free a station action takes an adversary factory too.
+fn an_adversary_factory_liberates_as_an_adversary_station_does() {
+    // 137: Liberate takes an adversary station or factory at one price.
     let (rules, mut g) = lab(&["board.bases"]);
     let w = rules.world();
     let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
     put(&mut g, z, FACTORY, 1);
-    put(&mut g, z, ambassador(0), w.int("board.free_station_ambassadors"));
-    assert!(!board::station_freeable(&w, &g, 0, z));
+    assert_eq!(board::liberate_cost(&w, &g, z), None);
     put(&mut g, z, ADV_CUBE, 1);
-    assert!(board::station_freeable(&w, &g, 0, z));
+    let at = w.int("board.liberate_facility_at");
+    assert_eq!(board::liberate_cost(&w, &g, z), Some(at));
+    put(&mut g, z, ADV_AMBASSADOR, 1);
+    assert_eq!(board::liberate_cost(&w, &g, z), Some(at + 1));
 }
 
 #[test]

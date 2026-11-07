@@ -151,9 +151,9 @@ pub struct Weights {
     /// r35: a corrupted station costs this on top of `station` (a flip: a cube
     /// a round both ways), and freeing it earns it back.
     pub station_flip: f64,
-    /// r35: player ambassadors toward freeing a corrupted station, on it with
-    /// no adversary ambassador there: this share of `station` + `station_flip`
-    /// at the full count, growing with its square.
+    /// 137: a seat in reach saving ambassadors toward liberating an adversary
+    /// station: this share of `station` + `station_flip` at the full cost,
+    /// growing with its square.
     pub station_freeing: f64,
     pub factory: f64,
     /// Each hardening token.
@@ -345,6 +345,13 @@ pub struct Weights {
     /// is worth less `node`, and the seat's `node_danger` reads its nodes less
     /// the exposed ones (a corrupting city takes its whole cluster).
     pub node_exposure: f64,
+    /// 137: each adversary city, station or factory a player ambassador stands
+    /// on, blocking its output (a city's diversion, a station's compute, a
+    /// factory's troop): about a round's output.
+    pub block: f64,
+    /// 137: each hex where a seat's own ambassador stands on its node or owned
+    /// facility: armor, used up instead of the piece.
+    pub armor: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -543,6 +550,8 @@ impl Default for Weights {
             energy_idle: 0.2,
             cube_target: 1.0,
             node_exposure: 0.0,
+            block: 4.0,
+            armor: 1.0,
         }
     }
 }
@@ -1112,27 +1121,21 @@ impl Eval {
             if city {
                 if bad {
                     corrupted += 1;
-                    // 080: only seats with a node on or next to it count.
-                    let on = board::liberating_ambassadors(&world, g, h) as f64;
-                    let held: i64 = (0..seats)
-                        .filter(|&s| near[s] >> h & 1 != 0)
-                        .map(|s| g.resource(s, Resource::Ambassadors))
-                        .sum();
-                    // 102 (D35): the city's own adversary ambassadors each cancel
-                    // an arrival first (F122's rule).
-                    let cancel = adv as f64;
-                    let need = board::liberate_at(&world) as f64 + cancel;
-                    // Gathering counts a little; landing, once enough are at
-                    // hand to meet the hold, counts more each step, so a push
-                    // climbs to the free one action at a time (027: agents
-                    // bought ambassadors and never moved them).
-                    let at_hand = on + held as f64;
-                    let mut share = 0.25 * (at_hand / need).min(1.0);
-                    if at_hand >= need {
-                        share += 0.75 * (on / need).powi(2);
+                    // 137: the Liberate action pays one seat's supply at once (its
+                    // adversary ambassadors add to the cost): gathering toward it, by
+                    // the best-placed seat in reach, counts a little, so a seat saves up.
+                    if let Some(need) = board::liberate_cost(&world, g, h) {
+                        let held = (0..seats)
+                            .filter(|&s| near[s] >> h & 1 != 0)
+                            .map(|s| g.resource(s, Resource::Ambassadors))
+                            .max()
+                            .unwrap_or(0) as f64;
+                        v += w.corrupted * w.freeing * 0.25 * (held / need.max(1) as f64).min(1.0);
                     }
-                    v += w.corrupted * w.freeing * share;
-                    v += (self.ambassador_unit() - w.ambassador_board) * on;
+                    // 137: a player ambassador standing on it blocks its diversion.
+                    if t.ambassador[..seats].iter().any(|&n| n > 0) {
+                        v += w.block;
+                    }
                 } else {
                     if owned {
                         v += w.aligned;
@@ -1168,6 +1171,10 @@ impl Eval {
                 if t.factory > 0 {
                     v -= w.on_factory;
                 }
+                // 137: it blocks a player's station or factory while it stands.
+                if owned && !bad && (t.station > 0 || t.factory > 0) {
+                    v -= w.block;
+                }
             }
             v -= w.troop * t.troop as f64;
             if t.station > 0 {
@@ -1176,14 +1183,19 @@ impl Eval {
                     // once its country's megaproject has completed.
                     let flip = w.station_flip * open_share(&world, g, h);
                     v -= w.station + flip;
-                    // r35: ambassadors gathering to free it, worth their supply
-                    // value while they stand there (as on a city).
-                    if adv == 0 {
-                        let need = world.int("board.free_station_ambassadors").max(1) as f64;
-                        let on = t.ambassador[..seats].iter().copied().max().unwrap_or(0) as f64;
-                        let share = (on / need).min(1.0);
+                    // 137: saving up for the Liberate action, by the best-placed
+                    // seat in reach (as on a city); an ambassador standing on it blocks its compute.
+                    if let Some(need) = board::liberate_cost(&world, g, h) {
+                        let held = (0..seats)
+                            .filter(|&s| near[s] >> h & 1 != 0)
+                            .map(|s| g.resource(s, Resource::Ambassadors))
+                            .max()
+                            .unwrap_or(0) as f64;
+                        let share = (held / need.max(1) as f64).min(1.0);
                         v += (w.station + flip) * w.station_freeing * share * share;
-                        v += (self.ambassador_unit() - w.ambassador_board) * on.min(need);
+                    }
+                    if t.ambassador[..seats].iter().any(|&n| n > 0) {
+                        v += w.block;
                     }
                 } else if owned {
                     let s = (0..self.seats).find(|&s| t.cube[s] > 0).unwrap_or(0);
@@ -1195,9 +1207,17 @@ impl Eval {
             if t.factory > 0 {
                 if bad {
                     v -= w.owned_factory;
+                    // 137: a player ambassador on an adversary factory blocks its troop.
+                    if t.ambassador[..seats].iter().any(|&n| n > 0) {
+                        v += w.block;
+                    }
                 } else if owned {
                     v += w.owned_factory;
                 }
+            }
+            // 137: your own ambassador on your own piece's hex is armor.
+            if w.armor > 0.0 && (0..seats).any(|s| t.ambassador[s] > 0 && (t.node[s] > 0 || (t.cube[s] > 0 && t.station + t.factory > 0))) {
+                v += w.armor;
             }
             v -= w.botnet * t.botnet as f64;
             v -= w.marker * t.marker as f64;

@@ -1,43 +1,43 @@
-# Ambassadors
+# Ambassadors and sites
 
-*What an ambassador does on each piece, liberating cities, canceling and evicting. Terms and conventions are in [README.md](README.md).*
+*The one site model (cities, research stations, factories), claiming, liberating, blocking, armor, canceling and evicting. Terms and conventions are in [README.md](README.md).*
 
-**An ambassador sits on a piece. The next time that piece does its normal thing, the
-ambassador redirects it to its own side.** An adversary ambassador is then used up and
-returns to the adversary's supply, unless it stands on a lone node or a city: on a city it redirects nothing, but
-stays (a clean or aligned city goes dark; a corrupted one's energy is diverted anyway: the table). **A player ambassador
-is consumed for a permanent change and stays for a position (candidate, Matt):** aligning a
-city, claiming a site, freeing a station and liberating a city by the fallback consume it (no card spends one);
-evicting, standing on a base, factory, station or botnet, and moving leave it on the board.
-A consumed ambassador is gone: new ones come from cards, Followers and the standard project.
+## One site model (Matt, 2026-11-06; candidate)
 
-| On | Adversary ambassador | Player ambassador |
-|---|---|---|
-| City | it stays, and the city is **dark** while it stands there: a neutral city sells no energy (r37), an aligned city gives its owner none (r38; no Discord at `ambassador_discord` 0, below) | aligning a dark city cancels one adversary ambassador there instead (r40: both removed, no cube); otherwise waits; a corrupted city is liberated the moment `liberate_at` player ambassadors stand on it from seats with a node on or next to it (the fallback, below; checked after every action and automatic phase) |
-| Research station | that round's cube is the adversary's (on any station, a neutral one too); `station_flip_at` (2) of them on a player's station let an effect flip it ([board.md](board.md)) | on a neutral station the player can claim: the station becomes the player's (cube placed, ambassador used); on a corrupted station, that round's cube is the player's, and it stays; 2 of them there, with no adversary ambassador, can free it (the *Free a station* action, [economy.md](economy.md): both used up) |
-| Factory | on a production step, an adversary troop on the factory's hex (**locked**); used up, on an adversary-owned factory too | on a neutral factory the player can claim: the factory becomes the player's; otherwise each production step no corp troop is made (136: no Unity), and on an adversary-owned factory its troop is stopped; it stays |
-| Node | if the node is alone on its hex (on a city, base, station or factory the ambassador is that piece's), each production its owner gets 1 less insight next round and 1 compute goes onto the cheapest adversary project; it stays until removed | waits (defense, below) |
-| Military base | on a production step, `base_discord` Discord instead of a troop | on a production step, no troop (136: no Unity); it stays |
+Cities, research stations and factories follow one set of rules and differ only in output:
 
-- **Liberating a city (candidate; Matt).** A corrupted city is **liberated** by a liberate
-  card ([player-cards.md](player-cards.md), *The liberate capstones*) or by the **fallback**: `liberate_at` (5) player
-  ambassadors on it. **Both need the liberating seat's node on or next to the city**
-  (getting close is the risk): a card liberates a corrupted city in its player's reach, and
-  the fallback counts only ambassadors of seats with a node on or next to it. The fallback's
-  ambassadors are used up (lower seats first). Either way its adversary cube returns to the
-  supply, the city is **clean** (a card's extra may put its player's cube on it: aligned),
-  every liberation sways `alignment.free_city` toward Unity, and the city **drops down the
-  ladder rather than off the board**: `free_leaves` adversary ambassadors arrive on it as
-  any placement does (a surplus player ambassador there cancels one, and the supply caps
-  them). Its factories keep their owners ([war.md](war.md)). A face-up influence threat on the city holds
-  it for both routes until it is countered.
-  **The fallback is the bad route** (Matt): at `ambassador_credits` 20 each it costs about
-  100 credits, for a seat with far too many. Ambassadors waiting on a city are canceled by
-  the next build like any others, so the fallback is met in one action phase: gather five
-  in your supply, stand next to the city, land them, plus one for each adversary ambassador
-  on the city (a corrupted city keeps one through the action phase, and the first arrival
-  cancels it: six, about 120 credits), unless the Remove action clears them first (its
-  ambassador evicts them and stays, and counts).
+| Owner | City | Research station | Factory |
+|---|---|---|---|
+| Neutral | sells its energy ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except **on each Discord tip it makes 1 corp troop** ([war.md](war.md)) |
+| Player | its energy to its owner | research cubes in its owner's color | `factory_chips` chips to its owner |
+| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute | 1 adversary troop on its hex |
+
+- **One opposing ambassador blocks a site's output while it stands.** An adversary ambassador on a neutral or player
+  site, a player ambassador on an adversary site: that round the site makes nothing, and the ambassador stays
+  (`blocker_stays` 1; at 0 an adversary blocker on a station or factory is used up as it blocks, the old way). On a
+  clean or aligned city this is the **dark** city (r37, r38): no sale, no energy, and an aligned one sways
+  `ambassador_discord` (0) a unit.
+- **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex
+  is used up instead ([war.md](war.md), *Destruction*; a neutral site has none). One ambassador on your site's hex
+  covers the site and your node there.
+- **Claiming is symmetric** (the Claim action, [economy.md](economy.md)): a neutral site in reach with a site claim
+  ([README.md](README.md#terms)), for as many ambassadors as the adversary's Corrupt X needs for that type:
+  `claim_city` 4 (today's `corrupt_at`), `claim_station` 2 and `claim_factory` 2 (the adversary's `station_flip_at`;
+  candidates until 138's Corrupt X), plus one for each adversary ambassador on it, which cancel. Your cube goes on.
+  Difficulty will lower only the adversary's number. The bound city at setup is free ([board.md](board.md)).
+- **Liberating an adversary site** (the Liberate action) takes massed ambassadors from one seat's supply and turns it
+  neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
+  for a station or factory, plus one for each adversary ambassador on it, which cancel. It needs the site **in
+  reach** (your node on or next to it: getting close is the risk) but no site claim: a botnet next to it doesn't stop
+  it, and a botnet on it stays. A liberated city also **drops down the ladder rather than off the board**:
+  `free_leaves` adversary ambassadors arrive on it as any placement does. Its factories keep their owners. A liberate
+  card ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city the same way, for its own price.
+
+A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
+up instead of the next corp troop made there; an adversary ambassador on one does nothing, and no botnet forms there.
+A **node** alone on its hex: an adversary ambassador on it costs its owner 1 insight next round and puts 1 compute on
+the cheapest adversary project each production; it stays until removed.
+
 - **Opposing ambassadors cancel.** When an ambassador arrives on a piece holding one of the
   other side, both are removed (the adversary's to its supply), with no Unity. **Two
   arrivals don't cancel:** the ambassador the Remove action moves evicts what stands there
@@ -45,31 +45,9 @@ A consumed ambassador is gone: new ones come from cards, Followers and the stand
   moved ambassadors don't evict, or one ambassador at 1 credit a hop would clear the board.
   An adversary ambassador arriving on a standing player ambassador cancels it, so a
   position is held only until the next arrival.
-- **Defense:** a player ambassador on a facility's hex is used up instead of the facility
-  when it would be destroyed.
-- **Diverted** energy: a corrupted city's sways `divert_discord` Discord per unit, whatever
-  stands on it. A clean or aligned city an adversary ambassador stands on is dark instead
-  ([economy.md](economy.md)): nothing is diverted, the energy is lost; an aligned one sways `ambassador_discord` (0) per unit each round it is dark.
-
-Player ambassadors move only through cards and the standard actions (Move, Remove).
-
-**Liberating a city, for new players.** A corrupted city pours Discord and adversary
-ambassadors into the world until someone liberates it. You need to stand next to it: your
-nodes on the city or a hex beside it. Then either play a liberate card, the tier-2 capstone
-of your engine (antimatter, energy, credits, research cubes, Cyber, Security or
-Followers), or, the expensive way, land 5 of your ambassadors on it (at 20 credits each from
-the standard project), one more for each adversary ambassador standing there, since the first
-cancels it. The city is clean again (some cards also put your cube on it), the
-world sways 5 toward Unity, and 1 adversary ambassador lands on it. In the draft, pass a
-liberate card to the player whose engine can pay for it. **What resisted this summary:** a
-fallback where two players pool ambassadors counts only the ambassadors of players standing
-next to the city, and an influence threat face up on the city holds it until it is countered.
-
-**For new players.** Ambassadors you spend change the board for good: aligning a city,
-claiming a station or factory, liberating a city. Ambassadors you place hold a position: one
-that evicts adversary ambassadors from a piece stays on it, and keeps working: on a botnet every
-round, on a base or factory each production round of the clock (not rounds 2 and 4). The next adversary ambassador to land there cancels it, so a
-position lasts until the adversary answers it.
+- **Consumed or standing:** claiming, liberating, Envoy and the troop rule use a player ambassador up; evicting,
+  blocking, armor and moving leave it standing. A consumed ambassador is gone: new ones come from cards, Followers
+  and the standard project. Player ambassadors move only through cards and the standard actions (Move, Remove).
 
 **Evicting is capped by supply:** Remove takes the ambassador from your supply, never from
 the board, so each eviction needs a new ambassador; that, and pieces filling up, cap the
@@ -80,3 +58,11 @@ lost node stays until removed.
 
 **Your supply has no limit** ([economy.md](economy.md), *No limits*). Orbital Embassy gives 1 ambassador a
 Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 in long games).
+
+**For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
+and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 2 for a station or
+factory) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
+more for each adversary ambassador sitting on it. Stand one ambassador on an adversary site to shut it off, and clear
+theirs off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
+**What resisted this summary:** a liberated city takes an adversary ambassador straight back (the ladder), and a
+botnet next to a site stops a claim but not a liberation.

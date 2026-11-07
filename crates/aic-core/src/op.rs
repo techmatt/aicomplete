@@ -68,8 +68,6 @@ pub enum Scope {
 pub enum TroopAt {
     /// On the threat's location token.
     Location,
-    /// On each country's first military base.
-    Base,
     /// On the factory this threat just built.
     NewFactory,
 }
@@ -194,10 +192,9 @@ pub enum Site {
     Industrial,
     /// Research stations, whoever owns them.
     Stations,
-    /// Each country's first military base, or every base: `base_sites_per_country`.
-    /// A threat's [`Spot::Bases`] is every base in its scope.
-    #[serde(rename = "bases")]
-    BaseSites,
+    /// 137: each country's lowest-numbered factory (one a country, as the
+    /// first base it replaced; Escalation lands there too).
+    Factory,
 }
 
 /// A facility kind a cleanse may be limited to (r35).

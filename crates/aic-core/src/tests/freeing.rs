@@ -111,10 +111,10 @@ fn freeing_a_city_and_removing_a_botnet_sway_unity() {
     let city = m.numbered(0, piece(0).cities[0]);
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, node(0), 1);
+    // 137: the Liberate action (the lab's `liberate_at` is 1).
     set_res(&mut g, 0, Resource::Ambassadors, 1);
-    set_res(&mut g, 0, Resource::Credits, 10);
-    rules.apply_mut(&mut g, &std_act(0, "move"), None).unwrap();
-    answer_hex(&rules, &mut g, city);
+    rules.apply_mut(&mut g, &std_act(0, "liberate"), None).unwrap();
+    pick(&rules, &mut g, city);
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(city, ADV_CUBE), 0);
     assert_eq!(g.var("alignment.unity"), 5);

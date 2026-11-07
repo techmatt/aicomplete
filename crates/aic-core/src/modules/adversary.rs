@@ -19,12 +19,11 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
     ParamSpec::list("stage_cards", 0, 20, "adversary cards dealt from stage I, II and III (before difficulty)"),
     ParamSpec::int("supply_per_country", 0, 40, "adversary ambassadors in the supply per country"),
-    ParamSpec::int("base_sites_per_country", 0, 1, "1: arrivals and escalation reach only each country's first military base, its lowest-numbered (0: every base)"),
     ParamSpec::int("city_build", 0, 10, "build: ambassadors each corrupted city gains"),
     ParamSpec::int("factory_build", 0, 10, "build: ambassadors each factory next to a corrupted city gains"),
     ParamSpec::int("spread_range", 1, 6, "spread: how far (hexes) a spreading ambassador may travel"),
     ParamSpec::int("corrupt_at", 1, 20, "corrupt: a city that is not corrupted, holding this many adversary ambassadors, is corrupted"),
-    ParamSpec::int("escalation_ambassadors", 0, 5, "stage-II escalation: ambassadors each base it reaches gains when the card builds"),
+    ParamSpec::int("escalation_ambassadors", 0, 5, "stage-II escalation: ambassadors each country's lowest-numbered factory gains when the card builds"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty 1+: added to every threat's first counter requirement"),
     ParamSpec::int("counter_bonus_all", 0, 10, "difficulty 1+: added to every counter requirement of every threat"),
     ParamSpec::int("extra_threats", 0, 5, "difficulty 1+: extra threats dealt each round in all, one per country in turn"),
@@ -894,15 +893,31 @@ fn arrive(g: &mut GameState, cx: &mut Cx, h: usize, spreading: bool) {
         cx.tally(g, "adversary.canceled", 1);
         return;
     }
+    // 137: a base is a front's troop pile with no ambassador rules beyond the
+    // troop rule, so no botnet forms on one.
     if spreading
         && g.tokens(h, ADV_AMBASSADOR) > 0
         && !collecting_city(&w, g, h)
+        && !is_base(&w, h)
         && g.tokens(h, BOTNET) == 0
     {
         remove(g, cx, h, 1);
         cx.add_key(g, SUPPLY, 1);
         cx.add_tokens(g, h, BOTNET, 1);
         cx.tally(g, "adversary.botnets_made", 1);
+        // 137: where botnets form (the measure's).
+        let on = if is_city(&w, h) {
+            "city"
+        } else if g.tokens(h, STATION) > 0 {
+            "station"
+        } else if g.tokens(h, FACTORY) > 0 {
+            "factory"
+        } else if node_owner(g, h).is_some() {
+            "node"
+        } else {
+            "other"
+        };
+        cx.tally(g, &format!("adversary.botnets_made.{on}"), 1);
         cx.peak(g, "adversary.botnets_peak", botnet_count(g, None));
         cx.note(Some(h), || format!("A botnet forms at {}", hex_name(&w, h)));
         return;

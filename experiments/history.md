@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 137 sites and war: one site model (Claim, Liberate, blocking, armor), bases as front troop piles, war every round, board income +6; strategist 73.6 / 62.5 / 49.3% (d0-d2) against r55's 74.3 / 57.6 / 43.1 on the same seeds, as asked 61.8 / 43.8 / 27.8; the purge win route shrinks (standing blockers, more botnets); the death audit continued | r56 | [137_sites_and_war/README.md](results/137_sites_and_war/README.md) |
 | 136 alignment and the win: two independent tracks (Unity may hold Discord off; Envoy), all 9 Unity cards, the purge by Unity cards drawn; median game 6 → 8 rounds at every level, no Unity win before round 6, strategist 79.9 / 71.5 / 63.9% (d0-d2); the death audit of r54's node losses | r55 | [136_alignment_and_win/README.md](results/136_alignment_and_win/README.md) |
 | 135 the new adversary model built and played with every 134 draft (threat decks by tier, location tokens and near, the counter menu, event pulls, project slots, production then war); d2 strategist 61.8% (r53 70.8%) | r54 | [135_adversary_model/README.md](results/135_adversary_model/README.md) |
 | 134 adversary decks drafted for the new model (content for review, not loaded): tier-1/2/3 threats 25/28/11, projects 20, the Militarist's board and 14 events; picker `adversary_drafts` | r53 | [134_militarist_drafts/README.md](results/134_militarist_drafts/README.md) |

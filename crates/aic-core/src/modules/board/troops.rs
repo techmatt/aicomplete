@@ -14,7 +14,7 @@ pub(super) fn nearest(w: &World, from: usize, hexes: impl Iterator<Item = usize>
     })
 }
 
-/// Production step 2, on a war round: on each front the units cancel 1 for
+/// War (137: at the end of every round): on each front the units cancel 1 for
 /// 1; each surplus unit crosses and destroys the rival factory nearest its
 /// base, taking any node on its hex (027: a node was the target with
 /// no factory left). All units at the front are used up.
@@ -39,6 +39,10 @@ pub(super) fn battle(g: &mut GameState, cx: &mut Cx) {
         }
         let [ba, bb] = f.bases;
         let (ua, ub) = (g.tokens(ba, UNIT), g.tokens(bb, UNIT));
+        // 137: a fight is a front with corp troops on it at war.
+        if ua + ub > 0 {
+            cx.tally(g, "board.war_fights", 1);
+        }
         cx.add_tokens(g, ba, UNIT, -ua);
         cx.add_tokens(g, bb, UNIT, -ub);
         let (from, rival, n) = if ua > ub {

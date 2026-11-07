@@ -37,14 +37,14 @@ set so that the Discord track fills faster than the team can hold it off without
 |---|---|---|
 | Unity | removing an adversary troop | `alignment.troop` 0 |
 | Unity | Biomia's converter | 1 for 2 research cubes |
-| Unity | liberating a corrupted city (ambassadors.md: a liberate card or the fallback) | `alignment.free_city` 5 |
+| Unity | liberating an adversary city (ambassadors.md: a liberate card or the Liberate action) | `alignment.free_city` 5 |
+| Unity | liberating an adversary station or factory (the Liberate action) | `free_facility` 2 |
 | Unity | removing a botnet | `alignment.botnet` 1 |
 | Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 2 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |
 | Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
-| Discord | an adversary ambassador on a producing base | `base_discord` 1 |
-| Discord | a facility destroyed in war (not by an adversary troop) | `destruction_discord` 0 |
+| Discord | a factory destroyed in war (not by an adversary troop) | `destruction_discord` 1 |
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
 | Discord | an uncountered threat, the antimatter action, twists, Discord cards, adversary projects | `threat_discord` 1, `antimatter_discord` 1, card text |
 | Discord | the adversary board's drip, at the start of every round | as printed (The Militarist: 0) |
@@ -136,7 +136,7 @@ can come.
 The steps are a list: the first is ambassadors, the second troops, the third botnets;
 with only two entries botnets always count. **Why:** with no standard action to remove a
 botnet, botnets would block the purge in most games, and troops respawn from adversary
-factories every production step. The level-0 purge (below the first step) counts only once this
+factories every round. The level-0 purge (below the first step) counts only once this
 round's adversary card is of stage `clear_win_stage` or later; at 1 (the default) that is from
 round 1's card on.
 

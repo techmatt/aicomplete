@@ -5,11 +5,12 @@ The rules are split by area. Read this page, then only the files your task touch
 - This page: scope, conventions, the new-player summary, [Terms](#terms) (the house words, reach, site claims,
   pieces, ownership, the ladder and who chooses) and the [off-variants](#off-variants).
 - [board.md](board.md): country pieces, fronts and bases, setup, research stations, megaprojects and converters.
-- [ambassadors.md](ambassadors.md): what ambassadors do on each piece, consuming versus standing, liberating cities,
-  canceling, evicting.
+- [ambassadors.md](ambassadors.md): the one site model (cities, stations, factories), claiming, liberating, blocking,
+  armor, canceling, evicting.
 - [adversary.md](adversary.md): the adversary board and event deck (the round cap), build, spread, corrupt, botnets,
   the project slots, difficulty.
-- [war.md](war.md): the production/war clock, factories, corp troops and war, the adversary march, Wall, node loss.
+- [war.md](war.md): production and war every round, factories, bases as troop piles, war, the adversary march, Wall,
+  node loss.
 - [alignment.md](alignment.md): Sway, tipping, the Unity and Discord decks, the purge, winning and losing.
 - [economy.md](economy.md): each resource's sources and uses, city energy, standard actions, the round's phases.
 - [ai-boards.md](ai-boards.md): the three boards, their special rules, node tracks and capstones.
@@ -21,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 55 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 56 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -84,10 +85,12 @@ The rest:
   move goes further. The adversary's distances (`spread_range`, the spread twists, `war_reach`) are its dials, not
   a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter is not a map target: it needs a node in a city of
   its country ([board.md](board.md)).
-- **Site claim**: aligning a city, or claiming a research station or factory, needs the
+- **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military
+  base is no site: it is a front's troop pile ([war.md](war.md)).
+- **Site claim**: claiming a neutral site (the Claim action) needs the
   player's node on or next to the site, and **a botnet next to the site blocks claims
-  on it** (one hop from the site).
-- **Piece**: a city, a military base, a facility or a node. Ambassadors sit on pieces.
+  on it** (one hop from the site). Liberating an adversary site needs reach only.
+- **Piece**: a site, a military base or a node. Ambassadors sit on pieces.
 - **Clean / corrupted / aligned / owned**: a city, research station or factory with no
   owner cube is clean (a station or factory: neutral); an adversary cube means corrupted
   (a factory: adversary-owned); a player cube means aligned (a city) or owned.
@@ -110,5 +113,5 @@ adversary deck-out stay; with no tips the Unity-deck win and the Discord-deck lo
 (no draft or drawing, so no player cards at all). Two don't isolate their module: with
 Alignment off nothing tips, so botnets always count against the purge; with cards off only Decommission removes a
 botnet. `board`, `adversary`, `alignment` and `ai` are not removable (each is read by another); `threats=off`,
-`cards=off` and `economy=off` remove the module. Parts switch off by parameters (`factory_units` 0, `factory_chips` 0,
+`cards=off` and `economy=off` remove the module. Parts switch off by parameters (`destruction_discord` 0, `factory_chips` 0,
 `escalation_ambassadors` 0, `board.troop_steps` 0 (no march), `adversary.botnet_compute` 0).

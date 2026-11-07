@@ -7,20 +7,72 @@ use crate::op::{CorpAt, CorpNear, CorpWhen};
 pub const LEFT: [Resource; 5] =
     [Resource::Credits, Resource::Chips, Resource::Energy, Resource::Antimatter, Resource::Ambassadors];
 
-fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
+/// 137: `n` corp troops are made at base `base` (held to `unit_cap` unless
+/// `past_cap`). A player ambassador standing on the base is used up instead of
+/// each troop, while one stands (the troop rule: no decision at tip time).
+/// Returns the troops made.
+pub fn corp_troops_at(g: &mut GameState, cx: &mut Cx, base: usize, n: i64, past_cap: bool) -> i64 {
     let w = cx.world;
-    if g.tokens(base, UNIT) < w.int("board.unit_cap") {
-        cx.add_tokens(g, base, UNIT, 1);
-        cx.tally(g, "board.units_built", 1);
+    let mut made = 0;
+    for _ in 0..n {
+        if let Some(s) = player_ambassador(g, base) {
+            cx.add_tokens(g, base, ambassador(s), -1);
+            cx.tally(g, "board.base_ambassador_used", 1);
+            continue;
+        }
+        if past_cap || g.tokens(base, UNIT) < w.int("board.unit_cap") {
+            cx.add_tokens(g, base, UNIT, 1);
+            made += 1;
+        }
+    }
+    made
+}
+
+fn add_unit(g: &mut GameState, cx: &mut Cx, base: usize) {
+    let made = corp_troops_at(g, cx, base, 1, false);
+    cx.tally(g, "board.units_built", made);
+}
+
+/// The bases of country `c`'s corp (137: one on each of its active fronts;
+/// every printed front is active).
+pub fn corp_bases(w: &World, c: u8) -> Vec<usize> {
+    (0..w.map.hexes.len()).filter(|&b| is_base(w, b) && w.map.hexes[b].country == c).collect()
+}
+
+/// 137: a Discord tip. Each neutral factory makes 1 corp troop, which its corp
+/// puts on each of its bases; an adversary ambassador on the factory blocks it
+/// (one opposing ambassador blocks a site's output), a player ambassador on it
+/// is used up instead (the troop rule), and an occupied factory makes nothing.
+pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
+    let w = cx.world;
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, FACTORY) == 0 || corrupted(g, h) || cube_owner(g, h).is_some() || occupied(g, h) {
+            continue;
+        }
+        if g.tokens(h, ADV_AMBASSADOR) > 0 {
+            cx.tally(g, "board.blocked.factory_neutral", 1);
+            if w.int("board.blocker_stays") == 0 {
+                adversary::remove(g, cx, h, 1);
+            }
+            continue;
+        }
+        if let Some(s) = player_ambassador(g, h) {
+            cx.add_tokens(g, h, ambassador(s), -1);
+            cx.tally(g, "board.factory_ambassador_used", 1);
+            continue;
+        }
+        cx.tally(g, "board.tip_factory_troops", 1);
+        for b in corp_bases(&w, w.map.hexes[h].country) {
+            add_unit(g, cx, b);
+        }
     }
 }
 
-/// Production step 1, on a production step of the clock: bases, then
-/// factories, make their corp's units (a factory 1 at each of its corp's
-/// bases); an adversary ambassador on the piece diverts it and is removed, a
-/// player's diverts it and stays (068: a position); an adversary-owned factory
-/// makes an adversary troop. Player-owned factories
-/// make chips. Then the cities grow factories.
+/// Production (137: every round, the clock's dial at 3): bases make nothing of
+/// their own; corp troops come from Discord tips at neutral factories
+/// ([`tip_corp_troops`]) and the extra-troop rules. Player-owned factories
+/// make chips, adversary factories an adversary troop; one opposing
+/// ambassador blocks either while it stands. Then the cities grow factories.
 pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     // 068: what each seat left unspent, the measure's: not a rule.
@@ -47,7 +99,6 @@ pub(super) fn produce_units(g: &mut GameState, cx: &mut Cx) -> Res {
     if !production_round(&w, g) {
         return Ok(());
     }
-    base_units(g, cx);
     extra_units(g, cx);
     factory_output(g, cx);
     grow_factories(g, cx)
@@ -93,8 +144,8 @@ fn extra_units(g: &mut GameState, cx: &mut Cx) {
         }
         let (past, capped) = extra_asked(&w, g, h, &registered);
         if past > 0 {
-            cx.add_tokens(g, h, UNIT, 1);
-            cx.tally(g, "board.units_extra", 1);
+            let made = corp_troops_at(g, cx, h, 1, true);
+            cx.tally(g, "board.units_extra", made);
             if past > 1 {
                 cx.tally(g, "board.units_extra_capped", past - 1);
             }
@@ -104,31 +155,12 @@ fn extra_units(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// Bases make their corp's units, or an ambassador diverts them: the adversary's
-/// is used up, a player's stays (068).
-fn base_units(g: &mut GameState, cx: &mut Cx) {
-    let w = cx.world;
-    for h in 0..g.hexes.len() {
-        if !is_base(&w, h) {
-            continue;
-        }
-        if g.tokens(h, ADV_AMBASSADOR) > 0 {
-            adversary::remove(g, cx, h, 1);
-            cx.tally(g, "board.bases_diverted", 1);
-            alignment::discord_from(g, cx, "base", w.int("board.base_discord"));
-        } else if player_ambassador(g, h).is_some() {
-            // 136: it stops the unit and sways no Unity (it swayed `base_unity`).
-            cx.tally(g, "board.bases_united", 1);
-        } else {
-            add_unit(g, cx, h);
-        }
-    }
-}
-
-/// Factories make chips for their owners, then units or an adversary troop.
+/// 137: factories make their owner's output: a player's chips, the adversary's
+/// 1 troop on its hex, a neutral one nothing (its troop comes at a Discord
+/// tip). One opposing ambassador blocks it while it stands: an adversary
+/// ambassador on a player's factory, a player ambassador on the adversary's.
 fn factory_output(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
-    let per = w.int("board.factory_units");
     let chips = w.int("board.factory_chips");
     for h in 0..g.hexes.len() {
         if g.tokens(h, FACTORY) == 0 {
@@ -140,45 +172,24 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
             continue;
         }
         if let Some(s) = cube_owner(g, h) {
-            cx.add_resource(g, s, Resource::Chips, chips);
-            cx.tally(g, "board.chips_made", chips);
-        }
-        if per == 0 {
-            continue;
-        }
-        if g.tokens(h, ADV_AMBASSADOR) > 0 || corrupted(g, h) {
-            // 028: an adversary-owned factory uses its ambassador up too.
             if g.tokens(h, ADV_AMBASSADOR) > 0 {
-                adversary::remove(g, cx, h, 1);
-            } else if player_ambassador(g, h).is_some() {
-                // 135 (Matt's ruling 3: adversary factories free as a corrupted
-                // station does): a player ambassador on one takes its output, so
-                // no troop is made, and stays (068); 136: no Unity (it swayed `factory_unity`).
-                cx.tally(g, "board.factory_troops_diverted", per);
+                cx.tally(g, "board.blocked.factory_player", 1);
+                if w.int("board.blocker_stays") == 0 {
+                    adversary::remove(g, cx, h, 1);
+                }
+            } else {
+                cx.add_resource(g, s, Resource::Chips, chips);
+                cx.tally(g, "board.chips_made", chips);
+            }
+        } else if corrupted(g, h) {
+            if player_ambassador(g, h).is_some() {
+                // 137: a player ambassador blocks it while it stands.
+                cx.tally(g, "board.blocked.factory_adversary", 1);
                 continue;
             }
-            for _ in 0..per {
-                adversary::place_troop(g, cx, h);
-            }
-            cx.tally(g, "board.troops_built", per);
-            cx.note(Some(h), || {
-                format!(
-                    "The factory at {} makes an adversary troop",
-                    hex_name(&w, h)
-                )
-            });
-        } else if player_ambassador(g, h).is_some() {
-            // 136: its units are stopped, with no Unity.
-        } else {
-            let c = w.map.hexes[h].country;
-            let bases: Vec<usize> = (0..g.hexes.len())
-                .filter(|&b| is_base(&w, b) && w.map.hexes[b].country == c)
-                .collect();
-            for b in bases {
-                for _ in 0..per {
-                    add_unit(g, cx, b);
-                }
-            }
+            adversary::place_troop(g, cx, h);
+            cx.tally(g, "board.troops_built", 1);
+            cx.note(Some(h), || format!("The factory at {} makes an adversary troop", hex_name(&w, h)));
         }
     }
 }
@@ -303,7 +314,10 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
         if hex_flagged(&w, g, RoundFlag::Blackout, h) || hex_flagged(&w, g, RoundFlag::GridDown, h) {
             continue;
         }
-        if corrupted(g, h) {
+        if corrupted(g, h) && player_ambassador(g, h).is_some() {
+            // 137: a player ambassador on an adversary city blocks its diversion.
+            cx.tally(g, "board.blocked.city_adversary", 1);
+        } else if corrupted(g, h) {
             alignment::discord_from(g, cx, "city", energy * divert);
             cx.tally(g, "board.energy_diverted", energy);
         } else if g.tokens(h, ADV_AMBASSADOR) > 0 && cube_owner(g, h).is_none() {
@@ -352,14 +366,13 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Color {
     Seat(usize),
-    Adversary,
     Neutral,
 }
 
 /// 074: stations make research cubes in their owner's color: onto their
-/// country's megaproject until it completes, then onto their owner's board, or
-/// the adversary's convert at once. An adversary ambassador takes the round's
-/// cube and is used up, on a neutral station too.
+/// country's megaproject until it completes, then onto their owner's board (a
+/// neutral one's is lost). 137: an adversary station makes compute instead,
+/// and one opposing ambassador blocks a station while it stands.
 pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let cubes = w.int("board.station_cubes");
@@ -374,16 +387,30 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
             cx.tally(g, "board.stations_dark", 1);
             continue;
         }
-        let color = if g.tokens(h, ADV_AMBASSADOR) > 0 {
-            adversary::remove(g, cx, h, 1);
-            Color::Adversary
-        } else if corrupted(g, h) {
-            // 068: a player ambassador on a corrupted station diverts its cube
-            // to that player, and stays.
-            player_ambassador(g, h).map_or(Color::Adversary, Color::Seat)
-        } else {
-            cube_owner(g, h).map_or(Color::Neutral, Color::Seat)
-        };
+        // 137: one opposing ambassador blocks the output while it stands: an
+        // adversary ambassador on a neutral or player station, a player
+        // ambassador on the adversary's. An adversary station makes compute.
+        if corrupted(g, h) {
+            if player_ambassador(g, h).is_some() {
+                cx.tally(g, "board.blocked.station_adversary", 1);
+            } else {
+                cx.tally(g, "board.station_compute", cubes);
+                adversary::gain_compute(g, cx, cubes)?;
+                if g.is_over() {
+                    return Ok(());
+                }
+            }
+            continue;
+        }
+        if g.tokens(h, ADV_AMBASSADOR) > 0 {
+            let side = if cube_owner(g, h).is_some() { "player" } else { "neutral" };
+            cx.tally(g, &format!("board.blocked.station_{side}"), 1);
+            if w.int("board.blocker_stays") == 0 {
+                adversary::remove(g, cx, h, 1);
+            }
+            continue;
+        }
+        let color = cube_owner(g, h).map_or(Color::Neutral, Color::Seat);
         // 135 (Cooling Failure): a seat with a station outage makes no cubes.
         if let Color::Seat(s) = color {
             if seat_flagged(g, RoundFlag::StationOutage, s) {
@@ -394,29 +421,14 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         if g.var(&project_done(c)) == 0 {
             let key = match color {
                 Color::Seat(s) => project_key(c, Some(s)),
-                Color::Adversary => project_key(c, None),
                 Color::Neutral => project_neutral(c),
             };
             cx.add_key(g, &key, cubes);
             continue;
         }
-        match color {
-            Color::Seat(s) => {
-                cx.add_resource(g, s, Resource::ResearchCubes, cubes);
-                cx.tally(g, "board.cubes_stored", cubes);
-            }
-            Color::Adversary => {
-                let after = &w.content.map.countries[c].megaproject.after;
-                cx.tally(g, "board.cubes_after", cubes);
-                cx.tally(g, &format!("board.cubes_after.{c}"), cubes);
-                for _ in 0..cubes {
-                    effects::run(g, cx, after, &mut effects::Ctx::team().named("megaproject"))?;
-                }
-                if g.is_over() {
-                    return Ok(());
-                }
-            }
-            Color::Neutral => {}
+        if let Color::Seat(s) = color {
+            cx.add_resource(g, s, Resource::ResearchCubes, cubes);
+            cx.tally(g, "board.cubes_stored", cubes);
         }
     }
     Ok(())

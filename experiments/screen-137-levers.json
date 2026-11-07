@@ -1,0 +1,29 @@
+{
+  "name": "screen-137-levers",
+  "note": "137 lever screen (dev seeds 36700-36747, 48 a cell, the three pairs, d0-d2, strategist): r56 as asked, and the player-board income lever (each board's printed credits +2, +4) screened on and off.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_inc2", "set": ["ais.builder.credits=20", "ais.protector.credits=18", "ais.researcher.credits=16"]},
+    {"name": "br_inc2", "set": ["ai.boards=0,2", "ais.builder.credits=20", "ais.protector.credits=18", "ais.researcher.credits=16"]},
+    {"name": "pr_inc2", "set": ["ai.boards=1,2", "ais.builder.credits=20", "ais.protector.credits=18", "ais.researcher.credits=16"]},
+    {"name": "bp_inc4", "set": ["ais.builder.credits=22", "ais.protector.credits=20", "ais.researcher.credits=18"]},
+    {"name": "br_inc4", "set": ["ai.boards=0,2", "ais.builder.credits=22", "ais.protector.credits=20", "ais.researcher.credits=18"]},
+    {"name": "pr_inc4", "set": ["ai.boards=1,2", "ais.builder.credits=22", "ais.protector.credits=20", "ais.researcher.credits=18"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 36700,
+  "records": 0
+}

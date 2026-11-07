@@ -806,8 +806,9 @@ mod tests {
         // 078: at `city_build` 2 the opening stops at a spread choice before
         // next round's card is revealed; at 1 seed 1's doesn't. 080: nor
         // may the Wall pressure's landing ask where.
+        // 137: round 1's card may ask where its troops land: a seed whose opening asks nothing.
         let r = config_rules_with("baseline", 0, &["adversary.city_build=1", "adversary.wall_troops=0"]);
-        let mut g = r.new_game(1);
+        let mut g = (1..64).map(|s| r.new_game(s)).find(|g| g.pending.is_none()).unwrap();
         let value = |clock: f64, g: &aic_core::GameState| {
             let w = eval::Weights { clock, ..Default::default() };
             eval::Eval::new(&r, w).value(&r, g)

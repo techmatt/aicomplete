@@ -1,0 +1,25 @@
+{
+  "name": "screen-137-agents",
+  "note": "137 agent screen (dev seeds 36700-36747, 48 a cell, the three pairs, d0-d2): r56 strategist (the prompt's numbers), without saving toward Liberate (w.freeing, w.station_freeing 0), and without the block/armor terms.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.freeing=0,w.station_freeing=0",
+    "strategist:w.block=0,w.armor=0"
+  ],
+  "games": 48,
+  "first_seed": 36700,
+  "records": 0
+}

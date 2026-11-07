@@ -49,16 +49,15 @@ fn the_view_shows_the_board_the_fronts_the_projects_and_the_next_card() {
     };
     assert_eq!(global("board.fronts").value, m.fronts.len() as i64);
     let clock = global("board.clock");
-    assert_eq!(clock.value, 1);
+    // 137: production and war every round.
+    assert_eq!(clock.value, 3);
     assert!(
-        clock.doc.contains(
-            "1: production, 2: war, 3: production, 4: war, 5: production, 6: production + war"
-        ),
+        clock.doc.contains("1: production + war, 2: production + war, 3: production + war"),
         "{}",
         clock.doc
     );
     assert!(global("adversary.compute").value > 0);
-    assert_eq!(global("board.war").value, 0);
+    assert_eq!(global("board.war").value, 1);
     let supply = global("adversary.supply");
     assert_eq!((supply.value, supply.max), (g.var(SUPPLY), Some(48)));
     assert_eq!(

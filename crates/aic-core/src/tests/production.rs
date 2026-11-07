@@ -97,7 +97,9 @@ fn a_project_short_of_its_cubes_does_not_complete() {
 }
 
 #[test]
-fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_takes_it() {
+fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_blocks_it() {
+    // 137: the ambassador blocks the cube while it stands (it took the cube
+    // for the adversary and was used up).
     let (rules, mut g) = lab(&["board.produce"]);
     let h = rules.map.numbered(0, piece(0).neutral_station);
     put(&mut g, h, STATION, 1);
@@ -106,50 +108,54 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_takes_i
     run(&rules, &mut g);
     assert_eq!(g.var(&board::project_neutral(0)), neutral + 1);
     put(&mut g, h, ADV_AMBASSADOR, 1);
-    run(&rules, &mut g);
+    for _ in 0..2 {
+        run(&rules, &mut g);
+    }
     assert_eq!(g.var(&board::project_neutral(0)), neutral + 1);
-    assert_eq!(g.var(&k), adversary + 1);
-    assert_eq!(g.tokens(h, ADV_AMBASSADOR), 0);
+    assert_eq!(g.var(&k), adversary);
+    assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
+    assert_eq!(g.stats.counters["board.blocked.station_neutral"], 2);
 }
 
-/// 075 (Matt): no corp prints an after line, so an adversary cube made after
-/// completion is lost, as a neutral one is.
+/// 137: an adversary station makes adversary compute, before its country's
+/// megaproject completes and after (it put an adversary cube on the project).
 #[test]
-fn adversary_cubes_after_completion_are_lost() {
+fn an_adversary_station_makes_compute_before_and_after_completion() {
     let (rules, mut g) = lab(&["board.produce"]);
+    let cubes = rules.world().int("board.station_cubes");
     for c in 0..2 {
-        g.vars.insert(board::project_done(c).into(), 1);
         let h = rules.map.numbered(c, piece(c).stations[0]);
         put(&mut g, h, STATION, 1);
         put(&mut g, h, ADV_CUBE, 1);
     }
-    let (made, discord) = (g.var(adversary::COMPUTE), g.var("alignment.discord"));
+    let on_projects = |g: &GameState| (0..2).map(|c| g.var(&board::project_key(c, None))).collect::<Vec<_>>();
+    let (made, before) = (g.var(adversary::COMPUTE), on_projects(&g));
+    // (Round 1 of the new game already ran the setup's adversary stations.)
+    let tallied = g.stats.counters.get("board.station_compute").copied().unwrap_or(0);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), made);
-    assert_eq!(g.var("alignment.discord"), discord);
-    assert_eq!(g.stats.counters["board.cubes_after"], 2);
-}
-
-/// The rule still reads an after line content prints (074's, by overlay).
-#[test]
-fn adversary_cubes_convert_at_once_after_completion_as_the_card_prints() {
-    let (rules, mut g) = lab_with(
-        &["board.produce"],
-        &[r#"corps.horizon.project.after=[{"op":"compute","amount":2}]"#, r#"corps.cintamani.project.after=[{"op":"compute_every","amount":1}]"#],
-    );
-    // Onyx is not in a 2-country game: Horizon's 2, Cintamani's every project.
-    for c in 0..2 {
-        g.vars.insert(board::project_done(c).into(), 1);
-        let h = rules.map.numbered(c, piece(c).stations[0]);
-        put(&mut g, h, STATION, 1);
-        put(&mut g, h, ADV_CUBE, 1);
-    }
-    let visible = adversary::projects(&g).len() as i64;
-    assert!(visible >= 2);
+    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
+    assert_eq!(on_projects(&g), before);
+    g.vars.insert(board::project_done(0).into(), 1);
+    g.vars.insert(board::project_done(1).into(), 1);
     let made = g.var(adversary::COMPUTE);
     run(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE) - made, 2 + visible);
-    assert_eq!(g.stats.counters["adversary.compute_corp"], 2 + visible);
+    assert_eq!(g.var(adversary::COMPUTE) - made, 2 * cubes);
+    assert_eq!(g.stats.counters["board.station_compute"] - tallied, 4 * cubes);
+}
+
+/// 137's lever: at `blocker_stays` 0 an adversary ambassador blocking a
+/// station is used up as it blocks (as before 137); at 1 it stands.
+#[test]
+fn a_blocker_is_used_up_only_with_blocker_stays_off() {
+    for (stays, left) in [(1, 1), (0, 0)] {
+        let (rules, mut g) = lab_with(&["board.produce"], &[&format!("board.blocker_stays={stays}")]);
+        let h = rules.map.numbered(0, piece(0).neutral_station);
+        put(&mut g, h, STATION, 1);
+        put(&mut g, h, ADV_AMBASSADOR, 1);
+        let neutral = g.var(&board::project_neutral(0));
+        run(&rules, &mut g);
+        assert_eq!((g.var(&board::project_neutral(0)), g.tokens(h, ADV_AMBASSADOR)), (neutral, left), "stays {stays}");
+    }
 }
 
 #[test]

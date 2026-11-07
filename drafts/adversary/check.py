@@ -308,7 +308,7 @@ def check_militarist(mil, projects, ops, new_ops):
             if n > stages[s]:
                 errors.append(f"difficulty {d}: deals {n} stage-{s} events, {stages[s]} printed")
     for e in mil["events"]:
-        if e.get("arrivals") not in ("coastal", "industrial", "stations", "bases", None):
+        if e.get("arrivals") not in ("coastal", "industrial", "stations", "factory", None):
             errors.append(f"{e['id']}: arrivals {e.get('arrivals')!r}")
     for s in (1, 2, 3):
         kinds = {e.get("arrivals") for e in mil["events"] if e["stage"] == s} - {None}

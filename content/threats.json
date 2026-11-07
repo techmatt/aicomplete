@@ -1278,7 +1278,7 @@
   "locations": [
    "base"
   ],
-  "text": "For 3 rounds, the corp base here makes 1 extra troop each production step, even past its cap.",
+  "text": "For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap.",
   "counters": [
    [
     {
@@ -1323,7 +1323,7 @@
   "locations": [
    "base"
   ],
-  "text": "Next round, the fronts next to this base fight their war step twice. Sway 2 toward Discord.",
+  "text": "Next round, the fronts next to this base fight twice. Sway 2 toward Discord.",
   "counters": [
    [
     {
@@ -2755,7 +2755,7 @@
   "locations": [
    "base"
   ],
-  "text": "Next round, the fronts next to this base fight their war step twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord.",
+  "text": "Next round, the fronts next to this base fight twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord.",
   "counters": [
    [
     {

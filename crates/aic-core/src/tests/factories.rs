@@ -1,6 +1,7 @@
 //! Factories, troops and chips.
 
 use super::*;
+use crate::modules::board;
 
 #[test]
 fn cities_grow_factories_that_take_their_owner() {
@@ -178,30 +179,40 @@ fn a_clean_citys_factory_goes_to_the_most_node_by_its_zone() {
 
 #[test]
 fn player_factories_make_chips_on_production_steps_only() {
-    let (rules, mut g0) = lab(&["board.bases"]);
-    let m = &rules.map;
-    let f = m.numbered(0, piece(0).factories[0]);
-    put(&mut g0, f, FACTORY, 1);
-    put(&mut g0, f, cube(0), 1);
-    // Every zone taken, so nothing grows.
-    for c in 0..2 {
-        for &z in &piece(c).industry {
-            put(&mut g0, m.numbered(c, z), FACTORY, 1);
+    // 137: the clock is 3 (both) every round; a war-only dial makes none.
+    let setup = |sets: &[&str]| {
+        let (rules, mut g0) = lab_with(&["board.bases"], sets);
+        let m = &rules.map;
+        let f = m.numbered(0, piece(0).factories[0]);
+        put(&mut g0, f, FACTORY, 1);
+        put(&mut g0, f, cube(0), 1);
+        // Every zone taken, so nothing grows.
+        for c in 0..2 {
+            for &z in &piece(c).industry {
+                put(&mut g0, m.numbered(c, z), FACTORY, 1);
+            }
         }
+        (rules, g0)
+    };
+    let (rules, g0) = setup(&[]);
+    for round in [1, 2] {
+        let mut g = g0.clone();
+        g.round = round;
+        run(&rules, &mut g);
+        assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), 1, "round {round}");
     }
+    // A war step only (the dial at 2): no chips, troops or growth.
+    let (rules, g0) = setup(&["board.clock=2"]);
     let mut g = g0.clone();
-    run(&rules, &mut g);
-    assert_eq!(g.resource(0, Resource::Chips) - g0.resource(0, Resource::Chips), 1);
-    // Round 2 is a war step only: no chips, troops or growth.
-    let mut g = g0.clone();
-    g.round = 2;
     run(&rules, &mut g);
     assert_eq!(g.resource(0, Resource::Chips), g0.resource(0, Resource::Chips));
     assert_eq!(total(&g, UNIT), 0);
 }
 
+/// 137: corp troops come from Discord tips: each neutral factory makes 1 on
+/// each of its corp's bases; production makes none.
 #[test]
-fn a_factory_makes_a_troop_at_each_of_its_corps_bases() {
+fn a_discord_tip_makes_a_troop_at_each_of_a_factorys_corp_bases() {
     let (rules, mut g) = lab_with(&["board.bases"], &["countries=3"]);
     let m = &rules.map;
     for c in 0..3 {
@@ -220,14 +231,70 @@ fn a_factory_makes_a_troop_at_each_of_its_corps_bases() {
         kind(m, h) == HexKind::Base && m.hexes[h].country == 0
     });
     assert_eq!(bases.len(), 2);
+    assert_eq!(bases, board::corp_bases(&rules.world(), 0));
     run(&rules, &mut g);
+    assert_eq!(total(&g, UNIT), 0, "production makes no corp troop");
+    next_alignment_card(&mut g, Side::Discord, "propaganda");
+    fill_bucket(&rules, &mut g, Side::Discord);
+    any_action(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.var("alignment.discord_tips"), 1);
     for b in bases {
-        assert_eq!(g.tokens(b, UNIT), 2, "1 from the base, 1 from the factory");
+        assert_eq!(g.tokens(b, UNIT), 1, "1 from the factory");
     }
     let other: Vec<usize> = hexes_where(m, |h| {
         kind(m, h) == HexKind::Base && m.hexes[h].country != 0
     });
-    assert!(other.iter().all(|&b| g.tokens(b, UNIT) == 1));
+    assert!(other.iter().all(|&b| g.tokens(b, UNIT) == 0));
+}
+
+/// 137: at a tip, one opposing ambassador blocks a neutral factory's troop
+/// and stays; a player ambassador on it is used up instead; an occupied,
+/// player or adversary factory makes none; a player ambassador on a base is
+/// used up instead of the troop there.
+#[test]
+fn what_stops_a_tip_troop() {
+    let (rules, mut g0) = lab(&[]);
+    let w = rules.world();
+    let f = rules.map.numbered(0, piece(0).factories[0]);
+    put(&mut g0, f, FACTORY, 1);
+    let bases = board::corp_bases(&w, 0);
+    assert!(!bases.is_empty());
+    let tip = |g: &mut GameState| with_cx(&rules, |cx| board::tip_corp_troops(g, cx));
+    let units = |g: &GameState| bases.iter().map(|&b| g.tokens(b, UNIT)).sum::<i64>();
+    let n = bases.len() as i64;
+
+    let mut g = g0.clone();
+    tip(&mut g);
+    assert_eq!(units(&g), n);
+
+    let mut g = g0.clone();
+    put(&mut g, f, ADV_AMBASSADOR, 1);
+    tip(&mut g);
+    assert_eq!((units(&g), g.tokens(f, ADV_AMBASSADOR)), (0, 1));
+
+    let mut g = g0.clone();
+    put(&mut g, f, ambassador(0), 1);
+    tip(&mut g);
+    assert_eq!((units(&g), g.tokens(f, ambassador(0))), (0, 0));
+    assert_eq!(g.stats.counters["board.factory_ambassador_used"], 1);
+
+    for (tok, label) in [(TROOP, "occupied"), (cube(0), "a player's"), (ADV_CUBE, "the adversary's")] {
+        let mut g = g0.clone();
+        put(&mut g, f, tok, 1);
+        if tok == TROOP {
+            g.vars.insert(crate::key::Key::new(&board::occupied_key(f)), 1);
+        }
+        tip(&mut g);
+        assert_eq!(units(&g), 0, "{label}");
+    }
+
+    let mut g = g0.clone();
+    put(&mut g, bases[0], ambassador(1), 1);
+    tip(&mut g);
+    assert_eq!((g.tokens(bases[0], UNIT), g.tokens(bases[0], ambassador(1))), (0, 0));
+    assert_eq!(units(&g), n - 1);
+    assert_eq!(g.stats.counters["board.base_ambassador_used"], 1);
 }
 
 #[test]
@@ -245,7 +312,8 @@ fn an_adversary_factory_makes_adversary_troops() {
     put(&mut g, f, ADV_CUBE, 1);
     let [b0, _] = m.fronts[0].bases;
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f, TROOP), g.tokens(b0, UNIT)), (1, 1));
+    // 137: and no corp troop at its corp's base.
+    assert_eq!((g.tokens(f, TROOP), g.tokens(b0, UNIT)), (1, 0));
 }
 
 /// 135 (Matt's ruling 3: it frees as a corrupted station does): a player
@@ -265,14 +333,15 @@ fn a_player_ambassador_on_an_adversary_factory_stops_its_troop_and_stays() {
     assert_eq!(g.var("alignment.unity") - unity, 0);
 }
 
-/// 028: an adversary-owned factory's ambassador is used up making its troop.
+/// 137: an adversary factory makes its troop and its own ambassadors stay
+/// (028: one was used up making it).
 #[test]
-fn an_ambassador_on_an_adversary_factory_is_used_up_making_its_troop() {
+fn ambassadors_on_an_adversary_factory_stay_as_it_makes_its_troop() {
     let (rules, mut g) = lab(&["board.bases"]);
     let f = rules.map.numbered(0, piece(0).factories[0]);
     put(&mut g, f, FACTORY, 1);
     put(&mut g, f, ADV_CUBE, 1);
     put(&mut g, f, ADV_AMBASSADOR, 2);
     run(&rules, &mut g);
-    assert_eq!((g.tokens(f, TROOP), g.tokens(f, ADV_AMBASSADOR)), (1, 1));
+    assert_eq!((g.tokens(f, TROOP), g.tokens(f, ADV_AMBASSADOR)), (1, 2));
 }

@@ -85,7 +85,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), 4-42 credits (Citywide Microgrid 4 and 8 energy; Popular Uprising 22, tier 1, its liberation four Actions away), well under the fallback's ~100 and
+  a corrupted city costs in play; the extra at its own row), 4-42 credits (Citywide Microgrid 4 and 8 energy; Popular Uprising 22, tier 1, its liberation four Actions away), well under the Liberate action's 5 ambassadors (~100 credits) and
   out of reach before mid-game. They read 1.0-1.35 at Matt's unit anchors, inside the margin like any fair card: the
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the

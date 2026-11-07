@@ -126,7 +126,7 @@
    ],
    "cost": 11,
    "ongoing": true,
-   "text": "Ongoing: each production step, every military base makes 1 more troop.",
+   "text": "Ongoing: each round, every military base makes 1 more troop.",
    "effects": [
     {
      "op": "corp_troops",
@@ -158,7 +158,7 @@
    ],
    "cost": 18,
    "ongoing": true,
-   "text": "In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights its war step twice.",
+   "text": "In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights twice.",
    "effects": [
     {
      "op": "extra_war",

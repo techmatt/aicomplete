@@ -18,6 +18,8 @@ fn the_build_forecast_matches_the_build_step() {
         let rules = Rules::new(&c).unwrap();
         for seed in 0..3 {
             let mut g0 = rules.new_game(seed);
+            // 137: round 1's card may land troops on a factory of the players' choice.
+            answer_all(&rules, &mut g0);
             let players: Vec<Key> = (0..g0.seats.len()).map(|s| Key::new(ambassador(s))).collect();
             for h in Arc::make_mut(&mut g0.hexes).iter_mut() {
                 Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));

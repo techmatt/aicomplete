@@ -12,15 +12,15 @@ The adversary is a **board** (the Militarist's: its project slots, two rules and
 2. **Threats** (`threats.deal`): the card's top line deals its pulls ([threats.md](threats.md)).
 3. **Build** (`adversary.build`), the rest of the card top to bottom. Its **standing lines**: compute, adversary
    ambassadors (`infiltrate`: each country's clean city with the most gains more) and troops ("in each country, 1 troop
-   lands on a factory, else a city"; "on each country's first base"). Then its **twists** (immediate ones resolve now:
+   lands on a factory, else a city"). Then its **twists** (immediate ones resolve now:
    Sway, a Unity pull, node losses, botnet ambassadors; the rest are read where they act). Then the **build**:
    **arrivals (candidate):** the card names a site type, and every matching site in every country gains `arrivals`
    adversary ambassadors, whatever the board holds (below); each corrupted city gains `city_build` (2, Matt: faster
    than the party can easily deal with) and each factory next to a corrupted city `factory_build`; the twists add
    more. **Troops where the Protector stands** (the board's rule): in each country where a seat with Wall has a node,
    `wall_troops` troops land as any landing does (on a factory, players choose, else a city; never a hex Wall holds),
-   giving Wall strikes to stop ([war.md](war.md)). A stage-II card's **Escalation** gives each country's first base
-   `escalation_ambassadors`. Ongoing **projects** act (below). Last, each **botnet** makes `botnet_compute`
+   giving Wall strikes to stop ([war.md](war.md)). A stage-II card's **Escalation** gives each country's lowest-numbered
+   factory `escalation_ambassadors` (137: it was the first base; candidate). Ongoing **projects** act (below). Last, each **botnet** makes `botnet_compute`
    **adversary compute**, onto the projects (none under a player ambassador).
 4. **Spread** (`adversary.spread`): every hex holding several adversary ambassadors, fixed
    when the step starts, keeps one and sends each other one to a hex within `spread_range`.
@@ -41,9 +41,9 @@ The adversary is a **board** (the Militarist's: its project slots, two rules and
 6. **March** (`board.march`, [war.md](war.md)), then **reveal** (`adversary.reveal`): the top card goes face up as
    next round's card.
 
-**The Militarist's board rules.** *Troops where the Protector stands* (above). *Warmongering:* each production step, a
+**The Militarist's board rules.** *Troops where the Protector stands* (above). *Warmongering:* each round, a
 military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; a base gains at most
-1 extra corp troop a production step from every such rule together (Warmongering, Conscription, Arms Race; Matt,
+1 extra corp troop a round from every such rule together (Warmongering, Conscription, Arms Race; Matt,
 2026-11-06). Its difficulty line, from `board_difficulty_at`: every standing line that lands troops lands 1 more in
 each country.
 
@@ -73,12 +73,12 @@ resolved (or been discarded), the slots refill.
 - **Compute sources:** each botnet, `botnet_compute` a round in the build (none under a
   player ambassador); most threats carry compute, gained when they execute uncountered
   ([threats.md](threats.md)); the event cards' standing lines; an adversary ambassador draining a lone node, 1 in
-  production ([ambassadors.md](ambassadors.md)); the corp cards, an adversary cube at Cintamani's completion
-  ([board.md](board.md)).
+  production ([ambassadors.md](ambassadors.md)); each adversary research station, `station_cubes` a round in
+  production (137); the corp cards, an adversary cube at Cintamani's completion ([board.md](board.md)).
 - **Spending:** each compute point goes onto the **cheapest** visible project (ties: the
   first slot); content may print `compute_every` (on every visible project). When a project holds its cost it **resolves**: a one-shot effect at once, or
   an **ongoing** one that acts in every round's build step from the next round on (Arms Race and Declaration of War
-  act where they say: production and the war step). Choices are the players' (seat 0; a player's own loss, each
+  act where they say: production and war). Choices are the players' (seat 0; a player's own loss, each
   player's). With no project left, compute is lost.
 - **Cost** is printed per player (the table below), which keeps the timing at 2, 3 and 4
   players.
@@ -159,26 +159,16 @@ it). A card prints, top to bottom: its pulls, its standing lines, its twists, it
 
 **Arrivals: the explore step that never stops.** The site types are **coastal cities**,
 **industrial zones** (built on or not: an ambassador may stand on an empty zone, the one
-exception to "ambassadors sit on pieces"), **research stations** (whoever owns them) and
-**each country's first base**. A coastal city is next to ocean or printed coastal on its
+exception to "ambassadors sit on pieces"), **research stations** (whoever owns them) and **each country's lowest-numbered factory**
+(137: it took the cards that named each country's first base). A coastal city is next to ocean or printed coastal on its
 piece (`coast` in `content/map.json`); every piece has two. Horizon gets both
 from ocean, Cintamani prints one more, Onyx and Biomia print both. Next round's card is
 face up, so its site type shows a round ahead. Each stage's cards spread the types. An
 out-of-turn "the adversary builds now" brings the card's arrivals too, in its scope.
 
-**A country's first base (candidate; `base_sites_per_country`):** its lowest-numbered
-military base. Arrivals and Escalation reach only that one, so what reaches bases counts
-countries, not fronts (a country has one front at 2 countries, two at 3 and 4), a count
-fixed by the printed board that can't feed back. A base's other rules hold: an
-ambassador spreading onto a second base still diverts it, and a threat's base token may go on any base in the
-country (the most threatened).
-
-**For new players.** An adversary card may name military bases, and stage II cards send an
-extra ambassador to them. Either way it lands on each country's lowest-numbered base. A
-base with an ambassador on it swings the world toward Discord when it next produces, so
-guard your first base. **What resisted this:** "first base" is a new term for a printed
-number, it only matters at 3 and 4 countries, and an ambassador can still spread onto the
-second base.
+**For new players.** Stage II cards send an extra adversary ambassador to each country's lowest-numbered factory,
+where it shuts the factory off until someone removes it. **What resisted this:** "lowest-numbered" is a printed
+number a player has to look up.
 
 **The supply is a cap.** A placement it can't make doesn't happen; running out doesn't lose.
 
@@ -202,6 +192,6 @@ difficulty 4's "tier-2 threats sooner" deals a stage-I card's tier-1 pulls from 
 `tier2_early` cards ahead (the face-up card first).
 
 Difficulty is only the configured level: Discord tips don't raise it ([alignment.md](alignment.md)). **The
-fallback's `liberate_at` is the same at every difficulty:** difficulty comes from the
+players' claim and liberate costs are the same at every difficulty** (138's Corrupt X will lower only the adversary's): difficulty comes from the
 adversary and decks (Discord deck size, threat strength, round cap). The target is in
 `docs/principles.md`; reads are indexed in [experiments/history.md](../../experiments/history.md).

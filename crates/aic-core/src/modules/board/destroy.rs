@@ -27,8 +27,8 @@ impl Cause {
 /// A piece of `kind` on hex `h` would be destroyed. A node safe as its
 /// owner's last stays. A Shelter Order in
 /// its country, a corp unit at a base next to it (adversary strikes only,
-/// [`Cause::Troop`]), a hardening token, a player ambassador on the hex, or an
-/// the Aegis Doctrine capstone absorbs it (in that order); otherwise it goes, and a war
+/// [`Cause::Troop`]), a hardening token, the owner's ambassador on the hex (137:
+/// armor), or the Aegis Doctrine capstone absorbs it (in that order); otherwise it goes, and a war
 /// destruction ([`Cause::War`]) sways toward Discord. Returns whether it was
 /// destroyed.
 pub fn destroy_piece(
@@ -62,7 +62,13 @@ pub fn destroy_piece(
         cx.tally(g, "board.hardening_used", 1);
         return false;
     }
-    if let Some(s) = player_ambassador(g, h) {
+    // 137: your own ambassador is armor: the node's owner's, or the owner of
+    // the site on the hex (a node shares its hex's site's armor). A neutral
+    // site has none.
+    let armor = owner
+        .filter(|&s| g.tokens(h, ambassador(s)) > 0)
+        .or_else(|| cube_owner(g, h).filter(|&s| g.tokens(h, ambassador(s)) > 0));
+    if let Some(s) = armor {
         cx.add_tokens(g, h, ambassador(s), -1);
         cx.tally(g, "board.ambassador_shield", 1);
         return false;
@@ -91,7 +97,7 @@ pub fn destroy_piece(
         format!("{} at {} destroyed", piece_name(kind), hex_name(&w, h))
     });
     if cause == Cause::War {
-        alignment::sway(g, cx, Side::Discord, w.int("board.destruction_discord"));
+        alignment::discord_from(g, cx, "war", w.int("board.destruction_discord"));
     }
     true
 }

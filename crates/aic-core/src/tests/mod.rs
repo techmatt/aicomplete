@@ -83,7 +83,6 @@ fn lab_config(round: &[&str]) -> Config {
         // Rule tests read these numbers, not the calibration.
         "adversary.city_build=2",
         "adversary.botnet_compute=3",
-        "board.base_discord=3",
         "board.ambassador_discord=1",
         "board.troop_node=0",
         "board.free_leaves=0",
@@ -121,6 +120,8 @@ fn lab_with(phases: &[&str], sets: &[&str]) -> (Rules, GameState) {
     }
     let rules = Rules::new(&c).unwrap();
     let mut g = rules.new_game(1);
+    // 137: round 1's card may land troops on a factory of the players' choice.
+    answer_all(&rules, &mut g);
     assert!(g.pending.is_none() && !g.is_over());
     for h in Arc::make_mut(&mut g.hexes).iter_mut() {
         Arc::make_mut(h).tokens.clear();
@@ -557,9 +558,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 55;
-const GOLDEN_FINGERPRINT: &str = "0aab9018f5d9e929";
-const GOLDEN_CONTENT_HASH: &str = "61fe66af4a5ab5a8";
+const GOLDEN_REVISION: u32 = 56;
+const GOLDEN_FINGERPRINT: &str = "96cb7a99082b489f";
+const GOLDEN_CONTENT_HASH: &str = "83961fd41df59b75";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

@@ -1,0 +1,20 @@
+{
+  "name": "diag-137c",
+  "note": "137 diagnosis 3 (dev seeds 36700-36731, 32 a cell, B+P): the agents under r56. Base strategist (blocked own site now costs w.block), without saving toward Liberate, with removal of standing adversary ambassadors weighted up, and without the block/armor terms.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.freeing=0,w.station_freeing=0",
+    "strategist:w.on_piece=4,w.on_factory=10",
+    "strategist:w.block=0,w.armor=0"
+  ],
+  "games": 32,
+  "first_seed": 36700,
+  "records": 0
+}

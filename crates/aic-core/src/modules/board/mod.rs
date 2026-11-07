@@ -1,10 +1,10 @@
 //! The board (014, 016): the printed country pieces (cities, open land,
 //! ocean, industrial zones; military bases on the fronts), player node
 //! (owned here; AI boards read the track through `track_taken`), the setup,
-//! the production/war clock, production (factories grow from cities and
-//! make corp units and chips, front battles on war steps, adversary
-//! troops, cities, stations, megaprojects), player ambassadors and site
-//! claims, the standard actions and the round-end cleanup.
+//! production every round (factories grow from cities and make chips or
+//! adversary troops, cities, stations, megaprojects; 137: the clock is a dial
+//! at 3), war at the end of every round, player ambassadors and the one site
+//! model (claim, liberate, block, armor), the standard actions and the round-end cleanup.
 
 use crate::action::Action;
 use crate::content::{Op, RoundFlag, Side};
@@ -29,7 +29,7 @@ mod view;
 pub use ambassadors::*;
 pub use destroy::*;
 pub use node::*;
-pub use production::LEFT;
+pub use production::{corp_bases, corp_troops_at, tip_corp_troops, LEFT};
 use production::*;
 pub use standard::*;
 pub use troops::*;
@@ -46,16 +46,19 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("start_corrupted", 0, 3, "cities per country that start corrupted"),
             ParamSpec::int("start_ambassadors", 0, 10, "player ambassadors each player starts with"),
             ParamSpec::int("unit_cap", 0, 20, "corp units a base holds at most"),
-            ParamSpec::int("factory_units", 0, 5, "corp units each factory makes on a production step at each of its corp's bases"),
-            ParamSpec::list("clock", 0, 3, "the printed round track, per round: 1 production, 2 war, 3 both (the last entry repeats)"),
+            ParamSpec::list("clock", 0, 3, "the round track, per round: 1 production, 2 war, 3 both (the last entry repeats; 137: 3, every round, a dial kept to restore the clock)"),
             ParamSpec::list("corp_energy", 0, 10, "energy cubes each city of country i makes a round (a megacorp parameter; the list repeats)"),
             ParamSpec::int("city_energy_credits", 0, 20, "credits for a neutral city's energy cube, bought by a player with a node next to it"),
             ParamSpec::int("aligned_bonus", 0, 10, "extra energy an aligned city gives its owner"),
             ParamSpec::int("station_cubes", 0, 5, "research cubes a station makes a round"),
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens"),
-            ParamSpec::int("base_discord", 0, 10, "Discord an adversary ambassador on a producing base sways"),
-            ParamSpec::int("liberate_at", 1, 10, "player ambassadors on a corrupted city, from seats with a node on or next to it, that liberate it (the fallback)"),
+            ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
+            ParamSpec::int("liberate_facility_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary station or factory"),
+            ParamSpec::int("blocker_stays", 0, 1, "1: an adversary ambassador blocking a station or factory stands while it blocks (137); 0: it is used up when it blocks, as before 137"),
+            ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at)"),
+            ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
+            ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
             ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe)"),
             ParamSpec::int("free_leaves", 0, 5, "adversary ambassadors left on a city as it frees (the piece ladder)"),
             ParamSpec::int("destruction_discord", 0, 5, "Discord each facility destroyed in war sways"),
@@ -66,7 +69,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("corruption_reach", 0, 1, "a city that corrupts destroys nodes within this many hexes of it"),
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
-            ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner on a production step"),
+            ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
             ParamSpec::int("chips_credits", 0, 50, "standard action: credits for selling 1 chip"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there"),
             ParamSpec::int("remove_count", 1, 3, "standard action: adversary ambassadors one removal takes off its hex, at most"),
@@ -80,14 +83,12 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
             ParamSpec::int("drain_credits", 1, 50, "standard project: credits to drain compute from an adversary project"),
             ParamSpec::int("drain_amount", 1, 20, "standard project: compute drained"),
-            ParamSpec::int("free_station_credits", 0, 50, "standard action: credits to free a corrupted research station"),
-            ParamSpec::int("free_station_ambassadors", 1, 5, "standard action: your ambassadors on a corrupted research station that freeing it uses up"),
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, align, free a station, harden, chips, sell, drain; completed megaprojects' converters"),
-            PhaseSpec::auto("bases", "on a production step: bases and factories make corp units and chips, cities grow factories"),
-            PhaseSpec::auto("war", "on a war step, the corp units on either side of each front fight"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, claim, liberate, harden, chips, sell, drain; completed megaprojects' converters"),
+            PhaseSpec::auto("bases", "production: factories make chips or adversary troops, extra corp troops, cities grow factories"),
+            PhaseSpec::auto("war", "at the end of the round, the corp troops on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
             PhaseSpec::auto("produce", "cities make energy (an adversary ambassador on one stays and darkens it) and research stations produce (ambassadors divert them); one on a lone node drains its owner's insight into adversary compute; full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
@@ -433,11 +434,6 @@ impl Module for Board {
             }
             _ => Err(Halt::Illegal("not a standard action".into())),
         }
-    }
-
-    fn after(&self, g: &mut GameState, cx: &mut Cx) -> Res {
-        free_cities(g, cx);
-        Ok(())
     }
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {

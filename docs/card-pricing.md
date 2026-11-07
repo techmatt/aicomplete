@@ -122,7 +122,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **A gift to another seat** is 0.75 × face; **a tag left in play** 1, then 0.5 each (events leave none).
 - **The liberate capstones**: priced at their own value, at least half in their engine's resource, out of reach
   before mid-game: a city liberated is 45 (5 Sway, the city and the ambassadors and Discord it stops; play reads about
-  50), against the fallback's 5 ambassadors at about 100; each engine's twist at its own row (3 ambassadors; up to 2
+  50), against the Liberate action's 5 ambassadors at about 100; each engine's twist at its own row (3 ambassadors; up to 2
   troops in the city's country; a botnet next to it; a draw 2). They read 1.0-1.5 at the anchors (r45), inside the
   margin like any fair card: the deck's late credit sinks, pending Matt's liberation anchor.
 

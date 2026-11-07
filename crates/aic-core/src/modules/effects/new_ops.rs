@@ -234,11 +234,6 @@ fn city_token(w: &World, g: &GameState, ctx: &Ctx) -> Option<usize> {
         .or_else(|| threats::tokens(g, t).into_iter().find(|&h| is_city(w, h)))
 }
 
-/// Country `c`'s first military base: its lowest-numbered.
-fn first_base(w: &World, c: usize) -> Option<usize> {
-    w.map.countries[c].hexes.iter().copied().filter(|&h| is_base(w, h)).min_by_key(|&h| w.map.hexes[h].number)
-}
-
 #[derive(Debug, Clone, Copy)]
 struct Landing {
     count: i64,
@@ -247,8 +242,8 @@ struct Landing {
     stand: bool,
 }
 
-/// Troops (135 fields): on the threat's token, each country's first base, or
-/// the factory the threat just built; `if` empty_zone, only where the token's
+/// Troops (135 fields): on the threat's token or the factory the threat just
+/// built (137 cut "each country's first base"); `if` empty_zone, only where the token's
 /// zone held no factory (before the threat's own destruction); `stand`, they
 /// never march or strike.
 fn troops(
@@ -265,7 +260,6 @@ fn troops(
         // No new landing place: today's (a factory near it, else a city).
         None => return team::troops(g, cx, ctx, land.count, land.each_country, land.destroy),
         Some(TroopAt::Location) => token(&w, g, ctx, location).into_iter().collect(),
-        Some(TroopAt::Base) => scope_countries(&w, ctx.scope).into_iter().filter_map(|c| first_base(&w, c)).collect(),
         Some(TroopAt::NewFactory) => ctx
             .threat
             .as_ref()
@@ -698,8 +692,9 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
                     c.count.min(cap - have).max(0)
                 };
                 if n > 0 {
-                    cx.add_tokens(g, b, UNIT, n);
-                    cx.tally(g, "board.units_extra_now", n);
+                    // 137: a player ambassador on the base is used up instead of each troop.
+                    let made = board::corp_troops_at(g, cx, b, n, true);
+                    cx.tally(g, "board.units_extra_now", made);
                 }
             }
         }

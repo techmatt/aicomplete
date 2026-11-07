@@ -111,9 +111,8 @@ pieces by lowercase name, the only part of the map it reaches; `null` clears an 
 `cards.<id>.ability=null`; an op's `amount` can't be 0: to switch an income off, rewrite its list without it, as
 122's `gen_disproof.py` does). It is checked like `content/` and lands in the config, so the hashes and records name
 it and `replay` needs nothing else (`experiments/overlay-card-cost.json` is a worked sweep). Only player-card text is
-generated: other text and the viewer's faces show printed values while the game plays the overlay. `experiment`
-refuses `--set` and a spec has no set shared by its variants, so a lever on two sizes is two variants, each
-repeating the whole list.
+generated: other text and the viewer's faces show printed values. `experiment` refuses `--set` and a spec has no
+shared set, so each variant repeats the whole list.
 
 **Bisect a batch by groups** of overlays on one binary. A price lever's first read is on the engine (many times
 cheaper); the planner confirms.
@@ -140,13 +139,13 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `read-135.json` (the three pairs, strategist and greedy, d0-d2: 864 games, about 5 min on 4
-  threads; `-counters.json` the `old_counters` off arm), read by 135's `read135.py` (wins, ends, threats per round,
-  counter kinds, peak holdings); 130's `read130.py` (energy per board, keeps, plays, Action uses), `deck_rates.py` and
+- **Current recipe:** `read-137.json` (the three pairs, d0-d2, the prompt's numbers as `*_asked` cells, an agent
+  on/off arm: 1728 strategist games, about 20 min on 6 threads), read by 137's `read137.py` (136's and 135's tables
+  plus war, claims, liberations, blocks and armor a game) and `levers.py` (a `<pair>_<lever>` screen, paired); 130's `read130.py` (energy per board, keeps, plays, Action uses), `deck_rates.py` and
   128's `action_read.py` (why an Action went unused) still apply. Agent switches and value-table numbers (`t.chips=2`, agents.md) are agent cells: no second
   binary. 131's `read131.py` reads `t.` arms against their base agent, paired, with `--same` for identical games.
-- **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min (13 ms a planner decision); 300
-  strategist games about 4 min on 4 threads under load.
+- **Costs:** an engine game about 0.7 s; a `sweep` screen of 432 games about 9 min; 1296 strategist games about 10
+  min on 8 threads (r56).
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
@@ -172,7 +171,8 @@ line alone reads near the engine.
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
 ledger. Used (specs in the write-ups): below 36144; r53 (131): 36144-36391 (dev 36144-36343, fresh
 36344-36391); r54 (135): 36392-36439 (the paired read at d0-d2 and the counter-kinds read); r55 (136): 36440-36487
-(the fresh paired read), dev 36600-36647 (screens). Next free: 36488 (skip 36600-36647).
+(the fresh paired read), dev 36600-36647 (screens); r56 (137): 36488-36535 (the fresh paired read), dev
+36700-36747 (screens). Next free: 36536 (skip 36600-36647 and 36700-36747).
 
 ## Reading prices
 

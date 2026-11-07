@@ -62,8 +62,8 @@ card does; how each primitive resolves:
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Amnesty Decree: 4) around one corrupted
-  city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Those next to the city don't raise the fallback, so clearing them only
-  thins the city's build before it spreads; each on the city costs the fallback one more ambassador ([ambassadors.md](ambassadors.md)).
+  city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Those next to the city don't raise the Liberate action's cost, so clearing them only
+  thins the city's build before it spreads; each on the city costs the Liberate action one more ambassador ([ambassadors.md](ambassadors.md)).
 - **Card text:** generated from the card's ops (*The card grammar*, above), extra costs and lowered income included; a
   long card sets smaller. **Harden N facilities** is N different ones (Hardening, above); **shelter one country**:
   nothing in it, facility or node, can be destroyed this round. The house words are in [README.md](README.md#terms)'s *Terms*.

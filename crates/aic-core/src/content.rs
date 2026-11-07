@@ -181,6 +181,10 @@ pub struct CountryPiece {
     pub neutral_station: u8,
     /// Printed industrial zones: open hexes next to a city where factories go.
     pub industry: Vec<u8>,
+    /// 137: printed empty station sites, 1-2 a country (open land, no setup
+    /// piece, industrial zone or base), where content may create a neutral station.
+    #[serde(default)]
+    pub station_sites: Vec<u8>,
     /// Industrial zones holding a factory at setup (neutral).
     pub factories: Vec<u8>,
     /// Where the starting node of the player who starts here goes.
@@ -494,8 +498,8 @@ pub struct AdversaryCard {
     pub twists: Vec<Op>,
     #[serde(default)]
     pub harms: Vec<String>,
-    /// The Militarist's escalation: each country's first base gains an adversary
-    /// ambassador when this card's round builds.
+    /// The Militarist's escalation: each country's lowest-numbered factory gains
+    /// an adversary ambassador when this card's round builds (137: it was the first base).
     #[serde(default)]
     pub escalation: bool,
 }

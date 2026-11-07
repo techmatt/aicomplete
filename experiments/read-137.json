@@ -1,0 +1,27 @@
+{
+  "name": "read-137",
+  "note": "137 read: one site model, bases as front piles, war every round (r56, with board income +6) on fresh seeds 36488-36535 (48 a cell), the three pairs, d0-d2; the prompt's numbers (board income as printed before 137: 18 / 16 / 14) as the `*_asked` cells; strategist, and strategist without the block/armor eval terms for their on/off read. Paired against r55 (main 6b5d719, out/r55cfg) on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]},
+    {"name": "bp_asked", "set": ["ais.builder.credits=18", "ais.protector.credits=16", "ais.researcher.credits=14"]},
+    {"name": "br_asked", "set": ["ai.boards=0,2", "ais.builder.credits=18", "ais.protector.credits=16", "ais.researcher.credits=14"]},
+    {"name": "pr_asked", "set": ["ai.boards=1,2", "ais.builder.credits=18", "ais.protector.credits=16", "ais.researcher.credits=14"]}
+  ],
+  "difficulties": [
+    0,
+    1,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.block=0,w.armor=0"
+  ],
+  "games": 48,
+  "first_seed": 36488,
+  "records": 0
+}

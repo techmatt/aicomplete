@@ -1,0 +1,18 @@
+{
+  "name": "smoke-137",
+  "note": "137 engine smoke (dev seeds 36700-36715, 16 a cell): r56's site model, bases as piles and war every round, strategist with and without the block/armor eval terms, d0 and d2, B+P.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.block=0,w.armor=0"
+  ],
+  "games": 16,
+  "first_seed": 36700,
+  "records": 0
+}

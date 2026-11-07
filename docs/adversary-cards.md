@@ -7,7 +7,7 @@
 Project slots: Military, Open, Open.
 
 - **Troops where the Protector stands.** Each build: in each country where the Protector has a node, 1 adversary troop lands.
-- **Warmongering.** Each production step, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each production step, whatever makes it.
+- **Warmongering.** Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each round, whatever makes it.
 - **Difficulty.** Militarist, harder: every event that lands troops lands 1 more in each country.
 
 ## Event deck
@@ -15,18 +15,18 @@ Project slots: Military, Open, Open.
 | Card | Stage | Text |
 |---|---|---|
 | Probing Strikes | 1 | Each country: a Military 1 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Arrivals: coastal cities. |
-| Factory Drive | 1 | Each country: Military 1 or Economic 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones. |
+| Factory Drive | 1 | Each country: Military 1 or Economic 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones. |
 | Long Patrols | 1 | Each country: Military 1 or Cyber 1. The adversary gains 3 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Spread reaches 1 hex further. Arrivals: research stations. |
-| War Drums | 1 | Each country: Military 1 or Influence 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Sway 1 toward Discord. Arrivals: each country's first base. |
+| War Drums | 1 | Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Sway 1 toward Discord. Arrivals: each country's lowest-numbered factory. |
 | Signal Jamming | 1 | Each country: Military 1 or Grid 1. The adversary gains 2 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Every botnet makes 1 adversary ambassador on its hex. Arrivals: coastal cities. |
 | Mobilization | 2 | Each country: a Military 2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each corrupted city gains 1 more adversary ambassador. Arrivals: coastal cities. Escalation. Escalation. |
 | Station Raids | 2 | Each country: Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each corrupted research station gains 1 adversary ambassador. Arrivals: research stations. Escalation. Escalation. |
 | Fifth Column | 2 | Each country: Influence 2 or Cyber 2. The adversary gains 3 compute. Each country's clean city with the most adversary ambassadors gains 1 more. Cities corrupt at 1 fewer adversary ambassador. Arrivals: coastal cities. Escalation. Escalation. |
-| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's first base. Escalation. Escalation. |
+| Border War | 2 | Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's lowest-numbered factory. Escalation. Escalation. |
 | Supply Lines | 2 | Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones. Escalation. Escalation. |
 | Forced March | 2 | Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Every adversary troop takes 1 more step this round. Arrivals: industrial zones. Escalation. Escalation. |
 | Total Mobilization | 3 | Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each corrupted city gains 1 more adversary ambassador. Remove 2 Unity from the Unity track. Arrivals: industrial zones. |
-| Blitzkrieg | 3 | Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's first base. |
+| Blitzkrieg | 3 | Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's lowest-numbered factory. |
 | Occupation | 3 | Each country: Military 3 or Cyber 3, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each country's clean city with the most adversary ambassadors gains 1 more. Cities corrupt at 1 fewer adversary ambassador. Arrivals: research stations. |
 | Naval Blockade | 3 | Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Factories next to clean cities gain 1 adversary ambassador. Arrivals: coastal cities. |
 
@@ -67,8 +67,8 @@ Project slots: Military, Open, Open.
 | Total War | Military | base | 2 troops land on the base here and march at once. | 12 credits; 3 Security tags; 2 nodes near it |
 | Siege | Military | factory | 1 troop lands on the factory or zone here. Each player near it destroys 1 of their nodes near it (never their last). | 12 credits; 3 energy; 2 nodes near it |
 | Manhunt | Military | base, city | Each player near it pays 14 credits or destroys 2 of their nodes near it (never their last). | 10 credits; 3 Security tags |
-| Conscription | Military + Economic | base | For 3 rounds, the corp base here makes 1 extra troop each production step, even past its cap. | 12 credits; 3 energy; 3 Security tags |
-| Casus Belli | Military | base | Next round, the fronts next to this base fight their war step twice. Sway 2 toward Discord. | 12 credits; 3 Security tags; 2 nodes near it |
+| Conscription | Military + Economic | base | For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap. | 12 credits; 3 energy; 3 Security tags |
+| Casus Belli | Military | base | Next round, the fronts next to this base fight twice. Sway 2 toward Discord. | 12 credits; 3 Security tags; 2 nodes near it |
 | Overrun | Influence | city | If the city here holds 3 or more adversary ambassadors, it becomes corrupted. If not, 2 adversary ambassadors land on it. | 12 credits; 3 ambassadors; 3 Diplomacy tags |
 | Insurrection | Influence | city | 3 adversary ambassadors land on the city here, each canceling a player ambassador there. Sway 2 toward Discord. | 11 credits; 3 ambassadors; 3 Diplomacy tags |
 | Deepfake Wave | Influence + Cyber | city, station | Sway 2 toward Discord. Remove 1 Unity from the Unity track. Each player near it gets 2 less insight next round. | 3 ambassadors; 11 credits; 6 insight |
@@ -102,7 +102,7 @@ Project slots: Military, Open, Open.
 | Iron Curtain | Universal | factory, city | 1 troop lands on the factory or zone here. Each player near it loses 2 energy. Remove 2 Unity from the Unity track. | 16 credits; 4 energy; 3 Security tags; 3 Power tags |
 | Spearhead | Military | base | 3 troops land on the base here and march at once, 2 steps. | 15 credits; 4 energy; 3 Security tags; 3 nodes near it |
 | Scorched Earth | Military | factory | The factory here is destroyed, with the nodes on its hex (never their last). On an empty zone, 2 troops land there instead. | 16 credits; 4 energy; 3 Security tags |
-| General Mobilization | Military | base | Next round, the fronts next to this base fight their war step twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord. | 14 credits; 3 energy; 3 Security tags; 6 credits + 2 energy |
+| General Mobilization | Military | base | Next round, the fronts next to this base fight twice. Its corp makes 2 more troops here now, past its cap. Sway 1 toward Discord. | 14 credits; 3 energy; 3 Security tags; 6 credits + 2 energy |
 | War Economy | Military + Economic | factory, base | An adversary factory lands on the zone here, else the nearest free zone, with 1 troop on it. Each player near it loses 1 energy. | 16 credits; 4 energy; 3 Security tags; 3 Industry tags |
 | Regime Change | Influence | city | The city here is corrupted: nodes on and next to it are destroyed (never their last), and player ambassadors waiting there are lost. | 27 credits; 7 ambassadors; 5 Diplomacy tags; 14 credits + 3 ambassadors |
 | Lab Takeover | Cyber | station | The station here is corrupted, even a player's; the adversary gains 4 compute. | 16 credits; 3 research cubes; 3 Cyber tags; 6 credits + 2 insight |
@@ -117,8 +117,8 @@ Project slots: Military, Open, Open.
 | War Footing | Military | 7 | once | Every corp base fills to its troop cap now. Sway 1 toward Discord. |
 | Purge the Unaligned | Military | 7 | once | Every player loses an ambassador or a node (never their last node). 1 troop lands on a factory in each country. |
 | Armored Columns | Military | 10 | once | In each country, 2 troops land on factories. |
-| Arms Race | Military | 11 | ongoing | Ongoing: each production step, every military base makes 1 more troop. |
-| Declaration of War | Military | 18 | ongoing | In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights its war step twice. |
+| Arms Race | Military | 11 | ongoing | Ongoing: each round, every military base makes 1 more troop. |
+| Declaration of War | Military | 18 | ongoing | In each country, 2 troops land on factories. Ongoing: each round, the front with the most corp troops fights twice. |
 | Disinformation | Influence | 5 | once | Sway 4 toward Discord. Every player loses an ambassador. |
 | Recruitment Drive | Influence | 11 | ongoing | Ongoing: every round, every clean city gains 1 adversary ambassador. |
 | Infiltration Drive | Influence | 18 | once | In each country, the uncorrupted city with the most adversary ambassadors becomes corrupted. |

@@ -37,6 +37,9 @@ pub struct Cell {
     pub facing: Option<u8>,
     /// A printed industrial zone: where cities build factories.
     pub industrial: bool,
+    /// 137: a printed empty station site, where content may create a neutral
+    /// research station (none does yet).
+    pub station_site: bool,
     /// A coastal city (027): next to ocean, or printed so on the piece.
     pub coastal: bool,
 }
@@ -88,6 +91,7 @@ impl Map {
                         kind: design.kind_at(number),
                         facing: None,
                         industrial: design.industry.contains(&number),
+                        station_site: design.station_sites.contains(&number),
                         coastal: design.coast.contains(&number),
                     });
                 }
@@ -169,6 +173,7 @@ fn place_bases(
             piece.stations.contains(&num)
                 || piece.neutral_station == num
                 || piece.industry.contains(&num)
+                || piece.station_sites.contains(&num)
                 || piece.node == num
         };
         let candidates = |o: usize| -> Vec<usize> {

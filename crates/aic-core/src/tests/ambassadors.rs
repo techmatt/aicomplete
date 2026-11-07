@@ -40,7 +40,9 @@ fn opposing_ambassadors_on_one_piece_cancel_without_unity() {
 }
 
 #[test]
-fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
+fn an_arriving_player_ambassador_claims_nothing_and_stands() {
+    // 137: claiming is the Claim action; an arriving ambassador just stands,
+    // on a neutral station the seat could claim too.
     let (rules, mut g) = lab(&[]);
     let m = &rules.map;
     let neutral = m.numbered(0, piece(0).stations[0]);
@@ -49,15 +51,16 @@ fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
     put(&mut g, corrupted, STATION, 1);
     put(&mut g, corrupted, ADV_CUBE, 1);
     put(&mut g, neutral, node(0), 1);
+    assert!(board::can_claim(&rules.world(), &g, 0, neutral));
     with_cx(&rules, |cx| board::place_ambassador(&mut g, cx, 0, neutral));
     assert_eq!(
         (
             g.tokens(neutral, cube(0)),
             g.tokens(neutral, ambassador(0))
         ),
-        (1, 0)
+        (0, 1)
     );
-    // On a corrupted station it just waits.
+    // On a corrupted station it stands too.
     with_cx(&rules, |cx| {
         board::place_ambassador(&mut g, cx, 0, corrupted)
     });
@@ -72,64 +75,62 @@ fn a_player_ambassador_takes_a_neutral_station_and_waits_on_a_corrupted_one() {
 }
 
 #[test]
-fn ambassadors_divert_bases_and_factories() {
+fn one_opposing_ambassador_blocks_a_factory_and_bases_make_no_troops() {
+    // 137: production makes no corp troop (they come at Discord tips); one
+    // opposing ambassador blocks a factory's output while it stands.
     let (rules, mut g0) = lab(&["board.bases"]);
+    let w = rules.world();
     let m = &rules.map;
     let [base, other] = m.fronts[0].bases;
     assert_eq!(m.fronts[0].countries, [0, 1]);
     let factory = m.numbered(0, piece(0).factories[0]);
     put(&mut g0, factory, FACTORY, 1);
-    let unity = |g: &GameState| g.var("alignment.unity");
-    let discord = |g: &GameState| g.var("alignment.discord");
+    let chips = w.int("board.factory_chips");
+    assert!(chips > 0);
+    let sway = |g: &GameState| (g.var("alignment.unity") - g0.var("alignment.unity"), g.var("alignment.discord") - g0.var("alignment.discord"));
+    let units = |g: &GameState| (g.tokens(base, UNIT), g.tokens(other, UNIT));
 
-    // Untouched: each base builds a unit, each factory one for its nearest base.
+    // A neutral factory and the bases make nothing in production.
     let mut g = g0.clone();
     run(&rules, &mut g);
-    assert_eq!((g.tokens(base, UNIT), g.tokens(other, UNIT)), (2, 1));
+    assert_eq!((units(&g), g.tokens(factory, TROOP)), ((0, 0), 0));
 
-    // An adversary ambassador on a base: no unit, 3 Discord.
+    // Ambassadors on a base stand there and make nothing happen.
     let mut g = g0.clone();
     put(&mut g, base, ADV_AMBASSADOR, 1);
+    put(&mut g, other, ambassador(0), 1);
     run(&rules, &mut g);
-    assert_eq!(
-        (g.tokens(base, UNIT), g.tokens(base, ADV_AMBASSADOR)),
-        (1, 0)
-    );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (3, 0));
+    assert_eq!((units(&g), g.tokens(base, ADV_AMBASSADOR), g.tokens(other, ambassador(0))), ((0, 0), 1, 1));
+    assert_eq!(sway(&g), (0, 0));
 
-    // A player ambassador on a base: no unit and it stays (068); 136: no Unity.
+    // A player's factory makes its owner chips; an adversary ambassador on it
+    // blocks them and stays (it no longer becomes a troop).
     let mut g = g0.clone();
-    put(&mut g, base, ambassador(0), 1);
+    put(&mut g, factory, cube(0), 1);
+    let before = g.resource(0, Resource::Chips);
     run(&rules, &mut g);
-    assert_eq!(
-        (g.tokens(base, UNIT), g.tokens(base, ambassador(0))),
-        (1, 1)
-    );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
-
-    // An adversary ambassador on a factory: it builds an adversary troop.
-    let mut g = g0.clone();
+    assert_eq!(g.resource(0, Resource::Chips) - before, chips);
     put(&mut g, factory, ADV_AMBASSADOR, 1);
+    let before = g.resource(0, Resource::Chips);
     run(&rules, &mut g);
     assert_eq!(
-        (
-            g.tokens(factory, TROOP),
-            g.tokens(factory, ADV_AMBASSADOR),
-            g.tokens(base, UNIT)
-        ),
-        (1, 0, 1)
+        (g.resource(0, Resource::Chips) - before, g.tokens(factory, ADV_AMBASSADOR), g.tokens(factory, TROOP), units(&g)),
+        (0, 1, 0, (0, 0))
     );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
+    assert_eq!(g.stats.counters["board.blocked.factory_player"], 1);
 
-    // A player ambassador on a factory: no unit; 136: no Unity.
+    // The adversary's factory makes 1 adversary troop on its hex, no corp troop;
+    // a player ambassador on it blocks it and stays.
     let mut g = g0.clone();
+    put(&mut g, factory, ADV_CUBE, 1);
+    run(&rules, &mut g);
+    assert_eq!((g.tokens(factory, TROOP), units(&g)), (1, (0, 0)));
+    put(&mut g, factory, TROOP, 0);
     put(&mut g, factory, ambassador(1), 1);
     run(&rules, &mut g);
-    assert_eq!(
-        (g.tokens(factory, ambassador(1)), g.tokens(base, UNIT)),
-        (1, 1)
-    );
-    assert_eq!((discord(&g) - discord(&g0), unity(&g) - unity(&g0)), (0, 0));
+    assert_eq!((g.tokens(factory, TROOP), g.tokens(factory, ambassador(1))), (0, 1));
+    assert_eq!(g.stats.counters["board.blocked.factory_adversary"], 1);
+    assert_eq!(sway(&g), (0, 0));
 }
 
 #[test]
@@ -198,7 +199,8 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     );
 
     // 020: only a lone node leaks. On a corrupted city the ambassador is
-    // the city's (it stays to spread); on a station it takes the cube (074).
+    // the city's (it stays to spread); on a station it blocks the cube and
+    // stays (137: it took the cube and was used up).
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, ADV_AMBASSADOR, 1);
@@ -215,11 +217,12 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
             g.var("economy.insight_debt.0"),
             g.var("economy.insight_debt.1")
         ),
-        (1, 0, 0, 0)
+        (1, 1, 0, 0)
     );
 
-    // An owned station's cube goes to the adversary; a corrupted station's
-    // always does; a neutral one makes a neutral cube.
+    // 137: an adversary ambassador on an owned station blocks its cube and
+    // stays; a corrupted station makes adversary compute, no megaproject cube;
+    // a neutral one makes a neutral cube.
     let mut g = g0.clone();
     let [s0, s1] = [0, 1].map(|c| m.numbered(c, piece(c).stations[0]));
     let neutral = m.numbered(0, piece(0).factories[0]);
@@ -229,17 +232,23 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     put(&mut g, s0, cube(0), 1);
     put(&mut g, s0, ADV_AMBASSADOR, 1);
     put(&mut g, s1, ADV_CUBE, 1);
+    let compute = g.var(adversary::COMPUTE);
     run(&rules, &mut g);
     // (Round 1 of the new game already put cubes on the projects.)
     let key = |g: &GameState, c: usize, s: Option<usize>| {
         let k = board::project_key(c, s);
         g.var(&k) - g0.var(&k)
     };
+    let neutral_key = |g: &GameState| {
+        let k = board::project_neutral(0);
+        g.var(&k) - g0.var(&k)
+    };
     assert_eq!(
-        (key(&g, 0, None), key(&g, 0, Some(0)), key(&g, 1, None)),
-        (1, 0, 1)
+        (key(&g, 0, None), key(&g, 0, Some(0)), key(&g, 1, None), neutral_key(&g)),
+        (0, 0, 0, 1)
     );
-    assert_eq!(g.tokens(s0, ADV_AMBASSADOR), 0);
+    assert_eq!(g.var(adversary::COMPUTE) - compute, rules.world().int("board.station_cubes"));
+    assert_eq!(g.tokens(s0, ADV_AMBASSADOR), 1);
     let mut g = g0.clone();
     put(&mut g, s0, STATION, 1);
     put(&mut g, s0, cube(0), 1);
@@ -278,6 +287,47 @@ fn a_player_ambassador_absorbs_a_destruction() {
     assert_eq!(g.var("alignment.discord"), discord);
 }
 
+/// 137: only the piece owner's ambassador is armor: another seat's on an owned
+/// facility, or any on a neutral one, absorbs nothing.
+#[test]
+fn only_the_owners_ambassador_absorbs_a_destruction() {
+    let (rules, g0) = lab(&[]);
+    let m = &rules.map;
+    let at = m.numbered(0, piece(0).factories[0]);
+    let destroy = |g: &mut GameState, kind: &str| {
+        with_cx(&rules, |cx| board::destroy_piece(g, cx, at, kind, board::Cause::Effect("test")))
+    };
+    // Seat 0's factory: seat 1's ambassador is no armor, seat 0's is.
+    let mut g = g0.clone();
+    put(&mut g, at, FACTORY, 1);
+    put(&mut g, at, cube(0), 1);
+    put(&mut g, at, ambassador(1), 1);
+    assert!(destroy(&mut g, FACTORY));
+    assert_eq!((g.tokens(at, FACTORY), g.tokens(at, ambassador(1))), (0, 1));
+    let mut g = g0.clone();
+    put(&mut g, at, FACTORY, 1);
+    put(&mut g, at, cube(0), 1);
+    put(&mut g, at, ambassador(0), 1);
+    assert!(!destroy(&mut g, FACTORY));
+    assert_eq!((g.tokens(at, FACTORY), g.tokens(at, ambassador(0))), (1, 0));
+    // A neutral factory has no armor.
+    let mut g = g0.clone();
+    put(&mut g, at, FACTORY, 1);
+    put(&mut g, at, ambassador(0), 1);
+    assert!(destroy(&mut g, FACTORY));
+    assert_eq!(g.tokens(at, ambassador(0)), 1);
+    // A node: its owner's ambassador, not another seat's.
+    let mut g = g0.clone();
+    put(&mut g, at, node(1), 1);
+    put(&mut g, at, ambassador(0), 1);
+    assert!(destroy(&mut g, node(1)));
+    let mut g = g0.clone();
+    put(&mut g, at, node(1), 1);
+    put(&mut g, at, ambassador(1), 1);
+    assert!(!destroy(&mut g, node(1)));
+    assert_eq!(g.tokens(at, ambassador(1)), 0);
+}
+
 #[test]
 fn an_evicting_ambassador_stays() {
     let (rules, mut g) = lab_actions();
@@ -290,7 +340,9 @@ fn an_evicting_ambassador_stays() {
 }
 
 #[test]
-fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_takes_its_cube() {
+fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_blocks_it() {
+    // 137: a player ambassador on an adversary station blocks its output (it
+    // took the cube for its seat) and stays.
     let (rules, mut g) = lab(&["board.bases", "board.produce"]);
     let w = rules.world();
     let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
@@ -302,11 +354,15 @@ fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_takes_its_cub
     put(&mut g, st, ambassador(1), 1);
     let c = w.map.hexes[st].country as usize;
     let adversary_cubes = g.var(&board::project_key(c, None));
+    let seat_cubes = g.var(&board::project_key(c, Some(1)));
+    let compute = g.var(adversary::COMPUTE);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!((g.tokens(z, ambassador(0)), g.tokens(st, ambassador(1))), (1, 1));
-    assert_eq!(g.var(&board::project_key(c, Some(1))), w.int("board.station_cubes"));
+    assert_eq!(g.var(&board::project_key(c, Some(1))), seat_cubes);
     assert_eq!(g.var(&board::project_key(c, None)), adversary_cubes);
+    assert_eq!(g.var(adversary::COMPUTE), compute);
+    assert_eq!(g.stats.counters["board.blocked.station_adversary"], 1);
 }
 
 #[test]

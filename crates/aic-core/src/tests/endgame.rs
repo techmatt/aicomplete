@@ -7,7 +7,7 @@ use crate::modules::common::{hex_opt, is_ocean, MARKER};
 use crate::modules::{adversary, alignment, board};
 use crate::state::Pick;
 
-/// The fallback's numbers (the lab pins them off).
+/// Liberate's city numbers (the lab pins them off).
 const HOLD: [&str; 2] = ["board.liberate_at=5", "board.free_leaves=1"];
 
 fn empty_deck(g: &mut GameState, side: &str) {
@@ -88,39 +88,47 @@ fn a_card_brings_arrivals_to_every_site_it_names_a_round_ahead() {
     }
 }
 
+/// 137: the Liberate action frees an adversary city for `liberate_at`
+/// ambassadors from the supply plus 1 for each adversary ambassador on it
+/// (those cancel); adversary ambassadors next to it don't count, and it drops
+/// down the ladder. It replaced the fallback.
 #[test]
-fn the_fallback_is_a_flat_count_whatever_the_adversary_holds_nearby() {
+fn liberating_a_city_pays_liberate_at_plus_its_adversary_ambassadors() {
     let (rules, mut g) = lab_with(&[], &HOLD);
+    let w = rules.world();
     let h = rules.map.numbered(0, piece(0).cities[0]);
     let n = rules.map.hexes[h].neighbors[0];
     put(&mut g, h, ADV_CUBE, 1);
+    put(&mut g, h, ADV_AMBASSADOR, 1);
     put(&mut g, n, ADV_AMBASSADOR, 2);
     put(&mut g, n, node(0), 1);
-    put(&mut g, n, node(1), 1);
-    put(&mut g, h, ambassador(0), 2);
-    put(&mut g, h, ambassador(1), 2);
-    any_action(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 1, "4 of 5");
-    put(&mut g, h, ambassador(1), 3);
-    // The next end check liberates it: any players, adversary ambassadors next to it don't count.
-    any_action(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 0);
-    assert_eq!(g.tokens(h, ambassador(0)) + g.tokens(h, ambassador(1)), 0);
-    // Down the ladder, not off the board.
-    assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1);
-    assert_eq!(g.stats.counters["board.liberated_fallback"], 1);
+    assert_eq!(board::liberate_cost(&w, &g, h), Some(6));
+    set_res(&mut g, 0, Resource::Ambassadors, 5);
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "5 of 6");
+    set_res(&mut g, 0, Resource::Ambassadors, 6);
+    let unity = g.var("alignment.unity") + alignment::unity_pending(&g);
+    act(&rules, &mut g, std_act(0, "liberate"));
+    assert_eq!((g.tokens(h, ADV_CUBE), g.resource(0, Resource::Ambassadors)), (0, 0));
+    // Down the ladder, not off the board; the ones next to it stay.
+    assert_eq!((g.tokens(h, ADV_AMBASSADOR), g.tokens(n, ADV_AMBASSADOR)), (1, 2));
+    assert_eq!(g.var("alignment.unity") + alignment::unity_pending(&g) - unity, w.int("alignment.free_city"));
+    assert_eq!(g.stats.counters["board.liberated.city"], 1);
 }
 
+/// 137: Liberate needs the city in reach (a node on or next to it), and
+/// player ambassadors standing on it liberate nothing (the fallback is gone).
 #[test]
-fn the_fallback_counts_only_seats_with_node_on_or_next_to_the_city() {
+fn liberating_needs_a_node_on_or_next_to_the_city() {
     let (rules, mut g) = lab_with(&[], &HOLD);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, ADV_CUBE, 1);
     put(&mut g, h, ambassador(0), 5);
-    any_action(&rules, &mut g);
-    assert_eq!(g.tokens(h, ADV_CUBE), 1, "no nodes near it");
+    set_res(&mut g, 0, Resource::Ambassadors, 5);
+    assert!(!rules.legal_actions(&g).contains(&std_act(0, "liberate")), "no nodes near it");
     put(&mut g, rules.map.hexes[h].neighbors[0], node(0), 1);
     any_action(&rules, &mut g);
+    assert_eq!(g.tokens(h, ADV_CUBE), 1, "standing ambassadors don't liberate it");
+    act(&rules, &mut g, std_act(0, "liberate"));
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
 }
 
@@ -384,7 +392,7 @@ fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
 }
 
 #[test]
-fn the_fallback_is_the_same_at_every_difficulty() {
+fn liberating_a_city_costs_the_same_at_every_difficulty() {
     let at = |d: i64| {
         let arg = format!("adversary.difficulty={d}");
         let (rules, _) = lab_with(&[], &["board.liberate_at=5", &arg]);

@@ -44,7 +44,7 @@ def main():
     a = ap.parse_args()
     cells = load(a.dirs)
     print('| config | pair | agent | games | win % | ±SE | rounds | corrupted / game (games with one) | '
-          'liberated: all (card / fallback) | per won game | games with a liberation | Grant / game | '
+          'liberated: all (card / Liberate action, r55 the fallback) | per won game | games with a liberation | Grant / game | '
           'Wall strikes stopped / game | troops landed by Wall pressure |')
     print('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     for (cfg, var, agent), gs in sorted(cells.items()):
@@ -56,7 +56,7 @@ def main():
         corrupting = sum(1 for g in gs if g['counters'].get('adversary.corruptions', 0)) / n * 100
         print(f"| {cfg} | {var} | {agent} | {n} | {100 * p:.1f} | {se:.1f} | {sum(g['rounds'] for g in gs) / n:.2f} | "
               f"{per(gs, 'adversary.corruptions'):.2f} ({corrupting:.0f}%) | {per(gs, 'board.cities_freed'):.2f} ({per(gs, 'board.liberated_card'):.2f} / "
-              f"{per(gs, 'board.liberated_fallback'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
+              f"{per(gs, 'board.liberated_fallback') + per(gs, 'board.liberated.city'):.2f}) | {per(won, 'board.cities_freed') if won else 0:.2f} | "
               f"{sum(1 for x in freed if x) / n * 100:.0f}% | "
               f"{per(gs, 'ai.power.researcher.3'):.2f} | {per(gs, 'board.wall_strikes'):.2f} | "
               f"{per(gs, 'adversary.wall_troops'):.2f} |")

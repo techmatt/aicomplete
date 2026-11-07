@@ -183,7 +183,8 @@ fn tunables_list_every_module_parameter() {
     }
     let clock = find("board.clock");
     assert_eq!((clock.min, clock.max), (0, 3));
-    assert_eq!(clock.value, ParamValue::List(vec![1, 2, 1, 2, 1, 3]));
+    // 137: production and war every round.
+    assert_eq!(clock.value, ParamValue::List(vec![3]));
     // One per declared parameter: no duplicates.
     let keys: BTreeSet<&str> = t.iter().map(|x| x.key.as_str()).collect();
     assert_eq!(keys.len(), t.len());

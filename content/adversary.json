@@ -21,7 +21,7 @@
    },
    {
     "name": "Warmongering",
-    "text": "Each production step, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each production step, whatever makes it.",
+    "text": "Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base each round, whatever makes it.",
     "effects": [
      {
       "op": "corp_troops",
@@ -107,8 +107,7 @@
     {
      "op": "troops",
      "count": 1,
-     "each_country": true,
-     "at": "base"
+     "each_country": true
     }
    ],
    "twists": [
@@ -121,7 +120,7 @@
      "site": "industrial"
     }
    ],
-   "text": "Each country: Military 1 or Economic 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones.",
+   "text": "Each country: Military 1 or Economic 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Factories next to clean cities gain 1 adversary ambassador. Arrivals: industrial zones.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -191,8 +190,7 @@
     {
      "op": "troops",
      "count": 1,
-     "each_country": true,
-     "at": "base"
+     "each_country": true
     }
    ],
    "twists": [
@@ -203,10 +201,10 @@
     },
     {
      "op": "arrivals",
-     "site": "bases"
+     "site": "factory"
     }
    ],
-   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. 1 troop lands on each country's first base. Sway 1 toward Discord. Arrivals: each country's first base.",
+   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Sway 1 toward Discord. Arrivals: each country's lowest-numbered factory.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -409,10 +407,10 @@
     },
     {
      "op": "arrivals",
-     "site": "bases"
+     "site": "factory"
     }
    ],
-   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's first base. Escalation.",
+   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each player destroys 1 of their nodes. Arrivals: each country's lowest-numbered factory. Escalation.",
    "escalation": true,
    "harms": [
     "adversary pieces placed",
@@ -598,10 +596,10 @@
     },
     {
      "op": "arrivals",
-     "site": "bases"
+     "site": "factory"
     }
    ],
-   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's first base.",
+   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Sway 1 toward Discord. Spread reaches 1 hex further. Arrivals: each country's lowest-numbered factory.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
