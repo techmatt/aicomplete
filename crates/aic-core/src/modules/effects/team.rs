@@ -42,11 +42,10 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
             .into_iter()
             .filter(|&h| g.tokens(h, STATION) > 0 && !corrupted(g, h))
             .collect();
-        // 135: "the station here": the threat's station token, while it is one.
-        if let Some(h) = ctx.threat.as_ref().and_then(|t| threats::token_of(&w, g, t, Location::Station)) {
-            if spots.contains(&h) {
-                spots = vec![h];
-            }
+        // 135: "the station here": the threat's station token; 146 (D63): nothing once it is corrupted.
+        if let Some(t) = ctx.threat.as_ref() {
+            let here = threats::token_of(&w, g, t, Location::Station);
+            spots.retain(|h| Some(*h) == here);
         }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         if let Some(i) = cx.choose(0, prompt, opts)? {
@@ -83,6 +82,28 @@ pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count
         for _ in 0..count {
             // 135: a threat never takes a last node.
             if ctx.threat.is_some() && node_count(g, s) <= 1 {
+                break;
+            }
+            board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label), ctx.why.as_deref())?;
+        }
+    }
+    Ok(())
+}
+
+/// 146 (`DestroyNode`): the player a threat hits destroys `count` of their
+/// nodes closest to it, wherever they are; never their last node.
+pub(super) fn destroy_nearest_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64) -> Res {
+    let w = cx.world;
+    let Some(t) = ctx.threat else {
+        return Ok(());
+    };
+    for s in ctx.seats(&w, g) {
+        for _ in 0..count {
+            if node_count(g, s) <= 1 {
+                break;
+            }
+            let hexes = threats::nearest_nodes(&w, g, s, &t);
+            if hexes.is_empty() {
                 break;
             }
             board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label), ctx.why.as_deref())?;

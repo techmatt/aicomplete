@@ -1,5 +1,6 @@
 {
  "deck": "threats_t2",
+ "note": "Tier-2 threat deck, 146 (Matt's threat card standard, 2026-11-07): bigger consequences, about two tier-1s; four cards re-cut from the old tier 3 (Last Ultimatum, Iron Curtain, War Economy, Cascade Failure). Counters: 4 energy, 4 ambassadors, 7 insight, 5 research cubes, 7 chips, 3 tags or 17 credits. Value lines price at configs/agents/values.json. Source: experiments/results/146_threat_standard/threat_cards.py.",
  "cards": [
   {
    "id": "total_war",
@@ -11,24 +12,18 @@
    "locations": [
     "base"
    ],
-   "text": "3 troops land on the base here and march at once. Each player near it destroys 1 of their nodes near it (never their last).",
+   "text": "3 adversary troops land here and march at once.",
    "counters": [
     [
      {
-      "resource": "ambassadors",
+      "resource": "energy",
       "amount": 4
      }
     ],
     [
      {
-      "sacrifice": "security",
-      "amount": 3
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -40,25 +35,16 @@
     },
     {
      "op": "march_now"
-    },
-    {
-     "op": "each_destroy_node",
-     "count": 1
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized",
-    "node destroyed"
+    "war brought forward"
    ],
-   "value": "cheapest counter 3 Security tags 15 (or 4 ambassadors 16; or 23 credits); harm per player 1 node 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 3 troops 15 + their strike at once ~15 = 30; ~48; ratio ~3.2 (2.7 vs credits)",
-   "check": "bites from round 5 when factories and stations sit near the fronts; the base's neighbors pay, diplomats in ambassadors; a troop that strikes is used up and corp troops absorb strikes next to the base, which caps it; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 37 at values.json (a troop 9 with its strike), 2.18x the cheapest counter",
+   "check": "bites from stage II where a base touches player sites: the strike comes before the players can answer",
    "flags": [
-    "new op march_now",
-    "new field: at location on troops",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 3 troops, was 2; adds 1 node destroyed",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "total_war"
   },
@@ -72,7 +58,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The factory here is destroyed with the nodes on its hex (never a last node). 2 troops land here and stay.",
+   "text": "The factory here is destroyed. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -82,14 +68,8 @@
     ],
     [
      {
-      "resource": "energy",
-      "amount": 4
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -99,23 +79,18 @@
      "at": "factory"
     },
     {
-     "op": "troops",
-     "count": 2,
-     "at": "location",
-     "stand": true
+     "op": "compute",
+     "amount": 4
     }
    ],
    "harms": [
     "facilities destroyed or seized",
-    "node destroyed",
-    "adversary pieces placed"
+    "projects advanced (compute)"
    ],
-   "value": "cheapest counter 4 ambassadors 16 (or 4 energy 18; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a factory and its node ~20 (on a free zone 0) + 2 standing troops 10 = ~30; ~42; ratio ~2.6 (~1.4 on a free zone)",
-   "check": "rounds 4-9 on a player's factory; its owner and neighbors pay; the standing troops hold the hex until removed (remove_troops cards), so they never strike; no loop",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 19.4 at values.json (a troop 9 with its strike), 1.21x the cheapest counter",
+   "check": "bites the factory's owner (a node on it goes with it, never a last node)",
    "flags": [
-    "new field: at location on troops",
-    "142: counters in scarce currencies, credits last; harm the factory is destroyed and 2 troops stand, was 1 troop and 1 node each",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "siege"
   },
@@ -130,7 +105,7 @@
     "base",
     "city"
    ],
-   "text": "Each player near it loses 2 ambassadors. 1 troop lands here.",
+   "text": "The nearest player pays 3 ambassadors or discards 3 cards. 1 adversary troop lands on the base here.",
    "counters": [
     [
      {
@@ -140,41 +115,33 @@
     ],
     [
      {
-      "sacrifice": "security",
-      "amount": 3
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "lose_ambassador"
+     "op": "requisition",
+     "resource": "ambassadors",
+     "amount": 3,
+     "cards": 3
     },
     {
      "op": "troops",
      "count": 1,
-     "at": "location"
+     "at": "location",
+     "location": "base"
     }
    ],
    "harms": [
     "ambassadors lost",
     "adversary pieces placed"
    ],
-   "value": "cheapest counter 3 Security tags 15 (or 4 energy 18; or 23 credits); harm per player 2 ambassadors 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared a troop 5 + its strike ~5 = 10; ~34; ratio ~2.3 (1.9 vs credits)",
-   "check": "any round from 5; seats with ambassadors on the board pay in energy or tags, not in the ambassadors it hunts; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 21 at values.json (a troop 9 with its strike), 1.24x the cheapest counter",
+   "check": "bites diplomats; energy or credits pay it",
    "flags": [
-    "new field: lose_node_or count",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 2 ambassadors lost and a troop, was 14 credits or 2 nodes (credits left the harm)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "manhunt"
   },
@@ -189,53 +156,42 @@
    "locations": [
     "base"
    ],
-   "text": "For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap. Remove 2 Unity from the Unity track.",
+   "text": "2 adversary troops land here. The nearest player pays 4 chips or discards 2 cards.",
    "counters": [
     [
      {
-      "resource": "chips",
-      "amount": 6
-     }
-    ],
-    [
-     {
-      "sacrifice": "security",
-      "amount": 3
+      "resource": "energy",
+      "amount": 4
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "corp_troops",
-     "count": 1,
-     "at": "location",
-     "when": "each_production",
-     "past_cap": true,
-     "rounds": 3
+     "op": "troops",
+     "count": 2,
+     "at": "location"
     },
     {
-     "op": "pull_unity",
-     "amount": 2
+     "op": "requisition",
+     "resource": "chips",
+     "amount": 4,
+     "cards": 2
     }
    ],
    "harms": [
-    "troops made",
-    "Unity pulled back"
+    "adversary pieces placed",
+    "credits or income lost"
    ],
-   "value": "cheapest counter 6 chips 12 (or 3 Security tags 15; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared ~1 factory and its node 21 per war step the extra troops reach + 2 Unity pulled back 8 = ~29; ~41; ratio ~3.4 (2.3 vs credits)",
-   "check": "lasts 3 rounds, so its production steps feed wars from round 6; front factory holders pay in chips; at most 3 extra troops past the cap, 1 a base a production step; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
+   "check": "bites near bases; a normal troop marches and strikes as any",
    "flags": [
-    "new op corp_troops (rounds 3, each_production, past_cap)",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "135: lasts 3 rounds, was the rest of the game (Matt's ruling 7, 2026-11-06: Conscription lasts 3 rounds, not for good); priced at ~1 war step, read its extra troops per game.",
-    "142: counters in scarce currencies, credits last; harm adds 2 Unity pulled back",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "conscription"
   },
@@ -249,7 +205,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 troops land on the base here. Next round, the fronts next to it fight twice. Sway 2 toward Discord.",
+   "text": "This base's front has a second war step next round. Sway 3 toward Discord.",
    "counters": [
     [
      {
@@ -259,47 +215,31 @@
     ],
     [
      {
-      "sacrifice": "security",
-      "amount": 3
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
-    {
-     "op": "troops",
-     "count": 2,
-     "at": "location"
-    },
     {
      "op": "extra_war"
     },
     {
      "op": "sway",
      "side": "discord",
-     "amount": 2
+     "amount": 3
     }
    ],
    "harms": [
-    "adversary pieces placed",
     "war brought forward",
-    "Discord sway",
-    "facilities destroyed or seized"
+    "Discord sway"
    ],
-   "value": "cheapest counter 3 Security tags 15 (or 4 ambassadors 16; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 troops 10 + a second war step ~12 + 2 sway 8 = ~30; ~42; ratio ~2.8 (2.3 vs credits)",
-   "check": "any round from 4, live from round 6 when every round is a war round; front factory owners pay, diplomats in ambassadors; it lasts one round; no loop",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "check": "bites where corp troops can win a front; Discord rides with Military here",
    "flags": [
-    "new op extra_war",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm adds 2 troops on the base",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "casus_belli"
   },
   {
    "id": "overrun",
@@ -311,53 +251,34 @@
    "locations": [
     "city"
    ],
-   "text": "Create 3 adversary ambassadors here. Corrupt cities (1 fewer).",
+   "text": "The city here is corrupted.",
    "counters": [
     [
      {
       "resource": "insight",
-      "amount": 10
-     }
-    ],
-    [
-     {
-      "sacrifice": "diplomacy",
-      "amount": 3
+      "amount": 7
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "create",
-     "count": 3,
-     "at": "location"
-    },
-    {
-     "op": "corrupt",
-     "site": "city",
-     "cut": 1
+     "op": "corrupt_city",
+     "at": "city"
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "node destroyed",
-    "ambassadors lost",
-    "production blacked out",
-    "Discord sway"
+    "facilities destroyed or seized"
    ],
-   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed 12 + a city corrupted ~45 (its nodes, ambassadors and energy) about 2 times in 3 = ~42; ~54; ratio ~3.6 (3.0 vs credits)",
-   "check": "bites from round 4; the 3 created ambassadors usually let the corruption step take this city or one next to it; nodes on and next to it are near, so those seats pay; no loop",
+   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 25 at values.json (a troop 9 with its strike), 1.47x the cheapest counter",
+   "check": "a lasting harm: the city corrupts as by the Corrupt line (a node on it is destroyed, an ambassador there is armor)",
    "flags": [
-    "new fields on corrupt_city: min_ambassadors, else_ambassadors",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 3 ambassadors created here feed the corruption, was 2 on a city already holding some",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "overrun"
   },
@@ -371,14 +292,8 @@
    "locations": [
     "city"
    ],
-   "text": "Create 3 adversary ambassadors here. Remove 2 Unity from the Unity track. Sway 1 toward Discord.",
+   "text": "4 adversary ambassadors are created here. 3 Unity comes off the Unity track.",
    "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
     [
      {
       "sacrifice": "diplomacy",
@@ -388,39 +303,29 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
      "op": "create",
-     "count": 3,
+     "count": 4,
      "at": "location"
     },
     {
      "op": "pull_unity",
-     "amount": 2
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1
+     "amount": 3
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "ambassadors lost",
-    "Unity pulled back",
-    "Discord sway"
+    "Unity pulled back"
    ],
-   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed or player ambassadors canceled 12 + 2 Unity pulled back 8 + 1 sway 4 = 24; ~36; ratio ~2.4 (2.0 vs credits)",
-   "check": "any stage-II round, worst near the Unity tip; Diplomacy and science seats near the city pay; feeds Overrun's corruption (one copy of each a deck), no loop",
+   "value": "counter 3 Diplomacy tags (15) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
+   "check": "bites the Unity race and the city's next Corrupt line",
    "flags": [
-    "ambassadors at the location with cancel uses the arrival rule; confirm the field",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm adds 2 Unity pulled back, sway 1 (was 2)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "insurrection"
   },
@@ -436,14 +341,8 @@
     "city",
     "station"
    ],
-   "text": "Sway 2 toward Discord. Remove 2 Unity from the Unity track. Each player near it gets 3 less insight next round.",
+   "text": "Sway 3 toward Discord. 2 Unity comes off the Unity track.",
    "counters": [
-    [
-     {
-      "resource": "research_cubes",
-      "amount": 3
-     }
-    ],
     [
      {
       "resource": "ambassadors",
@@ -453,7 +352,7 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -461,28 +360,21 @@
     {
      "op": "sway",
      "side": "discord",
-     "amount": 2
+     "amount": 3
     },
     {
      "op": "pull_unity",
      "amount": 2
-    },
-    {
-     "op": "lose_insight",
-     "amount": 3
     }
    ],
    "harms": [
     "Discord sway",
-    "Unity pulled back",
-    "insight lost"
+    "Unity pulled back"
    ],
-   "value": "cheapest counter 3 cubes 9 (or 4 ambassadors 16; or 23 credits); harm per player 3 insight 7.5 + the rule's 2 nodes 8 = 15.5 x 1.5 = ~23; shared 2 sway 8 + 2 Unity pulled back 8 = 16; ~39; ratio ~4.3 (2.2 vs credits)",
-   "check": "any round, worst near the Unity tip; science seats pay cubes, diplomats ambassadors; it takes insight, so no insight option; no loop",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "check": "bites both tracks",
    "flags": [
-    "insight anchor (4) makes the 6-insight counter dearer than the credit band",
-    "142: counters in scarce currencies, credits last; harm 2 Unity pulled back (was 1), 3 insight (was 2); insight left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "deepfake_wave"
   },
@@ -496,14 +388,8 @@
    "locations": [
     "city"
    ],
-   "text": "In its country: create 2 adversary ambassadors on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
+   "text": "The nearest player pays 4 ambassadors or discards 3 cards. The adversary gains 3 compute.",
    "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
     [
      {
       "sacrifice": "diplomacy",
@@ -513,37 +399,32 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "create",
-     "count": 2,
-     "at": "factory",
-     "if": "player",
-     "sites": 2
+     "op": "requisition",
+     "resource": "ambassadors",
+     "amount": 4,
+     "cards": 3
     },
     {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "lose_ambassador"
+     "op": "compute",
+     "amount": 3
     }
    ],
    "harms": [
     "ambassadors lost",
-    "adversary pieces placed"
+    "projects advanced (compute)"
    ],
-   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player 2 ambassadors 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 4 placed 16; ~40; ratio ~2.7 (2.2 vs credits)",
-   "check": "mid-game when seats hold ambassadors; anyone near pays, never in the ambassadors it takes; no loop",
+   "value": "counter 3 Diplomacy tags (15) or 17 credits (17); uncountered 15.3 at values.json (a troop 9 with its strike), 1.02x the cheapest counter",
+   "check": "bites diplomats; Diplomacy tags or credits pay it",
    "flags": [
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 2 ambassadors on each factory, was 1",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "turncoats"
   },
   {
    "id": "propaganda_ministry",
@@ -556,14 +437,8 @@
     "city",
     "coastal_city"
    ],
-   "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities (1 fewer). Sway 2 toward Discord.",
+   "text": "Sway 4 toward Discord. The adversary gains 4 compute.",
    "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
     [
      {
       "sacrifice": "diplomacy",
@@ -573,45 +448,126 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "clean",
-     "sites": 2
-    },
-    {
-     "op": "corrupt",
-     "site": "city",
-     "cut": 1
-    },
-    {
      "op": "sway",
      "side": "discord",
-     "amount": 2
+     "amount": 4
+    },
+    {
+     "op": "compute",
+     "amount": 4
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "node destroyed",
-    "ambassadors lost",
-    "production blacked out",
-    "Discord sway"
+    "Discord sway",
+    "projects advanced (compute)"
    ],
-   "value": "cheapest counter 3 Diplomacy tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 placed 8 + a city corrupted ~45 about 1 time in 2 = ~22 + 2 sway 8 = ~38; ~50; ratio ~3.3 (2.8 vs credits)",
-   "check": "any stage-II round; worst where adversary ambassadors already gather near a city; diplomats and science seats near it pay; no loop",
+   "value": "counter 3 Diplomacy tags (15) or 17 credits (17); uncountered 20.4 at values.json (a troop 9 with its strike), 1.36x the cheapest counter",
+   "check": "bites the Discord race",
    "flags": [
-    "new flag double_spread (country scope)",
-    "135: the tag option asks 3 Diplomacy tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm corrupts with 1 fewer, sway 2 (was 1)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "propaganda_ministry"
+  },
+  {
+   "id": "skimming_operation",
+   "name": "Skimming Operation",
+   "tier": 2,
+   "tags": [
+    "economic",
+    "influence"
+   ],
+   "locations": [
+    "coastal_city"
+   ],
+   "text": "Theft: the nearest player pays 8 chips or discards 3 cards; the adversary gains 6 compute.",
+   "counters": [
+    [
+     {
+      "resource": "ambassadors",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "theft",
+     "who": "nearest",
+     "resource": "chips",
+     "amount": 8,
+     "compute": 6,
+     "cards": 3
+    }
+   ],
+   "harms": [
+    "projects advanced (compute)",
+    "credits or income lost"
+   ],
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 18.6 at values.json (a troop 9 with its strike), 1.16x the cheapest counter",
+   "check": "bites chip holders",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "skimming_operation"
+  },
+  {
+   "id": "dark_cities",
+   "name": "Dark Cities",
+   "tier": 2,
+   "tags": [
+    "grid",
+    "influence"
+   ],
+   "locations": [
+    "city",
+    "coastal_city"
+   ],
+   "text": "The nearest player destroys 1 of their nodes closest to it. 3 Unity comes off the Unity track.",
+   "counters": [
+    [
+     {
+      "sacrifice": "power",
+      "amount": 3
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "destroy_node",
+     "count": 1
+    },
+    {
+     "op": "pull_unity",
+     "amount": 3
+    }
+   ],
+   "harms": [
+    "node destroyed",
+    "Unity pulled back"
+   ],
+   "value": "counter 3 Power tags (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
+   "check": "bites a seat's network and the Unity race; never a last node",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "dark_cities"
   },
   {
    "id": "station_seizure",
@@ -627,12 +583,6 @@
    "counters": [
     [
      {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
-    [
-     {
       "sacrifice": "cyber",
       "amount": 3
      }
@@ -640,7 +590,7 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -658,13 +608,10 @@
     "facilities destroyed or seized",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 3 Cyber tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a corrupted station ~20 (a player's lost, or a neutral one turned) + 4 compute 8 = 28; ~40; ratio ~2.7 (2.2 vs credits)",
-   "check": "rounds 4-9; the station's owner and neighbors pay; it takes the station's cube output, so no cubes option; no loop",
+   "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered 19.4 at values.json (a troop 9 with its strike), 1.29x the cheapest counter",
+   "check": "a lasting harm on the station's owner",
    "flags": [
-    "face 144 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm a player's station falls too (force), compute 4 (was 3); cubes left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "station_seizure"
   },
@@ -678,14 +625,8 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here (else the nearest piece without one). Create 2 adversary ambassadors here.",
+   "text": "A botnet lands on the station here. 2 adversary ambassadors are created here.",
    "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
     [
      {
       "sacrifice": "cyber",
@@ -695,7 +636,7 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -711,21 +652,14 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "actions or claims blocked",
-    "projects advanced (compute)",
-    "production blacked out"
+    "adversary pieces placed"
    ],
-   "value": "cheapest counter 3 Cyber tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a botnet 16 (compute every round, claims next to it blocked) + 2 placed 8 (the station dark while they stand) = 24; ~36; ratio ~2.4 (2.0 vs credits)",
-   "check": "worst early in stage II (more rounds of botnet compute); cyber seats counter; botnets need a tier-2 card to remove; no loop",
+   "value": "counter 3 Cyber tags (15) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.33x the cheapest counter",
+   "check": "bites the station: compute each round, nearer corrupting",
    "flags": [
-    "new op place_botnet",
-    "face 135 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 2 adversary ambassadors on the station, was 3 compute; cubes left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": "fifth_column"
+   "reuses": "sleeper_cells"
   },
   {
    "id": "purge_protocols",
@@ -737,50 +671,39 @@
    "locations": [
     "station"
    ],
-   "text": "Each player near it discards their most expensive card in hand, loses 3 tokens from their cards and destroys 1 node near it (never their last).",
+   "text": "The nearest player destroys 1 of their nodes closest to it and discards 3 cards.",
    "counters": [
     [
      {
       "resource": "research_cubes",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "resource": "insight",
-      "amount": 10
+      "amount": 5
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "discard_most_expensive"
-    },
-    {
-     "op": "lose_tokens",
-     "amount": 3
-    },
-    {
-     "op": "each_destroy_node",
+     "op": "destroy_node",
      "count": 1
+    },
+    {
+     "op": "discard",
+     "count": 3
     }
    ],
    "harms": [
-    "cards discarded",
-    "tokens stripped from cards",
-    "node destroyed"
+    "node destroyed",
+    "cards discarded"
    ],
-   "value": "cheapest counter 3 cubes 9 (or 10 insight 25; or 23 credits); harm per player a dear card ~8 + 3 tokens ~5 + 1 node 4 + the rule's 2 nodes 8 = 25 x 1.5 = ~37; shared 0; ratio ~4.1 (2.1 vs credits)",
-   "check": "bites hand-holders and token engines, rounds 4-9; science seats near stations pay; no loop",
+   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
+   "check": "bites a seat's network and hand; never a last node",
    "flags": [
-    "142: counters in scarce currencies, credits last; harm adds 1 node destroyed",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "purge_protocols"
   },
@@ -796,36 +719,27 @@
     "station",
     "factory"
    ],
-   "text": "Each player near it loses 2 research cubes and gets 3 less insight next round. The adversary gains 5 compute.",
+   "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 5 compute.",
    "counters": [
     [
      {
       "resource": "chips",
-      "amount": 6
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 4
+      "amount": 7
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "players_lose",
+     "op": "requisition",
      "resource": "research_cubes",
-     "amount": 2
-    },
-    {
-     "op": "lose_insight",
-     "amount": 3
+     "amount": 5,
+     "cards": 3
     },
     {
      "op": "compute",
@@ -833,17 +747,15 @@
     }
    ],
    "harms": [
-    "insight lost",
+    "credits or income lost",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 6 chips 12 (or 4 energy 18; or 23 credits); harm per player 2 cubes 6 + 3 insight 7.5 + the rule's 2 nodes 8 = 21.5 x 1.5 = ~32; shared 5 compute 10; ~42; ratio ~3.5 (2.3 vs credits)",
-   "check": "mid-game when cubes pile up; industry seats pay chips; it takes cubes and insight, so neither is on the menu; no loop",
+   "value": "counter 7 chips (14) or 17 credits (17); uncountered 17.5 at values.json (a troop 9 with its strike), 1.25x the cheapest counter",
+   "check": "bites cube holders before a megaproject",
    "flags": [
-    "new op lose_or",
-    "142: counters in scarce currencies, credits last; harm 2 cubes and 3 insight both (was their pick), 5 compute (was 2); insight left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "data_breach"
   },
   {
    "id": "zero_day",
@@ -855,31 +767,25 @@
    "locations": [
     "station"
    ],
-   "text": "The adversary gains 8 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
+   "text": "The adversary gains 10 compute. The nearest player turns 1 building face down until the end of next round.",
    "counters": [
     [
      {
       "resource": "research_cubes",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "sacrifice": "cyber",
-      "amount": 3
+      "amount": 5
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
      "op": "compute",
-     "amount": 8
+     "amount": 10
     },
     {
      "op": "disable_building",
@@ -889,19 +795,14 @@
    ],
    "harms": [
     "projects advanced (compute)",
-    "production blacked out",
     "actions or claims blocked"
    ],
-   "value": "cheapest counter 3 cubes 9 (or 3 Cyber tags 15; or 23 credits); harm per player a building idle a round ~5 + the rule's 2 nodes 8 = 13 x 1.5 = ~20; shared 8 compute 16; ~36; ratio ~4.0 (2.0 vs credits)",
-   "check": "worst when a project sits near its cost (often resolves one at once, and projects are harsher when they resolve); the face-down building is the player's pick; it lifts at the end of next round; no loop",
+   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 17 at values.json (a troop 9 with its strike), 1.13x the cheapest counter",
+   "check": "feeds the projects hard",
    "flags": [
-    "new op disable_building",
-    "face 156 characters, over the 110 target",
-    "135: the tag option asks 3 Cyber tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm unchanged (8 compute already severe)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "zero_day"
   },
   {
    "id": "asset_freeze",
@@ -913,7 +814,7 @@
    "locations": [
     "factory"
    ],
-   "text": "Each player near it turns 2 of their buildings face down until the end of next round (tags still count) and discards 2 cards.",
+   "text": "The nearest player turns 2 buildings face down until the end of next round and discards 2 cards.",
    "counters": [
     [
      {
@@ -923,14 +824,8 @@
     ],
     [
      {
-      "sacrifice": "industry",
-      "amount": 3
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -946,16 +841,13 @@
     }
    ],
    "harms": [
-    "production blacked out",
     "actions or claims blocked",
     "cards discarded"
    ],
-   "value": "cheapest counter 3 Industry tags 15 (or 4 energy 18; or 23 credits); harm per player 2 buildings idle a round ~10 + 2 cards ~6 + the rule's 2 nodes 8 = 24 x 1.5 = 36; shared 0; ratio ~2.4 (2.0 vs credits)",
-   "check": "any stage-II round; engines with several buildings feel it most; anyone near pays in energy or tags, not cards; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
+   "check": "bites engine seats",
    "flags": [
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 2 buildings face down and 2 cards, was 12 credits or 3 cards (credits left the harm)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "asset_freeze"
   },
@@ -969,24 +861,18 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary builds a factory on the free industrial zone nearest this threat's token. The adversary gains 5 compute.",
+   "text": "An adversary factory is built here. The adversary gains 5 compute.",
    "counters": [
     [
      {
       "resource": "chips",
-      "amount": 6
-     }
-    ],
-    [
-     {
-      "sacrifice": "industry",
-      "amount": 3
+      "amount": 7
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -1000,17 +886,13 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "actions or claims blocked",
+    "facilities destroyed or seized",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 6 chips 12 (or 3 Industry tags 15; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared an adversary factory 15 (it takes a zone and makes a troop each production step) + 5 compute 10 = 25; ~37; ratio ~3.1 (2.1 vs credits)",
-   "check": "rounds 4-7, while zones are free; industry seats pay chips; with no free zone it does the compute alone; no loop",
+   "value": "counter 7 chips (14) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.46x the cheapest counter",
+   "check": "a lasting site for the adversary",
    "flags": [
-    "new op adversary_factory",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm compute 5 (was 3)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
    "reuses": "mass_production"
   },
@@ -1025,7 +907,7 @@
    "locations": [
     "factory"
    ],
-   "text": "The adversary gains 4 compute. 1 troop lands on the factory or zone here and stays: a factory makes nothing while it stands; a zone gives 4 more compute.",
+   "text": "The adversary seizes the factory here, even a player's. The adversary gains 5 compute.",
    "counters": [
     [
      {
@@ -1035,86 +917,14 @@
     ],
     [
      {
-      "sacrifice": "industry",
-      "amount": 3
-     }
-    ],
-    [
-     {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "troops",
-     "count": 1,
-     "at": "location"
-    },
-    {
-     "op": "occupy_factory",
-     "else_compute": 4
-    },
-    {
-     "op": "compute",
-     "amount": 4
-    }
-   ],
-   "harms": [
-    "facilities destroyed or seized",
-    "adversary pieces placed",
-    "projects advanced (compute)"
-   ],
-   "value": "cheapest counter 3 Industry tags 15 (or 4 energy 18; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a factory idle ~3 rounds ~12 + a troop 5 + 4 compute 8 = ~25 (on a zone: troop 5 + 8 compute 16 = 21); ~37; ratio ~2.5 (2.1 vs credits)",
-   "check": "bites a factory owner from round 4; the owner pays now or removes the troop later, which caps it; the held troop never strikes; it idles the factory's chips, so no chips option; no loop",
-   "flags": [
-    "new op occupy_factory (not Hostile Takeover's seize_factory): settles the occupied factory as idle (no output to the adversary)",
-    "new field: at location on troops",
-    "face 153 characters, over the 110 target",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm compute 4 and 4 (was 3 and 3); the nodes option left the counters",
-    "142 freeze: credits counter 18 -> 23"
-   ],
-   "reuses": null
-  },
-  {
-   "id": "skimming_operation",
-   "name": "Skimming Operation",
-   "tier": 2,
-   "tags": [
-    "economic",
-    "influence"
-   ],
-   "locations": [
-    "coastal_city"
-   ],
-   "text": "Each player near it gets 4 less chips income next round. The adversary gains 5 compute.",
-   "counters": [
-    [
-     {
-      "resource": "ambassadors",
-      "amount": 4
-     }
-    ],
-    [
-     {
-      "resource": "energy",
-      "amount": 4
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 23
-     }
-    ]
-   ],
-   "effects": [
-    {
-     "op": "lose_income",
-     "resource": "chips",
-     "amount": 4
+     "op": "seize_factory"
     },
     {
      "op": "compute",
@@ -1122,17 +932,15 @@
     }
    ],
    "harms": [
-    "credits or income lost",
+    "facilities destroyed or seized",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 4 ambassadors 16 (or 4 energy 18; or 23 credits); harm per player 4 chips 8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 5 compute 10; ~34; ratio ~2.1 (1.9 vs credits)",
-   "check": "mid to late, against chip engines near the coast; diplomats pay ambassadors; it takes chips, so no chips option; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 20.5 at values.json (a troop 9 with its strike), 1.21x the cheapest counter",
+   "check": "a lasting harm on the factory's owner",
    "flags": [
-    "new op theft (Matt's theft-into-compute candidate)",
-    "142: counters in scarce currencies, credits last; harm 4 chips income and 5 compute, was 15 credits off the richest seat (credits left the harm)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "factory_occupation"
   },
   {
    "id": "trade_blockade",
@@ -1145,14 +953,8 @@
     "coastal_city",
     "factory"
    ],
-   "text": "Create 3 adversary ambassadors here. Sites on or next to it can't be claimed for 2 rounds.",
+   "text": "4 adversary ambassadors are created here. The nearest player pays 6 chips or discards 3 cards.",
    "counters": [
-    [
-     {
-      "resource": "chips",
-      "amount": 6
-     }
-    ],
     [
      {
       "resource": "energy",
@@ -1162,37 +964,33 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
      "op": "create",
-     "count": 3,
+     "count": 4,
      "at": "location"
     },
     {
-     "op": "flag",
-     "name": "embargo",
-     "scope": "near",
-     "rounds": 2
+     "op": "requisition",
+     "resource": "chips",
+     "amount": 6,
+     "cards": 3
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "actions or claims blocked"
+    "credits or income lost"
    ],
-   "value": "cheapest counter 6 chips 12 (or 4 energy 18; or 23 credits); harm per player a claim blocked 2 rounds ~8 + the rule's 2 nodes 8 = 16 x 1.5 = 24; shared 3 placed 12; ~36; ratio ~3.0 (2.0 vs credits)",
-   "check": "early stage II, while seats still expand; expanders near it pay; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
+   "check": "bites chip holders and the site's next Corrupt line",
    "flags": [
-    "new flag double_build",
-    "new fields on the embargo flag: near scope, rounds",
-    "135: the tag option asks 3 Industry tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 3 ambassadors created here and claims blocked 2 rounds, was 1 round and a doubled build",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "trade_blockade"
   },
   {
    "id": "grid_collapse",
@@ -1205,52 +1003,43 @@
     "city",
     "coastal_city"
    ],
-   "text": "Cities on or next to it produce no energy for 2 rounds. Each player near it destroys 1 of their nodes near it (never their last).",
+   "text": "The nearest player destroys 1 of their nodes closest to it and pays 4 energy or discards 3 cards.",
    "counters": [
     [
      {
       "resource": "research_cubes",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "sacrifice": "power",
-      "amount": 3
+      "amount": 5
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "flag",
-     "name": "blackout",
-     "rounds": 2,
-     "scope": "near"
+     "op": "destroy_node",
+     "count": 1
     },
     {
-     "op": "each_destroy_node",
-     "count": 1
+     "op": "requisition",
+     "resource": "energy",
+     "amount": 4,
+     "cards": 3
     }
    ],
    "harms": [
-    "production blacked out",
-    "node destroyed"
+    "node destroyed",
+    "energy lost"
    ],
-   "value": "cheapest counter 3 cubes 9 (or 3 Power tags 15; or 23 credits); harm per player ~2 energy 9 + 1 node 4 + the rule's 2 nodes 8 = 21 x 1.5 = ~32; shared 0; ratio ~3.5 (1.8 vs credits)",
-   "check": "worst mid-game on a seat's home grid; science seats pay cubes; it takes energy output, so no energy option; no loop",
+   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
+   "check": "bites a seat's network and energy; never a last node",
    "flags": [
-    "new field: flag rounds (shared with Thermal Runaway)",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm adds 1 node destroyed, drops 3 compute; energy left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "grid_collapse"
   },
   {
    "id": "power_rationing",
@@ -1262,14 +1051,8 @@
    "locations": [
     "city"
    ],
-   "text": "Each player near it loses 3 energy and turns 1 of their buildings face down until the end of next round (tags still count).",
+   "text": "The nearest player pays 4 energy or discards 3 cards.",
    "counters": [
-    [
-     {
-      "resource": "research_cubes",
-      "amount": 3
-     }
-    ],
     [
      {
       "resource": "ambassadors",
@@ -1279,36 +1062,27 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "players_lose",
+     "op": "requisition",
      "resource": "energy",
-     "amount": 3
-    },
-    {
-     "op": "disable_building",
-     "count": 1,
-     "until": "end_of_next_round"
+     "amount": 4,
+     "cards": 3
     }
    ],
    "harms": [
-    "energy lost",
-    "production blacked out",
-    "actions or claims blocked"
+    "energy lost"
    ],
-   "value": "cheapest counter 3 cubes 9 (or 4 ambassadors 16; or 23 credits); harm per player 3 energy 13.5 + a building idle a round ~5 + the rule's 2 nodes 8 = 26.5 x 1.5 = ~40; shared 0; ratio ~4.4 (2.2 vs credits)",
-   "check": "bites late, when energy engines run; science seats pay cubes; it takes energy, so no energy option; no loop",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 12 at values.json (a troop 9 with its strike), 0.75x the cheapest counter",
+   "check": "bites energy holders; ambassadors or credits pay it",
    "flags": [
-    "new op lose_or (shared with Data Breach)",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 3 energy and a building face down, was 3 energy or 12 credits (credits left the harm); energy left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "power_rationing"
   },
   {
    "id": "thermal_runaway",
@@ -1320,14 +1094,8 @@
    "locations": [
     "station"
    ],
-   "text": "Stations on or next to it produce nothing for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
+   "text": "The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute.",
    "counters": [
-    [
-     {
-      "resource": "energy",
-      "amount": 4
-     }
-    ],
     [
      {
       "sacrifice": "power",
@@ -1337,20 +1105,16 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "flag",
-     "name": "station_dark",
-     "rounds": 2,
-     "scope": "near"
-    },
-    {
-     "op": "lose_insight",
-     "amount": 3
+     "op": "requisition",
+     "resource": "research_cubes",
+     "amount": 6,
+     "cards": 3
     },
     {
      "op": "compute",
@@ -1358,79 +1122,15 @@
     }
    ],
    "harms": [
-    "production blacked out",
-    "insight lost",
+    "credits or income lost",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 3 Power tags 15 (or 4 energy 18; or 23 credits); harm per player ~1 cube 3 + 3 insight 7.5 + the rule's 2 nodes 8 = 18.5 x 1.5 = ~28; shared 4 compute 8; ~36; ratio ~2.4 (2.0 vs credits)",
-   "check": "mid-game against science seats; power seats pay energy; it takes cubes and insight, so neither is on the menu; no loop",
+   "value": "counter 3 Power tags (15) or 17 credits (17); uncountered 16.4 at values.json (a troop 9 with its strike), 1.09x the cheapest counter",
+   "check": "bites cube holders",
    "flags": [
-    "new flag station_dark with rounds",
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 3 insight (was 2) and 4 compute; cubes left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
-  },
-  {
-   "id": "dark_cities",
-   "name": "Dark Cities",
-   "tier": 2,
-   "tags": [
-    "grid",
-    "influence"
-   ],
-   "locations": [
-    "city",
-    "coastal_city"
-   ],
-   "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Remove 2 Unity from the Unity track.",
-   "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 10
-     }
-    ],
-    [
-     {
-      "sacrifice": "power",
-      "amount": 3
-     }
-    ],
-    [
-     {
-      "resource": "credits",
-      "amount": 23
-     }
-    ]
-   ],
-   "effects": [
-    {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "near",
-     "sites": 3
-    },
-    {
-     "op": "pull_unity",
-     "amount": 2
-    }
-   ],
-   "harms": [
-    "adversary pieces placed",
-    "production blacked out",
-    "Unity pulled back"
-   ],
-   "value": "cheapest counter 3 Power tags 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 3 placed 12 + their cities dark ~2 energy 9 + 2 Unity pulled back 8 = ~29; ~41; ratio ~2.7 (2.3 vs credits)",
-   "check": "any stage-II round; the darkness lasts until the ambassadors are removed; it darkens energy and cancels ambassadors, so neither is on the menu; feeds Overrun's corruption, capped by one copy of each",
-   "flags": [
-    "new field: ambassadors each",
-    "142: counters in scarce currencies, credits last; harm 2 Unity pulled back, was 1 sway; energy and ambassadors left the counters",
-    "142 freeze: credits counter 18 -> 23"
-   ],
-   "reuses": null
+   "reuses": "thermal_runaway"
   },
   {
    "id": "overload",
@@ -1443,14 +1143,8 @@
     "factory",
     "station"
    ],
-   "text": "Each player near it destroys 1 of their nodes near it (never their last). The adversary gains 5 compute.",
+   "text": "The nearest player destroys 2 of their nodes closest to it (never their last). The adversary gains 6 compute.",
    "counters": [
-    [
-     {
-      "resource": "energy",
-      "amount": 4
-     }
-    ],
     [
      {
       "sacrifice": "power",
@@ -1460,32 +1154,30 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "each_destroy_node",
-     "count": 1
+     "op": "destroy_node",
+     "count": 2
     },
     {
      "op": "compute",
-     "amount": 5
+     "amount": 6
     }
    ],
    "harms": [
     "node destroyed",
     "projects advanced (compute)"
    ],
-   "value": "cheapest counter 3 Power tags 15 (or 4 energy 18; or 23 credits); harm per player 1 node 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 5 compute 10; ~28; ratio ~1.9 (1.6 vs credits)",
-   "check": "rounds 4-9; energy-rich seats pay; the never-last guard keeps it from ending a seat; no loop",
+   "value": "counter 3 Power tags (15) or 17 credits (17); uncountered 14.6 at values.json (a troop 9 with its strike), 0.97x the cheapest counter",
+   "check": "bites a seat's network hardest",
    "flags": [
-    "135: the tag option asks 3 Power tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm 5 compute, was 2 energy (so energy can stay on the menu)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "overload"
   },
   {
    "id": "garrison_state",
@@ -1495,31 +1187,21 @@
     "universal"
    ],
    "locations": [
-    "base",
-    "city"
+    "city",
+    "base"
    ],
-   "text": "In its country: create 3 adversary ambassadors on the lowest-numbered city on or next to it. 2 troops land on the base here.",
+   "text": "3 adversary ambassadors are created on the city here. 2 adversary troops land on the base here.",
    "counters": [
     [
      {
-      "resource": "energy",
-      "amount": 2
-     },
-     {
-      "resource": "research_cubes",
-      "amount": 2
-     }
-    ],
-    [
-     {
       "resource": "insight",
-      "amount": 10
+      "amount": 7
      }
     ],
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -1527,8 +1209,7 @@
     {
      "op": "create",
      "count": 3,
-     "at": "city",
-     "if": "near"
+     "at": "location"
     },
     {
      "op": "troops",
@@ -1538,18 +1219,14 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "ambassadors lost",
-    "facilities destroyed or seized"
+    "adversary pieces placed"
    ],
-   "value": "cheapest counter 2 energy + 2 cubes 15 (or 10 insight 25; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared 2 troops 10 + their strikes ~8 + 3 placed 12 = ~30; ~42; ratio ~2.8 (2.3 vs credits)",
-   "check": "any stage-II round; two tokens widen who is near, so most seats can help; it cancels ambassadors, so none on the menu; no loop",
+   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
+   "check": "bites both sites",
    "flags": [
-    "new field: at on troops",
-    "142: counters in scarce currencies, credits last; harm 3 ambassadors and 2 troops, was 2, 1 and 2 compute; ambassadors left the counters",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "garrison_state"
   },
   {
    "id": "shock_doctrine",
@@ -1562,18 +1239,8 @@
     "city",
     "factory"
    ],
-   "text": "Each player near it loses 1 ambassador. Remove 2 Unity from the Unity track. Sway 2 toward Discord.",
+   "text": "The nearest player pays 2 ambassadors or discards 2 cards. 3 Unity comes off the Unity track.",
    "counters": [
-    [
-     {
-      "resource": "research_cubes",
-      "amount": 2
-     },
-     {
-      "resource": "chips",
-      "amount": 3
-     }
-    ],
     [
      {
       "resource": "energy",
@@ -1583,37 +1250,32 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
    "effects": [
     {
-     "op": "lose_ambassador"
+     "op": "requisition",
+     "resource": "ambassadors",
+     "amount": 2,
+     "cards": 2
     },
     {
      "op": "pull_unity",
-     "amount": 2
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 2
+     "amount": 3
     }
    ],
    "harms": [
     "ambassadors lost",
-    "Unity pulled back",
-    "Discord sway"
+    "Unity pulled back"
    ],
-   "value": "cheapest counter 2 cubes + 3 chips 12 (or 4 energy 18; or 23 credits); harm per player 1 ambassador 4 + the rule's 2 nodes 8 = 12 x 1.5 = 18; shared 2 Unity pulled back 8 + 2 sway 8 = 16; ~34; ratio ~2.8 (1.9 vs credits)",
-   "check": "any stage-II round, worst near the Unity tip; it takes ambassadors, so none on the menu; no loop",
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 20 at values.json (a troop 9 with its strike), 1.18x the cheapest counter",
+   "check": "bites diplomats and the Unity race",
    "flags": [
-    "no credits or energy option, on purpose",
-    "142: counters in scarce currencies, credits last; harm 1 ambassador and 2 Unity pulled back, was 6 credits and 1 energy (credits left the harm)",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "shock_doctrine"
   },
   {
    "id": "full_spectrum_assault",
@@ -1625,18 +1287,8 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here (else the nearest piece without one). Deal 1 extra tier-1 threat in this country. The adversary gains 4 compute.",
+   "text": "A botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round).",
    "counters": [
-    [
-     {
-      "resource": "insight",
-      "amount": 5
-     },
-     {
-      "resource": "research_cubes",
-      "amount": 2
-     }
-    ],
     [
      {
       "resource": "ambassadors",
@@ -1646,7 +1298,7 @@
     [
      {
       "resource": "credits",
-      "amount": 23
+      "amount": 17
      }
     ]
    ],
@@ -1660,28 +1312,214 @@
      "count": 1,
      "tier": 1,
      "scope": "country"
-    },
-    {
-     "op": "compute",
-     "amount": 4
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "actions or claims blocked",
-    "extra threats",
-    "projects advanced (compute)"
+    "extra threats"
    ],
-   "value": "cheapest counter 4 ambassadors 16 (or 5 insight + 2 cubes 18.5; or 23 credits); harm per player the rule's 2 nodes 8 x 1.5 = 12; shared a botnet 16 + a tier-1 threat ~10 + 4 compute 8 = ~34; ~46; ratio ~2.9 (2.6 vs credits)",
-   "check": "worst early in stage II (botnet compute every round after); a tier-1 extra threat can't chain back to this deck; no loop",
+   "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 23 at values.json (a troop 9 with its strike), 1.44x the cheapest counter",
+   "check": "bites by tempo and a lasting piece",
    "flags": [
-    "new ops place_botnet (shared with Sleeper Cells), deal_threats tier/scope (a threat that deals a threat deals it now, into its own country, at a named tier; it executes next round)",
-    "face 172 characters, over the 110 target",
-    "135: the tag option asks 3 Security tags, was 2 (Matt's ruling 1, 2026-11-06: tag-sacrifice counters ask 3 tags at tier 2); value line repriced against 15.",
-    "142: counters in scarce currencies, credits last; harm adds 4 compute",
-    "142 freeze: credits counter 18 -> 23"
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
-   "reuses": null
+   "reuses": "full_spectrum_assault"
+  },
+  {
+   "id": "last_ultimatum",
+   "name": "Last Ultimatum",
+   "tier": 2,
+   "tags": [
+    "universal"
+   ],
+   "locations": [
+    "city",
+    "base"
+   ],
+   "text": "A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their nodes closest to it.",
+   "counters": [
+    [
+     {
+      "resource": "research_cubes",
+      "amount": 5
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "deal_threats",
+     "count": 1,
+     "tier": 2,
+     "scope": "country"
+    },
+    {
+     "op": "destroy_node",
+     "count": 1
+    }
+   ],
+   "harms": [
+    "extra threats",
+    "node destroyed"
+   ],
+   "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 18 at values.json (a troop 9 with its strike), 1.20x the cheapest counter",
+   "check": "146: re-cut from tier 3; the dealt threat is any tag, never a chain past one",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "t3_last_ultimatum"
+  },
+  {
+   "id": "iron_curtain",
+   "name": "Iron Curtain",
+   "tier": 2,
+   "tags": [
+    "universal"
+   ],
+   "locations": [
+    "factory",
+    "city"
+   ],
+   "text": "2 adversary troops land on the factory here. 2 Unity comes off the Unity track.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "troops",
+     "count": 2,
+     "at": "location"
+    },
+    {
+     "op": "pull_unity",
+     "amount": 2
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "Unity pulled back"
+   ],
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 26 at values.json (a troop 9 with its strike), 1.53x the cheapest counter",
+   "check": "146: re-cut from tier 3; bites the factory and the Unity race",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "t3_iron_curtain"
+  },
+  {
+   "id": "war_economy",
+   "name": "War Economy",
+   "tier": 2,
+   "tags": [
+    "military",
+    "economic"
+   ],
+   "locations": [
+    "factory",
+    "base"
+   ],
+   "text": "An adversary factory is built here. 1 adversary troop lands on the factory here.",
+   "counters": [
+    [
+     {
+      "resource": "energy",
+      "amount": 4
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "adversary_factory"
+    },
+    {
+     "op": "troops",
+     "count": 1,
+     "at": "location",
+     "location": "factory"
+    }
+   ],
+   "harms": [
+    "facilities destroyed or seized",
+    "adversary pieces placed"
+   ],
+   "value": "counter 4 energy (18) or 17 credits (17); uncountered 24 at values.json (a troop 9 with its strike), 1.41x the cheapest counter",
+   "check": "146: re-cut from tier 3; a lasting adversary site",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "t3_war_economy"
+  },
+  {
+   "id": "cascade_failure",
+   "name": "Cascade Failure",
+   "tier": 2,
+   "tags": [
+    "grid",
+    "cyber"
+   ],
+   "locations": [
+    "station",
+    "city"
+   ],
+   "text": "A botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards.",
+   "counters": [
+    [
+     {
+      "resource": "insight",
+      "amount": 7
+     }
+    ],
+    [
+     {
+      "resource": "credits",
+      "amount": 17
+     }
+    ]
+   ],
+   "effects": [
+    {
+     "op": "place_botnet",
+     "count": 1
+    },
+    {
+     "op": "requisition",
+     "resource": "energy",
+     "amount": 3,
+     "cards": 3
+    }
+   ],
+   "harms": [
+    "adversary pieces placed",
+    "energy lost"
+   ],
+   "value": "counter 7 insight (17.5) or 17 credits (17); uncountered 28 at values.json (a troop 9 with its strike), 1.65x the cheapest counter",
+   "check": "146: re-cut from tier 3; a lasting piece and an energy hit",
+   "flags": [
+    "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
+   ],
+   "reuses": "t3_cascade_failure"
   }
  ]
 }

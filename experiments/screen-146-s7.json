@@ -1,0 +1,42 @@
+{
+  "name": "screen-146-s7",
+  "note": "146 screen s7 on the dev seeds: M15",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_M15",
+      "set": [
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=4"
+      ]
+    },
+    {
+      "name": "br_M15",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=4"
+      ]
+    },
+    {
+      "name": "pr_M15",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

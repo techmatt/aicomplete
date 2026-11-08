@@ -72,6 +72,16 @@ fn op_numbers(v: &serde_json::Value, out: &mut Vec<i64>) {
         match v {
             serde_json::Value::Number(n) => out.extend(n.as_i64()),
             serde_json::Value::Array(a) => a.iter().for_each(|x| nested(x, out)),
+            // 146: an op also read back through `Op`, so a defaulted field
+            // (Theft's `cards`, 2) counts as a number it has.
+            serde_json::Value::Object(o) if o.contains_key("op") && serde_json::from_value::<Op>(v.clone()).is_ok() => {
+                let op = serde_json::to_value(serde_json::from_value::<Op>(v.clone()).unwrap()).unwrap();
+                for full in [v, &op] {
+                    if let serde_json::Value::Object(f) = full {
+                        f.values().for_each(|x| nested(x, out));
+                    }
+                }
+            }
             serde_json::Value::Object(o) => o
                 .iter()
                 .filter(|(k, _)| !["id", "name", "text"].contains(&k.as_str()))

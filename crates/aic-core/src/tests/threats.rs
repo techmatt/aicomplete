@@ -128,7 +128,7 @@ fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
     // 142: Eviction (tier 1) pinned to 3 energy or 15 credits; at 150% it asks
     // 5 energy (4.5 up) and 23 credits (22.5 up), at 125% 4 (3.75 up) and 19 (18.75 up).
     const EVICTION: &str = r#"threats.eviction.counters=[[{"resource":"energy","amount":3}],[{"resource":"credits","amount":15}]]"#;
-    for (pct, want) in [("150,100,100", (5, 23)), ("125,100,100", (4, 19))] {
+    for (pct, want) in [("150,100", (5, 23)), ("125,100", (4, 19))] {
         let (rules, g) =
             threat_lab_with(&[EVICTION, "adversary.counter_credit_pct=100", &format!("adversary.counter_pct={pct}")]);
         let need = threats::requirement(&rules.world(), &g, "eviction");
@@ -144,8 +144,10 @@ fn counter_pct_scales_every_resource_item_by_tier_rounding_up() {
 
 #[test]
 fn counter_with_tags_sacrifices_cards_in_play() {
+    // 146: credits first so the sacrifice is option 1 (a chips counter would share
+    // Supply Raid's chips requisition).
     let (rules, mut g) =
-        threat_lab_with(&[r#"threats.supply_raid.counters=[[{"resource":"chips","amount":4}],[{"sacrifice":"industry","amount":2}]]"#]);
+        threat_lab_with(&[r#"threats.supply_raid.counters=[[{"resource":"credits","amount":15}],[{"sacrifice":"industry","amount":2}]]"#]);
     let w = rules.world();
     let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
     let c = rules.map.hexes[factory].country as usize;
@@ -174,8 +176,8 @@ fn counter_with_tags_sacrifices_cards_in_play() {
 
 #[test]
 fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
-    // 142: no printed threat has a nodes counter (refused while `threat_nodes`
-    // takes nodes; threat_lab sets it 0), so the test gives Orbital Strike one.
+    // 142: no printed threat has a nodes counter, so the test gives Orbital
+    // Strike one (its troops destroy no node, so no shared currency).
     let (rules, mut g) =
         threat_lab_with(&[r#"threats.orbital_strike.counters=[[{"resource":"energy","amount":3}],[{"nodes_near":1}]]"#]);
     let m = &rules.map;
@@ -195,61 +197,171 @@ fn counter_with_nodes_removes_nodes_near_it_never_the_last() {
     assert_eq!(counted(&g, "threats.countered_by.nodes"), 1);
 }
 
-#[test]
-fn an_uncountered_threat_hits_the_seats_near_it_and_sways_discord() {
-    let (rules, mut g) =
-        threat_lab_with(&[r#"threats.supply_raid.effects=[{"op":"players_lose","resource":"energy","amount":2}]"#]);
-    let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
-    let c = rules.map.hexes[factory].country as usize;
-    no_nodes(&mut g);
-    put(&mut g, factory, node(0), 1);
-    // In the country, but not near the token.
-    let far = rules.map.countries[c]
-        .hexes
-        .iter()
-        .copied()
-        .find(|&h| h != factory && !rules.map.hexes[factory].neighbors.contains(&h))
-        .unwrap();
-    put(&mut g, far, node(1), 1);
-    deal_at(&mut g,"supply_raid", c, &[factory]);
-    for s in 0..2 {
-        set_res(&mut g, s, Resource::Energy, 10);
-    }
-    let discord = g.var("alignment.discord");
-    for s in 0..g.seats.len() as u8 {
-        rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
-    }
-    assert!(g.pending.is_none());
-    // Supply Raid, pinned to take 2 energy from each player near it.
-    assert_eq!((g.resource(0, Resource::Energy), g.resource(1, Resource::Energy)), (8, 10));
-    assert_eq!(g.var("alignment.discord"), discord + 1);
-    assert_eq!(counted(&g, "threats.uncountered"), 1);
-    assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
+/// 146: a land hex exactly `d` from `from`, not in `avoid`.
+fn at_distance(m: &Map, from: usize, d: i32, avoid: &[usize]) -> usize {
+    (0..m.hexes.len())
+        .find(|&h| m.distance(from, h) == d && kind(m, h) != HexKind::Ocean && !avoid.contains(&h))
+        .unwrap_or_else(|| panic!("no land hex {d} from {from}"))
 }
 
-#[test]
-fn an_uncountered_threat_takes_its_tiers_nodes_from_each_player_near_it() {
-    // 138: `threat_nodes` 1 for tier 1: the near seat loses its node near the
-    // token (it holds another, so it is not its last); the far seat keeps its.
-    let (rules, mut g) = threat_lab_with(&["adversary.threat_nodes=1,1,2"]);
+/// 146: a lab with Supply Raid (one factory token) pinned to `effects` and no
+/// node on the board: (rules, game, its factory hex, its country).
+fn supply_raid_lab(effects: &str, sets: &[&str]) -> (Rules, GameState, usize, usize) {
+    let pin = format!("threats.supply_raid.effects={effects}");
+    let mut all = vec![pin.as_str()];
+    all.extend_from_slice(sets);
+    let (rules, mut g) = threat_lab_with(&all);
     let factory = (0..rules.map.hexes.len()).find(|&h| g.tokens(h, FACTORY) > 0).unwrap();
     let c = rules.map.hexes[factory].country as usize;
     no_nodes(&mut g);
-    let far: Vec<usize> = rules.map.countries[c]
-        .hexes
-        .iter()
-        .copied()
-        .filter(|&h| h != factory && !rules.map.hexes[factory].neighbors.contains(&h))
-        .take(2)
-        .collect();
-    put(&mut g, factory, node(0), 1);
-    put(&mut g, far[0], node(0), 1);
-    put(&mut g, far[1], node(1), 1);
-    deal_at(&mut g,"supply_raid", c, &[factory]);
+    (rules, g, factory, c)
+}
+
+const LOSE_2_ENERGY: &str = r#"[{"op":"players_lose","resource":"energy","amount":2}]"#;
+
+fn energies(g: &GameState) -> Vec<i64> {
+    (0..g.seats.len()).map(|s| g.resource(s, Resource::Energy)).collect()
+}
+
+fn pass_all(rules: &Rules, g: &mut GameState) {
     for s in 0..g.seats.len() as u8 {
-        rules.apply_mut(&mut g, &Action::Pass { seat: s }, None).unwrap();
+        rules.apply_mut(g, &Action::Pass { seat: s }, None).unwrap();
     }
+}
+
+/// 146: an uncountered threat's harm hits one player, the nearest by node
+/// (hex distance to a token), whether or not that seat is near; a seat near it
+/// but farther is not hit, and no Discord sways beyond what it prints.
+#[test]
+fn an_uncountered_threat_hits_only_the_nearest_seat() {
+    // Seat 1 on the token, seat 0 next to it (near: it may pay).
+    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
+    let m = &rules.map;
+    let next = at_distance(m, factory, 1, &[]);
+    put(&mut g, factory, node(1), 1);
+    put(&mut g, next, node(0), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() {
+        set_res(&mut g, s, Resource::Energy, 10);
+    }
+    assert!(threats::near(&rules.world(), &g, 0, &Key::new("supply_raid")), "seat 0 may pay");
+    let discord = g.var("alignment.discord");
+    pass_all(&rules, &mut g);
+    assert!(g.pending.is_none(), "one nearest seat: no choice");
+    assert_eq!(energies(&g), [10, 8], "only the seat on its token");
+    assert_eq!(g.var("alignment.discord"), discord, "no unprinted Discord");
+    assert_eq!(counted(&g, "threats.uncountered"), 1);
+    assert_eq!(counted(&g, "threats.hit.s1"), 1);
+    assert!(g.pile("threats.discard.1").contains(&Key::new("supply_raid")));
+
+    // Nobody near it: the nearest node, 2 away, still takes the harm.
+    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
+    let m = &rules.map;
+    let two = at_distance(m, factory, 2, &[]);
+    put(&mut g, two, node(0), 1);
+    put(&mut g, at_distance(m, factory, 4, &[]), node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() {
+        set_res(&mut g, s, Resource::Energy, 10);
+    }
+    assert!(threats::near_seats(&rules.world(), &g, &Key::new("supply_raid")).is_empty());
+    pass_all(&rules, &mut g);
     assert!(g.pending.is_none());
-    assert_eq!(g.tokens(factory, node(0)), 0, "the near node goes");
-    assert_eq!((g.tokens(far[0], node(0)), g.tokens(far[1], node(1))), (1, 1));
+    assert_eq!(energies(&g), [8, 10], "the nearest, not near");
+}
+
+/// 146: two seats equally near: the lowest tied seat picks which takes the
+/// harm (a loss choice among the tied seats); its first option is itself.
+#[test]
+fn a_tie_for_nearest_is_the_lowest_tied_seats_choice() {
+    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
+    let m = &rules.map;
+    let a = at_distance(m, factory, 1, &[]);
+    let b = at_distance(m, factory, 1, &[a]);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() {
+        set_res(&mut g, s, Resource::Energy, 10);
+    }
+    pass_all(&rules, &mut g);
+    let p = g.pending.as_ref().expect("a tie is a choice");
+    assert_eq!(p.ask.seat, 0, "the lowest tied seat answers");
+    let opts: Vec<&str> = p.ask.options.iter().map(|o| o.option.as_str()).collect();
+    assert_eq!(opts, ["seat 0", "seat 1"]);
+    answer(&rules, &mut g, 0);
+    answer_all(&rules, &mut g);
+    assert_eq!(energies(&g), [8, 10]);
+    assert_eq!(counted(&g, "threats.hit_ties"), 1);
+
+    // The other answer hands it to seat 1.
+    let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[]);
+    put(&mut g, a, node(0), 1);
+    put(&mut g, b, node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    for s in 0..g.seats.len() {
+        set_res(&mut g, s, Resource::Energy, 10);
+    }
+    pass_all(&rules, &mut g);
+    answer_with(&rules, &mut g, "seat 1");
+    answer_all(&rules, &mut g);
+    assert_eq!(energies(&g), [10, 8]);
+}
+
+/// 146: a printed `destroy_node` takes the nearest player's node closest to
+/// the threat, wherever it is, never their last; nobody else loses one.
+#[test]
+fn an_uncountered_threat_destroys_the_nearest_players_closest_node_never_the_last() {
+    const DESTROY: &str = r#"[{"op":"destroy_node","count":1}]"#;
+    let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
+    let m = &rules.map;
+    // Seat 0: one node 2 away (not near), one 4 away; seat 1: 3 away and far.
+    let s0_close = at_distance(m, factory, 2, &[]);
+    let s0_far = at_distance(m, factory, 4, &[]);
+    let s1_a = at_distance(m, factory, 3, &[]);
+    let s1_b = at_distance(m, factory, 6, &[]);
+    put(&mut g, s0_close, node(0), 1);
+    put(&mut g, s0_far, node(0), 1);
+    put(&mut g, s1_a, node(1), 1);
+    put(&mut g, s1_b, node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    pass_all(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.tokens(s0_close, node(0)), 0, "the nearest player's closest node goes");
+    assert_eq!(g.tokens(s0_far, node(0)), 1);
+    assert_eq!((g.tokens(s1_a, node(1)), g.tokens(s1_b, node(1))), (1, 1), "nobody else's");
+
+    // The nearest player's last node stays, and the harm passes to nobody.
+    let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
+    let m = &rules.map;
+    let next = at_distance(m, factory, 1, &[]);
+    put(&mut g, factory, node(0), 1);
+    put(&mut g, next, node(1), 1);
+    put(&mut g, at_distance(m, factory, 6, &[]), node(1), 1);
+    deal_at(&mut g, "supply_raid", c, &[factory]);
+    pass_all(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(total(&g, node(0)), 1, "its last node");
+    assert_eq!(total(&g, node(1)), 2);
+}
+
+/// 146: the Militarist's difficulty line (`threat_compute 4`, from
+/// `board_difficulty_at`) gives the adversary 4 compute per uncountered threat,
+/// none below that difficulty.
+#[test]
+fn the_militarists_difficulty_line_adds_compute_per_uncountered_threat() {
+    let made = |difficulty: i64| {
+        let at = format!("adversary.difficulty={difficulty}");
+        let (rules, mut g, factory, c) = supply_raid_lab(LOSE_2_ENERGY, &[&at]);
+        put(&mut g, factory, node(0), 1);
+        deal_at(&mut g, "supply_raid", c, &[factory]);
+        let before = g.var(crate::modules::adversary::COMPUTE);
+        pass_all(&rules, &mut g);
+        answer_all(&rules, &mut g);
+        assert_eq!(counted(&g, "threats.uncountered"), 1, "difficulty {difficulty}");
+        (crate::modules::adversary::threat_compute(&rules.world()), g.var(crate::modules::adversary::COMPUTE) - before)
+    };
+    let at = threat_lab().0.world().int("adversary.board_difficulty_at");
+    assert_eq!(made(at - 1), (0, 0));
+    assert_eq!(made(at), (4, 4));
 }

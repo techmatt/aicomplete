@@ -1,7 +1,7 @@
 {
  "name": "adversary_drafts",
  "title": "Adversary drafts: threats, projects, the Militarist",
- "intro": "One row per drafted card (134), grouped by deck: tier-1, tier-2 and tier-3 threats, the project deck, the Militarist board, the Militarist event deck. Each tile shows the card's full text, its value line and its check. Toggle on what goes forward; nothing is preselected. Numbers are sane starting values, not tuned. Notes per row are welcome.",
+ "intro": "One row per drafted card (134), grouped by deck: tier-1 and tier-2 threats, the project deck, the Militarist board, the Militarist event deck. Each tile shows the card's full text, its value line and its check. Toggle on what goes forward; nothing is preselected. Numbers are sane starting values, not tuned. Notes per row are welcome.",
  "rows": [
   {
    "id": "orbital_strike",
@@ -69,8 +69,21 @@
    ]
   },
   {
+   "id": "provocation",
+   "label": "6. Threats, tier 1: Provocation",
+   "note": "Threat, tier 1 | Influence 1 + Military 1 | at a military base",
+   "kind": "many",
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/adversary_drafts/provocation.svg",
+     "label": "goes forward"
+    }
+   ]
+  },
+  {
    "id": "agitators",
-   "label": "6. Threats, tier 1: Agitators",
+   "label": "7. Threats, tier 1: Agitators",
    "note": "Threat, tier 1 | Influence 1 | at a city",
    "kind": "many",
    "options": [
@@ -83,7 +96,7 @@
   },
   {
    "id": "defection",
-   "label": "7. Threats, tier 1: Defection",
+   "label": "8. Threats, tier 1: Defection",
    "note": "Threat, tier 1 | Influence 1 | at a city",
    "kind": "many",
    "options": [
@@ -96,7 +109,7 @@
   },
   {
    "id": "smear_campaign",
-   "label": "8. Threats, tier 1: Smear Campaign",
+   "label": "9. Threats, tier 1: Smear Campaign",
    "note": "Threat, tier 1 | Influence 1 | at a city and a research station",
    "kind": "many",
    "options": [
@@ -109,26 +122,13 @@
   },
   {
    "id": "propaganda_blitz",
-   "label": "9. Threats, tier 1: Propaganda Blitz",
+   "label": "10. Threats, tier 1: Propaganda Blitz",
    "note": "Threat, tier 1 | Influence 1 | at a coastal city",
    "kind": "many",
    "options": [
     {
      "key": "keep",
      "image": "../art-originals/picks/adversary_drafts/propaganda_blitz.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "provocation",
-   "label": "10. Threats, tier 1: Border Provocation",
-   "note": "Threat, tier 1 | Influence 1 + Military 1 | at a military base",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/provocation.svg",
      "label": "goes forward"
     }
    ]
@@ -459,8 +459,34 @@
    ]
   },
   {
+   "id": "skimming_operation",
+   "label": "36. Threats, tier 2: Skimming Operation",
+   "note": "Threat, tier 2 | Economic 2 + Influence 2 | at a coastal city",
+   "kind": "many",
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/adversary_drafts/skimming_operation.svg",
+     "label": "goes forward"
+    }
+   ]
+  },
+  {
+   "id": "dark_cities",
+   "label": "37. Threats, tier 2: Dark Cities",
+   "note": "Threat, tier 2 | Grid 2 + Influence 2 | at a city and a coastal city",
+   "kind": "many",
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/adversary_drafts/dark_cities.svg",
+     "label": "goes forward"
+    }
+   ]
+  },
+  {
    "id": "station_seizure",
-   "label": "36. Threats, tier 2: Station Seizure",
+   "label": "38. Threats, tier 2: Station Seizure",
    "note": "Threat, tier 2 | Cyber 2 | at a research station",
    "kind": "many",
    "options": [
@@ -473,7 +499,7 @@
   },
   {
    "id": "sleeper_cells",
-   "label": "37. Threats, tier 2: Sleeper Cells",
+   "label": "39. Threats, tier 2: Sleeper Cells",
    "note": "Threat, tier 2 | Cyber 2 | at a research station",
    "kind": "many",
    "options": [
@@ -486,7 +512,7 @@
   },
   {
    "id": "purge_protocols",
-   "label": "38. Threats, tier 2: Purge Protocols",
+   "label": "40. Threats, tier 2: Purge Protocols",
    "note": "Threat, tier 2 | Cyber 2 | at a research station",
    "kind": "many",
    "options": [
@@ -499,7 +525,7 @@
   },
   {
    "id": "data_breach",
-   "label": "39. Threats, tier 2: Data Breach",
+   "label": "41. Threats, tier 2: Data Breach",
    "note": "Threat, tier 2 | Cyber 2 + Economic 2 | at a research station and a factory or industrial zone",
    "kind": "many",
    "options": [
@@ -512,7 +538,7 @@
   },
   {
    "id": "zero_day",
-   "label": "40. Threats, tier 2: Zero Day",
+   "label": "42. Threats, tier 2: Zero Day",
    "note": "Threat, tier 2 | Cyber 2 | at a research station",
    "kind": "many",
    "options": [
@@ -525,7 +551,7 @@
   },
   {
    "id": "asset_freeze",
-   "label": "41. Threats, tier 2: Asset Freeze",
+   "label": "43. Threats, tier 2: Asset Freeze",
    "note": "Threat, tier 2 | Economic 2 | at a factory or industrial zone",
    "kind": "many",
    "options": [
@@ -538,7 +564,7 @@
   },
   {
    "id": "mass_production",
-   "label": "42. Threats, tier 2: Mass Production",
+   "label": "44. Threats, tier 2: Mass Production",
    "note": "Threat, tier 2 | Economic 2 | at a factory or industrial zone",
    "kind": "many",
    "options": [
@@ -551,7 +577,7 @@
   },
   {
    "id": "factory_occupation",
-   "label": "43. Threats, tier 2: Factory Occupation",
+   "label": "45. Threats, tier 2: Factory Occupation",
    "note": "Threat, tier 2 | Economic 2 + Military 2 | at a factory or industrial zone",
    "kind": "many",
    "options": [
@@ -563,21 +589,8 @@
    ]
   },
   {
-   "id": "skimming_operation",
-   "label": "44. Threats, tier 2: Skimming Operation",
-   "note": "Threat, tier 2 | Economic 2 + Influence 2 | at a coastal city",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/skimming_operation.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
    "id": "trade_blockade",
-   "label": "45. Threats, tier 2: Trade Blockade",
+   "label": "46. Threats, tier 2: Trade Blockade",
    "note": "Threat, tier 2 | Economic 2 | at a coastal city and a factory or industrial zone",
    "kind": "many",
    "options": [
@@ -590,7 +603,7 @@
   },
   {
    "id": "grid_collapse",
-   "label": "46. Threats, tier 2: Grid Collapse",
+   "label": "47. Threats, tier 2: Grid Collapse",
    "note": "Threat, tier 2 | Grid 2 | at a city and a coastal city",
    "kind": "many",
    "options": [
@@ -603,7 +616,7 @@
   },
   {
    "id": "power_rationing",
-   "label": "47. Threats, tier 2: Power Rationing",
+   "label": "48. Threats, tier 2: Power Rationing",
    "note": "Threat, tier 2 | Grid 2 | at a city",
    "kind": "many",
    "options": [
@@ -616,26 +629,13 @@
   },
   {
    "id": "thermal_runaway",
-   "label": "48. Threats, tier 2: Thermal Runaway",
+   "label": "49. Threats, tier 2: Thermal Runaway",
    "note": "Threat, tier 2 | Grid 2 | at a research station",
    "kind": "many",
    "options": [
     {
      "key": "keep",
      "image": "../art-originals/picks/adversary_drafts/thermal_runaway.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "dark_cities",
-   "label": "49. Threats, tier 2: Dark Cities",
-   "note": "Threat, tier 2 | Grid 2 + Influence 2 | at a city and a coastal city",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/dark_cities.svg",
      "label": "goes forward"
     }
    ]
@@ -656,7 +656,7 @@
   {
    "id": "garrison_state",
    "label": "51. Threats, tier 2: Garrison State",
-   "note": "Threat, tier 2 | Universal 2 | at a military base and a city",
+   "note": "Threat, tier 2 | Universal 2 | at a city and a military base",
    "kind": "many",
    "options": [
     {
@@ -693,151 +693,60 @@
    ]
   },
   {
-   "id": "t3_last_ultimatum",
-   "label": "54. Threats, tier 3: Last Ultimatum",
-   "note": "Threat, tier 3 | Universal 3 | at a city and a military base",
+   "id": "last_ultimatum",
+   "label": "54. Threats, tier 2: Last Ultimatum",
+   "note": "Threat, tier 2 | Universal 2 | at a city and a military base",
    "kind": "many",
    "options": [
     {
      "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_last_ultimatum.svg",
+     "image": "../art-originals/picks/adversary_drafts/last_ultimatum.svg",
      "label": "goes forward"
     }
    ]
   },
   {
-   "id": "t3_capital_siphon",
-   "label": "55. Threats, tier 3: Capital Siphon",
-   "note": "Threat, tier 3 | Universal 3 | at a factory or industrial zone and a research station",
+   "id": "iron_curtain",
+   "label": "55. Threats, tier 2: Iron Curtain",
+   "note": "Threat, tier 2 | Universal 2 | at a factory or industrial zone and a city",
    "kind": "many",
    "options": [
     {
      "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_capital_siphon.svg",
+     "image": "../art-originals/picks/adversary_drafts/iron_curtain.svg",
      "label": "goes forward"
     }
    ]
   },
   {
-   "id": "t3_iron_curtain",
-   "label": "56. Threats, tier 3: Iron Curtain",
-   "note": "Threat, tier 3 | Universal 3 | at a factory or industrial zone and a city",
+   "id": "war_economy",
+   "label": "56. Threats, tier 2: War Economy",
+   "note": "Threat, tier 2 | Military 2 + Economic 2 | at a factory or industrial zone and a military base",
    "kind": "many",
    "options": [
     {
      "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_iron_curtain.svg",
+     "image": "../art-originals/picks/adversary_drafts/war_economy.svg",
      "label": "goes forward"
     }
    ]
   },
   {
-   "id": "t3_spearhead",
-   "label": "57. Threats, tier 3: Spearhead",
-   "note": "Threat, tier 3 | Military 3 | at a military base",
+   "id": "cascade_failure",
+   "label": "57. Threats, tier 2: Cascade Failure",
+   "note": "Threat, tier 2 | Grid 2 + Cyber 2 | at a research station and a city",
    "kind": "many",
    "options": [
     {
      "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_spearhead.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_scorched_earth",
-   "label": "58. Threats, tier 3: Scorched Earth",
-   "note": "Threat, tier 3 | Military 3 | at a factory or industrial zone",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_scorched_earth.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_general_mobilization",
-   "label": "59. Threats, tier 3: General Mobilization",
-   "note": "Threat, tier 3 | Military 3 | at a military base",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_general_mobilization.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_war_economy",
-   "label": "60. Threats, tier 3: War Economy",
-   "note": "Threat, tier 3 | Military 3 + Economic 3 | at a factory or industrial zone and a military base",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_war_economy.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_regime_change",
-   "label": "61. Threats, tier 3: Regime Change",
-   "note": "Threat, tier 3 | Influence 3 | at a city",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_regime_change.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_lab_takeover",
-   "label": "62. Threats, tier 3: Lab Takeover",
-   "note": "Threat, tier 3 | Cyber 3 | at a research station",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_lab_takeover.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_hostile_takeover",
-   "label": "63. Threats, tier 3: Hostile Takeover",
-   "note": "Threat, tier 3 | Economic 3 | at a factory or industrial zone",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_hostile_takeover.svg",
-     "label": "goes forward"
-    }
-   ]
-  },
-  {
-   "id": "t3_cascade_failure",
-   "label": "64. Threats, tier 3: Cascade Failure",
-   "note": "Threat, tier 3 | Grid 3 + Cyber 3 | at a research station and a city",
-   "kind": "many",
-   "options": [
-    {
-     "key": "keep",
-     "image": "../art-originals/picks/adversary_drafts/t3_cascade_failure.svg",
+     "image": "../art-originals/picks/adversary_drafts/cascade_failure.svg",
      "label": "goes forward"
     }
    ]
   },
   {
    "id": "raiding_parties",
-   "label": "65. Projects: Raiding Parties",
+   "label": "58. Projects: Raiding Parties",
    "note": "Project | Military | 4 compute per player",
    "kind": "many",
    "options": [
@@ -850,7 +759,7 @@
   },
   {
    "id": "war_footing",
-   "label": "66. Projects: War Footing",
+   "label": "59. Projects: War Footing",
    "note": "Project | Military | 7 compute per player",
    "kind": "many",
    "options": [
@@ -863,7 +772,7 @@
   },
   {
    "id": "purge_the_unaligned",
-   "label": "67. Projects: Purge the Unaligned",
+   "label": "60. Projects: Purge the Unaligned",
    "note": "Project | Military | 7 compute per player",
    "kind": "many",
    "options": [
@@ -876,7 +785,7 @@
   },
   {
    "id": "armored_columns",
-   "label": "68. Projects: Armored Columns",
+   "label": "61. Projects: Armored Columns",
    "note": "Project | Military | 10 compute per player",
    "kind": "many",
    "options": [
@@ -889,7 +798,7 @@
   },
   {
    "id": "arms_race",
-   "label": "69. Projects: Arms Race",
+   "label": "62. Projects: Arms Race",
    "note": "Project | Military | 11 compute per player | ongoing",
    "kind": "many",
    "options": [
@@ -902,7 +811,7 @@
   },
   {
    "id": "declaration_of_war",
-   "label": "70. Projects: Declaration of War",
+   "label": "63. Projects: Declaration of War",
    "note": "Project | Military | 18 compute per player | ongoing",
    "kind": "many",
    "options": [
@@ -915,7 +824,7 @@
   },
   {
    "id": "disinformation",
-   "label": "71. Projects: Disinformation",
+   "label": "64. Projects: Disinformation",
    "note": "Project | Influence | 5 compute per player",
    "kind": "many",
    "options": [
@@ -928,7 +837,7 @@
   },
   {
    "id": "recruitment_drive",
-   "label": "72. Projects: Recruitment Drive",
+   "label": "65. Projects: Recruitment Drive",
    "note": "Project | Influence | 11 compute per player | ongoing",
    "kind": "many",
    "options": [
@@ -941,7 +850,7 @@
   },
   {
    "id": "infiltration_drive",
-   "label": "73. Projects: Infiltration Drive",
+   "label": "66. Projects: Infiltration Drive",
    "note": "Project | Influence | 18 compute per player",
    "kind": "many",
    "options": [
@@ -954,7 +863,7 @@
   },
   {
    "id": "data_heist",
-   "label": "74. Projects: Data Heist",
+   "label": "67. Projects: Data Heist",
    "note": "Project | Cyber | 6 compute per player",
    "kind": "many",
    "options": [
@@ -967,7 +876,7 @@
   },
   {
    "id": "botnet_swarm",
-   "label": "75. Projects: Botnet Swarm",
+   "label": "68. Projects: Botnet Swarm",
    "note": "Project | Cyber | 6 compute per player",
    "kind": "many",
    "options": [
@@ -980,7 +889,7 @@
   },
   {
    "id": "station_coup",
-   "label": "76. Projects: Station Coup",
+   "label": "69. Projects: Station Coup",
    "note": "Project | Cyber | 9 compute per player",
    "kind": "many",
    "options": [
@@ -993,7 +902,7 @@
   },
   {
    "id": "market_crash",
-   "label": "77. Projects: Market Crash",
+   "label": "70. Projects: Market Crash",
    "note": "Project | Economic | 5 compute per player",
    "kind": "many",
    "options": [
@@ -1006,7 +915,7 @@
   },
   {
    "id": "shadow_factories",
-   "label": "78. Projects: Shadow Factories",
+   "label": "71. Projects: Shadow Factories",
    "note": "Project | Economic | 7 compute per player",
    "kind": "many",
    "options": [
@@ -1019,7 +928,7 @@
   },
   {
    "id": "capital_flight",
-   "label": "79. Projects: Capital Flight",
+   "label": "72. Projects: Capital Flight",
    "note": "Project | Economic | 8 compute per player",
    "kind": "many",
    "options": [
@@ -1032,7 +941,7 @@
   },
   {
    "id": "rolling_blackouts",
-   "label": "80. Projects: Rolling Blackouts",
+   "label": "73. Projects: Rolling Blackouts",
    "note": "Project | Grid | 6 compute per player",
    "kind": "many",
    "options": [
@@ -1045,7 +954,7 @@
   },
   {
    "id": "grid_capture",
-   "label": "81. Projects: Grid Capture",
+   "label": "74. Projects: Grid Capture",
    "note": "Project | Grid | 9 compute per player | ongoing",
    "kind": "many",
    "options": [
@@ -1058,7 +967,7 @@
   },
   {
    "id": "false_flag",
-   "label": "82. Projects: False Flag",
+   "label": "75. Projects: False Flag",
    "note": "Project | Universal | 6 compute per player",
    "kind": "many",
    "options": [
@@ -1071,7 +980,7 @@
   },
   {
    "id": "grand_offensive",
-   "label": "83. Projects: Grand Offensive",
+   "label": "76. Projects: Grand Offensive",
    "note": "Project | Universal | 10 compute per player",
    "kind": "many",
    "options": [
@@ -1084,7 +993,7 @@
   },
   {
    "id": "propaganda_network",
-   "label": "84. Projects: Propaganda Network",
+   "label": "77. Projects: Propaganda Network",
    "note": "Project | Universal | 14 compute per player | ongoing",
    "kind": "many",
    "options": [
@@ -1097,7 +1006,7 @@
   },
   {
    "id": "militarist",
-   "label": "85. Militarist board: The Militarist",
+   "label": "78. Militarist board: The Militarist",
    "note": "Militarist board",
    "kind": "many",
    "options": [
@@ -1110,8 +1019,8 @@
   },
   {
    "id": "mil_s1_probing_strikes",
-   "label": "86. Militarist event deck: Probing Strikes",
-   "note": "Militarist event, stage 1 | arrivals: coastal",
+   "label": "79. Militarist event deck: Probing Strikes",
+   "note": "Militarist event, stage 1",
    "kind": "many",
    "options": [
     {
@@ -1123,8 +1032,8 @@
   },
   {
    "id": "mil_s1_factory_drive",
-   "label": "87. Militarist event deck: Factory Drive",
-   "note": "Militarist event, stage 1 | arrivals: industrial",
+   "label": "80. Militarist event deck: Factory Drive",
+   "note": "Militarist event, stage 1",
    "kind": "many",
    "options": [
     {
@@ -1136,8 +1045,8 @@
   },
   {
    "id": "mil_s1_long_patrols",
-   "label": "88. Militarist event deck: Long Patrols",
-   "note": "Militarist event, stage 1 | arrivals: stations",
+   "label": "81. Militarist event deck: Long Patrols",
+   "note": "Militarist event, stage 1",
    "kind": "many",
    "options": [
     {
@@ -1149,8 +1058,8 @@
   },
   {
    "id": "mil_s1_war_drums",
-   "label": "89. Militarist event deck: War Drums",
-   "note": "Militarist event, stage 1 | arrivals: bases",
+   "label": "82. Militarist event deck: War Drums",
+   "note": "Militarist event, stage 1",
    "kind": "many",
    "options": [
     {
@@ -1162,8 +1071,8 @@
   },
   {
    "id": "mil_s1_signal_jamming",
-   "label": "90. Militarist event deck: Signal Jamming",
-   "note": "Militarist event, stage 1 | arrivals: coastal",
+   "label": "83. Militarist event deck: Signal Jamming",
+   "note": "Militarist event, stage 1",
    "kind": "many",
    "options": [
     {
@@ -1175,8 +1084,8 @@
   },
   {
    "id": "mil_s2_mobilization",
-   "label": "91. Militarist event deck: Mobilization",
-   "note": "Militarist event, stage 2 | arrivals: coastal",
+   "label": "84. Militarist event deck: Mobilization",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1188,8 +1097,8 @@
   },
   {
    "id": "mil_s2_station_raids",
-   "label": "92. Militarist event deck: Station Raids",
-   "note": "Militarist event, stage 2 | arrivals: stations",
+   "label": "85. Militarist event deck: Station Raids",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1201,8 +1110,8 @@
   },
   {
    "id": "mil_s2_fifth_column",
-   "label": "93. Militarist event deck: Fifth Column",
-   "note": "Militarist event, stage 2 | arrivals: coastal",
+   "label": "86. Militarist event deck: Fifth Column",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1214,8 +1123,8 @@
   },
   {
    "id": "mil_s2_border_war",
-   "label": "94. Militarist event deck: Border War",
-   "note": "Militarist event, stage 2 | arrivals: bases",
+   "label": "87. Militarist event deck: Border War",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1227,8 +1136,8 @@
   },
   {
    "id": "mil_s2_supply_lines",
-   "label": "95. Militarist event deck: Supply Lines",
-   "note": "Militarist event, stage 2 | arrivals: industrial",
+   "label": "88. Militarist event deck: Supply Lines",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1240,8 +1149,8 @@
   },
   {
    "id": "mil_s2_forced_march",
-   "label": "96. Militarist event deck: Forced March",
-   "note": "Militarist event, stage 2 | arrivals: industrial",
+   "label": "89. Militarist event deck: Forced March",
+   "note": "Militarist event, stage 2",
    "kind": "many",
    "options": [
     {
@@ -1253,8 +1162,8 @@
   },
   {
    "id": "mil_s3_total_mobilization",
-   "label": "97. Militarist event deck: Total Mobilization",
-   "note": "Militarist event, stage 3 | arrivals: industrial",
+   "label": "90. Militarist event deck: Total Mobilization",
+   "note": "Militarist event, stage 3",
    "kind": "many",
    "options": [
     {
@@ -1266,8 +1175,8 @@
   },
   {
    "id": "mil_s3_blitzkrieg",
-   "label": "98. Militarist event deck: Blitzkrieg",
-   "note": "Militarist event, stage 3 | arrivals: bases",
+   "label": "91. Militarist event deck: Blitzkrieg",
+   "note": "Militarist event, stage 3",
    "kind": "many",
    "options": [
     {
@@ -1279,13 +1188,26 @@
   },
   {
    "id": "mil_s3_occupation",
-   "label": "99. Militarist event deck: Occupation",
-   "note": "Militarist event, stage 3 | arrivals: stations",
+   "label": "92. Militarist event deck: Occupation",
+   "note": "Militarist event, stage 3",
    "kind": "many",
    "options": [
     {
      "key": "keep",
      "image": "../art-originals/picks/adversary_drafts/mil_s3_occupation.svg",
+     "label": "goes forward"
+    }
+   ]
+  },
+  {
+   "id": "mil_s3_naval_blockade",
+   "label": "93. Militarist event deck: Naval Blockade",
+   "note": "Militarist event, stage 3",
+   "kind": "many",
+   "options": [
+    {
+     "key": "keep",
+     "image": "../art-originals/picks/adversary_drafts/mil_s3_naval_blockade.svg",
      "label": "goes forward"
     }
    ]

@@ -24,12 +24,11 @@ pub const HARMS: [&str; 14] = [
     "actions or claims blocked",
 ];
 
-/// The sources of the ledger, in its column order. The first seven read
+/// The sources of the ledger, in its column order. The first six read
 /// content; `RULE_HARMS` says what the rest do.
-pub const SOURCES: [&str; 13] = [
+pub const SOURCES: [&str; 12] = [
     "tier-1 threats",
     "tier-2 threats",
-    "tier-3 threats",
     "Discord cards",
     "adversary events",
     "adversary projects",
@@ -44,7 +43,7 @@ pub const SOURCES: [&str; 13] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 17] = [
+pub const RULE_HARMS: [(&str, &str, &str); 16] = [
     ("creation lines", "adversary pieces placed", "the board's line and each card's: N on the lowest-numbered sites of a type, each country"),
     ("creation lines", "ambassadors lost", "a created ambassador cancels a player ambassador there"),
     ("creation lines", "production blacked out", "an ambassador on a city or station blocks its output while it stands (137)"),
@@ -56,9 +55,9 @@ pub const RULE_HARMS: [(&str, &str, &str); 17] = [
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
     ("corruption", "production blacked out", "its energy goes to the adversary"),
     ("corruption", "Discord sway", "its energy sways Discord each round"),
-    ("uncountered threats", "node destroyed", "each player near a threat that executes uncountered destroys `threat_nodes` (1 / 2 / 3 by tier, `harm_bonus` more from difficulty `harm_bonus_at`) of their nodes near it"),
-    // 099: the board's most frequent Discord source had no mark.
-    ("uncountered threats", "Discord sway", "every threat that executes uncountered sways `threat_discord` toward Discord, beside its printed effects"),
+    // 146: no unprinted harm (the node loss near an uncountered threat and its floor sway are gone); the adversary
+    // board may print compute per uncountered threat.
+    ("uncountered threats", "projects advanced (compute)", "the adversary board's printed compute per threat that executes uncountered (the Militarist's difficulty line, from `board_difficulty_at`)"),
     ("war", "node destroyed", "a destroyed factory takes the node on its hex"),
     ("war", "facilities destroyed or seized", "surplus troops destroy factories"),
     ("war", "Discord sway", "each factory destroyed in war sways `destruction_discord` toward Discord"),
@@ -66,12 +65,12 @@ pub const RULE_HARMS: [(&str, &str, &str); 17] = [
 ];
 
 /// Columns of [`SOURCES`] that read content, for [`harm_marks`].
-const DISCORD_CARDS: usize = 3;
-const ADVERSARY_EVENTS: usize = 4;
-const ADVERSARY_PROJECTS: usize = 5;
-const MEGAPROJECTS: usize = 6;
-/// The first columns: the threats, by tier.
-const THREAT_TIERS: usize = 3;
+const DISCORD_CARDS: usize = 2;
+const ADVERSARY_EVENTS: usize = 3;
+const ADVERSARY_PROJECTS: usize = 4;
+const MEGAPROJECTS: usize = 5;
+/// The first columns: the threats, by tier (146: no tier 3).
+const THREAT_TIERS: usize = 2;
 
 /// Rows of [`HARMS`], for [`op_harms`].
 const NODE_DESTROYED: usize = 0;
@@ -92,12 +91,18 @@ const BLOCKED: usize = 13;
 /// The harms one op does, as rows of [`HARMS`].
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
-        Op::EachDestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
+        Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::PlayersLose { resource: Resource::Credits, .. } => vec![CREDITS_LOST],
+        // 146: a threat's "pays 2 ambassadors or discards 2 cards" takes either.
+        Op::Requisition { resource: Resource::Ambassadors, .. } | Op::Theft { resource: Resource::Ambassadors, .. } => {
+            vec![AMBASSADORS_LOST, CARDS_DISCARDED]
+        }
         Op::Requisition { .. } | Op::DiscardMostExpensive | Op::Discard { .. } => vec![CARDS_DISCARDED],
         Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
             vec![CREDITS_LOST]
         }
+        // 146: theft is "pays N or discards M cards", and the adversary gains its compute.
+        Op::Theft { .. } => vec![CARDS_DISCARDED, PROJECTS_ADVANCED],
         // Capital Flight: a negative credit income for every player.
         Op::TeamIncome { resource: Resource::Credits, amount } if *amount < 0 => vec![CREDITS_LOST],
         Op::LoseAmbassadorsOr { .. } => vec![AMBASSADORS_LOST, CREDITS_LOST],

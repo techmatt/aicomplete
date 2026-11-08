@@ -14,7 +14,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **`choices` counts prompts** (a placement is two: track, hex); with `answers` 99 a free
   multi-pick rule of N picks costs about N² evaluations.
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
-  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats; and:
+  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats (by printed harm,
+  `threat_harm`); and:
   - botnets −25 (D9): agents make none when an equal free choice exists;
   - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
     Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).
@@ -32,8 +33,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 **Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafts by a plan
 (`plan_keep` 1; 0: the heuristic keeps). At its first keep of a round a seat sketches
 `plan_rounds` (4) rounds from what it holds and earns, fills each round's budget with the
-cards it would play, by value per cost (value: the value table at the rounds then left times
-the strategy multiplier; cost: its price at the table's rates, printed with `plan_table=0`),
+cards it would play, by value per cost (value: the table at the rounds then left times
+the strategy multiplier; cost: its price at the table's rates, `plan_table=0`),
 and keeps each drafted card, best ratio first, only if the plan is worth more with it.
 A play waiting a round is worth 15% less; `plan_niche` adds for each marker, threat or node a
 card would act on now; `needs` may be met by cards planned earlier, or short now by at most

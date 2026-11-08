@@ -132,7 +132,7 @@
   "name": "Incursion",
   "side": "discord",
   "tier": 1,
-  "text": "Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and a tier-3 threat in each country.",
+  "text": "Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and two tier-2 threats in each country.",
   "effects": [
    {
     "op": "deal_threats",
@@ -149,8 +149,8 @@
      },
      {
       "op": "deal_threats",
-      "count": 1,
-      "tier": 3
+      "count": 2,
+      "tier": 2
      }
     ]
    }
@@ -241,7 +241,7 @@
   "name": "Offensive",
   "side": "discord",
   "tier": 2,
-  "text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: the threat is tier 3. 4+ instead: the adversary builds first, then Corrupt cities and the tier-3 threat.",
+  "text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: it deals a second tier-2 threat. 4+ instead: the adversary builds first, then Corrupt cities and the two threats.",
   "effects": [
    {
     "op": "corrupt",
@@ -262,7 +262,11 @@
      },
      {
       "op": "threat_at_node",
-      "tier": 3
+      "tier": 2
+     },
+     {
+      "op": "threat_at_node",
+      "tier": 2
      }
     ]
    },
@@ -278,7 +282,11 @@
      },
      {
       "op": "threat_at_node",
-      "tier": 3
+      "tier": 2
+     },
+     {
+      "op": "threat_at_node",
+      "tier": 2
      }
     ]
    }
@@ -289,7 +297,7 @@
   "name": "Two Fronts",
   "side": "discord",
   "tier": 2,
-  "text": "Deal 2 extra threats. 3+ earlier Discord tips: a tier-3 threat in each country instead. 4+ instead: deal 3, and a tier-3 threat in each country.",
+  "text": "Deal 2 extra threats. 3+ earlier Discord tips: two tier-2 threats in each country instead. 4+ instead: deal 3, and two tier-2 threats in each country.",
   "effects": [
    {
     "op": "deal_threats",
@@ -302,8 +310,8 @@
     "effects": [
      {
       "op": "deal_threats",
-      "count": 1,
-      "tier": 3
+      "count": 2,
+      "tier": 2
      }
     ]
    },
@@ -316,8 +324,8 @@
      },
      {
       "op": "deal_threats",
-      "count": 1,
-      "tier": 3
+      "count": 2,
+      "tier": 2
      }
     ]
    }

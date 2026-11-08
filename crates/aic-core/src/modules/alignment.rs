@@ -33,7 +33,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("free_city", 0, 10, "Sway toward Unity for freeing a corrupted city"),
     ParamSpec::int("free_facility", 0, 10, "Sway toward Unity for liberating an adversary station or factory (137)"),
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
-    ParamSpec::int("threat_discord", 0, 10, "Sway toward Discord when a threat executes uncountered"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
     ParamSpec::list("purge_at", 1, 50, "Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136)"),

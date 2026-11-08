@@ -36,19 +36,27 @@ pub struct Ctx {
     pub card: Option<Key>,
     /// What is resolving, by name, for prompts (a threat's).
     pub why: Option<String>,
-    /// The threat resolving (135): its near seats are "players", its tokens
-    /// "the location".
+    /// The threat resolving (135): its tokens are "the location".
     pub threat: Option<Key>,
+    /// 146: the one seat an executing threat's harm hits (the nearest by
+    /// node; `None` with no node on the board).
+    pub hit: Option<usize>,
 }
 
 impl Ctx {
     pub(super) fn new(source: EffectSource, scope: Option<usize>) -> Ctx {
-        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None }
+        Ctx { source, scope, other: None, label: "card", card: None, why: None, threat: None, hit: None }
     }
 
     /// The threat whose effects these are (135).
     pub fn with_threat(mut self, t: Key) -> Ctx {
         self.threat = Some(t);
+        self
+    }
+
+    /// 146: the seat the threat's harm hits.
+    pub fn hitting(mut self, seat: Option<usize>) -> Ctx {
+        self.hit = seat;
         self
     }
 
@@ -96,8 +104,9 @@ impl Ctx {
     pub(super) fn seats(&self, w: &World, g: &GameState) -> Vec<usize> {
         match self.source {
             EffectSource::Seat(s) => vec![s],
+            // 146: an executing threat hits one player, the nearest.
             EffectSource::Threat => match &self.threat {
-                Some(t) => threats::near_seats(w, g, t),
+                Some(_) => self.hit.into_iter().collect(),
                 None => seats_in_scope(w, g, self.scope),
             },
             EffectSource::Team => seats_in_scope(w, g, self.scope),

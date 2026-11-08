@@ -1,0 +1,81 @@
+{
+  "name": "screen-146-s2",
+  "note": "146 screen s2 on the dev seeds: C2, K2, X3",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_C2",
+      "set": [
+        "adversary.threat_compute_bonus=2"
+      ]
+    },
+    {
+      "name": "br_C2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.threat_compute_bonus=2"
+      ]
+    },
+    {
+      "name": "pr_C2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.threat_compute_bonus=2"
+      ]
+    },
+    {
+      "name": "bp_K2",
+      "set": [
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "br_K2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "pr_K2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "bp_X3",
+      "set": [
+        "adversary.extra_threats_at=3"
+      ]
+    },
+    {
+      "name": "br_X3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.extra_threats_at=3"
+      ]
+    },
+    {
+      "name": "pr_X3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.extra_threats_at=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

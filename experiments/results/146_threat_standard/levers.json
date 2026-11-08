@@ -1,0 +1,59 @@
+{
+  "base": [],
+  "K2": [
+    "adversary.counter_more_all=2",
+    "adversary.counter_more_credits=6"
+  ],
+  "X3": [
+    "adversary.extra_threats_at=3"
+  ],
+  "P90": [
+    "adversary.counter_pct=90,90",
+    "adversary.counter_credit_pct=90"
+  ],
+  "G3": [
+    "adversary.counter_bonus_all=3",
+    "adversary.counter_bonus_credits=8"
+  ],
+  "A1": [
+    "threats.agitators.effects.0.count=2",
+    "threats.insider_access.effects.0.count=1",
+    "threats.embargo.effects.0.count=1",
+    "threats.insurrection.effects.0.count=3",
+    "threats.sleeper_cells.effects.1.count=1",
+    "threats.trade_blockade.effects.0.count=3",
+    "threats.garrison_state.effects.0.count=2"
+  ],
+  "P85": [
+    "adversary.counter_pct=85,85",
+    "adversary.counter_credit_pct=85"
+  ],
+  "L1": [
+    "adversary.counter_pct=85,85",
+    "adversary.counter_credit_pct=85",
+    "adversary.counter_bonus_all=1",
+    "adversary.counter_bonus_credits=3",
+    "adversary.counter_bonus_at=1",
+    "adversary.counter_more_all=2",
+    "adversary.counter_more_credits=5",
+    "adversary.counter_more_at=2"
+  ],
+  "L1b": [
+    "adversary.counter_pct=85,85",
+    "adversary.counter_credit_pct=85",
+    "adversary.counter_bonus_all=1",
+    "adversary.counter_bonus_credits=3",
+    "adversary.counter_bonus_at=1",
+    "adversary.counter_more_all=3",
+    "adversary.counter_more_credits=8",
+    "adversary.counter_more_at=2"
+  ],
+  "M1": [
+    "adversary.counter_more_all=1",
+    "adversary.counter_more_credits=3"
+  ],
+  "M15": [
+    "adversary.counter_more_all=1",
+    "adversary.counter_more_credits=4"
+  ]
+}

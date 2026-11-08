@@ -48,14 +48,22 @@
    "botnet_compute": 1
   },
   "difficulty": {
-   "text": "Militarist, harder: every event that lands troops lands 1 more in each country.",
+   "text": "Militarist, harder: every event that lands troops lands 1 more in each country, and the adversary gains 4 compute for each threat that executes uncountered.",
    "effects": [
     {
      "op": "standing_troops_bonus",
      "amount": 1,
      "new": true,
      "why": "a Militarist-only dial on its main strength line; no op adds to an event's standing placements today"
+    },
+    {
+     "op": "threat_compute",
+     "amount": 4,
+     "why": "146: d3's step after harm_bonus went (a flat compute per uncountered threat, the standard's suggestion; 2 screened, 4 after Matt's Discord ruling)"
     }
+   ],
+   "flags": [
+    "146: + 4 compute per uncountered threat (replaces d3's unprinted +2 nodes, harm_bonus)"
    ]
   },
   "harms": [
@@ -589,6 +597,14 @@
       "economic"
      ],
      "per": "country"
+    },
+    {
+     "tier": 2,
+     "tags": [
+      "military",
+      "economic"
+     ],
+     "per": "country"
     }
    ],
    "standing": [
@@ -614,7 +630,7 @@
      "site": "factory"
     }
    ],
-   "text": "Each country: Military 1 or Economic 1. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Corrupt factories.",
+   "text": "Each country: Military 1 or Economic 1, and Military 2 or Economic 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Corrupt factories.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -623,7 +639,8 @@
    "value": "All shared (global + per country): 4 compute (8) + 1 troop a country (about 10) + Escalation (5 + its Discord sway, 4) + twist, about 1 factory ambassador a country that becomes an adversary troop at the next production step (about 10): 8 + 29 a country. Against the cheapest answer, 3 removals a country (troop, base, factory: about 15): 1.9x a country (2.5x at 1 country, 2.1x at 4). No credits option (removal only). Pull: the light one, 1 tier-1 threat a country, priced on its own card.",
    "check": "Rounds 5-9, the stage-II card with the tier-1 pull: pressure moves from threats to the board (about 29 a country on the board against Mobilization's 19 plus a tier-2 threat). Factory ambassadors become adversary troops at the next production step. No loop.",
    "flags": [
-    "Face text is 229 characters (over 130)."
+    "Face text is 229 characters (over 130).",
+    "146: the pull line to the ladder (stage III two tier-2 pulls; stage II one tier-2, or tier 1 and tier 2); the rest as printed"
    ],
    "reuses": "adv_s2_supply_lines"
   },
@@ -695,7 +712,7 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 3,
+     "tier": 2,
      "tags": [
       "military"
      ],
@@ -747,17 +764,18 @@
      "site": "city"
     }
    ],
-   "text": "Each country: a Military 3 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Remove 2 Unity from the Unity track. Corrupt factories. Corrupt cities.",
+   "text": "Each country: a Military 2 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Remove 2 Unity from the Unity track. Corrupt factories. Corrupt cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
     "Unity pulled back",
     "facilities destroyed or seized"
    ],
-   "value": "All shared (global + per country): 4 compute (8) + 2 Sway pulled from Unity (4 each, 8) + 2 troops a country (about 20) + 1 ambassador a corrupted city (5 each): 16 + 20 a country, plus 5 a corrupted city. Against the cheapest answer, 2 removals a country (about 10): 2x a country (3.6x at 1 country, 2.4x at 4). No credits option (removal only). Pulls: 1 tier-3 and 1 tier-2 threat a country (cheapest counters 13 + 9 credits), priced on their own cards.",
-   "check": "Rounds 10-11 (9-11 at difficulty 2+): a seat making 30+ counters both pulls in its country (about 22) and still builds; a weak table counters the tier-3 and lets the tier-2 go. No loop.",
+   "value": "All shared (global + per country): 4 compute (8) + 2 Sway pulled from Unity (4 each, 8) + 2 troops a country (about 20) + 1 ambassador a corrupted city (5 each): 16 + 20 a country, plus 5 a corrupted city. Against the cheapest answer, 2 removals a country (about 10): 2x a country (3.6x at 1 country, 2.4x at 4). No credits option (removal only). Pulls: 2 tier-2 threats a country (146), priced on their own cards.",
+   "check": "Rounds 10-11 (9-11 at difficulty 2+): a seat making 30+ counters both pulls in its country and still builds; a weak table counters one tier-2 and lets the other go. No loop.",
    "flags": [
-    "Face text is 274 characters (over 130)."
+    "Face text is 274 characters (over 130).",
+    "146: the pull line to the ladder (stage III two tier-2 pulls; stage II one tier-2, or tier 1 and tier 2); the rest as printed"
    ],
    "reuses": "adv_s3_total_mobilization"
   },
@@ -767,14 +785,14 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 3,
+     "tier": 2,
      "tags": [
       "any"
      ],
      "per": "country"
     },
     {
-     "tier": 1,
+     "tier": 2,
      "tags": [
       "military",
       "influence"
@@ -819,16 +837,17 @@
      "site": "land"
     }
    ],
-   "text": "Each country: any tier-3 threat, and Military 1 or Influence 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. Corrupt land.",
+   "text": "Each country: any tier-2 threat, and Military 2 or Influence 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. Corrupt land.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
     "Discord sway"
    ],
-   "value": "All shared (global + per country): 4 compute (8) + sway 1 (4) + reach, about 2 ambassadors onto player pieces (8) = 20 global; 2 troops a country (about 20) + the base arrival's Discord sway when it produces (4) = 24 a country. Against the cheapest answer, 2 troop removals and 1 arrival removal a country (about 15): 1.6x a country (2.9x at 1 country, 1.9x at 4). No credits option (removal only). Pulls: 1 tier-3 and 1 tier-1 threat a country (cheapest counters 13 + 6 credits), priced on their own cards.",
+   "value": "All shared (global + per country): 4 compute (8) + sway 1 (4) + reach, about 2 ambassadors onto player pieces (8) = 20 global; 2 troops a country (about 20) + the base arrival's Discord sway when it produces (4) = 24 a country. Against the cheapest answer, 2 troop removals and 1 arrival removal a country (about 15): 1.6x a country (2.9x at 1 country, 1.9x at 4). No credits option (removal only). Pulls: 2 tier-2 threats a country (146), priced on their own cards.",
    "check": "Rounds 10-11 (9-11 at difficulty 2+): the light second pull keeps it answerable; a strong engine pays both and removes 2 troops a country with one card. No loop.",
    "flags": [
-    "Face text is 243 characters (over 130)."
+    "Face text is 243 characters (over 130).",
+    "146: the pull line to the ladder (stage III two tier-2 pulls; stage II one tier-2, or tier 1 and tier 2); the rest as printed"
    ],
    "reuses": "adv_s3_blitzkrieg"
   },
@@ -838,7 +857,7 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 3,
+     "tier": 2,
      "tags": [
       "military",
       "cyber"
@@ -887,7 +906,7 @@
      "cut": 1
     }
    ],
-   "text": "Each country: Military 3 or Cyber 3, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Corrupt research stations. Corrupt cities (1 fewer).",
+   "text": "Each country: Military 2 or Cyber 2, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Corrupt research stations. Corrupt cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -895,10 +914,11 @@
     "node destroyed",
     "facilities destroyed or seized"
    ],
-   "value": "All shared (global + per country): 5 compute (10) + 1 troop (about 10) + 1 ambassador (5) a country: 10 + 15 a country. Against the cheapest answer, 1 troop removal and 1 ambassador removal a country (about 10): 1.5x a country (2.5x at 1 country, 1.8x at 4). No credits option (removal only). Twist, when it lands: corrupt_at 3 corrupts a city already holding 2 adversary ambassadors (45 to liberate; the nodes next to it are destroyed, 6 each, and player ambassadors waiting there are lost, 4 each), well over 3x. Pulls: 1 tier-3 and 1 tier-2 threat a country (counters about 15 + 10), priced on their own cards.",
+   "value": "All shared (global + per country): 5 compute (10) + 1 troop (about 10) + 1 ambassador (5) a country: 10 + 15 a country. Against the cheapest answer, 1 troop removal and 1 ambassador removal a country (about 10): 1.5x a country (2.5x at 1 country, 1.8x at 4). No credits option (removal only). Twist, when it lands: corrupt_at 3 corrupts a city already holding 2 adversary ambassadors (45 to liberate; the nodes next to it are destroyed, 6 each, and player ambassadors waiting there are lost, 4 each), well over 3x. Pulls: 2 tier-2 threats a country (146), priced on their own cards.",
    "check": "Rounds 10-11 (9-11 at difficulty 2+): the corruption lands in the last round or two, so it scores Discord rather than costing play; a Diplomat who cleared cities in stage II blunts it. No loop.",
    "flags": [
-    "Face text is 306 characters (over 130)."
+    "Face text is 306 characters (over 130).",
+    "146: the pull line to the ladder (stage III two tier-2 pulls; stage II one tier-2, or tier 1 and tier 2); the rest as printed"
    ],
    "reuses": "adv_s3_occupation"
   },
@@ -908,7 +928,7 @@
    "stage": 3,
    "pulls": [
     {
-     "tier": 3,
+     "tier": 2,
      "tags": [
       "economic",
       "grid"
@@ -916,7 +936,7 @@
      "per": "country"
     },
     {
-     "tier": 1,
+     "tier": 2,
      "tags": [
       "military",
       "cyber"
@@ -951,17 +971,18 @@
      "site": "land"
     }
    ],
-   "text": "Each country: Economic 3 or Grid 3, and Military 1 or Cyber 1. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on each of the 2 lowest-numbered coastal cities. Corrupt cities. Corrupt land.",
+   "text": "Each country: Economic 2 or Grid 2, and Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on each of the 2 lowest-numbered coastal cities. Corrupt cities. Corrupt land.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
     "facilities destroyed or seized"
    ],
-   "value": "All shared (global + per country): 4 compute (8) + 2 troops a country (about 20) + twist, about 1 factory ambassador a country that becomes an adversary troop at the next production step (about 10): 8 + 30 a country. Against the cheapest answer, 3 removals a country (2 troops and the factory ambassador: about 15): 2x a country (2.5x at 1 country, 2.1x at 4). No credits option (removal only). Pulls: 1 tier-3 and 1 tier-1 threat a country (cheapest counters 13 + 6 credits), priced on their own cards.",
+   "value": "All shared (global + per country): 4 compute (8) + 2 troops a country (about 20) + twist, about 1 factory ambassador a country that becomes an adversary troop at the next production step (about 10): 8 + 30 a country. Against the cheapest answer, 3 removals a country (2 troops and the factory ambassador: about 15): 2x a country (2.5x at 1 country, 2.1x at 4). No credits option (removal only). Pulls: 2 tier-2 threats a country (146), priced on their own cards.",
    "check": "Rounds 10-11 (9-11 at difficulty 2+): the coastal stage-III card, the spare difficulty 2-4 deals from; the light second pull keeps it answerable, a seat making 30+ counters both in its country (about 20) and removes troops with what is left; factory ambassadors become troops at the next production step, so a removal or a claim answers them first. No loop.",
    "flags": [
     "135: new card (Matt's ruling 2, 2026-11-06: stage III prints a 4th card, so it keeps a spare at difficulty 2-4); coastal arrivals, so stage III's four cards cover all four site types.",
-    "Face text is 238 characters (over 130)."
+    "Face text is 238 characters (over 130).",
+    "146: the pull line to the ladder (stage III two tier-2 pulls; stage II one tier-2, or tier 1 and tier 2); the rest as printed"
    ],
    "reuses": null
   }

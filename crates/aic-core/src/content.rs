@@ -1044,8 +1044,19 @@ fn check_card(c: &CardDef) -> Result<(), String> {
 }
 
 fn check_threat(t: &ThreatDef) -> Result<(), String> {
-    if !(1..=3).contains(&t.tier) || t.counters.is_empty() || t.counters.iter().any(|o| o.is_empty()) {
-        return Err(format!("threat {:?}: tier 1-3 and a counter menu", t.id));
+    // 146: no tier 3.
+    if !(1..=2).contains(&t.tier) || t.counters.is_empty() || t.counters.iter().any(|o| o.is_empty()) {
+        return Err(format!("threat {:?}: tier 1-2 and a counter menu", t.id));
+    }
+    // 146 (Matt's threat card standard, 2026-11-07): one counter option, two at most; one consequence, two at most.
+    if t.counters.len() > 2 {
+        return Err(format!("threat {:?}: {} counter options (two at most)", t.id, t.counters.len()));
+    }
+    if t.effects.len() > 2 {
+        return Err(format!("threat {:?}: {} consequences (two at most)", t.id, t.effects.len()));
+    }
+    if let Some(e) = t.effects.iter().find_map(threat_rule_break) {
+        return Err(format!("threat {:?}: {e}", t.id));
     }
     if t.tags.is_empty() || !(1..=2).contains(&t.locations.len()) {
         return Err(format!("threat {:?}: a tag and 1 or 2 locations", t.id));
@@ -1084,6 +1095,27 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
     Ok(())
 }
 
+/// 146: what in a threat's effect breaks Matt's threat card standard: a special piece (a troop that stands or
+/// occupies, corp troops past their cap) or a harm on more than the one nearest player (a flag on every hex near
+/// it, a country or the board; an each-country line).
+pub fn threat_rule_break(op: &Op) -> Option<String> {
+    use crate::op::RoundFlag::*;
+    match op {
+        Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
+        Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
+        Op::CorpTroops { past_cap: true, .. } => Some("corp troops past their cap (no special pieces)".into()),
+        Op::Flag { name, everywhere, scope, .. } => {
+            let seat = matches!(name, PowerDown | StationOutage) && !*everywhere && *scope != Some(crate::op::Scope::Country);
+            (!seat).then(|| format!("flag {name:?} hits every player near it, not the nearest"))
+        }
+        Op::Troops { each_country: true, .. }
+        | Op::FlipStation { each_country: true, .. }
+        | Op::DealThreats { each_country: true, .. } => Some("an each-country line".into()),
+        Op::EachDestroyNode { .. } => Some("each player destroys a node (the nearest player's: destroy_node)".into()),
+        _ => None,
+    }
+}
+
 /// What a threat's harm or counter takes from a player (142's shared-currency check; check.py's twin is
 /// `harm_currencies`). Discarding from the hand is not a counter currency, so it isn't listed.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1108,7 +1140,7 @@ pub fn harm_currencies(effects: &[Op]) -> Vec<Currency> {
             }
             Op::LoseInsight { .. } => (Some(Resource::Insight), false),
             Op::LoseAmbassador => (Some(Resource::Ambassadors), false),
-            Op::EachDestroyNode { .. } | Op::DestroyFacility { .. } => (None, true),
+            Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::DestroyFacility { .. } => (None, true),
             Op::Troops { destroy, .. } => (None, *destroy),
             Op::CorruptCity { at } => (None, *at == Some(Spot::Location)),
             Op::LoseOr { options } => {
@@ -1305,10 +1337,13 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             Op::Production { resource: r, .. }
             | Op::PlayersLose { resource: r, .. }
             | Op::LoseNodeOr { resource: r, .. }
-            | Op::Requisition { resource: r, .. }
             | Op::Logistics { resource: r, .. } => resource(r, what)?,
-            // 068: income can print ambassadors, as effects do.
-            Op::Income { resource: r, .. } => seat_resource(r, what)?,
+            // 068: income can print ambassadors, as effects do; 146: a threat's "pays 2 ambassadors or discards".
+            Op::Income { resource: r, .. } | Op::Requisition { resource: r, .. } => seat_resource(r, what)?,
+            // 146: no tier 3.
+            Op::DealThreats { tier: Some(t), .. } | Op::ThreatAtNode { tier: t } if !(1..=2).contains(t) => {
+                return Err(format!("{what}: a tier-{t} threat (tiers 1-2)"));
+            }
             Op::TeamIncome { resource: r, .. } => {
                 if !matches!(r, Resource::Credits | Resource::Insight) {
                     return Err(format!("{what}: team_income is credits or insight"));

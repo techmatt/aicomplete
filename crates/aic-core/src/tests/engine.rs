@@ -524,6 +524,16 @@ fn some_threats_take_insight() {
         })
         .map(|t| t.id.as_str())
         .collect();
-    // 135: an insight option on most cyber threats and a few others (142: 18 of 64).
-    assert!((12..=24).contains(&ins.len()), "{ins:?}");
+    // 146: insight is one of the scarce counters (the first option, before
+    // credits): a few threats take it (4 of 56 at r61), none whose harm takes insight.
+    assert!((2..=12).contains(&ins.len()), "{ins:?}");
+    let insight = crate::content::Currency::Resource(Resource::Insight);
+    for t in crate::content().threats.iter().filter(|t| ins.contains(&t.id.as_str())) {
+        assert!(!crate::content::harm_currencies(&t.effects).contains(&insight), "{}", t.id);
+        assert!(
+            t.counters[0].iter().any(|i| matches!(i, crate::content::CounterItem::Pay { resource: Resource::Insight, .. })),
+            "{}: insight is its first option",
+            t.id
+        );
+    }
 }

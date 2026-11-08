@@ -9,7 +9,7 @@
   "locations": [
    "base"
   ],
-  "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Sway 2 toward Discord.",
+  "text": "2 adversary troops land here.",
   "counters": [
    [
     {
@@ -19,38 +19,20 @@
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
     "op": "troops",
-    "count": 1,
-    "at": "location",
-    "stand": true
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
+    "count": 2,
+    "at": "location"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "Discord sway"
+   "adversary pieces placed"
   ]
  },
  {
@@ -64,7 +46,7 @@
    "base",
    "factory"
   ],
-  "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Each player near it pays 2 energy or discards 2 cards.",
+  "text": "The nearest player pays 3 energy or discards 3 cards. The adversary gains 2 compute.",
   "counters": [
    [
     {
@@ -74,40 +56,26 @@
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location",
-    "stand": true
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 3,
+    "cards": 3
    },
    {
     "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "requisition",
-    "resource": "energy",
-    "amount": 2,
-    "cards": 2
+    "amount": 2
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "cards discarded",
-   "energy lost"
+   "energy lost",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -121,14 +89,8 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Each player near it loses 2 energy.",
+  "text": "1 adversary troop lands here. The nearest player pays 3 chips or discards 1 cards.",
   "counters": [
-   [
-    {
-     "resource": "chips",
-     "amount": 4
-    }
-   ],
    [
     {
      "sacrifice": "industry",
@@ -138,7 +100,7 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
@@ -146,23 +108,18 @@
    {
     "op": "troops",
     "count": 1,
-    "at": "location",
-    "stand": true
+    "at": "location"
    },
    {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "players_lose",
-    "resource": "energy",
-    "amount": 2
+    "op": "requisition",
+    "resource": "chips",
+    "amount": 3,
+    "cards": 1
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "projects advanced (compute)",
-   "energy lost"
+   "credits or income lost"
   ]
  },
  {
@@ -175,14 +132,8 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses an ambassador.",
+  "text": "The nearest player pays 2 ambassadors or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 3
-    }
-   ],
    [
     {
      "sacrifice": "security",
@@ -192,28 +143,25 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 2,
+    "cards": 2
    },
    {
     "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_ambassador"
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "ambassadors lost"
+   "ambassadors lost",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -226,7 +174,7 @@
   "locations": [
    "base"
   ],
-  "text": "1 adversary troop lands here and stands until removed. This base makes 1 extra corp troop now, past its cap. The adversary gains 3 compute.",
+  "text": "1 adversary troop lands here. Sway 2 toward Discord.",
   "counters": [
    [
     {
@@ -236,14 +184,8 @@
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
@@ -251,25 +193,61 @@
    {
     "op": "troops",
     "count": 1,
-    "at": "location",
-    "stand": true
+    "at": "location"
    },
    {
-    "op": "corp_troops",
-    "count": 1,
-    "at": "location",
-    "when": "now",
-    "past_cap": true
-   },
-   {
-    "op": "compute",
-    "amount": 3
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "troops made",
-   "projects advanced (compute)"
+   "Discord sway"
+  ]
+ },
+ {
+  "id": "provocation",
+  "name": "Provocation",
+  "tier": 1,
+  "tags": [
+   "influence",
+   "military"
+  ],
+  "locations": [
+   "base"
+  ],
+  "text": "A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord.",
+  "counters": [
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 12
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "deal_threats",
+    "count": 1,
+    "tier": 1,
+    "scope": "country"
+   },
+   {
+    "op": "sway",
+    "side": "discord",
+    "amount": 2
+   }
+  ],
+  "harms": [
+   "extra threats",
+   "Discord sway"
   ]
  },
  {
@@ -282,14 +260,8 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Sway 2 toward Discord.",
+  "text": "3 adversary ambassadors are created here. Sway 2 toward Discord.",
   "counters": [
-   [
-    {
-     "resource": "ambassadors",
-     "amount": 3
-    }
-   ],
    [
     {
      "sacrifice": "diplomacy",
@@ -299,19 +271,15 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
     "op": "create",
-    "count": 1,
+    "count": 3,
     "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
    },
    {
     "op": "sway",
@@ -321,7 +289,6 @@
   ],
   "harms": [
    "adversary pieces placed",
-   "projects advanced (compute)",
    "Discord sway"
   ]
  },
@@ -335,14 +302,8 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses an ambassador. Sway 1 toward Discord.",
+  "text": "The nearest player pays 2 ambassadors or discards 2 cards. Sway 1 toward Discord.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 8
-    }
-   ],
    [
     {
      "sacrifice": "diplomacy",
@@ -352,22 +313,16 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_ambassador"
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 2,
+    "cards": 2
    },
    {
     "op": "sway",
@@ -376,8 +331,6 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
    "ambassadors lost",
    "Discord sway"
   ]
@@ -393,7 +346,7 @@
    "city",
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it gets 3 less insight next round. Remove 1 Unity from the Unity track.",
+  "text": "2 Unity comes off the Unity track. The nearest player gets 4 less insight next round.",
   "counters": [
    [
     {
@@ -403,41 +356,24 @@
    ],
    [
     {
-     "sacrifice": "diplomacy",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
+    "op": "pull_unity",
+    "amount": 2
    },
    {
     "op": "lose_insight",
-    "amount": 3
-   },
-   {
-    "op": "pull_unity",
-    "amount": 1
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "insight lost",
-   "Unity pulled back"
+   "Unity pulled back",
+   "insight lost"
   ]
  },
  {
@@ -450,14 +386,8 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Sway 2 toward Discord. Each player near it discards a card.",
+  "text": "Sway 3 toward Discord. The adversary gains 3 compute.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 8
-    }
-   ],
    [
     {
      "resource": "ambassadors",
@@ -467,91 +397,24 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
-   {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
-   },
-   {
-    "op": "discard",
-    "count": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "Discord sway",
-   "cards discarded"
-  ]
- },
- {
-  "id": "provocation",
-  "name": "Border Provocation",
-  "tier": 1,
-  "tags": [
-   "influence",
-   "military"
-  ],
-  "locations": [
-   "base"
-  ],
-  "text": "1 adversary troop lands here and stands until removed. The adversary gains 3 compute. Deal 1 extra tier-1 threat in this country; it executes next round.",
-  "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 2
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 15
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "troops",
-    "count": 1,
-    "at": "location",
-    "stand": true
+    "amount": 3
    },
    {
     "op": "compute",
     "amount": 3
-   },
-   {
-    "op": "deal_threats",
-    "count": 1,
-    "tier": 1,
-    "scope": "country"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "extra threats"
+   "Discord sway",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -564,14 +427,8 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 3 tokens from their cards.",
+  "text": "The nearest player loses 4 tokens from their cards. The adversary gains 6 compute.",
   "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
    [
     {
      "sacrifice": "cyber",
@@ -581,29 +438,23 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "lose_tokens",
+    "amount": 4
    },
    {
     "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_tokens",
-    "amount": 3
+    "amount": 6
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "tokens stripped from cards"
+   "tokens stripped from cards",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -617,49 +468,37 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here and 1 on each of its country's 2 lowest-numbered player stations. The adversary gains 3 compute.",
+  "text": "2 adversary ambassadors are created here. The nearest player pays 3 research cubes or discards 2 cards.",
   "counters": [
    [
     {
-     "resource": "insight",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 2
+     "resource": "ambassadors",
+     "amount": 3
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
     "op": "create",
-    "count": 1,
+    "count": 2,
     "at": "location"
    },
    {
-    "op": "create",
-    "count": 1,
-    "at": "station",
-    "if": "player",
-    "sites": 2
-   },
-   {
-    "op": "compute",
-    "amount": 3
+    "op": "requisition",
+    "resource": "research_cubes",
+    "amount": 3,
+    "cards": 2
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "projects advanced (compute)",
-   "production blacked out"
+   "credits or income lost"
   ]
  },
  {
@@ -672,50 +511,29 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it discards 2 cards or gets 2 less insight next round.",
+  "text": "The nearest player discards 3 cards.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
-   [
-    {
-     "sacrifice": "cyber",
-     "amount": 2
+     "amount": 3
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "requisition",
-    "resource": "insight",
-    "amount": 2,
-    "cards": 2,
-    "next_round": true
+    "op": "discard",
+    "count": 3
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "cards discarded",
-   "insight lost"
+   "cards discarded"
   ]
  },
  {
@@ -729,14 +547,8 @@
    "station",
    "factory"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 1 research cube; for each who has none, 4 more compute.",
+  "text": "The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 cards.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 8
-    }
-   ],
    [
     {
      "sacrifice": "cyber",
@@ -746,34 +558,25 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
     "op": "compute",
-    "amount": 3
+    "amount": 6
    },
    {
-    "op": "compute_per_missing",
+    "op": "requisition",
     "resource": "research_cubes",
-    "amount": 4
-   },
-   {
-    "op": "players_lose",
-    "resource": "research_cubes",
-    "amount": 1
+    "amount": 2,
+    "cards": 1
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)"
+   "projects advanced (compute)",
+   "credits or income lost"
   ]
  },
  {
@@ -786,45 +589,29 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute, then 1 compute on every visible project.",
+  "text": "A botnet lands on the station here.",
   "counters": [
    [
     {
      "resource": "insight",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 2
+     "amount": 6
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "compute_every",
-    "amount": 1
+    "op": "place_botnet",
+    "count": 1
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)"
+   "adversary pieces placed"
   ]
  },
  {
@@ -838,14 +625,8 @@
    "factory",
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it discards 2 cards or pays 3 chips.",
+  "text": "The nearest player pays 5 chips or discards 2 cards. The adversary gains 3 compute.",
   "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 3
-    }
-   ],
    [
     {
      "sacrifice": "industry",
@@ -855,31 +636,25 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "requisition",
+    "resource": "chips",
+    "amount": 5,
+    "cards": 2
    },
    {
     "op": "compute",
     "amount": 3
-   },
-   {
-    "op": "requisition",
-    "resource": "chips",
-    "amount": 3,
-    "cards": 2
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "cards discarded"
+   "credits or income lost",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -893,7 +668,7 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The player near it with the most credits (ties: lowest seat) loses 4 chips. The adversary gains 4 compute.",
+  "text": "Theft: the nearest player pays 5 chips or discards 2 cards; the adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -903,34 +678,24 @@
    ],
    [
     {
-     "sacrifice": "industry",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
     "op": "theft",
-    "who": "richest_near",
+    "who": "nearest",
     "resource": "chips",
-    "amount": 4,
-    "compute": 4
+    "amount": 5,
+    "compute": 4,
+    "cards": 2
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)"
+   "projects advanced (compute)",
+   "credits or income lost"
   ]
  },
  {
@@ -943,47 +708,37 @@
   "locations": [
    "factory"
   ],
-  "text": "Create 1 adversary ambassador here. Sites on or next to it can't be claimed next round. The adversary gains 3 compute.",
+  "text": "2 adversary ambassadors are created here. The nearest player pays 2 energy or discards 2 cards.",
   "counters": [
    [
     {
      "resource": "chips",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
-     "amount": 2
+     "amount": 6
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
     "op": "create",
-    "count": 1,
+    "count": 2,
     "at": "location"
    },
    {
-    "op": "flag",
-    "name": "embargo",
-    "scope": "near"
-   },
-   {
-    "op": "compute",
-    "amount": 3
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 2,
+    "cards": 2
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "actions or claims blocked",
-   "projects advanced (compute)"
+   "energy lost"
   ]
  },
  {
@@ -996,47 +751,34 @@
   "locations": [
    "coastal_city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
+  "text": "The nearest player discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
      "resource": "chips",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
-     "amount": 2
+     "amount": 6
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "discard",
+    "count": 2
    },
    {
     "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "disable_building",
-    "count": 1,
-    "until": "end_of_next_round"
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "actions or claims blocked"
+   "cards discarded",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1049,56 +791,31 @@
   "locations": [
    "factory"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 3 chips or discards 2 cards.",
+  "text": "The nearest player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {
-     "resource": "energy",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
-     "amount": 2
+     "resource": "chips",
+     "amount": 6
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_or",
-    "options": [
-     {
-      "op": "players_lose",
-      "resource": "chips",
-      "amount": 3
-     },
-     {
-      "op": "discard",
-      "count": 2
-     }
-    ]
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 3,
+    "cards": 3
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "cards discarded"
+   "energy lost"
   ]
  },
  {
@@ -1112,14 +829,8 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Cities on or next to it produce no energy next round.",
+  "text": "The nearest player pays 3 energy or discards 3 cards.",
   "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
    [
     {
      "sacrifice": "power",
@@ -1129,30 +840,19 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "flag",
-    "name": "blackout",
-    "scope": "near"
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 3,
+    "cards": 3
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "production blacked out",
    "energy lost"
   ]
  },
@@ -1167,47 +867,35 @@
    "city",
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Players near it can't use Actions that cost energy next round.",
+  "text": "The nearest player turns 1 building face down until the end of next round. The adversary gains 3 compute.",
   "counters": [
    [
     {
-     "resource": "energy",
+     "resource": "research_cubes",
      "amount": 3
     }
    ],
    [
     {
-     "sacrifice": "power",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
+    "op": "disable_building",
     "count": 1,
-    "at": "location"
+    "until": "end_of_next_round"
    },
    {
     "op": "compute",
     "amount": 3
-   },
-   {
-    "op": "flag",
-    "name": "power_down",
-    "scope": "near"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "actions or claims blocked"
+   "actions or claims blocked",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1220,57 +908,36 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Each player near it loses 2 energy or discards 2 cards.",
+  "text": "The nearest player pays 2 energy or discards 2 cards. The adversary gains 4 compute.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
-   [
-    {
-     "sacrifice": "power",
-     "amount": 2
+     "amount": 3
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 2,
+    "cards": 2
    },
    {
     "op": "compute",
-    "amount": 3
-   },
-   {
-    "op": "lose_or",
-    "options": [
-     {
-      "op": "players_lose",
-      "resource": "energy",
-      "amount": 2
-     },
-     {
-      "op": "discard",
-      "count": 2
-     }
-    ]
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
    "energy lost",
-   "cards discarded"
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1283,14 +950,8 @@
   "locations": [
    "station"
   ],
-  "text": "Create 1 adversary ambassador here. The adversary gains 3 compute. Next round, the research stations of each player near it make no research cubes.",
+  "text": "The nearest player pays 3 research cubes or discards 2 cards. The adversary gains 3 compute.",
   "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 3
-    }
-   ],
    [
     {
      "sacrifice": "power",
@@ -1300,30 +961,25 @@
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
+    "op": "requisition",
+    "resource": "research_cubes",
+    "amount": 3,
+    "cards": 2
    },
    {
     "op": "compute",
     "amount": 3
-   },
-   {
-    "op": "flag",
-    "name": "station_outage",
-    "scope": "near"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "production blacked out"
+   "credits or income lost",
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1336,45 +992,34 @@
   "locations": [
    "city"
   ],
-  "text": "Create 1 adversary ambassador here. The player near it with the most credits (ties: lowest seat) loses 2 energy. The adversary gains 4 compute.",
+  "text": "Theft: the nearest player pays 2 energy or discards 2 cards; the adversary gains 4 compute.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
-   [
-    {
-     "sacrifice": "power",
-     "amount": 2
+     "amount": 3
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 15
+     "amount": 12
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "location"
-   },
-   {
     "op": "theft",
-    "who": "richest_near",
+    "who": "nearest",
     "resource": "energy",
     "amount": 2,
-    "compute": 4
+    "compute": 4,
+    "cards": 2
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "energy lost",
-   "projects advanced (compute)"
+   "projects advanced (compute)",
+   "energy lost"
   ]
  },
  {
@@ -1387,24 +1032,18 @@
   "locations": [
    "base"
   ],
-  "text": "3 troops land on the base here and march at once. Each player near it destroys 1 of their nodes near it (never their last).",
+  "text": "3 adversary troops land here and march at once.",
   "counters": [
    [
     {
-     "resource": "ambassadors",
+     "resource": "energy",
      "amount": 4
     }
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 3
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -1416,16 +1055,11 @@
    },
    {
     "op": "march_now"
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or seized",
-   "node destroyed"
+   "war brought forward"
   ]
  },
  {
@@ -1438,7 +1072,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The factory here is destroyed with the nodes on its hex (never a last node). 2 troops land here and stay.",
+  "text": "The factory here is destroyed. The adversary gains 4 compute.",
   "counters": [
    [
     {
@@ -1448,14 +1082,8 @@
    ],
    [
     {
-     "resource": "energy",
-     "amount": 4
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -1465,16 +1093,13 @@
     "at": "factory"
    },
    {
-    "op": "troops",
-    "count": 2,
-    "at": "location",
-    "stand": true
+    "op": "compute",
+    "amount": 4
    }
   ],
   "harms": [
    "facilities destroyed or seized",
-   "node destroyed",
-   "adversary pieces placed"
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1488,7 +1113,7 @@
    "base",
    "city"
   ],
-  "text": "Each player near it loses 2 ambassadors. 1 troop lands here.",
+  "text": "The nearest player pays 3 ambassadors or discards 3 cards. 1 adversary troop lands on the base here.",
   "counters": [
    [
     {
@@ -1498,28 +1123,23 @@
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 3
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "lose_ambassador"
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 3,
+    "cards": 3
    },
    {
     "op": "troops",
     "count": 1,
-    "at": "location"
+    "at": "location",
+    "location": "base"
    }
   ],
   "harms": [
@@ -1538,44 +1158,37 @@
   "locations": [
    "base"
   ],
-  "text": "For 3 rounds, the corp base here makes 1 extra troop each round, even past its cap. Remove 2 Unity from the Unity track.",
+  "text": "2 adversary troops land here. The nearest player pays 4 chips or discards 2 cards.",
   "counters": [
    [
     {
-     "resource": "chips",
-     "amount": 6
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 3
+     "resource": "energy",
+     "amount": 4
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "corp_troops",
-    "count": 1,
-    "at": "location",
-    "when": "each_production",
-    "past_cap": true,
-    "rounds": 3
+    "op": "troops",
+    "count": 2,
+    "at": "location"
    },
    {
-    "op": "pull_unity",
-    "amount": 2
+    "op": "requisition",
+    "resource": "chips",
+    "amount": 4,
+    "cards": 2
    }
   ],
   "harms": [
-   "troops made",
-   "Unity pulled back"
+   "adversary pieces placed",
+   "credits or income lost"
   ]
  },
  {
@@ -1588,7 +1201,7 @@
   "locations": [
    "base"
   ],
-  "text": "2 troops land on the base here. Next round, the fronts next to it fight twice. Sway 2 toward Discord.",
+  "text": "This base's front has a second war step next round. Sway 3 toward Discord.",
   "counters": [
    [
     {
@@ -1598,37 +1211,24 @@
    ],
    [
     {
-     "sacrifice": "security",
-     "amount": 3
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
-   {
-    "op": "troops",
-    "count": 2,
-    "at": "location"
-   },
    {
     "op": "extra_war"
    },
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 3
    }
   ],
   "harms": [
-   "adversary pieces placed",
    "war brought forward",
-   "Discord sway",
-   "facilities destroyed or seized"
+   "Discord sway"
   ]
  },
  {
@@ -1641,45 +1241,29 @@
   "locations": [
    "city"
   ],
-  "text": "Create 3 adversary ambassadors here. Corrupt cities (1 fewer).",
+  "text": "The city here is corrupted.",
   "counters": [
    [
     {
      "resource": "insight",
-     "amount": 10
-    }
-   ],
-   [
-    {
-     "sacrifice": "diplomacy",
-     "amount": 3
+     "amount": 7
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 3,
-    "at": "location"
-   },
-   {
-    "op": "corrupt",
-    "site": "city",
-    "cut": 1
+    "op": "corrupt_city",
+    "at": "city"
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "node destroyed",
-   "ambassadors lost",
-   "production blacked out",
-   "Discord sway"
+   "facilities destroyed or seized"
   ]
  },
  {
@@ -1692,14 +1276,8 @@
   "locations": [
    "city"
   ],
-  "text": "Create 3 adversary ambassadors here. Remove 2 Unity from the Unity track. Sway 1 toward Discord.",
+  "text": "4 adversary ambassadors are created here. 3 Unity comes off the Unity track.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
    [
     {
      "sacrifice": "diplomacy",
@@ -1709,31 +1287,24 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
     "op": "create",
-    "count": 3,
+    "count": 4,
     "at": "location"
    },
    {
     "op": "pull_unity",
-    "amount": 2
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
+    "amount": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "ambassadors lost",
-   "Unity pulled back",
-   "Discord sway"
+   "Unity pulled back"
   ]
  },
  {
@@ -1748,14 +1319,8 @@
    "city",
    "station"
   ],
-  "text": "Sway 2 toward Discord. Remove 2 Unity from the Unity track. Each player near it gets 3 less insight next round.",
+  "text": "Sway 3 toward Discord. 2 Unity comes off the Unity track.",
   "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
    [
     {
      "resource": "ambassadors",
@@ -1765,7 +1330,7 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -1773,21 +1338,16 @@
    {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 3
    },
    {
     "op": "pull_unity",
     "amount": 2
-   },
-   {
-    "op": "lose_insight",
-    "amount": 3
    }
   ],
   "harms": [
    "Discord sway",
-   "Unity pulled back",
-   "insight lost"
+   "Unity pulled back"
   ]
  },
  {
@@ -1800,14 +1360,8 @@
   "locations": [
    "city"
   ],
-  "text": "In its country: create 2 adversary ambassadors on each of the 2 lowest-numbered player factories. Each player near it loses 2 ambassadors.",
+  "text": "The nearest player pays 4 ambassadors or discards 3 cards. The adversary gains 3 compute.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
    [
     {
      "sacrifice": "diplomacy",
@@ -1817,28 +1371,25 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 2,
-    "at": "factory",
-    "if": "player",
-    "sites": 2
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 4,
+    "cards": 3
    },
    {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "lose_ambassador"
+    "op": "compute",
+    "amount": 3
    }
   ],
   "harms": [
    "ambassadors lost",
-   "adversary pieces placed"
+   "projects advanced (compute)"
   ]
  },
  {
@@ -1852,14 +1403,8 @@
    "city",
    "coastal_city"
   ],
-  "text": "In its country: create 1 adversary ambassador on each of the 2 lowest-numbered clean cities. Corrupt cities (1 fewer). Sway 2 toward Discord.",
+  "text": "Sway 4 toward Discord. The adversary gains 4 compute.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
    [
     {
      "sacrifice": "diplomacy",
@@ -1869,35 +1414,107 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "city",
-    "if": "clean",
-    "sites": 2
-   },
-   {
-    "op": "corrupt",
-    "site": "city",
-    "cut": 1
-   },
-   {
     "op": "sway",
     "side": "discord",
-    "amount": 2
+    "amount": 4
+   },
+   {
+    "op": "compute",
+    "amount": 4
    }
   ],
   "harms": [
-   "adversary pieces placed",
+   "Discord sway",
+   "projects advanced (compute)"
+  ]
+ },
+ {
+  "id": "skimming_operation",
+  "name": "Skimming Operation",
+  "tier": 2,
+  "tags": [
+   "economic",
+   "influence"
+  ],
+  "locations": [
+   "coastal_city"
+  ],
+  "text": "Theft: the nearest player pays 8 chips or discards 3 cards; the adversary gains 6 compute.",
+  "counters": [
+   [
+    {
+     "resource": "ambassadors",
+     "amount": 4
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 17
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "theft",
+    "who": "nearest",
+    "resource": "chips",
+    "amount": 8,
+    "compute": 6,
+    "cards": 3
+   }
+  ],
+  "harms": [
+   "projects advanced (compute)",
+   "credits or income lost"
+  ]
+ },
+ {
+  "id": "dark_cities",
+  "name": "Dark Cities",
+  "tier": 2,
+  "tags": [
+   "grid",
+   "influence"
+  ],
+  "locations": [
+   "city",
+   "coastal_city"
+  ],
+  "text": "The nearest player destroys 1 of their nodes closest to it. 3 Unity comes off the Unity track.",
+  "counters": [
+   [
+    {
+     "sacrifice": "power",
+     "amount": 3
+    }
+   ],
+   [
+    {
+     "resource": "credits",
+     "amount": 17
+    }
+   ]
+  ],
+  "effects": [
+   {
+    "op": "destroy_node",
+    "count": 1
+   },
+   {
+    "op": "pull_unity",
+    "amount": 3
+   }
+  ],
+  "harms": [
    "node destroyed",
-   "ambassadors lost",
-   "production blacked out",
-   "Discord sway"
+   "Unity pulled back"
   ]
  },
  {
@@ -1914,12 +1531,6 @@
   "counters": [
    [
     {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
-   [
-    {
      "sacrifice": "cyber",
      "amount": 3
     }
@@ -1927,7 +1538,7 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -1956,14 +1567,8 @@
   "locations": [
    "station"
   ],
-  "text": "A botnet lands on the station here (else the nearest piece without one). Create 2 adversary ambassadors here.",
+  "text": "A botnet lands on the station here. 2 adversary ambassadors are created here.",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
    [
     {
      "sacrifice": "cyber",
@@ -1973,7 +1578,7 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -1989,10 +1594,7 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "actions or claims blocked",
-   "projects advanced (compute)",
-   "production blacked out"
+   "adversary pieces placed"
   ]
  },
  {
@@ -2005,44 +1607,34 @@
   "locations": [
    "station"
   ],
-  "text": "Each player near it discards their most expensive card in hand, loses 3 tokens from their cards and destroys 1 node near it (never their last).",
+  "text": "The nearest player destroys 1 of their nodes closest to it and discards 3 cards.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "resource": "insight",
-     "amount": 10
+     "amount": 5
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "discard_most_expensive"
-   },
-   {
-    "op": "lose_tokens",
-    "amount": 3
-   },
-   {
-    "op": "each_destroy_node",
+    "op": "destroy_node",
     "count": 1
+   },
+   {
+    "op": "discard",
+    "count": 3
    }
   ],
   "harms": [
-   "cards discarded",
-   "tokens stripped from cards",
-   "node destroyed"
+   "node destroyed",
+   "cards discarded"
   ]
  },
  {
@@ -2057,36 +1649,27 @@
    "station",
    "factory"
   ],
-  "text": "Each player near it loses 2 research cubes and gets 3 less insight next round. The adversary gains 5 compute.",
+  "text": "The nearest player pays 5 research cubes or discards 3 cards. The adversary gains 5 compute.",
   "counters": [
    [
     {
      "resource": "chips",
-     "amount": 6
-    }
-   ],
-   [
-    {
-     "resource": "energy",
-     "amount": 4
+     "amount": 7
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "players_lose",
+    "op": "requisition",
     "resource": "research_cubes",
-    "amount": 2
-   },
-   {
-    "op": "lose_insight",
-    "amount": 3
+    "amount": 5,
+    "cards": 3
    },
    {
     "op": "compute",
@@ -2094,7 +1677,7 @@
    }
   ],
   "harms": [
-   "insight lost",
+   "credits or income lost",
    "projects advanced (compute)"
   ]
  },
@@ -2108,31 +1691,25 @@
   "locations": [
    "station"
   ],
-  "text": "The adversary gains 8 compute. Each player near it turns 1 of their buildings face down until the end of next round (tags still count).",
+  "text": "The adversary gains 10 compute. The nearest player turns 1 building face down until the end of next round.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "sacrifice": "cyber",
-     "amount": 3
+     "amount": 5
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
     "op": "compute",
-    "amount": 8
+    "amount": 10
    },
    {
     "op": "disable_building",
@@ -2142,7 +1719,6 @@
   ],
   "harms": [
    "projects advanced (compute)",
-   "production blacked out",
    "actions or claims blocked"
   ]
  },
@@ -2156,7 +1732,7 @@
   "locations": [
    "factory"
   ],
-  "text": "Each player near it turns 2 of their buildings face down until the end of next round (tags still count) and discards 2 cards.",
+  "text": "The nearest player turns 2 buildings face down until the end of next round and discards 2 cards.",
   "counters": [
    [
     {
@@ -2166,14 +1742,8 @@
    ],
    [
     {
-     "sacrifice": "industry",
-     "amount": 3
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -2189,7 +1759,6 @@
    }
   ],
   "harms": [
-   "production blacked out",
    "actions or claims blocked",
    "cards discarded"
   ]
@@ -2204,24 +1773,18 @@
   "locations": [
    "factory"
   ],
-  "text": "The adversary builds a factory on the free industrial zone nearest this threat's token. The adversary gains 5 compute.",
+  "text": "An adversary factory is built here. The adversary gains 5 compute.",
   "counters": [
    [
     {
      "resource": "chips",
-     "amount": 6
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
-     "amount": 3
+     "amount": 7
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -2235,8 +1798,7 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "actions or claims blocked",
+   "facilities destroyed or seized",
    "projects advanced (compute)"
   ]
  },
@@ -2251,7 +1813,7 @@
   "locations": [
    "factory"
   ],
-  "text": "The adversary gains 4 compute. 1 troop lands on the factory or zone here and stays: a factory makes nothing while it stands; a zone gives 4 more compute.",
+  "text": "The adversary seizes the factory here, even a player's. The adversary gains 5 compute.",
   "counters": [
    [
     {
@@ -2261,75 +1823,14 @@
    ],
    [
     {
-     "sacrifice": "industry",
-     "amount": 3
-    }
-   ],
-   [
-    {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "troops",
-    "count": 1,
-    "at": "location"
-   },
-   {
-    "op": "occupy_factory",
-    "else_compute": 4
-   },
-   {
-    "op": "compute",
-    "amount": 4
-   }
-  ],
-  "harms": [
-   "facilities destroyed or seized",
-   "adversary pieces placed",
-   "projects advanced (compute)"
-  ]
- },
- {
-  "id": "skimming_operation",
-  "name": "Skimming Operation",
-  "tier": 2,
-  "tags": [
-   "economic",
-   "influence"
-  ],
-  "locations": [
-   "coastal_city"
-  ],
-  "text": "Each player near it gets 4 less chips income next round. The adversary gains 5 compute.",
-  "counters": [
-   [
-    {
-     "resource": "ambassadors",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "energy",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 23
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "lose_income",
-    "resource": "chips",
-    "amount": 4
+    "op": "seize_factory"
    },
    {
     "op": "compute",
@@ -2337,7 +1838,7 @@
    }
   ],
   "harms": [
-   "credits or income lost",
+   "facilities destroyed or seized",
    "projects advanced (compute)"
   ]
  },
@@ -2352,14 +1853,8 @@
    "coastal_city",
    "factory"
   ],
-  "text": "Create 3 adversary ambassadors here. Sites on or next to it can't be claimed for 2 rounds.",
+  "text": "4 adversary ambassadors are created here. The nearest player pays 6 chips or discards 3 cards.",
   "counters": [
-   [
-    {
-     "resource": "chips",
-     "amount": 6
-    }
-   ],
    [
     {
      "resource": "energy",
@@ -2369,26 +1864,26 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
     "op": "create",
-    "count": 3,
+    "count": 4,
     "at": "location"
    },
    {
-    "op": "flag",
-    "name": "embargo",
-    "scope": "near",
-    "rounds": 2
+    "op": "requisition",
+    "resource": "chips",
+    "amount": 6,
+    "cards": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "actions or claims blocked"
+   "credits or income lost"
   ]
  },
  {
@@ -2402,42 +1897,36 @@
    "city",
    "coastal_city"
   ],
-  "text": "Cities on or next to it produce no energy for 2 rounds. Each player near it destroys 1 of their nodes near it (never their last).",
+  "text": "The nearest player destroys 1 of their nodes closest to it and pays 4 energy or discards 3 cards.",
   "counters": [
    [
     {
      "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "sacrifice": "power",
-     "amount": 3
+     "amount": 5
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "flag",
-    "name": "blackout",
-    "rounds": 2,
-    "scope": "near"
+    "op": "destroy_node",
+    "count": 1
    },
    {
-    "op": "each_destroy_node",
-    "count": 1
+    "op": "requisition",
+    "resource": "energy",
+    "amount": 4,
+    "cards": 3
    }
   ],
   "harms": [
-   "production blacked out",
-   "node destroyed"
+   "node destroyed",
+   "energy lost"
   ]
  },
  {
@@ -2450,14 +1939,8 @@
   "locations": [
    "city"
   ],
-  "text": "Each player near it loses 3 energy and turns 1 of their buildings face down until the end of next round (tags still count).",
+  "text": "The nearest player pays 4 energy or discards 3 cards.",
   "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
    [
     {
      "resource": "ambassadors",
@@ -2467,26 +1950,20 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "players_lose",
+    "op": "requisition",
     "resource": "energy",
-    "amount": 3
-   },
-   {
-    "op": "disable_building",
-    "count": 1,
-    "until": "end_of_next_round"
+    "amount": 4,
+    "cards": 3
    }
   ],
   "harms": [
-   "energy lost",
-   "production blacked out",
-   "actions or claims blocked"
+   "energy lost"
   ]
  },
  {
@@ -2499,14 +1976,8 @@
   "locations": [
    "station"
   ],
-  "text": "Stations on or next to it produce nothing for 2 rounds. Each player near it gets 3 less insight next round. The adversary gains 4 compute.",
+  "text": "The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute.",
   "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 4
-    }
-   ],
    [
     {
      "sacrifice": "power",
@@ -2516,20 +1987,16 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "flag",
-    "name": "station_dark",
-    "rounds": 2,
-    "scope": "near"
-   },
-   {
-    "op": "lose_insight",
-    "amount": 3
+    "op": "requisition",
+    "resource": "research_cubes",
+    "amount": 6,
+    "cards": 3
    },
    {
     "op": "compute",
@@ -2537,61 +2004,8 @@
    }
   ],
   "harms": [
-   "production blacked out",
-   "insight lost",
+   "credits or income lost",
    "projects advanced (compute)"
-  ]
- },
- {
-  "id": "dark_cities",
-  "name": "Dark Cities",
-  "tier": 2,
-  "tags": [
-   "grid",
-   "influence"
-  ],
-  "locations": [
-   "city",
-   "coastal_city"
-  ],
-  "text": "In its country: create 1 adversary ambassador on each of the 3 lowest-numbered cities on or next to it. Remove 2 Unity from the Unity track.",
-  "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 10
-    }
-   ],
-   [
-    {
-     "sacrifice": "power",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 23
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "create",
-    "count": 1,
-    "at": "city",
-    "if": "near",
-    "sites": 3
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "production blacked out",
-   "Unity pulled back"
   ]
  },
  {
@@ -2605,14 +2019,8 @@
    "factory",
    "station"
   ],
-  "text": "Each player near it destroys 1 of their nodes near it (never their last). The adversary gains 5 compute.",
+  "text": "The nearest player destroys 2 of their nodes closest to it (never their last). The adversary gains 6 compute.",
   "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 4
-    }
-   ],
    [
     {
      "sacrifice": "power",
@@ -2622,18 +2030,18 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "each_destroy_node",
-    "count": 1
+    "op": "destroy_node",
+    "count": 2
    },
    {
     "op": "compute",
-    "amount": 5
+    "amount": 6
    }
   ],
   "harms": [
@@ -2649,31 +2057,21 @@
    "universal"
   ],
   "locations": [
-   "base",
-   "city"
+   "city",
+   "base"
   ],
-  "text": "In its country: create 3 adversary ambassadors on the lowest-numbered city on or next to it. 2 troops land on the base here.",
+  "text": "3 adversary ambassadors are created on the city here. 2 adversary troops land on the base here.",
   "counters": [
    [
     {
-     "resource": "energy",
-     "amount": 2
-    },
-    {
-     "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
-   [
-    {
      "resource": "insight",
-     "amount": 10
+     "amount": 7
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -2681,8 +2079,7 @@
    {
     "op": "create",
     "count": 3,
-    "at": "city",
-    "if": "near"
+    "at": "location"
    },
    {
     "op": "troops",
@@ -2692,9 +2089,7 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "ambassadors lost",
-   "facilities destroyed or seized"
+   "adversary pieces placed"
   ]
  },
  {
@@ -2708,18 +2103,8 @@
    "city",
    "factory"
   ],
-  "text": "Each player near it loses 1 ambassador. Remove 2 Unity from the Unity track. Sway 2 toward Discord.",
+  "text": "The nearest player pays 2 ambassadors or discards 2 cards. 3 Unity comes off the Unity track.",
   "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 2
-    },
-    {
-     "resource": "chips",
-     "amount": 3
-    }
-   ],
    [
     {
      "resource": "energy",
@@ -2729,28 +2114,25 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
   "effects": [
    {
-    "op": "lose_ambassador"
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 2,
+    "cards": 2
    },
    {
     "op": "pull_unity",
-    "amount": 2
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
+    "amount": 3
    }
   ],
   "harms": [
    "ambassadors lost",
-   "Unity pulled back",
-   "Discord sway"
+   "Unity pulled back"
   ]
  },
  {
@@ -2763,18 +2145,8 @@
   "locations": [
    "station"
   ],
-  "text": "A botnet lands on the station here (else the nearest piece without one). Deal 1 extra tier-1 threat in this country. The adversary gains 4 compute.",
+  "text": "A botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round).",
   "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 5
-    },
-    {
-     "resource": "research_cubes",
-     "amount": 2
-    }
-   ],
    [
     {
      "resource": "ambassadors",
@@ -2784,7 +2156,7 @@
    [
     {
      "resource": "credits",
-     "amount": 23
+     "amount": 17
     }
    ]
   ],
@@ -2798,23 +2170,17 @@
     "count": 1,
     "tier": 1,
     "scope": "country"
-   },
-   {
-    "op": "compute",
-    "amount": 4
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "actions or claims blocked",
-   "extra threats",
-   "projects advanced (compute)"
+   "extra threats"
   ]
  },
  {
-  "id": "t3_last_ultimatum",
+  "id": "last_ultimatum",
   "name": "Last Ultimatum",
-  "tier": 3,
+  "tier": 2,
   "tags": [
    "universal"
   ],
@@ -2822,124 +2188,42 @@
    "city",
    "base"
   ],
-  "text": "Each player near it destroys 1 of their nodes near it (never their last) and loses an ambassador. Deal 1 extra tier-2 threat in this country; it executes next round.",
+  "text": "A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their nodes closest to it.",
   "counters": [
    [
     {
-     "resource": "energy",
-     "amount": 3
-    },
-    {
      "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "resource": "chips",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "sacrifice": "diplomacy",
-     "amount": 4
+     "amount": 5
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 33
+     "amount": 17
     }
    ]
   ],
   "effects": [
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   },
-   {
-    "op": "lose_ambassador"
-   },
    {
     "op": "deal_threats",
     "count": 1,
     "tier": 2,
     "scope": "country"
+   },
+   {
+    "op": "destroy_node",
+    "count": 1
    }
   ],
   "harms": [
-   "node destroyed",
-   "ambassadors lost",
-   "extra threats"
+   "extra threats",
+   "node destroyed"
   ]
  },
  {
-  "id": "t3_capital_siphon",
-  "name": "Capital Siphon",
-  "tier": 3,
-  "tags": [
-   "universal"
-  ],
-  "locations": [
-   "factory",
-   "station"
-  ],
-  "text": "The adversary gains 6 compute. Each player near it discards 2 cards and loses 2 tokens from their cards.",
-  "counters": [
-   [
-    {
-     "resource": "chips",
-     "amount": 5
-    },
-    {
-     "resource": "research_cubes",
-     "amount": 3
-    }
-   ],
-   [
-    {
-     "resource": "insight",
-     "amount": 12
-    }
-   ],
-   [
-    {
-     "sacrifice": "cyber",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "compute",
-    "amount": 6
-   },
-   {
-    "op": "discard",
-    "count": 2
-   },
-   {
-    "op": "lose_tokens",
-    "amount": 2
-   }
-  ],
-  "harms": [
-   "projects advanced (compute)",
-   "cards discarded",
-   "tokens stripped from cards"
-  ]
- },
- {
-  "id": "t3_iron_curtain",
+  "id": "iron_curtain",
   "name": "Iron Curtain",
-  "tier": 3,
+  "tier": 2,
   "tags": [
    "universal"
   ],
@@ -2947,34 +2231,18 @@
    "factory",
    "city"
   ],
-  "text": "2 troops land on the factory or zone here. Each player near it loses 2 energy. Remove 3 Unity from the Unity track.",
+  "text": "2 adversary troops land on the factory here. 2 Unity comes off the Unity track.",
   "counters": [
    [
     {
-     "resource": "ambassadors",
-     "amount": 3
-    },
-    {
-     "resource": "chips",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "research_cubes",
+     "resource": "energy",
      "amount": 4
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 33
+     "amount": 17
     }
    ]
   ],
@@ -2985,215 +2253,19 @@
     "at": "location"
    },
    {
-    "op": "players_lose",
-    "resource": "energy",
-    "amount": 2
-   },
-   {
     "op": "pull_unity",
-    "amount": 3
+    "amount": 2
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "energy lost",
    "Unity pulled back"
   ]
  },
  {
-  "id": "t3_spearhead",
-  "name": "Spearhead",
-  "tier": 3,
-  "tags": [
-   "military"
-  ],
-  "locations": [
-   "base"
-  ],
-  "text": "4 troops land on the base here and march at once, 2 steps. Each player near it destroys 1 of their nodes near it (never their last).",
-  "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "resource": "ambassadors",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "troops",
-    "count": 4,
-    "at": "location"
-   },
-   {
-    "op": "march_now",
-    "steps": 2
-   },
-   {
-    "op": "each_destroy_node",
-    "count": 1
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "facilities destroyed or seized",
-   "node destroyed"
-  ]
- },
- {
-  "id": "t3_scorched_earth",
-  "name": "Scorched Earth",
-  "tier": 3,
-  "tags": [
-   "military"
-  ],
-  "locations": [
-   "factory"
-  ],
-  "text": "The factory here is destroyed with the nodes on its hex (never their last); on an empty zone, 3 troops land instead. Each player near it loses 3 energy.",
-  "counters": [
-   [
-    {
-     "resource": "ambassadors",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "resource": "chips",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "destroy_facility",
-    "at": "factory"
-   },
-   {
-    "op": "troops",
-    "count": 3,
-    "at": "location",
-    "if": "empty_zone"
-   },
-   {
-    "op": "players_lose",
-    "resource": "energy",
-    "amount": 3
-   }
-  ],
-  "harms": [
-   "facilities destroyed or seized",
-   "node destroyed",
-   "adversary pieces placed",
-   "energy lost"
-  ]
- },
- {
-  "id": "t3_general_mobilization",
-  "name": "General Mobilization",
-  "tier": 3,
-  "tags": [
-   "military"
-  ],
-  "locations": [
-   "base"
-  ],
-  "text": "Next round, the fronts next to this base fight twice. Its corp makes 3 more troops now, past its cap; 2 troops land here. Sway 2 toward Discord.",
-  "counters": [
-   [
-    {
-     "resource": "ambassadors",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "resource": "energy",
-     "amount": 3
-    },
-    {
-     "resource": "chips",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "sacrifice": "security",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "extra_war"
-   },
-   {
-    "op": "corp_troops",
-    "count": 3,
-    "at": "location",
-    "when": "now",
-    "past_cap": true
-   },
-   {
-    "op": "troops",
-    "count": 2,
-    "at": "location"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
-   }
-  ],
-  "harms": [
-   "war brought forward",
-   "troops made",
-   "Discord sway",
-   "facilities destroyed or seized",
-   "adversary pieces placed"
-  ]
- },
- {
-  "id": "t3_war_economy",
+  "id": "war_economy",
   "name": "War Economy",
-  "tier": 3,
+  "tier": 2,
   "tags": [
    "military",
    "economic"
@@ -3202,30 +2274,18 @@
    "factory",
    "base"
   ],
-  "text": "An adversary factory lands on the zone here, else the nearest free zone, with 2 troops on it. The adversary gains 5 compute.",
+  "text": "An adversary factory is built here. 1 adversary troop lands on the factory here.",
   "counters": [
    [
     {
-     "resource": "chips",
-     "amount": 8
-    }
-   ],
-   [
-    {
      "resource": "energy",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
      "amount": 4
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 33
+     "amount": 17
     }
    ]
   ],
@@ -3235,198 +2295,20 @@
    },
    {
     "op": "troops",
-    "count": 2,
-    "at": "new_factory"
-   },
-   {
-    "op": "compute",
-    "amount": 5
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "projects advanced (compute)",
-   "actions or claims blocked"
-  ]
- },
- {
-  "id": "t3_regime_change",
-  "name": "Regime Change",
-  "tier": 3,
-  "tags": [
-   "influence"
-  ],
-  "locations": [
-   "city"
-  ],
-  "text": "The city here is corrupted, with the nodes on and next to it (never their last). Each player near it loses an ambassador. Remove 2 Unity from the Unity track.",
-  "counters": [
-   [
-    {
-     "resource": "insight",
-     "amount": 12
-    }
-   ],
-   [
-    {
-     "resource": "chips",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "sacrifice": "diplomacy",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "corrupt_city",
-    "at": "location"
-   },
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ],
-  "harms": [
-   "adversary pieces placed",
-   "node destroyed",
-   "ambassadors lost",
-   "Discord sway",
-   "production blacked out",
-   "Unity pulled back"
-  ]
- },
- {
-  "id": "t3_lab_takeover",
-  "name": "Lab Takeover",
-  "tier": 3,
-  "tags": [
-   "cyber"
-  ],
-  "locations": [
-   "station"
-  ],
-  "text": "The station here is corrupted, even a player's; the adversary gains 6 compute. Each player near it gets 4 less insight next round.",
-  "counters": [
-   [
-    {
-     "resource": "research_cubes",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "chips",
-     "amount": 8
-    }
-   ],
-   [
-    {
-     "sacrifice": "cyber",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "flip_station",
-    "force": true
-   },
-   {
-    "op": "compute",
-    "amount": 6
-   },
-   {
-    "op": "lose_insight",
-    "amount": 4
+    "count": 1,
+    "at": "location",
+    "location": "factory"
    }
   ],
   "harms": [
    "facilities destroyed or seized",
-   "projects advanced (compute)",
-   "adversary pieces placed",
-   "insight lost"
+   "adversary pieces placed"
   ]
  },
  {
-  "id": "t3_hostile_takeover",
-  "name": "Hostile Takeover",
-  "tier": 3,
-  "tags": [
-   "economic"
-  ],
-  "locations": [
-   "factory"
-  ],
-  "text": "The adversary seizes the factory here, even a player's; on an empty zone, it builds one there. Each player near it loses 4 chips. The adversary gains 5 compute.",
-  "counters": [
-   [
-    {
-     "resource": "energy",
-     "amount": 5
-    }
-   ],
-   [
-    {
-     "sacrifice": "industry",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "insight",
-     "amount": 12
-    }
-   ],
-   [
-    {
-     "resource": "credits",
-     "amount": 33
-    }
-   ]
-  ],
-  "effects": [
-   {
-    "op": "seize_factory"
-   },
-   {
-    "op": "players_lose",
-    "resource": "chips",
-    "amount": 4
-   },
-   {
-    "op": "compute",
-    "amount": 5
-   }
-  ],
-  "harms": [
-   "facilities destroyed or seized",
-   "adversary pieces placed",
-   "projects advanced (compute)"
-  ]
- },
- {
-  "id": "t3_cascade_failure",
+  "id": "cascade_failure",
   "name": "Cascade Failure",
-  "tier": 3,
+  "tier": 2,
   "tags": [
    "grid",
    "cyber"
@@ -3435,30 +2317,18 @@
    "station",
    "city"
   ],
-  "text": "A botnet lands on the station here, else the nearest piece without one. Next round, cities and stations on or next to it produce nothing. Each player near it loses 3 energy.",
+  "text": "A botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards.",
   "counters": [
    [
     {
-     "resource": "research_cubes",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "sacrifice": "power",
-     "amount": 4
-    }
-   ],
-   [
-    {
-     "resource": "chips",
-     "amount": 8
+     "resource": "insight",
+     "amount": 7
     }
    ],
    [
     {
      "resource": "credits",
-     "amount": 33
+     "amount": 17
     }
    ]
   ],
@@ -3468,21 +2338,14 @@
     "count": 1
    },
    {
-    "op": "flag",
-    "name": "grid_down",
-    "scope": "near"
-   },
-   {
-    "op": "players_lose",
+    "op": "requisition",
     "resource": "energy",
-    "amount": 3
+    "amount": 3,
+    "cards": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "production blacked out",
-   "projects advanced (compute)",
-   "actions or claims blocked",
    "energy lost"
   ]
  }

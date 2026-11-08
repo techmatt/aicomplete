@@ -4,8 +4,9 @@
     python drafts/adversary/check.py --write    # also the listing and the picker
     python drafts/adversary/check.py --content  # the same checks on what content/ loaded (135's loader)
 
-Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits under 5), harms named from the ledger's
-list, the harms ledger's rule (every harm from 2+ kinds of source, each threat tier 5+ kinds), ops the engine lacks.
+Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits under 5), Matt's threat card standard
+(146: two consequences at most, two counter options at most, no shared currency, no each-player harm, no special
+pieces, no tier 3), harms named from the ledger's list, the harms ledger's rule (every harm from 2+ kinds of source, each threat tier 5+ kinds), ops the engine lacks.
 The pull simulation plays the draw rule over random Militarist decks at 1-4 countries and every difficulty's stage
 counts and extra pulls (configs/baseline.json `adversary`), and fails if a pull would need a second reshuffle of a deck.
 `--content` rebuilds the draft shape from content/ (threats by tier);
@@ -36,7 +37,11 @@ RESOURCES = {"credits", "energy", "insight", "research_cubes", "chips", "ambassa
 BRITISH = ["colour", "flavour", "neighbour", "behaviour", "armour", "favour", "harbour", "defence", "offence",
            "centre", "mobilis", "organis", "towards", "whilst", "amongst", "grey", "labour", "rumour"]
 PRINTED = {1: 5, 2: 6, 3: 4}  # Militarist events printed per stage
+# 146: the ladder of an event card's pulls by stage: stage I one tier-1 pull, stage II one tier-2 (or tier 1 and tier
+# 2), stage III two tier-2 pulls.
+LADDER = {1: [(1,)], 2: [(2,), (1, 2)], 3: [(2, 2)]}
 CONTENT_MODE = "--content" in sys.argv
+TIERS = (1, 2)  # 146: no tier 3
 
 
 def adversary_params():
@@ -67,7 +72,7 @@ errors, warnings = [], []
 def load():
     if CONTENT_MODE:
         return load_content()
-    t = {tier: json.loads((HERE / f"threats_t{tier}.json").read_text(encoding="utf-8"))["cards"] for tier in (1, 2, 3)}
+    t = {tier: json.loads((HERE / f"threats_t{tier}.json").read_text(encoding="utf-8"))["cards"] for tier in TIERS}
     projects = json.loads((HERE / "projects.json").read_text(encoding="utf-8"))["cards"]
     mil = json.loads((HERE / "militarist.json").read_text(encoding="utf-8"))
     return t, projects, mil
@@ -77,7 +82,7 @@ def load_content():
     """The draft shape, rebuilt from content/ (scripts/content/load_adversary.py's output)."""
     def read(name):
         return json.loads((ROOT / "content" / name).read_text(encoding="utf-8"))
-    t = {tier: [] for tier in (1, 2, 3)}
+    t = {tier: [] for tier in TIERS}
     for c in read("threats.json"):
         t.setdefault(c["tier"], []).append(c)
     adv = read("adversary.json")
@@ -87,7 +92,7 @@ def load_content():
     a = adversary_params()
     # 138: the build numbers left after creation lines replaced city_build, arrivals and escalation.
     build = {k: a[k] for k in ("corrupt_at", "corrupt_station_at", "corrupt_factory_at", "corrupt_land_at",
-                               "wall_troops", "botnet_compute") if k in a}
+                               "wall_troops", "botnet_compute", "threat_compute") if k in a}
     return t, read("projects.json"), {"board": dict(adv["board"], build=build), "events": events}
 
 
@@ -141,6 +146,7 @@ def check_card_common(c, kind, ops, new_ops):
 # Sacrificing tags (cards in play) and discarding (cards in hand) are different currencies.
 HARM_CURRENCY = {
     "lose_insight": {"insight"}, "lose_ambassador": {"ambassadors"}, "each_destroy_node": {"nodes"},
+    "destroy_node": {"nodes"},
     "discard": {"hand"}, "discard_most_expensive": {"hand"},
 }
 
@@ -162,8 +168,37 @@ def harm_currencies(c, tier):
             out.add("nodes")
         if op == "destroy_facility" or (op == "corrupt_city" and e.get("at") == "location"):
             out.add("nodes")
-    if adversary_params()["threat_nodes"][tier - 1] > 0:  # every uncountered threat destroys nodes near it
-        out.add("nodes")
+    return out
+
+
+def standard_breaks(c):
+    """146: what in a threat breaks the mechanical rules of Matt's threat card standard (the Rust twin is
+    `content::check_threat` with `threat_rule_break`)."""
+    out = []
+    if c.get("tier") not in TIERS:
+        out.append(f"tier {c.get('tier')} (no tier 3)")
+    if len(c.get("counters", [])) > 2:
+        out.append(f"{len(c['counters'])} counter options (two at most)")
+    effects = c.get("effects", [])
+    if len(effects) > 2:
+        out.append(f"{len(effects)} consequences (two at most)")
+    for e in walk_effects(effects):
+        op = e.get("op")
+        if op == "troops" and e.get("stand"):
+            out.append("a troop that stands (no special pieces)")
+        if op == "occupy_factory" or (op == "corp_troops" and e.get("past_cap")):
+            out.append(f"{op}: a special piece")
+        if op == "each_destroy_node":
+            out.append("each player destroys a node (the nearest player's: destroy_node)")
+        if op == "flag" and not (e.get("name") in ("power_down", "station_outage") and not e.get("everywhere")
+                                 and e.get("scope") != "country"):
+            out.append(f"flag {e.get('name')} hits every player near it, not the nearest")
+        if e.get("each_country"):
+            out.append(f"{op}: an each-country line")
+        if op == "corrupt_city" and e.get("at") == "location":
+            out.append("corrupt_city at location destroys every player's nodes near it")
+        if op == "theft" and e.get("who") != "nearest":
+            out.append("theft hits the nearest player")
     return out
 
 
@@ -213,6 +248,8 @@ def check_threats(t, ops, new_ops):
                             errors.append(f"{cid}: sacrifice {item['sacrifice']}")
                     elif "nodes_near" not in item:
                         errors.append(f"{cid}: counter item {item}")
+            for b in standard_breaks(c):
+                errors.append(f"{cid}: {b}")
             shared = counter_currencies(c) & harm_currencies(c, tier)
             if shared:
                 errors.append(f"{cid}: a counter and its uncountered harm share {sorted(shared)}")
@@ -352,6 +389,9 @@ def check_militarist(mil, projects, ops, new_ops):
                 errors.append(f"difficulty {d}: deals {n} stage-{s} events, {stages[s]} printed")
     for e in mil["events"]:
         check_card_common(e, "event", ops, new_ops)
+        tiers = tuple(sorted(p["tier"] for p in e["pulls"]))
+        if tiers not in LADDER[e["stage"]]:
+            errors.append(f"{e['id']}: stage-{e['stage']} pulls tiers {tiers}, the ladder wants one of {LADDER[e['stage']]}")
     tagged = [s["tag"] for s in b["project_slots"] if s.get("tag")]
     for tag in tagged:
         n = sum(1 for p in projects if fits(p["tags"], [tag]))
@@ -473,7 +513,7 @@ def svg(c, kind):
 
 
 def write_outputs(t, projects, mil, table, new_ops):
-    groups = [("Threats, tier 1", "t1", t[1]), ("Threats, tier 2", "t2", t[2]), ("Threats, tier 3", "t3", t[3]),
+    groups = [("Threats, tier 1", "t1", t[1]), ("Threats, tier 2", "t2", t[2]),
               ("Projects", "project", projects), ("Militarist board", "board", [board_card(mil["board"])]),
               ("Militarist event deck", "event", sorted(mil["events"], key=lambda e: e["stage"]))]
     img_dir = ROOT / "art-originals" / "picks" / "adversary_drafts"
@@ -510,7 +550,7 @@ def write_outputs(t, projects, mil, table, new_ops):
     out = ROOT / "experiments" / "results" / "134_militarist_drafts" / "listing.md"
     out.write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")
     manifest = {"name": "adversary_drafts", "title": "Adversary drafts: threats, projects, the Militarist",
-                "intro": "One row per drafted card (134), grouped by deck: tier-1, tier-2 and tier-3 threats, the "
+                "intro": "One row per drafted card (134), grouped by deck: tier-1 and tier-2 threats, the "
                          "project deck, the Militarist board, the Militarist event deck. Each tile shows the card's "
                          "full text, its value line and its check. Toggle on what goes forward; nothing is "
                          "preselected. Numbers are sane starting values, not tuned. Notes per row are welcome.",
@@ -520,7 +560,7 @@ def write_outputs(t, projects, mil, table, new_ops):
     print(f"wrote {n} cards: listing.md, picks/adversary_drafts.json, {img_dir}")
 
 
-SOURCES = ["tier-1 threats", "tier-2 threats", "tier-3 threats", "projects", "Militarist events", "Militarist board"]
+SOURCES = ["tier-1 threats", "tier-2 threats", "projects", "Militarist events", "Militarist board"]
 
 
 def main():

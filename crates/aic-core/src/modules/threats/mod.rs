@@ -16,7 +16,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ThreatSourceView, ViewOut};
 
 use super::common::*;
-use super::{adversary, alignment, board, cards, effects};
+use super::{adversary, board, cards, effects};
 
 mod counter;
 mod near;
@@ -24,7 +24,7 @@ mod ops;
 
 pub use counter::{cheapest_resource_need, need_and_share, paid_share, requirement, resource_only, UNPAYABLE};
 use counter::*;
-pub use near::{counterable, may_counter, near, near_hexes, near_seats, token_of, tokens};
+pub use near::{counterable, may_counter, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
 use near::*;
 pub use ops::*;
 
@@ -89,7 +89,7 @@ fn build_off(_: &Build) -> Result<Box<dyn Module>, String> {
 }
 
 /// The tiers threat decks come in.
-pub const TIERS: [u8; 3] = [1, 2, 3];
+pub const TIERS: [u8; 2] = [1, 2];
 
 fn deck(tier: u8) -> KeyBuf {
     KeyBuf::new("threats.deck.").num(tier as usize)
@@ -250,6 +250,27 @@ pub fn deal_at(g: &mut GameState, cx: &mut Cx, tier: u8, h: usize) -> Res {
     Ok(())
 }
 
+/// 146: the seat an uncountered `t`'s harm hits: the nearest by node (see
+/// [`nearest_seats`]); on a tie the lowest tied seat picks among them, as a
+/// loss. `None` when no seat has a node.
+fn hit_seat(g: &mut GameState, cx: &mut Cx, t: &Key, name: &str) -> Res<Option<usize>> {
+    let w = cx.world;
+    let tied = nearest_seats(&w, g, t);
+    if tied.len() > 1 {
+        cx.tally(g, "threats.hit_ties", 1);
+    }
+    let opts = tied.iter().map(|&s| seat_opt(s)).collect();
+    let prompt = || format!("{name}: which of the nearest players takes its harm?");
+    let picked = match tied.first() {
+        Some(&first) => cx.choose_loss(first, prompt, opts)?.map(|i| tied[i]),
+        None => None,
+    };
+    if let Some(s) = picked {
+        cx.tally(g, &format!("threats.hit.s{s}"), 1);
+    }
+    Ok(picked)
+}
+
 /// The current adversary event card's first pull: (tier, tags).
 fn first_pull(w: &World, g: &GameState) -> Option<(u8, Vec<PullTag>)> {
     // 145: this round's card, the face-up one before the flip (a Discord tip in
@@ -319,11 +340,8 @@ pub fn jam(g: &mut GameState, cx: &mut Cx, threat: &str, n: i64) {
 
 /// The tally label of a tier's threats (what they destroy is counted under it).
 fn label(tier: u8) -> &'static str {
-    match tier {
-        1 => "threat1",
-        2 => "threat2",
-        _ => "threat3",
-    }
+    // 146: no tier 3.
+    if tier == 1 { "threat1" } else { "threat2" }
 }
 
 #[derive(Debug)]
@@ -402,24 +420,21 @@ impl Module for Threats {
             cx.count(g, "executed", 1);
             cx.tally(g, "threats.uncountered", 1);
             cx.per_round(g, "threats.uncountered", 1);
-            let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t);
+            // 146: its harm hits one player, the nearest: the seat whose node is
+            // closest to one of its tokens, wherever that node is; on a tie the
+            // players pick (the lowest tied seat answers, for the table).
+            let hit = hit_seat(g, cx, &t, &d.name)?;
+            let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t).hitting(hit);
             cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
+            // 146: which threat, so a read can see each harm type land.
+            cx.tally(g, &format!("threats.uncountered.id.{}", d.id), 1);
             effects::run(g, cx, &d.effects, &mut ctx)?;
-            // 138: an uncountered threat's printed node harm by tier
-            // (`adversary.threat_nodes`): each player near it destroys that many
-            // of their nodes near it (never a last node in stage I).
-            // 142: from `harm_bonus_at` (3), `harm_bonus` more.
-            let bonus = if adversary::level(&w, w.int("adversary.harm_bonus_at")) { w.int("adversary.harm_bonus") } else { 0 };
-            let k = w.list("adversary.threat_nodes").get(d.tier as usize - 1).copied().unwrap_or(0) + bonus;
+            // 146: the adversary board's printed compute per uncountered threat (its
+            // difficulty line's from `board_difficulty_at`).
+            let k = adversary::threat_compute(&w);
             if k > 0 {
-                let hexes = near_hexes(&w, g, &t);
-                for s in near_seats(&w, g, &t) {
-                    for _ in 0..k {
-                        board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(label(d.tier)), Some(&d.name))?;
-                    }
-                }
+                adversary::gain_compute(g, cx, k)?;
             }
-            alignment::discord_from(g, cx, "threat", w.int("alignment.threat_discord"));
             clear(g, cx, &t);
         }
         // 070: the records' read of whether a board can stay clean.

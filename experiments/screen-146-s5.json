@@ -1,0 +1,58 @@
+{
+  "name": "screen-146-s5",
+  "note": "146 screen s5 on the dev seeds: base, M1",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_M1",
+      "set": [
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    },
+    {
+      "name": "br_M1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    },
+    {
+      "name": "pr_M1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=1",
+        "adversary.counter_more_credits=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

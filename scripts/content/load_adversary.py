@@ -104,7 +104,7 @@ def cards_page(threats, projects, adversary):
     out += ["## Event deck", "", "| Card | Stage | Text |", "|---|---|---|"]
     for e in adversary["events"]:
         out.append(f"| {cell(e['name'])} | {e['stage']} | {cell(e['text'])} |")
-    for tier in (1, 2, 3):
+    for tier in (1, 2):
         out += ["", f"## Threats, tier {tier}", "", "| Threat | Tags | Locations | If not countered | Counter (one of) |",
                 "|---|---|---|---|---|"]
         for t in (t for t in threats if t["tier"] == tier):
@@ -121,7 +121,7 @@ def cards_page(threats, projects, adversary):
 
 
 def build():
-    threats = [threat(c) for tier in (1, 2, 3) for c in read(f"threats_t{tier}.json")["cards"]]
+    threats = [threat(c) for tier in (1, 2) for c in read(f"threats_t{tier}.json")["cards"]]  # 146: no tier 3
     projects = [project(c) for c in read("projects.json")["cards"]]
     mil = read("militarist.json")
     adversary = {"board": board(mil["board"]), "events": [event(e) for e in mil["events"]]}

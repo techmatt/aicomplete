@@ -6,7 +6,8 @@
 //!
 //! - **who chooses**: the acting seat on a player's card; seat 0 for the team
 //!   on threats, Alignment cards and projects;
-//! - **who it hits**: the acting seat; the seats in a threat's scope; every seat;
+//! - **who it hits**: the acting seat; on a threat, the one nearest player (146: the seat whose node is
+//!   closest to its tokens; "each player in scope" below means that seat); every seat;
 //! - **where**: a threat's scope (its country); the whole board otherwise.
 //!
 //! Not every op makes sense everywhere, and the compiler no longer says so:
@@ -125,8 +126,8 @@ pub enum FrontPick {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TheftWho {
-    /// The player near it with the most credits (ties: the lowest seat).
-    RichestNear,
+    /// 146: the nearest player, as every threat harm hits.
+    Nearest,
 }
 
 /// What a facility destruction hits (135).
@@ -626,6 +627,12 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_false")]
         bases: bool,
     },
+    /// 146: a threat's: the nearest player destroys `count` of their nodes closest to it, wherever they are;
+    /// never their last node.
+    DestroyNode {
+        #[serde(default = "one", skip_serializing_if = "is_one")]
+        count: i64,
+    },
     /// Up to `amount` Sway comes off the Unity track (027; 136: no Undecided).
     PullUnity {
         amount: i64,
@@ -682,7 +689,7 @@ pub enum Op {
         everywhere: bool,
     },
     /// Each player in scope discards `cards` cards or pays `amount` `resource` (their choice; `next_round`: off
-    /// next round's).
+    /// next round's). 146: `resource` may be ambassadors (from the supply), as `income` may.
     Requisition {
         resource: Resource,
         amount: i64,
@@ -749,12 +756,12 @@ pub enum Op {
     DestroyFacility {
         at: DestroyAt,
     },
-    /// Each player near it turns `count` buildings face down until `until` (tags still count).
+    /// The player it hits (146: the nearest) turns `count` buildings face down until `until` (tags still count).
     DisableBuilding {
         count: i64,
         until: Until,
     },
-    /// Each player near it discards `count` cards (their choice).
+    /// The player it hits discards `count` cards (their choice).
     Discard {
         count: i64,
     },
@@ -766,7 +773,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_false")]
         ongoing_use: bool,
     },
-    /// Each player near it pays `amount` `resource` or loses `count` ambassadors.
+    /// The player it hits pays `amount` `resource` or loses `count` ambassadors.
     LoseAmbassadorsOr {
         count: i64,
         resource: Resource,
@@ -798,13 +805,16 @@ pub enum Op {
     },
     /// The adversary seizes the factory under the token, even a player's; a free zone gets a new one.
     SeizeFactory,
-    /// The player near it with the most credits loses `amount` `resource`; the adversary gains `compute`.
+    /// The player it hits (146: the nearest) pays `amount` `resource` or discards `cards` cards, as `Requisition`
+    /// (146, D62: a harm can't be dodged by holding none); the adversary gains `compute` either way.
     Theft {
         who: TheftWho,
         resource: Resource,
         amount: i64,
         #[serde(default)]
         compute: i64,
+        #[serde(default = "two")]
+        cards: i64,
     },
 
     // ---------- instant: the team (Alignment cards, projects) ----------
@@ -868,6 +878,11 @@ pub enum Op {
     },
     /// The board's difficulty line: each standing line landing troops lands `amount` more a country.
     StandingTroopsBonus {
+        amount: i64,
+    },
+    /// 146: an adversary board's line: the adversary gains `amount` compute for each threat that executes
+    /// uncountered (read by `threats.execute`; on the difficulty line, from `board_difficulty_at`).
+    ThreatCompute {
         amount: i64,
     },
 
@@ -983,6 +998,10 @@ fn is_one(n: &i64) -> bool {
     *n == 1
 }
 
+fn two() -> i64 {
+    2
+}
+
 impl Op {
     /// The lists that may print this op: the home of "what can go where".
     pub fn slots(&self) -> &'static [Slot] {
@@ -990,7 +1009,9 @@ impl Op {
         match self {
             Op::Sway { .. } => &[Player, Threat, Team, Twist],
             Op::PullUnity { .. } => &[Threat, Team, Twist],
-            Op::EachDestroyNode { .. } => &[Threat, Twist],
+            // 146: "each player" is a twist's only; a threat hits the nearest player.
+            Op::EachDestroyNode { .. } => &[Twist],
+            Op::DestroyNode { .. } => &[Threat],
             Op::Gain { .. } | Op::CounterThreat => &[Player, Team],
             Op::Troops { .. }
             | Op::FlipStation { .. }
@@ -1027,7 +1048,8 @@ impl Op {
             | Op::Pushback { .. }
             | Op::ThreatAtNode { .. }
             | Op::RemoveBotnets { .. }
-            | Op::StandingTroopsBonus { .. } => &[Team],
+            | Op::StandingTroopsBonus { .. }
+            | Op::ThreatCompute { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
             Op::Corrupt { .. } => &[Threat, Team, Twist],

@@ -407,8 +407,8 @@ fn threat_lab() -> (Rules, GameState) {
 fn threat_lab_with(sets: &[&str]) -> (Rules, GameState) {
     let mut c = lab_config(&[ACTIONS, "threats.execute"]);
     // 138: the threat tests read the printed counters and harms; the
-    // calibration dials have their own tests.
-    apply_sets(&mut c,&["adversary.counter_pct=100,100,100", "adversary.threat_nodes=0,0,0"]);
+    // calibration dials have their own tests (146: no tier 3, no unprinted harm).
+    apply_sets(&mut c, &["adversary.counter_pct=100,100"]);
     apply_sets(&mut c,sets);
     let rules = rules_of(&c, "lab_config and threat_lab", sets);
     let g = rules.new_game(3);
@@ -421,7 +421,7 @@ const FORGE_ABILITY: &str = r#"cards.synthetic_data_forge.ability={"effects":[{"
 
 /// Puts `threat` on country `c` (out of its deck).
 fn deal(g: &mut GameState, threat: &str, c: usize) {
-    for t in [1, 2, 3] {
+    for t in crate::modules::threats::TIERS {
         if let Some(p) = g.piles.get_mut(format!("threats.deck.{t}").as_str()) {
             Arc::make_mut(p).retain(|x| x != threat);
         }
@@ -567,9 +567,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 60;
-const GOLDEN_FINGERPRINT: &str = "f6335703816fd65e";
-const GOLDEN_CONTENT_HASH: &str = "f8efca31c19cb99a";
+const GOLDEN_REVISION: u32 = 61;
+const GOLDEN_FINGERPRINT: &str = "4dce5a834abb4cc9";
+const GOLDEN_CONTENT_HASH: &str = "98a49b3af4785a4a";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

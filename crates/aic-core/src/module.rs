@@ -649,6 +649,13 @@ impl<'a> Cx<'a> {
         stream(g, "threats")
     }
 
+    /// The adversary module's stream, for its project deck reshuffled in another
+    /// module's step (146: compute an uncountered threat gives fills a project, and
+    /// the refill reshuffles in `threats.execute`).
+    pub fn adversary_rng<'g>(&self, g: &'g mut GameState) -> &'g mut Stream {
+        stream(g, "adversary")
+    }
+
     /// The stream for one of this variant's declared purposes. Drawing from
     /// any other purpose, even one another module declared, panics.
     pub fn rng<'g>(&self, g: &'g mut GameState, purpose: &str) -> &'g mut Stream {

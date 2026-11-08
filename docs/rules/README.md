@@ -22,13 +22,13 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 60 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 61 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
 AI boards and the Unity and Discord decks are **placeholders** pending redesign; the adversary's
-threat decks, event deck, board and project deck are 134's drafts (`drafts/adversary/`), all in play
-until Matt's picks prune them. Every rule is a **candidate** unless marked **locked**; which, and what
+threat decks (rewritten by 146 to Matt's threat card standard, locked), event deck, board and project deck are drafts
+(`drafts/adversary/`), all in play until Matt's picks prune them. Every rule is a **candidate** unless marked **locked**; which, and what
 each revision changed and why, is in [rules-history.md](../rules-history.md). What content can
 print is in [ops.md](../ops.md).
 

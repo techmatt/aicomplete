@@ -165,16 +165,13 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                 }
             }
         }
-        Op::Theft { who: TheftWho::RichestNear, resource, amount, compute } => {
-            let richest = ctx
-                .seats(&w, g)
-                .into_iter()
-                .max_by_key(|&s| (g.resource(s, Resource::Credits), std::cmp::Reverse(s)));
-            if let Some(s) = richest {
-                let k = (*amount).min(g.resource(s, *resource)).max(0);
-                cx.add_resource(g, s, *resource, -k);
-                cx.tally(g, "effects.theft_taken", k);
-            }
+        Op::Theft { who: TheftWho::Nearest, resource, amount, compute, cards } => {
+            // 146: the nearest player, as every threat harm hits (was the richest near it); D62: pay or discard,
+            // as `Requisition`, so holding none dodges nothing.
+            let before: i64 = ctx.seats(&w, g).iter().map(|&s| g.resource(s, *resource)).sum();
+            requisition(g, cx, ctx, *resource, *amount, *cards, false)?;
+            let after: i64 = ctx.seats(&w, g).iter().map(|&s| g.resource(s, *resource)).sum();
+            cx.tally(g, "effects.theft_taken", before - after);
             adversary::gain_compute(g, cx, *compute)?;
         }
         other => unreachable!("{other:?} is not a 135 op"),
@@ -315,19 +312,17 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
     let w = cx.world;
     for hexes in team::regions(&w, g, ctx, each_country) {
         let mut spots: Vec<usize> = hexes.into_iter().filter(|&h| g.tokens(h, STATION) > 0 && !corrupted(g, h)).collect();
-        if let Some(h) = ctx.threat.as_ref().and_then(|t| threats::token_of(&w, g, t, Location::Station)) {
-            if spots.contains(&h) {
-                spots = vec![h];
-            }
+        // 146 (D63): a threat's "the station here" is its token's station, or nothing once that one is corrupted.
+        if let Some(t) = ctx.threat.as_ref() {
+            let here = threats::token_of(&w, g, t, Location::Station);
+            spots.retain(|h| Some(*h) == here);
         }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         let prompt = || format!("{}: which research station flips to the adversary?", ctx.why.as_deref().unwrap_or("Threat"));
         if let Some(i) = cx.choose(0, prompt, opts)? {
-            let h = spots[i];
-            if let Some(s) = cube_owner(g, h) {
-                cx.add_tokens(g, h, cube(s), -1);
-            }
-            adversary::corrupt_station(g, cx, h);
+            // 146 (D60): corruption, with its cleanup, even a player's station.
+            adversary::corrupt_hex(g, cx, spots[i], crate::op::CorruptSite::Station);
+            cx.tally(g, "adversary.stations_flipped", 1);
         }
     }
     Ok(())

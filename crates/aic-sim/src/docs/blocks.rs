@@ -363,15 +363,13 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];
-    let steps: [(&str, &str, &[&str]); 7] = [
+    let steps: [(&str, &str, &[&str]); 6] = [
         ("adversary.corrupt_cut_at", "each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
             &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),
         ("adversary.counter_more_at", "counters cost more again (from `counter_more_at`)",
             &["adversary.counter_more_all", "adversary.counter_more_credits", "adversary.counter_more_at"]),
-        ("adversary.harm_bonus_at", "an uncountered threat's harm +N: each player near it destroys more nodes near it (from `harm_bonus_at`)",
-            &["adversary.harm_bonus", "adversary.harm_bonus_at"]),
         ("adversary.board_difficulty_at", "the adversary board's difficulty line (from `board_difficulty_at`)",
             &["adversary.board_difficulty_at"]),
         ("adversary.extra_threats_at", "extra threats each round in all, countries in turn",
@@ -585,8 +583,8 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "an uncountered threat, the antimatter action, twists, Discord cards, adversary projects".to_string(),
-            format!("{}, {}, card text", t("alignment.threat_discord"), t("alignment.antimatter_discord")),
+            "the antimatter action, twists, threats, Discord cards, adversary projects".to_string(),
+            format!("{}, card text", t("alignment.antimatter_discord")),
         ],
         [
             "Discord".to_string(),

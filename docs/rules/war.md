@@ -6,8 +6,8 @@
 
 There is no production/war clock (137; cut for good at 139, Matt). **Production runs every round** and is one snapshot (135): chips, adversary troops, energy, stations, income
 and upkeep all read the board as the step starts. **War is fought at the end of every round** on every front, after
-threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli,
-General Mobilization; candidate): the fronts next to the threat's base fight twice in next round's war (their troops
+threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli;
+candidate): the fronts next to the threat's base fight twice in next round's war (their troops
 cancel once, the surplus strikes twice). Declaration of War (an ongoing project): each round, the front with the most
 corp troops fights twice.
 
@@ -24,8 +24,8 @@ corp troops fights twice.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (2) chips for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
   factory makes nothing, except that **on each Discord tip it makes 1 corp troop**. One opposing ambassador blocks a
-  factory's output while it stands. Threats build adversary factories (Mass Production, Shadow Factories, War Economy),
-  seize them (Hostile Takeover), occupy them (a standing troop: it makes nothing) and destroy them (Scorched Earth).
+  factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
+  (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); a project builds them (Shadow Factories).
 - **Growth** (each round, after output): every city builds one
   factory. A clean or aligned city builds on a free industrial zone next to it, where the
   players choose (an aligned city's owner, else seat 0). A **corrupted** city builds at a
@@ -46,9 +46,8 @@ player troops: corp troops belong to the megacorp of their territory and wait at
 - **Peacetime:** at most `unit_cap` troops wait at each base. A troop at a base **absorbs
   an adversary-troop strike** on a facility on or next to the base: 1 troop per hit.
 - **Extra corp troops** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
-  adversary troop on or next to it), Conscription (3 rounds), Arms Race (ongoing). A base gains at most 1 extra a
-  round from these three together (Matt, 2026-11-06). Threats that make troops now add on top, past the cap:
-  Call-Up (1) and General Mobilization (3).
+  adversary troop on or next to it) and Arms Race (ongoing). A base gains at most 1 extra a round from the two
+  together (Matt, 2026-11-06). No threat makes corp troops (146: no special pieces).
 - **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus troop
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
   adversary-owned one; ties: lower hex number), **and any node on its hex** (the node goes with the factory,
@@ -67,8 +66,8 @@ adversary-owned facilities.
 
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
 takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, in hex-number order fixed when the
-march starts. **Standing troops** (Orbital Strike, Factory Occupation) never march or strike until removed; troops a
-threat lands to "march at once" (Total War, Spearhead) take their steps as it executes. A step is one of:
+march starts. A troop a threat lands follows the troop's normal rules (146: no standing troops); troops a threat
+lands to "march at once" (Total War) take their steps as it executes. A step is one of:
 
 - **destroy** a target on or next to its hex (players choose which), or
 - with none there, **move** one hex toward the nearest target. When several hexes are
@@ -119,7 +118,7 @@ military base on each side, a pile of corp troops: every Discord tip, each neutr
 corp's bases (unless your ambassador stands there to stop it), and at the end of every round the two piles cancel and
 each troop left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
 Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra corp
-troops (Warmongering, Conscription, Arms Race) ignore the pile's cap, and the adversary ambassador count you pay for
+troops (Warmongering, Arms Race) ignore the pile's cap, and the adversary ambassador count you pay for
 grows by one for each adversary ambassador already on the site.
 
 **This is the game's one movement rule** (an exception to "no movement rules"); a Corrupt line's pull is the only
@@ -128,10 +127,9 @@ other, and it moves ambassadors one hex onto the site that corrupts ([adversary.
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
-the game on, only where the board is overrun: uncountered threats near the node (`threat_nodes` by tier, every one;
-and printed: Total War, Purge Protocols, Grid Collapse, Overload, Last Ultimatum and Spearhead make each player near
-destroy 1 more near it; Siege and Scorched Earth take the nodes on the factory's hex, Regime Change those on and next
-to its city), a site that becomes
+the game on, only where the board is overrun: an uncountered threat that prints it (146: Dark Cities, Purge
+Protocols, Grid Collapse, Overload and Last Ultimatum make the nearest player destroy their node closest to it, never
+their last; Siege takes the node on its factory's hex), a site that becomes
 corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next
 to it: 0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex) and Border War (each
 player with a node on or next to a front's base destroys 1 of those; Matt's message 5847). **Nothing else destroys a

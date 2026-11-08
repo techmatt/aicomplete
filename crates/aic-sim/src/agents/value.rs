@@ -600,6 +600,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         }
         Op::ThreatAtNode { tier } => Worth::now(row("threat_at_node") * *tier as f64),
         Op::EachDestroyNode { count, .. } => Worth::now(row("each_destroy_node") * *count as f64),
+        Op::DestroyNode { count } => Worth::now(row("destroy_node") * *count as f64),
         Op::PullUnity { amount } => Worth::now(row("pull_unity") * *amount as f64),
         Op::LoseInsight { amount } => Worth::unseen(row("lose_insight") * *amount as f64),
         Op::FlipStation { each_country, .. } => {
@@ -698,6 +699,7 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         // 135: the new adversary model's threat and team ops (no player card prints them).
         Op::TroopSteps { .. } => Worth::now(row("troop_steps")),
         Op::StandingTroopsBonus { .. } => Worth::now(row("standing_troops_bonus")),
+        Op::ThreatCompute { .. } => Worth::now(row("threat_compute")),
         Op::AdversaryFactory { count, .. } => Worth::now(row("adversary_factory") * *count as f64),
         Op::ComputePerMissing { amount, .. } => Worth::now(row("compute_per_missing") * *amount as f64),
         Op::CorpTroops { count, .. } => Worth::now(row("corp_troops") * (*count).max(1) as f64),
@@ -716,7 +718,9 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::OccupyFactory { .. } => Worth::now(row("occupy_factory")),
         Op::PlaceBotnet { count } => Worth::now(row("place_botnet") * *count as f64),
         Op::SeizeFactory => Worth::now(row("seize_factory")),
-        Op::Theft { resource, amount, .. } => Worth::now(row("theft") * r(*resource) * *amount as f64),
+        Op::Theft { resource, amount, cards, .. } => {
+            Worth::now(row("theft") * (r(*resource) * *amount as f64).min(t.rate("drawn_card") * *cards as f64))
+        }
     }
 }
 

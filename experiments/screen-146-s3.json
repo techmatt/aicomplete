@@ -1,0 +1,139 @@
+{
+  "name": "screen-146-s3",
+  "note": "146 screen s3 on the dev seeds: base, P90+G3, P85+G3, A1+G3",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_P90+G3",
+      "set": [
+        "adversary.counter_pct=90,90",
+        "adversary.counter_credit_pct=90",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "br_P90+G3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_pct=90,90",
+        "adversary.counter_credit_pct=90",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "pr_P90+G3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_pct=90,90",
+        "adversary.counter_credit_pct=90",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "bp_P85+G3",
+      "set": [
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "br_P85+G3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "pr_P85+G3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "bp_A1+G3",
+      "set": [
+        "threats.agitators.effects.0.count=2",
+        "threats.insider_access.effects.0.count=1",
+        "threats.embargo.effects.0.count=1",
+        "threats.insurrection.effects.0.count=3",
+        "threats.sleeper_cells.effects.1.count=1",
+        "threats.trade_blockade.effects.0.count=3",
+        "threats.garrison_state.effects.0.count=2",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "br_A1+G3",
+      "set": [
+        "ai.boards=0,2",
+        "threats.agitators.effects.0.count=2",
+        "threats.insider_access.effects.0.count=1",
+        "threats.embargo.effects.0.count=1",
+        "threats.insurrection.effects.0.count=3",
+        "threats.sleeper_cells.effects.1.count=1",
+        "threats.trade_blockade.effects.0.count=3",
+        "threats.garrison_state.effects.0.count=2",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "pr_A1+G3",
+      "set": [
+        "ai.boards=1,2",
+        "threats.agitators.effects.0.count=2",
+        "threats.insider_access.effects.0.count=1",
+        "threats.embargo.effects.0.count=1",
+        "threats.insurrection.effects.0.count=3",
+        "threats.sleeper_cells.effects.1.count=1",
+        "threats.trade_blockade.effects.0.count=3",
+        "threats.garrison_state.effects.0.count=2",
+        "adversary.counter_bonus_all=3",
+        "adversary.counter_bonus_credits=8"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

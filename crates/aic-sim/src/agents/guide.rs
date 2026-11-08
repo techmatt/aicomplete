@@ -10,7 +10,7 @@
 use aic_core::content::{CounterItem, Op, RoundFlag};
 use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
-use aic_core::modules::{adversary, board, threats};
+use aic_core::modules::{board, threats};
 use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
@@ -82,17 +82,19 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             continue;
         }
         // 145: each seat's nodes this threat takes, capped once at its open
-        // nodes here (its printed lines and the unprinted harm share them).
+        // nodes here. 146: a threat hits one seat, the nearest by node (a tie
+        // read as the first tied seat); no unprinted node harm.
         let mut lost = [0i64; 4];
+        let hit = threats::nearest_seats(w, g, &t).first().copied();
         for op in &w.content.threat(&t).effects {
             match op {
-                Op::EachDestroyNode { count, .. } => {
-                    for (s, l) in lost.iter_mut().enumerate().take(seats) {
-                        if board::last_node_safe(w, g, s) {
-                            continue;
-                        }
-                        let open = nodes_here(s).into_iter().filter(|&h| !absorbed(g, h)).count() as i64;
-                        *l += open.min(*count);
+                Op::DestroyNode { count } => {
+                    if let Some(s) = hit.filter(|&s| s < seats && !board::last_node_safe(w, g, s)) {
+                        let open = threats::nearest_nodes(w, g, s, &t)
+                            .into_iter()
+                            .filter(|h| hexes.contains(h) && !absorbed(g, *h))
+                            .count() as i64;
+                        lost[s] += open.min(*count);
                     }
                 }
                 Op::Troops { count, destroy: true, .. } => {
@@ -118,22 +120,6 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                     }
                 }
                 _ => {}
-            }
-        }
-        // 145: the unprinted node harm every uncountered threat deals (138:
-        // `threat_nodes` by tier, 142: `harm_bonus` more from `harm_bonus_at`):
-        // each seat near it loses that many of its nodes near it, here.
-        let tier = w.content.threat(&t).tier as usize;
-        let bonus = if adversary::level(w, w.int("adversary.harm_bonus_at")) { w.int("adversary.harm_bonus") } else { 0 };
-        let k = w.list("adversary.threat_nodes").get(tier.saturating_sub(1)).copied().unwrap_or(0) + bonus;
-        if k > 0 {
-            let near: Vec<usize> = threats::near_hexes(w, g, &t).into_iter().filter(|h| hexes.contains(h)).collect();
-            for s in threats::near_seats(w, g, &t) {
-                if s >= seats || board::last_node_safe(w, g, s) {
-                    continue;
-                }
-                let open = near.iter().filter(|&&h| g.tokens(h, common::node(s)) > 0 && !absorbed(g, h)).count() as i64;
-                lost[s] += open.min(k);
             }
         }
         for (s, &n) in lost.iter().enumerate().take(seats) {

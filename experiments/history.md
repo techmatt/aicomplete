@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 146 the threat card standard: no hidden harm, the nearest player takes every harm, all 57 threats rewritten (one or two consequences, two counter options), no tier 3, the pull ladder, d3's board compute line, the split counter ladder; strategist 93.4 / 80.9 / 58.0 / 48.6% (d0-d3, confirming seeds) against r60's 89.2 / 79.9 / 57.6 / 39.9 | r61 | [146_threat_standard/README.md](results/146_threat_standard/README.md) |
 | 142 threat intensity and the credit economy (claiming sites, the difficulty ladder, no node counters) | r59 | [142_threat_intensity/README.md](results/142_threat_intensity/README.md) |
 | 141 speed at r58: the standard read 146 → 88 s (1.66x wall, 1.42x a decision) with every game the same; Rush Build's sacrifice test (70% of a long game) and the card and fact lookups | r58 | [141_speed_r58/README.md](results/141_speed_r58/README.md) |
 | 140 cleanup: purge-level enum, megaproject `after` and `corrupt_city`'s unused fields cut, one variant list, fast lane 10.1 to 4.8 s, the web e2e fixed to r58; same play | r58 | [140_cleanup_tests_web/README.md](results/140_cleanup_tests_web/README.md) |

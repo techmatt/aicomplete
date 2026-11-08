@@ -57,18 +57,15 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
-| `adversary.threat_nodes` | 1, 2, 3 | 0..5 | an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it |
-| `adversary.counter_pct` | 100, 100, 100 | 50..300 | every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up) |
+| `adversary.counter_pct` | 100, 100 | 50..300 | every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up) |
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
-| `adversary.counter_bonus_all` | 2 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
-| `adversary.counter_bonus_credits` | 6 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
+| `adversary.counter_bonus_all` | 1 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
+| `adversary.counter_bonus_credits` | 3 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
 | `adversary.counter_more_all` | 1 | 0..10 | difficulty counter_more_at+: added again to every resource counter item but credits (142's second step) |
 | `adversary.counter_more_credits` | 3 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
-| `adversary.counter_more_at` | 3 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
-| `adversary.counter_bonus_at` | 2 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
-| `adversary.harm_bonus` | 2 | 0..5 | difficulty harm_bonus_at+: each player near an uncountered threat destroys this many more nodes near it |
-| `adversary.harm_bonus_at` | 3 | 0..5 | the difficulty level from which harm_bonus applies (142) |
+| `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
+| `adversary.counter_bonus_at` | 1 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
 | `adversary.extra_threats_at` | 4 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
 | `adversary.stage1_removed` | 1 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
@@ -92,7 +89,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.free_city` | 5 | 0..10 | Sway toward Unity for freeing a corrupted city |
 | `alignment.free_facility` | 2 | 0..10 | Sway toward Unity for liberating an adversary station or factory (137) |
 | `alignment.botnet` | 1 | 0..10 | Sway toward Unity for removing a botnet |
-| `alignment.threat_discord` | 1 | 0..10 | Sway toward Discord when a threat executes uncountered |
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
 | `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136) |

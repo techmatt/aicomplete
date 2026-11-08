@@ -79,9 +79,6 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54.
 | D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
 | D57 | cards | Exascale Training Cluster (8 energy) kept in ~45% of games, never played. | Cut its +25 agents override; energy 8 → 4-5 **Matt's call**. |
-| D62 | content | `lose_or` threats (Chip Shortage, Power Surcharge) are dodged with none of the resource; `requisition` ones aren't. | One op for both. **Matt's call**. |
-| D63 | content | Regime Change takes no node, Station Seizure / Lab Takeover flip another station, once theirs is already corrupted. | Ops follow faces. **Matt's call**. |
-| D60 | rules | Station Coup's flips skip corruption's cleanup (node, ambassadors). | Route through it, or keep. **Matt's call**. |
 | D64 | content | "Clean city" creation lines include aligned cities. | Faces say "not corrupted", or the op skips aligned. **Matt's call**. |
 | D65 | content | Rolling Blackouts / Market Crash "next round" also hits this round when filled in the build. | Faces say so. **Pick**. |
 | D71 | agents | The shelter forecast's armor (any player's ambassador; per-line). 145's fix slowed the greedy ~15×: taken back. | Profile, then land it. **Pick**. |

@@ -159,6 +159,51 @@ pub(super) fn seats_near(w: &World, g: &GameState, t: &str) -> Vec<usize> {
     (0..g.seats.len()).filter(|&s| is_near(w, g, s, t)).collect()
 }
 
+/// 146: the hexes an uncountered `t`'s harm is measured from: its tokens, or
+/// its country with none (a forced pull, a content bug).
+fn origins(w: &World, g: &GameState, t: &str) -> Vec<usize> {
+    let tk = tokens_of(g, t);
+    if tk.is_empty() {
+        return scope_of(g, t).map(|c| w.map.countries[c].hexes.clone()).unwrap_or_default();
+    }
+    tk
+}
+
+/// 146: seat `s`'s hex distance from `t`: its node closest to any of `t`'s
+/// tokens. `None` with no node on the board.
+pub fn node_distance(w: &World, g: &GameState, s: usize, t: &str) -> Option<i32> {
+    let from = origins(w, g, t);
+    let n = node(s);
+    (0..g.hexes.len())
+        .filter(|&h| g.tokens(h, n) > 0)
+        .filter_map(|h| from.iter().map(|&o| w.map.distance(o, h)).min())
+        .min()
+}
+
+/// 146: the seats an uncountered `t`'s harm may hit: the ones whose node is
+/// closest to one of its tokens (hex distance), in seat order. Several on a
+/// tie (the players pick one); none if no seat has a node.
+pub fn nearest_seats(w: &World, g: &GameState, t: &str) -> Vec<usize> {
+    let d: Vec<Option<i32>> = (0..g.seats.len()).map(|s| node_distance(w, g, s, t)).collect();
+    let Some(best) = d.iter().flatten().min().copied() else {
+        return Vec::new();
+    };
+    (0..g.seats.len()).filter(|&s| d[s] == Some(best)).collect()
+}
+
+/// 146: seat `s`'s node hexes closest to `t`'s tokens: where "destroy a node"
+/// lands, wherever that node is.
+pub fn nearest_nodes(w: &World, g: &GameState, s: usize, t: &str) -> Vec<usize> {
+    let Some(best) = node_distance(w, g, s, t) else {
+        return Vec::new();
+    };
+    let from = origins(w, g, t);
+    let n = node(s);
+    (0..g.hexes.len())
+        .filter(|&h| g.tokens(h, n) > 0 && from.iter().any(|&o| w.map.distance(o, h) == best))
+        .collect()
+}
+
 /// The land hexes within 1 of any of `t`'s tokens, sorted: its effects' "near it".
 pub fn near_hexes(w: &World, g: &GameState, t: &Key) -> Vec<usize> {
     reach(w, g, t).into_iter().filter(|&h| !is_ocean(w, h)).collect()

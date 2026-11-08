@@ -1,0 +1,20 @@
+{
+  "name": "smoke-146-harm",
+  "note": "146: the threat-harm eval heuristic (w.threat_harm) on and off, the strategist, the three pairs, d2, on the dev seeds (--seed 36800).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {"name": "bp", "set": []},
+    {"name": "br", "set": ["ai.boards=0,2"]},
+    {"name": "pr", "set": ["ai.boards=1,2"]}
+  ],
+  "difficulties": [2],
+  "agents": [
+    "engine:strategy=1",
+    "engine:strategy=1,w.threat_harm=0"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

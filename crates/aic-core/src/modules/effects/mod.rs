@@ -240,6 +240,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::AdversaryBuild => adversary::build_all(g, cx, ctx.scope)?,
         Op::ThreatAtNode { tier } => team::threat_at_node(g, cx, ctx, *tier)?,
         Op::EachDestroyNode { count, bases } => team::each_destroy_node(g, cx, ctx, *count, *bases)?,
+        Op::DestroyNode { count } => team::destroy_nearest_node(g, cx, ctx, *count)?,
         Op::PullUnity { amount } => alignment::pull_unity(g, cx, *amount),
         Op::LoseInsight { amount } => {
             for s in ctx.seats(&w, g) {
@@ -340,6 +341,7 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         | Op::TagsFromHand { .. }
         | Op::ConvertUpkeep { .. }
         | Op::StandingTroopsBonus { .. }
+        | Op::ThreatCompute { .. }
         | Op::TroopSteps { .. } => unreachable!("{e:?} is read, not resolved"),
     }
     Ok(())

@@ -109,17 +109,50 @@ fn bad_overlays_are_errors_that_name_the_entry() {
         ("cards.orbital_embassy.effects.99.amount=1", "no \"99\""),
         ("ais.*.economy_track.99=[]", "no list entry"),
         ("cards.telemetry_archive.cost=lots", "invalid type"),
-        ("threats.*.tier=9", "tier 1-3"),
+        ("threats.*.tier=9", "tier 1-2"),
+        // 146: no tier 3.
+        ("threats.eviction.tier=3", "tier 1-2"),
         ("threats.*.counters=[]", "a counter menu"),
-        // 142: Supply Raid's harm takes energy, so an energy counter shares it.
-        (r#"threats.supply_raid.counters=[[{"resource":"energy","amount":3}],[{"resource":"credits","amount":12}]]"#, "share"),
-        // 142: an uncountered tier-1 threat destroys nodes (threat_nodes 1).
-        (r#"threats.eviction.counters=[[{"nodes_near":1}],[{"resource":"credits","amount":12}]]"#, "nodes counter"),
+        // 146: Supply Raid's harm requisitions chips, so a chips counter shares it.
+        (r#"threats.supply_raid.counters=[[{"resource":"chips","amount":3}],[{"resource":"credits","amount":12}]]"#, "share"),
+        // 146: Dark Cities destroys the nearest player's node, so a nodes counter shares it.
+        (r#"threats.dark_cities.counters=[[{"nodes_near":1}],[{"resource":"credits","amount":12}]]"#, "share"),
     ] {
         let e = match Rules::new(&baseline_with(&[entry])) {
             Err(e) => e,
             Ok(_) => panic!("{entry} was accepted"),
         };
         assert!(e.contains(why), "{entry}: {e}");
+    }
+}
+
+/// 146 (Matt's threat card standard): two counter options and two consequences
+/// at most, no special pieces, and no node harm on each player; each refusal
+/// names the threat.
+#[test]
+fn a_threat_off_the_card_standard_is_refused_by_name() {
+    for (entry, id, why) in [
+        (
+            r#"threats.eviction.counters=[[{"resource":"chips","amount":6}],[{"resource":"energy","amount":3}],[{"resource":"credits","amount":15}]]"#,
+            "eviction",
+            "3 counter options",
+        ),
+        (
+            r#"threats.eviction.effects=[{"op":"compute","amount":1},{"op":"compute","amount":2},{"op":"compute","amount":3}]"#,
+            "eviction",
+            "3 consequences",
+        ),
+        (
+            r#"threats.orbital_strike.effects=[{"op":"troops","count":2,"at":"location","stand":true}]"#,
+            "orbital_strike",
+            "a troop that stands",
+        ),
+        (r#"threats.dark_cities.effects=[{"op":"each_destroy_node","count":1}]"#, "dark_cities", "each player destroys"),
+    ] {
+        let e = match Rules::new(&baseline_with(&[entry])) {
+            Err(e) => e,
+            Ok(_) => panic!("{entry} was accepted"),
+        };
+        assert!(e.contains(&format!("threat {id:?}")) && e.contains(why), "{entry}: {e}");
     }
 }

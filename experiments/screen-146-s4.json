@@ -1,0 +1,103 @@
+{
+  "name": "screen-146-s4",
+  "note": "146 screen s4 on the dev seeds: L1, L1b",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp_L1",
+      "set": [
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=5",
+        "adversary.counter_more_at=2"
+      ]
+    },
+    {
+      "name": "br_L1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=5",
+        "adversary.counter_more_at=2"
+      ]
+    },
+    {
+      "name": "pr_L1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=5",
+        "adversary.counter_more_at=2"
+      ]
+    },
+    {
+      "name": "bp_L1b",
+      "set": [
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=3",
+        "adversary.counter_more_credits=8",
+        "adversary.counter_more_at=2"
+      ]
+    },
+    {
+      "name": "br_L1b",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=3",
+        "adversary.counter_more_credits=8",
+        "adversary.counter_more_at=2"
+      ]
+    },
+    {
+      "name": "pr_L1b",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_pct=85,85",
+        "adversary.counter_credit_pct=85",
+        "adversary.counter_bonus_all=1",
+        "adversary.counter_bonus_credits=3",
+        "adversary.counter_bonus_at=1",
+        "adversary.counter_more_all=3",
+        "adversary.counter_more_credits=8",
+        "adversary.counter_more_at=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

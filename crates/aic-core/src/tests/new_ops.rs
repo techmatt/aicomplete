@@ -5,9 +5,10 @@ use crate::modules::common::{is_city, is_ocean};
 use crate::modules::{board, effects};
 use crate::op::TheftWho;
 
-/// Runs `ops` as threat `t` executing in country `c`.
+/// Runs `ops` as threat `t` executing in country `c`, hitting the nearest seat (146; a tie, the first).
 fn run_threat(rules: &Rules, g: &mut GameState, t: &str, c: usize, ops: &[content::Op]) {
-    let mut ctx = effects::Ctx::threat(Some(c)).with_threat(crate::key::Key::new(t)).why(t);
+    let hit = crate::modules::threats::nearest_seats(&rules.world(), g, t).first().copied();
+    let mut ctx = effects::Ctx::threat(Some(c)).with_threat(crate::key::Key::new(t)).why(t).hitting(hit);
     with_cx(rules, |cx| effects::run(g, cx, ops, &mut ctx)).unwrap();
 }
 
@@ -72,22 +73,20 @@ fn war_brought_forward_fights_a_front_twice() {
 }
 
 #[test]
-fn theft_hits_the_richest_player_near_it() {
+fn theft_hits_the_nearest_player_not_the_richest() {
+    // 146: theft hits the nearest player like every harm, however rich another is.
     let (rules, mut g) = lab(&["board.produce"]);
     let w = rules.world();
     let city = rules.map.countries[0].hexes.iter().copied().find(|&h| is_city(&w, h)).unwrap();
+    let far = (0..g.hexes.len()).find(|&h| !is_ocean(&w, h) && rules.map.distance(city, h) >= 3).unwrap();
     token_on(&mut g, "shakedown", city);
     put(&mut g, city, node(0), 1);
-    put(&mut g, city, node(1), 1);
-    set_res(&mut g, 0, Resource::Credits, 5);
-    set_res(&mut g, 1, Resource::Credits, 20);
-    let ops = [content::Op::Theft { who: TheftWho::RichestNear, resource: Resource::Credits, amount: 8, compute: 0 }];
+    put(&mut g, far, node(1), 1);
+    set_res(&mut g, 0, Resource::Credits, 10);
+    set_res(&mut g, 1, Resource::Credits, 40);
+    let ops = [content::Op::Theft { who: TheftWho::Nearest, resource: Resource::Credits, amount: 8, compute: 0, cards: 2 }];
     run_threat(&rules, &mut g, "shakedown", 0, &ops);
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (5, 12));
-    // A player not near it is never the one robbed, however rich.
-    put(&mut g, city, node(1), 0);
-    run_threat(&rules, &mut g, "shakedown", 0, &ops);
-    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (0, 12));
+    assert_eq!((g.resource(0, Resource::Credits), g.resource(1, Resource::Credits)), (2, 40));
 }
 
 #[test]

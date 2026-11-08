@@ -27,8 +27,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
-    ParamSpec::list("threat_nodes", 0, 5, "an uncountered threat of tier 1, 2, 3: nodes each player near it destroys near it"),
-    ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2, 3 threat costs this percent of its printed amount (rounded up)"),
+    ParamSpec::list("counter_pct", 50, 300, "every resource counter item of a tier 1, 2 threat costs this percent of its printed amount (rounded up)"),
     ParamSpec::int("counter_credit_pct", 50, 300, "every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial)"),
     ParamSpec::int("counter_bonus", 0, 10, "difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before)"),
     ParamSpec::int("counter_bonus_all", 0, 10, "difficulty counter_bonus_at+: added to every resource counter item of every threat"),
@@ -37,8 +36,6 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("counter_more_credits", 0, 20, "difficulty counter_more_at+: added again to every credits counter item (142)"),
     ParamSpec::int("counter_more_at", 0, 5, "the difficulty level from which counter_more_all and counter_more_credits apply (142)"),
     ParamSpec::int("counter_bonus_at", 0, 5, "the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before)"),
-    ParamSpec::int("harm_bonus", 0, 5, "difficulty harm_bonus_at+: each player near an uncountered threat destroys this many more nodes near it"),
-    ParamSpec::int("harm_bonus_at", 0, 5, "the difficulty level from which harm_bonus applies (142)"),
     ParamSpec::int("extra_threats", 0, 5, "difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn"),
     ParamSpec::int("extra_threats_at", 0, 5, "the difficulty level from which extra_threats are dealt (139)"),
     ParamSpec::int("stage1_removed", 0, 3, "difficulty stage_swap_at+: stage-I cards removed"),
@@ -165,8 +162,9 @@ pub fn start_supply(w: &World) -> i64 {
 /// round's card's stage, at most 3 (at difficulty 4, tier 2 `tier2_early`
 /// cards sooner). Event cards' pulls name their own tiers (135).
 pub fn threat_tier(w: &World, g: &GameState) -> u8 {
+    // 146: no tier 3; stages II and III deal tier 2.
     if g.var(STAGE) >= 2 {
-        return g.var(STAGE).min(3) as u8;
+        return 2;
     }
     if level(w, 4) && tier2_soon(w, g, 0) {
         return 2;
@@ -254,18 +252,6 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
             ));
         }
     }
-    // 142: every uncountered threat of a tier with `threat_nodes` above 0 destroys nodes near it, so a
-    // "remove N of your nodes near it" counter would share its harm's currency.
-    let threat_nodes = b.list("threat_nodes")?;
-    for t in &b.world.content.threats {
-        let destroys = threat_nodes.get(t.tier as usize - 1).copied().unwrap_or(0) > 0;
-        if destroys && t.counters.iter().flatten().any(|i| matches!(i, crate::content::CounterItem::NodesNear { .. })) {
-            return Err(format!(
-                "threat {:?}: a nodes counter, but an uncountered tier-{} threat destroys nodes (threat_nodes)",
-                t.id, t.tier
-            ));
-        }
-    }
     Ok(Box::new(Adversary { dealt }))
 }
 
@@ -306,6 +292,17 @@ fn standing_troops_bonus(w: &World) -> i64 {
             _ => 0,
         })
         .sum()
+}
+
+/// 146: the compute the adversary board prints for each threat that executes
+/// uncountered: its rules' `ThreatCompute` lines, and its difficulty line's from
+/// `adversary.board_difficulty_at`.
+pub fn threat_compute(w: &World) -> i64 {
+    let b = &w.content.adversary_board;
+    let read = |ops: &[Op]| -> i64 { ops.iter().map(|e| if let Op::ThreatCompute { amount } = e { *amount } else { 0 }).sum() };
+    let base: i64 = b.rules.iter().map(|r| read(&r.effects)).sum();
+    let hard = if level(w, w.int("adversary.board_difficulty_at")) { read(&b.difficulty.effects) } else { 0 };
+    base + hard
 }
 
 /// The event card's standing lines (135): compute, ambassadors and troops,
@@ -632,7 +629,7 @@ fn draw_project(g: &mut GameState, cx: &mut Cx, reshuffles: &mut u32) -> Option<
             return None;
         }
         cx.set_pile(g, PROJECT_DISCARD, Vec::new());
-        shuffle(&mut ids, cx.rng(g, "adversary"));
+        shuffle(&mut ids, cx.adversary_rng(g));
         cx.set_pile(g, PROJECT_DECK, ids);
         *reshuffles += 1;
         cx.tally(g, "adversary.project_reshuffles", 1);
@@ -1158,9 +1155,9 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
         }
         remove(g, cx, h, need);
     }
-    take_for_adversary(g, cx, h);
-    // 059: corruption replaces any marker here, as on a city.
-    clear_markers_on(g, cx, h);
+    // 146 (D60): a flip is corruption: its cleanup as everywhere (the node on it or its armor, the adversary
+    // ambassadors back to the supply, player ambassadors there lost, markers off).
+    corrupt_hex(g, cx, h, CorruptSite::Station);
     cx.tally(g, "adversary.stations_flipped", 1);
     cx.note(Some(h), || {
         format!("The station at {} flips to the adversary", hex_name(&w, h))
@@ -1168,12 +1165,12 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
     true
 }
 
-/// Factory `h` becomes the adversary's (070: a threat's target): any player
-/// cube comes off, its cube goes on, and it replaces any marker.
+/// Factory `h` becomes the adversary's (070: a threat's target): it corrupts,
+/// with corruption's cleanup (146, D60: the node on it or its armor, the
+/// ambassadors; any player cube comes off, its cube goes on, markers off).
 pub fn corrupt_factory(g: &mut GameState, cx: &mut Cx, h: usize) {
     let w = cx.world;
-    take_for_adversary(g, cx, h);
-    clear_markers_on(g, cx, h);
+    corrupt_hex(g, cx, h, CorruptSite::Factory);
     cx.tally(g, "adversary.factories_seized", 1);
     cx.note(Some(h), || format!("The factory at {} goes to the adversary", hex_name(&w, h)));
 }

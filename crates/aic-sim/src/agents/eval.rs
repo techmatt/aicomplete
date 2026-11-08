@@ -105,6 +105,12 @@ pub struct Weights {
     /// 070: an unpaid threat no seat may counter yet counts this much more: the
     /// pull to put a node or an ambassador on a source.
     pub threat_stranded: f64,
+    /// 146: how far an unpaid threat's weight follows what it would do uncountered: its printed harm at the
+    /// value table over `threat_harm_ref` (0: every threat alike, as before 146; 1: by its harm), so a cheap harm
+    /// may be let through and a dear one is paid.
+    pub threat_harm: f64,
+    /// 146: the harm (credits at the value table) that weighs as one `threat`.
+    pub threat_harm_ref: f64,
     /// Each player-owned factory (chips each production step); an
     /// adversary-owned one costs as much.
     pub owned_factory: f64,
@@ -464,6 +470,8 @@ impl Default for Weights {
             shield: 3.0,
             threat_waits: 0.5,
             threat_stranded: 1.25,
+            threat_harm: 1.0,
+            threat_harm_ref: 15.0,
             owned_factory: 4.0,
             chips: 2.0,
             reach: 0.5,
@@ -643,6 +651,8 @@ pub struct Eval {
     patient: [bool; 4],
     /// Each seat whose board has a power paid in research cubes (075).
     cube_power: [bool; 4],
+    /// 146: each threat's harm uncountered, at the value table (credits), by id.
+    threat_harms: Arc<Vec<(Key, f64)>>,
     keys: TokenKeys,
     /// Each card by its index in the content (found by `Content::card_index`,
     /// by its interned id's address): its [`Eval::cost`] and its table value. A
@@ -815,6 +825,14 @@ impl Eval {
                 s < seats && ai::board(&world, s).powers.iter().any(|p| p.cost.iter().any(|(r, _)| *r == Resource::ResearchCubes))
             }),
             keys: TokenKeys::new(),
+            threat_harms: Arc::new(
+                world
+                    .content
+                    .threats
+                    .iter()
+                    .map(|t| (Key::new(&t.id), -t.effects.iter().map(|e| value::op_worth(tbl, e).now).sum::<f64>()))
+                    .collect(),
+            ),
             mix: tbl.rate("own_mix") > 0.0,
             tbl,
             facts: Arc::new(
@@ -1363,7 +1381,14 @@ impl Eval {
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
             let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, Some(scope)));
             let stranded = if open { 1.0 } else { w.threat_stranded };
-            out.push(waits * stranded * (1.0 - share.min(1.0)));
+            // 146: weighed by what it would do uncountered, against a tier-1 counter's worth.
+            let harm = if w.threat_harm > 0.0 {
+                let h = self.threat_harms.iter().find(|(k, _)| *k == t).map_or(w.threat_harm_ref, |(_, h)| *h);
+                (1.0 - w.threat_harm + w.threat_harm * h / w.threat_harm_ref.max(1.0)).max(0.2)
+            } else {
+                1.0
+            };
+            out.push(waits * stranded * harm * (1.0 - share.min(1.0)));
         }
         out
     }

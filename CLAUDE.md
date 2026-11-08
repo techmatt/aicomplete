@@ -103,7 +103,9 @@ experiments, speed, scripts, web, card art.
   slowdown you mean to keep: say why in the report and `--update` the baseline. Read an agent's
   cost per action, not per game or round, with `per_decision.py`: longer games inflate the others.
 - **Compare a lever with base on the same seeds, and confirm on fresh ones.** Pooling new seeds
-  with the seeds that picked a winner is not confirmation: report the fresh seeds alone. A lever
+  with the seeds that picked a winner is not confirmation: report the fresh seeds alone. A fresh read
+  is spent the moment you change the build because of it: confirm any later change on the next free
+  seeds. A lever
   added beside the asked one is screened on and off as a factorial: two changes in one row can't
   say which did it. A change to a core rules file after a run was frozen needs that run's seeds
   replayed on the final build before the report, compared with `bench/same_results.py`: keep
@@ -140,6 +142,9 @@ Write the report to the path conductor's preamble gives, starting with the heade
 - Soft target about 60 lines.
 - Findings, decisions and surprises only: no process narration.
 - Mention tests only for a red you couldn't fix.
+- **A rules item with new or changed cards** ticks this list in its report: give / get before the first
+  screen; `npm run cards:fit` (in `web/`; a fresh worktree needs `npm ci` first); `play_read.py`;
+  `loop_smoke.py --run`; `speed.py check`; `bench/same_results.py` on a frozen run's seeds.
 - Answer every amendment and message by number.
 - A rules item's report ends with a short new-player summary of its rule changes, naming any rule
   that resisted one (Matt, 2026-11-03).

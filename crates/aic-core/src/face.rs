@@ -576,6 +576,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PlayersLose { .. }
         | Op::ThreatAtNode { .. }
         | Op::EachDestroyNode { .. }
+        | Op::DestroyNode { .. }
         | Op::PullUnity { .. }
         | Op::LoseInsight { .. }
         | Op::AdversaryBuild
@@ -630,6 +631,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::PlaceBotnet { .. }
         | Op::SeizeFactory
         | Op::StandingTroopsBonus { .. }
+        | Op::ThreatCompute { .. }
         | Op::Theft { .. }
         | Op::TroopSteps { .. } => panic!("{op:?} is not an instant player op: Content::check rejects it"),
     }
