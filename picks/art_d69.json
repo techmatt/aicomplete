@@ -1,0 +1,53 @@
+{
+ "name": "art_d69",
+ "title": "Card scene candidates, batch 9",
+ "intro": "Pick one scene for each card, in the C and E mix. Each tile is the bare scene over two real cards, the event and the building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Nothing is selected to start. For true size, print art-originals/scenes/b9/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "power_purchase_agreement",
+   "label": "1. Power Purchase Agreement",
+   "note": "Power. Each tile is the scene over Power Purchase Agreement and Microgrid Lab Compact. 1. A power-company engineer in an amber hard hat and a research-station director in a field jacket shaking hands over a signed blank contract laid on the hood of a utility truck, a crew behind them unspooling a thick new cable from a small substation across a meadow to a domed research station; no flags, logos or emblems. 2. Two negotiators at a folding table set out in the grass beneath a row of wind turbines, one sliding a signed blank contract across to the other, a single amber cable running from the nearest turbine past the table to a domed research station on the next rise, crates of glowing sky-blue research cubes waiting at its door; no flags, logos or emblems. 3. At the gate of a domed research station, a utility clerk handing a large brass power meter and a rolled blank contract to a smiling scientist, a line of fresh wooden poles carrying new wire back over the hills to a distant power plant; no flags, logos or emblems.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "ppa_handshake_at_the_truck",
+     "image": "../art-originals/picks/art_d69/ppa_handshake_at_the_truck.jpg",
+     "label": "1. ppa_handshake_at_the_truck"
+    },
+    {
+     "key": "ppa_contract_at_the_wind_farm",
+     "image": "../art-originals/picks/art_d69/ppa_contract_at_the_wind_farm.jpg",
+     "label": "2. ppa_contract_at_the_wind_farm"
+    },
+    {
+     "key": "ppa_meter_handover",
+     "image": "../art-originals/picks/art_d69/ppa_meter_handover.jpg",
+     "label": "3. ppa_meter_handover"
+    }
+   ]
+  },
+  {
+   "id": "microgrid_lab_compact",
+   "label": "2. Microgrid Lab Compact",
+   "note": "Power. Each tile is the scene over Power Purchase Agreement and Microgrid Lab Compact. 1. A self-powered research campus in a green valley, low white laboratories set around a central yard of battery cabinets and a small control hut, two wind turbines on the slope and a little river-turbine house on the stream feeding it, an engineer checking a panel of amber lamps while scientists wheel crates of glowing sky-blue research cubes between the labs; no solar panels, no flags, logos or emblems. 2. Inside a bright research campus's own power control room, a tall window looking out over its battery yard, wind turbines and white lab buildings, an engineer pulling a large lever as a row of amber lamps lights up on a hand-drawn map of the campus grid, a scientist alongside holding a glowing sky-blue research cube; no solar panels, no flags, logos or emblems. 3. A small research lab campus on a rocky island running on its own grid, tidal turbines churning in the channel, a stone battery house and a few wind turbines on the cliffs, cables climbing to a domed research station on the headland where scientists unload crates of glowing sky-blue research cubes from a boat; no solar panels, no flags, logos or emblems.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "microgrid_lab_battery_yard",
+     "image": "../art-originals/picks/art_d69/microgrid_lab_battery_yard.jpg",
+     "label": "1. microgrid_lab_battery_yard"
+    },
+    {
+     "key": "microgrid_lab_control_room",
+     "image": "../art-originals/picks/art_d69/microgrid_lab_control_room.jpg",
+     "label": "2. microgrid_lab_control_room"
+    },
+    {
+     "key": "microgrid_lab_island",
+     "image": "../art-originals/picks/art_d69/microgrid_lab_island.jpg",
+     "label": "3. microgrid_lab_island"
+    }
+   ]
+  }
+ ]
+}

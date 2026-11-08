@@ -13,7 +13,8 @@
     "render": "node render.mjs",
     "picker": "node picker.mjs",
     "scene-gen": "node scene-gen.mjs",
-    "scene-picker": "node scene-picker.mjs"
+    "scene-picker": "node scene-picker.mjs",
+    "art:alts": "node scene-gen.mjs && node scene-picker.mjs --one"
   },
   "devDependencies": {
     "playwright-core": "^1.50.0",

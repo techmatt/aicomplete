@@ -6,7 +6,8 @@
 // cards/, the same cards at true size in cards.pdf (9 to an A4 page), and one preview per
 // draw, scene over cards, in art-originals/picks/<picker>/. Reads and writes the originals
 // folder (lib.mjs). Stops, before any work, if that folder isn't reachable or a draw is
-// missing.
+// missing. With --one (`npm run art:alts`), a pick-one row per card the batch was written for
+// (a scene's `card`, else its `for`), one option per scene, keyed by scene id, none selected.
 import { mkdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import os from 'node:os';
@@ -22,6 +23,7 @@ os.setPriority(os.constants.priority.PRIORITY_BELOW_NORMAL);
 sharp.concurrency(1);
 
 const s = await readJson(path.join(TOOL, 'scenes.json'));
+const ONE = process.argv.includes('--one');
 const NAME = s.picker;
 const shared = pickerOriginals('scene-picker');
 const dir = path.join(shared, 'scenes', s.round);
@@ -55,6 +57,7 @@ const face = (cardId, id) => {
 // The name of the card a scene was written for, which may be no player card.
 const others = Object.fromEntries((await Promise.all(['adversary', 'alignment', 'threats'].map((f) => readJson(path.join(REPO, 'content', `${f}.json`))))).flat().map((c) => [c.id, c]));
 const written = (id) => (cards[id] ?? others[id]).name;
+const target = (scene) => scene.card ?? scene.for;
 
 const SHEET_W = l.print_px[0] * 2 + 20;
 const rows = [];
@@ -83,10 +86,22 @@ for (const [id, pair] of Object.entries(s.batch)) {
     .toFile(path.join(images, `${id}.jpg`));
   const tag = tagOf(id);
   const scene = s.scenes[tag][id];
+  if (ONE) {
+    const card = target(scene);
+    let row = rows.find((r) => r.id === card);
+    if (!row) {
+      row = { id: card, label: `${rows.length + 1}. ${written(card)}`, note: '', kind: 'one', options: [] };
+      rows.push(row);
+    }
+    const n = row.options.length + 1;
+    row.options.push({ key: id, image: `../art-originals/picks/${NAME}/${id}.jpg`, label: `${n}. ${id}` });
+    row.note += `${row.note ? ' ' : `${s.tags[tag].label}. Each tile is the scene over ${pair.map((c) => cards[c].name).join(' and ')}. `}${n}. ${scene.subject}`;
+    continue;
+  }
   rows.push({
     id,
     label: `${rows.length + 1}. ${s.tags[tag].label}: ${scene.subject}`,
-    note: `Written for ${written(scene.card)}. Shown on ${pair.map((c) => cards[c].name).join(' and ')}. Tile on: keep. Tile off: reject.`,
+    note: `Written for ${written(target(scene))}. Shown on ${pair.map((c) => cards[c].name).join(' and ')}. Tile on: keep. Tile off: reject.`,
     kind: 'many',
     default: ['keep'],
     options: [{ key: 'keep', image: `../art-originals/picks/${NAME}/${id}.jpg`, label: 'keep' }],
@@ -103,8 +118,10 @@ await writeFile(
   `${JSON.stringify(
     {
       name: NAME,
-      title: `Card scenes, batch ${s.round.slice(1)}`,
-      intro: `Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window${frameless ? ', and adversary, Discord and Unity cards have no frame yet, so their scenes sit on the nearest fit by name' : ''}. For true size, print art-originals/scenes/${s.round}/cards.pdf at 100%. Use the notes for what to change.`,
+      title: ONE ? `Card scene candidates, batch ${s.round.slice(1)}` : `Card scenes, batch ${s.round.slice(1)}`,
+      intro: ONE
+        ? `Pick one scene for each card, in the C and E mix. Each tile is the bare scene over two real cards, the event and the building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Nothing is selected to start. For true size, print art-originals/scenes/${s.round}/cards.pdf at 100%. Use the notes for what to change.`
+        : `Keep or reject each scene, in the C and E mix. Each tile is the bare scene over two real cards, a program or event and a building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Scenes are a pool: the card a scene was written for is a suggestion. The second card only shows the other window${frameless ? ', and adversary, Discord and Unity cards have no frame yet, so their scenes sit on the nearest fit by name' : ''}. For true size, print art-originals/scenes/${s.round}/cards.pdf at 100%. Use the notes for what to change.`,
       rows,
     },
     null,
