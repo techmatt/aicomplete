@@ -35,8 +35,8 @@ and tier-1 cards have a median of 10 credits with tier 2 15 (r59).
   Mission 41): within "about 50", but the income is not "produce
   1".
 - **Credit sinks priced off that income:** threat counters 15 / 23 / 33 credits by tier (the last option on every menu); a research cube is worth about 3
-  credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); chips sell
-  for `chips_credits` 1; Market Crash takes 9 of a round's income and Propaganda 4–8.
+  credits (payouts are per card); a player ambassador costs `ambassador_credits` (it pays for removals, and is priced dear because it stays); a card
+  sells for `sell_credits` 1 and chips don't sell; Market Crash takes 9 of a round's income and Propaganda 4–8.
 - **Adversary compute:** project costs are 4–18 *a player*, so 12–54 at 3 players and
   16–72 at 4: the dearest go past 50. A botnet makes 1.
 - Within the principle: energy (cities make 1, a node costs 1), chips (a factory
@@ -162,7 +162,7 @@ its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/scre
 | mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag |
 | ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder | `events_only=1` | keeps and plays only events |
-| ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
+| ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity) |
 | Science rush | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
 | always-max-node, never-second-node | `always_max_node=1`, `never_second_node=1` | both node powers whenever affordable; never the board's second |
 | never-Remove, Science board | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |

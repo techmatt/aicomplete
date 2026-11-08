@@ -10,14 +10,36 @@ fn builder_with_tags(g: &mut GameState) {
     set_pile(g, &cards::played(0), &["payroll_automation", "supply_chain_audit", "vendor_financing"]);
 }
 
+/// 149: a printed tag counts for requirements only; a revealed one like any
+/// tag on your cards (requirements and the counts that pay per tag).
 #[test]
 fn printed_and_revealed_tags_meet_a_requirement() {
     let (rules, mut g) = lab_actions();
     let w = rules.world();
     let extra = |g: &GameState| cards::required_tags(&w, g, 0)[Tag::Industry as usize] - cards::tag_counts(&w, g, 0)[Tag::Industry as usize];
     assert_eq!(extra(&g), 1, "printed on the Builder");
-    g.vars.insert(board::track2_key(0).into(), 2);
-    assert_eq!(extra(&g), 2, "revealed on its card-play track");
+    let cyber = crate::modules::ai::board(&w, 0).play_track.iter().position(|u| u.tags.contains(&Tag::Cyber)).unwrap() + 1;
+    let count = |g: &GameState| cards::tag_counts(&w, g, 0)[Tag::Cyber as usize];
+    g.vars.insert(board::track2_key(0).into(), cyber as i64 - 1);
+    let before = count(&g);
+    g.vars.insert(board::track2_key(0).into(), cyber as i64);
+    assert_eq!(count(&g), before + 1, "revealed on its card-play track, counted as a card's");
+    assert_eq!(extra(&g), 1, "still only the printed one beyond the counts");
+}
+
+/// 149: Movement is the board's printed moves plus its uncovered Movement
+/// spaces; each free move uses one this round, and cleanup gives them back.
+#[test]
+fn movement_is_printed_plus_uncovered_spaces() {
+    let (rules, mut g) = lab_actions();
+    let w = rules.world();
+    let b = crate::modules::ai::board(&w, 0);
+    assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[0].moves);
+    let k = b.economy_track.iter().position(|u| u.moves > 0).expect("a Movement space");
+    g.vars.insert(board::track_key(0).into(), k as i64 + 1);
+    assert_eq!(crate::modules::ai::movement(&w, &g, 0), b.moves + b.economy_track[..=k].iter().map(|u| u.moves).sum::<i64>());
+    g.vars.insert(board::moved_key(0).into(), 1);
+    assert_eq!(board::moves_left(&w, &g, 0), crate::modules::ai::movement(&w, &g, 0) - 1);
 }
 
 #[test]

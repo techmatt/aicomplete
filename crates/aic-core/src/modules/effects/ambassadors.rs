@@ -8,6 +8,7 @@ fn walk(g: &mut GameState, cx: &mut Cx, seat: usize, from: usize, to: usize) {
     cx.add_tokens(g, from, ambassador(seat), -1);
     board::place_ambassador(g, cx, seat, to);
     cx.tally(g, "effects.ambassador_moves", 1);
+    cx.tally(g, &crate::key::KeyBuf::new("board.amb_moves.").num(seat), 1);
 }
 
 pub(super) fn move_ambassadors(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {

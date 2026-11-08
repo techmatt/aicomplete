@@ -60,20 +60,25 @@ pub fn tags(w: &World, g: &GameState, seat: usize, tag: Tag) -> i64 {
     tag_counts(w, g, seat)[tag as usize]
 }
 
-/// Tags that count for what a card requires: those of seat `s`'s cards, its
-/// board's printed tags and those its tracks have revealed (068).
+/// Tags that count for what a card requires: [`tag_counts`] and its board's
+/// printed tags (068).
 pub fn required_tags(w: &World, g: &GameState, seat: usize) -> [i64; TAGS.len()] {
     let mut out = tag_counts(w, g, seat);
-    for t in ai::board_tags(w, g, seat) {
+    for t in ai::printed_tags(w, seat) {
         out[*t as usize] += 1;
     }
     out
 }
 
 /// Seat `s`'s tags of every kind, indexed by `Tag as usize`: one pass over its
-/// cards in play, for a caller that wants more than one count.
+/// cards in play, for a caller that wants more than one count, and the tags
+/// its tracks have revealed (149: they count like any tag; a sacrifice
+/// discards cards, so never them).
 pub fn tag_counts(w: &World, g: &GameState, seat: usize) -> [i64; TAGS.len()] {
     let mut out = [0; TAGS.len()];
+    for t in ai::revealed_tags(w, g, seat) {
+        out[*t as usize] += 1;
+    }
     let mut count = |ids: &[Key]| {
         for t in ids.iter().flat_map(|id| &def(w, id).tags) {
             out[*t as usize] += 1;

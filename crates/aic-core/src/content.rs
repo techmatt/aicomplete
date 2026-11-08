@@ -639,6 +639,10 @@ pub struct AiBoard {
     /// not for discounts or sacrifices.
     #[serde(default)]
     pub tags: Vec<Tag>,
+    /// 149: Movement printed on the board: free ambassador moves each round
+    /// (unused ones are lost), before the track's Movement spaces add to it.
+    #[serde(default)]
+    pub moves: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -664,10 +668,13 @@ pub struct Uncover {
     /// Energy every placement pays for this step (041; a card can say free).
     #[serde(default)]
     pub cost: i64,
-    /// Tags this space reveals (068): as a board's printed tags, they count
-    /// for what a card requires.
+    /// Tags this space reveals (068): 149, they count like the tags on your
+    /// cards (requirements, discounts, per-tag income), never for a sacrifice.
     #[serde(default)]
     pub tags: Vec<Tag>,
+    /// 149: "Movement +N": N more free ambassador moves each round once uncovered.
+    #[serde(default)]
+    pub moves: i64,
     /// The track's end (068): a standing rule once uncovered.
     #[serde(default)]
     pub capstone: Option<Innate>,

@@ -52,9 +52,7 @@
      ]
     ],
     "cost": 1,
-    "tags": [
-     "power"
-    ]
+    "moves": 1
    },
    {
     "income": [
@@ -72,7 +70,10 @@
       3
      ]
     ],
-    "cost": 3
+    "cost": 3,
+    "tags": [
+     "power"
+    ]
    },
    {
     "income": [],
@@ -250,10 +251,7 @@
    },
    {
     "income": [],
-    "keep2": true,
-    "tags": [
-     "industry"
-    ]
+    "keep2": true
    },
    {
     "income": [
@@ -271,10 +269,7 @@
       2
      ]
     ],
-    "cost": 2,
-    "tags": [
-     "science"
-    ]
+    "cost": 2
    },
    {
     "income": [
@@ -319,7 +314,8 @@
   ],
   "tags": [
    "industry"
-  ]
+  ],
+  "moves": 1
  },
  {
   "id": "protector",
@@ -395,9 +391,7 @@
      ]
     ],
     "cost": 1,
-    "tags": [
-     "diplomacy"
-    ]
+    "moves": 1
    },
    {
     "income": [
@@ -415,7 +409,10 @@
       2
      ]
     ],
-    "cost": 3
+    "cost": 3,
+    "tags": [
+     "cyber"
+    ]
    },
    {
     "income": [],
@@ -570,10 +567,7 @@
    },
    {
     "income": [],
-    "keep2": true,
-    "tags": [
-     "security"
-    ]
+    "keep2": true
    },
    {
     "income": [
@@ -591,10 +585,7 @@
       2
      ]
     ],
-    "cost": 2,
-    "tags": [
-     "cyber"
-    ]
+    "cost": 2
    },
    {
     "income": [
@@ -638,7 +629,8 @@
   ],
   "tags": [
    "security"
-  ]
+  ],
+  "moves": 1
  },
  {
   "id": "researcher",
@@ -697,9 +689,7 @@
      ]
     ],
     "cost": 1,
-    "tags": [
-     "power"
-    ]
+    "moves": 1
    },
    {
     "income": [
@@ -717,7 +707,10 @@
       3
      ]
     ],
-    "cost": 3
+    "cost": 3,
+    "tags": [
+     "power"
+    ]
    },
    {
     "income": [],
@@ -886,15 +879,13 @@
       "insight",
       2
      ]
-    ]
+    ],
+    "moves": 1
    },
    {
     "income": [],
     "keep2": true,
-    "cost": 1,
-    "tags": [
-     "science"
-    ]
+    "cost": 1
    },
    {
     "income": [
@@ -903,10 +894,7 @@
       1
      ]
     ],
-    "cost": 2,
-    "tags": [
-     "cyber"
-    ]
+    "cost": 2
    },
    {
     "income": [
@@ -951,6 +939,7 @@
   ],
   "tags": [
    "science"
-  ]
+  ],
+  "moves": 2
  }
 ]

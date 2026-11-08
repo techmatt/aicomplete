@@ -29,14 +29,12 @@
         "war_reach": 0,
         "station_chips": 2,
         "factory_chips": 2,
-        "chips_credits": 1,
         "remove_ambassadors": 1,
         "remove_count": 3,
         "clear_cost": 2,
         "clear_unity": 2,
         "clear_credits": 0,
         "envoy_ambassadors": 1,
-        "move_credits": 1,
         "ambassador_credits": 20,
         "sell_credits": 1,
         "corp_energy": [
@@ -91,13 +89,13 @@
         "stage_swap_at": 4,
         "stage2_removed": 1,
         "extra_corrupted": 0,
-        "build_bonus": 2,
+        "build_bonus": 3,
         "tier2_early": 1,
         "discord_removed": 1,
         "wall_troops": 1,
         "station_flip_at": 2,
         "botnet_compute": 1,
-        "board_difficulty_at": 3
+        "board_difficulty_at": 2
       }
     },
     {

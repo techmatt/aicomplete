@@ -299,6 +299,11 @@ pub struct Weights {
     /// 082, a probe: above 0, income (tracks, buildings, rewards) in table mode is
     /// valued at the table's rates times this, in place of the held resources'.
     pub table_income: f64,
+    /// 149: a seat's Movement (free ambassador moves a round) over the rounds
+    /// left, at `rates.movement` credits each times this (horizon mode). Only the
+    /// Movement a round counts, never what is left this round: unused it is lost,
+    /// so holding it is worth nothing.
+    pub movement: f64,
     /// 082: the share of its play cost a card still to be drafted or kept counts
     /// (table mode). The keep plan judges what a seat can pay; charged in full, a
     /// tier-2 card (priced at about its value less its keep) reads as worth no
@@ -596,6 +601,7 @@ impl Default for Weights {
             table_antimatter: 0.0,
             table_energy: 0.0,
             table_income: 0.0,
+            movement: 0.0,
             pick_cost: 0.0,
             needs_floor: 0.25,
             power_progress: 0.5,
@@ -664,6 +670,8 @@ impl Weights {
             // 128: per-tag ops at the count they're played at; spare energy cheap.
             tag_hand: 0.5,
             energy_cap: 4.0,
+            // 149: Movement spaces at `rates.movement` a round (the free move).
+            movement: 1.0,
             ..Weights::default()
         }
     }
@@ -724,6 +732,8 @@ pub struct Eval {
     mix: bool,
     /// 131: the value table this agent reads (`t.<key>=v` in its spec; else the table).
     pub tbl: &'static value::Table,
+    /// 149: `rates.movement`, a free move a round in credits, read once.
+    movement_rate: f64,
     /// 082: each strategy's multiplier for each card and phase.
     mults: Arc<Mults>,
     /// 082: each seat's strategy, once chosen (none: every multiplier 1).
@@ -912,6 +922,7 @@ impl Eval {
                     .collect(),
             ),
             mix: tbl.rate("own_mix") > 0.0,
+            movement_rate: tbl.rate("movement"),
             tbl,
             facts: Arc::new(
                 world
@@ -1897,7 +1908,7 @@ impl Eval {
                 let terms = || {
                     let tags = cards::tag_counts(&world, g, s);
                     let mut required = tags;
-                    for t in ai::board_tags(&world, g, s) {
+                    for t in ai::printed_tags(&world, s) {
                         required[*t as usize] += 1;
                     }
                     let income = economy::income_with(&world, g, s, &tags);
@@ -1983,6 +1994,11 @@ impl Eval {
                     unit[i]
                 };
                 v += w.horizon * left * u * n as f64;
+            }
+            if w.movement > 0.0 {
+                // 149: the free moves a round, at the credit's weight.
+                let mv = ai::movement(&world, g, s) as f64;
+                v += w.horizon * left * w.movement * unit[0] * self.movement_rate * mv;
             }
             v += w.horizon * w.production * left * self.energy_income_unit() * *made as f64;
             for id in g.pile(&cards::built(s)) {
@@ -2151,7 +2167,7 @@ fn next_eval_id() -> u64 {
 /// Everything seat `s`'s terms are read from besides the rules (the [`Eval`]'s
 /// `id` stands for those): its tracks, the cards of its piles in play by their
 /// interned names (whose addresses never move), its production vars and the
-/// team's income bonuses. Equal parts, equal terms: `tag_counts`, `board_tags`,
+/// team's income bonuses. Equal parts, equal terms: `tag_counts`, `printed_tags`,
 /// `income_with` and `prices_with` read nothing else, and a debug build checks
 /// each hit against a fresh reading.
 fn tableau_parts(id: u64, g: &GameState, s: usize, out: &mut Vec<u64>) {

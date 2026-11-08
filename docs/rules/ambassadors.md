@@ -50,12 +50,13 @@ the cheapest adversary project each production; it stays until removed.
   other side, both are removed (the adversary's to its supply), with no Unity. **Two
   arrivals don't cancel:** the ambassador the Remove action moves evicts what stands there
   and stays. Any other move onto adversary ambassadors cancels one, consuming the mover:
-  moved ambassadors don't evict, or one ambassador at 1 credit a hop would clear the board.
+  moved ambassadors don't evict, or one ambassador a hop would clear the board.
   An adversary ambassador arriving on a standing player ambassador cancels it, so a
   position is held only until the next arrival.
 - **Consumed or standing:** claiming, liberating, Envoy, armor and the troop rule use a player ambassador up;
   evicting, blocking and moving leave it standing. A consumed ambassador is gone: new ones come from cards, Followers
-  and the standard project. Player ambassadors move only through cards and the standard actions (Move, Remove).
+  and the standard project. Player ambassadors move only through cards, Remove and Move; Move is free and paid from
+  the board's Movement, so a seat makes as many free moves a round as its Movement ([ai-boards.md](ai-boards.md)).
 
 **Evicting is capped by supply:** Remove takes the ambassador from your supply, never from
 the board, so each eviction needs a new ambassador; that, and pieces filling up, cap the

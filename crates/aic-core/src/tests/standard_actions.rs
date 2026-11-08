@@ -33,9 +33,9 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
         set_res(&mut g, s, Resource::Ambassadors, 0);
         assert!(standard_offered(&rules, &g, s as u8).is_empty(), "seat {s}");
     }
-    // Just the credits to move an ambassador, and the ambassador.
+    // 149: an ambassador and the board's Movement, nothing else, to move one.
     set_res(&mut g, 0, Resource::Ambassadors, 1);
-    set_res(&mut g, 0, Resource::Credits, rules.world().int("board.move_credits"));
+    assert!(board::moves_left(&rules.world(), &g, 0) > 0);
     assert_eq!(standard_offered(&rules, &g, 0), ["move".to_string()].into());
     // No ambassadors: no moving.
     set_res(&mut g, 0, Resource::Ambassadors, 0);
@@ -44,11 +44,12 @@ fn standard_actions_are_offered_only_when_affordable_and_targeted() {
 
     rich(&mut g);
     let o0 = standard_offered(&rules, &g, 0);
-    for a in ["station", "move", "ambassador", "chips"] {
+    for a in ["station", "move", "ambassador"] {
         assert!(o0.contains(a), "{a}: {o0:?}");
     }
+    // 149: chips can't be sold.
     assert!(
-        !o0.contains("remove") && !o0.contains("harden"),
+        !o0.contains("remove") && !o0.contains("harden") && !o0.contains("chips"),
         "{o0:?}"
     );
     assert!(!o0.contains("factory"), "cities build factories now");
@@ -96,19 +97,26 @@ fn standard_actions_cost_what_the_config_says() {
     );
     assert_eq!(total(&g, cube(0)), 2, "the bound city's and the station's");
 
-    let mut g = g0.clone();
-    act(&rules, &mut g, std_act(0, "chips"));
-    // 021: sell 1 chip for 1 credit.
-    assert_eq!(spent(&g, 0), (0, -1, 1));
+    // 149: no chip sale.
+    assert!(rules.apply_mut(&mut g0.clone(), &std_act(0, "chips"), None).is_err());
 
     let mut g = g0.clone();
     act(&rules, &mut g, std_act(0, "ambassador"));
     let price = w.int("board.ambassador_credits");
     assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, price, 0), 2));
 
+    // 149: a move is free and uses 1 of the round's Movement; with none left, none is offered.
     let mut g = g0.clone();
+    let movement = board::moves_left(&w, &g, 0);
     act(&rules, &mut g, std_act(0, "move"));
-    assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, w.int("board.move_credits"), 0), 0));
+    assert_eq!((spent(&g, 0), g.resource(0, Resource::Ambassadors)), ((0, 0, 0), 0));
+    assert_eq!(board::moves_left(&w, &g, 0), movement - 1);
+    while board::moves_left(&w, &g, 0) > 0 {
+        set_res(&mut g, 0, Resource::Ambassadors, 1);
+        act(&rules, &mut g, std_act(0, "move"));
+    }
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    assert!(!standard_offered(&rules, &g, 0).contains("move"));
 
     let mut g = g0.clone();
     let d = node_of(&g, 0)[0];
@@ -125,7 +133,7 @@ fn standard_actions_cost_what_the_config_says() {
 
 /// 127 (Matt, 2026-11-05: no holding or production limit): a big holding
 /// keeps every gain, a gain is always something to act on, the ambassador
-/// project and both sales stay offered, and card raises of credit
+/// project and the card sale stay offered, and card raises of credit
 /// production stack without a cap.
 #[test]
 fn no_resource_has_a_holding_limit() {
@@ -147,7 +155,8 @@ fn no_resource_has_a_holding_limit() {
     let sells = |g: &GameState| rules.legal_actions(g).iter().any(|a| matches!(a, Action::Sell { seat: 0, .. }));
     set_pile(&mut g, &crate::modules::cards::hand(0), &["open_assembly"]);
     let offered = standard_offered(&rules, &g, 0);
-    assert!(offered.contains("ambassador") && offered.contains("chips") && sells(&g));
+    // 149: the card sale stays; chips can't be sold.
+    assert!(offered.contains("ambassador") && !offered.contains("chips") && sells(&g));
     let key = economy::production_key(0, Resource::Credits);
     let before = g.var(key.as_str());
     run_ops(&rules, &mut g, &[Op::Production { resource: Resource::Credits, amount: 200 }]);

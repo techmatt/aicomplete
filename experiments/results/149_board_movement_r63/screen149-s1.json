@@ -1,0 +1,115 @@
+{
+  "name": "screen149-s1",
+  "note": "149 screen 1: r62 tags back, Movement uncapped, the Movement term off (dev seeds).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_tags62",
+      "set": [
+        "ais.builder.economy_track.3.tags=[\"power\"]",
+        "ais.builder.play_track.1.tags=[\"industry\"]",
+        "ais.builder.play_track.3.tags=[\"science\"]",
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.protector.economy_track.3.tags=[\"diplomacy\"]",
+        "ais.protector.play_track.1.tags=[\"security\"]",
+        "ais.protector.play_track.3.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.researcher.economy_track.3.tags=[\"power\"]",
+        "ais.researcher.play_track.2.tags=[\"science\"]",
+        "ais.researcher.play_track.3.tags=[\"cyber\"]",
+        "ais.researcher.economy_track.5.tags=[]"
+      ]
+    },
+    {
+      "name": "br_tags62",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.economy_track.3.tags=[\"power\"]",
+        "ais.builder.play_track.1.tags=[\"industry\"]",
+        "ais.builder.play_track.3.tags=[\"science\"]",
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.protector.economy_track.3.tags=[\"diplomacy\"]",
+        "ais.protector.play_track.1.tags=[\"security\"]",
+        "ais.protector.play_track.3.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.researcher.economy_track.3.tags=[\"power\"]",
+        "ais.researcher.play_track.2.tags=[\"science\"]",
+        "ais.researcher.play_track.3.tags=[\"cyber\"]",
+        "ais.researcher.economy_track.5.tags=[]"
+      ]
+    },
+    {
+      "name": "pr_tags62",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.economy_track.3.tags=[\"power\"]",
+        "ais.builder.play_track.1.tags=[\"industry\"]",
+        "ais.builder.play_track.3.tags=[\"science\"]",
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.protector.economy_track.3.tags=[\"diplomacy\"]",
+        "ais.protector.play_track.1.tags=[\"security\"]",
+        "ais.protector.play_track.3.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.researcher.economy_track.3.tags=[\"power\"]",
+        "ais.researcher.play_track.2.tags=[\"science\"]",
+        "ais.researcher.play_track.3.tags=[\"cyber\"]",
+        "ais.researcher.economy_track.5.tags=[]"
+      ]
+    },
+    {
+      "name": "bp_mv9",
+      "set": [
+        "ais.builder.moves=9",
+        "ais.protector.moves=9",
+        "ais.researcher.moves=9"
+      ]
+    },
+    {
+      "name": "br_mv9",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.moves=9",
+        "ais.protector.moves=9",
+        "ais.researcher.moves=9"
+      ]
+    },
+    {
+      "name": "pr_mv9",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.moves=9",
+        "ais.protector.moves=9",
+        "ais.researcher.moves=9"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.movement=0"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

@@ -487,8 +487,8 @@ impl Policy {
             Action::Pay { .. } => f.no_counters || f.ignore_threats || f.free_only,
             Action::Standard { act, .. } => {
                 (f.never_clear && act == "clear")
-                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy" | "chips"))
-                    || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move" | "chips"))
+                    || (f.turtle && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "harden_chips" | "harden_buy"))
+                    || (f.free_only && !matches!(act.as_str(), "remove" | "clear" | "ambassador" | "move"))
             }
             Action::Play { card, seat } => {
                 let d = cards::def(world, card);

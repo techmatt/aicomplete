@@ -1,0 +1,74 @@
+{
+  "name": "screen149-s5",
+  "note": "149 screen 5: d3-only dials (build_bonus 2 -> 3, stage2_removed 1 -> 2) on the dialed baseline, d3, dev seeds 36800-36863.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_bb3",
+      "set": [
+        "adversary.build_bonus=3"
+      ]
+    },
+    {
+      "name": "br_bb3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.build_bonus=3"
+      ]
+    },
+    {
+      "name": "pr_bb3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.build_bonus=3"
+      ]
+    },
+    {
+      "name": "bp_s2r2",
+      "set": [
+        "adversary.stage2_removed=2"
+      ]
+    },
+    {
+      "name": "br_s2r2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.stage2_removed=2"
+      ]
+    },
+    {
+      "name": "pr_s2r2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.stage2_removed=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

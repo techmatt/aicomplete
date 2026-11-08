@@ -1,0 +1,123 @@
+{
+  "name": "screen149-s2",
+  "note": "149 screen 2: the revealed tags' kinds (the boards' own) and space (5, cost 2), dev seeds 36800-36863.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_kinds",
+      "set": [
+        "ais.builder.economy_track.5.tags=[\"industry\"]",
+        "ais.builder.play_track.5.tags=[\"science\"]",
+        "ais.protector.economy_track.5.tags=[\"security\"]",
+        "ais.protector.play_track.5.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[\"science\"]",
+        "ais.researcher.play_track.5.tags=[\"industry\"]"
+      ]
+    },
+    {
+      "name": "br_kinds",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.economy_track.5.tags=[\"industry\"]",
+        "ais.builder.play_track.5.tags=[\"science\"]",
+        "ais.protector.economy_track.5.tags=[\"security\"]",
+        "ais.protector.play_track.5.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[\"science\"]",
+        "ais.researcher.play_track.5.tags=[\"industry\"]"
+      ]
+    },
+    {
+      "name": "pr_kinds",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.economy_track.5.tags=[\"industry\"]",
+        "ais.builder.play_track.5.tags=[\"science\"]",
+        "ais.protector.economy_track.5.tags=[\"security\"]",
+        "ais.protector.play_track.5.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[\"science\"]",
+        "ais.researcher.play_track.5.tags=[\"industry\"]"
+      ]
+    },
+    {
+      "name": "bp_space5",
+      "set": [
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.builder.play_track.5.tags=[]",
+        "ais.builder.economy_track.4.tags=[\"power\"]",
+        "ais.builder.play_track.4.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.protector.play_track.5.tags=[]",
+        "ais.protector.economy_track.4.tags=[\"cyber\"]",
+        "ais.protector.play_track.4.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[]",
+        "ais.researcher.play_track.5.tags=[]",
+        "ais.researcher.economy_track.4.tags=[\"power\"]",
+        "ais.researcher.play_track.4.tags=[\"industry\"]"
+      ]
+    },
+    {
+      "name": "br_space5",
+      "set": [
+        "ai.boards=0,2",
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.builder.play_track.5.tags=[]",
+        "ais.builder.economy_track.4.tags=[\"power\"]",
+        "ais.builder.play_track.4.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.protector.play_track.5.tags=[]",
+        "ais.protector.economy_track.4.tags=[\"cyber\"]",
+        "ais.protector.play_track.4.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[]",
+        "ais.researcher.play_track.5.tags=[]",
+        "ais.researcher.economy_track.4.tags=[\"power\"]",
+        "ais.researcher.play_track.4.tags=[\"industry\"]"
+      ]
+    },
+    {
+      "name": "pr_space5",
+      "set": [
+        "ai.boards=1,2",
+        "ais.builder.economy_track.5.tags=[]",
+        "ais.builder.play_track.5.tags=[]",
+        "ais.builder.economy_track.4.tags=[\"power\"]",
+        "ais.builder.play_track.4.tags=[\"cyber\"]",
+        "ais.protector.economy_track.5.tags=[]",
+        "ais.protector.play_track.5.tags=[]",
+        "ais.protector.economy_track.4.tags=[\"cyber\"]",
+        "ais.protector.play_track.4.tags=[\"diplomacy\"]",
+        "ais.researcher.economy_track.5.tags=[]",
+        "ais.researcher.play_track.5.tags=[]",
+        "ais.researcher.economy_track.4.tags=[\"power\"]",
+        "ais.researcher.play_track.4.tags=[\"industry\"]"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

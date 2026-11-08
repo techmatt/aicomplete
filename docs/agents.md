@@ -21,6 +21,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
     in `eval.rs`): a one-off harm may be let through early and is paid late;
   - **corruption risk** (147, D67, `w.corrupt_exposure`, `w.blight`): a node on a site filling toward its
     Corrupt number is that share lost to its owner; land corruption costs its Discord drip;
+  - **Movement** (149, `w.movement`, `rates.movement`): a seat's free moves a round over the rounds left,
+    never what is left this round (lost unused); a free Move is searched like any free action;
   - botnets −25 (D9): agents make none when an equal free choice exists;
   - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
     Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).

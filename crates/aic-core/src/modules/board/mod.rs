@@ -67,14 +67,12 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("war_reach", 0, 1, "war that destroys a factory destroys nodes within this many hexes of it"),
             ParamSpec::int("station_chips", 0, 20, "standard action: chips to build a research station"),
             ParamSpec::int("factory_chips", 0, 5, "chips a player-owned factory makes its owner each round"),
-            ParamSpec::int("chips_credits", 0, 50, "standard action: credits for selling 1 chip"),
             ParamSpec::int("remove_ambassadors", 1, 5, "standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there"),
             ParamSpec::int("remove_count", 1, 3, "standard action: adversary ambassadors one removal takes off its hex, at most"),
             ParamSpec::int("clear_cost", 0, 20, "standard action: credits to clear a corruption marker within reach"),
             ParamSpec::int("clear_unity", 0, 5, "Sway toward Unity for clearing a corruption marker"),
             ParamSpec::int("clear_credits", 0, 5, "credits back for clearing a corruption marker"),
             ParamSpec::int("envoy_ambassadors", 0, 5, "standard action Envoy: your ambassadors from the supply, used up, to move 1 Discord off the Discord track (0: no such action)"),
-            ParamSpec::int("move_credits", 0, 20, "standard action: credits to move a player ambassador"),
             ParamSpec::int("ambassador_credits", 1, 50, "standard action: credits to gain a player ambassador (at least 1: a free untargeted action has no limit)"),
             ParamSpec::int("sell_credits", 0, 20, "standard action: credits for selling a card from hand"),
             ParamSpec::int("harden_credits", 1, 50, "standard project: credits for a hardening token"),
@@ -83,7 +81,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("cube_insight", 0, 5, "standard action, no limit a round: insight for 1 research cube (0: no such action)"),
         ],
         phases: &[
-            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move, ambassador, claim, liberate, harden, chips, sell, drain; completed megaprojects' converters"),
+            PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move (from the round's Movement), ambassador, claim, liberate, harden, sell, drain; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "production: factories make chips or adversary troops, extra corp troops, cities grow factories"),
             PhaseSpec::auto("war", "at the end of the round, the corp troops on either side of each front fight"),
             PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
@@ -499,7 +497,14 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             cx.set_key(g, &k, 0);
         }
     }
-    for prefix in ["board.new_factory.", "board.destroyed_at.", "board.landed_at.", "board.landed_n."] {
+    // 149: Movement unused this round is lost (tallied, for the movement read).
+    for s in 0..g.seats.len() {
+        let lost = moves_left(&cx.world, g, s);
+        if lost > 0 {
+            cx.tally(g, &KeyBuf::new("board.moves_lost.").num(s), lost);
+        }
+    }
+    for prefix in ["board.new_factory.", "board.destroyed_at.", "board.landed_at.", "board.landed_n.", MOVED] {
         for (k, _) in keys_under(g, prefix) {
             cx.set_key(g, &k, 0);
         }

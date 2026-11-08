@@ -41,7 +41,7 @@ pub const HOUSE_TERMS: [(&str, &str); 16] = [
     ("Remove N", "as many as there are, up to N"),
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
     ("Draw", "from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first"),
-    ("On your cards", "on tags: on your cards in play, covered buildings included. Tokens count only on the card that holds them"),
+    ("On your cards", "on tags: on your cards in play, covered buildings included, and the tags your board's tracks have revealed. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
 ];
@@ -425,6 +425,12 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
                 per_board(r, "ai.start_credits", i),
                 per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
+                // 149: printed Movement, and the most its spaces raise it to.
+                format!(
+                    "{} (up to {})",
+                    b.moves,
+                    b.moves + b.economy_track.iter().chain(&b.play_track).map(|u| u.moves).sum::<i64>()
+                ),
                 b.economy_track.len().to_string(),
                 b.play_track.len().to_string(),
                 (b.economy_track.len() + b.play_track.len()).to_string(),
@@ -437,6 +443,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         "Starting credits",
         "Slots",
         "Printed tags",
+        "Movement",
         "Economy track",
         "Card-play track",
         "Tokens in all",
@@ -461,6 +468,9 @@ pub(super) fn space(u: &Uncover) -> String {
         parts.push("**keep upgrade**".to_string());
     }
     parts.extend(u.tags.iter().map(|t| format!("{} tag", title(t.name()))));
+    if u.moves > 0 {
+        parts.push(format!("**Movement +{}**", u.moves));
+    }
     if aic_core::modules::ai::builds_station(u) {
         parts.push("builds a free research station in reach".to_string());
     }
@@ -521,8 +531,9 @@ pub(super) fn powers_block(c: &Content) -> String {
 pub(super) fn standard_actions_block(r: &Rules) -> String {
     use aic_core::modules::board::{std_rule_text, StandardAction as A};
     let t = |key: &str| tick(r, key);
-    // The rule book's order; selling a card is no standard action, but sits by the chips.
-    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::HardenChips, A::Chips];
+    // The rule book's order; selling a card is no standard action, but sits by the actions
+    // (149: chips can't be sold).
+    let order = [A::Station, A::Remove, A::Clear, A::Move, A::Ambassador, A::Claim, A::Liberate, A::HardenChips];
     let mut rows: Vec<[String; 3]> = order.iter().map(|&a| std_rule_text(a, &t)).collect();
     rows.push(["Sell a card".to_string(), format!("gain {}", t("board.sell_credits")), "from your hand".to_string()]);
     rows.extend([A::HardenBuy, A::Drain, A::Insight, A::Envoy].iter().map(|&a| std_rule_text(a, &t)));
@@ -691,7 +702,12 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a \
          round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \
-         start with {} energy and one city bound to you, which makes energy every round.\n",
+         start with {} energy and one city bound to you, which makes energy every round.\n\n\
+         **Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you \
+         have only your board's Movement each round ({} printed, more as Movement spaces are \
+         uncovered): one move each, and what you don't use is lost, like insight. A few late, \
+         costly track spaces reveal a tag, which counts like a tag on your cards, but you can't \
+         sacrifice it. You may sell a card from your hand for {} credit; chips can't be sold.\n",
         n("cards.opening_deal"),
         n("cards.opening_free"),
         n("cards.opening_keep_credits"),
@@ -703,6 +719,8 @@ pub(super) fn new_players_block(r: &Rules) -> String {
         range(&insight),
         range(&slots),
         n("ai.start_energy"),
+        range(&c.ais.iter().map(|b| b.moves).collect::<Vec<_>>()),
+        n("board.sell_credits"),
     )
 }
 

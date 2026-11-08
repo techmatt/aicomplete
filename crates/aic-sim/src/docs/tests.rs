@@ -56,7 +56,7 @@ fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
     type Block = fn(&Rules) -> String;
     let blocks: [(&str, Block); 8] = [
-        ("adversary.build_bonus=3", difficulty_block),
+        ("adversary.build_bonus=4", difficulty_block),
         ("board.remove_count=2", standard_actions_block),
         ("board.clear_unity=3", sway_sources_block),
         ("alignment.purge_at=1,3,5", purge_ease_block),
@@ -155,6 +155,7 @@ fn a_track_space_prints_income_upgrade_and_cost() {
         keep2: true,
         cost: 3,
         tags: vec![],
+        moves: 0,
         capstone: None,
     };
     assert_eq!(space(&u), "+2 credits, +1 chip, **keep upgrade** (cost 3)");

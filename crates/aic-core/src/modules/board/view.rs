@@ -35,8 +35,14 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
         "board.destroyed_at.",
         "board.landed_at.",
         "board.landed_n.",
+        MOVED,
     ]);
     out.bookkeeping(&keys);
+    // 149: each seat's Movement left this round, of its Movement.
+    for s in 0..g.seats.len() {
+        let doc = "Movement: free ambassador moves this round (Move); what you don't use is lost";
+        out.seat(s, "movement", "Movement", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
+    }
     for c in 0..w.map.countries.len() {
         for f in FLAGS {
             if flagged(g, f, c) {

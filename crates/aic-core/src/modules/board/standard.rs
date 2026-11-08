@@ -8,6 +8,7 @@ pub enum StandardAction {
     Station,
     Remove,
     Clear,
+    /// 149: a free move from the seat's Movement (the paid Move is gone).
     Move,
     Ambassador,
     /// 137: claim a neutral city, station or factory (it was Align, cities only).
@@ -17,7 +18,6 @@ pub enum StandardAction {
     Liberate,
     /// 066: the Harden action a card grants, paid in chips.
     HardenChips,
-    Chips,
     // 024: the credit sinks, Terraforming Mars' standard projects.
     HardenBuy,
     Drain,
@@ -28,7 +28,7 @@ pub enum StandardAction {
 }
 
 /// The standard actions, in the order they are offered and published.
-pub const STANDARD: [StandardAction; 13] = [
+pub const STANDARD: [StandardAction; 12] = [
     StandardAction::Station,
     StandardAction::Remove,
     StandardAction::Clear,
@@ -37,7 +37,6 @@ pub const STANDARD: [StandardAction; 13] = [
     StandardAction::Claim,
     StandardAction::Liberate,
     StandardAction::HardenChips,
-    StandardAction::Chips,
     StandardAction::HardenBuy,
     StandardAction::Drain,
     StandardAction::Insight,
@@ -56,7 +55,6 @@ impl StandardAction {
             StandardAction::Claim => "claim",
             StandardAction::Liberate => "liberate",
             StandardAction::HardenChips => "harden_chips",
-            StandardAction::Chips => "chips",
             StandardAction::HardenBuy => "harden_buy",
             StandardAction::Drain => "drain",
             StandardAction::Insight => "insight",
@@ -128,14 +126,14 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Station => chips(i("station_chips")),
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
         StandardAction::Clear => credits(i("clear_cost")),
-        StandardAction::Move => credits(i("move_credits")),
+        // 149: paid from the seat's Movement, not a resource (`moves_left`).
+        StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site (`claim_cost`, `liberate_cost`):
         // the targets list only sites the seat can pay for, and the action pays.
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
         // 080: the price is the card's (`seat_price`); none printed here.
         StandardAction::HardenChips => Price::default(),
-        StandardAction::Chips => chips(1),
         StandardAction::HardenBuy => credits(i("harden_credits")),
         StandardAction::Drain => credits(i("drain_credits")),
         StandardAction::Insight => Price { cubes: 1, ..Price::default() },
@@ -164,6 +162,20 @@ pub fn seat_price(w: &World, g: &GameState, seat: usize, act: StandardAction) ->
     }
 }
 
+/// The var counting seat `s`'s Movement used this round (149), cleared in cleanup.
+pub fn moved_key(seat: usize) -> KeyBuf {
+    KeyBuf::new(MOVED).num(seat)
+}
+
+/// Prefix of [`moved_key`].
+pub(super) const MOVED: &str = "board.moved.";
+
+/// Seat `s`'s Movement left this round (149): its board's [`ai::movement`]
+/// less the free moves it has made.
+pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
+    ai::movement(w, g, seat) - g.var(&moved_key(seat))
+}
+
 /// Takes the corruption marker off hex `h` (the action or a card), for its
 /// reward (041): `clear_unity` Sway toward Unity and `clear_credits` to `seat`.
 pub fn clear_marker(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
@@ -188,7 +200,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
             return format!("move {who} from your supply onto a hex in reach: it removes up to {} adversary ambassadors there and stays", w.int("board.remove_count"));
         }
-        StandardAction::Move => "move a player ambassador onto a piece in reach",
+        StandardAction::Move => "use 1 Movement: move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
@@ -206,7 +218,6 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             );
         }
         StandardAction::HardenChips => "the Harden action a card grants: harden a facility in reach",
-        StandardAction::Chips => "sell 1 chip for credits",
         StandardAction::HardenBuy => "standard project: harden a facility in reach",
         StandardAction::Drain => "standard project: remove compute from an adversary project",
         StandardAction::Insight => {
@@ -240,7 +251,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         ),
         StandardAction::Move => (
             "Move a player ambassador",
-            format!("{} credit", t("board.move_credits")),
+            "1 of your Movement this round (your board's, unused ones lost)".into(),
             "from your supply or the board onto a piece in reach (not the hex it comes from)".into(),
         ),
         StandardAction::Ambassador => (
@@ -278,7 +289,6 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             "the chips the card prints, per token".into(),
             "a player-owned station or factory in reach that is not corrupted, one a troop can strike".into(),
         ),
-        StandardAction::Chips => ("Sell chips", "1 chip".into(), format!("gain {}", t("board.chips_credits"))),
         StandardAction::HardenBuy => (
             "Project: harden (`harden_buy`)",
             format!("{} credits", t("board.harden_credits")),
@@ -337,6 +347,7 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         // Onto a piece in reach, from the supply or another hex: never onto the
         // hex the seat's only ambassador already holds (020: that charged the
         // energy and moved nothing).
+        StandardAction::Move if moves_left(w, g, seat) <= 0 => Vec::new(),
         StandardAction::Move => {
             let supply = g.resource(seat, Resource::Ambassadors) > 0;
             let on_board = ambassadors_on_board(g, seat);
@@ -366,9 +377,6 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
         }
         // Gaining an ambassador, credits or insight needs no target.
         StandardAction::Ambassador => vec![usize::MAX],
-        // 118: at `chips_credits` 0 selling a chip pays nothing: no such action, as `cube_insight` 0.
-        StandardAction::Chips if w.int("board.chips_credits") > 0 => vec![usize::MAX],
-        StandardAction::Chips => Vec::new(),
         StandardAction::Insight if w.int("board.cube_insight") > 0 => vec![usize::MAX],
         StandardAction::Insight => Vec::new(),
         // 136: with no Discord on the track it would do nothing.
@@ -397,10 +405,6 @@ pub(super) fn std_resolve(
     };
     match act {
         StandardAction::Ambassador => cx.add_resource(g, s, Resource::Ambassadors, 1),
-        StandardAction::Chips => {
-            cx.add_resource(g, s, Resource::Credits, w.int("board.chips_credits"));
-            cx.tally(g, "board.chips_sold", 1);
-        }
         StandardAction::Drain => adversary::choose_drain(g, cx, s, w.int("board.drain_amount"))?,
         StandardAction::Insight => {
             cx.add_resource(g, s, Resource::Insight, w.int("board.cube_insight"));
@@ -433,6 +437,7 @@ pub(super) fn std_resolve(
         }
         StandardAction::Move => {
             if let Some(h) = on_hex(cx)? {
+                cx.add_key(g, &moved_key(s), 1);
                 move_ambassador(g, cx, s, h)?;
             }
         }

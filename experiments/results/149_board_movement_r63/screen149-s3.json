@@ -1,0 +1,95 @@
+{
+  "name": "screen149-s3",
+  "note": "149 screen 3: the d2 counter step (counter_more_credits 3 -> 6 / 9, counter_more_all 1 -> 2), d2-d3, dev seeds 36800-36863.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_cmc6",
+      "set": [
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "br_cmc6",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "pr_cmc6",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "bp_cmc9",
+      "set": [
+        "adversary.counter_more_credits=9"
+      ]
+    },
+    {
+      "name": "br_cmc9",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=9"
+      ]
+    },
+    {
+      "name": "pr_cmc9",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=9"
+      ]
+    },
+    {
+      "name": "bp_cma2",
+      "set": [
+        "adversary.counter_more_all=2"
+      ]
+    },
+    {
+      "name": "br_cma2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=2"
+      ]
+    },
+    {
+      "name": "pr_cma2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

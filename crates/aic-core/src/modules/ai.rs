@@ -85,10 +85,22 @@ pub fn capstones<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator
     end(&b.economy_track, uncovered(w, g, seat)).into_iter().chain(end(&b.play_track, uncovered2(w, g, seat)))
 }
 
-/// The tags printed on seat `s`'s board and those its tracks have revealed
-/// (068): they count for what a card requires.
-pub fn board_tags<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Tag> {
-    board(w, seat).tags.iter().chain(uncovered_spaces(w, g, seat).flat_map(|u| &u.tags))
+/// The tags printed on seat `s`'s board (068): they count for what a card
+/// requires, and for nothing else.
+pub fn printed_tags<'w>(w: &World<'w>, seat: usize) -> impl Iterator<Item = &'w Tag> {
+    board(w, seat).tags.iter()
+}
+
+/// The tags seat `s`'s tracks have revealed (149: they count like the tags on
+/// its cards, for everything but a sacrifice).
+pub fn revealed_tags<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator<Item = &'w Tag> {
+    uncovered_spaces(w, g, seat).flat_map(|u| &u.tags)
+}
+
+/// Seat `s`'s Movement (149): free ambassador moves each round, the board's
+/// printed ones and its uncovered Movement spaces'.
+pub fn movement(w: &World, g: &GameState, seat: usize) -> i64 {
+    board(w, seat).moves + uncovered_spaces(w, g, seat).map(|u| u.moves).sum::<i64>()
 }
 
 /// Whether seat `s` has uncovered its board's keep upgrade (021: tier-2
@@ -278,6 +290,9 @@ pub fn uncover_label(u: &Uncover) -> String {
         parts.push("T2 keep -1".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if u.moves > 0 {
+        parts.push(format!("Movement +{}", u.moves));
+    }
     if builds_station(u) {
         parts.push("free station".into());
     }
@@ -294,6 +309,9 @@ pub fn uncover_words(u: &Uncover) -> String {
         parts.push("T2 keep".into());
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
+    if u.moves > 0 {
+        parts.push(format!("Movement +{}", u.moves));
+    }
     if builds_station(u) {
         parts.push("free station".into());
     }
@@ -460,7 +478,14 @@ impl Module for Ai {
                         marks.push(TrackMark {
                             key: t.to_string(),
                             label: format!("{t} tag"),
-                            doc: "this tag counts for what a card requires once uncovered".into(),
+                            doc: "once uncovered this tag counts like one on your cards (it can't be sacrificed)".into(),
+                        });
+                    }
+                    if u.moves > 0 {
+                        marks.push(TrackMark {
+                            key: "movement".into(),
+                            label: format!("Movement +{}", u.moves),
+                            doc: format!("once uncovered, {} more free ambassador move(s) each round; unused ones are lost", u.moves),
                         });
                     }
                     if builds_station(u) {

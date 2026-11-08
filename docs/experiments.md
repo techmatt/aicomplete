@@ -166,8 +166,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 37624 (which item spent which is in its write-up;
-147's: 37240-37527, three final reads; 148's: 37528-37623, its final read). Next free: 37624. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 37912 (which item spent which is in its write-up;
+148's: 37528-37623, its final read; 149's: 37624-37911, three paired reads). Next free: 37912. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

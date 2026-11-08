@@ -206,5 +206,7 @@ pub fn move_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, to: usize) -
         cx.add_tokens(g, from[i - off], k, -1);
     }
     place_ambassador(g, cx, seat, to);
+    // 149: ambassador moves a seat makes in a game (the movement read).
+    cx.tally(g, &KeyBuf::new("board.amb_moves.").num(seat), 1);
     Ok(())
 }
