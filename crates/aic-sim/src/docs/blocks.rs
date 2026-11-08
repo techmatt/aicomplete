@@ -111,15 +111,26 @@ pub(super) fn adversary_block() -> String {
         .iter()
         .map(|a| {
             let pulls: Vec<String> = a.pulls.iter().map(pull_words).collect();
+            let rally = aic_core::modules::adversary::rally_site(a).map(|r| r.plural()).unwrap_or("");
+            let deploy: i64 = a
+                .standing
+                .iter()
+                .map(|e| match e {
+                    aic_core::content::Op::Troops { count, each_country: true, .. } => *count,
+                    _ => 0,
+                })
+                .sum();
             vec![
                 a.name.clone(),
                 a.stage.to_string(),
                 pulls.join("; "),
+                rally.to_string(),
+                deploy.to_string(),
                 corrupt_words(a),
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Pulls (each country)", "Corrupt"], rows)
+    table(&["Card", "Stage", "Threat (each board)", "Rally", "Deploy", "Corrupt"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -355,8 +366,8 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         (String::new(), vec![]),
         (String::new(), vec![]),
         (
-            "Larger builds: each site the board's creation line reaches gains more, and stage-II cards removed (a shorter round cap)".into(),
-            vec!["adversary.build_bonus", "adversary.stage2_removed"],
+            "The level's incomes (its entries); stage-II cards removed, stage-I cards added back".into(),
+            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage2_removed", "adversary.stage1_added"],
         ),
         (
             "A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup".into(),

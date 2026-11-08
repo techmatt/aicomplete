@@ -1,0 +1,38 @@
+{
+  "name": "smoke151-rally",
+  "note": "151 smoke: the rally read on / off (strategist, greedy), dev seeds 36800-36815, d0 and d2.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.rally_read=0",
+    "greedy",
+    "greedy:w.rally_read=0"
+  ],
+  "games": 16,
+  "first_seed": 36800,
+  "records": 0
+}

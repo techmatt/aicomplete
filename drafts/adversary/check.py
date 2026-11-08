@@ -59,7 +59,7 @@ def stage_deals():
         if d >= a.get("stage_swap_at", 2):
             s1, s3 = s1 - a["stage1_removed"], s3 + a["stage3_added"]
         if d >= 3:
-            s2 -= a["stage2_removed"]
+            s1, s2 = s1 + a.get("stage1_added", 0), s2 - a["stage2_removed"]
         out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a.get("extra_threats_at", 1) else 0))
     return out
 
@@ -367,9 +367,54 @@ def worst_case(t, mil):
                                           f"countries, deck fits {have}")
 
 
+def event_step(e):
+    """151: where an event line sits in the fixed step order: rally 0, deploy 1, other lines 2, corrupt 3."""
+    if e.get("op") == "rally" and not e.get("count"):
+        return 0
+    if e.get("op") == "troops" and e.get("each_country") and not any(e.get(k) for k in ("at", "stand", "location", "if")):
+        return 1
+    return 3 if e.get("op") == "corrupt" else 2
+
+
+def event_breaks(ev):
+    """151, the event standard (the Rust twin is `content::event_rule_break`): one Rally X, the fixed order (threat,
+    rally, deploy, other lines, corrupt), at most two other lines, no per-event compute or creation line, "each
+    board", never "each country"."""
+    out = []
+    if "each country" in ev.get("text", "").lower():
+        out.append('says "each country" (each board)')
+    steps = [event_step(e) for e in ev.get("standing", []) + ev.get("twists", [])]
+    if steps.count(0) != 1:
+        out.append("one Rally X line")
+    if any(a > b for a, b in zip(steps, steps[1:])) or any(event_step(e) < 2 for e in ev.get("twists", [])):
+        out.append("a step out of the fixed order (threat, rally, deploy, other lines, corrupt)")
+    if steps.count(2) > 2:
+        out.append("more than two other lines (consequences)")
+    if any(e.get("op") == "corrupt" for e in ev.get("standing", [])):
+        out.append("a Corrupt line before the corrupt step")
+    if any(e.get("op") == "rally" and e.get("count") for e in ev.get("standing", []) + ev.get("twists", [])):
+        out.append("an event's Rally lands its pool (no count)")
+    if any(e.get("op") in ("compute", "create") for e in ev.get("standing", [])):
+        out.append("a per-event compute or creation line")
+    return out
+
+
+def project_breaks(p):
+    """151: a project's consequences (one, rarely two) and its words (the Rust twin is `content::project_rule_break`)."""
+    out = []
+    if "each country" in p.get("text", "").lower():
+        out.append('says "each country" (each board)')
+    if len(p.get("effects", [])) + len(p.get("resolve", [])) > 2:
+        out.append("more than two consequences")
+    return out
+
+
 def check_militarist(mil, projects, ops, new_ops):
     b = mil["board"]
     check_card_common(b, "board", ops, new_ops)
+    for r in b.get("rules", []) + [b.get("difficulty", {})]:
+        if "each country" in r.get("text", "").lower():
+            errors.append(f"board rule {r.get('name', 'difficulty')}: says \"each country\" (each board)")
     for r in b.get("rules", []):
         for e in walk_effects(r.get("effects", [])):
             if "rule" in e:  # a rule of today's engine, named, not an op
@@ -389,7 +434,9 @@ def check_militarist(mil, projects, ops, new_ops):
                 errors.append(f"difficulty {d}: deals {n} stage-{s} events, {stages[s]} printed")
     for e in mil["events"]:
         check_card_common(e, "event", ops, new_ops)
-        tiers = tuple(sorted(p["tier"] for p in e["pulls"]))
+        for why in event_breaks(e):
+            errors.append(f"{e['id']}: off the event standard: {why}")
+        tiers =tuple(sorted(p["tier"] for p in e["pulls"]))
         if tiers not in LADDER[e["stage"]]:
             errors.append(f"{e['id']}: stage-{e['stage']} pulls tiers {tiers}, the ladder wants one of {LADDER[e['stage']]}")
     tagged = [s["tag"] for s in b["project_slots"] if s.get("tag")]
@@ -408,6 +455,8 @@ def check_projects(projects, ops, new_ops):
     tags = Counter(g for p in projects for g in p["tags"])
     for p in projects:
         check_card_common(p, "project", ops, new_ops)
+        for why in project_breaks(p):
+            errors.append(f"{p['id']}: off the standard: {why}")
     print(f"projects: {len(projects)}, tags {dict(tags)}, costs {sorted(p['cost'] for p in projects)}")
 
 

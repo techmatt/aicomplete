@@ -10,12 +10,13 @@ ops the engine lacks, the harms ledger across the drafts) in
 | File | Deck |
 |---|---|
 | `threats_t1.json`, `threats_t2.json` | the threat deck of each tier (146 wrote both to Matt's threat card standard with [`threat_cards.py`](../../experiments/results/146_threat_standard/threat_cards.py), which also prints each card's give / get) |
-| `projects.json` | the project deck |
-| `militarist.json` | the Militarist's board (`board`) and event deck (`events`) |
+| `projects.json` | the project deck (151: written with [`adversary_cards.py`](../../experiments/results/151_adversary_income_r65/adversary_cards.py)) |
+| `militarist.json` | the Militarist's board (`board`) and event deck (`events`), written by the same generator: rerun it, never edit by hand |
 
 `python drafts/adversary/check.py` checks them: ids, deck sizes and tags, the tier rules, counters, the threat card
 standard (two consequences and two counter options at most, no shared currency, no each-player harm, no special
-pieces), the event pull ladder, the harms
+pieces), the event standard (151: one Rally X, the fixed order threat, rally, deploy, other lines, corrupt, at most
+two other lines, "each board" never "each country"), a project's two consequences at most, the event pull ladder, the harms
 ledger's rule, and the draw rule (a random-deal simulation at 1-4 countries and every difficulty's stage counts,
 plus Hall's condition at 4 countries: no Militarist pull may need a second reshuffle). `--content` runs the same
 checks on the loaded `content/` (no value or check lines there, so those are skipped). `--write` also rewrites the

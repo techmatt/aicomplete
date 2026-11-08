@@ -1,0 +1,37 @@
+{
+  "name": "read-151-f3-a",
+  "note": "151 ladder read (f3), set a: seeds 38584-38631, the three pairs, d0-d3; run the r64 binary on the same spec for the pair.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 38584,
+  "records": 0
+}

@@ -1,0 +1,98 @@
+{
+  "name": "screen151-s4",
+  "note": "151 screen 4: compute income one step up at d1 and d2 (dev seeds 36800-36863, d1-d2, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_stated",
+      "set": [
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_stated",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_stated",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_c6d1",
+      "set": [
+        "adversary.compute_income=5,6,8,10,10"
+      ]
+    },
+    {
+      "name": "br_c6d1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,6,8,10,10"
+      ]
+    },
+    {
+      "name": "pr_c6d1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,6,8,10,10"
+      ]
+    },
+    {
+      "name": "bp_c10d2",
+      "set": [
+        "adversary.compute_income=5,5,10,10,10"
+      ]
+    },
+    {
+      "name": "br_c10d2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,10,10,10"
+      ]
+    },
+    {
+      "name": "pr_c10d2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,10,10,10"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

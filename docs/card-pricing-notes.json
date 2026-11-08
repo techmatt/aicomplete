@@ -86,7 +86,7 @@
   "liquidity_event": "r43 (108): 7: the Capital engine; 8: fewer cheap cards, bigger and dearer; insight to play and keep at 2.5, get at the table (effect ledger, reasoned); anchors: pay 12; get 15 = 1.25.",
   "logic_bomb": "r45 (112): 9 cr, 1 ins, between r44's 6 cr, 1 ins and r43's 11 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 17; get 16.9 = 1.00.",
   "manifesto_leak": "r44 (111): priced alone (1.50 with Open Assembly); anchors: pay 12; get 12 = 1.00.",
-  "market_stabilization_board": "r62 (148): Autonomous Defense Grid's twin for Economic threats (6 less, anywhere); same give / get. Out of the baseline deck: in a deck with it, played in 40-50% of games, the win gap unresolved.",
+  "market_stabilization_board": "r62 (148): Autonomous Defense Grid's twin for Economic threats (6 less, anywhere); same give / get. In the baseline deck from r65 (151, Matt): 150 read it neutral to the win rate at every level.",
   "market_watchdog": "r45 (112): 7 cr, 0 ins, between r44's 5 cr, 0 ins and r43's 7 cr, 1 ins: the highest price that reads 1.0 with its r44 effect; anchors: pay 11; get 12.0 = 1.09.",
   "martial_cordon": "r45 (112): back to r43's price (14 cr, 2 ins; 111 had cut it to 4 cr, 2 ins to reach a band); anchors: pay 30; get 35.6 = 1.19.",
   "materials_hedge_desk": "r45 (112): back to r43's price (12 cr, 1 ins; 111 had cut it to 7 cr, 1 ins to reach a band); anchors: pay 20; get 22.9 = 1.15.",

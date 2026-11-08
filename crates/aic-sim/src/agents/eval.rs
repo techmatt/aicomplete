@@ -372,6 +372,10 @@ pub struct Weights {
     /// or a hardening token a quarter; none under Sanctuary): its `node` and
     /// `shelter_node`, and the seat's `node_danger` reads its nodes less the exposed ones.
     pub corrupt_exposure: f64,
+    /// 151, above 0: the coming Rally (`plan::next_rally`: the card ahead's site type and each board's pool,
+    /// spread evenly) counts this share of its expected ambassadors on each site toward corrupting, a round
+    /// ahead: the pressure, at-risk and exposure terms read them as if landed.
+    pub rally_read: f64,
     /// 147 (D67), above 0: each land-corruption token, and open land filling
     /// toward one, costs its Discord drip over the rounds left (up to 3) at its
     /// share of a Discord tip.
@@ -627,6 +631,7 @@ impl Default for Weights {
             // 147: dev seeds, 192 games a level, against 1: d0 +1.6, d1 +4.2, d2 −1.0, d3 +0.5 (pooled
             // +1.3 ±1.4), keeping most of the drop in nodes lost to corruption (2.3-3.1 a game, 1: 2.2-2.9, off 2.9-4.1).
             corrupt_exposure: 0.25,
+            rally_read: 1.0,
             blight: 1.0,
             site_pressure: 1.0,
             block: 4.0,
@@ -1150,12 +1155,14 @@ impl Eval {
     /// What site `h` would count toward corrupting: its own adversary
     /// ambassadors (and a city's markers), plus, with a gathering line ahead,
     /// those next to it in its country (138).
-    fn toward(rules: &Rules, t: &[HexTokens], h: usize, gather: bool) -> i64 {
+    /// 151: `arriving` adds the coming Rally's expected ambassadors (empty: none).
+    fn toward(rules: &Rules, t: &[HexTokens], arriving: &[f64], h: usize, gather: bool) -> f64 {
         let world = rules.world();
-        let mut n = t[h].adv_ambassador + if common::is_city(&world, h) { t[h].marker } else { 0 };
+        let at = |x: usize| t[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
+        let mut n = at(h) + if common::is_city(&world, h) { t[h].marker as f64 } else { 0.0 };
         if gather {
             let c = world.map.hexes[h].country;
-            n += world.map.hexes[h].neighbors.iter().filter(|&&x| world.map.hexes[x].country == c).map(|&x| t[x].adv_ambassador).sum::<i64>();
+            n += world.map.hexes[h].neighbors.iter().filter(|&&x| world.map.hexes[x].country == c).map(|&x| at(x)).sum::<f64>();
         }
         n
     }
@@ -1203,6 +1210,19 @@ impl Eval {
         let mut stations = [0i64; 4];
         let mut reach = 0i64;
         let tokens = self.keys.read(g);
+        // 151: the coming Rally, a round ahead, as expected ambassadors a hex (`rally_read` of them).
+        let mut arriving: Vec<f64> = Vec::new();
+        if w.rally_read > 0.0 {
+            let fore = plan::next_rally(&world, g);
+            if !fore.is_empty() {
+                arriving = vec![0.0; g.hexes.len()];
+                for (h, n) in fore {
+                    // An arrival on a player ambassador cancels it rather than landing.
+                    let held: i64 = tokens[h].ambassador[..self.seats].iter().sum();
+                    arriving[h] += (n - held as f64).max(0.0) * w.rally_read;
+                }
+            }
+        }
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
@@ -1252,10 +1272,10 @@ impl Eval {
                     }
                     // 034: a corruption marker counts toward corrupting; 138: so do
                     // the ambassadors next door when a gathering Corrupt line is ahead.
-                    let toward = Self::toward(rules, &tokens, h, gather);
-                    let p = (toward as f64 / corrupt_at as f64).min(1.0);
+                    let toward = Self::toward(rules, &tokens, &arriving, h, gather);
+                    let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
-                    if toward + 1 >= corrupt_at {
+                    if toward + 1.0 >= corrupt_at as f64 {
                         v -= w.at_risk;
                     }
                 }
@@ -1280,9 +1300,9 @@ impl Eval {
                     None
                 };
                 if let Some((n, gathers, share)) = site {
-                    let toward = Self::toward(rules, &tokens, h, gathers);
-                    if toward > 0 {
-                        let p = ((toward + 1) as f64 / n.max(1) as f64).min(1.0);
+                    let toward = Self::toward(rules, &tokens, &arriving, h, gathers);
+                    if toward > 0.0 {
+                        let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
                         let r = p * p * share;
                         for (s, e) in exposed.iter_mut().enumerate().take(seats) {
                             if w.corrupt_exposure <= 0.0 || t.node[s] == 0 {
@@ -1348,7 +1368,7 @@ impl Eval {
                     stations[s] += 1;
                     v += if stations[s] <= STATIONS_USEFUL { w.station } else { w.station_spare };
                     // 138: a player's station filling toward its Corrupt number.
-                    let p = (Self::toward(rules, &tokens, h, station_gather) as f64 / station_at.max(1) as f64).min(1.0);
+                    let p = (Self::toward(rules, &tokens, &arriving, h, station_gather) / station_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * (w.station + w.station_flip) * w.pressure * p * p;
                 }
             }
@@ -1363,7 +1383,7 @@ impl Eval {
                 } else if owned {
                     v += w.owned_factory;
                     // 138: a player's factory filling toward its Corrupt number.
-                    let p = (Self::toward(rules, &tokens, h, factory_gather) as f64 / factory_at.max(1) as f64).min(1.0);
+                    let p = (Self::toward(rules, &tokens, &arriving, h, factory_gather) / factory_at.max(1) as f64).min(1.0);
                     v -= w.site_pressure * 2.0 * w.owned_factory * w.pressure * p * p;
                 }
             }

@@ -88,8 +88,22 @@
         "stage3_added": 1,
         "stage_swap_at": 4,
         "stage2_removed": 2,
+        "stage1_added": 0,
         "extra_corrupted": 0,
-        "build_bonus": 3,
+        "compute_income": [
+          5,
+          5,
+          8,
+          10,
+          10
+        ],
+        "ambassador_income": [
+          2,
+          2,
+          2,
+          3,
+          3
+        ],
         "tier2_early": 1,
         "discord_removed": 1,
         "wall_troops": 1,
@@ -324,7 +338,8 @@
         "exascale_training_cluster",
         "wafer_fab_line",
         "power_purchase_agreement",
-        "microgrid_lab_compact"
+        "microgrid_lab_compact",
+        "market_stabilization_board"
       ]
     }
   ],

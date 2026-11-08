@@ -223,6 +223,33 @@ impl CreateIf {
     }
 }
 
+/// 151: the site type a Rally X line lands on.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RallyAt {
+    City,
+    /// Cities marked coastal on the map.
+    CoastalCity,
+    Station,
+    Factory,
+    /// Hexes holding a botnet.
+    Botnet,
+}
+
+impl RallyAt {
+    pub const ALL: [RallyAt; 5] = [RallyAt::City, RallyAt::CoastalCity, RallyAt::Station, RallyAt::Factory, RallyAt::Botnet];
+    /// The plural a card prints: "Rally: cities".
+    pub fn plural(self) -> &'static str {
+        match self {
+            RallyAt::City => "cities",
+            RallyAt::CoastalCity => "coastal cities",
+            RallyAt::Station => "research stations",
+            RallyAt::Factory => "factories",
+            RallyAt::Botnet => "botnet hexes",
+        }
+    }
+}
+
 /// 138: what a Corrupt X line corrupts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -589,7 +616,8 @@ pub enum Op {
     },
 
     // ---------- instant: threats and the team ----------
-    /// `count` adversary troops onto factories in scope (players choose), else cities; `each_country`: in each;
+    /// `count` adversary troops onto factories in scope (players choose; 151: an event's, a project's or the
+    /// board's on the lowest-numbered), else cities; `each_country`: on each board;
     /// `destroy`: each takes the node there; `at`, `location`: elsewhere; `stand`: they never march.
     Troops {
         count: i64,
@@ -869,11 +897,27 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
+    /// 151, Rally X: each board's adversary ambassador pool lands on its `site` sites: the neutral ones, else
+    /// the players', else the adversary's; spread evenly, players breaking ties. `count`: that many a board
+    /// instead of the pool (a project's rally). A cordoned board's pool lands nowhere.
+    Rally {
+        site: RallyAt,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        count: i64,
+    },
+    /// 151: the adversary's income rises for the rest of the game: `compute` more a round, `ambassadors` more
+    /// a board a round (into each board's pool).
+    IncreaseIncome {
+        #[serde(default, skip_serializing_if = "is_zero")]
+        compute: i64,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        ambassadors: i64,
+    },
     /// Remove `count` botnets anywhere on the board, one at a time (players choose).
     RemoveBotnets {
         count: i64,
     },
-    /// The board's difficulty line: each standing line landing troops lands `amount` more a country.
+    /// The board's difficulty line: each event's Deploy lands `amount` more troops a board.
     StandingTroopsBonus {
         amount: i64,
     },
@@ -1024,8 +1068,9 @@ impl Op {
             | Op::LoseAmbassador
             | Op::LoseTokens { .. }
             | Op::DealThreats { .. } => &[Threat, Team],
-            Op::Requisition { .. }
-            | Op::DiscardMostExpensive
+            // 151: a project's player harm is "each player pays N or discards M cards".
+            Op::Requisition { .. } => &[Threat, Team],
+            Op::DiscardMostExpensive
             | Op::LoseNodeOr { .. }
             | Op::ComputePerMissing { .. }
             | Op::DestroyFacility { .. }
@@ -1046,7 +1091,9 @@ impl Op {
             | Op::ThreatAtNode { .. }
             | Op::RemoveBotnets { .. }
             | Op::StandingTroopsBonus { .. }
-            | Op::ThreatCompute { .. } => &[Team],
+            | Op::ThreatCompute { .. }
+            | Op::Rally { .. }
+            | Op::IncreaseIncome { .. } => &[Team],
             Op::ComputeEvery { .. } => &[Threat, Team],
             Op::Create { .. } => &[Threat, Team],
             Op::Corrupt { .. } => &[Threat, Team, Twist],

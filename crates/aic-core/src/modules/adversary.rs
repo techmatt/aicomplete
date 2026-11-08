@@ -42,8 +42,10 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage3_added", 0, 3, "difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder)"),
     ParamSpec::int("stage_swap_at", 0, 5, "the difficulty level from which stage1_removed and stage3_added apply (142; 2 before)"),
     ParamSpec::int("stage2_removed", 0, 3, "difficulty 3+: stage-II cards removed (a shorter round cap)"),
+    ParamSpec::int("stage1_added", 0, 3, "151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
-    ParamSpec::int("build_bonus", 0, 5, "difficulty 3+: each site the adversary board's creation lines reach gains this many more"),
+    ParamSpec::list("compute_income", 0, 30, "151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board)"),
+    ParamSpec::list("ambassador_income", 0, 10, "151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
@@ -53,10 +55,10 @@ const PARAMS: &[ParamSpec] = &[
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the event card's standing lines (its creation lines) and twists; the board's creation lines; ongoing projects act; botnets make adversary compute onto the projects"),
+    PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act; botnets make adversary compute onto the projects"),
     PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of adversary ambassadors (on it and next to it) pulls them in and corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, ambassador income into each board's pool"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
@@ -99,6 +101,23 @@ pub const PROJECT_DISCARD: &str = "adversary.project_discard";
 pub const PROJECTS: &str = "adversary.projects";
 pub const PROJECTS_ONGOING: &str = "adversary.projects_ongoing";
 pub const PROJECTS_DONE: &str = "adversary.projects_done";
+/// 151: the adversary's compute income a round (base, raised by "increase income" lines).
+pub const INCOME_COMPUTE: &str = "adversary.income_compute";
+/// 151: its ambassador income a board a round.
+pub const INCOME_AMBASSADORS: &str = "adversary.income_ambassadors";
+
+/// 151: board `c`'s ambassador pool, waiting for the next Rally.
+pub fn pool_key(c: usize) -> String {
+    format!("adversary.pool.{c}")
+}
+
+/// 151: the income-list entry for this difficulty (the last entry past the list's end).
+fn income_at(w: &World, param: &str) -> i64 {
+    let l = w.list(param);
+    let d = w.int("adversary.difficulty").max(0) as usize;
+    l.get(d).or(l.last()).copied().unwrap_or(0)
+}
+
 /// The per-round counter of adversary operations (table time).
 pub const OPS: &str = "adversary.ops";
 /// The round the first project resolved (sim observation).
@@ -235,7 +254,7 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     // `stage_swap_at` (4) beside the extra threat a round (Matt, message 5982).
     let swap = difficulty >= b.int("stage_swap_at")?;
     let dealt = [
-        (stage_cards[0] - if swap { b.int("stage1_removed")? } else { 0 }).max(0),
+        (stage_cards[0] + if difficulty >= 3 { b.int("stage1_added")? } else { 0 } - if swap { b.int("stage1_removed")? } else { 0 }).max(0),
         (stage_cards[1] - if difficulty >= 3 { b.int("stage2_removed")? } else { 0 }).max(0),
         stage_cards[2] + if swap { b.int("stage3_added")? } else { 0 },
     ];
@@ -361,6 +380,18 @@ impl Module for Adversary {
         }
         cx.set_pile(g, DECK, deck);
         reveal(g, cx);
+        // 151: the income, from the config's level and the board's own lines; round 1's pools.
+        let (mut compute, mut ambassadors) =
+            (income_at(&w, "adversary.compute_income"), income_at(&w, "adversary.ambassador_income"));
+        for e in w.content.adversary_board.rules.iter().flat_map(|r| r.effects.iter()) {
+            if let Op::IncreaseIncome { compute: c, ambassadors: a } = e {
+                compute += c;
+                ambassadors += a;
+            }
+        }
+        cx.set_key(g, INCOME_COMPUTE, compute);
+        cx.set_key(g, INCOME_AMBASSADORS, ambassadors);
+        fill_pools(g, cx);
         // The project deck (135): one shuffled deck, dealt into the board's slots.
         let mut ids: Vec<Key> = w.content.projects.iter().map(|c| Key::new(&c.id)).collect();
         shuffle(&mut ids, cx.rng(g, "adversary"));
@@ -401,7 +432,6 @@ impl Module for Adversary {
                         other => unreachable!("twist with no reader: {other:?}"),
                     }
                 }
-                board_build(g, cx, None)?;
                 wall_pressure(g, cx)?;
                 // Ongoing projects act, in the order they came into play.
                 for id in ongoing_acting(g) {
@@ -468,7 +498,10 @@ impl Module for Adversary {
                     on_board,
                 );
             }
-            3 => reveal(g, cx),
+            3 => {
+                reveal(g, cx);
+                income(g, cx)?;
+            }
             _ => unreachable!("adversary phase {phase}"),
         }
         Ok(())
@@ -537,6 +570,28 @@ impl Module for Adversary {
                 "adversary compute made so far: each botnet makes {} a round (none under a player ambassador); it fills the cheapest visible project",
                 w.int("adversary.botnet_compute")
             ),
+        );
+        out.global(
+            "income_compute",
+            "adv. compute income",
+            g.var(INCOME_COMPUTE),
+            None,
+            "adversary compute income a round, at the end of its turn, onto the projects",
+        );
+        out.global(
+            "income_ambassadors",
+            "adv. ambassador income",
+            g.var(INCOME_AMBASSADORS),
+            None,
+            "adversary ambassadors a board a round, into each board's pool; the next Rally lands the pool",
+        );
+        let pool: i64 = (0..w.map.countries.len()).map(|c| g.var(&pool_key(c))).sum();
+        out.global(
+            "pool",
+            "adv. ambassador pool",
+            pool,
+            None,
+            "adversary ambassadors waiting to land at the next Rally, all boards",
         );
         out.global(
             "difficulty",
@@ -615,6 +670,7 @@ impl Module for Adversary {
             "adversary.project.",
             "adversary.ongoing_from.",
             "adversary.cut.",
+            "adversary.pool.",
         ]);
     }
 }
@@ -657,6 +713,9 @@ fn deal_projects(g: &mut GameState, cx: &mut Cx) {
         let Some(id) = draw_project(g, cx, &mut reshuffles) else {
             break;
         };
+        // 151 (amendment 6618): what share of the deck a game turns up.
+        cx.tally(g, "adversary.projects_revealed", 1);
+        cx.tally(g, &KeyBuf::new("adversary.revealed.").text(&id), 1);
         let tags = &project(&w, &id).tags;
         let fits = |k: usize| {
             filled[k].is_none()
@@ -827,40 +886,100 @@ fn standing_project_op(e: &Op) -> bool {
     )
 }
 
-/// The adversary board's own creation lines (138: they replace `city_build`
-/// and `factory_build`), in country `scope` or everywhere; from difficulty 3
-/// each site they reach gains `build_bonus` more.
-fn board_build(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
+/// 151: each board's pool gains its ambassador income (the supply caps it at rally).
+fn fill_pools(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
-    let bonus = if level(&w, 3) { w.int("adversary.build_bonus") } else { 0 };
-    for op in &w.content.adversary_board.build {
-        let op = match op {
-            Op::Create { count, at, if_, sites } => Op::Create { count: count + bonus, at: *at, if_: *if_, sites: *sites },
-            other => other.clone(),
+    let n = g.var(INCOME_AMBASSADORS).max(0);
+    for c in 0..w.map.countries.len() {
+        cx.add_key(g, &pool_key(c), n);
+    }
+}
+
+/// 151, income, at the end of the adversary's turn: its compute income goes onto the projects, and each board's
+/// pool gains its ambassador income, to land at the next Rally.
+fn income(g: &mut GameState, cx: &mut Cx) -> Res {
+    if g.is_over() {
+        return Ok(());
+    }
+    fill_pools(g, cx);
+    let n = g.var(INCOME_COMPUTE);
+    cx.tally(g, "adversary.compute_income", n.max(0));
+    gain_compute(g, cx, n)
+}
+
+/// 151: "increase income": for the rest of the game.
+pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64, ambassadors: i64) {
+    cx.add_key(g, INCOME_COMPUTE, compute);
+    cx.add_key(g, INCOME_AMBASSADORS, ambassadors);
+    cx.tally(g, "adversary.income_raised_compute", compute);
+    cx.tally(g, "adversary.income_raised_ambassadors", ambassadors);
+}
+
+/// The site type the card ahead rallies to (its Rally line).
+pub fn rally_site(c: &AdversaryCard) -> Option<crate::op::RallyAt> {
+    c.standing.iter().find_map(|e| if let Op::Rally { site, count: 0 } = e { Some(*site) } else { None })
+}
+
+/// 151, Rally X in board `scope` or every board: each board places its pool (or `count`, a project's rally)
+/// by [`super::plan::rally_plan`]: every eligible site gets the even share, and players choose which get one
+/// more (the remainder, one each). The supply is a cap. Tallied as `adversary.rallied` and by source.
+pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i64, scope: Option<usize>, source: &str) -> Res {
+    let w = cx.world;
+    let boards: Vec<usize> = match scope {
+        Some(c) => vec![c],
+        None => (0..w.map.countries.len()).collect(),
+    };
+    for c in boards {
+        let n = if count > 0 {
+            count
+        } else {
+            let p = g.var(&pool_key(c));
+            cx.set_key(g, &pool_key(c), 0);
+            p
         };
-        let mut ctx = effects::Ctx::team().named("board").why(&w.content.adversary_board.name);
-        ctx.scope = scope;
-        effects::run(g, cx, std::slice::from_ref(&op), &mut ctx)?;
+        if n <= 0 || board::flagged(g, crate::content::RoundFlag::Cordon, c) {
+            continue;
+        }
+        let Some(plan) = super::plan::rally_plan(&w, g, site, c, n) else {
+            cx.tally(g, "adversary.rally_nowhere", n);
+            continue;
+        };
+        let before = g.var(SUPPLY);
+        for &h in &plan.sites {
+            place(g, cx, h, plan.each);
+        }
+        let mut among = plan.sites.clone();
+        for _ in 0..plan.extra {
+            let opts = among.iter().map(|&h| hex_opt(&w, h)).collect();
+            let prompt = || format!("Rally in {}: which site gains one more adversary ambassador?", country_name(&w, c));
+            let Some(i) = cx.choose(0, prompt, opts)? else {
+                break;
+            };
+            place(g, cx, among.remove(i), 1);
+        }
+        let made = before - g.var(SUPPLY);
+        cx.tally(g, "adversary.rallied", made);
+        cx.tally(g, &format!("adversary.rallied.{source}"), made);
     }
     Ok(())
 }
 
-/// "The adversary builds now" (an out-of-turn build: Grand Offensive, the
-/// Offensive Discord card), in country `scope` or everywhere: the board's
-/// creation lines, then this round's card's.
+/// "The adversary builds now" (an out-of-turn build: Grand Offensive, the Offensive Discord card), in board
+/// `scope` or every board. 151: each board in scope rallies its ambassador income now, to this round's card's
+/// Rally site (none: nothing).
 pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
     let w = cx.world;
-    board_build(g, cx, scope)?;
-    let Some(id) = g.pile(CURRENT).first().cloned() else {
+    let Some(id) = g.pile(round_pile(g)).first().cloned() else {
         return Ok(());
     };
-    let c = card(&w, &id);
-    for op in c.standing.iter().filter(|e| matches!(e, Op::Create { .. })) {
-        let mut ctx = effects::Ctx::team().named("standing").why(&c.name);
-        ctx.scope = scope;
-        effects::run(g, cx, std::slice::from_ref(op), &mut ctx)?;
+    let Some(site) = rally_site(card(&w, &id)) else {
+        return Ok(());
+    };
+    let n = g.var(INCOME_AMBASSADORS);
+    if n <= 0 {
+        return Ok(());
     }
-    Ok(())
+    rally(g, cx, site, n, scope, "build")
 }
 
 /// 138, a creation line: `count` adversary ambassadors on each of the
@@ -896,7 +1015,7 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let hexes = w.map.countries[c].hexes.clone();
-        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None)?;
+        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true)?;
     }
     Ok(())
 }
@@ -1089,8 +1208,10 @@ fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
 }
 
 /// `count` adversary troops, each onto a factory among `hexes` (players
-/// choose), or with no factory onto a city. With `destroy`, each destroys
-/// the node on the hex it lands on (027), named for its tally.
+/// choose; 151, `lowest`: the lowest-numbered, deterministic targeting for events, projects and the board), or
+/// with no factory onto a city. With `destroy`, each destroys the node on the hex it lands on (027), named for
+/// its tally.
+#[allow(clippy::too_many_arguments)]
 pub fn land_troops(
     g: &mut GameState,
     cx: &mut Cx,
@@ -1099,6 +1220,7 @@ pub fn land_troops(
     prompt: &str,
     tally: &str,
     destroy: Option<&'static str>,
+    lowest: bool,
 ) -> Res {
     let w = cx.world;
     for _ in 0..count {
@@ -1113,9 +1235,17 @@ pub fn land_troops(
         if spots.is_empty() {
             spots = hexes.iter().copied().filter(open).filter(|&h| is_city(&w, h)).collect();
         }
-        let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
-        let Some(i) = cx.choose(0, prompt, opts)? else {
-            break;
+        let i = if lowest {
+            let Some(i) = (0..spots.len()).min_by_key(|&i| w.map.hexes[spots[i]].number) else {
+                break;
+            };
+            i
+        } else {
+            let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
+            let Some(i) = cx.choose(0, prompt, opts)? else {
+                break;
+            };
+            i
         };
         place_troop(g, cx, spots[i]);
         cx.per_round(g, OPS, 1);

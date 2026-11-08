@@ -4,7 +4,7 @@
 S=target/release/aic-sim
 $S experiment experiments/smoke.json --out out/smoke    # a quick check (6 seeds)
 $S experiment experiments/ladder-v0.json --games 20 --seed 1000 --threads 6
-$S experiment experiments/read-150-f1-a.json --quick --resume  # scoping; resumes with its --out, --games, --seed
+$S experiment experiments/read-151-f1-a.json --quick --resume  # scoping; resumes with its --out, --games, --seed
 ```
 
 ## The spec
@@ -139,12 +139,14 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** 150's `specs150.py` (two 48-seed sets, the three pairs, d0-d3; a second config rides on the
-  same seeds) on both binaries, read by `150_tags_exascale_r64/ladder150.py` (pooled, paired, by set, by config) and
-  147's `read147.py` (win, ends, nodes lost by cause,
-  counters by tier); screens are `<pair>_<lever>` cells.
-- **Costs:** an engine game about 0.7 s; the r58 standard read (432 strategist games, 9 rounds) 88 s on 6 threads on
-  a quiet box (141), twice that with a second run beside.
+- **Current recipe:** 151's `specs151.py` (two 48-seed sets, the three pairs, d0-d3) on both binaries, read by
+  `151_adversary_income_r65/ladder151.py NEW OLD --measures` (pooled, paired, by set; `--screen DIR` for a screen's
+  `<pair>_<lever>` cells) and 147's `read147.py` (ends, nodes lost by cause, counters by tier).
+- **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
+  ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
+  draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
+  measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
+- **Costs:** an engine game about 0.7 s; a 576-game read set (d0-d3) about 4-5 min on 6 threads, double on a busy box.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
   same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
   `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
@@ -167,8 +169,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 38392 (which item spent which is in its write-up;
-149's: 37624-37911, three paired reads; 150's: 37912-38391, five). Next free: 38392. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 38872 (which item spent which is in its write-up;
+151's: 38392-38871, five paired reads). Next free: 38872. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

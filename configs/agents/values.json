@@ -124,6 +124,8 @@
     "players_lose": {"credits": -1, "per": "the resource at its rate"},
     "adversary_build": {"credits": -6, "per": "an extra adversary build"},
     "create": {"credits": -2, "per": "adversary ambassador a creation line places, on each site in each country it reaches"},
+    "rally": {"credits": -2, "per": "adversary ambassador a Rally lands on each board (151; an event's: its pool)"},
+    "increase_income": {"credits": -1.1, "per": "compute a round of an income rise, each round left; an ambassador a board a round counts 2 compute a board (151)"},
     "create_site": {"credits": 3, "per": "neutral site opened in each country (a target both sides contest)"},
     "corrupt": {"credits": -10, "per": "a Corrupt X line (about one site a game in reach of corrupting, a liberation the other way)"},
     "lose_node_or": {"credits": -1, "per": "the cheaper of a node and the payment"},

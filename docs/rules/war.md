@@ -98,8 +98,8 @@ pays by stopping its harm, so the Sway counted it twice); a card meant to build 
 prints its Sway (none does).
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on adversary
-factories every round, from some threats and
-projects, and every round 1 lands on a factory (else a city) in each country where the Protector has a node.
+factories every round, from most event cards (Deploy: on each board's lowest-numbered factory), some threats and
+projects, and every round 1 lands the same way on each board where the Protector has a node.
 Every round, in the adversary's turn,
 each troop takes two steps. If a research station or factory you own is on or next to the
 troop's hex, it destroys that piece and leaves the board; otherwise it walks one hex toward

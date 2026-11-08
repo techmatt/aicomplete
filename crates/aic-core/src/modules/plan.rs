@@ -6,12 +6,12 @@
 //! deferred call 9: the agents' heuristic used to copy the build):
 //! `adversary::create` places what [`create_plan`] says and
 //! `adversary::corrupt_sites` corrupts what [`corrupt_plan`] says, so the
-//! forecasts in [`next_build`] and [`next_corruptions`] can't drift from the
-//! rule. The troops' forecast is `board::troop_plan`.
+//! forecasts in [`next_rally`] and [`next_corrupt_n`] can't drift from the
+//! rule (151: `adversary::rally` places what [`rally_plan`] says). The troops' forecast is `board::troop_plan`.
 
 use crate::content::{Op, RoundFlag};
 use crate::module::World;
-use crate::op::{CorruptSite, CreateAt, CreateIf};
+use crate::op::{CorruptSite, CreateAt, CreateIf, RallyAt};
 use crate::state::GameState;
 
 use super::{adversary, board};
@@ -188,33 +188,80 @@ fn card_ahead<'w>(w: &World<'w>, g: &GameState) -> Option<&'w crate::content::Ad
     Some(adversary::card(w, id))
 }
 
-/// The next round's build, read off the face-up adversary card (public): its
-/// creation lines, then the board's (with the difficulty's `build_bonus`).
-/// Empty when no card is face up (the deck has run out). Read on the table as
-/// it stands now, so ongoing projects, which create during the build too, are
-/// not foreseen.
-pub fn next_build(w: &World, g: &GameState) -> Vec<(usize, i64)> {
-    let Some(card) = g.pile(adversary::NEXT).first().map(|id| adversary::card(w, id)) else {
+/// 151: where a Rally lands in one board: every site in `sites` (hex order) gains `each`, and `extra` of them
+/// (players choose, one each) one more.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RallyPlan {
+    pub sites: Vec<usize>,
+    pub each: i64,
+    pub extra: i64,
+}
+
+/// Whether hex `h` is a site of Rally type `at`.
+pub fn rally_fits(w: &World, g: &GameState, h: usize, at: RallyAt) -> bool {
+    match at {
+        RallyAt::City => is_city(w, h),
+        RallyAt::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
+        RallyAt::Station => g.tokens(h, STATION) > 0,
+        RallyAt::Factory => g.tokens(h, FACTORY) > 0,
+        RallyAt::Botnet => g.tokens(h, BOTNET) > 0,
+    }
+}
+
+/// 151, Rally X's eligible sites in board `c`: its neutral `at` sites (no owner cube), else the players' (an
+/// aligned city, a player's station or factory), else the adversary's; in hex order. Empty: none of the type.
+pub fn rally_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize> {
+    let mut all: Vec<usize> = w.map.countries[c].hexes.iter().copied().filter(|&h| rally_fits(w, g, h, at)).collect();
+    all.sort_by_key(|&h| w.map.hexes[h].number);
+    let neutral = |h: &usize| !corrupted(g, *h) && cube_owner(g, *h).is_none();
+    let allied = |h: &usize| cube_owner(g, *h).is_some();
+    for class in [&neutral as &dyn Fn(&usize) -> bool, &allied, &|h: &usize| corrupted(g, *h)] {
+        let these: Vec<usize> = all.iter().copied().filter(|h| class(h)).collect();
+        if !these.is_empty() {
+            return these;
+        }
+    }
+    Vec::new()
+}
+
+/// 151: `n` ambassadors rallying to `at` in board `c`, spread evenly over its eligible sites. None: no site.
+pub fn rally_plan(w: &World, g: &GameState, at: RallyAt, c: usize, n: i64) -> Option<RallyPlan> {
+    let sites = rally_sites(w, g, at, c);
+    if sites.is_empty() || n <= 0 {
+        return None;
+    }
+    let k = sites.len() as i64;
+    Some(RallyPlan { each: n / k, extra: n % k, sites })
+}
+
+/// 151, the agents' forecast of the coming Rally (public: the card ahead and the pools): the expected
+/// ambassadors landing on each hex, the remainder spread as a share. Before this round's build the card is
+/// this round's; after it, the face-up one with the pools income has filled. Empty when nothing is coming
+/// (no card, empty pools, between this round's rally and the income).
+pub fn next_rally(w: &World, g: &GameState) -> Vec<(usize, f64)> {
+    let build_ahead = g.config.round.iter().position(|p| p == "adversary.build").is_some_and(|i| g.phase <= i);
+    let id = match g.pile(adversary::NEXT).first() {
+        None if build_ahead => g.pile(adversary::CURRENT).first(),
+        next => next,
+    };
+    let Some(site) = id.and_then(|id| adversary::rally_site(adversary::card(w, id))) else {
         return Vec::new();
     };
-    let bonus = if adversary::level(w, 3) { w.int("adversary.build_bonus") } else { 0 };
-    let mut plan: Vec<(usize, i64)> = Vec::new();
-    let mut add = |h: usize, n: i64| match plan.binary_search_by_key(&h, |&(x, _)| x) {
-        Ok(i) => plan[i].1 += n,
-        Err(i) => plan.insert(i, (h, n)),
-    };
-    for line in card.standing.iter().filter_map(CreateLine::of) {
-        for (h, n) in create_plan(w, g, line, None, &[], None) {
-            add(h, n);
+    let mut out = Vec::new();
+    for c in 0..w.map.countries.len() {
+        // A cordon counts down at cleanup: before this round's build it blocks this round's Rally; after it, only
+        // one played this round (still at 2) lasts to next round's.
+        let cordon = g.var(&board::flag(RoundFlag::Cordon, c));
+        if cordon >= if build_ahead { 1 } else { 2 } {
+            continue;
+        }
+        let n = g.var(&adversary::pool_key(c));
+        if let Some(p) = rally_plan(w, g, site, c, n) {
+            let share = p.each as f64 + p.extra as f64 / p.sites.len() as f64;
+            out.extend(p.sites.iter().map(|&h| (h, share)));
         }
     }
-    for line in w.content.adversary_board.build.iter().filter_map(CreateLine::of) {
-        let line = CreateLine { count: line.count + bonus, ..line };
-        for (h, n) in create_plan(w, g, line, None, &[], None) {
-            add(h, n);
-        }
-    }
-    plan
+    out
 }
 
 /// The corrupt number of the coming corrupt step's lines for `site`: the

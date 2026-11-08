@@ -33,7 +33,7 @@ pub const SOURCES: [&str; 12] = [
     "adversary events",
     "adversary projects",
     "megaprojects",
-    "creation lines",
+    "income and rally",
     "botnets",
     "corruption",
     "uncountered threats",
@@ -43,11 +43,12 @@ pub const SOURCES: [&str; 12] = [
 
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
-pub const RULE_HARMS: [(&str, &str, &str); 16] = [
-    ("creation lines", "adversary pieces placed", "the board's line and each card's: N on the lowest-numbered sites of a type, each country"),
-    ("creation lines", "ambassadors lost", "a created ambassador cancels a player ambassador there"),
-    ("creation lines", "production blacked out", "an ambassador on a city or station blocks its output while it stands (137)"),
-    ("creation lines", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
+pub const RULE_HARMS: [(&str, &str, &str); 17] = [
+    ("income and rally", "adversary pieces placed", "ambassador income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
+    ("income and rally", "projects advanced (compute)", "compute income onto the projects every round (151)"),
+    ("income and rally", "ambassadors lost", "an arriving ambassador cancels a player ambassador there"),
+    ("income and rally", "production blacked out", "an ambassador on a city or station blocks its output while it stands (137)"),
+    ("income and rally", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
     ("botnets", "actions or claims blocked", "a botnet blocks site claims next to it"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (an allied ambassador there is armor)"),
@@ -128,7 +129,17 @@ fn op_harms(op: &Op) -> Vec<usize> {
             "embargo" | "power_down" => vec![BLOCKED],
             _ => vec![BLACKED_OUT],
         },
-        Op::Create { .. } | Op::AdversaryBuild => vec![PIECES_PLACED],
+        Op::Create { .. } | Op::AdversaryBuild | Op::Rally { .. } => vec![PIECES_PLACED],
+        Op::IncreaseIncome { compute, ambassadors } => {
+            let mut v = Vec::new();
+            if *ambassadors > 0 {
+                v.push(PIECES_PLACED);
+            }
+            if *compute > 0 {
+                v.push(PROJECTS_ADVANCED);
+            }
+            v
+        }
         // 138: a corruption takes a node and the ambassadors on the hex itself.
         Op::CorruptCity { .. } | Op::Corrupt { .. } => vec![PIECES_PLACED, NODE_DESTROYED, AMBASSADORS_LOST],
         Op::Troops { destroy, .. } => {

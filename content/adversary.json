@@ -15,8 +15,18 @@
   ],
   "rules": [
    {
+    "name": "Garrisons",
+    "text": "Income: +1 ambassador a board a round.",
+    "effects": [
+     {
+      "op": "increase_income",
+      "ambassadors": 1
+     }
+    ]
+   },
+   {
     "name": "Troops where the Protector stands",
-    "text": "Each build: in each country where the Protector has a node, 1 adversary troop lands.",
+    "text": "Each round: on each board where the Protector has a node, 1 adversary troop lands on its lowest-numbered factory (else city), never a hex Wall holds.",
     "effects": []
    },
    {
@@ -35,7 +45,7 @@
    }
   ],
   "difficulty": {
-   "text": "Militarist, harder: every event that lands troops lands 1 more in each country, and the adversary gains 4 compute for each threat that executes uncountered.",
+   "text": "Militarist, harder: each event's Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.",
    "effects": [
     {
      "op": "standing_troops_bonus",
@@ -51,14 +61,6 @@
    "adversary pieces placed",
    "troops made",
    "facilities destroyed or seized"
-  ],
-  "build": [
-   {
-    "op": "create",
-    "count": 2,
-    "at": "city",
-    "if": "adversary"
-   }
   ]
  },
  "events": [
@@ -76,19 +78,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 2
+     "op": "rally",
+     "site": "coastal_city"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "coastal_city",
-     "sites": 2
     }
    ],
    "twists": [
@@ -97,10 +93,10 @@
      "site": "city"
     }
    ],
-   "text": "Each country: a Military 1 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Corrupt cities.",
+   "text": "Threat, each board: Military 1. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
     "facilities destroyed or seized"
    ]
   },
@@ -119,19 +115,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 2
+     "op": "rally",
+     "site": "factory"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory",
-     "sites": 2
     },
     {
      "op": "create_site",
@@ -144,13 +134,11 @@
      "site": "factory"
     }
    ],
-   "text": "Each country: Military 1 or Economic 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: a neutral factory opens on its lowest-numbered free industrial zone. Corrupt factories.",
+   "text": "Threat, each board: Military 1 or Economic 1. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each board: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "production blacked out",
-    "facilities destroyed or seized",
-    "troops made"
+    "troops made",
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -168,24 +156,12 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 3
+     "op": "rally",
+     "site": "station"
     },
     {
-     "op": "create",
-     "count": 1,
-     "at": "station",
-     "sites": 2
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "ambassadors"
-    },
-    {
-     "op": "create_site",
-     "kind": "station"
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -194,11 +170,10 @@
      "site": "station"
     }
    ],
-   "text": "Each country: Military 1 or Cyber 1. The adversary gains 3 compute. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Each board: a neutral research station opens on its lowest-numbered empty station site. Corrupt research stations.",
+   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 ambassador a board a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "production blacked out"
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -216,24 +191,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 2
+     "op": "rally",
+     "site": "city"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory"
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "ambassadors"
     }
    ],
    "twists": [
@@ -247,12 +211,12 @@
      "site": "city"
     }
    ],
-   "text": "Each country: Military 1 or Influence 1. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on the lowest-numbered factory. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities.",
+   "text": "Threat, each board: Military 1 or Influence 1. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
     "Discord sway",
-    "troops made"
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -270,20 +234,12 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 2
+     "op": "rally",
+     "site": "botnet"
     },
     {
-     "op": "create",
-     "count": 1,
-     "at": "coastal_city",
-     "sites": 2
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "botnet",
-     "sites": 2
+     "op": "increase_income",
+     "compute": 2
     }
    ],
    "twists": [
@@ -292,11 +248,11 @@
      "site": "city"
     }
    ],
-   "text": "Each country: Military 1 or Grid 1. The adversary gains 2 compute. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered botnet hexes. Corrupt cities.",
+   "text": "Threat, each board: Military 1 or Grid 1. Rally: botnet hexes. Income: +2 compute a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
-    "production blacked out"
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -313,8 +269,8 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 3
+     "op": "rally",
+     "site": "coastal_city"
     },
     {
      "op": "troops",
@@ -322,15 +278,8 @@
      "each_country": true
     },
     {
-     "op": "create",
-     "count": 1,
-     "at": "coastal_city",
-     "sites": 2
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory"
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -339,10 +288,10 @@
      "site": "city"
     }
    ],
-   "text": "Each country: a Military 2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered coastal cities. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities.",
+   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
     "facilities destroyed or seized"
    ]
   },
@@ -361,24 +310,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 4
+     "op": "rally",
+     "site": "station"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "station",
-     "sites": 2
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory"
     }
    ],
    "twists": [
@@ -387,11 +325,11 @@
      "site": "station"
     }
    ],
-   "text": "Each country: Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt research stations.",
+   "text": "Threat, each board: Military 2 or Cyber 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "production blacked out"
+    "troops made",
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -409,19 +347,12 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 3
+     "op": "rally",
+     "site": "city"
     },
     {
-     "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "ambassadors"
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory"
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -431,12 +362,10 @@
      "cut": 1
     }
    ],
-   "text": "Each country: Influence 2 or Cyber 2. The adversary gains 3 compute. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on the lowest-numbered factory. Corrupt cities (1 fewer).",
+   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 ambassador a board a round. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "ambassadors lost",
-    "node destroyed"
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -453,18 +382,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 2
+     "op": "rally",
+     "site": "factory"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 2,
-     "at": "factory"
     }
    ],
    "twists": [
@@ -478,12 +402,12 @@
      "site": "factory"
     }
    ],
-   "text": "Each country: a Military 2 threat. The adversary gains 2 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt factories.",
+   "text": "Threat, each board: Military 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
     "node destroyed",
-    "Discord sway"
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -508,8 +432,8 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 4
+     "op": "rally",
+     "site": "factory"
     },
     {
      "op": "troops",
@@ -517,10 +441,8 @@
      "each_country": true
     },
     {
-     "op": "create",
-     "count": 1,
-     "at": "factory",
-     "sites": 3
+     "op": "increase_income",
+     "compute": 2
     }
    ],
    "twists": [
@@ -529,9 +451,10 @@
      "site": "factory"
     }
    ],
-   "text": "Each country: Military 1 or Economic 1, and Military 2 or Economic 2. The adversary gains 4 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Corrupt factories.",
+   "text": "Threat, each board: Military 1 or Economic 1, and Military 2 or Economic 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +2 compute a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
+    "troops made",
     "projects advanced (compute)",
     "facilities destroyed or seized"
    ]
@@ -550,25 +473,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 3
+     "op": "rally",
+     "site": "city"
     },
     {
      "op": "troops",
      "count": 1,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory",
-     "sites": 2
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "ambassadors"
     }
    ],
    "twists": [
@@ -581,10 +492,11 @@
      "site": "city"
     }
    ],
-   "text": "Each country: any tier-2 threat. The adversary gains 3 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors. Every adversary troop takes 1 more step this round. Corrupt cities.",
+   "text": "Threat, each board: any tier-2 threat. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Every adversary troop takes 1 more step this round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
+    "war brought forward",
     "facilities destroyed or seized"
    ]
   },
@@ -609,8 +521,8 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 4
+     "op": "rally",
+     "site": "factory"
     },
     {
      "op": "troops",
@@ -618,16 +530,8 @@
      "each_country": true
     },
     {
-     "op": "create",
-     "count": 1,
-     "at": "factory",
-     "sites": 3
-    },
-    {
-     "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "ambassadors"
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -644,10 +548,10 @@
      "site": "city"
     }
    ],
-   "text": "Each country: a Military 2 threat, and Economic 2 or Grid 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 1 adversary ambassador on each of the 3 lowest-numbered factories. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Remove 2 Unity from the Unity track. Corrupt factories. Corrupt cities.",
+   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
     "Unity pulled back",
     "facilities destroyed or seized"
    ]
@@ -673,24 +577,13 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 4
+     "op": "rally",
+     "site": "city"
     },
     {
      "op": "troops",
      "count": 2,
      "each_country": true
-    },
-    {
-     "op": "create",
-     "count": 2,
-     "at": "factory"
-    },
-    {
-     "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "ambassadors"
     }
    ],
    "twists": [
@@ -708,11 +601,12 @@
      "site": "land"
     }
    ],
-   "text": "Each country: any tier-2 threat, and Military 2 or Influence 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on the lowest-numbered factory. Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Sway 1 toward Discord. Corrupt cities. Corrupt land.",
+   "text": "Threat, each board: any tier-2 threat, and Military 2 or Influence 2. Rally: cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "Discord sway"
+    "troops made",
+    "Discord sway",
+    "facilities destroyed or seized"
    ]
   },
   {
@@ -736,8 +630,8 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 5
+     "op": "rally",
+     "site": "station"
     },
     {
      "op": "troops",
@@ -745,16 +639,8 @@
      "each_country": true
     },
     {
-     "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "ambassadors"
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "station",
-     "sites": 2
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "twists": [
@@ -768,12 +654,10 @@
      "cut": 1
     }
    ],
-   "text": "Each country: Military 2 or Cyber 2, and an Influence 2 threat. The adversary gains 5 compute. In each country, 1 troop lands on a factory (else a city). Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Corrupt research stations. Corrupt cities (1 fewer).",
+   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
-    "ambassadors lost",
-    "node destroyed",
+    "troops made",
     "facilities destroyed or seized"
    ]
   },
@@ -799,8 +683,8 @@
    ],
    "standing": [
     {
-     "op": "compute",
-     "amount": 4
+     "op": "rally",
+     "site": "coastal_city"
     },
     {
      "op": "troops",
@@ -808,10 +692,9 @@
      "each_country": true
     },
     {
-     "op": "create",
-     "count": 2,
-     "at": "coastal_city",
-     "sites": 2
+     "op": "flag",
+     "name": "blackout",
+     "everywhere": true
     }
    ],
    "twists": [
@@ -824,10 +707,11 @@
      "site": "land"
     }
    ],
-   "text": "Each country: Economic 2 or Grid 2, and Military 2 or Cyber 2. The adversary gains 4 compute. In each country, 2 troops land on factories (else cities). Each board: create 2 adversary ambassadors on each of the 2 lowest-numbered coastal cities. Corrupt cities. Corrupt land.",
+   "text": "Threat, each board: Economic 2 or Grid 2, and Military 2 or Cyber 2. Rally: coastal cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
-    "projects advanced (compute)",
+    "troops made",
+    "production blacked out",
     "facilities destroyed or seized"
    ]
   }

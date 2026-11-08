@@ -7,15 +7,17 @@
   ],
   "cost": 4,
   "ongoing": false,
-  "text": "Every player loses 12 credits.",
+  "text": "Each player pays 5 chips or discards 3 cards.",
   "effects": [
    {
-    "op": "players_lose",
-    "resource": "credits",
-    "amount": 12
+    "op": "requisition",
+    "resource": "chips",
+    "amount": 5,
+    "cards": 3
    }
   ],
   "harms": [
+   "cards discarded",
    "credits or income lost"
   ]
  },
@@ -27,7 +29,7 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Every military base fills with corp troops to its cap now. Sway 3 toward Discord.",
+  "text": "Every military base fills with corp troops to its cap.",
   "effects": [
    {
     "op": "corp_troops",
@@ -35,16 +37,10 @@
     "at": "every_base",
     "when": "now",
     "past_cap": false
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 3
    }
   ],
   "harms": [
-   "troops made",
-   "Discord sway"
+   "troops made"
   ]
  },
  {
@@ -55,28 +51,18 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory (else a city) in each country. Remove 1 Unity from the Unity track.",
+  "text": "Each player pays 2 ambassadors or discards 2 cards.",
   "effects": [
    {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "troops",
-    "count": 1,
-    "each_country": true
-   },
-   {
-    "op": "pull_unity",
-    "amount": 1
+    "op": "requisition",
+    "resource": "ambassadors",
+    "amount": 2,
+    "cards": 2
    }
   ],
   "harms": [
-   "ambassadors lost",
-   "adversary pieces placed",
-   "Unity pulled back"
+   "cards discarded",
+   "ambassadors lost"
   ]
  },
  {
@@ -87,7 +73,7 @@
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "In each country, 3 troops land on factories (else cities).",
+  "text": "Deploy 3: each board, 3 troops on its lowest-numbered factory (else city).",
   "effects": [
    {
     "op": "troops",
@@ -96,9 +82,7 @@
    }
   ],
   "harms": [
-   "adversary pieces placed",
-   "node destroyed",
-   "facilities destroyed or seized"
+   "troops made"
   ]
  },
  {
@@ -109,7 +93,7 @@
   ],
   "cost": 11,
   "ongoing": true,
-  "text": "Ongoing: each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base in each production, whatever makes it); sway 1 toward Discord.",
+  "text": "Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production).",
   "effects": [
    {
     "op": "corp_troops",
@@ -117,16 +101,10 @@
     "at": "every_base",
     "when": "each_production",
     "past_cap": true
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 1
    }
   ],
   "harms": [
-   "troops made",
-   "Discord sway"
+   "troops made"
   ]
  },
  {
@@ -137,7 +115,7 @@
   ],
   "cost": 18,
   "ongoing": true,
-  "text": "In each country, 3 troops land on factories (else cities); sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice.",
+  "text": "Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice.",
   "effects": [
    {
     "op": "extra_war",
@@ -150,18 +128,11 @@
     "op": "troops",
     "count": 3,
     "each_country": true
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 3
    }
   ],
   "harms": [
-   "adversary pieces placed",
    "war brought forward",
-   "node destroyed",
-   "Discord sway"
+   "troops made"
   ]
  },
  {
@@ -172,23 +143,16 @@
   ],
   "cost": 5,
   "ongoing": false,
-  "text": "Sway 5 toward Discord. Every player loses 2 ambassadors.",
+  "text": "Sway 5 toward Discord.",
   "effects": [
    {
     "op": "sway",
     "side": "discord",
     "amount": 5
-   },
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "lose_ambassador"
    }
   ],
   "harms": [
-   "Discord sway",
-   "ambassadors lost"
+   "Discord sway"
   ]
  },
  {
@@ -198,15 +162,12 @@
    "influence"
   ],
   "cost": 11,
-  "ongoing": true,
-  "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered cities not corrupted.",
+  "ongoing": false,
+  "text": "Income: +1 ambassador a board a round.",
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "city",
-    "if": "clean",
-    "sites": 3
+    "op": "increase_income",
+    "ambassadors": 1
    }
   ],
   "harms": [
@@ -221,34 +182,22 @@
   ],
   "cost": 18,
   "ongoing": false,
-  "text": "Each board: create 3 adversary ambassadors on the lowest-numbered city not corrupted. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
+  "text": "Rally 3, each board: cities. Corrupt: cities (1 fewer).",
   "effects": [
    {
-    "op": "create",
-    "count": 3,
-    "at": "city",
-    "if": "clean"
+    "op": "rally",
+    "site": "city",
+    "count": 3
    },
    {
     "op": "corrupt",
     "site": "city",
     "cut": 1
-   },
-   {
-    "op": "lose_ambassador"
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "facilities destroyed or seized",
-   "node destroyed",
-   "ambassadors lost",
-   "Discord sway"
+   "facilities destroyed or seized"
   ]
  },
  {
@@ -259,19 +208,23 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Every player loses 5 tokens from their cards and gets 3 less insight next round.",
+  "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards.",
   "effects": [
    {
     "op": "lose_tokens",
-    "amount": 5
+    "amount": 3
    },
    {
-    "op": "lose_insight",
-    "amount": 3
+    "op": "requisition",
+    "resource": "insight",
+    "amount": 3,
+    "cards": 2,
+    "next_round": true
    }
   ],
   "harms": [
    "tokens stripped from cards",
+   "cards discarded",
    "insight lost"
   ]
  },
@@ -283,13 +236,12 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Each board: create 3 adversary ambassadors on each of the 2 lowest-numbered botnet hexes.",
+  "text": "Rally 3, each board: botnet hexes.",
   "effects": [
    {
-    "op": "create",
-    "count": 3,
-    "at": "botnet",
-    "sites": 2
+    "op": "rally",
+    "site": "botnet",
+    "count": 3
    }
   ],
   "harms": [
@@ -304,13 +256,12 @@
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, players choose a research station that is not the adversary's; it flips to the adversary, but a player's holds unless 2 adversary ambassadors and no player ambassador are on it (those 2 return to the supply as it flips). If it holds, 1 adversary ambassador lands on it (or cancels a player ambassador there).",
+  "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it).",
   "effects": [
    {
-    "op": "create",
-    "count": 1,
-    "at": "station",
-    "sites": 2
+    "op": "rally",
+    "site": "station",
+    "count": 2
    },
    {
     "op": "flip_station",
@@ -318,10 +269,8 @@
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
    "adversary pieces placed",
-   "ambassadors lost",
-   "production blacked out"
+   "facilities destroyed or seized"
   ]
  },
  {
@@ -332,20 +281,17 @@
   ],
   "cost": 5,
   "ongoing": false,
-  "text": "Every player gets 9 fewer credits of income at the next upkeep and loses all their chips.",
+  "text": "Each player pays 10 credits or discards 3 cards.",
   "effects": [
    {
-    "op": "lose_income",
+    "op": "requisition",
     "resource": "credits",
-    "amount": 9
-   },
-   {
-    "op": "players_lose",
-    "resource": "chips",
-    "all": true
+    "amount": 10,
+    "cards": 3
    }
   ],
   "harms": [
+   "cards discarded",
    "credits or income lost"
   ]
  },
@@ -357,25 +303,17 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "The adversary builds a factory in the country with the most free industrial zones (tie: the first country), on a free zone next to an adversary ambassador, else the lowest-numbered one (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories.",
+  "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory).",
   "effects": [
    {
     "op": "adversary_factory",
     "count": 1,
     "where": "most_free_zones",
     "fallback_ambassadors": 2
-   },
-   {
-    "op": "create",
-    "count": 1,
-    "at": "factory",
-    "sites": 2
    }
   ],
   "harms": [
-   "facilities destroyed or seized",
-   "adversary pieces placed",
-   "actions or claims blocked"
+   "facilities destroyed or seized"
   ]
  },
  {
@@ -386,12 +324,12 @@
   ],
   "cost": 8,
   "ongoing": false,
-  "text": "Every player's income falls by 6 credits for the rest of the game.",
+  "text": "Each player's credit income falls by 4 for the rest of the game.",
   "effects": [
    {
     "op": "team_income",
     "resource": "credits",
-    "amount": -6
+    "amount": -4
    }
   ],
   "harms": [
@@ -406,27 +344,16 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Every player loses 2 energy. Until the end of next round, cities make no energy and research stations produce nothing.",
+  "text": "Until the end of next round, cities make no energy.",
   "effects": [
-   {
-    "op": "players_lose",
-    "resource": "energy",
-    "amount": 2
-   },
    {
     "op": "flag",
     "name": "blackout",
     "everywhere": true
-   },
-   {
-    "op": "flag",
-    "name": "station_dark",
-    "everywhere": true
    }
   ],
   "harms": [
-   "production blacked out",
-   "energy lost"
+   "production blacked out"
   ]
  },
  {
@@ -437,22 +364,17 @@
   ],
   "cost": 9,
   "ongoing": true,
-  "text": "Every player loses 2 energy. Ongoing: every round, every player loses 1 energy.",
+  "text": "Ongoing: Each player pays 1 energy or discards 1 card.",
   "effects": [
    {
-    "op": "players_lose",
+    "op": "requisition",
     "resource": "energy",
-    "amount": 1
-   }
-  ],
-  "resolve": [
-   {
-    "op": "players_lose",
-    "resource": "energy",
-    "amount": 2
+    "amount": 1,
+    "cards": 1
    }
   ],
   "harms": [
+   "cards discarded",
    "energy lost"
   ]
  },
@@ -464,23 +386,17 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Deal 1 extra tier-2 threat in each country, any tag. Sway 2 toward Discord.",
+  "text": "Each board: an extra tier-2 threat, any tag.",
   "effects": [
    {
     "op": "deal_threats",
     "count": 1,
     "each_country": true,
     "tier": 2
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 2
    }
   ],
   "harms": [
-   "extra threats",
-   "Discord sway"
+   "extra threats"
   ]
  },
  {
@@ -491,7 +407,7 @@
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "The adversary builds now, then Corrupt cities; 1 troop lands on a factory (else a city) in each country; sway 3 toward Discord.",
+  "text": "Each board rallies its ambassador income now, to this round's Rally. Corrupt: cities.",
   "effects": [
    {
     "op": "adversary_build"
@@ -499,21 +415,11 @@
    {
     "op": "corrupt",
     "site": "city"
-   },
-   {
-    "op": "troops",
-    "count": 1,
-    "each_country": true
-   },
-   {
-    "op": "sway",
-    "side": "discord",
-    "amount": 3
    }
   ],
   "harms": [
    "adversary pieces placed",
-   "Discord sway"
+   "facilities destroyed or seized"
   ]
  },
  {
@@ -524,28 +430,23 @@
   ],
   "cost": 14,
   "ongoing": true,
-  "text": "Ongoing: every round, sway 3 toward Discord, remove 2 Unity from the Unity track. Each board: create 2 adversary ambassadors on the lowest-numbered corrupted city.",
+  "text": "Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord.",
   "effects": [
    {
     "op": "sway",
     "side": "discord",
-    "amount": 3
-   },
-   {
-    "op": "pull_unity",
     "amount": 2
-   },
+   }
+  ],
+  "resolve": [
    {
-    "op": "create",
-    "count": 2,
-    "at": "city",
-    "if": "adversary"
+    "op": "increase_income",
+    "compute": 2
    }
   ],
   "harms": [
    "Discord sway",
-   "Unity pulled back",
-   "adversary pieces placed"
+   "projects advanced (compute)"
   ]
  }
 ]

@@ -53,13 +53,18 @@ fn a_player_with_no_node_loses_the_game_for_everyone() {
 #[test]
 fn the_supply_is_a_cap_not_a_loss() {
     let (rules, mut g) = lab(&["adversary.build"]);
-    let city = rules.map.numbered(0, piece(0).corrupted[0]);
-    put(&mut g, city, ADV_CUBE, 1);
+    let station = rules.map.numbered(0, piece(0).stations[0]);
+    put(&mut g, station, STATION, 1);
     g.vars.insert(SUPPLY.into(), 1);
+    for c in 0..rules.map.countries.len() {
+        g.vars.insert(crate::modules::adversary::pool_key(c).into(), 0);
+    }
+    g.vars.insert(crate::modules::adversary::pool_key(0).into(), 2);
     set_pile(&mut g, NEXT, &["mil_s1_long_patrols"]);
     run_answered(&rules, &mut g);
-    // 138: the board's creation line asks 2 for the adversary city; one lands.
+    // 151: Long Patrols rallies board 0's pool of 2 to its one station; one lands.
     assert_eq!(total(&g, ADV_AMBASSADOR), 1);
+    assert_eq!(g.tokens(station, ADV_AMBASSADOR), 1);
     assert_eq!(g.var(SUPPLY), 0);
     assert!(!g.is_over());
 }

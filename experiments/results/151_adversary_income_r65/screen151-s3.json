@@ -1,0 +1,119 @@
+{
+  "name": "screen151-s3",
+  "note": "151 screen 3: compute income steps for d2 and d3 (dev seeds 36800-36863, d1-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_stated",
+      "set": [
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_stated",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_stated",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_c10d3",
+      "set": [
+        "adversary.compute_income=5,5,5,10,10"
+      ]
+    },
+    {
+      "name": "br_c10d3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,10,10"
+      ]
+    },
+    {
+      "name": "pr_c10d3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,10,10"
+      ]
+    },
+    {
+      "name": "bp_c12d3",
+      "set": [
+        "adversary.compute_income=5,5,5,12,12"
+      ]
+    },
+    {
+      "name": "br_c12d3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,12,12"
+      ]
+    },
+    {
+      "name": "pr_c12d3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,12,12"
+      ]
+    },
+    {
+      "name": "bp_c7d2",
+      "set": [
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    },
+    {
+      "name": "br_c7d2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    },
+    {
+      "name": "pr_c7d2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

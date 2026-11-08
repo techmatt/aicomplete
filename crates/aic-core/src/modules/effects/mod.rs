@@ -291,6 +291,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
+        // 151: the adversary's rally and income.
+        Op::Rally { site, count } => {
+            let source = if ctx.label == "standing" { "event" } else { ctx.label };
+            adversary::rally(g, cx, *site, *count, ctx.scope, source)?
+        }
+        Op::IncreaseIncome { compute, ambassadors } => adversary::increase_income(g, cx, *compute, *ambassadors),
 
         // 135: the new adversary model's ops, and the old ops with a new field set.
         Op::Troops { .. }

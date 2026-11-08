@@ -109,8 +109,8 @@ A threat countered by a card is discarded and its partial payments are refunded.
   tier-2 threats, creation, Corrupt lines) or strip player pieces (credits, Unity, ambassadors); nodes then fall
   only where the board is overrun ([war.md](war.md), *Node destruction*). "Two tier-2 threats in each country" pulls
   from the tier-2 deck, any tag, two a country (146, Matt: each tier-3 pull became two tier-2s, the ladder's top step).
-- Offensive acts at once, out of the round's order: Corrupt cities (at 4+ tips the adversary builds first: the
-  board's and this round's card's creation lines), then a tier-2 threat (two at 3+ tips), any tag, is dealt into the country of
+- Offensive acts at once, out of the round's order: Corrupt cities (at 4+ tips the adversary builds first: each board
+  rallies its ambassador income to this round's card's Rally site), then a tier-2 threat (two at 3+ tips), any tag, is dealt into the country of
   the node hex with the most adversary ambassadors and troops (ties: country, then lower hex number), its first
   location token on that hex. It is countered or executes like any other; dealt after the counter phase, it waits a
   round. Before the build step (a tip in the Sway phase, from land-corruption tokens or a board's drip) this round's card is the face-up one.

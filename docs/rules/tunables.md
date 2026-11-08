@@ -59,7 +59,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
 | `adversary.counter_bonus_all` | 1 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
-| `adversary.counter_bonus_credits` | 3 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
+| `adversary.counter_bonus_credits` | 6 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
 | `adversary.counter_more_all` | 1 | 0..10 | difficulty counter_more_at+: added again to every resource counter item but credits (142's second step) |
 | `adversary.counter_more_credits` | 2 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
 | `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
@@ -70,8 +70,10 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply (142; 2 before) |
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
+| `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.build_bonus` | 3 | 0..5 | difficulty 3+: each site the adversary board's creation lines reach gains this many more |
+| `adversary.compute_income` | 5, 5, 8, 10, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.ambassador_income` | 2, 2, 2, 3, 3 | 0..10 | 151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |

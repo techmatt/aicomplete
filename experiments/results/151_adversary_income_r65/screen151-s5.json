@@ -1,0 +1,142 @@
+{
+  "name": "screen151-s5",
+  "note": "151 screen 5: a d1 step (ambassador income 3 from d1, or counters' credits) and a d3 step (dev seeds 36800-36863, d1-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_stated",
+      "set": [
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_stated",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_stated",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_a3d1",
+      "set": [
+        "adversary.ambassador_income=2,3,3,3,3",
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    },
+    {
+      "name": "br_a3d1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=2,3,3,3,3",
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    },
+    {
+      "name": "pr_a3d1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=2,3,3,3,3",
+        "adversary.compute_income=5,5,7,10,10"
+      ]
+    },
+    {
+      "name": "bp_a3d1c10",
+      "set": [
+        "adversary.ambassador_income=2,3,3,3,3"
+      ]
+    },
+    {
+      "name": "br_a3d1c10",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=2,3,3,3,3"
+      ]
+    },
+    {
+      "name": "pr_a3d1c10",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=2,3,3,3,3"
+      ]
+    },
+    {
+      "name": "bp_cbc4",
+      "set": [
+        "adversary.counter_bonus_credits=4"
+      ]
+    },
+    {
+      "name": "br_cbc4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=4"
+      ]
+    },
+    {
+      "name": "pr_cbc4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=4"
+      ]
+    },
+    {
+      "name": "bp_c11d3",
+      "set": [
+        "adversary.compute_income=5,5,10,11,11"
+      ]
+    },
+    {
+      "name": "br_c11d3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,10,11,11"
+      ]
+    },
+    {
+      "name": "pr_c11d3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,10,11,11"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

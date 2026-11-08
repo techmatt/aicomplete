@@ -9,21 +9,23 @@
    ],
    "cost": 4,
    "ongoing": false,
-   "text": "Every player loses 12 credits.",
+   "text": "Each player pays 5 chips or discards 3 cards.",
    "effects": [
     {
-     "op": "players_lose",
-     "resource": "credits",
-     "amount": 12
+     "op": "requisition",
+     "resource": "chips",
+     "amount": 5,
+     "cards": 3
     }
    ],
    "harms": [
+    "cards discarded",
     "credits or income lost"
    ],
-   "value": "absorbs 4 a player (8 to drain); harm 12 credits a player (142: was 8; credits bite harder after 142's income trim); 3.0 a compute",
-   "check": "the first project to fill, rounds 2-4; 12 credits is about half a mid-game round's income, a blow, not a stall: a seat with fewer loses what it has; no loop",
+   "value": "absorbs 4 compute a player (8 at 2 players, 8.8 at values.json compute 1.1); harm 20 (Each player pays 5 chips or discards 3 cards: 20); 2.50 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: credits lost 8 to 12"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -35,33 +37,23 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Every military base fills with corp troops to its cap now. Sway 3 toward Discord.",
+   "text": "Every military base fills with corp troops to its cap.",
    "effects": [
     {
      "op": "corp_troops",
      "fill": true,
      "at": "every_base",
      "when": "now",
-     "past_cap": false,
-     "new": true,
-     "why": "corp bases make corp troops (more war, more Discord); fill: each base makes troops up to its cap, once, now"
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 3
+     "past_cap": false
     }
    ],
    "harms": [
-    "troops made",
-    "Discord sway"
+    "troops made"
    ],
-   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 0 + 2-4 troops a country at 5 (10-20) + 3 sway (12) = 22-32, about 27; 3.1-4.6, about 3.9 a compute",
-   "check": "bites rounds 3-6, worth most when bases are well under cap after a war; capped by the troop cap, once; the answer is draining it or a strong war seat; no loop",
+   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 16 (Every military base fills with corp troops to its cap: 16); 1.14 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "new op corp_troops (fill field; past_cap false, since a fill stops at the cap by definition)",
-    "troops a base is short of its cap is a guess until a read",
-    "142: more severe on resolving: sway 1 to 3"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -73,35 +65,25 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "Every player loses 2 ambassadors (from their supply, else ones on the board). 1 troop lands on a factory (else a city) in each country. Remove 1 Unity from the Unity track.",
+   "text": "Each player pays 2 ambassadors or discards 2 cards.",
    "effects": [
     {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
-    },
-    {
-     "op": "pull_unity",
-     "amount": 1
+     "op": "requisition",
+     "resource": "ambassadors",
+     "amount": 2,
+     "cards": 2
     }
    ],
    "harms": [
-    "ambassadors lost",
-    "adversary pieces placed",
-    "Unity pulled back"
+    "cards discarded",
+    "ambassadors lost"
    ],
-   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 2 ambassadors (8) + a troop and its strike (about 10) + 1 Unity pulled (4) = 22; 3.1 a compute",
-   "check": "mid-game, rounds 4-7; the troop is answered like any landing; the losses are each player's own pick of ambassadors, so it never strands a seat; no loop",
+   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 16 (Each player pays 2 ambassadors or discards 2 cards: 16); 1.14 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: 1 to 2 ambassadors lost, and 1 Unity pulled back"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "purge_the_unaligned"
+   "reuses": null
   },
   {
    "id": "armored_columns",
@@ -111,7 +93,7 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "In each country, 3 troops land on factories (else cities).",
+   "text": "Deploy 3: each board, 3 troops on its lowest-numbered factory (else city).",
    "effects": [
     {
      "op": "troops",
@@ -120,16 +102,14 @@
     }
    ],
    "harms": [
-    "adversary pieces placed",
-    "node destroyed",
-    "facilities destroyed or seized"
+    "troops made"
    ],
-   "value": "absorbs 10 a player (20 to drain); harm (a player's share + shared a country): 0 + 3 troops and their strikes (about 30) = 30; 3.0 a compute",
-   "check": "rounds 5-8; Security removals (5 a troop) and Wall answer it; troops march on, capped by the troop supply",
+   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 54 (Deploy 3: each board, 3 troops on its lowest-numbered factory (else city): 54); 2.70 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: 2 to 3 troops a country"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "armored_columns"
+   "reuses": null
   },
   {
    "id": "arms_race",
@@ -139,33 +119,23 @@
    ],
    "cost": 11,
    "ongoing": true,
-   "text": "Ongoing: each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base in each production, whatever makes it); sway 1 toward Discord.",
+   "text": "Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production).",
    "effects": [
     {
      "op": "corp_troops",
      "count": 1,
      "at": "every_base",
      "when": "each_production",
-     "past_cap": true,
-     "new": true,
-     "why": "corp bases make extra corp troops (more war, more Discord): every base, each production step, past its cap"
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 1
+     "past_cap": true
     }
    ],
    "harms": [
-    "troops made",
-    "Discord sway"
+    "troops made"
    ],
-   "value": "absorbs 11 a player (22 to drain); harm (a player's share + shared a country): 0 + 1 troop (5) a base a round, 1-2 bases a country, + 1 sway (4) a round, 3-4 rounds = 27-56, about 41; 2.5-5.1, about 3.7 a compute",
-   "check": "lands rounds 5-7 and runs to the end; strong war seats fight the troops; past the cap, so capped by bases (fixed by the board) and the troop supply, not a loop; the sway acts in the build step, the troops in production",
+   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 32 over about 4 rounds (Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production): 32); 1.45 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "new op corp_troops",
-    "unsure: value swings with bases a country; may want cost 12-13 at 1 country",
-    "142: more severe on resolving: sway 1 toward Discord every round"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -177,43 +147,31 @@
    ],
    "cost": 18,
    "ongoing": true,
-   "text": "In each country, 3 troops land on factories (else cities); sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice.",
+   "text": "Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice.",
    "effects": [
     {
      "op": "extra_war",
      "front": "most_corp_troops",
-     "ongoing_use": true,
-     "new": true,
-     "why": "each round the war step runs twice on the front with the most corp troops (a second round of cancelling and factory strikes): live even when every round is a war round"
+     "ongoing_use": true
     }
    ],
-   "harms": [
-    "adversary pieces placed",
-    "war brought forward",
-    "node destroyed",
-    "Discord sway"
-   ],
-   "value": "absorbs 18 a player (36 to drain); harm (a player's share + shared a country): 0 + 3 troops and their strikes now (about 30) + 3 sway now (12) + a second war step on one front (about 12) a round for 1-3 rounds (12-36) = 54-78, about 66; 3.0-4.3, about 3.7 a compute (the second war step is one front table-wide, so it thins at 2+ countries)",
-   "check": "the military superproject: only fills rounds 7-10, when every round is already a war round, so the second war step is what bites; game-shaping, not a loss: a war seat on that front holds it, and draining 36 a player stops it; one extra step a round, no loop",
-   "flags": [
-    "new op extra_war (ongoing form; front field: the one with the most corp troops, ties unsettled)",
-    "an ongoing project acting in the war step: today ongoing projects act only in the build step",
-    "135: the troops are its `resolve` line (once, when it resolves); its `effects` act every round while it stands",
-    "142: more severe on resolving: 2 to 3 troops a country, and sway 3 toward Discord, both in its resolve line"
-   ],
-   "reuses": null,
    "resolve": [
     {
      "op": "troops",
      "count": 3,
      "each_country": true
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 3
     }
-   ]
+   ],
+   "harms": [
+    "war brought forward",
+    "troops made"
+   ],
+   "value": "absorbs 18 compute a player (36 at 2 players, 39.6 at values.json compute 1.1); harm 118 over about 4 rounds (Each round, the front with the most corp troops fights twice: 64; Deploy 3: each board, 3 troops on its lowest-numbered factory (else city): 54); 3.28 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
+   "flags": [
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
+   ],
+   "reuses": null
   },
   {
    "id": "disinformation",
@@ -223,31 +181,23 @@
    ],
    "cost": 5,
    "ongoing": false,
-   "text": "Sway 5 toward Discord. Every player loses 2 ambassadors.",
+   "text": "Sway 5 toward Discord.",
    "effects": [
     {
      "op": "sway",
      "side": "discord",
      "amount": 5
-    },
-    {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "lose_ambassador"
     }
    ],
    "harms": [
-    "Discord sway",
-    "ambassadors lost"
+    "Discord sway"
    ],
-   "value": "absorbs 5 a player (10 to drain); harm 20 to the table plus 8 a player: about 18 a player at 2 players, 13 at 4; 2.6-3.6 a compute",
-   "check": "cheap, fills rounds 2-4; nobody counters a project, so the answer is draining it; no loop",
+   "value": "absorbs 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); harm 20 (Sway 5 toward Discord: 20); 2.00 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "sway doesn't scale with players while cost does: dearer per compute at 4 players",
-    "142: more severe on resolving: sway 4 to 5, ambassadors lost 1 to 2"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "disinformation"
+   "reuses": null
   },
   {
    "id": "recruitment_drive",
@@ -256,26 +206,23 @@
     "influence"
    ],
    "cost": 11,
-   "ongoing": true,
-   "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered cities not corrupted.",
+   "ongoing": false,
+   "text": "Income: +1 ambassador a board a round.",
    "effects": [
     {
-     "op": "create",
-     "count": 1,
-     "at": "city",
-     "if": "clean",
-     "sites": 3
+     "op": "increase_income",
+     "ambassadors": 1
     }
    ],
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "absorbs 11 a player (22 to drain); harm 1-3 clean cities a country mid-game, 5 each, 3-4 rounds: 15-60, about 40; 1.4-5.5, about 3.6 a compute",
-   "check": "lands rounds 5-7; aligned cities count (148, D64: 'not corrupted'), so removal and liberation answer it, not aligning; capped by cities not corrupted, which only fall",
+   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 22 (Income: +1 ambassador a board a round: 22); 1.00 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: 2 to 3 clean cities a round"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "recruitment_drive"
+   "reuses": null
   },
   {
    "id": "infiltration_drive",
@@ -285,42 +232,29 @@
    ],
    "cost": 18,
    "ongoing": false,
-   "text": "Each board: create 3 adversary ambassadors on the lowest-numbered city not corrupted. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
+   "text": "Rally 3, each board: cities. Corrupt: cities (1 fewer).",
    "effects": [
     {
-     "op": "create",
-     "count": 3,
-     "at": "city",
-     "if": "clean"
+     "op": "rally",
+     "site": "city",
+     "count": 3
     },
     {
      "op": "corrupt",
      "site": "city",
      "cut": 1
-    },
-    {
-     "op": "lose_ambassador"
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 3
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "facilities destroyed or seized",
-    "node destroyed",
-    "ambassadors lost",
-    "Discord sway"
+    "facilities destroyed or seized"
    ],
-   "value": "absorbs 18 a player (36 to drain); harm (a player's share + shared a country): an ambassador (4) + 3 sway (12) + a city corrupted (45, the liberation price, which covers the nodes next to it destroyed, the player ambassadors waiting on it lost, its energy swaying Discord and its build after) + any other city that gathers 3 (0-45) = 61-106, about 70; 3.4-5.9, about 3.9 a compute",
-   "check": "the influence superproject, rounds 7-10; the 3 created on a clean city meet the cut corrupt number (corrupt_at 4, less 1), so one city a country corrupts for certain: a blow, not a loss; liberation answers it; corrupted cities build, capped by city_build",
+   "value": "absorbs 18 compute a player (36 at 2 players, 39.6 at values.json compute 1.1); harm 22 (Rally 3, each board: cities: 12; Corrupt: cities (1 fewer): 10); 0.61 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "P1 (Matt, 2026-11-07): the unprinted bare corrupt_city line is gone; the created 3 do its job in print",
-    "142: more severe on resolving: 3 adversary ambassadors created on a clean city before the corrupt, every player loses an ambassador, sway 3 toward Discord"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "infiltration_drive"
+   "reuses": null
   },
   {
    "id": "data_heist",
@@ -330,25 +264,29 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Every player loses 5 tokens from their cards and gets 3 less insight next round.",
+   "text": "Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards.",
    "effects": [
     {
      "op": "lose_tokens",
-     "amount": 5
+     "amount": 3
     },
     {
-     "op": "lose_insight",
-     "amount": 3
+     "op": "requisition",
+     "resource": "insight",
+     "amount": 3,
+     "cards": 2,
+     "next_round": true
     }
    ],
    "harms": [
     "tokens stripped from cards",
+    "cards discarded",
     "insight lost"
    ],
-   "value": "absorbs 6 a player (12 to drain); harm (a player's share + shared a country): 5 tokens (about 10) + 3 insight (12) + 0 = 22; 3.7 a compute",
-   "check": "rounds 2-5, when token engines start; a seat with fewer tokens loses what it has; draining it is the answer; no loop",
+   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 24 (Each player removes 3 tokens from their cards (their choice of cards): 9; Each player pays 3 insight next round or discards 2 cards: 15); 2.00 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: tokens 3 to 5, insight 2 to 3"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -360,24 +298,23 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Each board: create 3 adversary ambassadors on each of the 2 lowest-numbered botnet hexes.",
+   "text": "Rally 3, each board: botnet hexes.",
    "effects": [
     {
-     "op": "create",
-     "count": 3,
-     "at": "botnet",
-     "sites": 2
+     "op": "rally",
+     "site": "botnet",
+     "count": 3
     }
    ],
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "absorbs 6 a player (12 to drain); harm 1-2 botnets a country, 3 ambassadors each at 5: 15-30; 2.5-5.0 a compute",
-   "check": "rounds 3-6; removing botnets (tier-2 Cyber) shrinks it; the ambassadors spread and can make more botnets, capped by spread rules and supply",
+   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 12 (Rally 3, each board: botnet hexes: 12); 1.00 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: 2 to 3 ambassadors a botnet"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "botnet_swarm"
+   "reuses": null
   },
   {
    "id": "station_coup",
@@ -387,13 +324,12 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, players choose a research station that is not the adversary's; it flips to the adversary, but a player's holds unless 2 adversary ambassadors and no player ambassador are on it (those 2 return to the supply as it flips). If it holds, 1 adversary ambassador lands on it (or cancels a player ambassador there).",
+   "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it).",
    "effects": [
     {
-     "op": "create",
-     "count": 1,
-     "at": "station",
-     "sites": 2
+     "op": "rally",
+     "site": "station",
+     "count": 2
     },
     {
      "op": "flip_station",
@@ -401,18 +337,15 @@
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
     "adversary pieces placed",
-    "ambassadors lost",
-    "production blacked out"
+    "facilities destroyed or seized"
    ],
-   "value": "absorbs 9 a player (18 to drain); harm (a player's share + shared a country): 0 + 2 adversary ambassadors (10; each cancels a player ambassador there and blocks the station's output while it stands) + a corrupted station (20) = 30 a country; 3.3 a compute",
-   "check": "rounds 5-8; the created ambassadors cancel a guard, so a station needs 2 player ambassadors to hold; cleanse answers it; no loop",
+   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 (Rally 2, each board: research stations: 8; Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it): 24); 1.78 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "text is about 215 characters, over 130, to print the create line and today's guard rule",
-    "142: more severe on resolving: 1 adversary ambassador created on each of the 2 lowest-numbered stations before the flip"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "station_coup"
+   "reuses": null
   },
   {
    "id": "market_crash",
@@ -422,35 +355,25 @@
    ],
    "cost": 5,
    "ongoing": false,
-   "text": "Every player gets 9 fewer credits of income at the next upkeep and loses all their chips.",
+   "text": "Each player pays 10 credits or discards 3 cards.",
    "effects": [
     {
-     "op": "lose_income",
+     "op": "requisition",
      "resource": "credits",
-     "amount": 9,
-     "new": true,
-     "why": "lose_insight's twin for credits (as tier-1 Credit Crunch): income lost next round"
-    },
-    {
-     "op": "players_lose",
-     "resource": "chips",
-     "all": true,
-     "new": true,
-     "why": "players_lose gains an 'all' field: every one held"
+     "amount": 10,
+     "cards": 3
     }
    ],
    "harms": [
+    "cards discarded",
     "credits or income lost"
    ],
-   "value": "absorbs 5 a player (10 to drain); harm (a player's share + shared a country): 9 credits + 0-3 chips at 3 (0-9) + 0 = 9-18, about 15; 1.8-3.6, about 3.0 a compute",
-   "check": "rounds 2-5, while 9 is over a third of a round's income; worst for a seat banking chips for a build; nobody answers it but by draining; no loop",
+   "value": "absorbs 5 compute a player (10 at 2 players, 11.0 at values.json compute 1.1); harm 20 (Each player pays 10 credits or discards 3 cards: 20); 2.00 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "new op lose_income (shared with tier-1 Credit Crunch)",
-    "players_lose gains an 'all' field",
-    "chips lost has no harm row of its own: listed under credits or income lost",
-    "142: more severe on resolving: income lost 6 to 9"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "market_crash"
+   "reuses": null
   },
   {
    "id": "shadow_factories",
@@ -460,34 +383,22 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "The adversary builds a factory in the country with the most free industrial zones (tie: the first country), on a free zone next to an adversary ambassador, else the lowest-numbered one (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories.",
+   "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory).",
    "effects": [
     {
      "op": "adversary_factory",
      "count": 1,
      "where": "most_free_zones",
-     "fallback_ambassadors": 2,
-     "new": true,
-     "why": "the adversary takes one free industrial zone with its own factory, in the country with the most free zones (ties, the lower hex)"
-    },
-    {
-     "op": "create",
-     "count": 1,
-     "at": "factory",
-     "sites": 2
+     "fallback_ambassadors": 2
     }
    ],
    "harms": [
-    "facilities destroyed or seized",
-    "adversary pieces placed",
-    "actions or claims blocked"
+    "facilities destroyed or seized"
    ],
-   "value": "absorbs 7 a player (14 to drain); harm (a player's share + shared a country): 0 + an adversary factory (15: it makes an adversary troop on its hex each production step) + its zone blocked 1-2 rounds it would have been claimed (6-12) + 2 adversary ambassadors a country (10, toward corrupting a factory) = 25-37, about 31; 3.6-5.3, about 4.4 a compute (one factory table-wide, so dearer per compute at 2+ countries)",
-   "check": "rounds 3-6, while zones are free; Industry seats that claim zones early blunt it; the factory makes an adversary troop on its hex each production step, and with no removal it stays to the end; the created ambassadors bring the next Corrupt factories closer; one factory a fill, no loop",
+   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 15 (The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory): 15); 1.07 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "new op adversary_factory",
-    "an adversary factory has no removal route in today's rules: a later rules item must add one (as liberation is for a city)",
-    "142: more severe on resolving: 1 adversary ambassador created on each of the 2 lowest-numbered factories"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -499,22 +410,21 @@
    ],
    "cost": 8,
    "ongoing": false,
-   "text": "Every player's income falls by 6 credits for the rest of the game.",
+   "text": "Each player's credit income falls by 4 for the rest of the game.",
    "effects": [
     {
      "op": "team_income",
      "resource": "credits",
-     "amount": -6
+     "amount": -4
     }
    ],
    "harms": [
     "credits or income lost"
    ],
-   "value": "absorbs 8 a player (16 to drain); harm 6 a round for 4-5 rounds: 24-30 a player; 3.0-3.8 a compute",
-   "check": "rounds 4-6; worth less the later it lands; nobody answers it but by draining; no loop",
+   "value": "absorbs 8 compute a player (16 at 2 players, 17.6 at values.json compute 1.1); harm 40 (Each player's credit income falls by 4 for the rest of the game: 40); 2.50 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "team_income with a negative amount: the engine may refuse it (a one-line check, not a new op)",
-    "142: more severe on resolving: income cut 4 to 6 credits"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -526,36 +436,21 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Every player loses 2 energy. Until the end of next round, cities make no energy and research stations produce nothing.",
+   "text": "Until the end of next round, cities make no energy.",
    "effects": [
-    {
-     "op": "players_lose",
-     "resource": "energy",
-     "amount": 2
-    },
     {
      "op": "flag",
      "name": "blackout",
      "everywhere": true
-    },
-    {
-     "op": "flag",
-     "name": "station_dark",
-     "everywhere": true,
-     "new": true,
-     "why": "a station makes no research cubes for a round"
     }
    ],
    "harms": [
-    "production blacked out",
-    "energy lost"
+    "production blacked out"
    ],
-   "value": "absorbs 6 a player (12 to drain); harm (a player's share + shared a country): 2 energy now (9) + about 2 energy (9) + a cube (6) + 0 = 24; 4.0 a compute",
-   "check": "rounds 2-5, worst for a Science seat; a player with less energy loses what they have; one round only; no loop",
+   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 18 (Until the end of next round, cities make no energy: 18); 1.50 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "new flag station_dark (a rule must read it)",
-    "the blackout flag over every country, not one",
-    "142: more severe on resolving: every player loses 2 energy now"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
    "reuses": null
   },
@@ -567,30 +462,25 @@
    ],
    "cost": 9,
    "ongoing": true,
-   "text": "Every player loses 2 energy. Ongoing: every round, every player loses 1 energy.",
+   "text": "Ongoing: Each player pays 1 energy or discards 1 card.",
    "effects": [
     {
-     "op": "players_lose",
+     "op": "requisition",
      "resource": "energy",
-     "amount": 1
+     "amount": 1,
+     "cards": 1
     }
    ],
    "harms": [
+    "cards discarded",
     "energy lost"
    ],
-   "value": "absorbs 9 a player (18 to drain); harm 2 energy now (9) + 4.5 a round for 4 rounds (18) = 27 a player; 3.0 a compute",
-   "check": "lands rounds 4-6; the ongoing loss acts in the build step, so it takes from energy held into the round; a player with none loses none; no loop",
+   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 over about 4 rounds (Each player pays 1 energy or discards 1 card: 32); 1.78 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: every player loses 2 energy when it resolves (its `resolve` line, as Declaration of War's)"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": null,
-   "resolve": [
-    {
-     "op": "players_lose",
-     "resource": "energy",
-     "amount": 2
-    }
-   ]
+   "reuses": null
   },
   {
    "id": "false_flag",
@@ -600,33 +490,24 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Deal 1 extra tier-2 threat in each country, any tag. Sway 2 toward Discord.",
+   "text": "Each board: an extra tier-2 threat, any tag.",
    "effects": [
     {
      "op": "deal_threats",
      "count": 1,
      "each_country": true,
-     "tier": 2,
-     "new": true,
-     "why": "deal_threats gains tier and each_country fields: one tier-2 threat dealt into each country now, executing next round"
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 2
+     "tier": 2
     }
    ],
    "harms": [
-    "extra threats",
-    "Discord sway"
+    "extra threats"
    ],
-   "value": "absorbs 6 a player (12 to drain); harm a tier-2 threat a country: the cheaper of its counter (4 energy or 23 credits, about 18-23) or its harm uncountered, plus sway 2 (8) = 26-31, 4.3-5.2 a compute",
-   "check": "rounds 3-6; countered like any threat by players near them; no loop: threats give compute, but a threat doesn't deal a project",
+   "value": "absorbs 6 compute a player (12 at 2 players, 13.2 at values.json compute 1.1); harm 28 (Each board: an extra tier-2 threat, any tag: 28); 2.33 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "deal_threats gains tier and each_country fields (today: count, one per country in turn)",
-    "142: more severe on resolving: sway 2 beside the tier-2 threat (the executor kept the extra tier-1 threat out: Matt's ladder adds no threat count below d4)"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "false_flag"
+   "reuses": null
   },
   {
    "id": "grand_offensive",
@@ -636,7 +517,7 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "The adversary builds now, then Corrupt cities; 1 troop lands on a factory (else a city) in each country; sway 3 toward Discord.",
+   "text": "Each board rallies its ambassador income now, to this round's Rally. Corrupt: cities.",
    "effects": [
     {
      "op": "adversary_build"
@@ -644,28 +525,18 @@
     {
      "op": "corrupt",
      "site": "city"
-    },
-    {
-     "op": "troops",
-     "count": 1,
-     "each_country": true
-    },
-    {
-     "op": "sway",
-     "side": "discord",
-     "amount": 3
     }
    ],
    "harms": [
     "adversary pieces placed",
-    "Discord sway"
+    "facilities destroyed or seized"
    ],
-   "value": "absorbs 10 a player (20 to drain); harm (a player's share + shared a country): 0 + 15-25 of build and spread + a troop and its strike (about 10) + 3 sway (12) = 37-47; 3.7-4.7, about 4.2 a compute",
-   "check": "rounds 5-8, when corrupted cities build 2 each; ongoing projects don't act in it; no loop",
+   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 22 (Each board rallies its ambassador income now, to this round's Rally: 12; Corrupt: cities: 10); 1.10 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "142: more severe on resolving: 1 troop a country, sway 2 to 3"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "total_offensive"
+   "reuses": null
   },
   {
    "id": "propaganda_network",
@@ -675,36 +546,30 @@
    ],
    "cost": 14,
    "ongoing": true,
-   "text": "Ongoing: every round, sway 3 toward Discord, remove 2 Unity from the Unity track. Each board: create 2 adversary ambassadors on the lowest-numbered corrupted city.",
+   "text": "Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord.",
    "effects": [
     {
      "op": "sway",
      "side": "discord",
-     "amount": 3
-    },
-    {
-     "op": "pull_unity",
      "amount": 2
-    },
+    }
+   ],
+   "resolve": [
     {
-     "op": "create",
-     "count": 2,
-     "at": "city",
-     "if": "adversary"
+     "op": "increase_income",
+     "compute": 2
     }
    ],
    "harms": [
     "Discord sway",
-    "Unity pulled back",
-    "adversary pieces placed"
+    "projects advanced (compute)"
    ],
-   "value": "absorbs 14 a player (28 to drain); harm a round: 3 sway (12) + 2 Unity pulled (8) = 20 to the table, about 7 a player at 3 players, + corrupted cities' extra build (about 10 a country) = about 17, for 3 rounds = about 50; 3.6 a compute",
-   "check": "the universal superproject, rounds 7-10; liberating cities shrinks it; city_build feeds corruption, capped by the deck's last rounds",
+   "value": "absorbs 14 compute a player (28 at 2 players, 30.8 at values.json compute 1.1); harm 43 over about 4 rounds (Sway 2 toward Discord: 32; Income: +2 compute a round: 11); 1.54 a compute.",
+   "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
-    "the city_build twist read every round from an ongoing project: the engine reads it only off the current adversary card",
-    "142: more severe on resolving: sway 2 to 3, Unity pulled 1 to 2, 1 to 2 ambassadors created a round"
+    "151: rewritten to the standard (one consequence, each board, deterministic)"
    ],
-   "reuses": "propaganda_network"
+   "reuses": null
   }
  ]
 }

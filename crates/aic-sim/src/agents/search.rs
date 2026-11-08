@@ -246,11 +246,22 @@ pub fn greedy_scores(
 /// `samples` 0, which uses the state as it is. Apart from scoring so a caller
 /// that may not need the scores (the planner past its budget, 069) still takes
 /// the same draws, and so plays the same.
+/// 151: a guess of the hidden information, except in the middle of a resolution (a pending choice): there the
+/// replay of the answers runs through hidden piles and hands (a project's "each player pays N or discards M
+/// cards", answered card by card, for every seat), and a guess that changes a pile or a hand the resolution
+/// reads replays a different line, so the recorded answers no longer fit (screen 3 and F2 each lost a game to a
+/// replay panic). The leak is the true table for one pending choice.
+fn guess_unless_pending(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
+    if g.pending.is_none() {
+        determinize(rules, g, rng);
+    }
+}
+
 pub fn draw_guesses(rules: &Rules, rng: &mut ChaCha8Rng, state: &GameState, samples: usize) -> Vec<GameState> {
     (0..samples)
         .map(|_| {
             let mut d = state.clone();
-            determinize(rules, &mut d, rng);
+            guess_unless_pending(rules, &mut d, rng);
             d
         })
         .collect()
@@ -618,7 +629,7 @@ impl Beam {
     /// end of the game), best first, with their end states and values.
     fn search(&mut self, rules: &Rules, state: &GameState) -> (GameState, Vec<(f64, Seq)>) {
         let mut start = state.clone();
-        determinize(rules, &mut start, &mut self.rng);
+        guess_unless_pending(rules, &mut start, &mut self.rng);
         let round = start.round;
         let mut beam = vec![Seq {
             g: start.clone(),
@@ -694,7 +705,7 @@ impl Beam {
         let mut legal = Vec::new();
         for _ in 0..cfg.rollouts {
             let mut s = g.clone();
-            determinize(rules, &mut s, &mut self.rng);
+            guess_unless_pending(rules, &mut s, &mut self.rng);
             let stop = s.round + cfg.horizon as u32;
             let mut guard = 0;
             while !s.is_over() && s.round < stop && guard < 2000 {

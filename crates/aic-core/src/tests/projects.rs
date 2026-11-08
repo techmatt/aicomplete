@@ -40,14 +40,14 @@ fn setup_deals_one_project_into_each_board_slot() {
 
 #[test]
 fn compute_fills_the_cheapest_project_which_resolves_when_full() {
-    // Costs and Disinformation's sway pinned as printed at r58.
+    // Costs and Disinformation's sway pinned as printed at r65.
     let (rules, mut g) = lab_with(
         &[],
         &[
             "projects.botnet_swarm.cost=6",
             "projects.disinformation.cost=5",
             "projects.market_crash.cost=5",
-            r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5},{"op":"lose_ambassador"},{"op":"lose_ambassador"}]"#,
+            r#"projects.disinformation.effects=[{"op":"sway","side":"discord","amount":5}]"#,
         ],
     );
     // At 2 players: Botnet Swarm 12, Disinformation 10, Market Crash 10.
@@ -66,8 +66,18 @@ fn compute_fills_the_cheapest_project_which_resolves_when_full() {
 
 #[test]
 fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
-    let (rules, mut g) = lab(&[]);
-    row(&mut g, &["market_crash"]);
+    // Costs pinned as printed at r65.
+    let (rules, mut g) = lab_with(
+        &[],
+        &[
+            "projects.disinformation.cost=5",
+            "projects.station_coup.cost=9",
+            "projects.recruitment_drive.cost=11",
+            "projects.armored_columns.cost=10",
+            "projects.grid_capture.cost=9",
+        ],
+    );
+    row(&mut g, &["disinformation"]);
     g.piles.insert(
         PROJECT_DECK.into(),
         [
@@ -82,10 +92,10 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     );
     // Setup's misses: cleared, so the deck never reshuffles here.
     set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
-    set_res(&mut g, 0, Resource::Chips, 3);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
-    // Market Crash (10) resolved: every player loses all their chips.
-    assert_eq!(g.resource(0, Resource::Chips), 0);
+    // Disinformation (10) resolved: Sway 5 toward Discord.
+    assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
+    assert_eq!(g.var("alignment.discord"), 5);
     // 135: the slots are Military, any, any: Station Coup and Recruitment Drive
     // take the open slots, Armored Columns the Military one; the row is slot order.
     assert_eq!(
@@ -95,57 +105,42 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     assert_eq!(g.pile(PROJECT_DECK), ["war_footing"]);
     // The 11th point went onto the cheapest of the new row (Station Coup, 18).
     assert_eq!(g.var(&adversary::project_key("station_coup")), 1);
-    // An ongoing project goes into play and acts every round's build.
-    row(&mut g, &["recruitment_drive"]);
-    g.vars
-        .insert(adversary::project_key("recruitment_drive").into(), 21);
+    // An ongoing project (Grid Capture, 18) goes into play and acts every round's build.
+    row(&mut g, &["grid_capture"]);
+    g.vars.insert(adversary::project_key("grid_capture").into(), 17);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
-    assert_eq!(g.pile(PROJECTS_ONGOING), ["recruitment_drive"]);
+    assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
     // The deck holds one card: it fills the Military slot, the rest stay empty.
     assert_eq!(g.pile(PROJECTS), ["war_footing"]);
 }
 
 #[test]
 fn an_ongoing_project_acts_in_the_build() {
-    let (rules, mut g) = lab(&["adversary.build"]);
-    set_pile(&mut g, PROJECTS_ONGOING, &["recruitment_drive"]);
+    // Propaganda Network's ongoing line pinned as printed at r65: Sway 2 toward Discord.
+    let (rules, mut g) = lab_with(
+        &["adversary.build"],
+        &[r#"projects.propaganda_network.effects=[{"op":"sway","side":"discord","amount":2}]"#],
+    );
+    set_pile(&mut g, PROJECTS_ONGOING, &["propaganda_network"]);
     set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
+    let before = g.var("alignment.discord");
     run(&rules, &mut g);
-    // 135: the card's standing troops ask where they land.
-    answer_all(&rules, &mut g);
-    // 138: in each country the 3 (142; 2 before) lowest-numbered clean cities
-    // (lab: all are clean) gain one, beside the card's 1 on its 2
-    // lowest-numbered coastal cities.
-    let m = &rules.map;
-    let lowest = |c: u8, coastal: bool, n: usize| {
-        let mut v: Vec<usize> =
-            cities(m).into_iter().filter(|&h| m.hexes[h].country == c && (!coastal || m.hexes[h].coastal)).collect();
-        v.sort_by_key(|&h| m.hexes[h].number);
-        v.truncate(n);
-        v
-    };
-    let mut want = vec![0; m.hexes.len()];
-    for c in 0..m.countries.len() as u8 {
-        for h in lowest(c, false, 3).into_iter().chain(lowest(c, true, 2)) {
-            want[h] += 1;
-        }
-    }
-    let got: Vec<i64> = (0..m.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
-    assert_eq!(got, want);
-    assert_eq!(g.stats.counters["adversary.created.project"], 6);
+    // 151: the card's troops land on the lowest-numbered factory (else city), asking nothing.
+    assert!(g.pending.is_none());
+    assert_eq!(g.var("alignment.discord"), before + 2);
 }
 
-/// 145: an ongoing project filled this round (here by the event card's
-/// standing compute) acts from next round's build, not in the build that filled it.
+/// 145: an ongoing project filled this round (here by the build's botnet
+/// compute) acts from next round's build, not in the build that filled it.
 #[test]
 fn an_ongoing_project_filled_in_the_build_waits_a_round() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let w = rules.world();
-    row(&mut g, &["recruitment_drive"]);
-    let cost = adversary::project_cost(&w, &g, "recruitment_drive");
-    g.vars.insert(adversary::project_key("recruitment_drive").into(), cost - 1);
+    row(&mut g, &["grid_capture"]);
+    let cost = adversary::project_cost(&w, &g, "grid_capture");
+    g.vars.insert(adversary::project_key("grid_capture").into(), cost - 1);
     with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
-    assert_eq!(g.pile(PROJECTS_ONGOING), ["recruitment_drive"]);
+    assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
     assert!(adversary::ongoing_acting(&g).is_empty(), "not this round");
     g.round += 1;
     assert_eq!(adversary::ongoing_acting(&g).len(), 1, "from the next");
@@ -166,8 +161,8 @@ fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
     set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
-    // The free botnet's 3 (lab), and (135) the card's 2 standing compute.
-    assert_eq!(g.var(adversary::COMPUTE), before + 3 + 2);
+    // The free botnet's 3 (lab); 151: the card prints no compute.
+    assert_eq!(g.var(adversary::COMPUTE), before + 3);
     assert_eq!(g.tokens(a, ambassador(0)), 1);
     assert_eq!(g.stats.counters["adversary.compute_blocked"], 3);
 }
@@ -184,7 +179,7 @@ fn a_fifth_to_two_thirds_of_the_threats_carry_compute() {
         })
         .count();
     let n = crate::content().threats.len();
-    // 135: compute comes mostly from the event cards' standing lines (142: most
+    // 151: compute comes mostly from the adversary's income and botnets (142: most
     // tier-1 threats carry 3 again, 36 of 64).
     assert!(t * 5 >= n && t * 3 <= n * 2, "{t} of {n}");
 }

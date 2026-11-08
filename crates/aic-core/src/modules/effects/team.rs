@@ -22,9 +22,11 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
     let named = ctx.why.as_deref().map(|n| format!("{n}: an adversary troop lands on which hex?"));
     let prompt = named.as_deref().unwrap_or(base);
     let tally = ctx.says("threats.troops", "adversary.project_troops");
+    // 151: an event's, a project's or the board's troops land deterministically (the lowest-numbered).
+    let lowest = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board");
     for hexes in regions(&w, g, ctx, each_country) {
         let kills = destroy.then_some(ctx.label);
-        adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills)?;
+        adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills, lowest)?;
     }
     Ok(())
 }
@@ -46,6 +48,13 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
         if let Some(t) = ctx.threat.as_ref() {
             let here = threats::token_of(&w, g, t, Location::Station);
             spots.retain(|h| Some(*h) == here);
+        }
+        // 151: a project's or an event's flip takes the lowest-numbered station.
+        if ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board") {
+            if let Some(&h) = spots.iter().min_by_key(|&&h| w.map.hexes[h].number) {
+                adversary::corrupt_station(g, cx, h);
+            }
+            continue;
         }
         let opts = spots.iter().map(|&h| hex_opt(&w, h)).collect();
         if let Some(i) = cx.choose(0, prompt, opts)? {

@@ -90,6 +90,9 @@ fn each_seat_starts_with_a_bound_clean_city_at_every_size_and_difficulty() {
             for s in &sets {
                 c.apply_override(s).unwrap();
             }
+            // Setup only: 151, round 1's Rally and Corrupt step can take a bound city before the first action
+            // (d4 with 2 corrupted cities a country, War Drums first).
+            c.round = vec![ACTIONS.into()];
             let rules = Rules::new(&c).unwrap();
             let g = rules.new_game(1);
             let w = rules.world();

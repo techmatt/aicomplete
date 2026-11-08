@@ -1,0 +1,100 @@
+{
+  "name": "screen151-s1",
+  "note": "151 screen 1: the income dial (dev seeds 36800-36831, d0-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_stated",
+      "set": [
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_stated",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_stated",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_a2",
+      "set": [
+        "adversary.ambassador_income=2,2,2,3,3"
+      ]
+    },
+    {
+      "name": "br_a2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=2,2,2,3,3"
+      ]
+    },
+    {
+      "name": "pr_a2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=2,2,2,3,3"
+      ]
+    },
+    {
+      "name": "bp_c8",
+      "set": [
+        "adversary.compute_income=8,8,8,8,8"
+      ]
+    },
+    {
+      "name": "br_c8",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=8,8,8,8,8"
+      ]
+    },
+    {
+      "name": "pr_c8",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=8,8,8,8,8"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

@@ -611,6 +611,12 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::AdversaryBuild => Worth::now(row("adversary_build")),
         Op::Create { count, sites, .. } => Worth::now(row("create") * t.rate("countries") * (*count * *sites) as f64),
         Op::CreateSite { .. } => Worth::now(row("create_site") * t.rate("countries")),
+        // 151: a rally lands its count (an event's: the pool, about three a board) on each board.
+        Op::Rally { count, .. } => Worth::now(row("rally") * t.rate("countries") * if *count > 0 { *count } else { 3 } as f64),
+        // 151: an income rise, a compute point a round, an ambassador a board a round (about two compute).
+        Op::IncreaseIncome { compute, ambassadors } => {
+            Worth::income(row("increase_income") * (*compute as f64 + 2.0 * t.rate("countries") * *ambassadors as f64))
+        }
         Op::Corrupt { .. } => Worth::now(row("corrupt")),
         Op::LoseNodeOr { resource, amount, count } => Worth::now(
             row("lose_node_or") * (r(*resource) * *amount as f64).min(t.rate("node") * *count as f64),

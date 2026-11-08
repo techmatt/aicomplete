@@ -1,0 +1,119 @@
+{
+  "name": "screen151-s6",
+  "note": "151 screen 6: d1's dials, bigger steps (dev seeds 36800-36863, d1-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_stated",
+      "set": [
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_stated",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_stated",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=5,5,5,5,5",
+        "adversary.ambassador_income=1,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_cba2",
+      "set": [
+        "adversary.counter_bonus_all=2"
+      ]
+    },
+    {
+      "name": "br_cba2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_all=2"
+      ]
+    },
+    {
+      "name": "pr_cba2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_all=2"
+      ]
+    },
+    {
+      "name": "bp_cbc6",
+      "set": [
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "br_cbc6",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "pr_cbc6",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=6"
+      ]
+    },
+    {
+      "name": "bp_cc2",
+      "set": [
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    },
+    {
+      "name": "br_cc2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    },
+    {
+      "name": "pr_cc2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

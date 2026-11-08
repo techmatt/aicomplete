@@ -90,8 +90,8 @@ card does; how each primitive resolves:
   (Fieldwork) is not offered.
 - **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
   over land and sea); the destination must be a piece.
-- **Cordon (`cordon`):** in one country, no creation line places ambassadors from its play through the next round: that build, and any a project
-  brings that round (118); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
+- **Cordon (`cordon`):** in one country, no Rally or creation line places ambassadors from its play through the next round: that Rally (its pool
+  lands nowhere), and any a project brings that round (118); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
   ambassador's job.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,
   so a building that needed those tags or the sacrificed stack can't then be played; its other costs and requirements

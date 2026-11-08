@@ -8,7 +8,7 @@ The source of truth is drafts/adversary/*.json (format: experiments/results/134_
 keeps the fields the engine reads and drops the review ones: every op loses `new` and `why`; cards lose `value`,
 `check`, `flags` and `reuses`; pulls lose `per` (always "country"); a board rule's entries with no `op` (notes naming
 today's rules) are dropped; the board's `build` numbers are not written (configs/baseline.json `adversary.*` is their
-one home); the board's `creates` (its creation lines, 138) become its `build`.
+one home). 151: the board prints no creation line (its Garrisons rule is an income line).
 """
 
 import json
@@ -66,7 +66,7 @@ def board(b):
     return {"id": b["id"], "name": b["name"], "project_slots": b["project_slots"],
             "rules": [{"name": r["name"], "text": r["text"], "effects": ops(r["effects"])} for r in b["rules"]],
             "difficulty": {"text": b["difficulty"]["text"], "effects": ops(b["difficulty"]["effects"])},
-            "harms": b["harms"], "build": ops(b.get("creates"))}
+            "harms": b["harms"]}
 
 
 SACRIFICE = {"security": "Security", "diplomacy": "Diplomacy", "cyber": "Cyber", "industry": "Industry",
@@ -100,7 +100,7 @@ def cards_page(threats, projects, adversary):
     out += [f"## {b['name']} (board)", "", f"Project slots: {slots}.", ""]
     for r in b["rules"]:
         out.append(f"- **{r['name']}.** {r['text']}")
-    out += [f"- **Build.** {b['build_text']}", f"- **Difficulty.** {b['difficulty']['text']}", ""]
+    out += [f"- **Difficulty.** {b['difficulty']['text']}", ""]
     out += ["## Event deck", "", "| Card | Stage | Text |", "|---|---|---|"]
     for e in adversary["events"]:
         out.append(f"| {cell(e['name'])} | {e['stage']} | {cell(e['text'])} |")
@@ -125,8 +125,7 @@ def build():
     projects = [project(c) for c in read("projects.json")["cards"]]
     mil = read("militarist.json")
     adversary = {"board": board(mil["board"]), "events": [event(e) for e in mil["events"]]}
-    page = {"board": dict(adversary["board"], build_text=mil["board"].get("creates_text", "")),
-            "events": adversary["events"]}
+    page = {"board": adversary["board"], "events": adversary["events"]}
     return {"content/threats.json": dump(threats), "content/projects.json": dump(projects),
             "content/adversary.json": dump(adversary),
             "docs/adversary-cards.md": cards_page(threats, projects, page)}

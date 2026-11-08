@@ -101,8 +101,8 @@ has every tag), discard the misses, and put its location tokens on the board. If
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next the card's standing lines land compute, troops and its new ambassadors (always on the
-lowest-numbered sites of a kind), then its twists, its Corrupt lines (each site that can gather enough adversary
+never what it asks for. Next the card rallies (each board's pool of adversary ambassadors lands on the sites of the type
+it names, spread evenly) and deploys its troops, then its other lines, its Corrupt lines (each site that can gather enough adversary
 ambassadors from itself and next door corrupts) and the march. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
 consequence, sometimes two, from a short list (troops or adversary ambassadors on its spot, compute, Sway toward

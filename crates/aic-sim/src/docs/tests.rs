@@ -57,8 +57,8 @@ fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
     // One off the baseline, so a dial item landing on any value can't make it a no-op
     // (149); down from the range's top (5), which an override can't pass (150).
-    let bb = base.world().int("adversary.build_bonus");
-    let build_bonus = format!("adversary.build_bonus={}", if bb < 5 { bb + 1 } else { bb - 1 });
+    let s2 = base.world().int("adversary.stage2_removed");
+    let build_bonus = format!("adversary.stage2_removed={}", if s2 < 3 { s2 + 1 } else { s2 - 1 });
     type Block = fn(&Rules) -> String;
     let blocks: [(&str, Block); 8] = [
         (&build_bonus, difficulty_block),

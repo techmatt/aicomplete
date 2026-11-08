@@ -597,6 +597,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::Pushback { .. }
         | Op::DealThreats { .. }
         | Op::RemoveBotnets { .. }
+        | Op::Rally { .. }
+        | Op::IncreaseIncome { .. }
         | Op::Income { .. }
         | Op::IncomePerTag { .. }
         | Op::BuildingDiscount { .. }

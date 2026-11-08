@@ -498,10 +498,6 @@ pub struct AdversaryBoard {
     /// Militarist prints none).
     #[serde(default)]
     pub discord_drip: i64,
-    /// 138: the board's own creation lines, run in every build (they replaced
-    /// `city_build` and `factory_build`).
-    #[serde(default)]
-    pub build: Vec<Op>,
 }
 
 /// A project slot on the adversary board: a project must carry `tag` (or be
@@ -534,9 +530,9 @@ pub struct Pull {
     pub tags: Vec<PullTag>,
 }
 
-/// An adversary event card (135): the clock and the stager. Top to bottom:
-/// its pulls, its standing lines (compute, troops and its creation lines,
-/// 138) and its twists (read while it is current; its Corrupt X lines among them).
+/// An adversary event card (135): the clock and the stager. 151: its steps always in one order, threat, rally,
+/// deploy, corrupt: its pulls; its standing lines (its Rally X, then its Deploy troops, then any other line such
+/// as an income increase); its twists (other lines read while it is current, then its Corrupt X lines).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AdversaryCard {
@@ -1173,7 +1169,65 @@ fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
     }
     check_ops(&a.twists, Slot::Twist, &format!("adversary card {:?}", a.id))?;
     check_ops(&a.standing, Slot::Team, &format!("adversary card {:?} standing", a.id))?;
+    if let Some(why) = event_rule_break(a) {
+        return Err(format!("adversary card {:?}: off the event standard: {why}", a.id));
+    }
     Ok(())
+}
+
+/// 151: "each board", never "each country" (they are always equivalent).
+pub fn says_each_country(text: &str) -> bool {
+    text.to_lowercase().contains("each country")
+}
+
+/// 151: where an event line sits in the fixed step order (threat, rally, deploy, other lines, corrupt).
+fn event_step(e: &Op) -> u8 {
+    match e {
+        Op::Rally { count: 0, .. } => 0,
+        Op::Troops { each_country: true, at: None, stand: false, location: None, if_: None, .. } => 1,
+        Op::Corrupt { .. } => 3,
+        _ => 2,
+    }
+}
+
+/// 151, the event standard (the threat card standard's, for events): one Rally X, its lines in the fixed order
+/// (rally, deploy, other lines, corrupt), at most two other lines (consequences), no per-event compute or
+/// creation line, and "each board", never "each country". The reason it breaks, if it does.
+pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
+    if says_each_country(&a.text) {
+        return Some("it says \"each country\" (each board)".into());
+    }
+    let steps: Vec<u8> = a.standing.iter().chain(&a.twists).map(event_step).collect();
+    if steps.iter().filter(|&&s| s == 0).count() != 1 {
+        return Some("one Rally X line".into());
+    }
+    if steps.windows(2).any(|p| p[0] > p[1]) || a.twists.iter().any(|e| event_step(e) < 2) {
+        return Some("a step out of the fixed order (threat, rally, deploy, other lines, corrupt)".into());
+    }
+    if steps.iter().filter(|&&s| s == 2).count() > 2 {
+        return Some("more than two other lines (consequences)".into());
+    }
+    if a.standing.iter().any(|e| matches!(e, Op::Corrupt { .. })) {
+        return Some("a Corrupt line before the corrupt step (it goes last, among the twists)".into());
+    }
+    if a.standing.iter().chain(&a.twists).any(|e| matches!(e, Op::Rally { count, .. } if *count != 0)) {
+        return Some("an event's Rally lands its pool (no count)".into());
+    }
+    if a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })) {
+        return Some("a per-event compute or creation line (income and Rally replace them)".into());
+    }
+    None
+}
+
+/// 151: a project's consequences, its resolve line's included: one, rarely two.
+pub fn project_rule_break(p: &ProjectCard) -> Option<String> {
+    if says_each_country(&p.text) {
+        return Some("it says \"each country\" (each board)".into());
+    }
+    if p.effects.len() + p.resolve.len() > 2 {
+        return Some("more than two consequences".into());
+    }
+    None
 }
 
 fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
@@ -1183,10 +1237,9 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     }
     for r in b.rules.iter().chain([&b.difficulty]) {
         check_ops(&r.effects, Slot::Team, &what)?;
-    }
-    // 138: the board's build is creation lines only.
-    if b.build.iter().any(|e| !matches!(e, Op::Create { at, if_, .. } if *at != crate::op::CreateAt::Location && *if_ != crate::op::CreateIf::Near)) {
-        return Err(format!("{what}: its build prints creation lines only (no threat location)"));
+        if says_each_country(&r.text) {
+            return Err(format!("{what}: {:?} says \"each country\" (each board)", r.name));
+        }
     }
     Ok(())
 }
@@ -1223,6 +1276,9 @@ fn check_project(p: &ProjectCard) -> Result<(), String> {
     check_ops(&p.resolve, Slot::Team, &format!("project {:?}", p.id))?;
     if !p.ongoing && !p.resolve.is_empty() {
         return Err(format!("project {:?}: only an ongoing project prints a resolve line", p.id));
+    }
+    if let Some(why) = project_rule_break(p) {
+        return Err(format!("project {:?}: off the standard: {why}", p.id));
     }
     Ok(())
 }

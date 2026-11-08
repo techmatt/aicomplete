@@ -1,10 +1,9 @@
-use std::collections::BTreeMap;
 
 use super::*;
 use crate::content::Op;
-use crate::modules::common::{LAND_CORRUPTION, MARKER};
+use crate::modules::common::{corrupted, cube_owner, LAND_CORRUPTION, MARKER};
 use crate::modules::{adversary, alignment, board, effects, plan};
-use crate::op::{CorruptSite, CreateAt, CreateIf, Facility};
+use crate::op::{CorruptSite, CreateAt, CreateIf, Facility, RallyAt};
 
 /// Country `c`'s hexes passing `f`, lowest-numbered first.
 fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
@@ -13,49 +12,60 @@ fn numbered_where(m: &Map, c: u8, f: impl Fn(usize) -> bool) -> Vec<usize> {
     v
 }
 
-/// 138: the build runs the event card's creation lines, then the board's
-/// (Militarist: 2 on each country's lowest-numbered adversary city), each on
-/// the lowest-numbered matching sites; the forecast reads the same plan.
+/// 151: the build's Rally lands each board's pool on its neutral sites of the card's type, evenly, the players
+/// choosing which take the remainder; the agents' forecast reads the same plan, and the pool empties.
 #[test]
-fn the_build_runs_the_cards_and_the_boards_creation_lines_on_the_lowest_numbered_sites() {
+fn rally_lands_each_boards_pool_evenly_on_its_eligible_sites() {
     let (rules, mut g) = lab(&["adversary.build"]);
     let m = &rules.map;
     let w = rules.world();
     g.vars.insert(SUPPLY.into(), 40);
-    // Two adversary cities in country 0: only the lower-numbered one gains.
-    let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
-    let (low, high) = (cities0[0], cities0[1]);
-    put(&mut g, high, ADV_CUBE, 1);
-    put(&mut g, low, ADV_CUBE, 1);
-    // Three botnets in country 0: Signal Jamming creates on the 2 lowest.
-    let open0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open);
-    let bots = [open0[0], open0[1], open0[2]];
-    for &h in &bots {
-        put(&mut g, h, BOTNET, 1);
+    let players: Vec<Key> = (0..g.seats.len()).map(|s| Key::new(ambassador(s))).collect();
+    for h in Arc::make_mut(&mut g.hexes).iter_mut() {
+        Arc::make_mut(h).tokens.retain(|k, _| !players.contains(k));
     }
-    set_pile(&mut g, NEXT, &["mil_s1_signal_jamming"]);
-
-    let mut want: BTreeMap<usize, i64> = BTreeMap::new();
-    for c in 0..m.countries.len() as u8 {
-        for &h in numbered_where(m, c, |h| kind(m, h) == HexKind::City && m.hexes[h].coastal).iter().take(2) {
-            *want.entry(h).or_default() += 1;
-        }
+    // War Drums rallies to cities; only board 0 has a pool.
+    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
+    for c in 0..m.countries.len() {
+        g.vars.insert(adversary::pool_key(c).into(), 0);
     }
-    *want.entry(bots[0]).or_default() += 1;
-    *want.entry(bots[1]).or_default() += 1;
-    *want.entry(low).or_default() += 2;
-    let want: Vec<(usize, i64)> = want.into_iter().collect();
-    assert_eq!(plan::next_build(&w, &g), want, "the forecast is the build");
-
+    g.vars.insert(adversary::pool_key(0).into(), 5);
+    let sites = plan::rally_sites(&w, &g, RallyAt::City, 0);
+    assert!(!sites.is_empty());
+    assert!(sites.iter().all(|&h| !corrupted(&g, h) && cube_owner(&g, h).is_none()), "neutral cities first");
+    let before: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
+    let fore = plan::next_rally(&w, &g);
+    assert!((fore.iter().map(|&(_, n)| n).sum::<f64>() - 5.0).abs() < 1e-9);
+    assert_eq!(fore.iter().map(|&(h, _)| h).collect::<Vec<_>>(), sites);
     run_answered(&rules, &mut g);
-    assert_eq!(g.pile(CURRENT), ["mil_s1_signal_jamming"]);
-    let got: Vec<(usize, i64)> =
-        (0..g.hexes.len()).map(|h| (h, g.tokens(h, ADV_AMBASSADOR))).filter(|&(_, n)| n > 0).collect();
-    assert_eq!(got, want);
-    assert!(g.tokens(high, ADV_AMBASSADOR) < 2, "the board's 2 land on the lowest-numbered only");
-    assert_eq!(g.tokens(bots[2], ADV_AMBASSADOR), 0);
-    assert_eq!(g.var(SUPPLY), 40 - want.iter().map(|&(_, n)| n).sum::<i64>());
-    assert_eq!(g.var(STAGE), 1);
+    let gained: Vec<(usize, i64)> = (0..g.hexes.len())
+        .map(|h| (h, g.tokens(h, ADV_AMBASSADOR) - before[h]))
+        .filter(|&(_, n)| n != 0)
+        .collect();
+    assert_eq!(gained.iter().map(|&(_, n)| n).sum::<i64>(), 5);
+    let each = 5 / sites.len() as i64;
+    assert!(gained.iter().all(|&(h, n)| sites.contains(&h) && (n == each || n == each + 1)), "{gained:?}");
+    assert_eq!(g.var(&adversary::pool_key(0)), 0);
+    assert_eq!(g.var(SUPPLY), 35);
+}
+
+/// 151: with no neutral site of the type, a Rally lands on the players' sites, then the adversary's.
+#[test]
+fn rally_falls_back_to_allied_then_adversary_sites() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let w = rules.world();
+    let cities0 = numbered_where(m, 0, |h| kind(m, h) == HexKind::City);
+    for &h in &cities0 {
+        Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens.clear();
+        put(&mut g, h, ADV_CUBE, 1);
+    }
+    put(&mut g, cities0[0], cube(0), 1);
+    Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[cities0[0]]).tokens.remove(&Key::new(ADV_CUBE));
+    assert_eq!(plan::rally_sites(&w, &g, RallyAt::City, 0), vec![cities0[0]], "the players' city before the adversary's");
+    put(&mut g, cities0[0], ADV_CUBE, 1);
+    Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[cities0[0]]).tokens.remove(&Key::new(cube(0)));
+    assert_eq!(plan::rally_sites(&w, &g, RallyAt::City, 0), cities0, "every city the adversary's: all of them");
 }
 
 /// 138: a creation line's condition picks among the sites, and `sites` how
@@ -351,18 +361,52 @@ fn botnets_start_on_the_stations_and_make_adversary_compute() {
         assert_eq!(g.tokens(m.numbered(c, piece(c).stations[0]), BOTNET), 1);
     }
     assert_eq!(total(&g, BOTNET), 2);
-    // Round 1's build has run: 3 compute a botnet (lab: botnet_compute 3), and
-    // (135) the event card's standing compute.
+    // Round 1's build has run: 3 compute a botnet (lab: botnet_compute 3).
     assert_eq!(g.stats.counters["adversary.compute_botnets"], 6);
-    // Probing Strikes and War Drums each print 2 standing compute.
+    // 151: an event card prints no compute of its own (income comes in the reveal step).
     let before = g.var(adversary::COMPUTE);
     set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
     run_answered(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), before + 6 + 2);
+    assert_eq!(g.var(adversary::COMPUTE), before + 6);
     put(&mut g, m.numbered(0, piece(0).stations[0]), BOTNET, 0);
     set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
     run_answered(&rules, &mut g);
-    assert_eq!(g.var(adversary::COMPUTE), before + 8 + 3 + 2);
+    assert_eq!(g.var(adversary::COMPUTE), before + 6 + 3);
+}
+
+/// 151: setup sets the income from the difficulty's list entry plus the board's Garrisons (+1 ambassador) and
+/// fills each board's pool once; each reveal step then adds the compute income onto the projects and the
+/// ambassador income to every pool.
+#[test]
+fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
+    for (d, compute, ambassadors) in [(0, 5, 1), (3, 7, 2)] {
+        let mut c = lab_config(&["adversary.reveal", ACTIONS]);
+        let level = format!("adversary.difficulty={d}");
+        apply_sets(&mut c, &[&level, "adversary.compute_income=5,5,5,7,7", "adversary.ambassador_income=1,1,1,2,2"]);
+        let rules = Rules::new(&c).unwrap();
+        let mut g = rules.new_game(1);
+        answer_all(&rules, &mut g);
+        let boards = rules.map.countries.len();
+        assert_eq!(g.var(adversary::INCOME_COMPUTE), compute, "d{d}");
+        assert_eq!(g.var(adversary::INCOME_AMBASSADORS), ambassadors + 1, "d{d}: Garrisons");
+        // Setup's pools, then round 1's reveal step (no build here to land them).
+        for b in 0..boards {
+            assert_eq!(g.var(&adversary::pool_key(b)), 2 * (ambassadors + 1), "d{d} board {b}");
+        }
+        assert_eq!(g.stats.counters["adversary.compute_income"], compute, "d{d}");
+        // A row too dear to fill: the next reveal step puts the income on it, resolving nothing.
+        row(&mut g, &["declaration_of_war"]);
+        set_pile(&mut g, adversary::PROJECTS_DONE, &[]);
+        g.vars.insert(adversary::project_key("declaration_of_war").into(), 0);
+        let before = g.var(adversary::COMPUTE);
+        run_answered(&rules, &mut g);
+        assert_eq!(g.var(adversary::COMPUTE), before + compute, "d{d}");
+        assert_eq!(g.var(&adversary::project_key("declaration_of_war")), compute, "d{d}");
+        assert!(g.pile(adversary::PROJECTS_DONE).is_empty());
+        for b in 0..boards {
+            assert_eq!(g.var(&adversary::pool_key(b)), 3 * (ambassadors + 1), "d{d} board {b}");
+        }
+    }
 }
 
 #[test]
@@ -433,14 +477,21 @@ fn a_stage_iii_card_pulls_sway_out_of_the_unity_bucket() {
     assert!(g.var(alignment::track(Side::Unity)) <= 1, "the bucket loses the pull");
 }
 
-/// 138: every event card prints a creation line and a Corrupt line, and each
-/// stage corrupts cities, stations and factories.
+/// 151: every event card opens on one Rally X (its pool lands), keeps to the event standard (no per-event
+/// compute or creation line), and prints a Corrupt line; each stage corrupts cities, stations and factories.
 #[test]
-fn every_event_card_creates_and_corrupts() {
+fn every_event_card_rallies_and_corrupts() {
     for stage in 1..=3u8 {
         let mut seen: Vec<CorruptSite> = Vec::new();
         for a in content().adversary.iter().filter(|a| a.stage == stage) {
-            assert!(a.standing.iter().any(|e| matches!(e, Op::Create { .. })), "{} creates", a.id);
+            assert!(matches!(a.standing.first(), Some(Op::Rally { count: 0, .. })), "{} rallies first", a.id);
+            assert!(adversary::rally_site(a).is_some(), "{} rallies", a.id);
+            assert_eq!(crate::content::event_rule_break(a), None, "{} keeps the event standard", a.id);
+            assert!(
+                !a.standing.iter().any(|e| matches!(e, Op::Compute { .. } | Op::Create { .. })),
+                "{} prints no per-event compute or creation line",
+                a.id
+            );
             let sites: Vec<CorruptSite> = a
                 .twists
                 .iter()
@@ -456,4 +507,45 @@ fn every_event_card_creates_and_corrupts() {
             assert!(seen.contains(&site), "stage {stage} corrupts {}", site.name());
         }
     }
+}
+
+/// 151: the load check refuses an event off the event standard (one Rally X, the fixed step order, at most two
+/// other lines, "each board") and a project with more than two consequences.
+#[test]
+fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
+    use crate::content::{event_rule_break, project_rule_break};
+    let c = content();
+    // War Drums: Rally, Deploy | Sway, Corrupt.
+    let base = c.adversary.iter().find(|a| a.id == "mil_s1_war_drums").unwrap();
+    assert_eq!(event_rule_break(base), None);
+    let rally = base.standing[0].clone();
+    let sway = base.twists[0].clone();
+    let corrupt = base.twists.last().unwrap().clone();
+    assert!(matches!(rally, Op::Rally { .. }) && matches!(corrupt, Op::Corrupt { .. }));
+    let refused = |edit: &dyn Fn(&mut crate::content::AdversaryCard), why: &str| {
+        let mut a = base.clone();
+        edit(&mut a);
+        let got = event_rule_break(&a);
+        assert!(got.as_deref().is_some_and(|r| r.contains(why)), "{why}: {got:?}");
+    };
+    refused(&|a| a.standing.insert(0, rally.clone()), "one Rally X");
+    refused(&|a| a.standing.insert(0, corrupt.clone()), "out of the fixed order");
+    refused(
+        &|a| {
+            a.twists.insert(0, sway.clone());
+            a.twists.insert(0, sway.clone());
+        },
+        "more than two other lines",
+    );
+    refused(&|a| a.text = "Deploy 1 in each country.".into(), "each country");
+    // Data Heist prints two consequences; a third is refused.
+    let p = c.projects.iter().find(|p| p.id == "data_heist").unwrap();
+    assert_eq!(p.effects.len() + p.resolve.len(), 2);
+    assert_eq!(project_rule_break(p), None);
+    let mut three = p.clone();
+    three.effects.push(p.effects[0].clone());
+    assert!(project_rule_break(&three).is_some_and(|r| r.contains("more than two")));
+    let mut country = p.clone();
+    country.text = "Each country: a threat.".into();
+    assert!(project_rule_break(&country).is_some_and(|r| r.contains("each country")));
 }

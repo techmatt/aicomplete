@@ -101,15 +101,16 @@ fn rng_draws_are_fixed_width_and_pinned() {
     assert_eq!(draws, GOLDEN_DRAWS);
 }
 
-/// A state waiting on a build choice: an event card's standing troops land on
-/// a factory of the players' choice (138: the spread's choice is gone).
+/// A state waiting on a build choice: 151, a Rally's remainder (board 0's pool of 1 over its many clean
+/// cities), whose site the players choose (an event's troops land on the lowest-numbered factory, no choice).
 fn build_choice() -> (Rules, GameState) {
+    use crate::modules::adversary::pool_key;
     let (rules, mut g) = lab(&["adversary.build"]);
-    let m = &rules.map;
-    let open: Vec<usize> = hexes_where(m, |h| kind(m, h) == HexKind::Open && m.hexes[h].country == 0);
-    put(&mut g, open[0], FACTORY, 1);
-    put(&mut g, open[1], FACTORY, 1);
-    set_pile(&mut g, NEXT, &["mil_s1_probing_strikes"]);
+    for c in 0..rules.map.countries.len() {
+        g.vars.insert(pool_key(c).into(), 0);
+    }
+    g.vars.insert(pool_key(0).into(), 1);
+    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
     run(&rules, &mut g);
     assert!(g.pending.is_some());
     (rules, g)
