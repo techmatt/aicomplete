@@ -38,7 +38,8 @@ experiments, speed, scripts, web, card art.
 - **A new decision type for the agents** (a new kind of card to keep, a new action to take): review the
   agent code that makes that decision (keep plan, eval term, fixed policies) before the first screen, not
   after it reads low. **A new agent heuristic** gets a 16-seed engine smoke, on and off, on the dev seeds
-  before its first fresh read (092 lost a screen and a fresh seed set to two heuristics that lost).
+  before its first fresh read (092 lost a screen and a fresh seed set to two heuristics that lost), and its eval diff
+  is reviewed against the engine rule it mirrors before the first fresh read (147: two faults found after F2 spent a read).
 - **The prompt's stated numbers run as a cell of every screen**, beside any lever you try, so the report
   can always say what the asked-for numbers did.
 - **Any change to how games play out:** bump `RULES_REVISION` and update the golden constants

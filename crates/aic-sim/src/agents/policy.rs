@@ -146,10 +146,6 @@ macro_rules! forced_table {
             /// move, remove, clear and chips standard actions, no counters, no nodes,
             /// no powers.
             (free_only: bool, true, 0.0, "exploit check (027): only Diplomacy cards and the ambassador, move, remove, clear and chips actions")
-            /// Exploit check (028): farm the Unity deck. Every seat buys ambassadors
-            /// and lands them on bases and factories, each worth Unity when it produces,
-            /// before anything else; the rest of its play is the agent's.
-            (unity_farm: bool, true, 0.0, "exploit check (028): before anything else, buy ambassadors and land them on bases and factories")
             /// Exploit check (053): give up the last country: never counter a threat
             /// on it and never pick a hex in it while another pick is open, losses
             /// aside (those may land there), so the team concentrates on the rest. Pressure counts countries at setup, so
@@ -624,11 +620,6 @@ impl Agent for Policy {
                 }
             }
         }
-        if self.forced.unity_farm {
-            if let Some(i) = farm(&world, g, legal) {
-                return i;
-            }
-        }
         if self.forced.antimatter_rule && !pending {
             if let Some(i) = first_power(legal, |s, k| antimatter_wanted(&world, g, s, k)) {
                 if !self.ruled_out(&world, g, &legal[i]) {
@@ -812,45 +803,6 @@ fn abroad(w: &World, g: &GameState, s: usize, threat: &str) -> bool {
 /// Whether `threat` sits on the country the abandon check gives up.
 fn on_given_up(w: &World, g: &GameState, threat: &str) -> bool {
     threats::active(g).iter().any(|(t, c)| t == threat && *c == last_country(w))
-}
-
-/// Whether hex `h` pays Unity for a player ambassador when it produces and
-/// holds none yet (028).
-fn farm_site(w: &World, g: &GameState, h: usize) -> bool {
-    (common::is_base(w, h) || g.tokens(h, common::FACTORY) > 0)
-        && common::player_ambassador(g, h).is_none()
-        && g.tokens(h, common::ADV_AMBASSADOR) == 0
-}
-
-/// The Unity farmer's move (028), if it has one: send an ambassador to a free
-/// farm site in reach, or buy one to send.
-fn farm(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
-    if let Some(p) = &g.pending {
-        if p.ask.prompt.contains("move which ambassador") {
-            return legal.iter().position(|a| matches!(a, Action::Choose { option, .. } if option == "from your supply"));
-        }
-        return p.ask.prompt.contains(": move on which hex").then(|| {
-            legal.iter().position(|a| {
-                matches!(a, Action::Choose { target: Some(t), .. }
-                    if w.map.find(*t).is_some_and(|h| farm_site(w, g, h)))
-            })
-        })?;
-    }
-    let sites = |s: usize| {
-        (0..g.hexes.len())
-            .filter(|&h| farm_site(w, g, h) && common::in_reach(w, g, s, h))
-            .count() as i64
-    };
-    let act = |want: &str| {
-        legal.iter().position(|a| {
-            matches!(a, Action::Standard { seat, act } if act == want && {
-                let s = *seat as usize;
-                let held = g.resource(s, Resource::Ambassadors);
-                sites(s) > if want == "move" { 0 } else { held } && (want != "move" || held > 0)
-            })
-        })
-    };
-    act("move").or_else(|| act("ambassador"))
 }
 
 /// Whether seat `s` could pay to keep a card of `tier` now (insight, with

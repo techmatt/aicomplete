@@ -203,6 +203,12 @@ pub fn twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
     g.pile(round_pile(g)).iter().flat_map(|id| card(w, id).twists.iter()).collect()
 }
 
+/// 148 (D59): the twists of next round's card, face up in `NEXT` once revealed
+/// (none before the reveal).
+pub fn next_twists<'w>(w: &World<'w>, g: &GameState) -> Vec<&'w Op> {
+    g.pile(NEXT).iter().take(1).flat_map(|id| card(w, id).twists.iter()).collect()
+}
+
 /// The pile holding this round's adversary card: the face-up one before this
 /// round's flip (a Discord tip in the Sway phase), else the current one.
 pub fn round_pile(g: &GameState) -> &'static str {
@@ -860,16 +866,14 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
 /// 138, a creation line: `count` adversary ambassadors on each of the
 /// `sites` lowest-numbered matching sites in each country in scope (one
 /// source with the agents' forecast, [`super::plan::create_plan`]). A
-/// cordoned country gains none; a site on or next to a doubled-build flag
-/// gains twice (135; no content prints one since 142's Trade Blockade). Tallied by `source` (event, board, threat, project,
+/// cordoned country gains none. Tallied by `source` (event, board, threat, project,
 /// discord, unity).
 pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, scope: Option<usize>, near: &[usize], location: Option<usize>, source: &str) {
     let w = cx.world;
     let mut made = 0;
     for (h, n) in super::plan::create_plan(&w, g, line, scope, near, location) {
-        let twice = if board::double_build_at(&w, g, h) { 2 } else { 1 };
         let before = g.var(SUPPLY);
-        place(g, cx, h, n * twice);
+        place(g, cx, h, n);
         made += before - g.var(SUPPLY);
     }
     cx.tally(g, "adversary.created", made);

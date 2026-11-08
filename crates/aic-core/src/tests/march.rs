@@ -40,6 +40,16 @@ fn a_troop_marches_two_steps_toward_node_then_strikes() {
     assert_eq!(g.stats.counters["board.troop_moves"], 2);
     let v = rules.view(&g);
     assert_eq!(v.arrows[0].rounds, 1);
+    // 148 (D59): in the action phase, past this round's march, with Forced
+    // March (+1 step) face up as next round's card, the arrow reads one
+    // adversary phase sooner; this round's card no longer counts.
+    let mut fm = g0.clone();
+    put(&mut fm, p, node(0), 1);
+    put(&mut fm, t, TROOP, 1);
+    fm.piles.insert(adversary::CURRENT.into(), vec!["mil_s2_forced_march".into()].into());
+    assert_eq!(rules.view(&fm).arrows[0].rounds, 2, "this round's card is spent");
+    fm.piles.insert(adversary::NEXT.into(), vec!["mil_s2_forced_march".into()].into());
+    assert_eq!(rules.view(&fm).arrows[0].rounds, 1);
     // Next round it strikes, sways no Discord, and is used up.
     let discord = g.var("alignment.discord");
     run(&rules, &mut g);

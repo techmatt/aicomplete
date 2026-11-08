@@ -19,8 +19,8 @@ antitrust_action,tags [card],card,industry,1.0,1.0,1.0,0.67,0.67
 arcology_foundry,production credits [play],play,"resource=credits, amount=7",7.0,17.5,2.5,12.89,1.84
 arcology_foundry,production chips [play],play,"resource=chips, amount=2",2.0,10.0,5.0,7.37,3.68
 arcology_foundry,tags [card],card,industry,1.0,1.0,1.0,0.74,0.74
-autonomous_defense_grid,auto_counter [passive],passive,"source=cyber, amount=5",5.0,8.38,1.68,10.27,2.05
-autonomous_defense_grid,tags [card],card,cyber,1.0,1.0,1.0,1.23,1.23
+autonomous_defense_grid,auto_counter [passive],passive,"source=cyber, amount=6",6.0,15.0,2.5,10.78,1.8
+autonomous_defense_grid,tags [card],card,cyber,1.0,1.0,1.0,0.72,0.72
 back_channel_talks,cleanse factory [play],play,"amount=2, one_country=False, only=factory",2.0,12.0,6.0,7.14,3.57
 back_channel_talks,sway unity [play],play,"side=unity, amount=2",2.0,8.0,4.0,4.76,2.38
 back_channel_talks,tags [card],card,diplomacy,1.0,1.0,1.0,0.6,0.6
@@ -126,10 +126,9 @@ envoy_briefings,tags [card],card,diplomacy,1.0,1.0,1.0,0.55,0.55
 eviction_worm,remove_ambassadors_country [play],play,"max=3, reach=True",3.0,6.0,2.0,6.58,2.19
 eviction_worm,drain_project [play],play,amount=4,4.0,4.4,1.1,4.82,1.21
 eviction_worm,tags [card],card,cyber,1.0,1.0,1.0,1.1,1.1
-exascale_training_cluster,gain research_cubes [play],play,"resource=research_cubes, amount=6",6.0,18.0,3.0,15.94,2.66
-exascale_training_cluster,income insight [passive],passive,"resource=insight, amount=3",3.0,18.75,6.25,16.6,5.53
-exascale_training_cluster,tags [card],card,cyber power,2.0,1.5,0.75,1.33,0.66
-exascale_training_cluster,override [card],card,,1.0,25,25.0,22.13,22.13
+exascale_training_cluster,gain research_cubes [play],play,"resource=research_cubes, amount=6",6.0,18.0,3.0,20.0,3.33
+exascale_training_cluster,income insight [passive],passive,"resource=insight, amount=3",3.0,18.75,6.25,20.83,6.94
+exascale_training_cluster,tags [card],card,cyber power,2.0,1.5,0.75,1.67,0.83
 exodus_corridors,spread_ambassadors [play],play,,1.0,3.0,3.0,2.78,2.78
 exodus_corridors,gain_ambassadors [play],play,count=4,4.0,16.0,4.0,14.83,3.71
 exodus_corridors,tags [card],card,diplomacy security,2.0,1.5,0.75,1.39,0.7
@@ -236,8 +235,8 @@ logic_bomb,draw [play],play,count=1,1.0,4.0,4.0,3.8,3.8
 logic_bomb,tags [card],card,cyber security,2.0,1.5,0.75,1.43,0.71
 manifesto_leak,sway unity [play],play,"side=unity, amount=3",3.0,12.0,4.0,6.62,2.21
 manifesto_leak,add_tokens followers [play],play,"kind=followers, amount=1",1.0,2.5,2.5,1.38,1.38
-market_stabilization_board,auto_counter [passive],passive,"source=economic, amount=5",5.0,8.38,1.68,10.27,2.05
-market_stabilization_board,tags [card],card,industry,1.0,1.0,1.0,1.23,1.23
+market_stabilization_board,auto_counter [passive],passive,"source=economic, amount=6",6.0,15.0,2.5,10.78,1.8
+market_stabilization_board,tags [card],card,industry,1.0,1.0,1.0,0.72,0.72
 market_watchdog,jam typed [action],action,"amount=6, source=economic",6.0,11.76,1.96,6.45,1.08
 market_watchdog,tags [card],card,industry,1.0,1.0,1.0,0.55,0.55
 martial_cordon,remove_ambassadors_country [play],play,max=6,6.0,12.0,2.0,10.6,1.77
@@ -245,8 +244,8 @@ martial_cordon,sway unity [play],play,"side=unity, amount=2",2.0,8.0,4.0,7.07,3.
 martial_cordon,tags [card],card,security diplomacy,2.0,1.5,0.75,1.33,0.66
 materials_hedge_desk,draw [play],play,count=3,3.0,12.0,4.0,9.67,3.22
 materials_hedge_desk,add_tokens capital [play],play,"kind=capital, amount=2",2.0,6.0,3.0,4.83,2.42
-microgrid_lab_compact,claim_station [action],action,; pays 2 energy,1.0,19.25,19.25,9.74,9.74
-microgrid_lab_compact,tags [card],card,power science,2.0,1.5,0.75,0.76,0.38
+microgrid_lab_compact,claim_station [action],action,; pays 2 energy,1.0,19.25,19.25,15.31,15.31
+microgrid_lab_compact,tags [card],card,power science,2.0,1.5,0.75,1.19,0.6
 moonshot_grant,project_cube [play],play,count=8,8.0,48.0,6.0,40.84,5.11
 moonshot_grant,draw [play],play,count=2,2.0,8.0,4.0,6.81,3.4
 moonshot_grant,tags [card],card,science,1.0,1.0,1.0,0.85,0.85

@@ -405,7 +405,19 @@ pub fn troop_plan(w: &World, g: &GameState, h: usize) -> Option<(usize, i64)> {
     let target = (0..g.hexes.len())
         .filter(|&x| is_troop_target(w, g, x) && reach(x).is_some())
         .min_by_key(|&x| (reach(x), w.map.hexes[x].country, w.map.hexes[x].number))?;
-    let steps = w.int("board.troop_steps");
+    // 148 (D59): the next march's Forced March twist, from the card current then:
+    // this round's (`adversary::twists`, as `round_pile` reads it) until this
+    // round's march is past, then next round's, face up in `NEXT` from the reveal.
+    let marched = g.phase_index("board.march").is_some_and(|i| g.phase > i);
+    let twists = if marched { adversary::next_twists(w, g) } else { adversary::twists(w, g) };
+    let extra: i64 = twists
+        .iter()
+        .map(|t| match t {
+            Op::TroopSteps { amount } => *amount,
+            _ => 0,
+        })
+        .sum();
+    let steps = (w.int("board.troop_steps") + extra).max(1);
     // Moves until the target is on or next to the troop, then the strike.
     let moves = (reach(target).unwrap_or(0) as i64 - 1).max(0);
     Some((target, (moves + steps) / steps))

@@ -104,6 +104,14 @@ pub fn view(state_json: &str) -> Result<String, JsValue> {
     Ok(to_json(&aic_core::view(&state).map_err(err)?))
 }
 
+/// A state's fingerprint (`GameState::fingerprint`: its play, measures left
+/// out), for the wasm smoke's golden check.
+#[wasm_bindgen]
+pub fn fingerprint(state_json: &str) -> Result<String, JsValue> {
+    let state: GameState = parse("state", state_json)?;
+    Ok(state.fingerprint())
+}
+
 /// A game record (`aic_core::SavedGame` text: config + seed + actions,
 /// plus identity) for the game that `actions` took to `state`.
 #[wasm_bindgen]

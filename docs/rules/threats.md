@@ -66,8 +66,9 @@ it, never their last.
 
 A player's card that jams or counters a threat reaches only threats they are near (a typed one, threats carrying its
 tag or Universal); a jam takes its amount off every resource item of every option. A Unity reward reaches any threat.
-**Standing counters:** a tier-2 capstone with an automatic counter takes its amount off each threat of its type the
-player is near, whenever it was dealt; one it pays in full is countered at once (118). From difficulty
+**Standing counters:** a tier-2 capstone with an automatic counter takes its amount off each threat of its type on
+the table, wherever it is and whenever it was dealt (148: no longer only those its holder is near); one it pays in
+full is countered at once (118). From difficulty
 `counter_bonus_at` (1) every resource item costs `counter_bonus_all` (1) more, a credits item `counter_bonus_credits` (3) more
 instead, and the first option's items `counter_bonus` (0) more still; from `counter_more_at` (2) every item
 `counter_more_all` (1) more again, credits `counter_more_credits` (3).

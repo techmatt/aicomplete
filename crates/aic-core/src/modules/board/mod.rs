@@ -98,7 +98,7 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 10] = [
+pub const FLAGS: [RoundFlag; 9] = [
     RoundFlag::Blackout,
     RoundFlag::Sabotage,
     RoundFlag::Shelter,
@@ -106,7 +106,6 @@ pub const FLAGS: [RoundFlag; 10] = [
     RoundFlag::Cordon,
     RoundFlag::PowerDown,
     RoundFlag::StationOutage,
-    RoundFlag::DoubleBuild,
     RoundFlag::StationDark,
     RoundFlag::GridDown,
 ];
@@ -146,12 +145,6 @@ pub fn seat_flagged(g: &GameState, f: RoundFlag, s: usize) -> bool {
 /// board's powers.
 pub fn powered_down(g: &GameState, s: usize) -> bool {
     seat_flagged(g, RoundFlag::PowerDown, s)
-}
-
-/// 135 (Trade Blockade): whether the adversary's build on hex `h` happens
-/// twice (the flag lasts its rounds: one build a round).
-pub fn double_build_at(w: &World, g: &GameState, h: usize) -> bool {
-    hex_flagged(w, g, RoundFlag::DoubleBuild, h)
 }
 
 /// Standing troops on hex `h` (135): they never march or strike. A removal

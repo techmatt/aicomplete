@@ -26,6 +26,8 @@ pub use counter::{cheapest_resource_need, need_and_share, paid_share, requiremen
 use counter::*;
 pub use near::{counterable, may_counter, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
 use near::*;
+#[cfg(test)]
+pub use near::mask_matches_reach;
 pub use ops::*;
 
 const PHASES: &[PhaseSpec] = &[

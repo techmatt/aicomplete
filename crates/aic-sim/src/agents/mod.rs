@@ -695,7 +695,7 @@ mod tests {
         dominance_checks(4);
     }
 
-    const DOMINANCE: [&str; 21] = [
+    const DOMINANCE: [&str; 20] = [
             "engine:keep_all=1",
             "engine:keep_k=2",
             "engine:tier2_rush=1",
@@ -708,7 +708,6 @@ mod tests {
             "engine:capstone_rush=1",
             "engine:turtle=1",
             "engine:free_only=1",
-            "engine:unity_farm=1",
             "engine:abandon=1",
             "engine:keep_none=1",
             "engine:keep_random=1",

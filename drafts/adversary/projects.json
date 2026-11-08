@@ -257,7 +257,7 @@
    ],
    "cost": 11,
    "ongoing": true,
-   "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered clean cities.",
+   "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered cities not corrupted.",
    "effects": [
     {
      "op": "create",
@@ -271,7 +271,7 @@
     "adversary pieces placed"
    ],
    "value": "absorbs 11 a player (22 to drain); harm 1-3 clean cities a country mid-game, 5 each, 3-4 rounds: 15-60, about 40; 1.4-5.5, about 3.6 a compute",
-   "check": "lands rounds 5-7; aligning cities shrinks it, so an Influence engine answers it; capped by clean cities, which only fall",
+   "check": "lands rounds 5-7; aligned cities count (148, D64: 'not corrupted'), so removal and liberation answer it, not aligning; capped by cities not corrupted, which only fall",
    "flags": [
     "142: more severe on resolving: 2 to 3 clean cities a round"
    ],
@@ -285,7 +285,7 @@
    ],
    "cost": 18,
    "ongoing": false,
-   "text": "Each board: create 3 adversary ambassadors on the lowest-numbered clean city. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
+   "text": "Each board: create 3 adversary ambassadors on the lowest-numbered city not corrupted. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
    "effects": [
     {
      "op": "create",
@@ -422,7 +422,7 @@
    ],
    "cost": 5,
    "ongoing": false,
-   "text": "Every player gets 9 fewer credits of income next round and loses all their chips.",
+   "text": "Every player gets 9 fewer credits of income at the next upkeep and loses all their chips.",
    "effects": [
     {
      "op": "lose_income",
@@ -526,7 +526,7 @@
    ],
    "cost": 6,
    "ongoing": false,
-   "text": "Every player loses 2 energy. Next round, cities make no energy and research stations produce nothing.",
+   "text": "Every player loses 2 energy. Until the end of next round, cities make no energy and research stations produce nothing.",
    "effects": [
     {
      "op": "players_lose",

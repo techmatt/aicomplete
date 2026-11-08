@@ -29,9 +29,10 @@ Cities, research stations and factories follow one set of rules and differ only 
   factory `factory_chips` 2 chips a round (a neutral station `station_cubes` 1). Give / get at `values.json`: 3
   ambassadors (12) for 2 chips a round (4) or 2 cubes a round (6) pays back in 3 or 2 rounds.
 - **Claiming a station with energy** (142): Power Purchase Agreement (an event: 2 credits and 2 energy) and Microgrid
-  Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach with no adversary
-  ambassador on it (`claim_station`), with the Claim action's other limits (a site claim: no botnet next to it, no
-  embargo). 2 energy (9) is cheaper than 3 ambassadors (12).
+  Lab Compact (a building: Action, pay 2 energy) claim a neutral research station in reach as the Claim action does
+  (`claim_station`; 148, Matt): the energy replaces the `claim_station` ambassadors, each adversary ambassador on it
+  still costs one of yours (they cancel), and a site claim is needed (no botnet next to it, no embargo). 2 energy (9)
+  is cheaper than 3 ambassadors (12).
 - **Liberating an adversary site** (the Liberate action) takes massed ambassadors from one seat's supply and turns it
   neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
   for a station or factory, plus one for each adversary ambassador on it, which cancel. It needs the site **in

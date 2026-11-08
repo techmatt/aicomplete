@@ -97,15 +97,23 @@ pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
 }
 
 /// The neutral research stations seat `seat` may claim with a card (142, `claim_station`): in its reach, a
-/// site claim on it (`can_claim`), and no adversary ambassador on it.
+/// site claim on it (`can_claim`), and, as the Claim action asks (148, D70), one of the seat's ambassadors
+/// for each adversary ambassador on it ([`card_claim_extra`]).
 pub fn card_claim_stations(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+    let held = g.resource(seat, Resource::Ambassadors);
     (0..g.hexes.len())
         .filter(|&h| {
             site_kind(w, g, h) == Some(SiteKind::Station)
-                && claim_cost(w, g, h) == Some(claim_ambassadors(w, SiteKind::Station))
+                && card_claim_extra(w, g, h).is_some_and(|n| n <= held)
                 && can_claim(w, g, seat, h)
         })
         .collect()
+}
+
+/// 148 (D70): what a card's claim of neutral station `h` costs beyond the card's own price: the Claim
+/// action's "1 more for each adversary ambassador on it", in the seat's ambassadors (they cancel).
+pub fn card_claim_extra(w: &World, g: &GameState, h: usize) -> Option<i64> {
+    claim_cost(w, g, h).map(|n| n - claim_ambassadors(w, SiteKind::Station))
 }
 
 /// Seat `seat` claims neutral site `h` (the Claim action, paid, or a card: `route`, 142's tally): the

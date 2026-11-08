@@ -163,7 +163,6 @@ its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/scre
 | ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
 | event-hoarder | `events_only=1` | keeps and plays only events |
 | ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity, and selling chips) |
-| Unity farm | `unity_farm=1` | before anything else, buys ambassadors and lands them on bases and factories, which pay Unity when they produce |
 | Science rush | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
 | always-max-node, never-second-node | `always_max_node=1`, `never_second_node=1` | both node powers whenever affordable; never the board's second |
 | never-Remove, Science board | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |

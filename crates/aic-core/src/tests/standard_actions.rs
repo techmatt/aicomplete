@@ -301,6 +301,29 @@ fn claiming_costs_by_site_type() {
     assert_eq!(g.stats.counters["board.claimed.factory"], 1);
 }
 
+/// 148 (D70): a card's station claim (`claim_station`) claims as the Claim action does: a station holding
+/// adversary ambassadors is open to it for one of the seat's ambassadors each, which cancel.
+#[test]
+fn card_claims_a_station_as_claim_does() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let me = m.numbered(0, piece(0).node);
+    put(&mut g, me, node(0), 1);
+    let st = m.hexes[me].neighbors.iter().copied().find(|&h| kind(m, h) == HexKind::Open).unwrap();
+    put(&mut g, st, STATION, 1);
+    assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
+    put(&mut g, st, ADV_AMBASSADOR, 2);
+    assert_eq!(board::card_claim_extra(&w, &g, st), Some(2));
+    set_res(&mut g, 0, Resource::Ambassadors, 1);
+    assert!(board::card_claim_stations(&w, &g, 0).is_empty(), "short of the extra ambassadors");
+    set_res(&mut g, 0, Resource::Ambassadors, 3);
+    assert_eq!(board::card_claim_stations(&w, &g, 0), vec![st]);
+    run_ops(&rules, &mut g, &[crate::content::Op::ClaimStation]);
+    assert_eq!((g.tokens(st, ADV_AMBASSADOR), g.tokens(st, cube(0))), (0, 1));
+    assert_eq!(g.resource(0, Resource::Ambassadors), 1);
+}
+
 /// 137: Liberate turns an adversary station or factory in reach neutral for
 /// `liberate_facility_at` ambassadors (plus 1 for each adversary ambassador
 /// on it, which cancel) and sways `free_facility` Unity; a botnet on it stays

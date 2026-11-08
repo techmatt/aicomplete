@@ -74,6 +74,17 @@ fn position_hash(g: &GameState, choices: usize) -> u64 {
         mix(k.as_str().as_ptr() as u64);
         mix(*n as u64);
     }
+    // 148: the piles too, which `same_position` compares: positions differing
+    // only in piles all fell in one bucket, and a scan of deep compares went
+    // quadratic (one Shadow Factories scoring, 6.2M compares: r62's strategist
+    // 1.30x a decision, 1.14x with this; the memo is confirmed, so same play).
+    for (k, v) in g.piles.iter() {
+        mix(k.as_str().as_ptr() as u64);
+        mix(v.len() as u64);
+        for id in v.iter() {
+            mix(id.as_str().as_ptr() as u64);
+        }
+    }
     h
 }
 

@@ -365,3 +365,26 @@ fn the_militarists_difficulty_line_adds_compute_per_uncountered_threat() {
     assert_eq!(made(at - 1), (0, 0));
     assert_eq!(made(at), (4, 4));
 }
+
+/// 148: `near_mask` (the bit-mask reach the eval asks of every threat) reads the
+/// same hexes as the Vec it replaced, at every step of random games, 2-4 countries.
+#[test]
+fn near_mask_matches_the_reach() {
+    for n in 2..=4u8 {
+        let mut c = baseline();
+        c.countries = n;
+        let rules = Rules::new(&c).unwrap();
+        let w = rules.world();
+        let (_, actions) = random_game(&rules, 7);
+        let mut g = rules.new_game(7);
+        let mut checked = 0;
+        for a in &actions {
+            for (t, _) in threats::active(&g) {
+                assert!(threats::mask_matches_reach(&w, &g, &t), "{n} countries: {t}");
+                checked += 1;
+            }
+            rules.apply_mut(&mut g, a, None).unwrap();
+        }
+        assert!(checked > 0, "{n} countries: no threat was ever active");
+    }
+}

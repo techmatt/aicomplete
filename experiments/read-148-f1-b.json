@@ -1,0 +1,37 @@
+{
+  "name": "read-148-f1-b",
+  "note": "148 final paired read (f1), set b: seeds 37576-37623, the three pairs, d0-d3.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 37576,
+  "records": 0
+}

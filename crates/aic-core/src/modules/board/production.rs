@@ -94,6 +94,8 @@ fn measure_round(g: &mut GameState, cx: &mut Cx) {
         for r in LEFT {
             cx.per_round(g, &format!("unspent.{s}.{r}"), g.resource(s, r));
         }
+        // 148: research cubes too (the leftover read; LEFT is the margin's order).
+        cx.per_round(g, &format!("unspent.{s}.research_cubes"), g.resource(s, Resource::ResearchCubes));
         ai::tally_dear_powers(g, cx, s);
         // 078: the seat's most-held tag on its cards in play (tags by round).
         let top = crate::modules::cards::tag_counts(&w, g, s).into_iter().max().unwrap_or(0);

@@ -135,7 +135,7 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
   `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`), armor read as the engine does
-  (`w.shelter_armor`, D71).
+  (`w.shelter_armor`, D71; one pool a hex, 148).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`: slots
   full, the keep plan charges a plain building what the top it buries would earn).
 - *Count your research cubes like credits* (`plan_cubes`: a budget in the keep plan).

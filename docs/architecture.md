@@ -224,8 +224,8 @@ and a viewer game; `SavedGame::replay` warns on any identity or fingerprint mism
 
 - **Event log**: `Event`s from `apply` and `new_game_logged`, for UIs and the sim's
   `--trace`; hot loops pass `None`.
-- **Counters** in `GameState::stats` are in the fingerprint: adding or renaming one
-  moves the golden even when play doesn't. `adversary.ops` is the proxy for table time.
+- **Counters** in `GameState::stats` are left out of the fingerprint (148), so adding or
+  renaming one moves no golden. `adversary.ops` is the proxy for table time.
 - **`PlayedGame`** carries the outcome (a stable `reason` code), decision counts and
   identity (config and content hashes, engine version, `rules_revision`, fingerprint).
 

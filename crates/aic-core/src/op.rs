@@ -172,8 +172,6 @@ pub enum RoundFlag {
     PowerDown,
     /// The research stations of players near it make no research cubes (135).
     StationOutage,
-    /// The next adversary build on or next to it happens twice (135).
-    DoubleBuild,
     /// Research stations on or next to it produce nothing (135).
     StationDark,
     /// Cities and stations on or next to it produce nothing (135).
@@ -308,7 +306,6 @@ impl RoundFlag {
             RoundFlag::Cordon => "cordon",
             RoundFlag::PowerDown => "power_down",
             RoundFlag::StationOutage => "station_outage",
-            RoundFlag::DoubleBuild => "double_build",
             RoundFlag::StationDark => "station_dark",
             RoundFlag::GridDown => "grid_down",
         }
@@ -943,8 +940,8 @@ pub enum Op {
     ProjectDrain {
         amount: i64,
     },
-    /// Each threat of `source` you can pay toward (you may counter it) needs
-    /// `amount` less of each resource (070; r48: any country, or the row).
+    /// Each threat of `source` needs `amount` less of each resource to counter
+    /// (070; 148: wherever it is, no longer only those its holder can pay toward).
     AutoCounter {
         source: ThreatSource,
         amount: i64,

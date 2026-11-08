@@ -204,8 +204,12 @@ impl GameState {
         serde_json::to_string(self).expect("state serializes")
     }
 
-    /// FNV-1a of the JSON form, as 16 hex digits; for replay checks and logs.
+    /// FNV-1a of the JSON form less `stats`, as 16 hex digits; for replay
+    /// checks and logs. 148: measures stay out, so a measures-only tally moves
+    /// no fingerprint (147's stage tally moved `GOLDEN_FINGERPRINT` and no game).
     pub fn fingerprint(&self) -> String {
-        format!("{:016x}", crate::hash::fnv1a64(self.to_json().as_bytes()))
+        let mut play = self.clone();
+        play.stats = Stats::default();
+        format!("{:016x}", crate::hash::fnv1a64(play.to_json().as_bytes()))
     }
 }

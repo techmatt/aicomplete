@@ -3156,7 +3156,7 @@
    {
     "op": "auto_counter",
     "source": "economic",
-    "amount": 5
+    "amount": 6
    }
   ]
  },
@@ -3180,7 +3180,7 @@
    {
     "op": "auto_counter",
     "source": "cyber",
-    "amount": 5
+    "amount": 6
    }
   ]
  },
@@ -4823,7 +4823,7 @@
   "tier": 2,
   "kind": "building",
   "cost": 15,
-  "energy": 8,
+  "energy": 5,
   "insight": 2,
   "tags": [
    "cyber",
@@ -4898,7 +4898,7 @@
   "name": "Microgrid Lab Compact",
   "tier": 2,
   "kind": "building",
-  "cost": 8,
+  "cost": 14,
   "insight": 1,
   "tags": [
    "power",

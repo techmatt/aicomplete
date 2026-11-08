@@ -398,7 +398,7 @@ fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
 /// Flag (135 fields): up for `rounds` more rounds (the var holds rounds + 1:
 /// a threat executes after the round's production). A seat's flag
 /// (power_down, station_outage) goes on the seats near it; a hex's (blackout,
-/// embargo, double_build, station_dark, grid_down) on the hexes near it, the
+/// embargo, station_dark, grid_down) on the hexes near it, the
 /// rest on the country; `scope` country, the country; `everywhere`, every
 /// country (every seat, for a seat's flag).
 #[allow(clippy::too_many_arguments)]
@@ -413,7 +413,7 @@ fn flag(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, name: RoundFlag, scope: Optio
     let seat_flag = matches!(name, RoundFlag::PowerDown | RoundFlag::StationOutage);
     let hex_flag = matches!(
         name,
-        RoundFlag::Blackout | RoundFlag::Embargo | RoundFlag::DoubleBuild | RoundFlag::StationDark | RoundFlag::GridDown
+        RoundFlag::Blackout | RoundFlag::Embargo | RoundFlag::StationDark | RoundFlag::GridDown
     );
     if seat_flag {
         let seats = if everywhere {

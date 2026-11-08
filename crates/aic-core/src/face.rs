@@ -772,7 +772,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         ),
         Op::AutoCounter { source, amount: n } => effect(
             adversary(minus(*n, "jam")),
-            format!("{source} threats you can pay toward need {n} less"),
+            format!("{source} threats need {n} less to counter"),
         ),
         Op::UnityBonus { amount: n } => effect(
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },

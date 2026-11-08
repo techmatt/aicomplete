@@ -11,7 +11,6 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Cordon => "Cordon: no arrivals land here this round",
         RoundFlag::PowerDown => "Power down: players near it can't use Actions that cost energy",
         RoundFlag::StationOutage => "Station outage: the research stations of players near it make no research cubes",
-        RoundFlag::DoubleBuild => "Blockade: the next adversary build on or next to it happens twice",
         RoundFlag::StationDark => "Stations dark: research stations on or next to it produce nothing",
         RoundFlag::GridDown => "Grid down: cities and stations on or next to it produce nothing",
     }
@@ -47,7 +46,10 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 } else {
                     flag_doc(f)
                 };
-                out.country(c, f.name(), f.name(), 1, None, doc);
+                // 148: the label is the doc's name ("Stations dark"), not the key
+                // (Rolling Blackouts sets `station_dark` on every country).
+                let label = doc.split(':').next().unwrap_or(doc);
+                out.country(c, f.name(), label, 1, None, doc);
             }
         }
         // 102 (D29): dark cities, named, so a dark city reads as one off the hover.

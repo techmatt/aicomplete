@@ -75,14 +75,14 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
-- **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
+- **Margin**: a win's adversary cards left and ambassador supply (a loss ending `deck_empty` is the round cap); a loss's adversary pieces over the bar
   (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`.
 
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions` and
 `adversary.first_corruption_round` (any site since 138: cities alone are `adversary.corruptions.city`), `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
 `games.jsonl`. Per-round tables (`<key>.rNN`, summed over seats) exist only for keys `PER_ROUND_EXPORT` in
-`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, `unspent.<seat>.energy` (held as the action phase
-ends); add one there (a rebuild). A zero fills every round up to the key's last record, so an absent
+`experiment.rs` names: `cards.`, `ai.`, `economy.`, `board.node`, `threats.`, `unspent.<seat>.<resource>` (held as the
+action phase ends, before production and upkeep pay; research cubes too since 148); add one there (a rebuild). A zero fills every round up to the key's last record, so an absent
 `unspent.*.rNN` means the round's action phase never ended. `cx.count(g, "x", n)` writes
 `<module>.x`; `cx.tally` and `cx.per_round` take the full key (`ai.power.builder.0`). The sim adds, as a seat
 passes: `actions.skipped|blocked[_energy].<seat>.<card>` (a building's Action offered and not taken, or not offered:
@@ -119,8 +119,8 @@ cheaper); the planner confirms.
 
 ## Reading noise
 
-**Seeds are noisy.** 24 seeds is about ±10 and 48 about ±7; 16 about ±15, too few for levers under about 20
-points. Seed sets alone move a pair 10-25 points at 48 seeds.
+**Seeds are noisy.** 24 seeds is about ±10, 48 about ±7, 16 about ±15. Seed sets alone move a pair 10-25 points at 48
+seeds (148's two d3 sets: 34.0 and 59.7).
 
 `cards.csv` splits by variant; `report.md`'s card table pools per agent. `games.jsonl` names agents as the spec
 writes them (`strategist`), `cards.csv` as resolved (`engine:strategy=1`): map them to join. `kept` and `drawn` in `games.jsonl`
@@ -139,11 +139,9 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** 139's `read-139-r58-{a,b}.json` (the three pairs, d0-d2, 48 seeds) paired with the old
-  binary's run, merged and read by `139_discord_and_band/read139.py` (`merge`; `discord`: Discord cards, nodes by
-  cause), 137's `read137.py --135` (win, length, ends, war, claims, counters, peaks) and 138's `sum138.py`
-  (corruptions, creation, threats by tier); screens are `<pair>_<lever>` cells (`specs.py`). 130's `read130.py`,
-  128's `action_read.py` and 131's `read131.py` (agent `t.` arms, paired) still apply.
+- **Current recipe:** 148's `specs.py final` (two 48-seed sets, the three pairs, d0-d3) on both binaries, read by
+  `148_card_pass_r62/pairs148.py` (pooled, paired, by set) and 147's `read147.py` (win, ends, nodes lost by cause,
+  counters by tier); screens are `<pair>_<lever>` cells. 137's `read137.py --135` and 138's `sum138.py` still apply.
 - **Costs:** an engine game about 0.7 s; the r58 standard read (432 strategist games, 9 rounds) 88 s on 6 threads on
   a quiet box (141), twice that with a second run beside.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
@@ -168,9 +166,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 37528 (which item spent which is in its write-up;
-146's: 36952-37047 its first read, 37048-37143 its confirming read, 37144-37239 its final read; 147's: 37240-37527,
-three final reads). Next free: 37528. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 37624 (which item spent which is in its write-up;
+147's: 37240-37527, three final reads; 148's: 37528-37623, its final read). Next free: 37624. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

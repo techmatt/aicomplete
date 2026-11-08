@@ -25,7 +25,8 @@ The adversary is a **board** (the Militarist's: project slots, two rules, a diff
 
 **Creation lines (138, candidate): bounded arrivals.** Every line that makes adversary ambassadors has one shape:
 *create N per board on the lowest-numbered X [condition]*, or *on each of the K lowest-numbered Xs*. X is a city, coastal
-city, research station, factory or botnet hex (a threat may say "here"); the conditions are clean (not the adversary's),
+city, research station, factory or botnet hex (a threat may say "here"); the conditions are not corrupted (not the adversary's:
+a clean or aligned city, 148),
 corrupted, a player's, holding adversary ambassadors, with none, or on or next to a threat. "Per board" is each country;
 a threat's line reaches its own country. Stage I creates 1 a site, later stages more. Only a Corrupt line moves them. A cordoned country gains none.
 **Site creation (candidate):** a few cards open a **neutral** research station (or factory) on each board's

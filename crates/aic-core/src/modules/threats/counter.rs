@@ -148,31 +148,26 @@ pub(super) fn room(req: &[Vec<CounterItem>], g: &GameState, threat: &str, resour
 }
 
 /// What standing counters take off `threat` (070): the Auto Counters of its
-/// type (its tag, or Universal) held by every seat near it. Read, not stored,
-/// so a delayed threat isn't cut twice and an extra deal is cut too.
+/// type (its tag, or Universal) held by every seat, wherever the threat is
+/// (148: r61's menus are one scarce currency or credits, so the old "you can
+/// pay toward" cut seldom fired). Read, not stored, so a delayed threat isn't
+/// cut twice and an extra deal is cut too.
 pub(super) fn standing(w: &World, g: &GameState, threat: &str) -> i64 {
     if scope_of(g, threat).is_none() {
         return 0;
     }
-    // 147: each seat's Auto Counters first (most seats hold none), then
-    // whether the seats holding one are near, the threat's reach read once.
-    let mut by_seat = [0i64; 4];
-    let mut any = false;
-    for (s, k) in by_seat.iter_mut().enumerate().take(g.seats.len()) {
+    let mut cut = 0;
+    for s in 0..g.seats.len() {
         // A walk, not a list: the heuristic asks this of every threat a position (103).
         cards::each_passive(w, g, s, |p| {
             if let Op::AutoCounter { source, amount } = p {
                 if of_type(w, threat, *source) {
-                    *k += *amount;
+                    cut += *amount;
                 }
             }
         });
-        any |= *k != 0;
     }
-    if !any {
-        return 0;
-    }
-    seats_near(w, g, threat).into_iter().map(|s| by_seat.get(s).copied().unwrap_or(0)).sum()
+    cut
 }
 
 /// Returns every pooled contribution on `threat` to its payers.

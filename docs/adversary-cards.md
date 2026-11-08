@@ -109,15 +109,15 @@ Project slots: Military, Open, Open.
 | Arms Race | Military | 11 | ongoing | Ongoing: each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base in each production, whatever makes it); sway 1 toward Discord. |
 | Declaration of War | Military | 18 | ongoing | In each country, 3 troops land on factories (else cities); sway 3 toward Discord. Ongoing: each round, the front with the most corp troops fights twice. |
 | Disinformation | Influence | 5 | once | Sway 5 toward Discord. Every player loses 2 ambassadors. |
-| Recruitment Drive | Influence | 11 | ongoing | Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered clean cities. |
-| Infiltration Drive | Influence | 18 | once | Each board: create 3 adversary ambassadors on the lowest-numbered clean city. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord. |
+| Recruitment Drive | Influence | 11 | ongoing | Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered cities not corrupted. |
+| Infiltration Drive | Influence | 18 | once | Each board: create 3 adversary ambassadors on the lowest-numbered city not corrupted. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord. |
 | Data Heist | Cyber | 6 | once | Every player loses 5 tokens from their cards and gets 3 less insight next round. |
 | Botnet Swarm | Cyber | 6 | once | Each board: create 3 adversary ambassadors on each of the 2 lowest-numbered botnet hexes. |
 | Station Coup | Cyber | 9 | once | Each board: create 1 adversary ambassador on each of the 2 lowest-numbered research stations. Then in each country, players choose a research station that is not the adversary's; it flips to the adversary, but a player's holds unless 2 adversary ambassadors and no player ambassador are on it (those 2 return to the supply as it flips). If it holds, 1 adversary ambassador lands on it (or cancels a player ambassador there). |
-| Market Crash | Economic | 5 | once | Every player gets 9 fewer credits of income next round and loses all their chips. |
+| Market Crash | Economic | 5 | once | Every player gets 9 fewer credits of income at the next upkeep and loses all their chips. |
 | Shadow Factories | Economic | 7 | once | The adversary builds a factory in the country with the most free industrial zones (tie: the first country), on a free zone next to an adversary ambassador, else the lowest-numbered one (none: 2 of its ambassadors land on a factory). Each board: create 1 adversary ambassador on each of the 2 lowest-numbered factories. |
 | Capital Flight | Economic | 8 | once | Every player's income falls by 6 credits for the rest of the game. |
-| Rolling Blackouts | Grid | 6 | once | Every player loses 2 energy. Next round, cities make no energy and research stations produce nothing. |
+| Rolling Blackouts | Grid | 6 | once | Every player loses 2 energy. Until the end of next round, cities make no energy and research stations produce nothing. |
 | Grid Capture | Grid | 9 | ongoing | Every player loses 2 energy. Ongoing: every round, every player loses 1 energy. |
 | False Flag | Universal | 6 | once | Deal 1 extra tier-2 threat in each country, any tag. Sway 2 toward Discord. |
 | Grand Offensive | Universal | 10 | once | The adversary builds now, then Corrupt cities; 1 troop lands on a factory (else a city) in each country; sway 3 toward Discord. |

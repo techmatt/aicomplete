@@ -199,7 +199,7 @@
   ],
   "cost": 11,
   "ongoing": true,
-  "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered clean cities.",
+  "text": "Ongoing: every round, each board: create 1 adversary ambassador on each of the 3 lowest-numbered cities not corrupted.",
   "effects": [
    {
     "op": "create",
@@ -221,7 +221,7 @@
   ],
   "cost": 18,
   "ongoing": false,
-  "text": "Each board: create 3 adversary ambassadors on the lowest-numbered clean city. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
+  "text": "Each board: create 3 adversary ambassadors on the lowest-numbered city not corrupted. Corrupt cities (1 fewer). Every player loses an ambassador. Sway 3 toward Discord.",
   "effects": [
    {
     "op": "create",
@@ -332,7 +332,7 @@
   ],
   "cost": 5,
   "ongoing": false,
-  "text": "Every player gets 9 fewer credits of income next round and loses all their chips.",
+  "text": "Every player gets 9 fewer credits of income at the next upkeep and loses all their chips.",
   "effects": [
    {
     "op": "lose_income",
@@ -406,7 +406,7 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Every player loses 2 energy. Next round, cities make no energy and research stations produce nothing.",
+  "text": "Every player loses 2 energy. Until the end of next round, cities make no energy and research stations produce nothing.",
   "effects": [
    {
     "op": "players_lose",

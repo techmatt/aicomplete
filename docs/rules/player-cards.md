@@ -39,12 +39,10 @@ The cards config lists which cards are in the game (baseline: all of them).
   Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
   compute (Foundation Model Campus 2). Energy costs stay uncommon (counts above), so a
   seat that makes little energy still has plenty to play. Seven late sinks are for a seat whose node tracks are full,
-  open to any seat with the energy: Actions that pay 2 energy, Particle Accelerator (3 research cubes on a megaproject,
-  OR onto your board), Directed-Energy Array (remove 3 adversary ambassadors in reach), Holographic Assembly Hall
-  (2 Sway toward Unity and 2 ambassadors), Wafer Fab Line (Industry: draw 2, 2 chips) and the tier-2 Microgrid Lab
-  Compact (claim a neutral station in reach); and two tier-2 buildings with a very big energy cost, Citywide Microgrid (8
-  energy: liberate a city in reach; Action: 2 Sway toward Unity) and Exascale Training Cluster (8 energy: 6 research
-  cubes; +3 insight a round). Power is the usual tag of a sink.
+  open to any seat with the energy ([cards.md](../cards.md) has their faces): five Actions that pay 2 energy (Particle
+  Accelerator, Directed-Energy Array, Holographic Assembly Hall, Wafer Fab Line, the tier-2 Microgrid Lab Compact) and
+  two tier-2 buildings with a big energy cost, Citywide Microgrid (8) and Exascale Training Cluster (5, r62). Power is
+  the usual tag of a sink.
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
@@ -68,7 +66,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   trigger (when you play a card of the tag) and a tier-2 one that counts every tag on the played card, and its
   engines' payoffs: fight triggers, teammate triggers, discounts, rebates, thresholds, copy and reuse
   ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber keeps a standing automatic counter
-  (Autonomous Defense Grid); the others' were cut (Industry's at r44). No capstone prints a shield or a delay. Reasoning and
+  (Autonomous Defense Grid: Cyber threats anywhere need 6 less to counter, r62); the others' were cut (Industry's at r44). No capstone prints a shield or a delay. Reasoning and
   prices: [card-pricing.md](../card-pricing.md).
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
@@ -86,7 +84,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   | Popular Uprising | Followers | tier-1 building | Action: add 1 Follower here, OR pay 4 Followers to liberate, again and again |
 
   Each is priced at its own value at the rates (`configs/agents/values.json`: a liberation about 45 credits, near what
-  a corrupted city costs in play; the extra at its own row), 4-42 credits (Citywide Microgrid 4 and 8 energy; Popular Uprising 22, tier 1, its liberation four Actions away), well under the Liberate action's 5 ambassadors (~100 credits) and
+  a corrupted city costs in play; the extra at its own row), 4-42 credits, well under the Liberate action's 5 ambassadors (~100 credits) and
   out of reach before mid-game. They read 1.0-1.35 at Matt's unit anchors, inside the margin like any fair card: the
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the

@@ -41,14 +41,11 @@ console.log(`view ${viewOk ? 'ok' : 'BAD'}, record ${recordOk ? 'ok' : 'BAD'} ($
 
 // Must equal GOLDEN_FINGERPRINT in crates/aic-core/src/tests/mod.rs (same config,
 // seed and policy), proving native and wasm builds play the same game.
-const GOLDEN = 'ccb4f7162f12c0b8';
+const GOLDEN = '456ada0df90a8b0f';
 // Must equal GOLDEN_CONTENT_HASH there: this game may never pay for a repriced card.
-const GOLDEN_CONTENT = '98a49b3af4785a4a';
-let h = 0xcbf29ce484222325n;
-for (const b of new TextEncoder().encode(state)) {
-  h = ((h ^ BigInt(b)) * 0x100000001b3n) & 0xffffffffffffffffn;
-}
-const fingerprint = h.toString(16).padStart(16, '0');
+const GOLDEN_CONTENT = '51336b5bb9c0e279';
+// 148: the state's play less its measures (`stats`), computed in the wasm build.
+const fingerprint = m.fingerprint(state);
 const golden = process.argv[2] ? true : fingerprint === GOLDEN && parsed.content_hash === GOLDEN_CONTENT;
 console.log(`final state fingerprint ${fingerprint}${process.argv[2] ? '' : ` (golden ${GOLDEN})`}`);
 if (!process.argv[2]) console.log(`content hash ${parsed.content_hash} (golden ${GOLDEN_CONTENT})`);

@@ -1106,15 +1106,16 @@ fn finish(r: &mut GameResult, rules: &Rules, g: GameState) {
 
 /// The per-round counters games.jsonl carries, as (prefix, suffix) pairs: a
 /// key matching both is written round by round (`<key>.rNN`). Others
-/// (`adversary.*`, the other `unspent.*` resources) stay out, to keep
-/// games.jsonl small; a new by-round read adds its pair here. `unspent.<seat>.energy`
-/// is the energy a seat holds as the action phase ends (090).
+/// (`adversary.*`) stay out, to keep games.jsonl small; a new by-round read
+/// adds its pair here. `unspent.<seat>.<resource>` is what a seat holds as the
+/// action phase ends, before production and upkeep pay (090: energy; 148: every
+/// resource, research cubes included, for the leftover read).
 pub const PER_ROUND_EXPORT: &[(&str, &str)] = &[
     ("cards.", ""),
     ("ai.", ""),
     ("economy.", ""),
     ("board.node", ""),
-    ("unspent.", ".energy"),
+    ("unspent.", ""),
     // 135: threats countered and uncountered, round by round.
     ("threats.", ""),
 ];

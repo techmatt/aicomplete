@@ -1,0 +1,10 @@
+# 148 (r62): Matt's card rulings of 2026-11-07, written with scripts/cards/apply_overlay.py (rerunnable).
+# 1. Exascale Training Cluster: build energy 8 -> 5 (a starting value data adjusts); its +25 override is cut in values.json.
+cards.exascale_training_cluster.energy=5
+# 3. Microgrid Lab Compact: priced at the anchors (write-up: a claim's 2 cubes a round at 6 for about 4 rounds, less the risk).
+cards.microgrid_lab_compact.cost=14
+# 5. Autonomous Defense Grid and Market Stabilization Board, 9 cr as printed: the cut now reaches every threat of the
+# type on the table (counter.rs `standing`), 6 less of each resource item: a scarce option of 3-6 is paid in full at
+# d0, so the threat is countered at once (118); 7 chips or insight fall to 1, credits 12 / 17 to 6 / 11.
+cards.autonomous_defense_grid.passives.0.amount=6
+cards.market_stabilization_board.passives.0.amount=6

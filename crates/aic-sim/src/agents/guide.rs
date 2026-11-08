@@ -8,9 +8,9 @@
 //! open table; the eval credits a sheltered country with what it saves.
 
 use aic_core::content::{CounterItem, Op, RoundFlag};
-use aic_core::module::World;
+use aic_core::module::{Hot, World};
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
-use aic_core::modules::{board, threats};
+use aic_core::modules::{adversary, board, threats};
 use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
@@ -37,7 +37,8 @@ pub enum Armor {
     AnyAmbassador,
     /// 147: as the engine does (`board::destroy_piece`): a hardening token, the
     /// node owner's ambassador or the site owner's; each destroy spends one unit
-    /// while any lasts, then takes a node.
+    /// while any lasts, then takes a node. 148: one pool a hex across the
+    /// country's threats, and never a seat's last node (as the engine spares it).
     ByOwner,
 }
 
@@ -67,11 +68,48 @@ fn factory_absorbed(g: &GameState, h: usize, armor: Armor) -> bool {
     }
 }
 
-/// D71: the armor units on hex `h` against destroys aimed at seat `s`'s node
-/// there: hardening tokens, `s`'s ambassadors, and the site owner's.
-fn armor_units(g: &GameState, s: usize, h: usize) -> i64 {
-    let site = common::cube_owner(g, h).filter(|&o| o != s).map_or(0, |o| g.tokens(h, common::ambassador(o)));
-    g.tokens(h, HARDEN) + g.tokens(h, common::ambassador(s)) + site
+/// Reads the country's armor pool and clears its fallen-node counts, once a
+/// call (148).
+fn fill(g: &GameState, hexes: &[usize], pool: &mut Vec<HexArmor>, taken: &mut Vec<i64>) {
+    if pool.is_empty() {
+        pool.extend(hexes.iter().map(|&h| HexArmor::read(g, h)));
+        taken.resize(hexes.len(), 0);
+    }
+}
+
+/// 148: the armor on one hex, as `board::destroy_piece` spends it: hardening
+/// tokens, then the node owner's ambassadors, then the site owner's. One pool a
+/// hex for a whole forecast, so a unit one threat spends is gone for the next.
+#[derive(Clone, Copy)]
+struct HexArmor {
+    harden: i64,
+    amb: [i64; 4],
+    site: Option<usize>,
+}
+
+impl HexArmor {
+    fn read(g: &GameState, h: usize) -> HexArmor {
+        let mut amb = [0; 4];
+        for (s, a) in amb.iter_mut().enumerate().take(g.seats.len()) {
+            *a = g.tokens(h, common::ambassador(s));
+        }
+        HexArmor { harden: g.tokens(h, HARDEN), amb, site: common::cube_owner(g, h).filter(|&o| o < 4) }
+    }
+
+    /// Spends one unit against a destroy of seat `s`'s node here, if any lasts.
+    fn spend(&mut self, s: usize) -> bool {
+        if self.harden > 0 {
+            self.harden -= 1;
+            return true;
+        }
+        for o in [Some(s), self.site].into_iter().flatten() {
+            if self.amb[o] > 0 {
+                self.amb[o] -= 1;
+                return true;
+            }
+        }
+        false
+    }
 }
 
 /// The share of threat `t`'s counter still unpaid.
@@ -113,6 +151,16 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         let k = common::node(s);
         hexes.iter().copied().filter(|&h| g.tokens(h, k) > 0).collect()
     };
+    // 148, by owner: one armor pool a hex and one node count a seat for the
+    // whole call, drawn down in resolution order, each read when first needed.
+    // `taken[i]`: nodes on `hexes[i]` the forecast has taken already.
+    let mut pool: Vec<HexArmor> = Vec::new();
+    let mut taken: Vec<i64> = Vec::new();
+    let mut left: [Option<i64>; 4] = [None; 4];
+    // The engine's last-node floors: "destroy a node" never takes a seat's
+    // last (`team::destroy_nearest_node`); any other destroy spares it below
+    // the last-safe stage (`board::last_node_safe`).
+    let safe_stage = g.var(adversary::STAGE) < w.hot(Hot::LastSafeStage);
     for (t, scope) in threats::active(g) {
         if scope != country || threats::waits(g, &t) {
             continue;
@@ -128,18 +176,63 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         let hit = threats::nearest_seats(w, g, &t).first().copied();
         for op in &w.content.threat(&t).effects {
             match op {
-                Op::DestroyNode { count } => {
+                Op::DestroyNode { count } if armor == Armor::AnyAmbassador => {
                     if let Some(s) = hit.filter(|&s| s < seats && !board::last_node_safe(w, g, s)) {
                         let near: Vec<usize> =
                             threats::nearest_nodes(w, g, s, &t).into_iter().filter(|h| hexes.contains(h)).collect();
-                        lost[s] += match armor {
-                            Armor::AnyAmbassador => (near.iter().filter(|&&h| !absorbed(h)).count() as i64).min(*count),
-                            // D71: the hit player spends armor first, one unit a destroy.
-                            Armor::ByOwner => {
-                                let units: i64 = near.iter().map(|&h| armor_units(g, s, h)).sum();
-                                (*count - units).max(0).min(near.len() as i64)
-                            }
-                        };
+                        lost[s] += (near.iter().filter(|&&h| !absorbed(h)).count() as i64).min(*count);
+                    }
+                }
+                Op::DestroyNode { count } => {
+                    // D71: the hit player spends armor first, one unit a
+                    // destroy (148: from the call's pool), then loses a node.
+                    let Some(s) = hit.filter(|&s| s < seats) else { continue };
+                    let near: Vec<usize> = threats::nearest_nodes(w, g, s, &t)
+                        .into_iter()
+                        .filter_map(|h| hexes.iter().position(|&x| x == h))
+                        .collect();
+                    if near.is_empty() {
+                        continue;
+                    }
+                    fill(g, hexes, &mut pool, &mut taken);
+                    let k = common::node(s);
+                    for _ in 0..*count {
+                        let have = *left[s].get_or_insert_with(|| common::node_count(g, s));
+                        if have <= 1 {
+                            break;
+                        }
+                        if near.iter().any(|&i| pool[i].spend(s)) {
+                            continue;
+                        }
+                        let Some(&i) = near.iter().find(|&&i| taken[i] < g.tokens(hexes[i], k)) else { break };
+                        taken[i] += 1;
+                        left[s] = Some(have - 1);
+                        lost[s] += 1;
+                    }
+                }
+                Op::Troops { count, destroy: true, .. } if armor == Armor::ByOwner => {
+                    // As below, the armor and the seat's nodes drawn from the
+                    // call's pool and counts.
+                    fill(g, hexes, &mut pool, &mut taken);
+                    let mut hit = 0;
+                    let factories = hexes.iter().any(|&h| g.tokens(h, FACTORY) > 0);
+                    for (i, &h) in hexes.iter().enumerate() {
+                        let site = if factories { g.tokens(h, FACTORY) > 0 } else { common::is_city(w, h) };
+                        if !site || hit >= *count || board::walled(w, g, h) {
+                            continue;
+                        }
+                        let Some(s) = common::node_owner(g, h).filter(|&s| s < seats) else { continue };
+                        if pool[i].spend(s) {
+                            continue;
+                        }
+                        let have = *left[s].get_or_insert_with(|| common::node_count(g, s));
+                        if taken[i] >= g.tokens(h, common::node(s)) || (safe_stage && have <= 1) {
+                            continue;
+                        }
+                        taken[i] += 1;
+                        left[s] = Some(have - 1);
+                        lost[s] += 1;
+                        hit += 1;
                     }
                 }
                 Op::Troops { count, destroy: true, .. } => {
@@ -172,10 +265,11 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                 continue;
             }
             // D71: by owner, the armor is already spent above (a node whose
-            // armor runs out falls); before, an armored node never fell.
+            // armor runs out falls) and the nodes counted out of what stands
+            // (148); before, an armored node never fell.
             let open = match armor {
                 Armor::AnyAmbassador => nodes_here(s).into_iter().filter(|&h| !absorbed(h)).count() as i64,
-                Armor::ByOwner => nodes_here(s).len() as i64,
+                Armor::ByOwner => n,
             };
             out.nodes[s] += share * n.min(open) as f64;
         }
@@ -230,4 +324,62 @@ pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool, armor: Arm
         .map(|c| shelter_saves(w, g, c, counter_first, armor))
         .filter(Saves::any)
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use aic_core::Key;
+    use std::sync::Arc;
+
+    /// A board with no nodes, troops, armor or threats on it but `threats`
+    /// (token-less, near the whole country) on country 0, and seat 0's nodes on
+    /// the first `nodes` hexes of country 0 with a hardening token on the
+    /// first `harden` of them.
+    fn lab(threats: &[&str], nodes: usize, harden: usize) -> (aic_core::Rules, GameState) {
+        let r = crate::agents::tests::rules(0);
+        let mut g = r.new_game(1);
+        let seats = g.seats.len();
+        for hex in Arc::make_mut(&mut g.hexes).iter_mut() {
+            Arc::make_mut(hex).tokens.retain(|k, _| {
+                let k = k.as_str();
+                k != UNIT && k != HARDEN && (0..seats).all(|s| k != common::node(s) && k != common::ambassador(s))
+            });
+        }
+        g.piles.retain(|k, _| !k.as_str().starts_with("threats.on."));
+        g.piles.insert("threats.on.0".into(), Arc::new(threats.iter().map(|&t| Key::from(t)).collect()));
+        let hexes = r.world().map.countries[0].hexes.clone();
+        for (i, &h) in hexes.iter().take(nodes).enumerate() {
+            let t = &mut Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens;
+            t.insert(common::node(0).into(), 1);
+            if i < harden {
+                t.insert(HARDEN.into(), 1);
+            }
+        }
+        (r, g)
+    }
+
+    /// 148: two "destroy a node" threats on one country share its one
+    /// hardening token: one destroy is absorbed, the other takes a node (each
+    /// read apart, both were absorbed).
+    #[test]
+    fn armor_is_one_pool_across_a_countrys_threats() {
+        let (r, g) = lab(&["dark_cities", "purge_protocols"], 3, 1);
+        let w = r.world();
+        let saves = shelter_saves(&w, &g, 0, false, Armor::ByOwner);
+        assert_eq!(saves.nodes[0], 1.0, "one unit absorbs one destroy, not two");
+        assert_eq!(saves.factories, 0.0);
+        let (r, g) = lab(&["dark_cities", "purge_protocols"], 3, 2);
+        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 0.0, "two units, two destroys");
+    }
+
+    /// 148: the forecast never takes a seat's last node, however many destroys
+    /// show (the engine's "destroy a node" stops at one).
+    #[test]
+    fn the_forecast_spares_the_last_node() {
+        let (r, g) = lab(&["overload", "dark_cities"], 2, 0);
+        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 1.0, "three destroys, two nodes");
+        let (r, g) = lab(&["overload"], 1, 0);
+        assert!(!shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).any());
+    }
 }
