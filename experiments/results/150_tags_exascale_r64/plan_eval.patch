@@ -1,0 +1,125 @@
+diff --git a/crates/aic-sim/src/agents/policy.rs b/crates/aic-sim/src/agents/policy.rs
+index bcdb591..d802c32 100644
+--- a/crates/aic-sim/src/agents/policy.rs
++++ b/crates/aic-sim/src/agents/policy.rs
+@@ -249,6 +249,11 @@ macro_rules! forced_table {
+             /// while a megaproject is open to the seat (Particle Accelerator).
+             /// The play check's twin is `w.cube_target`: screen the two together.
+             (plan_cube_target: bool, false, 1.0, "128: keep plan: a project-cube Action counts no uses once no megaproject is open")
++            /// 150: the keep plan keeps a pick only if the play eval reads playing
++            /// it now (its costs funded) as a gain over holding it: keep and play
++            /// agree (Exascale Training Cluster was kept in 62-76% of games and
++            /// played in 1-3%).
++            (plan_eval: bool, false, 1.0, "150: keep plan: keep a pick only if the play eval gains from playing it now (costs funded)")
+         }
+     };
+ }
+@@ -395,7 +400,11 @@ impl Policy {
+         let t = self.rates.as_deref().unwrap_or(own);
+         let idle = (cap, idle);
+         let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
+-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate };
++        // 150 (`plan_eval`): the play eval's own read of each pick, so the plan
++        // keeps no card the eval would never play.
++        let plays = |id: &Key| ev.is_none_or(|e| eval_plays(rules, e, g, s, id));
++        let plays = self.forced.plan_eval.then_some(&plays as &dyn Fn(&Key) -> bool);
++        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate, plays };
+         let set = if self.forced.keep_none {
+             Vec::new()
+         } else if self.forced.keep_random {
+@@ -440,6 +449,14 @@ impl Policy {
+         } else {
+             plan_keeps(&world, g, s, &self.forced, &pc)
+         };
++        if std::env::var_os("AIC_DBG150").is_some() {
++            if let Some(e) = ev {
++                for id in g.pile(&cards::drafted(s)).iter() {
++                    let gain = eval_play_gain(rules, e, g, s, id);
++                    eprintln!("DBGK {} {} {} {} {} {:.2}", g.seed, g.round, s, id, set.contains(id) as u8, gain.unwrap_or(f64::NAN));
++                }
++            }
++        }
+         let hoards = self.forced.hoarding(&world, g, s, true);
+         let set: Vec<Key> = set
+             .into_iter()
+@@ -845,6 +862,52 @@ pub struct PlanCtx<'a> {
+     pub spare_at: f64,
+     /// 128: the seat's `Ctx::energy_rate` at the keep.
+     pub energy_rate: f64,
++    /// 150 (`plan_eval`): whether the play eval gains from playing a pick now
++    /// (`None`: off, or no eval).
++    pub plays: Option<&'a dyn Fn(&Key) -> bool>,
++}
++
++/// 150 (`plan_eval`): whether the play eval `ev` reads seat `s` playing `id`
++/// now as a gain over holding it: on a copy of the table in the play phase,
++/// with the card in hand and its costs added to what the seat holds, the
++/// eval's value after the play against before it. A play the rules refuse
++/// there (a requirement, a target) is the plan's own call, so it counts as a yes.
++fn eval_plays(rules: &Rules, ev: &super::eval::Eval, g: &GameState, s: usize, id: &Key) -> bool {
++    eval_play_gain(rules, ev, g, s, id).is_none_or(|x| x > 0.0)
++}
++
++fn eval_play_gain(rules: &Rules, ev: &super::eval::Eval, g: &GameState, s: usize, id: &Key) -> Option<f64> {
++    let w = rules.world();
++    let phase = g.config.round.iter().position(|p| p.starts_with("cards.play"))?;
++    let d = cards::def(&w, id);
++    let mut h = g.clone();
++    h.pending = None;
++    h.phase = phase;
++    h.seats[s].passed = false;
++    for pile in [cards::drafted(s), cards::packet(s)] {
++        let rest: Vec<Key> = h.pile(&pile).iter().filter(|k| *k != id).cloned().collect();
++        h.piles.insert(pile.into(), Arc::new(rest));
++    }
++    let mut hand = h.pile(&cards::hand(s)).to_vec();
++    hand.retain(|k| k != id);
++    hand.push(*id);
++    h.piles.insert(cards::hand(s).into(), Arc::new(hand));
++    let costs = [
++        (Resource::Credits, cards::play_cost(&w, g, s, d)),
++        (Resource::Insight, cards::play_insight(&w, g, s, d)),
++        (Resource::Chips, d.chips),
++        (Resource::Energy, d.energy),
++        (Resource::Antimatter, d.antimatter),
++        (Resource::ResearchCubes, d.research_cubes),
++    ];
++    for (r, n) in costs {
++        let have = h.resource(s, r).max(0);
++        h.seats[s].resources.insert(r, have + n.max(0));
++    }
++    let before = ev.value(rules, &h);
++    let play = Action::Play { seat: s as u8, card: *id };
++    let (after, _) = rules.apply(&h, &play).ok()?;
++    Some(ev.value(rules, &after) - before + ev.bonus(&w, &play))
+ }
+ 
+ /// What a plan's values read once (082): rounds left by the adversary deck, the
+@@ -937,6 +1000,9 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx)
+     let mut kept: Vec<Key> = Vec::new();
+     let mut best = plan_value(w, g, s, &kept, f, pc, &pt);
+     for c in drafted {
++        if pc.plays.is_some_and(|plays| !plays(&c)) {
++            continue;
++        }
+         let mut with = kept.clone();
+         with.push(c);
+         let Some(v) = plan_value_checked(w, g, s, &with, &c, f, pc, &pt) else {
+@@ -973,7 +1039,7 @@ pub fn plan_keeps(w: &World, g: &GameState, s: usize, f: &Forced, pc: &PlanCtx)
+             } else {
+                 1.0
+             };
+-            if worth <= 0.0 {
++            if worth <= 0.0 || pc.plays.is_some_and(|plays| !plays(&c)) {
+                 continue;
+             }
+             spare -= ins as f64;
+@@ -1259,7 +1325,7 @@ fn plan(
+     let mut planned: Vec<Key> = Vec::new();
+     let mut total = 0.0;
+     let mut b = now;
+-    let mut needs = cards::required_tags(w, g, s);
++    let mut needs = cards::tag_counts(w, g, s);
+     let needs_now = needs;
+     // 107 (`plan_reach`): the tags the hand and the keeps would add, a card's own aside.
+     let mut reach = needs_now;

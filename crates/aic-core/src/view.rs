@@ -197,7 +197,8 @@ pub struct BoardView {
     /// A standing rule printed on the board, if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub innate: Option<InnateView>,
-    /// Tags printed on the board: they count for what a card requires (068).
+    /// Tags printed on the board: they count like the tags on your cards, never
+    /// for a sacrifice (068, 150).
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
     pub tracks: Vec<TrackView>,

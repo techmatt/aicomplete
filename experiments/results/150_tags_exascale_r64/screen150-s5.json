@@ -1,0 +1,75 @@
+{
+  "name": "screen150-s5",
+  "note": "150 screen 5: counter_more_credits 3 -> 2 / 1 (dev seeds 36800-36863, d2 and d3).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_cmc2",
+      "set": [
+        "adversary.counter_more_credits=2"
+      ]
+    },
+    {
+      "name": "br_cmc2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=2"
+      ]
+    },
+    {
+      "name": "pr_cmc2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=2"
+      ]
+    },
+    {
+      "name": "bp_cmc1",
+      "set": [
+        "adversary.counter_more_credits=1"
+      ]
+    },
+    {
+      "name": "br_cmc1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=1"
+      ]
+    },
+    {
+      "name": "pr_cmc1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

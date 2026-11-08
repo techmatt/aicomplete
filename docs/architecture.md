@@ -141,7 +141,7 @@ Content fields are the serde structs in `content.rs`. What isn't plain there:
   new op doesn't compile without a face. `tokens` names a token type only: no card
   gains tokens by itself (Matt's ruling 12); "here" in an op names this card. `keywords`
   are never printed. Every op and where it prints: [ops.md](ops.md), whose text is each op's `///` comment in op.rs.
-- **AI boards**: printed `tags` count for requirements only. Slots and starting credits
+- **AI boards**: printed and revealed `tags` count like card tags (`cards::tag_counts`). Slots and starting credits
   are config lists (`ai.slots`, `ai.start_credits`), so a board's sheet spans both files.
 - **Country pieces** (`map.json`) carry the corp's megaproject; `Megaproject::words`
   prints its op lists, so a new op there needs its words.

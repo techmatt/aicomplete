@@ -28,17 +28,18 @@ fn row(block: &str, first: &str) -> Vec<String> {
 #[test]
 fn the_round_cap_comes_from_the_engines_deal() {
     let base = round_cap_block(&baseline(&[]));
-    // At the baseline (138): 4, 4, 3 cards; difficulty 3 removes a stage-II card;
-    // difficulty 4 (142: stage_swap_at, 2 before) swaps a stage-I card for a stage-III.
+    // At the baseline (138): 4, 4, 3 cards; difficulty 3 removes two stage-II cards
+    // (150: `stage2_removed` 2); difficulty 4 (142: stage_swap_at, 2 before) swaps a
+    // stage-I card for a stage-III.
     assert_eq!(row(&base, "0"), ["0", "4", "4", "3", "5", "11"]);
     assert_eq!(row(&base, "2"), ["2", "4", "4", "3", "5", "11"]);
-    assert_eq!(row(&base, "3"), ["3", "4", "3", "3", "5", "10"]);
-    assert_eq!(row(&base, "4"), ["4", "3", "3", "4", "4", "10"]);
+    assert_eq!(row(&base, "3"), ["3", "4", "2", "3", "5", "9"]);
+    assert_eq!(row(&base, "4"), ["4", "3", "2", "4", "4", "9"]);
     let shorter = round_cap_block(&baseline(&["adversary.stage_cards=4,4,2"]));
     assert_eq!(row(&shorter, "0")[5], "10");
     let harsher = round_cap_block(&baseline(&["adversary.stage1_removed=2"]));
     assert_eq!(row(&base, "3")[5], row(&harsher, "3")[5], "difficulty 3 removes no stage-I card");
-    assert_eq!(row(&harsher, "4")[5], "9");
+    assert_eq!(row(&harsher, "4")[5], "8");
 }
 
 /// 099: every standard action has its row (r35's Free a station had none),
@@ -54,9 +55,13 @@ fn every_standard_action_has_a_row() {
 #[test]
 fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
+    // One off the baseline, so a dial item landing on any value can't make it a no-op
+    // (149); down from the range's top (5), which an override can't pass (150).
+    let bb = base.world().int("adversary.build_bonus");
+    let build_bonus = format!("adversary.build_bonus={}", if bb < 5 { bb + 1 } else { bb - 1 });
     type Block = fn(&Rules) -> String;
     let blocks: [(&str, Block); 8] = [
-        ("adversary.build_bonus=4", difficulty_block),
+        (&build_bonus, difficulty_block),
         ("board.remove_count=2", standard_actions_block),
         ("board.clear_unity=3", sway_sources_block),
         ("alignment.purge_at=1,3,5", purge_ease_block),

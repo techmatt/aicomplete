@@ -107,7 +107,8 @@ length, split length from code by moving length on each binary with `--set` (136
 by trying each answer to the prompts that follow (`search::settled`, `choices` 2), so r61's loss choices at threat
 execution cost it 3.0× a decision while the strategist got cheaper (147). Its cost a decision also follows which
 games it plays: an eval change that moves play can read 0.6-1.4× on 16 games with no code cost. Read the code's cost
-on identical games, the change switched off on the new binary against the old one (147: 0.92×).
+on identical games, the change switched off on the new binary against the old one (147: 0.92×). Beside a running
+sim, `per_decision.py` needs about 16 games: 6 read greedy 1.40-1.45× where a quiet 16-game rerun read 1.08× (149).
 
 **`sweep`, the cheap profile.** `planner:deals=1,lead=0` under the name `sweep`, for price screens. Keep and
 play rates by card hold under it (rank correlation 0.985-0.991 against the planner's;

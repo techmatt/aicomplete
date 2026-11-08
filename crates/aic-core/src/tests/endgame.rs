@@ -369,7 +369,8 @@ fn the_round_cap_is_the_deck_and_higher_difficulty_shortens_it() {
         let (_, g) = lab_with(&[], &[&arg]);
         g.pile(DECK).len() + g.pile(NEXT).len()
     };
-    assert_eq!((cap(0), cap(1), cap(2), cap(3), cap(4)), (11, 11, 11, 10, 10));
+    // 150: d3 removes two stage-II cards (`stage2_removed` 2).
+    assert_eq!((cap(0), cap(1), cap(2), cap(3), cap(4)), (11, 11, 11, 9, 9));
 }
 
 #[test]

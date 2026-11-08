@@ -376,7 +376,9 @@ fn prices_worked_out_once_match_each_cards_own() {
         let counts = cards::tag_counts(&w, &g, 0);
         for t in TAGS {
             let by_hand: usize = cards::in_play(&g, 0).iter().map(|id| cards::def(&w, id).tags.iter().filter(|x| **x == t).count()).sum();
-            assert_eq!(counts[t as usize], by_hand as i64);
+            // 150: the board's printed tags count too.
+            let board = crate::modules::ai::printed_tags(&w, 0).filter(|x| **x == t).count();
+            assert_eq!(counts[t as usize], (by_hand + board) as i64);
         }
     }
 }
@@ -554,7 +556,7 @@ fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
     set_pile(&mut g, "cards.played.0", &[]);
     set_pile(&mut g, "cards.built.0", &[]);
     let w = rules.world();
-    let have = cards::required_tags(&w, &g, 0)[crate::content::Tag::Diplomacy as usize];
+    let have = cards::tag_counts(&w, &g, 0)[crate::content::Tag::Diplomacy as usize];
     let offered = rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { card, .. } if card == "consular_pouch"));
     assert_eq!(offered, have >= 1, "its own Diplomacy tag doesn't count ({have} in play)");
 }

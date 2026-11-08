@@ -1,0 +1,38 @@
+{
+  "name": "read-150-f1-a",
+  "note": "150 ladder read (f1), set a: seeds 37912-37959, the three pairs, d0-d3; run the r63 binary on the same spec (baseline config only) for the pair.",
+  "configs": [
+    "configs/baseline.json",
+    "experiments/configs/msb_deck.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 37912,
+  "records": 0
+}

@@ -41,7 +41,7 @@ pub const HOUSE_TERMS: [(&str, &str); 16] = [
     ("Remove N", "as many as there are, up to N"),
     ("At N", "on a building's Effect: when its tokens here reach N, N of them come off and the rest happens"),
     ("Draw", "from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first"),
-    ("On your cards", "on tags: on your cards in play, covered buildings included, and the tags your board's tracks have revealed. Tokens count only on the card that holds them"),
+    ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
 ];
@@ -355,7 +355,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         (String::new(), vec![]),
         (String::new(), vec![]),
         (
-            "Larger builds: each site the board's creation line reaches gains more, and a stage-II card removed (a shorter round cap)".into(),
+            "Larger builds: each site the board's creation line reaches gains more, and stage-II cards removed (a shorter round cap)".into(),
             vec!["adversary.build_bonus", "adversary.stage2_removed"],
         ),
         (
@@ -705,9 +705,10 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
          **Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you \
          have only your board's Movement each round ({} printed, more as Movement spaces are \
-         uncovered): one move each, and what you don't use is lost, like insight. A few late, \
-         costly track spaces reveal a tag, which counts like a tag on your cards, but you can't \
-         sacrifice it. You may sell a card from your hand for {} credit; chips can't be sold.\n",
+         uncovered): one move each, and what you don't use is lost, like insight. **One tag rule:** \
+         the tag printed on your AI board, and any a late, costly track space reveals, count like the \
+         tags on your cards, for everything a tag does; the only difference is that a board tag can't \
+         be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n",
         n("cards.opening_deal"),
         n("cards.opening_free"),
         n("cards.opening_keep_credits"),

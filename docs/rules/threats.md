@@ -71,7 +71,7 @@ the table, wherever it is and whenever it was dealt (148: no longer only those i
 full is countered at once (118). From difficulty
 `counter_bonus_at` (1) every resource item costs `counter_bonus_all` (1) more, a credits item `counter_bonus_credits` (3) more
 instead, and the first option's items `counter_bonus` (0) more still; from `counter_more_at` (2) every item
-`counter_more_all` (1) more again, credits `counter_more_credits` (3).
+`counter_more_all` (1) more again, credits `counter_more_credits` (2).
 
 **Counters (146; Matt's standard).** **One counter option, two at most**: a scarce currency or a tag sacrifice, or
 credits ("pay 3 energy or 12 credits"). Printed amounts are paid (`counter_pct` 100 by tier and `counter_credit_pct`

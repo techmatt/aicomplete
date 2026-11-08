@@ -21,7 +21,7 @@ fn requirements_met(w: &World, g: &GameState, seat: usize, d: &CardDef) -> bool 
     if d.needs.is_empty() {
         return true;
     }
-    let have = required_tags(w, g, seat);
+    let have = tag_counts(w, g, seat);
     d.needs.iter().all(|(t, n)| have[*t as usize] >= *n)
 }
 
@@ -102,7 +102,7 @@ impl<'a, 'w> FreeTest<'a, 'w> {
             return false;
         }
         if !d.needs.is_empty() {
-            let have = self.tags.get_or_insert_with(|| required_tags(w, g, seat));
+            let have = self.tags.get_or_insert_with(|| tag_counts(w, g, seat));
             if !d.needs.iter().all(|(t, n)| have[*t as usize] >= *n) {
                 return false;
             }

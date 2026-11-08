@@ -1,0 +1,54 @@
+{
+  "name": "screen150-s7",
+  "note": "150 screen 7: build_bonus 4 -> 5 on the dialed baseline (dev seeds 36800-36863, d3).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_bb5",
+      "set": [
+        "adversary.build_bonus=5"
+      ]
+    },
+    {
+      "name": "br_bb5",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.build_bonus=5"
+      ]
+    },
+    {
+      "name": "pr_bb5",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.build_bonus=5"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

@@ -26,8 +26,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
   events included), 2 for big effects and most tier 2 (counts below); it
-  comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (tags on your cards
-  in play, your board's printed tags and those its tracks revealed, [ai-boards.md](ai-boards.md)) are checked only when it is played. Each
+  comes from the same insight as keeps, and the credit conversion is for keeps only. Its `needs` (your tags, *Tags* below) are checked only when it is played. Each
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
@@ -98,7 +97,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";
   a cost printed under the floor stays. The floor holds for every building discount.
 - **Tags:** Science, Industry, Cyber, Power, Diplomacy, Security; 1-3 a card. Your tags are those on every card you
-  have in play: active buildings, the cards splayed under them, and programs. Events' tags don't stay.
+  have in play (active buildings, the cards splayed under them, programs) and your board's, printed or revealed
+  ([ai-boards.md](ai-boards.md)), which can't be sacrificed. Events' tags don't stay.
 - **Programs** resolve and stay in your play area (their tags count; powers can sacrifice them). **Events** resolve
   and go to your played pile (their tags don't count). **Nothing to act on never blocks a card** (r48, Matt): a part
   of a card with nothing to act on (a removal with no target in reach, a move, a gain per tag with too few tags, a draw

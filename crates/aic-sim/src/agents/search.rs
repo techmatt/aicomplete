@@ -94,7 +94,8 @@ fn position_hash(g: &GameState, choices: usize) -> u64 {
 /// only the tables: a loop's progress lives in them alone (a hit Shelter absorbs
 /// moves nothing, and a troop's march keeps its place in a local).
 fn same_position(a: &GameState, b: &GameState) -> bool {
-    let same_answers = match (&a.pending, &b.pending) {
+    // Cheapest compares first; the pending snapshot (a whole state) last (148).
+    let same_answers = || match (&a.pending, &b.pending) {
         (Some(p), Some(q)) => {
             let count = |made: &[Pick], x: &Pick| made.iter().filter(|y| *y == x).count();
             p.ask == q.ask
@@ -106,16 +107,16 @@ fn same_position(a: &GameState, b: &GameState) -> bool {
         (None, None) => true,
         _ => false,
     };
-    same_answers
-        && a.round == b.round
+    a.round == b.round
         && a.phase == b.phase
         && a.outcome == b.outcome
-        && a.hexes == b.hexes
-        && a.seats == b.seats
-        && a.vars == b.vars
-        && a.piles == b.piles
         && a.rng == b.rng
+        && a.vars == b.vars
+        && a.seats == b.seats
+        && a.piles == b.piles
+        && a.hexes == b.hexes
         && a.stats.counters == b.stats.counters
+        && same_answers()
 }
 
 /// The value of `g`, with any choice it is waiting on answered best-first

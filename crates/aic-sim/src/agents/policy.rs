@@ -249,6 +249,12 @@ macro_rules! forced_table {
             /// while a megaproject is open to the seat (Particle Accelerator).
             /// The play check's twin is `w.cube_target`: screen the two together.
             (plan_cube_target: bool, false, 1.0, "128: keep plan: a project-cube Action counts no uses once no megaproject is open")
+            /// 150: under Patience with insight beyond the heuristic's `insight_cap`,
+            /// the keep plan prices an insight income at the heuristic's idle rate,
+            /// as the play eval does (its horizon term): keep and play agree
+            /// (Exascale Training Cluster, +3 insight a round, was kept in 62-76% of
+            /// games and played in 1-3%; with the Researcher, 86% and 0%).
+            (plan_spare: bool, false, 1.0, "150: keep plan: under Patience with spare insight, an insight income is worth the heuristic's idle rate, as in its play eval")
         }
     };
 }
@@ -382,7 +388,7 @@ impl Policy {
             // The heuristic's own multipliers (116 `strat_scale`, 124 `strat_contents`).
             self.mults = Some(ev.map_or_else(|| Arc::new(Mults::new(&world, 1.0, false)), |e| e.mults()));
         }
-        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, energy_cap, energy_share } =
+        let super::eval::PlanRates { energy, antimatter, project, cap, idle, insight_cap, insight_idle, energy_cap, energy_share } =
             ev.map_or_else(super::eval::PlanRates::table, |e| e.plan_rates());
         // 128 (`energy_cap`): a seat whose energy piles up keeps what spends it.
         let held = g.resource(s, Resource::Energy) as f64;
@@ -395,7 +401,13 @@ impl Policy {
         let t = self.rates.as_deref().unwrap_or(own);
         let idle = (cap, idle);
         let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
-        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate };
+        // 150 (`plan_spare`): a Patience seat's insight beyond the cap is spare, so
+        // more insight income is worth the idle rate, as the play eval reads it.
+        // The eval's spare branch sits outside its `table_income` probe, so this does too.
+        let probe = ev.is_some_and(|e| e.w.table > 0.0 && e.w.table_income > 0.0);
+        let spare = !probe && economy::patient(&world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
+        let insight_idle = (self.forced.plan_spare && spare).then_some(insight_idle);
+        let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle };
         let set = if self.forced.keep_none {
             Vec::new()
         } else if self.forced.keep_random {
@@ -845,6 +857,9 @@ pub struct PlanCtx<'a> {
     pub spare_at: f64,
     /// 128: the seat's `Ctx::energy_rate` at the keep.
     pub energy_rate: f64,
+    /// 150 (`plan_spare`): the credits an insight income a round is worth to a
+    /// Patience seat whose insight is spare (`None`: the table's rate).
+    pub insight_idle: Option<f64>,
 }
 
 /// What a plan's values read once (082): rounds left by the adversary deck, the
@@ -1147,7 +1162,19 @@ fn value(
         _ => f64::INFINITY,
     };
     let covered = if covered.is_finite() { covered.max(0.0) } else { 0.0 };
-    m * CardValue::of(t, d).total(t, &ctx) - covered + jobs + situational(d, pc, pt)
+    // 150 (`plan_spare`): an insight income onto a spare Patience pile, at the idle rate.
+    let spare = pc.insight_idle.map_or(0.0, |idle| {
+        let per_round: i64 = d
+            .passives
+            .iter()
+            .map(|p| match p {
+                Op::Income { resource: Resource::Insight, amount } => *amount,
+                _ => 0,
+            })
+            .sum();
+        ctx.horizon * per_round as f64 * t.op("income") * (t.res(Resource::Insight) - idle).max(0.0)
+    });
+    m * (CardValue::of(t, d).total(t, &ctx) - spare) - covered + jobs + situational(d, pc, pt)
 }
 
 /// 092: what building `d`, buried now, would still have earned: its standing
@@ -1259,7 +1286,7 @@ fn plan(
     let mut planned: Vec<Key> = Vec::new();
     let mut total = 0.0;
     let mut b = now;
-    let mut needs = cards::required_tags(w, g, s);
+    let mut needs = cards::tag_counts(w, g, s);
     let needs_now = needs;
     // 107 (`plan_reach`): the tags the hand and the keeps would add, a card's own aside.
     let mut reach = needs_now;

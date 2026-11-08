@@ -1,0 +1,54 @@
+{
+  "name": "screen150-s4",
+  "note": "150 screen 4: the d2 dial counter_more_at 2 -> 3 (dev seeds 36800-36863, d2).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_cma3",
+      "set": [
+        "adversary.counter_more_at=3"
+      ]
+    },
+    {
+      "name": "br_cma3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_at=3"
+      ]
+    },
+    {
+      "name": "pr_cma3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_at=3"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

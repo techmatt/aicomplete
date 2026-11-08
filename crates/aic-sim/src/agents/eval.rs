@@ -1122,6 +1122,7 @@ impl Eval {
             cap,
             idle,
             insight_cap: w.insight_cap,
+            insight_idle: w.insight_idle / credit,
             energy_cap: w.energy_cap,
             energy_share: (w.energy_idle / self.energy_unit().max(1e-9)).min(1.0),
         }
@@ -1906,11 +1907,9 @@ impl Eval {
         let seats: Vec<SeatData> = (0..self.seats)
             .map(|s| {
                 let terms = || {
+                    // 150: board tags count like card tags, requirements included.
                     let tags = cards::tag_counts(&world, g, s);
-                    let mut required = tags;
-                    for t in ai::printed_tags(&world, s) {
-                        required[*t as usize] += 1;
-                    }
+                    let required = tags;
                     let income = economy::income_with(&world, g, s, &tags);
                     (tags, required, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
                 };
@@ -2297,6 +2296,9 @@ pub struct PlanRates {
     pub idle: f64,
     /// 124: the heuristic's `insight_cap` (0: none), for `keep_spare`.
     pub insight_cap: f64,
+    /// 150: an insight beyond `insight_cap` under Patience, in table credits
+    /// (`plan_spare`).
+    pub insight_idle: f64,
     /// 128: the heuristic's `energy_cap` (0: none) and the share of the table's
     /// energy price an energy beyond it costs (`Ctx::energy_rate`).
     pub energy_cap: f64,
@@ -2315,6 +2317,7 @@ impl PlanRates {
             cap: f64::MAX,
             idle: 1.0,
             insight_cap: 0.0,
+            insight_idle: t.res(Resource::Insight),
             energy_cap: 0.0,
             energy_share: 1.0,
         }

@@ -85,8 +85,8 @@ pub fn capstones<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iterator
     end(&b.economy_track, uncovered(w, g, seat)).into_iter().chain(end(&b.play_track, uncovered2(w, g, seat)))
 }
 
-/// The tags printed on seat `s`'s board (068): they count for what a card
-/// requires, and for nothing else.
+/// The tags printed on seat `s`'s board (068; 150: they count like the tags
+/// on its cards, for everything but a sacrifice).
 pub fn printed_tags<'w>(w: &World<'w>, seat: usize) -> impl Iterator<Item = &'w Tag> {
     board(w, seat).tags.iter()
 }

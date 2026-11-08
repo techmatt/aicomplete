@@ -144,7 +144,8 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 - *Pick the strategy your board's powers feed* (`strat_powers`).
 - *Insight you can't spend is cheap: keep with it* (124): insight over `w.insight_cap` (10) is
   worth `w.insight_idle` (0.1), held or (Patience) as income, and so is a keep paid from it; the
-  plan keeps any pick worth its price that spare insight pays for (`keep_spare`).
+  plan keeps any pick worth its price that spare insight pays for (`keep_spare`) and prices a
+  Patience seat's insight income at the idle rate, as the eval does (`plan_spare`).
 - *A trigger that pays credits is a credits card* (124): strategies read triggers' and
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
   Off (no gain read): teammate triggers at the teammates' share (`w.team_share`, `plan_team`),
@@ -172,6 +173,6 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
 
 The strategist judges (within about 5 points of `sweep` a pair on the same seeds) at a tenth of
-its time a game; `sweep` spot-checks. Last read: [124](../experiments/results/124_agents_engines/r49-agents.md).
+its time a game; `sweep` spot-checks.
 A strategy pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them;
 `aic-sim strategies CONFIG` prints the choices.

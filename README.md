@@ -102,11 +102,10 @@ search-agent games, the greedy experiment grid, and more seeds of the replay che
 whose first seed runs in the fast lane. `test-all` and `test-slow` are cargo aliases
 (`.cargo/config.toml`) for `cargo test --workspace -- --include-ignored` and
 `-- --ignored`; one slow test runs with `cargo test -p aic-sim -- --ignored <name>`.
-Anything after an alias goes to the test binary, with no second `--` (`tests/args_guard.rs` fails
-`cargo test-all -- --test-threads=2`, a filter that runs nothing): `cargo test-all --test-threads=3`
-caps test threads; cap build jobs with `CARGO_BUILD_JOBS=3` (a `-j` stops in a second with
+Anything after an alias goes to the test binary, with no second `--` (`tests/args_guard.rs`):
+`cargo test-all --test-threads=3` caps test threads; cap build jobs with `CARGO_BUILD_JOBS=3` (a `-j` stops in a second with
 "Unrecognized option: 'j'", which looks like a fast pass: check the exit code). Times are on this
-12-thread machine with nothing else heavy running; the first test-profile build takes about 80 s.
+machine, otherwise idle; the first test-profile build takes about 80 s.
 
 - The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`; debug
   assertions and overflow checks stay on).
@@ -118,10 +117,10 @@ caps test threads; cap build jobs with `CARGO_BUILD_JOBS=3` (a `-j` stops in a s
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is
 intended, bump `RULES_REVISION` in `crates/aic-core/src/lib.rs` and update
-`GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and the
-fingerprint in `scripts/wasm-smoke.mjs` (a fast-lane test fails if the two differ). The
-fingerprint covers the final state less its measures (`stats`, 148), config `name` included, so a
-rename that plays the same moves it with no bump; a new counter doesn't. The test also pins `GOLDEN_CONTENT_HASH` (wasm-smoke
+`GOLDEN_REVISION` and `GOLDEN_FINGERPRINT` in `crates/aic-core/src/tests/mod.rs` and `GOLDEN`
+in `scripts/wasm-smoke.mjs` (`wasm_smoke_expects_the_golden_fingerprint` fails until it and `GOLDEN_CONTENT` match). The
+fingerprint covers the final state less its measures (`stats`, 148), its config too, so a
+rename that plays the same moves it with no bump; a new counter doesn't. (A slow-lane test.) The test also pins `GOLDEN_CONTENT_HASH` (wasm-smoke
 `GOLDEN_CONTENT`), the content hash over raw bytes: a content-only edit (price, name,
 whitespace) moves it with no bump unless play changes; update both (the new hash is
 `content_hash` in any run's `games.jsonl` first line). The test checks the fingerprint first, so a stale hash shows
@@ -133,8 +132,7 @@ only once the fingerprint matches; `cargo test` stops at the first failing binar
   rebuild. The game configs are read from the working directory, so an old binary runs from an old tree:
   `git archive <rev> configs | tar -x -C out/old`.
 - A fresh worktree has no `web/node_modules`: `npm ci` in `web/` (about a minute) before `npm run cards:fit`.
-- 6 cores, 12 threads: 12 workers give about 6 × one, so never read "12 threads" as 12 ×
-  in an estimate.
+- 6 cores, 12 threads: 12 workers give about 6 × one, not 12 ×.
 - `samply` waits on a UAC prompt a headless session never sees: profile with `bench/profile_win.py`
   (VS's collector, no admin; docs/speed.md).
 - Check processes with PowerShell `Get-Process` or `Get-CimInstance`. `wmic` and `tasklist`
@@ -159,6 +157,8 @@ only once the fingerprint matches; `cargo test` stops at the first failing binar
   newline='\n'`. A CRLF list read by a Bash `read -r` loop hands on `20\r`.
 - `timeout N cargo test` under load kills the compile and prints "could not compile" with no
   reason. Background it with a log instead. `npm run wasm` can pass 60 s under load: the same.
+- A conductor `wait_for` on a cargo test log needs `fail: ""`: passing test names hold "errors"
+  (`..._are_errors_not_panics ... ok`), which the default pattern stops on.
 - In Git Bash `rm -rf out/x` also deletes `out/x.exe` (Cygwin's `.exe` matching). Copy a binary
   before a run, then rebuild freely.
 - PowerShell `*>` writes UTF-16 logs, which Git Bash `grep` reads as empty: read them in PowerShell

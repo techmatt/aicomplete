@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 63 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 64 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -45,7 +45,7 @@ Design intent lives in [principles.md](../principles.md); the engine in
 
 **Nodes, for new players.** There is no growth step. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
 
-**Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you have only your board's Movement each round (1-2 printed, more as Movement spaces are uncovered): one move each, and what you don't use is lost, like insight. A few late, costly track spaces reveal a tag, which counts like a tag on your cards, but you can't sacrifice it. You may sell a card from your hand for 1 credit; chips can't be sold.
+**Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you have only your board's Movement each round (1-2 printed, more as Movement spaces are uncovered): one move each, and what you don't use is lost, like insight. **One tag rule:** the tag printed on your AI board, and any a late, costly track space reveals, count like the tags on your cards, for everything a tag does; the only difference is that a board tag can't be sacrificed. You may sell a card from your hand for 1 credit; chips can't be sold.
 <!-- /generated -->
 
 ## Terms
@@ -66,7 +66,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Remove N**: as many as there are, up to N.
 - **At N**: on a building's Effect: when its tokens here reach N, N of them come off and the rest happens.
 - **Draw**: from the tier-1 deck, with no keep to pay; if it is empty, reshuffle its discard first.
-- **On your cards**: on tags: on your cards in play, covered buildings included, and the tags your board's tracks have revealed. Tokens count only on the card that holds them.
+- **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 <!-- /generated -->

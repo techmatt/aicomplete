@@ -10,21 +10,25 @@ fn builder_with_tags(g: &mut GameState) {
     set_pile(g, &cards::played(0), &["payroll_automation", "supply_chain_audit", "vendor_financing"]);
 }
 
-/// 149: a printed tag counts for requirements only; a revealed one like any
-/// tag on your cards (requirements and the counts that pay per tag).
+/// 150: one tag rule. A printed tag (150) and a revealed one (149) count like
+/// any tag on your cards, but neither can be sacrificed: a sacrifice discards a card.
 #[test]
-fn printed_and_revealed_tags_meet_a_requirement() {
+fn printed_and_revealed_tags_count_like_card_tags() {
     let (rules, mut g) = lab_actions();
     let w = rules.world();
-    let extra = |g: &GameState| cards::required_tags(&w, g, 0)[Tag::Industry as usize] - cards::tag_counts(&w, g, 0)[Tag::Industry as usize];
-    assert_eq!(extra(&g), 1, "printed on the Builder");
+    for p in [cards::played(0), cards::built(0)] {
+        set_pile(&mut g, &p, &[]);
+    }
+    let industry = |g: &GameState| cards::tag_counts(&w, g, 0)[Tag::Industry as usize];
+    assert_eq!(industry(&g), 1, "printed on the Builder, counted with no card in play");
+    assert!(cards::sources(&w, &g, 0).is_empty(), "a board tag is nothing to sacrifice");
     let cyber = crate::modules::ai::board(&w, 0).play_track.iter().position(|u| u.tags.contains(&Tag::Cyber)).unwrap() + 1;
     let count = |g: &GameState| cards::tag_counts(&w, g, 0)[Tag::Cyber as usize];
     g.vars.insert(board::track2_key(0).into(), cyber as i64 - 1);
     let before = count(&g);
     g.vars.insert(board::track2_key(0).into(), cyber as i64);
     assert_eq!(count(&g), before + 1, "revealed on its card-play track, counted as a card's");
-    assert_eq!(extra(&g), 1, "still only the printed one beyond the counts");
+    assert!(cards::sources(&w, &g, 0).is_empty(), "nor is a revealed one");
 }
 
 /// 149: Movement is the board's printed moves plus its uncovered Movement

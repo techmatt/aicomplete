@@ -115,6 +115,9 @@ impl Ctx {
 
     /// The hexes an effect on "pieces in scope" acts in (135: a threat's, the
     /// hexes on or next to its tokens; else its country, or the board).
+    /// A threat op acting on hexes (Create, flags) reads these near hexes, while
+    /// one acting on a seat reads the hit seat (`hitting`): two different targets.
+    /// Fine while no threat prints a hex harm; revisit if one returns (146).
     pub(super) fn hexes(&self, w: &World, g: &GameState) -> Vec<usize> {
         match (&self.source, &self.threat) {
             (EffectSource::Threat, Some(t)) => threats::near_hexes(w, g, t),

@@ -635,8 +635,8 @@ pub struct AiBoard {
     /// AI-board powers (locked: tag costs are sacrifices), each usable once a round.
     #[serde(default)]
     pub powers: Vec<Power>,
-    /// Tags printed on the board (068): they count for what a card requires,
-    /// not for discounts or sacrifices.
+    /// Tags printed on the board (068; 150: they count like the tags on your
+    /// cards, for everything but a sacrifice).
     #[serde(default)]
     pub tags: Vec<Tag>,
     /// 149: Movement printed on the board: free ambassador moves each round

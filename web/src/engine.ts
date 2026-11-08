@@ -103,7 +103,7 @@ export interface BoardView {
   name: string;
   text?: string;
   innate?: { name: string; text?: string };
-  /** Tags printed on the board: they count for what a card requires (068). */
+  /** Tags printed on the board: they count like the tags on your cards, never for a sacrifice (068, 150). */
   tags?: string[];
   tracks: TrackView[];
   slots?: number;
