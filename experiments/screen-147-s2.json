@@ -1,0 +1,39 @@
+{
+  "name": "screen-147-s2",
+  "note": "147 smoke s2: strategist; strategist:w.tempo=0; strategist:t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5; greedy; greedy:w.tempo=0; greedy:t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.tempo=0",
+    "strategist:t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5",
+    "greedy",
+    "greedy:w.tempo=0",
+    "greedy:t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

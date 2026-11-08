@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 147 the agents at r61: land and site corruption risk (D67), the tempo trade for unpaid threats, shelter armor as the engine reads it (D71), node 8 / troop 7 in the value table; greedy's r61 cost profiled (D58); strategist 87.8 / 76.0 / 68.1 / 49.7% (d0-d3, final read 37432-37527: d0 and d2 unmet) against r61's agents' 88.9 / 79.5 / 68.4 / 52.8 on the same games | r61 | [147_agents_tempo/README.md](results/147_agents_tempo/README.md) |
 | 146 the threat card standard: no hidden harm, the nearest player takes every harm, all 57 threats rewritten (one or two consequences, two counter options), no tier 3, the pull ladder, d3's board compute line, the split counter ladder; strategist 93.4 / 80.9 / 58.0 / 48.6% (d0-d3, confirming seeds) against r60's 89.2 / 79.9 / 57.6 / 39.9 | r61 | [146_threat_standard/README.md](results/146_threat_standard/README.md) |
 | 142 threat intensity and the credit economy (claiming sites, the difficulty ladder, no node counters) | r59 | [142_threat_intensity/README.md](results/142_threat_intensity/README.md) |
 | 141 speed at r58: the standard read 146 → 88 s (1.66x wall, 1.42x a decision) with every game the same; Rush Build's sacrifice test (70% of a long game) and the card and fact lookups | r58 | [141_speed_r58/README.md](results/141_speed_r58/README.md) |

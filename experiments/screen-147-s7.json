@@ -1,0 +1,36 @@
+{
+  "name": "screen-147-s7",
+  "note": "147 smoke s7: strategist; strategist:w.corrupt_exposure=0.25; strategist:w.shelter_armor=0,w.corrupt_exposure=0,w.blight=0,w.tempo=0,t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.corrupt_exposure=0.25",
+    "strategist:w.shelter_armor=0,w.corrupt_exposure=0,w.blight=0,w.tempo=0,t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

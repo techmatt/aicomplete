@@ -102,6 +102,8 @@ experiments, speed, scripts, web, card art.
   failure proves nothing: run `speed.py pair OLD NEW --only engine`, which holds under load. A
   slowdown you mean to keep: say why in the report and `--update` the baseline. Read an agent's
   cost per action, not per game or round, with `per_decision.py`: longer games inflate the others.
+  An item that changes an agent runs a greedy line in its smoke (`speed.py check`, per decision), so a
+  slowdown shows at once (145: a forecast rewrite made greedy ~15× slower, seen only late).
 - **Compare a lever with base on the same seeds, and confirm on fresh ones.** Pooling new seeds
   with the seeds that picked a winner is not confirmation: report the fresh seeds alone. A fresh read
   is spent the moment you change the build because of it: confirm any later change on the next free

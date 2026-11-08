@@ -1,0 +1,38 @@
+{
+  "name": "read-147-f1-b",
+  "note": "147 final paired read (f1), set b: seeds 37288-37335, the three pairs, d0-d3.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.shelter_armor=0,w.corrupt_exposure=0,w.blight=0,w.tempo=0,t.node=4,t.node_late=3,t.destroy_node=-4,t.each_destroy_node=-4,t.troops=-5"
+  ],
+  "games": 48,
+  "first_seed": 37288,
+  "records": 0
+}

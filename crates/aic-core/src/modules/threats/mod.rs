@@ -426,6 +426,9 @@ impl Module for Threats {
             let hit = hit_seat(g, cx, &t, &d.name)?;
             let mut ctx = effects::Ctx::threat(Some(scope)).named(label(d.tier)).why(&d.name).with_threat(t).hitting(hit);
             cx.tally(g, &format!("threats.uncountered.t{}", d.tier), 1);
+            // 147: by stage too (see `tally_countered`).
+            let stage = g.var(adversary::STAGE);
+            cx.tally(g, &format!("threats.uncountered.s{stage}.t{}", d.tier), 1);
             // 146: which threat, so a read can see each harm type land.
             cx.tally(g, &format!("threats.uncountered.id.{}", d.id), 1);
             effects::run(g, cx, &d.effects, &mut ctx)?;

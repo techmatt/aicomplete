@@ -109,7 +109,7 @@ the anchor wins for the printed price and the table stays the agents'.
 | Draw 1 card | 5 | | | |
 
 Derived: the keep, 4 a tier-1 card and 8 a tier-2 one (1 and 2 insight); +1 energy income 14 (4 rounds × 4.5 × 0.8);
-+1 chip income 10. Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 4, antimatter 7)
++1 chip income 10. Units with no anchor take `values.json` (an ambassador gained 4, a sway 4, a node 8, antimatter 7)
 or [card-pricing.md](card-pricing.md) (a city liberated 45). From past checks: a node placed free 6, a research cube 6
 (9 when the play completes the megaproject), a botnet removed 16.
 

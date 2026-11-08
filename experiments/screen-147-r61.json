@@ -1,0 +1,35 @@
+{
+  "name": "screen-147-r61",
+  "note": "147 smoke r61: strategist; greedy, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

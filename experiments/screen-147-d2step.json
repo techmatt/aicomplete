@@ -1,0 +1,77 @@
+{
+  "name": "screen-147-d2step",
+  "note": "147 smoke d2step: strategist, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_m2",
+      "set": [
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "br_m2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "pr_m2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_all=2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "bp_m1c6",
+      "set": [
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "br_m1c6",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=6"
+      ]
+    },
+    {
+      "name": "pr_m1c6",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=6"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

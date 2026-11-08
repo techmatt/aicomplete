@@ -102,6 +102,11 @@ games, about 2 min on 6 threads). `same_play.py` is the wider one. After a value
 late rounds hold more cards, pieces and resources, so each option's eval costs more (136: strategist 0.07 ms an
 option at 5.5-6 rounds, 0.14 at 8.5; r54 made long by a config costs as r55 does). Across a rules change that moves
 length, split length from code by moving length on each binary with `--set` (136's write-up, *Speed*).
+**Greedy is the agent new prompts in an automatic phase hit hardest.** It settles every action that closes a phase
+by trying each answer to the prompts that follow (`search::settled`, `choices` 2), so r61's loss choices at threat
+execution cost it 3.0× a decision while the strategist got cheaper (147). Its cost a decision also follows which
+games it plays: an eval change that moves play can read 0.6-1.4× on 16 games with no code cost. Read the code's cost
+on identical games, the change switched off on the new binary against the old one (147: 0.92×).
 
 **`sweep`, the cheap profile.** `planner:deals=1,lead=0` under the name `sweep`, for price screens. Keep and
 play rates by card hold under it (rank correlation 0.985-0.991 against the planner's;

@@ -111,6 +111,14 @@ pub struct Weights {
     pub threat_harm: f64,
     /// 146: the harm (credits at the value table) that weighs as one `threat`.
     pub threat_harm_ref: f64,
+    /// 147, the tempo trade (0: off, 146's printed harm): a threat's harm is
+    /// what it takes once plus what it leaves (troops, created ambassadors,
+    /// botnets, compute, sites and nodes taken, Sway) times the rounds left over
+    /// `tempo_ref`, over 1 + `tempo` × (that ratio − 1): paying early costs the
+    /// engine more, so a one-off harm may be let through early and paid late.
+    pub tempo: f64,
+    /// 147: the rounds left at which the tempo trade reads as 146's printed harm.
+    pub tempo_ref: f64,
     /// Each player-owned factory (chips each production step); an
     /// adversary-owned one costs as much.
     pub owned_factory: f64,
@@ -148,6 +156,11 @@ pub struct Weights {
     /// 092 (1: on): a shelter counts no threat the team can still counter from
     /// what it holds (a player counters first and shelters what it can't).
     pub shelter_counter: f64,
+    /// 147 (D71, 1: on): the shelter forecast reads armor as the engine does (a
+    /// hardening token, the node owner's or the site owner's ambassador; each
+    /// destroy spends one unit, then takes a node). 0: any player's ambassador,
+    /// and an armored node never falls.
+    pub shelter_armor: f64,
     /// Horizon mode: per round left, each of a seat's first
     /// [`STATIONS_USEFUL`] owned stations (074).
     pub station_round: f64,
@@ -346,12 +359,18 @@ pub struct Weights {
     /// megaproject is open to the seat (`Ctx::cubes_open`). The keep plan's twin
     /// is the forced row `plan_cube_target` (policy.rs).
     pub cube_target: f64,
-    /// 136 (the death audit), above 0: a node on or next to a clean city that
-    /// is filling toward corruption counts as this share of lost, by
-    /// ((its ambassadors + marker + 1) / the corrupt threshold)², capped at 1: it
-    /// is worth less `node`, and the seat's `node_danger` reads its nodes less
-    /// the exposed ones (a corrupting city takes its whole cluster).
-    pub node_exposure: f64,
+    /// 147 (D67; 136's city-only `node_exposure`, then off), above 0: a node on a
+    /// site filling toward corruption (a clean city, a station or factory not the
+    /// adversary's, open land) counts as this much times its share lost, by ((what the site
+    /// would gather + 1) / its Corrupt number)², capped at 1 (land with no Corrupt
+    /// land line ahead a quarter of that; a node armored by its owner's ambassador
+    /// or a hardening token a quarter; none under Sanctuary): its `node` and
+    /// `shelter_node`, and the seat's `node_danger` reads its nodes less the exposed ones.
+    pub corrupt_exposure: f64,
+    /// 147 (D67), above 0: each land-corruption token, and open land filling
+    /// toward one, costs its Discord drip over the rounds left (up to 3) at its
+    /// share of a Discord tip.
+    pub blight: f64,
     /// 138: a player's research station or factory filling toward its
     /// Corrupt number (what it holds, plus next door when a gathering line is
     /// ahead) costs this share of `pressure` (0: off; cities always count).
@@ -368,7 +387,8 @@ pub struct Weights {
 /// Weights renamed since experiments named them: (former name, name).
 /// 086 renamed `presence` to `node` and the old `node` (the adversary's) to
 /// `botnet`; that `node` can't be aliased, see [`PRE_086`].
-const RENAMED: [(&str, &str); 6] = [
+const RENAMED: [(&str, &str); 7] = [
+    ("node_exposure", "corrupt_exposure"),
     ("opp_rate", "unity_rate_start"),
     ("hardware", "chips"),
     ("data_center", "node"),
@@ -429,6 +449,39 @@ fn danger_share(count: i64) -> f64 {
     }
 }
 
+/// 147 (D67): open land filling toward corruption with no Corrupt land line on
+/// the card ahead counts this share (land corrupts only by a line, a few cards a game).
+const LAND_QUIET: f64 = 0.25;
+/// 147 (D67): an armored node's exposure, as a share (the armor goes, not the node).
+const ARMORED_SHARE: f64 = 0.25;
+/// 147 (D67): rounds of a land token's Discord drip the eval counts (at most).
+const BLIGHT_ROUNDS: f64 = 3.0;
+
+/// 147: whether a threat's harm stays on the table and costs again every round
+/// (Matt, 2026-11-07: "a corruption it brings closer, troops, compute toward a
+/// project, sway"): pieces it places, sites and nodes it takes, compute and the
+/// tracks. A payment, a discard or a building switched off for a round is once.
+fn lasting(op: &Op) -> bool {
+    matches!(
+        op,
+        Op::Troops { .. }
+            | Op::Create { .. }
+            | Op::PlaceBotnet { .. }
+            | Op::Compute { .. }
+            | Op::ComputeEvery { .. }
+            | Op::AdversaryFactory { .. }
+            | Op::SeizeFactory
+            | Op::OccupyFactory { .. }
+            | Op::FlipStation { .. }
+            | Op::CorruptCity { .. }
+            | Op::DestroyNode { .. }
+            | Op::EachDestroyNode { .. }
+            | Op::DestroyFacility { .. }
+            | Op::Sway { .. }
+            | Op::PullUnity { .. }
+    )
+}
+
 /// How many of a seat's owned stations the eval counts in full (074).
 const STATIONS_USEFUL: i64 = 2;
 /// How far off a troop makes a Wall's facility worth more: two marches.
@@ -472,6 +525,8 @@ impl Default for Weights {
             threat_stranded: 1.25,
             threat_harm: 1.0,
             threat_harm_ref: 15.0,
+            tempo: 0.5,
+            tempo_ref: 4.0,
             owned_factory: 4.0,
             chips: 2.0,
             reach: 0.5,
@@ -490,6 +545,7 @@ impl Default for Weights {
             shelter_read: 1.0,
             shelter_node: 12.0,
             shelter_counter: 1.0,
+            shelter_armor: 1.0,
             station_round: 1.0,
             station_spare: 1.0,
             station_flip: 20.0,
@@ -562,7 +618,10 @@ impl Default for Weights {
             energy_cap: 0.0,
             energy_idle: 0.2,
             cube_target: 1.0,
-            node_exposure: 0.0,
+            // 147: dev seeds, 192 games a level, against 1: d0 +1.6, d1 +4.2, d2 −1.0, d3 +0.5 (pooled
+            // +1.3 ±1.4), keeping most of the drop in nodes lost to corruption (2.3-3.1 a game, 1: 2.2-2.9, off 2.9-4.1).
+            corrupt_exposure: 0.25,
+            blight: 1.0,
             site_pressure: 1.0,
             block: 4.0,
             armor: 1.0,
@@ -652,7 +711,9 @@ pub struct Eval {
     /// Each seat whose board has a power paid in research cubes (075).
     cube_power: [bool; 4],
     /// 146: each threat's harm uncountered, at the value table (credits), by id.
-    threat_harms: Arc<Vec<(Key, f64)>>,
+    /// 147: split as (once, lasting): what it takes now, and what it leaves on
+    /// the table (see [`lasting`]), each at the value table.
+    threat_harms: Arc<Vec<(Key, f64, f64)>>,
     keys: TokenKeys,
     /// Each card by its index in the content (found by `Content::card_index`,
     /// by its interned id's address): its [`Eval::cost`] and its table value. A
@@ -720,6 +781,8 @@ struct HexTokens {
     harden: i64,
     troop: i64,
     botnet: i64,
+    /// 147: land-corruption tokens (D67).
+    land: i64,
     node: [i64; 4],
     cube: [i64; 4],
     ambassador: [i64; 4],
@@ -736,6 +799,7 @@ struct TokenKeys {
     harden: Key,
     troop: Key,
     botnet: Key,
+    land: Key,
     node: [Key; 4],
     cube: [Key; 4],
     ambassador: [Key; 4],
@@ -753,6 +817,7 @@ impl TokenKeys {
             harden: k(HARDEN),
             troop: k(TROOP),
             botnet: k(common::BOTNET),
+            land: k(common::LAND_CORRUPTION),
             node: std::array::from_fn(|s| k(common::node(s))),
             cube: std::array::from_fn(|s| k(common::cube(s))),
             ambassador: std::array::from_fn(|s| k(common::ambassador(s))),
@@ -789,6 +854,8 @@ impl TokenKeys {
                         t.troop = n;
                     } else if k == self.botnet {
                         t.botnet = n;
+                    } else if k == self.land {
+                        t.land = n;
                     }
                 }
                 t
@@ -830,7 +897,18 @@ impl Eval {
                     .content
                     .threats
                     .iter()
-                    .map(|t| (Key::new(&t.id), -t.effects.iter().map(|e| value::op_worth(tbl, e).now).sum::<f64>()))
+                    .map(|t| {
+                        let (mut once, mut stays) = (0.0, 0.0);
+                        for e in &t.effects {
+                            let h = -value::op_worth(tbl, e).now;
+                            if lasting(e) {
+                                stays += h;
+                            } else {
+                                once += h;
+                            }
+                        }
+                        (Key::new(&t.id), once, stays)
+                    })
                     .collect(),
             ),
             mix: tbl.rate("own_mix") > 0.0,
@@ -1106,6 +1184,8 @@ impl Eval {
         // 138: a player's research station or factory corrupts too, by its own number.
         let (station_at, station_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Station);
         let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
+        // 147 (D67): land corrupts only by a Corrupt land line (no natural corruption).
+        let (land_at, land_line) = plan::next_corrupt_n(&world, g, CorruptSite::Land);
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
@@ -1115,8 +1195,12 @@ impl Eval {
         let seats = self.seats;
         let mut pieces = 0i64;
         let level = alignment::bar_level(&world, g);
-        // 136: clean cities filling toward corruption, with their risk.
-        let mut risky: Vec<(usize, f64)> = Vec::new();
+        // 147 (D67): each seat's nodes on sites filling toward corruption, as
+        // shares lost (corruption destroys a node on its own hex), and land
+        // corruption's Discord to come.
+        let mut exposed = [0.0f64; 4];
+        let mut shielded: [Option<bool>; 4] = [None; 4];
+        let mut blight = 0.0f64;
         for h in 0..g.hexes.len() {
             let t = &tokens[h];
             let city = common::is_city(&world, h);
@@ -1157,10 +1241,6 @@ impl Eval {
                     // 034: a corruption marker counts toward corrupting; 138: so do
                     // the ambassadors next door when a gathering Corrupt line is ahead.
                     let toward = Self::toward(rules, &tokens, h, gather);
-                    if w.node_exposure > 0.0 && toward > 0 {
-                        let r = ((toward + 1) as f64 / corrupt_at.max(1) as f64).min(1.0);
-                        risky.push((h, r * r));
-                    }
                     let p = (toward as f64 / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1 >= corrupt_at {
@@ -1169,6 +1249,53 @@ impl Eval {
                 }
             }
             let held = t.node[..seats].iter().any(|&n| n > 0);
+            if (w.corrupt_exposure > 0.0 || w.blight > 0.0) && (held || (adv > 0 && land_line)) {
+                // 147 (D67): the Corrupt number this hex's site kind is read
+                // against, and whether the line ahead gathers from next door. A
+                // clean city, a station or factory not the adversary's, or open
+                // land with no building (only a Corrupt land line takes land).
+                let site = if bad {
+                    None
+                } else if city {
+                    Some((corrupt_at, gather, 1.0))
+                } else if t.station > 0 {
+                    Some((station_at, station_gather, 1.0))
+                } else if t.factory > 0 {
+                    Some((factory_at, factory_gather, 1.0))
+                } else if t.land == 0 && plan::corrupt_target(&world, g, h, CorruptSite::Land) {
+                    Some((land_at, land_line, if land_line { 1.0 } else { LAND_QUIET }))
+                } else {
+                    None
+                };
+                if let Some((n, gathers, share)) = site {
+                    let toward = Self::toward(rules, &tokens, h, gathers);
+                    if toward > 0 {
+                        let p = ((toward + 1) as f64 / n.max(1) as f64).min(1.0);
+                        let r = p * p * share;
+                        for (s, e) in exposed.iter_mut().enumerate().take(seats) {
+                            if w.corrupt_exposure <= 0.0 || t.node[s] == 0 {
+                                continue;
+                            }
+                            // Sanctuary (`CorruptionShield`): corruption never takes its nodes.
+                            let safe = *shielded[s].get_or_insert_with(|| {
+                                cards::has_passive(&world, g, s, |p| matches!(p, Op::CorruptionShield))
+                            });
+                            if safe {
+                                continue;
+                            }
+                            // Armor against corruption is a hardening token or the node
+                            // owner's own ambassador (the engine takes the site owner's
+                            // cube first, so the site owner's ambassador is no armor here).
+                            let armored = t.ambassador[s] > 0 || t.harden > 0;
+                            *e += if armored { r * ARMORED_SHARE } else { r };
+                        }
+                        if !city && t.station == 0 && t.factory == 0 {
+                            // Land corrupted drips Discord every round after.
+                            blight += r;
+                        }
+                    }
+                }
+            }
             v -= w.adv_ambassador * adv as f64;
             if adv > 0 {
                 let piece = held || owned || base || t.factory > 0 || t.station > 0;
@@ -1260,18 +1387,15 @@ impl Eval {
             v += w.liberated * g.stats.counters.get("board.cities_freed").copied().unwrap_or(0) as f64;
         }
         let mut thin = i64::MAX;
-        // 138: corruption destroys only a node on the corrupted hex itself.
-        let blast = 0;
-        for s in 0..self.seats {
+        for (s, &e) in exposed.iter().enumerate().take(self.seats) {
             let mut count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
-            if !risky.is_empty() {
-                // 136: a node in a filling city's blast is that share of lost.
-                let exposed: f64 = (0..g.hexes.len())
-                    .filter(|&h| tokens[h].node[s] > 0)
-                    .map(|h| risky.iter().filter(|&&(c, _)| world.map.distance(h, c) <= blast).map(|&(_, r)| r).fold(0.0, f64::max))
-                    .sum();
-                v -= w.node_exposure * w.node * exposed;
-                count -= exposed.round() as i64;
+            if e > 0.0 {
+                // 147 (D67): a node on a site filling toward corruption is that
+                // share lost: the node and what losing one costs beyond it (as a
+                // shelter reads it); the seat's danger step comes from reading its
+                // nodes less the exposed ones (136 read cities only, and was off).
+                v -= w.corrupt_exposure * e * (w.node + w.shelter_node);
+                count -= e.round() as i64;
             }
             thin = thin.min(count);
             match count {
@@ -1286,7 +1410,8 @@ impl Eval {
         }
         // 092: a shelter is worth the destruction showing that it stops.
         if w.shelter_read > 0.0 {
-            for saves in guide::sheltered_saves(&world, g, w.shelter_counter > 0.0) {
+            let armor = if w.shelter_armor > 0.0 { guide::Armor::ByOwner } else { guide::Armor::AnyAmbassador };
+            for saves in guide::sheltered_saves(&world, g, w.shelter_counter > 0.0, armor) {
                 for s in 0..self.seats.min(4) {
                     let k = saves.nodes[s];
                     if k <= 0.0 {
@@ -1303,6 +1428,18 @@ impl Eval {
         // The Discord deck: the tip that finds it empty loses.
         let discord_left = alignment::cards_left(g, Side::Discord) as i64;
         v -= w.discord_danger * (3 - discord_left).max(0) as f64;
+        // 147 (D67): each land-corruption token (and land filling toward one)
+        // drips Discord every round left, at its share of a Discord tip.
+        if w.blight > 0.0 {
+            let tokens_down: i64 = tokens.iter().map(|t| t.land).sum();
+            let land = tokens_down as f64 + blight;
+            if land > 0.0 {
+                let cap = alignment::capacity(&world, g, Side::Discord).max(1) as f64;
+                let drip = world.int("adversary.blight_discord") as f64;
+                let rounds = (Self::cards_left(g) as f64).min(BLIGHT_ROUNDS);
+                v -= w.blight * land * drip * rounds * w.discord_tip / cap;
+            }
+        }
         v += w.unity_deck * (3 - alignment::cards_left(g, Side::Unity) as i64).max(0) as f64;
         // Megaprojects: each player cube pays when the project completes.
         for c in 0..world.map.countries.len() {
@@ -1369,7 +1506,9 @@ impl Eval {
         let world = rules.world();
         let w = &self.w;
         let mut out = Vec::new();
-        for (t, scope) in threats::active(g) {
+        // 147: the tempo trade's rounds, read once a position.
+        let tempo_r = if w.threat_harm > 0.0 && w.tempo > 0.0 { self.tempo_rounds(g) / w.tempo_ref.max(1.0) } else { 1.0 };
+        for (t, _scope) in threats::active(g) {
             // 135: the cheapest resource option of the menu (a tag or node option
             // is a whole payment, priced by what it removes, not pooled).
             // 145: the share paid in each option's own currencies (summed units across
@@ -1379,11 +1518,22 @@ impl Eval {
                 continue;
             }
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
-            let open = (0..self.seats).any(|s| threats::may_counter(&world, g, s, &t, Some(scope)));
+            // 147: who may counter (`may_counter`: near it), the threat's reach read once.
+            let open = !threats::near_seats(&world, g, &t).is_empty();
             let stranded = if open { 1.0 } else { w.threat_stranded };
             // 146: weighed by what it would do uncountered, against a tier-1 counter's worth.
             let harm = if w.threat_harm > 0.0 {
-                let h = self.threat_harms.iter().find(|(k, _)| *k == t).map_or(w.threat_harm_ref, |(_, h)| *h);
+                let (once, stays) =
+                    self.threat_harms.iter().find(|(k, ..)| *k == t).map_or((w.threat_harm_ref, 0.0), |&(_, o, s)| (o, s));
+                // 147, the tempo trade: what it leaves on the table costs again every
+                // round left, and paying now costs the engine more the earlier it is.
+                // At `tempo_ref` rounds left both read as 146's printed harm.
+                let h = if w.tempo > 0.0 {
+                    let r = tempo_r;
+                    (once + stays * r) / (1.0 + w.tempo * (r - 1.0)).max(0.25)
+                } else {
+                    once + stays
+                };
                 (1.0 - w.threat_harm + w.threat_harm * h / w.threat_harm_ref.max(1.0)).max(0.2)
             } else {
                 1.0
@@ -1432,6 +1582,16 @@ impl Eval {
             k += 1.0;
         }
         total
+    }
+
+    /// 147: the rounds a threat's lasting harm would stand (the tempo trade):
+    /// the adversary deck's clock, cut short by the team's projected win, at
+    /// least one. Every agent reads it, flat or horizon.
+    fn tempo_rounds(&self, g: &GameState) -> f64 {
+        let clock = Self::cards_left(g) as f64;
+        let (points, bar) = self.unity_progress(g);
+        let to_win = ((bar - points).max(0.0) / self.unity_rate(g)).ceil() + self.w.win_lag;
+        clock.min(to_win).max(1.0)
     }
 
     /// Unity so far, in Sway (each tip counts a full bucket at the base

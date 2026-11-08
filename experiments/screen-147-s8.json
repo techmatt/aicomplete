@@ -1,0 +1,35 @@
+{
+  "name": "screen-147-s8",
+  "note": "147 smoke s8: strategist:w.corrupt_exposure=0.25, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3
+  ],
+  "agents": [
+    "strategist:w.corrupt_exposure=0.25"
+  ],
+  "games": 64,
+  "first_seed": 36800,
+  "records": 0
+}

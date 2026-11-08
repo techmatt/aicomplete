@@ -1,0 +1,37 @@
+{
+  "name": "screen-147-eqr61",
+  "note": "147 smoke eqr61: strategist, seeds from 37240",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 8,
+  "first_seed": 37240,
+  "records": 0
+}

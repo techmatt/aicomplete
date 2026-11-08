@@ -156,7 +156,14 @@ pub fn near_seats(w: &World, g: &GameState, t: &Key) -> Vec<usize> {
 }
 
 pub(super) fn seats_near(w: &World, g: &GameState, t: &str) -> Vec<usize> {
-    (0..g.seats.len()).filter(|&s| is_near(w, g, s, t)).collect()
+    // 147: the reach read once for every seat (it was once a seat).
+    let hexes = reach(w, g, t);
+    (0..g.seats.len())
+        .filter(|&s| {
+            let (n, a) = (node(s), ambassador(s));
+            hexes.iter().any(|&h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0)
+        })
+        .collect()
 }
 
 /// 146: the hexes an uncountered `t`'s harm is measured from: its tokens, or

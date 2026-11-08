@@ -81,12 +81,10 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54.
 | D57 | cards | Exascale Training Cluster (8 energy) kept in ~45% of games, never played. | Cut its +25 agents override; energy 8 → 4-5 **Matt's call**. |
 | D64 | content | "Clean city" creation lines include aligned cities. | Faces say "not corrupted", or the op skips aligned. **Matt's call**. |
 | D65 | content | Rolling Blackouts / Market Crash "next round" also hits this round when filled in the build. | Faces say so. **Pick**. |
-| D71 | agents | The shelter forecast's armor (any player's ambassador; per-line). 145's fix slowed the greedy ~15×: taken back. | Profile, then land it. **Pick**. |
-| D67 | agents | Land corruption is invisible to the eval. | A land term and a drip term. **Pick**. |
 | D68 | agents | The gates' Unity-farm check farms a reward 137 removed. | Drop it. **Pick**. |
 | D70 | cards | The claim-station cards' faces omit that a station with an adversary ambassador can't be claimed by them (printing it: 5.8 pt). | **Matt's call**. |
 | D69 | card art | Power Purchase Agreement and Microgrid Lab Compact have no art scene. | Write and render them. **Matt's call**. |
-| D58 | speed | Greedy 1.63× a decision r58 → r59. | Profile its eval over the menus. **Pick**. |
+| D58 | speed | Greedy 1.63× a decision r58 → r59, 3.0× r60 → r61: settling the loss prompts threat execution asks (pay or discard, nearest ties) in `search::settled` (147's profile). | A cheaper settle of an uncountered threat's loss prompts (moves greedy's play). **Pick**. |
 | D59 | viewer | A troop arrow ignores Forced March's +1 step. | Read the next march's card. **Pick**. |
 | D61 | engine | The doubled-build path is dead since 142. | Remove. **Pick**. |
 | D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |

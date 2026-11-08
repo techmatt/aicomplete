@@ -15,8 +15,8 @@ use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
 /// round, by owner: `nodes[s]` of seat `s`'s nodes, `factories` player-owned
-/// factories. What a hardening token or a player ambassador on the hex would
-/// absorb anyway is left out, and an unpaid threat counts by its unpaid share.
+/// factories. What armor on the hex would absorb anyway is left out (see
+/// [`Armor`]), and an unpaid threat counts by its unpaid share.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Saves {
     pub nodes: [f64; 4],
@@ -29,10 +29,49 @@ impl Saves {
     }
 }
 
-/// Whether `h` would absorb a destruction anyway (a hardening token or a
-/// player ambassador on it).
-fn absorbed(g: &GameState, h: usize) -> bool {
-    g.tokens(h, HARDEN) > 0 || common::player_ambassador(g, h).is_some()
+/// How the forecast reads armor (D71).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Armor {
+    /// Before 147: any player's ambassador on the hex, and each "destroy N of
+    /// your nodes" line read apart (an armored node never fell).
+    AnyAmbassador,
+    /// 147: as the engine does (`board::destroy_piece`): a hardening token, the
+    /// node owner's ambassador or the site owner's; each destroy spends one unit
+    /// while any lasts, then takes a node.
+    ByOwner,
+}
+
+/// Whether `h` would absorb a destruction anyway (a hardening token or an
+/// ambassador the engine takes as armor there).
+fn absorbed(g: &GameState, h: usize, armor: Armor) -> bool {
+    if g.tokens(h, HARDEN) > 0 {
+        return true;
+    }
+    match armor {
+        Armor::AnyAmbassador => common::player_ambassador(g, h).is_some(),
+        Armor::ByOwner => {
+            let own = |s: usize| g.tokens(h, common::ambassador(s)) > 0;
+            common::node_owner(g, h).is_some_and(own) || common::cube_owner(g, h).is_some_and(own)
+        }
+    }
+}
+
+/// Whether a strike on the factory on `h` would be absorbed: by owner, only a
+/// hardening token or the factory owner's ambassador (the piece is no node).
+fn factory_absorbed(g: &GameState, h: usize, armor: Armor) -> bool {
+    match armor {
+        Armor::AnyAmbassador => absorbed(g, h, armor),
+        Armor::ByOwner => {
+            g.tokens(h, HARDEN) > 0 || common::cube_owner(g, h).is_some_and(|s| g.tokens(h, common::ambassador(s)) > 0)
+        }
+    }
+}
+
+/// D71: the armor units on hex `h` against destroys aimed at seat `s`'s node
+/// there: hardening tokens, `s`'s ambassadors, and the site owner's.
+fn armor_units(g: &GameState, s: usize, h: usize) -> i64 {
+    let site = common::cube_owner(g, h).filter(|&o| o != s).map_or(0, |o| g.tokens(h, common::ambassador(o)));
+    g.tokens(h, HARDEN) + g.tokens(h, common::ambassador(s)) + site
 }
 
 /// The share of threat `t`'s counter still unpaid.
@@ -65,7 +104,8 @@ fn counterable(w: &World, g: &GameState, t: &str, scope: Option<usize>) -> bool 
 /// What sheltering `country` would save this round, were it not sheltered:
 /// the threats on it that destroy (each seat's nodes there, troops landing on
 /// its factories) and the war step's crossings into it.
-pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool) -> Saves {
+pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bool, armor: Armor) -> Saves {
+    let absorbed = |h: usize| absorbed(g, h, armor);
     let mut out = Saves::default();
     let seats = g.seats.len().min(4);
     let hexes = &w.map.countries[country].hexes;
@@ -90,11 +130,16 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             match op {
                 Op::DestroyNode { count } => {
                     if let Some(s) = hit.filter(|&s| s < seats && !board::last_node_safe(w, g, s)) {
-                        let open = threats::nearest_nodes(w, g, s, &t)
-                            .into_iter()
-                            .filter(|h| hexes.contains(h) && !absorbed(g, *h))
-                            .count() as i64;
-                        lost[s] += open.min(*count);
+                        let near: Vec<usize> =
+                            threats::nearest_nodes(w, g, s, &t).into_iter().filter(|h| hexes.contains(h)).collect();
+                        lost[s] += match armor {
+                            Armor::AnyAmbassador => (near.iter().filter(|&&h| !absorbed(h)).count() as i64).min(*count),
+                            // D71: the hit player spends armor first, one unit a destroy.
+                            Armor::ByOwner => {
+                                let units: i64 = near.iter().map(|&h| armor_units(g, s, h)).sum();
+                                (*count - units).max(0).min(near.len() as i64)
+                            }
+                        };
                     }
                 }
                 Op::Troops { count, destroy: true, .. } => {
@@ -108,7 +153,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                     };
                     let mut hit = 0;
                     for h in sites {
-                        if hit >= *count || absorbed(g, h) || board::walled(w, g, h) {
+                        if hit >= *count || absorbed(h) || board::walled(w, g, h) {
                             continue;
                         }
                         if let Some(s) = common::node_owner(g, h) {
@@ -123,7 +168,15 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             }
         }
         for (s, &n) in lost.iter().enumerate().take(seats) {
-            let open = nodes_here(s).into_iter().filter(|&h| !absorbed(g, h)).count() as i64;
+            if n <= 0 {
+                continue;
+            }
+            // D71: by owner, the armor is already spent above (a node whose
+            // armor runs out falls); before, an armored node never fell.
+            let open = match armor {
+                Armor::AnyAmbassador => nodes_here(s).into_iter().filter(|&h| !absorbed(h)).count() as i64,
+                Armor::ByOwner => nodes_here(s).len() as i64,
+            };
             out.nodes[s] += share * n.min(open) as f64;
         }
     }
@@ -147,7 +200,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             // The unit forecast is a guess (factories add units too): count it
             // at a share.
             for &h in targets.iter().take(n as usize) {
-                if absorbed(g, h) {
+                if factory_absorbed(g, h, armor) {
                     continue;
                 }
                 if common::cube_owner(g, h).is_some() {
@@ -171,10 +224,10 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
 const WAR_SHARE: f64 = 0.7;
 
 /// The countries sheltered now, each with what its shelter saves.
-pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool) -> Vec<Saves> {
+pub fn sheltered_saves(w: &World, g: &GameState, counter_first: bool, armor: Armor) -> Vec<Saves> {
     (0..w.map.countries.len())
         .filter(|&c| board::flagged(g, RoundFlag::Shelter, c))
-        .map(|c| shelter_saves(w, g, c, counter_first))
+        .map(|c| shelter_saves(w, g, c, counter_first, armor))
         .filter(Saves::any)
         .collect()
 }

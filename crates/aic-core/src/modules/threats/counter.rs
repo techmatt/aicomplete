@@ -154,18 +154,25 @@ pub(super) fn standing(w: &World, g: &GameState, threat: &str) -> i64 {
     if scope_of(g, threat).is_none() {
         return 0;
     }
-    let mut n = 0;
-    for s in seats_near(w, g, threat) {
+    // 147: each seat's Auto Counters first (most seats hold none), then
+    // whether the seats holding one are near, the threat's reach read once.
+    let mut by_seat = [0i64; 4];
+    let mut any = false;
+    for (s, k) in by_seat.iter_mut().enumerate().take(g.seats.len()) {
         // A walk, not a list: the heuristic asks this of every threat a position (103).
         cards::each_passive(w, g, s, |p| {
             if let Op::AutoCounter { source, amount } = p {
                 if of_type(w, threat, *source) {
-                    n += *amount;
+                    *k += *amount;
                 }
             }
         });
+        any |= *k != 0;
     }
-    n
+    if !any {
+        return 0;
+    }
+    seats_near(w, g, threat).into_iter().map(|s| by_seat.get(s).copied().unwrap_or(0)).sum()
 }
 
 /// Returns every pooled contribution on `threat` to its payers.
@@ -206,6 +213,9 @@ pub(super) fn tally_countered(g: &mut GameState, cx: &mut Cx, threat: &str, how:
     cx.tally(g, &format!("threats.countered_by.{how}"), 1);
     cx.tally(g, &format!("threats.countered.t{tier}"), 1);
     cx.tally(g, &format!("threats.countered_by.t{tier}.{how}"), 1);
+    // 147: by the adversary's stage (I-III) too, so a read sees the tempo shift.
+    let stage = g.var(adversary::STAGE);
+    cx.tally(g, &format!("threats.countered.s{stage}.t{tier}"), 1);
 }
 
 /// Counters `threat` if the pooled payments cover one of its resource-only

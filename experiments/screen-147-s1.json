@@ -1,0 +1,41 @@
+{
+  "name": "screen-147-s1",
+  "note": "147 smoke s1: strategist; strategist:w.shelter_armor=0; strategist:w.corrupt_exposure=0,w.blight=0; strategist:w.tempo=0; greedy; greedy:w.shelter_armor=0; greedy:w.corrupt_exposure=0,w.blight=0; greedy:w.tempo=0, seeds from 36800",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "strategist:w.shelter_armor=0",
+    "strategist:w.corrupt_exposure=0,w.blight=0",
+    "strategist:w.tempo=0",
+    "greedy",
+    "greedy:w.shelter_armor=0",
+    "greedy:w.corrupt_exposure=0,w.blight=0",
+    "greedy:w.tempo=0"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

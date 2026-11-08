@@ -14,8 +14,13 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 - **`choices` counts prompts** (a placement is two: track, hex); with `answers` 99 a free
   multi-pick rule of N picks costs about N² evaluations.
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
-  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats (by printed harm,
-  `threat_harm`); and:
+  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats (the tempo
+  trade, below); and:
+  - **the tempo trade** (147, `w.tempo`, `w.tempo_ref`): an unpaid threat weighs its one-off harm plus
+    what it leaves on the table times the rounds left, over what paying now costs the engine (`lasting`
+    in `eval.rs`): a one-off harm may be let through early and is paid late;
+  - **corruption risk** (147, D67, `w.corrupt_exposure`, `w.blight`): a node on a site filling toward its
+    Corrupt number is that share lost to its owner; land corruption costs its Discord drip;
   - botnets −25 (D9): agents make none when an equal free choice exists;
   - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
     Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).
@@ -44,12 +49,9 @@ of the seat's own none stands or is planned for (`pile_ok`), or copies an income
 building built or planned (`plan_copy`); a building over one of the seat's (built, or planned
 first: `plan_under`) adds only what it beats the weakest by (`plan_cover`), the covered one at
 what it would still earn; each credit paid for keeps costs `plan_credit`.
-`plan_chain` (off) credits a chain card the plan brings within `plan_short` tags.
 
 Priced like the play check (102): a card worth no more than its price is not planned, one
-that is adds its **gross value**; credits over `w.credit_cap` cost `w.credit_idle`; energy and
-antimatter at the heuristic's rates (about 1.3 and 3.3 credits), a building's Action at the
-table's; a project discard or drain at the heuristic's charge for the projects up.
+that is adds its **gross value** (the prices: `plan_value` in `policy.rs`).
 
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
@@ -70,8 +72,7 @@ those left in a game; in the typical context (the opening's choice, the effect l
 tier's horizon, `horizon_t1` 4, `horizon_t2` 2.5. "Remove up to N troops" counts
 `troops_removed` (D26). An `overrides` row adds flat credits to one card, with its reason: the scoped fix where the
 table under-prices a card's output against the anchors; built, the card keeps it, spread over the rounds left (130).
-A spec's `t.<key>=v` sets one number for that agent, no rebuild: a resource, rate, op row or token
-(`strategist:t.chips=2,t.auto_counter=0.7`; `t.<section>.<key>` where a name is in two, as `t.tags.first`).
+`t.<key>=v` in a spec sets one number for that agent (`t.<section>.<key>` where a name is in two).
 
 The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greedy`):
 
@@ -86,10 +87,7 @@ The heuristic reads it in table mode (`w.table`: on for `engine`, off for `greed
   reads `tag_share`); a threshold its card's own trigger fills fills at that rate (`own_fill`);
   an income a firing raises counts `raised_rounds` rounds; insight off every card counts
   `insight_discount_share` of the plays (the discount floor).
-- **A token:** what its card's spend pays per token, else the held rate; on a card whose
-  Action cashes its own pile out, the cash-out's rate (D24). A supply
-  ambassador: its row.
-- **Energy:** `energy` 0.8 points, not the table's 4.5 (`w.table_energy` 1 played worse).
+- **A token:** what its card's spend pays per token (a cash-out's rate, D24), else the held rate.
 - **An action** is credited what the board terms can't see after it: a cordon, a peek, a
   shelter's flat worth (`Eval::bonus`; what a shelter saves: the guide, below).
 
@@ -136,7 +134,8 @@ Rules a player could say where a one-step search misses a card's point, each a s
 player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
-  `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`).
+  `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`), armor read as the engine does
+  (`w.shelter_armor`, D71).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`: slots
   full, the keep plan charges a plain building what the top it buries would earn).
 - *Count your research cubes like credits* (`plan_cubes`: a budget in the keep plan).
