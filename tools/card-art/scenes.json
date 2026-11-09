@@ -19,6 +19,9 @@
   },
   "scenes": {
     "cyber": {
+      "lure_server_room": { "card": "lure_network", "subject": "A single glowing decoy server in a dark data hall, trails of light from every rack bending toward it." },
+      "firewall_array_wall": { "card": "firewall_array", "subject": "A tall wall of glowing hexagonal panels across a city street, figures stopped at its edge, the far side calm." },
+      "air_gap_cut": { "card": "air_gap", "subject": "A technician pulling a thick fiber cable out of a rack, the severed end glowing, the rest of the room going dark." },
       "market_stall_of_drives": { "card": "darknet_exchange", "subject": "A cramped back-alley stall heaped with unmarked data drives, a hooded buyer and seller trading over a folding table." },
       "honeypot_relay_hut": { "card": "honeypot_relay", "subject": "A lone antenna hut in a meadow rigged as a trap, tempting signal lines running in and a steel cage door hanging open inside." },
       "server_hall_fault": { "card": "intrusion_lab", "from": "r2", "subject": "A server hall with one technician tracing a glowing fault." },
@@ -56,6 +59,9 @@
       "bounty_board_hunters": { "card": "bug_bounty_board", "subject": "A big corkboard of bounty notices in a bright open co-working loft, each notice pinned with a painted beetle sketch and a cash envelope, two hackers with laptops pulling a notice down to claim it." }
     },
     "diplomacy": {
+      "defectors_crossing": { "card": "mass_defection", "subject": "A column of people in mismatched uniforms walking across a checkpoint at dawn, discarded insignia piled by the barrier." },
+      "exiles_embassy": { "card": "embassy_of_exiles", "subject": "A crowded embassy waiting room of travelers with suitcases, a clerk stamping papers under a wall of foreign flags." },
+      "allies_rally": { "card": "rally_the_allies", "subject": "A packed city square at dusk, delegations streaming in from side streets under banners, everyone turning toward one stage." },
       "shared_rooftop_grid": { "card": "citywide_microgrid", "was": "commons_grid", "subject": "A neighborhood's rooftops linked by shared solar panels, residents together hauling a cable across a street." },
       "consulate_tower": { "card": "consulate_tower", "subject": "A slender glass and stone tower with a line of many flagpoles at its foot, unmarked flags flying in the wind." },
       "walled_embassy": { "card": "protocol_office", "was": "embassy_compound", "subject": "A walled embassy with a garden courtyard and a guarded gate, a black car waiting at the steps." },
@@ -170,6 +176,7 @@
       "microgrid_lab_battery_yard": { "card": "microgrid_lab_compact", "subject": "A self-powered research campus in a green valley, low white laboratories set around a central yard of battery cabinets and a small control hut, two wind turbines on the slope and a little river-turbine house on the stream feeding it, an engineer checking a panel of amber lamps while scientists wheel crates of glowing sky-blue research cubes between the labs; no solar panels, no flags, logos or emblems." }
     },
     "science": {
+      "open_source_hackathon": { "card": "open_source_uprising", "subject": "A crowded open-air hackathon in a city park, laptops on picnic tables, a big screen of shared code over the crowd." },
       "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
       "sample_repository_shelves": { "was": "sample_repository", "subject": "A tall cold-store hall of glass shelves, each holding small luminous cubes in rows, a technician sliding one more into place." },
       "preprint_exchange_board": { "card": "preprint_server", "was": "preprint_exchange", "subject": "A crowded corkboard wall of pinned papers in a bright corridor, two scientists swapping a printout and a small glowing cube." },
@@ -210,6 +217,9 @@
       "frontier_lab_opening": { "card": "frontier_lab_charter", "subject": "A brand-new frontier research lab of glass and white steel opening on a hilltop campus, scientists in lab coats carrying the first crates of glowing sky-blue research cubes through its tall doors while a founder holds up a blank rolled charter to a small cheering crowd; no flags or emblems." }
     },
     "security": {
+      "double_agents_meet": { "card": "double_agents", "subject": "Two figures in raincoats swapping identical briefcases on a park bench, a city skyline behind a light drizzle." },
+      "kettle_cordon": { "card": "kettle_operation", "subject": "A ring of riot shields closing around a plaza seen from above, a small crowd herded into its center." },
+      "surgical_strike_team": { "card": "surgical_strike", "subject": "A small tactical team stepping out of a helicopter onto a rooftop at night, one red flare marking the target." },
       "point_defense_turret": { "card": "directed_energy_array", "was": "point_defense", "subject": "A compact automated gun turret on a factory roof, its barrels tracking a small drone in the sky." },
       "sentinel_watch_post": { "was": "sentinel_post", "subject": "A lone watchtower with a small solar array on a high ridge, one sentry looking out over the valley below." },
       "shelter_blast_doors": { "was": "shelter_order", "subject": "Families filing down into a public shelter past heavy open blast doors, a warden waving them on under a siren pole." },

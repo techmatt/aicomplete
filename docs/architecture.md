@@ -171,7 +171,8 @@ An op shared by threats and team cards takes wording and tally from the context.
 **A new op parameter** touches `op.rs` (the field, `slots()`), `content.rs` (its check), `face.rs`,
 its dispatch (`effects/mod.rs`, whose arm keeps the old behavior by matching the field's default and sends the
 rest to `effects/new_ops.rs`; or the rule that reads a standing op), and its price: `agents/value.rs`, `agents/strategy.rs`, `configs/agents/values.json` and the
-ledger's hand mirror, `scripts/cards/effect_ledger.py`. The compiler finds the Rust sites (`face.rs` lists every non-player op); a
+ledger's hand mirror, `scripts/cards/effect_ledger.py`. A new op touches the same, plus `effects/feasible.rs` (what
+it acts on). The compiler finds the Rust sites (`face.rs` lists every non-player op); a
 fast-lane mirror test finds the ledger.
 
 ### Generated docs

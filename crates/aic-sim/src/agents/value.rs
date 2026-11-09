@@ -578,6 +578,21 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::MoveOne { .. } => Worth::now(row("move_one")),
         Op::SpreadAmbassadors => Worth::now(row("spread_ambassadors")),
         Op::Consolidate { max } => Worth::now(row("consolidate") * *max as f64),
+        // 158: the end-game shapes. A conversion is a removal plus an ambassador of yours on the board.
+        Op::Convert { max } => Worth::now(row("convert") * t.rate("target_share") * *max as f64),
+        Op::Gather { troops, strike } => {
+            let each = if *troops { row("remove_troop") } else { row("remove_ambassador") };
+            Worth::now(row("gather") + each * t.rate("target_share") * *strike as f64)
+        }
+        Op::Firewall => Worth::unseen(row("firewall")),
+        // A threshold: its ops at the row's share (the chance the seat holds the tags when it plays).
+        Op::IfTags { then, .. } => {
+            let mut w = Worth::default();
+            for o in then {
+                w += op_worth(t, o);
+            }
+            w.scaled(row("if_tags"))
+        }
         Op::Draw { count } => Worth::now(row("draw") * t.rate("drawn_card") * *count as f64),
         Op::DrainAll { amount } => Worth::now(row("drain_all") * *amount as f64),
         Op::GainPerTokens { resource, per, .. } => {

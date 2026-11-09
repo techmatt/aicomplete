@@ -103,6 +103,10 @@ fn with_contents<'a>(ops: impl Iterator<Item = &'a Op>, contents: bool) -> Vec<&
                 out.extend(then.iter());
             }
         }
+        // 158: a "with N X tags, also" rider is the card's own effect, read always.
+        if let Op::IfTags { then, .. } = o {
+            out.extend(then.iter());
+        }
     }
     out
 }
@@ -139,6 +143,8 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::RemoveTroops { .. }
                 | Op::ClearCity { .. }
                 | Op::Pushback { .. }
+                | Op::Convert { .. }
+                | Op::Gather { .. }
         )
     });
     c[6] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));
@@ -147,6 +153,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
             o,
             Op::Shelter
                 | Op::Cordon
+                | Op::Firewall
                 | Op::Harden { .. }
                 | Op::HardenAction { .. }
                 | Op::ShieldNode { .. }

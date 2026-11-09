@@ -16,6 +16,7 @@ use super::{adversary, alignment, board, cards, economy, threats};
 
 mod ambassadors;
 mod ctx;
+mod endgame;
 mod feasible;
 mod new_ops;
 mod removal;
@@ -25,6 +26,7 @@ mod targets;
 mod team;
 
 pub use ctx::*;
+pub use endgame::{convert_cities, firewall_hexes, gather_hexes};
 pub use feasible::*;
 pub use targets::*;
 
@@ -224,6 +226,15 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::MoveOne { range } => ambassadors::move_one(g, cx, seat, *range)?,
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
         Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
+        Op::Convert { max } => endgame::convert(g, cx, seat, *max)?,
+        Op::Gather { troops, strike } => endgame::gather(g, cx, seat, *troops, *strike)?,
+        Op::Firewall => endgame::firewall(g, cx, seat)?,
+        Op::IfTags { tag, count, then } => {
+            if cards::tags(&w, g, seat, *tag) >= *count {
+                cx.tally(g, "effects.if_tags_met", 1);
+                run(g, cx, then, ctx)?;
+            }
+        }
         Op::CutBotnet => removal::cut_botnet(g, cx, seat)?,
 
         // Threats and the team: the wordings differ, the rule doesn't.

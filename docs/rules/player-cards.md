@@ -30,18 +30,22 @@ The cards config lists which cards are in the game (baseline: all of them).
   card's price is in [cards.md](../cards.md); the reasoning is in [card-pricing.md](../card-pricing.md).
 
 <!-- generated: draft_set -->
-**The draft set in numbers.** 158 cards (113 tier 1, 45 tier 2). Insight to play: 25 / 103 / 30 cards at 0 / 1 / 2, 30 of the 45 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 60 buildings.
+**The draft set in numbers.** 168 cards (113 tier 1, 55 tier 2). Insight to play: 25 / 112 / 31 cards at 0 / 1 / 2, 31 of the 55 tier-2 cards at 2. An energy cost: 14 cards, 8 of the 63 buildings.
 <!-- /generated -->
 
 - **Energy costs (candidate; Matt, r50).** Energy is a second cost on a card whose title reads power-hungry (most are buildings), its
   credits cut to match (about 4.5 an energy): mostly the Builder's heavy machinery, Industry and Power (Fabrication
   Megaplex 2, Lights-Out Assembly 1, Orbital Mass Driver 3, Positron Storage Ring 2, Power to the People 4), and AI
   compute (Foundation Model Campus 2). Energy costs stay uncommon (counts above), so a
-  seat that makes little energy still has plenty to play. Seven late sinks are for a seat whose node tracks are full,
-  open to any seat with the energy ([cards.md](../cards.md) has their faces): five Actions that pay 2 energy (Particle
-  Accelerator, Directed-Energy Array, Holographic Assembly Hall, Wafer Fab Line, the tier-2 Microgrid Lab Compact) and
-  two tier-2 buildings with a big energy cost, Citywide Microgrid (8) and Exascale Training Cluster (5, r62). Power is
-  the usual tag of a sink.
+  seat that makes little energy still has plenty to play. Seven late sinks (five 2-energy Actions, two tier-2
+  buildings with a big energy cost; [cards.md](../cards.md)) serve a seat whose node tracks are full.
+- **The end-game cards (r69, drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
+  adversary's ambassadors stand, in reach: **convert** them onto your node (Mass Defection, Double Agents, Open Source
+  Uprising, Embassy of Exiles), **gather** them (and troops) onto a corrupted city and strike there (Kettle Operation, Lure
+  Network), **firewall** a hex for a round (Firewall Array, Air Gap), or mass your own (Rally the Allies), and strike
+  (Surgical Strike). The seven events also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
+  also …"). None frees a city, none is
+  global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
   token on a hex with your node (a shield, [ai-powers.md](ai-powers.md)) or make a threat wait a round (a delay: it skips this round's
   execution, stays up, and can be countered next round). The content check refuses any of the three on a card without
@@ -88,10 +92,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   deck's late credit sinks (r45, pending a liberation anchor). Great Liberation (Diplomacy, three cleanses in one country, cities included)
   liberates too. **Part of the draft is guessing who will have which engine**, and passing each liberate card to the
   seat that can use it. Loops: each card is one-shot and tier 2, and every route needs nodes next to the city, so
-  liberation → clean city → energy → more liberation is capped; Popular Uprising (106) repeats, capped by its
-  once-a-round Action, 4 Followers a liberation and corrupted cities in reach: alone it adds 1 a round, a liberation
-  every fifth round, an early investment that pays as a cheap late liberation (r48); Simulation Cluster's Reuse may
-  repeat either half of an Action (Matt, r48), so with it about one every 2-3 rounds.
+  liberation → clean city → energy → more liberation is capped; Popular Uprising repeats, capped by its once-a-round
+  Action and 4 Followers a liberation (about one every fifth round; every 2-3 with Simulation Cluster's Reuse).
 - **Tag discounts (candidate; the Terraforming Mars pattern).** Every `science_every` Science tags you have take 1
   insight off your tier-2 keeps and your card plays; every `industry_every` Industry tags take 1 credit off your
   buildings, as steel does. Neither goes below `discount_floor`, the cap on the loop "tags, cheaper costs, more tags";

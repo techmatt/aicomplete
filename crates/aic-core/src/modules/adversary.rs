@@ -501,6 +501,13 @@ impl Module for Adversary {
             3 => {
                 reveal(g, cx);
                 income(g, cx)?;
+                // 158: firewalls come off at the end of the adversary turn after they went on.
+                for h in 0..g.hexes.len() {
+                    let n = g.tokens(h, FIREWALL);
+                    if n > 0 {
+                        cx.add_tokens(g, h, FIREWALL, -n);
+                    }
+                }
             }
             _ => unreachable!("adversary phase {phase}"),
         }
@@ -1023,6 +1030,11 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
 /// Places `n` adversary ambassadors from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
 pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
+    // 158: a firewall stops every arrival on its hex; they stay in the supply.
+    if firewalled(g, h) {
+        cx.tally(g, "adversary.firewalled", n.max(0));
+        return;
+    }
     for k in 0..n {
         if g.var(SUPPLY) <= 0 {
             cx.tally(g, "adversary.supply_short", n - k);

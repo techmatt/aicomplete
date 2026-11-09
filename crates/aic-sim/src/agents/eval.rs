@@ -1307,7 +1307,8 @@ impl Eval {
                     }
                     // 034: a corruption marker counts toward corrupting; 138: so do
                     // the ambassadors next door when a gathering Corrupt line is ahead.
-                    let toward = Self::toward(rules, &tokens, &arriving, h, gather);
+                    // 158: a firewall stops the pull from next door (the Rally forecast already skips it).
+                    let toward = Self::toward(rules, &tokens, &arriving, h, gather && !common::firewalled(g, h));
                     let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1.0 >= corrupt_at as f64 {
@@ -1335,7 +1336,7 @@ impl Eval {
                     None
                 };
                 if let Some((n, gathers, share)) = site {
-                    let toward = Self::toward(rules, &tokens, &arriving, h, gathers);
+                    let toward = Self::toward(rules, &tokens, &arriving, h, gathers && !common::firewalled(g, h));
                     if toward > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
                         let r = p * p * share;

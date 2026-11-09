@@ -35,7 +35,8 @@ botnet hex): its **neutral** ones (no owner cube), else the players', else the a
 evenly** over those sites; the players choose which take the remainder, one each. The supply is a cap; a cordoned
 board's pool lands nowhere. A project may print "Rally 3: botnet hexes": 3 a board, by the same rule. An arrival on a
 player ambassador cancels it. The card ahead and the pools are public: players see next round's landing a round ahead.
-A threat still places its own ambassadors "here". Factory Drive opens a **neutral** factory on each board.
+A threat still places its own ambassadors "here". Factory Drive opens a **neutral** factory on each board. A player's
+**firewall** (r69) keeps every arrival and Corrupt pull off its hex for a round ([ambassadors.md](ambassadors.md)).
 
 **Corrupt X (138, candidate).** X is a site type: **city** (`corrupt_at` 4), **research station**
 (`corrupt_station_at` 3), **factory** (`corrupt_factory_at` 3) or, rarely, **land** (`corrupt_land_at` 3; an empty land
@@ -168,7 +169,7 @@ last round): a backstop with no share target, a plain loss whose cases are exami
 | 0 | Base rules |  |
 | 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 3, 4, 10, 8, 10, `ambassador_income` 1, 1, 1, 1, 2, `stage2_removed` 2, `stage1_added` 0 |
+| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 3, 4, 10, 8, 10, `ambassador_income` 0, 1, 1, 1, 2, `stage2_removed` 2, `stage1_added` 0 |
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 

@@ -43,6 +43,27 @@ Cities, research stations and factories follow one set of rules and differ only 
   the same all game (r67: 154's late liberation, 3 ambassadors from stage III, is gone; late strength comes from
   cards instead).
 
+## Convert, gather, firewall (r69; Matt, 2026-11-09; candidate)
+
+Ten tier-2 cards (drafts, [player-cards.md](player-cards.md)) act on the adversary's ambassadors where they stand,
+for the last rounds, and never free a city: the players still reach it and Liberate.
+
+- **Convert** (Mass Defection, Double Agents, Open Source Uprising, Embassy of Exiles' Action): up to N adversary
+  ambassadors on or next to one city in your reach leave the adversary's stack (to its supply) and become yours, on
+  **the node whose reach the card used** (a node on or next to the city; you pick among several). Each one taken off
+  the city lowers its Liberate bill by 1; it arrives as any ambassador does (onto an adversary ambassador there, the
+  two cancel). A converted ambassador is on the board, not in your supply: it is armor or a blocker, and moves like
+  any other, but Liberate pays from the supply.
+- **Gather at a city** (Kettle Operation, Lure Network's Action): every adversary ambassador (and troop, when the
+  card names them) on the hexes next to one **corrupted** city in your reach moves onto it; then the card removes up
+  to N adversary pieces there (troops first, where it names troops). Only a corrupted city takes a gather, so what it
+  pulls in can't corrupt a clean site; what the strike leaves raises that city's Liberate bill.
+- **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
+  adversary ambassador arrives there: a Rally skips the site (the pool spreads over the rest), a creation line takes
+  the next site, a threat's or Discord card's placement there doesn't happen, and a Corrupt line pulls nothing into
+  it from next door (it corrupts only on what it already holds). Troops are not stopped. It comes off at the end of
+  the next adversary turn (after its income), so it lasts one round; the building places a fresh one each round.
+
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next corp troop made there; an adversary ambassador on one does nothing.
 A **node** alone on its hex: an adversary ambassador on it costs its owner 1 insight next round and puts 1 compute on

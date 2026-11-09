@@ -46,10 +46,13 @@ card does; how each primitive resolves:
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
   base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit
-  Caucus, Liaison Corps) is a "you may move": it never vetoes a card that does something else (118). No deck card prints `move_one`
-  since r44 (Peacekeeper Rotation was cut).
-- **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal. No
-  content prints `peek` since 111.
+  Caucus, Liaison Corps) is a "you may move": it never vetoes a card that does something else (118).
+- **Convert, gather, firewall** (`convert`, `gather`, `firewall`; r69, house terms): a city in reach with adversary
+  ambassadors on or next to it; a corrupted city in reach with adversary pieces next to it; a land hex in reach. How each
+  resolves is in [ambassadors.md](ambassadors.md), *Convert, gather, firewall*.
+- **"With N X tags, also …"** (`if_tags`, r69): the rest resolves only if you hold N tags of X on your cards when
+  the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
+- **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
 - **Jam:** the chosen threat needs less of each resource (not below 0) while in play; if that leaves it fully paid, it
   is countered at once. **Counter a threat:** partial payments on it are refunded. **Delay N threats** (Predictive
   Modeling, Early Warning Drill): only threats you may counter, as countering and jamming; with none, the card still

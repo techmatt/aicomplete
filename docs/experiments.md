@@ -129,10 +129,11 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `157_strategist_purge_r68/specs157.py read TAG SEED [--probe]` (three 48-seed sets, the three
-  pairs, d0-d3, into `out/`; `screen NAME AGENTS LEVELS SEEDS [LEVER...]` for a dev screen) on both binaries
-  (`run_read.sh`), read by its `ladder157.py NEW OLD --measures` (pooled, paired, by set), 156's `screen156.py` (by
-  lever), `ends157.py` (win routes by Unity step, loss kinds) and `endgame157.py` (the probe by Unity step);
+- **Current recipe:** `158_tier2_cards_r69/specs158.py read TAG SEED [--probe]` (three 48-seed sets, the three
+  pairs, d0-d3, into `out/`; `screen NAME AGENTS LEVELS SEEDS [--offs] [LEVER...]` for a dev screen, `--offs` adding a
+  config per new card switched off) on both binaries (its `run_read.sh`); a lever's `set` takes content overlay keys
+  (`cards.<id>.effects.0.max=5`), so a card what-if needs no build. Read by 157's `ladder157.py NEW OLD --measures` (pooled, paired, by set),
+  158's `wins158.py` (by lever or config) and `rates158.py` (a card's draft, play and use rates), `ends157.py` (win routes by Unity step, loss kinds) and `endgame157.py` (the probe by Unity step);
   `partial157.py` reads a run still going. A flat-weight agent (`greedy`) costs 11-31 s a game on 8 threads (the
   strategist 1.5-3.6 s): cap its seeds (157: 24 a level beside a read).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
@@ -155,8 +156,8 @@ the judge off the value table.
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
 `oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
 pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row costs
-10 s a game at d3 and 61 s at d4; at r68 48 s and 395 s (157: ~35 min on 6 threads for the 48 games); `threads=N` plays a decision's lines side
-by side. Spec and costs: `155_skilled_agents/`.
+10 s a game at d3 and 61 s at d4; at r69 26 s and 394 s (158: ~50 min on 3 threads beside a read: launch it with
+the read); `threads=N` plays a decision's lines side by side. Spec and costs: `155_skilled_agents/`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
 Unity step, `ends156.py`) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
@@ -167,8 +168,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 39592 (which item spent which is in its write-up;
-157's: 39304-39591, a final read and a d2 re-read). Next free: 39592. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 39880 (which item spent which is in its write-up;
+158's: 39592-39879, a final read and a d0 re-read). Next free: 39880. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

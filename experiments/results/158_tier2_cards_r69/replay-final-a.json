@@ -1,0 +1,47 @@
+{
+  "name": "read-158-final-a",
+  "note": "158 read (final), set a: seeds 39592-39639, the three pairs, d0-d3.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "adversary.ambassador_income=1,1,1,1,2"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=1,1,1,1,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=1,1,1,1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "first_seed": 39592,
+  "records": 0,
+  "endgame": {
+    "back": 3,
+    "agent": "",
+    "rollouts": 0,
+    "all_losses": true
+  }
+}

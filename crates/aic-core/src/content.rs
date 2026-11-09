@@ -392,6 +392,9 @@ pub struct CardDef {
     /// A building's once-a-round ability.
     #[serde(default)]
     pub ability: Option<Ability>,
+    /// 158: a drafted card Matt has not picked yet (the card viewer marks it, as 156's Unity drafts).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub draft: bool,
 }
 
 /// A card's token type. No card gains tokens by itself (Matt's ruling 12):
@@ -1377,6 +1380,16 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             }
             Op::RemoveTroops { count, .. } if *count < 1 => {
                 return Err(format!("{what}: remove_troops needs count >= 1"));
+            }
+            Op::Convert { max } if *max < 1 => {
+                return Err(format!("{what}: convert needs max >= 1"));
+            }
+            // 158: "with N X tags, also ...": one level, instant player ops only.
+            Op::IfTags { count, then, .. } => {
+                check_ops(then, Slot::Player, what)?;
+                if *count < 1 || then.is_empty() || then.iter().any(|o| matches!(o, Op::IfTags { .. })) {
+                    return Err(format!("{what}: if_tags counts at least 1 tag and resolves instant ops, not another if_tags"));
+                }
             }
             // 142 (P1): the no-location form (the most infiltrated city) is gone.
             Op::CorruptCity { at: None } => {

@@ -277,6 +277,8 @@ function playerCard(c, face, keep) {
     name: c.name,
     tier: c.tier,
     tierLabel: TIER(c.tier),
+    // 158: a drafted player card Matt has not picked yet (the viewer's draft badge, as 156's Unity drafts).
+    draft: !!c.draft,
     cost: c.cost,
     costLabel: `${c.cost} credits`,
     tags: c.tags ?? [],

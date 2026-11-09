@@ -556,6 +556,33 @@ pub enum Op {
     Consolidate {
         max: i64,
     },
+    /// 158 (Matt, 2026-11-09): convert up to `max` adversary ambassadors on or
+    /// next to one city in your reach: each leaves the adversary's stack and
+    /// becomes yours, onto your node whose reach the card used (the node on or
+    /// next to the city; you choose among several).
+    Convert {
+        max: i64,
+    },
+    /// 158: gather onto one hex in your reach every adversary ambassador (and
+    /// with `troops`, every adversary troop) on the hexes next to it, then
+    /// remove up to `strike` of the adversary pieces there, troops first.
+    Gather {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        troops: bool,
+        #[serde(default, skip_serializing_if = "is_zero")]
+        strike: i64,
+    },
+    /// 158: a firewall token on one hex in your reach: no adversary ambassador
+    /// arrives there (Rally, Corrupt pulls, threat and Discord placements)
+    /// until it comes off at the end of the next adversary turn.
+    Firewall,
+    /// 158: "with `count` `tag` tags on your cards, also" `then`: resolved when
+    /// the seat holds that many when this op resolves.
+    IfTags {
+        tag: Tag,
+        count: i64,
+        then: Vec<Op>,
+    },
     /// Draw `count` tier-1 cards into your hand, no keep paid (023: Science's
     /// card draw).
     Draw {
@@ -1164,6 +1191,10 @@ impl Op {
             | Op::MoveOne { .. }
             | Op::SpreadAmbassadors
             | Op::Consolidate { .. }
+            | Op::Convert { .. }
+            | Op::Gather { .. }
+            | Op::Firewall
+            | Op::IfTags { .. }
             | Op::Draw { .. }
             | Op::DrainAll { .. }
             | Op::GainPerTokens { .. }

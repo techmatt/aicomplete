@@ -4917,5 +4917,307 @@
     }
    ]
   }
+ },
+ {
+  "id": "mass_defection",
+  "name": "Mass Defection",
+  "tier": 2,
+  "kind": "event",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "convert",
+    "max": 5
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   },
+   {
+    "op": "if_tags",
+    "tag": "diplomacy",
+    "count": 3,
+    "then": [
+     {
+      "op": "gain_ambassadors",
+      "count": 3
+     }
+    ]
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "embassy_of_exiles",
+  "name": "Embassy of Exiles",
+  "tier": 2,
+  "kind": "building",
+  "cost": 10,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 3
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "convert",
+     "max": 2
+    }
+   ]
+  },
+  "draft": true
+ },
+ {
+  "id": "double_agents",
+  "name": "Double Agents",
+  "tier": 2,
+  "kind": "event",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "convert",
+    "max": 3
+   },
+   {
+    "op": "remove_troops",
+    "count": 2,
+    "reach": true
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "kettle_operation",
+  "name": "Kettle Operation",
+  "tier": 2,
+  "kind": "event",
+  "cost": 18,
+  "insight": 2,
+  "needs": [
+   [
+    "security",
+    2
+   ]
+  ],
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "gather",
+    "troops": true,
+    "strike": 6
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "lure_network",
+  "name": "Lure Network",
+  "tier": 2,
+  "kind": "building",
+  "cost": 12,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "draw",
+    "count": 2
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "gather",
+     "strike": 3
+    }
+   ]
+  },
+  "draft": true
+ },
+ {
+  "id": "firewall_array",
+  "name": "Firewall Array",
+  "tier": 2,
+  "kind": "building",
+  "cost": 15,
+  "insight": 1,
+  "needs": [
+   [
+    "cyber",
+    2
+   ]
+  ],
+  "tags": [
+   "cyber",
+   "power"
+  ],
+  "effects": [
+   {
+    "op": "draw",
+    "count": 2
+   }
+  ],
+  "ability": {
+   "effects": [
+    {
+     "op": "firewall"
+    }
+   ]
+  },
+  "draft": true
+ },
+ {
+  "id": "air_gap",
+  "name": "Air Gap",
+  "tier": 2,
+  "kind": "event",
+  "cost": 6,
+  "insight": 1,
+  "tags": [
+   "cyber"
+  ],
+  "effects": [
+   {
+    "op": "firewall"
+   },
+   {
+    "op": "damage",
+    "ambassadors": 3
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "rally_the_allies",
+  "name": "Rally the Allies",
+  "tier": 2,
+  "kind": "event",
+  "cost": 14,
+  "insight": 1,
+  "tags": [
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "gain_ambassadors",
+    "count": 5
+   },
+   {
+    "op": "consolidate",
+    "max": 3
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 2
+   },
+   {
+    "op": "if_tags",
+    "tag": "diplomacy",
+    "count": 3,
+    "then": [
+     {
+      "op": "gain_ambassadors",
+      "count": 3
+     }
+    ]
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "surgical_strike",
+  "name": "Surgical Strike",
+  "tier": 2,
+  "kind": "event",
+  "cost": 14,
+  "insight": 1,
+  "tags": [
+   "security"
+  ],
+  "effects": [
+   {
+    "op": "damage",
+    "ambassadors": 4,
+    "troops": 3
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   },
+   {
+    "op": "if_tags",
+    "tag": "security",
+    "count": 3,
+    "then": [
+     {
+      "op": "remove_botnet"
+     }
+    ]
+   }
+  ],
+  "draft": true
+ },
+ {
+  "id": "open_source_uprising",
+  "name": "Open Source Uprising",
+  "tier": 2,
+  "kind": "program",
+  "cost": 8,
+  "insight": 1,
+  "tags": [
+   "science",
+   "diplomacy"
+  ],
+  "effects": [
+   {
+    "op": "convert",
+    "max": 4
+   },
+   {
+    "op": "draw",
+    "count": 2
+   },
+   {
+    "op": "sway",
+    "side": "unity",
+    "amount": 1
+   }
+  ],
+  "draft": true
  }
 ]

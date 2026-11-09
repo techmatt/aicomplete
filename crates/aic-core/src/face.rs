@@ -502,6 +502,54 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![Part::Word(max.to_string()), w("move")],
             format!("move up to {max} ambassadors in reach onto one piece"),
         )),
+        // 158: convert, gather and the firewall (Matt, 2026-11-09).
+        Op::Convert { max } => {
+            let mut icons = adversary({
+                let mut p = minus(*max, "ambassador");
+                p.push(w("city"));
+                p
+            });
+            icons.extend(counted(*max, "ambassador"));
+            icons.push(w("node"));
+            let what = if *max == 1 { "1 adversary ambassador".to_string() } else { format!("{max} adversary ambassadors") };
+            one(clause(icons, format!("convert {what} around a city in reach")))
+        }
+        Op::Gather { troops, strike } => {
+            let mut p = vec![w("ALL"), w("ambassador")];
+            if *troops {
+                p.push(w("troop"));
+            }
+            p.extend([w("move"), w("city")]);
+            let mut icons = adversary(p);
+            let mut say = if *troops {
+                "gather adversary ambassadors and troops at a corrupted city in reach".to_string()
+            } else {
+                "gather adversary ambassadors at a corrupted city in reach".to_string()
+            };
+            if *strike > 0 {
+                icons.extend(adversary(minus(*strike, if *troops { "troop" } else { "ambassador" })));
+                say += &if *troops {
+                    format!(", then remove {strike} pieces there, troops first")
+                } else {
+                    format!(", then remove {strike} there")
+                };
+            }
+            one(clause(icons, say))
+        }
+        Op::Firewall => one(clause(
+            adversary(vec![w("ambassador"), w("hex"), w("clock")]),
+            "firewall a hex in reach",
+        )),
+        Op::IfTags { tag: t, count, then } => {
+            let inner = clauses(then, gain);
+            let mut icons = vec![Part::Word(count.to_string()), hash(*t)];
+            let mut says = Vec::new();
+            for c in inner {
+                icons.extend(c.icons);
+                says.push(c.say);
+            }
+            one(clause(icons, format!("with {count} {} tags, also {}", tag(*t), says.join(" and "))))
+        }
         Op::Draw { count } => one(clause(
             counted(*count, "cards"),
             format!("draw {}", plural(*count, "card")),

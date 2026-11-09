@@ -1,0 +1,9 @@
+# 158: Unity on the one-shot events (the purge needs 6 Unity tips; 157: 119 of d3's 253 losses fell short of them,
+# and the new cards crowd out the liberate capstones' 5 Unity a city). Applied after cards158_strong.overlay.
+cards.mass_defection.effects=[{"op": "convert", "max": 5}, {"op": "sway", "side": "unity", "amount": 2}, {"op": "if_tags", "tag": "diplomacy", "count": 3, "then": [{"op": "gain_ambassadors", "count": 3}]}]
+cards.double_agents.effects=[{"op": "convert", "max": 3}, {"op": "remove_troops", "count": 2, "reach": true}, {"op": "sway", "side": "unity", "amount": 1}]
+cards.kettle_operation.effects=[{"op": "gather", "troops": true, "strike": 6}, {"op": "sway", "side": "unity", "amount": 2}]
+cards.rally_the_allies.effects=[{"op": "gain_ambassadors", "count": 5}, {"op": "consolidate", "max": 3}, {"op": "sway", "side": "unity", "amount": 2}, {"op": "if_tags", "tag": "diplomacy", "count": 3, "then": [{"op": "gain_ambassadors", "count": 3}]}]
+cards.surgical_strike.effects=[{"op": "damage", "ambassadors": 4, "troops": 3}, {"op": "sway", "side": "unity", "amount": 1}, {"op": "if_tags", "tag": "security", "count": 3, "then": [{"op": "remove_botnet"}]}]
+cards.air_gap.effects=[{"op": "firewall"}, {"op": "damage", "ambassadors": 3}, {"op": "sway", "side": "unity", "amount": 1}]
+cards.open_source_uprising.effects=[{"op": "convert", "max": 4}, {"op": "draw", "count": 2}, {"op": "sway", "side": "unity", "amount": 1}]

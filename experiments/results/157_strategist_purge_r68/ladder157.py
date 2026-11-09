@@ -115,7 +115,14 @@ def main():
     new_dirs, old_dirs = sys.argv[1].split(","), sys.argv[2].split(",")
     new, old = defaultdict(dict), defaultdict(dict)
     per_set = defaultdict(lambda: defaultdict(list))
-    ms = {"r65": defaultdict(list), "r64": defaultdict(list)}
+    # 158: each side's label is its games' rules revision (it printed r65 / r64 whatever the read).
+    def rev(d):
+        with open(f"{d}/games.jsonl", encoding="utf-8") as f:
+            return f"r{json.loads(f.readline()).get('rules_revision', '?')}"
+    nl, ol = rev(new_dirs[0]), rev(old_dirs[0])
+    if nl == ol:
+        nl, ol = nl + " new", ol + " old"
+    ms = {nl: defaultdict(list), ol: defaultdict(list)}
     for side, dirs in (("new", new_dirs), ("old", old_dirs)):
         for i, d in enumerate(dirs):
             for c, g in load(d):
@@ -125,11 +132,11 @@ def main():
                 if side == "new":
                     new[diff][key] = won
                     per_set[diff][i].append(won)
-                    ms["r65"][diff].append(measures(g))
+                    ms[nl][diff].append(measures(g))
                 else:
                     old[diff][key] = won
-                    ms["r64"][diff].append(measures(g))
-    print("| d | r65 win % | ±SE | r64 win % | gap | ±SE (paired) | sets (r65) | band | verdict |")
+                    ms[ol][diff].append(measures(g))
+    print(f"| d | {nl} win % | ±SE | {ol} win % | gap | ±SE (paired) | sets ({nl}) | band | verdict |")
     print("|---|---|---|---|---|---|---|---|---|")
     for diff in sorted(new):
         n = new[diff]

@@ -27,7 +27,7 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 16] = [
+pub const HOUSE_TERMS: [(&str, &str); 19] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "yours; the other side's is always an adversary ambassador"),
@@ -44,6 +44,9 @@ pub const HOUSE_TERMS: [(&str, &str); 16] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
+    ("Convert", "an adversary ambassador on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
+    ("Gather at a city", "every adversary ambassador on a hex next to it moves onto it (troops too, when the card names them)"),
+    ("Firewall", "a token on a hex: no adversary ambassador lands or is pulled there; it comes off at the end of the next adversary turn"),
 ];
 
 /// `3 credits, 1 energy`.

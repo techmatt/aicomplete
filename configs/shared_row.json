@@ -98,7 +98,7 @@
           10
         ],
         "ambassador_income": [
-          1,
+          0,
           1,
           1,
           1,
@@ -348,7 +348,17 @@
         "wafer_fab_line",
         "power_purchase_agreement",
         "microgrid_lab_compact",
-        "market_stabilization_board"
+        "market_stabilization_board",
+        "mass_defection",
+        "embassy_of_exiles",
+        "double_agents",
+        "kettle_operation",
+        "lure_network",
+        "firewall_array",
+        "air_gap",
+        "rally_the_allies",
+        "surgical_strike",
+        "open_source_uprising"
       ]
     }
   ],

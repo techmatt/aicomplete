@@ -242,6 +242,19 @@ def op_worth(t, o):
         return Worth(now=row('shelter') * t.rate('target_share'))
     if op == 'cordon':
         return Worth(now=row('cordon'))
+    # 158: the end-game shapes.
+    if op == 'convert':
+        return Worth(now=row(op) * t.rate('target_share') * n('max'))
+    if op == 'gather':
+        each = row('remove_troop') if o.get('troops') else row('remove_ambassador')
+        return Worth(now=row(op) + each * t.rate('target_share') * n('strike'))
+    if op == 'firewall':
+        return Worth(now=row(op))
+    if op == 'if_tags':
+        w = Worth()
+        for x in o['then']:
+            w.add(op_worth(t, x))
+        return w.scaled(row(op))
     if op == 'project_cube':
         return Worth(now=row(op) * n('count'))
     if op == 'jam':

@@ -1,0 +1,16 @@
+# 158: the stronger effects screened as `strong` (same prices; s2-strong): applied on top of cards158.overlay.
+cards.mass_defection.effects.0.max=5
+cards.mass_defection.effects.1.then.0.count=3
+cards.embassy_of_exiles.effects.0.count=3
+cards.embassy_of_exiles.ability.effects.0.max=2
+cards.double_agents.effects.0.max=3
+cards.double_agents.effects.1.count=2
+cards.kettle_operation.effects.0.strike=6
+cards.lure_network.ability.effects.0.strike=3
+cards.air_gap.effects.1.ambassadors=3
+cards.rally_the_allies.effects.0.count=5
+cards.rally_the_allies.effects.2.then.0.count=3
+cards.surgical_strike.effects.0.ambassadors=4
+cards.surgical_strike.effects.0.troops=3
+cards.open_source_uprising.effects.0.max=4
+cards.open_source_uprising.effects.1.count=2

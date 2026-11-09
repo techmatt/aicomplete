@@ -16,7 +16,7 @@ use crate::state::GameState;
 
 use super::{adversary, board};
 use super::common::{
-    corrupted, cube_owner, has_building, is_city, is_ocean, ADV_AMBASSADOR, LAND_CORRUPTION, BOTNET, FACTORY, MARKER,
+    corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, ADV_AMBASSADOR, LAND_CORRUPTION, BOTNET, FACTORY, MARKER,
     STATION,
 };
 use crate::content::HexKind;
@@ -84,7 +84,8 @@ pub fn create_plan(
             continue;
         }
         let mut hexes: Vec<usize> =
-            w.map.countries[c].hexes.iter().copied().filter(|&h| create_fits(w, g, h, line, near, location)).collect();
+            // 158: a firewalled hex takes no arrival; the line goes to the next site.
+            w.map.countries[c].hexes.iter().copied().filter(|&h| !firewalled(g, h) && create_fits(w, g, h, line, near, location)).collect();
         hexes.sort_by_key(|&h| w.map.hexes[h].number);
         for h in hexes.into_iter().take(line.sites.max(0) as usize) {
             if line.count > 0 {
@@ -133,11 +134,12 @@ pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: 
             w.map.countries[c].hexes.iter().copied().filter(|&h| corrupt_target(w, g, h, site)).collect();
         targets.sort_by_key(|&h| w.map.hexes[h].number);
         for t in targets {
+            // 158: nothing is pulled onto a firewalled target: it corrupts only on what it holds.
             let mut from: Vec<usize> = w.map.hexes[t]
                 .neighbors
                 .iter()
                 .copied()
-                .filter(|&x| w.map.hexes[x].country as usize == c && counts[x] > 0)
+                .filter(|&x| !firewalled(g, t) && w.map.hexes[x].country as usize == c && counts[x] > 0)
                 .collect();
             from.sort_by_key(|&x| w.map.hexes[x].number);
             let own = held(w, g, t, &counts);
@@ -211,7 +213,9 @@ pub fn rally_fits(w: &World, g: &GameState, h: usize, at: RallyAt) -> bool {
 /// 151, Rally X's eligible sites in board `c`: its neutral `at` sites (no owner cube), else the players' (an
 /// aligned city, a player's station or factory), else the adversary's; in hex order. Empty: none of the type.
 pub fn rally_sites(w: &World, g: &GameState, at: RallyAt, c: usize) -> Vec<usize> {
-    let mut all: Vec<usize> = w.map.countries[c].hexes.iter().copied().filter(|&h| rally_fits(w, g, h, at)).collect();
+    // 158: a firewalled site is no Rally site this round.
+    let mut all: Vec<usize> =
+        w.map.countries[c].hexes.iter().copied().filter(|&h| !firewalled(g, h) && rally_fits(w, g, h, at)).collect();
     all.sort_by_key(|&h| w.map.hexes[h].number);
     let neutral = |h: &usize| !corrupted(g, *h) && cube_owner(g, *h).is_none();
     let allied = |h: &usize| cube_owner(g, *h).is_some();
