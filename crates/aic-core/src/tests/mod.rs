@@ -113,6 +113,8 @@ fn lab_config(round: &[&str]) -> Config {
         "board.unit_cap=3",
         "board.destruction_discord=1",
         "board.liberate_at=1",
+        // 154: no late step in the lab (its own test sets one).
+        "board.liberate_late_at=1",
         "board.last_safe_stage=0",
         "board.troop_steps=2",
         "board.troop_spent=1",
@@ -567,8 +569,8 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 65;
-const GOLDEN_FINGERPRINT: &str = "a82964586cd8e135";
+const GOLDEN_REVISION: u32 = 66;
+const GOLDEN_FINGERPRINT: &str = "db3cb6280dd13101";
 const GOLDEN_CONTENT_HASH: &str = "6796f1d7e33d2c6f";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action

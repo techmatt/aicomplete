@@ -1,0 +1,148 @@
+{
+  "name": "screen154-s2",
+  "note": "154 screen 2: the dials on the late liberation at 3 (dev seeds 36800-36831, d1-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_cbc8",
+      "set": [
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "br_cbc8",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "pr_cbc8",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "bp_cbc10",
+      "set": [
+        "adversary.counter_bonus_credits=10"
+      ]
+    },
+    {
+      "name": "br_cbc10",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=10"
+      ]
+    },
+    {
+      "name": "pr_cbc10",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=10"
+      ]
+    },
+    {
+      "name": "bp_x1",
+      "set": [
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,11,14,14"
+      ]
+    },
+    {
+      "name": "br_x1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,11,14,14"
+      ]
+    },
+    {
+      "name": "pr_x1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,11,14,14"
+      ]
+    },
+    {
+      "name": "bp_x2",
+      "set": [
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,12,16,16"
+      ]
+    },
+    {
+      "name": "br_x2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,12,16,16"
+      ]
+    },
+    {
+      "name": "pr_x2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.compute_income=5,5,12,16,16"
+      ]
+    },
+    {
+      "name": "bp_x3",
+      "set": [
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_more_credits=4",
+        "adversary.compute_income=5,5,10,14,14"
+      ]
+    },
+    {
+      "name": "br_x3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_more_credits=4",
+        "adversary.compute_income=5,5,10,14,14"
+      ]
+    },
+    {
+      "name": "pr_x3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_bonus_credits=8",
+        "adversary.counter_more_credits=4",
+        "adversary.compute_income=5,5,10,14,14"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0
+}

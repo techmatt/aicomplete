@@ -8,6 +8,7 @@ mod cli;
 mod current_docs;
 mod docs;
 mod spelling;
+mod endgame;
 mod experiment;
 mod experiment_run;
 mod gate;

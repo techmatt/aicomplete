@@ -56,6 +56,9 @@ pub struct Spec {
     pub winprob: WinProb,
     #[serde(default)]
     pub closeness: Closeness,
+    /// 154: the end-game probe for round-cap losses (`crate::endgame`); off unless set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub endgame: Option<crate::endgame::EndgameProbe>,
     /// Records saved per category (close losses, lock-ins, surprises).
     #[serde(default = "default_records")]
     pub records: usize,
@@ -257,6 +260,9 @@ pub fn cells(spec: &Spec) -> Result<Vec<Cell>, String> {
     if let Some(n) = first_repeat(spec.variants.iter().map(|v| v.name.as_str())) {
         return Err(format!("two variants are named {n:?}"));
     }
+    if let Some(p) = spec.endgame.as_ref().filter(|p| !p.agent.is_empty()) {
+        AgentSpec::parse(&p.agent).map_err(|e| format!("endgame.agent: {e}"))?;
+    }
     if spec.winprob.games > 0 {
         AgentSpec::parse(&spec.winprob.agent).map_err(|e| format!("winprob.agent: {e}"))?;
         if spec.winprob.rollouts == 0 {
@@ -382,6 +388,9 @@ pub struct GameResult {
     pub replay_ms: f64,
     pub replay_ok: bool,
     pub actions: Vec<Action>,
+    /// 154: a round-cap loss's end-game probe, when the spec asks for one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub endgame: Option<crate::endgame::EndgameRead>,
     /// Rebuilt from the actions when read back.
     #[serde(skip)]
     pub final_state: Option<Box<GameState>>,
@@ -664,12 +673,22 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
     track_holdings(&mut r, &g, None);
     // 124: each action's events, for `sources` (they change no state).
     let mut events = Vec::new();
+    // 154: the state at each round's start, the last few kept, for the end-game probe.
+    let mut starts: Vec<GameState> = Vec::new();
     while r.actions.len() < spec.max_actions {
         let t = Instant::now();
         rules.legal_actions_into(&g, &mut legal);
         r.legal_ms += ms_since(t);
         if legal.is_empty() {
             break;
+        }
+        if let Some(p) = &spec.endgame {
+            if starts.last().is_none_or(|s| s.round != g.round) {
+                starts.push(g.clone());
+                if starts.len() > p.back as usize + 1 {
+                    starts.remove(0);
+                }
+            }
         }
         if let Some(a) = &wp_agent {
             if g.round != checked_round && g.round >= 1 {
@@ -769,6 +788,11 @@ pub fn play_one(spec: &Spec, cells: &[Cell], ci: usize, seed: u64) -> GameResult
         track_holdings(&mut r, &g, Some((&src, &events)));
         r.actions.push(a);
         r.apply_ms += ms_since(t);
+    }
+    if let Some(p) = &spec.endgame {
+        let t = Instant::now();
+        r.endgame = crate::endgame::probe(rules, p, &g, &starts, spec.max_actions);
+        r.probe_ms += ms_since(t);
     }
     finish(&mut r, rules, g);
     r.counters.extend(slots);

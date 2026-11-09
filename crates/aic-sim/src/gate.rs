@@ -373,6 +373,7 @@ mod tests {
             max_actions: 50,
             winprob: Default::default(),
             closeness: Default::default(),
+            endgame: None,
             records: 0,
             selection_seeds: None,
             gate: Some(Gate::default()),

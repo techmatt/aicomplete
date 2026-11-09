@@ -40,6 +40,13 @@ Cities, research stations and factories follow one set of rules and differ only 
   it, and a botnet on it stays. A liberated city also **drops down the ladder rather than off the board**:
   `free_leaves` adversary ambassadors arrive on it as any placement does. Its factories keep their owners. A liberate
   card ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city the same way, for its own price.
+- **The late liberation** (r66, candidate): once this round's adversary card is of stage `liberate_late_stage` (III,
+  the last three rounds at every level), the Liberate action frees a city for `liberate_late_at` 3 ambassadors
+  instead of 5, still plus one for each adversary ambassador on it; a station or factory keeps its 3. **Why (154):**
+  games lost to the round cap ended with about 5 corrupted cities standing and the team holding about 5 ambassadors,
+  6-8 short of liberating them; a stronger player replaying the last three rounds lost 9 in 10 of them too. Give /
+  get at `values.json`: 3 ambassadors (12) for a liberation (45) and its 5 Unity, against 20 for 45 before stage III.
+  The stage is printed on the face-up card, so a table sees the price change coming a round ahead.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next corp troop made there; an adversary ambassador on one does nothing.
@@ -71,7 +78,7 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
 and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 3 for a station or
 factory, as many as the adversary needs to corrupt it; a few cards claim a station for energy instead; a station or
-factory you own makes 2 a round, so a claim pays back in about 3 rounds) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way), one
+factory you own makes 2 a round, so a claim pays back in about 3 rounds) or to take one back from the adversary (5 for a city, only 3 once the adversary's stage-III cards come up, 3 for a station or factory: Unity sways your way), one
 more for each adversary ambassador sitting on it. Stand one ambassador on an adversary site to shut it off, and clear
 theirs off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
 **What resisted this summary:** a liberated city takes an adversary ambassador straight back (the ladder), and a

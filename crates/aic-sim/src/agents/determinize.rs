@@ -462,6 +462,16 @@ mod tests {
                         let threats = |s: &GameState| {
                             (s.pile("threats.deck.1").len(), s.pile("threats.deck.2").len())
                         };
+                        // 154: or a threat or project comes out that wasn't out before (a deck that
+                        // empties and reshuffles mid-deal keeps its length while dealing a different
+                        // card: d4's compute 16 turns the project deck over).
+                        let dealt = |s: &GameState| {
+                            s.vars.keys().any(|k| {
+                                let k = k.as_str();
+                                (k.starts_with("threats.loc.") || k.starts_with("adversary.project."))
+                                    && g.vars.get(k).is_none()
+                            })
+                        };
                         if x.round == g.round
                             && tips(&x) == tips(&g)
                             && tips(&y) == tips(&g)
@@ -469,6 +479,8 @@ mod tests {
                             && row(&y) == row(&g)
                             && threats(&x) == threats(&g)
                             && threats(&y) == threats(&g)
+                            && !dealt(&x)
+                            && !dealt(&y)
                         {
                             assert_eq!(
                                 (&x.hexes, &x.vars, &x.seats),

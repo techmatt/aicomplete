@@ -173,9 +173,9 @@ last round), a quiet backstop.
 | Level | Adds | Tunable |
 |---|---|---|
 | 0 | Base rules |  |
-| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 6, `counter_bonus` 0, `counter_bonus_at` 1 |
+| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 8, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 2, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 5, 5, 8, 10, 10, `ambassador_income` 2, 2, 2, 3, 3, `stage2_removed` 2, `stage1_added` 0 |
+| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 5, 5, 10, 16, 16, `ambassador_income` 2, 2, 2, 3, 3, `stage2_removed` 2, `stage1_added` 0 |
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 

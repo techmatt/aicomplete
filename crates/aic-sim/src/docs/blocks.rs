@@ -776,9 +776,23 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
-         most, though games rarely reach it. So there are three different pressures: the Discord deck \
-         (politics), your nodes (the board) and the cap.\n",
+         most (fewer at the harder levels), and reaching it loses.{late} So there are three different \
+         pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
         dealt(r, 0).iter().sum::<usize>(),
+        late = late_liberation_words(r),
+    )
+}
+
+/// 154: the late liberation, for new players (empty when it is off).
+fn late_liberation_words(r: &Rules) -> String {
+    let (at, late, stage) = (int(r, "board.liberate_at"), int(r, "board.liberate_late_at"), int(r, "board.liberate_late_stage"));
+    if late >= at || stage > 3 {
+        return String::new();
+    }
+    let roman = ["I", "II", "III"][(stage.clamp(1, 3) - 1) as usize];
+    format!(
+        " To finish in time, from the adversary's stage-{roman} cards on the Liberate action frees a corrupted city for \
+         {late} ambassadors instead of {at}: each liberation sways Unity toward the last card and takes a city off the purge."
     )
 }

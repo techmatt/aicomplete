@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 154 round-cap losses classified (90 design mistakes, 11 agent mistakes at r65; short of ambassadors to liberate, and of the sixth Unity card while troops count); the late liberation (a city for 3 ambassadors from stage III); `counter_bonus_credits` 8, `compute_income` 5,5,10,16,16; the end-game probe; strategist 95.8 / 79.9 / 62.5 / 44.9% (all in band), the cap's share of losses 50/18/12/51% → 44/8/6/28% | r66 | [154_endgame_r66/README.md](results/154_endgame_r66/README.md) |
 | 152 art round: three scene candidates each for Power Purchase Agreement and Microgrid Lab Compact (picker `art_d69`, batch 9), the first of each provisional; `npm run art:alts`; Market Stabilization Board back on its own scene | r65 | [152_art_ppa_microgrid/art.md](results/152_art_ppa_microgrid/art.md) |
 | 151 the adversary's income and rally: compute and ambassador income, Rally X, threat / rally / deploy / corrupt, every event, project and the Militarist rewritten; Market Stabilization Board in the deck; strategist 95.0 / 79.7 / 62.5 / 47.0% (all in band) | r65 | [151_adversary_income_r65/README.md](results/151_adversary_income_r65/README.md) |
 | 150 board tags count fully; Exascale's keep; Market Stabilization Board read in and out; strategist 92.7 / 77.9 / 60.8 / 39.7% (d3 unmet by 0.3) | r64 | [150_tags_exascale_r64/README.md](results/150_tags_exascale_r64/README.md) |

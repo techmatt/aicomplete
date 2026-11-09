@@ -1,0 +1,102 @@
+{
+  "name": "screen154-s1",
+  "note": "154 screen 1: the late liberation at 3 (base), off (5: r65), 4 and 2 (dev seeds 36800-36831, d0-d3, strategist).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "bp_off",
+      "set": [
+        "board.liberate_late_at=5"
+      ]
+    },
+    {
+      "name": "br_off",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_late_at=5"
+      ]
+    },
+    {
+      "name": "pr_off",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_late_at=5"
+      ]
+    },
+    {
+      "name": "bp_l4",
+      "set": [
+        "board.liberate_late_at=4"
+      ]
+    },
+    {
+      "name": "br_l4",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_late_at=4"
+      ]
+    },
+    {
+      "name": "pr_l4",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_late_at=4"
+      ]
+    },
+    {
+      "name": "bp_l2",
+      "set": [
+        "board.liberate_late_at=2"
+      ]
+    },
+    {
+      "name": "br_l2",
+      "set": [
+        "ai.boards=0,2",
+        "board.liberate_late_at=2"
+      ]
+    },
+    {
+      "name": "pr_l2",
+      "set": [
+        "ai.boards=1,2",
+        "board.liberate_late_at=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "first_seed": 36800,
+  "records": 0,
+  "endgame": {
+    "back": 3,
+    "agent": "planner:strategy=1,w.blocker=8",
+    "rollouts": 2
+  }
+}

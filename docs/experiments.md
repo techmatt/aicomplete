@@ -25,6 +25,7 @@ second checkout is refused).
 | `max_actions` | `5000` | Per-game cap (`timeout`); `--max-actions` overrides. |
 | `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability by round: `rollouts` playouts by `agent` at each round's start, on each cell's first `games` seeds (`--winprob N`). |
 | `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Every n-th real choice (`--closeness N`), close when the best two 1-ply greedy scores are within `gap` (about credits). |
+| `endgame` | none | `{"back": 3, "agent": "", "rollouts": 1}`: each round-cap loss's end state, the bound's inputs at the start of the `back`-th last round, and `agent`'s replays from there (`crates/aic-sim/src/endgame.rs`; read by 154's `endgame154.py`). |
 | `records` | `4` | Records saved per category. |
 | `gate` | none | Early stopping (suspended: *The ballpark read*). |
 | `inject_panic` | none | `{"cell", "seed"}`: that game panics, for a test. |
@@ -64,19 +65,17 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 - **Pick position** is the card signal (every dealt card is drafted, so how early it goes); played is per card gained.
 - **Economy buildings standing**: passive `income` or `income_per_tag` at the end, overlay included.
 - **Early lock-in**: p ≤ 0.05 or ≥ 0.95 from round 2 to the end; uncertain checkpoints are 0.1 < p < 0.9.
-- **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>` in `per_round`); the flag
-  thresholds are `UNSPENT_HIGH` in `experiment.rs` and `scripts/screens.py`. `margin.held_after_actions`: what each
-  seat held after its last *completed* action phase, never mid-round.
-- **The runaway check**: each resource's peak per seat (`peaks` in `games.jsonl`, `PEAKS` order; *Peak holdings*).
-  A peak's rise over setup's `start` far above a round's income (`gained / rounds`) is a runaway engine:
-  `scripts/cards/runaway_read.py` flags it. `sources` splits a seat's `gained` by action or phase; `keeps` counts
-  picks, keeps and tiers after the opening (`source_read.py`); `spent` and `uses` split falls. 127's
-  `read127.py`, `production_read.py` and `seat_read.py` read them (their docstrings). No resource has a limit.
+- **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>`; flags at `UNSPENT_HIGH`).
+  `margin.held_after_actions`: held after the last *completed* action phase, never mid-round.
+- **The runaway check**: each resource's peak per seat (`peaks`, `PEAKS` order) far above a round's income
+  (`gained / rounds`) is a runaway engine: `scripts/cards/runaway_read.py`. `sources` / `uses` split a seat's
+  `gained` / `spent` by action or phase; `keeps` counts picks, keeps and tiers after the opening (`source_read.py`).
 - **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
   head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
-- **Margin**: a win's adversary cards left and ambassador supply (a loss ending `deck_empty` is the round cap); a loss's adversary pieces over the bar
-  (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`.
+- **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
+  (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`. A loss ending
+  `deck_empty` is the round cap; its `rounds` is one past the cap's printed count (the round whose card was missing).
 
 **Counters.** `games.csv` carries the margin columns and the core's `adversary.corruptions` and
 `adversary.first_corruption_round` (any site since 138: cities alone are `adversary.corruptions.city`), `board.std_actions` and `board.war_destroyed`; every whole-game counter is in
@@ -105,27 +104,20 @@ stderr line and a missing cell.
 
 **Content levers run on one binary.** A variant's `set` (or `--set` on `run` and `compare`) takes an overlay,
 `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`, `alignment`, `projects`; `*` for every id;
-a path through fields and list indexes (`cards.telemetry_archive.cost=3`, `cards.orbital_embassy.passives.0.amount=2`,
-`ais.*.economy_track.4.cost=2`, `threats.<id>.counter=[["credits",3]]`; `corps.horizon.project.cubes=8`: country
-pieces by lowercase name, the only part of the map it reaches; `null` clears an optional field,
-`cards.<id>.ability=null`; an op's `amount` can't be 0: to switch an income off, rewrite its list without it, as
-122's `gen_disproof.py` does). It is checked like `content/` and lands in the config, so the hashes and records name
-it and `replay` needs nothing else (`experiments/overlay-card-cost.json` is a worked sweep). Only player-card text is
-generated: other text and the viewer's faces show printed values. `experiment` refuses `--set` and a spec has no
-shared set, so each variant repeats the whole list.
-
-**Bisect a batch by groups** of overlays on one binary. A price lever's first read is on the engine (many times
-cheaper); the planner confirms.
+a path through fields and list indexes (`cards.orbital_embassy.passives.0.amount=2`, `ais.*.economy_track.4.cost=2`;
+`corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field; an op's `amount`
+can't be 0: rewrite its list without it, as 122's `gen_disproof.py` does). It is checked like `content/` and lands
+in the config, so `replay` needs nothing else (`experiments/overlay-card-cost.json` is a worked sweep). Only
+player-card text is generated. A spec has no shared set, so each variant repeats the whole list. Bisect a batch by
+groups of overlays on one binary; a price lever's first read is on the engine, the planner confirms.
 
 ## Reading noise
 
 **Seeds are noisy.** 24 seeds is about ±10, 48 about ±7, 16 about ±15. Seed sets alone move a pair 10-25 points at 48
 seeds (148's two d3 sets: 34.0 and 59.7).
 
-`cards.csv` splits by variant; `report.md`'s card table pools per agent. `games.jsonl` names agents as the spec
-writes them (`strategist`), `cards.csv` as resolved (`engine:strategy=1`): map them to join. `kept` and `drawn` in `games.jsonl`
-include the opening deal and `offered` doesn't, so kept ÷ offered passes 100%: use share of games. An agent's keeps
-are its plan, not a human table's.
+`cards.csv` splits by variant and names agents as resolved (`engine:strategy=1`; `games.jsonl` as the spec writes
+them). `kept` and `drawn` include the opening deal and `offered` doesn't: use share of games.
 
 ## The ballpark read
 
@@ -139,19 +131,19 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** 151's `specs151.py` (two 48-seed sets, the three pairs, d0-d3) on both binaries, read by
-  `151_adversary_income_r65/ladder151.py NEW OLD --measures` (pooled, paired, by set; `--screen DIR` for a screen's
-  `<pair>_<lever>` cells) and 147's `read147.py` (ends, nodes lost by cause, counters by tier).
+- **Current recipe:** `154_endgame_r66/specs154.py TAG SEED [--probe]` (two 48-seed sets, the three pairs, d0-d3,
+  into `out/`) on both binaries, read by 151's `ladder151.py NEW OLD --measures` (pooled, paired, by set) and 154's
+  `screen154.py` (by lever: the round cap's share of losses, Liberate uses) and `ends154.py` (end reasons).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
   measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
 - **Costs:** an engine game about 0.7 s; a 576-game read set (d0-d3) about 4-5 min on 6 threads, double on a busy box.
-- **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`), on the
-  same seeds. Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own
-  `CARGO_TARGET_DIR`; for new sim-only measures, `patch -p1 < measures.patch` in that tree first (`git apply` in a
-  worktree resolves paths against the enclosing repo and silently applies nothing). Run it from its own folder, spec
-  copied there. `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
+- **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`: a new
+  parameter in `baseline.json` makes the old binary refuse the new one), on the same seeds, run from its own folder.
+  Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own `CARGO_TARGET_DIR`; new
+  sim-only measures go in as `patch -p1` in that tree (`git apply` in a worktree silently applies nothing).
+  `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
 - **Size levers:** a size lever's first read is ambassadors bought (`board.std.ambassador`). Income levers are
   overlays (`ais.builder.credits=16`) and need no build; a rule or map what-if does.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
@@ -169,8 +161,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 38872 (which item spent which is in its write-up;
-151's: 38392-38871, five paired reads). Next free: 38872. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 39112 (which item spent which is in its write-up;
+154's: 38872-39111, the classification and a check, then three final sets). Next free: 39112. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

@@ -212,8 +212,10 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Liberate => {
             return format!(
-                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each adversary ambassador on it; it turns neutral",
+                "liberate an adversary site in reach: {} ambassadors for a city ({} from adversary stage {}), {} for a station or factory, plus 1 for each adversary ambassador on it; it turns neutral",
                 liberate_ambassadors(w, SiteKind::City),
+                w.int("board.liberate_late_at"),
+                w.int("board.liberate_late_stage"),
                 liberate_ambassadors(w, SiteKind::Station)
             );
         }
@@ -274,8 +276,10 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station or factory, from your supply, used up; 1 more for each adversary ambassador on it",
+                "{} ambassadors for a city ({} from stage {}: the late liberation), {} for a station or factory, from your supply, used up; 1 more for each adversary ambassador on it",
                 t("board.liberate_at"),
+                t("board.liberate_late_at"),
+                t("board.liberate_late_stage"),
                 t("board.liberate_facility_at")
             ),
             format!(
@@ -451,6 +455,10 @@ pub(super) fn std_resolve(
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
                 let n = liberate_cost(&w, g, h).unwrap_or(0);
+                // 154: a city freed at the late price.
+                if is_city(&w, h) && late_liberation(&w, g) && w.int("board.liberate_late_at") < liberate_at(&w) {
+                    cx.tally(g, "board.liberated_late", 1);
+                }
                 cx.add_resource(g, s, Resource::Ambassadors, -n);
                 liberate_site(g, cx, h);
             }
