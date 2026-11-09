@@ -25,11 +25,14 @@ pub struct EndgameProbe {
     /// Replays per game (agent seeds differ; the game's own dice are the
     /// state's, so the adversary plays the same cards).
     pub rollouts: usize,
+    /// 155: every loss, not only the round cap's (`reason` says which).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub all_losses: bool,
 }
 
 impl Default for EndgameProbe {
     fn default() -> Self {
-        EndgameProbe { back: 3, agent: String::new(), rollouts: 1 }
+        EndgameProbe { back: 3, agent: String::new(), rollouts: 1, all_losses: false }
     }
 }
 
@@ -82,9 +85,12 @@ pub struct Team {
     pub unity_capacity: i64,
 }
 
-/// One round-cap loss, probed.
+/// One round-cap loss (or, `all_losses`, any loss), probed.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct EndgameRead {
+    /// The end reason (155; empty in older streams: the round cap).
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub reason: String,
     pub end_round: u32,
     pub level: i64,
     pub unity_drawn: i64,
@@ -167,13 +173,14 @@ fn team(rules: &Rules, g: &GameState) -> Team {
 /// Probes a finished game; `starts` holds the state at the start of each
 /// round played (round 1 first). None unless it was lost to the round cap.
 pub fn probe(rules: &Rules, probe: &EndgameProbe, g: &GameState, starts: &[GameState], max_actions: usize) -> Option<EndgameRead> {
-    if g.outcome.as_ref().is_none_or(|o| o.won || o.reason != "deck_empty") {
+    if g.outcome.as_ref().is_none_or(|o| o.won || (o.reason != "deck_empty" && !probe.all_losses)) {
         return None;
     }
     let w = rules.world();
     let snap_round = g.round.saturating_sub(probe.back.saturating_sub(1)).max(1);
     let snap = starts.iter().rev().find(|s| s.round <= snap_round)?;
     let mut r = EndgameRead {
+        reason: g.outcome.as_ref().map_or(String::new(), |o| o.reason.clone()),
         end_round: g.round,
         level: alignment::bar_level(&w, g).steps(),
         unity_drawn: alignment::unity_drawn(g),

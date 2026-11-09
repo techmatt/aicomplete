@@ -167,11 +167,7 @@
       "grid_analytics_desk": { "card": "demand_response_grid", "subject": "A bright analysts' desk overlooking a city, three people at a long curved desk studying large painted charts of the city's power use with a model of the grid's pylons and substations laid out on the table in front of them." },
       "grid_buildout_crews": { "card": "national_grid_buildout", "subject": "A national power grid being built across open country, crews and cranes raising a long line of new lattice pylons over farmland toward the horizon, cable drums on trucks, three fresh substations taking shape along the route, a power station far off; no flags or emblems." },
       "ppa_handshake_at_the_truck": { "card": "power_purchase_agreement", "subject": "A power-company engineer in an amber hard hat and a research-station director in a field jacket shaking hands over a signed blank contract laid on the hood of a utility truck, a crew behind them unspooling a thick new cable from a small substation across a meadow to a domed research station; no flags, logos or emblems." },
-      "ppa_contract_at_the_wind_farm": { "for": "power_purchase_agreement", "subject": "Two negotiators at a folding table set out in the grass beneath a row of wind turbines, one sliding a signed blank contract across to the other, a single amber cable running from the nearest turbine past the table to a domed research station on the next rise, crates of glowing sky-blue research cubes waiting at its door; no flags, logos or emblems." },
-      "ppa_meter_handover": { "for": "power_purchase_agreement", "subject": "At the gate of a domed research station, a utility clerk handing a large brass power meter and a rolled blank contract to a smiling scientist, a line of fresh wooden poles carrying new wire back over the hills to a distant power plant; no flags, logos or emblems." },
-      "microgrid_lab_battery_yard": { "card": "microgrid_lab_compact", "subject": "A self-powered research campus in a green valley, low white laboratories set around a central yard of battery cabinets and a small control hut, two wind turbines on the slope and a little river-turbine house on the stream feeding it, an engineer checking a panel of amber lamps while scientists wheel crates of glowing sky-blue research cubes between the labs; no solar panels, no flags, logos or emblems." },
-      "microgrid_lab_control_room": { "for": "microgrid_lab_compact", "subject": "Inside a bright research campus's own power control room, a tall window looking out over its battery yard, wind turbines and white lab buildings, an engineer pulling a large lever as a row of amber lamps lights up on a hand-drawn map of the campus grid, a scientist alongside holding a glowing sky-blue research cube; no solar panels, no flags, logos or emblems." },
-      "microgrid_lab_island": { "for": "microgrid_lab_compact", "subject": "A small research lab campus on a rocky island running on its own grid, tidal turbines churning in the channel, a stone battery house and a few wind turbines on the cliffs, cables climbing to a domed research station on the headland where scientists unload crates of glowing sky-blue research cubes from a boat; no solar panels, no flags, logos or emblems." }
+      "microgrid_lab_battery_yard": { "card": "microgrid_lab_compact", "subject": "A self-powered research campus in a green valley, low white laboratories set around a central yard of battery cabinets and a small control hut, two wind turbines on the slope and a little river-turbine house on the stream feeding it, an engineer checking a panel of amber lamps while scientists wheel crates of glowing sky-blue research cubes between the labs; no solar panels, no flags, logos or emblems." }
     },
     "science": {
       "field_grant_survey": { "card": "field_grant", "subject": "Two researchers in field jackets planting a small instrument mast beside a domed research station on a windy plain, a crate of glowing sample cubes at their feet." },
@@ -271,10 +267,6 @@
   },
   "batch": {
     "ppa_handshake_at_the_truck": ["power_purchase_agreement", "microgrid_lab_compact"],
-    "ppa_contract_at_the_wind_farm": ["power_purchase_agreement", "microgrid_lab_compact"],
-    "ppa_meter_handover": ["power_purchase_agreement", "microgrid_lab_compact"],
-    "microgrid_lab_battery_yard": ["power_purchase_agreement", "microgrid_lab_compact"],
-    "microgrid_lab_control_room": ["power_purchase_agreement", "microgrid_lab_compact"],
-    "microgrid_lab_island": ["power_purchase_agreement", "microgrid_lab_compact"]
+    "microgrid_lab_battery_yard": ["power_purchase_agreement", "microgrid_lab_compact"]
   }
 }

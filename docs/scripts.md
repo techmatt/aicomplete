@@ -96,8 +96,7 @@ Current:
   normal, detached; wait on `out/NAME.exit` (its header says more).
 - `bench/same_results.py`: compares two experiment outputs. A cell's agent string that differs
   (`strategist` against `engine:strategy=1`) is listed and is no difference when the games match. `--map OLD=NEW`
-  renames in the old output first, for a rename that must play the same. To swap two names, map one to a placeholder
-  (`QQ1`) first and back last.
+  renames in the old output first (to swap two names, map one to a placeholder first).
 - `bench/same_play.py`: proves a refactor left play unchanged: a matrix of configs, countries, difficulties and
   `configs/variants.json`, with every agent but the beam (rollout and planner included), on the old and new binaries,
   ~20 min a run on 6 threads (r58); every saved game replays on the new binary. `run ... --threads N` caps it on a shared machine;
@@ -123,6 +122,7 @@ Current:
   `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old
   content.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
+- `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).

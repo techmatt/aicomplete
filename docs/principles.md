@@ -69,8 +69,8 @@ expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the
 `adversary.corruptions.city` > 0; the bare `adversary.corruptions` counts every site since 138).
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
-main cause, and the node clock stays live. The round cap is a quiet backstop with no share target
-(locked).
+main cause, and the node clock stays live. The round cap is a backstop with no share target
+(locked): a plain loss, and its losses are examined (Matt, 2026-11-08).
 
 **Pressure scales per country (Matt, 2026-10-31).** Harm sources count the countries at setup, not a
 fixed amount and not the countries still standing, so no loop forms and sizes land in one band.
@@ -130,6 +130,7 @@ the one-step heuristic wins far less: it drafts by printed cost.
 **One exception (D20):** no agent knows which Alignment cards a game dealt, rollouts
 included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
 a mean of guesses of the deal, never read from the table (`deals`, [agents.md](agents.md)).
+The `oracle` (155) alone reads the deal too: it measures what perfect play could reach, and judges no balance.
 
 ## Dominance checks (Matt, 2026-10-29)
 

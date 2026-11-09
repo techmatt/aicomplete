@@ -165,7 +165,7 @@ count out by hand, and the even spread asks a little division.
 **The supply is a cap.** A placement it can't make doesn't happen; running out doesn't lose.
 
 Players **lose** when a round starts with no card to turn face up (after the round cap's
-last round), a quiet backstop.
+last round): a backstop with no share target, a plain loss whose cases are examined (Matt, 2026-11-08).
 
 ## Difficulty (`difficulty`, 0–4; each level includes the ones below)
 

@@ -25,7 +25,7 @@ second checkout is refused).
 | `max_actions` | `5000` | Per-game cap (`timeout`); `--max-actions` overrides. |
 | `winprob` | `{"games": 0, "rollouts": 8, "agent": "greedy"}` | **Off unless set.** Win probability by round: `rollouts` playouts by `agent` at each round's start, on each cell's first `games` seeds (`--winprob N`). |
 | `closeness` | `{"every": 0, "gap": 2.0}` | **Off unless set.** Every n-th real choice (`--closeness N`), close when the best two 1-ply greedy scores are within `gap` (about credits). |
-| `endgame` | none | `{"back": 3, "agent": "", "rollouts": 1}`: each round-cap loss's end state, the bound's inputs at the start of the `back`-th last round, and `agent`'s replays from there (`crates/aic-sim/src/endgame.rs`; read by 154's `endgame154.py`). |
+| `endgame` | none | `{"back": 3, "agent": "", "rollouts": 1, "all_losses": false}`: each round-cap loss's end state (`all_losses`: every loss's), the bound's inputs at the start of the `back`-th last round, and `agent`'s replays from there (`crates/aic-sim/src/endgame.rs`; read by 154's `endgame154.py`, 155's `losses155.py`). |
 | `records` | `4` | Records saved per category. |
 | `gate` | none | Early stopping (suspended: *The ballpark read*). |
 | `inject_panic` | none | `{"cell", "seed"}`: that game panics, for a test. |
@@ -47,8 +47,7 @@ past the selection range for any to exist.
 **Results as they go.** Each finished game is appended to `games.jsonl` (actions included); the report is rewritten
 every `--report-every` seconds (60), marked **Partial: N of M games**. Games go out seed by seed across cells, so a
 stopped run has every cell's first seeds. `--resume` (same spec and `--out`) plays only the missing games and refuses
-a changed spec, config, engine, rules revision or content; without it an earlier stream moves to `games.jsonl.bak`. A
-partial report blocked by a lock (`games.csv` open in a spreadsheet) is skipped with a warning.
+a changed spec, config, engine, rules revision or content; without it an earlier stream moves to `games.jsonl.bak`.
 
 - `report.md` and `results.json` exist from the start: wait on `^time:` in stderr or on the process, not on the file.
 - `run_sim.ps1` writes `out/NAME.err` as it runs (`panicked`, or the 10 s progress lines); `out/NAME.exit` marks the end.
@@ -68,10 +67,10 @@ run exits 1. `--resume` plays it again. `aic-sim run` and `compare` have no such
 - **Unspent resources**: at each seat's last action phase (`unspent.<seat>.<resource>`; flags at `UNSPENT_HIGH`).
   `margin.held_after_actions`: held after the last *completed* action phase, never mid-round.
 - **The runaway check**: each resource's peak per seat (`peaks`, `PEAKS` order) far above a round's income
-  (`gained / rounds`) is a runaway engine: `scripts/cards/runaway_read.py`. `sources` / `uses` split a seat's
-  `gained` / `spent` by action or phase; `keeps` counts picks, keeps and tiers after the opening (`source_read.py`).
-- **Top agent**: highest win rate at the spec's highest difficulty (ties to the later agent). *Beats greedy* (head to
-  head against `greedy`, else the first greedy-kind agent, same seeds, exact sign test) only when ahead with p < 0.05.
+  (`gained / rounds`) is a runaway engine: `scripts/cards/runaway_read.py`. `sources` / `uses` / `keeps`:
+  `source_read.py`.
+- **Top agent**: highest win rate at the top difficulty (ties to the later). *Beats greedy*: ahead of the first
+  greedy-kind agent on the same seeds, exact sign test p < 0.05.
 - **Variants against the base** pair on seeds; a variant switching a module off reads as what the module is worth.
 - **Margin**: a win's adversary cards left and ambassador supply; a loss's adversary pieces over the bar
   (`margin.level`; `margin.unity_tips`); every game, `margin.cities_corrupted_end`, `_aligned_end`. A loss ending
@@ -89,7 +88,7 @@ used, unaffordable or no target; `_energy` sums energy held), `energy_cards.held
 
 **Saved records** (`records/`, reason in `note`): close losses (fewest pieces over the bar, top difficulty), early
 lock-ins, surprising wins (the weakest agent's, or at playout p ≤ 0.25), ranked by measured win rate at the top
-difficulty on the base variant. A rerun into the same directory replaces them.
+difficulty on the base variant.
 
 ## Opt-in measures and `--quick`
 
@@ -108,8 +107,7 @@ a path through fields and list indexes (`cards.orbital_embassy.passives.0.amount
 `corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field; an op's `amount`
 can't be 0: rewrite its list without it, as 122's `gen_disproof.py` does). It is checked like `content/` and lands
 in the config, so `replay` needs nothing else (`experiments/overlay-card-cost.json` is a worked sweep). Only
-player-card text is generated. A spec has no shared set, so each variant repeats the whole list. Bisect a batch by
-groups of overlays on one binary; a price lever's first read is on the engine, the planner confirms.
+player-card text is generated. Each variant repeats its whole list.
 
 ## Reading noise
 
@@ -152,6 +150,13 @@ the judge off the value table.
   [scripts.md](scripts.md). **A won game ends inside a round, holding the last upkeep's income**, so
   `margin.unspent` tracks late income: read credits held as `margin.held_after_actions[seat][0]`.
 
+**Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
+`oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
+pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row
+(`oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1`) costs 10 s a game at d3 and 61 s at d4, about 28 CPU-minutes for
+the 48 games, 6-7 min on 6 threads (its slowest game, about 5 min, is the floor). `threads=N` plays a decision's
+lines side by side (same games; 1.9 × at 4). Write-up: `155_skilled_agents/`.
+
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (purge vs.
 Unity deck) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
 line alone reads near the engine.
@@ -161,8 +166,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 39112 (which item spent which is in its write-up;
-154's: 38872-39111, the classification and a check, then three final sets). Next free: 39112. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 39160 (which item spent which is in its write-up;
+155's: 39112-39159, the oracle's cost curve and its confirmation). Next free: 39160. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

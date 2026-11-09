@@ -39,6 +39,10 @@
 //!   action phase by rolling each out `horizon` rounds with the engine as
 //!   the policy, on full information but for the Alignment deal, whose guesses
 //!   it averages ([`planner`]).
+//! - `oracle` (155): the planner's search on full information, the Alignment
+//!   deal included, each line played to the game's end: a line that wins
+//!   proves the seed winnable and is followed ([`oracle`]). A measuring
+//!   stick for a skilled player, opt in.
 //!
 //! `greedy`, `engine` and `planner` keep by plan: [`policy::Policy`] wraps them, decides
 //! their keeps, and applies the dominance checks' forced behaviors.
@@ -51,6 +55,7 @@
 pub mod determinize;
 pub mod eval;
 pub mod guide;
+pub mod oracle;
 pub mod planner;
 pub mod policy;
 pub mod search;
@@ -261,6 +266,22 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("lead", 0.0, "what an alternative must lead the line to beat by, on the first deal and on the mean"),
         ],
     ),
+    (
+        "oracle",
+        with_policy_params![
+            ("horizon", 2.0, "rounds on at which two lines that do not win are compared"),
+            ("alts", 2.0, "alternatives played to the end per decision"),
+            ("budget", 8.0, "alternatives played to the end per round"),
+            ("margin", 40.0, "only actions within this of the engine's best score are tried"),
+            ("reseeds", 0.0, "lines on other policy seeds at a round's first searched decision, while no win is found"),
+            ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
+            ("samples", 1.0, "guesses of the hidden cards averaged per decision"),
+            ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
+            ("powers", 6.0, "with prune, powers each seat keeps through a phase of a rollout"),
+            ("answers", 99.0, "prompts an answer looks on inside a rollout, at most choices"),
+            ("threads", 1.0, "lines played side by side in one decision (the same play at any count)"),
+        ],
+    ),
 ];
 
 /// `sweep`: the planner on one guess, for price sweeps, not the default (069):
@@ -326,8 +347,8 @@ impl AgentSpec {
                 // so rather than label a cell "0" (020).
                 // (`engine`'s width and candidates 0 mean "no beam" and "no rollouts",
                 // so those two only for beam and rollout.)
-                let at_least_one = (k == "horizon" && kind == "planner")
-                    || ["samples", "depth", "rollouts", "deals"].contains(&k)
+                let at_least_one = (k == "horizon" && (kind == "planner" || kind == "oracle"))
+                    || ["samples", "depth", "rollouts", "deals", "threads"].contains(&k)
                     || (k == "width" && (kind == "beam" || kind == "rollout"))
                     || (k == "candidates" && kind == "rollout");
                 if v < 1.0 && at_least_one {
@@ -421,6 +442,8 @@ impl AgentSpec {
             "engine" => self.p("width") == 0 && self.p("samples") <= 1,
             // 028: built to be run on screens, whatever the rules' stage.
             "planner" => true,
+            // 155: a measuring stick, run deliberately.
+            "oracle" => false,
             _ => false,
         }
     }
@@ -430,7 +453,7 @@ impl AgentSpec {
     }
 
     fn weights(&self) -> eval::Weights {
-        let mut w = if self.kind == "engine" || self.kind == "planner" {
+        let mut w = if ["engine", "planner", "oracle"].contains(&self.kind.as_str()) {
             eval::Weights::engine()
         } else {
             eval::Weights::default()
@@ -529,6 +552,24 @@ impl AgentSpec {
                     lead: self.params["lead"],
                 },
             )),
+            "oracle" => Box::new(oracle::Oracle::new(
+                ev,
+                self.forced(),
+                rng,
+                oracle::OracleCfg {
+                    horizon: self.p("horizon") as u32,
+                    alts: self.p("alts"),
+                    budget: self.p("budget"),
+                    margin: self.params["margin"],
+                    reseeds: self.p("reseeds"),
+                    choices: self.p("choices"),
+                    samples: self.p("samples"),
+                    prune: self.p("prune"),
+                    powers: self.p("powers"),
+                    answers: self.p("answers"),
+                    threads: self.p("threads"),
+                },
+            )),
             k => unreachable!("agent kind {k} is checked in parse"),
         }
     }
@@ -611,6 +652,7 @@ mod tests {
     // The engine's beam is beam's code with another heuristic.
     const ENGINE: &str = "engine";
     const PLANNER: &str = "planner:budget=2";
+    const ORACLE: &str = "oracle:budget=2,reseeds=1";
 
     /// The agent plays seed 3 at difficulty 0 for up to `max_actions`; the
     /// game replays from seed + actions, and the same agent on the same seed
@@ -657,6 +699,11 @@ mod tests {
     #[test]
     fn planner_replays_and_repeats_opening() {
         replay_and_repeat(PLANNER, 30, false);
+    }
+
+    #[test]
+    fn oracle_replays_and_repeats_opening() {
+        replay_and_repeat(ORACLE, 30, false);
     }
 
     /// 022: the dominance checks parse, label and replay (into round 3,
@@ -751,6 +798,12 @@ mod tests {
     #[ignore = "slow lane: a whole search-agent game"]
     fn planner_replays_and_repeats() {
         replay_and_repeat(PLANNER, 3000, true);
+    }
+
+    #[test]
+    #[ignore = "slow lane: a whole search-agent game"]
+    fn oracle_replays_and_repeats() {
+        replay_and_repeat(ORACLE, 3000, true);
     }
 
     /// An agent's decision is the same on two tables that differ only in

@@ -6,25 +6,22 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 
 - **No peeking.** Before a search an agent replaces what the printed game hides with
   a guess from its own RNG (`agents/determinize.rs`); a test checks hidden information alone
-  moves no decision.
+  moves no decision. The planner's lines and the oracle's read the table (below).
 - **Own randomness.** Each agent's RNG is the game seed on its kind's stream, so games
   replay from seed + actions whatever `--threads`.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
-- **`choices` counts prompts** (a placement is two: track, hex); with `answers` 99 a free
-  multi-pick rule of N picks costs about N² evaluations.
+- **`choices` counts prompts** (a placement is two: track, hex).
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
   adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats (the tempo
   trade, below); and:
-  - **the tempo trade** (147, `w.tempo`, `w.tempo_ref`): an unpaid threat weighs its one-off harm plus
-    what it leaves on the table times the rounds left, over what paying now costs the engine (`lasting`
-    in `eval.rs`): a one-off harm may be let through early and is paid late;
+  - **the tempo trade** (147, `w.tempo`): an unpaid threat weighs its one-off harm plus what it leaves
+    on the table times the rounds left, over what paying now costs the engine (`lasting` in `eval.rs`);
   - **corruption risk** (147, D67, `w.corrupt_exposure`, `w.blight`): a node on a site filling toward its
     Corrupt number is that share lost to its owner; land corruption costs its Discord drip;
-  - **the coming Rally** (151, `w.rally_read`): `plan::next_rally`'s expected ambassadors (the card ahead's Rally,
-    each board's pool spread evenly) count toward each site's corruption a round ahead;
-  - **Movement** (149, `w.movement`, `rates.movement`): a seat's free moves a round over the rounds left,
-    never what is left this round (lost unused); a free Move is searched like any free action;
+  - **the coming Rally** (151, `w.rally_read`): `plan::next_rally`'s expected ambassadors count toward each
+    site's corruption a round ahead;
+  - **Movement** (149, `w.movement`): a seat's free moves a round over the rounds left;
   - botnets −25 (D9): agents make none when an equal free choice exists;
   - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
     Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).
@@ -38,6 +35,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × its weight × the rounds left (the adversary deck's clock, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` in `eval.rs` |
 | `strategist` | `engine:strategy=1`: greedy with strategy, no search. **The screens' judge** (*The tiers*). | the engine's |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on the real state but the Alignment deal (**full information**), valued over `deals` guesses of it; decisions inside a line are scored on a guess. The followed line is reused. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0 and the rest in `agents/planner.rs`. `sweep[:...]` is `planner:deals=1,lead=0`. |
+| `oracle` | **A measuring stick, opt in** (155): the planner's search on **full information**, the Alignment deal too, each line played to the game's end. A winning line is followed: the seed is proved winnable, so the win rate is a floor on perfect play. Others compare on the heuristic `horizon` rounds on; `reseeds`: lines on other policy guesses at a round's first searched decision. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `reseeds` 0, `threads` 1 (lines side by side, same play) (`agents/oracle.rs`) |
 
 **Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafts by a plan
 (`plan_keep` 1; 0: the heuristic keeps). At its first keep of a round a seat sketches
@@ -45,14 +43,10 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 cards it would play, by value per cost (value: the table at the rounds then left times
 the strategy multiplier; cost: its price at the table's rates, `plan_table=0`),
 and keeps each drafted card, best ratio first, only if the plan is worth more with it.
-A play waiting a round is worth 15% less; `plan_niche` adds for each marker, threat or node a
-card would act on now; `needs` may be met by cards planned earlier, or short now by at most
-`plan_short` tags, counting hand and keeps for a card on the seat's strategy's tags (`plan_reach`);
-a card with no target now may be planned from round 2 at `target_share`, unless it works a pile
-of the seat's own none stands or is planned for (`pile_ok`), or copies an income with no income
-building built or planned (`plan_copy`); a building over one of the seat's (built, or planned
-first: `plan_under`) adds only what it beats the weakest by (`plan_cover`), the covered one at
-what it would still earn; each credit paid for keeps costs `plan_credit`.
+A play waiting a round is worth 15% less; `needs` may be met by cards planned earlier, or short
+now by at most `plan_short` tags; a building over one of the seat's adds only what it beats the
+weakest by (`plan_cover`); each credit paid for keeps costs `plan_credit`. The other switches
+(`plan_niche`, `plan_reach`, `pile_ok`, `plan_copy`, `plan_under`) say their rule in `forced_table!`.
 
 Priced like the play check (102): a card worth no more than its price is not planned, one
 that is adds its **gross value** (the prices: `plan_value` in `policy.rs`).
@@ -60,10 +54,8 @@ that is adds its **gross value** (the prices: `plan_value` in `policy.rs`).
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
-number `t.` (*The value table*), a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat terms (any agent can
-take horizon mode: `greedy:w.horizon=1,...`), so the table's and horizon's levers reach only its
-keep plan, which reads the table (`plan_table` 1). Sweeps:
-[`scripts/tune/`](../scripts/tune/README.md).
+number `t.` (*The value table*), a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat
+terms, so the table's and horizon's levers reach only its keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
@@ -134,8 +126,7 @@ As a player says them (the config's `says`):
 ## Strategy-guide heuristics
 
 Rules a player could say where a one-step search misses a card's point, each a switch, on
-(`experiments/results/screen-092/`); 124's spare-insight rule is every agent's (a new
-player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
+(092); 124's spare-insight rule is every agent's (Matt 2026-11-05).
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
   `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`), armor read as the engine does
@@ -145,13 +136,10 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 - *Count your research cubes like credits* (`plan_cubes`: a budget in the keep plan).
 - *Pick the strategy your board's powers feed* (`strat_powers`).
 - *Insight you can't spend is cheap: keep with it* (124): insight over `w.insight_cap` (10) is
-  worth `w.insight_idle` (0.1), held or (Patience) as income, and so is a keep paid from it; the
-  plan keeps any pick worth its price that spare insight pays for (`keep_spare`) and prices a
-  Patience seat's insight income at the idle rate, as the eval does (`plan_spare`).
+  worth `w.insight_idle` (0.1), held or as income, and so is a keep paid from it (`keep_spare`, `plan_spare`).
 - *A trigger that pays credits is a credits card* (124): strategies read triggers' and
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
-  Off (no gain read): teammate triggers at the teammates' share (`w.team_share`, `plan_team`),
-  At N tokens at the threshold's pay (`w.threshold_tokens`).
+  Off (no gain read): `w.team_share`, `plan_team`, `w.threshold_tokens`.
 - *A per-tag card pays at the count you'll play it at* (128): table `tag_count` 5 (the median
   before such a play) plus the card's own tags; the engine adds `w.tag_hand` (0.5) of its hand's.
 - *Spare energy is cheap: draft and use what spends it* (128, engine): energy over `w.energy_cap`
@@ -173,6 +161,7 @@ player's, Matt 2026-11-05), its strategy and insight-income levers the engine's.
 | Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
 | Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
+| Oracle | A skilled player with full information (155): d3 100, d4 96 at r66 | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 
 The strategist judges (within about 5 points of `sweep` a pair on the same seeds) at a tenth of
 its time a game; `sweep` spot-checks.
