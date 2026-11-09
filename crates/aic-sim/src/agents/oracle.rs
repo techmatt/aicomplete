@@ -23,12 +23,12 @@
 //! scored on a guess, as the planner's are (`docs/principles.md`).
 
 use aic_core::{Action, Agent, GameState, Rules};
-use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
 use super::eval::Eval;
-use super::policy::{Forced, Policy};
-use super::search::{draw_guesses, pick, score_guesses, Greedy, PhaseHistory, Scoring};
+use super::planner::{idea, rollout_policy, searched_phase};
+use super::policy::Forced;
+use super::search::{draw_guesses, pick, score_guesses, PhaseHistory, Scoring};
 use crate::prof::{self, Part};
 
 /// A line is played at most this many actions past the table (the experiment's default cap).
@@ -143,10 +143,9 @@ impl Kit<'_> {
     /// The rollout policy: the planner's, guessing from the state's own
     /// actions count, moved by `salt` (0: the planner's own seed).
     fn policy(&self, g: &GameState, salt: u64) -> Box<dyn Agent + Send> {
+        let c = self.cfg;
         let seed = (g.seed ^ g.stats.actions as u64).wrapping_add(salt.wrapping_mul(0x9E37_79B9_7F4A_7C15));
-        let greedy = Greedy::new(self.ev.clone(), ChaCha8Rng::seed_from_u64(seed), self.cfg.samples, 1, self.cfg.choices);
-        let inner = Box::new(greedy.pruned(self.cfg.prune).powers(self.cfg.powers).answers(self.cfg.answers).in_rollout());
-        Box::new(Policy::new(inner, self.forced.clone()).with_strategies(self.ev.strategies()))
+        rollout_policy(self.ev, self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers)
     }
 
     /// The line from `state` opening with `first` (or the policy's own move),
@@ -208,20 +207,6 @@ impl Oracle {
                 self.line = None;
             }
         })
-    }
-}
-
-/// Whether `state`'s phase is the action phase (the planner's searched phase).
-fn searched_phase(state: &GameState) -> bool {
-    state.config.round.get(state.phase).is_some_and(|p| p.starts_with("cards.play+"))
-}
-
-/// The planner's ideas: one alternative of each (`planner::idea`).
-fn idea(a: &Action) -> Option<String> {
-    match a {
-        Action::Withdraw { .. } => None,
-        Action::Pay { seat, threat, resource, .. } => Some(format!("pay {seat} {threat} {resource:?}")),
-        _ => Some(format!("{a:?}")),
     }
 }
 

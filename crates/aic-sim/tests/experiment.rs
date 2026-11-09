@@ -158,7 +158,7 @@ const VARIANT_SPEC: &str = r#"{
     {"name": "cards_off", "set": ["cards.variant=off"]}
   ],
   "difficulties": [0],
-  "agents": ["random", "greedy"],
+  "agents": ["random", "greedy:choices=1"],
   "games": 3,
   "closeness": {"every": 0},
   "records": 0
@@ -166,7 +166,8 @@ const VARIANT_SPEC: &str = r#"{
 
 /// Two agents and two variants, one switching a module off: the
 /// comparison sections appear, with their machine-readable twins. (The cards
-/// module, not threats: with threats off a debug greedy game runs ~2 s.)
+/// module, not threats: with threats off a debug greedy game runs ~2 s. Greedy
+/// at `choices=1`: at its default 2 this test took ~11 s from r67.)
 #[test]
 fn experiment_reports_comparisons() {
     let root = fresh_dir("aic-sim-experiment-variants", true);
@@ -182,7 +183,7 @@ fn experiment_reports_comparisons() {
         "## Removing a module",
         "Strategy health at difficulty 0",
         // greedy wins most here, so it is the top agent itself.
-        "Top agent (greedy",
+        "Top agent (greedy:choices=1",
         "What a module is worth",
         "| cards (cards_off) |",
     ] {
@@ -194,14 +195,14 @@ fn experiment_reports_comparisons() {
     assert_eq!(h2h.len(), 2);
     for h in h2h {
         assert_eq!(h["agent"], "random");
-        assert_eq!(h["greedy"], "greedy");
+        assert_eq!(h["greedy"], "greedy:choices=1");
         assert_eq!(h["paired"]["games"], 3);
     }
     assert_eq!(results["variants"].as_array().unwrap().len(), 2);
     let removals = results["removals"].as_array().unwrap();
     assert_eq!(removals.len(), 2);
     assert_eq!(removals[0]["modules"][0], "cards");
-    assert_eq!(results["top_agent"]["agent"], "greedy");
+    assert_eq!(results["top_agent"]["agent"], "greedy:choices=1");
     for c in results["cells"].as_array().unwrap() {
         assert!(c["buildings_played_per_game"].as_f64().unwrap() >= 0.0);
         assert!(c["tier2_played_per_game"].is_number());
@@ -217,7 +218,8 @@ fn experiment_omits_comparisons_that_do_not_apply() {
             r#"{"name": "cards_off", "set": ["cards.variant=off"]}"#,
             r#"{"name": "same", "set": []}"#,
         )
-        .replace(r#""random", "greedy""#, r#""random""#);
+        .replace(r#""random", "greedy:choices=1""#, r#""random""#);
+    assert!(!body.contains("greedy"), "the replace above missed: {body}");
     let spec = spec_in(&root, body);
     let out = root.join("out");
     let res = experiment(&spec, &out, &[]);
@@ -466,8 +468,11 @@ fn experiment_killed_partway_leaves_a_partial_report() {
 }
 
 /// 046: a panicking game killed a gate 25 minutes in. One now fails alone: the
-/// gate plays on to its end, lists the game, and exits 1.
+/// gate plays on to its end, lists the game, and exits 1. A gate needs bare
+/// `greedy` (~11 s here from r67), so this is slow-lane; the fast twin below is
+/// a plain run with random agents.
 #[test]
+#[ignore = "slow lane: greedy gate games, twice"]
 fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     let dir = fresh_dir("panic-gate", true);
     let spec = spec_in(&dir, r#"{"name": "panic-gate", "configs": ["configs/baseline.json"], "difficulties": [2],
@@ -499,6 +504,36 @@ fn a_gate_with_a_panicking_game_finishes_and_lists_it() {
     assert_eq!(played, results["games_played"].as_u64().unwrap() as usize);
 
     // --resume plays it again, and it panics again: listed afresh, not twice.
+    let again = experiment(&spec, &out, &["--threads", "2", "--resume"]);
+    assert_eq!(again.status.code(), Some(1));
+    let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();
+    assert_eq!(failed.lines().count(), 1);
+}
+
+/// The fast twin of the gate test above: a plain run with a panicking game
+/// plays on, lists it, exits 1, and `--resume` lists it once.
+#[test]
+fn a_run_with_a_panicking_game_finishes_and_lists_it() {
+    let dir = fresh_dir("panic-run", true);
+    let spec = spec_in(&dir, r#"{"name": "panic-run", "configs": ["configs/baseline.json"], "difficulties": [2],
+            "agents": ["random"], "games": 2, "first_seed": 50, "records": 0,
+            "inject_panic": {"cell": 0, "seed": 51}}"#);
+    let out = dir.join("out");
+    let run = experiment(&spec, &out, &["--threads", "2"]);
+    let stderr = String::from_utf8_lossy(&run.stderr);
+    assert_eq!(run.status.code(), Some(1), "{stderr}");
+    assert!(stderr.contains("1 game(s) PANICKED"), "{stderr}");
+
+    let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();
+    let f: serde_json::Value = serde_json::from_str(failed.trim()).unwrap();
+    assert_eq!(f["seed"], "51");
+    assert_eq!(f["agent"], "random");
+    assert!(f["message"].as_str().unwrap().contains("injected panic"), "{f}");
+    let report = std::fs::read_to_string(out.join("report.md")).unwrap();
+    assert!(report.contains("## Failed games"), "{report}");
+    let results = read_json(out.join("results.json"));
+    assert_eq!(results["games_failed"].as_array().unwrap().len(), 1);
+
     let again = experiment(&spec, &out, &["--threads", "2", "--resume"]);
     assert_eq!(again.status.code(), Some(1));
     let failed = std::fs::read_to_string(out.join("failed.jsonl")).unwrap();

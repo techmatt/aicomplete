@@ -15,6 +15,8 @@ from collections import defaultdict
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from screens import cell_labels, content, stream  # noqa: E402
 
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+
 
 def typed_and_capstones():
     typed, cap = [], []

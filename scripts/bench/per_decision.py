@@ -23,6 +23,8 @@ import os
 import subprocess
 import sys
 
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+
 
 def sim(root):
     """The binary a ROOT names, and the directory to run it in."""

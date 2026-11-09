@@ -118,8 +118,8 @@ const PAGE_LIB = String.raw`(() => {
   const COUNTER_EVENTS_R41 = /^(cards\.(triggers|thresholds|reused|hand_discarded|discount_credits|insight_bought)|threats\.counter_paid\.insight)$/;
   // 145: r55-r59's sites, war, Corrupt X and menus: a claim or liberation by site, Envoy, a
   // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
-  // tier-3 counter by currency. (144's blackout and sabotage flags and the "is freed" note are gone.)
-  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t3\.[a-z_]+|dealt_at_node))$/;
+  // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
+  const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
     return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);

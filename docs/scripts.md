@@ -16,7 +16,8 @@ Current:
   `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a card pass
   keeps its edits as one overlay file and reruns it. `cards.<id>=<JSON object>` writes a whole row: a new card is
   appended, an existing one replaced (125; `--set` has no such form). Nothing deletes: drop a card from the
-  baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check` prints what would change. Run `regen.py` after.
+  baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check` prints what would change. Run `regen.py` after. It refuses
+  hand-laid `alignment.json`; threats, adversary and projects come from `drafts/adversary/` (edit there).
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
   (runs `use.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
@@ -99,22 +100,16 @@ Current:
   renames in the old output first (to swap two names, map one to a placeholder first).
 - `bench/same_play.py`: proves a refactor left play unchanged: a matrix of configs, countries, difficulties and
   `configs/variants.json`, with every agent but the beam (rollout and planner included), on the old and new binaries,
-  ~20 min a run on 6 threads (r58); every saved game replays on the new binary. `run ... --threads N` caps it on a shared machine;
-  `compare` takes under a minute. Keep a copy of the old binary. Takes `--map` too: records are then compared by
-  field, since a renamed state's fingerprint moves. Each difference prints its first differing field or trace line.
-  An old binary that refuses today's configs plays its own: `mkdir -p out/old && git archive REV configs | tar -x -C
-  out/old`, then `run ... --root out/old`.
-- `bench/speed.py`: games a minute per agent. In `table`, `pair` and `specs`, `--threads N` caps the many-thread
-  column (default: leaves 4 hardware threads free) and `--games N` sets its games; each row prints its games and a
-  rough time first. `pair OLD NEW --out FILE` runs each row on both binaries in turn, so the ratio holds on a busy
-  machine: use it for a before and after. An OLD built on another baseline takes `--old-config` (its
-  `configs/baseline.json`, from `git show`). A row whose games differ on the two prints NOT LIKE FOR LIKE (its ratio is
-  speed times game length). `table SIM --out FILE` is one binary's rates (`rollout` alone ~20 min; `--only "planner c2"` for a
-  row, keeping the file's others). `compare BEFORE.json AFTER.json` reads two `table` files. `check SIM` is the
-  standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `scripts/bench/speed_baseline.json`,
-  `--update` moves it. It holds only on the same games (the baseline records its
-  revision and a hash of each agent's check games): on other games or another revision it prints NO VERDICT, says
-  which, and exits 0; read `per_decision.py`, then `--update`, then a plain `check`.
+  ~20 min a run on 6 threads (r58); every saved game replays on the new binary; `compare` takes under a minute.
+  `--map` as above (records then compared by field). An old binary that refuses today's configs plays its own: `git
+  archive REV configs | tar -x -C out/old`, then `run ... --root out/old`.
+- `bench/speed.py` (flags: `--help`): games a minute per agent. `pair OLD NEW --out FILE` runs each row on both
+  binaries in turn, so the ratio holds on a busy machine (`--old-config` for an OLD on another baseline; a row whose
+  games differ prints NOT LIKE FOR LIKE). `table SIM --out FILE` is one binary's rates, `compare` reads two. `check
+  SIM` is the standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `speed_baseline.json`,
+  `--update` moves it; on other games or another revision it prints NO VERDICT and exits 0: read `per_decision.py`,
+  then `--update`, then a plain `check`. `--games N` sets the many-thread column's games (greedy's default 200 is
+  ~25 min since r61: pass 16).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per decision on the same seeds,
   for telling longer games from a slower agent. Use `--games 16` or more across rules revisions (about 8 min for the
   default `--agent planner`; name the agents a change touched). A `speed.py check --update` and the check after it
@@ -122,7 +117,13 @@ Current:
   `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old
   content.
 - `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
-- `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
+- `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
+- `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c]`: a rules item's specs into `out/`: `read TAG SEED
+  [AGENT] [--probe] [SET...]` three 48-seed sets, the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs]
+  [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
+  `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs).
+- `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck 20]`: the paired ladder
+  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).
@@ -130,9 +131,8 @@ Current:
   paired gaps between any two cells, pooled over several `--pair`s. A `--pair` cell is its exact name
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
-  every variant `cN-x` against `cN`, per agent, and each lever pooled over its sizes. The spec's variants are `c2`,
-  `c3`, `c2-x`, `c3-x`, each with its `countries=N` and the lever's overlay in `set`. report.md's variant section
-  pairs only against the first variant, so it reads a c3 lever against c2.
+  every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes (report.md pairs only against the
+  first variant, so it reads a c3 lever against c2).
 - Two agent specs on one binary: `bench/speed.py specs SIM A B`, `bench/per_decision.py SIM.exe --old-agent A
   --agent B`, and `bench/first_divergence.py --cells DIR A B` for where two cells of one run first play differently.
 - `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently, game by game.
@@ -145,5 +145,5 @@ Current:
   rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls.
 - `tune/agent_sweep.py`: the strategist's parameter sweep; see [scripts/tune/README.md](../scripts/tune/README.md).
 - `tune/`: `sweep.py`, `log_table.py`, `engine_sweep.py`.
-- Past-revision reads, each described at its top: `cards/r37_read.py` (096), `cards/r38_read.py` (098). Kept for
-  the results docs that cite them, each saying so at its top: `cards/screen_0NN.py` (034 a shim for `--preset 034`).
+- Past items' one-off readers (021-034's `screen_0NN.py`, 096's `r37_read.py`, 098's `r38_read.py`) are in
+  `experiments/archive/scripts/`, kept for the write-ups that cite them; 034's is `cards/screen.py --preset 034`.

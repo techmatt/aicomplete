@@ -23,15 +23,27 @@ use serde::Deserialize;
 pub const CATEGORIES: [&str; 10] =
     ["income", "engine", "chain", "capstone", "liberate", "purge", "counter", "defense", "draw", "team"];
 
+/// Each category's slot in a card's [`categories`], in [`CATEGORIES`] order.
+mod cat {
+    pub const INCOME: usize = 0;
+    pub const ENGINE: usize = 1;
+    pub const CHAIN: usize = 2;
+    pub const CAPSTONE: usize = 3;
+    pub const LIBERATE: usize = 4;
+    pub const PURGE: usize = 5;
+    pub const COUNTER: usize = 6;
+    pub const DEFENSE: usize = 7;
+    pub const DRAW: usize = 8;
+    pub const TEAM: usize = 9;
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Spec {
-    /// `aic-sim strategies` prints `id`; `name` and `says` are read by the tests
-    /// and the docs check (docs/agents.md prints `says`); play reads the weights.
+    /// `aic-sim strategies` prints `id`; docs/agents.md prints `name` and `says`
+    /// (`docs/blocks.rs`); play reads the weights.
     pub id: String,
     pub board: String,
-    #[allow(dead_code)]
     pub name: String,
-    #[allow(dead_code)]
     pub says: String,
     #[serde(default)]
     tags: BTreeMap<String, f64>,
@@ -119,19 +131,19 @@ pub fn categories(d: &CardDef, contents: bool) -> [bool; CATEGORIES.len()] {
     let all: Vec<&Op> = with_contents(d.effects.iter().chain(&d.passives).chain(ability.iter().copied()), contents);
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
     op_categories(&all, &mut c);
-    c[1] = d.is_building() && (d.ability.is_some() || d.tokens.is_some() || any(&|o| matches!(o, Op::ConvertUpkeep { .. } | Op::Slots { .. })));
-    c[2] = !d.needs.is_empty();
-    c[3] = super::policy::is_capstone(d) || (d.tier == 2 && d.antimatter > 0);
-    c[4] = super::policy::is_liberate(d);
+    c[cat::ENGINE] = d.is_building() && (d.ability.is_some() || d.tokens.is_some() || any(&|o| matches!(o, Op::ConvertUpkeep { .. } | Op::Slots { .. })));
+    c[cat::CHAIN] = !d.needs.is_empty();
+    c[cat::CAPSTONE] = super::policy::is_capstone(d) || (d.tier == 2 && d.antimatter > 0);
+    c[cat::LIBERATE] = super::policy::is_liberate(d);
     c
 }
 
 /// The categories ops alone decide (income, purge, counter, defense, draw,
-/// support), for a card or (092) a board power.
+/// team), for a card or (092) a board power.
 fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
     let any = |f: &dyn Fn(&Op) -> bool| all.iter().any(|o| f(o));
-    c[0] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::BuildingDiscount { .. }));
-    c[5] = any(&|o| {
+    c[cat::INCOME] = any(&|o| matches!(o, Op::Income { .. } | Op::IncomePerTag { .. } | Op::Production { .. } | Op::ProductionPerTag { .. } | Op::BuildingDiscount { .. }));
+    c[cat::PURGE] = any(&|o| {
         matches!(
             o,
             Op::Damage { .. }
@@ -147,8 +159,8 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::Gather { .. }
         )
     });
-    c[6] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));
-    c[7] = any(&|o| {
+    c[cat::COUNTER] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));
+    c[cat::DEFENSE] = any(&|o| {
         matches!(
             o,
             Op::Shelter
@@ -161,8 +173,8 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::CorruptionShield
         )
     });
-    c[8] = any(&|o| matches!(o, Op::Draw { .. }));
-    c[9] = any(&|o| matches!(o, Op::OtherGain { .. } | Op::SupplyInsight { .. } | Op::Sway { .. } | Op::TeamIncome { .. }));
+    c[cat::DRAW] = any(&|o| matches!(o, Op::Draw { .. }));
+    c[cat::TEAM] = any(&|o| matches!(o, Op::OtherGain { .. } | Op::SupplyInsight { .. } | Op::Sway { .. } | Op::TeamIncome { .. }));
 }
 
 /// The resources card `d` pays out or (beyond credits and insight) costs.
@@ -417,6 +429,27 @@ pub fn by_id(id: &str) -> Option<u16> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The named slots match [`CATEGORIES`].
+    #[test]
+    fn category_slots_match_their_names() {
+        let slots = [
+            (cat::INCOME, "income"),
+            (cat::ENGINE, "engine"),
+            (cat::CHAIN, "chain"),
+            (cat::CAPSTONE, "capstone"),
+            (cat::LIBERATE, "liberate"),
+            (cat::PURGE, "purge"),
+            (cat::COUNTER, "counter"),
+            (cat::DEFENSE, "defense"),
+            (cat::DRAW, "draw"),
+            (cat::TEAM, "team"),
+        ];
+        assert_eq!(slots.len(), CATEGORIES.len());
+        for (i, name) in slots {
+            assert_eq!(CATEGORIES[i], name);
+        }
+    }
 
     /// Every strategy reads, names a board and weights only what exists; every
     /// board has a menu.

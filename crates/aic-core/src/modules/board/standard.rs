@@ -279,9 +279,10 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
                 t("board.liberate_facility_at")
             ),
             format!(
-                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes `free_leaves` adversary ambassadors as it frees",
+                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes {} adversary ambassadors as it frees",
                 t("alignment.free_city"),
-                t("alignment.free_facility")
+                t("alignment.free_facility"),
+                t("board.free_leaves")
             ),
         ),
         StandardAction::HardenChips => (

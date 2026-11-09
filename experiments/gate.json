@@ -1,6 +1,6 @@
 {
   "name": "gate-075",
-  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-070 plus never_convert (075). The Researcher's own checks (always_buy_cubes, hoard_insight) sit at 3 countries only, in gate-c3.json, since no seat has its board at 2. 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with experiments/gate-close/. Run on fresh seeds.",
+  "note": "The dominance gate at d2 against the planner, 2 and 3 countries: every check of gate-070 plus never_convert (075). The Researcher's own checks (always_buy_cubes, hoard_insight) sit at 3 countries only, in gate-c3.json, since no seat has its board at 2. 48 paired seeds a check, early-stopped from 12 at 2 SE; those within 2 SE at 48 go on to 96 with specs from scripts/bench/gate_close.py plan (075's are in experiments/archive/gate-close-075/). Run on fresh seeds.",
   "configs": [
     "configs/baseline.json"
   ],

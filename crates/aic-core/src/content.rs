@@ -717,6 +717,24 @@ pub struct Power {
 }
 
 impl CardDef {
+    /// Every op the card prints: its effects, each Action branch's effects
+    /// and its passives, each followed by the ops nested in it ([`Op::nested`]).
+    pub fn all_ops(&self) -> Vec<&Op> {
+        fn add<'a>(ops: &'a [Op], out: &mut Vec<&'a Op>) {
+            for op in ops {
+                out.push(op);
+                add(op.nested(), out);
+            }
+        }
+        let mut out = Vec::new();
+        add(&self.effects, &mut out);
+        for a in self.ability.iter().flat_map(|a| a.branches()) {
+            add(&a.effects, &mut out);
+        }
+        add(&self.passives, &mut out);
+        out
+    }
+
     pub fn is_event(&self) -> bool {
         self.kind == CardKind::Event
     }
@@ -1068,9 +1086,11 @@ fn check_card(c: &CardDef) -> Result<(), String> {
     Ok(())
 }
 
+/// The tiers threat decks come in (146: no tier 3): every printed threat tier is one.
+pub const THREAT_TIERS: [u8; 2] = [1, 2];
+
 fn check_threat(t: &ThreatDef) -> Result<(), String> {
-    // 146: no tier 3.
-    if !(1..=2).contains(&t.tier) || t.counters.is_empty() || t.counters.iter().any(|o| o.is_empty()) {
+    if !THREAT_TIERS.contains(&t.tier) || t.counters.is_empty() || t.counters.iter().any(|o| o.is_empty()) {
         return Err(format!("threat {:?}: tier 1-2 and a counter menu", t.id));
     }
     // 146 (Matt's threat card standard, 2026-11-07): one counter option, two at most; one consequence, two at most.
@@ -1124,13 +1144,12 @@ fn check_threat(t: &ThreatDef) -> Result<(), String> {
 /// occupies, corp troops past their cap) or a harm on more than the one nearest player (a flag on every hex near
 /// it, a country or the board; an each-country line).
 pub fn threat_rule_break(op: &Op) -> Option<String> {
-    use crate::op::RoundFlag::*;
     match op {
         Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
         Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
         Op::CorpTroops { past_cap: true, .. } => Some("corp troops past their cap (no special pieces)".into()),
         Op::Flag { name, everywhere, scope, .. } => {
-            let seat = matches!(name, PowerDown | StationOutage) && !*everywhere && *scope != Some(crate::op::Scope::Country);
+            let seat = name.on_seats() && !*everywhere && *scope != Some(crate::op::Scope::Country);
             (!seat).then(|| format!("flag {name:?} hits every player near it, not the nearest"))
         }
         Op::Troops { each_country: true, .. }
@@ -1186,8 +1205,8 @@ fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
     if !(1..=3).contains(&a.stage) {
         return Err(format!("adversary card {:?}: stage 1-3", a.id));
     }
-    if a.pulls.iter().any(|p| !(1..=3).contains(&p.tier) || p.tags.is_empty()) {
-        return Err(format!("adversary card {:?}: each pull a tier 1-3 and a tag", a.id));
+    if a.pulls.iter().any(|p| !THREAT_TIERS.contains(&p.tier) || p.tags.is_empty()) {
+        return Err(format!("adversary card {:?}: each pull a tier 1-2 and a tag", a.id));
     }
     check_ops(&a.twists, Slot::Twist, &format!("adversary card {:?}", a.id))?;
     check_ops(&a.standing, Slot::Team, &format!("adversary card {:?} standing", a.id))?;
@@ -1429,8 +1448,7 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
             | Op::Logistics { resource: r, .. } => resource(r, what)?,
             // 068: income can print ambassadors, as effects do; 146: a threat's "pays 2 ambassadors or discards".
             Op::Income { resource: r, .. } | Op::Requisition { resource: r, .. } => seat_resource(r, what)?,
-            // 146: no tier 3.
-            Op::DealThreats { tier: Some(t), .. } | Op::ThreatAtNode { tier: t } if !(1..=2).contains(t) => {
+            Op::DealThreats { tier: Some(t), .. } | Op::ThreatAtNode { tier: t } if !THREAT_TIERS.contains(t) => {
                 return Err(format!("{what}: a tier-{t} threat (tiers 1-2)"));
             }
             Op::TeamIncome { resource: r, .. } => {

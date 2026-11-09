@@ -15,8 +15,11 @@ field; the value is JSON, or a bare word taken as a string. An entry setting a v
 there changes nothing, so a card pass keeps its edits as one overlay file and reruns it.
 
 `--check` prints each entry that would change something and writes nothing (exit 1 if any
-would). A file whose text isn't what `json.dumps(indent=1)` writes (projects.json's one-line
-effect lists) is refused: edit it by hand. Afterwards run `python scripts/regen.py`, which
+would). A file whose text isn't what `json.dumps(indent=1)` writes (today only alignment.json, its
+tiers laid out by hand; 157 wrote experiments/results/157_strategist_purge_r68/apply_tiers.py for
+it) is refused: edit it by hand. threats.json, adversary.json and projects.json are written from
+drafts/adversary/ by scripts/content/load_adversary.py: an overlay there is lost on the next load
+and fails regen.py's `load_adversary.py --check`, so edit the drafts instead. Afterwards run `python scripts/regen.py`, which
 builds, regenerates the docs and validates the content as the engine parses it.
 """
 import argparse

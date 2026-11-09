@@ -139,7 +139,7 @@ the same token on nodes is a "shield". "You gain the Harden action" is a standar
 chips (the card prints the price); the Protector's Bulwark is a power, paid in energy. It is not a keyword.
 
 **American English** everywhere (Mobilization, Armored, Modeling): `aic-sim docs --check`, so the fast lane, refuses
-a British spelling (`crates/aic-sim/src/spelling.rs`).
+a British spelling (`crates/aic-sim/src/docs/spelling.rs`).
 
 ## Legend
 

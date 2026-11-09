@@ -162,7 +162,8 @@ pub fn home_country(w: &World, seat: usize) -> usize {
     seat % w.map.countries.len()
 }
 
-/// Hexes holding seat `s`'s node, in board order.
+/// Hexes holding seat `s`'s node, in board order (the tests' reading).
+#[cfg(test)]
 pub fn node_of(g: &GameState, seat: usize) -> Vec<usize> {
     let k = node(seat);
     (0..g.hexes.len())

@@ -24,19 +24,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     let mut keys: Vec<&str> = flags.iter().map(String::as_str).collect();
     keys.extend(["board.project.", "board.project_done.", "board.project_paid.", "board.converter_round.", "board.track.", "board.track2."]);
     // 135: hex and seat flags, standing troops, occupations and registrations.
-    keys.extend([
-        HEX_FLAGS,
-        SEAT_FLAGS,
-        "board.stand.",
-        "board.occupied.",
-        "board.corp_extra.",
-        "board.extra_war.",
-        "board.new_factory.",
-        "board.destroyed_at.",
-        "board.landed_at.",
-        "board.landed_n.",
-        MOVED,
-    ]);
+    keys.extend(MARKS);
     out.bookkeeping(&keys);
     // 149: each seat's Movement left this round, of its Movement.
     for s in 0..g.seats.len() {

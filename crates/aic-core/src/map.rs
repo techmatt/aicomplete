@@ -9,6 +9,10 @@ use serde::Serialize;
 use crate::content::{Content, HexKind};
 use crate::hex::Hex;
 
+/// The most hexes a board may have: a threat's reach is a `u128` bit mask
+/// (`threats::near`). Content maps are at most 64.
+pub const MAX_HEXES: usize = 128;
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Map {
     /// All hexes, country by country, each country in piece order
@@ -100,6 +104,12 @@ impl Map {
                 hexes: mine,
                 color: p.color.clone(),
             });
+        }
+        if hexes.len() > MAX_HEXES {
+            return Err(format!(
+                "layout for {countries} countries: {} hexes, over the {MAX_HEXES} a threat's reach mask holds",
+                hexes.len()
+            ));
         }
         for cell in hexes.iter_mut() {
             cell.neighbors = cell

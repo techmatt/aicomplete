@@ -21,7 +21,7 @@ primitives are reachable and used).
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
 from screens import ROUND, checked_cnt, ends_text, load, mean  # noqa: E402
 
 

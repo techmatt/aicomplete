@@ -88,7 +88,7 @@ pub struct Weights {
     /// Each Discord tip made (a cost); Sway on the Discord track costs its
     /// share of the next one.
     pub discord_tip: f64,
-    /// Each level the clear-board bar has dropped (Unity cards drawn, 136).
+    /// Each level the clear-board bar has dropped (Unity tips, 156).
     pub level: f64,
     /// Each visible adversary project's fill, as a share of its cost (a
     /// cost: it will resolve; 017).
@@ -1590,7 +1590,7 @@ impl Eval {
                 continue;
             }
             let waits = if threats::waits(g, &t) { w.threat_waits } else { 1.0 };
-            // 147: who may counter (`may_counter`: near it), the threat's reach read once.
+            // 147: who may counter (a seat near it, `threats::near`), the threat's reach read once.
             let open = !threats::near_seats(&world, g, &t).is_empty();
             let stranded = if open { 1.0 } else { w.threat_stranded };
             // 146: weighed by what it would do uncountered, against a tier-1 counter's worth.
@@ -1630,10 +1630,7 @@ impl Eval {
         discord_left: i64,
     ) -> f64 {
         let w = &self.w;
-        let clock = Self::cards_left(g) as f64;
-        let (points, bar) = self.unity_progress(g);
-        let to_win = ((bar - points).max(0.0) / self.unity_rate(g)).ceil() + w.win_lag;
-        let rounds = clock.min(to_win).max(0.0);
+        let rounds = self.win_clock(g).max(0.0);
         let world = rules.world();
         let countries = world.map.countries.len().max(1) as f64;
         let mut danger = unpaid.iter().sum::<f64>() / countries;
@@ -1660,14 +1657,22 @@ impl Eval {
     /// the adversary deck's clock, cut short by the team's projected win, at
     /// least one. Every agent reads it, flat or horizon.
     fn tempo_rounds(&self, g: &GameState) -> f64 {
+        self.win_clock(g).max(1.0)
+    }
+
+    /// The adversary deck's clock (a round a card left), cut short by the
+    /// rounds the team is on course to win in (Unity still needed at its rate
+    /// so far, plus `win_lag`); unclamped, for [`Self::rounds_left`] and
+    /// [`Self::tempo_rounds`] to floor each its own way.
+    fn win_clock(&self, g: &GameState) -> f64 {
         let clock = Self::cards_left(g) as f64;
         let (points, bar) = self.unity_progress(g);
         let to_win = ((bar - points).max(0.0) / self.unity_rate(g)).ceil() + self.w.win_lag;
-        clock.min(to_win).max(1.0)
+        clock.min(to_win)
     }
 
     /// Unity so far, in Sway (each tip counts a full bucket at the base
-    /// size), and the Sway the target (the outright Unity win) needs.
+    /// size), and the Sway the target (`target_tips`, the purge's last step) needs.
     fn unity_progress(&self, g: &GameState) -> (f64, f64) {
         let per = (self.tip_per_player * self.seats as i64) as f64;
         let tips = g.var(alignment::tips_key(Side::Unity)) as f64;
@@ -1844,25 +1849,6 @@ impl Eval {
         out
     }
 
-    /// 107: seat `s`'s cards in play and in hand counted by tag, and how many.
-    fn mix_counts(
-        &self,
-        world: &aic_core::module::World,
-        g: &GameState,
-        s: usize,
-        tags: [i64; TAGS.len()],
-        n: i64,
-    ) -> ([i64; TAGS.len()], i64) {
-        let (mut counts, mut cards_n) = (tags, n);
-        for id in g.pile(&cards::hand(s)) {
-            cards_n += 1;
-            for t in &self.fact(world, id).0.tags {
-                counts[*t as usize] += 1;
-            }
-        }
-        (counts, cards_n)
-    }
-
     /// 128 (`tag_hand`): seat `s`'s tags in play plus `tag_hand` of those on the
     /// cards in its hand that stay in play (events leave none), rounded.
     fn hand_tags(&self, world: &aic_core::module::World, g: &GameState, s: usize, tags: [i64; TAGS.len()]) -> [i64; TAGS.len()] {
@@ -1969,16 +1955,15 @@ impl Eval {
                 let terms = || {
                     // 150: board tags count like card tags, requirements included.
                     let tags = cards::tag_counts(&world, g, s);
-                    let required = tags;
                     let income = economy::income_with(&world, g, s, &tags);
-                    (tags, required, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
+                    (tags, cards::prices_with(&world, g, s, &tags), income, in_play(g, s))
                 };
-                let (tags, required, prices, income, n) = seat_terms_cached(self.id, g, s, terms);
+                let (tags, prices, income, n) = seat_terms_cached(self.id, g, s, terms);
                 let node = tokens.iter().filter(|t| t.node[s] > 0).count() as f64;
                 let mut ctx = Ctx::at(tbl, left, node, tags, corrupted);
                 if table && self.mix {
                     // 107: the share of the seat's cards, in play and in hand, by tag.
-                    let (counts, cards_n) = self.mix_counts(&world, g, s, tags, n);
+                    let (counts, cards_n) = mix_counts(&world, g, s, &tags, n);
                     ctx = ctx.with_mix(tbl, &counts, cards_n);
                 }
                 if table && w.tag_hand > 0.0 {
@@ -1989,7 +1974,7 @@ impl Eval {
                 ctx.energy_rate = self.energy_rate(g, s);
                 ctx.cubes_open =
                     w.cube_target <= 0.0 || !aic_core::modules::effects::cube_projects(&world, g, s, false).is_empty();
-                SeatData { s, tags, required, prices, income, ctx }
+                SeatData { s, tags, prices, income, ctx }
             })
             .collect();
         // 124 (D47, `team_share`): a trigger on a teammate's plays fires at the
@@ -1997,7 +1982,7 @@ impl Eval {
         let mut seats = seats;
         if table && self.mix && w.team_share > 0.0 && self.seats > 1 {
             let mixes: Vec<([i64; TAGS.len()], i64)> =
-                seats.iter().map(|sd| self.mix_counts(&world, g, sd.s, sd.tags, in_play(g, sd.s))).collect();
+                seats.iter().map(|sd| own_mix_counts(&world, g, sd.s, &sd.tags)).collect();
             for sd in seats.iter_mut() {
                 let others = mixes.iter().enumerate().filter(|&(o, _)| o != sd.s).map(|(_, m)| *m);
                 sd.ctx.team = Some(team_share(tbl, others));
@@ -2139,11 +2124,12 @@ impl Eval {
             Some(k) if !cards::has_token_card(world, g, s, Some(k)) => w.needs_floor,
             _ => 1.0,
         };
-        p * w.table * w.hand_share * net.max(0.0) * self.needs_factor(d, &sd.required) * pile
+        p * w.table * w.hand_share * net.max(0.0) * self.needs_factor(d, &sd.tags) * pile
     }
 
     /// The progress term for a card's `needs` (082): 1 once met, else
-    /// `needs_floor` plus the rest times the square of the share of the tags held.
+    /// `needs_floor` plus the rest times the square of the share of the tags held
+    /// (`required`: the cards' and the board's, 150).
     fn needs_factor(&self, d: &CardDef, required: &[i64; TAGS.len()]) -> f64 {
         if d.needs.is_empty() {
             return 1.0;
@@ -2190,10 +2176,11 @@ impl Eval {
 }
 
 /// What one seat's cards are judged by in a position (082).
-/// A seat's tags, `needs` tags, prices and income: what [`Eval::value`] reads
-/// off its tableau, kept a decision long (103: worked out for every position, they
-/// were a sixth of the strategist's time, and a search's positions mostly share them).
-type SeatTerms = ([i64; TAGS.len()], [i64; TAGS.len()], cards::Prices, aic_core::content::PerResource, i64);
+/// A seat's tags (`needs` read them too, 150), prices, income and cards in play: what
+/// [`Eval::value`] reads off its tableau, kept a decision long (103: worked out for every
+/// position, they were a sixth of the strategist's time, and a search's positions mostly
+/// share them).
+type SeatTerms = ([i64; TAGS.len()], cards::Prices, aic_core::content::PerResource, i64);
 
 thread_local! {
     /// The seat terms worked out this decision, by a hash of [`tableau_parts`],
@@ -2299,8 +2286,12 @@ pub(crate) fn own_mix(t: &value::Table, w: &aic_core::module::World, g: &GameSta
 
 /// 107: seat `s`'s cards in play and in hand counted by tag, and how many.
 pub(crate) fn own_mix_counts(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()]) -> ([i64; TAGS.len()], i64) {
-    let mut counts = *tags;
-    let mut n = in_play(g, s);
+    mix_counts(w, g, s, tags, in_play(g, s))
+}
+
+/// [`own_mix_counts`] with the seat's cards in play, `n`, already counted.
+fn mix_counts(w: &aic_core::module::World, g: &GameState, s: usize, tags: &[i64; TAGS.len()], n: i64) -> ([i64; TAGS.len()], i64) {
+    let (mut counts, mut n) = (*tags, n);
     for id in g.pile(&cards::hand(s)) {
         n += 1;
         for t in &cards::def(w, id).tags {
@@ -2335,9 +2326,8 @@ fn in_play(g: &GameState, s: usize) -> i64 {
 
 struct SeatData {
     s: usize,
+    /// The cards' and the board's tags (`needs` read them too, 150).
     tags: [i64; TAGS.len()],
-    /// Tags for `needs`: the cards' and the board's.
-    required: [i64; TAGS.len()],
     prices: cards::Prices,
     income: aic_core::content::PerResource,
     ctx: Ctx,

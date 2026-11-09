@@ -7,7 +7,8 @@ use super::*;
 pub enum EffectSource {
     /// A player's card, ability or power: that seat chooses.
     Seat(usize),
-    /// An executing threat: seat 0 chooses for the team, the rest by scope.
+    /// An executing threat: its harm hits one seat, `Ctx::hit` (146: the
+    /// nearest by node); seat 0 chooses for the team.
     Threat,
     /// A Unity or Discord card or a project: seat 0 chooses for the team.
     Team,

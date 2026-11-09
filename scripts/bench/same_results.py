@@ -23,6 +23,8 @@ import io
 import json
 import sys
 
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+
 TIMING = ("ms", "wall", "threads", "seconds")
 # Run bookkeeping, not play (012 added the games_* counts); `countries` is a label 052 added,
 # so an output from before it still compares. A spec's `note` is prose (145: 144 reworded

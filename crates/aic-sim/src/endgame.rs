@@ -1,12 +1,13 @@
 //! 154: the end-game probe, opt in (`"endgame"` in a spec). For a game lost to
-//! the round cap it records what the purge still needed at the end, what the
-//! team held toward it a few rounds before (the inputs of a feasibility bound,
+//! the round cap (155: any loss, with `all_losses`) it records what the purge
+//! still needed at the end, what the team held toward it a few rounds before
+//! (the inputs of a feasibility bound,
 //! read by `experiments/results/154_endgame_r66/endgame154.py`), and, with an
 //! agent named, plays the last rounds again from that round's start with that
 //! agent (the real game continued: same state, same dice) to see whether a
 //! stronger player wins it. It never touches the game being played.
 
-use aic_core::content::{Resource, Side};
+use aic_core::content::{Op, Resource, Side};
 use aic_core::modules::{adversary, alignment, cards, common};
 use aic_core::{GameState, Rules};
 use serde::{Deserialize, Serialize};
@@ -107,10 +108,6 @@ pub struct EndgameRead {
     pub replay_purge: Vec<i64>,
 }
 
-fn has_op(json: &str, ops: &[&str]) -> bool {
-    ops.iter().any(|o| json.contains(&format!("\"op\":\"{o}\"")))
-}
-
 pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     let w = rules.world();
     let level = alignment::bar_level(&w, g);
@@ -154,11 +151,12 @@ fn team(rules: &Rules, g: &GameState) -> Team {
         let mut ids: Vec<String> = g.pile(&cards::hand(s)).iter().map(|k| k.as_str().to_string()).collect();
         ids.extend(cards::in_play(g, s).iter().map(|k| k.as_str().to_string()));
         for id in ids {
-            let json = serde_json::to_string(w.content.card(&id)).unwrap_or_default();
-            t.botnet_cards += has_op(&json, &["remove_botnet", "cut_botnet"]) as i64;
-            t.liberate_cards += has_op(&json, &["liberate", "clear_city", "cleanse"]) as i64;
-            t.troop_cards += has_op(&json, &["remove_troop", "remove_troops"]) as i64;
-            t.ambassador_cards += has_op(&json, &["remove_ambassadors", "remove_ambassadors_country"]) as i64;
+            let ops = w.content.card(&id).all_ops();
+            let has = |f: fn(&Op) -> bool| ops.iter().any(|o| f(o)) as i64;
+            t.botnet_cards += has(|o| matches!(o, Op::RemoveBotnet | Op::CutBotnet));
+            t.liberate_cards += has(|o| matches!(o, Op::Liberate { .. } | Op::ClearCity { .. } | Op::Cleanse { .. }));
+            t.troop_cards += has(|o| matches!(o, Op::RemoveTroops { .. }));
+            t.ambassador_cards += has(|o| matches!(o, Op::RemoveAmbassadorsCountry { .. }));
         }
     }
     let drawn: Vec<String> = g.pile(&alignment::resolved(Side::Unity)).iter().map(|k| k.as_str().to_string()).collect();
@@ -171,7 +169,8 @@ fn team(rules: &Rules, g: &GameState) -> Team {
 }
 
 /// Probes a finished game; `starts` holds the state at the start of each
-/// round played (round 1 first). None unless it was lost to the round cap.
+/// round played (round 1 first). None unless it was lost to the round cap
+/// (`deck_empty`), or lost at all with `all_losses`.
 pub fn probe(rules: &Rules, probe: &EndgameProbe, g: &GameState, starts: &[GameState], max_actions: usize) -> Option<EndgameRead> {
     if g.outcome.as_ref().is_none_or(|o| o.won || (o.reason != "deck_empty" && !probe.all_losses)) {
         return None;

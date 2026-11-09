@@ -32,7 +32,7 @@ pub fn track2_taken(g: &GameState, seat: usize) -> usize {
 /// Where seat `s` may place nodes: a land hex holding no nodes and no
 /// corruption marker, adjacent to one of its own (with none left, any such
 /// hex in its home country).
-pub fn node_hexes(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
+pub fn node_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let mine = node(seat);
     // 138: no node goes on land corruption.
     let free = |h: usize| {
@@ -125,7 +125,7 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
     if !ai::can_place(&w, g, seat) {
         return Ok(false);
     }
-    let hexes = node_hexes(&w, g, seat);
+    let hexes = node_sites(&w, g, seat);
     // 021: with two tracks the player chooses which one's next token to take.
     let b = ai::board(&w, seat);
     let (t1, t2) = (track_taken(g, seat), track2_taken(g, seat));

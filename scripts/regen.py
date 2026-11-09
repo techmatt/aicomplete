@@ -87,7 +87,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--no-build', action='store_true', help='skip cargo build; use the binary already built')
     ap.add_argument('--check', action='store_true',
-                    help='only check: aic-sim docs --check and cards_doc.py --check; exit 1 if stale')
+                    help='only check: load_adversary.py --check, aic-sim docs --check, cards_doc.py --check '
+                         'and the rules README revision line; exit 1 if stale')
     a = ap.parse_args()
     start = time.monotonic()
     if not a.no_build:

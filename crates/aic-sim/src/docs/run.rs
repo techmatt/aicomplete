@@ -15,8 +15,9 @@ use crate::cli::{fail, load, rules, Options};
 
 const BASELINE: &str = "configs/baseline.json";
 const RULES_DIR: &str = "docs/rules";
-/// Each `docs/rules/` file's size limit in bytes: the 15 KB doc budget (CLAUDE.md).
-pub(super) const RULES_BUDGET: usize = 15 * 1024;
+/// A doc's size limit in bytes (each `docs/rules/` file and every page of
+/// [`page_budget_failures`]): the 15 KB doc budget (CLAUDE.md).
+pub(super) const DOC_BUDGET: usize = 15 * 1024;
 const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
@@ -273,7 +274,7 @@ pub(super) fn block(name: &str, r: &Rules) -> Option<String> {
 }
 
 /// What is wrong with the rules files (path, text) as a set: a block of [`BLOCKS`] missing or
-/// in more than one place, or a file over [`RULES_BUDGET`].
+/// in more than one place, or a file over [`DOC_BUDGET`].
 pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
     for name in BLOCKS {
@@ -289,8 +290,8 @@ pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
         }
     }
     for (path, text) in files {
-        if text.len() > RULES_BUDGET {
-            out.push(format!("{path}: {} bytes, over the {RULES_BUDGET}-byte doc budget: trim what the code or a generated table already says (no archive files)", text.len()));
+        if text.len() > DOC_BUDGET {
+            out.push(format!("{path}: {} bytes, over the {DOC_BUDGET}-byte doc budget: trim what the code or a generated table already says (no archive files)", text.len()));
         }
     }
     out
@@ -355,12 +356,10 @@ pub(super) fn card_quote_failures(files: &[(String, String)], faces: &[(String, 
 }
 
 /// 102: README.md, CLAUDE.md, the web and card-art READMEs (123) and every `docs/*.md` page
-/// but the generated cards.md, adversary-cards.md and ops.md over [`RULES_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/`
+/// but the generated cards.md, adversary-cards.md and ops.md over [`DOC_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/`
 /// is [`rules_file_failures`]'s).
 fn page_budget_failures() -> Vec<String> {
-    let mut paths: Vec<String> = ["README.md", "CLAUDE.md", "web/README.md", "tools/card-art/README.md"]
-        .map(String::from)
-        .into();
+    let mut paths: Vec<String> = super::ROOT_DOCS.map(String::from).into();
     if let Ok(dir) = fs::read_dir("docs") {
         let mut pages: Vec<String> = dir
             .flatten()
@@ -378,7 +377,7 @@ fn page_budget_failures() -> Vec<String> {
         .into_iter()
         .filter_map(|p| {
             let n = fs::metadata(&p).ok()?.len() as usize;
-            (n > RULES_BUDGET).then(|| format!("{p}: {n} bytes, over the {RULES_BUDGET}-byte doc budget: trim it"))
+            (n > DOC_BUDGET).then(|| format!("{p}: {n} bytes, over the {DOC_BUDGET}-byte doc budget: trim it"))
         })
         .collect()
 }
@@ -500,8 +499,8 @@ pub fn run(o: &Options) {
     for f in &failures {
         eprintln!("{f}");
     }
-    let mut spelled = crate::spelling::failures();
-    spelled.extend(crate::current_docs::failures());
+    let mut spelled = super::spelling::failures();
+    spelled.extend(super::current_docs::failures());
     let ids: Vec<&str> = content().cards.iter().map(|c| c.id.as_str()).collect();
     spelled.extend(card_note_failures(&on_disk(CARD_NOTES), &ids));
     for s in &spelled {

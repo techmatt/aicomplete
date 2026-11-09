@@ -24,7 +24,7 @@ mod ops;
 
 pub use counter::{cheapest_resource_need, need_and_share, paid_share, requirement, resource_only, UNPAYABLE};
 use counter::*;
-pub use near::{counterable, may_counter, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
+pub use near::{counterable, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
 use near::*;
 #[cfg(test)]
 pub use near::mask_matches_reach;
@@ -90,8 +90,8 @@ fn build_off(_: &Build) -> Result<Box<dyn Module>, String> {
     Ok(Box::new(NoThreats))
 }
 
-/// The tiers threat decks come in.
-pub const TIERS: [u8; 2] = [1, 2];
+/// The tiers threat decks come in (content checks every printed tier against them).
+pub use crate::content::THREAT_TIERS as TIERS;
 
 fn deck(tier: u8) -> KeyBuf {
     KeyBuf::new("threats.deck.").num(tier as usize)
@@ -453,7 +453,7 @@ impl Module for Threats {
         let s = seat as usize;
         for (t, _) in active(g) {
             // 044: a seat no longer near can't pay, but can take back.
-            let can_pay = is_near(w, g, s, &t);
+            let can_pay = near(w, g, s, &t);
             let req = requirement(w, g, &t);
             for r in menu_resources(w, &t) {
                 let most = if can_pay { g.resource(s, r).min(room(&req, g, &t, r)) } else { 0 };
@@ -491,7 +491,7 @@ impl Module for Threats {
                 let Some(c) = scope_of(g, threat) else {
                     return Err(Halt::Illegal(format!("no active threat {threat}")));
                 };
-                if !is_near(&w, g, s, threat) {
+                if !near(&w, g, s, threat) {
                     return Err("only a player near the threat can pay".into());
                 }
                 let req = requirement(&w, g, threat);

@@ -1,13 +1,13 @@
 {
   "name": "overlay-card-cost",
-  "note": "A card cost swept through the content overlay on one binary (040): Telemetry Archive at its printed 3 and three other costs, with a track number beside them.",
+  "note": "A card cost swept through the content overlay on one binary (040; prices to r69 by 159): Telemetry Archive at its printed 15 and three other costs, with a track number beside them (the fifth economy-track step 2 -> 3).",
   "configs": ["configs/baseline.json"],
   "variants": [
     {"name": "base", "set": []},
-    {"name": "cost1", "set": ["cards.telemetry_archive.cost=1"]},
-    {"name": "cost5", "set": ["cards.telemetry_archive.cost=5"]},
-    {"name": "cost7", "set": ["cards.telemetry_archive.cost=7"]},
-    {"name": "track", "set": ["ais.*.economy_track.4.cost=2"]}
+    {"name": "cost10", "set": ["cards.telemetry_archive.cost=10"]},
+    {"name": "cost20", "set": ["cards.telemetry_archive.cost=20"]},
+    {"name": "cost25", "set": ["cards.telemetry_archive.cost=25"]},
+    {"name": "track", "set": ["ais.*.economy_track.4.cost=3"]}
   ],
   "difficulties": [2],
   "agents": ["engine"],

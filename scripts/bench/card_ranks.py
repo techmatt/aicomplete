@@ -14,6 +14,9 @@ import argparse
 import collections
 import csv
 import os
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
 
 def ranks(xs):

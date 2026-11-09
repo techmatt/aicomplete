@@ -148,8 +148,24 @@ pub fn powered_down(g: &GameState, s: usize) -> bool {
 /// Standing troops on hex `h` (135): they never march or strike. A removal
 /// takes them down with the hex's troops (cleanup trues the count).
 pub fn stand_key(h: usize) -> KeyBuf {
-    KeyBuf::new("board.stand.").num(h)
+    KeyBuf::new(STAND).num(h)
 }
+
+const STAND: &str = "board.stand.";
+const OCCUPIED: &str = "board.occupied.";
+const EXTRA_WAR: &str = "board.extra_war.";
+const NEW_FACTORY: &str = "board.new_factory.";
+const DESTROYED_AT: &str = "board.destroyed_at.";
+const LANDED_AT: &str = "board.landed_at.";
+const LANDED_N: &str = "board.landed_n.";
+
+/// The marks a round's end clears outright ([`expire_marks`]).
+const ROUND_MARKS: [&str; 5] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
+
+/// 135: every per-round mark [`expire_marks`] counts down, trues or clears
+/// (the view lists them as bookkeeping).
+pub(super) const MARKS: [&str; 11] =
+    [HEX_FLAGS, SEAT_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {
@@ -164,7 +180,7 @@ pub fn add_standing(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
 
 /// Set while a troop occupies the factory on hex `h` (135, Factory Occupation).
 pub fn occupied_key(h: usize) -> KeyBuf {
-    KeyBuf::new("board.occupied.").num(h)
+    KeyBuf::new(OCCUPIED).num(h)
 }
 
 /// Whether the factory on hex `h` is occupied: it makes nothing.
@@ -182,29 +198,29 @@ const CORP_EXTRA: &str = "board.corp_extra.";
 
 /// Set to the round in which front `i` fights a second war step (135: Casus Belli).
 pub fn extra_war_key(front: usize) -> KeyBuf {
-    KeyBuf::new("board.extra_war.").num(front)
+    KeyBuf::new(EXTRA_WAR).num(front)
 }
 
 /// The factory a threat just built (135), plus 1: what "on the new factory" names.
 pub fn new_factory_key(threat: &str) -> KeyBuf {
-    KeyBuf::new("board.new_factory.").text(threat)
+    KeyBuf::new(NEW_FACTORY).text(threat)
 }
 
 /// Set (hex plus 1) when a threat's facility destruction emptied its zone
 /// (135): "on an empty zone ... instead" reads the zone as it was.
 pub fn destroyed_key(threat: &str) -> KeyBuf {
-    KeyBuf::new("board.destroyed_at.").text(threat)
+    KeyBuf::new(DESTROYED_AT).text(threat)
 }
 
 /// The hex (plus 1) a threat's troops just landed on, and how many (135):
 /// what "they march at once" moves.
 pub fn landed_key(threat: &str) -> KeyBuf {
-    KeyBuf::new("board.landed_at.").text(threat)
+    KeyBuf::new(LANDED_AT).text(threat)
 }
 
 /// How many troops a threat just landed (see [`landed_key`]).
 pub fn landed_count_key(threat: &str) -> KeyBuf {
-    KeyBuf::new("board.landed_n.").text(threat)
+    KeyBuf::new(LANDED_N).text(threat)
 }
 
 /// Var keys under `prefix` with their values, in key order.
@@ -474,14 +490,14 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             }
         }
     }
-    for (k, v) in keys_under(g, "board.stand.") {
+    for (k, v) in keys_under(g, STAND) {
         let Some(h) = k.rsplit('.').next().and_then(|h| h.parse::<usize>().ok()) else { continue };
         let left = v.min(g.tokens(h, TROOP)).max(0);
         if left != v {
             cx.set_key(g, &k, left);
         }
     }
-    for (k, _) in keys_under(g, "board.occupied.") {
+    for (k, _) in keys_under(g, OCCUPIED) {
         let Some(h) = k.rsplit('.').next().and_then(|h| h.parse::<usize>().ok()) else { continue };
         if g.tokens(h, TROOP) <= 0 {
             cx.set_key(g, &k, 0);
@@ -492,7 +508,7 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             cx.set_key(g, &corp_extra_key(b, until), 0);
         }
     }
-    for (k, v) in keys_under(g, "board.extra_war.") {
+    for (k, v) in keys_under(g, EXTRA_WAR) {
         if v <= round {
             cx.set_key(g, &k, 0);
         }
@@ -504,7 +520,7 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             cx.tally(g, &KeyBuf::new("board.moves_lost.").num(s), lost);
         }
     }
-    for prefix in ["board.new_factory.", "board.destroyed_at.", "board.landed_at.", "board.landed_n.", MOVED] {
+    for prefix in ROUND_MARKS {
         for (k, _) in keys_under(g, prefix) {
             cx.set_key(g, &k, 0);
         }

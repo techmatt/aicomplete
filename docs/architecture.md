@@ -54,8 +54,8 @@ most one instance per module id, in one variant, with its `params` and, for
 
 - **Every** parameter must be given: no defaults in code. Unknown, missing, wrong-kind
   and out-of-range values are errors naming it.
-- **Integers only** (printable). A `list` is a per-round
-  schedule (the last entry repeats, `module::scheduled`) or a table.
+- **Integers only** (printable). A `list` is a table (by
+  difficulty, tier, country or track).
 - A card belongs to at most one module; leaving one out removes it from the game.
 - `round` lists `"<module>.<phase>"`, each any number of times; `"a.x+b.y"` combines
   several modules' **decision** phases into one simultaneous phase.

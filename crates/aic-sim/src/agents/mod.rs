@@ -2,9 +2,11 @@
 //! with hands and drafts open (as at a table where the team talks it
 //! through), and makes the "players choose" decisions too. Agents play
 //! through the public API only (`Rules::legal_actions_into`, `apply_mut`,
-//! reading the state) and, but for the planner, see only what the printed
-//! game shows: before any search they hide the decks' order and the dice
-//! behind a guess of their own ([`determinize`]).
+//! reading the state) and, but for the planner and the oracle, see only what the
+//! printed game shows: before any search they hide the decks' order and the dice
+//! behind a guess of their own ([`determinize`]). The one exception (151): in the
+//! middle of a resolution (a pending choice) the search scores the true table, since
+//! a guess can change what the recorded answers replay through.
 //!
 //! Each agent has its own RNG, seeded from the game seed on a stream no
 //! engine purpose uses, so a game still replays from seed + actions and
@@ -34,6 +36,8 @@
 //!   rollouts across rounds (`candidates` > 0); in the 008 sweep the beam
 //!   and rollouts did worse. Built (008) to find out whether a building
 //!   engine can beat greedy's no-building play.
+//! - `strategist` (082): an alias, the engine with strategies (`strategy=1`),
+//!   one action at a time with no search, and the deck clock off (157).
 //!
 //! - `planner` (028): the engine, trying a shortlist of alternatives in the
 //!   action phase by rolling each out `horizon` rounds with the engine as
@@ -317,7 +321,7 @@ impl AgentSpec {
         let Some(rung) = rung(kind) else {
             let names: Vec<&str> = LADDER.iter().map(|(k, _)| *k).collect();
             return Err(format!(
-                "unknown agent {kind:?}; known: {}",
+                "unknown agent {kind:?}; known: {}, or the aliases strategist, sweep",
                 names.join(", ")
             ));
         };

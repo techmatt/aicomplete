@@ -54,8 +54,9 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// Bump on **any** change to how the rules play out (module behavior,
 /// engine loop, RNG use), so results from different rules are never
 /// mistaken for the same experiment. Recorded with every result. The
-/// `golden_game` test fails until it is bumped and the golden fingerprint
-/// updated (also in `scripts/wasm-smoke.mjs`).
+/// `golden_game` test (`tests/mod.rs`) fails until it is bumped and
+/// `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` and `GOLDEN_CONTENT_HASH` there are
+/// updated, with `GOLDEN` and `GOLDEN_CONTENT` in `scripts/wasm-smoke.mjs`.
 pub const RULES_REVISION: u32 = 69;
 
 /// The rules of the config embedded in `state`, checked against it.

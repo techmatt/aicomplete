@@ -105,7 +105,7 @@ pub(super) fn pieces_in_reach(w: &World, g: &GameState, seat: usize) -> Vec<usiz
 /// every face-up threat).
 pub(super) fn undelayed_threats(w: &World, g: &GameState, s: usize) -> Vec<(Key, usize)> {
     let mut active = threats::active(g);
-    active.retain(|(t, scope)| !threats::waits(g, t) && threats::may_counter(w, g, s, t, Some(*scope)));
+    active.retain(|(t, _)| !threats::waits(g, t) && threats::near(w, g, s, t));
     active
 }
 

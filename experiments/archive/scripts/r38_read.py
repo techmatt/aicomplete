@@ -13,7 +13,7 @@ import collections
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
 from screens import cnt, load  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')

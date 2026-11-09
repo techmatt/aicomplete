@@ -329,7 +329,7 @@ pub(super) fn counter_with(g: &mut GameState, cx: &mut Cx, s: usize, threat: &Ke
         if resource_only(&items) {
             return Err("that option is paid by pooling: use Pay".into());
         }
-        if !is_near(&w, g, s, threat) {
+        if !near(&w, g, s, threat) {
             return Err("only a player near the threat can counter it".into());
         }
         if !can_pay_whole(&w, g, s, threat, &items) {

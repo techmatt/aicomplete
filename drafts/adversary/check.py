@@ -92,7 +92,7 @@ def load_content():
     a = adversary_params()
     # 138: the build numbers left after creation lines replaced city_build, arrivals and escalation.
     build = {k: a[k] for k in ("corrupt_at", "corrupt_station_at", "corrupt_factory_at", "corrupt_land_at",
-                               "wall_troops", "botnet_compute", "threat_compute") if k in a}
+                               "wall_troops", "botnet_compute") if k in a}
     return t, read("projects.json"), {"board": dict(adv["board"], build=build), "events": events}
 
 
@@ -100,7 +100,7 @@ def engine_ops():
     text = (ROOT / "docs" / "ops.md").read_text(encoding="utf-8")
     ops = set(re.findall(r"^\| `([a-z_]+)` \|", text, re.M))
     adv = json.loads((ROOT / "content" / "adversary.json").read_text(encoding="utf-8"))
-    for card in adv["events"] if isinstance(adv, dict) else adv:  # twist ops live in content
+    for card in adv["events"]:  # twist ops live in content
         for tw in card.get("twists", []):
             ops.add(tw["op"])
     return ops

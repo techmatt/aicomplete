@@ -3,7 +3,7 @@
   "note": "150 ladder read (f5), set a: seeds 38296-38343, the three pairs, d0-d3; run the r63 binary on the same spec (baseline config only) for the pair.",
   "configs": [
     "configs/baseline.json",
-    "experiments/configs/msb_deck.json"
+    "experiments/archive/configs/msb_deck.json"
   ],
   "variants": [
     {

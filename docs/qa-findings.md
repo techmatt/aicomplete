@@ -61,7 +61,7 @@ Each hunt found most of its faults in the same places. Look there first:
 
 ## Open, deferred to Matt
 
-Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54.
+Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54; by 152 (both scenes): D69.
 
 | # | Area | Finding | Options, and the pick |
 |---|---|---|---|
@@ -78,18 +78,16 @@ Closed by 121 and 124 (git has them): D16, D43, D44, D47, D48, D51, D53, D54.
 | D55 | rules | At 1 country no military base: base arrivals, Escalation, Total War's base ambassadors place nothing. | **Matt's call**. |
 | D56 | content | `Content::check` lets through ops that never run: a threshold or `here` op on an AI board, the Science niche or `gain_per_tokens` in a trigger's ops. | Widen the checks (F196 did two). **Pick**. |
 | D50 | viewer | A new player's notes from two real-speed sessions: [viewer-notes.md](../experiments/results/118_bug_hunt_r46/viewer-notes.md). | Picks there. |
-| D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62: 5 energy, override cut; 10% even at 3 energy): the keep plan wants it, the play eval doesn't. | Fix the keep plan (agents), then more power **Matt's call** (148). |
-| D69 | card art | Power Purchase Agreement and Microgrid Lab Compact have no art scene. | Write and render them. **Matt's call**. |
-| D58 | speed | Greedy 1.63× a decision r58 → r59, 3.0× r60 → r61: settling the loss prompts threat execution asks (pay or discard, nearest ties) in `search::settled` (147's profile). | A cheaper settle of an uncountered threat's loss prompts (moves greedy's play). **Pick**. |
+| D57 | cards | Exascale Training Cluster kept in 59-72% of games, played in 1-3% (r62: 5 energy, override cut; 10% even at 3 energy): the keep plan wants it, the play eval doesn't. | 150 tried three keep-plan levers (kept `plan_spare`); one pricing for keep and play is an agents item of its own, then more power **Matt's call** (148, 150). |
+| D58 | speed | Greedy 1.63× a decision r58 → r59, 3.0× r60 → r61: settling the loss prompts that threat execution asks (pay or discard, nearest ties) in `search::settled` (147's profile); at r68 86-91% of greedy's time is `score_choose`, the prompt answers (157). | A cheaper settle of an uncountered threat's loss prompts (moves greedy's play). **Pick**. |
 | D66 | docs | principles.md's credits a game and card-pricing's cost range unmeasured at r60. | Re-read, restate. **Pick**. |
 
 ## Won't fix
 
 | # | Area | Report | Why not |
 |---|---|---|---|
-| W2 | alignment | "The last-drawn Alignment card is shuffled back before it resolves." | Not a bug: a drawn card goes face up on its side's resolved pile before it resolves, and neither deck ever reshuffles (alignment.md); an empty deck ends the game instead. |
+| W2 | alignment | "The last-drawn Alignment card is shuffled back before it resolves." | Not a bug: a drawn card goes face up on its side's resolved pile before it resolves, the Discord deck never reshuffles (a tip that finds it empty loses) and the Unity deck reshuffles only its resolved pile (alignment.md). |
 | W3 | view | "`PhaseView.waiting` is stale during a choice in an automatic phase." | Not reached (no choice before round 1's first decision phase in 62 seeds); the viewer reads who decides from the choice. |
-| W4 | plan | "`plan::next_build` leaves out ongoing projects (Recruitment Drive)." | It forecasts the build and escalation, as documented; only tests call it (no agent or client reads it), so this is no visible bug. |
 | W5 | viewer | The event log shows engine events raw (`var changed · key adversary.supply · delta +1`). | The viewer is debug-first (web/README.md); the board, panels and prompts carry the readable story. |
 | W6 | viewer | With the *View* tab open a 4-country step costs up to ~140 ms (it re-renders ~85 KB of view JSON); *Raw state* ~75 ms. | Debug tabs, closed by default; the default log tab steps in ~25–45 ms. |
 | W7 | sim | In counter rows "-" means both "never tallied" and "no game reached this round"; a "mean where reached" carries no count of the games that reached it. | Reading aids, not wrong numbers; `games.jsonl` has the detail. |

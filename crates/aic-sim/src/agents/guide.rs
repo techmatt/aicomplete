@@ -121,8 +121,8 @@ fn unpaid(w: &World, g: &GameState, t: &str) -> f64 {
 /// Whether the team can still counter threat `t` from what the seats who may
 /// counter it hold: then a player counters it rather than shelter (092: crediting
 /// a shelter for threats the team went on to counter cost 7.6 ±4.0 points).
-fn counterable(w: &World, g: &GameState, t: &str, scope: Option<usize>) -> bool {
-    let seats: Vec<usize> = (0..g.seats.len()).filter(|&s| threats::may_counter(w, g, s, t, scope)).collect();
+fn counterable(w: &World, g: &GameState, t: &str) -> bool {
+    let seats = threats::near_seats(w, g, t);
     if seats.is_empty() {
         return false;
     }
@@ -166,7 +166,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
             continue;
         }
         let share = unpaid(w, g, &t);
-        if share <= 0.0 || (counter_first && counterable(w, g, &t, Some(scope))) {
+        if share <= 0.0 || (counter_first && counterable(w, g, &t)) {
             continue;
         }
         // 145: each seat's nodes this threat takes, capped once at its open

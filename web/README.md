@@ -35,7 +35,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
 
 ## Using it
 
-- **Play:** pick a config (any file in `configs/`; `baseline.json` is the default) and a
+- **Play:** pick a config (any config in `configs/`; `baseline.json` is the default) and a
   seed, then *New game*. Each seat's panel lists that seat's legal actions; one person
   plays every seat, in any order during a simultaneous phase. Draft phases offer no pass.
   *Pass every seat*, *Random action* (R) and *Random to end* are for quick debugging.
@@ -95,7 +95,7 @@ change can move it, so remeasure before reading a layout change into a failure: 
 (same `AIC_URL`) prints that game's pane heights at the three sizes; diff two revisions' output.
 
 The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the baseline
-at `station_cubes` and `owned_station_cubes` 5 (corps) or 3 (researcher) on a quiet board (no arrivals, city builds or marches, `corrupt_at` 20)
+at `station_cubes` and `owned_station_cubes` 5 (corps) or 3 (researcher) on a quiet board (no troop steps or adversary supply, no corruption before round 20)
 for cubes, converters (a node on a city) and the Researcher's board; `e2e:sources`
 checks a face-up threat's sources and a forged payment refused.
 

@@ -285,11 +285,11 @@ fn land_corruption_blocks_a_node() {
     let x = numbered_where(m, 0, |h| kind(m, h) == HexKind::Open)[0];
     let mine = m.hexes[x].neighbors.iter().copied().find(|&y| kind(m, y) == HexKind::Open).unwrap();
     put(&mut g, mine, node(0), 1);
-    assert!(board::node_hexes(&w, &g, 0).contains(&x));
+    assert!(board::node_sites(&w, &g, 0).contains(&x));
     put(&mut g, x, ADV_AMBASSADOR, adversary::corrupt_n(&w, CorruptSite::Land, 0));
     with_cx(&rules, |cx| adversary::corrupt_sites(&mut g, cx, CorruptSite::Land, 0, Some(0)));
     assert_eq!((g.tokens(x, LAND_CORRUPTION), g.tokens(x, ADV_AMBASSADOR), g.tokens(x, ADV_CUBE)), (1, 0, 0));
-    assert!(!board::node_hexes(&w, &g, 0).contains(&x));
+    assert!(!board::node_sites(&w, &g, 0).contains(&x));
     assert!(!plan::corrupt_target(&w, &g, x, CorruptSite::Land), "it corrupts once");
 }
 

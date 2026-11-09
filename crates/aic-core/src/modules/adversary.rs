@@ -58,7 +58,7 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act; botnets make adversary compute onto the projects"),
     PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of adversary ambassadors (on it and next to it) pulls them in and corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, ambassador income into each board's pool"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, ambassador income into each board's pool; then every firewall comes off"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
@@ -442,9 +442,6 @@ impl Module for Adversary {
                         return Ok(());
                     }
                 }
-                // 118: a cordon lasts the round, as its card says ("no arrivals land next
-                // round"), and counts down at cleanup with the other flags: cleared here
-                // (068), it let the build's own compute (Rapid Buildout) land arrivals.
                 // Botnets make compute, except under a player ambassador.
                 let per = w.int("adversary.botnet_compute");
                 let (mut made, mut blocked) = (0, 0);

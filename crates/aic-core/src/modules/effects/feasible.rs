@@ -114,7 +114,7 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             Op::DiscardHand { .. } => !g.pile(&cards::hand(seat)).is_empty(),
             Op::PlaceNode { free, .. } => {
                 board::can_pay_placement(w, g, seat, placing(*free), gained)
-                    && !board::node_hexes(w, g, seat).is_empty()
+                    && !board::node_sites(w, g, seat).is_empty()
             }
             Op::ClearMarkers { .. } => any_hex(g, |h| marker_in_reach(w, g, seat, h)),
             Op::ShieldNode { .. } => any_hex(g, |h| shieldable(g, seat, h)),

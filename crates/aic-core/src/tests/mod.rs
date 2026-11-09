@@ -180,7 +180,7 @@ fn actions_with_room() -> (Rules, GameState) {
     let w = rules.world();
     for s in 0..2 {
         assert!(
-            crate::modules::board::node_hexes(&w, &g, s).len() >= 2,
+            crate::modules::board::node_sites(&w, &g, s).len() >= 2,
             "seat {s} has no room to grow at setup"
         );
     }
@@ -573,11 +573,12 @@ const GOLDEN_CONTENT_HASH: &str = "8bd963c4138f6cb0";
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).
 /// `scripts/wasm-smoke.mjs` checks the wasm build reaches the same state.
-/// If this fails after an intended rules change, bump `RULES_REVISION`
-/// and update `GOLDEN_REVISION` and both fingerprints. `GOLDEN_CONTENT_HASH`
-/// is there because this game may never pay for a repriced card: it moves on any
-/// edit to `content/`, a name or a space included, so update it (and the one in
-/// wasm-smoke) on its own when play doesn't change.
+/// If this fails after an intended rules change, bump `RULES_REVISION` and
+/// update `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` (and `GOLDEN` in wasm-smoke).
+/// `GOLDEN_CONTENT_HASH` is there because this game may never pay for a
+/// repriced card: it moves on any edit to `content/`, a name or a space
+/// included, so update it (and `GOLDEN_CONTENT` in wasm-smoke) on its own when
+/// play doesn't change.
 #[test]
 fn golden_game() {
     let rules = Rules::new(&baseline()).unwrap();

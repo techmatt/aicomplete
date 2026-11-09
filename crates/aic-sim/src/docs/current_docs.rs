@@ -7,9 +7,9 @@
 use std::fs;
 use std::path::Path;
 
-/// Where the repo's current docs live: paths from its root. A directory is read whole but
-/// for `experiments/results/`; `experiments` itself only at its top level.
-const FILES: [&str; 4] = ["CLAUDE.md", "README.md", "web/README.md", "tools/card-art/README.md"];
+/// Where the repo's current docs live beside [`super::ROOT_DOCS`]: paths from its root. A
+/// directory is read whole but for `experiments/results/`; `experiments` itself only at its
+/// top level.
 const DIRS: [&str; 1] = ["docs"];
 const TOP_LEVEL: [&str; 1] = ["experiments"];
 
@@ -71,7 +71,7 @@ fn walk(path: &Path, deep: bool, out: &mut Vec<String>) {
 /// Every history heading in the current docs, one line each.
 pub fn failures() -> Vec<String> {
     let mut out = Vec::new();
-    for f in FILES {
+    for f in super::ROOT_DOCS {
         read(Path::new(f), &mut out);
     }
     for d in DIRS {

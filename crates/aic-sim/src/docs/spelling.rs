@@ -26,12 +26,8 @@ const BRITISH: &[&str] = &[
     "downwards", "onwards",
 ];
 
-/// Where the repo speaks to a reader: paths from its root.
-const ROOTS: [&str; 15] = [
-    "CLAUDE.md",
-    "README.md",
-    "web/README.md",
-    "tools/card-art/README.md",
+/// Where the repo speaks to a reader beside [`super::ROOT_DOCS`]: paths from its root.
+const ROOTS: [&str; 11] = [
     "content",
     "docs",
     "configs",
@@ -79,10 +75,10 @@ fn walk(path: &Path, out: &mut Vec<String>) {
     }
 }
 
-/// Every British spelling under `ROOTS`, one line each.
+/// Every British spelling in `ROOT_DOCS` and under `ROOTS`, one line each.
 pub fn failures() -> Vec<String> {
     let mut out = Vec::new();
-    for root in ROOTS {
+    for root in super::ROOT_DOCS.into_iter().chain(ROOTS) {
         walk(Path::new(root), &mut out);
     }
     out

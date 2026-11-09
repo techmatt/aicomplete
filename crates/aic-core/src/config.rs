@@ -79,7 +79,8 @@ impl TryFrom<RawModuleConfig> for ModuleConfig {
 }
 
 /// A tunable value. Integers only: every number must be printable on a card
-/// or a board track. A list is a per-round schedule or a table.
+/// or a board track. A list is a table (by difficulty, stage,
+/// board, seat, country or site kind) or a list of thresholds.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(untagged)]
 pub enum ParamValue {

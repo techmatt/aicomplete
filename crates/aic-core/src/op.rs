@@ -337,6 +337,16 @@ impl RoundFlag {
             RoundFlag::GridDown => "grid_down",
         }
     }
+
+    /// 135: a seat's flag, put on the players near a threat (or every player).
+    pub fn on_seats(self) -> bool {
+        matches!(self, RoundFlag::PowerDown | RoundFlag::StationOutage)
+    }
+
+    /// 135: a hex's flag, put on the hexes near a threat; the rest go on a country.
+    pub fn on_hexes(self) -> bool {
+        matches!(self, RoundFlag::Blackout | RoundFlag::Embargo | RoundFlag::StationDark | RoundFlag::GridDown)
+    }
 }
 
 /// One thing content does. See the module docs for how context shapes it;
@@ -1077,6 +1087,15 @@ fn two() -> i64 {
 }
 
 impl Op {
+    /// The ops printed inside this one (a `then`, a choice's `options`).
+    pub fn nested(&self) -> &[Op] {
+        match self {
+            Op::IfTags { then, .. } | Op::OnePlayer { then } | Op::When { then, .. } | Op::Threshold { then, .. } => then,
+            Op::LoseOr { options } => options,
+            _ => &[],
+        }
+    }
+
     /// The lists that may print this op: the home of "what can go where".
     pub fn slots(&self) -> &'static [Slot] {
         use Slot::*;

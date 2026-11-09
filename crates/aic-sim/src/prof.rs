@@ -37,11 +37,16 @@ pub enum Part {
     ScoreOther,
 }
 
+/// Each [`Part`]'s name, in its order (`Part as usize` indexes it).
 #[cfg(feature = "profile")]
 pub const PARTS: [&str; 16] = [
     "apply", "apply_mut", "clone", "legal", "eval", "determinize", "line", "sync", "policy", "top",
     "extend", "score_power", "score_play", "score_standard", "score_choose", "score_other",
 ];
+
+// A part added to `Part` needs its name in `PARTS`.
+#[cfg(feature = "profile")]
+const _: () = assert!(PARTS.len() == Part::ScoreOther as usize + 1);
 
 #[cfg(feature = "profile")]
 mod on {

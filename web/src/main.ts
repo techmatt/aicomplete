@@ -53,12 +53,22 @@ const ui = {
   recordFile: $<HTMLInputElement>('record-file'),
 };
 
-/** Every file in configs/, read at build time (the dev server reloads on changes). */
+/** Every config in configs/ (a file with `modules`; not variants.json's override matrix), read
+ *  at build time (the dev server reloads on changes). */
 const CONFIGS: Record<string, string> = Object.fromEntries(
   Object.entries(import.meta.glob('../../configs/*.json', { query: '?raw', import: 'default', eager: true }))
     .map(([path, text]) => [path.split('/').pop() as string, text as string])
+    .filter(([, text]) => isConfig(text))
     .sort(([a], [b]) => a.localeCompare(b)),
 );
+
+function isConfig(text: string): boolean {
+  try {
+    return 'modules' in JSON.parse(text);
+  } catch {
+    return false;
+  }
+}
 
 let tl: Timeline;
 let shown: View;

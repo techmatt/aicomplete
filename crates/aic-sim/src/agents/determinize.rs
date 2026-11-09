@@ -9,7 +9,7 @@
 //!   not seen elsewhere), their order is not, so they are shuffled;
 //! - the Unity and Discord decks: a game deals a subset of the printed cards
 //!   face down (the Unity deck always, the Discord deck at difficulty 4), so
-//!   each pile is dealt again from the printed cards of its tier not yet
+//!   each pile is dealt again from the printed cards of its side not yet
 //!   resolved, at its size ([`redeal_alignment`], D20);
 //! - the adversary deck: its size and the stage of each position are public
 //!   (the stages are stacked), next round's card (`adversary.next`) is face
@@ -23,7 +23,10 @@
 //! - every RNG stream is reseeded, so later reshuffles are guesses too.
 //!
 //! A pending choice's snapshot gets the same guess, so answering it replays
-//! the partly resolved step consistently.
+//! the partly resolved step consistently. The agents' search never reaches that
+//! branch (151): it skips the guess while a choice is pending
+//! (`search::guess_unless_pending`), so only `experiment.rs`'s win probability
+//! and the tests guess a pending table.
 
 use std::sync::Arc;
 
@@ -41,18 +44,15 @@ pub(crate) const SHUFFLED: [&str; 7] = [
     "threats.deck.1",
     "threats.deck.2",
     "threats.deck.3",
-    DEALT[0].2,
-    DEALT[1].2,
+    DEALT[0].1,
+    DEALT[1].1,
 ];
 
-/// The Alignment piles a game may deal a subset of: (side, unused, pile).
+/// The Alignment piles a game may deal a subset of: (side, pile).
 /// 156: one deck a side (its cards print three tiers).
-const DEALT: [(Side, u8, &str); 2] = [
-    (Side::Unity, 0, "alignment.deck.unity"),
-    (Side::Discord, 0, "alignment.deck.discord"),
-];
+const DEALT: [(Side, &str); 2] = [(Side::Unity, "alignment.deck.unity"), (Side::Discord, "alignment.deck.discord")];
 
-/// Deals each Alignment pile again from the printed cards of its tier not
+/// Deals each Alignment pile again from the printed cards of its side not
 /// yet resolved, at the pile's size (D20): which cards were dealt is face
 /// down. A pile with no such cards to fill it (only a test's) stays.
 ///
@@ -61,7 +61,7 @@ const DEALT: [(Side, u8, &str); 2] = [
 /// deals covers the next card, the one a line feels first (054).
 fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng, turn: usize) {
     let w = rules.world();
-    for (side, _, key) in DEALT {
+    for (side, key) in DEALT {
         let n = g.pile(key).len();
         if n == 0 {
             continue;
@@ -103,12 +103,12 @@ fn drawn_on_top(was: &[Key], now: &[Key], guessed: &[Key]) -> Option<Vec<Key>> {
 pub fn hide_alignment_deal(rules: &Rules, g: &mut GameState, seed: u64, sample: usize) {
     let original = g.pending.is_some().then(|| g.clone());
     redeal_alignment(rules, g, &mut ChaCha8Rng::seed_from_u64(seed), sample);
-    let guessed = DEALT.map(|(_, _, key)| g.pile(key).to_vec());
+    let guessed = DEALT.map(|(_, key)| g.pile(key).to_vec());
     let (Some(p), Some(original)) = (g.pending.as_mut().map(Arc::make_mut), &original) else {
         return;
     };
     let snap = Arc::make_mut(&mut p.snapshot);
-    for ((_, _, key), guess) in DEALT.into_iter().zip(guessed) {
+    for ((_, key), guess) in DEALT.into_iter().zip(guessed) {
         let (was, now) = (snap.pile(key), original.pile(key));
         let pile = match drawn_on_top(was, now, &guess) {
             Some(pile) => pile,
@@ -145,7 +145,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
     }
     redeal_alignment(rules, g, rng, 0);
     resample_adversary_deck(rules, g, rng);
-    shuffle_project_stages(rules, g, rng);
+    shuffle_project_deck(g, rng);
     let seeds: Vec<(Key, u64)> = g.rng.keys().map(|k| (*k, rng.next_u64())).collect();
     reseed(g, &seeds);
     if let (Some(p), Some(original)) = (g.pending.as_mut().map(Arc::make_mut), &original) {
@@ -177,7 +177,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
             } else if key == adversary::DECK {
                 resample_adversary_deck(rules, snap, rng);
             } else if key == adversary::PROJECT_DECK {
-                shuffle_project_stages(rules, snap, rng);
+                shuffle_project_deck(snap, rng);
             } else {
                 // The step drew the snapshot's whole pile (public now) and
                 // reshuffled (017-026: a tip reshuffled the moment its deck
@@ -199,7 +199,7 @@ fn guess(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
 
 /// Shuffles the project deck (135: one shuffled deck; its contents are
 /// public, the projects not in the row, in play or discarded).
-fn shuffle_project_stages(_rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) {
+fn shuffle_project_deck(g: &mut GameState, rng: &mut ChaCha8Rng) {
     let Some(deck) = g.piles.get_mut(adversary::PROJECT_DECK) else {
         return;
     };
@@ -274,7 +274,7 @@ mod tests {
                         );
                         continue;
                     }
-                    if DEALT.iter().any(|(_, _, key)| key == k) {
+                    if DEALT.iter().any(|(_, key)| key == k) {
                         // Its size is public; which cards were dealt is not.
                         assert_eq!(a.len(), b.len(), "{k}");
                         continue;

@@ -56,7 +56,7 @@ const ACTION_PHASE: &str = "cards.play+";
 /// Whether `state`'s phase is one the planner searches, a pending choice
 /// inside it included. In every other phase it plays the next move of its
 /// line, whatever the top-level score says.
-fn searched_phase(state: &GameState) -> bool {
+pub(super) fn searched_phase(state: &GameState) -> bool {
     state.config.round.get(state.phase).is_some_and(|p| p.starts_with(ACTION_PHASE))
 }
 
@@ -134,13 +134,33 @@ fn tips(g: &GameState) -> i64 {
 
 /// Actions that are the same idea: the shortlist tries one of each. A threat
 /// paid in pieces is one idea; insight gifts and withdrawals are not tried.
-fn idea(a: &Action) -> Option<String> {
+pub(super) fn idea(a: &Action) -> Option<String> {
     match a {
         Action::Withdraw { .. } => None,
         // 135: a menu's resources are different ideas (credits, or ambassadors).
         Action::Pay { seat, threat, resource, .. } => Some(format!("pay {seat} {threat} {resource:?}")),
         _ => Some(format!("{a:?}")),
     }
+}
+
+/// A fresh rollout policy: the engine with `forced` behaviors and `ev`'s seats'
+/// strategies (082), guessing from `seed`; the planner's and the oracle's.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn rollout_policy(
+    ev: &Eval,
+    forced: &Forced,
+    seed: u64,
+    samples: usize,
+    choices: usize,
+    prune: usize,
+    powers: usize,
+    answers: usize,
+) -> Box<dyn Agent + Send> {
+    let rng = ChaCha8Rng::seed_from_u64(seed);
+    // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
+    let greedy = Greedy::new(ev.clone(), rng, samples, 1, choices);
+    let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).in_rollout());
+    Box::new(Policy::new(inner, forced.clone()).with_strategies(ev.strategies()))
 }
 
 impl Planner {
@@ -156,15 +176,12 @@ impl Planner {
         }
     }
 
-    /// A fresh rollout policy: the engine with this planner's forced
-    /// behaviors and its seats' strategies (082), guessing from a seed of the
+    /// A fresh rollout policy ([`rollout_policy`]), guessing from a seed of the
     /// state's own actions count, so a line repeats.
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
-        let rng = ChaCha8Rng::seed_from_u64(g.seed ^ g.stats.actions as u64);
-        // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
-        let greedy = Greedy::new(self.ev.clone(), rng, self.cfg.samples, 1, self.cfg.choices);
-        let inner = Box::new(greedy.pruned(self.cfg.prune).powers(self.cfg.powers).answers(self.cfg.answers).in_rollout());
-        Box::new(Policy::new(inner, self.forced.clone()).with_strategies(self.ev.strategies()))
+        let c = &self.cfg;
+        let seed = g.seed ^ g.stats.actions as u64;
+        rollout_policy(&self.ev, &self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers)
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round

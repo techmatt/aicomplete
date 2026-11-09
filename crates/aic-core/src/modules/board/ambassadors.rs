@@ -167,8 +167,8 @@ pub fn liberate_at(w: &World) -> i64 {
 }
 
 /// City `h` is liberated: the adversary's cube comes off, so it is clean,
-/// Unity sways, and it drops down the piece ladder rather than off the board
-/// (027: `free_leaves` adversary ambassadors stay on it). A liberate card
+/// Unity sways, and `board.free_leaves` adversary ambassadors land on it
+/// (027; none at 0). A liberate card
 /// with `align` (080) puts the seat's cube on it afterward
 /// (`effects::removal::liberate_city`).
 pub fn liberate(g: &mut GameState, cx: &mut Cx, h: usize) {

@@ -1,4 +1,4 @@
-# Card pricing (r46)
+# Card pricing
 
 How a card's price is set, as the set stands. Every price is a **candidate**. The cards themselves are
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are

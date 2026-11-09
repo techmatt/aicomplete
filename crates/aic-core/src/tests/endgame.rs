@@ -304,7 +304,7 @@ fn a_marker_adds_nothing_where_there_is_corruption_and_blocks_the_hex() {
     assert_eq!(g.tokens(n, MARKER), 0, "a botnet is corruption");
     put(&mut g, n, MARKER, 1);
     let w = rules.world();
-    assert!(!board::node_hexes(&w, &g, 0).contains(&n));
+    assert!(!board::node_sites(&w, &g, 0).contains(&n));
     with_cx(&rules, |cx| board::lose_node(&mut g, cx, a, 0, "test"));
     assert_eq!(g.tokens(a, MARKER), 1);
 }
@@ -343,7 +343,7 @@ fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
     let a = rules.map.numbered(0, piece(0).node);
     let marked = w.map.hexes[a].neighbors.iter().copied().find(|&h| !is_ocean(&w, h)).unwrap();
     put(&mut g, marked, MARKER, 1);
-    assert!(!board::node_hexes(&w, &g, 0).contains(&marked), "no nodes on a marker");
+    assert!(!board::node_sites(&w, &g, 0).contains(&marked), "no nodes on a marker");
     set_res(&mut g, 0, Resource::Energy, 0);
     set_res(&mut g, 0, Resource::Credits, 5);
     let credits = 5 - w.int("board.clear_cost");

@@ -3,7 +3,7 @@ use aic_core::{Config, Rules};
 
 use super::blocks::*;
 use super::run::{
-    block, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS, RULES_BUDGET,
+    block, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS, DOC_BUDGET,
 };
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
@@ -56,12 +56,13 @@ fn every_standard_action_has_a_row() {
 fn a_config_change_changes_its_block() {
     let base = baseline(&[]);
     // One off the baseline, so a dial item landing on any value can't make it a no-op
-    // (149); down from the range's top (5), which an override can't pass (150).
+    // (149); down from the range's top, which an override can't pass (150).
     let s2 = base.world().int("adversary.stage2_removed");
-    let build_bonus = format!("adversary.stage2_removed={}", if s2 < 3 { s2 + 1 } else { s2 - 1 });
+    let top = base.tunables().into_iter().find(|t| t.key == "adversary.stage2_removed").expect("a tunable").max;
+    let stage2_removed = format!("adversary.stage2_removed={}", if s2 < top { s2 + 1 } else { s2 - 1 });
     type Block = fn(&Rules) -> String;
     let blocks: [(&str, Block); 8] = [
-        (&build_bonus, difficulty_block),
+        (&stage2_removed, difficulty_block),
         ("board.remove_count=2", standard_actions_block),
         ("board.clear_unity=3", sway_sources_block),
         ("alignment.purge_at=1,3,5", purge_ease_block),
@@ -117,7 +118,7 @@ fn check_wants_each_block_once_and_files_in_budget() {
         ("docs/rules/b.md".to_string(), "<!-- generated: corps -->".to_string()),
     ];
     assert_eq!(rules_file_failures(&twice).len(), 1);
-    let big = vec![("docs/rules/a.md".to_string(), all + &"x".repeat(RULES_BUDGET))];
+    let big = vec![("docs/rules/a.md".to_string(), all + &"x".repeat(DOC_BUDGET))];
     assert_eq!(rules_file_failures(&big).len(), 1);
 }
 

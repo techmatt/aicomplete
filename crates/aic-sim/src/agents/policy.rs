@@ -103,8 +103,8 @@ macro_rules! forced_table {
             (plan_hand: usize, false, 0.0, "probe guard: keep nothing while the hand holds this many cards (0: off)")
             /// What a credit paid for a keep costs the plan (024).
             (plan_credit: f64, false, 3.0, "what a credit paid for a keep costs the keep plan")
-            /// What the keep plan adds, in credits, for each marker a card would clear
-            /// threat it would delay and nodes it would shield on the table as it
+            /// What the keep plan adds, in credits, for each marker a card would clear,
+            /// threat it would delay and node it would shield on the table as it
             /// stands (046: priced at its printed cost, a 2-credit Science card lost
             /// every keep to a tier-2).
             (plan_niche: f64, false, 3.0, "credits the keep plan adds per marker a card would clear now, threat it would delay and nodes it would shield")

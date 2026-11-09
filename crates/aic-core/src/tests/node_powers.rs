@@ -163,7 +163,7 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
         .find(|&h| kind(&rules.map, h) != HexKind::Ocean)
         .unwrap();
     put(&mut g, blocked, node(1), 1);
-    let hexes = board::node_hexes(&w, &g, 0);
+    let hexes = board::node_sites(&w, &g, 0);
     assert!(!hexes.contains(&blocked));
     assert!(hexes
         .iter()

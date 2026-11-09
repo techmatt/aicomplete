@@ -340,7 +340,7 @@ function adversary(a) {
     tier: a.stage,
     tierLabel: `Stage ${a.stage}`,
     keywords: [],
-    ops: { twists: a.twists },
+    ops: { standing: a.standing, twists: a.twists },
   });
 }
 

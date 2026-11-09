@@ -13,17 +13,22 @@ pub(super) fn loc_key(threat: &str, i: usize) -> KeyBuf {
 
 /// The hexes of `t`'s location tokens, in its locations' order (a location
 /// with no site in its country has none).
-pub fn tokens(g: &GameState, t: &Key) -> Vec<usize> {
-    tokens_of(g, t)
+pub fn tokens(g: &GameState, t: &str) -> Vec<usize> {
+    token_hexes(g, t).collect()
 }
 
-pub(super) fn tokens_of(g: &GameState, t: &str) -> Vec<usize> {
-    (0..MAX_TOKENS)
-        .filter_map(|i| {
-            let v = g.var(&loc_key(t, i));
-            (v > 0).then(|| v as usize - 1)
-        })
-        .collect()
+/// [`tokens`] with no allocation.
+fn token_hexes<'a>(g: &'a GameState, t: &'a str) -> impl Iterator<Item = usize> + 'a {
+    (0..MAX_TOKENS).filter_map(move |i| {
+        let v = g.var(&loc_key(t, i));
+        (v > 0).then(|| v as usize - 1)
+    })
+}
+
+/// The hexes of `t`'s country: where a threat with no token (a forced pull, a
+/// content bug) is measured from and reaches.
+fn scope_hexes<'a>(w: &'a World, g: &GameState, t: &str) -> &'a [usize] {
+    scope_of(g, t).map(|c| w.map.countries[c].hexes.as_slice()).unwrap_or(&[])
 }
 
 /// The hex of `t`'s token of location type `loc`, if it has one.
@@ -126,52 +131,38 @@ pub(super) fn clear_tokens(g: &mut GameState, cx: &mut Cx, threat: &Key) {
     }
 }
 
-/// The hexes `t` reaches: within 1 of any token. A threat with no token (a
-/// forced pull, a content bug) reaches its whole country.
-fn reach(w: &World, g: &GameState, t: &str) -> Vec<usize> {
-    let tk = tokens_of(g, t);
-    if tk.is_empty() {
-        return scope_of(g, t).map(|c| w.map.countries[c].hexes.clone()).unwrap_or_default();
-    }
-    let mut hexes: Vec<usize> = tk.iter().flat_map(|&h| within(w, h, 1)).collect();
-    hexes.sort_unstable();
-    hexes.dedup();
-    hexes
-}
-
-/// 148: the hexes `t` reaches ([`reach`]) as a bit mask, bit `h` for hex `h`, built
-/// with no allocation; `None` on a board over 128 hexes (the callers then read
-/// [`reach`]). The eval asks "is seat s near t" of every threat for every seat.
-fn near_mask(w: &World, g: &GameState, t: &str) -> Option<u128> {
-    if w.map.hexes.len() > 128 {
-        return None;
-    }
+/// 148: the hexes `t` reaches as a bit mask, bit `h` for hex `h`, built with no
+/// allocation: within 1 of any token, or its whole country with none (a forced
+/// pull, a content bug). `Map::build` holds a board to `map::MAX_HEXES` (128).
+/// The eval asks "is seat s near t" of every threat for every seat.
+fn near_mask(w: &World, g: &GameState, t: &str) -> u128 {
     let mut mask = 0u128;
-    let mut any = false;
-    for i in 0..MAX_TOKENS {
-        let v = g.var(&loc_key(t, i));
-        if v <= 0 {
-            continue;
-        }
-        let h = (v - 1) as usize;
-        any = true;
+    for h in token_hexes(g, t) {
         mask |= 1u128 << h;
         for &n in &w.map.hexes[h].neighbors {
             mask |= 1u128 << n;
         }
     }
-    if !any {
-        for &h in scope_of(g, t).map(|c| w.map.countries[c].hexes.as_slice()).unwrap_or(&[]) {
+    if mask == 0 {
+        for &h in scope_hexes(w, g, t) {
             mask |= 1u128 << h;
         }
     }
-    Some(mask)
+    mask
 }
 
-/// 148: whether [`near_mask`] reads the same hexes as [`reach`] for `t` (the test's check).
+/// 148: whether [`near_mask`] reads the same hexes as a plain computation from
+/// [`origins`] (the test's check).
 #[cfg(test)]
 pub fn mask_matches_reach(w: &World, g: &GameState, t: &str) -> bool {
-    near_mask(w, g, t).is_none_or(|m| mask_hexes(m).collect::<Vec<_>>() == reach(w, g, t))
+    let mut plain: Vec<usize> = if tokens(g, t).is_empty() {
+        origins(w, g, t)
+    } else {
+        origins(w, g, t).into_iter().flat_map(|h| within(w, h, 1)).collect()
+    };
+    plain.sort_unstable();
+    plain.dedup();
+    mask_hexes(near_mask(w, g, t)).collect::<Vec<_>>() == plain
 }
 
 /// The hexes of `mask`, ascending.
@@ -188,50 +179,29 @@ fn mask_hexes(mut mask: u128) -> impl Iterator<Item = usize> {
 
 /// Whether seat `s` is near `t`: a node or a player ambassador of its within
 /// 1 hex of any of `t`'s tokens.
-pub fn near(w: &World, g: &GameState, s: usize, t: &Key) -> bool {
-    is_near(w, g, s, t)
+pub fn near(w: &World, g: &GameState, s: usize, t: &str) -> bool {
+    seat_in_mask(g, s, near_mask(w, g, t))
 }
 
-pub(super) fn is_near(w: &World, g: &GameState, s: usize, t: &str) -> bool {
+/// Whether a node or a player ambassador of seat `s` sits on a hex of `mask`.
+fn seat_in_mask(g: &GameState, s: usize, mask: u128) -> bool {
     let (n, a) = (node(s), ambassador(s));
-    match near_mask(w, g, t) {
-        Some(m) => mask_hexes(m).any(|h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0),
-        None => reach(w, g, t).into_iter().any(|h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0),
-    }
+    mask_hexes(mask).any(|h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0)
 }
 
 /// The seats near `t`, in seat order: who may pay, and who its effects hit.
-pub fn near_seats(w: &World, g: &GameState, t: &Key) -> Vec<usize> {
-    seats_near(w, g, t)
-}
-
-pub(super) fn seats_near(w: &World, g: &GameState, t: &str) -> Vec<usize> {
+pub fn near_seats(w: &World, g: &GameState, t: &str) -> Vec<usize> {
     // 147: the reach read once for every seat (it was once a seat). 148: as a mask.
-    let hexes: Vec<usize> = match near_mask(w, g, t) {
-        Some(m) => {
-            return (0..g.seats.len())
-                .filter(|&s| {
-                    let (n, a) = (node(s), ambassador(s));
-                    mask_hexes(m).any(|h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0)
-                })
-                .collect();
-        }
-        None => reach(w, g, t),
-    };
-    (0..g.seats.len())
-        .filter(|&s| {
-            let (n, a) = (node(s), ambassador(s));
-            hexes.iter().any(|&h| g.tokens(h, n) > 0 || g.tokens(h, a) > 0)
-        })
-        .collect()
+    let m = near_mask(w, g, t);
+    (0..g.seats.len()).filter(|&s| seat_in_mask(g, s, m)).collect()
 }
 
 /// 146: the hexes an uncountered `t`'s harm is measured from: its tokens, or
 /// its country with none (a forced pull, a content bug).
 fn origins(w: &World, g: &GameState, t: &str) -> Vec<usize> {
-    let tk = tokens_of(g, t);
+    let tk = tokens(g, t);
     if tk.is_empty() {
-        return scope_of(g, t).map(|c| w.map.countries[c].hexes.clone()).unwrap_or_default();
+        return scope_hexes(w, g, t).to_vec();
     }
     tk
 }
@@ -272,26 +242,14 @@ pub fn nearest_nodes(w: &World, g: &GameState, s: usize, t: &str) -> Vec<usize> 
 }
 
 /// The land hexes within 1 of any of `t`'s tokens, sorted: its effects' "near it".
-pub fn near_hexes(w: &World, g: &GameState, t: &Key) -> Vec<usize> {
-    match near_mask(w, g, t) {
-        Some(m) => mask_hexes(m).filter(|&h| !is_ocean(w, h)).collect(),
-        None => reach(w, g, t).into_iter().filter(|&h| !is_ocean(w, h)).collect(),
-    }
+pub fn near_hexes(w: &World, g: &GameState, t: &str) -> Vec<usize> {
+    mask_hexes(near_mask(w, g, t)).filter(|&h| !is_ocean(w, h)).collect()
 }
 
 /// Seat `s`'s node hexes on or next to one of `t`'s tokens (a `nodes_near` counter).
 pub(super) fn nodes_near(w: &World, g: &GameState, s: usize, t: &str) -> Vec<usize> {
     let n = node(s);
-    match near_mask(w, g, t) {
-        Some(m) => mask_hexes(m).filter(|&h| g.tokens(h, n) > 0).collect(),
-        None => reach(w, g, t).into_iter().filter(|&h| g.tokens(h, n) > 0).collect(),
-    }
-}
-
-/// Whether seat `s` may counter `threat` (135: whether it is near it; `scope`
-/// is no longer read).
-pub fn may_counter(w: &World, g: &GameState, s: usize, threat: &str, _scope: Option<usize>) -> bool {
-    is_near(w, g, s, threat)
+    mask_hexes(near_mask(w, g, t)).filter(|&h| g.tokens(h, n) > 0).collect()
 }
 
 /// Whether `threat` carries `source`'s tag, or Universal (a typed Jam or Auto Counter).

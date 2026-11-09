@@ -242,10 +242,6 @@ pub fn greedy_scores(
     score_guesses(rules, ev, state, &guesses, legal, how)
 }
 
-/// The guesses a scoring of `state` averages, drawn from `rng`: none with
-/// `samples` 0, which uses the state as it is. Apart from scoring so a caller
-/// that may not need the scores (the planner past its budget, 069) still takes
-/// the same draws, and so plays the same.
 /// 151: a guess of the hidden information, except in the middle of a resolution (a pending choice): there the
 /// replay of the answers runs through hidden piles and hands (a project's "each player pays N or discards M
 /// cards", answered card by card, for every seat), and a guess that changes a pile or a hand the resolution
@@ -257,6 +253,10 @@ fn guess_unless_pending(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng) 
     }
 }
 
+/// The guesses a scoring of `state` averages, drawn from `rng`: none with
+/// `samples` 0, which uses the state as it is. Apart from scoring so a caller
+/// that may not need the scores (the planner past its budget, 069) still takes
+/// the same draws, and so plays the same.
 pub fn draw_guesses(rules: &Rules, rng: &mut ChaCha8Rng, state: &GameState, samples: usize) -> Vec<GameState> {
     (0..samples)
         .map(|_| {

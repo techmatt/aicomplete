@@ -58,7 +58,7 @@ where a gate can tell a good price from a bad one. A 48-seed band read is ±7 an
 
 **Ballpark simulation (Matt, 2026-11-03; supersedes the band above until he names a milestone).**
 Simulation is a ballpark check: two players only, rotating the board pairs (Builder + Protector, Builder + Researcher,
-Protector + Researcher), no c3, an engine smoke read first, then the `sweep` profile at 48 seeds a pair on one fresh set;
+Protector + Researcher), no c3, an engine smoke read first, then the judge (the strategist since the ruling's `sweep`) at 48 seeds a pair on one fresh set;
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 

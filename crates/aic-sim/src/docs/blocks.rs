@@ -364,7 +364,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         let k: Vec<String> = keys.iter().map(|k| tick(r, k)).collect();
         k.join(", ")
     };
-    // Each of `steps`' seven dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
+    // Each of `steps`' six dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
         ("Base rules".into(), vec![]),
         (String::new(), vec![]),

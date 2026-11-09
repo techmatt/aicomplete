@@ -179,7 +179,8 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
     Ok(())
 }
 
-/// The op's name for its tally (`effects.<name>`).
+/// The op's name for its tally (`effects.<name>`): its serde tag, for each op
+/// the dispatcher (`effects::one`) sends to [`one`].
 fn op_name(e: &Op) -> &'static str {
     match e {
         Op::Troops { .. } => "troops",
@@ -208,7 +209,7 @@ fn op_name(e: &Op) -> &'static str {
         Op::PlaceBotnet { .. } => "place_botnet",
         Op::SeizeFactory => "seize_factory",
         Op::Theft { .. } => "theft",
-        _ => "other",
+        _ => unreachable!("new_ops::one runs only the ops listed here"),
     }
 }
 
@@ -410,12 +411,7 @@ fn flag(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, name: RoundFlag, scope: Optio
             cx.set_key(g, k, v);
         }
     };
-    let seat_flag = matches!(name, RoundFlag::PowerDown | RoundFlag::StationOutage);
-    let hex_flag = matches!(
-        name,
-        RoundFlag::Blackout | RoundFlag::Embargo | RoundFlag::StationDark | RoundFlag::GridDown
-    );
-    if seat_flag {
+    if name.on_seats() {
         let seats = if everywhere {
             (0..g.seats.len()).collect()
         } else if scope == Some(Scope::Country) {
@@ -430,7 +426,7 @@ fn flag(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, name: RoundFlag, scope: Optio
         for c in 0..w.map.countries.len() {
             raise(g, cx, &board::flag(name, c));
         }
-    } else if hex_flag && scope != Some(Scope::Country) && (scope == Some(Scope::Near) || ctx.threat.is_some()) {
+    } else if name.on_hexes() && scope != Some(Scope::Country) && (scope == Some(Scope::Near) || ctx.threat.is_some()) {
         for h in ctx.hexes(&w, g) {
             raise(g, cx, &board::hex_flag(name, h));
         }

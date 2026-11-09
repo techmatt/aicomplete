@@ -7,6 +7,8 @@ import json
 import os
 import sys
 
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+
 
 def main():
     tags = set(sys.argv[1:])

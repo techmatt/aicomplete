@@ -10,6 +10,8 @@ import math
 import random
 import sys
 
+sys.stdout.reconfigure(encoding='utf-8', newline='\n')
+
 
 def run(p, q, z, first, every, cap, rng):
     seq = [(rng.random() < p) - (rng.random() < q) for _ in range(cap)]

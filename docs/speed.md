@@ -137,6 +137,8 @@ for the planners). 104's before/after on the same games, and 103's table, are in
 | planner (4 deals) | 10.4 | 4596 | 7.25 | 440 |
 | planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 7.25 | 424 |
 
-The strategist is about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
+**Stale for greedy:** at r68 (157) the flat-weight agents (greedy, the engine on greedy's weights) cost 6-70 s a
+game against the strategist's 1.5-3.6 s, 86-91% of it in `score_choose` (prompt answers). At r40 the strategist was
+about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
 threads beside another item, the read of `experiments/archive/screen-082.json` (1,152 games: four greedy agents and
 four planners) took 17 min at r34.

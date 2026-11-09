@@ -56,7 +56,8 @@ pub struct Spec {
     pub winprob: WinProb,
     #[serde(default)]
     pub closeness: Closeness,
-    /// 154: the end-game probe for round-cap losses (`crate::endgame`); off unless set.
+    /// 154: the end-game probe for round-cap losses (155: every loss, with
+    /// `all_losses`; `crate::endgame`); off unless set.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub endgame: Option<crate::endgame::EndgameProbe>,
     /// Records saved per category (close losses, lock-ins, surprises).
@@ -483,8 +484,7 @@ pub struct Margin {
     /// Adversary ambassadors left in the supply, and at the start.
     pub supply_left: i64,
     pub supply_start: i64,
-    /// Cities with the adversary's cube at the end (every city = a loss),
-    /// and cities with a player cube.
+    /// Corrupted cities at the end, and cities with a player cube.
     pub cities_corrupted_end: i64,
     pub cities_aligned_end: i64,
     /// Adversary pieces keeping the current level's bar from being met
@@ -1394,18 +1394,30 @@ mod tests {
     #[test]
     fn every_live_spec_loads_and_its_agents_parse() {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../experiments");
-        let mut files = json_in(&root);
-        for e in std::fs::read_dir(&root).unwrap().map(|e| e.unwrap().path()) {
-            if e.is_dir() && e.file_name().is_some_and(|n| n.to_string_lossy().starts_with("gate-close")) {
-                files.extend(json_in(&e));
-            }
-        }
-        assert!(files.len() > 10, "{root:?}: {} specs", files.len());
-        for f in files {
-            let text = std::fs::read_to_string(&f).unwrap();
+        let top = json_in(&root);
+        assert!(top.len() >= 5, "{root:?}: {} specs", top.len());
+        for f in &top {
+            let text = std::fs::read_to_string(f).unwrap();
             let spec: Spec = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{f:?}: {e}"));
             for a in &spec.agents {
                 AgentSpec::parse(a).unwrap_or_else(|e| panic!("{f:?}: {e}"));
+            }
+        }
+        // 159: each top-level spec's configs load (paths from the repo root, as a run
+        // reads them) and take each variant's `set`, as `cells` applies it: a retired
+        // key strands a spec as surely as a renamed agent parameter.
+        let repo = root.join("..");
+        for f in &top {
+            let spec: Spec = serde_json::from_str(&std::fs::read_to_string(f).unwrap()).unwrap();
+            for path in &spec.configs {
+                let text = std::fs::read_to_string(repo.join(path)).unwrap_or_else(|e| panic!("{f:?}: {path}: {e}"));
+                let base = Config::from_json(&text).unwrap_or_else(|e| panic!("{f:?}: {path}: {e}"));
+                for v in &spec.variants {
+                    let mut c = base.clone();
+                    for o in &v.set {
+                        c.apply_override(o).unwrap_or_else(|e| panic!("{f:?}, variant {:?}: {o}: {e}", v.name));
+                    }
+                }
             }
         }
     }

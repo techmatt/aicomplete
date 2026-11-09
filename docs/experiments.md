@@ -4,7 +4,7 @@
 S=target/release/aic-sim
 $S experiment experiments/smoke.json --out out/smoke    # a quick check (6 seeds)
 $S experiment experiments/ladder-v0.json --games 20 --seed 1000 --threads 6
-$S experiment experiments/read-151-f1-a.json --quick --resume  # scoping; resumes with its --out, --games, --seed
+$S experiment experiments/use.json --quick --resume     # scoping; resumes with its --out, --games, --seed
 ```
 
 ## The spec
@@ -129,12 +129,13 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `158_tier2_cards_r69/specs158.py read TAG SEED [--probe]` (three 48-seed sets, the three
-  pairs, d0-d3, into `out/`; `screen NAME AGENTS LEVELS SEEDS [--offs] [LEVER...]` for a dev screen, `--offs` adding a
-  config per new card switched off) on both binaries (its `run_read.sh`); a lever's `set` takes content overlay keys
-  (`cards.<id>.effects.0.max=5`), so a card what-if needs no build. Read by 157's `ladder157.py NEW OLD --measures` (pooled, paired, by set),
+- **Current recipe:** `scripts/bench/read_specs.py read TAG SEED --tag NNN [--probe]` (three 48-seed sets, the three
+  pairs, d0-d3, into `out/`; `screen NAME AGENTS LEVELS SEEDS --tag NNN [--offs --cards a,b,c] [LEVER...]` for a dev
+  screen, `--offs` adding a config per new card switched off) on both binaries (`scripts/bench/run_read.sh NNN ...`); a
+  lever's `set` takes content overlay keys (`cards.<id>.effects.0.max=5`), so a card what-if needs no build. Read by
+  `scripts/bench/ladder.py NEW OLD --measures [--bands ...]` (pooled, paired, by set),
   158's `wins158.py` (by lever or config) and `rates158.py` (a card's draft, play and use rates), `ends157.py` (win routes by Unity step, loss kinds) and `endgame157.py` (the probe by Unity step);
-  `partial157.py` reads a run still going. A flat-weight agent (`greedy`) costs 11-31 s a game on 8 threads (the
+  `partial157.py` reads a run still going. A flat-weight agent (`greedy`) costs 11-31 s a game on 8 threads at r68 (the
   strategist 1.5-3.6 s): cap its seeds (157: 24 a level beside a read).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
@@ -182,6 +183,6 @@ on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 ## Past runs
 
 Write-ups: index in [experiments/history.md](../experiments/history.md). Specs the binary refuses go to
-`experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close/`). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
+`experiments/archive/` (a fast-lane test parses each spec at the top level). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
 --var "name=<sets;...>"` runs `aic-sim run --json` per variant and agent into `out/tune/log.jsonl`; `log_table.py
 TAG...` makes a markdown table.

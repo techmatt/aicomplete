@@ -6,19 +6,28 @@
 //! and `docs/harms.md` are generated whole (the ledger's checks fail the run), and so
 //! are `docs/player-aid.md` (the house terms, printed in `docs/rules/README.md`'s
 //! *Terms* too) and `web/card/faces.json`, every card's face from its ops
-//! (`aic_core::face`). The run fails on a block missing or doubled, or a rules file
-//! over 15 KB. `--check` changes nothing and exits 1 if anything is stale, if a rules
-//! file backticks a `module.param` or bare `snake_case` name that isn't a tunable,
-//! on a British spelling (`crate::spelling`), on an "NNN's changes" heading
-//! (`crate::current_docs`), or on a problem in `docs/card-pricing-notes.json`. The fast
+//! (`aic_core::face`); `docs/agents.md` holds the `strategies` block. The run fails
+//! on a harm-ledger check, a block missing or doubled, a rules file or page over
+//! 15 KB (`run::DOC_BUDGET`), a stale rules-revision line, a rules file quoting words
+//! a card's face no longer says, a British spelling (`spelling`), an "NNN's changes"
+//! heading (`current_docs`) or a problem in `docs/card-pricing-notes.json`.
+//! `--check` changes nothing and exits 1 on any of those, if anything is stale, or if
+//! a rules file backticks a `module.param` or bare `snake_case` name that isn't a
+//! tunable or an op. The fast
 //! test lane runs the check. A block is a pure function of `Rules` or
 //! `Content`, so a test can show it moves with its source.
 
 mod blocks;
+mod current_docs;
 mod harms;
 mod run;
+mod spelling;
 #[cfg(test)]
 mod tests;
+
+/// The repo's docs at its root and in `web/` and `tools/` (paths from the root):
+/// read by the spelling, history-heading and page-budget checks.
+const ROOT_DOCS: [&str; 4] = ["README.md", "CLAUDE.md", "web/README.md", "tools/card-art/README.md"];
 
 pub use run::run;
 
