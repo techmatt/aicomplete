@@ -289,8 +289,12 @@ pub const LADDER: &[(&str, &[Param])] = &[
 const SWEEP: &str = "deals=1,lead=0";
 
 /// `strategist` (082): the engine with strategies, one action at a time and no
-/// search: the greedy-with-strategy tier.
-const STRATEGIST: &str = "strategy=1";
+/// search: the greedy-with-strategy tier. 157 (r68): the deck clock off
+/// (`w.clock` 0; the engine and planner keep it): it charged each round the team's
+/// Unity rate left it short of the purge's last step, which bought Unity tips over
+/// liberations. Dev seeds 36800-36831, 96 games a level: d1-d3 70.8 / 62.5 / 42.7
+/// on, 74.0 / 69.8 / 49.0 off.
+const STRATEGIST: &str = "strategy=1,w.clock=0";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -603,7 +607,7 @@ mod tests {
         assert_eq!(t.op("auto_counter"), 1.2);
         assert_eq!(base.res(aic_core::content::Resource::Chips), value::table().res(aic_core::content::Resource::Chips));
         assert!(std::ptr::eq(spec("greedy:t.auto_counter=1.2,t.chips=2.25").unwrap().table(), t), "one table a set");
-        assert_eq!(a.label(), "engine:strategy=1,t.auto_counter=1.2,t.chips=2.25");
+        assert_eq!(a.label(), "engine:strategy=1,w.clock=0,t.auto_counter=1.2,t.chips=2.25");
         assert_eq!(AgentSpec::parse(&a.label()).unwrap(), a);
         assert_eq!(spec("greedy:t.rates.tag_count=3").unwrap().table().rate("tag_count"), 3.0);
         assert!(spec("greedy:t.no_such_rate=1").is_err());

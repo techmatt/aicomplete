@@ -38,7 +38,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
     ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
-    ParamSpec::list("tier_at", 1, 50, "156: a side's tip count (before this tip) from which its cards resolve tier II, then tier III"),
+    ParamSpec::list("tier_at", 1, 50, "157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
 ];
@@ -169,10 +169,16 @@ pub fn unity_drawn(g: &GameState) -> i64 {
     g.var(tips_key(Side::Unity))
 }
 
-/// 156: the tier (1-3) a card of `side` resolves at on its next tip: the
-/// side's tips so far against `tier_at`.
+/// 156: the tier (1-3) a card of `side` resolves at on its next tip; 157 (r68,
+/// Matt 2026-11-09): that tip's own count against `tier_at` (tier I at tips 1-2,
+/// II at 3-5, III from the 6th, at `tier_at` 3, 6).
 pub fn next_tier(w: &World, g: &GameState, side: Side) -> usize {
-    1 + reached(w.list("alignment.tier_at"), g.var(tips_key(side))) as usize
+    tier_of(w, g.var(tips_key(side)) + 1)
+}
+
+/// 157: the tier a side's `tip`th tip (1-based) resolves at.
+fn tier_of(w: &World, tip: i64) -> usize {
+    1 + reached(w.list("alignment.tier_at"), tip) as usize
 }
 
 /// Unity swayed this action or phase and still to be placed (136).
@@ -380,8 +386,8 @@ fn draw(g: &mut GameState, cx: &mut Cx, side: Side) -> Option<Key> {
     g.pile(&deck(side)).first().cloned()
 }
 
-/// A track tips: one card of its side resolves (at the tier its side's
-/// tip count before this tip picks, 156), the side's tip count goes up by
+/// A track tips: one card of its side resolves (at the tier this tip's own
+/// count picks, 157), the side's tip count goes up by
 /// one, and the track's Sway comes off (136: no pool to return to).
 fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let w = cx.world;
@@ -411,8 +417,8 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     };
     let c = card(&w, &id);
     cx.move_card(g, &id, &deck(side), &resolved(side), true).unwrap();
-    // 156: the tip count before this tip picks the tier.
-    let tier = 1 + reached(w.list("alignment.tier_at"), before) as usize;
+    // 157: this tip's own count picks the tier (156 counted the tips before it).
+    let tier = tier_of(&w, before + 1);
     let printed = &c.tiers[tier - 1];
     cx.note(None, || {
         format!("{} ({}, tier {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
@@ -428,8 +434,8 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
 fn tier_words(side: &str, w: &World) -> String {
     let t = w.list("alignment.tier_at");
     format!(
-        "{side} tips so far; the next {side} card resolves tier I below {} earlier tips, II from {}, III from {}",
-        t[0], t[0], t[1]
+        "{side} tips so far; a {side} card resolves tier I on tips 1-{}, II from the tip numbered {}, III from tip {}",
+        t[0] - 1, t[0], t[1]
     )
 }
 

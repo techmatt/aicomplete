@@ -129,15 +129,17 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `156_win_redesign_r67/specs156.py TAG SEED [--probe]` (three 48-seed sets, the three pairs,
-  d0-d3, into `out/`) on both binaries, read by 151's `ladder151.py NEW OLD --measures` (pooled, paired, by set) and
-  156's `screen156.py` (by lever), `ends156.py` (win routes by Unity step, loss kinds) and `endgame156.py` (the probe
-  by Unity step). A smoke with `greedy` costs ~20 s a game (the strategist ~2 s): cap its seeds.
+- **Current recipe:** `157_strategist_purge_r68/specs157.py read TAG SEED [--probe]` (three 48-seed sets, the three
+  pairs, d0-d3, into `out/`; `screen NAME AGENTS LEVELS SEEDS [LEVER...]` for a dev screen) on both binaries
+  (`run_read.sh`), read by its `ladder157.py NEW OLD --measures` (pooled, paired, by set), 156's `screen156.py` (by
+  lever), `ends157.py` (win routes by Unity step, loss kinds) and `endgame157.py` (the probe by Unity step);
+  `partial157.py` reads a run still going. A flat-weight agent (`greedy`) costs 11-31 s a game on 8 threads (the
+  strategist 1.5-3.6 s): cap its seeds (157: 24 a level beside a read).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
   measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
-- **Costs:** an engine game about 0.7 s; a 576-game read set (d0-d3) about 4-5 min on 6 threads, double on a busy box.
+- **Costs:** a 576-game strategist read set (d0-d3) about 4-5 min on 6 threads, double on a busy box.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`: a new
   parameter in `baseline.json` makes the old binary refuse the new one), on the same seeds, run from its own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own `CARGO_TARGET_DIR`; new
@@ -153,7 +155,7 @@ the judge off the value table.
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
 `oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
 pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row costs
-10 s a game at d3 and 61 s at d4, 6-7 min on 6 threads for the 48 games; `threads=N` plays a decision's lines side
+10 s a game at d3 and 61 s at d4; at r68 48 s and 395 s (157: ~35 min on 6 threads for the 48 games); `threads=N` plays a decision's lines side
 by side. Spec and costs: `155_skilled_agents/`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
@@ -165,8 +167,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 39304 (which item spent which is in its write-up;
-156's: 39160-39303, three final sets). Next free: 39304. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 39592 (which item spent which is in its write-up;
+157's: 39304-39591, a final read and a d2 re-read). Next free: 39592. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 
@@ -178,8 +180,7 @@ on the same seeds. How prices are set: [card-pricing.md](card-pricing.md).
 
 ## Past runs
 
-Write-ups: index in [experiments/history.md](../experiments/history.md). Past revisions' specs, and those the binary
-refuses, are in `experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close/`: removing a switch
-moves its specs there). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
+Write-ups: index in [experiments/history.md](../experiments/history.md). Specs the binary refuses go to
+`experiments/archive/` (a fast-lane test parses each spec at the top level and in `gate-close/`). Tuning sweeps: `scripts/tune/sweep.py --agents "greedy;beam" --games 64 --tag T --var "base="
 --var "name=<sets;...>"` runs `aic-sim run --json` per variant and agent into `out/tune/log.jsonl`; `log_table.py
 TAG...` makes a markdown table.

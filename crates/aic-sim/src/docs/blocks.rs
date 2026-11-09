@@ -772,9 +772,9 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
-         Every Unity and Discord card prints three tiers: its side's tips so far pick which one resolves \
-         (tier I below {t2}, II from {t2}, III from {t3}), so Unity's late cards help free cities and \
-         Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
+         Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which \
+         one resolves (tier I on tips below {t2}, II from tip {t2}, III from tip {t3}), so Unity's late cards \
+         bring ambassadors or clear the ground to free cities with, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
          Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \

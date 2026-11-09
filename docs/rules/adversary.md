@@ -59,7 +59,7 @@ Cells, Full Spectrum Assault, Cascade Failure place one). A botnet stays
 until removed: it makes `botnet_compute` compute a round, **blocks site claims** on or next to it, counts against the
 purge until Unity eases it ([alignment.md](alignment.md)), and a Rally may name botnet hexes. **Hard to remove
 (candidate, Matt):** only tier-2 effects (Botnet Takedown, Singularity Exploit, Decapitation Strike, Root Access) and
-Unity cards (Decommission anywhere; Network Cleanup and Reclamation's tier III in reach), no standard action. Removing one sways `alignment.botnet` Unity.
+Unity cards (Decommission anywhere; Network Cleanup in reach), no standard action. Removing one sways `alignment.botnet` Unity.
 
 ## The project deck (candidate)
 
@@ -168,7 +168,7 @@ last round): a backstop with no share target, a plain loss whose cases are exami
 | 0 | Base rules |  |
 | 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 4, 4, 6, 8, 10, `ambassador_income` 1, 1, 1, 1, 2, `stage2_removed` 2, `stage1_added` 0 |
+| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 3, 4, 10, 8, 10, `ambassador_income` 1, 1, 1, 1, 2, `stage2_removed` 2, `stage1_added` 0 |
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 

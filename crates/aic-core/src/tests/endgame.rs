@@ -359,8 +359,8 @@ fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
 /// at each difficulty, with the deck's tips counted as the game counts them.
 #[test]
 fn discord_tier_two_is_reached_at_every_difficulty() {
-    // 156: tier II is reached before the Discord deck ends at every level. Tier III
-    // (6+ earlier tips) is not, with 6 cards: the 7th tip loses (flagged to Matt).
+    // 156: tier II is reached before the Discord deck ends at every level; 157 (r68):
+    // tiers count the tip itself, so with 6 cards the 6th tip resolves tier III too.
     for d in 0..=4 {
         let arg = format!("adversary.difficulty={d}");
         let (rules, g) = lab_with(&[], &[&arg]);
@@ -368,9 +368,11 @@ fn discord_tier_two_is_reached_at_every_difficulty() {
         let start = g.var("alignment.discord_tips").max(0);
         let cards = w.content.alignment.iter().filter(|c| c.side == crate::content::Side::Discord).count() as i64;
         let cut = if d >= 4 { w.int("adversary.discord_removed") } else { 0 };
-        let last = start + cards - cut - 1;
-        let tier2 = w.list("alignment.tier_at")[0];
-        assert!(tier2 <= last, "tier II at {tier2} never acts at d{d} (last tip {last})");
+        // The number of the last tip that finds a card.
+        let last = start + cards - cut;
+        let tiers = w.list("alignment.tier_at");
+        assert!(tiers[0] <= last, "tier II at {} never acts at d{d} (last tip {last})", tiers[0]);
+        assert!(tiers[1] <= last, "tier III at {} never acts at d{d} (last tip {last})", tiers[1]);
     }
 }
 

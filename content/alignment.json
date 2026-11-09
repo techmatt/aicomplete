@@ -34,8 +34,8 @@
     "effects": [{"op": "team_income", "resource": "insight", "amount": 1}]},
    {"text": "Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.",
     "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
-   {"text": "Every player gains 1 insight each round for the rest of the game; one player removes every adversary ambassador on or next to one corrupted city in their reach, then gains 2 ambassadors.",
-    "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}, {"op": "gain_ambassadors", "count": 2}]}]}
+   {"text": "Every player gains 1 insight each round for the rest of the game; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+    "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}, {"op": "gain_ambassadors", "count": 2}]}]}
   ]
  },
  {
@@ -47,8 +47,8 @@
     "effects": [{"op": "counter_threat"}]},
    {"text": "Counter an active threat; one player removes 2 adversary ambassadors in one hex in their reach.",
     "effects": [{"op": "counter_threat"}, {"op": "one_player", "then": [{"op": "damage", "ambassadors": 2}]}]},
-   {"text": "Counter every active threat; one player removes every adversary ambassador on or next to one corrupted city in their reach.",
-    "effects": [{"op": "counter_all"}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}]}]}
+   {"text": "Counter every active threat; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "counter_all"}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}]}]}
   ]
  },
  {
@@ -73,8 +73,8 @@
     "effects": [{"op": "sway", "side": "unity", "amount": 3}]},
    {"text": "Sway 3 toward Unity, and every player gains 1 ambassador.",
     "effects": [{"op": "sway", "side": "unity", "amount": 3}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
-   {"text": "One player liberates a corrupted city in their reach.",
-    "effects": [{"op": "one_player", "then": [{"op": "liberate"}]}]}
+   {"text": "One player gains 8 ambassadors.",
+    "effects": [{"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 8}]}]}
   ]
  },
  {
@@ -140,8 +140,8 @@
     "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 2}]}]},
    {"text": "One player removes up to 4 adversary ambassadors on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 4}]}]},
-   {"text": "One player removes every adversary ambassador on or next to one corrupted city in their reach, then gains 2 ambassadors.",
-    "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 0}, {"op": "gain_ambassadors", "count": 2}]}]}
+   {"text": "One player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+    "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 6}, {"op": "gain_ambassadors", "count": 2}]}]}
   ]
  },
  {
@@ -154,8 +154,8 @@
     "effects": [{"op": "gain", "resource": "ambassadors", "amount": 1}]},
    {"text": "Every player gains 2 ambassadors.",
     "effects": [{"op": "gain", "resource": "ambassadors", "amount": 2}]},
-   {"text": "One player liberates a corrupted city in their reach and gains 2 ambassadors.",
-    "effects": [{"op": "one_player", "then": [{"op": "liberate", "ambassadors": 2}]}]}
+   {"text": "One player gains 6 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 6}, {"op": "move_ambassadors", "max": 3}]}]}
   ]
  },
  {
@@ -168,8 +168,8 @@
     "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 1, "one_country": false}]}]},
    {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 2, "one_country": false}]}]},
-   {"text": "One player liberates a corrupted city in their reach, and a botnet on or next to it comes off.",
-    "effects": [{"op": "one_player", "then": [{"op": "liberate", "botnet": true}]}]}
+   {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 2, "one_country": false}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
  {
@@ -182,8 +182,8 @@
     "effects": [{"op": "gain", "resource": "energy", "amount": 1}]},
    {"text": "Every player gains 2 energy.",
     "effects": [{"op": "gain", "resource": "energy", "amount": 2}]},
-   {"text": "Every player gains 2 energy; one player removes every adversary ambassador on or next to one corrupted city in their reach.",
-    "effects": [{"op": "gain", "resource": "energy", "amount": 2}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}]}]}
+   {"text": "Every player gains 2 energy; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "gain", "resource": "energy", "amount": 2}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}]}]}
   ]
  },
  {
@@ -196,8 +196,8 @@
     "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 2, "troops": 2}]}]},
    {"text": "One player removes 3 adversary ambassadors or 3 troops in one hex in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 3, "troops": 3}]}]},
-   {"text": "One player removes 4 adversary ambassadors or 4 troops in one hex in their reach, then every adversary ambassador on or next to one corrupted city in their reach.",
-    "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 4, "troops": 4}, {"op": "clear_city", "max": 0}]}]}
+   {"text": "One player removes 4 adversary ambassadors or 4 troops in one hex in their reach, then up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 4, "troops": 4}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
  {
@@ -210,8 +210,8 @@
     "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}]}]},
    {"text": "One player removes a botnet in their reach, and clears a corruption marker in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 1}]}]},
-   {"text": "One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes every adversary ambassador on or next to one corrupted city in their reach.",
-    "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 2}, {"op": "clear_city", "max": 0}]}]}
+   {"text": "One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 2}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
  {
@@ -224,8 +224,8 @@
     "effects": [{"op": "sway", "side": "unity", "amount": 2}, {"op": "gain", "resource": "credits", "amount": 2}]},
    {"text": "Sway 4 toward Unity.",
     "effects": [{"op": "sway", "side": "unity", "amount": 4}]},
-   {"text": "One player liberates a corrupted city in their reach and puts their cube on it.",
-    "effects": [{"op": "one_player", "then": [{"op": "liberate", "align": true}]}]}
+   {"text": "Sway 3 toward Unity; one player gains 6 ambassadors.",
+    "effects": [{"op": "sway", "side": "unity", "amount": 3}, {"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 6}]}]}
   ]
  },
  {

@@ -91,9 +91,9 @@
         "stage1_added": 0,
         "extra_corrupted": 0,
         "compute_income": [
+          3,
           4,
-          4,
-          6,
+          10,
           8,
           10
         ],

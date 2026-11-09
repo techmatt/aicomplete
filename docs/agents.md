@@ -33,7 +33,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; plans once, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × its weight × the rounds left (the adversary deck's clock, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` in `eval.rs` |
-| `strategist` | `engine:strategy=1`: greedy with strategy, no search. **The screens' judge** (*The tiers*). | the engine's |
+| `strategist` | `engine:strategy=1,w.clock=0`: greedy with strategy, no search, the deck clock off (157). **The screens' judge** (*The tiers*). | the engine's |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on the real state but the Alignment deal (**full information**), valued over `deals` guesses of it; decisions inside a line are scored on a guess. The followed line is reused. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0 and the rest in `agents/planner.rs`. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in** (155): the planner's search on **full information**, the Alignment deal too, each line played to the game's end. A winning line is followed: the seed is proved winnable, so the win rate is a floor on perfect play. Others compare on the heuristic `horizon` rounds on; `reseeds`: lines on other policy guesses at a round's first searched decision. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `reseeds` 0, `threads` 1 (lines side by side, same play) (`agents/oracle.rs`) |
 
@@ -47,9 +47,6 @@ A play waiting a round is worth 15% less; `needs` may be met by cards planned ea
 now by at most `plan_short` tags; a building over one of the seat's adds only what it beats the
 weakest by (`plan_cover`); each credit paid for keeps costs `plan_credit`. The other switches
 (`plan_niche`, `plan_reach`, `pile_ok`, `plan_copy`, `plan_under`) say their rule in `forced_table!`.
-
-Priced like the play check (102): a card worth no more than its price is not planned, one
-that is adds its **gross value** (the prices: `plan_value` in `policy.rs`).
 
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
@@ -158,10 +155,10 @@ Rules a player could say where a one-step search misses a card's point, each a s
 
 | Tier | Stands for | Spec | Target win % |
 |---|---|---|---|
-| Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
+| Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth (r68: greedy leads, 157) |
 | Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
-| Oracle | A skilled player with full information (155): d3 100, d4 96 at r66 | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
+| Oracle | A skilled player with full information (155): d3 100, d4 96 at r66; r68 100, 38 (157) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 
 The strategist judges (within about 5 points of `sweep` a pair on the same seeds) at a tenth of
 its time a game; `sweep` spot-checks.

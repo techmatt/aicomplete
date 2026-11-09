@@ -72,7 +72,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 4, 4, 6, 8, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.compute_income` | 3, 4, 10, 8, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
 | `adversary.ambassador_income` | 1, 1, 1, 1, 2 | 0..10 | 151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
@@ -92,7 +92,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
 | `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
-| `alignment.tier_at` | 3, 6 | 1..50 | 156: a side's tip count (before this tip) from which its cards resolve tier II, then tier III |
+| `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |

@@ -39,7 +39,7 @@ Cities, research stations and factories follow one set of rules and differ only 
   reach** (your node on or next to it: getting close is the risk) but no site claim: a botnet next to it doesn't stop
   it, and a botnet on it stays. A liberated city turns clean and takes `free_leaves` adversary ambassadors back (r67:
   0, Matt, 2026-11-08: none; it was 1). Its factories keep their owners. A liberate card ([player-cards.md](player-cards.md),
-  *The liberate capstones*) or a Unity card's tier III liberates a city the same way, for its own price. The price is
+  *The liberate capstones*) liberates a city the same way, for its own price (r68: no Unity tier III does). The price is
   the same all game (r67: 154's late liberation, 3 ambassadors from stage III, is gone; late strength comes from
   cards instead).
 
