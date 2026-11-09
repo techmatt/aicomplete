@@ -640,6 +640,14 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Pushback { ambassadors } => Worth::now(row("pushback") * t.rate("countries") * *ambassadors as f64),
         Op::DealThreats { count, .. } => Worth::now(row("deal_threats") * *count as f64),
         Op::RemoveBotnets { count } => Worth::now(row("remove_botnets") * *count as f64),
+        // 156: one player resolves seat ops: their worth, at the row's share.
+        Op::OnePlayer { then } => {
+            let mut w = Worth::default();
+            for o in then {
+                w += op_worth(t, o);
+            }
+            w.scaled(row("one_player"))
+        }
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per, amount } => {
             let mut w = Worth::default();

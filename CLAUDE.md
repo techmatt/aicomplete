@@ -61,7 +61,8 @@ experiments, speed, scripts, web, card art.
 - **Adding or removing a card** edits `configs/baseline.json`, then run `python
   scripts/configs/shared_row.py`; a core test fails until you do.
 - **Any card work** follows [docs/card-guidelines.md](docs/card-guidelines.md) (`npm run
-  cards:fit` in `web/` checks the fit). A display rename keeps the card's id: notes,
+  cards:fit` in `web/` checks the fit). An id is unique across all of `content/` (a Unity card can't share a
+  player card's; `Content::check` refuses it). A display rename keeps the card's id: notes,
   `scenes.json` and records key on it. An id changes only to fix a spelling `docs --check`
   refuses, and only in a rules item: card id order feeds play (087 kept 086's two ids for it),
   so it bumps `RULES_REVISION` and strands any note on the old id. A pass editing many cards

@@ -11,9 +11,7 @@ use crate::state::Pick;
 const HOLD: [&str; 2] = ["board.liberate_at=5", "board.free_leaves=1"];
 
 fn empty_deck(g: &mut GameState, side: &str) {
-    for tier in 1..=2 {
-        g.piles.insert(format!("alignment.deck.{side}.{tier}").into(), Vec::new().into());
-    }
+    g.piles.insert(format!("alignment.deck.{side}").into(), Vec::new().into());
 }
 
 #[test]
@@ -29,14 +27,25 @@ fn a_discord_tip_with_an_empty_deck_loses_and_nothing_reshuffles() {
 }
 
 #[test]
-fn drawing_the_last_unity_card_wins_outright() {
+fn drawing_the_last_unity_card_wins_nothing_and_an_empty_unity_deck_reshuffles() {
+    // 156: no Unity-deck win. The last card resolves; the next tip shuffles the
+    // resolved pile back in and draws from it.
     let (rules, mut g) = action_only(&[]);
     empty_deck(&mut g, "unity");
-    set_pile(&mut g, "alignment.deck.unity.1", &["civil_defense"]);
+    set_pile(&mut g, "alignment.deck.unity", &["volunteer_corps"]);
+    set_pile(&mut g, "alignment.resolved.unity", &[]);
     fill_bucket(&rules, &mut g, Side::Unity);
     any_action(&rules, &mut g);
-    let o = g.outcome.as_ref().expect("a win");
-    assert_eq!((o.won, o.reason.as_str()), (true, "unity_deck"));
+    answer_all(&rules, &mut g);
+    assert!(g.outcome.as_ref().is_none_or(|o| o.reason != "unity_deck"), "no Unity-deck win");
+    assert_eq!(g.pile("alignment.resolved.unity"), ["volunteer_corps"]);
+    assert!(g.pile("alignment.deck.unity").is_empty());
+    set_pile(&mut g, "alignment.resolved.unity", &["volunteer_corps", "think_tank"]);
+    fill_bucket(&rules, &mut g, Side::Unity);
+    any_action(&rules, &mut g);
+    answer_all(&rules, &mut g);
+    assert_eq!(g.pile("alignment.resolved.unity").len() + g.pile("alignment.deck.unity").len(), 2, "reshuffled, one drawn");
+    assert_eq!(g.pile("alignment.resolved.unity").len(), 1);
 }
 
 #[test]
@@ -217,14 +226,13 @@ fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
     assert_eq!(g.tokens(last, node(1)), 0, "stage II: it goes");
 }
 
-/// 136: every printed Unity card is dealt, by tier.
+/// 136: every printed Unity card is dealt (156: into one deck).
 #[test]
 fn a_game_deals_every_printed_unity_card() {
     let (_, g) = action_only(&[]);
-    let printed = |t: u8| crate::content().alignment.iter().filter(|c| c.side == Side::Unity && c.tier == t).count();
-    assert_eq!(g.pile("alignment.deck.unity.1").len(), printed(1));
-    assert_eq!(g.pile("alignment.deck.unity.2").len(), printed(2));
-    assert_eq!(crate::modules::alignment::cards_left(&g, Side::Unity), printed(1) + printed(2));
+    let printed = crate::content().alignment.iter().filter(|c| c.side == Side::Unity).count();
+    assert_eq!(g.pile("alignment.deck.unity").len(), printed);
+    assert_eq!(crate::modules::alignment::cards_left(&g, Side::Unity), printed);
 }
 
 #[test]
@@ -350,7 +358,9 @@ fn clearing_a_marker_costs_its_credits_and_pays_its_reward() {
 /// 034's d4 fix: every printed step of the Discord deck acts before it ends,
 /// at each difficulty, with the deck's tips counted as the game counts them.
 #[test]
-fn every_discord_step_is_reached_at_every_difficulty() {
+fn discord_tier_two_is_reached_at_every_difficulty() {
+    // 156: tier II is reached before the Discord deck ends at every level. Tier III
+    // (6+ earlier tips) is not, with 6 cards: the 7th tip loses (flagged to Matt).
     for d in 0..=4 {
         let arg = format!("adversary.difficulty={d}");
         let (rules, g) = lab_with(&[], &[&arg]);
@@ -359,11 +369,8 @@ fn every_discord_step_is_reached_at_every_difficulty() {
         let cards = w.content.alignment.iter().filter(|c| c.side == crate::content::Side::Discord).count() as i64;
         let cut = if d >= 4 { w.int("adversary.discord_removed") } else { 0 };
         let last = start + cards - cut - 1;
-        for c in w.content.alignment.iter().filter(|c| c.side == crate::content::Side::Discord) {
-            for st in &c.steps {
-                assert!(st.at <= last, "{} step at {} never acts at d{d} (last tip {last})", c.id, st.at);
-            }
-        }
+        let tier2 = w.list("alignment.tier_at")[0];
+        assert!(tier2 <= last, "tier II at {tier2} never acts at d{d} (last tip {last})");
     }
 }
 

@@ -120,9 +120,8 @@ fn op_uses() -> BTreeMap<String, usize> {
         add(&a.twists, &mut out);
     }
     for a in &c.alignment {
-        add(&a.effects, &mut out);
-        for s in &a.steps {
-            add(&s.effects, &mut out);
+        for t in &a.tiers {
+            add(&t.effects, &mut out);
         }
     }
     for p in &c.projects {

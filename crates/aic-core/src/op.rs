@@ -917,6 +917,12 @@ pub enum Op {
     RemoveBotnets {
         count: i64,
     },
+    /// 156: one player (the team chooses, among those with something it acts
+    /// on) resolves `then` as their own card would, in their reach: a Unity
+    /// card's way to act where pieces are.
+    OnePlayer {
+        then: Vec<Op>,
+    },
     /// The board's difficulty line: each event's Deploy lands `amount` more troops a board.
     StandingTroopsBonus {
         amount: i64,
@@ -1090,6 +1096,7 @@ impl Op {
             | Op::Pushback { .. }
             | Op::ThreatAtNode { .. }
             | Op::RemoveBotnets { .. }
+            | Op::OnePlayer { .. }
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
             | Op::Rally { .. }

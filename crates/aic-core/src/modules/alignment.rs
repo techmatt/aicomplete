@@ -4,10 +4,12 @@
 //! conditions, checked after every action and every automatic phase.
 //!
 //! Replaces human opposition (rules revision 5). Since 017 every card is
-//! one-shot, a Discord card's strength steps up with the Discord tip count
-//! (printed steps); 017–018's Discord-tip troop advance became 019's march
+//! one-shot; 017–018's Discord-tip troop advance became 019's march
 //! (module `board`). r55 (136): the Undecided pool and the tug of war are
 //! gone; Unity swayed may instead hold Discord off, 1 for 1 (`hold_off`).
+//! r67 (156): the purge is the only win (no Unity-deck win); every card
+//! prints three tiers, picked by its side's tips (`tier_at`); an empty Unity
+//! deck reshuffles, the Discord deck never does.
 
 use crate::module::Hot;
 use crate::action::Action;
@@ -35,9 +37,8 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
-    ParamSpec::list("purge_at", 1, 50, "Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136)"),
-    ParamSpec::int("unity_tier2", 0, 50, "Unity cards drawn from which a Unity tip draws the stronger tier"),
-    ParamSpec::int("discord_tier2", 1, 50, "Discord tip count from which a Discord tip draws the stronger tier"),
+    ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
+    ParamSpec::list("tier_at", 1, 50, "156: a side's tip count (before this tip) from which its cards resolve tier II, then tier III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),
 ];
@@ -84,6 +85,10 @@ fn build(b: &Build) -> Result<Box<dyn Module>, String> {
     let v = b.list("purge_at")?;
     if v.is_empty() || v.len() > 3 || v.iter().any(|&x| x < 1) || v.windows(2).any(|p| p[0] > p[1]) {
         return Err("alignment.purge_at: give up to three Unity-card counts of 1 or more, in order".into());
+    }
+    let t = b.list("tier_at")?;
+    if t.len() != 2 || t.iter().any(|&x| x < 1) || t[0] > t[1] {
+        return Err("alignment.tier_at: give two tip counts of 1 or more, in order (tier II, tier III)".into());
     }
     Ok(Box::new(Alignment))
 }
@@ -142,8 +147,9 @@ pub fn tips_key(side: Side) -> &'static str {
     }
 }
 
-fn deck(side: Side, tier: u8) -> KeyBuf {
-    KeyBuf::new("alignment.deck.").text(side.name()).text(".").num(tier as usize)
+/// A side's face-down deck (156: one a side; every card prints three tiers).
+pub fn deck(side: Side) -> String {
+    format!("alignment.deck.{}", side.name())
 }
 
 /// A side's resolved one-shot cards (top: the latest).
@@ -151,14 +157,22 @@ pub fn resolved(side: Side) -> String {
     format!("alignment.resolved.{}", side.name())
 }
 
-/// Cards left in a side's decks: its clock (027).
+/// Cards left in a side's deck: the Discord deck is a clock (027); the
+/// Unity deck reshuffles its resolved pile when empty (156).
 pub fn cards_left(g: &GameState, side: Side) -> usize {
-    g.pile(&deck(side, 1)).len() + g.pile(&deck(side, 2)).len()
+    g.pile(&deck(side)).len()
 }
 
-/// Unity cards drawn so far: the purge's steps (136).
+/// Unity tips so far, each one card drawn: the purge's steps (136; 156:
+/// counted as tips, since the reshuffle empties the resolved pile).
 pub fn unity_drawn(g: &GameState) -> i64 {
-    g.pile(&resolved(Side::Unity)).len() as i64
+    g.var(tips_key(Side::Unity))
+}
+
+/// 156: the tier (1-3) a card of `side` resolves at on its next tip: the
+/// side's tips so far against `tier_at`.
+pub fn next_tier(w: &World, g: &GameState, side: Side) -> usize {
+    1 + reached(w.list("alignment.tier_at"), g.var(tips_key(side))) as usize
 }
 
 /// Unity swayed this action or phase and still to be placed (136).
@@ -349,26 +363,25 @@ pub fn pull_unity(g: &mut GameState, cx: &mut Cx, n: i64) {
 }
 
 
-/// Draws the next card of `side`: the stronger tier once the side's tip
-/// count has reached `unity_tier2` / `discord_tier2`, else tier 1; the other
-/// tier if that deck is empty. Neither deck ever reshuffles (027): they are
-/// the game's clocks.
-fn draw(g: &GameState, w: &World, side: Side, tips: i64) -> Option<(Key, String)> {
-    let first = match side {
-        Side::Unity => w.int("alignment.unity_tier2"),
-        Side::Discord => w.int("alignment.discord_tier2"),
-    };
-    let want: u8 = if tips >= first { 2 } else { 1 };
-    for tier in [want, 3 - want] {
-        if let Some(id) = g.pile(&deck(side, tier)).first().cloned() {
-            return Some((id, deck(side, tier).to_string()));
+/// Draws the next card of `side`. The Discord deck never reshuffles (027):
+/// it is the game's clock. 156: an empty Unity deck shuffles its resolved
+/// pile back in first (there is no Unity-deck win).
+fn draw(g: &mut GameState, cx: &mut Cx, side: Side) -> Option<Key> {
+    if side == Side::Unity && cards_left(g, side) == 0 {
+        let mut ids: Vec<Key> = g.pile(&resolved(side)).to_vec();
+        if !ids.is_empty() {
+            shuffle(&mut ids, cx.rng(g, "alignment"));
+            cx.set_pile(g, &resolved(side), Vec::new());
+            cx.set_pile(g, &deck(side), ids);
+            cx.tally(g, "alignment.unity_reshuffles", 1);
+            cx.note(None, || "The Unity deck is empty: its resolved cards are shuffled back in".to_string());
         }
     }
-    None
+    g.pile(&deck(side)).first().cloned()
 }
 
-/// A track tips: one card of its side resolves (at the strength step
-/// its side's tip count has reached), the side's tip count goes up by
+/// A track tips: one card of its side resolves (at the tier its side's
+/// tip count before this tip picks, 156), the side's tip count goes up by
 /// one, and the track's Sway comes off (136: no pool to return to).
 fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let w = cx.world;
@@ -389,7 +402,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     if side == Side::Discord {
         board::tip_corp_troops(g, cx);
     }
-    let Some((id, from)) = draw(g, &w, side, before) else {
+    let Some(id) = draw(g, cx, side) else {
         // Discord tips with no card left: the players lose (locked, 027).
         if side == Side::Discord {
             cx.end(g, false, "discord_deck", "a Discord tip found the Discord deck empty".into());
@@ -397,25 +410,27 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
         return Ok(());
     };
     let c = card(&w, &id);
-    cx.move_card(g, &id, &from, &resolved(side), true).unwrap();
-    // Drawing the last Unity card wins outright (027); it needn't act.
-    if side == Side::Unity && cards_left(g, side) == 0 {
-        cx.end(g, true, "unity_deck", "the last Unity card was drawn".into());
-        return Ok(());
-    }
+    cx.move_card(g, &id, &deck(side), &resolved(side), true).unwrap();
+    // 156: the tip count before this tip picks the tier.
+    let tier = 1 + reached(w.list("alignment.tier_at"), before) as usize;
+    let printed = &c.tiers[tier - 1];
     cx.note(None, || {
-        format!("{} ({}) resolves: {}", c.name, side.name(), c.text)
+        format!("{} ({}, tier {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
     });
-    let effects = c
-        .steps
-        .iter()
-        .rev()
-        .find(|st| before >= st.at)
-        .map_or(&c.effects, |st| &st.effects);
     let source = if side == Side::Discord { "discord" } else { "unity" };
-    effects::run(g, cx, effects, &mut effects::Ctx::team().named(source).why(&c.name))?;
+    effects::run(g, cx, &printed.effects, &mut effects::Ctx::team().named(source).why(&c.name))?;
     cx.tally(g, &KeyBuf::new("alignment.card.").text(&id), 1);
+    cx.tally(g, &format!("alignment.tier_{}.{tier}", side.name()), 1);
     Ok(())
+}
+
+/// "Discord tips so far; ..." with the tier steps as configured (156).
+fn tier_words(side: &str, w: &World) -> String {
+    let t = w.list("alignment.tier_at");
+    format!(
+        "{side} tips so far; the next {side} card resolves tier I below {} earlier tips, II from {}, III from {}",
+        t[0], t[0], t[1]
+    )
 }
 
 /// Whether the antimatter action exists in this game (uses aside).
@@ -429,27 +444,24 @@ impl Module for Alignment {
         for side in [Side::Unity, Side::Discord] {
             cx.set_key(g, track(side), 0);
             cx.set_key(g, tips_key(side), 0);
-            for tier in [1u8, 2] {
-                let mut ids: Vec<Key> = w
-                    .content
-                    .alignment
-                    .iter()
-                    .filter(|c| c.side == side && c.tier == tier)
-                    .map(|c| Key::new(&c.id))
-                    .collect();
-                shuffle(&mut ids, cx.rng(g, "alignment"));
-                // Difficulty 4: the Discord deck, the clock, is shorter.
-                if side == Side::Discord && tier == 1 && adversary::level(&w, 4) {
-                    let cut = w.int("adversary.discord_removed") as usize;
-                    ids.truncate(ids.len().saturating_sub(cut));
-                }
-                // 136: every printed Unity card is dealt (028-135 dealt
-                // `unity_cards` of them); drawing the last one wins.
-                cx.set_pile(g, &deck(side, tier), ids);
+            let mut ids: Vec<Key> = w
+                .content
+                .alignment
+                .iter()
+                .filter(|c| c.side == side)
+                .map(|c| Key::new(&c.id))
+                .collect();
+            shuffle(&mut ids, cx.rng(g, "alignment"));
+            // Difficulty 4: the Discord deck, the clock, is shorter.
+            if side == Side::Discord && adversary::level(&w, 4) {
+                let cut = w.int("adversary.discord_removed") as usize;
+                ids.truncate(ids.len().saturating_sub(cut));
             }
+            // 136: every printed card is dealt; 156: one deck a side.
+            cx.set_pile(g, &deck(side), ids);
         }
-        // Difficulty 4: the removed Discord cards count as tips made, so every
-        // printed step is still reached before the deck ends (034).
+        // Difficulty 4: the removed Discord cards count as tips made, so the
+        // tiers come a tip sooner before the deck ends (034).
         if adversary::level(&w, 4) {
             cx.set_key(g, tips_key(Side::Discord), w.int("adversary.discord_removed"));
         }
@@ -544,7 +556,7 @@ impl Module for Alignment {
                 true,
                 "purge",
                 format!(
-                    "the adversary fell under the bar for {} Unity cards drawn",
+                    "the adversary fell under the bar for {} Unity tips",
                     unity_drawn(g)
                 ),
             );
@@ -574,16 +586,15 @@ impl Module for Alignment {
             "unity_tips",
             "Unity tips",
             ut,
-            next(w.list("alignment.purge_at"), unity_drawn(g)),
-            "Unity tips so far; the purge asks less at each step of Unity cards drawn",
+            next(w.list("alignment.purge_at"), ut),
+            "Unity tips so far; the purge asks less at each step, and the next Unity card resolves at the tier they reach",
         );
-        let tier2 = w.int("alignment.discord_tier2");
         out.global(
             "discord_tips",
             "Discord tips",
             dt,
-            (dt < tier2).then_some(tier2),
-            "Discord tips so far; a Discord card's stronger steps count the tips before its own: \"3+ earlier\" first fires on the 4th tip",
+            next(w.list("alignment.tier_at"), dt),
+            &tier_words("Discord", w),
         );
         let level = bar_level(w, g);
         let mut text = level.win_text().to_string();
@@ -642,7 +653,7 @@ impl Module for Alignment {
             CardView {
                 id: id.to_string(),
                 name: c.name.clone(),
-                text: format!("{} {}: {}", c.side.name(), c.tier, c.text),
+                text: format!("{}: {}", c.side.name(), c.text()),
                 status: status.to_string(),
                 cost: None,
             }
@@ -650,7 +661,7 @@ impl Module for Alignment {
         for side in [Side::Unity, Side::Discord] {
             let n = cards_left(g, side);
             let label = match side {
-                Side::Unity => "Unity deck (drawing the last card wins)",
+                Side::Unity => "Unity deck (reshuffles its resolved cards when empty)",
                 Side::Discord => "Discord deck (a tip with no card left loses)",
             };
             out.pile(&format!("deck.{}", side.name()), label, None, n, Vec::new());

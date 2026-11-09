@@ -74,8 +74,14 @@ pub struct Weights {
     /// Each adversary piece that keeps the current clear-board bar from
     /// being met (the win condition).
     pub blocker: f64,
-    /// Per Unity card short of 3 left in the deck (028: drawing the last wins).
-    pub unity_deck: f64,
+    /// 156: each side's next tip at the tier it would resolve at: this share
+    /// of a card's mean worth at that tier (the value table), times the
+    /// track's fill toward it. Replaced `unity_deck` (no Unity-deck win).
+    pub tier_read: f64,
+    /// 156: the Unity tips the horizon aims for; 0: the purge's last step
+    /// (`purge_at`). Set to the Unity card count to aim as 028-155 did, at the
+    /// deck's last card (the on / off check).
+    pub unity_target: f64,
     /// Each Unity tip made; Sway on the Unity track counts as its share of
     /// the next tip (so a tip about to happen is worth nearly a tip).
     pub unity_tip: f64,
@@ -515,7 +521,8 @@ impl Default for Weights {
             on_factory: 6.0,
             troop: 12.0,
             discord_danger: 40.0,
-            unity_deck: 40.0,
+            tier_read: 1.0,
+            unity_target: 0.0,
             blocker: 2.0,
             // 013: a Unity tip replaces about 4 opposition points (24) and
             // brings a card; a Discord tip brings one of the adversary's.
@@ -712,8 +719,10 @@ pub struct Eval {
     /// For the seat-terms store's key (see [`tableau_parts`]): clones share it.
     id: u64,
     seats: usize,
-    /// Unity tip count the team aims for: the deck's last card.
+    /// Unity tip count the team aims for: the purge's last step (156).
     target_tips: i64,
+    /// 156: a card's mean worth at each tier, [Unity, Discord] × [I, II, III].
+    tier_worth: [[f64; 3]; 2],
     city_energy: i64,
     aligned_bonus: i64,
     tip_per_player: i64,
@@ -888,8 +897,33 @@ impl Eval {
     pub fn with_table(rules: &Rules, w: Weights, tbl: &'static value::Table) -> Eval {
         let world = rules.world();
         let seats = rules.config.countries as usize;
-        // 028: the Unity deck's last card wins; 136: every printed one is dealt.
-        let target_tips = world.content.alignment.iter().filter(|c| c.side == Side::Unity).count() as i64;
+        // 156: no Unity-deck win (028-155 aimed at the deck's last card): the team
+        // aims for the purge's last step, where only the corrupted cities count.
+        let target_tips = if w.unity_target > 0.0 {
+            w.unity_target as i64
+        } else {
+            world.list("alignment.purge_at").iter().copied().max().unwrap_or(0)
+        };
+        // 156: what a card of each side is worth at each tier, the mean over its
+        // printed cards at the value table (Discord's is a cost: its rows are negative).
+        let ctx = value::Ctx::typical(tbl);
+        let rounds = tbl.rate("income_rounds");
+        let tier_worth: [[f64; 3]; 2] = std::array::from_fn(|i| {
+            let side = if i == 0 { Side::Unity } else { Side::Discord };
+            let cards: Vec<_> = world.content.alignment.iter().filter(|c| c.side == side).collect();
+            std::array::from_fn(|t| {
+                let n = cards.len().max(1) as f64;
+                cards
+                    .iter()
+                    .filter_map(|c| c.tiers.get(t))
+                    .map(|tier| {
+                        let wo = value::list_worth(tbl, &tier.effects);
+                        wo.instant(tbl, &ctx) + wo.per_round(&ctx) * rounds
+                    })
+                    .sum::<f64>()
+                    / n
+            })
+        });
         let strat_scale = w.strat_scale;
         let strat_contents = w.strat_contents > 0.0;
         let threshold_tokens = w.threshold_tokens > 0.0;
@@ -898,6 +932,7 @@ impl Eval {
             id: next_eval_id(),
             seats,
             target_tips,
+            tier_worth,
             city_energy: world.list("board.corp_energy").first().copied().unwrap_or(1),
             aligned_bonus: world.int("board.aligned_bonus"),
             tip_per_player: world.int("alignment.tip_per_player"),
@@ -1472,7 +1507,6 @@ impl Eval {
                 v -= w.blight * land * drip * rounds * w.discord_tip / cap;
             }
         }
-        v += w.unity_deck * (3 - alignment::cards_left(g, Side::Unity) as i64).max(0) as f64;
         // Megaprojects: each player cube pays when the project completes.
         for c in 0..world.map.countries.len() {
             if g.var(&board::project_done(c)) > 0 {
@@ -1508,6 +1542,11 @@ impl Eval {
             let pending = if side == Side::Unity { alignment::unity_pending(g) } else { 0 };
             let fill = ((g.var(alignment::track(side)) + pending) as f64 / cap).min(1.0);
             v += weight * (g.var(alignment::tips_key(side)) as f64 + fill);
+            // 156: the next card resolves at the tier the tips reach (public).
+            if w.tier_read != 0.0 {
+                let tier = alignment::next_tier(&world, g, side);
+                v += w.tier_read * fill * self.tier_worth[(side == Side::Discord) as usize][tier - 1];
+            }
         }
         v += w.level * level.steps() as f64;
         // A resolved (or ongoing) project counts in full, so letting one

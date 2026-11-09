@@ -291,6 +291,25 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         }
         Op::DealThreats { count, tier: None, scope: None, each_country: false } => threats::deal_extra(g, cx, *count),
         Op::RemoveBotnets { count } => team::remove_botnets(g, cx, *count)?,
+        Op::OnePlayer { then } => {
+            // 156: the team picks who acts, among the players it would act for.
+            let able: Vec<usize> = (0..g.seats.len()).filter(|&s| feasible(&w, g, s, then)).collect();
+            let who = match able.len() {
+                0 => None,
+                1 => Some(able[0]),
+                _ => {
+                    let opts = able.iter().map(|&s| seat_opt(s)).collect();
+                    let why = ctx.why.clone().unwrap_or_default();
+                    let prompt = || format!("{why}: which player acts?");
+                    cx.choose(seat, prompt, opts)?.map(|i| able[i])
+                }
+            };
+            if let Some(s) = who {
+                let mut inner = Ctx::seat(s).named(ctx.label);
+                inner.why = ctx.why.clone();
+                run(g, cx, then, &mut inner)?;
+            }
+        }
         // 151: the adversary's rally and income.
         Op::Rally { site, count } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };

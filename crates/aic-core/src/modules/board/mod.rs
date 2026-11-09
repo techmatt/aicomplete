@@ -53,8 +53,6 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("divert_discord", 0, 5, "Discord per unit of a corrupted city's energy diverted to the adversary"),
             ParamSpec::int("ambassador_discord", 0, 5, "Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens"),
             ParamSpec::int("liberate_at", 1, 10, "the Liberate action: ambassadors that liberate an adversary city"),
-            ParamSpec::int("liberate_late_at", 1, 10, "154: the Liberate action from stage `liberate_late_stage`: ambassadors that liberate an adversary city (liberate_at: no late step)"),
-            ParamSpec::int("liberate_late_stage", 1, 4, "154: the adversary card stage from which a city liberates for `liberate_late_at` (4: never)"),
             ParamSpec::int("liberate_facility_at", 1, 10,"the Liberate action: ambassadors that liberate an adversary station or factory"),
             ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),

@@ -15,14 +15,12 @@
         "divert_discord": 1,
         "ambassador_discord": 0,
         "liberate_at": 5,
-        "liberate_late_at": 3,
-        "liberate_late_stage": 3,
         "liberate_facility_at": 3,
         "claim_city": 4,
         "claim_station": 3,
         "claim_factory": 3,
         "last_safe_stage": 2,
-        "free_leaves": 1,
+        "free_leaves": 0,
         "destruction_discord": 1,
         "troop_spent": 1,
         "troop_steps": 2,
@@ -79,10 +77,10 @@
         "counter_credit_pct": 100,
         "counter_bonus": 0,
         "counter_bonus_all": 1,
-        "counter_bonus_credits": 8,
+        "counter_bonus_credits": 4,
         "counter_bonus_at": 1,
         "counter_more_all": 1,
-        "counter_more_credits": 2,
+        "counter_more_credits": 0,
         "counter_more_at": 2,
         "extra_threats": 1,
         "extra_threats_at": 4,
@@ -93,18 +91,18 @@
         "stage1_added": 0,
         "extra_corrupted": 0,
         "compute_income": [
-          5,
-          5,
-          10,
-          16,
-          16
+          4,
+          4,
+          6,
+          8,
+          10
         ],
         "ambassador_income": [
-          2,
-          2,
-          2,
-          3,
-          3
+          1,
+          1,
+          1,
+          1,
+          2
         ],
         "tier2_early": 1,
         "discord_removed": 1,
@@ -139,8 +137,10 @@
           6,
           6
         ],
-        "unity_tier2": 3,
-        "discord_tier2": 2,
+        "tier_at": [
+          3,
+          6
+        ],
         "node_loss": 1,
         "clear_win_stage": 1
       }

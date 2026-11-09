@@ -42,6 +42,21 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     assert!(o.won && o.reason == "purge", "{o:?}");
 }
 
+/// 156: the Unity tips before this tip pick the tier: Grassroots Funding pays 2 a
+/// round at tier I (0-2 earlier tips), 3 at tier II (3-5).
+#[test]
+fn the_tip_count_picks_a_unity_cards_tier() {
+    for (tips, income, tier) in [(0, 2, 1), (2, 2, 1), (3, 3, 2), (5, 3, 2)] {
+        let (rules, mut g) = action_only(&[]);
+        g.vars.insert("alignment.unity_tips".into(), tips);
+        assert_eq!(alignment::next_tier(&rules.world(), &g, Side::Unity), tier, "{tips} tips");
+        fill_bucket(&rules, &mut g, Side::Unity);
+        next_alignment_card(&mut g, Side::Unity, "grassroots_funding");
+        any_action(&rules, &mut g);
+        assert_eq!(alignment::income_bonus(&g), income, "{tips} tips");
+    }
+}
+
 #[test]
 fn bar_levels_follow_the_unity_cards_drawn() {
     use PurgeLevel::*;
@@ -315,7 +330,8 @@ fn a_discord_tip_no_longer_moves_troops() {
 
 #[test]
 fn discord_cards_step_up_with_the_discord_tip_count() {
-    for (tips, each) in [(0, 1), (5, 3)] {
+    // 156: tier I below 3 earlier tips, tier III from 6.
+    for (tips, each) in [(0, 1), (6, 3)] {
         let (rules, mut g) = lab(&[]);
         // 138: Blight creates on each country's lowest-numbered city holding one.
         let seeded: Vec<usize> = (0..2).map(|c| rules.map.numbered(c, piece(c).cities[0])).collect();
@@ -335,7 +351,7 @@ fn discord_cards_step_up_with_the_discord_tip_count() {
                 assert_eq!(g.tokens(h, ADV_AMBASSADOR), 1 + each, "{tips} tips");
             }
         } else {
-            // 139: 5+ creates 3, then Corrupt cities: the 1 + 3 there are a city's 4,
+            // 139: tier III creates 3, then Corrupt cities: the 1 + 3 there are a city's 4,
             // so a city in each country gathers them and corrupts; they return.
             assert_eq!(corrupt(&g), before + 2, "{tips} tips");
             assert_eq!(seeded.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum::<i64>(), 0, "{tips} tips");
@@ -348,9 +364,9 @@ fn alignment_cards_are_one_shot() {
     assert!(crate::content()
         .alignment
         .iter()
-        .all(|c| !c.effects.is_empty()));
+        .all(|c| c.tiers.len() == 3 && c.tiers.iter().all(|t| !t.effects.is_empty())));
     // The ongoing field is gone from the format: content with it is rejected.
-    let bad = r#"[{"id":"x","name":"X","side":"unity","tier":1,"ongoing":true,"text":"","effects":[{"op":"build"}]}]"#;
+    let bad = r#"[{"id":"x","name":"X","side":"unity","ongoing":true,"tiers":[]}]"#;
     assert!(serde_json::from_str::<Vec<content::AlignmentCard>>(bad).is_err());
 }
 

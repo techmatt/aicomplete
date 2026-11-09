@@ -137,18 +137,19 @@ pub(super) fn alignment_block() -> String {
     let rows = content()
         .alignment
         .iter()
-        .map(|a| {
-            let steps: Vec<String> = a.steps.iter().map(|s| s.at.to_string()).collect();
-            vec![
-                a.name.clone(),
-                a.side.to_string(),
-                a.tier.to_string(),
-                a.text.clone(),
-                steps.join(", "),
-            ]
-        })
-        .collect();
-    table(&["Card", "Side", "Tier", "Text", "Stronger after tips"], rows)
+        .collect::<Vec<_>>();
+    // 156: the three tiers' text is in docs/cards.md (20+ cards would overrun this page's budget).
+    let mut out = String::new();
+    for side in [aic_core::content::Side::Unity, aic_core::content::Side::Discord] {
+        let names: Vec<String> = rows
+            .iter()
+            .filter(|a| a.side == side)
+            .map(|a| if a.draft { format!("{} (draft)", a.name) } else { a.name.clone() })
+            .collect();
+        out.push_str(&format!("- **{}** ({}): {}.\n", side.name(), names.len(), names.join(", ")));
+    }
+    out.push_str("- Each card's three tiers: [cards.md](../cards.md#unity-and-discord-cards).\n");
+    out
 }
 
 pub(super) fn projects_block() -> String {
@@ -370,7 +371,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage2_removed", "adversary.stage1_added"],
         ),
         (
-            "A still shorter Discord deck: the removed cards count as tips already made, so every printed step still acts; tier-2 threats sooner; optionally more corrupted cities per country at setup".into(),
+            "A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup".into(),
             vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];
@@ -648,7 +649,7 @@ pub(super) fn purge_ease_block(r: &Rules) -> String {
         } else {
             format!("the corrupted cities, {}", left.join(", "))
         };
-        out.push_str(&format!("- {range} Unity cards drawn: remove {what};\n"));
+        out.push_str(&format!("- {range} Unity tips: remove {what};\n"));
     }
     out.push_str("- corrupted cities always count.\n");
     out
@@ -741,12 +742,15 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     let at = list(r, "alignment.purge_at");
     let easing = match at.as_slice() {
         [a, _, b] => format!(
-            "With {a} Unity cards drawn the purge no longer asks you to clear adversary ambassadors; with {b}, it \
-             asks only for no corrupted cities."
+            "At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and \
+             adversary ambassadors. After {a} Unity tips the purge no longer asks you to clear adversary \
+             ambassadors; after {b}, it asks only that the adversary owns no city, and you win the moment it doesn't."
         ),
-        [a, ..] => format!("With {a} Unity cards drawn the purge no longer asks you to clear adversary ambassadors."),
+        [a, ..] => format!("After {a} Unity tips the purge no longer asks you to clear adversary ambassadors."),
         [] => String::new(),
     };
+    let tiers = list(r, "alignment.tier_at");
+    let (t2, t3) = (tiers.first().copied().unwrap_or(0), tiers.get(1).copied().unwrap_or(0));
     let unity = content().alignment.iter().filter(|c| c.side == aic_core::content::Side::Unity).count();
     // `board.last_safe_stage`: a last node is safe while the adversary card is below that stage.
     let safe = match int(r, "board.last_safe_stage") {
@@ -755,8 +759,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
         _ => "",
     };
     format!(
-        "**How the game ends, for new players.** You win by purging the board or by drawing the last \
-         Unity card. Pressure comes every round: the face-up adversary event card deals threats \
+        "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
+         step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
          by your sites and says where its new adversary ambassadors land (the lowest-numbered sites of a \
          kind), so you always know where the next wave lands. Ambassadors pile up, a card's Corrupt line \
          pulls {} of them on and next to a city into it and corrupts it, and corrupted \
@@ -768,31 +772,19 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
+         Every Unity and Discord card prints three tiers: its side's tips so far pick which one resolves \
+         (tier I below {t2}, II from {t2}, III from {t3}), so Unity's late cards help free cities and \
+         Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
          Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
-         Discord card. All {unity} Unity cards are dealt, and drawing the last wins at once. \
-         {easing} You also lose if any player has no nodes left on the board. \
+         Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
          their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
-         most (fewer at the harder levels), and reaching it loses.{late} So there are three different \
+         most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
         dealt(r, 0).iter().sum::<usize>(),
-        late = late_liberation_words(r),
-    )
-}
-
-/// 154: the late liberation, for new players (empty when it is off).
-fn late_liberation_words(r: &Rules) -> String {
-    let (at, late, stage) = (int(r, "board.liberate_at"), int(r, "board.liberate_late_at"), int(r, "board.liberate_late_stage"));
-    if late >= at || stage > 3 {
-        return String::new();
-    }
-    let roman = ["I", "II", "III"][(stage.clamp(1, 3) - 1) as usize];
-    format!(
-        " To finish in time, from the adversary's stage-{roman} cards on the Liberate action frees a corrupted city for \
-         {late} ambassadors instead of {at}: each liberation sways Unity toward the last card and takes a city off the purge."
     )
 }

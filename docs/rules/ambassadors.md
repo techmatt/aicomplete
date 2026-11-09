@@ -37,16 +37,11 @@ Cities, research stations and factories follow one set of rules and differ only 
   neutral: `liberate_at` 5 and `free_city` 5 Unity for a city, `liberate_facility_at` 3 and `free_facility` 2 Unity
   for a station or factory, plus one for each adversary ambassador on it, which cancel. It needs the site **in
   reach** (your node on or next to it: getting close is the risk) but no site claim: a botnet next to it doesn't stop
-  it, and a botnet on it stays. A liberated city also **drops down the ladder rather than off the board**:
-  `free_leaves` adversary ambassadors arrive on it as any placement does. Its factories keep their owners. A liberate
-  card ([player-cards.md](player-cards.md), *The liberate capstones*) liberates a city the same way, for its own price.
-- **The late liberation** (r66, candidate): once this round's adversary card is of stage `liberate_late_stage` (III,
-  the last three rounds at every level), the Liberate action frees a city for `liberate_late_at` 3 ambassadors
-  instead of 5, still plus one for each adversary ambassador on it; a station or factory keeps its 3. **Why (154):**
-  games lost to the round cap ended with about 5 corrupted cities standing and the team holding about 5 ambassadors,
-  6-8 short of liberating them; a stronger player replaying the last three rounds lost 9 in 10 of them too. Give /
-  get at `values.json`: 3 ambassadors (12) for a liberation (45) and its 5 Unity, against 20 for 45 before stage III.
-  The stage is printed on the face-up card, so a table sees the price change coming a round ahead.
+  it, and a botnet on it stays. A liberated city turns clean and takes `free_leaves` adversary ambassadors back (r67:
+  0, Matt, 2026-11-08: none; it was 1). Its factories keep their owners. A liberate card ([player-cards.md](player-cards.md),
+  *The liberate capstones*) or a Unity card's tier III liberates a city the same way, for its own price. The price is
+  the same all game (r67: 154's late liberation, 3 ambassadors from stage III, is gone; late strength comes from
+  cards instead).
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next corp troop made there; an adversary ambassador on one does nothing.

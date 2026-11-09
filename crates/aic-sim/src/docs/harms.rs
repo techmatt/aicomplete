@@ -203,10 +203,7 @@ fn harm_marks() -> BTreeMap<(usize, usize), Mark> {
         add(t.tier as usize - 1, &t.effects);
     }
     for a in c.alignment.iter().filter(|a| a.side.name() == "discord") {
-        let mut all = a.effects.clone();
-        for s in &a.steps {
-            all.extend(s.effects.iter().cloned());
-        }
+        let all: Vec<_> = a.all_effects().cloned().collect();
         add(DISCORD_CARDS, &all);
     }
     for a in &c.adversary {

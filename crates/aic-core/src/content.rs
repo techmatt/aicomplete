@@ -553,30 +553,49 @@ pub struct AdversaryCard {
 
 // ---------- alignment ----------
 
-/// A Unity or Discord card, resolved when its side's bucket tips.
+/// A Unity or Discord card, resolved when its side's track tips (156: one
+/// deck a side, every card printing three tiers, as Spirit Island's fear
+/// cards; the side's tip count before this tip picks which resolves, by
+/// `alignment.tier_at`).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AlignmentCard {
     pub id: String,
     pub name: String,
     pub side: Side,
-    /// 1, or 2 for the stronger tier.
-    pub tier: u8,
-    pub text: String,
-    pub effects: Vec<Op>,
-    /// Printed strength steps (017): from `at` tips of the card's side
-    /// (counted before this tip), `effects` replace the card's effects; the
-    /// last step reached applies.
-    #[serde(default)]
-    pub steps: Vec<Step>,
+    /// Tier I, II and III, in order.
+    pub tiers: Vec<AlignmentTier>,
+    /// 156: a drafted card Matt has not picked yet (the card viewer marks it).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub draft: bool,
 }
 
-/// A strength step printed on an Alignment card.
+/// One tier printed on an Alignment card (156).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct Step {
-    pub at: i64,
+pub struct AlignmentTier {
+    pub text: String,
     pub effects: Vec<Op>,
+}
+
+/// The tier numerals as printed.
+pub const TIER_NUMERALS: [&str; 3] = ["I", "II", "III"];
+
+impl AlignmentCard {
+    /// The printed text: each tier's line after its numeral.
+    pub fn text(&self) -> String {
+        self.tiers
+            .iter()
+            .zip(TIER_NUMERALS)
+            .map(|(t, n)| format!("{n}: {}", t.text))
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    /// Every op the card prints, all tiers.
+    pub fn all_effects(&self) -> impl Iterator<Item = &Op> {
+        self.tiers.iter().flat_map(|t| t.effects.iter())
+    }
 }
 
 /// An adversary project (017): one shared deck, staged (stage 1 cheap,
@@ -1245,22 +1264,16 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
 }
 
 fn check_alignment(a: &AlignmentCard) -> Result<(), String> {
-    if !(1..=2).contains(&a.tier) || a.effects.is_empty() {
+    // 156: three tiers, each with its text and an effect.
+    if a.tiers.len() != 3 || a.tiers.iter().any(|t| t.effects.is_empty() || t.text.trim().is_empty()) {
         return Err(format!(
-            "alignment card {:?}: tier 1 or 2 and an effect",
-            a.id
-        ));
-    }
-    if a.steps.windows(2).any(|p| p[0].at >= p[1].at) || a.steps.iter().any(|s| s.at < 1) {
-        return Err(format!(
-            "alignment card {:?}: steps at 1 or more tips, in rising order",
+            "alignment card {:?}: three tiers (I, II, III), each with text and an effect",
             a.id
         ));
     }
     let what = format!("alignment card {:?}", a.id);
-    check_ops(&a.effects, Slot::Team, &what)?;
-    for st in &a.steps {
-        check_ops(&st.effects, Slot::Team, &what)?;
+    for t in &a.tiers {
+        check_ops(&t.effects, Slot::Team, &what)?;
     }
     Ok(())
 }
@@ -1439,6 +1452,13 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                 // A token placed fires it; a token it placed would fire it again, forever.
                 if matches!(on, Event::PlaceTokens { .. }) && then.iter().any(|o| matches!(o, Op::AddTokens { .. })) {
                     return Err(format!("{what}: a place-token trigger places no tokens (it would loop)"));
+                }
+            }
+            // 156: a team card's player ops, resolved by one player.
+            Op::OnePlayer { then } => {
+                check_ops(then, Slot::Player, what)?;
+                if then.is_empty() || then.iter().any(|o| matches!(o, Op::When { .. } | Op::Threshold { .. })) {
+                    return Err(format!("{what}: one_player resolves instant player ops"));
                 }
             }
             Op::Threshold { at, then } => {

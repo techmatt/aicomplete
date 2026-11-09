@@ -19,14 +19,12 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
 | `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
-| `board.liberate_late_at` | 3 | 1..10 | 154: the Liberate action from stage `liberate_late_stage`: ambassadors that liberate an adversary city (liberate_at: no late step) |
-| `board.liberate_late_stage` | 3 | 1..4 | 154: the adversary card stage from which a city liberates for `liberate_late_at` (4: never) |
 | `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
 | `board.claim_city` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.last_safe_stage` | 2 | 0..3 | while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe) |
-| `board.free_leaves` | 1 | 0..5 | adversary ambassadors left on a city as it frees (the piece ladder) |
+| `board.free_leaves` | 0 | 0..5 | adversary ambassadors left on a city as it frees (the piece ladder) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 2 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
@@ -61,9 +59,9 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.counter_credit_pct` | 100 | 50..300 | every credits counter item costs this percent of its amount after counter_pct (rounded up; 100 = unchanged; 142's dial) |
 | `adversary.counter_bonus` | 0 | 0..10 | difficulty counter_bonus_at+: added to every resource item of each threat's first counter option (142; its credits before) |
 | `adversary.counter_bonus_all` | 1 | 0..10 | difficulty counter_bonus_at+: added to every resource counter item of every threat |
-| `adversary.counter_bonus_credits` | 8 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
+| `adversary.counter_bonus_credits` | 4 | 0..20 | difficulty counter_bonus_at+: added to every credits counter item, in place of counter_bonus_all (142) |
 | `adversary.counter_more_all` | 1 | 0..10 | difficulty counter_more_at+: added again to every resource counter item but credits (142's second step) |
-| `adversary.counter_more_credits` | 2 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
+| `adversary.counter_more_credits` | 0 | 0..20 | difficulty counter_more_at+: added again to every credits counter item (142) |
 | `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
 | `adversary.counter_bonus_at` | 1 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
@@ -74,8 +72,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 5, 5, 10, 16, 16 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 2, 2, 2, 3, 3 | 0..10 | 151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4 |
+| `adversary.compute_income` | 4, 4, 6, 8, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.ambassador_income` | 1, 1, 1, 1, 2 | 0..10 | 151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
@@ -93,9 +91,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.botnet` | 1 | 0..10 | Sway toward Unity for removing a botnet |
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
-| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity cards drawn at which the purge asks less: ambassadors, then troops, then botnets stop counting (136) |
-| `alignment.unity_tier2` | 3 | 0..50 | Unity cards drawn from which a Unity tip draws the stronger tier |
-| `alignment.discord_tier2` | 2 | 1..50 | Discord tip count from which a Discord tip draws the stronger tier |
+| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
+| `alignment.tier_at` | 3, 6 | 1..50 | 156: a side's tip count (before this tip) from which its cards resolve tier II, then tier III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |
 | `ai.boards` | 0, 1, 2 | 0..99 | AI board (index into content/ais.json) of each seat; the list repeats for more seats |

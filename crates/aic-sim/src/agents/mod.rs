@@ -842,7 +842,7 @@ mod tests {
     #[test]
     fn sampled_deals_ignore_the_true_deal() {
         let r = rules(2);
-        let key = "alignment.deck.unity.1";
+        let key = "alignment.deck.unity";
         let spec = AgentSpec::parse("planner:budget=2,horizon=1,deals=3").unwrap();
         let mut legal = Vec::new();
         for seed in 0..2 {
@@ -852,7 +852,7 @@ mod tests {
                 .content
                 .alignment
                 .iter()
-                .filter(|c| c.side == aic_core::content::Side::Unity && c.tier == 1)
+                .filter(|c| c.side == aic_core::content::Side::Unity)
                 .map(|c| aic_core::Key::new(&c.id))
                 .collect();
             let other: Vec<aic_core::Key> =
@@ -894,7 +894,7 @@ mod tests {
         assert!(AgentSpec::parse("engine:width=4,candidates=2,rollouts=3").is_ok());
     }
 
-    /// The deck clock (011; 013 on Unity; 028 on the Unity deck's last card):
+    /// The deck clock (011; 013 on Unity; 156 on the purge's last step):
     /// `w.clock` per round the team, at its Unity rate so far, would still
     /// be short of its Unity target when the deck runs out; nothing while it
     /// is on course.
@@ -908,16 +908,16 @@ mod tests {
             let w = eval::Weights { clock, ..Default::default() };
             eval::Eval::new(&r, w).value(&r, g)
         };
-        // Round 4, one Unity tip (6 Sway: 1.5 a round), 9 tips (54 Sway, 136:
-        // every printed Unity card) for the Unity deck's last card: 32 rounds
+        // Round 4, one Unity tip (6 Sway: 1.5 a round), 6 tips (36 Sway, 156:
+        // the purge's last step, `purge_at`) for the target: 20 rounds
         // needed. Two cards left (the face-up one and one in the deck): 2
-        // action phases after this one. 30 short.
+        // action phases after this one. 18 short.
         g.round = 4;
         g.vars.insert("alignment.unity_tips".into(), 1);
         assert_eq!(g.pile("adversary.next").len(), 1);
         let deck = g.pile("adversary.deck").to_vec();
         g.piles.insert("adversary.deck".into(), deck[..1].to_vec().into());
-        assert!((value(0.0, &g) - value(2.0, &g) - 2.0 * 30.0).abs() < 1e-9);
+        assert!((value(0.0, &g) - value(2.0, &g) - 2.0 * 18.0).abs() < 1e-9);
         // On course (7 tips by round 4): no cost.
         g.vars.insert("alignment.unity_tips".into(), 7);
         assert_eq!(value(0.0, &g), value(2.0, &g));

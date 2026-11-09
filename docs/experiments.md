@@ -129,9 +129,10 @@ check of a verdict that matters, `planner:strategy=1` the ceiling, and `sweep:pl
 the judge off the value table.
 
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read.
-- **Current recipe:** `154_endgame_r66/specs154.py TAG SEED [--probe]` (two 48-seed sets, the three pairs, d0-d3,
-  into `out/`) on both binaries, read by 151's `ladder151.py NEW OLD --measures` (pooled, paired, by set) and 154's
-  `screen154.py` (by lever: the round cap's share of losses, Liberate uses) and `ends154.py` (end reasons).
+- **Current recipe:** `156_win_redesign_r67/specs156.py TAG SEED [--probe]` (three 48-seed sets, the three pairs,
+  d0-d3, into `out/`) on both binaries, read by 151's `ladder151.py NEW OLD --measures` (pooled, paired, by set) and
+  156's `screen156.py` (by lever), `ends156.py` (win routes by Unity step, loss kinds) and `endgame156.py` (the probe
+  by Unity step). A smoke with `greedy` costs ~20 s a game (the strategist ~2 s): cap its seeds.
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
@@ -142,8 +143,7 @@ the judge off the value table.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own `CARGO_TARGET_DIR`; new
   sim-only measures go in as `patch -p1` in that tree (`git apply` in a worktree silently applies nothing).
   `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
-- **Size levers:** a size lever's first read is ambassadors bought (`board.std.ambassador`). Income levers are
-  overlays (`ais.builder.credits=16`) and need no build; a rule or map what-if does.
+- **Levers:** an income lever is an overlay (no build); a rule, content or map what-if needs one.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
   out/preflight`) for a crash, bad override or dead agent.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and others in
@@ -152,13 +152,12 @@ the judge off the value table.
 
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
 `oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
-pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row
-(`oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1`) costs 10 s a game at d3 and 61 s at d4, about 28 CPU-minutes for
-the 48 games, 6-7 min on 6 threads (its slowest game, about 5 min, is the floor). `threads=N` plays a decision's
-lines side by side (same games; 1.9 × at 4). Write-up: `155_skilled_agents/`.
+pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row costs
+10 s a game at d3 and 61 s at d4, 6-7 min on 6 threads for the 48 games; `threads=N` plays a decision's lines side
+by side. Spec and costs: `155_skilled_agents/`.
 
-`experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (purge vs.
-Unity deck) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
+`experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
+Unity step, `ends156.py`) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
 line alone reads near the engine.
 
 **Gates are suspended** until Matt names a milestone. The spec is `experiments/gate.json`, the early-stopping rule
@@ -166,8 +165,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 39160 (which item spent which is in its write-up;
-155's: 39112-39159, the oracle's cost curve and its confirmation). Next free: 39160. **The dev seeds for screens are 36800-36831**; screen at
+ledger, after its last read, not before it. Used: every seed below 39304 (which item spent which is in its write-up;
+156's: 39160-39303, three final sets). Next free: 39304. **The dev seeds for screens are 36800-36831**; screen at
 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
 52.8 and 44.4).
 

@@ -67,6 +67,8 @@ const isNew = (c) => !data.seen[c.id] && !noteOf(c);
 function badges(c) {
   const n = noteOf(c);
   return [
+    // 156: a drafted Unity card, for Matt to keep or prune.
+    c.draft ? '<span class="badge draft">draft</span>' : '',
     isNew(c) ? '<span class="badge new">new</span>' : '',
     isChanged(c) ? '<span class="badge changed">changed since your note</span>' : '',
     n?.flag ? `<span class="badge ${n.flag.replace(' ', '-')}">${esc(n.flag)}</span>` : '',

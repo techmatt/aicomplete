@@ -3,380 +3,349 @@
   "id": "grassroots_funding",
   "name": "Grassroots Funding",
   "side": "unity",
-  "tier": 1,
-  "text": "Every player gains 2 credits each round for the rest of the game.",
-  "effects": [
-   {
-    "op": "team_income",
-    "resource": "credits",
-    "amount": 2
-   }
+  "tiers": [
+   {"text": "Every player gains 2 credits each round for the rest of the game.",
+    "effects": [{"op": "team_income", "resource": "credits", "amount": 2}]},
+   {"text": "Every player gains 3 credits each round for the rest of the game.",
+    "effects": [{"op": "team_income", "resource": "credits", "amount": 3}]},
+   {"text": "Every player gains 3 credits each round for the rest of the game, and 2 ambassadors now.",
+    "effects": [{"op": "team_income", "resource": "credits", "amount": 3}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}
   ]
  },
  {
   "id": "open_market",
   "name": "Open Market",
   "side": "unity",
-  "tier": 1,
-  "text": "The next 2 cards any player keeps from the draft are free.",
-  "effects": [
-   {
-    "op": "free_purchases",
-    "count": 2
-   }
+  "tiers": [
+   {"text": "The next 2 cards any player keeps from the draft are free.",
+    "effects": [{"op": "free_purchases", "count": 2}]},
+   {"text": "The next 3 cards any player keeps from the draft are free, and every player gains 1 ambassador.",
+    "effects": [{"op": "free_purchases", "count": 3}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
+   {"text": "The next 4 cards any player keeps from the draft are free, and every player gains 2 ambassadors.",
+    "effects": [{"op": "free_purchases", "count": 4}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}
   ]
  },
  {
   "id": "think_tank",
   "name": "Think Tank",
   "side": "unity",
-  "tier": 1,
-  "text": "Every player gains 1 insight each round for the rest of the game.",
-  "effects": [
-   {
-    "op": "team_income",
-    "resource": "insight",
-    "amount": 1
-   }
+  "tiers": [
+   {"text": "Every player gains 1 insight each round for the rest of the game.",
+    "effects": [{"op": "team_income", "resource": "insight", "amount": 1}]},
+   {"text": "Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.",
+    "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
+   {"text": "Every player gains 1 insight each round for the rest of the game; one player removes every adversary ambassador on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+    "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}, {"op": "gain_ambassadors", "count": 2}]}]}
   ]
  },
  {
   "id": "ceasefire",
   "name": "Ceasefire",
   "side": "unity",
-  "tier": 1,
-  "text": "Counter an active threat.",
-  "effects": [
-   {
-    "op": "counter_threat"
-   }
+  "tiers": [
+   {"text": "Counter an active threat.",
+    "effects": [{"op": "counter_threat"}]},
+   {"text": "Counter an active threat; one player removes 2 adversary ambassadors in one hex in their reach.",
+    "effects": [{"op": "counter_threat"}, {"op": "one_player", "then": [{"op": "damage", "ambassadors": 2}]}]},
+   {"text": "Counter every active threat; one player removes every adversary ambassador on or next to one corrupted city in their reach.",
+    "effects": [{"op": "counter_all"}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}]}]}
   ]
  },
  {
   "id": "civil_defense",
   "name": "Civil Defense",
   "side": "unity",
-  "tier": 1,
-  "text": "In each country, remove 1 adversary ambassador, and a neutral research station opens on its lowest-numbered empty station site.",
-  "effects": [
-   {
-    "op": "pushback",
-    "ambassadors": 1
-   },
-   {
-    "op": "create_site",
-    "kind": "station"
-   }
+  "tiers": [
+   {"text": "In each country, remove 1 adversary ambassador, and a neutral research station opens on its lowest-numbered empty station site.",
+    "effects": [{"op": "pushback", "ambassadors": 1}, {"op": "create_site", "kind": "station"}]},
+   {"text": "In each country, remove 2 adversary ambassadors, and a neutral research station opens on its lowest-numbered empty station site.",
+    "effects": [{"op": "pushback", "ambassadors": 2}, {"op": "create_site", "kind": "station"}]},
+   {"text": "In each country, remove 3 adversary ambassadors, and a neutral research station opens on its lowest-numbered empty station site.",
+    "effects": [{"op": "pushback", "ambassadors": 3}, {"op": "create_site", "kind": "station"}]}
   ]
  },
  {
   "id": "volunteer_corps",
   "name": "Volunteer Corps",
   "side": "unity",
-  "tier": 1,
-  "text": "Sway 3 toward Unity.",
-  "effects": [
-   {
-    "op": "sway",
-    "side": "unity",
-    "amount": 3
-   }
+  "tiers": [
+   {"text": "Sway 3 toward Unity.",
+    "effects": [{"op": "sway", "side": "unity", "amount": 3}]},
+   {"text": "Sway 3 toward Unity, and every player gains 1 ambassador.",
+    "effects": [{"op": "sway", "side": "unity", "amount": 3}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
+   {"text": "One player liberates a corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "liberate"}]}]}
   ]
  },
  {
   "id": "global_coalition",
   "name": "Global Coalition",
   "side": "unity",
-  "tier": 2,
-  "text": "Counter every active threat.",
-  "effects": [
-   {
-    "op": "counter_all"
-   }
+  "tiers": [
+   {"text": "Counter an active threat, and every player gains 2 credits.",
+    "effects": [{"op": "counter_threat"}, {"op": "gain", "resource": "credits", "amount": 2}]},
+   {"text": "Counter every active threat.",
+    "effects": [{"op": "counter_all"}]},
+   {"text": "Counter every active threat; one player removes up to 3 troops in their reach.",
+    "effects": [{"op": "counter_all"}, {"op": "one_player", "then": [{"op": "remove_troops", "count": 3, "reach": true}]}]}
   ]
  },
  {
   "id": "new_deal",
   "name": "New Deal",
   "side": "unity",
-  "tier": 2,
-  "text": "Every player gains 4 credits now, and 2 credits each round for the rest of the game.",
-  "effects": [
-   {
-    "op": "team_income",
-    "resource": "credits",
-    "amount": 2
-   },
-   {
-    "op": "gain",
-    "resource": "credits",
-    "amount": 4
-   }
+  "tiers": [
+   {"text": "Every player gains 5 credits now.",
+    "effects": [{"op": "gain", "resource": "credits", "amount": 5}]},
+   {"text": "Every player gains 4 credits now, and 2 credits each round for the rest of the game.",
+    "effects": [{"op": "team_income", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "credits", "amount": 4}]},
+   {"text": "Every player gains 6 credits now, and 3 credits each round for the rest of the game.",
+    "effects": [{"op": "team_income", "resource": "credits", "amount": 3}, {"op": "gain", "resource": "credits", "amount": 6}]}
   ]
  },
  {
   "id": "decommission",
   "name": "Decommission",
   "side": "unity",
-  "tier": 2,
-  "text": "Remove a botnet anywhere on the board.",
-  "effects": [
-   {
-    "op": "remove_botnets",
-    "count": 1
-   }
+  "tiers": [
+   {"text": "Remove a botnet anywhere on the board.",
+    "effects": [{"op": "remove_botnets", "count": 1}]},
+   {"text": "Remove 2 botnets anywhere on the board.",
+    "effects": [{"op": "remove_botnets", "count": 2}]},
+   {"text": "Remove 2 botnets anywhere on the board; one player removes up to 3 troops in their reach.",
+    "effects": [{"op": "remove_botnets", "count": 2}, {"op": "one_player", "then": [{"op": "remove_troops", "count": 3, "reach": true}]}]}
+  ]
+ },
+ {
+  "id": "peacekeepers",
+  "name": "Peacekeepers",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player removes up to 2 troops in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_troops", "count": 2, "reach": true}]}]},
+   {"text": "One player removes up to 4 troops in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_troops", "count": 4, "reach": true}]}]},
+   {"text": "One player removes up to 6 troops in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_troops", "count": 6, "reach": true}]}]}
+  ]
+ },
+ {
+  "id": "town_hall_accord",
+  "name": "Town Hall Accord",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player removes up to 2 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 2}]}]},
+   {"text": "One player removes up to 4 adversary ambassadors on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 4}]}]},
+   {"text": "One player removes every adversary ambassador on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+    "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 0}, {"op": "gain_ambassadors", "count": 2}]}]}
+  ]
+ },
+ {
+  "id": "popular_mandate",
+  "name": "Popular Mandate",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "Every player gains 1 ambassador.",
+    "effects": [{"op": "gain", "resource": "ambassadors", "amount": 1}]},
+   {"text": "Every player gains 2 ambassadors.",
+    "effects": [{"op": "gain", "resource": "ambassadors", "amount": 2}]},
+   {"text": "One player liberates a corrupted city in their reach and gains 2 ambassadors.",
+    "effects": [{"op": "one_player", "then": [{"op": "liberate", "ambassadors": 2}]}]}
+  ]
+ },
+ {
+  "id": "reclamation",
+  "name": "Reclamation",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player takes the adversary cube off a corrupted research station or factory in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 1, "one_country": false}]}]},
+   {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 2, "one_country": false}]}]},
+   {"text": "One player liberates a corrupted city in their reach, and a botnet on or next to it comes off.",
+    "effects": [{"op": "one_player", "then": [{"op": "liberate", "botnet": true}]}]}
+  ]
+ },
+ {
+  "id": "mutual_aid",
+  "name": "Mutual Aid",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "Every player gains 1 energy.",
+    "effects": [{"op": "gain", "resource": "energy", "amount": 1}]},
+   {"text": "Every player gains 2 energy.",
+    "effects": [{"op": "gain", "resource": "energy", "amount": 2}]},
+   {"text": "Every player gains 2 energy; one player removes every adversary ambassador on or next to one corrupted city in their reach.",
+    "effects": [{"op": "gain", "resource": "energy", "amount": 2}, {"op": "one_player", "then": [{"op": "clear_city", "max": 0}]}]}
+  ]
+ },
+ {
+  "id": "disarmament_talks",
+  "name": "Disarmament Talks",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player removes 2 adversary ambassadors or 2 troops in one hex in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 2, "troops": 2}]}]},
+   {"text": "One player removes 3 adversary ambassadors or 3 troops in one hex in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 3, "troops": 3}]}]},
+   {"text": "One player removes 4 adversary ambassadors or 4 troops in one hex in their reach, then every adversary ambassador on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 4, "troops": 4}, {"op": "clear_city", "max": 0}]}]}
+  ]
+ },
+ {
+  "id": "network_cleanup",
+  "name": "Network Cleanup",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player removes a botnet in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}]}]},
+   {"text": "One player removes a botnet in their reach, and clears a corruption marker in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 1}]}]},
+   {"text": "One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes every adversary ambassador on or next to one corrupted city in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 2}, {"op": "clear_city", "max": 0}]}]}
+  ]
+ },
+ {
+  "id": "citizens_assembly",
+  "name": "Citizens' Assembly",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "Sway 2 toward Unity, and every player gains 2 credits.",
+    "effects": [{"op": "sway", "side": "unity", "amount": 2}, {"op": "gain", "resource": "credits", "amount": 2}]},
+   {"text": "Sway 4 toward Unity.",
+    "effects": [{"op": "sway", "side": "unity", "amount": 4}]},
+   {"text": "One player liberates a corrupted city in their reach and puts their cube on it.",
+    "effects": [{"op": "one_player", "then": [{"op": "liberate", "align": true}]}]}
+  ]
+ },
+ {
+  "id": "rebuilding_fund",
+  "name": "Rebuilding Fund",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "Every player gains 4 credits.",
+    "effects": [{"op": "gain", "resource": "credits", "amount": 4}]},
+   {"text": "Every player gains 5 credits and 1 ambassador.",
+    "effects": [{"op": "gain", "resource": "credits", "amount": 5}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
+   {"text": "Every player gains 5 credits and 3 ambassadors.",
+    "effects": [{"op": "gain", "resource": "credits", "amount": 5}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}
+  ]
+ },
+ {
+  "id": "safe_corridors",
+  "name": "Safe Corridors",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player gains 1 ambassador and moves up to 2 of their ambassadors onto pieces in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 1}, {"op": "move_ambassadors", "max": 2}]}]},
+   {"text": "One player gains 2 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 2}, {"op": "move_ambassadors", "max": 3}]}]},
+   {"text": "One player gains 4 ambassadors and moves up to 4 of their ambassadors onto pieces in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "gain_ambassadors", "count": 4}, {"op": "move_ambassadors", "max": 4}]}]}
+  ]
+ },
+ {
+  "id": "reconciliation_panel",
+  "name": "Reconciliation Panel",
+  "side": "unity",
+  "draft": true,
+  "tiers": [
+   {"text": "One player removes up to 2 adversary ambassadors in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 2, "reach": true}]}]},
+   {"text": "One player removes up to 4 adversary ambassadors in their reach.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 4, "reach": true}]}]},
+   {"text": "One player removes up to 6 adversary ambassadors in their reach, swaying 1 toward Unity for every 2.",
+    "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 6, "unity_per": 2, "reach": true}]}]}
   ]
  },
  {
   "id": "incursion",
   "name": "Incursion",
   "side": "discord",
-  "tier": 1,
-  "text": "Deal 1 extra threat. 5+ earlier Discord tips: deal 3 instead, and two tier-2 threats in each country.",
-  "effects": [
-   {
-    "op": "deal_threats",
-    "count": 1
-   }
-  ],
-  "steps": [
-   {
-    "at": 5,
-    "effects": [
-     {
-      "op": "deal_threats",
-      "count": 3
-     },
-     {
-      "op": "deal_threats",
-      "count": 2,
-      "tier": 2
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Deal 1 extra threat.",
+    "effects": [{"op": "deal_threats", "count": 1}]},
+   {"text": "Deal 2 extra threats, and one tier-2 threat in each country.",
+    "effects": [{"op": "deal_threats", "count": 2}, {"op": "deal_threats", "count": 1, "tier": 2}]},
+   {"text": "Deal 3 extra threats, and two tier-2 threats in each country.",
+    "effects": [{"op": "deal_threats", "count": 3}, {"op": "deal_threats", "count": 2, "tier": 2}]}
   ]
  },
  {
   "id": "blight",
   "name": "Blight",
   "side": "discord",
-  "tier": 1,
-  "text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone. 5+ earlier Discord tips: create 3 instead, then Corrupt cities.",
-  "effects": [
-   {
-    "op": "create",
-    "count": 1,
-    "at": "city",
-    "if": "ambassadors"
-   },
-   {
-    "op": "create_site",
-    "kind": "factory"
-   }
-  ],
-  "steps": [
-   {
-    "at": 5,
-    "effects": [
-     {
-      "op": "create",
-      "count": 3,
-      "at": "city",
-      "if": "ambassadors"
-     },
-     {
-      "op": "create_site",
-      "kind": "factory"
-     },
-     {
-      "op": "corrupt",
-      "site": "city"
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone.",
+    "effects": [{"op": "create", "count": 1, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
+   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]},
+   {"text": "Each board: create 3 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]}
   ]
  },
  {
   "id": "propaganda",
   "name": "Propaganda",
   "side": "discord",
-  "tier": 1,
-  "text": "Every player loses 4 credits; remove 2 Unity from the Unity track. 5+ earlier Discord tips: lose 8 credits and remove 4 Unity instead, and every player loses 2 ambassadors.",
-  "effects": [
-   {
-    "op": "players_lose",
-    "resource": "credits",
-    "amount": 4
-   },
-   {
-    "op": "pull_unity",
-    "amount": 2
-   }
-  ],
-  "steps": [
-   {
-    "at": 5,
-    "effects": [
-     {
-      "op": "players_lose",
-      "resource": "credits",
-      "amount": 8
-     },
-     {
-      "op": "pull_unity",
-      "amount": 4
-     },
-     {
-      "op": "lose_ambassador"
-     },
-     {
-      "op": "lose_ambassador"
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Every player loses 4 credits; remove 2 Unity from the Unity track.",
+    "effects": [{"op": "players_lose", "resource": "credits", "amount": 4}, {"op": "pull_unity", "amount": 2}]},
+   {"text": "Every player loses 6 credits and 1 ambassador; remove 3 Unity from the Unity track.",
+    "effects": [{"op": "players_lose", "resource": "credits", "amount": 6}, {"op": "pull_unity", "amount": 3}, {"op": "lose_ambassador"}]},
+   {"text": "Every player loses 8 credits and 2 ambassadors; remove 4 Unity from the Unity track.",
+    "effects": [{"op": "players_lose", "resource": "credits", "amount": 8}, {"op": "pull_unity", "amount": 4}, {"op": "lose_ambassador"}, {"op": "lose_ambassador"}]}
   ]
  },
  {
   "id": "offensive",
   "name": "Offensive",
   "side": "discord",
-  "tier": 2,
-  "text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops. 3+ earlier Discord tips: it deals a second tier-2 threat. 4+ instead: the adversary builds first, then Corrupt cities and the two threats.",
-  "effects": [
-   {
-    "op": "corrupt",
-    "site": "city"
-   },
-   {
-    "op": "threat_at_node",
-    "tier": 2
-   }
-  ],
-  "steps": [
-   {
-    "at": 3,
-    "effects": [
-     {
-      "op": "corrupt",
-      "site": "city"
-     },
-     {
-      "op": "threat_at_node",
-      "tier": 2
-     },
-     {
-      "op": "threat_at_node",
-      "tier": 2
-     }
-    ]
-   },
-   {
-    "at": 4,
-    "effects": [
-     {
-      "op": "adversary_build"
-     },
-     {
-      "op": "corrupt",
-      "site": "city"
-     },
-     {
-      "op": "threat_at_node",
-      "tier": 2
-     },
-     {
-      "op": "threat_at_node",
-      "tier": 2
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops.",
+    "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the node hex with the most adversary ambassadors and troops.",
+    "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
+   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the node hex with the most adversary ambassadors and troops.",
+    "effects": [{"op": "adversary_build"}, {"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
  {
   "id": "two_fronts",
   "name": "Two Fronts",
   "side": "discord",
-  "tier": 2,
-  "text": "Deal 2 extra threats. 3+ earlier Discord tips: two tier-2 threats in each country instead. 4+ instead: deal 3, and two tier-2 threats in each country.",
-  "effects": [
-   {
-    "op": "deal_threats",
-    "count": 2
-   }
-  ],
-  "steps": [
-   {
-    "at": 3,
-    "effects": [
-     {
-      "op": "deal_threats",
-      "count": 2,
-      "tier": 2
-     }
-    ]
-   },
-   {
-    "at": 4,
-    "effects": [
-     {
-      "op": "deal_threats",
-      "count": 3
-     },
-     {
-      "op": "deal_threats",
-      "count": 2,
-      "tier": 2
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Deal 2 extra threats.",
+    "effects": [{"op": "deal_threats", "count": 2}]},
+   {"text": "Deal two tier-2 threats in each country.",
+    "effects": [{"op": "deal_threats", "count": 2, "tier": 2}]},
+   {"text": "Deal 3 extra threats, and two tier-2 threats in each country.",
+    "effects": [{"op": "deal_threats", "count": 3}, {"op": "deal_threats", "count": 2, "tier": 2}]}
   ]
  },
  {
   "id": "firestorm",
   "name": "Firestorm",
   "side": "discord",
-  "tier": 2,
-  "text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors. 3+ earlier Discord tips: then Corrupt cities. 4+ instead: create 3, then Corrupt cities (1 fewer).",
-  "effects": [
-   {
-    "op": "create",
-    "count": 2,
-    "at": "city",
-    "if": "ambassadors"
-   }
-  ],
-  "steps": [
-   {
-    "at": 3,
-    "effects": [
-     {
-      "op": "create",
-      "count": 2,
-      "at": "city",
-      "if": "ambassadors"
-     },
-     {
-      "op": "corrupt",
-      "site": "city"
-     }
-    ]
-   },
-   {
-    "at": 4,
-    "effects": [
-     {
-      "op": "create",
-      "count": 3,
-      "at": "city",
-      "if": "ambassadors"
-     },
-     {
-      "op": "corrupt",
-      "site": "city",
-      "cut": 1
-     }
-    ]
-   }
+  "tiers": [
+   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors.",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
+   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, then Corrupt cities.",
+    "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city"}]},
+   {"text": "Each board: create 3 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, then Corrupt cities (1 fewer).",
+    "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city", "cut": 1}]}
   ]
  }
 ]

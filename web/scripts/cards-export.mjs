@@ -342,11 +342,17 @@ function adversary(a) {
   });
 }
 
+// 156: every Alignment card prints tiers I, II and III (its side's tips pick one); `draft` marks a
+// drafted card Matt has not picked yet.
 function alignment(a) {
+  const numerals = ['I', 'II', 'III'];
+  const tiers = a.tiers ?? [];
   return frameless(a.side, a, {
-    tier: a.tier,
-    tierLabel: TIER(a.tier),
-    ops: { effects: a.effects, ...Object.fromEntries((a.steps ?? []).map((s) => [`from ${s.at} tips`, s.effects])) },
+    tier: 0,
+    tierLabel: a.draft ? 'Three tiers (draft)' : 'Three tiers',
+    text: tiers.map((t, i) => `${numerals[i]}: ${t.text}`).join(' '),
+    draft: !!a.draft,
+    ops: Object.fromEntries(tiers.map((t, i) => [`tier ${numerals[i]}`, t.effects])),
   });
 }
 

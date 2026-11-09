@@ -13,18 +13,18 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
 - **`choices` counts prompts** (a placement is two: track, hex).
 - **Heuristic** (`agents/eval.rs`, `Weights`): win/loss, cities, a seat's last nodes, the
-  adversary's pieces, the decks' last cards, Alignment, projects, holdings, unpaid threats (the tempo
+  adversary's pieces, the Discord deck's last cards, Alignment (156: the next card's tier, `w.tier_read`;
+  the horizon aims at the purge's last step), projects, holdings, unpaid threats (the tempo
   trade, below); and:
   - **the tempo trade** (147, `w.tempo`): an unpaid threat weighs its one-off harm plus what it leaves
     on the table times the rounds left, over what paying now costs the engine (`lasting` in `eval.rs`);
-  - **corruption risk** (147, D67, `w.corrupt_exposure`, `w.blight`): a node on a site filling toward its
-    Corrupt number is that share lost to its owner; land corruption costs its Discord drip;
+  - **corruption risk** (147, `w.corrupt_exposure`, `w.blight`): a node on a site filling toward corruption,
+    that share lost; land corruption, its Discord drip;
   - **the coming Rally** (151, `w.rally_read`): `plan::next_rally`'s expected ambassadors count toward each
     site's corruption a round ahead;
   - **Movement** (149, `w.movement`): a seat's free moves a round over the rounds left;
-  - botnets −25 (D9): agents make none when an equal free choice exists;
-  - cubes, converter cities, a corrupted station, the liberation push, a darkened city, a
-    Patience seat's insight and idle credits each have a weight (`Weights` in `eval.rs` says each).
+  - botnets (−25, D9), cubes, converter cities, a corrupted station, the liberation push, a darkened city,
+    Patience insight and idle credits each have a weight (`Weights` in `eval.rs`).
 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|

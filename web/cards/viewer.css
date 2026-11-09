@@ -44,6 +44,7 @@ main.grid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; 
 .badge { font-size: 11px; line-height: 1.3; padding: 1px 6px; border-radius: 3px; background: #333943; color: #fff; box-shadow: 0 1px 3px #0009; white-space: nowrap; }
 .badge.changed { background: #b4561f; }
 .badge.new { background: #2c8a5b; }
+.badge.draft { background: #2a5d9c; }
 .badge.ok { background: #3c7a4d; }
 .badge.too-cheap, .badge.too-dear { background: #8a6d1d; }
 .badge.rework { background: #a33; }

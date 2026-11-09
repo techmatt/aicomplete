@@ -125,24 +125,18 @@ fn an_adversary_factory_liberates_as_an_adversary_station_does() {
 }
 
 #[test]
-fn a_city_liberates_for_fewer_ambassadors_from_stage_three() {
-    // 154: from stage `liberate_late_stage` a city takes `liberate_late_at`, plus one an adversary ambassador on it;
-    // a station or factory keeps its price. The lab prices Liberate at 1, so the baseline's numbers go back on.
-    let (rules, mut g) = lab_with(&["board.bases"], &["board.liberate_at=5", "board.liberate_late_at=3"]);
+fn a_city_liberates_at_one_price_all_game() {
+    // 156: the late liberation (154) is gone: a city costs `liberate_at` at every stage, plus one an
+    // adversary ambassador on it. The lab prices Liberate at 1, so the baseline's number goes back on.
+    let (rules, mut g) = lab_with(&["board.bases"], &["board.liberate_at=5"]);
     let w = rules.world();
     let c = (0..g.hexes.len()).find(|&h| is_city(&w, h)).unwrap();
     put(&mut g, c, ADV_CUBE, 1);
     put(&mut g, c, ADV_AMBASSADOR, 1);
-    let (at, late, from) = (w.int("board.liberate_at"), w.int("board.liberate_late_at"), w.int("board.liberate_late_stage"));
-    assert!(late < at, "the baseline's late price is the cheaper one");
-    setv(&mut g, crate::modules::adversary::STAGE, from - 1);
-    assert_eq!(board::liberate_cost(&w, &g, c), Some(at + 1));
-    setv(&mut g, crate::modules::adversary::STAGE, from);
-    assert_eq!(board::liberate_cost(&w, &g, c), Some(late + 1));
-    let z = (0..g.hexes.len()).find(|&h| w.map.hexes[h].industrial).unwrap();
-    put(&mut g, z, FACTORY, 1);
-    put(&mut g, z, ADV_CUBE, 1);
-    assert_eq!(board::liberate_cost(&w, &g, z), Some(w.int("board.liberate_facility_at")));
+    for stage in 1..=3 {
+        setv(&mut g, crate::modules::adversary::STAGE, stage);
+        assert_eq!(board::liberate_cost(&w, &g, c), Some(w.int("board.liberate_at") + 1));
+    }
 }
 
 #[test]

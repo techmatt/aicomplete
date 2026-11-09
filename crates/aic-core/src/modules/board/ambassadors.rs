@@ -93,18 +93,7 @@ pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     if !corrupted(g, h) {
         return None;
     }
-    let base = if kind == SiteKind::City && late_liberation(w, g) {
-        w.int("board.liberate_late_at").max(1)
-    } else {
-        liberate_ambassadors(w, kind)
-    };
-    Some(base + g.tokens(h, ADV_AMBASSADOR))
-}
-
-/// 154: whether this round's adversary card is of stage `liberate_late_stage`
-/// or later, when the Liberate action frees a city for `liberate_late_at`.
-pub fn late_liberation(w: &World, g: &GameState) -> bool {
-    g.var(adversary::STAGE) >= w.int("board.liberate_late_stage")
+    Some(liberate_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
 }
 
 /// The neutral research stations seat `seat` may claim with a card (142, `claim_station`): in its reach, a

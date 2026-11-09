@@ -142,7 +142,28 @@ def render(cards):
                 f"| {name} | {c['tier'] or '-'} | {kind} | {cost_text(c)} | "
                 f"{c.get('insight', 0)} | {tags} | {text} |")
         lines.append('')
+    lines += alignment_section()
     return '\n'.join(lines)
+
+
+def alignment_section():
+    """156: the Unity and Discord cards, three tiers each (too long for rules/alignment.md's budget)."""
+    with open(os.path.join(ROOT, 'content', 'alignment.json'), encoding='utf-8') as f:
+        cards = json.load(f)
+    out = ['## Unity and Discord cards', '',
+           'From `content/alignment.json`. Its side\'s tips before this tip pick the tier that resolves '
+           '(`alignment.tier_at`; [rules/alignment.md](rules/alignment.md)). *(draft)*: drafted by 156, for Matt to keep or prune.',
+           '']
+    for side in ('unity', 'discord'):
+        cs = [c for c in cards if c['side'] == side]
+        out += [f'### {side.capitalize()} ({len(cs)})', '',
+                '| card | tier I | tier II | tier III |', '|---|---|---|---|']
+        for c in cs:
+            name = c['name'] + (' *(draft)*' if c.get('draft') else '')
+            t = [x['text'].replace('|', '/') for x in c['tiers']]
+            out.append(f"| {name} | {t[0]} | {t[1]} | {t[2]} |")
+        out.append('')
+    return out
 
 
 def main(argv):

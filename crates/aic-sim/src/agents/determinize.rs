@@ -35,7 +35,7 @@ use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 /// Piles whose order is hidden but whose contents are known.
-pub(crate) const SHUFFLED: [&str; 9] = [
+pub(crate) const SHUFFLED: [&str; 7] = [
     "cards.deck.1",
     "cards.deck.2",
     "threats.deck.1",
@@ -43,16 +43,13 @@ pub(crate) const SHUFFLED: [&str; 9] = [
     "threats.deck.3",
     DEALT[0].2,
     DEALT[1].2,
-    DEALT[2].2,
-    DEALT[3].2,
 ];
 
-/// The Alignment piles a game may deal a subset of: (side, tier, pile).
-const DEALT: [(Side, u8, &str); 4] = [
-    (Side::Unity, 1, "alignment.deck.unity.1"),
-    (Side::Unity, 2, "alignment.deck.unity.2"),
-    (Side::Discord, 1, "alignment.deck.discord.1"),
-    (Side::Discord, 2, "alignment.deck.discord.2"),
+/// The Alignment piles a game may deal a subset of: (side, unused, pile).
+/// 156: one deck a side (its cards print three tiers).
+const DEALT: [(Side, u8, &str); 2] = [
+    (Side::Unity, 0, "alignment.deck.unity"),
+    (Side::Discord, 0, "alignment.deck.discord"),
 ];
 
 /// Deals each Alignment pile again from the printed cards of its tier not
@@ -64,7 +61,7 @@ const DEALT: [(Side, u8, &str); 4] = [
 /// deals covers the next card, the one a line feels first (054).
 fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng, turn: usize) {
     let w = rules.world();
-    for (side, tier, key) in DEALT {
+    for (side, _, key) in DEALT {
         let n = g.pile(key).len();
         if n == 0 {
             continue;
@@ -74,7 +71,7 @@ fn redeal_alignment(rules: &Rules, g: &mut GameState, rng: &mut ChaCha8Rng, turn
             .content
             .alignment
             .iter()
-            .filter(|c| c.side == side && c.tier == tier && !seen.iter().any(|s| s.as_str() == c.id))
+            .filter(|c| c.side == side && !seen.iter().any(|s| s.as_str() == c.id))
             .map(|c| Key::new(&c.id))
             .collect();
         pool.shuffle(rng);
@@ -354,9 +351,9 @@ mod tests {
     fn the_unity_deal_is_hidden() {
         let r = rules(0);
         let w = r.world();
-        let key = "alignment.deck.unity.1";
+        let key = "alignment.deck.unity";
         let g = r.new_game(3);
-        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier == 1).count();
+        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity).count();
         assert_eq!(printed, g.pile(key).len());
         let last = *g.pile(key).last().unwrap();
         let reached = (0..40).any(|s| {
@@ -379,9 +376,9 @@ mod tests {
     fn sampled_deals_are_blind_and_open_differently() {
         let r = rules(0);
         let w = r.world();
-        let key = "alignment.deck.unity.1";
+        let key = "alignment.deck.unity";
         let g = r.new_game(3);
-        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity && c.tier == 1).count();
+        let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity).count();
         let mut other = g.clone();
         Arc::make_mut(other.piles.get_mut(key).unwrap()).reverse();
         let deals = 4.min(printed);
