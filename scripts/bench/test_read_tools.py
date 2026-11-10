@@ -38,15 +38,16 @@ def outcome(cell, seed):
     return (seed + cell) % 4 != 0
 
 
-def write_read(d, wasm_seeds):
+def write_read(d, wasm_seeds, spec=SPEC, won=None):
     """DIR/games.jsonl: a farm header, then one line a cell a seed; seeds in WASM_SEEDS played on wasm."""
     os.makedirs(d)
-    cells = len(SPEC['variants']) * len(SPEC['difficulties']) * len(SPEC['agents'])
+    won = won or outcome
+    cells = len(spec['configs']) * len(spec['variants']) * len(spec['difficulties']) * len(spec['agents'])
     with open(os.path.join(d, 'games.jsonl'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write(json.dumps({'format': 1, 'spec': SPEC, 'rules_revision': 69}) + '\n')
+        f.write(json.dumps({'format': 1, 'spec': spec, 'rules_revision': 69}) + '\n')
         for s in SEEDS:
             for c in range(cells):
-                f.write(json.dumps({'cell': c, 'seed': s, 'won': outcome(c, s), 'rounds': 8, 'reason': 'end',
+                f.write(json.dumps({'cell': c, 'seed': s, 'won': won(c, s), 'rounds': 8, 'reason': 'end',
                                     'counters': {}, 'engine': 'wasm' if s in wasm_seeds else 'native'}) + '\n')
 
 
@@ -114,6 +115,34 @@ class IdenticalReads(unittest.TestCase):
         self.assertIn(f'minus A/d2/bp/strategist: +0.0 ±0.0 on {n} seeds ({n // 2} seeds on mixed engines paired)',
                       self.pair())
         self.assertIn(f'on {n // 2} seeds ({n // 2} seeds on mixed engines left out)', self.pair('--same-engine'))
+
+
+class TwoAgentsTwoConfigs(unittest.TestCase):
+    """169: a read of two agents gets a row each (they were pooled into one win %), and a screen's second config is a
+    lever of its own (its games overwrote the base config's)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_ladder_rows_per_agent(self):
+        spec = dict(SPEC, agents=['strategist', 'greedy'])
+        d = os.path.join(self.tmp.name, 'A')
+        write_read(d, set(), spec, lambda c, s: c % 2 == 1)  # cells run agents fastest: greedy wins, strategist not
+        text = run(ladder.ladder, [d], [d], ladder.parse_bands(ladder.BANDS), False)
+        self.assertIn('| strategist | d0 | **0.0**', text)
+        self.assertIn('| greedy | d0 | **100.0**', text)
+
+    def test_screen_config_lever(self):
+        spec = dict(SPEC, configs=['configs/baseline.json', 'out/x_off.json'])
+        d = os.path.join(self.tmp.name, 'S')
+        per_config = len(spec['variants']) * len(spec['difficulties']) * len(spec['agents'])
+        write_read(d, set(), spec, lambda c, s: c < per_config)  # the base config wins, x_off never
+        text = run(ladder.screen, [d], False)
+        self.assertRegex(text, r'\| base \| strategist \| d0 \| 100\.0 ')
+        self.assertRegex(text, r'\| x_off \| strategist \| d0 \| 0\.0 \| [\d.]+ \| -100\.0 ')
 
 
 if __name__ == '__main__':

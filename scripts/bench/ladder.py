@@ -10,8 +10,9 @@ order on both sides (set a, b, c of `bench/read_specs.py read`). Each side is la
 (`r69 new` / `r69 old` when both share one). The table, per difficulty: the new win % and its SE, the old, the paired
 gap and its SE, each set's new win %, the band and whether the new rate is in it. `--bands` gives the band of each
 difficulty from d0 up, `lo-hi` ','-separated (default `90-100,70-80,55-65,40-50`, 157's prompt); a difficulty with no
-band prints `-`. `--screen` reads a screen's cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), with
-its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
+band prints `-`. A read of two or more agents prints a row per agent and difficulty. `--screen` reads a screen's
+cells: a variant `PAIR_LEVER` is lever LEVER (no suffix: `base`), a config after the spec's first is a lever named by
+its file (`x_off`, `x_off LEVER`), each with its gap to base paired on the same pair and seed. `--measures` adds, per difficulty and side, a game's means: nodes
 lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`, 20), distinct projects revealed,
 and reshuffles.
@@ -60,8 +61,12 @@ def load(d):
     else:
         cells = dict(enumerate(cells_of(head["spec"])))
     agents = list(dict.fromkeys(cells[k]["agent"] for k in sorted(cells)))
+    configs = list(dict.fromkeys(cells[k].get("config", "") for k in sorted(cells)))
     for c in cells.values():
         c["rank"] = agents.index(c["agent"])
+        # 169: a screen's other configs (read_specs --offs) are levers of their own, named by the config's file.
+        cfg = c.get("config", "")
+        c["config_lever"] = os.path.splitext(os.path.basename(cfg))[0] if configs.index(cfg) > 0 else ""
     for g in lines:
         yield cells[g["cell"]], g
 
@@ -104,7 +109,7 @@ def mean_table(rows_by_side):
     head = "| side | d | games | " + " | ".join(keys) + " |"
     lines = [head, "|" + "---|" * (len(keys) + 3)]
     for side, diff, avg, n in out:
-        lines.append(f"| {side} | d{diff} | {n} | " + " | ".join(f"{avg[k]:.2f}" for k in keys) + " |")
+        lines.append(f"| {side} | {diff if isinstance(diff, str) else f'd{diff}'} | {n} | " + " | ".join(f"{avg[k]:.2f}" for k in keys) + " |")
     return "\n".join(lines)
 
 
@@ -148,6 +153,9 @@ def screen(dirs, with_measures):
         for c, g in load(d):
             v = c["variant"]
             lever = v.split("_", 1)[1] if "_" in v else "base"
+            if c["config_lever"]:
+                # 169: each config's game for a seed overwrote the one before it (the last config read as base).
+                lever = c["config_lever"] if lever == "base" else f"{c['config_lever']} {lever}"
             pair = v.split("_", 1)[0]
             key = (lever, c["agent"], c["difficulty"])
             wins[key][(i, pair, g["seed"])] = g
@@ -176,38 +184,45 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
     if nl == ol:
         nl, ol = nl + " new", ol + " old"
     ms = {nl: defaultdict(list), ol: defaultdict(list)}
+    # 169: a read of two or more agents gets a row per agent and difficulty (they were pooled into one win %, its
+    # band judged on the blend); rows are keyed (agent, d), the agent by its spec place.
+    names = {}
     for side, dirs in (("new", new_dirs), ("old", old_dirs)):
         for i, d in enumerate(dirs):
             for c, g in load(d):
-                diff, v = c["difficulty"], c["variant"]
+                names.setdefault(c["rank"], c["agent"])
+                row, v = (c["rank"], c["difficulty"]), c["variant"]
                 # 160: the agent too (its place in the spec): a run of two agents kept one game a seed, by file order.
                 key = (i, v, c["rank"], g["seed"])
                 if side == "new":
-                    new[diff][key] = g
-                    per_set[diff][i].append(won(g))
-                    ms[nl][diff].append(measures(g))
+                    new[row][key] = g
+                    per_set[row][i].append(won(g))
+                    ms[nl][row].append(measures(g))
                 else:
-                    old[diff][key] = g
-                    ms[ol][diff].append(measures(g))
-    print(f"| d | {nl} win % | ±SE | {ol} win % | gap | ±SE (paired) | sets ({nl}) | band | verdict |")
-    print("|---|---|---|---|---|---|---|---|---|")
+                    old[row][key] = g
+                    ms[ol][row].append(measures(g))
+    many = len({r for r, _ in new} | {r for r, _ in old}) > 1
+    print(f"| {'agent | ' if many else ''}d | {nl} win % | ±SE | {ol} win % | gap | ±SE (paired) | sets ({nl}) | band | verdict |")
+    print(f"|{'---|' if many else ''}---|---|---|---|---|---|---|---|---|")
     mixed = {}
-    for diff in sorted(new):
-        n = new[diff]
+    for rank, diff in sorted(new):
+        n = new[(rank, diff)]
+        who = f"{names[rank]} | " if many else ""
         p = sum(map(won, n.values())) / len(n)
         se = math.sqrt(p * (1 - p) / len(n)) * 100
-        po, m, gse, mixed[f"d{diff}"] = paired(n, old.get(diff, {}))
-        sets = " / ".join(f"{100 * sum(x) / len(x):.1f}" for _, x in sorted(per_set[diff].items()))
+        po, m, gse, mixed[f"{who.strip(' |') + ' ' if many else ''}d{diff}"] = paired(n, old.get((rank, diff), {}))
+        sets = " / ".join(f"{100 * sum(x) / len(x):.1f}" for _, x in sorted(per_set[(rank, diff)].items()))
         if diff in bands:
             lo, hi = bands[diff]
             band, ok = f"{lo}-{hi}", "met" if lo <= 100 * p <= hi else "**unmet**"
         else:
             band, ok = "-", "-"
-        print(f"| d{diff} | **{100 * p:.1f}** | {se:.1f} | {100 * po:.1f} | {m:+.1f} | {gse:.1f} | {sets} | {band} | {ok} | ({len(n)} games)")
+        print(f"| {who}d{diff} | **{100 * p:.1f}** | {se:.1f} | {100 * po:.1f} | {m:+.1f} | {gse:.1f} | {sets} | {band} | {ok} | ({len(n)} games)")
     mixed_line(mixed)
     if with_measures:
         print()
-        print(mean_table(ms))
+        # The measures table's d column: the difficulty, with the agent when the read has two or more.
+        print(mean_table({side: {(f"{names[r]} d{d}" if many else d): v for (r, d), v in by.items()} for side, by in ms.items()}))
 
 
 def main():

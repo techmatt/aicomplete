@@ -19,8 +19,8 @@ corp) energy cubes a round. An aligned city's go free to the player who aligned 
 player with a node on or next to it (players choose who, or nobody); otherwise they are
 lost. **An agent on a city stays, and the city is dark** (Matt: neutral
 cities at r37, aligned ones at r38): every round it stands there, a neutral city sells none of
-its cubes and an aligned city gives its owner none, and they are lost. One ambassador makes a
-city dark; `corrupt_at` of them corrupt it, so clearing ambassadors from the cities you buy
+its cubes and an aligned city gives its owner none, and they are lost. One agent makes a
+city dark; `corrupt_at` of them corrupt it, so clearing agents from the cities you buy
 from, and above all from the cities you aligned, comes well before corruption. **Aligning** a city is the Claim
 action (137: `claim_city` ambassadors, plus one for each agent on it, which cancel;
 [ambassadors.md](ambassadors.md)). A corrupted city's go to the adversary (Discord), unless a player ambassador
@@ -29,9 +29,9 @@ stands on it and blocks them.
 **Cities' energy, for new players.** A city you aligned gives you its energy every round.
 A neutral city next to your node sells you its energy. An agent standing on
 any city shuts it off: your aligned city gives you nothing, a neutral one sells nothing,
-every round until someone removes the ambassador, and more of them corrupt the city. Claiming
-a dark city costs one more ambassador for each of theirs on it. If
-enemy ambassadors get that close to your city, work to stop them: clear them early. A Blackout stops a country's cities
+every round until someone removes the agent, and more of them corrupt the city. Claiming
+a dark city costs one more ambassador for each agent on it. If
+agents get that close to your city, work to stop them: clear them early. A Blackout stops a country's cities
 in the production after the threat executes.
 
 **No limits** (Matt, 2026-11-05, as in Terraforming Mars and Spirit Island). No resource has a holding limit and no
@@ -65,7 +65,7 @@ target is in the player's reach. The view publishes each action with its cost
 | Move a player ambassador | 1 of your Movement this round (your board's, unused ones lost) | from your supply or the board onto a piece in reach (not the hex it comes from) |
 | Gain a player ambassador | `ambassador_credits` 20 credits | into your supply; a standard project too |
 | Claim a site | `claim_city` 4 ambassadors for a city, `claim_station` 3 for a station, `claim_factory` 3 for a factory, from your supply, used up; 1 more for each agent on it | a neutral city, research station or factory in reach, with a site claim: the agents on it cancel and your cube goes on |
-| Liberate a site | `liberate_at` 5 ambassadors for a city, `liberate_facility_at` 3 for a station or factory, from your supply, used up; 1 more for each agent on it | an adversary city, station or factory in reach: it turns neutral and sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory); a city takes `free_leaves` 0 agents as it frees |
+| Liberate a site | `liberate_at` 5 ambassadors for a city, `liberate_facility_at` 3 for a station or factory, 1 more for each agent on it; used up: those on the site first (yours, then others'), your supply the rest | an adversary city, station or factory in reach: it turns neutral and sways Unity (`alignment.free_city` 5 for a city, `free_facility` 2 for a station or factory); a city takes `free_leaves` 0 agents as it frees |
 | Harden a facility (a card that grants it; none does: Faraday Yard hardens when played) | the chips the card prints, per token | a player-owned station or factory in reach that is not corrupted, one a troop can strike |
 | Sell a card | gain `sell_credits` 1 | from your hand |
 | Project: harden (`harden_buy`) | `harden_credits` 3 credits | any player: a hardening token on a player-owned station or factory in reach |
@@ -86,11 +86,11 @@ There is no "build a factory" standard action: cities build factories.
 | 3 | `threats.deal` | Its pulls: a threat a pull in each country, its tokens on the board ([threats.md](threats.md)) |
 | 4–6 | `adversary.build`, `.corrupt`, `.natural` | The card's Rally X (each board's pool lands), Deploy and other lines, the board's troops, ongoing projects, botnet compute onto the projects; the card's Corrupt lines; natural corruption |
 | 7 | `board.march` | The adversary troops march ([war.md](war.md)): `troop_steps` steps each, move or destroy |
-| 8 | `adversary.reveal` | Next round's card face up; the adversary's income (compute onto the projects, ambassadors into each board's pool) |
+| 8 | `adversary.reveal` | Next round's card face up; the adversary's income (compute onto the projects, agents into each board's pool) |
 | 9–12 | `cards.tier`, `.deal`, `.draft`, `.keep` | Round 1: the opening deal and keep. Later: build the draft hand card by card (tier each), draft, keep ([player-cards.md](player-cards.md)) |
 | 13 | `cards.play+threats.counter+alignment.act+board.act+ai.power` | Actions, simultaneous: cards, abilities, AI-board powers (nodes come from them), standard actions, countering threats, antimatter |
-| 14 | `board.bases` | Production, every round: factories make chips (a player's) or a troop (the adversary's), extra corp troops, cities grow factories; one opposing ambassador blocks a site |
-| 15 | `board.produce` | Production: cities' energy cubes (neutral ones for sale) and stations (cubes, or the adversary's compute); one opposing ambassador blocks a site; ambassadors on nodes drain insight; full megaprojects complete |
+| 14 | `board.bases` | Production, every round: factories make chips (a player's) or a troop (the adversary's), extra corp troops, cities grow factories; one opposing ambassador or agent blocks a site |
+| 15 | `board.produce` | Production: cities' energy cubes (neutral ones for sale) and stations (cubes, or the adversary's compute); one opposing ambassador or agent blocks a site; agents on nodes drain insight; full megaprojects complete |
 | 16 | `economy.upkeep` | Production: income; building upkeep |
 | 17 | `threats.execute` | Partial payments refunded; uncountered threats execute |
 | 18 | `board.war` | War, at the end of every round: front battles; what it destroys is gone for next round's production |

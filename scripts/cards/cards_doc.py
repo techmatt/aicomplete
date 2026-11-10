@@ -151,7 +151,7 @@ def alignment_section():
     with open(os.path.join(ROOT, 'content', 'alignment.json'), encoding='utf-8') as f:
         cards = json.load(f)
     out = ['## Unity and Discord cards', '',
-           'From `content/alignment.json`. Its side\'s tips before this tip pick the tier that resolves '
+           'From `content/alignment.json`. Its side\'s tip count, this tip included, picks the tier that resolves '
            '(`alignment.tier_at`; [rules/alignment.md](rules/alignment.md)). *(draft)*: drafted by 156, for Matt to keep or prune.',
            '']
     for side in ('unity', 'discord'):

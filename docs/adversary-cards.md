@@ -6,7 +6,7 @@
 
 Project slots: Military, Open, Open.
 
-- **Garrisons.** Income: +1 ambassador a board a round.
+- **Garrisons.** Income: +1 agent a board a round.
 - **Troops where the Protector stands.** Each round: on each board where the Protector has a node, 1 adversary troop lands on its lowest-numbered factory (else city), never a hex Wall holds.
 - **Warmongering.** Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base in each production, whatever makes it.
 - **Difficulty.** Militarist, harder: each event's Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.
@@ -17,18 +17,18 @@ Project slots: Military, Open, Open.
 |---|---|---|
 | Probing Strikes | 1 | Threat, each board: Military 1. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: cities. |
 | Factory Drive | 1 | Threat, each board: Military 1 or Economic 1. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each board: a neutral factory opens on its lowest-numbered free site. Corrupt: factories. |
-| Long Patrols | 1 | Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 ambassador a board a round. Corrupt: research stations. |
+| Long Patrols | 1 | Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 agent a board a round. Corrupt: research stations. |
 | War Drums | 1 | Threat, each board: Military 1 or Influence 1. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. |
 | Signal Jamming | 1 | Threat, each board: Military 1 or Grid 1. Rally: botnet hexes. Income: +2 compute a round. Corrupt: cities. |
-| Mobilization | 2 | Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: cities. |
+| Mobilization | 2 | Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: cities. |
 | Station Raids | 2 | Threat, each board: Military 2 or Cyber 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: research stations. |
-| Fifth Column | 2 | Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 ambassador a board a round. Corrupt: cities (1 fewer). |
+| Fifth Column | 2 | Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 agent a board a round. Corrupt: cities (1 fewer). |
 | Border War | 2 | Threat, each board: Military 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt: factories. |
 | Supply Lines | 2 | Threat, each board: Military 1 or Economic 1, and Military 2 or Economic 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +2 compute a round. Corrupt: factories. |
 | Forced March | 2 | Threat, each board: any tier-2 threat. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Every adversary troop takes 1 more step this round. Corrupt: cities. |
-| Total Mobilization | 3 | Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities. |
+| Total Mobilization | 3 | Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 agent a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities. |
 | Blitzkrieg | 3 | Threat, each board: any tier-2 threat, and Military 2 or Influence 2. Rally: cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. Corrupt: land. |
-| Occupation | 3 | Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: research stations. Corrupt: cities (1 fewer). |
+| Occupation | 3 | Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: research stations. Corrupt: cities (1 fewer). |
 | Naval Blockade | 3 | Threat, each board: Economic 2 or Grid 2, and Military 2 or Cyber 2. Rally: coastal cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Corrupt: cities. Corrupt: land. |
 
 ## Threats, tier 1
@@ -37,7 +37,7 @@ Project slots: Military, Open, Open.
 |---|---|---|---|---|
 | Orbital Strike | Military | base | 2 adversary troops land here. | 3 energy; 12 credits |
 | Commandeer | Military | base, factory | The nearest player pays 3 energy or discards 3 cards. The adversary gains 2 compute. | 3 ambassadors; 12 credits |
-| Supply Raid | Military + Economic | factory | 1 adversary troop lands here. The nearest player pays 3 chips or discards 1 cards. | 2 Industry tags; 12 credits |
+| Supply Raid | Military + Economic | factory | 1 adversary troop lands here. The nearest player pays 3 chips or discards 1 card. | 2 Industry tags; 12 credits |
 | Eviction | Military | city | The nearest player pays 2 ambassadors or discards 2 cards. The adversary gains 4 compute. | 2 Security tags; 12 credits |
 | Call-Up | Military | base | 1 adversary troop lands here. Sway 2 toward Discord. | 3 ambassadors; 12 credits |
 | Provocation | Influence + Military | base | A tier-1 threat is dealt into this country (it executes next round). Sway 2 toward Discord. | 3 ambassadors; 12 credits |
@@ -48,7 +48,7 @@ Project slots: Military, Open, Open.
 | Sabotage | Cyber | station | The nearest player loses 4 tokens from their cards. The adversary gains 6 compute. | 2 Cyber tags; 12 credits |
 | Insider Access | Cyber + Influence | station | 2 agents are created here. The nearest player pays 3 research cubes or discards 2 cards. | 3 ambassadors; 12 credits |
 | Wiper Malware | Cyber | station | The nearest player discards 3 cards. | 3 research cubes; 12 credits |
-| Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 cards. | 2 Cyber tags; 12 credits |
+| Cryptojacking | Cyber | station, factory | The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card. | 2 Cyber tags; 12 credits |
 | Backdoor | Cyber | station | A botnet lands on the station here. | 6 insight; 12 credits |
 | Requisition | Economic | factory, city | The nearest player pays 5 chips or discards 2 cards. The adversary gains 3 compute. | 2 Industry tags; 12 credits |
 | Shakedown | Economic + Influence | city | Theft: the nearest player pays 5 chips or discards 2 cards; the adversary gains 4 compute. | 3 ambassadors; 12 credits |
@@ -109,16 +109,16 @@ Project slots: Military, Open, Open.
 | Arms Race | Military | 11 | ongoing | Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production). |
 | Declaration of War | Military | 18 | ongoing | Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice. |
 | Disinformation | Influence | 5 | once | Sway 5 toward Discord. |
-| Recruitment Drive | Influence | 11 | once | Income: +1 ambassador a board a round. |
+| Recruitment Drive | Influence | 11 | once | Income: +1 agent a board a round. |
 | Infiltration Drive | Influence | 18 | once | Rally 3, each board: cities. Corrupt: cities (1 fewer). |
 | Data Heist | Cyber | 6 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards. |
 | Botnet Swarm | Cyber | 6 | once | Rally 3, each board: botnet hexes. |
 | Station Coup | Cyber | 9 | once | Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it). |
 | Market Crash | Economic | 5 | once | Each player pays 10 credits or discards 3 cards. |
-| Shadow Factories | Economic | 7 | once | The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory). |
+| Shadow Factories | Economic | 7 | once | The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory). |
 | Capital Flight | Economic | 8 | once | Each player's credit income falls by 4 for the rest of the game. |
 | Rolling Blackouts | Grid | 6 | once | Until the end of next round, cities make no energy. |
 | Grid Capture | Grid | 9 | ongoing | Ongoing: Each player pays 1 energy or discards 1 card. |
 | False Flag | Universal | 6 | once | Each board: an extra tier-2 threat, any tag. |
-| Grand Offensive | Universal | 10 | once | Each board rallies its ambassador income now, to this round's Rally. Corrupt: cities. |
+| Grand Offensive | Universal | 10 | once | Each board rallies its agent income now, to this round's Rally. Corrupt: cities. |
 | Propaganda Network | Universal | 14 | ongoing | Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord. |

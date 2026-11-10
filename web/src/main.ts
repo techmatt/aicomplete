@@ -326,7 +326,8 @@ function actionButtons(mine: Action[]): HTMLElement {
     if (acts.every((a) => isHex(a.target))) {
       const count = document.createElement('span');
       count.className = 'hex-pick';
-      count.textContent = `pick a hex ▸ (${acts.length})`;
+      // 169: hexes, not answers (a Gather or Push offers two batch sizes on one hex), as the prompt counts them.
+      count.textContent = `pick a hex ▸ (${new Set(acts.map((a) => hexKey(a.target!))).size})`;
       count.dataset.hexes = acts.map((a) => hexKey(a.target!)).join(' ');
       count.dataset.action = JSON.stringify(acts[0]);
       row.append(count);

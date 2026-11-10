@@ -50,7 +50,7 @@ Revealed tags are rare, late and costly: two a board, on space 6 (cost 3), place
 ambassadors from your supply or the board onto a piece in reach). Movement unused this round is lost; a space
 counts from when it is uncovered. Cards that move ambassadors (Liaison Corps, Summit Caucus) add to it. Economy space 4
 is reached about round 2-3. **The Researcher is the movement-heavy board,** as its stations spread over the map: its own
-ambassador on one armors it and keeps the adversary's off, which would block its cubes.
+ambassador on one armors it and keeps agents off, which would block its cubes.
 
 **Give / get** (`values.json`): a Movement is 1.4 a round; space 6
 (cost 3, about 18) is even on the way to the capstone. A printed tag is free: the tag (1), its discount one card

@@ -1,0 +1,36 @@
+{
+  "name": "smoke169",
+  "note": "169: the agent-fix smoke (amendment 7657): 32 seeds paired, d1-d3, on and off. Seeds 41500-41531.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 32,
+  "records": 0
+}

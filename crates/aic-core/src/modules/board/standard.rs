@@ -288,7 +288,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station or factory, from your supply, used up; 1 more for each agent on it",
+                "{} ambassadors for a city, {} for a station or factory, 1 more for each agent on it; used up: those on the site first (yours, then others'), your supply the rest",
                 t("board.liberate_at"),
                 t("board.liberate_facility_at")
             ),

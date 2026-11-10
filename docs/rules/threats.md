@@ -108,7 +108,7 @@ Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest
 ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute fills the cheapest project on the
 adversary's board; a full project fires, and when every slot has fired they refill. **Harder levels** make threats
-harsher, not more: difficulty 1 lets sites corrupt with one fewer ambassador and makes every counter cost 1 more of
+harsher, not more: difficulty 1 lets sites corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (3 more credits), 2 adds 1 more again (3 credits), 3 gives the adversary 4 compute for each unpaid threat
 (and a shorter, busier game), and only 4 deals an extra threat a round.
 **What resisted a summary:** where a token goes (the most-threatened uncorrupted site of its type, by count of

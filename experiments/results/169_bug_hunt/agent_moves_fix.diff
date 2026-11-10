@@ -1,0 +1,74 @@
+diff --git a/crates/aic-sim/src/agents/moves.rs b/crates/aic-sim/src/agents/moves.rs
+index a097179..7b2b353 100644
+--- a/crates/aic-sim/src/agents/moves.rs
++++ b/crates/aic-sim/src/agents/moves.rs
+@@ -118,6 +118,16 @@ fn agents_next_to(w: &World, g: &GameState, h: usize) -> i64 {
+     w.map.hexes[h].neighbors.iter().map(|&x| agents(g, x)).sum()
+ }
+ 
++/// 169: the agents a gathering Corrupt line pulls into site `h`, as the rule does: from neighbors in its own country,
++/// none onto a firewalled site.
++fn pulled_into(w: &World, g: &GameState, h: usize) -> i64 {
++    if common::firewalled(g, h) {
++        return 0;
++    }
++    let c = w.map.hexes[h].country;
++    w.map.hexes[h].neighbors.iter().filter(|&&x| w.map.hexes[x].country == c).map(|&x| agents(g, x)).sum()
++}
++
+ /// What a Liberate on `h` still needs beyond the ambassadors standing there (0: not an adversary site).
+ fn liberate_short(w: &World, g: &GameState, h: usize) -> i64 {
+     board::liberate_cost(w, g, h).map_or(0, |n| (n - standing(g, h)).max(0))
+@@ -128,9 +138,15 @@ fn holds(g: &GameState, x: usize) -> bool {
+     (0..g.seats.len()).any(|s| g.tokens(x, common::node(s)) > 0 || g.tokens(x, common::cube(s)) > 0)
+ }
+ 
++/// Whether an ambassador on `x` may leave freely: no holding there, and no adversary site it pays toward (169: one
++/// standing on a corrupted site counted as free, and the gather took it off that site's own bill).
++fn free_from(w: &World, g: &GameState, x: usize) -> bool {
++    !holds(g, x) && board::liberate_cost(w, g, x).is_none()
++}
++
+ /// The ambassadors next to `h` a gather may take without leaving armor or a holding.
+ fn free_ambassadors_next_to(w: &World, g: &GameState, h: usize) -> i64 {
+-    w.map.hexes[h].neighbors.iter().filter(|&&x| !holds(g, x)).map(|&x| standing(g, x)).sum()
++    w.map.hexes[h].neighbors.iter().filter(|&&x| free_from(w, g, x)).map(|&x| standing(g, x)).sum()
+ }
+ 
+ /// Whether gathering `more` ambassadors onto adversary site `h` lets a seat in reach pay its Liberate now.
+@@ -208,7 +224,7 @@ fn gather_piece(w: &World, g: &GameState, legal: &[Action], to: usize) -> Option
+     let short = liberate_short(w, g, to);
+     if short > 0 && payable(w, g, to, free_ambassadors_next_to(w, g, to)) {
+         let free = |a: &Action| {
+-            batch(a).is_some_and(|_| option_label(a).contains("ambassador")) && option_hex(w, a).is_some_and(|x| !holds(g, x))
++            batch(a).is_some_and(|_| option_label(a).contains("ambassador")) && option_hex(w, a).is_some_and(|x| free_from(w, g, x))
+         };
+         if let Some(i) = largest(&free, short) {
+             return Some((i, 2));
+@@ -232,11 +248,13 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
+     let mut out = Vec::new();
+     for h in 0..g.hexes.len() {
+         let Some(kind) = board::site_kind(w, g, h) else { continue };
+-        if common::corrupted(g, h) || common::firewalled(g, h) {
++        if common::corrupted(g, h) {
+             continue;
+         }
+         let Some(&(_, (n, gathers))) = lines.iter().find(|(k, _)| *k == kind) else { continue };
+-        let count = agents(g, h) + if gathers { agents_next_to(w, g, h) } else { 0 };
++        // 169: a firewalled site still corrupts on its own agents; the pull is its own country's.
++        let gathers = gathers && !common::firewalled(g, h);
++        let count = agents(g, h) + if gathers { pulled_into(w, g, h) } else { 0 };
+         if count > 0 && count + 2 >= n {
+             out.push((h, count, n, gathers));
+         }
+@@ -247,8 +265,9 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
+ /// The pressure a hex's agents put on the sites at risk: each site counts its own agents (and its
+ /// neighbors' when the line gathers), weighted by how near its number it is.
+ fn pressure(w: &World, risk: &[(usize, i64, i64, bool)], h: usize) -> f64 {
++    let same = |s: usize| w.map.hexes[s].country == w.map.hexes[h].country;
+     risk.iter()
+-        .filter(|&&(s, _, _, gathers)| s == h || (gathers && w.map.hexes[s].neighbors.contains(&h)))
++        .filter(|&&(s, _, _, gathers)| s == h || (gathers && same(s) && w.map.hexes[s].neighbors.contains(&h)))
+         .map(|&(_, count, n, _)| count as f64 / n.max(1) as f64)
+         .sum()
+ }

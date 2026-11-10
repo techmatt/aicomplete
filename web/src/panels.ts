@@ -200,7 +200,7 @@ export function pipelineHtml(v: View): string {
     discBox,
   ].filter(Boolean);
   const left = onBoard(v, ['ambassador:adversary', 'troop']);
-  const pieces = `<span class="left" title="adversary pieces on the board">on board: ${left['ambassador:adversary']} ambassador${left['ambassador:adversary'] === 1 ? '' : 's'} · ${left.troop} troop${left.troop === 1 ? '' : 's'}</span>`;
+  const pieces = `<span class="left" title="adversary pieces on the board">on board: ${left['ambassador:adversary']} agent${left['ambassador:adversary'] === 1 ? '' : 's'} · ${left.troop} troop${left.troop === 1 ? '' : 's'}</span>`;
   return `<div class="phead"><b>Adversary</b>${head}${pieces}</div><div class="prow">${boxes.join(arrow)}</div>${projectsHtml(v)}`;
 }
 
@@ -297,7 +297,7 @@ export function countriesHtml(v: View): string {
     const some = (n: number, what: string, cls = '') => (n ? [`<span class="${cls}">${n} ${what}</span>`] : []);
     const parts = [
       `cities ${cities.length - corrupted - aligned} clean`, ...some(aligned, 'aligned'), ...some(corrupted, 'corrupted', 'adv'),
-      ...some(tok('ambassador:adversary'), 'amb.', 'adv'), ...some(tok('botnet'), `botnet${tok('botnet') === 1 ? '' : 's'}`, 'adv'),
+      ...some(tok('ambassador:adversary'), `agent${tok('ambassador:adversary') === 1 ? '' : 's'}`, 'adv'), ...some(tok('botnet'), `botnet${tok('botnet') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('troop'), `troop${tok('troop') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('unit'), `unit${tok('unit') === 1 ? '' : 's'}`),
     ];

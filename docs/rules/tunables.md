@@ -91,7 +91,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `alignment.botnet` | 1 | 0..10 | Sway toward Unity for removing a botnet |
 | `alignment.antimatter_discord` | 1 | 0..5 | the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action) |
 | `alignment.antimatter_uses` | 1 | 0..5 | times each player may take the antimatter action per round |
-| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
+| `alignment.purge_at` | 3, 6, 6 | 1..50 | Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles) |
 | `alignment.tier_at` | 3, 6 | 1..50 | 157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III |
 | `alignment.node_loss` | 1 | 0..1 | 1: a player with no nodes on the board loses the game for everyone |
 | `alignment.clear_win_stage` | 1 | 1..3 | the bar-0 win counts only once this round's adversary card is of this stage (1: any time) |

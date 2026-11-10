@@ -547,7 +547,9 @@ pub fn run(o: &Options) {
         for (path, ..) in &stale {
             eprintln!("{path} is stale: run aic-sim docs");
         }
-        if !stale.is_empty() || bad > 0 || !failures.is_empty() || !spelled.is_empty() {
+        let words = super::spelling::stale_failures();
+        words.iter().for_each(|s| eprintln!("{s}"));
+        if !stale.is_empty() || bad > 0 || !failures.is_empty() || !spelled.is_empty() || !words.is_empty() {
             exit(1);
         }
         return;
@@ -555,7 +557,12 @@ pub fn run(o: &Options) {
     for (path, new, _) in stale {
         fs::write(path, new).unwrap_or_else(|e| fail(&format!("{path}: {e}")));
     }
-    if !failures.is_empty() || !spelled.is_empty() {
+    // 169: the house words read once the generated docs are written (a stale word there is rewritten above);
+    // cards.md is `scripts/cards/cards_doc.py`'s, run after this (regen.py), so only `--check` reads it.
+    let words: Vec<String> =
+        super::spelling::stale_failures().into_iter().filter(|s| !s.replace('\\', "/").starts_with("docs/cards.md:")).collect();
+    words.iter().for_each(|s| eprintln!("{s}"));
+    if !failures.is_empty() || !spelled.is_empty() || !words.is_empty() {
         exit(1);
     }
 }

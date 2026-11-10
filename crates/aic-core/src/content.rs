@@ -558,7 +558,7 @@ pub struct AdversaryCard {
 
 /// A Unity or Discord card, resolved when its side's track tips (156: one
 /// deck a side, every card printing three tiers, as Spirit Island's fear
-/// cards; the side's tip count before this tip picks which resolves, by
+/// cards; the side's tip count, this tip included, picks which resolves, by
 /// `alignment.tier_at`).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

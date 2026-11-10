@@ -125,6 +125,11 @@ pub fn play_free_building(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
     let d = def(&w, &id);
     pay_card_extras(g, cx, seat, d);
     cx.tally(g, "cards.free_built", 1);
+    // 169: a building with its own fight trigger fires it for its own play here too (Rush Build on Honeypot Relay);
+    // only when the seat held none, else the power's own watch (`fighting`) already counts these removals.
+    if fight_watch(&w, g, seat).is_none() && fighting_play_watches(&w, &id) {
+        return fighting_play(g, cx, seat, &id, |g, cx| enter_play(g, cx, seat, &id, d));
+    }
     enter_play(g, cx, seat, &id, d)
 }
 

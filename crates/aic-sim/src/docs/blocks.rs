@@ -46,7 +46,7 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
     ("Convert", "an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
-    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece"),
+    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"and remove them\", picks only the hex and takes troops first)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
@@ -382,7 +382,7 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
         ),
     ];
     let steps: [(&str, &str, &[&str]); 6] = [
-        ("adversary.corrupt_cut_at", "each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`)",
+        ("adversary.corrupt_cut_at", "each site type corrupts with fewer agents (city, station, factory, land; from `corrupt_cut_at`)",
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
             &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),
@@ -593,7 +593,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
         ],
         [
             "Discord".to_string(),
-            "energy diverted (a corrupted city) or darkened (an ambassador on an aligned city)".to_string(),
+            "energy diverted (a corrupted city) or darkened (an agent on an aligned city)".to_string(),
             format!(
                 "{} per unit of a corrupted city's, {} per unit, each round, of a dark aligned city's",
                 t("board.divert_discord"),
@@ -749,8 +749,8 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     let easing = match at.as_slice() {
         [a, _, b] => format!(
             "At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and \
-             agents. After {a} Unity tips the purge no longer asks you to clear adversary \
-             ambassadors; after {b}, it asks only that the adversary owns no city, and you win the moment it doesn't."
+             agents. After {a} Unity tips the purge no longer asks you to clear \
+             agents; after {b}, it asks only that the adversary owns no city, and you win the moment it doesn't."
         ),
         [a, ..] => format!("After {a} Unity tips the purge no longer asks you to clear agents."),
         [] => String::new(),
@@ -778,8 +778,9 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
-         Like fear cards, each acts by what is on the board, never by your reach: for each city holding an \
-         ambassador, on each hex next to one, or each player on one such hex; some forbid the adversary's next \
+         Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or \
+         each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such \
+         hex; some forbid the adversary's next \
          Rally, Deploy or Corrupt where your pieces stand, so place them before its turn. \
          Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which \
          one resolves (tier I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later tier counts more \

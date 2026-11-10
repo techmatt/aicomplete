@@ -111,12 +111,12 @@ checker, checks the page at the moments that matter over many games. It needs a 
   at random (choices, hex picks, the odd undo). `AIC_SWEEP_SEEDS` games per case and mode (3; `--quick` 1), the
   simulated ones from seed `AIC_SWEEP_SEED` (100).
 - **Moments:** new rounds, prompts, the first of each key event and counter rise
-  (`COUNTER_EVENTS`, `_R41`), the end. At each, the checks at 1366×768, layout at the two
+  (`COUNTER_EVENTS`, `_R41`, `_R55`, `_R70`), the end. At each, the checks at 1366×768, layout at the two
   larger sizes, and a screenshot (at most 14 a game, plus the end and any failure).
 - **Fail the run** (exit 1): console errors and blocking dialogs, `stuck` (no legal action
   without an outcome), the error bar, page scroll, placeholder text (`undefined`, `NaN`),
   elements off screen with no scroll to them, `hidden-target`, `clipped` (no ellipsis),
-  `token-unknown`, `case` (`aic-sim` could not play it). **Reported for a look:** `no-control`
+  `token-unknown`, `stale-word` (an old house word on screen: agents, Operatives), `case` (`aic-sim` could not play it). **Reported for a look:** `no-control`
   (a legal action with no control on screen), `raw-id`, `truncated-no-hover`, `truncated`,
   overlaps, undrawn view tokens, steps over 150 ms, heap growth over 50 MB.
 - **Output** in `web/sweep-out/` (`AIC_SWEEP_OUT`): `shots/`, `issues.json` (game, step,

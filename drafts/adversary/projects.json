@@ -207,7 +207,7 @@
    ],
    "cost": 11,
    "ongoing": false,
-   "text": "Income: +1 ambassador a board a round.",
+   "text": "Income: +1 agent a board a round.",
    "effects": [
     {
      "op": "increase_income",
@@ -217,7 +217,7 @@
    "harms": [
     "adversary pieces placed"
    ],
-   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 22 (Income: +1 ambassador a board a round: 22); 1.00 a compute.",
+   "value": "absorbs 11 compute a player (22 at 2 players, 24.2 at values.json compute 1.1); harm 22 (Income: +1 agent a board a round: 22); 1.00 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"
@@ -383,7 +383,7 @@
    ],
    "cost": 7,
    "ongoing": false,
-   "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory).",
+   "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory).",
    "effects": [
     {
      "op": "adversary_factory",
@@ -395,7 +395,7 @@
    "harms": [
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 15 (The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory): 15); 1.07 a compute.",
+   "value": "absorbs 7 compute a player (14 at 2 players, 15.4 at values.json compute 1.1); harm 15 (The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory): 15); 1.07 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"
@@ -517,7 +517,7 @@
    ],
    "cost": 10,
    "ongoing": false,
-   "text": "Each board rallies its ambassador income now, to this round's Rally. Corrupt: cities.",
+   "text": "Each board rallies its agent income now, to this round's Rally. Corrupt: cities.",
    "effects": [
     {
      "op": "adversary_build"
@@ -531,7 +531,7 @@
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 22 (Each board rallies its ambassador income now, to this round's Rally: 12; Corrupt: cities: 10); 1.10 a compute.",
+   "value": "absorbs 10 compute a player (20 at 2 players, 22.0 at values.json compute 1.1); harm 22 (Each board rallies its agent income now, to this round's Rally: 12; Corrupt: cities: 10); 1.10 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"

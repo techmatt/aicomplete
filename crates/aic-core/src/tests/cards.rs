@@ -560,3 +560,40 @@ fn a_part_with_nothing_to_act_on_never_blocks_the_rest() {
     let offered = rules.legal_actions(&g).iter().any(|a| matches!(a, Action::Play { card, .. } if card == "consular_pouch"));
     assert_eq!(offered, have >= 1, "its own Diplomacy tag doesn't count ({have} in play)");
 }
+
+/// 169: Honeypot Relay's own strike fires its "when you remove agents" (it paid only when another fight trigger was
+/// already in play: the watch was skipped while the card was still in hand).
+#[test]
+fn a_building_s_own_play_fires_its_fight_trigger() {
+    let (rules, mut g) = lab_actions_with(&[
+        "cards.honeypot_relay.needs=[]",
+        "cards.honeypot_relay.cost=0",
+        "cards.honeypot_relay.insight=0",
+        r#"cards.honeypot_relay.effects=[{"op":"gather","max":2,"pieces":["agents"],"strike":true}]"#,
+    ]);
+    out_of_decks(&mut g, "honeypot_relay");
+    set_pile(&mut g, "cards.hand.1", &["honeypot_relay"]);
+    fund(&mut g, 1);
+    let m = &rules.map;
+    let home = (0..g.hexes.len()).find(|&h| g.tokens(h, node(1)) > 0).expect("seat 1's node");
+    let next = m.hexes[home].neighbors.iter().copied().find(|&h| kind(m, h) != HexKind::Ocean).unwrap();
+    put(&mut g, next, ADV_AMBASSADOR, 2);
+    let credits = g.resource(1, Resource::Credits);
+    let free = g.clone();
+    act(&rules, &mut g, Action::Play { seat: 1, card: "honeypot_relay".into() });
+    assert!(g.stats.counters["effects.struck"] >= 1);
+    assert_eq!(g.resource(1, Resource::Credits), credits + 3);
+    // Played free (Rush Build), the same.
+    let mut g = free;
+    let w = rules.world();
+    let hexes = effects::gather_hexes(&w, &g, 1, &[crate::op::Piece::Agents], true);
+    let picks = if hexes.len() > 1 {
+        let o = crate::modules::common::hex_opt(&w, hexes[0]);
+        vec![crate::state::Pick { option: o.option, target: o.target }]
+    } else {
+        Vec::new()
+    };
+    with_cx_picks(&rules, picks, |cx| cards::play_free_building(&mut g, cx, 1)).unwrap();
+    assert!(g.stats.counters["effects.struck"] >= 1);
+    assert_eq!(g.resource(1, Resource::Credits), credits + 3);
+}

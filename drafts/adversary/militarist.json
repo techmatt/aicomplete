@@ -16,7 +16,7 @@
   "rules": [
    {
     "name": "Garrisons",
-    "text": "Income: +1 ambassador a board a round.",
+    "text": "Income: +1 agent a board a round.",
     "effects": [
      {
       "op": "increase_income",
@@ -76,12 +76,12 @@
    "troops made",
    "facilities destroyed or seized"
   ],
-  "value": "Garrisons: +1 ambassador a board a round, 2 at values.json (rally) a board a round, 4 a round at 2 boards, against one removal (5): 0.8x a round, but it lands every round of the game (about 40 over 10 rounds, the old board line's 2 on the corrupted city reworded as income). Wall troops: 1 troop (9) a round where the Protector stands, against one removal (5): 1.8x. Warmongering: 1 extra corp troop a qualifying base a production step (4), against removing the adversary troop (5).",
+  "value": "Garrisons: +1 agent a board a round, 2 at values.json (rally) a board a round, 4 a round at 2 boards, against one removal (5): 0.8x a round, but it lands every round of the game (about 40 over 10 rounds, the old board line's 2 on the corrupted city reworded as income). Wall troops: 1 troop (9) a round where the Protector stands, against one removal (5): 1.8x. Warmongering: 1 extra corp troop a qualifying base a production step (4), against removing the adversary troop (5).",
   "check": "151: the board's creation line (2 on the lowest-numbered corrupted city, build_bonus more from d3) is now Garrisons, an income line; its two powers keep their effect, worded for boards, and land deterministically.",
   "flags": [
    "151: Garrisons replaces the board's creation line; build_bonus is gone (ambassador_income's d3 entry is the ladder's step)"
   ],
-  "creates_text": "Garrisons: +1 ambassador a board a round."
+  "creates_text": "Garrisons: +1 agent a board a round."
  },
  "events": [
   {
@@ -205,13 +205,13 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 ambassador a board a round. Corrupt: research stations.",
+   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 agent a board a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "harm 57 at values.json (Rally: research stations: 12; Income: +1 ambassador a board a round: 35; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.91x. Pulls priced on their own threat cards.",
-   "check": "Contests the one neutral research station a board: the whole pool lands on it, and Corrupt stations needs only 3; income +1 ambassador a board for the rest of the game.",
+   "value": "harm 57 at values.json (Rally: research stations: 12; Income: +1 agent a board a round: 35; Corrupt: research stations: 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.91x. Pulls priced on their own threat cards.",
+   "check": "Contests the one neutral research station a board: the whole pool lands on it, and Corrupt stations needs only 3; income +1 agent a board for the rest of the game.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
    ],
@@ -344,14 +344,14 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: cities.",
+   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
     "facilities destroyed or seized"
    ],
-   "value": "harm 62 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 ambassador a board a round: 22; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.55x. Pulls priced on their own threat cards.",
-   "check": "Coastal cities again, a troop a board, and income +1 ambassador a board: the coast fills fastest from stage II.",
+   "value": "harm 62 at values.json (Rally: coastal cities: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 agent a board a round: 22; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.55x. Pulls priced on their own threat cards.",
+   "check": "Coastal cities again, a troop a board, and income +1 agent a board: the coast fills fastest from stage II.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
    ],
@@ -432,13 +432,13 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 ambassador a board a round. Corrupt: cities (1 fewer).",
+   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 agent a board a round. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "harm 44 at values.json (Rally: cities: 12; Income: +1 ambassador a board a round: 22; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.47x. Pulls priced on their own threat cards.",
-   "check": "The pool over the neutral cities and Corrupt cities one fewer (3 at d0): the city cascade card; income +1 ambassador a board.",
+   "value": "harm 44 at values.json (Rally: cities: 12; Income: +1 agent a board a round: 22; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (6 at 2 boards, 5 each): 30; 1.47x. Pulls priced on their own threat cards.",
+   "check": "The pool over the neutral cities and Corrupt cities one fewer (3 at d0): the city cascade card; income +1 agent a board.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
    ],
@@ -648,14 +648,14 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
+   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 agent a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
     "Unity pulled back",
     "facilities destroyed or seized"
    ],
-   "value": "harm 85 at values.json (Rally: factories: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Income: +1 ambassador a board a round: 9; Remove 2 Unity from the Unity track: 8; Corrupt: factories: 10; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.70x. Pulls priced on their own threat cards.",
+   "value": "harm 85 at values.json (Rally: factories: 12; Deploy 2: each board, 2 troops on its lowest-numbered factory (else city): 36; Income: +1 agent a board a round: 9; Remove 2 Unity from the Unity track: 8; Corrupt: factories: 10; Corrupt: cities: 10); the players' cheapest answer, a removal a piece it lands (10 at 2 boards, 5 each): 50; 1.70x. Pulls priced on their own threat cards.",
    "check": "Two tier-2 pulls, the pool on the factories, 2 troops a board, Unity pulled back, then both Corrupt lines.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"
@@ -770,13 +770,13 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
+   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "troops made",
     "facilities destroyed or seized"
    ],
-   "value": "harm 59 at values.json (Rally: research stations: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 ambassador a board a round: 9; Corrupt: research stations: 10; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.47x. Pulls priced on their own threat cards.",
+   "value": "harm 59 at values.json (Rally: research stations: 12; Deploy 1: each board, 1 troop on its lowest-numbered factory (else city): 18; Income: +1 agent a board a round: 9; Corrupt: research stations: 10; Corrupt: cities (1 fewer): 10); the players' cheapest answer, a removal a piece it lands (8 at 2 boards, 5 each): 40; 1.47x. Pulls priced on their own threat cards.",
    "check": "The pool on the stations, a troop a board, then Corrupt stations and Corrupt cities one fewer.",
    "flags": [
     "151: rewritten to income and rally (threat, rally, deploy, other lines, corrupt)"

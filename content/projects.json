@@ -163,7 +163,7 @@
   ],
   "cost": 11,
   "ongoing": false,
-  "text": "Income: +1 ambassador a board a round.",
+  "text": "Income: +1 agent a board a round.",
   "effects": [
    {
     "op": "increase_income",
@@ -303,7 +303,7 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 ambassadors on a factory).",
+  "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory).",
   "effects": [
    {
     "op": "adversary_factory",
@@ -407,7 +407,7 @@
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "Each board rallies its ambassador income now, to this round's Rally. Corrupt: cities.",
+  "text": "Each board rallies its agent income now, to this round's Rally. Corrupt: cities.",
   "effects": [
    {
     "op": "adversary_build"

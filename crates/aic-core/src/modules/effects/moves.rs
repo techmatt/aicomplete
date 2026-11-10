@@ -42,9 +42,10 @@ fn tokens_of(g: &GameState, h: usize, pieces: &[Piece]) -> Vec<(&'static str, St
     out
 }
 
-/// Whether a piece of token `kind` may arrive on hex `to`: land, and no agent onto a firewall.
+/// Whether a piece of token `kind` may arrive on hex `to`: land, no agent onto a firewall, and no troop onto the
+/// Protector's node (Wall: adversary troops can't enter it, however they move; 169).
 fn may_arrive(w: &World, g: &GameState, kind: &str, to: usize) -> bool {
-    !is_ocean(w, to) && !(kind == ADV_AMBASSADOR && firewalled(g, to))
+    !is_ocean(w, to) && !(kind == ADV_AMBASSADOR && firewalled(g, to)) && !(kind == TROOP && board::walled(w, g, to))
 }
 
 /// The hexes a Gather may target: land in reach, with a piece it may take on a hex next to it.

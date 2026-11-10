@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 72 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 73 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -72,7 +72,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
 - **Convert**: an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used.
-- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece.
+- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "and remove them", picks only the hex and takes troops first).
 - **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
 - **Firewall**: a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn.
 - **In the next adversary turn, no X**: a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply.
@@ -102,9 +102,9 @@ The rest:
 - **Clean / corrupted / aligned / owned**: a city, research station or factory with no
   owner cube is clean (a station or factory: neutral); an adversary cube means corrupted
   (a factory: adversary-owned); a player cube means aligned (a city) or owned.
-- **The ladder**: the adversary's pieces, weakest first: ambassadors (the explorers, used
+- **The ladder**: the adversary's pieces, weakest first: agents (the explorers, used
   up when they act), **botnets** (the towns, persistent), troops, corrupted cities and
-  stations (the cities). Liberating a city knocks it down the ladder, not off it ([ambassadors.md](ambassadors.md)).
+  stations (the cities). Liberating a city takes it off the ladder: no agent stays ([ambassadors.md](ambassadors.md)).
 - **The supply is a cap**: a placement it can't make doesn't happen.
 - **Players choose**: an `Action::Choose` in `legal_actions`. Team choices in the
   adversary's steps, production and threats are asked of seat 0 (an aligned city's

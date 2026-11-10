@@ -86,6 +86,28 @@ fn a_push_moves_pieces_next_door_but_not_agents_onto_a_firewall() {
     assert_eq!(g.tokens(a, ADV_AMBASSADOR), 0);
 }
 
+/// 169: Wall holds against a push: no troop arrives on the Protector's node (seat 1 in the lab), however it moves.
+#[test]
+fn a_push_moves_no_troop_onto_a_protector_node() {
+    let (rules, mut g) = lab(&[]);
+    let w = rules.world();
+    let m = &rules.map;
+    let (c, _, a, b) = by_a_city(&mut g, m);
+    put(&mut g, c, TROOP, 1);
+    put(&mut g, a, node(1), 1);
+    assert!(board::walled(&w, &g, a));
+    let pieces = vec![Piece::Troops];
+    let mut picks = hex_pick(&w, &effects::push_hexes(&w, &g, 0, &pieces), c);
+    picks.push(piece_pick(&w, "1 troop to", a));
+    // Not an option: the push refuses the pick and moves nothing.
+    let _ = with_cx_picks(&rules, picks, |cx| effects::run(&mut g, cx, &[Op::Push { max: 1, pieces: pieces.clone() }], &mut effects::Ctx::seat(0)));
+    assert_eq!((g.tokens(a, TROOP), g.tokens(c, TROOP)), (0, 1));
+    let mut picks = hex_pick(&w, &effects::push_hexes(&w, &g, 0, &pieces), c);
+    picks.push(piece_pick(&w, "1 troop to", b));
+    run_ops_with(&rules, &mut g, picks, &[Op::Push { max: 1, pieces }]);
+    assert_eq!((g.tokens(b, TROOP), g.tokens(c, TROOP)), (1, 0));
+}
+
 /// Liberate spends the ambassadors standing on the site first, any seat's; the acting seat's supply pays the rest.
 #[test]
 fn liberate_spends_the_ambassadors_standing_on_the_site() {

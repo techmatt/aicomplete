@@ -44,11 +44,11 @@ pub const SOURCES: [&str; 12] = [
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
 pub const RULE_HARMS: [(&str, &str, &str); 17] = [
-    ("income and rally", "adversary pieces placed", "ambassador income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
+    ("income and rally", "adversary pieces placed", "agent income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects every round (151)"),
-    ("income and rally", "ambassadors lost", "an arriving ambassador cancels a player ambassador there"),
-    ("income and rally", "production blacked out", "an ambassador on a city or station blocks its output while it stands (137)"),
-    ("income and rally", "insight lost", "an ambassador on a lone node drains insight every round until removed"),
+    ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
+    ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
+    ("income and rally", "insight lost", "an agent on a lone node drains insight every round until removed"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
     ("botnets", "actions or claims blocked", "a botnet blocks site claims next to it"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (an allied ambassador there is armor)"),
@@ -288,7 +288,7 @@ pub(super) fn harms_md() -> String {
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. `Discord cards` covers both tiers; `march` is the adversary \
          troops' strikes, which take facilities only at `board.troop_node` 4. The `yes` cells \
-         are true at the baseline's numbers (`board.ambassador_discord` is 0, so an ambassador \
+         are true at the baseline's numbers (`board.ambassador_discord` is 0, so an agent \
          darkening an aligned city doesn't sway).\n\n{}\n\
          **Checks** (`aic-sim docs --check`, and a fast test): every harm in at least 2 kinds of \
          source; each threat tier at least 5 kinds of harm; no kind of source more than about half \

@@ -42,7 +42,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   agents stand, in reach: **convert** them onto your node (Mass Defection, Double Agents, Open Source
   Uprising, Embassy of Exiles), **gather** them (and troops) into a hex in reach and remove them (Kettle Operation, Lure
   Network; r70), **firewall** a hex for a round (Firewall Array, Air Gap), or mass your own (Rally the Allies), and strike
-  (Surgical Strike). The seven events also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
+  (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
@@ -62,8 +62,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   pays up front (Matt):** a building with a trigger, threshold, discount or income also gives a one-time gain
   when built, worth about two of its fires: draw 2-4 cards, 2 energy on three Power ones (not Positron Storage Ring), or its first tokens here
   (the At N cards, *Tokens* below), so its own play fills the
-  first threshold; Intrusion Lab's 1 Agent instead fills its "at 2" on the first removal of compute,
-  or a feeder's Agent. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
+  first threshold; Intrusion Lab's 1 Operative instead fills its "at 2" on the first removal of compute,
+  or a feeder's Operative. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger and a tier-2 one that counts every tag on the played card, and its engines' payoffs
   ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber keeps a standing automatic counter
   (Autonomous Defense Grid: Cyber threats anywhere need 6 less to counter); no other tag has one. No capstone prints a shield or a delay.
@@ -113,7 +113,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   Driver, Capital Projects Office, Hyperscale Botnet, Positron Storage Ring) have none: an engine goes in a free slot
   or over whichever building its owner chooses, so it never buries a better building of its tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
-  (Industry), Operatives (Security; r70, so agents are only the adversary's pieces; Matt to confirm). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
+  (Industry), Operatives (Security; r70, so agents are only the adversary's pieces). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
   card gains tokens except as it prints. Each arrives loaded ("Add 2 Operatives here" when built), then grows one of
   two ways: an OR Action that adds N here or spends or counts what is here (Synthetic Data Forge, Safehouse Network,
   Popular Uprising), or an Effect that adds tokens when something happens, with an **At N** that takes N off and pays

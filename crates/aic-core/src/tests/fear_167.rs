@@ -120,3 +120,45 @@ fn the_decks_name_board_conditions() {
         }
     }
 }
+
+/// 169: a pending prohibition shows as the printed marker would: a labeled global naming the step, the round of the
+/// adversary turn it acts in, and every condition (its raw vars were an unlabeled bit mask).
+#[test]
+fn a_pending_prohibition_is_labeled_in_the_view() {
+    let (rules, mut g) = lab(&[]);
+    let none = rules.view(&g);
+    assert!(!none.globals.iter().any(|v| v.key.starts_with("adversary.prohibit")));
+    run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Rally, where_: Where::ByAmbassador }]);
+    run_ops(&rules, &mut g, &[Op::Prohibit { step: Step::Rally, where_: Where::CorruptedCity }]);
+    let v = rules.view(&g);
+    let p = v.globals.iter().find(|v| v.key == "adversary.prohibit_rally").expect("the Rally prohibition");
+    assert_eq!(p.value, g.var(plan::prohibit_keys(Step::Rally).0));
+    assert!(p.label.contains("Rally"), "{}", p.label);
+    for wh in [Where::ByAmbassador, Where::CorruptedCity] {
+        assert!(p.doc.contains(wh.words()), "{}", p.doc);
+    }
+    assert!(!v.globals.iter().any(|v| v.key.contains("prohibit.")), "raw vars are bookkeeping");
+}
+
+/// 169: Incursion's extra threats, one for each corrupted city, go one per country in turn across the whole batch
+/// (each city's own deal began again at country 0, so every one landed in country 0).
+#[test]
+fn extra_threats_for_each_site_go_one_per_country() {
+    use crate::modules::{effects, threats};
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    assert_eq!(m.countries.len(), 2);
+    for h in cities(m).into_iter().take(2) {
+        put(&mut g, h, ADV_CUBE, 1);
+    }
+    let per_country = |g: &GameState| [0, 1].map(|c| threats::active(g).iter().filter(|(_, k)| *k == c).count());
+    let before = per_country(&g);
+    let incursion = Op::PerSite {
+        where_: Where::CorruptedCity,
+        max: 4,
+        then: vec![Op::DealThreats { count: 1, tier: None, scope: None, each_country: false }],
+    };
+    with_cx(&rules, |cx| effects::run(&mut g, cx, &[incursion], &mut effects::Ctx::team().named("discord"))).unwrap();
+    let after = per_country(&g);
+    assert_eq!([after[0] - before[0], after[1] - before[1]], [1, 1]);
+}

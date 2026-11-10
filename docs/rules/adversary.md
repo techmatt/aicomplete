@@ -23,10 +23,10 @@ on a card means each country: they are always the same. Its steps in the round:
    next round's card; then **income**.
 
 **Income (151, Matt, locked; numbers candidates).** Every adversary has two incomes (step 6):
-**compute income** (`compute_income`, fixed, not per board) goes onto the projects, and **ambassador income**
+**compute income** (`compute_income`, fixed, not per board) goes onto the projects, and **agent income**
 (`ambassador_income`, a board) goes into **each board's pool** (the supply caps it when it lands). Setup fills the pools once,
 for round 1. Both are lists by difficulty. Boards, events and projects **raise** an income for the
-rest of the game ("Income: +1 ambassador a board a round"; the Militarist's **Garrisons**); player cards may lower
+rest of the game ("Income: +1 agent a board a round"; the Militarist's **Garrisons**); player cards may lower
 one (none does yet). No troop income: troops are printed (Deploy).
 
 **Rally X (151, Matt, locked; the spread a candidate).** Every event prints one Rally X:
@@ -44,7 +44,7 @@ either) ([alignment.md](alignment.md)).
 (`corrupt_station_at` 3), **factory** (`corrupt_factory_at` 3) or, rarely, **land** (`corrupt_land_at` 3; an empty land
 hex: no city, base or building). On each board, every X not the adversary's, lowest-numbered first, that can gather its number n
 of agents (on it plus next to it, in its board, one move each) pulls just enough in, lowest-numbered
-hexes first, and corrupts; its ambassadors return to the supply. **Every site that qualifies corrupts**: a crowded board
+hexes first, and corrupts; its agents return to the supply. **Every site that qualifies corrupts**: a crowded board
 cascades. A line may print "(1 fewer)"; difficulty lowers n (below).
 - **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
   **Corruption destroys only a node on the corrupted hex itself**; its owner's ambassador there is armor, used up
@@ -60,7 +60,7 @@ extra corp troop a round from all such rules; its difficulty line) are printed i
 until removed: it makes compute (above), **blocks site claims** on or next to it and counts against the
 purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove
 (candidate, Matt):** only tier-2 effects (Botnet Takedown, Singularity Exploit, Decapitation Strike, Root Access) and
-Decommission (a Unity card: each botnet on, then on or next to, a player's piece), no standard action. Removing one sways `alignment.botnet` Unity.
+Decommission (a Unity card: each botnet on, then on or next to, an ambassador; tier III also a node), no standard action. Removing one sways `alignment.botnet` Unity.
 
 ## The project deck (candidate)
 
@@ -150,7 +150,7 @@ two other lines, or saying "each country".
 pool lands on the sites named, neutral first, spread evenly, you placing the odd one); **deploy** (troops on each
 board's lowest-numbered factory); **corrupt** ("Corrupt cities": every city that can gather 4 agents
 from itself and its neighbors does, destroying a node on that hex only, unless your ambassador stands there). Then
-**income**: compute onto projects, ambassadors into the pools. The card ahead and the pools are face up: armor or
+**income**: compute onto projects, agents into the pools. The card ahead and the pools are face up: armor or
 clear sites a round ahead. **What resisted this:** the gathering count is
 counted out by hand, and the even spread asks a little division.
 
@@ -162,7 +162,7 @@ Players **lose** when a round starts with no card to turn face up (step 1): a ba
 | Level | Adds | Tunable |
 |---|---|---|
 | 0 | Base rules |  |
-| 1 | Each site type corrupts with fewer ambassadors (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
+| 1 | Each site type corrupts with fewer agents (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
 | 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 3, 4, 18, 24, 13, `ambassador_income` 0, 3, 3, 3, 2, `stage2_removed` 2, `stage1_added` 0 |
 | 4 | A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |

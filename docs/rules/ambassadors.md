@@ -12,8 +12,8 @@ Cities, research stations and factories follow one set of rules and differ only 
 | Player | its energy to its owner | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
 | Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute | 1 adversary troop on its hex |
 
-- **One opposing ambassador blocks a site's output while it stands.** An agent on a neutral or player
-  site, a player ambassador on an adversary site: that round the site makes nothing, and the ambassador stays
+- **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
+  site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
   (137; 139 dropped the dial that used it up). On a
   clean or aligned city this is the **dark** city (r37, r38): no sale, no energy, and an aligned one sways
   `ambassador_discord` (0) a unit.
@@ -52,9 +52,10 @@ Pieces on the board move: **ambassadors** (any seat's), **agents** and **troops*
   pieces from a land hex in your reach, each to a land hex next to it, the player choosing where. "Up to": stop
   after any piece, so a move is never forced into a bad one. Distance 1. The card names which pieces it moves.
 - **Arrivals:** a moved piece arrives as any does. An agent arriving on a standing ambassador cancels both; an
-  ambassador arriving on agents cancels one; a firewalled hex takes no agent. Troops just move.
-- **A strike** (Kettle Operation, Lure Network's Action) removes each agent or troop it gathers instead of landing
-  it, so it never raises a Liberate bill.
+  ambassador arriving on agents cancels one; a firewalled hex takes no agent; no troop enters the Protector's node
+  (Wall). Troops otherwise just move.
+- **A strike** (Kettle Operation, Lure Network's Action) removes up to N agents or troops next to the hex instead of
+  landing them, troops first, the player choosing only the hex, so it never raises a Liberate bill.
 - **Where:** Kettle Operation, Lure Network, Honeypot Relay (strikes), Checkpoint Network (push; Action: push),
   Exodus Corridors and Rally the Allies (gather ambassadors), and the Protector's Patrol power (1 energy: push up to 3 agents or
   troops). What a card moves is set by its price, not its tier: about 2 credits a piece (`values.json` `gather`, `push`).
@@ -80,8 +81,8 @@ up instead of the next corp troop made there; an agent on one does nothing.
 A **node** alone on its hex: an agent on it costs its owner 1 insight next round and puts 1 compute on
 the cheapest adversary project each production; it stays until removed.
 
-- **Opposing ambassadors cancel.** When an ambassador arrives on a piece holding one of the
-  other side, both are removed (the adversary's to its supply), with no Unity. **Two
+- **An agent and an ambassador cancel.** When an agent arrives on a hex holding a player ambassador, or an
+  ambassador on agents, both are removed (the agent to the adversary's supply), with no Unity. **Two
   arrivals don't cancel:** the ambassador the Remove action moves evicts what stands there
   and stays. Any other move onto agents cancels one, consuming the mover:
   moved ambassadors don't evict, or one ambassador a hop would clear the board.
@@ -105,8 +106,7 @@ Diplomacy tag on each card you play (127; at 1 a tag of any kind it piled 52-84 
 **For new players.** Every city, research station and factory belongs to a player, to the adversary, or to nobody,
 and makes something for its owner. Spend your ambassadors to claim a neutral one (4 for a city, 3 for a station or
 factory, as many as the adversary needs to corrupt it; a few cards claim a station for energy instead; a station or
-factory you own makes 2 a round, so a claim pays back in about 3 rounds) or to take one back from the adversary (5 for a city, only 3 once the adversary's stage-III cards come up, 3 for a station or factory: Unity sways your way), one
+factory you own makes 2 a round, so a claim pays back in about 3 rounds) or to take one back from the adversary (5 for a city, 3 for a station or factory: Unity sways your way; any ambassadors standing on it pay first), one
 more for each agent sitting on it. Stand one ambassador on an adversary site to shut it off, and clear
-theirs off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
-**What resisted this summary:** a liberated city takes an agent straight back (the ladder), and a
-botnet next to a site stops a claim but not a liberation.
+agents off yours, which they shut off the same way. An ambassador of yours on your own piece takes a hit for it.
+**What resisted this summary:** a botnet next to a site stops a claim but not a liberation.

@@ -89,7 +89,7 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   1-player game, "another player" means you** (Matt's ruling of 2026-11-04): the gift is yours.
 - **Moves of "up to N hexes"** (`move_one`'s `range`; no deck card prints one) count hex distance (`Map::distance`,
   over land and sea); the destination must be a piece.
-- **Cordon (`cordon`):** in one country, no Rally or creation line places ambassadors from its play through the next round: that Rally (its pool
+- **Cordon (`cordon`):** in one country, no Rally or creation line places agents from its play through the next round: that Rally (its pool
   lands nowhere), and any a project brings that round (118); the rest of a build goes on. Hardpoint Lockdown prints it: a Security card that does an
   ambassador's job.
 - **Play a building, paying no credits (`free_building`):** the Builder's Rush Build (1 Industry and 1 energy). Its tags are sacrificed first,

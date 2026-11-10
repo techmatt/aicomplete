@@ -37,7 +37,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("botnet", 0, 10, "Sway toward Unity for removing a botnet"),
     ParamSpec::int("antimatter_discord", 0, 5, "the antimatter action: Sway toward Discord to produce 1 antimatter (0: no such action)"),
     ParamSpec::int("antimatter_uses", 0, 5, "times each player may take the antimatter action per round"),
-    ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: ambassadors, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
+    ParamSpec::list("purge_at", 1, 50, "Unity tips at which the purge asks less: agents, then troops, then botnets stop counting (136; 156: tips, not cards drawn, since the Unity deck reshuffles)"),
     ParamSpec::list("tier_at", 1, 50, "157: the tip (its side's count, this tip included) from which its cards resolve tier II, then tier III"),
     ParamSpec::int("node_loss", 0, 1, "1: a player with no nodes on the board loses the game for everyone"),
     ParamSpec::int("clear_win_stage", 1, 3, "the bar-0 win counts only once this round's adversary card is of this stage (1: any time)"),

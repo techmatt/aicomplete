@@ -721,8 +721,8 @@ pub enum Op {
     /// 166 (Matt, 2026-11-09, *Moving pieces*): gather up to `max` `pieces` into one land hex in your
     /// reach, each from a hex next to it, one at a time, the player choosing (and stopping when they
     /// like). They arrive as any piece does (`effects::moves`). With `strike` (Kettle Operation, Lure
-    /// Network), each adversary piece gathered comes off instead of arriving, so a strike never raises a
-    /// Liberate bill.
+    /// Network), the player picks only the hex: up to `max` adversary pieces next to it come off, troops
+    /// first, so a strike never raises a Liberate bill.
     Gather {
         max: i64,
         pieces: Vec<Piece>,

@@ -325,6 +325,12 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             }
         }
         // 167: fear-card shape: board conditions, never reach.
+        // 169: extra threats for each site are one batch, so "one per country in turn" runs across them all (each
+        // site's own deal started again at country 0).
+        Op::PerSite { where_, max, then } if matches!(then.as_slice(), [Op::DealThreats { tier: None, scope: None, each_country: false, .. }]) => {
+            let [Op::DealThreats { count, .. }] = then.as_slice() else { unreachable!() };
+            threats::deal_extra(g, cx, count * team::per_site_count(&w, g, *where_, *max));
+        }
         Op::PerSite { where_, max, then } => {
             for _ in 0..team::per_site_count(&w, g, *where_, *max) {
                 run(g, cx, then, ctx)?;

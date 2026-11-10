@@ -245,7 +245,7 @@ export function strong(hex: string): string {
   return `hsl(${Math.round((h * 60 + 360) % 360)} 70% 42%)`;
 }
 
-/** The adversary's color: its owner cubes, its ambassadors, its cubes on megaprojects. */
+/** The adversary's color: its owner cubes, its agents, its cubes on megaprojects. */
 /** Neutral stations' cubes on megaprojects (074). */
 export const NEUTRAL_COLOR = '#9a9a9a';
 export const ADVERSARY_COLOR = '#5b1a8c';
@@ -264,6 +264,7 @@ const KNOWN: Record<string, string> = {
   station: '#00796b',
   unit: '#455a64',
   harden: '#607d8b',
+  firewall: '#ff8a65',
 };
 
 export function tokenColor(kind: string): string {
@@ -285,6 +286,7 @@ const TOKEN_NAMES: Record<string, string> = {
   troop: 'adversary troop',
   unit: 'corp troop',
   harden: 'hardening token',
+  firewall: 'firewall (no agent may arrive here)',
 };
 
 /** "node:1" → "node (seat 1)", "cube:adversary" → "owner cube (adversary)". */
@@ -292,6 +294,7 @@ export function tokenName(kind: string): string {
   const [base, owner] = kind.split(':');
   const name = TOKEN_NAMES[base] ?? words(base);
   if (owner === undefined) return name;
+  if (kind === 'ambassador:adversary') return 'agent';
   return owner === 'adversary' ? `${name} (adversary${base === 'cube' ? ': corrupted' : ''})` : `${name} (seat ${owner})`;
 }
 

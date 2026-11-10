@@ -84,9 +84,69 @@ pub fn failures() -> Vec<String> {
     out
 }
 
+/// 169, the house words (r70; Matt, amendment 7657): printed text calls the adversary's pieces agents and the
+/// Security token Operatives. An old name, or the open naming note, in what a player reads is refused. Code names
+/// may stay, so the crates are not read.
+const STALE: &[&str] = &[
+    "adversary ambassador", "adversary's ambassador", "enemy ambassador", "adv. ambassador", "matt to confirm",
+    "agents token", "security agent",
+];
+
+/// What a player reads: the content, the rules, the generated faces, the viewer's words.
+const PLAYER_TEXT: [&str; 7] = [
+    "content", "docs/rules", "docs/player-aid.md", "docs/cards.md", "docs/adversary-cards.md",
+    "docs/card-pricing-notes.json", "web/src",
+];
+
+/// The stale house words in `text`.
+pub fn stale(text: &str) -> Vec<&'static str> {
+    let low = text.to_lowercase();
+    STALE.iter().copied().filter(|b| low.contains(b)).collect()
+}
+
+/// Every stale house word in what a player reads, one line each (`docs --check`).
+pub fn stale_failures() -> Vec<String> {
+    let mut files = Vec::new();
+    for root in PLAYER_TEXT {
+        list(Path::new(root), &mut files);
+    }
+    let mut out = Vec::new();
+    for path in files {
+        let Ok(text) = fs::read_to_string(&path) else { continue };
+        for (i, line) in text.lines().enumerate() {
+            for b in stale(line) {
+                out.push(format!("{}:{}: stale house word {b:?} (agents, Operatives: docs/rules/README.md, Terms)", path.display(), i + 1));
+            }
+        }
+    }
+    out
+}
+
+fn list(path: &Path, out: &mut Vec<std::path::PathBuf>) {
+    if path.is_dir() {
+        if path.ends_with("wasm") {
+            return;
+        }
+        let Ok(dir) = fs::read_dir(path) else { return };
+        let mut entries: Vec<_> = dir.flatten().map(|e| e.path()).collect();
+        entries.sort();
+        for e in entries {
+            list(&e, out);
+        }
+    } else if TEXT.contains(&path.extension().and_then(|e| e.to_str()).unwrap_or("")) {
+        out.push(path.to_path_buf());
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn stale_house_words_match_in_any_case() {
+        assert_eq!(stale("Income: +1 Adversary ambassador"), ["adversary ambassador"]);
+        assert!(stale("an agent cancels one of your ambassadors; Operatives (Security)").is_empty());
+    }
 
     #[test]
     fn a_stem_matches_in_any_case_and_inside_a_name() {

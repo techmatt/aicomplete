@@ -58,13 +58,13 @@ const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act; botnets make adversary compute onto the projects"),
     PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of agents (on it and next to it) pulls them in and corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, ambassador income into each board's pool; then every firewall comes off"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, agent income into each board's pool; then every firewall comes off"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
     id: "adversary",
-    summary: "The adversary deck (the clock), ambassadors (creation lines, Corrupt X), botnets, the supply, difficulty",
+    summary: "The adversary deck (the clock), agents (creation lines, Corrupt X), botnets, the supply, difficulty",
     requires: &["board", "alignment"],
     variants: &[
         VariantDef {
@@ -593,7 +593,7 @@ impl Module for Adversary {
         );
         out.global(
             "income_ambassadors",
-            "adv. ambassador income",
+            "agent income",
             g.var(INCOME_AMBASSADORS),
             None,
             "agents a board a round, into each board's pool; the next Rally lands the pool",
@@ -601,7 +601,7 @@ impl Module for Adversary {
         let pool: i64 = (0..w.map.countries.len()).map(|c| g.var(&pool_key(c))).sum();
         out.global(
             "pool",
-            "adv. ambassador pool",
+            "agent pool",
             pool,
             None,
             "agents waiting to land at the next Rally, all boards",
@@ -676,7 +676,32 @@ impl Module for Adversary {
             None,
             "rounds left on the clock after this one; players lose when the next round has no card",
         );
+        // 169: a pending prohibition, as the printed game's marker would show it: the step that is off, where, and
+        // the round whose adversary turn it acts in (its raw vars were an unlabeled bit mask).
+        for step in Step::ALL {
+            let (rk, wk) = super::plan::prohibit_keys(step);
+            let round = g.var(rk);
+            if round <= 0 {
+                continue;
+            }
+            let mask = g.var(wk);
+            let wheres: Vec<&str> =
+                Where::ALL.iter().enumerate().filter(|(i, _)| mask & (1 << i) != 0).map(|(_, wh)| wh.words()).collect();
+            let name = match step {
+                Step::Rally => "Rally",
+                Step::Deploy => "Deploy",
+                Step::Corrupt => "Corrupt",
+            };
+            out.global(
+                &format!("prohibit_{}", step.name()),
+                &format!("no {name} (round)"),
+                round,
+                None,
+                &format!("a Unity prohibition: in round {round}'s adversary turn, {name} skips each {}", wheres.join("; each ")),
+            );
+        }
         out.bookkeeping(&[
+            "prohibit.",
             PEEK,
             FIRST_CORRUPTION,
             FIRST_PROJECT,
@@ -1508,10 +1533,10 @@ impl PurgeLevel {
         match self {
             PurgeLevel::All => "purge: no corrupted city, botnet, adversary troop or agent on the board",
             PurgeLevel::NoAmbassadors => {
-                "purge: no corrupted city, botnet or adversary troop (ambassadors no longer count)"
+                "purge: no corrupted city, botnet or adversary troop (agents no longer count)"
             }
-            PurgeLevel::NoTroops => "purge: no corrupted city or botnet (ambassadors and troops no longer count)",
-            PurgeLevel::CitiesOnly => "purge: no corrupted city (ambassadors, troops and botnets no longer count)",
+            PurgeLevel::NoTroops => "purge: no corrupted city or botnet (agents and troops no longer count)",
+            PurgeLevel::CitiesOnly => "purge: no corrupted city (agents, troops and botnets no longer count)",
         }
     }
 }

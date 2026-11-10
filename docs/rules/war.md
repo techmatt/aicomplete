@@ -23,7 +23,7 @@ corp troops fights twice.
   changes hands later.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (2) chips for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
-  factory makes nothing, except that **on each Discord tip it makes 1 corp troop**. One opposing ambassador blocks a
+  factory makes nothing, except that **on each Discord tip it makes 1 corp troop**. One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
   (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); a project builds them (Shadow Factories).
 - **Growth** (each round, after output): every city builds one
@@ -113,7 +113,7 @@ it, or put the Protector's node on it or in its way. Troops don't hit nodes.
 its output (energy, research cubes, chips), and the adversary's make Discord, compute or raiders. Claim a neutral site
 with your ambassadors (4 for a city, 3 for a station or factory); take one back from the adversary with more (5 for a
 city, 3 for a station or factory). One of your ambassadors standing on an adversary site shuts it off, and one of
-theirs shuts off yours; your own ambassador on your piece takes a hit for it. Each border between countries has a
+its agents shuts off yours; your own ambassador on your piece takes a hit for it. Each border between countries has a
 military base on each side, a pile of corp troops: every Discord tip, each neutral factory adds a troop to each of its
 corp's bases (unless your ambassador stands there to stop it), and at the end of every round the two piles cancel and
 each troop left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
@@ -121,9 +121,10 @@ Discord: keep neutral factories quiet and the Discord track low. **What resisted
 troops (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
 grows by one for each agent already on the site.
 
-**This is the game's one movement rule** (an exception to "no movement rules"); a Corrupt line's pull is the only
-other, and it moves ambassadors one hex onto the site that corrupts ([adversary.md](adversary.md)). **A Discord tip doesn't move troops**, and
-`board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never move or strike.
+**This is the troops' own movement rule** (an exception to "no movement rules"); a Corrupt line's pull moves agents one
+hex onto the site that corrupts ([adversary.md](adversary.md)), and Gather and Push (cards, the Protector's Patrol) move
+ambassadors, agents and troops ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and
+`board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never march or strike (Gather and Push still move them).
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of

@@ -9,6 +9,7 @@
 
 use aic_core::content::{Op, Resource, Side};
 use aic_core::modules::{adversary, alignment, cards, common};
+use aic_core::op::{Piece, Removable};
 use aic_core::{GameState, Rules};
 use serde::{Deserialize, Serialize};
 
@@ -144,12 +145,19 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
 
 /// An op that removes a botnet.
 fn removes_botnet(o: &Op) -> bool {
-    matches!(o, Op::RemoveBotnet | Op::RemoveBotnets { .. } | Op::CutBotnet)
+    // 169: r71's Unity cards remove by board condition (`remove_where`); without it the probe counted none.
+    matches!(o, Op::RemoveBotnet | Op::RemoveBotnets { .. } | Op::CutBotnet | Op::RemoveWhere { pieces: Removable::Botnets, .. })
 }
 
-/// An op that removes adversary ambassadors.
+/// An op that removes adversary ambassadors (agents).
 fn removes_ambassadors(o: &Op) -> bool {
-    matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::Pushback { .. })
+    matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::Pushback { .. } | Op::RemoveWhere { pieces: Removable::Agents, .. })
+        || matches!(o, Op::Gather { strike: true, pieces, .. } if pieces.contains(&Piece::Agents))
+}
+
+/// An op that removes adversary troops (169: a strike gather too).
+fn removes_troops(o: &Op) -> bool {
+    matches!(o, Op::RemoveTroops { .. }) || matches!(o, Op::Gather { strike: true, pieces, .. } if pieces.contains(&Piece::Troops))
 }
 
 /// `ops` and every op nested under them.
@@ -174,7 +182,7 @@ fn team(rules: &Rules, g: &GameState) -> Team {
             let has = |f: fn(&Op) -> bool| ops.iter().any(|o| f(o)) as i64;
             t.botnet_cards += has(removes_botnet);
             t.liberate_cards += has(|o| matches!(o, Op::Liberate { .. } | Op::ClearCity { .. } | Op::Cleanse { .. }));
-            t.troop_cards += has(|o| matches!(o, Op::RemoveTroops { .. }));
+            t.troop_cards += has(removes_troops);
             t.ambassador_cards += has(removes_ambassadors);
         }
     }

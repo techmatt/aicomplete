@@ -89,7 +89,7 @@
   "locations": [
    "factory"
   ],
-  "text": "1 adversary troop lands here. The nearest player pays 3 chips or discards 1 cards.",
+  "text": "1 adversary troop lands here. The nearest player pays 3 chips or discards 1 card.",
   "counters": [
    [
     {
@@ -547,7 +547,7 @@
    "station",
    "factory"
   ],
-  "text": "The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 cards.",
+  "text": "The adversary gains 6 compute. The nearest player pays 2 research cubes or discards 1 card.",
   "counters": [
    [
     {

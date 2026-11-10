@@ -21,8 +21,8 @@ from tipping is offered, since a tip empties it anyway. Variant `off` moves no S
 holding `discord_tip_per_player` × players, **tips**: one tip's worth comes off and, on the Unity
 side, the rest stays toward the next tip (`carry` 1, r48: a big Sway can tip more than once); a
 Discord tip empties its track (`carry` 2 would carry Discord's too, 0 neither); that side's tip count
-goes up by one; one card of its side is drawn and resolves (at the step printed for the tip count
-before this tip, below). Unity tips and Discord tips are counted separately and only count up.
+goes up by one; one card of its side is drawn and resolves (at the tier picked by its side's tip
+count, this tip included, below). Unity tips and Discord tips are counted separately and only count up.
 Tracks are checked when an action or automatic phase finishes resolving (with win and loss, below),
 so a track may overfill within one action. If both are full, **Discord tips first**; a tip's card may
 fill a track again, which then tips too. Thresholds: *Tunables*.
@@ -40,7 +40,7 @@ fill a track again, which then tips too. Thresholds: *Tunables*.
 | Unity | clearing a corruption marker (the Clear action, Recovery, cards) | `clear_unity` 2 |
 | Unity | player cubes on a megaproject as it completes, as its corp's card prints (Delta Seawall) | 1 each |
 | Unity | cards (Peace Conference, Coalition Charter, Open Assembly), Unity cards | card text |
-| Discord | energy diverted (a corrupted city) or darkened (an ambassador on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
+| Discord | energy diverted (a corrupted city) or darkened (an agent on an aligned city) | `divert_discord` 1 per unit of a corrupted city's, `ambassador_discord` 0 per unit, each round, of a dark aligned city's |
 | Discord | a factory destroyed in war (not by an adversary troop) | `destruction_discord` 1 |
 | Discord | adversary cubes on a megaproject as it completes, as its corp's card prints | 1 each |
 | Discord | the antimatter action, twists, threats, Discord cards, adversary projects | `antimatter_discord` 1, card text |
@@ -97,19 +97,19 @@ A threat countered by a card is discarded and its partial payments are refunded.
   pressure on the board (more or tier-2 threats, creation, Corrupt lines) or take credits, scaled by the corrupted
   sites (r71); nodes fall only where the board is overrun ([war.md](war.md)). "A tier-2 threat in each country piece"
   pulls from the tier-2 deck, any tag (146).
-- Offensive acts at once: Corrupt cities (tier III: the adversary builds first, each board rallying its ambassador
+- Offensive acts at once: Corrupt cities (tier III: the adversary builds first, each board rallying its agent
   income to this round's card's Rally site), then a tier-2 threat (two from tier II), any tag, is dealt into the
   country of the node hex with the most agents and troops (ties: country, then lower hex number), its
   first token on that hex; dealt after the counter phase, it waits a round. Before the build step this round's card
   is the face-up one.
 - **Unity tier III never frees a city** (r68, Matt, 2026-11-09): it widens its card's condition or count, never to a
-  whole step or the whole map (a prohibition's tier III: on or next to an ambassador or a node); no tier III clears
+  whole step or the whole map (a prohibition's tier III: on or next to, or within 2 of, an ambassador or a node); no tier III clears
   around corrupted cities (r68's clearing, rejected) and Reclamation's cubes are stations' and factories' only. The
   players still reach a city and Liberate it.
 
 **The purge: the only win (r67, locked: Matt, 2026-11-08), stepped by Unity tips** as Spirit
 Island's terror levels are. What you must remove from the board depends on the Unity tips made
-(`purge_at`: ambassadors, troops, botnets stop counting at those counts): at 0 almost everything;
+(`purge_at`: agents, troops, botnets stop counting at those counts): at 0 almost everything;
 from 6 only the cities, and the players win the moment the adversary owns no city. No round
 gate: the steps and liberating cities ([ambassadors.md](ambassadors.md)) set how early it comes.
 
@@ -120,14 +120,14 @@ gate: the steps and liberating cities ([ambassadors.md](ambassadors.md)) set how
 - corrupted cities always count.
 <!-- /generated -->
 
-The steps are a list: ambassadors, then troops, then botnets (two entries: botnets always count).
+The steps are a list: agents, then troops, then botnets (two entries: botnets always count).
 **Why:** botnets are hard to remove and troops respawn from adversary factories every round. The
 level-0 purge counts only from this round's adversary card of stage `clear_win_stage` (1: from round 1).
 
 **No escalation in play:** Discord tips don't raise the difficulty; the cards' tiers escalate.
 
 <!-- generated: game_end -->
-**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, step by step, like terror levels. At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and agents. After 3 Unity tips the purge no longer asks you to clear adversary ambassadors; after 6, it asks only that the adversary owns no city, and you win the moment it doesn't. Pressure comes every round: the face-up adversary event card deals threats by your sites and says where its new agents land (the lowest-numbered sites of a kind), so you always know where the next wave lands. Agents pile up, a card's Corrupt line pulls 4 of them on and next to a city into it and corrupts it, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions they bring: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the Discord side empties: free a corrupted city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. Like fear cards, each acts by what is on the board, never by your reach: for each city holding an ambassador, on each hex next to one, or each player on one such hex; some forbid the adversary's next Rally, Deploy or Corrupt where your pieces stand, so place them before its turn. Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which one resolves (tier I on tips below 3, II from tip 3, III from tip 6): a later tier counts more or reaches wider, and Discord's late cards hit harder. The 23 Unity cards reshuffle when the deck runs out. Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your ambassadors for the same, so you choose between racing toward Unity and holding off the next Discord card. You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's base). A lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most (fewer at the harder levels), and reaching it loses. So there are three different pressures: the Discord deck (politics), your nodes (the board) and the cap.
+**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, step by step, like terror levels. At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and agents. After 3 Unity tips the purge no longer asks you to clear agents; after 6, it asks only that the adversary owns no city, and you win the moment it doesn't. Pressure comes every round: the face-up adversary event card deals threats by your sites and says where its new agents land (the lowest-numbered sites of a kind), so you always know where the next wave lands. Agents pile up, a card's Corrupt line pulls 4 of them on and next to a city into it and corrupts it, and corrupted cities and uncountered threats fill the Discord track. Each time it fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions they bring: they deal more or stronger threats (Offensive aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the Discord side empties: free a corrupted city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such hex; some forbid the adversary's next Rally, Deploy or Corrupt where your pieces stand, so place them before its turn. Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which one resolves (tier I on tips below 3, II from tip 3, III from tip 6): a later tier counts more or reaches wider, and Discord's late cards hit harder. The 23 Unity cards reshuffle when the deck runs out. Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your ambassadors for the same, so you choose between racing toward Unity and holding off the next Discord card. You also lose if any player has no nodes left on the board. Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's base). A lost token leaves the game and marks its hex, so you can't act from there any more; its income stays. In stage I your last one is safe. The adversary deck is a round cap too, 11 rounds at most (fewer at the harder levels), and reaching it loses. So there are three different pressures: the Discord deck (politics), your nodes (the board) and the cap.
 <!-- /generated -->
 
 **Losing:**

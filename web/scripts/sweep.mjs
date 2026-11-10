@@ -65,6 +65,11 @@ const CASES = [
   // war every round, d3's dearer menus and harsher harms, as the strategist and engine play them.
   { name: 'c2-d3-strategist', config: 'baseline.json', set: ['adversary.difficulty=3'], agent: 'engine:strategy=1' },
   { name: 'c4-d3-engine', config: 'baseline.json', set: ['countries=4', 'adversary.difficulty=3'], agent: 'engine' },
+  // 169: r70-r72's moving pieces (gather, push, Patrol, standing liberations) and fear cards
+  // (prohibitions, remove_where): the strategist at 3 countries seats the Protector beside
+  // the Researcher, and d1's long games tip the most Unity cards.
+  { name: 'c3-d1-strategist', config: 'baseline.json', set: ['countries=3', 'adversary.difficulty=1'], agent: 'engine:strategy=1' },
+  { name: 'c2-d1-strategist', config: 'baseline.json', set: ['adversary.difficulty=1'], agent: 'engine:strategy=1' },
 ];
 const unknown = only.filter((n) => !CASES.some((c) => c.name === n));
 if (unknown.length) throw new Error(`no case ${unknown.join(', ')}; cases: ${CASES.map((c) => c.name).join(', ')}`);
@@ -73,7 +78,7 @@ const cases = CASES.filter((c, i) => (only.length ? only.includes(c.name) : !qui
 /** Viewport sizes: the first is used for play, the others are checked at every capture. */
 const SIZES = [[1366, 768], [1920, 1080], [2560, 1440]];
 /** Checks that fail the run; the rest are reported for a look. */
-const HARD = new Set(['console', 'stuck', 'error-banner', 'page-scroll', 'placeholder', 'offscreen', 'hidden-target', 'case', 'clipped', 'token-unknown']);
+const HARD = new Set(['console', 'stuck', 'error-banner', 'page-scroll', 'placeholder', 'offscreen', 'hidden-target', 'case', 'clipped', 'token-unknown', 'stale-word']);
 /** One act or seek slower than this (ms, render included) is a frame-time spike. */
 const SPIKE_MS = 150;
 /** Captures per game, so a long game can't flood the sheets. */
@@ -120,9 +125,13 @@ const PAGE_LIB = String.raw`(() => {
   // hold-off, a node lost by cause, war's destroys, a corruption by site, a created site, a
   // top-tier counter by currency (tier 3 until 146, tier 2 since). (144's blackout and sabotage flags and the "is freed" note are gone.)
   const COUNTER_EVENTS_R55 = /^(board\.(claimed|liberated)\.(city|station|factory)|board\.(std\.envoy|cities_freed|war_destroyed)|board\.node_lost\.[a-z0-9]+|adversary\.(corruptions\.(city|station|factory|land)|sites_created\.(station|factory)|factories_seized|stations_flipped)|alignment\.(unity|discord)_held_off|alignment\.unity_pulled|threats\.(countered_by\.t2\.[a-z_]+|dealt_at_node))$/;
+  // 169: r70-r71's moving pieces and fear cards: a gather, a push, an arrival that cancels, a
+  // gather-then-strike, a liberation spending standing ambassadors, a prohibition made or fired,
+  // a remove_where sweep and a cleanse.
+  const COUNTER_EVENTS_R70 = /^(effects\.(gathered|pushed|moved_canceled|struck|cleansed|firewalls|remove_where\..+)|board\.liberate_standing|prohibit\.[a-z]+\.[a-z_]+\.(made|fired))$/;
   const counters = () => { const c = aic.timeline.frame.snap.state.stats?.counters ?? {}; return Array.isArray(c) ? Object.fromEntries(c) : c; };
   function counterEvents(c0, c1) {
-    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
+    return Object.keys(c1).filter((k) => (COUNTER_EVENTS.test(k) || COUNTER_EVENTS_R41.test(k) || COUNTER_EVENTS_R55.test(k) || COUNTER_EVENTS_R70.test(k)) && (c1[k] ?? 0) > (c0[k] ?? 0)).map((k) => 'count: ' + k);
   }
   /** Why the step from a to b is worth a capture, or null. */
   function moment(a, b, events, extra = []) {
@@ -192,7 +201,9 @@ const PAGE_LIB = String.raw`(() => {
   /** Words on screen that are code, not text: unfilled values and raw ids. */
   const PLACEHOLDER = /\b(undefined|NaN|null|\[object Object\]|TODO|FIXME)\b|\?\?/;
   const RAW_ID = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/;
-  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop']);
+  // The words docs/spelling.rs refuses in source (STALE there), plus the engine's labels it can't read.
+  const STALE = /adversary(?:'s)? ambassadors?|enemy ambassadors?|adv\. ambassadors?|agents token|Matt to confirm|Security agents?\b|on board: \d+ ambassadors?/i;
+  const TOKENS = new Set(['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop', 'firewall']);
 
   function checks() {
     const issues = [];
@@ -225,6 +236,9 @@ const PAGE_LIB = String.raw`(() => {
         if (!el.closest('code, pre, #data, #source') && RAW_ID.test(t)) add('raw-id', label(el) + ' (' + t.match(RAW_ID)[0] + ')');
         // The engine's hex names (C1 #13) are shown with the country's name (020).
         if (!el.closest('code, pre, #data') && /\bC\d+ #\d+/.test(t)) add('raw-id', label(el) + ' (engine hex name)');
+        // 169: the house words (r70, amendment 7657): the adversary's pieces are agents, the
+        // Security token Operatives; an old name or an open naming note is a stale word.
+        if (!el.closest('code, pre, #data') && STALE.test(t)) add('stale-word', label(el) + ' (' + t.match(STALE)[0] + ')');
       }
     }
     // Buttons: each one on screen must be the element under its own center (not covered).

@@ -175,6 +175,20 @@ pub fn fighting(g: &mut GameState, cx: &mut Cx, s: usize, f: impl FnOnce(&mut Ga
     fight_fire(g, cx, s, before)
 }
 
+/// Whether `card` brings its own fight trigger (a "when you remove ..." passive).
+pub fn fighting_play_watches(w: &World, card: &Key) -> bool {
+    def(w, card).passives.iter().any(|p| matches!(p, Op::When { on, .. } if fights(on)))
+}
+
+/// [`fighting`] for a card play: a card that brings its own fight trigger is watched too, so the removals of its own
+/// play fire it (169: Honeypot Relay's strike paid its +3 credits only when another fight trigger was already in play,
+/// card-grammar.md: a building's own play fires its trigger).
+pub fn fighting_play(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key, f: impl FnOnce(&mut GameState, &mut Cx) -> Res) -> Res {
+    let before = if fighting_play_watches(&cx.world, card) { Some(watch_now(g)) } else { fight_watch(&cx.world, g, s) };
+    f(g, cx)?;
+    fight_fire(g, cx, s, before)
+}
+
 /// After seat `s`'s action: its fight triggers fire for what it removed (a
 /// troop: each; compute or ambassadors: once for the action), less what a
 /// teammate's trigger removed inside it (`Cx::fought`).

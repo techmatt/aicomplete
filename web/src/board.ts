@@ -139,6 +139,13 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
         el('path', { d: `M${f(-0.45 * s)},${f(-0.45 * s)} L${f(0.45 * s)},${f(0.45 * s)} M${f(0.45 * s)},${f(-0.45 * s)} L${f(-0.45 * s)},${f(0.45 * s)}`, fill: 'none', stroke: ADVERSARY_COLOR, 'stroke-width': f(0.24 * s), 'stroke-linecap': 'round' }),
       );
       break;
+    case 'firewall':
+      // 169: a firewall (158, Firewall Array, Air Gap): a brick wall; no agent may arrive on its hex.
+      g.append(
+        el('rect', { x: f(-0.9 * s), y: f(-0.7 * s), width: f(1.8 * s), height: f(1.4 * s), rx: f(0.1 * s), fill: c, stroke: '#bf360c', 'stroke-width': f(0.14 * s), class: 'glyph' }),
+        el('path', { d: `M${f(-0.9 * s)},0 H${f(0.9 * s)} M0,${f(-0.7 * s)} V0 M${f(-0.45 * s)},0 V${f(0.7 * s)} M${f(0.45 * s)},0 V${f(0.7 * s)}`, fill: 'none', stroke: '#bf360c', 'stroke-width': f(0.12 * s) }),
+      );
+      break;
     default:
       g.append(el('circle', { cx: 0, cy: 0, r: f(0.9 * s), fill: c, class: 'glyph' }));
   }
@@ -146,10 +153,10 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
 }
 
 /** Glyph scale per kind: owner cubes and facilities a little larger than pawns. */
-const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95, land_corruption: 0.95 };
+const SCALE: Record<string, number> = { cube: 1.05, station: 1.1, factory: 1, node: 1, ambassador: 0.9, troop: 0.95, unit: 0.95, harden: 0.85, botnet: 1, corruption: 0.95, land_corruption: 0.95, firewall: 0.9 };
 /** The adversary's tokens: its owner cube, its ambassadors, its troops, its botnets, a corruption marker, land corruption. */
 const isAdversary = (kind: string) => kind === 'troop' || kind === 'botnet' || kind === 'corruption' || kind === 'land_corruption' || kind.endsWith(':adversary');
-const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop'];
+const ORDER = ['cube', 'station', 'factory', 'node', 'harden', 'firewall', 'unit', 'ambassador', 'corruption', 'land_corruption', 'botnet', 'troop'];
 const rank = (k: string) => {
   const i = ORDER.indexOf(k.split(':')[0]);
   return i < 0 ? ORDER.length : i;

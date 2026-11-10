@@ -56,7 +56,7 @@ neighbors change with the country count).
   number), found after the corrupted cities are placed. Its `corp_energy` cubes are the
   player's one easy energy source at the start. It is an aligned city in every way: it can
   be lost to corruption, and the factories it builds are its owner's.
-- The adversary's supply: `adversary.supply_per_country` ambassadors per country.
+- The adversary's supply: `adversary.supply_per_country` agents per country.
 - The adversary deck is dealt and its top card revealed face up as round 1's card.
 
 ## Research cubes and the corps (candidate)
@@ -77,12 +77,12 @@ megaproject is the corp's defining card.
   a round, in production, in its owner's color: a player's or **neutral**; an adversary station (corrupted) makes
   that much adversary compute instead (137), so no adversary cube reaches a megaproject. No player starts with a
   station: building one (`station_chips`) or claiming the neutral one (`claim_station` ambassadors) is an investment.
-  One opposing ambassador on a station blocks its output while it stands; an adversary station is liberated to
+  One opposing ambassador or agent on a station blocks its output while it stands; an adversary station is liberated to
   neutral by the Liberate action.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Coup, Station Seizure) takes it
   only when `adversary.station_flip_at` (2) agents and no player ambassador
-  stand on it, those ambassadors used up; short of that one agent lands on it
+  stand on it, those agents used up; short of that one agent lands on it
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
   that free a station are priced as a station flip, a cube a round both ways (Reclamation
   Crew); factories stay cheap to free (Back-Channel Talks).
@@ -126,6 +126,6 @@ card says, neutral ones pay nothing. So claim the neutral station (3 ambassadors
 fills. After that your stations there put cubes on your board, and if you have a node on one of that country's
 cities (any city, not only yours) you can spend them on its converter, as often as you can pay (Onyx's once a
 round), or anywhere for 1 insight each. Take back an adversary station with 3 of your ambassadors; the adversary can
-take yours only once 2 of its ambassadors stand on it and none of yours.
+take yours only once 2 of its agents stand on it and none of yours.
 
 **What resisted this summary:** Onyx's converter alone keeps once a round, an exception a new player has to be told.

@@ -16,7 +16,7 @@
   "rules": [
    {
     "name": "Garrisons",
-    "text": "Income: +1 ambassador a board a round.",
+    "text": "Income: +1 agent a board a round.",
     "effects": [
      {
       "op": "increase_income",
@@ -170,7 +170,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 ambassador a board a round. Corrupt: research stations.",
+   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 agent a board a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -288,7 +288,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: cities.",
+   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -362,7 +362,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 ambassador a board a round. Corrupt: cities (1 fewer).",
+   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 agent a board a round. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -548,7 +548,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
+   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 agent a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -654,7 +654,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 ambassador a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
+   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "troops made",

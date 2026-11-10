@@ -87,7 +87,7 @@ fn bar_levels_follow_the_unity_cards_drawn() {
         assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
     }
     assert!(All.win_text().contains("botnet, adversary troop or agent"));
-    assert!(NoAmbassadors.win_text().contains("ambassadors no longer count"));
+    assert!(NoAmbassadors.win_text().contains("agents no longer count"));
     assert!(NoTroops.win_text().contains("no corrupted city or botnet"));
     assert!(CitiesOnly.win_text().contains("botnets no longer count"));
 }

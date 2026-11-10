@@ -49,7 +49,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
     jam of its type plus a rider of its tag, never a full counter (*Rapid Response*).
 15. **No recounting across cards** (ruling 12). A token effect counts only the tokens **on that card**, never "you
     have" across cards: recounting every round is tracking load. Token cards are progressive with a choice:
-    "Action: add 1 Agent here, OR get 1 credit per Agent here" (*Agency Field Station*), with other cards that add
+    "Action: add 1 Operative here, OR get 1 credit per Operative here" (*Agency Field Station*), with other cards that add
     tokens to one card (*Recruit Operatives*). Nothing gains tokens by itself each round. A program that cashes
     tokens in takes them from one card.
 16. **Tag chains** (ruling 10). Science, and other tags where it fits, has requirement chains: cards that need 3-4
