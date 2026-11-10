@@ -1,0 +1,121 @@
+{
+ "checks": [
+  {
+   "id": "V1",
+   "engine_answer": "No agents or troops are on the board at setup. Each country gets an adversary cube on its marked city, an adversary cube and a botnet on its marked station, a neutral station and two neutral factories. Each country's agent pool starts with one round of agent income: ambassador_income[0] = 0 at difficulty 0, plus Garrisons' +1, so 1 agent. That agent lands at round 1's Rally (adversary.build). Bases start with no corp troops. Adversary troops first arrive with a Deploy line or the Protector-troop step.",
+   "evidence": "adversary.rs:360-399 (setup: botnets, deck, income, fill_pools; no agents placed), adversary.rs:928-934 fill_pools, adversary.rs:58 (Rally in the build phase); configs/baseline.json adversary.ambassador_income [0,...], difficulty 0; content/adversary.json:18-22 Garrisons increase_income; board/mod.rs:272-304 setup; tests/setup.rs:71-74 (bases start empty)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 Setup, steps 2-3",
+   "fix": "Optional: add one line to §3 saying that no agents, adversary troops or corp troops start on the board, and the pool's agents land at round 1's Rally."
+  },
+  {
+   "id": "V2",
+   "engine_answer": "6. At round start your insight is set to the board's 5 plus the income of your uncovered track spaces. The setup node counts as the first economy-track token, and that space prints +1 insight income each round. Round 1's opening tier-2 keeps (1 insight each) then come out of these 6.",
+   "evidence": "economy.rs:189-200 round_start (n = income insight + gift + carried - debt); ai.rs:45-47 uncovered() (at least 1), ai.rs:66-72 each_track_income; board/mod.rs:297-298 (track counter set to 1 at setup); content/ais.json economy_track[0] income insight 1 for every board",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5 first bullet; §5 'Insight is this round's attention'",
+   "fix": "In §3, write 'uncovering the track's first space: +1 insight every round' so it doesn't read as a one-time gain."
+  },
+  {
+   "id": "V3",
+   "engine_answer": "Builder (seat 0) and Protector (seat 1). Seat s takes boards[s mod 3] from [Builder, Protector, Researcher], so no Researcher plays with 2.",
+   "evidence": "ai.rs:113-116 board_index (seat % list.len()); configs/baseline.json ai.boards [0,1,2]",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5; §17 Boards",
+   "fix": "None needed."
+  },
+  {
+   "id": "V4",
+   "engine_answer": "No. The round order is sway, then the adversary's event, threat deal, build (Rally/Deploy), corrupt, natural corruption, march and reveal, then cards.deal (round 1: the opening hand), keep, then the action phase.",
+   "evidence": "configs/baseline.json `round` (adversary.* and threats.deal before cards.tier/deal/draft/keep); cards/mod.rs:84 (deal: round 1 opening)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 last line; §4 table steps B-D",
+   "fix": "None needed."
+  },
+  {
+   "id": "V5",
+   "engine_answer": "No. threats.counter is offered only inside the action-phase decision. board.produce and economy.upkeep run after it, then threats.execute. Upkeep income arrives too late for this round's threats (a delayed threat can use it next round).",
+   "evidence": "configs/baseline.json `round`: 'cards.play+threats.counter+...' then board.bases, board.produce, economy.upkeep, threats.execute; economy.rs:221-245 upkeep",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§4 table D-F; §11 Countering, When threats take effect",
+   "fix": "None needed. Optionally add to §11: 'Upkeep comes after the action phase, so this round's income can't pay this round's threats.'"
+  },
+  {
+   "id": "V6",
+   "engine_answer": "Correct. There is no fast/slow timing. The only play window is the action phase, which always comes after that round's adversary turn. A held card can next be played after the next round's adversary turn. Hands carry over (no hand limit).",
+   "evidence": "configs/baseline.json `round` (one Decision phase: cards.play+...; adversary phases all precede it); rules.rs:755-779 (Decision phase)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§4 table; §8 opening paragraph",
+   "fix": "None needed."
+  },
+  {
+   "id": "V7",
+   "engine_answer": "No. Once a seat passes, it gets no legal actions until the next decision phase. Selling, paying a threat and taking back contributions all stop. Passed flags reset only when a new decision phase begins.",
+   "evidence": "rules.rs:474-476 (passed seats skipped in legal), rules.rs:603-604 ('seat has passed this phase'), rules.rs:762-764 (reset at the next Decision phase)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 first paragraph",
+   "fix": "None needed."
+  },
+  {
+   "id": "V8",
+   "engine_answer": "Shelter sets the country's Shelter flag to 1 for the rest of the round. Cleanup counts it down to 0, so it never protects in next round's adversary turn. While it is up, destroy_piece refuses every destruction in that country, war included: a war strike on a factory in a sheltered country fails (the troop is spent), so a node on that factory survives too. The war rule that 'no Shelter saves that node' only matters when the factory is actually destroyed, and that can't happen in a sheltered country. Only the stage-I last-node check runs inside lose_node.",
+   "evidence": "board/mod.rs:228-231 shelter() sets 1; board/mod.rs:502-513 cleanup counts flags down; destroy.rs:49-51 (Shelter refuses any cause); troops.rs:65-73 (node lost only if destroy_piece(FACTORY, War) succeeds; lose_node checks only last_node_safe, node.rs:195-200)",
+   "verdict": "partly",
+   "cause": "wording",
+   "paragraph": "§13 War step 3 ('no Shelter, hardening, ambassador or Aegis Doctrine saves that node'); §6 Shelter",
+   "fix": "In §13 War step 3, say: 'If the factory is destroyed (a Shelter, hardening, ambassador or Aegis Doctrine can save the factory, and with it the node), any node on its hex goes with it; nothing saves that node then but the stage-I last-node rule.' This makes clear that Shelter does protect the node by protecting the factory."
+  },
+  {
+   "id": "V9",
+   "engine_answer": "Yes. Round start sets insight first. Vigil's 'gain 1 insight' fires during board.march, in the adversary turn, and adds straight to the resource, so it can be spent in this round's action phase. The next round start resets it, and the Protector has no Patience, so it is lost then.",
+   "evidence": "economy.rs:189-200 round_start; content/ais.json Protector passive when wall_stops then gain insight 1 (~line 326-342); troops.rs:155-166 Vigil fires in the march; triggers.rs:239-247 on_wall; configs/baseline.json `round` (board.march before the action phase)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 'Insight is this round's attention'; §6 Vigil",
+   "fix": "None needed. Optionally add to §5: 'insight gained later in the round, even in the adversary's turn, can be spent this round.'"
+  },
+  {
+   "id": "V10",
+   "engine_answer": "Yes to both. node_sites allows any non-ocean hex adjacent to your node that has no node of anyone's, no corruption marker and no land corruption. Agents, botnets and adversary cubes don't block a placement.",
+   "evidence": "board/node.rs:34-58 node_sites (free = !ocean && no node && no MARKER && no LAND_CORRUPTION)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 'Where'",
+   "fix": "None needed."
+  },
+  {
+   "id": "V11",
+   "engine_answer": "No to both. A hex holding any player's node is excluded (node_owner(g,h).is_none()), so a hex holds at most one node.",
+   "evidence": "board/node.rs:38-40 node_sites free predicate",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§2 Pieces (Node row); §6 'Where'",
+   "fix": "None needed."
+  },
+  {
+   "id": "V12",
+   "engine_answer": "No. Claim costs claim_N + the agents on the site, all paid from the acting seat's supply. Ambassadors standing on the site are ignored. Liberate spends the ambassadors standing on the site first (the actor's, then the others' in seat order) and the supply pays the rest.",
+   "evidence": "board/ambassadors.rs:81-88 claim_cost; standard.rs:170-174 target_price; standard.rs:459-463 Claim pays the price from supply; ambassadors.rs:107-129 liberate_supply_cost and pay_liberate",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 Claiming a neutral site (second bullet); Liberating (first bullet)",
+   "fix": "None needed."
+  },
+  {
+   "id": "V13",
+   "engine_answer": "Correct. liberable checks only the price and reach, never botnets. liberate_site takes off the adversary cube and the agents and sways 2 Unity; the botnet stays, and the station turns neutral, not yours. can_claim refuses while a botnet is on or next to the hex (next_to includes the hex itself), so you can't then Claim it.",
+   "evidence": "board/standard.rs:346-351 liberable (comment: a botnet doesn't stop it); board/ambassadors.rs:169-187 liberate_site; ambassadors.rs:9-13 can_claim; common.rs:133-135 next_to (on or adjacent)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 Liberating (last bullet), Claiming (first bullet)",
+   "fix": "None needed."
+  }
+ ]
+}

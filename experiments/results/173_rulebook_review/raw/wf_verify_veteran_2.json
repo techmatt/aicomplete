@@ -1,0 +1,112 @@
+{
+ "checks": [
+  {
+   "id": "V14",
+   "engine_answer": "No. Move targets only a hex in reach that holds a city, a base, a station or factory, or any node (has_piece). An empty open hex is not offered. Remove agents can go onto any hex in reach that has at least one agent.",
+   "evidence": "crates/aic-core/src/modules/board/standard.rs:366-375 (Move: reach && has_piece), :360 (Remove: reach && agents > 0); modules/common.rs:114-116 (has_piece = city || base || station/factory || node)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Standard actions table, Move row; §9 Moving pieces, first paragraph",
+   "fix": "No change needed. Optionally add: 'never onto an empty hex'."
+  },
+  {
+   "id": "V15",
+   "engine_answer": "The player whose node is the fewest hexes from any of its tokens, wherever that node is. Only nodes count, not ambassadors. On a tie the tied players pick one (in the engine the lowest tied seat answers). A player with no node can't be hit.",
+   "evidence": "crates/aic-core/src/modules/threats/near.rs:211-229 (node_distance / nearest_seats use node tokens only); threats/mod.rs:255-274 (hit_seat), :425-436",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 When threats take effect, second paragraph ('Its harm to a player always hits the nearest player')",
+   "fix": "No change needed. Optionally add 'ambassadors don't count' to make the contrast with Near explicit."
+  },
+  {
+   "id": "V16",
+   "engine_answer": "No. Paying (and the tag counter) needs the seat to be near: a node or ambassador of theirs on or next to one of its tokens. A player no longer near may still take back what they paid. Card counters, jams and delays also reach only threats you are near; Unity rewards and standing counters reach any threat.",
+   "evidence": "crates/aic-core/src/modules/threats/mod.rs:452-479 (legal: can_pay = near), :494-496 (Pay refused if not near), :512-521 (Withdraw has no near check); near.rs:180-190",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 Near",
+   "fix": "No change needed."
+  },
+  {
+   "id": "V17",
+   "engine_answer": "Partly yes. A 'destroy a node' harm (Dark Cities, Purge Protocols, Grid Collapse, Overload, Last Ultimatum) and Siege's factory destruction never take a last node, at any stage. But Overrun (corrupt the city here) and Station Seizure (corrupt the station here) corrupt the hex through the normal corruption code, which destroys a node on it. That is subject only to the stage-I last-node rule, so from stage II on they can destroy a last node. Shelter, hardening, the node owner's ambassador, Aegis Doctrine or Sanctuary can still stop it.",
+   "evidence": "crates/aic-core/src/modules/effects/team.rs:108-125 (destroy_nearest_node: node_count <= 1 breaks); effects/new_ops.rs:694-716 (Siege spares a last node), :335-350 (Overrun -> adversary::corrupt_city), :312-327 (Station Seizure -> corrupt_hex); adversary.rs:1200-1213 (corrupt_hex -> destroy_piece on the node unless CorruptionShield); board/destroy.rs:44 and board/node.rs:187-189 (last_node_safe = stage < last_safe_stage 2); content/threats.json overrun, station_seizure (tier 2)",
+   "verdict": "wrong",
+   "cause": "rulebook_error",
+   "paragraph": "§13 Losing nodes, first paragraph ('a threat never does, at any stage'); §11 When threats take effect, last bullet",
+   "fix": "§13: 'A threat's \"destroy a node\" never takes a last node. A threat that corrupts a city or station (Overrun, Station Seizure) destroys a node there as corruption does, so from stage II on it can take a last node.' Alternatively, make the rule match the sentence by giving threat corruption the last-node exception (a rule change)."
+  },
+  {
+   "id": "V18",
+   "engine_answer": "No. At execution, any threat now fully paid is countered. Every other threat's payments go back to their payers before any threat acts, a waiting threat's included.",
+   "evidence": "crates/aic-core/src/modules/threats/mod.rs:404-411 (try_complete else refund for every active threat)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 Countering, Resources bullet",
+   "fix": "No change needed."
+  },
+  {
+   "id": "V19",
+   "engine_answer": "No. The difficulty steps add only to resource items (Pay). A tag-sacrifice item is passed through unchanged, so '2 Security tags' stays 2 (and 3 for tier 2) at every difficulty.",
+   "evidence": "crates/aic-core/src/modules/threats/counter.rs:51-91 (only CounterItem::Pay gets bonus/all/credits; 'other => other' for Sacrifice); configs/baseline.json adversary counter_bonus_all 1, counter_more_all 1",
+   "verdict": "wrong",
+   "cause": "wording",
+   "paragraph": "§16 Difficulty, table row 1 ('+1 on each non-credit item'), and row 2",
+   "fix": "Row 1: '+1 on each non-credit resource item (energy, insight, cubes, chips, ambassadors), +4 on a credits item; tag counters don't change.' The same wording goes in §11 Countering."
+  },
+  {
+   "id": "V20",
+   "engine_answer": "No. Pools are per-country counters (adversary.pool.N), not pieces on a hex. The purge counts only hex tokens: corrupted cities, botnets, agents and troops on hexes.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:110-112 (pool_key is a var), :1546-1573 (purge_count/under_bar sum hex tokens only)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§15 Winning: the purge, table and the line under it; §10 'pools of agents waiting to land'",
+   "fix": "Add under the table: 'Agents waiting in the pools are off the board and never count.' Without that line the reader had to guess."
+  },
+  {
+   "id": "V21",
+   "engine_answer": "Yes. At 6 Unity tips (purge_at [3,6,6] -> 3 steps -> CitiesOnly), only corrupted cities count. You win at the end-of-action check that follows the action or step, not mid-action.",
+   "evidence": "configs/baseline.json alignment.purge_at [3,6,6]; crates/aic-core/src/modules/alignment.rs:212-221 (bar_level from Unity tips), :342-347; adversary.rs:1505-1512, 1556-1568 (CitiesOnly counts only corrupted_city); common.rs:89-91 (corrupted_city = is_city && adversary cube)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§15 Winning: the purge, table row '6 or more' and the line after it",
+   "fix": "No change needed."
+  },
+  {
+   "id": "V22",
+   "engine_answer": "No. An adversary troop strikes only player-owned, uncorrupted research stations and factories. Its node-strike switch, board.troop_node, is 4, a stage that never comes, so nodes are never targets. Cities are never targets.",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:213-233 (troop_targets_on; nodes only if STAGE >= troop_node); configs/baseline.json board.troop_node 4; modules/board/mod.rs:65 (4: never)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 Adversary troops: the march, first paragraph",
+   "fix": "No change needed."
+  },
+  {
+   "id": "V23",
+   "engine_answer": "Yes. Corruption destroys the node on the hex through destroy_piece. The last-node rule holds only while the stage is below 2. From stage II on, a last node goes unless one of these stops it: Shelter on the country, a hardening token on the hex, the node owner's ambassador on the hex (the site owner's cube is already gone), Aegis Doctrine, or Sanctuary. A player with no nodes then loses the game for everyone at the end-of-step check.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1200-1213 (corrupt_hex -> destroy_piece unless CorruptionShield); board/destroy.rs:34-78 (last_node_safe, Shelter, hardening, ambassador, civic_shelter); board/node.rs:187-189; configs/baseline.json last_safe_stage 2; adversary.rs:1578-1581 (loss)",
+   "verdict": "partly",
+   "cause": "wording",
+   "paragraph": "§13 Losing nodes, first paragraph; §13 Destruction list",
+   "fix": "Losing nodes: 'Nothing takes a player's last node while the event card is stage I. From stage II on, corruption, war and Border War can; a threat's \"destroy a node\" never does.' The reader's exceptions should be the full Destruction list: Shelter, hardening/shield, own ambassador, Aegis Doctrine, plus Sanctuary."
+  },
+  {
+   "id": "V24",
+   "engine_answer": "No. Of the Unity waiting at the end of the action, the k used to hold Discord off moves Discord off the track. Only n - k goes onto the Unity track. Only amounts that leave the Discord track below its tipping point are offered.",
+   "evidence": "crates/aic-core/src/modules/alignment.rs:253-292 (place_unity: hold_off(k), track(Unity) += n - k; ks filter discord - k < cap)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14 Holding Discord off",
+   "fix": "No change needed."
+  },
+  {
+   "id": "V25",
+   "engine_answer": "No carry for Discord: a Discord tip removes the whole track (carry 1 keeps overflow for Unity only). With 6 Discord cards, the 7th Discord tip finds the deck empty and the players lose. At difficulty 4, one card is cut and the tip count starts at 1, so the 6th real tip loses.",
+   "evidence": "crates/aic-core/src/modules/alignment.rs:399-403 (carries only Unity at carry 1), :411-416 (empty Discord deck -> loss), :500-512 (d4 cut and tip count 1); configs/baseline.json alignment.carry 1, adversary.discord_removed 1; content/alignment.json (6 discord cards)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14 Tipping step 1; §14 The cards; §16 row 4",
+   "fix": "No change needed."
+  }
+ ]
+}

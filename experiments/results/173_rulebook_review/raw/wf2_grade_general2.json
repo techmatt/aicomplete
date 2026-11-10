@@ -1,0 +1,544 @@
+{
+ "grades": [
+  {
+   "id": "G1",
+   "engine_answer": "1 node on the starting hex as the economy track's first token (+1 insight each round from round 1), 1 ambassador, 3 energy, 46 credits, cube on the nearest clean city of its country. No cards at setup.",
+   "evidence": "answer_key G1; board/mod.rs:293-303, ai.rs:380-385",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5",
+   "fix": ""
+  },
+  {
+   "id": "G2",
+   "engine_answer": "No: setup places the node and sets the track counter without charging; the first economy space costs 0 anyway.",
+   "evidence": "answer_key G2; board/mod.rs:294-298",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5, §5 Node tracks",
+   "fix": ""
+  },
+  {
+   "id": "G3",
+   "engine_answer": "1 per country (income 0 at d0 + Garrisons +1).",
+   "evidence": "answer_key G3; adversary.rs:383-394, 928-934",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 3, §6 Garrisons, §21",
+   "fix": ""
+  },
+  {
+   "id": "G4",
+   "engine_answer": "Builder and Protector.",
+   "evidence": "answer_key G4; ai.rs:113-116",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5, §22",
+   "fix": ""
+  },
+  {
+   "id": "G5",
+   "engine_answer": "No: the adversary's turn precedes the cards step every round, round 1 included.",
+   "evidence": "answer_key G5; baseline.json round",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 last line, §4",
+   "fix": ""
+  },
+  {
+   "id": "G6",
+   "engine_answer": "No, except the Researcher's Patience, which carries its own unspent insight (not insight received from others).",
+   "evidence": "answer_key G6; economy.rs:189-201",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Patience, Insight",
+   "fix": ""
+  },
+  {
+   "id": "G7",
+   "engine_answer": "No: a passed seat has no legal actions until the next decision phase.",
+   "evidence": "answer_key G7; rules.rs:474-476, 603-604",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 intro",
+   "fix": ""
+  },
+  {
+   "id": "G8",
+   "engine_answer": "No: factory_output runs before grow_factories; the new factory produces from next round.",
+   "evidence": "answer_key G8; production.rs:81-86",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 steps 2-3",
+   "fix": ""
+  },
+  {
+   "id": "G9",
+   "engine_answer": "Income goes into the pool at the reveal step (12); the whole pool lands at the next round's Rally, which empties it. Every Militarist event card has a Rally line, so the no-Rally case never arises.",
+   "evidence": "answer_key G9; adversary.rs:938-946, 964-976; content/adversary.json: all 15 event cards carry a Rally op",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 steps 3 and 12",
+   "fix": "Optional: add to §6 step 3 'Every event card has a Rally line.' to close the reader's open question."
+  },
+  {
+   "id": "G10",
+   "engine_answer": "Yes to both: node_sites checks only ocean, any node, marker and land corruption; agents and corrupted sites don't block. The bare-hex leak (1 insight next round, 1 compute) applies only off a city, base or facility.",
+   "evidence": "answer_key G10; board/node.rs:35-58; production.rs:434-457",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Where, §9 step 6",
+   "fix": ""
+  },
+  {
+   "id": "G11",
+   "engine_answer": "No: Move targets only a hex in reach with a city, base, facility or node.",
+   "evidence": "answer_key G11; standard.rs:365-375",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Standard actions",
+   "fix": ""
+  },
+  {
+   "id": "G12",
+   "engine_answer": "Not by the Liberate action: it becomes neutral (+5 Unity); owning it takes a Claim, 4 + 1 per agent, blocked by a botnet on or next to it (or an Embargo). The card Hostile Buyout is an exception printed on the card.",
+   "evidence": "answer_key G12; ambassadors.rs:9-13, 81-88, 169-211",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Claim and Liberate",
+   "fix": ""
+  },
+  {
+   "id": "G13",
+   "engine_answer": "5 from your supply (3 + 2); the agents are removed; a botnet on or next to it stops the claim.",
+   "evidence": "answer_key G13; ambassadors.rs:81-88, 151-165",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Claim and Liberate",
+   "fix": ""
+  },
+  {
+   "id": "G14",
+   "engine_answer": "Yes, automatically: standing ambassadors pay first (the actor's, then others' in seat order), then the supply. The teammate is never asked.",
+   "evidence": "answer_key G14; ambassadors.rs:99-127",
+   "verdict": "right",
+   "cause": "missing",
+   "paragraph": "§8 Claim and Liberate table, Who pays row",
+   "fix": "Add 'automatically: their owners aren't asked' to the Liberate 'Who pays' cell."
+  },
+  {
+   "id": "G15",
+   "engine_answer": "Yes: a node or ambassador on or next to any of its tokens makes you near.",
+   "evidence": "answer_key G15; threats/near.rs:180-190",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 Near and nearest",
+   "fix": ""
+  },
+  {
+   "id": "G16",
+   "engine_answer": "No: one option must be covered in full; near players may pool toward it.",
+   "evidence": "answer_key G16; threats/counter.rs:216-254",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 Paying it off",
+   "fix": ""
+  },
+  {
+   "id": "G17",
+   "engine_answer": "No: one near player alone sacrifices cards in play.",
+   "evidence": "answer_key G17; counter.rs:282-341",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 Tags",
+   "fix": ""
+  },
+  {
+   "id": "G18",
+   "engine_answer": "The player whose node is fewest hexes from any token, at any distance. On a tie the tied players choose which of them takes it (the lowest tied seat answers the prompt); it is not automatically the earliest.",
+   "evidence": "threats/near.rs:220-229 nearest_seats ('Several on a tie (the players pick one)'); threats/mod.rs:256-273 hit_seat asks choose_loss among all tied seats; mod.rs:425-427 comment 'on a tie the players pick'",
+   "verdict": "partly",
+   "cause": "rulebook_error",
+   "paragraph": "§10 Near and nearest, Nearest bullet",
+   "fix": "'(tie: the tied players choose which of them takes it; if they can't agree, the earliest of them in player order decides)'."
+  },
+  {
+   "id": "G19",
+   "engine_answer": "A 'destroy a node' harm (and Siege's) never takes a last node; Overrun and Station Seizure corrupt a site through the normal corruption code and can take a last node from stage II on, unless hardening, the owner's ambassador, Aegis or Sanctuary stops it.",
+   "evidence": "answer_key G19; adversary.rs:1200-1213; board/node.rs:187-189; effects/team.rs:108-125",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 Your last node",
+   "fix": ""
+  },
+  {
+   "id": "G20",
+   "engine_answer": "No: the purge counts hex tokens only; pools are counters.",
+   "evidence": "answer_key G20; adversary.rs:1546-1574",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14",
+   "fix": ""
+  },
+  {
+   "id": "G21",
+   "engine_answer": "Usually yes, same turn: its first march step strikes a target on or next to its hex, and if there are several the players choose which, so it may hit a neighbor instead. Stoppers in order: (Shelter, never up then), a corp troop at a base on or next to the hex, hardening, the factory owner's ambassador, Aegis Doctrine; the troop is spent either way. If step 9/10 corruption took the factory first, it is no longer a target.",
+   "evidence": "answer_key G21; adversary.rs:1299-1354; board/troops.rs:176-233, 352-385; destroy.rs:34-78",
+   "verdict": "partly",
+   "cause": "reader_misread",
+   "paragraph": "§6 The march (first bullet), §13 protection order",
+   "fix": "Book already says 'the players choose which, if several' and lists Aegis Doctrine; optionally add to §6 after 'So a troop two hexes from your facility will hit it this turn': 'unless another target is also in range and the players pick that one'."
+  },
+  {
+   "id": "G22",
+   "engine_answer": "Only if the factory is yours: the factory owner's ambassador stops the war strike, saving factory and node. Otherwise once the factory goes the node goes, in stage II even the last.",
+   "evidence": "answer_key G22; troops.rs:65-73; destroy.rs:68-75",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 War step 3, §13 protection order 5",
+   "fix": ""
+  },
+  {
+   "id": "G23",
+   "engine_answer": "No: hold-off is offered only if it leaves Discord below its tip point; otherwise all of it goes on the Unity track.",
+   "evidence": "answer_key G23; alignment.rs:253-291",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12 Holding Discord off",
+   "fix": ""
+  },
+  {
+   "id": "G24",
+   "engine_answer": "6; the 7th tip loses. At level 4, 5 survivable; the 6th tip loses.",
+   "evidence": "answer_key G24; alignment.rs:412-414, 490-512",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12 The cards, §21 level 4",
+   "fix": ""
+  },
+  {
+   "id": "G25",
+   "engine_answer": "No in effect: Shelter is set in the action phase and cleared at cleanup, so it is never up during the adversary's turn.",
+   "evidence": "answer_key G25; board/mod.rs:96-100, 228-231",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 protection order 2",
+   "fix": ""
+  },
+  {
+   "id": "V1",
+   "engine_answer": "No agents or troops on the board; corrupted city, corrupted station with botnet per country; one round of income (1 at d0) waits in each pool.",
+   "evidence": "answer_key V1; adversary.rs:360-399",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 steps 2-3",
+   "fix": ""
+  },
+  {
+   "id": "V2",
+   "engine_answer": "6; opening tier-2 keeps (1 insight each) come out of it.",
+   "evidence": "answer_key V2; economy.rs:189-200",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Insight, §7 Round 1",
+   "fix": ""
+  },
+  {
+   "id": "V3",
+   "engine_answer": "Builder and Protector.",
+   "evidence": "answer_key V3",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3, §22",
+   "fix": ""
+  },
+  {
+   "id": "V4",
+   "engine_answer": "No: the adversary's turn comes first, then the opening deal.",
+   "evidence": "answer_key V4",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3, §4",
+   "fix": ""
+  },
+  {
+   "id": "V5",
+   "engine_answer": "No: upkeep runs after the action phase; a delayed threat could use it next round.",
+   "evidence": "answer_key V5; baseline.json round",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§4, §9 step 8, §10",
+   "fix": ""
+  },
+  {
+   "id": "V6",
+   "engine_answer": "No fast/slow; the only play window is the action phase after the adversary's turn; hands carry over.",
+   "evidence": "answer_key V6",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§4, §7, §8",
+   "fix": ""
+  },
+  {
+   "id": "V7",
+   "engine_answer": "No: a passed seat has no actions until the next decision phase.",
+   "evidence": "answer_key V7; rules.rs:474-476",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 intro",
+   "fix": ""
+  },
+  {
+   "id": "V8",
+   "engine_answer": "No: cleanup counts the flag down, so it never covers next round's adversary turn.",
+   "evidence": "answer_key V8; board/mod.rs:228-231, 502-513",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 item 2, §4 H",
+   "fix": ""
+  },
+  {
+   "id": "V9",
+   "engine_answer": "Yes: Vigil insight is added after round start and is spendable this round's action phase.",
+   "evidence": "answer_key V9",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Vigil",
+   "fix": ""
+  },
+  {
+   "id": "V10",
+   "engine_answer": "Yes to both.",
+   "evidence": "answer_key V10; board/node.rs:34-58",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Where",
+   "fix": ""
+  },
+  {
+   "id": "V11",
+   "engine_answer": "No: one node per hex, of any player.",
+   "evidence": "answer_key V11",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§2 Pieces, §5 Where",
+   "fix": ""
+  },
+  {
+   "id": "V12",
+   "engine_answer": "No: Claim is paid from supply only; standing ambassadors are ignored and stay where they are.",
+   "evidence": "answer_key V12; ambassadors.rs:81-88; standard.rs:459-463",
+   "verdict": "right",
+   "cause": "missing",
+   "paragraph": "§8 Claim and Liberate table, Who pays row",
+   "fix": "Claim's 'Who pays' cell: 'your supply only; ambassadors already on the site stay there'."
+  },
+  {
+   "id": "V13",
+   "engine_answer": "The botnet doesn't stop Liberate and stays; the station is neutral, and the botnet stops a Claim while it is on or next to it.",
+   "evidence": "answer_key V13; standard.rs:346-351; ambassadors.rs:9-13",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Claim and Liberate table",
+   "fix": ""
+  },
+  {
+   "id": "V14",
+   "engine_answer": "No: Move needs a city, base, facility or node on the target hex.",
+   "evidence": "answer_key V14; standard.rs:366-375",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Move",
+   "fix": ""
+  },
+  {
+   "id": "V15",
+   "engine_answer": "The player whose node is closest to any token, at any distance (nodes only). On a tie the tied players choose which of them takes it (the lowest tied seat answers), not automatically the earliest.",
+   "evidence": "threats/near.rs:220-229; threats/mod.rs:256-273 (choose_loss over all tied seats)",
+   "verdict": "partly",
+   "cause": "rulebook_error",
+   "paragraph": "§10 Near and nearest, Nearest bullet",
+   "fix": "'(tie: the tied players choose which of them takes it; if they can't agree, the earliest of them in player order decides)'."
+  },
+  {
+   "id": "V16",
+   "engine_answer": "No: paying needs the seat to be near.",
+   "evidence": "answer_key V16; threats/mod.rs:452-496",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10",
+   "fix": ""
+  },
+  {
+   "id": "V17",
+   "engine_answer": "Not a 'destroy a node' threat (or Siege); Overrun and Station Seizure corrupt the hex and can take a last node from stage II on.",
+   "evidence": "answer_key V17",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 Your last node",
+   "fix": ""
+  },
+  {
+   "id": "V18",
+   "engine_answer": "No: partial payments are refunded at execution, and the threat fires.",
+   "evidence": "answer_key V18; threats/mod.rs:404-411",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 Paying it off",
+   "fix": ""
+  },
+  {
+   "id": "V19",
+   "engine_answer": "No: only resource items get surcharges; tag items are unchanged.",
+   "evidence": "answer_key V19; counter.rs:51-91",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§18 Difficulty, §21",
+   "fix": ""
+  },
+  {
+   "id": "V20",
+   "engine_answer": "No.",
+   "evidence": "answer_key V20",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14",
+   "fix": ""
+  },
+  {
+   "id": "V21",
+   "engine_answer": "Yes, at the end-of-action/step check; only corrupted cities count at 6 Unity tips.",
+   "evidence": "answer_key V21",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14, §4 check",
+   "fix": ""
+  },
+  {
+   "id": "V22",
+   "engine_answer": "No: targets are player-owned uncorrupted stations and factories only.",
+   "evidence": "answer_key V22; troops.rs:213-233",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 The march, §13 table",
+   "fix": ""
+  },
+  {
+   "id": "V23",
+   "engine_answer": "Yes: from stage II corruption can destroy the last node unless hardening, the node owner's ambassador, Aegis or Sanctuary stops it (Shelter can't be up then); no nodes loses for everyone.",
+   "evidence": "answer_key V23; adversary.rs:1200-1213; destroy.rs:34-78",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 Your last node, protection order",
+   "fix": ""
+  },
+  {
+   "id": "V24",
+   "engine_answer": "No: only n - k goes onto the Unity track.",
+   "evidence": "answer_key V24; alignment.rs:253-292",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12 Holding Discord off",
+   "fix": ""
+  },
+  {
+   "id": "V25",
+   "engine_answer": "No carry for Discord; the 7th Discord tip loses (6th at level 4).",
+   "evidence": "answer_key V25; alignment.rs:399-416, 500-512",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12 Tipping, The cards",
+   "fix": ""
+  },
+  {
+   "id": "N1",
+   "engine_answer": "No. A corrupted city's Discord is blocked only by a player ambassador on it; a node doesn't block. (A node on any city of that country does satisfy the converter's node test, once the megaproject is complete.)",
+   "evidence": "board/production.rs:324-330 (corrupted && player_ambassador -> blocked, else discord_from); board/mod.rs:412-418 converter_blocked (megaproject done, then has_city_node_in)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§2 Blocked, §8 Megaprojects and converters",
+   "fix": ""
+  },
+  {
+   "id": "N2",
+   "engine_answer": "A coastal city is a city next to an ocean hex, or a city the tile prints as coastal though no ocean touches it (a river or lake; e.g. hex 15 on one tile, hexes 7 and 2 on another).",
+   "evidence": "crates/aic-core/src/map.rs:47-48, 99, 122-126 (coastal = printed coast or next to ocean); content.rs:227-230; content/map.json coast lists (lines 325, 400, 476); plan.rs:224, threats/near.rs:50",
+   "verdict": "partly",
+   "cause": "missing",
+   "paragraph": "§2 The map, Countries and hexes (used in §6 step 3 and §10 Location tokens)",
+   "fix": "Add to §2: 'A coastal city is a city next to an ocean hex, or one printed with the coast mark (some tiles mark a river or lake city coastal).'"
+  },
+  {
+   "id": "N3",
+   "engine_answer": "Each Deploy troop goes to the lowest-numbered factory whose hex has no Protector node; only if every factory is walled (or there are none) does it go to the lowest-numbered city without the Protector's node.",
+   "evidence": "modules/adversary.rs:1311-1324 land_troops (open = !walled; factories filtered by open first, then cities filtered by open); board/troops.rs:270-272 walled",
+   "verdict": "right",
+   "cause": "wording",
+   "paragraph": "§6 step 4 (Deploy N)",
+   "fix": "'...on its lowest-numbered factory (any owner's) that has no Protector node on it; with none, its lowest-numbered city without one.'"
+  },
+  {
+   "id": "N4",
+   "engine_answer": "Yes: Move to a site in reach with agents costs 1 Movement; on arrival it removes 1 agent and the ambassador is removed too.",
+   "evidence": "board/standard.rs:366-375 (target needs reach + has_piece), 453-457; board/ambassadors.rs:24-31 place_ambassador (agent present: remove 1 agent, ambassador not placed)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Move, Ambassadors meet agents",
+   "fix": ""
+  },
+  {
+   "id": "N5",
+   "engine_answer": "Yes: each Move spends 1 Movement and may take any of your ambassadors from the map, including one already moved this round.",
+   "evidence": "board/standard.rs:365-375 (only moves_left and target checks); board/ambassadors.rs:215-242 move_ambassador (any of your on-board ambassadors or supply)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Move, §5 Movement",
+   "fix": "Optional: add 'the same ambassador may move again' to the Move row."
+  },
+  {
+   "id": "N6",
+   "engine_answer": "Yes: a botnet and the adversary cube don't block placement; being a site, the hex never causes the agent leak.",
+   "evidence": "board/node.rs:35-58 node_sites (free = !ocean, no node, no MARKER, no LAND_CORRUPTION); production.rs:450-452 node_leak skips city/base/building hexes",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 Where, §9 step 6",
+   "fix": ""
+  },
+  {
+   "id": "N7",
+   "engine_answer": "No: land corruption goes on the hex (even if the node is protected and survives), no node can be placed on land corruption, nothing removes it, and it sways 1 Discord a round. The node is destroyed unless something protects it.",
+   "evidence": "adversary.rs:1200-1213 corrupt_hex (adds LAND_CORRUPTION, destroy_piece on node); board/node.rs:38-40 (no node on LAND_CORRUPTION); grep: only adversary.rs:1203 writes LAND_CORRUPTION; alignment.rs:528 (Discord per token)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 Corruption, §15",
+   "fix": ""
+  },
+  {
+   "id": "N8",
+   "engine_answer": "The troop is placed on the factory's hex in production step 2 and acts in the next adversary turn's march (step 11), taking 2 steps (strike a target on or next to it, else move toward the nearest). Until then it counts against the purge at 0-5 Unity tips.",
+   "evidence": "board/production.rs:172-201 factory_output (place_troop on its hex); baseline.json round (board.march in the next round's adversary turn); adversary.rs:1546-1574 purge counts",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 step 2, §6 The march, §14",
+   "fix": ""
+  },
+  {
+   "id": "N9",
+   "engine_answer": "Yes: Shelter in the factory's country refuses every destruction of any owner's piece, war included; the factory survives and war adds Discord only when a factory is actually destroyed.",
+   "evidence": "board/destroy.rs:47-50 (flagged Shelter -> return false, any cause/owner), 89-91 (war Discord only after destruction); board/troops.rs:65-73",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 War step 3, §13 protection order 2, §20 Shelter",
+   "fix": ""
+  },
+  {
+   "id": "N10",
+   "engine_answer": "It waits: a threat dealt after the counter phase skips this round's execution, can be paid in next round's action phase, and executes in next round's threat step with that round's threats.",
+   "evidence": "threats/mod.rs:228-230 (after_counter sets late key to this round), 135-137 waits(), 412-418 (waiting threat skipped this round only)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 When threats take effect",
+   "fix": ""
+  }
+ ]
+}

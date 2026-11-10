@@ -1,0 +1,1433 @@
+{
+ "paragraphs": [
+  {
+   "section": "Front matter",
+   "starts": "Rules revision 73. A first draft",
+   "pictured": "A working draft taken from a simulator, with placeholder content",
+   "confused": "Talks about a 'friction table', a simulator and code. A player wouldn't know what these are.",
+   "weird": "A rulebook that says the simulator wins when it disagrees with the rules files. It also says every number is a candidate.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "Contents",
+   "starts": "1. The game in brief",
+   "pictured": "19 sections",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§1 The game in brief",
+   "starts": "You and up to three other players are good AIs",
+   "pictured": "A co-op game for 1-4 players. Agents work like explorers, nodes like presence, ambassadors are our pieces.",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Reads like Spirit Island: spirits against invaders. I'd assume agents behave like explorers and ravage. Here agents mostly just gather and corrupt sites.",
+   "severity": 0
+  },
+  {
+   "section": "§1 The game in brief",
+   "starts": "You win by the purge",
+   "pictured": "Like Spirit Island fear: Unity tips lower the win bar. There are three ways to lose.",
+   "confused": "'Tipped 6 times' doesn't yet tell me how big a tip is.",
+   "weird": "none",
+   "false_familiarity": "Unity looks exactly like fear and terror levels, but the thresholds count tips (0-2/3-5/6+), not cards earned. A no-nodes loss is like a spirit losing all its presence, and the event deck running out is like the invader deck running out, so that matches.",
+   "severity": 1
+  },
+  {
+   "section": "§1 The game in brief",
+   "starts": "Each round the adversary acts first",
+   "pictured": "Adversary, then draft, then a simultaneous action phase, then production, threats and war",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "In Spirit Island the spirits grow and play first, then the invaders act. Here the adversary goes first every round and there is no fast/slow split. I'd keep thinking I can react before it moves.",
+   "severity": 1
+  },
+  {
+   "section": "§2 Countries and hexes",
+   "starts": "There is one country per player",
+   "pictured": "4x4-ish tiles of hexes, each also a megacorp",
+   "confused": "How do 16 hexes make a 'square piece'? I need a diagram.",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§2 Countries and hexes",
+   "starts": "A hex is city, open land or ocean",
+   "pictured": "Cities, open hexes, some industrial zones, coastal cities",
+   "confused": "none",
+   "weird": "A city can be 'printed as coastal' without touching ocean. That's an exception.",
+   "false_familiarity": "In Spirit Island the ocean is a playable land for some spirits. Here no piece ever enters ocean, and ocean also blocks movement and reach targets.",
+   "severity": 0
+  },
+  {
+   "section": "§2 Countries and hexes",
+   "starts": "Two hexes are adjacent if they share an edge",
+   "pictured": "'Next to' means range 0-1. Ties go to the lower hex number.",
+   "confused": "none",
+   "weird": "Adjacency crosses borders, but §10 corruption only counts adjacent hexes in the site's own country. That one exception is buried later.",
+   "false_familiarity": "'Next to' includes the hex itself. In Spirit Island 'adjacent' excludes the land itself, so I'd read 'next to' as excluding it.",
+   "severity": 2
+  },
+  {
+   "section": "§2 Sites",
+   "starts": "Cities, research stations and factories are sites",
+   "pictured": "Three site types, each with an owner cube",
+   "confused": "none",
+   "weird": "It has to warn that 'building' is a card and not a piece. That shows the term clashes.",
+   "false_familiarity": "In Spirit Island, 'building' means an invader town or city. They headed that off, but I'd still say 'building' at the table and mean a board piece.",
+   "severity": 1
+  },
+  {
+   "section": "§2 Sites table",
+   "starts": "Owner | City | Research station | Factory",
+   "pictured": "A 3x3 grid of what each site produces for each owner",
+   "confused": "'Sells its 1 energy': at what price? (5 credits, found only in §12.) Where do the neutral cubes go, and what's a megaproject so far?",
+   "weird": "A neutral factory makes nothing but corp troops at a Discord tip. Odd.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§2 Sites",
+   "starts": "Every city also builds a factory each round",
+   "pictured": "Factories multiplying every round",
+   "confused": "Where? It is only explained in §12.",
+   "weird": "Every city builds a free factory every round, even corrupted ones. That's a lot of board growth for a one-line rule.",
+   "false_familiarity": "It feels like the invader Build step, but every city builds a factory every round, and the owner can be a player.",
+   "severity": 1
+  },
+  {
+   "section": "§2 Fronts and military bases",
+   "starts": "A front is a long edge shared by two country pieces",
+   "pictured": "Borders with a pile of corp troops on each side",
+   "confused": "Can a node or an ambassador stand on a base hex? (Move allows bases. Nodes aren't stated.)",
+   "weird": "A base 'is not a site' but sits on an open hex.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§2 Pieces table",
+   "starts": "Node | a player | where you act from",
+   "pictured": "Nodes, ambassadors, agents, botnets, two troop kinds, cubes, markers, tokens",
+   "confused": "What's the difference between a corruption marker and land corruption? Only part of it is explained here.",
+   "weird": "There are three different corruption-like things (corrupted site, marker, land corruption).",
+   "false_familiarity": "Only one node per hex, of any player. Spirit Island lets presence stack and spirits share lands. Markers look like blight but don't cascade.",
+   "severity": 1
+  },
+  {
+   "section": "§2 Pieces",
+   "starts": "Some cards hold their own tokens",
+   "pictured": "Tokens on cards",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§2 Reach",
+   "starts": "A hex is in reach if it is on or next to one of your nodes",
+   "pictured": "Range 1 from any node, always",
+   "confused": "With 'in one country', does any country include ones where I have no node? It says yes.",
+   "weird": "none",
+   "false_familiarity": "Spirit Island powers have different ranges, often from sacred sites. Here range is always 1. I'd go looking for range numbers on cards.",
+   "severity": 1
+  },
+  {
+   "section": "§3 Setup step 1",
+   "starts": "Lay out the map",
+   "pictured": "Tiles laid out for the player count",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§3 Setup step 2",
+   "starts": "In each country (each piece prints these places)",
+   "pictured": "One corrupted city, one corrupted station with a botnet, a neutral station, two neutral factories",
+   "confused": "No agents or troops start on the board?",
+   "weird": "none",
+   "false_familiarity": "Spirit Island setup puts invaders on the board and does an explore. Here only cubes and a botnet start out. I'd want to pre-place agents.",
+   "severity": 1
+  },
+  {
+   "section": "§3 Setup step 3",
+   "starts": "The adversary: its agent supply is 24 per country",
+   "pictured": "Event deck stacked by stage, top card face up, agents in the pools",
+   "confused": "'1 agent a country at the base difficulty'. Does that already include Garrisons' +1 (§10), or is it 1 + 1? Also what are the project slots?",
+   "weird": "none",
+   "false_familiarity": "The stage-stacked deck is like the invader deck. But the top card is face up, unlike the face-down explore card.",
+   "severity": 2
+  },
+  {
+   "section": "§3 Setup step 4",
+   "starts": "Shuffle the Unity deck",
+   "pictured": "Six decks shuffled",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§3 Setup step 5",
+   "starts": "Each player takes an AI board, in this order",
+   "pictured": "Fixed boards by seat. Place the first node, take 1 ambassador and 3 energy, claim a home city.",
+   "confused": "Is '+1 insight' a one-off gain, or a lasting bonus that makes round-1 insight 6? It's wasted if one-off, since insight is set at round start. 'Nearest': counted in hexes, across ocean? No starting cards?",
+   "weird": "You don't choose your board, the seat decides it.",
+   "false_familiarity": "Spirit Island lets you pick any spirit. Here the seat decides. I'd want to pick freely.",
+   "severity": 2
+  },
+  {
+   "section": "§3 Setup",
+   "starts": "The game starts with the adversary's turn",
+   "pictured": "Adversary turn 1 before we have cards",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "In Spirit Island the spirits act first in turn 1. Here the adversary deals threats and rallies before we even have cards.",
+   "severity": 1
+  },
+  {
+   "section": "§4 The round table",
+   "starts": "Round start | Your insight is set",
+   "pictured": "Steps A-H",
+   "confused": "Production (E) comes before threats (F). So harm lands after income, and you can't use this round's income to pay.",
+   "weird": "Sway (A) is its own step just for land corruption.",
+   "false_familiarity": "No fast/slow and no separate ravage/build/explore. The adversary's whole turn is one step. Threats resolve after production, which is unlike Spirit Island's fear and events.",
+   "severity": 1
+  },
+  {
+   "section": "§4 The round",
+   "starts": "After every action and every step, check in this order",
+   "pictured": "A state-based check after every action",
+   "confused": "Losing is checked before the purge. So if both happen at once, we lose?",
+   "weird": "Holding Discord off comes before tipping. That reads like a patch for timing.",
+   "false_familiarity": "In Spirit Island, victory is checked at set points and fear cards resolve at the fear step. Here everything is checked after each action.",
+   "severity": 1
+  },
+  {
+   "section": "§5 Resources",
+   "starts": "Nothing has a holding limit",
+   "pictured": "No caps",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§5 Resource table",
+   "starts": "Credits | yes | board income",
+   "pictured": "Eight resources, two of them not kept",
+   "confused": "'Chips can't be sold' suggests other resources can be. Can anything besides cards be sold?",
+   "weird": "Eight resources is a lot. Antimatter is only for tier-2 cards.",
+   "false_familiarity": "Energy is kept between rounds, just like Spirit Island energy. Fine.",
+   "severity": 1
+  },
+  {
+   "section": "§5 Insight",
+   "starts": "Insight is this round's attention",
+   "pictured": "Insight resets to 5+ each round",
+   "confused": "How do I track which of my unspent insight came from another player (Patience)?",
+   "weird": "'Not insight another player gave them' is a carve-out bolted on.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§5 When income arrives",
+   "starts": "Insight comes at the start of the round",
+   "pictured": "Most income arrives at the end of the round",
+   "confused": "The §6 table lists '5 insight' as board income. Is it at round start or in upkeep? (Round start.)",
+   "weird": "City energy and factory chips come 'earlier in production'. Two timings for income.",
+   "false_familiarity": "In Spirit Island you gain energy at the start of your turn during growth. Here credits and energy come at the end, so round 1 is spent on starting resources only.",
+   "severity": 1
+  },
+  {
+   "section": "§6 Your AI board",
+   "starts": "Each player is one AI board",
+   "pictured": "A player board with eight powers",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§6 Board table",
+   "starts": "Builder | Breadth: 5 building slots",
+   "pictured": "Three boards with different incomes and slots",
+   "confused": "none",
+   "weird": "Builder's special rule is just its slot count. The Protector starts with 46 credits, an odd number.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§6 Wall and Vigil",
+   "starts": "Wall: adversary troops can't move onto",
+   "pictured": "The Protector's node hexes are no-go for adversary troops",
+   "confused": "Vigil: 'your node's hex', meaning any of the Protector's nodes? Can a troop born on a Wall hex strike neighbours or leave?",
+   "weird": "Vigil is a fiddly per-troop, per-step insight trigger. The parenthetical about the factory on a Wall hex is a patch.",
+   "false_familiarity": "Feels like a defend or Dahan-protection ability, but it only works against adversary troops, not corruption.",
+   "severity": 2
+  },
+  {
+   "section": "§6 Node tracks",
+   "starts": "Your nodes start on your board, on two tracks",
+   "pictured": "Presence tracks",
+   "confused": "The track spaces aren't listed (which space gives what).",
+   "weird": "none",
+   "false_familiarity": "Strongly Spirit Island. I'd assume the 'card-play track' raises how many cards I can play a round. No card-play limit is stated anywhere, so it can't do that.",
+   "severity": 2
+  },
+  {
+   "section": "§6 Two prices",
+   "starts": "Every placement pays two prices",
+   "pictured": "Power cost plus the energy shown on the space",
+   "confused": "none",
+   "weird": "Placement cost rises 0,0,0,1,2,3,5.",
+   "false_familiarity": "Spirit Island track numbers are what you GAIN once uncovered. Here they are a COST to uncover. I'd read 0,0,0,1,2,3,5 as energy income.",
+   "severity": 3
+  },
+  {
+   "section": "§6 Where",
+   "starts": "Where: a node goes on a land hex in your reach",
+   "pictured": "Range 1, an empty hex, no marker or land corruption",
+   "confused": "Can it go on a military base hex?",
+   "weird": "none",
+   "false_familiarity": "Blight doesn't stop presence placement in Spirit Island. Here markers and land corruption do.",
+   "severity": 1
+  },
+  {
+   "section": "§6 Lost node",
+   "starts": "A lost node leaves the game",
+   "pictured": "Destroyed presence gone for good",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Close to Spirit Island destroyed presence. Fine.",
+   "severity": 0
+  },
+  {
+   "section": "§6 Powers",
+   "starts": "Each power can be used once a round",
+   "pictured": "Eight once-a-round powers",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "These aren't innate powers. There are no element thresholds. They're paid activations.",
+   "severity": 1
+  },
+  {
+   "section": "§6 Node powers",
+   "starts": "Every board has Deploy",
+   "pictured": "Two node placements a round",
+   "confused": "Peer Review costs 3 cubes and the track's energy as well?",
+   "weird": "none",
+   "false_familiarity": "Spirit Island growth gives presence placement for free with choices. Here each placement costs energy twice.",
+   "severity": 1
+  },
+  {
+   "section": "§6 Conversions/Draws",
+   "starts": "Conversions: the Builder's Mint",
+   "pictured": "Resource converters and draw powers",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§6 Sacrifice powers",
+   "starts": "Sacrifice powers pay with your cards",
+   "pictured": "Discard cards in play for effects",
+   "confused": "Rush Build skips credits. Does it still pay insight? Shelter says 'nothing can be destroyed', but §13 war lets a node die even under Shelter.",
+   "weird": "Shelter is absolute here but has a war exception elsewhere.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§6 Bulwark/Patrol",
+   "starts": "The Protector's Bulwark",
+   "pictured": "Harden, and push 3",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Patrol is like a Spirit Island push. But the target hex is in reach, and only agents or troops can be pushed.",
+   "severity": 0
+  },
+  {
+   "section": "§6 Sacrifice",
+   "starts": "A power that names a tag in its cost",
+   "pictured": "Discard a program, or a whole building stack",
+   "confused": "none",
+   "weird": "Losing the whole stack under a building is harsh. Extra tags are wasted.",
+   "false_familiarity": "Tags look like elements, but in Spirit Island elements are never spent.",
+   "severity": 1
+  },
+  {
+   "section": "§6 Capstones",
+   "starts": "Builder | Full Capacity",
+   "pictured": "Last-space bonuses",
+   "confused": "Open Science: 2 insight in total or 2 each? Aegis 'first destruction': is it mandatory on the first one, even a trivial one?",
+   "weird": "Aegis protects anyone's piece. 'Arriving next round' adds another timing.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§7 Decks and kinds",
+   "starts": "There are two player decks",
+   "pictured": "Programs stay, buildings go in slots, events are discarded",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Spirit Island cards are discarded and reclaimed. Here programs and buildings stay forever and their tags count permanently, unlike elements that count only this turn.",
+   "severity": 1
+  },
+  {
+   "section": "§7 Tags",
+   "starts": "Every card has 1-3 tags",
+   "pictured": "Six tags",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Tags = elements, but they're permanent and countable",
+   "severity": 0
+  },
+  {
+   "section": "§7 Draw",
+   "starts": "Draw always means from the tier-1 deck",
+   "pictured": "Free draws from tier 1",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§7 Round 1 opening",
+   "starts": "Each player is dealt 8 tier-1 cards",
+   "pictured": "Keep 4 free, extras cost credits",
+   "confused": "none",
+   "weird": "A tier-2 keep costs 1 insight here but 2 later. Is the cost really lower in round 1?",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§7 Rounds 2 on",
+   "starts": "Build a hand. Each player takes 4 cards",
+   "pictured": "Pick 4 face up, draft, pay to keep",
+   "confused": "With 2 players, the hand goes back and forth? You must keep from the 4 you drafted?",
+   "weird": "Draft direction flips by round parity. The 5-credit-per-insight fallback works only for keeps.",
+   "false_familiarity": "Spirit Island gains power cards by choosing 1 of 4. Here you draft and pay to keep.",
+   "severity": 1
+  },
+  {
+   "section": "§7 Playing a card",
+   "starts": "In the action phase, play a card from your hand by paying",
+   "pictured": "Credits plus insight plus extras",
+   "confused": "none",
+   "weird": "Credits can buy insight for keeps but not for plays",
+   "false_familiarity": "No card-play limit. A Spirit Island player would look for one tied to the card-play track.",
+   "severity": 2
+  },
+  {
+   "section": "§7 Requirement",
+   "starts": "Its requirement must be met",
+   "pictured": "Tag thresholds",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Yellow plates read like innate thresholds, but they gate playing the card at all.",
+   "severity": 1
+  },
+  {
+   "section": "§7 Discounts",
+   "starts": "every 2 Science tags take 1 insight off",
+   "pictured": "Tag-based discounts, minimum 1",
+   "confused": "Insight costs are 0-2 with a floor of 1, so Science discounts beyond the first are useless?",
+   "weird": "The floor of 1 means a printed 0 stays 0. That's a patch.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§7 Nothing to act on",
+   "starts": "Nothing to act on never blocks a card",
+   "pictured": "Partial resolution",
+   "confused": "Can buildings be played with nothing to do? (Implied yes.)",
+   "weird": "A program or event that would do nothing can't be played, so you can't play them just for tags.",
+   "false_familiarity": "Spirit Island lets you play a power with no effect (for elements). Here you can't.",
+   "severity": 2
+  },
+  {
+   "section": "§7 Sell",
+   "starts": "Sell a card from your hand for 1 credit",
+   "pictured": "Dump a card for 1 credit",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§7 Tags on your cards",
+   "starts": "The tags on your cards are those on",
+   "pictured": "Permanent tag count",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Elements on played cards vanish at end of turn in Spirit Island. Here they persist.",
+   "severity": 1
+  },
+  {
+   "section": "§7 Buildings and slots",
+   "starts": "A building goes into a slot",
+   "pictured": "Stacking buildings, the top one active",
+   "confused": "none",
+   "weird": "A stacked-cards plate forces a build-over even when a slot is free.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§7 Action/Effect bullets",
+   "starts": "An Action (→: pay the left, get the right)",
+   "pictured": "Once-a-round Actions, Effects with no limit",
+   "confused": "Troop-removal Effects fire per troop, but agent and compute removal fire once per source. I'd mix these up.",
+   "weird": "Different granularity for troops and agents is clearly a patch. A building firing its own trigger.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§7 Tokens on cards",
+   "starts": "Some buildings hold their own tokens",
+   "pictured": "Tokens build up to an 'At N' payout",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§7 Tokens, own only",
+   "starts": "A few cards add tokens to one of your token cards",
+   "pictured": "Tokens stay per card",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§7 Help cards",
+   "starts": "A help card names another player",
+   "pictured": "I pay, both of us gain",
+   "confused": "Does the other player need to be in reach or in the same country? Do both gain the same thing?",
+   "weird": "none",
+   "false_familiarity": "Like Spirit Island powers targeting another spirit, but with no range limit stated",
+   "severity": 1
+  },
+  {
+   "section": "§8 Action phase",
+   "starts": "All players act at once",
+   "pictured": "Simultaneous free-for-all until everyone passes",
+   "confused": "After passing, can I still sell or take back threat payments? 'Done' suggests not.",
+   "weird": "none",
+   "false_familiarity": "No fast/slow split. Everything happens in one window after the adversary. Spirit Island players would wait for 'slow' timing that doesn't exist.",
+   "severity": 1
+  },
+  {
+   "section": "§8 Standard actions intro",
+   "starts": "Standard actions are poor value on purpose",
+   "pictured": "Fallback actions",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§8 Standard actions table",
+   "starts": "Move | 1 Movement",
+   "pictured": "Twelve basic actions",
+   "confused": "Move can't go to an empty open hex. Can a research station be built on a hex with a node, agents or a base? Remove agents: the ambassador 'goes onto' the hex, so it is placed, not moved?",
+   "weird": "Clear costs 2 credits for 2 Unity, but Recovery costs a Security card for the same effect. Gain ambassador is a flat 20.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§8 Megacorp converters",
+   "starts": "Each megaproject needs 8 cubes",
+   "pictured": "Completed megaprojects unlock converters",
+   "confused": "'Node on a city' means a node literally on a city hex, not just in that country?",
+   "weird": "Only Onyx is once a round. An exception.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§8 Converter table",
+   "starts": "Horizon (Tidal Grid)",
+   "pictured": "Four payouts and converters",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§9 Arrivals",
+   "starts": "When an agent arrives on a hex holding a player's ambassador",
+   "pictured": "1-for-1 annihilation",
+   "confused": "When three agents rally onto one ambassador, does one cancel and two land? Yes, presumably.",
+   "weird": "Player order decides whose ambassador dies.",
+   "false_familiarity": "Ambassadors are not Dahan. Dahan don't cancel explorers on arrival. I'd expect them to sit and fight back later.",
+   "severity": 1
+  },
+  {
+   "section": "§9 Remove agents exception",
+   "starts": "Remove agents is the one exception",
+   "pictured": "The ambassador stays, extra agents beside it",
+   "confused": "Agents and an ambassador now coexist. Does the next arrival cancel against it?",
+   "weird": "An exception right after the rule.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§9 Claiming",
+   "starts": "Claim a neutral site in reach by spending ambassadors",
+   "pictured": "4 or 3 ambassadors, +1 per agent",
+   "confused": "none",
+   "weird": "Standing ambassadors don't help a claim but do pay first for a liberation. That asymmetry is odd.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§9 Liberating",
+   "starts": "Liberate an adversary site in reach",
+   "pictured": "Pay 5 or 3 ambassadors, the site becomes neutral, sway Unity",
+   "confused": "Other players' standing ambassadors are spent without their say? The site becomes neutral, not mine.",
+   "weird": "A botnet stays on a liberated station and then blocks claiming it.",
+   "false_familiarity": "'Liberate' sounds like taking it back for us. In fact it turns neutral and needs a separate claim.",
+   "severity": 2
+  },
+  {
+   "section": "§9 Liberate cards",
+   "starts": "Liberate cards (a family of tier-2 cards)",
+   "pictured": "Card liberation that leaves the agents",
+   "confused": "none",
+   "weird": "An exception for a card family.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§9 Blocking",
+   "starts": "While an agent stands on a neutral or player site",
+   "pictured": "One opposing piece blocks output",
+   "confused": "How does my ambassador end up on an adversary site holding agents? It cancels one on arrival, so I need more.",
+   "weird": "A blocked city still builds a factory.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§9 Guarding",
+   "starts": "When your node, or a site you own, would be destroyed",
+   "pictured": "An ambassador dies instead",
+   "confused": "A site owner's ambassador guards another player's node, except during corruption.",
+   "weird": "An exception on top of an extension.",
+   "false_familiarity": "Like Dahan absorbing hits? Not really, they're simply spent.",
+   "severity": 2
+  },
+  {
+   "section": "§9 Spent or standing",
+   "starts": "Spent: claiming, liberating",
+   "pictured": "A classification list",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§9 Moving pieces (Move)",
+   "starts": "Move (the standard action) takes one of your ambassadors",
+   "pictured": "Teleport within reach",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Not adjacency movement like Spirit Island's push/gather. It's a jump to any eligible place in reach.",
+   "severity": 1
+  },
+  {
+   "section": "§9 Card moves",
+   "starts": "Some cards and the Protector's Patrol move pieces",
+   "pictured": "Push/gather of ambassadors, agents and troops",
+   "confused": "Can nodes ever move? (Not listed, presumably never.)",
+   "weird": "none",
+   "false_familiarity": "Spirit Island push/gather, but the target hex must be in reach and the destinations are land only.",
+   "severity": 1
+  },
+  {
+   "section": "§9 Gather/Push bullets",
+   "starts": "Gather up to N: pick a land hex in your reach",
+   "pictured": "Standard push and gather",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Same as Spirit Island. But pushing agents onto ambassadors cancels them, which is a new combo.",
+   "severity": 0
+  },
+  {
+   "section": "§9 Stop / firewall",
+   "starts": "You may stop after any piece",
+   "pictured": "Optional stopping",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§9 Gather and remove",
+   "starts": "Gather and remove. Some cards (the rules call this a strike)",
+   "pictured": "Removal from the ring around a hex",
+   "confused": "The heading says gather, but it removes. 'Strike' is the same word as troop strikes. 'Troops first': is that forced?",
+   "weird": "It skips the centre hex.",
+   "false_familiarity": "Spirit Island targets the land itself. Here the centre hex is excluded, and I'd remove from the centre.",
+   "severity": 2
+  },
+  {
+   "section": "§9 Convert",
+   "starts": "Convert. Some late cards convert agents",
+   "pictured": "Agents become my ambassadors",
+   "confused": "Do the arriving ambassadors cancel agents on the node hex? Which node is 'the node you used for reach' if several qualify?",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§9 Firewall",
+   "starts": "Firewall. Some cards put a firewall",
+   "pictured": "A no-agent hex for one adversary turn",
+   "confused": "none",
+   "weird": "Troops pass through it.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§10 Intro",
+   "starts": "The adversary has a board",
+   "pictured": "Adversary components",
+   "confused": "none",
+   "weird": "'Each board' means each country. Leftover terminology.",
+   "false_familiarity": "Like a Spirit Island adversary with its levels.",
+   "severity": 1
+  },
+  {
+   "section": "§10 Militarist",
+   "starts": "The only adversary so far is the Militarist",
+   "pictured": "Three rules",
+   "confused": "Garrisons +1 agent income: is it already in the difficulty table?",
+   "weird": "Adversary troops make corp troops grow past their limit.",
+   "false_familiarity": "Spirit Island adversary rules come with levels. Here difficulty is separate (§16).",
+   "severity": 2
+  },
+  {
+   "section": "§10 You always see",
+   "starts": "You always see what's coming",
+   "pictured": "Next card face up, public pools",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Unlike Spirit Island's hidden explore card",
+   "severity": 0
+  },
+  {
+   "section": "§10 The turn steps 1-4",
+   "starts": "Event. The face-up card becomes",
+   "pictured": "Threats, rally to sites, troop deploy",
+   "confused": "Rally X onto 'botnet hexes' as a type. 'Spread evenly' over all sites of that type in the country.",
+   "weird": "Neutral sites first, then players', then the adversary's.",
+   "false_familiarity": "Rally is like explore, but it goes onto sites by type, not by terrain or adjacency, and the whole pool lands at once.",
+   "severity": 2
+  },
+  {
+   "section": "§10 The turn step 5",
+   "starts": "Other lines, at most two",
+   "pictured": "Assorted event effects",
+   "confused": "Border War: what if I have no node near a base? Are guards and Shelter allowed?",
+   "weird": "Border War can take a last node from stage II on. Forced March is a one-off.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§10 The turn steps 6-12",
+   "starts": "Troops where the Protector stands",
+   "pictured": "Projects, botnet compute, corrupt, natural corruption, march, reveal",
+   "confused": "Natural corruption counts only the site's own hex, while Corrupt X counts neighbours. Two different counts.",
+   "weird": "Step 6 punishes the Protector for being there.",
+   "false_familiarity": "Corrupt resembles ravage but needs a threshold of agents. Nothing like ravage damage versus Dahan.",
+   "severity": 2
+  },
+  {
+   "section": "§10 Every arriving agent",
+   "starts": "Every arriving agent cancels",
+   "pictured": "Restatement",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§10 Corruption list",
+   "starts": "Corrupt cities (or stations, factories, land) works on each country",
+   "pictured": "A threshold of agents on and next to the site, consumed",
+   "confused": "Only adjacent hexes in its own country count, unlike general adjacency. 'Corrupt land': do agents ever stand on open hexes?",
+   "weird": "A cascade. A marker on a city counts as an agent.",
+   "false_familiarity": "Corruption spreading feels like a blight cascade, but it is driven by agents being used up, not by blight spilling over.",
+   "severity": 2
+  },
+  {
+   "section": "§10 (1 fewer) / firewall",
+   "starts": "A card may print (1 fewer)",
+   "pictured": "Modifiers",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§10 What corruption destroys",
+   "starts": "What corruption destroys",
+   "pictured": "The node dies, then ambassadors",
+   "confused": "Does the guarding ambassador die first and then the rest? Is a marker left? (No, because of the adversary cube.)",
+   "weird": "none",
+   "false_familiarity": "Spirit Island ravage destroys presence only via blight. Here the node on the hex dies outright.",
+   "severity": 2
+  },
+  {
+   "section": "§10 Land corruption",
+   "starts": "Land corruption blocks node placement",
+   "pictured": "A permanent Discord leak",
+   "confused": "Can land corruption ever be removed? Not stated.",
+   "weird": "none",
+   "false_familiarity": "Like blight, but there's no way to remove it, while Spirit Island has many.",
+   "severity": 2
+  },
+  {
+   "section": "§10 Projects",
+   "starts": "The adversary spends compute on projects",
+   "pictured": "Slots filled from a project deck",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§10 Project costs",
+   "starts": "A project costs its printed number times",
+   "pictured": "Compute goes to the cheapest project",
+   "confused": "'Once, at once, or ongoing': what's the difference between 'once' and 'at once'? Does an ongoing project keep its slot? Do empty slots wait until all have resolved?",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§10 Compute sources",
+   "starts": "Compute comes from",
+   "pictured": "Many compute sources",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§10 Botnets",
+   "starts": "A botnet stays until removed",
+   "pictured": "Hard-to-remove compute generators",
+   "confused": "'Until Unity eases it' means it stops counting at 6 tips? No, at 6+. It's the table in §15.",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§11 Dealing",
+   "starts": "The event card's first line prints its pulls",
+   "pictured": "Threats per country by stage",
+   "confused": "none",
+   "weird": "Supply Lines is a named exception. Threat tags differ from card tags.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§11 Dealing flip",
+   "starts": "For each pull, for each country in turn",
+   "pictured": "Flip until it matches",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§11 Location tokens",
+   "starts": "A threat prints one or two location types",
+   "pictured": "Tokens on the hottest matching place",
+   "confused": "none",
+   "weird": "With no non-adversary factory, the token goes on a free industrial zone.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§11 Near",
+   "starts": "You are near a threat",
+   "pictured": "A node or ambassador within 1 of a token",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§11 Countering",
+   "starts": "A threat prints one or two ways to pay off",
+   "pictured": "Pay one option in full",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§11 Resources/Tags",
+   "starts": "Resources (credits, energy, insight",
+   "pictured": "Pooled resources or a solo tag sacrifice",
+   "confused": "Do difficulty's '+1 non-credit item' increases apply to tag counters?",
+   "weird": "Tag counters must be paid by one player alone.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§11 Jam/delay",
+   "starts": "Cards can also jam a threat",
+   "pictured": "Mitigations",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§11 When threats take effect",
+   "starts": "After production, each unpaid threat",
+   "pictured": "Resolve after production",
+   "confused": "none",
+   "weird": "Threats dealt mid-round wait a round.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§11 Harm",
+   "starts": "Its harm to a player always hits the nearest player",
+   "pictured": "Closest node, at any distance",
+   "confused": "'Nearest' uses nodes only, not ambassadors. 'Near' uses both. Does distance count across ocean?",
+   "weird": "Never the last node.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§12 Production intro",
+   "starts": "Production reads the board as each step starts",
+   "pictured": "Sequential steps",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§12 Steps 1-2",
+   "starts": "Corp troops. Warmongering",
+   "pictured": "Corp troops, then factory output",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§12 Step 3 cities build",
+   "starts": "Cities build factories",
+   "pictured": "Each city places a factory on a free zone",
+   "confused": "Does a node on the zone matter? Who chooses for a clean city when no one has the most nodes? Can a corrupted city's factory land under my node?",
+   "weird": "Building a factory removes a corruption marker from the zone.",
+   "false_familiarity": "Like the invader Build step, but every city builds, and clean or aligned cities build for us.",
+   "severity": 2
+  },
+  {
+   "section": "§12 Steps 4-6",
+   "starts": "Cities' energy. Each city makes 1 energy",
+   "pictured": "Energy, cubes, an insight penalty for agents on bare node hexes",
+   "confused": "Step 6: 'costs you 1 insight next round', so lost at the next round start?",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§12 Steps 7-8",
+   "starts": "Megaprojects. A megaproject holding its 8 cubes",
+   "pictured": "A one-time payout, then upkeep",
+   "confused": "none",
+   "weird": "Research cubes only start after the megaproject completes, so Peer Review is dead early.",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§12 Blocking recap",
+   "starts": "A blocking piece stops a site's output",
+   "pictured": "Recap",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§13 Intro",
+   "starts": "There are two kinds of troop",
+   "pictured": "Adversary troops and corp troops",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§13 Targets",
+   "starts": "An adversary troop's targets are",
+   "pictured": "Only player stations and factories",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Spirit Island invaders hit everything in a land. Troops here ignore nodes and cities entirely.",
+   "severity": 1
+  },
+  {
+   "section": "§13 Steps",
+   "starts": "In the adversary's turn, each adversary troop takes 2 steps",
+   "pictured": "Move/strike AI, the troop removed after a strike",
+   "confused": "Can troops cross borders? (Presumably yes.)",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§13 Two hexes",
+   "starts": "So a troop two hexes from your facility",
+   "pictured": "Predictable",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§13 Corp troops",
+   "starts": "Each base holds up to 2 corp troops",
+   "pictured": "Corp troop generation",
+   "confused": "'A corp makes troops' and 'all the factory's troops' (2 at 3-4 countries) are tangled. Which corp does a neutral factory feed?",
+   "weird": "Ambassadors cancel troops. There are two past-limit exceptions with a cap.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§13 War",
+   "starts": "War, at the end of every round, on each front",
+   "pictured": "Piles cancel, the leftover hits the rival's factory",
+   "confused": "none",
+   "weird": "A node on a war-hit factory can't be saved by anything except the stage-I rule. Big carve-out.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§13 Corp troop protection",
+   "starts": "A corp troop at a base also protects",
+   "pictured": "Corp troops absorb adversary strikes",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§13 Destruction list",
+   "starts": "When a node or facility would be destroyed",
+   "pictured": "A priority list of savers",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Dahan-like defenders, but there's a strict priority and only the first one applies",
+   "severity": 1
+  },
+  {
+   "section": "§13 Sanctuary / cube",
+   "starts": "Corruption never destroys the node",
+   "pictured": "none",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§13 Hardening",
+   "starts": "Hardening goes on a player-owned",
+   "pictured": "A token, called a shield on a node hex",
+   "confused": "Does the token stay if the site is corrupted?",
+   "weird": "none",
+   "false_familiarity": "Like Spirit Island Defend, but permanent until used",
+   "severity": 1
+  },
+  {
+   "section": "§13 Losing nodes",
+   "starts": "Nodes are destroyed only where the board is overrun",
+   "pictured": "Sources of node loss",
+   "confused": "It lists the threat, war and Border War exceptions for a last node but leaves out corruption. Can corruption take a last node at stage II+? (Implied yes.)",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§13 Marker",
+   "starts": "A destroyed node leaves the game and leaves a corruption marker",
+   "pictured": "Markers block placement",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Blight-like, but there's no cascade, and markers are cleared for Unity",
+   "severity": 1
+  },
+  {
+   "section": "§14 Intro",
+   "starts": "The world leans toward Unity",
+   "pictured": "Two independent tracks",
+   "confused": "'Nothing on one side empties the other', yet Unity can remove Discord.",
+   "weird": "none",
+   "false_familiarity": "Unity ~ fear",
+   "severity": 1
+  },
+  {
+   "section": "§14 Sway bullets",
+   "starts": "Unity comes from liberating",
+   "pictured": "Sources",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Fear comes from destroying invaders. Unity doesn't come from removing agents, only from sites, markers and botnets.",
+   "severity": 1
+  },
+  {
+   "section": "§14 Holding Discord off",
+   "starts": "Unity swayed during an action",
+   "pictured": "Spend Unity to keep Discord below its tip",
+   "confused": "'Only if that leaves the Discord track below its tipping point': all-or-nothing? Can I trim Discord that is far below the tip point? (Seems yes.)",
+   "weird": "An obvious timing patch.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§14 Tipping",
+   "starts": "A track tips when it holds 3 × the number of players",
+   "pictured": "Fill, tip, draw a tiered card",
+   "confused": "none",
+   "weird": "Unity carries the overflow but Discord empties",
+   "false_familiarity": "Like earning fear cards, but they resolve immediately instead of at the fear step, and the tier depends on the tip count.",
+   "severity": 1
+  },
+  {
+   "section": "§14 Both full",
+   "starts": "If both tracks are full",
+   "pictured": "Discord first",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§14 The cards",
+   "starts": "Every Unity and Discord card prints three tiers",
+   "pictured": "Board-wide condition effects",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Fear cards have three terror levels, which matches. Forbid effects are like Spirit Island fear skipping a build or ravage.",
+   "severity": 1
+  },
+  {
+   "section": "§14 Decks",
+   "starts": "The Unity deck (23 cards)",
+   "pictured": "The Discord deck is the clock",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "Like the blight card or the fear deck running out, but here running out is a loss",
+   "severity": 1
+  },
+  {
+   "section": "§15 Purge",
+   "starts": "You win the moment the board holds none",
+   "pictured": "A win table by tip count",
+   "confused": "Do agents in the off-board pools count?",
+   "weird": "Corrupted stations, factories and land never matter.",
+   "false_familiarity": "Terror levels 1/2/3 drop invader requirements, which matches. But the thresholds count tips, and corrupted cities always count.",
+   "severity": 1
+  },
+  {
+   "section": "§15 Losing",
+   "starts": "Everyone loses at once if",
+   "pictured": "Three ways to lose",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§16 Difficulty table",
+   "starts": "Level | Changes",
+   "pictured": "Five difficulty levels",
+   "confused": "Do '+1 on each non-credit item' increases apply to tag counters? Level 2 adds no further credit increase? 'Counts as a tip already made': does the Discord tip count start at 1?",
+   "weird": "Lots of bolted-on effects at level 4.",
+   "false_familiarity": "Like Spirit Island adversary levels, but generic",
+   "severity": 2
+  },
+  {
+   "section": "§16 Income table",
+   "starts": "Level | Compute income",
+   "pictured": "Numbers by level",
+   "confused": "Level 0 agent income 1: does that include Garrisons?",
+   "weird": "Agent income jumps 1→4 at level 1. Compute goes 3,4,18,24 and then drops to 13 at level 4. Level 4 agent income is lower than level 3.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§17 Player count",
+   "starts": "Countries: one per player, 1-4",
+   "pictured": "Scaling rules",
+   "confused": "How do you settle a disagreement on a team choice?",
+   "weird": "Solo is Builder only. 'Another player' means you.",
+   "false_familiarity": "Spirit Island solo lets you play any spirit",
+   "severity": 1
+  },
+  {
+   "section": "§18 Legend intro",
+   "starts": "A card is read like a sentence",
+   "pictured": "Header slots, icons inline",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§18 Where things sit",
+   "starts": "Top strip: the credit cost",
+   "pictured": "Card layout",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§18 Icons table",
+   "starts": "Resources (square tiles)",
+   "pictured": "Icon families",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§18 Shapes",
+   "starts": "Square tile | a resource",
+   "pictured": "Shape grammar",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§18 Boxes and outlines",
+   "starts": "No box | once, now",
+   "pictured": "Frames for adversary, other player, cards",
+   "confused": "An ambassador icon in the dark frame means an agent. Easy to misread.",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 1
+  },
+  {
+   "section": "§18 Connectors",
+   "starts": "→ | an Action",
+   "pictured": "Action and Effect syntax",
+   "confused": "none",
+   "weird": "none",
+   "false_familiarity": "none",
+   "severity": 0
+  },
+  {
+   "section": "§18 Special marks",
+   "starts": "Play (a card with an arrow onto it)",
+   "pictured": "Assorted marks",
+   "confused": "The 'cordon' (no agents land in a country through next round) appears only here. It's a rule hidden in the legend.",
+   "weird": "A red 'at most' plate that no card uses.",
+   "false_familiarity": "none",
+   "severity": 2
+  },
+  {
+   "section": "§19 Glossary",
+   "starts": "Adjacent: sharing an edge",
+   "pictured": "Definitions",
+   "confused": "'A country you're in' and 'home country' are defined but barely used in the body.",
+   "weird": "none",
+   "false_familiarity": "'Next to' includes the hex itself, unlike Spirit Island 'adjacent'",
+   "severity": 0
+  }
+ ],
+ "questions": [
+  {
+   "id": "V1",
+   "question": "Do any agents or troops start on the board at setup, like Spirit Island's initial explorers and towns?",
+   "answer": "No. Only adversary cubes on the marked city and station, plus a botnet. Agents wait in each country's pool (1 each at base difficulty) and land at the first Rally.",
+   "section": "§3 Setup",
+   "confidence": "medium"
+  },
+  {
+   "id": "V2",
+   "question": "How much insight do I have in round 1?",
+   "answer": "5 from the board, plus 1 from the first economy space I uncovered = 6. (Assuming the '+1 insight' is the space's lasting bonus.)",
+   "section": "§3, §5, §6",
+   "confidence": "medium"
+  },
+  {
+   "id": "V3",
+   "question": "In a 2-player game, which boards are used?",
+   "answer": "Builder and Protector. No Researcher.",
+   "section": "§3, §17",
+   "confidence": "high"
+  },
+  {
+   "id": "V4",
+   "question": "Do we get cards before the adversary's first turn?",
+   "answer": "No. The adversary's turn (threats, rally, and so on) comes first, then the opening deal in step C, then the action phase where we can pay those threats.",
+   "section": "§3, §4",
+   "confidence": "high"
+  },
+  {
+   "id": "V5",
+   "question": "Can I use this round's upkeep income to pay a threat before it fires?",
+   "answer": "No. Paying happens only in the action phase. Production and upkeep (E) come after it, and threats fire in F.",
+   "section": "§4, §11",
+   "confidence": "high"
+  },
+  {
+   "id": "V6",
+   "question": "Spirit Island habit: can I hold a 'slow' card until after the adversary acts?",
+   "answer": "No. There's no fast/slow. The adversary's turn comes before the action phase every round. Anything you hold waits until after next round's adversary turn.",
+   "section": "§4, §8",
+   "confidence": "high"
+  },
+  {
+   "id": "V7",
+   "question": "After I pass, can I still sell a card or add to a threat?",
+   "answer": "No. When you pass you are done for this action phase.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "V8",
+   "question": "Does a Shelter used this action phase protect against corruption in next round's adversary turn?",
+   "answer": "No. It lasts 'this round' and ends at Cleanup (H). It covers threats (F) and war (G) this round. Even then, a node on a war-destroyed factory dies unless the stage-I last-node rule applies.",
+   "section": "§4, §6, §13",
+   "confidence": "high"
+  },
+  {
+   "id": "V9",
+   "question": "Can insight I gain during the adversary turn (Vigil) be spent this round?",
+   "answer": "Yes. Insight is set at round start, and anything gained afterwards is usable until the next round start (when it's lost, except for the Researcher).",
+   "section": "§5, §6",
+   "confidence": "medium"
+  },
+  {
+   "id": "V10",
+   "question": "Can I place a node on a hex with agents, or on a corrupted city?",
+   "answer": "Yes, both are allowed. Not on a hex with a node, a corruption marker or land corruption, and not on ocean.",
+   "section": "§6 Where",
+   "confidence": "high"
+  },
+  {
+   "id": "V11",
+   "question": "Spirit Island habit: can my node share a hex with another player's node, or can I stack two of mine?",
+   "answer": "No. One node per hex, of any player.",
+   "section": "§2 Pieces",
+   "confidence": "high"
+  },
+  {
+   "id": "V12",
+   "question": "My ambassador already stands on a neutral factory. Does it count toward the 3 for Claim?",
+   "answer": "No. Standing ambassadors don't help pay a claim. They do pay first for a Liberate.",
+   "section": "§9 Claiming",
+   "confidence": "high"
+  },
+  {
+   "id": "V13",
+   "question": "Does a botnet on a corrupted station stop me liberating it? Is the station then mine?",
+   "answer": "The botnet doesn't stop the Liberate and stays on the station. The station becomes neutral, not mine, and I can't then Claim it while the botnet is on or next to it.",
+   "section": "§9 Liberating, Claiming",
+   "confidence": "high"
+  },
+  {
+   "id": "V14",
+   "question": "Can I Move an ambassador onto an open hex next to my node that has no site, base or node?",
+   "answer": "No. Move goes only onto a site, base or node in reach. (Remove agents can put one onto any hex in reach that has agents.)",
+   "section": "§8, §9",
+   "confidence": "high"
+  },
+  {
+   "id": "V15",
+   "question": "Who takes the harm from an unpaid threat?",
+   "answer": "The player whose node is closest to one of its tokens, however far. Ambassadors don't count for this. Tied players choose.",
+   "section": "§11 When threats take effect",
+   "confidence": "high"
+  },
+  {
+   "id": "V16",
+   "question": "Can a player with no node or ambassador near a threat chip in credits?",
+   "answer": "No. Only players near it (a node or ambassador on or next to a token) may pay or use a card on it.",
+   "section": "§11 Near",
+   "confidence": "high"
+  },
+  {
+   "id": "V17",
+   "question": "At stage III, can a threat destroy my last node?",
+   "answer": "No. A threat never takes a last node, at any stage.",
+   "section": "§11, §13",
+   "confidence": "high"
+  },
+  {
+   "id": "V18",
+   "question": "We put 4 credits on a 6-credit threat and couldn't finish. Do we lose the 4?",
+   "answer": "No. Payments on an unpaid threat return to their payers when threats take effect.",
+   "section": "§11 Countering",
+   "confidence": "high"
+  },
+  {
+   "id": "V19",
+   "question": "At difficulty 1, does a '2 Security tags' counter become 3?",
+   "answer": "Not stated. The rule says '+1 on each non-credit item'. My guess is yes, tags count as a non-credit item.",
+   "section": "§16, §11",
+   "confidence": "low"
+  },
+  {
+   "id": "V20",
+   "question": "At 0-2 Unity tips, do agents waiting in the pools stop the purge?",
+   "answer": "Not stated clearly. The table says 'on the board', and pools seem to be off-board. My guess: no, only placed agents count.",
+   "section": "§15",
+   "confidence": "low"
+  },
+  {
+   "id": "V21",
+   "question": "At 6 Unity tips, a corrupted station and land corruption remain but no corrupted cities. Do we win?",
+   "answer": "Yes, immediately. Corrupted stations, factories and land never count.",
+   "section": "§15",
+   "confidence": "high"
+  },
+  {
+   "id": "V22",
+   "question": "Spirit Island habit: can an adversary troop attack my node or my aligned city?",
+   "answer": "No. Its only targets are player-owned research stations and factories.",
+   "section": "§13 The march",
+   "confidence": "high"
+  },
+  {
+   "id": "V23",
+   "question": "In a stage-II round, can a Corrupt line destroy my last node and lose us the game?",
+   "answer": "Yes. The last-node protection holds only while the card is stage I, unless I have Sanctuary or an ambassador guard. A player with no nodes loses the game for everyone. (The 'Losing nodes' paragraph doesn't name corruption explicitly.)",
+   "section": "§13 Destruction, Losing nodes; §15",
+   "confidence": "medium"
+  },
+  {
+   "id": "V24",
+   "question": "If we spend swayed Unity to hold Discord off, does it also count toward the Unity tip?",
+   "answer": "No. Unity used to remove Discord doesn't go onto the Unity track. Only the rest does.",
+   "section": "§14 Holding Discord off",
+   "confidence": "high"
+  },
+  {
+   "id": "V25",
+   "question": "When Discord tips with 2 over, does the overflow carry over? When do we lose to Discord?",
+   "answer": "No carry-over: Discord empties. (Unity keeps its extra.) We lose when a Discord tip finds the 6-card Discord deck empty, so on the 7th tip (the 6th at difficulty 4).",
+   "section": "§14 Tipping, The cards",
+   "confidence": "high"
+  }
+ ],
+ "overall": "1. Node track numbers are costs, not income (0,0,0,1,2,3,5 energy to uncover). Spirit Island veterans will misread them. The 'card-play track' suggests a play limit that doesn't exist. Say both outright.\n2. The order of play is the reverse of Spirit Island: the adversary goes first every round, there's no fast/slow, and threats fire after production. A one-page turn diagram with when you can respond would help most.\n3. There are too many exception riders: Remove agents doesn't cancel, standing ambassadors pay for Liberate but not Claim, war kills nodes despite Shelter, guarding by a site owner except during corruption, Onyx once a round, Patience versus given insight, and per-troop versus per-source Effects. Group them, or cut them.\n4. Two different agent counts: Corrupt X counts adjacent hexes in its own country only, natural corruption counts only the site's own hex. Plus 'next to' including the hex itself. Use the same terms throughout and show an example.\n5. Holes: can land corruption be removed, does corruption take a last node at stage II+, do pools count for the purge, does a difficulty increase apply to tag counters, how do project slots and ongoing projects work, and 'cordon' appears only in the legend.\n6. The difficulty tables look arbitrary: agent income goes 1→4, compute goes 3,4,18,24,13, and it's unclear whether Garrisons is included. Explain the curve or smooth it.\n7. Liberated sites become neutral, not yours. That should be shouted, since 'liberate' implies taking the site back for us."
+}

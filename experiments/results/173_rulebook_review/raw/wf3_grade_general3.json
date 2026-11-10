@@ -1,0 +1,184 @@
+{
+ "grades": [
+  {
+   "id": "F1",
+   "engine_answer": "The harm hits the seat whose node is closest to any token, at any distance (near or not). On a tie, the lowest tied seat makes the choice among the tied seats (choose_loss).",
+   "evidence": "modules/threats/near.rs nearest_seats/node_distance; modules/threats/mod.rs hit_seat: tied = nearest_seats, cx.choose_loss(tied.first()...)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 Near and nearest",
+   "fix": "none"
+  },
+  {
+   "id": "F2",
+   "engine_answer": "Yes. Deploy (adversary.build) comes before board.march in the same turn. The march lists every troop, the deployed one included (no standing flag on event Deploy lines). On step 1 the troop has a target on or next to its hex, so it strikes; the players choose if there are several targets. Protection: Shelter (cleared at cleanup, so it is never up in the adversary turn), then a corp troop at a base within 1, then hardening, then the owner's ambassador, then Aegis. The troop is spent either way. A walled hex can't be a landing spot.",
+   "evidence": "configs/baseline.json round order; modules/board/troops.rs march/march_troops/strike_from; modules/board/destroy.rs destroy_piece order; adversary.rs land_troops filters walled hexes",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 The turn, The march; §13",
+   "fix": "none"
+  },
+  {
+   "id": "F3",
+   "engine_answer": "A city with an ocean hex next to it, or a city the piece prints as coastal.",
+   "evidence": "map.rs: coastal = design.coast.contains(number); also set when a City has an Ocean neighbor",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§2 Countries and hexes",
+   "fix": "none"
+  },
+  {
+   "id": "F4",
+   "engine_answer": "No corruption spreads by itself. A site corrupts through natural corruption, through any Corrupt X line (on the event card, but also on Discord cards Blight, Offensive and Firestorm, and on projects Infiltration Drive and Grand Offensive), through threats (Overrun, Station Seizure, Factory Occupation), or through the project Station Coup, which flips stations.",
+   "evidence": "content/alignment.json blight/offensive/firestorm {op: corrupt}; content/projects.json infiltration_drive/grand_offensive {op: corrupt}, station_coup {op: flip_station}; effects/new_ops.rs Op::Corrupt -> adversary::corrupt_sites",
+   "verdict": "partly",
+   "cause": "missing",
+   "paragraph": "§6 Corruption",
+   "fix": "After 'Some threats also corrupt the site their token is on (§10).' add: 'Some Discord cards and adversary projects also print a Corrupt line, which works as step 9, and one project (Station Coup) flips research stations.'"
+  },
+  {
+   "id": "F5",
+   "engine_answer": "Yes, in production each corrupted factory with no player ambassador on it places 1 adversary troop on its hex. The Wall does not stop it. A player ambassador blocks it, and liberating the factory makes it neutral, so it makes nothing. An occupied factory also makes nothing.",
+   "evidence": "modules/board/production.rs factory_output: corrupted && player_ambassador -> blocked, else adversary::place_troop (no walled check)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 step 2, §5 Wall",
+   "fix": "none"
+  },
+  {
+   "id": "F6",
+   "engine_answer": "No. The war strike calls destroy_piece on the FACTORY. Armor comes only from the cube owner's ambassador, and a neutral factory has no owner, so there is no armor. When the factory is destroyed, lose_node takes the node (only a stage-I last node is safe). Shelter, a hardening token on the hex (for example a shield on that node hex) or Aegis would save the factory and so the node.",
+   "evidence": "modules/board/troops.rs battle -> destroy_piece(FACTORY, War) then lose_node; destroy.rs armor = cube_owner's ambassador; node.rs lose_node checks last_node_safe",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 War step 3",
+   "fix": "none"
+  },
+  {
+   "id": "F7",
+   "engine_answer": "Yes. The cube owner's ambassador on the hex absorbs the strike and is spent, so the factory survives and the node stays. Shelter or a hardening token is checked first and would spare the ambassador.",
+   "evidence": "destroy.rs destroy_piece: Shelter, HARDEN, then armor via cube_owner ambassador (-1), then civic_shelter",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 War step 3, §13",
+   "fix": "none"
+  },
+  {
+   "id": "F8",
+   "engine_answer": "No. The claim costs claim_factory 3 + 1 per agent, paid from the supply (target_price). claim_site removes only agents and adds the cube, so the standing ambassador stays on what is now the player's own site.",
+   "evidence": "modules/board/ambassadors.rs claim_cost, claim_site; standard.rs Claim pays target_price; baseline claim_factory 3",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Claim and Liberate",
+   "fix": "none"
+  },
+  {
+   "id": "F9",
+   "engine_answer": "The level-4 deck has 5 Discord cards and the tip count starts at 1. The first tip is tip 2, which resolves at tier I (tier_at 3,6). The team survives 5 tips and loses on the 6th.",
+   "evidence": "alignment.rs: truncate by discord_removed 1 at level 4, tips_key set to 1; tier_of(tip) against tier_at [3,6]; content has 6 discord cards",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12, §21 level 4",
+   "fix": "none"
+  },
+  {
+   "id": "F10",
+   "engine_answer": "Walled hexes are filtered out first. The troop goes to the lowest-numbered factory in the country without the Protector's node (any owner's). With none, it goes to the lowest-numbered such city. With none, it does not land.",
+   "evidence": "adversary.rs land_troops: open = !walled, factories first, then cities, lowest number; team::troops lowest=true for standing lines",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 step 4",
+   "fix": "none"
+  },
+  {
+   "id": "F11",
+   "engine_answer": "Firewalled sites are excluded. Without them the neutral class is empty, so the agents go to player-owned stations; failing those, to the adversary's. With no site at all the pool is zeroed and nothing is placed, so the agents stay in the supply.",
+   "evidence": "modules/plan.rs rally_sites filters !firewalled, classes neutral/allied/corrupted; adversary.rs rally sets pool 0, rally_nowhere",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 step 3, §16 Firewall",
+   "fix": "none"
+  },
+  {
+   "id": "F12",
+   "engine_answer": "Every event card's standing lines include a Rally. The whole pool is zeroed and spread evenly (n/k each), and the players choose which sites take the remainder, one each. With nowhere to land, the agents stay in the supply. An arrival cancels with a player ambassador. Under a cordon the pool is emptied and nothing lands.",
+   "evidence": "content/adversary.json: all 15 events have a rally op; adversary.rs rally; plan.rs rally_plan; arrive()",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 step 3",
+   "fix": "none"
+  },
+  {
+   "id": "F13",
+   "engine_answer": "A threat that corrupts a site (Overrun, Station Seizure, Factory Occupation) goes through corrupt_hex -> destroy_piece, where the last node is safe only below stage II, so it can destroy a last node in stage III. DestroyNode/EachDestroyNode from threats and Siege's destroy_facility never take a last node.",
+   "evidence": "team.rs destroy_nearest_node (node_count<=1 skip), each_destroy_node (threat skip); new_ops.rs destroy_factory (node_count>=2); node.rs last_node_safe stage<2",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 Your last node",
+   "fix": "none"
+  },
+  {
+   "id": "F14",
+   "engine_answer": "No. Surcharges apply only to CounterItem::Pay items; tag items pass through unchanged.",
+   "evidence": "modules/threats/counter.rs requirement_less: Pay items get step/bonus, `other => other`",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§21, §18",
+   "fix": "none"
+  },
+  {
+   "id": "F15",
+   "engine_answer": "No. The Shelter flag is set to 1 and counted down at cleanup, so it is gone by the next adversary turn. Within its round it stops destruction (of a node too). A site still corrupts under it; Shelter only saves what would be destroyed.",
+   "evidence": "modules/board/mod.rs shelter sets flag 1, FLAGS counted down in cleanup; destroy.rs checks flagged Shelter",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§13 item 2",
+   "fix": "none"
+  },
+  {
+   "id": "F16",
+   "engine_answer": "No. LAND_CORRUPTION is only ever added (corrupt_hex). It drips 1 Discord each round in sway and blocks node placement. No code removes it.",
+   "evidence": "grep LAND_CORRUPTION: added only in adversary.rs corrupt_hex; read in alignment.rs sway and node.rs placement",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 When a site corrupts",
+   "fix": "none"
+  },
+  {
+   "id": "F17",
+   "engine_answer": "remove_count 3 agents are removed and 1 ambassador is added with no cancel, leaving the ambassador plus 2 agents. A later arriving agent cancels with the ambassador (both removed), and the 2 agents remain.",
+   "evidence": "standard.rs StandardAction::Remove; baseline remove_count 3, remove_ambassadors 1; adversary.rs arrive cancels player ambassador",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Ambassadors meet agents",
+   "fix": "none"
+  },
+  {
+   "id": "F18",
+   "engine_answer": "In upkeep, 2 insight from the supply (not the Researcher's own), assigned one at a time to other players. It lands as their insight at next round start. Under Patience, received insight does not carry.",
+   "evidence": "economy.rs supply_insight called in upkeep after cards::upkeep; insight_gift added at round_start; patient carry excludes received",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§20 capstones",
+   "fix": "none"
+  },
+  {
+   "id": "F19",
+   "engine_answer": "The power costs 1 Industry sacrifice and 1 energy. The building is played without its credits, but pay_card_extras still charges insight, energy, chips, antimatter, cubes and income lowers. Requirement plates (needs) must be met.",
+   "evidence": "content/ais.json Rush Build cost energy 1, tag industry; cards/play.rs play_free_building -> pay_card_extras; FreeTest checks needs and blocked_beyond_credits",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§20 Builder powers",
+   "fix": "none"
+  },
+  {
+   "id": "F20",
+   "engine_answer": "A resolved project leaves its slot. deal_projects runs only when the row is empty: it draws until every slot is filled, placing each card in the first empty slot it fits (Universal fits any), else in the discard, and reshuffles when the deck runs out. Remaining compute points go onto the new row.",
+   "evidence": "adversary.rs resolve: if PROJECTS empty -> deal_projects; deal_projects fits/discard/reshuffle; gain_compute loops per point",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§17 Projects",
+   "fix": "none"
+  }
+ ]
+}

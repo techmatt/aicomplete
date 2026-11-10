@@ -1,0 +1,1562 @@
+{
+ "paragraphs": [
+  {
+   "section": "Front matter",
+   "starts": "Rules revision 73. A first draft",
+   "clarity": 1,
+   "needed": "cut (designer note, not for players)",
+   "rule_or_patch": "note",
+   "simpler_wording": "Move to the friction file; a printed rulebook opens on the story and the goal."
+  },
+  {
+   "section": "1",
+   "starts": "You and up to three other players are good AIs",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep. Add one line: the Discord deck is the clock."
+  },
+  {
+   "section": "1",
+   "starts": "You win by the purge",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Win: clear the adversary off the board. The more Unity tips, the less you must clear (see the purge table).\""
+  },
+  {
+   "section": "1",
+   "starts": "You lose if a Discord tip finds the Discord deck empty",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Same three bullets as §15; say \"when the event deck runs out (11 rounds, 9 at level 3-4)\"."
+  },
+  {
+   "section": "1",
+   "starts": "Each round the adversary acts first",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Replace with the round table's step names in one line; \"first\" hides step A (Sway)."
+  },
+  {
+   "section": "2 Countries and hexes",
+   "starts": "There is one country per player",
+   "clarity": 0,
+   "needed": "core (megacorp/megaproject can move to its own section)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; defer megacorps to the megaproject section."
+  },
+  {
+   "section": "2 Countries and hexes",
+   "starts": "A hex is city, open land or ocean",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fine; show a labeled hex diagram (city, open, industrial zone, coastal, ocean)."
+  },
+  {
+   "section": "2 Countries and hexes",
+   "starts": "Two hexes are adjacent if they share an edge",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Next to\" including \"on\" is a trap used in 30+ rules; write \"on or next to\" every time it means that, and drop the house sense."
+  },
+  {
+   "section": "2 Sites",
+   "starts": "Cities, research stations and factories are sites",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Cut the building aside to the glossary; \"Sites are cities, stations, factories. Each has one owner cube: yours, the adversary's, or none.\""
+  },
+  {
+   "section": "2 Sites",
+   "starts": "Owner | City | Research station | Factory (table)",
+   "clarity": 2,
+   "needed": "core (as a player aid), output moves to production",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Use three state words only (neutral, yours, corrupted) and drop clean/aligned/owned; the neutral-city cell omits \"on or next to\" and the 5-credit price; drop the corp-troop aside.",
+   "simpler_rule": "A neutral city's energy is simply lost (no purchase)."
+  },
+  {
+   "section": "2 Sites",
+   "starts": "Every city also builds a factory each round",
+   "clarity": 2,
+   "needed": "core but in production",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Delete here; say it once in production with a diagram."
+  },
+  {
+   "section": "2 Fronts and military bases",
+   "starts": "A front is a long edge shared by two country pieces",
+   "clarity": 1,
+   "needed": "core (short) + setup diagram",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Where two countries meet is a front. Each country has a military base on each front (marked on the map).\""
+  },
+  {
+   "section": "2 Pieces",
+   "starts": "Piece | Whose | What it does (table)",
+   "clarity": 1,
+   "needed": "components list",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Make it the component list with a picture per piece; replace the firewall row's §9, §13, §11 with one-line meanings."
+  },
+  {
+   "section": "2 Pieces",
+   "starts": "Some cards hold their own tokens",
+   "clarity": 1,
+   "needed": "cut (duplicate of §7)",
+   "rule_or_patch": "patch",
+   "simpler_wording": "List the four token types in components only."
+  },
+  {
+   "section": "2 Reach",
+   "starts": "A hex is in reach if it is on or next to one of your nodes",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; add a diagram of a 7-hex reach."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "Lay out the map for the number of players",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Make step 0 \"choose difficulty and player count\"; one setup card per count shows bases, start hexes, home cities."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "In each country (each piece prints these places)",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fine; a setup diagram does it in one look."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "The adversary: its agent supply is 24 per country",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "State the pool amount from the difficulty table as a number (\"put N agents in each country's pool\"); \"agent income\" here is unexplained."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "Shuffle the Unity deck, the Discord deck",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Add: tip-count markers at 0 (at level 4 the Discord marker starts at 1)."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "Each player takes an AI board, in this order",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fold §17's board-by-count line in here; say players sit in player order (the draft passes by it); home city printed on the map, not computed."
+  },
+  {
+   "section": "3 Setup",
+   "starts": "The game starts with the adversary's turn",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Play round 1 from step A.\" (Sway runs before the adversary.)"
+  },
+  {
+   "section": "4 The round",
+   "starts": "A round runs in this order (table)",
+   "clarity": 1,
+   "needed": "core + player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Good backbone; number Round start as a step, and give step B its own sub-list rather than a run-on cell."
+  },
+  {
+   "section": "4 The round",
+   "starts": "After every action and every step, check in this order",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"A full track tips at once (Discord first). The game ends the moment you win or lose; a loss checked first wins the tie.\" Put the Unity hold-off in §14."
+  },
+  {
+   "section": "5 Resources",
+   "starts": "Nothing has a holding limit",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "5 Resources",
+   "starts": "Resource | Kept? | Comes from | Spent on (table)",
+   "clarity": 1,
+   "needed": "player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep as reference; cut \"Chips can't be sold\" (nothing but cards can be sold, so it implies otherwise); print Movement and ambassadors on the board, not as resources."
+  },
+  {
+   "section": "5 Resources",
+   "starts": "Insight is this round's attention",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Each round start, set your insight to the total on your board (6 at the start). Subtract any insight-loss tokens. Unspent insight is lost (Researcher: see Patience).\"",
+   "simpler_rule": "Patience keeps all unspent insight, gifted included."
+  },
+  {
+   "section": "5 When income arrives",
+   "starts": "Insight comes at the start of the round",
+   "clarity": 2,
+   "needed": "core but in production",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Delete; production's numbered list already says when each arrives.",
+   "simpler_rule": "One income step pays everything."
+  },
+  {
+   "section": "6 Your AI board",
+   "starts": "Each player is one AI board",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Show an annotated board picture instead."
+  },
+  {
+   "section": "6 Your AI board",
+   "starts": "Board | Special rule | Income each round (table)",
+   "clarity": 2,
+   "needed": "board / reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Move insight out of the income column (it is set at round start, not paid in upkeep) and print the real start value 6."
+  },
+  {
+   "section": "6 Your AI board",
+   "starts": "Wall: adversary troops can't move onto",
+   "clarity": 2,
+   "needed": "Protector's board",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"Wall: adversary troops never enter, land on or strike your node's hex. Nothing else is stopped.\" Put the step-6 troop landing on this board too."
+  },
+  {
+   "section": "6 Your AI board",
+   "starts": "Vigil: once per adversary troop each march",
+   "clarity": 3,
+   "needed": "Protector's board",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"Vigil: when an adversary troop could have struck your node's hex but Wall stopped it, gain 1 insight (once per troop each march).\"",
+   "simpler_rule": "When a troop ends its march next to your node, gain 1 insight."
+  },
+  {
+   "section": "6 Node tracks",
+   "starts": "Your nodes start on your board, on two tracks",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fine; \"keep upgrade\" arrives before keeps are taught, so point to §7 or show the space."
+  },
+  {
+   "section": "6 Node tracks",
+   "starts": "Every placement pays two prices",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Print the energy on each track space (it already is); say \"Placing a node also costs the energy shown on the space you uncover\" once, and drop the cost lists."
+  },
+  {
+   "section": "6 Node tracks",
+   "starts": "Where: a node goes on a land hex in your reach",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"An empty land hex in reach with no corruption on it. Agents and corrupted sites don't stop you.\""
+  },
+  {
+   "section": "6 Node tracks",
+   "starts": "A lost node leaves the game",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Move to destruction; keep."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Each power can be used once a round",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep this one line in core."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Node powers. Every board has Deploy",
+   "clarity": 1,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Powers are read per board; list them per board in a reference box, not by function across boards. Deploy clashes with the adversary's Deploy line."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Conversions: the Builder's Mint",
+   "clarity": 0,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Board text only."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Draws: the Builder's Procure",
+   "clarity": 0,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Board text only."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Sacrifice powers pay with your cards",
+   "clarity": 1,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Board text only; Shelter should say \"any country (no reach)\" on its face."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "The Protector's Bulwark (1 energy",
+   "clarity": 0,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Board text only."
+  },
+  {
+   "section": "6 Powers",
+   "starts": "Sacrifice. A power that names a tag in its cost",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Teach before the power list: \"To pay 1 Industry, discard a program or building (with everything under it) that has an Industry tag. Extra tags are wasted.\""
+  },
+  {
+   "section": "6 Capstones",
+   "starts": "Board | Economy track | Card-play track (table)",
+   "clarity": 2,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Print on the track's last space. Aegis must say \"anyone's piece, the first one, automatically\"; Open Science must say whether 2 is each or split."
+  },
+  {
+   "section": "7 Decks and kinds",
+   "starts": "There are two player decks: tier 1, and tier 2",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; \"played pile\" vs discard needs one line; show one card of each kind."
+  },
+  {
+   "section": "7 Decks and kinds",
+   "starts": "Every card has 1-3 tags",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Merge into the Tags subsection."
+  },
+  {
+   "section": "7 Decks and kinds",
+   "starts": "Draw always means from the tier-1 deck",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Say the hand-building \"take\" is not a draw, or readers apply \"no keep to pay\" to it."
+  },
+  {
+   "section": "7 Round 1: the opening",
+   "starts": "Each player is dealt 8 tier-1 cards and 2 tier-2",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Fine as setup step 6; state tier-2 opening keeps cost 1 insight, unlike later rounds (2).",
+   "simpler_rule": "Tier-2 keeps cost the same in every round."
+  },
+  {
+   "section": "7 Rounds 2 on",
+   "starts": "Build a hand. Each player takes 4 cards",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; a worked example teaches it."
+  },
+  {
+   "section": "7 Rounds 2 on",
+   "starts": "Draft. Take one card from the hand in front of you",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Pass left in odd rounds, right in even rounds\" with an arrow on the round track; solo note to §17."
+  },
+  {
+   "section": "7 Rounds 2 on",
+   "starts": "Keep. Pay 1 insight for each tier-1 card",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Put the Science discount on tier-2 keeps here, and say keeps and plays draw on the same insight (the real decision)."
+  },
+  {
+   "section": "7 Playing a card",
+   "starts": "In the action phase, play a card from your hand by paying",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; one annotated card face does it."
+  },
+  {
+   "section": "7 Playing a card",
+   "starts": "Its requirement must be met: a yellow plate",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Move after Tags so \"on your cards\" is defined; the stacked-plate rule is said again under Buildings: say it once."
+  },
+  {
+   "section": "7 Playing a card",
+   "starts": "Discounts: every 2 Science tags",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; \"never below 1 unless printed 0\" is clear."
+  },
+  {
+   "section": "7 Playing a card",
+   "starts": "Nothing to act on never blocks a card",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"You may play a card if any part of it can do something; parts with nothing to act on are skipped.\" (The heading contradicts its own last sentence.)"
+  },
+  {
+   "section": "7 Playing a card",
+   "starts": "Sell a card from your hand for 1 credit",
+   "clarity": 0,
+   "needed": "cut (said in §5 and §8 table)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Once, in the standard actions table."
+  },
+  {
+   "section": "7 Tags",
+   "starts": "The tags on your cards are those on your programs",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Move before requirements; \"Count tags on your programs, all your buildings (covered too) and your board. Events don't count.\""
+  },
+  {
+   "section": "7 Buildings and slots",
+   "starts": "A building goes into a slot",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; picture of a stack."
+  },
+  {
+   "section": "7 Buildings and slots",
+   "starts": "An Action (→: pay the left",
+   "clarity": 1,
+   "needed": "core (Action, Effect, income); legend for the rest",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Core: \"Action: once a round. Effect: every time. Income: each upkeep.\" Move per-troop vs per-action counting and rebates to card text."
+  },
+  {
+   "section": "7 Tokens on cards",
+   "starts": "Some buildings hold their own tokens",
+   "clarity": 1,
+   "needed": "card text, plus one core line",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Core keeps: \"A card counts only its own tokens; they're lost when it leaves play.\" The A-OR-B and At N grammar goes to the legend."
+  },
+  {
+   "section": "7 Help cards",
+   "starts": "A help card names another player",
+   "clarity": 1,
+   "needed": "card text",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Help cards: you pay; you and a player you choose both gain.\""
+  },
+  {
+   "section": "8 The action phase",
+   "starts": "All players act at once, as often as they like",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Add the missing conflict line: when order matters, players agree, else player order decides. Same rule for every \"players choose\"."
+  },
+  {
+   "section": "8 Standard actions",
+   "starts": "Standard actions are poor value on purpose",
+   "clarity": 0,
+   "needed": "cut (designer note)",
+   "rule_or_patch": "note",
+   "simpler_wording": "Delete, or make it a strategy tip box."
+  },
+  {
+   "section": "8 Standard actions",
+   "starts": "Action | Cost | Effect (table)",
+   "clarity": 1,
+   "needed": "player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep as the reference; teach Move, Claim, Liberate, Remove in prose with the ambassador rules and point here."
+  },
+  {
+   "section": "8 Megacorp converters",
+   "starts": "Each megaproject needs 8 cubes",
+   "clarity": 2,
+   "needed": "core but its own section with production",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Teach megaprojects in one place (cubes in, completion payout, converter); print \"once a round\" on Onyx's card."
+  },
+  {
+   "section": "8 Megacorp converters",
+   "starts": "Megacorp | Payout | Converter (table)",
+   "clarity": 0,
+   "needed": "card text",
+   "rule_or_patch": "rule",
+   "simpler_wording": "On the megaproject cards; cut from the rulebook."
+  },
+  {
+   "section": "9 Arrivals",
+   "starts": "When an agent arrives on a hex holding a player's ambassador",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"An agent and an ambassador never share a hex: whenever one arrives where the other is, remove one of each. (Several players' ambassadors: earliest in player order.)\""
+  },
+  {
+   "section": "9 Arrivals",
+   "starts": "Remove agents is the one exception",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Say it in the Remove agents action and admit it breaks the never-share rule.",
+   "simpler_rule": "Remove agents spends the ambassador; it places nothing."
+  },
+  {
+   "section": "9 Claiming",
+   "starts": "Claim a neutral site in reach by spending ambassadors",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Teach Claim and Liberate as one table (cost, who pays, botnet, Unity, result) instead of two lists."
+  },
+  {
+   "section": "9 Liberating",
+   "starts": "Liberate an adversary site in reach",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Lead with the result: \"Liberate makes the site neutral (not yours); claim it later.\" Then cost, then \"ambassadors standing on it pay first, any player's\".",
+   "simpler_rule": "Liberate puts your cube on; only your own ambassadors pay."
+  },
+  {
+   "section": "9 Liberating",
+   "starts": "Liberate cards (a family of tier-2 cards)",
+   "clarity": 2,
+   "needed": "card text",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Card text; this is engine fault M1, fix the engine to \"the same way\"."
+  },
+  {
+   "section": "9 Blocking",
+   "starts": "While an agent stands on a neutral or player site",
+   "clarity": 1,
+   "needed": "core (with sites in §2)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"A site with an opposing piece on it (an agent on yours or a neutral one, your ambassador on the adversary's) produces nothing, but a city still builds its factory.\" Drop \"dark\" and \"diverts\"."
+  },
+  {
+   "section": "9 Guarding",
+   "starts": "When your node, or a site you own, would be destroyed",
+   "clarity": 3,
+   "needed": "core but in destruction only",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Delete here; the destruction list says it.",
+   "simpler_rule": "Only your own ambassador guards your piece."
+  },
+  {
+   "section": "9 Spent or standing",
+   "starts": "Spent: claiming, liberating, Envoy",
+   "clarity": 1,
+   "needed": "player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Player aid; \"being moved\" isn't a use, drop it."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Move (the standard action) takes one of your ambassadors",
+   "clarity": 2,
+   "needed": "cut (duplicates the table)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Say once: \"Move: place an ambassador from your supply or anywhere on the map onto a site, base or node in reach.\" It's a placement, not a walk."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Some cards and the Protector's Patrol move pieces",
+   "clarity": 1,
+   "needed": "legend",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Legend entry."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Gather up to N / Push up to N",
+   "clarity": 1,
+   "needed": "legend",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Legend with a two-hex diagram each."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "You may stop after any piece. Moved pieces arrive as above",
+   "clarity": 1,
+   "needed": "legend",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Moved pieces still cancel where they arrive.\""
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Gather and remove. Some cards (the rules call this a strike)",
+   "clarity": 3,
+   "needed": "legend",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Name it apart from a troop's strike; say \"adjacent only, not the hex you pick; troops first\" with a diagram.",
+   "simpler_rule": "Remove up to N on or next to a hex in reach, your choice."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Convert. Some late cards convert agents",
+   "clarity": 2,
+   "needed": "card text",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Card text: \"...become your ambassadors on your node's hex\".",
+   "simpler_rule": "They become ambassadors where they stood."
+  },
+  {
+   "section": "9 Moving pieces",
+   "starts": "Firewall. Some cards put a firewall",
+   "clarity": 2,
+   "needed": "legend + token",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Print the duration on the token; legend line \"rallies skip it; it still corrupts on what it holds\"."
+  },
+  {
+   "section": "10 Intro",
+   "starts": "The adversary has a board, an event deck",
+   "clarity": 2,
+   "needed": "core (minus the patch)",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Fix the cards to say \"each country\" and delete the decoder line."
+  },
+  {
+   "section": "10 Intro",
+   "starts": "The only adversary so far is the Militarist",
+   "clarity": 3,
+   "needed": "adversary board",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Garrisons is already in the difficulty table's agent income: say so, or readers add it twice. Print Warmongering and the Protector landing on the board, with step numbers."
+  },
+  {
+   "section": "10 Intro",
+   "starts": "You always see what's coming",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; promote to §1."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Event. The face-up card becomes this round's card",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; the loss goes to §15."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Threats. The card's first line deals threats",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Rally X. Each country's whole pool",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"The pool lands evenly on sites of type X: neutral ones first, else yours, else the adversary's. Firewalled sites are skipped. You place the leftovers.\" Diagram it; \"botnet hexes\" isn't a site type, say so.",
+   "simpler_rule": "Rally lands evenly on every unfirewalled site of the type."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Deploy N. N adversary troops land",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Rename on the card (Muster); otherwise clear."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Other lines, at most two, in printed order",
+   "clarity": 2,
+   "needed": "card text / legend",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"Then do the card's other lines in order.\" Each line explains itself on the card; Border War's last-node note goes to destruction."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Troops where the Protector stands",
+   "clarity": 2,
+   "needed": "adversary board + Protector board",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Print it on both boards."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Projects. Ongoing projects act. / Botnets",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Each botnet adds 1 compute unless blocked\" (same blocking rule as sites)."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Corrupt X, for each Corrupt line / Natural corruption",
+   "clarity": 3,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Two different counts every round (on-and-next-to vs on-hex only); name natural corruption \"overrun\" and teach it first, then Corrupt X as \"also pulls from next door\".",
+   "simpler_rule": "One corruption count for both."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "March / Reveal and income",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; give the pool amount as a number."
+  },
+  {
+   "section": "10 The turn",
+   "starts": "Every arriving agent cancels a player's ambassador",
+   "clarity": 0,
+   "needed": "cut (duplicate)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Delete; §9 says it."
+  },
+  {
+   "section": "10 Corruption",
+   "starts": "Corrupt cities (or stations, factories, land) works on each country",
+   "clarity": 3,
+   "needed": "core (procedure in reference, example in core)",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Teach by a worked board fragment; the four steps go to the reference.",
+   "simpler_rule": "A Corrupt line lowers this round's corrupt number (no pull)."
+  },
+  {
+   "section": "10 Corruption",
+   "starts": "A card may print (1 fewer). A firewalled site pulls nothing",
+   "clarity": 2,
+   "needed": "legend",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Legend/card text."
+  },
+  {
+   "section": "10 Corruption",
+   "starts": "What corruption destroys",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Corruption destroys your node on that hex (protections apply) and removes every ambassador there.\""
+  },
+  {
+   "section": "10 Corruption",
+   "starts": "Land corruption blocks node placement",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; note it targets open hexes holding your node and destroys it."
+  },
+  {
+   "section": "10 Projects",
+   "starts": "The adversary spends compute on projects. To deal",
+   "clarity": 1,
+   "needed": "adversary board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Slot fitting goes on the adversary board."
+  },
+  {
+   "section": "10 Projects",
+   "starts": "A project costs its printed number times the number of players",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Compute always goes on the cheapest project. Refill the slots only when all are empty.\" Print the per-count cost on the card.",
+   "simpler_rule": "Refill each slot as it empties."
+  },
+  {
+   "section": "10 Projects",
+   "starts": "Compute comes from the adversary's income, botnets",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; good summary."
+  },
+  {
+   "section": "10 Botnets",
+   "starts": "A botnet stays until removed",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Replace \"until Unity eases it\" with \"until Unity has tipped 3 times\" (the purge table)."
+  },
+  {
+   "section": "11 Dealing",
+   "starts": "The event card's first line prints its pulls",
+   "clarity": 1,
+   "needed": "card text",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"Deal what the event card's first line shows\"; drop Supply Lines and stage bands (the card says it)."
+  },
+  {
+   "section": "11 Dealing",
+   "starts": "For each pull, for each country in turn, turn up",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Turn up threats until one has a named tag and a place it can go in that country.\""
+  },
+  {
+   "section": "11 Location tokens",
+   "starts": "A threat prints one or two location types",
+   "clarity": 2,
+   "needed": "reference",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Core: \"the token goes on the matching place with the most adversary pieces on or next to it.\" Per-type exceptions to reference.",
+   "simpler_rule": "One condition for all types (not the adversary's)."
+  },
+  {
+   "section": "11 Near",
+   "starts": "You are near a threat if one of your nodes or ambassadors",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep, and bold the contrast with \"nearest\" here, not two subsections later."
+  },
+  {
+   "section": "11 Countering",
+   "starts": "A threat prints one or two ways to pay off",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Put the threat-tag to card-tag pairs in a 5-row table and print it on the threat; refunds in one sentence."
+  },
+  {
+   "section": "11 Countering",
+   "starts": "Cards can also jam a threat",
+   "clarity": 1,
+   "needed": "legend",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Legend."
+  },
+  {
+   "section": "11 When threats take effect",
+   "starts": "After production, each unpaid threat does what it prints",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"A threat dealt after the action phase starts gets a wait marker\" (a token, not a memory)."
+  },
+  {
+   "section": "11 When threats take effect",
+   "starts": "Its harm to a player always hits the nearest player",
+   "clarity": 3,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Payers are near; the victim is whoever has a node closest, at any distance.\" A diagram with both."
+  },
+  {
+   "section": "11 When threats take effect",
+   "starts": "A resource harm reads pay N or discard M",
+   "clarity": 1,
+   "needed": "card text",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep last-node line in destruction; the rest is card text."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Production reads the board as each step starts",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Do each step for the whole board before the next.\""
+  },
+  {
+   "section": "12 Production",
+   "starts": "Corp troops. Warmongering (§10) and some projects",
+   "clarity": 2,
+   "needed": "adversary board",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Print Warmongering on the adversary board as \"production step 1\"."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Factories. A player's factory makes 2 chips",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Cities build factories. Each city builds one factory",
+   "clarity": 3,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Diagram: adjacent free zone; yours if your city, else most nodes; corrupted city builds anywhere in its country.",
+   "simpler_rule": "Only adjacent zones; a clean city's factory is neutral."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Cities' energy. Each city makes 1 energy",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Add the blocking and blackout cases here; warn to keep 5 credits back from the action phase."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Stations. A player's makes 2 cubes",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fine."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Your nodes. Each hex where your node stands with no site",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Use an insight-loss token so the debt is visible next round.",
+   "simpler_rule": "Each agent on your node's hex costs 1 insight, wherever."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Megaprojects. A megaproject holding its 8 cubes",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fine; move into the megaproject section."
+  },
+  {
+   "section": "12 Production",
+   "starts": "Upkeep. Each player collects their income",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "12 Production",
+   "starts": "A blocking piece stops a site's output",
+   "clarity": 1,
+   "needed": "cut (duplicate)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Put it as the section's first line, or delete."
+  },
+  {
+   "section": "13 Intro",
+   "starts": "There are two kinds of troop",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Always write \"adversary troop\" and \"corp troop\" in full; never bare \"troop\"."
+  },
+  {
+   "section": "13 March",
+   "starts": "An adversary troop's targets are player-owned",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "13 March",
+   "starts": "In the adversary's turn, each adversary troop takes 2 steps",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep, plus a diagram."
+  },
+  {
+   "section": "13 March",
+   "starts": "So a troop two hexes from your facility hits it this round",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; this is the right teaching move."
+  },
+  {
+   "section": "13 Corp troops",
+   "starts": "Each base holds up to 2 corp troops",
+   "clarity": 3,
+   "needed": "core (troop making), reference (ambassador exceptions)",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Core: \"Each Discord tip, every neutral factory adds 1 corp troop to each of its corp's bases (max 2).\" Ambassador cases to reference.",
+   "simpler_rule": "An ambassador on a base or factory stops 1 troop, always."
+  },
+  {
+   "section": "13 War",
+   "starts": "War, at the end of every round, on each front",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Steps 1-2 are clear; step 3 needs \"a node on that factory is lost: only stage I saves it\" as its own bold rule."
+  },
+  {
+   "section": "13 War",
+   "starts": "A corp troop at a base also protects facilities",
+   "clarity": 2,
+   "needed": "cut (in the destruction list)",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Delete; destruction item 3 says it."
+  },
+  {
+   "section": "13 Destruction",
+   "starts": "When a node or facility would be destroyed, the first of these",
+   "clarity": 2,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep as a numbered card-sized list; add \"automatic: you don't choose\".",
+   "simpler_rule": "The owner chooses which protection to spend."
+  },
+  {
+   "section": "13 Destruction",
+   "starts": "Corruption never destroys the node of a player with Sanctuary",
+   "clarity": 1,
+   "needed": "board",
+   "rule_or_patch": "rule",
+   "simpler_wording": "On the capstone; keep only the owner-cube line."
+  },
+  {
+   "section": "13 Destruction",
+   "starts": "Hardening goes on a player-owned, uncorrupted station",
+   "clarity": 1,
+   "needed": "legend",
+   "rule_or_patch": "rule",
+   "simpler_wording": "\"Shield\" is a legend word; define it there only."
+  },
+  {
+   "section": "13 Losing nodes",
+   "starts": "Nodes are destroyed only where the board is overrun",
+   "clarity": 3,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "A 4-row table: source × can it take your last node (stage I / II-III).",
+   "simpler_rule": "Nothing destroys a last node."
+  },
+  {
+   "section": "13 Losing nodes",
+   "starts": "A destroyed node leaves the game and leaves a corruption marker",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "14 Intro",
+   "starts": "The world leans toward Unity (you) or Discord",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; move this section before the round walkthrough (checked after every action)."
+  },
+  {
+   "section": "14 Sway",
+   "starts": "Unity comes from liberating sites",
+   "clarity": 0,
+   "needed": "player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Print on the tracks."
+  },
+  {
+   "section": "14 Sway",
+   "starts": "Holding Discord off. Unity swayed during an action",
+   "clarity": 3,
+   "needed": "core",
+   "rule_or_patch": "patch",
+   "simpler_wording": "\"When you sway Unity, you may instead remove that much Discord, but only if Discord then stays below its tip.\" Worked example.",
+   "simpler_rule": "Unity may always cancel Discord 1 for 1, no filter."
+  },
+  {
+   "section": "14 Tipping",
+   "starts": "A track tips when it holds 3 × the number of players",
+   "clarity": 2,
+   "needed": "core + printed on track",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Print the tip steps and tier bands on each track; say \"count this tip\"."
+  },
+  {
+   "section": "14 Tipping",
+   "starts": "If both tracks are full, Discord tips first",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "14 The cards",
+   "starts": "Every Unity and Discord card prints three tiers",
+   "clarity": 2,
+   "needed": "card text / reference",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Core: \"Resolve the tier for this tip count.\" Prohibition line goes on the card; cut \"never by one player's reach\" and the node-destruction aside."
+  },
+  {
+   "section": "14 The cards",
+   "starts": "The Unity deck (23 cards) reshuffles",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; promote \"the Discord deck is the clock\" to §1."
+  },
+  {
+   "section": "15 Winning",
+   "starts": "Unity tips | The adversary must have none (table)",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; print it on the Unity track."
+  },
+  {
+   "section": "15 Winning",
+   "starts": "Corrupted stations, factories and land never count",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "15 Losing",
+   "starts": "Everyone loses at once if",
+   "clarity": 1,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Say the round cap as \"if the event deck is empty when a round's event step comes\"."
+  },
+  {
+   "section": "15 Losing",
+   "starts": "The adversary running out of agents is not a loss",
+   "clarity": 0,
+   "needed": "core",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep."
+  },
+  {
+   "section": "16 Difficulty",
+   "starts": "Choose a level from 0 to 4. Your claim and liberate costs",
+   "clarity": 1,
+   "needed": "setup",
+   "rule_or_patch": "patch",
+   "simpler_wording": "Cut the claim/liberate line."
+  },
+  {
+   "section": "16 Difficulty",
+   "starts": "Level | Changes (table)",
+   "clarity": 2,
+   "needed": "difficulty card",
+   "rule_or_patch": "rule",
+   "simpler_wording": "One table, one row per level, every number in the row (no \"as level 2\"); level 4 as setup steps."
+  },
+  {
+   "section": "16 Difficulty",
+   "starts": "Level | Compute income | Agent income (table)",
+   "clarity": 3,
+   "needed": "difficulty card",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Merge with the table above; mark agent income \"includes Garrisons\"."
+  },
+  {
+   "section": "17 Player count",
+   "starts": "Countries / Boards / Tipping / Projects / Corp troops",
+   "clarity": 1,
+   "needed": "setup card per count",
+   "rule_or_patch": "rule",
+   "simpler_wording": "A per-count setup card (board, boards, tip size, project multiplier); these lines are restated elsewhere."
+  },
+  {
+   "section": "17 Player count",
+   "starts": "Solo (1 player): one country",
+   "clarity": 1,
+   "needed": "core (short solo box)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep as a solo box."
+  },
+  {
+   "section": "17 Player count",
+   "starts": "Team choices (where a rally's remainder lands",
+   "clarity": 2,
+   "needed": "core (in §4 or §8)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "A general rule early: \"When the players choose and can't agree, the earliest player in player order decides.\""
+  },
+  {
+   "section": "18 Legend",
+   "starts": "A card is read like a sentence",
+   "clarity": 1,
+   "needed": "reference / player aid",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Spirit Island style: text where it reads better, icons for resources/pieces; cut the claim that text always mirrors icons."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "Where things sit (list)",
+   "clarity": 0,
+   "needed": "core (one annotated card)",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Replace with an annotated card picture."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "The icons (table)",
+   "clarity": 1,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Printed key sheet with the pictures."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "Shapes (table)",
+   "clarity": 1,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; minus has four meanings: write \"less\" or \"remove\" in text."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "Boxes and outlines (table)",
+   "clarity": 2,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Fewer marks: use text for the dark frame's numbers and the below-art income raise."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "Connectors (table)",
+   "clarity": 1,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; At N in its own ring."
+  },
+  {
+   "section": "18 Legend",
+   "starts": "Special marks (table)",
+   "clarity": 2,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Clock for delay only; write firewall/cordon in words; drop the red plate line (no card has one)."
+  },
+  {
+   "section": "19 Glossary",
+   "starts": "Adjacent: sharing an edge",
+   "clarity": 1,
+   "needed": "reference",
+   "rule_or_patch": "rule",
+   "simpler_wording": "Keep; add page numbers, drop pointer-only entries, add Pool/Supply distinction and \"dark\" removal if renamed."
+  }
+ ],
+ "structure": "Teach in the Spirit Island order: overview, setup, a round in play order, then reference. Proposed book:\nPART 1, LEARN TO PLAY. (1) The game in brief: story, win and lose, the Discord deck as the clock, \"you always see what's coming\", and team choices with a tie-break (earliest in player order decides). (2) Components: §2's piece table plus pictures and the four card-token types. (3) The map: hexes, sites with three states (neutral, yours, corrupted) and blocking, reach, fronts. This is the only rule-heavy part before setup. (4) Setup, with difficulty and player count folded in as step 0, using a per-count setup card (bases, start hexes, home cities, board order, tip size). (5) Unity and Discord: sway, holding Discord off, tipping. It moves up because it is checked after every action. (6) Your AI board and resources: §5 and §6 merged. Insight goes here. Powers sit on the boards, not in the text. Node tracks and sacrifice stay in the text. (7) The round at a glance (the table). Then one short section per step, in play order: A Sway; B the adversary's turn (event, threats dealt, rally, deploy, other lines, projects and botnets in one paragraph, overrun and Corrupt X, march, reveal and income); C cards (opening, build, draft, keep, playing a card, tags, buildings); D the action phase (standard actions, then ambassadors: move, claim and liberate as one comparison table, remove agents, the cancel rule); E production (one list, which absorbs \"When income arrives\", megaprojects and converters); F threats (near against nearest, countering); G war; H cleanup. (8) Protecting your pieces: the destruction list, guarding, last-node table, markers. Merge §9 Guarding, §13 Destruction and Losing nodes, and the War node rule here.\nPART 2, REFERENCE. The full Corrupt X procedure, location-token rules, Rally edge cases, corp-troop and ambassador cases, projects and slot fitting, Unity/Discord prohibitions, the difficulty card (one table), solo, the card legend (§18, slimmed to what icons carry), glossary with page numbers, and a back-cover round summary.\nMerges and moves: §5+§6. §9 split three ways: Claim, Liberate, Remove and Move go to the action phase; Blocking goes to the map; Gather, Push, Strike, Convert and Firewall go to the legend. §13 split: the march goes to the adversary's turn, corp troops to the war step and tipping, destruction to Protecting your pieces. §15 goes into §1 plus the purge table printed on the Unity track. §16+§17 become setup and reference cards. Megaproject text from §8 and §12 becomes one section. Delete the repeats: Sell (3 places), Move (2), claim and liberate costs (2), guarding (2), blocking (3), corp-troop protection (2), last node (3), arrival cancel (2), Garrisons (adversary board and difficulty table). Cut the designer notes: the front matter, \"poor value on purpose\", \"never by one player's reach\", \"the rules call this a strike\". Fix the cards rather than decode them (\"each board\" means each country). Then the core text loses about a quarter of its words with no rule changed.",
+ "worked_examples": [
+  "Corruption on a small board fragment: two cities share neighbor hexes, a Corrupt Cities line runs in hex order, each city takes just enough agents from next door (lowest-numbered first), one city's marker counts as an agent, and the second city fails because the first took its agents. Then the node on the corrupted city is destroyed and the ambassador there is removed.",
+  "A round-2 card turn for the Researcher: build a hand of 4 (tier 1 or 2, face up), draft with passing, keep two cards with the Science discount on the tier-2 keep, run out of insight and pay 5 credits for the last keep, then play a card with what is left. It shows that keeps and plays draw on the same insight.",
+  "Block, then liberate, then claim: Move puts two ambassadors on a corrupted city over two rounds (no Discord diverted, and an arriving rally agent cancels one). Liberate costs 5 + agents; the standing ambassadors pay first and your supply pays the rest. Sway 5 Unity and decide how much holds Discord off. The city turns neutral, and a nearby botnet now blocks the claim.",
+  "Placing a node: Deploy (1 energy) plus the track space's energy (economy space 4 = 1 more), what the uncovered space gives, where the node may go (agents fine, marker not), and how reach grows.",
+  "A threat from deal to effect: the event's pull, turning up cards until the tag and location fit, the token on the place with the most adversary pieces nearby, who is near (pays) against who is nearest (is hit), two players pooling credits, a partial payment refunded when it goes unpaid, and the harm landing on the nearest player.",
+  "An adversary troop's march: two steps, a move then a strike on a player factory. Wall makes the troop walk around the Protector's node. A corp troop at the base next door is removed instead of the factory, and a second troop meets a hardening token. Show Vigil firing.",
+  "A Discord tip at 3 players: the track reaches 9, the tip count goes to 3 (tier II), the track empties, neutral factories feed corp troops to their bases (an ambassador on one factory stops it), the Discord card resolves, and at round end war on a front destroys a factory with a node on it.",
+  "Production for one player in one round, in order: factory chips, a city building a factory on an adjacent zone, buying a neutral city's energy for 5 credits, station cubes completing a megaproject and every cube paying out, an agent on a bare node hex costing insight next round, then upkeep."
+ ],
+ "friction": [
+  {
+   "existing_number": "new",
+   "rule": "Garrisons against the difficulty table's agent income",
+   "hard": "§10 lists Garrisons as +1 agent income, but the §16 table's agent income (1/4/4/4/3) already includes it, as does setup's \"1 a country\". A reader adds it twice: the pool is wrong from setup on.",
+   "change": "Mark the column \"includes Garrisons\", or list the base figure and the board's +1 apart.",
+   "fix_by": "wording",
+   "proposed_rank": 6
+  },
+  {
+   "existing_number": "new",
+   "rule": "Natural corruption against Corrupt X",
+   "hard": "Two corruption counts run every round: Corrupt X counts on and next to the site and pulls agents in; natural corruption counts the site's own hex only. Same corrupt numbers, same marker rule, different reach, steps 9 and 10 back to back.",
+   "change": "Name natural corruption apart (\"overrun\"), teach it first as the base rule, then Corrupt X as \"also pulls from next door\". Rule fix: one count for both.",
+   "fix_by": "wording",
+   "proposed_rank": 2
+  },
+  {
+   "existing_number": "new",
+   "rule": "Simultaneous action phase and team choices",
+   "hard": "All players act at once, but nothing says what happens when order matters (two players want the last ambassador slot, the same converter, a threat's last payment), or when the players disagree on a team choice. The engine resolves it some fixed way; the book doesn't say which.",
+   "change": "One general line early: \"When order matters or players disagree, the earliest player in player order decides.\" This states the engine's order without changing it.",
+   "fix_by": "wording",
+   "proposed_rank": 8
+  },
+  {
+   "existing_number": "new",
+   "rule": "Liberate gives the site to nobody",
+   "hard": "A player expects to take the site they liberate. It turns neutral, and claiming it is a second action, which an adjacent botnet that didn't stop the liberation now forbids.",
+   "change": "Lead the Liberate rule with \"the site turns neutral; claim it to own it\" and teach it in the block-liberate-claim example. Only a rule change could make Liberate own the site.",
+   "fix_by": "wording",
+   "proposed_rank": 5
+  },
+  {
+   "existing_number": "new",
+   "rule": "Site-state vocabulary",
+   "hard": "Five words for three states (neutral/clean, owned/aligned, corrupted), plus dark (an agent on a city) and blocked, plus \"home city\". The table uses two names per cell.",
+   "change": "Use neutral, yours and corrupted only. Write \"blocked\" for any site with an opposing piece. Drop clean, aligned and dark.",
+   "fix_by": "wording",
+   "proposed_rank": 11
+  },
+  {
+   "existing_number": "new",
+   "rule": "\"Next to\" includes \"on\"",
+   "hard": "A house meaning against the English one, used in dozens of rules. Strike then uses \"adjacent\" to mean the opposite, and readers miss which is which.",
+   "change": "Write \"on or next to\" in full wherever it is meant, so \"next to\" keeps its English sense.",
+   "fix_by": "wording",
+   "proposed_rank": 12
+  },
+  {
+   "existing_number": "new",
+   "rule": "Playable card with nothing to act on",
+   "hard": "The heading says nothing blocks a card, and the last sentence says a card doing nothing can't be played.",
+   "change": "\"Play a card if any part can act; skip parts that can't.\"",
+   "fix_by": "wording",
+   "proposed_rank": 30
+  },
+  {
+   "existing_number": "new",
+   "rule": "Draft direction by player order, not seating",
+   "hard": "Player order is set by board (Builder, Protector, Researcher), and hands pass to the next and previous player. Unless players sit in player order, passing at the table breaks.",
+   "change": "Setup: sit in player order. Combine with #31's arrow on the round track.",
+   "fix_by": "wording",
+   "proposed_rank": 25
+  },
+  {
+   "existing_number": "new",
+   "rule": "Board income column lists insight",
+   "hard": "The board table's \"Income each round\" includes 5 insight, but insight is set at round start, not paid in upkeep, and the real start value is 6 (first track space).",
+   "change": "Move insight to its own column, \"insight each round\", and print 6.",
+   "fix_by": "wording",
+   "proposed_rank": 10
+  },
+  {
+   "existing_number": "7",
+   "rule": "Insight (merge #18 Keeps into it)",
+   "hard": "Every player meets it every round, in every keep and play decision: reset, carry for the Researcher (own but not gifted), debt from last round, credits for keeps but not plays, three keep regimes.",
+   "change": "Rank 3. Rewording does half the job (print 6, insight-loss tokens, one keep table). The rest needs a rule change: one keep price all game.",
+   "fix_by": "rule",
+   "proposed_rank": 3
+  },
+  {
+   "existing_number": "1",
+   "rule": "Corrupt X",
+   "hard": "As written; now also the second count from natural corruption (new entry).",
+   "change": "Keep at 1.",
+   "fix_by": "rule",
+   "proposed_rank": 1
+  },
+  {
+   "existing_number": "2",
+   "rule": "Ambassadors meeting agents",
+   "hard": "As written.",
+   "change": "Rank 4.",
+   "fix_by": "rule",
+   "proposed_rank": 4
+  },
+  {
+   "existing_number": "3",
+   "rule": "Claim and Liberate",
+   "hard": "As written, plus the new liberate-to-neutral entry.",
+   "change": "Rank 5 together; a single comparison table makes the four differences visible without a rule change.",
+   "fix_by": "rule",
+   "proposed_rank": 5
+  },
+  {
+   "existing_number": "8",
+   "rule": "When income arrives (merge #20 station output, #22 cities' energy)",
+   "hard": "Every player meets all three every round in production. They are one problem: a staged production list.",
+   "change": "Rank 7. One numbered production list with each output printed on the site by owner color fixes most of it. Only one income step needs a rule change.",
+   "fix_by": "wording",
+   "proposed_rank": 7
+  },
+  {
+   "existing_number": "9",
+   "rule": "Rally X",
+   "hard": "As written.",
+   "change": "Rank 9.",
+   "fix_by": "rule",
+   "proposed_rank": 9
+  },
+  {
+   "existing_number": "23",
+   "rule": "Words with two meanings",
+   "hard": "Met every round (Deploy, strike, tier, board), and it costs nothing to fix.",
+   "change": "Move up to 10. Renames of printed words that aren't Matt's ruled terms are wording. \"Each board\" on adversary cards should simply be reprinted.",
+   "fix_by": "wording",
+   "proposed_rank": 10
+  },
+  {
+   "existing_number": "13",
+   "rule": "Holding Discord off",
+   "hard": "As written; most rounds.",
+   "change": "Rank 13. The filter must stay without a rule change, but one sentence and an example carry it.",
+   "fix_by": "rule",
+   "proposed_rank": 13
+  },
+  {
+   "existing_number": "4",
+   "rule": "The destruction ladder",
+   "hard": "Most games, not every round, and automatic, so players rarely need to do it in their heads.",
+   "change": "Down to 14.",
+   "fix_by": "rule",
+   "proposed_rank": 14
+  },
+  {
+   "existing_number": "10",
+   "rule": "Who a threat hits (merge #11 location tokens)",
+   "hard": "Both are met every round, at the same moment.",
+   "change": "Rank 8 together. Naming \"payers\" and \"target\" on the card is wording; token conditions need a rule change.",
+   "fix_by": "wording",
+   "proposed_rank": 8
+  },
+  {
+   "existing_number": "5",
+   "rule": "Two kinds of troop",
+   "hard": "Most of the cost goes if \"adversary troop\" and \"corp troop\" are always written in full and the pieces differ in look.",
+   "change": "Rank 15. The name and the art are wording; the corp troops' ambassador cases need a rule change.",
+   "fix_by": "wording",
+   "proposed_rank": 15
+  },
+  {
+   "existing_number": "6",
+   "rule": "Last node safety",
+   "hard": "Three regimes, but met only when a player is down to one node.",
+   "change": "Down to 18; a 4-row table in the book carries it.",
+   "fix_by": "rule",
+   "proposed_rank": 18
+  },
+  {
+   "existing_number": "15",
+   "rule": "Factory growth",
+   "hard": "Every round, every city: high frequency.",
+   "change": "Up to 12.",
+   "fix_by": "rule",
+   "proposed_rank": 12
+  },
+  {
+   "existing_number": "16",
+   "rule": "Wall and the Protector's troops",
+   "hard": "Only the Protector's player meets it, though every round.",
+   "change": "Down to 20. Printing it on the Protector's board is wording; Vigil's counterfactual needs a rule change.",
+   "fix_by": "wording",
+   "proposed_rank": 20
+  },
+  {
+   "existing_number": "25",
+   "rule": "Liberate cards",
+   "hard": "Not a design rule but engine fault M1; the docs already say \"the same way\".",
+   "change": "Fix the engine to the documented rule; drop it from the friction table.",
+   "fix_by": "wording",
+   "proposed_rank": 40
+  },
+  {
+   "existing_number": "14",
+   "rule": "Tipping",
+   "hard": "Most of it is solved by printing the steps on the tracks.",
+   "change": "Wording and components: print the tip steps and tier bands on the track, and add a level-4 setup step.",
+   "fix_by": "wording",
+   "proposed_rank": 16
+  },
+  {
+   "existing_number": "32",
+   "rule": "Difficulty",
+   "hard": "A presentation fault: two tables and an \"includes\" claim.",
+   "change": "One difficulty card, one full row per level.",
+   "fix_by": "wording",
+   "proposed_rank": 24
+  },
+  {
+   "existing_number": "12",
+   "rule": "Placing a node",
+   "hard": "The track already prints the energy; the book over-explains it.",
+   "change": "Wording: one sentence plus the printed track.",
+   "fix_by": "wording",
+   "proposed_rank": 17
+  },
+  {
+   "existing_number": "19",
+   "rule": "Move",
+   "hard": "The name misleads; the rule itself is simple.",
+   "change": "Rename the action (not a ruled term) or describe it as a placement.",
+   "fix_by": "wording",
+   "proposed_rank": 19
+  },
+  {
+   "existing_number": "17",
+   "rule": "Tags on your cards",
+   "hard": "Mostly order of teaching: requirements come before tags are defined.",
+   "change": "Teach Tags first, then one exceptions line.",
+   "fix_by": "wording",
+   "proposed_rank": 21
+  },
+  {
+   "existing_number": "33",
+   "rule": "Military bases",
+   "hard": "Already solved by the setup diagram the book cites.",
+   "change": "Wording and components: print the bases on the map. Drop from the table once the diagram exists.",
+   "fix_by": "wording",
+   "proposed_rank": 35
+  },
+  {
+   "existing_number": "34",
+   "rule": "Home city",
+   "hard": "The same: a printed marker removes it.",
+   "change": "Print it on the map.",
+   "fix_by": "wording",
+   "proposed_rank": 36
+  },
+  {
+   "existing_number": "36",
+   "rule": "Icons 36-43, 47",
+   "hard": "Graphic-design issues, not rules. Under Matt's ruling (\"text wherever it reads better\") most go away if the card prints words for minus, clock, dark-frame numbers and brown-box raises.",
+   "change": "Treat as art and legend work. Use text where an icon has 2+ meanings.",
+   "fix_by": "wording",
+   "proposed_rank": 30
+  }
+ ],
+ "top_ten": [
+  "Garrisons is printed on the adversary board and is already inside the difficulty table's agent income, so a reader adds it twice from setup on. Say \"includes Garrisons\".",
+  "Teach Unity/Discord (sway, hold-off, tip) before the round walkthrough: it is checked after every action, and the Discord deck is the game's clock. Put that in §1.",
+  "Corruption is two different counts every round (natural: on the hex; Corrupt X: on and next to, with pulls). Name them apart and teach both with one worked board fragment.",
+  "Merge Claim and Liberate into one comparison table, and lead Liberate with \"the site turns neutral, not yours\"; teach block, liberate, claim as one example.",
+  "One numbered production list absorbs \"When income arrives\", cities' energy, station output and megaprojects; print each site's output by owner color on the board.",
+  "Add the missing general rule for simultaneous play and team choices: when order matters or players disagree, the earliest in player order decides (state what the engine does).",
+  "Cut the duplicates (Sell ×3, guarding ×2, blocking ×3, last node ×3, Move ×2, corp-troop protection ×2, the arrival cancel ×2). Cut the designer notes (\"poor value on purpose\", \"the rules call this a strike\", \"each board means each country\": fix the card instead).",
+  "Move powers, capstones, converters, event lines, Liberate/Convert/Gather/Strike/Firewall wording to the boards, cards and legend. The core book teaches sacrifice, node tracks and the card grammar only.",
+  "Use three site-state words (neutral, yours, corrupted) plus \"blocked\". Always write \"adversary troop\" or \"corp troop\" in full. Write \"on or next to\" wherever it is meant.",
+  "Rerank friction by reader cost: Insight+Keeps up to 3, production timing to 7, words-with-two-meanings to 10, factory growth to 12. Destruction and last-node go down, Wall goes down (one player). Liberate cards is engine fault M1, not a design entry: fix the engine to the documented rule."
+ ]
+}

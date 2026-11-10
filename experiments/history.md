@@ -8,6 +8,7 @@ The current recipes and costs are in [docs/experiments.md](../docs/experiments.m
 
 | Item | Rev | Write-up |
 |---|---|---|
+| 173 rulebook review and second draft (no rules change): cold readers, a Spirit Island veteran and a designer; 43/50 first-draft answers right against the engine, 111/120 on the second draft, 19/20 on the final trouble spots; friction table merged to 40 rule-only entries, M47-M48 | 73 | [173_rulebook_review](results/173_rulebook_review/README.md) |
 | 172 rulebook first draft (docs/rulebook.md, about 8,000 core words, no rules change) and its friction table (47 ranked entries, 46 engine-against-docs mismatches; worst: Corrupt X's pull, ambassador-agent contact, Claim against Liberate, the destruction ladder, two kinds of troop) | 73 | [172_rulebook](results/172_rulebook/README.md) |
 | 169 bug hunt: Wall against Push, Incursion's threats by country, a building's own fight trigger (r73); the house words; viewer firewall and prohibitions; ladder per agent; agent move fixes deferred (D72) | 73 | [169_bug_hunt](results/169_bug_hunt/README.md) |
 | 168 recalibration to the strategist: incomes only (`compute_income` 3,4,18,24,13, `ambassador_income` 0,3,3,3,2); strategist 91.7 / 75.7 / 62.8 / 42.0 / 37.5 at d0-d4 on fresh seeds, every band met; oracle d4 95.8; the Discord-tip switch screened and dropped | r72 | [168_recalibration](results/168_recalibration/README.md) |

@@ -1,0 +1,112 @@
+{
+ "checks": [
+  {
+   "id": "G14",
+   "engine_answer": "Yes. A Liberate spends the ambassadors standing on the site first, the acting player's and then every other player's in seat order, automatically; the supply pays the rest. The engine never asks the teammate.",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:99-127 (liberate_standing sums every seat's ambassadors; pay_liberate spends own then others' in seat order, then the supply)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 Liberating an adversary site, first bullet ('Ambassadors standing on the site pay first: yours, then other players'')",
+   "fix": "Optional: add 'whoever owns them; their owner isn't asked' so the doubt about consent doesn't come up."
+  },
+  {
+   "id": "G15",
+   "engine_answer": "Yes. You are near a threat if one of your nodes or one of your ambassadors is on or next to any of its tokens.",
+   "evidence": "crates/aic-core/src/modules/threats/near.rs:180-190 (seat_in_mask checks node(s) or ambassador(s) within 1 of a token)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 Near",
+   "fix": "None needed."
+  },
+  {
+   "id": "G16",
+   "engine_answer": "No. The threat is countered only when the pooled payments cover every item of one resource option. Payments are pooled by resource, so money put toward one option never adds to the other one.",
+   "evidence": "crates/aic-core/src/modules/threats/counter.rs:216-231 (try_complete takes the first option whose every need is met); 242-254 (the rest is refunded)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 Countering, first sentence and the Resources bullet",
+   "fix": "None needed."
+  },
+  {
+   "id": "G17",
+   "engine_answer": "No. One near player alone sacrifices cards in play (programs, or building stacks) carrying the tags. The board's own tag and track tags are not sources.",
+   "evidence": "crates/aic-core/src/modules/threats/counter.rs:282-294, 319-341 (counter_with: one seat, can_pay_whole on its own sources); modules/cards/sacrifice.rs:18-48 (sources are only the played and built piles)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 Countering, Tags bullet; §6 Sacrifice",
+   "fix": "None needed."
+  },
+  {
+   "id": "G18",
+   "engine_answer": "The player whose node is the fewest hexes from any of its tokens, at any distance, whether or not anyone is near. On a tie the tied players pick one. A player with no node on the board can't be hit.",
+   "evidence": "crates/aic-core/src/modules/threats/near.rs:209-229 (node_distance, nearest_seats)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§11 When threats take effect, 'Its harm to a player always hits the nearest player'",
+   "fix": "None needed."
+  },
+  {
+   "id": "G19",
+   "engine_answer": "Yes, in one case. A 'destroy a node' harm never takes your last node, and neither does Siege's node loss. But Overrun (tier 2) corrupts the uncorrupted city its token is on, and corruption destroys any node on that hex. Only the stage-I last-node rule guards that, so from stage II on it can take your last node, unless Shelter, hardening, your ambassador, Aegis or Sanctuary saves it. Casus Belli's extra war step next round can also take a last node on a factory that war destroys.",
+   "evidence": "content/threats.json overrun ({op: corrupt_city, at: city}); crates/aic-core/src/modules/effects/new_ops.rs:332-349 (the 'never last' check covers only the neighbors in the at:Location form); modules/adversary.rs:1200-1213 (corrupt_hex calls destroy_piece on the node with no last-node check); modules/board/node.rs:187-189 (last_node_safe only below stage II); compare effects/team.rs:96-98, 108-125 and new_ops.rs:711-714, which do check for a last node",
+   "verdict": "wrong",
+   "cause": "rulebook_error",
+   "paragraph": "§13 Losing nodes ('a threat never does, at any stage'); §11 When threats take effect, last bullet",
+   "fix": "§13: 'A threat that destroys a node never takes your last. But a city a threat corrupts (Overrun) destroys the node on it as any corruption does, and from stage II on that can be your last; so can Casus Belli's extra war.' Or change the rule: give corrupt_hex the 'never last' check when a threat causes it."
+  },
+  {
+   "id": "G20",
+   "engine_answer": "No. The purge counts only pieces on board hexes: agents (and botnets, troops, corrupted cities) on hexes. Agents waiting in a country's pool are a counter, not a piece on the board, and don't count.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1546-1574 (counts_against reads g.tokens(h, ADV_AMBASSADOR) per hex); adversary.rs:110 pool_key (the pool is a per-country var, not a hex token)",
+   "verdict": "right",
+   "cause": "missing",
+   "paragraph": "§15 Winning: the purge (the table row '0-2: ... agents')",
+   "fix": "Add under the table: 'Agents waiting in a pool are not on the board and don't count.'"
+  },
+  {
+   "id": "G21",
+   "engine_answer": "Usually yes. Deploy lands on the lowest-numbered factory of any owner, skipping a hex with the Protector's node. In the same turn's march the troop's first step strikes a target on or next to its hex; if there are several, the players choose which, so it may hit a neighbor instead. Stoppers in order: Shelter, a corp troop at a base on or next to the hex (it is removed), a hardening token, the factory owner's ambassador, Aegis. The troop is used up either way. Shelter can't actually be up then: it is set in the action phase and falls at cleanup. If corruption earlier in the turn took the factory, it is no longer a target.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:1300-1350 (land_troops: lowest factory, walled hexes skipped); modules/board/troops.rs:176-184, 213-233, 352-385 (strike on or within 1, players choose, troop_spent 1); modules/board/destroy.rs:34-78 (stop order); modules/board/mod.rs:96-100, 228-231 (Shelter flag 1, counted down in cleanup)",
+   "verdict": "partly",
+   "cause": "wording",
+   "paragraph": "§13 Destruction list (item 2, Shelter, given with no timing) and §13 Adversary troops: the march (players choose among targets)",
+   "fix": "In §13 Destruction, item 2: 'Shelter (it lasts from the action phase to cleanup, so it never covers the adversary's turn)'. In the march: 'a troop on your facility strikes it, or another target next to it if the players choose'."
+  },
+  {
+   "id": "G22",
+   "engine_answer": "Only if the factory is yours. The factory owner's ambassador on the hex stops the war strike, so the factory and your node both survive. If the factory is neutral or another player's, your ambassador does nothing, and if the factory goes, the node goes with it (from stage II, even your last).",
+   "evidence": "crates/aic-core/src/modules/board/troops.rs:65-73 (node lost only if destroy_piece on the FACTORY returns true; war_reach 0); modules/board/destroy.rs:68-75 (for a factory the armor is the cube owner's ambassador only); configs/baseline.json war_reach 0, last_safe_stage 2",
+   "verdict": "partly",
+   "cause": "wording",
+   "paragraph": "§13 Corp troops and war, War step 3; §13 Destruction item 5",
+   "fix": "War step 3: 'Save the factory and you save the node: its owner's ambassador on the hex does that, so your ambassador helps only if the factory is yours.'"
+  },
+  {
+   "id": "G23",
+   "engine_answer": "No. Hold-off amounts are offered only if they leave the Discord track below its tip point (or 0). Otherwise all of the swayed Unity goes onto the Unity track.",
+   "evidence": "crates/aic-core/src/modules/alignment.rs:253-291 (place_unity: ks keeps k==0 or discord-k < cap; carry 1 so empties is true)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14 Sway, 'Holding Discord off'",
+   "fix": "None needed."
+  },
+  {
+   "id": "G24",
+   "engine_answer": "The Discord deck holds 6 cards and never reshuffles, so the 7th tip loses. At difficulty 4 one card is cut (5 left, and the tip count starts at 1), so the 6th tip loses.",
+   "evidence": "content/alignment.json (6 discord-side cards); crates/aic-core/src/modules/alignment.rs:490-512 (d4 truncates by discord_removed 1 and sets tips to 1), 412-414 (an empty deck at a tip loses); configs/baseline.json discord_removed 1",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§14 The cards; §16 level 4",
+   "fix": "None needed."
+  },
+  {
+   "id": "G25",
+   "engine_answer": "No, in effect. Corruption's node destruction does check Shelter, but Shelter can only be used in the action phase (by power or card) and is cleared at cleanup, so it is never up during the adversary's turn. It does cover threats (after production) and war. Sanctuary, hardening, your ambassador and Aegis can still save the node.",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:96-100, 228-231 (Shelter flag set to 1, counted down in cleanup); modules/board/destroy.rs:49; modules/adversary.rs:1209-1212; content/ais.json and cards.json shelter ops (all played in the action phase)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 Powers (Shelter, 'this round'); §4 step H; §13 Destruction",
+   "fix": "Optional: say in §6 Shelter 'it covers threats and war this round, never the adversary's turn'."
+  }
+ ]
+}

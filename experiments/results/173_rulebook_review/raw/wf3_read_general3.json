@@ -1,0 +1,146 @@
+{
+ "answers": [
+  {
+   "id": "F1",
+   "section": "§10 Near and nearest",
+   "answer": "The harm goes to whoever's node is closest, even if nobody is near. If two players' nodes are tied, those two players choose which of them takes it. If they can't agree, the first of them in player order decides (§1 Team choices).",
+   "confidence": "high"
+  },
+  {
+   "id": "F2",
+   "section": "§6 The turn (step 4 Deploy, step 11 March), §6 The march",
+   "answer": "Yes. Troops deploy in step 4 and march in step 11 of the same turn. On its first step the troop finds my factory on its own hex, so it strikes. The factory is destroyed unless something in the §13 order protects it: Shelter can't apply in the adversary's turn, but a corp troop at a base on or next to it, a hardening token, my ambassador or Aegis Doctrine can. Either way the troop is used up. (If my hex held the Protector's node, the troop couldn't have been deployed there.)",
+   "confidence": "high"
+  },
+  {
+   "id": "F3",
+   "section": "§2 Countries and hexes",
+   "answer": "A city next to an ocean hex, or a city printed as coastal.",
+   "confidence": "high"
+  },
+  {
+   "id": "F4",
+   "section": "§6 Corruption, §15",
+   "answer": "No, corruption never spreads by itself. A site corrupts in only three ways: natural corruption (step 10: its corrupt number of agents on its own hex), a Corrupt X line on the event card (step 9: it also pulls agents from neighbouring hexes in its own country), or a threat that corrupts the site its token is on. Open land corrupts only through a Corrupt land line.",
+   "confidence": "high"
+  },
+  {
+   "id": "F5",
+   "section": "§9 step 2, §2 Blocked, §8 Liberate, §5 Wall",
+   "answer": "Yes, every production a corrupted factory makes 1 adversary troop on its own hex. To stop it, put my ambassador on the factory: that blocks it and it makes nothing. Liberating it also stops it, because it becomes neutral. A Protector's node on the hex (Wall) does not stop the troop being made; the troop just can't strike that hex.",
+   "confidence": "high"
+  },
+  {
+   "id": "F6",
+   "section": "§11 War step 3, §13",
+   "answer": "No. In war the factory is what is struck, and only its owner's ambassador protects it. My ambassador on a neutral factory doesn't count, so the factory is destroyed and my node with it. Only the stage-I last-node rule would save the node, and this is stage II. Shelter on that country or Aegis Doctrine would also save the factory, and so the node.",
+   "confidence": "high"
+  },
+  {
+   "id": "F7",
+   "section": "§11 War step 3, §13 protection order item 5",
+   "answer": "Yes. My ambassador on my own factory saves the factory, so the node isn't lost. The ambassador is used up doing it, since a protecting piece is spent. If a Shelter or a hardening token is there, it applies first and the ambassador stays.",
+   "confidence": "high"
+  },
+  {
+   "id": "F8",
+   "section": "§8 Claim and Liberate table",
+   "answer": "No, the claim is paid from my supply only: 3 for a factory, +1 per agent on it. My standing ambassador stays on the site and now guards it as my own site (§13).",
+   "confidence": "high"
+  },
+  {
+   "id": "F9",
+   "section": "§12 The cards, §21 level 4",
+   "answer": "We survive 5 Discord tips and lose on the 6th. The first Discord tip counts as tip 2, so its card resolves at tier I (tiers: I on tips 1-2, II on 3-5, III from 6).",
+   "confidence": "medium"
+  },
+  {
+   "id": "F10",
+   "section": "§6 step 4 Deploy, §5 Wall",
+   "answer": "That factory is skipped. The troop goes to the next lowest-numbered factory in that country without the Protector's node (any owner's). If there is none, it goes to the lowest-numbered city without the Protector's node. If there is no such city either, it doesn't land.",
+   "confidence": "high"
+  },
+  {
+   "id": "F11",
+   "section": "§6 step 3 Rally X, §16 Firewall",
+   "answer": "Firewalled stations don't count, so the agents go to the players' stations, spread evenly. If there are none, they go to the adversary's stations. If they have nowhere to land, they go back to the supply.",
+   "confidence": "high"
+  },
+  {
+   "id": "F12",
+   "section": "§6 step 3 Rally X, §16 Cordon",
+   "answer": "No, every event card has a Rally. The country's whole pool lands, spread evenly over the chosen sites, and the players choose which sites take the remainder, one each. Agents with nowhere to land go back to the supply, and the pool is left empty. An agent landing where an ambassador stands cancels with it. Under a cordon, the pool goes back to the supply instead.",
+   "confidence": "high"
+  },
+  {
+   "id": "F13",
+   "section": "§13 Your last node",
+   "answer": "It depends on the threat. A threat that corrupts a site (Overrun, Station Seizure) can destroy my last node in stage II or III. A threat that says \"destroy a node\" (Siege's too) never can, in any stage.",
+   "confidence": "high"
+  },
+  {
+   "id": "F14",
+   "section": "§21, §18 Difficulty",
+   "answer": "No. Level surcharges apply only to resource items; tag items never change.",
+   "confidence": "high"
+  },
+  {
+   "id": "F15",
+   "section": "§13 protection order item 2",
+   "answer": "No. Shelter lasts from the action phase to cleanup this round, so it covers production, threats and war but never the adversary's turn, which is when Rally/Corrupt corruption happens next round. It would cover a corrupting threat that takes effect in step F this round.",
+   "confidence": "high"
+  },
+  {
+   "id": "F16",
+   "section": "§6 When a site corrupts",
+   "answer": "No, nothing removes it. It adds 1 Discord every round and blocks node placement for the rest of the game. (Clear removes corruption markers, which are a different thing.)",
+   "confidence": "high"
+  },
+  {
+   "id": "F17",
+   "section": "§8 Ambassadors meet agents",
+   "answer": "My ambassador removes 3 agents and stays, so the hex holds my ambassador plus 2 agents, which it doesn't cancel. When another agent lands there, that agent and my ambassador cancel and both are removed, leaving the 2 old agents.",
+   "confidence": "high"
+  },
+  {
+   "id": "F18",
+   "section": "§20 capstones, §5 Patience",
+   "answer": "2 insight in total each round, split among the other players as I like. I give it in upkeep, and it arrives with their insight at the start of next round. Given insight doesn't carry over under Patience.",
+   "confidence": "high"
+  },
+  {
+   "id": "F19",
+   "section": "§20 Builder powers",
+   "answer": "The power itself costs a sacrificed Industry card (a program, or a building with its stack) plus 1 energy. I skip only the building's credit cost. I still pay its insight cost and any extra costs printed below the art, and I must still meet its requirement plates.",
+   "confidence": "high"
+  },
+  {
+   "id": "F20",
+   "section": "§17 Projects",
+   "answer": "They aren't dealt one at a time. A resolved project's slot stays empty until the last project in the row resolves. Then a whole new row is dealt: turn up projects one at a time, each into the first empty slot it fits (a Universal fits any), otherwise into the discard, until every slot is full. Reshuffle the discards if the deck runs out. Leftover compute goes onto the new row.",
+   "confidence": "high"
+  }
+ ],
+ "trouble": [
+  {
+   "section": "§21 Difficulty, level 4 'Other'",
+   "note": "\"the first Discord tip is tip 2 and the 6th loses\": it's unclear whether \"the 6th\" means tip count 6 or the 6th actual tip. Only §12's \"you survive 5\" settles it as the 6th actual tip (tip count 7).",
+   "severity": 2
+  },
+  {
+   "section": "§13 The protection order, item 5",
+   "note": "Item 5 says a node is saved by its owner's ambassador on the hex. Read alone, that suggests my ambassador saves my node on a neutral factory in war. Only the trailing sentence and §11 say otherwise. The war case belongs in the item itself, not tacked on.",
+   "severity": 2
+  },
+  {
+   "section": "§13 What can be destroyed (marker rule) vs §6 'Corruption never leaves a corruption marker'",
+   "note": "A destroyed node leaves a marker unless the hex holds a marker, botnet or adversary cube. Land corruption is not on that list, so a node destroyed when open land corrupts seems to leave a marker, against §6. You have to infer that the land-corruption token counts.",
+   "severity": 2
+  },
+  {
+   "section": "§5 Vigil",
+   "note": "\"a player's station or factory\": unclear whether this means any player's or only the Protector's own.",
+   "severity": 2
+  }
+ ]
+}

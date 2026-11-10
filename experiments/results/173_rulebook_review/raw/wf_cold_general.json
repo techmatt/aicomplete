@@ -1,0 +1,1344 @@
+{
+ "paragraphs": [
+  {
+   "section": "Header note",
+   "starts": "Rules revision 73. A first draft",
+   "pictured": "A designer's working draft that says a simulator, not this text, defines the game",
+   "confused": "It points to docs/rules and a friction table I can't see, and says every number is a candidate. That makes me unsure how far to trust the rulebook.",
+   "weird": "A rulebook that describes 'the simulator' and calls the cards placeholders. This is fine for a draft but odd for a player.",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "Contents",
+   "starts": "1. The game in brief",
+   "pictured": "19 sections, a long rulebook",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "1. The game in brief",
+   "starts": "You and up to three other players are good AIs",
+   "pictured": "A co-op game against an evil AI that puts agents in cities. We spread nodes and ambassadors.",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "1. The game in brief",
+   "starts": "You win by the purge",
+   "pictured": "The win condition gets easier as Unity tips. There are three ways to lose.",
+   "confused": "'Unity has tipped 6 times' isn't explained yet. '11 rounds at most' turns out to be 9 at higher difficulties.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "1. The game in brief",
+   "starts": "Each round the adversary acts first",
+   "pictured": "Adversary, then draft, then a simultaneous action phase, then production, threats and war",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Countries and hexes",
+   "starts": "There is one country per player. A country is a square piece of 16 hexes",
+   "pictured": "A 4x4 hex tile per player, each tile also a megacorp",
+   "confused": "'Each country is also a megacorp' sounds as if the country and the corp are the same thing. Are the corp and its troops friendly, neutral or hostile?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Countries and hexes",
+   "starts": "A hex is city, open land or ocean",
+   "pictured": "Three terrain types. Industrial zones are a subtype of open hex. Some cities are coastal.",
+   "confused": "none",
+   "weird": "A city can be 'printed as coastal' even when it isn't next to ocean.",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Countries and hexes",
+   "starts": "Two hexes are adjacent if they share an edge",
+   "pictured": "Normal adjacency. 'Next to' includes the hex itself. Ties go to the lower hex number.",
+   "confused": "Every country numbers its hexes 1-16, so 'lower hex number' is ambiguous across countries. Does the country number come first? It isn't clear that the country tie-break applies before the hex number. 'Next to' meaning 'on or adjacent' is counterintuitive and easy to forget.",
+   "weird": "'Next to' includes 'on'.",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Sites",
+   "starts": "Cities, research stations and factories are sites",
+   "pictured": "Three site types, each with an owner cube (player, adversary or none)",
+   "confused": "none",
+   "weird": "Saying 'A building is always a card, never a piece' reads like a fix for a past terminology clash.",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Sites",
+   "starts": "Owner table: Nobody / A player / The adversary",
+   "pictured": "A 3x3 grid of what each site produces for each owner",
+   "confused": "There are a lot of synonyms (neutral/clean, owned/aligned, corrupted). The neutral factory note 'corp troops at a Discord tip' is cryptic at this point.",
+   "weird": "Neutral stations still put cubes on the megaproject.",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Sites",
+   "starts": "Every city also builds a factory each round",
+   "pictured": "Factories multiply every round",
+   "confused": "Every city, every round? That sounds like a lot of factories. Where do they go?",
+   "weird": "A big rule mentioned in passing as 'also'",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Fronts and military bases",
+   "starts": "A front is a long edge shared by two country pieces",
+   "pictured": "Shared borders between tiles, each with a base for each corp",
+   "confused": "A 'base is not a site' but is a 'pile of corp troops' on a hex. Is it a physical marker? Can my pieces stand on it? (Later: ambassadors can.)",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Pieces",
+   "starts": "Piece | Whose | What it does",
+   "pictured": "A component list",
+   "confused": "'Land corruption: a corrupted empty hex', but later a node can stand on such a hex. 'Empty' must mean 'no site'.",
+   "weird": "There are lots of token types: firewall, hardening, location, marker, land corruption",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Pieces",
+   "starts": "Some cards hold their own tokens",
+   "pictured": "Tokens that live on cards",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "2. Reach",
+   "starts": "A hex is in reach if it is on or next to one of your nodes",
+   "pictured": "Range 1 from my nodes",
+   "confused": "Ambassadors don't give reach, but they do count for 'near' a threat. The two ideas are easy to mix up.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "Lay out the map",
+   "pictured": "The map tiles for the player count",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "In each country (each piece prints these places)",
+   "pictured": "Per tile: 1 corrupted city, 1 corrupted station with a botnet, 1 neutral station, 2 neutral factories",
+   "confused": "It doesn't say whether agents start on the board (apparently none).",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "The adversary: its agent supply is 24 per country",
+   "pictured": "The adversary's supply, event deck, pools and projects",
+   "confused": "'1 agent a country at the base difficulty', but the Militarist's Garrisons adds +1 agent income, and the difficulty table jumps from 1 to 4. Is Garrisons included in the 1? How many projects are dealt: one per slot, flipping until full?",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "Shuffle the Unity deck, the Discord deck",
+   "pictured": "Six decks shuffled, two empty tracks",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "Each player takes an AI board, in this order",
+   "pictured": "Fixed boards by seat, a first node on the start hex, a free home city",
+   "confused": "Boards are assigned, not chosen. What if the nearest clean city is in a different country, or there's none? It says 'the clean city of their country', which implies there is always one.",
+   "weird": "A second Builder for player 4. The home city is free while claiming normally costs 4 ambassadors.",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "3. Setup",
+   "starts": "The game starts with the adversary's turn",
+   "pictured": "The adversary goes first in round 1",
+   "confused": "Does the 'Round start' step (insight) happen before it? Presumably yes.",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "4. The round",
+   "starts": "A round runs in this order (table)",
+   "pictured": "Steps A to H after a round-start refresh",
+   "confused": "Threats are dealt in B, paid in D and resolved in F. That makes sense but takes a moment. The Sway step (A) comes before the adversary turn, while corrupted-city Discord comes in production.",
+   "weird": "Land-corruption sway gets its own step at the very top",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "4. The round",
+   "starts": "After every action and every step, check in this order",
+   "pictured": "A checklist run constantly: Unity placement, tips, lose, win",
+   "confused": "With simultaneous play, when exactly does 'after every action' fall? Loss is checked before the purge, so a simultaneous win and loss is a loss. That's implied, not said.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "5. Resources",
+   "starts": "Nothing has a holding limit",
+   "pictured": "No caps",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "5. Resources",
+   "starts": "Resource | Kept? | Comes from | Spent on",
+   "pictured": "Eight resources, with insight and Movement reset each round",
+   "confused": "Treating ambassadors as a 'resource' in your supply mixes pieces and currency.",
+   "weird": "'Chips can't be sold' is an odd aside. Selling a card is listed as a credit source.",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "5. Resources",
+   "starts": "Insight is this round's attention",
+   "pictured": "Insight resets each round: 5 plus bonuses minus penalties",
+   "confused": "The Researcher keeps their own unspent insight but not insight given by others. Do I have to track where each insight came from?",
+   "weird": "The Patience exception for given insight is a patch",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "5. When income arrives",
+   "starts": "Insight comes at the start of the round",
+   "pictured": "Insight at round start, other income at the end of production",
+   "confused": "The board income line lists '5 insight', but insight isn't paid in upkeep. Is that the same 5 as 'your board's 5'? Presumably yes.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Your AI board",
+   "starts": "Each player is one AI board",
+   "pictured": "A player mat with tracks and 8 powers",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Your AI board",
+   "starts": "Board table: Builder / Protector / Researcher",
+   "pictured": "Three boards with different income, slots and Movement",
+   "confused": "none",
+   "weird": "The Builder's 'special rule' is just a slot count. The Protector starts with 46 credits against 40 for the others, which is an odd number.",
+   "weird_extra": "",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Your AI board",
+   "starts": "Wall: adversary troops can't move onto",
+   "pictured": "The Protector's node hexes repel adversary troops",
+   "confused": "Vigil is hard to parse: 'your node's hex' and 'that hex holds a player-owned station or factory'. Is that any player's? It's gained during the adversary turn, so it's usable this round?",
+   "weird": "The factory exception inside Wall is a patch. Vigil is very fiddly for 1 insight.",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Node tracks",
+   "starts": "Your nodes start on your board, on two tracks of 7 spaces",
+   "pictured": "Removing nodes uncovers bonuses, like Terraforming Mars or Wingspan rewards",
+   "confused": "Which space gives what isn't listed. Where does a 'free research station' go: in reach, and on any open hex?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Node tracks",
+   "starts": "Every placement pays two prices",
+   "pictured": "Power cost plus the space's energy cost",
+   "confused": "none",
+   "weird": "The two tracks' cost sequences differ slightly (0,0,0,1,2,3,5 against 0,0,1,2,2,3,5)",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Node tracks",
+   "starts": "Where: a node goes on a land hex in your reach",
+   "pictured": "Placement restrictions",
+   "confused": "You may place on a corrupted city or a hex with agents, which is surprising. Does that cancel agents? Presumably not, since a node isn't an ambassador.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Node tracks",
+   "starts": "A lost node leaves the game",
+   "pictured": "Nodes are a finite pool",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "Each power can be used once a round",
+   "pictured": "Eight once-per-round powers",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "Node powers. Every board has Deploy",
+   "pictured": "Two node-placing powers each",
+   "confused": "Does Deploy also pay the track space's energy? Yes, by the two-price rule.",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "Conversions / Draws",
+   "pictured": "Small conversions",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "Sacrifice powers pay with your cards",
+   "pictured": "Discard tagged cards for effects",
+   "confused": "Shelter works 'in any one country' with no reach needed? Does Field Station follow the station-building restrictions (open hex, not an industrial zone)?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "The Protector's Bulwark",
+   "pictured": "Harden and push",
+   "confused": "Can Patrol push corp troops?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Powers",
+   "starts": "Sacrifice. A power that names a tag",
+   "pictured": "Discard a program or a whole building stack",
+   "confused": "Can I sacrifice a stack where only a covered card has the tag? Can I sacrifice a covered building alone? It seems not.",
+   "weird": "Losing the whole stack is harsh and unexplained",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "6. Capstones",
+   "starts": "Board | Economy track | Card-play track",
+   "pictured": "Endgame bonuses on the last track spaces",
+   "confused": "Aegis says it stops 'the first destruction'. Is that automatic, or do I choose? Open Science gives 2 insight to other players: to each, or split?",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Decks and kinds",
+   "starts": "There are two player decks",
+   "pictured": "Programs, buildings and events, like Terraforming Mars",
+   "confused": "Events go to the 'played pile', not the discard. That distinction matters for reshuffles.",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Decks and kinds",
+   "starts": "Every card has 1-3 tags / Draw always means",
+   "pictured": "Tags; 'draw' means the tier-1 deck",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Round 1: the opening",
+   "starts": "Each player is dealt 8 tier-1 cards",
+   "pictured": "Opening keep: 4 free, then 5 credits each; tier 2 for 1 insight",
+   "confused": "none",
+   "weird": "An opening tier-2 keep costs 1 insight, which is already the 'keep upgrade' price",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Rounds 2 on",
+   "starts": "Build a hand. Each player takes 4 cards",
+   "pictured": "Pick 4 cards face up, then draft them around, then pay to keep",
+   "confused": "So I build a hand mostly for others to draft from? Hands go to the previous player in even rounds and the next in odd: which direction is 'next'?",
+   "weird": "The unusual 'build a hand then draft it' structure",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Playing a card",
+   "starts": "In the action phase, play a card from your hand by paying",
+   "pictured": "Credit cost, insight cost and extras, plus a requirement",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Playing a card",
+   "starts": "Discounts",
+   "pictured": "Tag-based discounts, floor of 1",
+   "confused": "Does the Science discount apply to tier-1 keeps? It says tier 2 only.",
+   "weird": "'Never below 1, but 0 stays 0' is a patch",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Playing a card",
+   "starts": "Nothing to act on never blocks a card",
+   "pictured": "Partial resolution is fine",
+   "confused": "none",
+   "weird": "The exception for cards that would do nothing at all",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Playing a card",
+   "starts": "Sell a card from your hand for 1 credit",
+   "pictured": "Sell for 1",
+   "confused": "none",
+   "weird": "It's duplicated as a standard action",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Tags",
+   "starts": "The tags on your cards are those on your programs",
+   "pictured": "Count tags across the tableau",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Buildings and slots",
+   "starts": "A building goes into a slot",
+   "pictured": "Stack buildings over old ones. Covered ones stop working but keep their tags.",
+   "confused": "Can a covered building ever become uncovered?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Buildings and slots",
+   "starts": "An Action (→: pay the left",
+   "pictured": "Actions, Effects, income, one-time gains",
+   "confused": "An Effect fires per troop but once per action for agents and compute. That's hard to remember.",
+   "weird": "The troop/agent firing distinction is a patch",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Tokens on cards",
+   "starts": "Some buildings hold their own tokens",
+   "pictured": "Token accumulators with At N payouts",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "7. Help cards and teammates",
+   "starts": "A help card names another player",
+   "pictured": "Pay to benefit yourself and a teammate",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "8. The action phase",
+   "starts": "All players act at once",
+   "pictured": "Free-form simultaneous play until everyone passes",
+   "confused": "After I pass, can I still pay a threat if a teammate asks? It seems not.",
+   "weird": "The antimatter action costs 1 Discord",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "8. Standard actions",
+   "starts": "Action | Cost | Effect",
+   "pictured": "12 fallback actions",
+   "confused": "Move only to a site, base or node hex, never an empty hex. Can I build a research station on a hex with a corruption marker or another player's node? A claim costs 4 ambassadors while I start with 1 and buying one costs 20 credits; is claiming really this expensive?",
+   "weird": "The ambassador costs are very steep. Clear (2 credits) duplicates the Recovery power.",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "8. Megacorp converters",
+   "starts": "Each megaproject needs 8 cubes",
+   "pictured": "Complete a shared project, then unlock a converter for players with a node on a city there",
+   "confused": "'Node on a city': does that mean a node on a city hex specifically? Does the city have to be aligned?",
+   "weird": "Onyx's converter alone is once a round",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "8. Megacorp converters",
+   "starts": "Megacorp (megaproject) | Payout",
+   "pictured": "Per-cube payouts and converters",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Arrivals",
+   "starts": "When an agent arrives on a hex holding a player's ambassador",
+   "pictured": "1-for-1 cancel on arrival",
+   "confused": "If several agents land, does each cancel one ambassador? I assume so.",
+   "weird": "The tie-break where the earliest player in order loses theirs",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Arrivals",
+   "starts": "Remove agents is the one exception",
+   "pictured": "The ambassador removes 3 and stays",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Claiming",
+   "starts": "Claim a neutral site in reach",
+   "pictured": "Spend 4 or 3 ambassadors plus 1 per agent",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Liberating",
+   "starts": "Liberate an adversary site in reach",
+   "pictured": "Spend ambassadors, the site becomes neutral, Unity is swayed",
+   "confused": "Other players' standing ambassadors pay first. Do they get a say? The site turns neutral, not mine, so I'd also have to claim it. A remaining botnet then blocks that claim forever.",
+   "weird": "Spending teammates' ambassadors automatically",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Liberating",
+   "starts": "Liberate cards (a family of tier-2 cards)",
+   "pictured": "A card version that leaves the agents",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Blocking",
+   "starts": "While an agent stands on a neutral or player site",
+   "pictured": "One opposing piece shuts a site off",
+   "confused": "Does an agent on a neutral factory also stop corp troops? Yes, per §13.",
+   "weird": "A blocked city still builds a factory",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Guarding",
+   "starts": "When your node, or a site you own, would be destroyed",
+   "pictured": "An ambassador sacrifices itself for a node or site",
+   "confused": "The site owner's ambassador guards another player's node, except during corruption. Hard to follow.",
+   "weird": "The corruption exception is a patch",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Spent or standing",
+   "starts": "Spent: claiming, liberating",
+   "pictured": "A list of what removes ambassadors",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Moving pieces",
+   "starts": "Move (the standard action) takes one of your ambassadors",
+   "pictured": "A repeat of Move",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Moving pieces",
+   "starts": "Some cards and the Protector's Patrol move pieces",
+   "pictured": "Gather and push",
+   "confused": "Can I push agents into a teammate's ambassador to cancel them? It seems so.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Moving pieces",
+   "starts": "Gather and remove. Some cards (the rules call this a strike)",
+   "pictured": "Remove pieces adjacent to a hex but not on it",
+   "confused": "'Strike' is also what adversary troops do, so the term is overloaded. Is 'troops first' mandatory?",
+   "weird": "It excludes the center hex",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Moving pieces",
+   "starts": "Convert. Some late cards convert agents",
+   "pictured": "Agents become my ambassadors",
+   "confused": "'The node you used for reach': what if several nodes qualify? I'd choose.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "9. Moving pieces",
+   "starts": "Firewall. Some cards put a firewall",
+   "pictured": "A temporary no-agent zone",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The adversary's turn",
+   "starts": "The adversary has a board, an event deck",
+   "pictured": "An automated opponent",
+   "confused": "'Each board' means each country, which clashes with AI board and adversary board",
+   "weird": "The term clash",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The adversary's turn",
+   "starts": "The only adversary so far is the Militarist",
+   "pictured": "Three rules: Garrisons, Protector troops, Warmongering",
+   "confused": "Is Garrisons already in the difficulty table's agent income?",
+   "weird": "An adversary rule that specifically punishes the Protector",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The adversary's turn",
+   "starts": "You always see what's coming",
+   "pictured": "Next event face up, public pools",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The turn",
+   "starts": "Event / Threats / Rally X",
+   "pictured": "Agents land evenly on sites of a type, neutral sites first",
+   "confused": "Does the pool always empty on a Rally? If the card has no Rally, does the pool keep growing?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The turn",
+   "starts": "Deploy N. N adversary troops land",
+   "pictured": "Troops appear on the lowest-numbered factory, even mine",
+   "confused": "A troop deployed on my own factory will strike it in the march, which surprised me. Is that intended?",
+   "weird": "Deploy treats all factories the same, whoever owns them",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The turn",
+   "starts": "Other lines, at most two",
+   "pictured": "A grab bag of event effects",
+   "confused": "Border War: what if I have no node near a base?",
+   "weird": "Border War's last-node exception",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The turn",
+   "starts": "Troops where the Protector stands ... Reveal and income",
+   "pictured": "Projects, botnets, corruption, march, income",
+   "confused": "Natural corruption counts only agents on the site's own hex, while Corrupt X also counts adjacent hexes. Two similar rules.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. The turn",
+   "starts": "Every arriving agent cancels",
+   "pictured": "A reminder",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Corruption",
+   "starts": "Corrupt cities works on each country in turn",
+   "pictured": "Count agents on and around a site; at the threshold, take them and flip the site",
+   "confused": "How can this 'cascade' when used agents leave? I guess it just means several sites flip. Corrupt land targets open hexes, including empty industrial zones?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Corruption",
+   "starts": "A card may print (1 fewer)",
+   "pictured": "Modifiers",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Corruption",
+   "starts": "What corruption destroys",
+   "pictured": "The node, then the ambassadors on that hex",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Corruption",
+   "starts": "Land corruption blocks node placement",
+   "pictured": "A permanent Discord drip",
+   "confused": "How do I remove land corruption? It's never stated.",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Projects",
+   "starts": "The adversary spends compute on projects",
+   "pictured": "Three slots fill with compute and fire",
+   "confused": "Do I keep flipping until every slot is filled? 'Resolves: once, at once, or ongoing' is garbled. 'A resolved project leaves the game' conflicts with ongoing projects acting every round. When do new projects come if one slot holds an ongoing project? Is 'cheapest' the lowest cost or the least remaining?",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Projects",
+   "starts": "Compute comes from the adversary's income",
+   "pictured": "Compute sources",
+   "confused": "Do unpaid threats always give compute, or only at difficulty 2 and up?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "10. Botnets",
+   "starts": "A botnet stays until removed",
+   "pictured": "Hard-to-remove compute generators that block claims",
+   "confused": "none",
+   "weird": "Only a few cards remove them, but they block the purge until 3 Unity tips",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. Dealing",
+   "starts": "The event card's first line prints its pulls",
+   "pictured": "Flip threat cards until one matches the tag and the location",
+   "confused": "none",
+   "weird": "The Supply Lines exception names one specific card in a general rule",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. Location tokens",
+   "starts": "A threat prints one or two location types",
+   "pictured": "Tokens go where the adversary is strongest",
+   "confused": "none",
+   "weird": "For factories, 'with none, a free industrial zone' is a fallback patch",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. Near",
+   "starts": "You are near a threat",
+   "pictured": "A node or ambassador within 1 of a token",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. Countering",
+   "starts": "A threat prints one or two ways to pay off",
+   "pictured": "Pool resources, or one player sacrifices tags",
+   "confused": "Is 'carrying that many tags' a total across several cards? I think so.",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. Countering",
+   "starts": "Cards can also jam a threat",
+   "pictured": "Jam, delay, counter",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. When threats take effect",
+   "starts": "After production, each unpaid threat does what it prints",
+   "pictured": "Threats fire in step F",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. When threats take effect",
+   "starts": "Its harm to a player always hits the nearest player",
+   "pictured": "The closest node takes the hit, however far away",
+   "confused": "Nearest is measured by nodes only, even though 'near' counts ambassadors",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "11. When threats take effect",
+   "starts": "A resource harm reads 'pay N or discard M cards'",
+   "pictured": "Choose payment or discard",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production and upkeep",
+   "starts": "Production reads the board as each step starts",
+   "pictured": "Steps are sequential",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Corp troops / Factories",
+   "pictured": "Player factories give 2 chips, adversary factories give troops",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Cities build factories",
+   "pictured": "Each city adds a factory to a free zone each round",
+   "confused": "Corrupted cities build adversary factories anywhere in the country every round. That seems explosive. Does the clean-city factory go to the player with the most nodes?",
+   "weird": "It removes the corruption marker as a side effect",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Cities' energy",
+   "pictured": "Aligned to the owner, clean for sale at 5 credits, corrupted becomes Discord",
+   "confused": "none",
+   "weird": "5 credits for 1 energy",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Stations",
+   "pictured": "Cubes onto the megaproject, then research cubes",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Your nodes. Each hex where your node stands with no site",
+   "pictured": "A penalty for nodes sharing a bare hex with agents",
+   "confused": "none",
+   "weird": "A narrow penalty rule",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "Megaprojects ... Upkeep",
+   "pictured": "Completion payouts, then income",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "12. Production",
+   "starts": "A blocking piece stops a site's output",
+   "pictured": "A reminder",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Troops intro",
+   "starts": "There are two kinds of troop",
+   "pictured": "Adversary troops and corp troops",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. The march",
+   "starts": "An adversary troop's targets are player-owned",
+   "pictured": "Troops hunt your facilities, 2 steps each",
+   "confused": "Can troops march across country borders? Do they stay forever if there's no target (which blocks the purge)?",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Corp troops and war",
+   "starts": "Each base holds up to 2 corp troops",
+   "pictured": "Corps fill bases; ambassadors can absorb the new troops",
+   "confused": "Which corp does a neutral factory feed: its country's? Why would I want to stop corp troops when they also protect my facilities?",
+   "weird": "'2 at 3-4 countries' in parentheses, and the exceptions to the cap",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. War",
+   "starts": "War, at the end of every round, on each front",
+   "pictured": "Piles cancel and leftover troops hit the nearest rival factory",
+   "confused": "The factory can be saved like any destruction, but the node on it can't be saved separately. Two layers of protection rules.",
+   "weird": "The node-goes-with-it exception list is a patch",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. War",
+   "starts": "A corp troop at a base also protects facilities",
+   "pictured": "Corp troops shield nearby facilities from adversary strikes",
+   "confused": "none",
+   "weird": "none",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Destruction",
+   "starts": "When a node or facility would be destroyed, the first of these",
+   "pictured": "A priority list of protections",
+   "confused": "Aegis comes last in the list, but the capstone text says 'the first destruction'. Do I choose which protection to spend? It seems not; the first that applies is used.",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Destruction",
+   "starts": "Corruption never destroys the node of a player with Sanctuary",
+   "pictured": "A capstone reminder",
+   "confused": "Hardening, a shield, and the shield icon 'with a node': is a shield ever anything but a hardening token?",
+   "weird": "The 'shield' name for a hardening token that happens to share a hex with a node",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Losing nodes",
+   "starts": "Nodes are destroyed only where the board is overrun",
+   "pictured": "Ways nodes die and last-node protections",
+   "confused": "Can corruption take a last node from stage II on? It's not listed, but it's implied.",
+   "weird": "Last-node protection varies by source and stage",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "13. Losing nodes",
+   "starts": "A destroyed node leaves the game and leaves a corruption marker",
+   "pictured": "Markers block placement",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. Unity and Discord intro",
+   "starts": "The world leans toward Unity",
+   "pictured": "Two independent tracks",
+   "confused": "'Nothing on one side empties the other', yet Unity can remove Discord",
+   "severity": 1,
+   "weird": "none",
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. Sway",
+   "starts": "Effects sway Unity or Discord",
+   "pictured": "Lists of sources",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. Sway",
+   "starts": "Holding Discord off",
+   "pictured": "Spend fresh Unity to remove Discord",
+   "confused": "'Only if that leaves the Discord track below its tipping point': can I use none at all if I can't get it below? Only Unity from this action counts.",
+   "weird": "The tipping-point condition is a patch",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. Tipping",
+   "starts": "A track tips when it holds 3 × the number of players",
+   "pictured": "Tip, take a card, resolve it at a tier",
+   "confused": "none",
+   "weird": "Discord empties on a tip while Unity carries over",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. The cards",
+   "starts": "Every Unity and Discord card prints three tiers",
+   "pictured": "Board-wide condition effects",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "14. The cards",
+   "starts": "The Unity deck (23 cards) / The Discord deck (6 cards)",
+   "pictured": "Discord is the clock: the 7th tip loses",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "15. Winning",
+   "starts": "You win the moment the board holds none",
+   "pictured": "A purge table by Unity tips",
+   "confused": "Do agents in pools count as 'on the board'?",
+   "weird": "none",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "15. Losing",
+   "starts": "Everyone loses at once if",
+   "pictured": "Three loss conditions",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "16. Difficulty",
+   "starts": "Choose a level from 0 to 4",
+   "pictured": "Cumulative changes by level",
+   "confused": "Level 4 removes a Discord card and 'counts as a tip already made'. Does the tip count start at 1?",
+   "weird": "Many bolted-on changes at level 4",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "16. Difficulty",
+   "starts": "Level | Compute income | Agent income",
+   "pictured": "An income table",
+   "confused": "Compute income 3, 4, 18, 24, then 13 at the hardest level? Agent income goes 1, 4, 4, 4, 3. That isn't monotonic, and level 0 to 1 jumps from 1 to 4. Is Garrisons on top of this?",
+   "weird": "Odd, non-monotonic numbers",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "17. Player count and solo",
+   "starts": "Countries: one per player, 1-4",
+   "pictured": "Scaling rules; solo has no war",
+   "confused": "none",
+   "weird": "2 players have no Researcher; solo is Builder only",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. Icon legend intro",
+   "starts": "A card is read like a sentence",
+   "pictured": "Top strip, above the art, below the art",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. The icons",
+   "starts": "Kind | Icons",
+   "pictured": "An icon reference",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. Shapes",
+   "starts": "Mark | Means (Square tile...)",
+   "pictured": "Shape grammar",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. Boxes and outlines",
+   "starts": "No box | once, now",
+   "pictured": "Frames for income and adversary effects",
+   "confused": "An ambassador silhouette in a dark frame means an agent. That's easy to misread.",
+   "weird": "Agents share the ambassador icon",
+   "severity": 1,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. Connectors",
+   "starts": "→ | an Action",
+   "pictured": "Connector grammar",
+   "confused": "none",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  },
+  {
+   "section": "18. Special marks",
+   "starts": "Play (a card with an arrow onto it)",
+   "pictured": "Special icons",
+   "confused": "'Cordon (no agents land there through next round)' is a mechanic that appears nowhere else in the rules",
+   "weird": "It mentions a red 'at most' plate that no card uses",
+   "severity": 2,
+   "false_familiarity": ""
+  },
+  {
+   "section": "19. Glossary",
+   "starts": "Adjacent: sharing an edge",
+   "pictured": "Term list",
+   "confused": "'A country you're in' is defined here only",
+   "weird": "none",
+   "severity": 0,
+   "false_familiarity": ""
+  }
+ ],
+ "questions": [
+  {
+   "id": "G1",
+   "question": "What does the Protector start with?",
+   "answer": "1 node on the starting hex (+1 insight), 1 ambassador, 3 energy, 46 credits, and a cube on the home city",
+   "section": "3 Setup, 6 table",
+   "confidence": "high"
+  },
+  {
+   "id": "G2",
+   "question": "Does my setup node cost energy?",
+   "answer": "No: the first economy space costs 0, and setup placement pays no power cost",
+   "section": "3, 6 Node tracks",
+   "confidence": "medium"
+  },
+  {
+   "id": "G3",
+   "question": "At difficulty 0 with the Militarist, how many agents are in each country's pool at setup?",
+   "answer": "1 (the text says 1 at base difficulty). It's unclear whether Garrisons' +1 is included; I'd play 1.",
+   "section": "3, 10, 16",
+   "confidence": "low"
+  },
+  {
+   "id": "G4",
+   "question": "In a 2-player game, which boards are used?",
+   "answer": "Builder and Protector (no Researcher)",
+   "section": "17",
+   "confidence": "high"
+  },
+  {
+   "id": "G5",
+   "question": "In round 1, do we get cards before the adversary acts?",
+   "answer": "No. The adversary's turn (B) comes first, then the opening deal (C).",
+   "section": "3, 4",
+   "confidence": "high"
+  },
+  {
+   "id": "G6",
+   "question": "Can I save unspent insight for next round?",
+   "answer": "No, unless you're the Researcher (your own insight only, not insight others gave you)",
+   "section": "5",
+   "confidence": "high"
+  },
+  {
+   "id": "G7",
+   "question": "After I pass, can I still chip in on a threat if a teammate asks?",
+   "answer": "No. Passing ends your action phase.",
+   "section": "8",
+   "confidence": "high"
+  },
+  {
+   "id": "G8",
+   "question": "Does a factory a city builds this production make chips this round?",
+   "answer": "No. Factories produce in step 2, before cities build in step 3.",
+   "section": "12",
+   "confidence": "high"
+  },
+  {
+   "id": "G9",
+   "question": "When do agents added by agent income actually land?",
+   "answer": "Income goes to the pool at the end of the adversary turn (step 12). The pool lands at next round's Rally.",
+   "section": "10",
+   "confidence": "medium"
+  },
+  {
+   "id": "G10",
+   "question": "Can I place a node on a corrupted city or a hex with agents?",
+   "answer": "Yes. Not on ocean, an occupied hex, a corruption marker or land corruption, and it must be in reach.",
+   "section": "6 Node tracks",
+   "confidence": "high"
+  },
+  {
+   "id": "G11",
+   "question": "Can I Move an ambassador onto an empty open hex?",
+   "answer": "No. Only onto a site, base or node hex in reach, other than the hex it leaves.",
+   "section": "8, 9",
+   "confidence": "high"
+  },
+  {
+   "id": "G12",
+   "question": "If I liberate a corrupted city, is it mine?",
+   "answer": "No, it turns neutral. You must Claim it (4 + agents), and you can't if a botnet is on or next to it.",
+   "section": "9",
+   "confidence": "high"
+  },
+  {
+   "id": "G13",
+   "question": "How many ambassadors to claim a neutral station with 2 agents on it?",
+   "answer": "5 from your supply (3 + 2). The agents cancel. Ambassadors already standing there don't help.",
+   "section": "9",
+   "confidence": "high"
+  },
+  {
+   "id": "G14",
+   "question": "When I liberate, are a teammate's ambassadors standing on the site spent?",
+   "answer": "Yes. Standing ambassadors pay first, yours then others'. Consent isn't mentioned; I'd ask the teammate.",
+   "section": "9 Liberating",
+   "confidence": "medium"
+  },
+  {
+   "id": "G15",
+   "question": "Can I pay toward a threat if only my ambassador (no node) is next to its token?",
+   "answer": "Yes. Near is a node or ambassador on or next to a token.",
+   "section": "11 Near",
+   "confidence": "high"
+  },
+  {
+   "id": "G16",
+   "question": "Can we split a threat's payment across its two options?",
+   "answer": "No. Pay one option in full. Resources for that option can be pooled among near players.",
+   "section": "11 Countering",
+   "confidence": "high"
+  },
+  {
+   "id": "G17",
+   "question": "Can two players combine sacrificed cards for a tag counter?",
+   "answer": "No. One player alone sacrifices the tags (2 for tier 1, 3 for tier 2). Board tags can't be used.",
+   "section": "11, 6",
+   "confidence": "high"
+  },
+  {
+   "id": "G18",
+   "question": "If nobody is near an unpaid threat, who takes the harm?",
+   "answer": "The player whose node is closest to any of its tokens, however far. Tied players choose.",
+   "section": "11",
+   "confidence": "high"
+  },
+  {
+   "id": "G19",
+   "question": "Can a threat destroy my last node in stage III?",
+   "answer": "No. A threat never takes a last node.",
+   "section": "11, 13",
+   "confidence": "high"
+  },
+  {
+   "id": "G20",
+   "question": "At 0-2 Unity tips, do agents sitting in pools stop the purge?",
+   "answer": "Not stated. My guess: no, pools aren't 'on the board'.",
+   "section": "15",
+   "confidence": "low"
+  },
+  {
+   "id": "G21",
+   "question": "An adversary troop is deployed on my factory. Does it hit it in the march?",
+   "answer": "Yes. Its first step strikes a target on or next to its hex, unless stopped by Shelter, a corp troop at a base next to it, hardening, my ambassador or Aegis. The troop is used up either way.",
+   "section": "10 Deploy, 13",
+   "confidence": "medium"
+  },
+  {
+   "id": "G22",
+   "question": "In stage II, war hits a factory with my node on it. Can my ambassador there save the node?",
+   "answer": "Only by saving the factory (the destruction list applies to the factory). If the factory is destroyed, the node goes too and nothing saves it.",
+   "section": "13 War",
+   "confidence": "medium"
+  },
+  {
+   "id": "G23",
+   "question": "Can I use Unity swayed this action to remove Discord if Discord would still be at or above its tip point?",
+   "answer": "No. Only if the Discord track ends below its tipping point. Otherwise all the Unity goes on the Unity track.",
+   "section": "14 Holding Discord off",
+   "confidence": "medium"
+  },
+  {
+   "id": "G24",
+   "question": "How many Discord tips can we survive?",
+   "answer": "6 (one per card). The 7th tip loses. At difficulty 4, one card is removed, so the 6th tip loses.",
+   "section": "14, 16",
+   "confidence": "high"
+  },
+  {
+   "id": "G25",
+   "question": "Can Shelter protect my node from the adversary's Corrupt step?",
+   "answer": "Effectively no. Shelter is used in the action phase and ends at cleanup, so it never covers an adversary turn. It covers threats and war.",
+   "section": "6, 4, 13",
+   "confidence": "medium"
+  }
+ ],
+ "overall": "1. Projects (§10) are the weakest section. Dealing, 'resolves: once, at once, or ongoing', and when new projects come in can't be played reliably. Rewrite it with a step list.\n2. Protection and guarding stack up across §9, §13 and the capstones: the destruction order, Aegis 'first destruction', war's node exception, the corruption exception to guarding, and which sources can take a last node at each stage. One consolidated table, by source of destruction against each protection, would help most.\n3. The numbers and difficulty don't line up. Agent income goes 1 to 4, compute income is non-monotonic, and it's unclear whether Garrisons stacks on top. Setup's '1 agent' has the same ambiguity.\n4. Some mechanics are missing or orphaned. Removing land corruption isn't covered. 'Cordon' appears only in the icon legend. It isn't said whether pooled agents count for the purge.\n5. There are many patched exceptions: the Vigil wording, Patience vs given insight, the Effect firing rules, the Supply Lines named in dealing, Unity holding Discord off only below the tipping point, and the Wall factory exception. Each one is small, but together they make the game feel fiddly.\n6. Overloaded terms: 'strike' is both a card effect and a troop attack, 'board' means both a country and an AI board, the agent and ambassador icons are the same, and 'next to' includes the hex itself.\nBiggest help: a one-page turn summary with the adversary steps, a destruction/protection matrix, and a worked example of a liberate followed by a claim."
+}

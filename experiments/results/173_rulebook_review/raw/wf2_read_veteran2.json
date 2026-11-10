@@ -1,0 +1,481 @@
+{
+ "answers": [
+  {
+   "id": "G1",
+   "question": "What does the Protector start with?",
+   "answer": "First economy-track node on the starting hex (free), 1 ambassador, 3 energy, 46 credits, its cube on the home city. Insight 6 in round 1 (5 +1 from the uncovered space), Movement 1, 4 slots, Security tag, Wall and Vigil.",
+   "section": "§3, §5",
+   "confidence": "high"
+  },
+  {
+   "id": "G2",
+   "question": "Does my setup node cost energy?",
+   "answer": "No. Setup just places it, and economy space 1 costs 0 anyway.",
+   "section": "§3, §5",
+   "confidence": "high"
+  },
+  {
+   "id": "G3",
+   "question": "Level 0 Militarist: agents in each pool at setup?",
+   "answer": "1 per country. The level-0 income of 1 already includes Garrisons.",
+   "section": "§3, §6, §21",
+   "confidence": "high"
+  },
+  {
+   "id": "G4",
+   "question": "2-player boards?",
+   "answer": "Builder and Protector. No Researcher.",
+   "section": "§3, §22",
+   "confidence": "high"
+  },
+  {
+   "id": "G5",
+   "question": "Round 1: cards before the adversary acts?",
+   "answer": "No. The game opens with the adversary's turn (step B). The opening deal is step C, after it.",
+   "section": "§3, §4",
+   "confidence": "high"
+  },
+  {
+   "id": "G6",
+   "question": "Save unspent insight?",
+   "answer": "No, it is lost at round end. Only the Researcher's Patience carries over their own unspent insight. Insight a teammate gave does not carry over.",
+   "section": "§5",
+   "confidence": "high"
+  },
+  {
+   "id": "G7",
+   "question": "After passing, chip in on a threat?",
+   "answer": "No. Once you pass you can't play, pay or take anything back until next round.",
+   "section": "§8, §10",
+   "confidence": "high"
+  },
+  {
+   "id": "G8",
+   "question": "New factory from a city: chips this round?",
+   "answer": "No. Factories produce in production step 2 and cities build in step 3, so the new one first makes chips next round.",
+   "section": "§9",
+   "confidence": "high"
+  },
+  {
+   "id": "G9",
+   "question": "When do income agents land?",
+   "answer": "Income goes into the pool at step 12 of the adversary turn. That pool lands at the next adversary turn's Rally (step 3), on that card's site type. The book doesn't say what happens if a card has no Rally line. My guess is that the pool waits.",
+   "section": "§6",
+   "confidence": "medium"
+  },
+  {
+   "id": "G10",
+   "question": "Node on a corrupted city or a hex with agents?",
+   "answer": "Yes, both are allowed (the hex must be land in reach, with no node, marker or land corruption). The node doesn't remove the agents.",
+   "section": "§5 Where",
+   "confidence": "high"
+  },
+  {
+   "id": "G11",
+   "question": "Move ambassador onto an empty open hex?",
+   "answer": "No. Move only goes onto a site, base or node in your reach.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "G12",
+   "question": "Liberated city mine?",
+   "answer": "No, it becomes neutral (+5 Unity). Claim it afterwards for 4 + agents. A botnet on or next to it blocks that claim.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "G13",
+   "question": "Claim neutral station with 2 agents?",
+   "answer": "5 ambassadors (3 + 1 per agent), all from your supply. The agents are removed.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "G14",
+   "question": "Liberate: teammate's standing ambassadors spent?",
+   "answer": "Yes. Ambassadors standing on the site pay first, yours then other players', then your supply. The book doesn't say whether the teammate must agree.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "G15",
+   "question": "Pay threat with only an ambassador near?",
+   "answer": "Yes. Near means your node or ambassador is on or next to a token.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "G16",
+   "question": "Split payment across two options?",
+   "answer": "No. You must pay one way in full. Whatever is on an unfinished option goes back to its payers.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "G17",
+   "question": "Two players combine sacrifices for a tag counter?",
+   "answer": "No. One player alone sacrifices the tags.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "G18",
+   "question": "Nobody near: who takes harm?",
+   "answer": "The player whose node is closest to any of its tokens, at any distance. Ties go to the earliest in player order. Being near doesn't matter.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "G19",
+   "question": "Threat destroy last node in stage III?",
+   "answer": "It depends on the threat. One that corrupts a site (Overrun, Station Seizure) can. One that says \"destroy a node\" (including Siege) never can.",
+   "section": "§13 Your last node",
+   "confidence": "high"
+  },
+  {
+   "id": "G20",
+   "question": "0-2 Unity tips: pool agents stop purge?",
+   "answer": "No. Agents in the pools are not on the map.",
+   "section": "§14",
+   "confidence": "high"
+  },
+  {
+   "id": "G21",
+   "question": "Troop deployed on my factory: hits it in the march?",
+   "answer": "Yes, on its first march step this same turn (deploy is step 4, march is step 11), unless something protects the factory: a corp troop at an adjacent base, a hardening token or my ambassador. Shelter doesn't work in the adversary's turn. Either way the troop is used up.",
+   "section": "§6, §13",
+   "confidence": "high"
+  },
+  {
+   "id": "G22",
+   "question": "Stage II war on factory with my node; ambassador saves node?",
+   "answer": "Only if I own the factory. My ambassador then protects the factory, and protecting the factory protects the node. If the factory is neutral or a teammate's, my ambassador can't protect it, and once it goes only the stage-I last-node rule saves the node. §13 item 5's 'node owner's ambassador' muddies this.",
+   "section": "§11 War step 3, §13",
+   "confidence": "medium"
+  },
+  {
+   "id": "G23",
+   "question": "Use swayed Unity if Discord stays at/above tip point?",
+   "answer": "No. It is only allowed if Discord ends up below its tipping point. Otherwise the Unity goes onto the Unity track.",
+   "section": "§12",
+   "confidence": "high"
+  },
+  {
+   "id": "G24",
+   "question": "How many Discord tips survivable?",
+   "answer": "6 (the 7th tip loses). At level 4, 5 (the 6th tip loses).",
+   "section": "§12, §21",
+   "confidence": "high"
+  },
+  {
+   "id": "G25",
+   "question": "Shelter vs Corrupt step?",
+   "answer": "No. Shelter runs from the action phase to cleanup and never covers the adversary's turn. Only the stage-I last-node rule, hardening, an ambassador, Sanctuary or Aegis help there.",
+   "section": "§13",
+   "confidence": "high"
+  },
+  {
+   "id": "V1",
+   "question": "Agents/troops at setup?",
+   "answer": "No agents or troops start on the map. Each country does start with a corrupted city and a corrupted station with a botnet, and 1 agent waits in each pool (level 0) to land on the first adversary turn.",
+   "section": "§3",
+   "confidence": "high"
+  },
+  {
+   "id": "V2",
+   "question": "Round-1 insight?",
+   "answer": "6 (5 + 1 from the setup node's space). Keeping tier-2 cards in the opening deal costs 1 each.",
+   "section": "§5, §7",
+   "confidence": "high"
+  },
+  {
+   "id": "V3",
+   "question": "2-player boards?",
+   "answer": "Builder and Protector.",
+   "section": "§3, §22",
+   "confidence": "high"
+  },
+  {
+   "id": "V4",
+   "question": "Cards before first adversary turn?",
+   "answer": "No. The adversary acts first.",
+   "section": "§3, §4",
+   "confidence": "high"
+  },
+  {
+   "id": "V5",
+   "question": "Use this round's upkeep to pay a threat?",
+   "answer": "No. Upkeep is production step 8, after the action phase, and threats can only be paid in the action phase. That income is for next round.",
+   "section": "§4, §9, §10",
+   "confidence": "high"
+  },
+  {
+   "id": "V6",
+   "question": "Hold a 'slow' card until after the adversary acts?",
+   "answer": "There is no fast/slow split. All play happens in the action phase (D), which already comes after this round's adversary turn. You can't play anything after production, threats or war. Unplayed cards stay in hand (no hand limit) for next round.",
+   "section": "§4, §8",
+   "confidence": "high"
+  },
+  {
+   "id": "V7",
+   "question": "After passing, sell or add to threat?",
+   "answer": "No. After you pass you can't play, pay or take anything back.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "V8",
+   "question": "Shelter vs next round's adversary turn?",
+   "answer": "No. It ends at cleanup and never covers the adversary's turn.",
+   "section": "§13",
+   "confidence": "high"
+  },
+  {
+   "id": "V9",
+   "question": "Vigil insight spendable this round?",
+   "answer": "Yes, the book says so explicitly. Insight is set at round start, before the adversary turn, so it isn't wiped.",
+   "section": "§5 Vigil",
+   "confidence": "high"
+  },
+  {
+   "id": "V10",
+   "question": "Node on agents hex or corrupted city?",
+   "answer": "Yes to both.",
+   "section": "§5",
+   "confidence": "high"
+  },
+  {
+   "id": "V11",
+   "question": "Share hex with another node / stack two?",
+   "answer": "No. Only one node per hex, of any player.",
+   "section": "§2 Pieces, §5",
+   "confidence": "high"
+  },
+  {
+   "id": "V12",
+   "question": "Standing ambassador counts toward Claim?",
+   "answer": "No. Claim is paid from your supply only (only Liberate uses standing ambassadors). You pay 3 from supply. The book doesn't say what happens to the standing ambassador.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "V13",
+   "question": "Botnet on corrupted station vs liberate; mine?",
+   "answer": "The botnet doesn't stop the Liberate, and it stays. The station becomes neutral, not yours. You can't then claim it while the botnet is on or next to it.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "V14",
+   "question": "Move onto open hex with no site/base/node?",
+   "answer": "No.",
+   "section": "§8",
+   "confidence": "high"
+  },
+  {
+   "id": "V15",
+   "question": "Who takes unpaid-threat harm?",
+   "answer": "The player whose node is closest to any token, at any distance. Ties go to the earliest in player order.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "V16",
+   "question": "Not near: chip in credits?",
+   "answer": "No. Only near players may pay.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "V17",
+   "question": "Stage III threat destroy last node?",
+   "answer": "Only a threat that corrupts a site can. One that says \"destroy a node\" never can.",
+   "section": "§13",
+   "confidence": "high"
+  },
+  {
+   "id": "V18",
+   "question": "Partial 4 on 6-credit threat lost?",
+   "answer": "No. It goes back to its payers when threats take effect.",
+   "section": "§10",
+   "confidence": "high"
+  },
+  {
+   "id": "V19",
+   "question": "Level 1: '2 Security' becomes 3?",
+   "answer": "No. Tag items never change.",
+   "section": "§18, §21",
+   "confidence": "high"
+  },
+  {
+   "id": "V20",
+   "question": "Pool agents stop purge at 0-2 tips?",
+   "answer": "No.",
+   "section": "§14",
+   "confidence": "high"
+  },
+  {
+   "id": "V21",
+   "question": "6 Unity tips, corrupted station + land corruption remain: win?",
+   "answer": "Yes, the moment no corrupted city remains (as long as no loss triggers in the same check).",
+   "section": "§14",
+   "confidence": "high"
+  },
+  {
+   "id": "V22",
+   "question": "Adversary troop attack node or my city?",
+   "answer": "No. Its only targets are player-owned stations and factories, and a strike never destroys a node.",
+   "section": "§6 March, §13",
+   "confidence": "high"
+  },
+  {
+   "id": "V23",
+   "question": "Stage II Corrupt line destroys last node, game lost?",
+   "answer": "Yes, unless something protects the node: a hardening token (shield), my ambassador on the hex, Sanctuary or Aegis. Shelter doesn't apply in the adversary's turn.",
+   "section": "§13, §14",
+   "confidence": "high"
+  },
+  {
+   "id": "V24",
+   "question": "Unity spent on Discord counts toward Unity tip?",
+   "answer": "No. Only the rest goes onto the Unity track.",
+   "section": "§12",
+   "confidence": "high"
+  },
+  {
+   "id": "V25",
+   "question": "Discord overflow carries? When lose?",
+   "answer": "No. Discord empties on a tip (only Unity keeps extra). You lose when a Discord tip finds the deck empty: the 7th tip, or the 6th at level 4.",
+   "section": "§12",
+   "confidence": "high"
+  },
+  {
+   "id": "N1",
+   "question": "SI habit (Explore): Do agents spread or move to adjacent hexes on their own each round?",
+   "answer": "No. Agents only arrive by Rally and stay put. Only adversary troops march. A Corrupt line pulls neighbours in only when a site corrupts.",
+   "section": "§6",
+   "confidence": "high"
+  },
+  {
+   "id": "N2",
+   "question": "SI habit (blight-out): Is there a loss for too much corruption on the map?",
+   "answer": "No. There are only three losses: an empty Discord deck at a tip, a player with no nodes, and the event deck running out. Corruption hurts through Discord per round instead.",
+   "section": "§14",
+   "confidence": "high"
+  },
+  {
+   "id": "N3",
+   "question": "SI habit (blight cascade): Does a new corruption spread to a neighbouring hex? Can land corruption be removed like blight?",
+   "answer": "There is no cascade: a site corrupts only by natural corruption or a Corrupt line. Land corruption can never be removed and adds 1 Discord every round.",
+   "section": "§6, §15",
+   "confidence": "high"
+  },
+  {
+   "id": "N4",
+   "question": "SI habit (Build only on Build cards): Do corrupted cities add adversary structures every round?",
+   "answer": "Yes. Every city builds a factory on a free industrial zone each production, even if blocked. A corrupted city's factory belongs to the adversary and makes 1 adversary troop each production.",
+   "section": "§9 step 3",
+   "confidence": "high"
+  },
+  {
+   "id": "N5",
+   "question": "SI habit (Dahan fight back): Rally lands 3 agents on a site where I have 1 ambassador. What remains?",
+   "answer": "Each landing agent cancels with an ambassador there, so 1 agent and my ambassador are removed and 2 agents remain.",
+   "section": "§6, §8",
+   "confidence": "medium"
+  },
+  {
+   "id": "N6",
+   "question": "SI habit (presence claims a land): Does my node on a neutral city make it mine or block agents?",
+   "answer": "No. A node neither owns nor blocks a site. Only Claim owns it, and only an opposing piece blocks.",
+   "section": "§2 Blocked, §8",
+   "confidence": "high"
+  },
+  {
+   "id": "N7",
+   "question": "Rally stations, but every neutral station in the country is firewalled. Where do the agents go?",
+   "answer": "Not stated. My guess is they go to the players' stations, then the adversary's, else back to the supply.",
+   "section": "§6 step 3, §16",
+   "confidence": "low"
+  },
+  {
+   "id": "N8",
+   "question": "SI habit (fear victory checked at end): Can we win mid-action-phase when a Unity tip lowers the purge?",
+   "answer": "Yes. After every action, tip any full track and then check the purge, so the win is immediate. A loss in the same check beats it.",
+   "section": "§4, §14",
+   "confidence": "high"
+  },
+  {
+   "id": "N9",
+   "question": "An adversary troop is next to my hardened factory and my unprotected station. Can we steer the strike?",
+   "answer": "Yes. The players choose which target it strikes. The hardening token is used up, but the troop is used up either way.",
+   "section": "§6 March, §13",
+   "confidence": "high"
+  },
+  {
+   "id": "N10",
+   "question": "SI habit (fear cards banked until the Fear phase): Is a Unity card saved for later?",
+   "answer": "No. It is drawn and resolved at once, when the track tips, at the tier for the tip count. A card that refills a track tips it again.",
+   "section": "§12",
+   "confidence": "high"
+  }
+ ],
+ "trouble": [
+  {
+   "section": "§11 War step 3 vs §13 item 5",
+   "starts": "The factory can be protected like any destruction",
+   "note": "§13 says the node owner's ambassador protects a node, but §11 says once the factory goes only the last-node rule saves the node. Can my ambassador on a neutral factory save my node? The two conflict.",
+   "severity": 3
+  },
+  {
+   "section": "§6 step 3 Rally X",
+   "starts": "Rally X. Each country's whole pool lands",
+   "note": "It is unclear whether every event card has a Rally. If one doesn't, does the pool wait or empty? Also, what happens when all top-priority sites are firewalled?",
+   "severity": 2
+  },
+  {
+   "section": "§12 / §21 level 4",
+   "starts": "A Discord tip with no card left loses the game",
+   "note": "'Start the Discord tip count at 1' and 'the 6th at level 4' mix up the tip count with actual tips. Is it 5 actual tips survivable, or 4?",
+   "severity": 2
+  },
+  {
+   "section": "§13 protection order item 5",
+   "starts": "The owner's ambassador on the hex",
+   "note": "The parenthetical about the corrupting site's owner reads patched. It also sits oddly with 'then every ambassador on it is removed'. Does the protecting ambassador get used up or removed?",
+   "severity": 2
+  },
+  {
+   "section": "§9 step 3 Cities build factories",
+   "starts": "Every city, blocked or not, builds one factory",
+   "note": "Surprising (SI habit: Builds come only from cards). A factory every round from every city seems huge. I'd reread it twice to believe it, and I'd want the zone limit stressed.",
+   "severity": 2
+  },
+  {
+   "section": "§4 round order (SI habit)",
+   "starts": "Each round runs in this order",
+   "note": "SI veterans expect a fast window before the invaders act. Here everything you do in D is preparation for NEXT round's adversary turn, and Shelter can never cover it. One sentence saying so outright would help.",
+   "severity": 2
+  },
+  {
+   "section": "§8 Claim table, Who pays",
+   "starts": "your supply only",
+   "note": "It doesn't say what happens to my ambassador already standing on the site I claim. Does it stay, and does it then block my own site?",
+   "severity": 2
+  },
+  {
+   "section": "§5 Wall",
+   "starts": "adversary troops can't enter, be deployed onto or strike",
+   "note": "The factory-troop exception reads patched. Does the troop made on a Wall hex march off normally?",
+   "severity": 2
+  },
+  {
+   "section": "§8 Ambassadors meet agents",
+   "starts": "When your ambassador arrives on a hex with agents",
+   "note": "Liberate lets standing ambassadors pay, but a liberate card leaves agents on the city with them. Does an ambassador then on the hex cancel? The interaction is unclear.",
+   "severity": 2
+  }
+ ],
+ "overall": "Yes, I could play from this book: 47 of the 50 listed questions had clear answers in the text, and G9, G22 and my N7 were the only real gaps.\nPart 1 teaches well and the order of play is clear; §13 (protection) and §6 (corruption) are the densest but hold together.\nThe one real contradiction is §11 vs §13 on whether an ambassador saves a node on a factory destroyed in war; I'd likely get that wrong at the table.\nSpirit Island habit misleads me in three places: there is no fast window before the adversary, nodes are not presence (they neither own nor block), and cities build factories every round.\nSmall fixes would close the rest: what happens to a pool with no Rally or with every site firewalled, how level 4 counts Discord tips, and what happens to an ambassador already on a site you Claim."
+}

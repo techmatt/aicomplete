@@ -1,0 +1,121 @@
+{
+ "checks": [
+  {
+   "id": "G1",
+   "engine_answer": "1 node on the starting hex. It is the economy track's first token, so the track counter is set to 1 and the space's +1 insight income applies from round 1. Also 1 ambassador in supply, 3 energy, 46 credits, and the Protector's cube on the nearest clean city of its country (tie: lower hex). No cards at setup.",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:293-303 (node, track_key=1, start_ambassadors, bound_city); modules/ai.rs:380-385 (start_credits, start_energy); configs/baseline.json start_credits [40,46,40], start_energy 3, board.start_ambassadors 1; content/ais.json protector economy_track[0] income insight 1",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 Setup step 5; §6 board table (Starting credits)",
+   "fix": "Optional: write '+1 insight each round' instead of '+1 insight', so the space doesn't read as a one-off gain at setup."
+  },
+  {
+   "id": "G2",
+   "engine_answer": "No. Setup puts the node on the hex and sets the track counter to 1 without charging anything, and the first economy space's printed cost is 0 anyway.",
+   "evidence": "crates/aic-core/src/modules/board/mod.rs:294-298 (add_tokens + set_key track 1, no Price paid); content/ais.json economy_track[0] has no cost (0)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 step 5 first bullet; §6 Node tracks ('Every placement pays two prices')",
+   "fix": "Add 'free' to §3 step 5: 'places their first node, free, from the economy track...'. The reader then doesn't have to work it out from the cost table."
+  },
+  {
+   "id": "G3",
+   "engine_answer": "1 agent per country. Pool = ambassador_income[d0] = 0, plus Garrisons' increase_income +1 = 1. fill_pools puts one round of that into each country's pool at setup.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:383-394 (income_at plus the board's IncreaseIncome lines, then fill_pools), 928-934; configs/baseline.json adversary.ambassador_income [0,3,3,3,2]; content/adversary.json Garrisons increase_income ambassadors 1",
+   "verdict": "right",
+   "cause": "wording",
+   "paragraph": "§3 step 3 fourth bullet; §10 Garrisons bullet; §16 income table 'Agent income (each country)' column",
+   "fix": "The §16 table shows totals with Garrisons included (0+1, 3+1, 3+1, 3+1, 2+1), but nothing says so, which is why the reader wasn't sure. Retitle the column 'Agent income, each country (Garrisons' +1 included)' and add '(counted in §16's table)' to the Garrisons bullet in §10. §3 could also say '1 agent a country at difficulty 0 with the Militarist'."
+  },
+  {
+   "id": "G4",
+   "engine_answer": "Builder (seat 0) and Protector (seat 1). Seat s takes ai.boards[s mod 3], so there is no Researcher.",
+   "evidence": "crates/aic-core/src/modules/ai.rs:113-116 (board_index = list[seat % len]); configs/baseline.json ai.boards [0,1,2]",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§17 Boards bullet; §3 step 5",
+   "fix": "None needed."
+  },
+  {
+   "id": "G5",
+   "engine_answer": "No. Round order is sway, adversary event, threats deal, build (Rally/Deploy/projects/botnets), corrupt, natural, march, reveal+income, and only then cards.tier/deal/draft/keep. Round 1 is no different.",
+   "evidence": "configs/baseline.json round (lines 365-385)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§3 last line; §4 table steps B and C",
+   "fix": "None needed."
+  },
+  {
+   "id": "G6",
+   "engine_answer": "No. At round start, insight is reset to income + gifts + carried - debt. Only a board with the Patience passive (the Researcher) carries over, and only its own unspent insight: what it holds minus insight received from other seats that round.",
+   "evidence": "crates/aic-core/src/modules/economy.rs:189-201 (round_start: carried = patient ? have - received : 0), 79-83 (patient); content/ais.json Researcher innate 'patience'",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§5 'Insight is this round's attention'; §6 board table, Researcher special rule",
+   "fix": "None needed."
+  },
+  {
+   "id": "G7",
+   "engine_answer": "No. A passed seat gets no legal actions for the rest of the combined action phase (cards.play+threats.counter+...), and a threat payment is one of those actions. The flag resets only when the next decision phase begins.",
+   "evidence": "crates/aic-core/src/rules.rs:474-476 (passed seats skipped in legal_actions_into), 603-604 ('seat has passed this phase'), 615-624, 762-764; configs/baseline.json round 'cards.play+threats.counter+alignment.act+board.act+ai.power'",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 first paragraph",
+   "fix": "None needed."
+  },
+  {
+   "id": "G8",
+   "engine_answer": "No. In the production 'bases' step the order is measure, extra corp troops, factory_output, then grow_factories. A factory built by a city this production produces from next round.",
+   "evidence": "crates/aic-core/src/modules/board/production.rs:81-86 (produce_units: extra_units, factory_output, grow_factories); board/mod.rs:85,391",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§12 steps 2 and 3",
+   "fix": "None needed."
+  },
+  {
+   "id": "G9",
+   "engine_answer": "Income goes into each country's pool in the adversary's reveal step (step 12 in the rulebook), after the march. The pool lands in full at the next round's Rally, in the build step, and the Rally then empties it.",
+   "evidence": "crates/aic-core/src/modules/adversary.rs:498-500 (reveal then income), 938-946 (income -> fill_pools), 964-976 (rally reads and zeroes pool_key); configs/baseline.json round order (board.march, adversary.reveal ... next round adversary.build)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§10 The turn, steps 3 and 12",
+   "fix": "None needed. Optionally add 'it lands at next round's Rally' to step 12 so the reader doesn't have to piece it together from steps 3 and 12."
+  },
+  {
+   "id": "G10",
+   "engine_answer": "Yes. The node must go on a non-ocean hex with no node of any player, no corruption marker and no land corruption, next to one of your nodes. With no nodes left, any such hex in your home country. Agents and a corrupted site are not checked.",
+   "evidence": "crates/aic-core/src/modules/board/node.rs:35-58 (node_sites: free = !ocean && no node && no MARKER && no LAND_CORRUPTION; adjacent to own node)",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§6 Node tracks, 'Where'",
+   "fix": "None needed. The 'no nodes left: anywhere in your home country' fallback isn't covered in §6; it belongs with §13 Losing nodes if it isn't there already."
+  },
+  {
+   "id": "G11",
+   "engine_answer": "No. Move targets only hexes in reach that hold a city, a base, a station or factory, or any player's node, and never the hex your only ambassador already stands on.",
+   "evidence": "crates/aic-core/src/modules/board/standard.rs:365-375 (Move targets: reach && has_piece); modules/common.rs:114-116 (has_piece = city || base || building || node); board/ambassadors.rs:215-242",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§8 Standard actions table, Move row; §9 Moving pieces",
+   "fix": "None needed."
+  },
+  {
+   "id": "G12",
+   "engine_answer": "Not by the Liberate action. The agents on the city cancel, the adversary cube comes off, Unity sways and the city is clean (neutral), with free_leaves 0 agents landing. Making it yours takes a Claim: claim_city 4 plus 1 per agent, in reach, no botnet on or next to it, and no Embargo. The exception is the tier-2 card Hostile Buyout (align: true, in the baseline deck), which puts your cube on the city it liberates.",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:169-185 (liberate_site), 199-211 (liberate: cube off, free_leaves), 9-13 (can_claim: reach, no botnet next_to, no Embargo), 81-88 (claim_cost); effects/removal.rs:217-221 (align puts seat's cube); configs/baseline.json claim_city 4, free_leaves 0, cards list hostile_buyout",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 Liberating an adversary site; Claiming a neutral site",
+   "fix": "Right for the standard action. In the §9 'Liberate cards' paragraph, add that one of them (Hostile Buyout) makes the city yours. Also add the Embargo exception to the Claim bullets ('a botnet on or next to it, or an Embargo, blocks claims')."
+  },
+  {
+   "id": "G13",
+   "engine_answer": "5 from your supply: claim_station 3 plus 2 agents. The agents are removed (cancel) and your cube goes on. Ambassadors standing on the site are not counted (claim_cost subtracts nothing) and stay where they are.",
+   "evidence": "crates/aic-core/src/modules/board/ambassadors.rs:81-88 (claim_cost = claim_ambassadors + agents), 151-165 (claim_site cancels agents, adds cube); standard.rs:169-177 (Claim price from claim_cost, paid from supply), 439-443; configs/baseline.json claim_station 3",
+   "verdict": "right",
+   "cause": "none",
+   "paragraph": "§9 Claiming a neutral site",
+   "fix": "None needed."
+  }
+ ]
+}
