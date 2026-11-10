@@ -107,10 +107,14 @@ pieces by lowercase name; `null` clears an optional field; an op's `amount` can'
 It is checked like `content/` and lands in the config, so `replay` needs nothing else
 (`overlay-card-cost.json`: a sweep). Each variant repeats its whole list.
 
+**Diagnose a rewrite's gap by part before tuning** (171): restore the old content one part at a time (a side, a tier,
+a card group) as overlays, and read which part carries the gap.
+
 ## Reading noise
 
 **Seeds are noisy.** 24 seeds is about ±10, 48 about ±7, 16 about ±15. Seed sets alone move a pair 10-25 points at 48
-seeds.
+seeds. A screen's SE is about 50/√n points over n paired games: size a screen so its SE is at most half the effect it
+must resolve (171).
 
 `cards.csv` splits by variant and names agents as resolved (`engine:strategy=1`; `games.jsonl` as the spec writes
 them). `kept` and `drawn` include the opening deal and `offered` doesn't: use share of games.

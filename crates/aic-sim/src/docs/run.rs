@@ -21,6 +21,11 @@ pub(super) const DOC_BUDGET: usize = 15 * 1024;
 /// 165: a doc over this is warned of, not refused (CLAUDE.md: leave about 1 KB
 /// free, so the next item can add to it without trimming first).
 pub(super) const DOC_WARN: usize = 14 * 1024;
+/// The `docs/` pages outside the budget: the generated card listings (cards_doc.py,
+/// load_adversary.py), the op listing (`aic-sim docs`, from op.rs: P1 of 136) and,
+/// from 172, the player-facing rulebook and its friction table.
+pub(super) const BUDGET_EXEMPT: [&str; 5] =
+    ["docs/cards.md", "docs/adversary-cards.md", "docs/ops.md", "docs/rulebook.md", "docs/rulebook-friction.md"];
 const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
@@ -359,7 +364,7 @@ pub(super) fn card_quote_failures(files: &[(String, String)], faces: &[(String, 
 }
 
 /// 102: README.md, CLAUDE.md, the web and card-art READMEs (123) and every `docs/*.md` page
-/// but the generated cards.md, adversary-cards.md and ops.md, with their sizes in bytes (CLAUDE.md's 15 KB a doc;
+/// but those in [`BUDGET_EXEMPT`], with their sizes in bytes (CLAUDE.md's 15 KB a doc;
 /// `docs/rules/` is [`rules_file_failures`]'s).
 fn budget_pages() -> Vec<(String, usize)> {
     let mut paths: Vec<String> = super::ROOT_DOCS.map(String::from).into();
@@ -369,9 +374,7 @@ fn budget_pages() -> Vec<(String, usize)> {
             .map(|e| e.path())
             .filter(|p| p.extension().and_then(|x| x.to_str()) == Some("md"))
             .map(|p| p.to_string_lossy().replace('\\', "/"))
-            // The generated card listings (cards_doc.py, load_adversary.py) and the op
-            // listing (`aic-sim docs`, from op.rs: P1 of 136, so op docs needn't be cut to fit).
-            .filter(|p| p != "docs/cards.md" && p != "docs/adversary-cards.md" && p != "docs/ops.md")
+            .filter(|p| !BUDGET_EXEMPT.contains(&p.as_str()))
             .collect();
         pages.sort();
         paths.extend(pages);
