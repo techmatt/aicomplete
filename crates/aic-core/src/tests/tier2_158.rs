@@ -1,4 +1,4 @@
-//! 158: the tier-2 end-game ops (Matt, 2026-11-09): convert, gather, the firewall, "with N X tags, also".
+//! 158: the tier-2 end-game ops (Matt, 2026-11-09): convert, the firewall, "with N X tags, also".
 
 use super::*;
 use crate::content::{Op, Tag};
@@ -14,7 +14,7 @@ fn by_a_city(g: &mut GameState, m: &Map) -> (usize, usize, usize, usize) {
     (c, lonely[0], lonely[1], lonely[2])
 }
 
-/// Amendment 6949: a converted adversary ambassador leaves the stack (lowering the city's Liberate bill) and
+/// Amendment 6949: a converted agent leaves the stack (lowering the city's Liberate bill) and
 /// becomes the seat's, on the node whose reach the card used; the adversary's supply takes it back.
 #[test]
 fn convert_moves_adversary_ambassadors_onto_the_casting_node() {
@@ -31,27 +31,6 @@ fn convert_moves_adversary_ambassadors_onto_the_casting_node() {
     assert_eq!(g.tokens(me, ambassador(0)), 3);
     assert_eq!(g.var(SUPPLY), supply + 3);
     assert!(effects::convert_cities(&w, &g, 0).is_empty(), "nothing left to convert");
-}
-
-/// 158: a gather pulls the adversary pieces next to a corrupted city in reach onto it, then strikes there, troops
-/// first.
-#[test]
-fn gather_pulls_next_door_pieces_in_and_strikes_troops_first() {
-    let (rules, mut g) = lab(&[]);
-    let w = rules.world();
-    let m = &rules.map;
-    let (c, _, a, b) = by_a_city(&mut g, m);
-    put(&mut g, a, ADV_AMBASSADOR, 2);
-    put(&mut g, b, TROOP, 1);
-    assert!(!effects::gather_hexes(&w, &g, 0, true, 2).contains(&c), "a clean city takes no gather");
-    put(&mut g, c, ADV_CUBE, 1);
-    assert!(effects::gather_hexes(&w, &g, 0, true, 2).contains(&c));
-    let o = crate::modules::common::hex_opt(&w, c);
-    let picks = vec![crate::state::Pick { option: o.option, target: o.target }];
-    run_ops_with(&rules, &mut g, picks, &[Op::Gather { troops: true, strike: 2 }]);
-    assert_eq!((g.tokens(a, ADV_AMBASSADOR), g.tokens(b, TROOP)), (0, 0));
-    // Two struck: the troop, then one ambassador; one stays on the gathered hex.
-    assert_eq!((g.tokens(c, TROOP), g.tokens(c, ADV_AMBASSADOR)), (0, 1));
 }
 
 /// 158: a firewall stops placements on its hex, keeps it off the Rally's sites, and a Corrupt line can't pull

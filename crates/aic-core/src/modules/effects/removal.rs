@@ -39,7 +39,7 @@ pub(super) fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
         .collect();
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt =
-        format!("Seat {seat}: remove every adversary ambassador and troop in which hex?");
+        format!("Seat {seat}: remove every agent and troop in which hex?");
     if let Some(i) = cx.choose(seat, &prompt, opts)? {
         adversary::destroy_all(g, cx, seat, hexes[i]);
     }
@@ -75,7 +75,7 @@ pub(super) fn remove_ambassadors_country(
     } else {
         let cs = countries_where(&w, |h| g.tokens(h, ADV_AMBASSADOR) > 0);
         let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
-        let prompt = || format!("Seat {seat}: remove adversary ambassadors in which country?");
+        let prompt = || format!("Seat {seat}: remove agents in which country?");
         let Some(i) = cx.choose(seat, prompt, opts)? else {
             return Ok(());
         };
@@ -251,7 +251,7 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
     let w = cx.world;
     let cities = guarded_cities(&w, g, seat);
     let opts = cities.iter().map(|&h| hex_opt(&w, h)).collect();
-    let prompt = || format!("Seat {seat}: clear adversary ambassadors around which corrupted city?");
+    let prompt = || format!("Seat {seat}: clear agents around which corrupted city?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         let city = cities[i];
         let mut hexes = w.map.hexes[city].neighbors.to_vec();
@@ -270,7 +270,7 @@ pub(super) fn clear_city(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) 
                 held[0]
             } else {
                 let opts = held.iter().map(|&h| hex_opt(&w, h)).collect();
-                let prompt = || format!("Seat {seat}: remove an adversary ambassador from which hex?");
+                let prompt = || format!("Seat {seat}: remove an agent from which hex?");
                 match cx.choose(seat, prompt, opts)? {
                     Some(k) => held[k],
                     None => break,

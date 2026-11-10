@@ -592,7 +592,7 @@ fn build_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, z: usize) {
 /// country, then hex number); `where` most_free_zones, in the country with the
 /// most free zones (ties: the first), on its zone next to an adversary
 /// ambassador if any, else its lowest-numbered. None free: `fallback`
-/// adversary ambassadors on a factory (players choose).
+/// agents on a factory (players choose).
 fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<FactoryWhere>, fallback: i64) -> Res {
     let w = cx.world;
     let zones = free_zones(&w, g);
@@ -624,7 +624,7 @@ fn adversary_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Facto
     if fallback > 0 {
         let factories: Vec<usize> = (0..g.hexes.len()).filter(|&h| g.tokens(h, FACTORY) > 0).collect();
         let opts = factories.iter().map(|&h| hex_opt(&w, h)).collect();
-        let prompt = || format!("{}: adversary ambassadors land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
+        let prompt = || format!("{}: agents land on which factory?", ctx.why.as_deref().unwrap_or("The adversary"));
         if let Some(i) = cx.choose_loss(0, prompt, opts)? {
             adversary::place(g, cx, factories[i], fallback);
         }

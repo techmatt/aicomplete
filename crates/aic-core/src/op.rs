@@ -35,7 +35,7 @@ pub enum Slot {
     Twist,
 }
 
-/// Pieces a threat places adversary ambassadors on.
+/// Pieces a threat places agents on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Spot {
@@ -195,9 +195,9 @@ pub enum CreateAt {
 pub enum CreateIf {
     #[default]
     Any,
-    /// Holding no adversary ambassador.
+    /// Holding no agent.
     NoAmbassadors,
-    /// Holding at least one adversary ambassador.
+    /// Holding at least one agent.
     Ambassadors,
     /// Not the adversary's (a clean or aligned city, a neutral or player site).
     Clean,
@@ -273,6 +273,30 @@ pub enum Facility {
     Factory,
 }
 
+/// 166 (Matt, 2026-11-09, *Moving pieces*): a board piece a Gather or Push may move. Botnets and
+/// corruption markers never move.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Piece {
+    /// Any seat's ambassadors (printed: ambassadors).
+    Ambassadors,
+    /// The adversary's ambassadors (printed: agents).
+    Agents,
+    /// Adversary troops.
+    Troops,
+}
+
+impl Piece {
+    /// The printed word, plural.
+    pub fn word(self) -> &'static str {
+        match self {
+            Piece::Ambassadors => "ambassadors",
+            Piece::Agents => "agents",
+            Piece::Troops => "troops",
+        }
+    }
+}
+
 /// What a standing trigger (`Op::When`) waits for (105). Each fires as often as
 /// it happens: there is no per-round limit on a trigger.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -305,7 +329,7 @@ pub enum Event {
     /// You remove compute from adversary projects: once a card, Action, power
     /// or standard action that removes any.
     RemoveCompute,
-    /// You remove adversary ambassadors (canceling included): once a card,
+    /// You remove agents (canceling included): once a card,
     /// Action, power or standard action that removes any.
     RemoveAmbassadors,
     /// You place a token of `kind` on one of your cards: once a token.
@@ -381,7 +405,7 @@ pub enum Op {
     DelayThreat {
         count: i64,
     },
-    /// In one hex in your reach, remove `ambassadors` adversary ambassadors or
+    /// In one hex in your reach, remove `ambassadors` agents or
     /// `troops` troops: one kind, your choice (059; a 0 prints no such choice).
     Damage {
         #[serde(default)]
@@ -396,11 +420,11 @@ pub enum Op {
         #[serde(default)]
         troops: i64,
     },
-    /// Remove every adversary ambassador and troop in one hex.
+    /// Remove every agent and troop in one hex.
     DestroyAll,
     /// Remove one botnet within your reach (019: the tier-2 way to remove a botnet).
     RemoveBotnet,
-    /// Remove up to `max` adversary ambassadors in one country (0: every one);
+    /// Remove up to `max` agents in one country (0: every one);
     /// sway 1 toward Unity per `unity_per` removed (0: none). 076: a number, not "every".
     /// `reach` (111, Matt's ruling 3): in reach instead, any hexes within reach
     /// of your nodes, across countries.
@@ -451,7 +475,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         botnet: bool,
     },
-    /// Remove up to `max` adversary ambassadors (0: all) on or next to one
+    /// Remove up to `max` agents (0: all) on or next to one
     /// corrupted city in your reach (024), your choice which while more stand
     /// than it takes (059).
     ClearCity {
@@ -480,7 +504,7 @@ pub enum Op {
     FreeBuilding,
     /// Build a research station in your reach, paying no chips (075).
     BuildStation,
-    /// Claim a neutral research station in your reach with no adversary ambassador on it, paying no
+    /// Claim a neutral research station in your reach with no agent on it, paying no
     /// ambassadors (142: the card's energy is the price).
     ClaimStation,
     /// `count` research cubes in your color onto one open megaproject
@@ -549,23 +573,31 @@ pub enum Op {
     Consolidate {
         max: i64,
     },
-    /// 158 (Matt, 2026-11-09): convert up to `max` adversary ambassadors on or
+    /// 158 (Matt, 2026-11-09): convert up to `max` agents on or
     /// next to one city in your reach: each leaves the adversary's stack and
     /// becomes yours, onto your node whose reach the card used (the node on or
     /// next to the city; you choose among several).
     Convert {
         max: i64,
     },
-    /// 158: gather onto one hex in your reach every adversary ambassador (and
-    /// with `troops`, every adversary troop) on the hexes next to it, then
-    /// remove up to `strike` of the adversary pieces there, troops first.
+    /// 166 (Matt, 2026-11-09, *Moving pieces*): gather up to `max` `pieces` into one land hex in your
+    /// reach, each from a hex next to it, one at a time, the player choosing (and stopping when they
+    /// like). They arrive as any piece does (`effects::moves`). With `strike` (Kettle Operation, Lure
+    /// Network), each adversary piece gathered comes off instead of arriving, so a strike never raises a
+    /// Liberate bill.
     Gather {
+        max: i64,
+        pieces: Vec<Piece>,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        troops: bool,
-        #[serde(default, skip_serializing_if = "is_zero")]
-        strike: i64,
+        strike: bool,
     },
-    /// 158: a firewall token on one hex in your reach: no adversary ambassador
+    /// 166: push up to `max` `pieces` from one land hex in your reach, each to a land hex next to it,
+    /// the player choosing where (and stopping when they like).
+    Push {
+        max: i64,
+        pieces: Vec<Piece>,
+    },
+    /// 158: a firewall token on one hex in your reach: no agent
     /// arrives there (Rally, Corrupt pulls, threat and Discord placements)
     /// until it comes off at the end of the next adversary turn.
     Firewall,
@@ -660,7 +692,7 @@ pub enum Op {
         if_: Option<TroopIf>,
     },
     /// 139 (Offensive): a `tier` threat is dealt, any tag, by the draw rule, into the country of the most
-    /// threatened node hex in scope (the node hex with the most adversary ambassadors and troops; ties: the first
+    /// threatened node hex in scope (the node hex with the most agents and troops; ties: the first
     /// in board order), its first location token on that hex; it is countered or executes like any other.
     ThreatAtNode { tier: u8 },
     /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed;
@@ -686,7 +718,7 @@ pub enum Op {
     LoseInsight {
         amount: i64,
     },
-    /// A research station in scope is corrupted (a player's holds unless `adversary.station_flip_at` adversary
+    /// A research station in scope is corrupted (a player's holds unless `adversary.station_flip_at` agents
     /// and no player ambassadors are on it); `each_country`: one a country; `force`: a player's too.
     FlipStation {
         #[serde(default)]
@@ -695,7 +727,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_false")]
         force: bool,
     },
-    /// In each country in scope the uncorrupted city with the most adversary ambassadors is corrupted (`at`: the
+    /// In each country in scope the uncorrupted city with the most agents is corrupted (`at`: the
     /// token's; `at: location` also destroys the nodes on and next to it).
     CorruptCity {
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -875,7 +907,7 @@ pub enum Op {
     },
     /// Counter every active threat.
     CounterAll,
-    /// In each country, remove `ambassadors` adversary ambassadors (players choose).
+    /// In each country, remove `ambassadors` agents (players choose).
     Pushback {
         ambassadors: i64,
     },
@@ -893,7 +925,7 @@ pub enum Op {
     },
     /// 138, the one creation shape: "create `count` per board on the
     /// lowest-numbered `at` [`if`]": in each country in scope, the `sites`
-    /// lowest-numbered matching sites each gain `count` adversary ambassadors.
+    /// lowest-numbered matching sites each gain `count` agents.
     Create {
         count: i64,
         at: CreateAt,
@@ -909,15 +941,15 @@ pub enum Op {
         kind: Facility,
     },
     /// 138, Corrupt X: in each country in scope, every `site` that can gather
-    /// its corrupt number (`adversary.corrupt_*`, less `cut`) of adversary
-    /// ambassadors with one move each (on it and next to it, in its country)
+    /// its corrupt number (`adversary.corrupt_*`, less `cut`) of agents
+    /// with one move each (on it and next to it, in its country)
     /// pulls them in, lowest-numbered hexes first, and corrupts.
     Corrupt {
         site: CorruptSite,
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
-    /// 151, Rally X: each board's adversary ambassador pool lands on its `site` sites: the neutral ones, else
+    /// 151, Rally X: each board's agent pool lands on its `site` sites: the neutral ones, else
     /// the players', else the adversary's; spread evenly, players breaking ties. `count`: that many a board
     /// instead of the pool (a project's rally). A cordoned board's pool lands nowhere.
     Rally {
@@ -1195,6 +1227,7 @@ impl Op {
             | Op::Consolidate { .. }
             | Op::Convert { .. }
             | Op::Gather { .. }
+            | Op::Push { .. }
             | Op::Firewall
             | Op::IfTags { .. }
             | Op::Draw { .. }

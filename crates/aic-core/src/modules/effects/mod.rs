@@ -18,6 +18,7 @@ mod ambassadors;
 mod ctx;
 mod endgame;
 mod feasible;
+mod moves;
 mod new_ops;
 mod removal;
 mod resources;
@@ -26,7 +27,8 @@ mod targets;
 mod team;
 
 pub use ctx::*;
-pub use endgame::{convert_cities, firewall_hexes, gather_hexes};
+pub use endgame::{convert_cities, firewall_hexes};
+pub use moves::{gather_hexes, push_hexes, GATHER_INTO, GATHER_PIECE, PUSH_FROM, PUSH_PIECE, STOP};
 pub use feasible::*;
 pub use targets::*;
 
@@ -227,7 +229,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::SpreadAmbassadors => ambassadors::spread_ambassadors(g, cx, seat)?,
         Op::Consolidate { max } => ambassadors::consolidate(g, cx, seat, *max)?,
         Op::Convert { max } => endgame::convert(g, cx, seat, *max)?,
-        Op::Gather { troops, strike } => endgame::gather(g, cx, seat, *troops, *strike)?,
+        Op::Gather { max, pieces, strike } => moves::gather(g, cx, seat, *max, pieces, *strike)?,
+        Op::Push { max, pieces } => moves::push(g, cx, seat, *max, pieces)?,
         Op::Firewall => endgame::firewall(g, cx, seat)?,
         Op::IfTags { tag, count, then } => {
             if cards::tags(&w, g, seat, *tag) >= *count {

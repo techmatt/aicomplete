@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use crate::hash::fnv1a64;
 use crate::hex::{Dir, Hex};
 use crate::key::FastMap;
-pub use crate::op::{Event, Facility, Op, RoundFlag, Slot, Spot};
+pub use crate::op::{Event, Facility, Op, Piece, RoundFlag, Slot, Spot};
 pub use crate::vocab::{
     Location, PerResource, PullTag, Resource, Side, Tag, TagOrAny, ThreatSource, ThreatTag, TokenKind,
     RESOURCES, TAGS,

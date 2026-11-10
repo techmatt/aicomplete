@@ -27,10 +27,11 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 19] = [
+pub const HOUSE_TERMS: [(&str, &str); 21] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
-    ("Ambassador", "yours; the other side's is always an adversary ambassador"),
+    ("Ambassador", "a player's piece, any player's: a card never says whose"),
+    ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
     ("Troop", "an adversary troop, unless it says corp troop (a megacorp's, waiting at its military bases)"),
     ("In reach", "on a hex within 1 of your nodes"),
     ("A country you're in", "a country where you have a node"),
@@ -44,9 +45,10 @@ pub const HOUSE_TERMS: [(&str, &str); 19] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Convert", "an adversary ambassador on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
-    ("Gather at a city", "every adversary ambassador on a hex next to it moves onto it (troops too, when the card names them)"),
-    ("Firewall", "a token on a hex: no adversary ambassador lands or is pulled there; it comes off at the end of the next adversary turn"),
+    ("Convert", "an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
+    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece"),
+    ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
+    ("Firewall", "a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -629,7 +631,7 @@ pub(super) fn sway_sources_block(r: &Rules) -> String {
 
 /// What the purge asks at each step of `purge_at` (Unity cards drawn, 136).
 pub(super) fn purge_ease_block(r: &Rules) -> String {
-    const PIECES: [&str; 3] = ["adversary ambassadors", "adversary troops", "botnets"];
+    const PIECES: [&str; 3] = ["agents", "adversary troops", "botnets"];
     let at = list(r, "alignment.purge_at");
     // Each step's lower bound and the pieces still counting from it.
     let mut steps: Vec<(i64, usize)> = vec![(0, 0)];
@@ -746,10 +748,10 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     let easing = match at.as_slice() {
         [a, _, b] => format!(
             "At 0 Unity tips you must purge almost everything: corrupted cities, botnets, adversary troops and \
-             adversary ambassadors. After {a} Unity tips the purge no longer asks you to clear adversary \
+             agents. After {a} Unity tips the purge no longer asks you to clear adversary \
              ambassadors; after {b}, it asks only that the adversary owns no city, and you win the moment it doesn't."
         ),
-        [a, ..] => format!("After {a} Unity tips the purge no longer asks you to clear adversary ambassadors."),
+        [a, ..] => format!("After {a} Unity tips the purge no longer asks you to clear agents."),
         [] => String::new(),
     };
     let tiers = list(r, "alignment.tier_at");
@@ -764,7 +766,7 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     format!(
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and says where its new adversary ambassadors land (the lowest-numbered sites of a \
+         by your sites and says where its new agents land (the lowest-numbered sites of a \
          kind), so you always know where the next wave lands. Ambassadors pile up, a card's Corrupt line \
          pulls {} of them on and next to a city into it and corrupts it, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \

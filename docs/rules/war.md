@@ -29,7 +29,7 @@ corp troops fights twice.
 - **Growth** (each round, after output): every city builds one
   factory. A clean or aligned city builds on a free industrial zone next to it, where the
   players choose (an aligned city's owner, else seat 0). A **corrupted** city builds at a
-  free industrial zone in its own country **next to an adversary ambassador if there is
+  free industrial zone in its own country **next to an agent if there is
   one, otherwise the lowest-numbered free zone** (Matt; the lowest number among several
   next to one). A city with no such zone builds nothing. Factories destroyed in war regrow
   this way.
@@ -118,8 +118,8 @@ military base on each side, a pile of corp troops: every Discord tip, each neutr
 corp's bases (unless your ambassador stands there to stop it), and at the end of every round the two piles cancel and
 each troop left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
 Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra corp
-troops (Warmongering, Arms Race) ignore the pile's cap, and the adversary ambassador count you pay for
-grows by one for each adversary ambassador already on the site.
+troops (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
+grows by one for each agent already on the site.
 
 **This is the game's one movement rule** (an exception to "no movement rules"); a Corrupt line's pull is the only
 other, and it moves ambassadors one hex onto the site that corrupts ([adversary.md](adversary.md)). **A Discord tip doesn't move troops**, and
@@ -135,7 +135,7 @@ to it: 0, an adversary dial kept below the players' reach 1, so war takes only t
 player with a node on or next to a front's base destroys 1 of those; Matt's message 5847). **Nothing else destroys a
 node:** Discord cards, projects and the other event cards print board pressure instead (more or higher-tier threats,
 creation, Corrupt lines, credits, Unity or ambassadors lost; [alignment.md](alignment.md)); Offensive deals a threat
-onto the node hex with the most adversary ambassadors and troops (ties: country, then lower hex number), which
+onto the node hex with the most agents and troops (ties: country, then lower hex number), which
 destroys nodes only if it goes uncountered. A hit is each player's own pick of which token, and it is absorbed as any
 destruction is (below), so a token shielded by an ambassador is a good pick.
 **While this round's adversary card is stage I, a player's last node can't be destroyed**

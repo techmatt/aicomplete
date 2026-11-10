@@ -29,7 +29,7 @@ pub fn liberable_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .collect()
 }
 
-/// Corrupted cities in seat `s`'s reach with an adversary ambassador on or
+/// Corrupted cities in seat `s`'s reach with an agent on or
 /// next to them (a `clear_city` target, 024).
 pub(super) fn guarded_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len())

@@ -127,7 +127,7 @@ fn an_adversary_factory_liberates_as_an_adversary_station_does() {
 #[test]
 fn a_city_liberates_at_one_price_all_game() {
     // 156: the late liberation (154) is gone: a city costs `liberate_at` at every stage, plus one an
-    // adversary ambassador on it. The lab prices Liberate at 1, so the baseline's number goes back on.
+    // agent on it. The lab prices Liberate at 1, so the baseline's number goes back on.
     let (rules, mut g) = lab_with(&["board.bases"], &["board.liberate_at=5"]);
     let w = rules.world();
     let c = (0..g.hexes.len()).find(|&h| is_city(&w, h)).unwrap();

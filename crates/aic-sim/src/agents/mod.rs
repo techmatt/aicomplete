@@ -59,6 +59,7 @@
 pub mod determinize;
 pub mod eval;
 pub mod guide;
+pub mod moves;
 pub mod oracle;
 pub mod planner;
 pub mod policy;

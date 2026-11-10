@@ -256,7 +256,7 @@
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it).",
+  "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it).",
   "effects": [
    {
     "op": "rally",

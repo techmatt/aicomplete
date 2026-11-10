@@ -87,8 +87,8 @@ fn every_corrupted_city_is_no_loss() {
 }
 
 /// 137: the Liberate action frees an adversary city for `liberate_at`
-/// ambassadors from the supply plus 1 for each adversary ambassador on it
-/// (those cancel); adversary ambassadors next to it don't count, and it drops
+/// ambassadors from the supply plus 1 for each agent on it
+/// (those cancel); agents next to it don't count, and it drops
 /// down the ladder. It replaced the fallback.
 #[test]
 fn liberating_a_city_pays_liberate_at_plus_its_adversary_ambassadors() {

@@ -170,7 +170,8 @@ pub fn target_price(w: &World, g: &GameState, act: StandardAction, h: usize) -> 
     let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
     match act {
         StandardAction::Claim => claim_cost(w, g, h).map(ambassadors),
-        StandardAction::Liberate => liberate_cost(w, g, h).map(ambassadors),
+        // 166: less the ambassadors standing on the site, any seat's (they are spent first).
+        StandardAction::Liberate => liberate_supply_cost(w, g, h).map(ambassadors),
         _ => Some(Price::default()),
     }
 }
@@ -211,13 +212,13 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         StandardAction::Remove => {
             let n = w.int("board.remove_ambassadors");
             let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
-            return format!("move {who} from your supply onto a hex in reach: it removes up to {} adversary ambassadors there and stays", w.int("board.remove_count"));
+            return format!("move {who} from your supply onto a hex in reach: it removes up to {} agents there and stays", w.int("board.remove_count"));
         }
         StandardAction::Move => "use 1 Movement: move a player ambassador onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
-                "claim a neutral site you can claim: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each adversary ambassador on it",
+                "claim a neutral site you can claim: {} ambassadors for a city, {} for a station, {} for a factory, plus 1 for each agent on it",
                 claim_ambassadors(w, SiteKind::City),
                 claim_ambassadors(w, SiteKind::Station),
                 claim_ambassadors(w, SiteKind::Factory)
@@ -225,7 +226,7 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
         }
         StandardAction::Liberate => {
             return format!(
-                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each adversary ambassador on it; it turns neutral",
+                "liberate an adversary site in reach: {} ambassadors for a city, {} for a station or factory, plus 1 for each agent on it; it turns neutral",
                 liberate_ambassadors(w, SiteKind::City),
                 liberate_ambassadors(w, SiteKind::Station)
             );
@@ -253,7 +254,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             "on an open hex in reach that is not an industrial zone; it is yours (your cube)".into(),
         ),
         StandardAction::Remove => (
-            "Remove adversary ambassadors",
+            "Remove agents",
             format!("{} of your ambassadors, from your supply", t("board.remove_ambassadors")),
             format!("it goes onto one hex in reach, removes up to {} there and stays", t("board.remove_count")),
         ),
@@ -276,23 +277,23 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Claim => (
             "Claim a site",
             format!(
-                "{} ambassadors for a city, {} for a station, {} for a factory, from your supply, used up; 1 more for each adversary ambassador on it",
+                "{} ambassadors for a city, {} for a station, {} for a factory, from your supply, used up; 1 more for each agent on it",
                 t("board.claim_city"),
                 t("board.claim_station"),
                 t("board.claim_factory")
             ),
-            "a neutral city, research station or factory in reach, with a site claim: the adversary ambassadors on it cancel and your cube goes on".into(),
+            "a neutral city, research station or factory in reach, with a site claim: the agents on it cancel and your cube goes on".into(),
         ),
         // 137: it replaced Free a station and the city fallback.
         StandardAction::Liberate => (
             "Liberate a site",
             format!(
-                "{} ambassadors for a city, {} for a station or factory, from your supply, used up; 1 more for each adversary ambassador on it",
+                "{} ambassadors for a city, {} for a station or factory, from your supply, used up; 1 more for each agent on it",
                 t("board.liberate_at"),
                 t("board.liberate_facility_at")
             ),
             format!(
-                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes {} adversary ambassadors as it frees",
+                "an adversary city, station or factory in reach: it turns neutral and sways Unity ({} for a city, {} for a station or factory); a city takes {} agents as it frees",
                 t("alignment.free_city"),
                 t("alignment.free_facility"),
                 t("board.free_leaves")
@@ -463,7 +464,8 @@ pub(super) fn std_resolve(
         }
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                target_price(&w, g, act, h).unwrap_or_default().pay(g, cx, s);
+                // 166: the ambassadors standing on it first, any seat's; the supply pays the rest.
+                pay_liberate(g, cx, s, h);
                 liberate_site(g, cx, h);
             }
         }

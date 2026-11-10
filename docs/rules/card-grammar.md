@@ -38,17 +38,17 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
 
 - **Reach:** a card's map target is in your reach (within 1 of your node) where its text says so; a removal in one
   country (a tier-2 sweep) is not. A removal (`damage`) takes a hex in reach holding adversary
-  pieces; a country removal any country holding them. A card names the pieces it removes: where it says "2 adversary
-  ambassadors or 1 troop" you choose one kind.
+  pieces; a country removal any country holding them. A card names the pieces it removes: where it says "2 agents or 1 troop" you choose one kind.
 - **Hardening:** a different facility in reach for each token, each one a token can protect ([ai-powers.md](ai-powers.md)).
 - **Factories:** "build a factory" is always on a free industrial zone in reach; the factory is yours (your cube). A
   building that builds one can be played with no such zone and then builds nothing.
 - **Moving ambassadors** (`move_ambassadors`, `move_one`, `consolidate`, `spread_ambassadors`): onto pieces (city,
   base, facility or node), each arriving as in [ambassadors.md](ambassadors.md); stop at any time. "Move up to N" (Summit
   Caucus, Liaison Corps) is a "you may move": it never vetoes a card that does something else.
-- **Convert, gather, firewall** (`convert`, `gather`, `firewall`; house terms): a city in reach with adversary
-  ambassadors on or next to it; a corrupted city in reach with adversary pieces next to it; a land hex in reach. How each
-  resolves is in [ambassadors.md](ambassadors.md), *Convert, gather, firewall*.
+- **Convert, firewall** (`convert`, `firewall`; house terms): a city in reach with agents on or next to it; a land
+  hex in reach. How each resolves is in [ambassadors.md](ambassadors.md), *Convert and firewall*.
+- **Gather, push** (`gather`, `push`; house terms, r70): a land hex in reach, with a piece the card names next to it
+  (gather) or on it (push). How they resolve: [ambassadors.md](ambassadors.md), *Moving pieces*.
 - **"With N X tags, also …"** (`if_tags`): the rest resolves only if you hold N tags of X on your cards when
   the card resolves (an event's own tags never count, as for a gain per tag); it never blocks the card.
 - **Peek:** the top cards of the adversary deck, behind the face-up card, are shown; one fewer after each reveal.
@@ -63,7 +63,7 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
 - **Liberate:** liberate one corrupted city in your reach ([ambassadors.md](ambassadors.md)): it is clean; with `align` your cube goes on it (its icon line adds → cube). Each
   engine's twist: `ambassadors` (gain that many), `troops` (up to that many adversary troops in the city's country come
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
-- **Clear a city (`clear_city`):** remove up to N adversary ambassadors (Amnesty Decree: 4) around one corrupted
+- **Clear a city (`clear_city`):** remove up to N agents (Amnesty Decree: 4) around one corrupted
   city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Each on the city adds one to the Liberate action's bill ([ambassadors.md](ambassadors.md)); those
   next to it don't, so clearing them only thins what a Corrupt line could pull in.
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter one country**:
@@ -105,14 +105,14 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   card. **Per tag** (`play_tag`): "when you play a card, gain 1 insight per tag on it" (Interdisciplinary Institute), the tier-2
   form, once for each tag of any kind on the played card (the empty ring), or per tag of one kind, the
   ringed tag after `/` on the right of the `:`.
-- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 adversary ambassadors in reach"
-  (Joint Task Force): what it removes is the owner's, so the owner's "when you remove adversary ambassadors" triggers
+- **Teammate triggers (`team_play`):** "When another player plays a Security card, remove 2 agents in reach"
+  (Joint Task Force): what it removes is the owner's, so the owner's "when you remove agents" triggers
   fire for it, not the player's whose card set it off. With `both`, "you both gain" (Consulate Tower, Substation Hub), the dashed box holding the other's gain. Your own plays don't fire them, except in a 1-player game
   (*Help cards*, above): they fire on your plays and a shared gain lands once.
 - **Rebate (`play_cost`):** "when you play a card printed at 10 credits or more, gain 5 credits" (Lights-Out Assembly):
   the printed cost, before discounts. `≥`N is at least N.
 - **Fight triggers:** "when you remove a troop" fires once a troop (Security Contractor HQ); "when you remove adversary
-  compute" (Security Ops Floor) and "when you remove adversary ambassadors" (Honeypot Relay) once for
+  compute" (Security Ops Floor) and "when you remove agents" (Honeypot Relay) once for
   the card, Action, power, converter or standard action that removed any, canceling an arrival included.
 - **Placing tokens (`place_tokens`):** "when you place a Dataset on one of your cards" fires once a token (no deck card
   prints it); a trigger's own tokens count too.

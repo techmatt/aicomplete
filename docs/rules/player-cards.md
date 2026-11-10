@@ -39,9 +39,9 @@ The cards config lists which cards are in the game (baseline: all of them).
   seat that makes little energy still has plenty to play. Seven late sinks (five 2-energy Actions, two tier-2
   buildings with a big energy cost; [cards.md](../cards.md)) serve a seat whose node tracks are full.
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
-  adversary's ambassadors stand, in reach: **convert** them onto your node (Mass Defection, Double Agents, Open Source
-  Uprising, Embassy of Exiles), **gather** them (and troops) onto a corrupted city and strike there (Kettle Operation, Lure
-  Network), **firewall** a hex for a round (Firewall Array, Air Gap), or mass your own (Rally the Allies), and strike
+  agents stand, in reach: **convert** them onto your node (Mass Defection, Double Agents, Open Source
+  Uprising, Embassy of Exiles), **gather** them (and troops) into a hex in reach and remove them (Kettle Operation, Lure
+  Network; r70), **firewall** a hex for a round (Firewall Array, Air Gap), or mass your own (Rally the Allies), and strike
   (Surgical Strike). The seven events also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
@@ -101,7 +101,7 @@ The cards config lists which cards are in the game (baseline: all of them).
   of a card with nothing to act on (a removal with no target in reach, a move, a gain per tag with too few tags, a draw
   with no card left) does nothing, and the rest resolves. A program, event or ability is offered when at least one of
   its parts acts; one that would do nothing at all is not. A removal's target is a hex with a piece the card names:
-  "remove 1 adversary ambassador" can't name a hex holding only a troop. A building's when-built effect is not checked.
+  "remove 1 agent" can't name a hex holding only a troop. A building's when-built effect is not checked.
 - **Own tags:** a card's own tags never count toward its own `needs` (Matt, as in Terraforming Mars): it is still
   in your hand. Once played, a program's tags count for its own gain per tag ([card-grammar.md](card-grammar.md)).
 - **Buildings** go into a slot: your AI board's `ai.slots` (a building printing `slots` adds them and sits in one
@@ -113,8 +113,8 @@ The cards config lists which cards are in the game (baseline: all of them).
   Driver, Capital Projects Office, Hyperscale Botnet, Positron Storage Ring) have none: an engine goes in a free slot
   or over whichever building its owner chooses, so it never buries a better building of its tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
-  (Industry), Agents (Security). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
-  card gains tokens except as it prints. Each arrives loaded ("Add 2 Agents here" when built), then grows one of
+  (Industry), Operatives (Security; r70, so agents are only the adversary's pieces; Matt to confirm). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
+  card gains tokens except as it prints. Each arrives loaded ("Add 2 Operatives here" when built), then grows one of
   two ways: an OR Action that adds N here or spends or counts what is here (Synthetic Data Forge, Safehouse Network,
   Popular Uprising), or an Effect that adds tokens when something happens, with an **At N** that takes N off and pays
   by itself (the other six in the deck: Telemetry Archive, Retained Earnings, Intrusion Lab, Open Assembly, Agency
@@ -130,7 +130,7 @@ The cards config lists which cards are in the game (baseline: all of them).
 Effects needing choices ask the acting player: hexes, countries, players, threats, amounts ("up to N" offers 0..N), or
 "stop".
 
-**Token cards, for new players.** A building that holds Agents, Datasets, Followers or Capital starts with a few.
+**Token cards, for new players.** A building that holds Operatives, Datasets, Followers or Capital starts with a few.
 Most gain more each time you do what the card names (play a Science card, say), and at its number pay and empty by
 that many. Three have an Action instead: each round, add a token or spend or count them. A few cards add tokens to
 one of your piles. A card only ever counts the tokens on itself.

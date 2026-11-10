@@ -57,7 +57,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// `golden_game` test (`tests/mod.rs`) fails until it is bumped and
 /// `GOLDEN_REVISION`, `GOLDEN_FINGERPRINT` and `GOLDEN_CONTENT_HASH` there are
 /// updated, with `GOLDEN` and `GOLDEN_CONTENT` in `scripts/wasm-smoke.mjs`.
-pub const RULES_REVISION: u32 = 69;
+pub const RULES_REVISION: u32 = 70;
 
 /// The rules of the config embedded in `state`, checked against it.
 fn rules_for(state: &GameState) -> Result<Rules, String> {

@@ -557,7 +557,7 @@
   "name": "Open-Weights Release",
   "tier": 2,
   "kind": "program",
-  "cost": 10,
+  "cost": 12,
   "insight": 2,
   "tags": [
    "science",
@@ -705,7 +705,7 @@
   "name": "Collateralized Grid",
   "tier": 2,
   "kind": "program",
-  "cost": 10,
+  "cost": 11,
   "insight": 1,
   "tags": [
    "industry",
@@ -1039,7 +1039,15 @@
   "effects": [
    {
     "op": "draw",
-    "count": 2
+    "count": 1
+   },
+   {
+    "op": "gather",
+    "max": 2,
+    "pieces": [
+     "agents"
+    ],
+    "strike": true
    }
   ]
  },
@@ -2294,12 +2302,14 @@
    "diplomacy",
    "security"
   ],
-  "keywords": [
-   "spread"
-  ],
+  "keywords": [],
   "effects": [
    {
-    "op": "spread_ambassadors"
+    "op": "gather",
+    "max": 6,
+    "pieces": [
+     "ambassadors"
+    ]
    },
    {
     "op": "gain_ambassadors",
@@ -2601,26 +2611,33 @@
   "name": "Checkpoint Network",
   "tier": 1,
   "kind": "building",
-  "cost": 12,
+  "cost": 7,
   "insight": 1,
   "tags": [
    "security"
   ],
   "ability": {
-   "cost": [
-    [
-     "credits",
-     2
-    ]
-   ],
    "effects": [
     {
-     "op": "remove_ambassadors_country",
+     "op": "push",
      "max": 2,
-     "reach": true
+     "pieces": [
+      "agents",
+      "troops"
+     ]
     }
    ]
-  }
+  },
+  "effects": [
+   {
+    "op": "push",
+    "max": 3,
+    "pieces": [
+     "agents",
+     "troops"
+    ]
+   }
+  ]
  },
  {
   "id": "security_contractor_hq",
@@ -4923,7 +4940,7 @@
   "name": "Mass Defection",
   "tier": 2,
   "kind": "event",
-  "cost": 8,
+  "cost": 11,
   "insight": 1,
   "tags": [
    "diplomacy"
@@ -5025,8 +5042,12 @@
   "effects": [
    {
     "op": "gather",
-    "troops": true,
-    "strike": 6
+    "max": 6,
+    "pieces": [
+     "agents",
+     "troops"
+    ],
+    "strike": true
    },
    {
     "op": "sway",
@@ -5056,7 +5077,11 @@
    "effects": [
     {
      "op": "gather",
-     "strike": 3
+     "max": 3,
+     "pieces": [
+      "agents"
+     ],
+     "strike": true
     }
    ]
   },
@@ -5136,8 +5161,11 @@
     "count": 5
    },
    {
-    "op": "consolidate",
-    "max": 3
+    "op": "gather",
+    "max": 3,
+    "pieces": [
+     "ambassadors"
+    ]
    },
    {
     "op": "sway",
@@ -5163,7 +5191,7 @@
   "name": "Surgical Strike",
   "tier": 2,
   "kind": "event",
-  "cost": 14,
+  "cost": 15,
   "insight": 1,
   "tags": [
    "security"
@@ -5197,7 +5225,7 @@
   "name": "Open Source Uprising",
   "tier": 2,
   "kind": "program",
-  "cost": 8,
+  "cost": 9,
   "insight": 1,
   "tags": [
    "science",

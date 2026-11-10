@@ -79,7 +79,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   Tranche pay its 7 in credits; the liberate and removal ultimates keep it.
 - **Card throughput** (108): credits pile up, so the fix is dearer, bigger
   cards and more of them: engines draw when built, Action buildings turn spare credits (Patent Library, Bug Bounty
-  Board), chips (Parts Exchange), energy (Grid Analytics Desk) or Agents (Safehouse Network) into cards, three engines
+  Board), chips (Parts Exchange), energy (Grid Analytics Desk) or Operatives (Safehouse Network) into cards, three engines
   draw on their tag's plays (Preprint Server, Supplier Network, Fusion Research Campus), and two board powers do the
   same (the Builder's Procure, the Protector's Debrief). Late cards costing 28-46 credits (Moonshot Grant, Headquarters
   Raid, Wartime Retooling, Gigafactory Charter) take spare credits (111). A flat credit sink stays the last resort.

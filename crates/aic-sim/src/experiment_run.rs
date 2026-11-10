@@ -133,6 +133,9 @@ pub fn run_experiment(path: &str, o: &Options) -> i32 {
         records
     );
     print_cells(&sums);
+    if let Some(line) = crate::agents::moves::report(games.len()) {
+        println!("{line}");
+    }
     let bad = games.iter().filter(|g| !g.replay_ok).count();
     if bad > 0 {
         eprintln!("REPLAY MISMATCH in {bad} game(s)");

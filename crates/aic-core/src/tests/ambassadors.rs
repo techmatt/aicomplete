@@ -23,7 +23,7 @@ fn opposing_ambassadors_on_one_piece_cancel_without_unity() {
     assert_eq!(g.var(SUPPLY), supply + 1);
     assert_eq!(sway(&g), sway(&g0));
 
-    // An adversary ambassador arrives on a player one.
+    // An agent arrives on a player one.
     let mut g = g0.clone();
     put(&mut g, city, ambassador(1), 1);
     let supply = g.var(SUPPLY);
@@ -103,7 +103,7 @@ fn one_opposing_ambassador_blocks_a_factory_and_bases_make_no_troops() {
     assert_eq!((units(&g), g.tokens(base, ADV_AMBASSADOR), g.tokens(other, ambassador(0))), ((0, 0), 1, 1));
     assert_eq!(sway(&g), (0, 0));
 
-    // A player's factory makes its owner chips; an adversary ambassador on it
+    // A player's factory makes its owner chips; an agent on it
     // blocks them and stays (it no longer becomes a troop).
     let mut g = g0.clone();
     put(&mut g, factory, cube(0), 1);
@@ -181,7 +181,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     }
     assert_eq!(g.stats.counters["board.city_dark"], 2);
 
-    // 021: an adversary ambassador on a node costs its owner 1 insight
+    // 021: an agent on a node costs its owner 1 insight
     // next round and adds 1 compute to the cheapest project; it stays (068).
     let mut g = g0.clone();
     let d = m.numbered(0, piece(0).node);
@@ -220,7 +220,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
         (1, 1, 0, 0)
     );
 
-    // 137: an adversary ambassador on an owned station blocks its cube and
+    // 137: an agent on an owned station blocks its cube and
     // stays; a corrupted station makes adversary compute, no megaproject cube;
     // a neutral one makes a neutral cube.
     let mut g = g0.clone();

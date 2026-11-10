@@ -82,7 +82,7 @@ fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_fr
     let adv = Some("cube:adversary".to_string());
     let zone = |g: &GameState, n: u8| (g.tokens(at(n), FACTORY), cube_on(g, at(n)));
 
-    // No adversary ambassador: the lowest-numbered free zone, 8, even though
+    // No agent: the lowest-numbered free zone, 8, even though
     // it is not next to the city; then 7 builds at 11 and 14 at 13, neutral.
     let mut g = g0.clone();
     run(&rules, &mut g);
@@ -91,7 +91,7 @@ fn a_corrupted_city_builds_next_to_an_adversary_ambassador_else_at_its_lowest_fr
     assert_eq!(zone(&g, 8), (1, adv.clone()));
     assert_eq!((zone(&g, 11), zone(&g, 13)), ((1, None), (1, None)));
 
-    // An adversary ambassador next to 13 (on 9) draws it there, past 8 and 11.
+    // An agent next to 13 (on 9) draws it there, past 8 and 11.
     let mut g = g0.clone();
     put(&mut g, at(9), ADV_AMBASSADOR, 1);
     assert!(m.adjacent(at(9), at(13)) && !m.adjacent(at(9), at(8)) && !m.adjacent(at(9), at(11)));

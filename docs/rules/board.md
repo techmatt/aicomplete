@@ -81,8 +81,8 @@ megaproject is the corp's defining card.
   neutral by the Liberate action.
 - **A station is a defended investment (candidate, Matt).** The adversary needs weight to take
   yours: an effect that flips a player's station (Station Coup, Station Seizure) takes it
-  only when `adversary.station_flip_at` (2) adversary ambassadors and no player ambassador
-  stand on it, those ambassadors used up; short of that one adversary ambassador lands on it
+  only when `adversary.station_flip_at` (2) agents and no player ambassador
+  stand on it, those ambassadors used up; short of that one agent lands on it
   instead (a player ambassador there cancels it). A neutral station flips as before. Cards
   that free a station are priced as a station flip, a cube a round both ways (Reclamation
   Crew); factories stay cheap to free (Back-Channel Talks).

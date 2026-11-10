@@ -20,7 +20,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     let (rules, mut g) = action_only(&[EASE]);
     let m = &rules.map;
     // One Unity tip made, the bucket full (2 a player, 2 players); no city
-    // corrupted but adversary ambassadors about. The next card is Civil
+    // corrupted but agents about. The next card is Civil
     // Defense (pushback).
     uncorrupt_cities(&rules, &mut g);
     for c in 0..2 {
@@ -76,7 +76,7 @@ fn bar_levels_follow_the_unity_cards_drawn() {
         unity_drawn(&mut g, n);
         assert_eq!(alignment::bar_level(&w, &g), level, "{n} cards");
     }
-    assert!(All.win_text().contains("botnet, adversary troop or adversary ambassador"));
+    assert!(All.win_text().contains("botnet, adversary troop or agent"));
     assert!(NoAmbassadors.win_text().contains("ambassadors no longer count"));
     assert!(NoTroops.win_text().contains("no corrupted city or botnet"));
     assert!(CitiesOnly.win_text().contains("botnets no longer count"));

@@ -49,7 +49,7 @@ fn a_token_lands_on_the_most_threatened_uncorrupted_site() {
     // No adversary pieces: the lower city.
     pull(&rules, &mut g, &[PullTag::Any], 0);
     assert_eq!(threats::tokens(&g, &Key::new("eviction")), [a]);
-    // An adversary ambassador on b: b, though a is lower; corrupted cities never.
+    // An agent on b: b, though a is lower; corrupted cities never.
     put(&mut g, b, ADV_AMBASSADOR, 1);
     pull(&rules, &mut g, &[PullTag::Any], 0);
     assert_eq!(threats::tokens(&g, &Key::new("defection")), [b]);

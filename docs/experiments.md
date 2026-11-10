@@ -142,6 +142,9 @@ the judge off the value table.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`); new
   sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing).
 - **Farming a read:** `experiments/farm/read.json` is the read as one spec ([simulator.md](simulator.md), *The farm*).
+  166: 48 seeds by `farm-seeds` on the main box alone took 342 s (482 s beside 6 other threads); the old side as 6
+  native shards of 8 seeds (`aic-sim farm read --seed S --games 8`, its folder's configs) about as long. Assemble each
+  side as `aic-sim farm read --header --seed F --games N` then the shards in seed order, and read with `ladder.py`.
 - **Levers:** an income or card lever is an overlay (`cards.<id>.effects.0.max=5`, *Content levers*), no build; a
   rule, content or map what-if needs one.
 - **Same games:** `experiments/same-noplanner.json` is same.json ([speed.md](speed.md)) with greedy for the planner

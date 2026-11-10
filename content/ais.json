@@ -554,6 +554,27 @@
       "count": 2
      }
     ]
+   },
+   {
+    "name": "Patrol",
+    "tags": [],
+    "cost": [
+     [
+      "energy",
+      1
+     ]
+    ],
+    "text": "push up to 3 agents or troops from a hex in reach, each to a hex next to it",
+    "effects": [
+     {
+      "op": "push",
+      "max": 3,
+      "pieces": [
+       "agents",
+       "troops"
+      ]
+     }
+    ]
    }
   ],
   "play_track": [

@@ -182,6 +182,9 @@ macro_rules! forced_table {
             (hoard_insight: usize, true, 0.0, "fixed policy (075): a seat with Patience plays and keeps cards only every n-th round (0: off)")
             /// Fixed policy (075): no converter, and no conversion on a power menu.
             (never_convert: bool, true, 0.0, "fixed policy (075): no converter and no power that only converts a resource")
+            /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
+            /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
+            (move_rules: bool, false, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
             /// 082: the keep plan values cards by the value table (0: printed cost
             /// plus 1, the niche jobs and capstone jobs, as before 082).
             (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
@@ -649,6 +652,12 @@ impl Agent for Policy {
         }
         if self.forced.always_buy_cubes && !pending {
             if let Some(i) = first_power(legal, |s, k| ai::power_buys_cube(&world, s, k)) {
+                return i;
+            }
+        }
+        if self.forced.move_rules && pending {
+            if let Some((i, which)) = super::moves::pick(&world, g, legal) {
+                super::moves::fired(which);
                 return i;
             }
         }

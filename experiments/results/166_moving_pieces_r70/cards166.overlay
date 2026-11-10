@@ -1,0 +1,34 @@
+# 166 (Matt, 2026-11-09, *Moving pieces*): Gather and Push on the card set. Apply with
+# python scripts/cards/apply_overlay.py experiments/results/166_moving_pieces_r70/cards166.overlay
+# Kettle Operation and Lure Network: gather-then-strike at any hex in reach, removing what they gather.
+cards.kettle_operation.effects.0={"op": "gather", "max": 6, "pieces": ["agents", "troops"], "strike": true}
+cards.lure_network.ability.effects.0={"op": "gather", "max": 3, "pieces": ["agents"], "strike": true}
+# Checkpoint Network (0% played when drafted at r69; its Action, pay 2 credits for 2 removals in a country, read 6.6
+# against a 14.5 price): push up to 3 agents or troops from a hex in reach; Action: push up to 2. (An Action-only
+# push of 3 was 0/12 played at 12 credits on the dev screen, 0/15 at 10: the strategist plays a building for what it
+# does now.) With the on-play push it was still 2/40 played at 10 credits: 7. Anchors: on play 3 pieces (6), the
+# Action 2 a round (4 x 3.5 rounds, 14): get 20 against pay 7 + 4 x (1 keep + 1 play) = 15 (1.33).
+cards.interceptor_battery.cost=7
+cards.interceptor_battery.effects=[{"op": "push", "max": 3, "pieces": ["agents", "troops"]}]
+cards.interceptor_battery.ability={"effects": [{"op": "push", "max": 2, "pieces": ["agents", "troops"]}]}
+# Exodus Corridors (37% played): its weakest line, every ambassador steps 1 (4 at the table), becomes gather up to 6
+# ambassadors into a hex in reach (toward a Liberate).
+cards.exodus_corridors.effects.0={"op": "gather", "max": 6, "pieces": ["ambassadors"]}
+cards.exodus_corridors.keywords=[]
+# Honeypot Relay (32% played): its draw 2 (10 at the anchors) becomes gather up to 2 agents into a hex in reach and
+# remove them (2 removals, 10), which pays its own passive. A plain gather of 4 was played 0-2 times in 13 drafts.
+cards.honeypot_relay.effects.0={"op": "gather", "max": 2, "pieces": ["agents"], "strike": true}
+# After the first full read (12.9% played when drafted, from 36% at r69): draw 1 back beside the strike (dev screen
+# 36864-895: 25.5% -> 40.4%). Anchors: pay 20; get 30.7 (1.54).
+cards.honeypot_relay.effects=[{"op": "draw", "count": 1}, {"op": "gather", "max": 2, "pieces": ["agents"], "strike": true}]
+# Rally the Allies (87% played): its weakest line, consolidate 3 (4.5 at the table), becomes gather up to 3
+# ambassadors into a hex in reach (4.2): the same job, toward a Liberate.
+cards.rally_the_allies.effects.1={"op": "gather", "max": 3, "pieces": ["ambassadors"]}
+# The tier-2 ceiling (158's call; the effect ledger's check, reasoned / printed at values.json at most 2.5): each card
+# over it rises to the ceiling, credits rounded up. The three r69 end-game cards over it, and two older tier-2 cards
+# the done-when's "every tier-2 card" takes in.
+cards.mass_defection.cost=11
+cards.open_source_uprising.cost=9
+cards.surgical_strike.cost=15
+cards.open_weights_release.cost=12
+cards.collateralized_grid.cost=11

@@ -624,7 +624,7 @@ impl Module for Alignment {
             "corrupted cities",
             bad,
             Some(cities),
-            "corrupted cities always count against the purge; each one builds adversary ambassadors",
+            "corrupted cities always count against the purge; each one builds agents",
         );
         // 135: Capital Flight (a project) takes it below 0.
         if g.var(INCOME_BONUS) != 0 {

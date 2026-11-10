@@ -79,16 +79,16 @@ fn no_face_prints_an_exception() {
 #[test]
 fn a_removal_says_which_pieces() {
     let monitors = face_of("ceasefire_monitors").text;
-    assert!(monitors.starts_with("Remove 3 adversary ambassadors or 1 troop from a hex in reach."), "{monitors}");
+    assert!(monitors.starts_with("Remove 3 agents or 1 troop from a hex in reach."), "{monitors}");
     assert_eq!(face_of("bounty_board").text, "Remove 1 troop in reach. Gain 1 credit per Security tag on your cards.");
     // 076 (ruling 6): a printed number in one country, never "per hex"; 111 (Matt's ruling 3): most in reach.
     assert_eq!(
         face_of("eviction_worm").text,
-        "Remove 3 adversary ambassadors in reach. Remove 4 compute from an adversary project."
+        "Remove 3 agents in reach. Remove 4 compute from an adversary project."
     );
     assert_eq!(
         face_of("kinetic_interdiction").text,
-        "Pay 1 antimatter. Remove 2 troops in one country. Remove 6 adversary ambassadors in reach."
+        "Pay 1 antimatter. Remove 2 troops in one country. Remove 6 agents in reach."
     );
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);

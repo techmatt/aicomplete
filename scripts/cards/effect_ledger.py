@@ -58,6 +58,8 @@ TAGS = ['science', 'industry', 'cyber', 'power', 'diplomacy', 'security']
 SPREAD_RATIO = 2.5      # an effect whose per-unit max / min exceeds this
 CARD_GAP_SD = 2.0       # a card whose gap is this many SDs from the mean gap
 BETA_FAR = (0.5, 2.0)   # a fitted multiplier outside this band, on 4+ cards
+# 166: the card guidelines' ceiling (ruling 22) at tier 2: reasoned / printed at most about 2.5.
+CEILING = {2: 2.5}
 TOP_N = 8               # at most this many rows per outliers.md list
 
 
@@ -245,9 +247,15 @@ def op_worth(t, o):
     # 158: the end-game shapes.
     if op == 'convert':
         return Worth(now=row(op) * t.rate('target_share') * n('max'))
+    # 166: a move is worth `gather` / `push` a piece; a strike removes what it gathers, at the dearest removal.
     if op == 'gather':
-        each = row('remove_troop') if o.get('troops') else row('remove_ambassador')
-        return Worth(now=row(op) + each * t.rate('target_share') * n('strike'))
+        if o.get('strike'):
+            each = row('remove_troop') if 'troops' in o['pieces'] else row('remove_ambassador')
+        else:
+            each = row('gather')
+        return Worth(now=each * t.rate('target_share') * n('max'))
+    if op == 'push':
+        return Worth(now=row(op) * t.rate('target_share') * n('max'))
     if op == 'firewall':
         return Worth(now=row(op))
     if op == 'if_tags':
@@ -782,6 +790,17 @@ def write_outliers(meta, effects, eff_rows, card_rows, inst):
         L.append(f"- **{e['effect']}** ({e['cards']} cards, reasoned {e['reasoned']}): "
                  f"{e['min']} on `{e['min_card']}` to {e['max']} on `{e['max_card']}` (x{e['max_over_min']}).")
     if not spread:
+        L.append('- none')
+    L.append('')
+    # Tier 2 only: at tier 1 the ceiling is read at Matt's anchors (card-guidelines.md), which the table is not.
+    over = [c for c in card_rows if c['ratio'] and int(c['tier']) == 2 and 1 / c['ratio'] > CEILING[2] + 0.005]
+    over.sort(key=lambda c: (int(c['tier']), c['ratio'], c['card']))
+    L.append('## Tier-2 cards over the ceiling (reasoned / printed over 2.5; card-guidelines ruling 22)')
+    L.append('')
+    for c in over:
+        L.append(f"- `{c['card']}` (tier {c['tier']}): reasoned {c['reasoned']} / printed {c['printed']} = "
+                 f"{1 / c['ratio']:.2f}.")
+    if not over:
         L.append('- none')
     L.append('')
     far = [e for e in eff_rows if e['status'] == 'fitted' and e['cards'] >= 4 and e['beta'] is not None

@@ -97,6 +97,29 @@ fn minus(n: i64, icon: &str) -> Vec<Part> {
     vec![Part::Word(format!("\u{2212}{n}")), w(icon)]
 }
 
+/// 166: a Gather's or Push's pieces as icons: ambassadors bare, agents and troops in the adversary's frame.
+fn piece_icons(pieces: &[crate::op::Piece]) -> Vec<Part> {
+    use crate::op::Piece;
+    let mut out = Vec::new();
+    let mut adv = Vec::new();
+    for p in pieces {
+        match p {
+            Piece::Ambassadors => out.push(w("ambassador")),
+            Piece::Agents => adv.push(w("ambassador")),
+            Piece::Troops => adv.push(w("troop")),
+        }
+    }
+    if !adv.is_empty() {
+        out.extend(adversary(adv));
+    }
+    out
+}
+
+/// 166: a Gather's or Push's pieces in words, in the icons' order: "agents or troops".
+fn piece_words(pieces: &[crate::op::Piece]) -> String {
+    pieces.iter().map(|p| p.word()).collect::<Vec<_>>().join(" or ")
+}
+
 fn icon(r: Resource) -> &'static str {
     match r {
         Resource::Ambassadors => "ambassador",
@@ -139,10 +162,11 @@ fn token(kind: TokenKind, n: i64) -> &'static str {
     match (kind, n) {
         (TokenKind::Datasets, 1) => "Dataset",
         (TokenKind::Followers, 1) => "Follower",
-        (TokenKind::Agents, 1) => "Agent",
+        // 166 (Matt, 2026-11-09): printed Operatives, so "agents" are only the adversary's pieces (code name stays).
+        (TokenKind::Agents, 1) => "Operative",
         (TokenKind::Datasets, _) => "Datasets",
         (TokenKind::Followers, _) => "Followers",
-        (TokenKind::Agents, _) => "Agents",
+        (TokenKind::Agents, _) => "Operatives",
         (TokenKind::Capital, _) => "Capital",
     }
 }
@@ -181,12 +205,12 @@ fn plural(n: i64, one: &str) -> String {
     format!("{n} {one}{}", if n == 1 { "" } else { "s" })
 }
 
-/// A removal's pieces: "2 adversary ambassadors or 1 troop".
+/// A removal's pieces: "2 agents or 1 troop".
 fn pieces(ambassadors: i64, troops: i64) -> String {
     match (ambassadors, troops) {
         (0, t) => plural(t, "troop"),
-        (a, 0) => plural(a, "adversary ambassador"),
-        (a, t) => format!("{} or {}", plural(a, "adversary ambassador"), plural(t, "troop")),
+        (a, 0) => plural(a, "agent"),
+        (a, t) => format!("{} or {}", plural(a, "agent"), plural(t, "troop")),
     }
 }
 
@@ -302,21 +326,21 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         }
         Op::DestroyAll => one(clause(
             adversary(vec![w("ALL"), w("ambassador"), w("troop"), w("hex")]),
-            "remove every adversary ambassador and troop in one hex",
+            "remove every agent and troop in one hex",
         )),
         Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet in reach")),
         Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
             // 111: "in reach" prints no place, as a botnet or a marker in reach.
             let (mut icons, what) = if *max > 0 && *reach {
-                (adversary(minus(*max, "ambassador")), format!("remove {} in reach", plural(*max, "adversary ambassador")))
+                (adversary(minus(*max, "ambassador")), format!("remove {} in reach", plural(*max, "agent")))
             } else if *max > 0 {
                 let mut p = minus(*max, "ambassador");
                 p.push(w("country"));
-                (adversary(p), format!("remove {} in one country", plural(*max, "adversary ambassador")))
+                (adversary(p), format!("remove {} in one country", plural(*max, "agent")))
             } else {
                 (
                     adversary(vec![w("ALL"), w("ambassador"), w("country")]),
-                    "remove every adversary ambassador in one country".to_string(),
+                    "remove every agent in one country".to_string(),
                 )
             };
             if *unity_per == 0 {
@@ -405,9 +429,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let (parts, what) = if *max > 0 {
                 let mut p = minus(*max, "ambassador");
                 p.push(w("city"));
-                (p, format!("{max} adversary ambassadors"))
+                (p, format!("{max} agents"))
             } else {
-                (vec![w("ALL"), w("ambassador"), w("city")], "every adversary ambassador".to_string())
+                (vec![w("ALL"), w("ambassador"), w("city")], "every agent".to_string())
             };
             one(clause(adversary(parts), format!("remove {what} on or next to one corrupted city in reach")))
         }
@@ -511,29 +535,33 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             });
             icons.extend(counted(*max, "ambassador"));
             icons.push(w("node"));
-            let what = if *max == 1 { "1 adversary ambassador".to_string() } else { format!("{max} adversary ambassadors") };
+            let what = if *max == 1 { "1 agent".to_string() } else { format!("{max} agents") };
             one(clause(icons, format!("convert {what} around a city in reach")))
         }
-        Op::Gather { troops, strike } => {
-            let mut p = vec![w("ALL"), w("ambassador")];
-            if *troops {
-                p.push(w("troop"));
-            }
-            p.extend([w("move"), w("city")]);
-            let mut icons = adversary(p);
-            let mut say = if *troops {
-                "gather adversary ambassadors and troops at a corrupted city in reach".to_string()
-            } else {
-                "gather adversary ambassadors at a corrupted city in reach".to_string()
-            };
-            if *strike > 0 {
-                icons.extend(adversary(minus(*strike, if *troops { "troop" } else { "ambassador" })));
-                say += &if *troops {
-                    format!(", then remove {strike} pieces there, troops first")
-                } else {
-                    format!(", then remove {strike} there")
-                };
-            }
+        // 166 (Matt, 2026-11-09, *Moving pieces*): bare silhouettes, a number before its icon, "up to"
+        // printed (≤N); the dark frame only around the adversary's pieces.
+        Op::Gather { max, pieces, strike: false } => {
+            let mut icons = vec![Part::Word(format!("\u{2264}{max}"))];
+            icons.extend(piece_icons(pieces));
+            icons.extend([w("move"), w("hex")]);
+            let say = format!("gather up to {max} {} into a hex in reach, each from a hex next to it", piece_words(pieces));
+            one(clause(icons, say))
+        }
+        // The strike: what is gathered comes off (a removal, so the number carries its minus).
+        Op::Gather { max, pieces, strike: true } => {
+            let mut icons = vec![Part::Word(format!("\u{2212}\u{2264}{max}"))];
+            icons.extend(piece_icons(pieces));
+            icons.extend([w("move"), w("hex")]);
+            let say = format!(
+                "gather up to {max} {} into a hex in reach, each from a hex next to it, and remove them",
+                piece_words(pieces)
+            );
+            one(clause(icons, say))
+        }
+        Op::Push { max, pieces } => {
+            let mut icons = vec![w("hex"), w("move"), Part::Word(format!("\u{2264}{max}"))];
+            icons.extend(piece_icons(pieces));
+            let say = format!("push up to {max} {} from a hex in reach, each to a hex next to it", piece_words(pieces));
             one(clause(icons, say))
         }
         Op::Firewall => one(clause(
@@ -723,7 +751,7 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
             // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt.
             "when you remove adversary compute".to_string(),
         ),
-        Event::RemoveAmbassadors => (adversary(vec![w("ambassador")]), "when you remove adversary ambassadors".to_string()),
+        Event::RemoveAmbassadors => (adversary(vec![w("ambassador")]), "when you remove agents".to_string()),
         Event::PlaceTokens { kind } => (
             vec![Part::Yours { yours: vec![w(kind.name())] }],
             format!("when you place a {} on one of your cards", token(kind, 1)),

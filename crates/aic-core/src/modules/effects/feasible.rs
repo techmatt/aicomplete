@@ -66,7 +66,8 @@ pub fn feasible_on(w: &World, g: &GameState, seat: usize, effects: &[Op], spent:
             }
             Op::MoveAmbassadors { .. } => movable_ambassadors(g, seat) > 0,
             Op::Convert { .. } => !convert_cities(w, g, seat).is_empty(),
-            Op::Gather { troops, strike } => !gather_hexes(w, g, seat, *troops, *strike).is_empty(),
+            Op::Gather { pieces, strike, .. } => !gather_hexes(w, g, seat, pieces, *strike).is_empty(),
+            Op::Push { pieces, .. } => !push_hexes(w, g, seat, pieces).is_empty(),
             Op::Firewall => !firewall_hexes(w, g, seat).is_empty(),
             // The threshold is a rider: it acts only with the tags, and then as its own ops do.
             Op::IfTags { tag, count, then } => cards::tags(w, g, seat, *tag) >= *count && feasible(w, g, seat, then),

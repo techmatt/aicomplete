@@ -251,7 +251,7 @@ fn claiming_puts_a_cube_on_a_neutral_city_in_reach() {
     assert!(!standard_offered(&rules, &g, 0).contains("claim"));
 }
 
-/// 137: claiming a dark city (adversary ambassadors on it) costs 1 more for
+/// 137: claiming a dark city (agents on it) costs 1 more for
 /// each; they cancel back to the supply and the cube goes on at once (r40:
 /// Align canceled one and aligned nothing).
 #[test]
@@ -311,7 +311,7 @@ fn claiming_costs_by_site_type() {
 }
 
 /// 148 (D70): a card's station claim (`claim_station`) claims as the Claim action does: a station holding
-/// adversary ambassadors is open to it for one of the seat's ambassadors each, which cancel.
+/// agents is open to it for one of the seat's ambassadors each, which cancel.
 #[test]
 fn card_claims_a_station_as_claim_does() {
     let (rules, mut g) = lab(&[]);
@@ -334,7 +334,7 @@ fn card_claims_a_station_as_claim_does() {
 }
 
 /// 137: Liberate turns an adversary station or factory in reach neutral for
-/// `liberate_facility_at` ambassadors (plus 1 for each adversary ambassador
+/// `liberate_facility_at` ambassadors (plus 1 for each agent
 /// on it, which cancel) and sways `free_facility` Unity; a botnet on it stays
 /// and doesn't block it.
 #[test]

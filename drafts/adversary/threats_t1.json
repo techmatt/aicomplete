@@ -299,7 +299,7 @@
    "locations": [
     "city"
    ],
-   "text": "3 adversary ambassadors are created here. Sway 2 toward Discord.",
+   "text": "3 agents are created here. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -537,7 +537,7 @@
    "locations": [
     "station"
    ],
-   "text": "2 adversary ambassadors are created here. The nearest player pays 3 research cubes or discards 2 cards.",
+   "text": "2 agents are created here. The nearest player pays 3 research cubes or discards 2 cards.",
    "counters": [
     [
      {
@@ -813,7 +813,7 @@
    "locations": [
     "factory"
    ],
-   "text": "2 adversary ambassadors are created here. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "2 agents are created here. The nearest player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {

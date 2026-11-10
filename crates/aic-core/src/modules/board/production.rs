@@ -42,7 +42,7 @@ pub fn corp_bases(w: &World, c: u8) -> Vec<usize> {
 }
 
 /// 137: a Discord tip. Each neutral factory makes 1 corp troop, which its corp
-/// puts on each of its bases; an adversary ambassador on the factory blocks it
+/// puts on each of its bases; an agent on the factory blocks it
 /// (one opposing ambassador blocks a site's output), a player ambassador on it
 /// is used up instead (the troop rule), and an occupied factory makes nothing.
 pub fn tip_corp_troops(g: &mut GameState, cx: &mut Cx) {
@@ -203,7 +203,7 @@ fn factory_output(g: &mut GameState, cx: &mut Cx) {
 }
 
 /// Each city builds one factory: a corrupted city at a free zone in its
-/// country next to an adversary ambassador if there is one, else the
+/// country next to an agent if there is one, else the
 /// lowest-numbered free zone (lowest number among equals); any other city on
 /// a free zone next to it, where the players choose (an aligned city's
 /// owner, else seat 0). A corrupted city's factory is the adversary's, an
@@ -293,8 +293,8 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
 }
 
 /// Production step 3: cities make energy, stations research cubes; an
-/// adversary ambassador on a station takes its output and is removed; on a
-/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then an adversary ambassador on a
+/// agent on a station takes its output and is removed; on a
+/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then an agent on a
 /// lone node drains 1 of its owner's next insight into adversary compute,
 /// and last full megaprojects complete.
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
@@ -390,7 +390,7 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         }
         let c = w.map.hexes[h].country as usize;
         // 137: one opposing ambassador blocks the output while it stands: an
-        // adversary ambassador on a neutral or player station, a player
+        // agent on a neutral or player station, a player
         // ambassador on the adversary's. An adversary station makes compute.
         if corrupted(g, h) {
             if player_ambassador(g, h).is_some() {
@@ -428,7 +428,7 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// An adversary ambassador on a node (with no other piece to divert)
+/// An agent on a node (with no other piece to divert)
 /// costs its owner 1 insight next round and adds 1 compute to the cheapest
 /// adversary project; it stays until removed (068; 021: it was used up).
 fn node_leak(g: &mut GameState, cx: &mut Cx) -> Res {

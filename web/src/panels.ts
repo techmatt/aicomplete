@@ -301,7 +301,7 @@ export function countriesHtml(v: View): string {
       ...some(tok('troop'), `troop${tok('troop') === 1 ? '' : 's'}`, 'adv'),
       ...some(tok('unit'), `unit${tok('unit') === 1 ? '' : 's'}`),
     ];
-    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; adversary ambassadors, botnets and troops; corp units at bases">${parts.join(' · ')}</span>`;
+    const counts = `<span class="counts" title="cities: clean, aligned, corrupted; agents, botnets and troops; corp units at bases">${parts.join(' · ')}</span>`;
     const flags = c.values.filter((x) => !x.key.startsWith('tokens.') && !x.key.startsWith('board.project')).map((x) => valueChip(x, `country:${c.index}`)).join('');
     const groups = c.cards.map((g) => g.key === 'threats.on'
       ? g.cards.map((x) => threatCard(x, `country:${c.index}:${g.key}`, v)).join('')

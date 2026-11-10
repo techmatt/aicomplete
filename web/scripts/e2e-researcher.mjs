@@ -20,7 +20,7 @@ const config = JSON.parse(readFileSync(join(web, '..', 'configs', 'baseline.json
 config.countries = 3;
 Object.assign(config.modules.find((m) => m.module === 'board').params, { station_cubes: 3, owned_station_cubes: 3, troop_steps: 0, claim_station: 1 });
 // Nothing diverts a cube or takes the bound city while the script passes its turns.
-// No adversary ambassadors: a creation line would land one on the claimed station, blocking its cubes.
+// No agents: a creation line would land one on the claimed station, blocking its cubes.
 Object.assign(config.modules.find((m) => m.module === 'adversary').params, { corrupt_at: 20, corrupt_station_at: 20, corrupt_factory_at: 20, corrupt_land_at: 20, supply_per_country: 0 });
 
 const page = await openPage();

@@ -14,7 +14,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   replay from seed + actions whatever `--threads`.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
-- **`choices` counts prompts** (a placement is two: track, hex).
+- **`choices` counts prompts** (a placement is two: track, hex). An effect resolved a prompt a piece is scored
+  part of the way, so it reads as paid for little: 166's moves take a batch a prompt for this.
 - **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities,
   a seat's last nodes, the adversary's pieces, the Discord deck's last cards, Alignment (the next
   card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
@@ -44,6 +45,12 @@ is worth more with it. A play waiting a round is worth 15% less; `needs` may be 
 planned earlier, or short now by at most `plan_short` tags; a building over one of the seat's
 adds only what it beats the weakest by (`plan_cover`). Each switch's default and rule, and each
 **dominance check** (principles.md), is a row of `forced_table!`.
+
+**Move heuristics (`agents/moves.rs`, 166; `move_rules`, on).** Gather and Push prompts: push agents off the next
+Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
+armor, no Liberate it pays toward) to cancel; gather free ambassadors onto an adversary site when a seat in reach can
+then pay its Liberate. Anything else, and every strike, is the search's. `aic-sim experiment` prints their fires a
+game (all its games: an on/off run halves it).
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
 number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` and the

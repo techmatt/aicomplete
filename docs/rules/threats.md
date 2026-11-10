@@ -36,8 +36,7 @@ Last Ultimatum) deals it now, into its own country, at its printed tier, any tag
 **Location tokens.** A dealt threat puts a token on a site of each of its location types in its country (two tokens
 never share a hex): a city or coastal-city token on an uncorrupted city (coastal for coastal), a station token on an
 uncorrupted research station, a factory token on a factory that isn't the adversary's, else a free industrial zone, a
-base token on a military base. Among those sites, the one with the most adversary pieces on or next to it (adversary
-ambassadors, troops, botnets); ties, the lower hex number. Tokens go in printed order, but if that leaves one off the
+base token on a military base. Among those sites, the one with the most adversary pieces on or next to it (agents, troops, botnets); ties, the lower hex number. Tokens go in printed order, but if that leaves one off the
 board (a city token on the only clean coastal city), the type with fewer sites goes first. A printed game does this by eye. A location type the country
 lacks gets no token; the pull never deals a threat with none (so a base-only threat never lands at 1 country).
 
@@ -101,11 +100,10 @@ has every tag), discard the misses, and put its location tokens on the board. If
 or next to a token, you are *near* that threat and may help pay it off. Each threat prints one way to pay, or two: a
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
-never what it asks for. Next the card rallies (each board's pool of adversary ambassadors lands on the sites of the type
-it names, spread evenly) and deploys its troops, then its other lines, its Corrupt lines (each site that can gather enough adversary
-ambassadors from itself and next door corrupts) and the march. You draft and act; production then runs from one
+never what it asks for. Next the card rallies (each board's pool of agents lands on the sites of the type
+it names, spread evenly) and deploys its troops, then its other lines, its Corrupt lines (each site that can gather enough agents from itself and next door corrupts) and the march. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
-consequence, sometimes two, from a short list (troops or adversary ambassadors on its spot, compute, Sway toward
+consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest player paying energy, chips, cubes or
 ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute fills the cheapest project on the

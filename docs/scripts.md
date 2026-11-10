@@ -40,7 +40,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
 - `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
   `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
-  in none, and every draft card no game kept. Seconds.
+  in none, and every draft card no game kept. Seconds. A farmed read has no `results.json`: run it on a screen.
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
   where used; games whose insight grew three rounds running past `--held`; per cell, seat and resource the mean
@@ -77,7 +77,8 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `cards/effect_ledger.py`: the effect ledger. It splits each card's printed cost over its effects pro rata to the
   reasoned values (`configs/agents/values.json`, an income valued over its tier's horizon), fits a price multiplier
   per effect, and writes CSVs, `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`; rerun at each
-  card revision. `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing;
+  card revision. `outliers.md` lists the tier-2 cards over the 2.5 ceiling at the table (166; tier 1's 1.5 is read
+  at the anchors, by hand). `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing;
   `--cards FILE`, `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an overlay before it
   is written; `--hold-ratio OLD.csv` adds the price keeping an older `cards.csv`'s printed / reasoned ratio (repricing
   after a value change). It mirrors `agents/value.rs` by hand (card-pricing.md). Seconds.

@@ -146,7 +146,7 @@ fn an_adversary_station_makes_compute_before_and_after_completion() {
     assert_eq!(g.stats.counters["board.station_compute"] - tallied, 4 * cubes);
 }
 
-/// 137, kept at 139 (no dial): an adversary ambassador blocking a station
+/// 137, kept at 139 (no dial): an agent blocking a station
 /// stands while it blocks.
 #[test]
 fn a_blocker_stands_while_it_blocks() {

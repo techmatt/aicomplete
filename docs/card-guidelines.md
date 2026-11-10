@@ -8,7 +8,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
    needs a footnote is redesigned, repriced or simplified. If the exception is the fun, find
    another way to get that play and take it to Matt.
 2. **Plain words, one reading only.** A player reads a card once and knows what to do. Name the pieces
-   and the number: "remove 2 adversary ambassadors or 1 troop", never "2 worth". A "per" or an OR binds to exactly
+   and the number: "remove 2 agents or 1 troop", never "2 worth". A "per" or an OR binds to exactly
    one thing; "you have" is spelled out on the face ("on your cards"); every icon keeps its locked meaning (ruling 5:
    *Kinetic Interdiction* read as in every hex or in one). Fix a phrase in `face.rs`, and every card using it improves.
 3. **No arithmetic.** At most a simple "per X". No sums, series, formulas or running totals. **No "per hex of a
@@ -63,7 +63,7 @@ card that breaks one is a bug, or a design call for Matt, never a quiet exceptio
 
 ## Matt's rulings of 2026-11-04
 
-A card that prices out on the value table but reads absurd to a Terraforming Mars or Spirit Island player is a bug (*Eviction Worm*: "remove 8 adversary ambassadors in one country" for 10 credits).
+A card that prices out on the value table but reads absurd to a Terraforming Mars or Spirit Island player is a bug (*Eviction Worm*: "remove 8 agents in one country" for 10 credits).
 
 19. **Useful alone.** A card is never useless alone, even if it is better with others; tag payoffs ("1 income per X
     tag") are the exception (*Collateralized Grid* needed a Capital card).
@@ -93,7 +93,7 @@ price ([card-pricing.md](card-pricing.md), *The method*).
 
 | Unit | Credits | | Unit | Credits |
 |---|---|---|---|---|
-| Remove 1 adversary ambassador | 5 | | 1 chip | 3 |
+| Remove 1 agent | 5 | | 1 chip | 3 |
 | Remove 1 troop | 5 | | +1 credit income | 4 at mid-game |
 | 1 energy | 4.5 | | +1 insight income | 12 at mid-game |
 | 1 insight | 4 | | Remove 1 compute from a project | 2 (stopping projects is hard) |
@@ -116,7 +116,7 @@ is a bonus, never a veto.
 card cost or rider prints 1 credit: fold it into the price or raise it. A counter is 5+ credits or energy (1 or 2);
 a per-tag rate of 1 is a rate, not an amount.
 
-**Board state to size removals against:** adversary ambassadors median 6 a country (p90 10) and 6 in a seat's
+**Board state to size removals against:** agents median 6 a country (p90 10) and 6 in a seat's
 reach (p90 12); troops 0-1 a country (p90 3); a project holds under its cost (5-10 compute a player).
 
 ## House wording

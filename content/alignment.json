@@ -34,7 +34,7 @@
     "effects": [{"op": "team_income", "resource": "insight", "amount": 1}]},
    {"text": "Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.",
     "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]},
-   {"text": "Every player gains 1 insight each round for the rest of the game; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+   {"text": "Every player gains 1 insight each round for the rest of the game; one player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.",
     "effects": [{"op": "team_income", "resource": "insight", "amount": 1}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}, {"op": "gain_ambassadors", "count": 2}]}]}
   ]
  },
@@ -45,9 +45,9 @@
   "tiers": [
    {"text": "Counter an active threat.",
     "effects": [{"op": "counter_threat"}]},
-   {"text": "Counter an active threat; one player removes 2 adversary ambassadors in one hex in their reach.",
+   {"text": "Counter an active threat; one player removes 2 agents in one hex in their reach.",
     "effects": [{"op": "counter_threat"}, {"op": "one_player", "then": [{"op": "damage", "ambassadors": 2}]}]},
-   {"text": "Counter every active threat; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "Counter every active threat; one player removes up to 6 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "counter_all"}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}]}]}
   ]
  },
@@ -56,11 +56,11 @@
   "name": "Civil Defense",
   "side": "unity",
   "tiers": [
-   {"text": "In each country, remove 1 adversary ambassador, and a neutral research station opens on its lowest-numbered empty station site.",
+   {"text": "In each country, remove 1 agent, and a neutral research station opens on its lowest-numbered empty station site.",
     "effects": [{"op": "pushback", "ambassadors": 1}, {"op": "create_site", "kind": "station"}]},
-   {"text": "In each country, remove 2 adversary ambassadors, and a neutral research station opens on its lowest-numbered empty station site.",
+   {"text": "In each country, remove 2 agents, and a neutral research station opens on its lowest-numbered empty station site.",
     "effects": [{"op": "pushback", "ambassadors": 2}, {"op": "create_site", "kind": "station"}]},
-   {"text": "In each country, remove 3 adversary ambassadors, and a neutral research station opens on its lowest-numbered empty station site.",
+   {"text": "In each country, remove 3 agents, and a neutral research station opens on its lowest-numbered empty station site.",
     "effects": [{"op": "pushback", "ambassadors": 3}, {"op": "create_site", "kind": "station"}]}
   ]
  },
@@ -136,11 +136,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "One player removes up to 2 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "One player removes up to 2 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 2}]}]},
-   {"text": "One player removes up to 4 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "One player removes up to 4 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 4}]}]},
-   {"text": "One player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach, then gains 2 ambassadors.",
+   {"text": "One player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.",
     "effects": [{"op": "one_player", "then": [{"op": "clear_city", "max": 6}, {"op": "gain_ambassadors", "count": 2}]}]}
   ]
  },
@@ -168,7 +168,7 @@
     "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 1, "one_country": false}]}]},
    {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 2, "one_country": false}]}]},
-   {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "cleanse", "amount": 2, "one_country": false}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
@@ -182,7 +182,7 @@
     "effects": [{"op": "gain", "resource": "energy", "amount": 1}]},
    {"text": "Every player gains 2 energy.",
     "effects": [{"op": "gain", "resource": "energy", "amount": 2}]},
-   {"text": "Every player gains 2 energy; one player removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "Every player gains 2 energy; one player removes up to 6 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "gain", "resource": "energy", "amount": 2}, {"op": "one_player", "then": [{"op": "clear_city", "max": 6}]}]}
   ]
  },
@@ -192,11 +192,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "One player removes 2 adversary ambassadors or 2 troops in one hex in their reach.",
+   {"text": "One player removes 2 agents or 2 troops in one hex in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 2, "troops": 2}]}]},
-   {"text": "One player removes 3 adversary ambassadors or 3 troops in one hex in their reach.",
+   {"text": "One player removes 3 agents or 3 troops in one hex in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 3, "troops": 3}]}]},
-   {"text": "One player removes 4 adversary ambassadors or 4 troops in one hex in their reach, then up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "One player removes 4 agents or 4 troops in one hex in their reach, then up to 6 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "damage", "ambassadors": 4, "troops": 4}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
@@ -210,7 +210,7 @@
     "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}]}]},
    {"text": "One player removes a botnet in their reach, and clears a corruption marker in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 1}]}]},
-   {"text": "One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 adversary ambassadors on or next to one corrupted city in their reach.",
+   {"text": "One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_botnet"}, {"op": "clear_markers", "count": 2}, {"op": "clear_city", "max": 6}]}]}
   ]
  },
@@ -262,11 +262,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "One player removes up to 2 adversary ambassadors in their reach.",
+   {"text": "One player removes up to 2 agents in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 2, "reach": true}]}]},
-   {"text": "One player removes up to 4 adversary ambassadors in their reach.",
+   {"text": "One player removes up to 4 agents in their reach.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 4, "reach": true}]}]},
-   {"text": "One player removes up to 6 adversary ambassadors in their reach, swaying 1 toward Unity for every 2.",
+   {"text": "One player removes up to 6 agents in their reach, swaying 1 toward Unity for every 2.",
     "effects": [{"op": "one_player", "then": [{"op": "remove_ambassadors_country", "max": 6, "unity_per": 2, "reach": true}]}]}
   ]
  },
@@ -288,11 +288,11 @@
   "name": "Blight",
   "side": "discord",
   "tiers": [
-   {"text": "Each board: create 1 adversary ambassador on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone.",
+   {"text": "Each board: create 1 agent on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
     "effects": [{"op": "create", "count": 1, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
-   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each board: create 3 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+   {"text": "Each board: create 3 agents on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]}
   ]
  },
@@ -314,11 +314,11 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most adversary ambassadors and troops.",
+   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most agents and troops.",
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the node hex with the most adversary ambassadors and troops.",
+   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the node hex with the most agents and troops.",
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the node hex with the most adversary ambassadors and troops.",
+   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the node hex with the most agents and troops.",
     "effects": [{"op": "adversary_build"}, {"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
@@ -340,11 +340,11 @@
   "name": "Firestorm",
   "side": "discord",
   "tiers": [
-   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors.",
+   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
-   {"text": "Each board: create 2 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, then Corrupt cities.",
+   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents, then Corrupt cities.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each board: create 3 adversary ambassadors on the lowest-numbered city holding adversary ambassadors, then Corrupt cities (1 fewer).",
+   {"text": "Each board: create 3 agents on the lowest-numbered city holding agents, then Corrupt cities (1 fewer).",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city", "cut": 1}]}
   ]
  }

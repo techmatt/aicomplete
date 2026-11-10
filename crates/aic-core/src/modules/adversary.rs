@@ -1,7 +1,7 @@
 //! The adversary (014, 016, 017): its deck (the clock and the stager), its
 //! ambassadors (creation lines, Corrupt X, natural corruption; 138), botnets, adversary compute and the
 //! project deck it fills, the ambassador supply and the difficulty levels.
-//! Also the shared rules for placing and removing adversary ambassadors and
+//! Also the shared rules for placing and removing agents and
 //! troops, which cards, threats and Alignment use, and the board conditions
 //! for winning and losing.
 
@@ -19,11 +19,11 @@ use super::{alignment, board, cards, effects};
 const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
     ParamSpec::list("stage_cards", 0, 20, "adversary cards dealt from stage I, II and III (before difficulty)"),
-    ParamSpec::int("supply_per_country", 0, 40, "adversary ambassadors in the supply per country"),
-    ParamSpec::int("corrupt_at", 1, 20, "Corrupt city: adversary ambassadors a city gathers (on it and next to it) to corrupt"),
-    ParamSpec::int("corrupt_station_at", 1, 20, "Corrupt station: adversary ambassadors a research station gathers to corrupt"),
-    ParamSpec::int("corrupt_factory_at", 1, 20, "Corrupt factory: adversary ambassadors a factory gathers to corrupt"),
-    ParamSpec::int("corrupt_land_at", 1, 20, "Corrupt land: adversary ambassadors an empty land hex gathers to take land corruption"),
+    ParamSpec::int("supply_per_country", 0, 40, "agents in the supply per country"),
+    ParamSpec::int("corrupt_at", 1, 20, "Corrupt city: agents a city gathers (on it and next to it) to corrupt"),
+    ParamSpec::int("corrupt_station_at", 1, 20, "Corrupt station: agents a research station gathers to corrupt"),
+    ParamSpec::int("corrupt_factory_at", 1, 20, "Corrupt factory: agents a factory gathers to corrupt"),
+    ParamSpec::int("corrupt_land_at", 1, 20, "Corrupt land: agents an empty land hex gathers to take land corruption"),
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
@@ -45,18 +45,18 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage1_added", 0, 3, "151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::list("compute_income", 0, 30, "151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board)"),
-    ParamSpec::list("ambassador_income", 0, 10, "151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4"),
+    ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a board a round (into each board's pool), at difficulty 0-4"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
-    ParamSpec::int("station_flip_at", 0, 5, "adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead)"),
+    ParamSpec::int("station_flip_at", 0, 5, "agents on a player's research station before an effect can flip it (short of that, one lands there instead)"),
     ParamSpec::int("botnet_compute", 0, 5, "adversary compute each botnet makes a round (none with a player ambassador on it)"),
     ParamSpec::int("board_difficulty_at", 0, 5, "the difficulty level from which the adversary board's own difficulty line applies (135)"),
 ];
 
 const PHASES: &[PhaseSpec] = &[
     PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act; botnets make adversary compute onto the projects"),
-    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of adversary ambassadors (on it and next to it) pulls them in and corrupts"),
+    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of agents (on it and next to it) pulls them in and corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
     PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, ambassador income into each board's pool; then every firewall comes off"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
@@ -85,7 +85,7 @@ pub const DISCARD: &str = "adversary.discard";
 pub const CURRENT: &str = "adversary.current";
 /// Next round's card, face up a round ahead.
 pub const NEXT: &str = "adversary.next";
-/// Adversary ambassadors in the supply.
+/// Agents in the supply.
 pub const SUPPLY: &str = "adversary.supply";
 /// Stage of this round's card.
 pub const STAGE: &str = "adversary.stage";
@@ -553,10 +553,10 @@ impl Module for Adversary {
         );
         out.global(
             "supply",
-            "adversary ambassador supply",
+            "agent supply",
             g.var(SUPPLY),
             Some(start_supply(w)),
-            "adversary ambassadors left: a cap, a placement it can't make doesn't happen",
+            "agents left: a cap, a placement it can't make doesn't happen",
         );
         out.global(
             "stage",
@@ -587,7 +587,7 @@ impl Module for Adversary {
             "adv. ambassador income",
             g.var(INCOME_AMBASSADORS),
             None,
-            "adversary ambassadors a board a round, into each board's pool; the next Rally lands the pool",
+            "agents a board a round, into each board's pool; the next Rally lands the pool",
         );
         let pool: i64 = (0..w.map.countries.len()).map(|c| g.var(&pool_key(c))).sum();
         out.global(
@@ -595,7 +595,7 @@ impl Module for Adversary {
             "adv. ambassador pool",
             pool,
             None,
-            "adversary ambassadors waiting to land at the next Rally, all boards",
+            "agents waiting to land at the next Rally, all boards",
         );
         out.global(
             "difficulty",
@@ -955,7 +955,7 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
         let mut among = plan.sites.clone();
         for _ in 0..plan.extra {
             let opts = among.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = || format!("Rally in {}: which site gains one more adversary ambassador?", country_name(&w, c));
+            let prompt = || format!("Rally in {}: which site gains one more agent?", country_name(&w, c));
             let Some(i) = cx.choose(0, prompt, opts)? else {
                 break;
             };
@@ -986,7 +986,7 @@ pub fn build_all(g: &mut GameState, cx: &mut Cx, scope: Option<usize>) -> Res {
     rally(g, cx, site, n, scope, "build")
 }
 
-/// 138, a creation line: `count` adversary ambassadors on each of the
+/// 138, a creation line: `count` agents on each of the
 /// `sites` lowest-numbered matching sites in each country in scope (one
 /// source with the agents' forecast, [`super::plan::create_plan`]). A
 /// cordoned country gains none. Tallied by `source` (event, board, threat, project,
@@ -1024,7 +1024,7 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// Places `n` adversary ambassadors from the supply on hex `h`. The supply
+/// Places `n` agents from the supply on hex `h`. The supply
 /// is a cap (027): a placement it can't make doesn't happen.
 pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
     // 158: a firewall stops every arrival on its hex; they stay in the supply.
@@ -1043,7 +1043,7 @@ pub fn place(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) {
     }
 }
 
-/// One adversary ambassador arrives on hex `h` from the supply: it cancels a
+/// One agent arrives on hex `h` from the supply: it cancels a
 /// player ambassador there (both are removed, no Unity). 138: with the spread
 /// gone, no botnet forms by arriving (botnets come only from printed lines).
 fn arrive(g: &mut GameState, cx: &mut Cx, h: usize) {
@@ -1075,7 +1075,7 @@ pub fn botnet_count(g: &GameState, hexes: Option<&[usize]>) -> i64 {
     }
 }
 
-/// Removes up to `n` adversary ambassadors from hex `h` to the supply.
+/// Removes up to `n` agents from hex `h` to the supply.
 pub fn remove(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> i64 {
     let k = n.min(g.tokens(h, ADV_AMBASSADOR)).max(0);
     if k > 0 {
@@ -1085,7 +1085,7 @@ pub fn remove(g: &mut GameState, cx: &mut Cx, h: usize, n: i64) -> i64 {
     k
 }
 
-/// Removes every adversary ambassador in country `c` to the supply (one
+/// Removes every agent in country `c` to the supply (one
 /// tally for them all); returns how many.
 pub fn remove_all_in_country(g: &mut GameState, cx: &mut Cx, c: usize) -> i64 {
     let w = cx.world;
@@ -1118,7 +1118,7 @@ pub fn clear_markers_on(g: &mut GameState, cx: &mut Cx, h: usize) {
 }
 
 /// City `h` is corrupted: the adversary's cube goes on (a player cube
-/// comes off), its adversary ambassadors return to the supply, and a node on
+/// comes off), its agents return to the supply, and a node on
 /// it is destroyed (138: only on the hex itself; an allied ambassador there is
 /// armor).
 pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
@@ -1127,7 +1127,7 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
 
 /// 138: hex `h` corrupts as a `site`: a city, research station or factory
 /// takes the adversary's cube (a player's comes off); an empty land hex takes
-/// land corruption. Its adversary ambassadors return to the supply; a node on
+/// land corruption. Its agents return to the supply; a node on
 /// the hex is destroyed (its owner's ambassador there is armor, used up
 /// instead; the Sanctuary capstone keeps it); player ambassadors still there
 /// are lost (024: they would free it in the same step); a marker comes off.
@@ -1272,8 +1272,8 @@ pub fn land_troops(
 
 /// Research station `h`, not yet corrupted, flips to the adversary. r35: a
 /// player's station is defended: it flips only with `station_flip_at`
-/// adversary ambassadors on it and no player ambassador, and those are used
-/// up; short of that one adversary ambassador lands on it instead (a player
+/// agents on it and no player ambassador, and those are used
+/// up; short of that one agent lands on it instead (a player
 /// ambassador standing there cancels it).
 /// Returns whether it flipped (099: a player's station that holds is no new source).
 pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
@@ -1287,11 +1287,11 @@ pub fn corrupt_station(g: &mut GameState, cx: &mut Cx, h: usize) -> bool {
             place(g, cx, h, 1);
             cx.tally(g, "adversary.station_flip_held", 1);
             let what = if supply <= 0 {
-                "no adversary ambassador is left to send"
+                "no agent is left to send"
             } else if g.tokens(h, ADV_AMBASSADOR) > adv {
-                "an adversary ambassador lands on it"
+                "an agent lands on it"
             } else {
-                "the adversary ambassador sent and a player ambassador there cancel each other"
+                "the agent sent and a player ambassador there cancel each other"
             };
             cx.note(Some(h), || format!("The station at {} holds: {what}", hex_name(&w, h)));
             return false;
@@ -1330,7 +1330,7 @@ pub fn can_destroy_all(g: &GameState, h: usize) -> bool {
     can_damage(g, h, 1, 1)
 }
 
-/// In hex `h`, removes up to `ambassadors` adversary ambassadors or up to
+/// In hex `h`, removes up to `ambassadors` agents or up to
 /// `troops` troops: one kind, seat `seat`'s choice where the hex holds both.
 pub fn damage(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, ambassadors: i64, troops: i64) -> Res {
     let w = cx.world;
@@ -1372,7 +1372,7 @@ pub fn remove_piece(g: &mut GameState, cx: &mut Cx, seat: Option<usize>, h: usiz
     }
 }
 
-/// Removes every adversary ambassador and troop in hex `h`.
+/// Removes every agent and troop in hex `h`.
 pub fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     let n = g.tokens(h, ADV_AMBASSADOR);
     for _ in 0..n {
@@ -1383,7 +1383,7 @@ pub fn destroy_all(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
     }
 }
 
-/// Removes one adversary ambassador in country `c` (players choose the hex).
+/// Removes one agent in country `c` (players choose the hex).
 pub fn pushback(g: &mut GameState, cx: &mut Cx, c: usize) -> Res {
     let w = cx.world;
     let hexes: Vec<usize> = w.map.countries[c]
@@ -1395,7 +1395,7 @@ pub fn pushback(g: &mut GameState, cx: &mut Cx, c: usize) -> Res {
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     if let Some(i) = cx.choose(
         0,
-        &format!("Unity: remove an adversary ambassador in {} from which hex?", country_name(&w, c)),
+        &format!("Unity: remove an agent in {} from which hex?", country_name(&w, c)),
         opts,
     )? {
         remove_piece(g, cx, None, hexes[i], ADV_AMBASSADOR);
@@ -1448,7 +1448,7 @@ impl PurgeLevel {
     /// The win line for this level.
     pub fn win_text(self) -> &'static str {
         match self {
-            PurgeLevel::All => "purge: no corrupted city, botnet, adversary troop or adversary ambassador on the board",
+            PurgeLevel::All => "purge: no corrupted city, botnet, adversary troop or agent on the board",
             PurgeLevel::NoAmbassadors => {
                 "purge: no corrupted city, botnet or adversary troop (ambassadors no longer count)"
             }

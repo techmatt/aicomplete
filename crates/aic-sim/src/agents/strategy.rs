@@ -157,6 +157,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::Pushback { .. }
                 | Op::Convert { .. }
                 | Op::Gather { .. }
+                | Op::Push { .. }
         )
     });
     c[cat::COUNTER] = any(&|o| matches!(o, Op::Jam { .. } | Op::CounterThreat | Op::AutoCounter { .. } | Op::DelayThreat { .. }));

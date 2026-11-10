@@ -292,7 +292,7 @@
    "locations": [
     "city"
    ],
-   "text": "4 adversary ambassadors are created here. 3 Unity comes off the Unity track.",
+   "text": "4 agents are created here. 3 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -625,7 +625,7 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here. 2 adversary ambassadors are created here.",
+   "text": "A botnet lands on the station here. 2 agents are created here.",
    "counters": [
     [
      {
@@ -953,7 +953,7 @@
     "coastal_city",
     "factory"
    ],
-   "text": "4 adversary ambassadors are created here. The nearest player pays 6 chips or discards 3 cards.",
+   "text": "4 agents are created here. The nearest player pays 6 chips or discards 3 cards.",
    "counters": [
     [
      {
@@ -1190,7 +1190,7 @@
     "city",
     "base"
    ],
-   "text": "3 adversary ambassadors are created on the city here. 2 adversary troops land on the base here.",
+   "text": "3 agents are created on the city here. 2 adversary troops land on the base here.",
    "counters": [
     [
      {

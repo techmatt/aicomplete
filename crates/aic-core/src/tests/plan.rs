@@ -3,7 +3,7 @@ use crate::modules::plan;
 
 /// 151: `plan::next_rally` must foresee what the build's Rally places, hex by hex (a share where players
 /// break a tie): for every event card face up, on set-up boards, with each board's pool at 0-5. Player
-/// ambassadors are taken off first (an arriving adversary ambassador cancels one rather than landing), and
+/// ambassadors are taken off first (an arriving agent cancels one rather than landing), and
 /// the supply is made roomy (the plan doesn't check it).
 #[test]
 fn the_rally_forecast_matches_the_rally_step() {

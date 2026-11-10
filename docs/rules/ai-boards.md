@@ -128,7 +128,7 @@ takes 1 Industry tag and 1 energy out and puts a building with 1-3 tags in, once
 level, but each use spends an energy and a card for good, and the building still pays its insight, so energy and the
 hand cap it. **The energy gift** (Shared Grid Accord and Interconnector Treaty, programs) is one-shot. Energy bought
 from a neutral city costs `city_energy_credits` (5); credits → energy → a card's income is capped by the cards and
-the cities' energy (a city's `corp_energy` cubes a round, none while an adversary ambassador stands on it). **Energy
+the cities' energy (a city's `corp_energy` cubes a round, none while an agent stands on it). **Energy
 counters** spend energy for good. **The Researcher's:** Patience with the cube converters (Cintamani's, a cube for 2
 insight; everyone's standard action, a cube for 1) is the intended engine, with no limit a round: capped by how many
 stations make cubes (and Open Archive's 1 a round) and, for Cintamani's, by the city node in its country. Bought cubes

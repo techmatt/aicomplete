@@ -56,7 +56,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
                 dark.len() as i64,
                 None,
                 &format!(
-                    "dark: an adversary ambassador stands on {}: no energy for anyone there (sold or to its owner) while it stays",
+                    "dark: an agent stands on {}: no energy for anyone there (sold or to its owner) while it stays",
                     dark.join(", ")
                 ),
             );

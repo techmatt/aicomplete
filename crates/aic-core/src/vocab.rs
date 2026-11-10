@@ -286,9 +286,14 @@ impl TokenKind {
             TokenKind::Datasets => "dataset",
             TokenKind::Followers => "follower",
             TokenKind::Capital => "capital",
-            TokenKind::Agents => "agent",
+            // 166: printed Operatives (the adversary's pieces are agents); the code name stays.
+            TokenKind::Agents => "operative",
         };
-        format!("{n} {}", if n == 1 { one } else { self.name() })
+        let many = match self {
+            TokenKind::Agents => "operatives",
+            _ => self.name(),
+        };
+        format!("{n} {}", if n == 1 { one } else { many })
     }
 }
 

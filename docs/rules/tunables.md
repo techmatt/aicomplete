@@ -17,14 +17,14 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.station_cubes` | 1 | 0..5 | research cubes a neutral station makes a round (an adversary one: compute) |
 | `board.owned_station_cubes` | 2 | 0..5 | research cubes a player-owned station makes its owner a round (142) |
 | `board.divert_discord` | 1 | 0..5 | Discord per unit of a corrupted city's energy diverted to the adversary |
-| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an adversary ambassador darkens |
+| `board.ambassador_discord` | 0 | 0..5 | Discord per unit of energy, each round, of an aligned city an agent darkens |
 | `board.liberate_at` | 5 | 1..10 | the Liberate action: ambassadors that liberate an adversary city |
 | `board.liberate_facility_at` | 3 | 1..10 | the Liberate action: ambassadors that liberate an adversary station or factory |
 | `board.claim_city` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.last_safe_stage` | 2 | 0..3 | while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe) |
-| `board.free_leaves` | 0 | 0..5 | adversary ambassadors left on a city as it frees (the piece ladder) |
+| `board.free_leaves` | 0 | 0..5 | agents left on a city as it frees (the piece ladder) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 2 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
@@ -33,8 +33,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.war_reach` | 0 | 0..1 | war that destroys a factory destroys nodes within this many hexes of it |
 | `board.station_chips` | 2 | 0..20 | standard action: chips to build a research station |
 | `board.factory_chips` | 2 | 0..5 | chips a player-owned factory makes its owner each round |
-| `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its adversary ambassadors, and stay there |
-| `board.remove_count` | 3 | 1..3 | standard action: adversary ambassadors one removal takes off its hex, at most |
+| `board.remove_ambassadors` | 1 | 1..5 | standard action: your ambassadors from the supply that go onto a hex to evict its agents, and stay there |
+| `board.remove_count` | 3 | 1..3 | standard action: agents one removal takes off its hex, at most |
 | `board.clear_cost` | 2 | 0..20 | standard action: credits to clear a corruption marker within reach |
 | `board.clear_unity` | 2 | 0..5 | Sway toward Unity for clearing a corruption marker |
 | `board.clear_credits` | 0 | 0..5 | credits back for clearing a corruption marker |
@@ -47,11 +47,11 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.cube_insight` | 1 | 0..5 | standard action, no limit a round: insight for 1 research cube (0: no such action) |
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
-| `adversary.supply_per_country` | 24 | 0..40 | adversary ambassadors in the supply per country |
-| `adversary.corrupt_at` | 4 | 1..20 | Corrupt city: adversary ambassadors a city gathers (on it and next to it) to corrupt |
-| `adversary.corrupt_station_at` | 3 | 1..20 | Corrupt station: adversary ambassadors a research station gathers to corrupt |
-| `adversary.corrupt_factory_at` | 3 | 1..20 | Corrupt factory: adversary ambassadors a factory gathers to corrupt |
-| `adversary.corrupt_land_at` | 3 | 1..20 | Corrupt land: adversary ambassadors an empty land hex gathers to take land corruption |
+| `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
+| `adversary.corrupt_at` | 4 | 1..20 | Corrupt city: agents a city gathers (on it and next to it) to corrupt |
+| `adversary.corrupt_station_at` | 3 | 1..20 | Corrupt station: agents a research station gathers to corrupt |
+| `adversary.corrupt_factory_at` | 3 | 1..20 | Corrupt factory: agents a factory gathers to corrupt |
+| `adversary.corrupt_land_at` | 3 | 1..20 | Corrupt land: agents an empty land hex gathers to take land corruption |
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |
@@ -73,11 +73,11 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
 | `adversary.compute_income` | 3, 4, 10, 8, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 0, 1, 1, 1, 2 | 0..10 | 151: the adversary's ambassador income a board a round (into each board's pool), at difficulty 0-4 |
+| `adversary.ambassador_income` | 0, 1, 1, 1, 2 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
-| `adversary.station_flip_at` | 2 | 0..5 | adversary ambassadors on a player's research station before an effect can flip it (short of that, one lands there instead) |
+| `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |
 | `adversary.board_difficulty_at` | 2 | 0..5 | the difficulty level from which the adversary board's own difficulty line applies (135) |
 | `alignment.tip_per_player` | 3 | 1..50 | the Unity track tips when it holds this many Sway per player |

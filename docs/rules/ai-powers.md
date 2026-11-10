@@ -29,6 +29,7 @@ still help.
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
 | Protector | Shelter | 1 Security + 1 energy | in one country this round, no nodes or facility can be destroyed |
 | Protector | Debrief | 1 Diplomacy | draw 2 cards |
+| Protector | Patrol | 1 energy | push up to 3 agents or troops from a hex in reach, each to a hex next to it |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
 | Researcher | Deploy | 1 energy | place 1 node |
 | Researcher | Peer Review | 3 research cubes | place 1 node |

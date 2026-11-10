@@ -324,7 +324,7 @@
    ],
    "cost": 9,
    "ongoing": false,
-   "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it).",
+   "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it).",
    "effects": [
     {
      "op": "rally",
@@ -340,7 +340,7 @@
     "adversary pieces placed",
     "facilities destroyed or seized"
    ],
-   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 (Rally 2, each board: research stations: 8; Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 adversary ambassadors are on it): 24); 1.78 a compute.",
+   "value": "absorbs 9 compute a player (18 at 2 players, 19.8 at values.json compute 1.1); harm 32 (Rally 2, each board: research stations: 8; Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it): 24); 1.78 a compute.",
    "check": "151: one consequence (two at most), deterministic targeting; a player's harm is a fixed amount a seat with a choice of currency.",
    "flags": [
     "151: rewritten to the standard (one consequence, each board, deterministic)"

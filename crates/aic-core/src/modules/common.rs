@@ -33,7 +33,7 @@ pub const MARKER: &str = "corruption";
 /// Land corruption (138): a rare hex token a Corrupt land line leaves on an
 /// empty land hex. No node may be placed there, and it drips Discord.
 pub const LAND_CORRUPTION: &str = "land_corruption";
-/// A firewall (158): no adversary ambassador arrives on its hex; it comes off at
+/// A firewall (158): no agent arrives on its hex; it comes off at
 /// the end of the next adversary turn.
 pub const FIREWALL: &str = "firewall";
 
@@ -227,6 +227,8 @@ pub fn seats_in_scope(w: &World, g: &GameState, scope: Option<usize>) -> Vec<usi
 pub fn piece_name(kind: &str) -> String {
     match kind.split_once(':') {
         Some(("node", s)) => format!("seat {s}'s node"),
+        // 166 (Matt, 2026-11-09): the agents print as agents.
+        Some(("ambassador", "adversary")) => "agent".into(),
         Some((kind, "adversary")) => format!("adversary {kind}"),
         _ if kind == STATION => "research station".into(),
         _ => kind.replace('_', " "),

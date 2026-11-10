@@ -1253,10 +1253,12 @@ impl Eval {
                     // adversary ambassadors add to the cost): gathering toward it, by
                     // the best-placed seat in reach, counts a little, so a seat saves up.
                     if let Some(need) = board::liberate_cost(&world, g, h) {
+                        // 166: the ambassadors standing on it, any seat's, pay first; the supply the rest.
+                        let standing = board::liberate_standing(g, h);
                         if w.purge != 0.0 {
                             for (s, b) in bill.iter_mut().enumerate().take(seats) {
                                 if near[s] >> h & 1 != 0 {
-                                    *b += need;
+                                    *b += (need - standing).max(0);
                                 }
                             }
                         }
@@ -1264,7 +1266,8 @@ impl Eval {
                             .filter(|&s| near[s] >> h & 1 != 0)
                             .map(|s| g.resource(s, Resource::Ambassadors))
                             .max()
-                            .unwrap_or(0) as f64;
+                            .unwrap_or(0) as f64
+                            + standing as f64;
                         v += w.corrupted * w.freeing * 0.25 * (held / need.max(1) as f64).min(1.0);
                     }
                     // 137: a player ambassador standing on it blocks its diversion.
@@ -1370,7 +1373,8 @@ impl Eval {
                             .filter(|&s| near[s] >> h & 1 != 0)
                             .map(|s| g.resource(s, Resource::Ambassadors))
                             .max()
-                            .unwrap_or(0) as f64;
+                            .unwrap_or(0) as f64
+                            + board::liberate_standing(g, h) as f64;
                         let share = (held / need.max(1) as f64).min(1.0);
                         v += (w.station + flip) * w.station_freeing * share * share;
                     }

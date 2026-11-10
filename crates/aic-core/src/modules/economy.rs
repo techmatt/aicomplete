@@ -49,7 +49,7 @@ pub fn raise_production(g: &mut GameState, cx: &mut Cx, seat: usize, r: Resource
     }
 }
 
-/// Insight seat `s` loses next round (021: an adversary ambassador on its nodes).
+/// Insight seat `s` loses next round (021: an agent on its nodes).
 pub fn insight_debt(seat: usize) -> String {
     format!("economy.insight_debt.{seat}")
 }
@@ -312,7 +312,7 @@ impl Module for Economy {
                     "insight lost next round",
                     debt,
                     None,
-                    "this much less insight next round: from adversary ambassadors on your nodes, or a threat",
+                    "this much less insight next round: from agents on your nodes, or a threat",
                 );
             }
         }

@@ -26,6 +26,7 @@ mod freeing;
 mod invariants;
 mod map;
 mod march;
+mod moves_166;
 mod new_ops;
 mod ops;
 mod overlay;
@@ -566,9 +567,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 69;
-const GOLDEN_FINGERPRINT: &str = "478d9d3ad2bd0516";
-const GOLDEN_CONTENT_HASH: &str = "8bd963c4138f6cb0";
+const GOLDEN_REVISION: u32 = 70;
+const GOLDEN_FINGERPRINT: &str = "eec6d6a511734a13";
+const GOLDEN_CONTENT_HASH: &str = "7b21af2554f1db88";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

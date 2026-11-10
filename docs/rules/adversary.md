@@ -18,7 +18,7 @@ on a card means each country: they are always the same. Its steps in the round:
    each **botnet** makes `botnet_compute` **adversary compute**, onto the projects (none under a player ambassador).
 4. **Corrupt** (`adversary.corrupt`): the card's last step, its **Corrupt X** lines, in order (below).
 5. **Natural corruption** (`adversary.natural`): every city, research station or factory already holding its corrupt
-   number of adversary ambassadors corrupts, with no move (a city's corruption markers count).
+   number of agents corrupts, with no move (a city's corruption markers count).
 6. **March** (`board.march`, [war.md](war.md)), then **reveal** (`adversary.reveal`): the top card goes face up as
    next round's card; then **income**.
 
@@ -40,7 +40,7 @@ A threat still places its own ambassadors "here". A player's
 **Corrupt X (candidate).** X is a site type: **city** (`corrupt_at` 4), **research station**
 (`corrupt_station_at` 3), **factory** (`corrupt_factory_at` 3) or, rarely, **land** (`corrupt_land_at` 3; an empty land
 hex: no city, base or building). On each board, every X not the adversary's, lowest-numbered first, that can gather its number n
-of adversary ambassadors (on it plus next to it, in its board, one move each) pulls just enough in, lowest-numbered
+of agents (on it plus next to it, in its board, one move each) pulls just enough in, lowest-numbered
 hexes first, and corrupts; its ambassadors return to the supply. **Every site that qualifies corrupts**: a crowded board
 cascades. A line may print "(1 fewer)"; difficulty lowers n (below).
 - **A corrupted site** takes the adversary's cube (a player cube comes off; [ambassadors.md](ambassadors.md)).
@@ -69,7 +69,7 @@ every slot), else to the project discard, which reshuffles when the deck runs ou
 resolved (or been discarded), the slots refill.
 
 - **Compute sources:** compute income; botnets (above); threats executing uncountered ([threats.md](threats.md)), from
-  d2 the board's 4 more each; an adversary ambassador draining a lone node ([ambassadors.md](ambassadors.md)); adversary
+  d2 the board's 4 more each; an agent draining a lone node ([ambassadors.md](ambassadors.md)); adversary
   research stations, `station_cubes` a round; Cintamani's adversary cubes ([board.md](board.md)).
 - **Spending:** each compute point goes onto the **cheapest** visible project (ties: the
   first slot); content may print `compute_every` (on every visible project). When a project holds its cost it **resolves**: a one-shot effect at once, or
@@ -145,7 +145,7 @@ two other lines, or saying "each country".
 
 **For new players: the adversary's turn.** Its card, in order: a **threat** on each board; **rally** (each board's
 pool lands on the sites named, neutral first, spread evenly, you placing the odd one); **deploy** (troops on each
-board's lowest-numbered factory); **corrupt** ("Corrupt cities": every city that can gather 4 adversary ambassadors
+board's lowest-numbered factory); **corrupt** ("Corrupt cities": every city that can gather 4 agents
 from itself and its neighbors does, destroying a node on that hex only, unless your ambassador stands there). Then
 **income**: compute onto projects, ambassadors into the pools. The card ahead and the pools are face up: armor or
 clear sites a round ahead. **What resisted this:** the gathering count is

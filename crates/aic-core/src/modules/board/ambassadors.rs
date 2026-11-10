@@ -18,7 +18,7 @@ pub fn ambassadors_on_board(g: &GameState, seat: usize) -> i64 {
 }
 
 /// Seat `s`'s player ambassador arrives on hex `h`: it cancels an
-/// adversary ambassador there (both removed, no Unity); otherwise it stands on
+/// agent there (both removed, no Unity); otherwise it stands on
 /// the piece (137: claiming and liberating are standard actions, so an
 /// arriving ambassador claims nothing).
 pub fn place_ambassador(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
@@ -77,7 +77,7 @@ pub fn liberate_ambassadors(w: &World, kind: SiteKind) -> i64 {
 }
 
 /// What claiming neutral site `h` costs in ambassadors (one more for each
-/// adversary ambassador on it, which cancel), if it is a neutral site.
+/// agent on it, which cancel), if it is a neutral site.
 pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
     if corrupted(g, h) || cube_owner(g, h).is_some() {
@@ -87,7 +87,7 @@ pub fn claim_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
 }
 
 /// What liberating adversary site `h` costs in ambassadors (one more for each
-/// adversary ambassador on it), if it is an adversary site.
+/// agent on it), if it is an adversary site.
 pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     let kind = site_kind(w, g, h)?;
     if !corrupted(g, h) {
@@ -96,9 +96,39 @@ pub fn liberate_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
     Some(liberate_ambassadors(w, kind) + g.tokens(h, ADV_AMBASSADOR))
 }
 
+/// 166 (Matt, 2026-11-09): the ambassadors standing on adversary site `h`, any seat's, that a Liberate there
+/// may spend before the acting seat's supply.
+pub fn liberate_standing(g: &GameState, h: usize) -> i64 {
+    (0..g.seats.len()).map(|s| g.tokens(h, ambassador(s))).sum()
+}
+
+/// 166: what seat `seat`'s supply pays to liberate adversary site `h`: the bill less the ambassadors standing
+/// on it, if it is an adversary site.
+pub fn liberate_supply_cost(w: &World, g: &GameState, h: usize) -> Option<i64> {
+    liberate_cost(w, g, h).map(|n| (n - liberate_standing(g, h)).max(0))
+}
+
+/// 166: pays the Liberate bill of site `h` for `seat`: the ambassadors standing on it first (the acting seat's,
+/// then the others' in seat order), the supply the rest.
+pub fn pay_liberate(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize) {
+    let w = cx.world;
+    let mut left = liberate_cost(&w, g, h).unwrap_or(0);
+    let order = std::iter::once(seat).chain((0..g.seats.len()).filter(|&s| s != seat)).collect::<Vec<_>>();
+    for s in order {
+        let k = ambassador(s);
+        let n = g.tokens(h, k).min(left);
+        if n > 0 {
+            cx.add_tokens(g, h, k, -n);
+            cx.tally(g, "board.liberate_standing", n);
+            left -= n;
+        }
+    }
+    cx.add_resource(g, seat, Resource::Ambassadors, -left);
+}
+
 /// The neutral research stations seat `seat` may claim with a card (142, `claim_station`): in its reach, a
 /// site claim on it (`can_claim`), and, as the Claim action asks (148, D70), one of the seat's ambassadors
-/// for each adversary ambassador on it ([`card_claim_extra`]).
+/// for each agent on it ([`card_claim_extra`]).
 pub fn card_claim_stations(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
     let held = g.resource(seat, Resource::Ambassadors);
     (0..g.hexes.len())
@@ -111,13 +141,13 @@ pub fn card_claim_stations(w: &World, g: &GameState, seat: usize) -> Vec<usize> 
 }
 
 /// 148 (D70): what a card's claim of neutral station `h` costs beyond the card's own price: the Claim
-/// action's "1 more for each adversary ambassador on it", in the seat's ambassadors (they cancel).
+/// action's "1 more for each agent on it", in the seat's ambassadors (they cancel).
 pub fn card_claim_extra(w: &World, g: &GameState, h: usize) -> Option<i64> {
     claim_cost(w, g, h).map(|n| n - claim_ambassadors(w, SiteKind::Station))
 }
 
 /// Seat `seat` claims neutral site `h` (the Claim action, paid, or a card: `route`, 142's tally): the
-/// adversary ambassadors on it cancel, and its cube goes on.
+/// agents on it cancel, and its cube goes on.
 pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: &str) {
     let w = cx.world;
     let Some(kind) = site_kind(&w, g, h) else { return };
@@ -133,7 +163,7 @@ pub fn claim_site(g: &mut GameState, cx: &mut Cx, seat: usize, h: usize, route: 
 }
 
 /// Adversary site `h` is liberated by seat `seat`'s massed ambassadors (the
-/// Liberate action, paid): the adversary ambassadors on it cancel, and it
+/// Liberate action, paid): the agents on it cancel, and it
 /// turns neutral. A city liberates as a card's does ([`liberate`]); a station
 /// or factory sways `alignment.free_facility` toward Unity (a botnet on it stays).
 pub fn liberate_site(g: &mut GameState, cx: &mut Cx, h: usize) {
@@ -154,7 +184,7 @@ pub fn liberate_site(g: &mut GameState, cx: &mut Cx, h: usize) {
     cx.note(Some(h), || format!("The {} at {} is liberated", kind.name(), hex_name(&w, h)));
 }
 
-/// Whether an adversary ambassador stands on hex `h` or an adjacent hex
+/// Whether an agent stands on hex `h` or an adjacent hex
 /// (what Clear City clears).
 pub fn guarded(w: &World, g: &GameState, h: usize) -> bool {
     next_to(w, h, |x| g.tokens(x, ADV_AMBASSADOR) > 0)
@@ -167,7 +197,7 @@ pub fn liberate_at(w: &World) -> i64 {
 }
 
 /// City `h` is liberated: the adversary's cube comes off, so it is clean,
-/// Unity sways, and `board.free_leaves` adversary ambassadors land on it
+/// Unity sways, and `board.free_leaves` agents land on it
 /// (027; none at 0). A liberate card
 /// with `align` (080) puts the seat's cube on it afterward
 /// (`effects::removal::liberate_city`).

@@ -18,7 +18,7 @@
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
+use aic_core::content::{Ability, CardDef, CardKind, Event, Facility, Op, Piece, Power, Resource, RoundFlag, Side, TokenKind, TAGS};
 use serde::Deserialize;
 
 /// The table as loaded.
@@ -580,10 +580,17 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
         Op::Consolidate { max } => Worth::now(row("consolidate") * *max as f64),
         // 158: the end-game shapes. A conversion is a removal plus an ambassador of yours on the board.
         Op::Convert { max } => Worth::now(row("convert") * t.rate("target_share") * *max as f64),
-        Op::Gather { troops, strike } => {
-            let each = if *troops { row("remove_troop") } else { row("remove_ambassador") };
-            Worth::now(row("gather") + each * t.rate("target_share") * *strike as f64)
+        // 166: a move is worth `gather` / `push` a piece (about 40% of a removal); a strike removes what it
+        // gathers, each at the dearest removal its pieces allow. Pieces in reach to move: `target_share`.
+        Op::Gather { max, pieces, strike } => {
+            let each = if *strike {
+                if pieces.contains(&Piece::Troops) { row("remove_troop") } else { row("remove_ambassador") }
+            } else {
+                row("gather")
+            };
+            Worth::now(each * t.rate("target_share") * *max as f64)
         }
+        Op::Push { max, .. } => Worth::now(row("push") * t.rate("target_share") * *max as f64),
         Op::Firewall => Worth::unseen(row("firewall")),
         // A threshold: its ops at the row's share (the chance the seat holds the tags when it plays).
         Op::IfTags { then, .. } => {

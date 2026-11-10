@@ -178,7 +178,7 @@ fn the_corrupt_step_runs_the_cards_corrupt_lines() {
 fn a_station_flip_face_prints_station_flip_at() {
     let rules = Rules::new(&baseline()).unwrap();
     let n = rules.world().int("adversary.station_flip_at");
-    let want = format!("unless {n} adversary");
+    let want = format!("unless {n} agents");
     // A forced flip (135: "even a player's") reads no tunable.
     let flips = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::FlipStation { force: false, .. }));
     let c = crate::content();

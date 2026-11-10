@@ -457,9 +457,11 @@ impl ViewOut<'_> {
 }
 
 /// A token kind in words, for a label: `node:0` is "seat 0's node",
-/// `ambassador:adversary` "adversary ambassador" (020: labels were raw keys).
+/// `ambassador:adversary` "agent" (020: labels were raw keys).
 fn token_words(kind: &str) -> String {
     match kind.split_once(':') {
+        // 166 (Matt, 2026-11-09): the agents print as agents.
+        Some(("ambassador", "adversary")) => "agent".into(),
         Some((what, "adversary")) => format!("adversary {}", what.replace('_', " ")),
         Some((what, seat)) => format!("seat {seat}'s {}", what.replace('_', " ")),
         None => kind.replace('_', " "),

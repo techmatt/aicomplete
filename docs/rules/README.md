@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 69 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 70 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -55,7 +55,8 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 <!-- generated: house_terms -->
 - **Facility**: a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else.
 - **Shield**: a hardening token on a hex with your node.
-- **Ambassador**: yours; the other side's is always an adversary ambassador.
+- **Ambassador**: a player's piece, any player's: a card never says whose.
+- **Agent**: the adversary's piece on the board (the Security token is an Operative).
 - **Troop**: an adversary troop, unless it says corp troop (a megacorp's, waiting at its military bases).
 - **In reach**: on a hex within 1 of your nodes.
 - **A country you're in**: a country where you have a node.
@@ -69,9 +70,10 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Convert**: an adversary ambassador on or next to the city leaves its stack and becomes yours, on your node whose reach you used.
-- **Gather at a city**: every adversary ambassador on a hex next to it moves onto it (troops too, when the card names them).
-- **Firewall**: a token on a hex: no adversary ambassador lands or is pulled there; it comes off at the end of the next adversary turn.
+- **Convert**: an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used.
+- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece.
+- **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
+- **Firewall**: a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn.
 <!-- /generated -->
 
 The rest:
