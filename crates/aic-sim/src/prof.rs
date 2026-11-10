@@ -12,6 +12,11 @@
 //!
 //! Each worker thread adds to its own counters and merges them into the
 //! process total with [`flush`] when it runs out of games.
+//!
+//! 165 (162's ask): [`prompt`] also tallies each prompt's scorings (an answer
+//! to "discard which card (1 of 3)?" and the like) by its text, digits as `#`:
+//! decisions, applies, evals and time, so the costly prompt is named before
+//! anyone optimizes (docs/speed.md).
 
 #[derive(Clone, Copy)]
 pub enum Part {
@@ -62,6 +67,16 @@ mod on {
     }
     pub static TOTAL: Mutex<Totals> = Mutex::new([(0.0, 0); super::PARTS.len()]);
 
+    /// A prompt's (decisions, applies, evals, ms), by its text with digits as `#`.
+    pub type Prompts = std::collections::BTreeMap<String, (u64, u64, u64, f64)>;
+
+    thread_local! {
+        pub static LOCAL_PROMPTS: RefCell<Prompts> = const { RefCell::new(Prompts::new()) };
+        /// Scorings under way on this thread: only the outermost is tallied.
+        pub static DEPTH: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
+    }
+    pub static TOTAL_PROMPTS: Mutex<Prompts> = Mutex::new(Prompts::new());
+
     pub static ALLOCS: AtomicU64 = AtomicU64::new(0);
     pub static BYTES: AtomicU64 = AtomicU64::new(0);
 
@@ -111,8 +126,56 @@ pub fn time<R>(part: Part, f: impl FnOnce() -> R) -> R {
     }
 }
 
+/// Runs `f`, a decision's whole scoring, and (profiling, outermost only)
+/// tallies it under `prompt`, the open question's text: none, not a prompt.
+#[inline(always)]
+pub fn prompt<R>(prompt: Option<&str>, f: impl FnOnce() -> R) -> R {
+    #[cfg(feature = "profile")]
+    if let Some(text) = prompt {
+        if on::DEPTH.get() == 0 {
+            let counts = || {
+                on::LOCAL.with(|l| {
+                    let l = l.borrow();
+                    (l[Part::Apply as usize].1 + l[Part::ApplyMut as usize].1, l[Part::Eval as usize].1)
+                })
+            };
+            let (applies, evals) = counts();
+            let t = std::time::Instant::now();
+            on::DEPTH.set(1);
+            let r = f();
+            on::DEPTH.set(0);
+            let ms = t.elapsed().as_secs_f64() * 1000.0;
+            let (applies2, evals2) = counts();
+            let key: String = text.chars().map(|c| if c.is_ascii_digit() { '#' } else { c }).collect();
+            on::LOCAL_PROMPTS.with(|p| {
+                let mut p = p.borrow_mut();
+                let e = p.entry(key).or_default();
+                e.0 += 1;
+                e.1 += applies2 - applies;
+                e.2 += evals2 - evals;
+                e.3 += ms;
+            });
+            return r;
+        }
+    }
+    let _ = prompt;
+    f()
+}
+
 /// Merges this thread's counters into the process total.
 pub fn flush() {
+    #[cfg(feature = "profile")]
+    on::LOCAL_PROMPTS.with(|l| {
+        let mut l = l.borrow_mut();
+        let mut t = on::TOTAL_PROMPTS.lock().expect("profile lock");
+        for (k, (d, a, e, ms)) in std::mem::take(&mut *l) {
+            let x = t.entry(k).or_default();
+            x.0 += d;
+            x.1 += a;
+            x.2 += e;
+            x.3 += ms;
+        }
+    });
     #[cfg(feature = "profile")]
     on::LOCAL.with(|l| {
         let mut l = l.borrow_mut();
@@ -137,6 +200,23 @@ pub fn totals() -> Option<Vec<(&'static str, f64, u64)>> {
                 .map(|(n, (ms, c))| (*n, *ms, *c))
                 .collect(),
         )
+    }
+    #[cfg(not(feature = "profile"))]
+    None
+}
+
+/// One prompt's tally: `(prompt, decisions, applies, evals, ms)`.
+pub type PromptRow = (String, u64, u64, u64, f64);
+
+/// The process total by prompt, the costliest first; `None` unless built
+/// with `profile`.
+pub fn prompts() -> Option<Vec<PromptRow>> {
+    #[cfg(feature = "profile")]
+    {
+        let t = on::TOTAL_PROMPTS.lock().expect("profile lock");
+        let mut v: Vec<_> = t.iter().map(|(k, (d, a, e, ms))| (k.clone(), *d, *a, *e, *ms)).collect();
+        v.sort_by(|a, b| b.4.total_cmp(&a.4));
+        Some(v)
     }
     #[cfg(not(feature = "profile"))]
     None

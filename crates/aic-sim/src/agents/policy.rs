@@ -243,7 +243,7 @@ macro_rules! forced_table {
             /// whole keep ("with insight to burn, keep every card worth having").
             (keep_spare: bool, false, 1.0, "124: keep plan: a pick worth its price is kept when insight beyond the heuristic's insight_cap pays its whole keep")
             /// 124 (D47): the keep plan reads a teammate trigger at the teammates' tag share.
-            /// The play check's twin is `w.team_share`: screen the two together.
+            /// (The play check's twin, `w.team_share`, was retired at 165.)
             (plan_team: bool, false, 0.0, "124 (D47): keep plan: a trigger on a teammate's plays fires at the teammates' share of the tag")
             /// 128: the keep plan counts an Action that places project cubes only
             /// while a megaproject is open to the seat (Particle Accelerator).
@@ -403,9 +403,7 @@ impl Policy {
         let spare_at = if self.forced.keep_spare { insight_cap } else { 0.0 };
         // 150 (`plan_spare`): a Patience seat's insight beyond the cap is spare, so
         // more insight income is worth the idle rate, as the play eval reads it.
-        // The eval's spare branch sits outside its `table_income` probe, so this does too.
-        let probe = ev.is_some_and(|e| e.w.table > 0.0 && e.w.table_income > 0.0);
-        let spare = !probe && economy::patient(&world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
+        let spare = economy::patient(&world, s) && insight_cap > 0.0 && g.resource(s, Resource::Insight) as f64 > insight_cap;
         let insight_idle = (self.forced.plan_spare && spare).then_some(insight_idle);
         let pc = PlanCtx { table: self.forced.plan_table, strat, mults: self.mults.as_deref(), t, project, idle, spare_at, energy_rate, insight_idle };
         let set = if self.forced.keep_none {

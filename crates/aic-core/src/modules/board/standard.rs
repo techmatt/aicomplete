@@ -129,8 +129,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         // 149: paid from the seat's Movement, not a resource (`moves_left`).
         StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
-        // 137: the ambassadors depend on the site (`claim_cost`, `liberate_cost`):
-        // the targets list only sites the seat can pay for, and the action pays.
+        // 137: the ambassadors depend on the site: [`target_price`].
         StandardAction::Claim | StandardAction::Liberate => Price::default(),
         // 080: the price is the card's (`seat_price`); none printed here.
         StandardAction::HardenChips => Price::default(),
@@ -159,6 +158,20 @@ pub fn seat_price(w: &World, g: &GameState, seat: usize, act: StandardAction) ->
     match (act, harden_card_chips(w, g, seat)) {
         (StandardAction::HardenChips, Some(chips)) => Price { chips, ..Price::default() },
         _ => printed_price(w, act),
+    }
+}
+
+/// The part of a standard action's price that depends on its target hex `h`
+/// (137; 140's hook): Claim's and Liberate's ambassadors, the site's
+/// `claim_cost` or `liberate_cost` (`None`: no such site there). The rest are
+/// priced whole by [`seat_price`] and add nothing here. The targets list only
+/// hexes the seat can pay this for, and the action pays it on the hex chosen.
+pub fn target_price(w: &World, g: &GameState, act: StandardAction, h: usize) -> Option<Price> {
+    let ambassadors = |ambassadors| Price { ambassadors, ..Price::default() };
+    match act {
+        StandardAction::Claim => claim_cost(w, g, h).map(ambassadors),
+        StandardAction::Liberate => liberate_cost(w, g, h).map(ambassadors),
+        _ => Some(Price::default()),
     }
 }
 
@@ -327,14 +340,14 @@ pub fn station_sites(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
 /// Whether seat `s` can claim neutral site `h` now: a site claim on it and
 /// the ambassadors in its supply (137).
 pub fn claimable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    claim_cost(w, g, h).is_some_and(|n| g.resource(seat, Resource::Ambassadors) >= n) && can_claim(w, g, seat, h)
+    target_price(w, g, StandardAction::Claim, h).is_some_and(|p| p.affordable(g, seat)) && can_claim(w, g, seat, h)
 }
 
 /// Whether seat `s` can liberate adversary site `h` now: in its reach (a
 /// botnet doesn't stop it: the setup station holds one) and the ambassadors
 /// in its supply (137).
 pub fn liberable(w: &World, g: &GameState, seat: usize, h: usize) -> bool {
-    liberate_cost(w, g, h).is_some_and(|n| g.resource(seat, Resource::Ambassadors) >= n) && in_reach(w, g, seat, h)
+    target_price(w, g, StandardAction::Liberate, h).is_some_and(|p| p.affordable(g, seat)) && in_reach(w, g, seat, h)
 }
 
 /// The hexes a standard action of `seat` may target (empty: not offered).
@@ -444,15 +457,13 @@ pub(super) fn std_resolve(
         }
         StandardAction::Claim => {
             if let Some(h) = on_hex(cx)? {
-                let n = claim_cost(&w, g, h).unwrap_or(0);
-                cx.add_resource(g, s, Resource::Ambassadors, -n);
+                target_price(&w, g, act, h).unwrap_or_default().pay(g, cx, s);
                 claim_site(g, cx, s, h, "ambassadors");
             }
         }
         StandardAction::Liberate => {
             if let Some(h) = on_hex(cx)? {
-                let n = liberate_cost(&w, g, h).unwrap_or(0);
-                cx.add_resource(g, s, Resource::Ambassadors, -n);
+                target_price(&w, g, act, h).unwrap_or_default().pay(g, cx, s);
                 liberate_site(g, cx, h);
             }
         }

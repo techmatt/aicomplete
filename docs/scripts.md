@@ -2,8 +2,6 @@
 
 What each script under `scripts/` is for, and how to run it. Run them from the repo root.
 
-Current:
-
 - `wasm-smoke.mjs`: plays one game through the wasm package in Node. `wasm-parity.mjs`:
   replays aic-sim records of each `configs/variants.json` variant in wasm.
 - `farm/build.mjs BUNDLE`: the farm's wasm bundle. `farm/run.mjs BUNDLE SPEC FIRST COUNT OUT [--browser] [--port N]
@@ -15,11 +13,12 @@ Current:
   `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
   `--check`: the `--check`s and the revision line only.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
-- `cards/cards_doc.py`: regenerates `docs/cards.md`.
+- `cards/cards_doc.py`: regenerates `docs/cards.md`. `cards/deck_text.py DECK...` prints a deck as plain text for a
+  review, from the generated docs (`--list` the decks; README, *Card text for review*).
 - `cards/apply_overlay.py FILE... [--check]`: writes content overlays (`cards.<id>.<path>=JSON` lines, the keys
-  `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a card pass
-  keeps its edits as one overlay file and reruns it. `cards.<id>=<JSON object>` writes a whole row: a new card is
-  appended, an existing one replaced (125; `--set` has no such form). Nothing deletes: drop a card from the
+  `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; rerunnable
+  (CLAUDE.md). `cards.<id>=<JSON object>` writes a whole row: a new card is
+  appended, an existing one replaced (`--set` has no such form). Nothing deletes: drop a card from the
   baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check`: a dry run. Then
   `regen.py`. It refuses hand-laid `alignment.json`; threats, adversary and projects: edit `drafts/adversary/`.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
@@ -28,10 +27,9 @@ Current:
 - `cards/counter_names.py DIR... [--all]`: measures gone quiet: the counter keys the read scripts, web scripts and
   `crates/aic-sim` (agents aside) quote that no game in DIR wrote (a key a rules change retired). Rare events and
   test strings list too: read it, don't gate on it.
-- `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
-  (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
-  each check against its own agent in one sign, agent minus check, with the paired SE, and games
-  per check when `results.json` has a `gate` key, then the unspent-resources readout. `--preset
+- `cards/screen.py`: the screen summary: named columns over experiment outputs (`--columns a,b,c`, `--preset
+  tiers|041|034|028|018|016`, `--sources`, `--list`); `--gate DIR` each check against its own agent (agent minus
+  check, paired SE), then the unspent-resources readout. `--preset
   tiers` is cards offered, kept and played per game by tier: run it on the first screen of a card rework, since agents
   draft tier 2 about three picks in four ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
@@ -58,15 +56,14 @@ Current:
   lost and what seats leave unspent; `--powers` every board power a game, `--cards` the deck's research-cube cards
   (read from content) kept, played and used.
 - `cards/use_read.py DIR... [--min PCT] [--agents A,B]`: per agent and pair, pooled over DIRs: wins, each dear
-  power's uses a game (`ai::power_is_dear`: two tags or more, or a tag and an energy and no node), Grant, Action
-  buildings' uses, tokens gained / spent, each liberate card kept / played (Popular Uprising's Action uses); then per
-  agent the draft cards kept in over `--min` percent of games and never played, and those never kept. Seconds.
+  power's uses a game (`ai::power_is_dear`), Grant, Action buildings' uses, tokens gained / spent, each liberate card
+  kept / played (Popular Uprising's Action uses); then per agent `play_read.py`'s two lists. Seconds.
 - `cards/liberation_read.py DIR... [--cards]`: per cell (config, pair, agent): wins ± SE, rounds, cities corrupted a
   game, cities liberated a game (by a card / by the fallback), the share of games with a liberation, Grant uses,
   strikes a Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played a game.
   Seconds.
-- `configs/no_liberate.py`: writes `experiments/configs/no_liberate.json`, the baseline with the seven liberate
-  capstones out of the deck; rerun after editing the baseline (`regen.py` does).
+- `configs/no_liberate.py`: writes `experiments/configs/no_liberate.json`, the baseline less every card printing
+  `liberate` (read from content); `regen.py` reruns it.
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards
   kept (opening keeps apart) and played, kept and never played, nodes placed, credit income a round, credits and
   insight left unspent a round; each board's first dear power used a game; each seat's most-held tag by round
@@ -76,17 +73,14 @@ Current:
 - `cards/corp_read.py DIR...`: per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by
   color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source.
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl
-  ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, not of offered.
+  ([experiments.md](experiments.md), *Reading prices*).
 - `cards/effect_ledger.py`: the effect ledger. It splits each card's printed cost over its effects pro rata to the
   reasoned values (`configs/agents/values.json`, an income valued over its tier's horizon), fits a price multiplier
-  per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`;
-  rerun at each card revision. `--stdout` writes nothing and prints each card's fit and fair credit price
-  (card-pricing.md, *A fair price*); `--cards FILE` and `--values FILE` read a proposed `cards.json` or
-  `values.json`; `--overlay FILE` (with `--stdout`) applies a card pass's overlay first, to price it before
-  writing it; `--hold-ratio OLD.csv` adds the credit price that keeps each card's printed / reasoned ratio of an
-  older `cards.csv` (`git show REV:experiments/results/effect-ledger/cards.csv`), for repricing after a value change.
-  Its Python mirror of `agents/value.rs` must change with it (a fast-lane test checks the committed `cards.csv`).
-  "Remove up to N troops" counts at what it removes in play (`values.json` `troops_removed`). Seconds.
+  per effect, and writes CSVs, `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`; rerun at each
+  card revision. `--stdout` prints each card's fit and fair price (card-pricing.md, *A fair price*), writing nothing;
+  `--cards FILE`, `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an overlay before it
+  is written; `--hold-ratio OLD.csv` adds the price keeping an older `cards.csv`'s printed / reasoned ratio (repricing
+  after a value change). It mirrors `agents/value.rs` by hand (card-pricing.md). Seconds.
 - `cards/payback.py [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
   price at a committed seat's fire rates (card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older
   deck's column.
@@ -96,24 +90,23 @@ Current:
   (`strategist` against `engine:strategy=1`) is listed and is no difference when the games match. `--map OLD=NEW`
   renames in the old output first (to swap two names, map one to a placeholder first).
 - `bench/same_play.py`: proves a refactor left play unchanged: a matrix of configs, countries, difficulties and
-  `configs/variants.json`, with every agent but the beam (rollout and planner included), on the old and new binaries,
-  ~20 min a run on 6 threads (r58); every saved game replays on the new binary; `compare` takes under a minute.
-  `--map` as above (records then compared by field). An old binary that refuses today's configs plays its own: `git
-  archive REV configs | tar -x -C out/old`, then `run ... --root out/old`.
+  `configs/variants.json`, with every agent but the beam, on the old and new binaries (~20 min a run on 6 threads);
+  every saved game replays on the new binary.
+  `--map` as above (records then compared by field). An old binary that refuses today's configs plays its own
+  (README, *This machine*): `run ... --root out/old`.
 - `bench/speed.py` (flags: `--help`): games a minute per agent. `pair OLD NEW --out FILE` runs each row on both
   binaries in turn, so the ratio holds on a busy machine (`--old-config` for an OLD on another baseline; a row whose
   games differ prints NOT LIKE FOR LIKE). `table SIM --out FILE` is one binary's rates, `compare` reads two. `check
   SIM` is the standing check (about 2 min, quiet machine, one thread): fails at 1.3 × `speed_baseline.json`,
-  `--update` moves it; on other games or another revision it prints NO VERDICT and exits 0: read `per_decision.py`,
-  then `--update`, then a plain `check`. `--games N` sets the many-thread column's games (greedy's default 200 is
-  ~25 min since r61: pass 16).
+  `--update` moves it; across a revision it prints NO VERDICT (CLAUDE.md). `--games N` sets the many-thread column's
+  games (greedy's default 200 is ~25 min: pass 16).
 - `bench/per_decision.py OLD_ROOT NEW_ROOT`: rounds, decisions and ms per game and per decision on the same seeds,
   for telling longer games from a slower agent. Use `--games 16` or more across rules revisions (about 8 min for the
-  default `--agent planner`; name the agents a change touched). A `speed.py check --update` and the check after it
-  are about 4 min more. Each root is an `.exe` or a directory holding `aic-sim.exe` and the `configs/` it plays.
+  default `--agent planner`; name the agents a change touched). Each root is an `.exe` or a directory holding
+  `aic-sim.exe` and the `configs/` it plays.
   `--set K=V` (repeatable) goes to both sides after the built-in ones: a content overlay runs the new binary on old
   content.
-- `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict.
+- `bench/gate_stop_rate.py`: how often the gate's early stop flips a verdict (at `z` 2, about 1%).
 - `bench/skilled_rows.py READ.json [--games 24] [--levels 3,4] [--rows ...] [--out ...]`: the oracle's companion spec to a read (experiments.md, *Skilled rows*).
 - `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c]`: a rules item's specs into `out/`: `read TAG SEED
   [AGENT] [--probe] [SET...]` three 48-seed sets, the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs]
@@ -126,23 +119,23 @@ Current:
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base] [--same-engine]`: any run's cells with win %, SE, rounds
-  and ends, and paired gaps, pooled over several `--pair`s, on the seeds both played, across engines (they play alike,
-  163), counting the mixed ones; `--same-engine` leaves those out. `bench/test_read_tools.py` tests both. A `--pair` cell is its exact name
+  and ends, and paired gaps pooled over `--pair`s on the seeds both played (`--same-engine`: one engine's seeds only).
+  `bench/test_read_tools.py` tests both. A `--pair` cell is its exact name
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
   every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes (report.md pairs only against the
   first variant, so it reads a c3 lever against c2).
 - Two agent specs on one binary: `bench/speed.py specs SIM A B`, `bench/per_decision.py SIM.exe --old-agent A
-  --agent B`, and `bench/first_divergence.py --cells DIR A B` for where two cells of one run first play differently.
-- `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently, game by game.
-- `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin: Visual Studio's collector and `xperf`
-  (docs/speed.md, *Profiling*). `--runs K` on the next seeds each; `--attach S1,S2,...` reads 5 s windows of a long
+  --agent B`.
+- `bench/first_divergence.py OLD NEW`: where two runs of one spec first play differently, game by game; `--cells DIR
+  A B` two cells of one run.
+- `bench/profile_win.py SIM OUT -- run ...`: a sampling profile, no admin (docs/speed.md, *Profiling*). `--runs K` on the next seeds each; `--attach S1,S2,...` reads 5 s windows of a long
   run; writes `self.csv`, `total.csv`, `callers.csv`, `edges.csv`.
-- `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of each card's keep and play rates, agent B against A (as `cards.csv` names
-  them: the strategist is `engine:strategy=1`); an approximation's bar.
+- `bench/card_ranks.py DIR A B [--variant V]...`: Spearman of each card's keep and play rates, agent B against A
+  (as `cards.csv` names them); an approximation's bar.
 - `bench/item_time.py ITEM...`: how a done conductor item's wall time split between sims, builds, tests and the
   rest, from its run.json and main transcript (read only); `--top N` lists the unclassified calls.
-- `tune/agent_sweep.py`: the strategist's parameter sweep; see [scripts/tune/README.md](../scripts/tune/README.md).
-- `tune/`: `sweep.py`, `log_table.py`, `engine_sweep.py`.
-- Past items' one-off readers (021-034's `screen_0NN.py`, 096's `r37_read.py`, 098's `r38_read.py`) are in
-  `experiments/archive/scripts/`, kept for the write-ups that cite them; 034's is `cards/screen.py --preset 034`.
+- `tune/`: `agent_sweep.py` (the strategist's parameter sweep), `sweep.py`, `log_table.py`, `engine_sweep.py`; see
+  [scripts/tune/README.md](../scripts/tune/README.md).
+- Past items' one-off readers are in `experiments/archive/scripts/`, kept for the write-ups that cite them; 034's is
+  `cards/screen.py --preset 034`.

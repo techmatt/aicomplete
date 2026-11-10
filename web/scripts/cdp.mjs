@@ -1,6 +1,6 @@
 // A headless Edge or Chrome page driven over the DevTools protocol, with no extra npm
 // packages. Shared by every browser script here: e2e, e2e-sources, e2e-corps, e2e-researcher,
-// sweep, odd, cards-check, cards-fit and the shots-*.
+// sweep, odd, cards-check, cards-fit and card-shots.
 //   AIC_BROWSER browser executable (default: Edge, then Chrome, at their usual paths)
 //   AIC_URL     the viewer the scripts drive (default http://localhost:5173/)
 

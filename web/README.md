@@ -1,43 +1,37 @@
 # web: the AI Complete viewer
 
 A debug-first browser client on top of `aic-wasm`. Vite + TypeScript, no UI framework.
-It renders the engine's **generic view** and offers only what `legal_actions` returns;
-it knows no rules. See [../docs/architecture.md](../docs/architecture.md#the-generic-view)
+It renders the engine's **generic view** and offers only what `legal_actions` returns.
+See [../docs/architecture.md](../docs/architecture.md#the-generic-view)
 for how a module shows up in it.
 
 ## Build and run
 
-Needs Node (built with 24), Rust with the `wasm32-unknown-unknown` target, and
-wasm-pack (see the root README).
+Needs the root README's *Toolchain*.
 
 ```sh
 cd web
-npm install                     # once; a fresh worktree has no node_modules
+npm install                     # once per worktree
 npm run dev                     # builds the wasm, then serves http://localhost:5173/
 npm run dev -- --port 61870     # another port
 npm run wasm                    # only rebuild web/src/wasm/ from crates/aic-wasm
 npm run check                   # typecheck (needs web/src/wasm/: npm run wasm first)
 npm run build                   # wasm + typecheck + static site in web/dist/ (92 s cold)
 npm run e2e [-- <record.json>] # browser check, dev server must be running (see below)
-npm run e2e:sources            # the threat-source check, the same way
-npm run e2e:corps              # research cubes and the corps, the same way
-npm run e2e:researcher         # the Researcher's board, the same way
+npm run e2e:sources            # the same way, as are e2e:corps and e2e:researcher
 ```
 
 - **The wasm build:** `scripts/build-wasm.mjs` runs `wasm-pack build crates/aic-wasm
-  --target web --release` into `web/src/wasm/` (git-ignored): about 20 s cold, 9 s warm,
-  74 s in a fresh target dir (background it there).
-  `AIC_WASM_PROFILE=dev` builds unoptimized.
+  --target web --release` into `web/src/wasm/` (git-ignored); 74 s in a fresh target dir (background it there). `AIC_WASM_PROFILE=dev` builds unoptimized.
 - **While the dev server runs**, editing anything under `crates/` (tests and `aic-sim`
   included) or `content/` rebuilds the wasm and reloads the page; a new or edited file in
-  `configs/` reloads it (`import.meta.glob`). A failed rebuild keeps the last good engine;
+  `configs/` reloads it. A failed rebuild keeps the last good engine;
   the error is in the dev server's terminal.
 
 ## Using it
 
 - **Play:** pick a config (any config in `configs/`; `baseline.json` is the default) and a
-  seed, then *New game*. Each seat's panel lists that seat's legal actions; one person
-  plays every seat, in any order during a simultaneous phase. Draft phases offer no pass.
+  seed, then *New game*. One person plays every seat, in any order during a simultaneous phase. Draft phases offer no pass.
   *Pass every seat*, *Random action* (R) and *Random to end* are for quick debugging.
 - **Choices:** the question shows in the amber bar above the board. A hex answer
   highlights its hexes: click one. Two answers on one hex (a sacrifice: the ambassador
@@ -45,7 +39,7 @@ npm run e2e:researcher         # the Researcher's board, the same way
   buttons in the seat's panel. Text names hexes by country
   (`Cintamani #13`) and cards by name.
 - **The board:** hexes filled by `kind` (key at the bottom left), base pennants in their
-  `facing` country's color, fronts solid red and pulsing (they fight every round). Player pieces sit on a hex's upper
+  `facing` country's color, fronts solid red and pulsing. Player pieces sit on a hex's upper
   row in the seat's color, the adversary's on the lower row in purple. Hover anything for
   details; hexes the shown step changed have an amber outline.
 - **Actions:** each seat panel offers cards, threats, gifts, the view's `standard`
@@ -55,36 +49,33 @@ npm run e2e:researcher         # the Researcher's board, the same way
 - **Globals:** a `vars` track no module labels folds under *Unlabeled tracks*.
 - **Timeline:** Ctrl+Z undoes (every state is a replay of config + seed + actions). ⏮ ◀
   ▶ ⏭, the slider, ← → Home End, Space to auto-play at 1x (4 steps a second), 4x or 16x.
-  **Page Up / Page Down** jump between round starts. Clicking a log entry jumps to its
+  **Page Up / Down** jump between round starts. Clicking a log entry jumps to its
   step; acting from an earlier step drops the later actions, after asking. Log events
   fold by phase; hovering a heading outlines that phase's hexes.
 - **The header** shows the engine version and rules revision. A saved session
   (`localStorage`, replayed on load) whose config changed or no longer loads, or a record
   from another revision, says so in the error bar; one that no longer loads is kept
-  (`copy(aic.keptSession())`). Data tabs: event log, raw state, generic view, resolved
-  config.
+  (`copy(aic.keptSession())`). Tabs: event log, raw state, generic view, resolved config.
 
 ## Game records
 
-A record is config, seed and actions, plus identity (hashes, engine version, rules
-revision) and the saved outcome and final fingerprint (`aic_core::SavedGame`, format
-`aic-game-record/1`, one action per line).
+Format: [../docs/simulator.md](../docs/simulator.md), *Game records*.
 
 - **Watch a simulated game:** `aic-sim run ... --save DIR` writes records. *Open
   record…* or drop the file on the page; it opens at step 0. A record whose replay
   differs from what was saved loads with a warning.
 - **Bug report:** *Record / bug report…* holds the current game as a record, with an
   optional note. *Copy this game*, *Copy up to shown step*, or paste a record and *Load*
-  it. `aic-sim replay <file>` checks a record natively.
+  it.
 
 ## Browser check
 
 `npm run e2e [-- <record.json>]` (`scripts/e2e.mjs`) drives headless Edge or Chrome over
-the DevTools protocol, no extra packages. `AIC_URL` points it at the server (default
+the DevTools protocol (no packages). `AIC_URL` points it at the server (default
 `http://localhost:5173/`), `AIC_BROWSER` at a browser off the usual path. It checks the
 panels and board, a baseline game (seed 1) played to the end, the interactions above, no
 page scroll at 1366×768, 1920×1080 and 2560×1440, words not ids, under 100 ms a step, a
-4-country game (may scroll at 1366×768), the shared row (`configs/shared_row.json`) and
+4-country game (may scroll at 1366×768), the shared row and
 the given record; each `check(...)` names itself.
 About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` also saves
 `viewer-mid.png` and `viewer-end.png` there.
@@ -92,9 +83,9 @@ About 15 s. Screenshots go to `web/e2e-out/` (git-ignored); `AIC_SHOTS=<dir>` al
 The face-up adversary card and threat checks run at round 2 (a fresh game has neither).
 `board fills its pane` measures a fixed game (baseline seed 11, first legal action): a rules
 change can move it, so remeasure before reading a layout change into a failure: `npm run panes`
-(same `AIC_URL`) prints that game's pane heights at the three sizes; diff two revisions' output.
+prints that game's pane heights at the three sizes; diff two revisions' output.
 
-The other three take the same `AIC_URL`. `e2e:corps` and `e2e:researcher` play the baseline
+`e2e:corps` and `e2e:researcher` play the baseline
 at `station_cubes` and `owned_station_cubes` 5 (corps) or 3 (researcher) on a quiet board (no troop steps or adversary supply, no corruption before round 20)
 for cubes, converters (a node on a city) and the Researcher's board; `e2e:sources`
 checks a face-up threat's sources and a forged payment refused.
@@ -106,15 +97,12 @@ while the engine is edited serve a snapshot: `node scripts/build-wasm.mjs && npx
 hold the port (`--strictPort` fails): kill it.
 
 **An old revision side by side** (about 3 min): `git archive REV | tar -x -C out/rREV`,
-then in its `web/` `npm ci`, `node scripts/build-wasm.mjs`, `npx vite build`, and a
-preview on another port (`AIC_URL`).
+then in its `web/` `npm ci` and the snapshot above on another port.
 
 ## The sweep
 
 `npm run sweep [-- --quick] [-- --case NAME]` (`scripts/sweep.mjs`), the bug hunt's
-checker, plays and watches many games at test speed and checks the page at the moments
-that matter. It needs a served viewer (`AIC_URL`; a `vite preview` snapshot while the
-engine is edited) and a release `aic-sim` (`AIC_SIM`, default
+checker, checks the page at the moments that matter over many games. It needs a served viewer (`AIC_URL`; see *Against a built site*) and a release `aic-sim` (`AIC_SIM`, default
 `../target/release/aic-sim[.exe]`).
 
 - **Cases:** `CASES` in the script (`--quick` keeps the first four, `--case c4-d0` picks
@@ -154,13 +142,11 @@ lane. Failure shots go to `sweep-out/odd/`.
 
 ## Source
 
-In `src/`: `engine.ts` (typed wasm wrapper), `session.ts` (`Timeline`: replayed states,
-cursor, undo, localStorage), `board.ts` (SVG board), `format.ts` (action and event labels,
-colors), `panels.ts`, `hover.ts`, `log.ts`, and `main.ts` (wiring).
+In `src/`: `engine.ts` (typed wasm wrapper), `session.ts` (`Timeline`), `board.ts` (SVG
+board), `format.ts` (labels, colors), `panels.ts`, `hover.ts`, `log.ts`, and `main.ts` (wiring).
 
 `card/` is the printed card renderer, used by `tools/card-art/` and the card viewer
-(`cards/`), not by this game viewer: see [tools/card-art/README.md](../tools/card-art/README.md).
-`scripts/shots-NNN.mjs`: past items' viewer shots (see their write-ups).
+(`cards/`): see [tools/card-art/README.md](../tools/card-art/README.md).
 
 ## Card viewer
 
@@ -178,10 +164,8 @@ says so and exits.
   (none: drawn without); a kind with no frame gets a plain face. Scenes are 3.6 MB PNGs
   loaded as they scroll in, so a fast scroll shows gray for a second or two.
 - **The export** (`web/scripts/cards-export.mjs`, to `out/cards-export.json`) reads
-  `content/`, `web/card/faces.json`, `configs/baseline.json`,
-  `docs/card-pricing-notes.json` and `experiments/results/`. It never runs `aic-sim docs`:
-  a card edited without it shows its old text. **Rebuild** on the page re-exports in about
-  0.1 s.
+  `content/`, `web/card/faces.json`, `configs/baseline.json` and the stats and pricing files below. It never runs `aic-sim docs`:
+  a card edited without it shows its old text. **Rebuild** on the page re-exports in ~0.1 s.
 - **Stats** come from the newest `results.json` of 100+ games with a per-card `cards`
   table, in `experiments/results/` or the checkout's `out/experiments/` (highest revision,
   then most plain agents, then most games). Each label carries its revision; the page
@@ -195,25 +179,21 @@ says so and exits.
     column with `reason` in its name (`card-prices.csv` by convention) adds the reasoned
     price and printed minus reasoned. One whose `revision` is older than `RULES_REVISION`
     is passed over silently (the CLI export names it); none is current now.
-- **Notes:** `review/card-notes.json` in the checkout, git-ignored, never deleted by a
-  cleanup. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is
+- **Notes:** `review/card-notes.json` in the checkout, git-ignored. Keyed by card id: `{ name, kind, hash, flag, comment, text, at }`. `flag` is
   empty or one of `ok`, `too cheap`, `too dear`, `rework`, `unclear text`; `text` is the
-  card's text at saving; `hash` is a SHA-256 prefix of its content row and face, key
-  order aside (`contentHash` in the export). A note is stale when its `hash` differs from
-  the card's in `out/cards-export.json`. Closing or stepping saves the note (previous
+  card's text at saving; `hash` a SHA-256 prefix of its content row and face, key
+  order aside (`contentHash` in `out/cards-export.json`). Closing or stepping saves the note (previous
   file kept as `.bak`); a broken notes file shows on the page and refuses saves.
-- **Badges:** *changed since your note* when the hash moved (saving again clears it).
+- **Badges:** *changed since your note* when the note's `hash` is stale (saving again clears it).
   *New* for a card missing from `review/card-seen.json`, until opened, noted or *Mark all
   seen*; the first run seeds that ledger with the whole set.
 - **Pricing:** a card's one current line from `docs/card-pricing-notes.json`, under
-  *Pricing* in the large view (format and rules: root CLAUDE.md). `aic-sim docs --check`
-  refuses an id that is no player card.
+  *Pricing* in the large view (format and rules: root CLAUDE.md; `docs --check` refuses an id that is no player card).
 - **Check:** `npm run cards:check -- --port N` (about 20 s) drives a headless browser
   through all that on a copy in `out/cards-check/` (screenshots there). It fails on a card
   overflowing at the last size or title floor, a title off its plate, text wrapping apart
   between zooms, or a deck card with no scene or scene image.
-- **Card rules** (box capacity, the 7.5 pt goal) are in
-  [docs/card-guidelines.md](../docs/card-guidelines.md). A test refuses any face printing
+- **Card rules** are in [docs/card-guidelines.md](../docs/card-guidelines.md). A test refuses any face printing
   `*` or "worth".
 - **Shots of named cards** in the viewer's large view: `node scripts/card-shots.mjs ID,ID [--port N] [--out NAME]`
   (shots in `out/NAME/`, about 1 s a card).

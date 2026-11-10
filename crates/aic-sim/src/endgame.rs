@@ -77,8 +77,9 @@ pub struct Team {
     pub liberate_cards: i64,
     pub troop_cards: i64,
     pub ambassador_cards: i64,
-    /// Unity cards still in the deck that remove pieces (Decommission: a
-    /// botnet; Civil Defense: an adversary ambassador a country).
+    /// Unity cards still in the deck whose text (any tier) removes a botnet, or
+    /// adversary ambassadors (by op, as the player cards; 165: was 0/1 on two
+    /// pre-156 card ids).
     pub unity_botnet_left: i64,
     pub unity_ambassador_left: i64,
     pub unity_drawn: i64,
@@ -141,6 +142,24 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     p
 }
 
+/// An op that removes a botnet.
+fn removes_botnet(o: &Op) -> bool {
+    matches!(o, Op::RemoveBotnet | Op::RemoveBotnets { .. } | Op::CutBotnet)
+}
+
+/// An op that removes adversary ambassadors.
+fn removes_ambassadors(o: &Op) -> bool {
+    matches!(o, Op::RemoveAmbassadorsCountry { .. } | Op::Pushback { .. })
+}
+
+/// `ops` and every op nested under them.
+fn with_nested<'a>(ops: impl IntoIterator<Item = &'a Op>, out: &mut Vec<&'a Op>) {
+    for op in ops {
+        out.push(op);
+        with_nested(op.nested(), out);
+    }
+}
+
 fn team(rules: &Rules, g: &GameState) -> Team {
     let w = rules.world();
     let mut t = Team::default();
@@ -153,15 +172,18 @@ fn team(rules: &Rules, g: &GameState) -> Team {
         for id in ids {
             let ops = w.content.card(&id).all_ops();
             let has = |f: fn(&Op) -> bool| ops.iter().any(|o| f(o)) as i64;
-            t.botnet_cards += has(|o| matches!(o, Op::RemoveBotnet | Op::CutBotnet));
+            t.botnet_cards += has(removes_botnet);
             t.liberate_cards += has(|o| matches!(o, Op::Liberate { .. } | Op::ClearCity { .. } | Op::Cleanse { .. }));
             t.troop_cards += has(|o| matches!(o, Op::RemoveTroops { .. }));
-            t.ambassador_cards += has(|o| matches!(o, Op::RemoveAmbassadorsCountry { .. }));
+            t.ambassador_cards += has(removes_ambassadors);
         }
     }
-    let drawn: Vec<String> = g.pile(&alignment::resolved(Side::Unity)).iter().map(|k| k.as_str().to_string()).collect();
-    t.unity_botnet_left = (!drawn.iter().any(|c| c == "decommission")) as i64;
-    t.unity_ambassador_left = (!drawn.iter().any(|c| c == "civil_defense")) as i64;
+    for id in g.pile(&alignment::deck(Side::Unity)) {
+        let mut ops = Vec::new();
+        with_nested(w.content.alignment_card(id.as_str()).all_effects(), &mut ops);
+        t.unity_botnet_left += ops.iter().any(|o| removes_botnet(o)) as i64;
+        t.unity_ambassador_left += ops.iter().any(|o| removes_ambassadors(o)) as i64;
+    }
     t.unity_drawn = alignment::unity_drawn(g);
     t.unity_track = g.var(alignment::track(Side::Unity));
     t.unity_capacity = alignment::capacity(&w, g, Side::Unity);

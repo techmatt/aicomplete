@@ -19,7 +19,7 @@ use crate::state::GameState;
 use crate::view::{CardView, ViewOut};
 
 use super::common::*;
-use super::{adversary, ai, alignment, board, economy, effects, threats};
+use super::{adversary, ai, alignment, economy, effects, threats};
 
 mod deck;
 mod play;

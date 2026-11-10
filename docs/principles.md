@@ -62,11 +62,13 @@ Protector + Researcher), no c3, an engine smoke read first, then the judge (the 
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
+**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). 162's purge judge reads above them at r69 (98.3 / 93.1 / 80.2 / 65.6); whether to recalibrate the dials or the bands is open.
+
 **Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
 measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);
 at d2 the adversary corrupts at least one new city in most games, and a won game liberates about one; at high difficulty
 expect to liberate at least 2. Read with `scripts/cards/liberation_read.py` (the share of games with a new corruption is
-`adversary.corruptions.city` > 0; the bare `adversary.corruptions` counts every site since 138).
+`adversary.corruptions.city` > 0; the bare `adversary.corruptions` counts every site).
 
 **Failure mix (Matt, 2026-10-31).** No clock over about 80% of losses: Discord may be the
 main cause, and the node clock stays live. The round cap is a backstop with no share target
@@ -128,19 +130,18 @@ handling gets in the way, it may be dropped. The `planner` plays its rollouts on
 real state; each decision inside them still scores on a guess, because scored on open decks
 the one-step heuristic wins far less: it drafts by printed cost.
 **One exception (D20):** no agent knows which Alignment cards a game dealt, rollouts
-included: that knowledge alone was worth 20-30 points at d2. The planner values a line on
-a mean of guesses of the deal, never read from the table (`deals`, [agents.md](agents.md)).
-The `oracle` (155) alone reads the deal too: it measures what perfect play could reach, and judges no balance.
+included. The planner values a line on a mean of guesses of the deal, never read from the
+table (`deals`, [agents.md](agents.md)).
+The `oracle` alone reads the deal too: it measures what perfect play could reach, and judges no balance.
 
 ## Dominance checks (Matt, 2026-10-29)
 
 > Balance should require thought, not an obvious heuristic dominating.
 
 Each check is a fixed, simple policy: the planner with one behavior forced
-(`planner:<check>=1` in an experiment spec; `crates/aic-sim/src/agents/policy.rs`). The
-strategy-health gate, which runs them beside the planner at d2, is suspended until Matt
-names a milestone (the ballpark ruling, 2026-11-03): its spec is `experiments/gate.json`,
-its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/screen.py --gate`.
+(`planner:<check>=1` in an experiment spec; a `forced_table!` row in
+`crates/aic-sim/src/agents/policy.rs`). The strategy-health gate (*The gate*, below) is
+suspended until Matt names a milestone (the ballpark ruling, 2026-11-03).
 
 - **Healthy:** every check loses ground to the planner at d2. Report each check's gap
   (planner win % minus the check's) with its noise.
@@ -151,35 +152,25 @@ its early stopping `crates/aic-sim/src/gate.rs`, its summary `scripts/cards/scre
   the stated noise (`crates/aic-sim/src/gate.rs`); a check that stays close runs to the cap.
 - **The list grows:** a new mechanic adds the obvious fixed policy for it.
 
-| Check | Spec | Policy |
-|---|---|---|
-| keep-all | `keep_all=1` | keeps every drafted card it can afford |
-| keep-cheapest-k | `keep_k=2` | keeps only its k cheapest drafted cards (k = 2) |
-| tier-1-only | `tier1_only=1` | never drafts from tier 2 |
-| tier-2-rush | `tier2_rush=1` | drafts from tier 2 whenever it can afford the keep |
-| no-powers | `no_powers=1` | never uses an AI-board power |
-| no-counters | `no_counters=1` | never pays toward a threat's counter |
-| no-node | `no_node=1` | places no nodes beyond setup (no power or card that places one) |
-| mono-tag, one per tag | `only_tag=N` (1-6: Science, Industry, Cyber, Power, Diplomacy, Security) | keeps and plays only cards carrying that tag |
-| ignore-X, one per tag | `never_tag=N` | never keeps or plays a card carrying that tag |
-| event-hoarder | `events_only=1` | keeps and plays only events |
-| ignore threats, turtle, free cities only | `ignore_threats=1`, `turtle=1`, `free_only=1` | no counters; stays on the setup hex and defends it; only Diplomacy cards and ambassador moves (turtle and free cities only also pass Clear, which pays Unity) |
-| Science rush | `science_rush=1` | drafts, keeps and plays Science first, for its discounts |
-| always-max-node, never-second-node | `always_max_node=1`, `never_second_node=1` | both node powers whenever affordable; never the board's second |
-| never-Remove, Science board | `never_clear=1`, `science_board=1` | never clears a corruption marker; the Science rush, board cards first |
-| abandon | `abandon=1` | gives up the last country: counters no threat on it and picks no hex in it while another pick is open, losses aside; pressure counts countries at setup, so concentrating must not pay |
-| never-sacrifice | `never_sacrifice=1` | never uses a power that sacrifices (Accord included) |
-| ambassador mass | `ambassador_mass=1` | buys every ambassador it can, before anything else |
-| free-build rush | `free_build_rush=1` | the Builder's Rush Build at every chance |
-| wall turtle | `wall_turtle=1` | the Protector places nodes only with a troop on the board, on the hex nearest one |
-| home only | `home_only=1` | counters only threats in its home country |
-| capstone rush | `capstone_rush=1` | tier 2 whenever the keep is affordable, and tier-2 capstones before anything else |
-| never-convert | `never_convert=1` | no converter, and no power that only converts a resource |
-| always-buy-cubes, hoard insight (c3) | `always_buy_cubes=1`, `hoard_insight=N` | the power that buys a research cube at every chance; a Patience seat plays and keeps only every n-th round |
-| always-liberate | `always_liberate=1` | drafts and keeps every liberate card, and plays one the first round it is legal |
-| engine rush (107, a probe) | `engine_rush=1`, `=2` | drafts and keeps every engine card (a trigger, threshold, per-tag income, discount or copy) and plays one the moment it is legal; `=2` only plays a kept one at once |
+The checks, by spec; each policy is said on its `forced_table!` row:
 
-**The gate** is `experiments/gate.json` (named gate-075: every check of gate-070 plus `never_convert`): planner
+- keep-all `keep_all=1`, keep-cheapest-k `keep_k=2`, tier-1-only `tier1_only=1`, tier-2-rush
+  `tier2_rush=1`, no-powers `no_powers=1`, no-counters `no_counters=1`, no-node `no_node=1`;
+- mono-tag and ignore-X, one per tag: `only_tag=N`, `never_tag=N` (1-6: Science, Industry, Cyber,
+  Power, Diplomacy, Security); event-hoarder `events_only=1`;
+- ignore threats `ignore_threats=1`, turtle `turtle=1`, free cities only `free_only=1` (turtle and
+  free cities only also pass Clear, which pays Unity); Science rush `science_rush=1`;
+- always-max-node `always_max_node=1`, never-second-node `never_second_node=1`, never-Remove
+  `never_clear=1`, Science board `science_board=1`, never-sacrifice `never_sacrifice=1` (Accord included);
+- abandon `abandon=1` (pressure counts countries at setup, so concentrating must not pay);
+- ambassador mass `ambassador_mass=1`, free-build rush `free_build_rush=1`, wall turtle
+  `wall_turtle=1`, home only `home_only=1`, capstone rush `capstone_rush=1`, never-convert
+  `never_convert=1`, always-buy-cubes `always_buy_cubes=1`, hoard insight `hoard_insight=N` (c3),
+  always-liberate `always_liberate=1`;
+- engine rush `engine_rush=1` / `=2`, a probe (an engine card: a trigger, threshold, per-tag income,
+  discount or copy).
+
+**The gate** is `experiments/gate.json` (gate-075): planner
 only, d2 (d4 is not winnable, so a d4 half could not pass), 2 and 3 countries, 48 paired seeds a check, those within 2 SE going on to 96, `never_tag` dropped to fit,
 summarized by `scripts/cards/screen.py --gate`. The rules are judged by play that can plan.
 `experiments/gate-exploit.json` is its fast first read: the fixed strategies most likely to beat thinking,
@@ -206,5 +197,5 @@ engine, and the planner, Matt's standing ruling: rollouts before deeper search) 
 short runs (`aic-sim experiment --quick`); deep-search agents stay in the code, ready, but
 don't get run time until the rules settle.
 
-The agents (random, greedy, beam, rollout, engine, planner) and how each measure is computed are in the
-[agents.md](agents.md) and [experiments.md](experiments.md); `aic-sim experiment` writes them up as a cycle report.
+The agents and how each measure is computed are in [agents.md](agents.md) and
+[experiments.md](experiments.md); `aic-sim experiment` writes them up as a cycle report.

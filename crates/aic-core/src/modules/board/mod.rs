@@ -96,17 +96,8 @@ pub static DEF: ModuleDef = ModuleDef {
 
 /// Country flags: up while their var is above 0, counted down in cleanup (1 lasts to
 /// the end of the round; a threat sets 2, to the end of the next).
-pub const FLAGS: [RoundFlag; 9] = [
-    RoundFlag::Blackout,
-    RoundFlag::Sabotage,
-    RoundFlag::Shelter,
-    RoundFlag::Embargo,
-    RoundFlag::Cordon,
-    RoundFlag::PowerDown,
-    RoundFlag::StationOutage,
-    RoundFlag::StationDark,
-    RoundFlag::GridDown,
-];
+pub const FLAGS: [RoundFlag; 5] =
+    [RoundFlag::Blackout, RoundFlag::Sabotage, RoundFlag::Shelter, RoundFlag::Embargo, RoundFlag::Cordon];
 
 /// The var key of a country flag.
 pub fn flag(f: RoundFlag, country: usize) -> KeyBuf {
@@ -115,34 +106,15 @@ pub fn flag(f: RoundFlag, country: usize) -> KeyBuf {
 
 /// Prefix of the hex flags (135: a threat's flag on the hexes near it).
 pub const HEX_FLAGS: &str = "board.hflag.";
-/// Prefix of the seat flags (135: a threat's flag on the players near it).
-pub const SEAT_FLAGS: &str = "board.sflag.";
 
 /// The var key of flag `f` on hex `h` (135), counted down with the country flags.
 pub fn hex_flag(f: RoundFlag, h: usize) -> KeyBuf {
     KeyBuf::new(HEX_FLAGS).text(f.name()).text(".").num(h)
 }
 
-/// The var key of flag `f` on seat `s` (135: power_down, station_outage).
-pub fn seat_flag(f: RoundFlag, s: usize) -> KeyBuf {
-    KeyBuf::new(SEAT_FLAGS).text(f.name()).text(".").num(s)
-}
-
 /// Whether flag `f` is up on hex `h`: on the hex, or on its country.
 pub fn hex_flagged(w: &World, g: &GameState, f: RoundFlag, h: usize) -> bool {
     g.var(&hex_flag(f, h)) > 0 || flagged(g, f, w.map.hexes[h].country as usize)
-}
-
-/// Whether flag `f` is up on seat `s`.
-pub fn seat_flagged(g: &GameState, f: RoundFlag, s: usize) -> bool {
-    g.var(&seat_flag(f, s)) > 0
-}
-
-/// Whether seat `s` is powered down (135, Load Shedding): it can't use
-/// Actions or powers that cost energy. Read by the cards' Actions and the AI
-/// board's powers.
-pub fn powered_down(g: &GameState, s: usize) -> bool {
-    seat_flagged(g, RoundFlag::PowerDown, s)
 }
 
 /// Standing troops on hex `h` (135): they never march or strike. A removal
@@ -164,8 +136,8 @@ const ROUND_MARKS: [&str; 5] = [NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, 
 
 /// 135: every per-round mark [`expire_marks`] counts down, trues or clears
 /// (the view lists them as bookkeeping).
-pub(super) const MARKS: [&str; 11] =
-    [HEX_FLAGS, SEAT_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
+pub(super) const MARKS: [&str; 10] =
+    [HEX_FLAGS, STAND, OCCUPIED, CORP_EXTRA, EXTRA_WAR, NEW_FACTORY, DESTROYED_AT, LANDED_AT, LANDED_N, MOVED];
 
 /// How many of hex `h`'s adversary troops stand.
 pub fn standing(g: &GameState, h: usize) -> i64 {
@@ -478,16 +450,14 @@ fn convert(g: &mut GameState, cx: &mut Cx, s: usize, c: usize) -> Res {
     cards::fighting(g, cx, s, |g, cx| effects::run(g, cx, &m.converter.effects, &mut effects::Ctx::seat(s)))
 }
 
-/// 135: the hex and seat flags count down as the country flags do; standing
+/// 135: the hex flags count down as the country flags do; standing
 /// troops and occupations follow the troops left on their hex; registrations
 /// past their round, and a threat's notes to its own later ops, go.
 fn expire_marks(g: &mut GameState, cx: &mut Cx) {
     let round = g.round as i64;
-    for prefix in [HEX_FLAGS, SEAT_FLAGS] {
-        for (k, v) in keys_under(g, prefix) {
-            if v > 0 {
-                cx.set_key(g, &k, v - 1);
-            }
+    for (k, v) in keys_under(g, HEX_FLAGS) {
+        if v > 0 {
+            cx.set_key(g, &k, v - 1);
         }
     }
     for (k, v) in keys_under(g, STAND) {

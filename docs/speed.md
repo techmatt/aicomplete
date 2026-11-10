@@ -85,7 +85,8 @@ exact form above gives the same time. Rows in [103's write-up](../experiments/re
 
 **Profiling.** Every run prints the split (`time: ...` on stderr, and in the report's *Timing*); `cargo
 build --release -p aic-sim --features profile` adds the search's own split (apply, clone, legal, heuristic,
-determinization, planner lines) with call counts, and allocations a game, from `experiment`. For where
+determinization, planner lines) with call counts, allocations a game, and the costliest prompts answered
+(`prompt N% ...`: decisions, applies and evals by prompt text, digits as `#`), from `experiment`. For where
 inside them, `scripts/bench/profile_win.py` samples by function with stacks: `samply` needs an elevated
 session here (it raises a UAC prompt and waits), so it uses Visual Studio's collector, which needs no
 admin. Build with symbols in its own target dir (`CARGO_PROFILE_RELEASE_DEBUG=true

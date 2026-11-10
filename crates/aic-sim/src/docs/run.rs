@@ -18,6 +18,9 @@ const RULES_DIR: &str = "docs/rules";
 /// A doc's size limit in bytes (each `docs/rules/` file and every page of
 /// [`page_budget_failures`]): the 15 KB doc budget (CLAUDE.md).
 pub(super) const DOC_BUDGET: usize = 15 * 1024;
+/// 165: a doc over this is warned of, not refused (CLAUDE.md: leave about 1 KB
+/// free, so the next item can add to it without trimming first).
+pub(super) const DOC_WARN: usize = 14 * 1024;
 const OPS_MD: &str = "docs/ops.md";
 const OP_SOURCE: &str = "crates/aic-core/src/op.rs";
 const HARMS_MD: &str = "docs/harms.md";
@@ -356,9 +359,9 @@ pub(super) fn card_quote_failures(files: &[(String, String)], faces: &[(String, 
 }
 
 /// 102: README.md, CLAUDE.md, the web and card-art READMEs (123) and every `docs/*.md` page
-/// but the generated cards.md, adversary-cards.md and ops.md over [`DOC_BUDGET`] (CLAUDE.md's 15 KB a doc; `docs/rules/`
-/// is [`rules_file_failures`]'s).
-fn page_budget_failures() -> Vec<String> {
+/// but the generated cards.md, adversary-cards.md and ops.md, with their sizes in bytes (CLAUDE.md's 15 KB a doc;
+/// `docs/rules/` is [`rules_file_failures`]'s).
+fn budget_pages() -> Vec<(String, usize)> {
     let mut paths: Vec<String> = super::ROOT_DOCS.map(String::from).into();
     if let Ok(dir) = fs::read_dir("docs") {
         let mut pages: Vec<String> = dir
@@ -377,7 +380,28 @@ fn page_budget_failures() -> Vec<String> {
         .into_iter()
         .filter_map(|p| {
             let n = fs::metadata(&p).ok()?.len() as usize;
-            (n > DOC_BUDGET).then(|| format!("{p}: {n} bytes, over the {DOC_BUDGET}-byte doc budget: trim it"))
+            Some((p, n))
+        })
+        .collect()
+}
+
+/// The pages of [`budget_pages`] over [`DOC_BUDGET`].
+fn page_budget_failures(pages: &[(String, usize)]) -> Vec<String> {
+    pages
+        .iter()
+        .filter(|(_, n)| *n > DOC_BUDGET)
+        .map(|(p, n)| format!("{p}: {n} bytes, over the {DOC_BUDGET}-byte doc budget: trim it"))
+        .collect()
+}
+
+/// 165: the docs (path, bytes) over [`DOC_WARN`] but within [`DOC_BUDGET`]:
+/// a warning, never a failure.
+pub(super) fn budget_warnings(sizes: &[(String, usize)]) -> Vec<String> {
+    sizes
+        .iter()
+        .filter(|(_, n)| *n > DOC_WARN && *n <= DOC_BUDGET)
+        .map(|(p, n)| {
+            format!("warning: {p}: {n} bytes, {} short of the {DOC_BUDGET}-byte doc budget: trim it before adding to it", DOC_BUDGET - n)
         })
         .collect()
 }
@@ -495,9 +519,14 @@ pub fn run(o: &Options) {
     failures.extend(revision_line_failures(&rules_new, aic_core::RULES_REVISION));
     let faces: Vec<(String, String)> = content().cards.iter().map(|c| (c.name.clone(), card_face(c).full_text())).collect();
     failures.extend(card_quote_failures(&rules_new, &faces));
-    failures.extend(page_budget_failures());
+    let mut sizes = budget_pages();
+    failures.extend(page_budget_failures(&sizes));
     for f in &failures {
         eprintln!("{f}");
+    }
+    sizes.extend(rules_new.iter().map(|(p, t)| (p.clone(), t.len())));
+    for w in budget_warnings(&sizes) {
+        eprintln!("{w}");
     }
     let mut spelled = super::spelling::failures();
     spelled.extend(super::current_docs::failures());

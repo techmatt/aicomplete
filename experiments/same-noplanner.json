@@ -1,0 +1,36 @@
+{
+  "name": "same-noplanner",
+  "note": "165: the identical-games check for a refactor the planner barely touches: same.json's seeds, pairs and level without the planner rows (57-80 s a game at r69), greedy in their place. Run before and after, compare with bench/same_results.py; add same.json's planner rows when the change reaches the planner or oracle.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist",
+    "engine",
+    "greedy"
+  ],
+  "games": 16,
+  "first_seed": 1000,
+  "records": 0
+}

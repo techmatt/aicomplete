@@ -345,6 +345,9 @@ impl AgentSpec {
                 .parse()
                 .map_err(|_| format!("agent {spec:?}: {k}: not a number: {v:?}"))?;
             if let Some(w) = k.strip_prefix("w.") {
+                if let Some((_, why)) = eval::RETIRED.iter().find(|(name, _)| *name == w) {
+                    return Err(format!("agent {spec:?}: weight {w:?} is retired (165): {why}"));
+                }
                 if kind == "random" || !eval::Weights::default().set(w, v) {
                     return Err(format!("agent {spec:?}: no heuristic weight {w:?}"));
                 }
@@ -889,6 +892,12 @@ mod tests {
         assert_eq!(AgentSpec::parse("greedy").unwrap().label(), "greedy");
         assert!(AgentSpec::parse("greedy:width=3").is_err());
         assert!(AgentSpec::parse("greedy:w.nope=3").is_err());
+        // 165: a retired probe is refused with its reason.
+        for (name, _) in eval::RETIRED {
+            let e = AgentSpec::parse(&format!("engine:w.{name}=1")).unwrap_err();
+            assert!(e.contains("retired"), "{e}");
+            assert!(!eval::Weights::default().set(name, 1.0), "{name} is still a weight");
+        }
         assert!(AgentSpec::parse("mcts").is_err());
         assert!(AgentSpec::parse("random:samples=2").is_err());
         // 020: a 0 that would be played as 1 is refused; engine's width 0 (no beam) is not.

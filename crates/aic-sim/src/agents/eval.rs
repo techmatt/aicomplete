@@ -219,10 +219,6 @@ pub struct Weights {
     pub program: f64,
     /// A token on one of a seat's cards (021).
     pub token: f64,
-    /// Cards in hand (and drafted) that count, best first (021); 0: all.
-    /// At 8 the 021 screen fell to 38% at d0 (agents hoarded their best
-    /// cards and stopped playing), so it is off by default.
-    pub hand_cap: f64,
     pub energy: f64,
     pub antimatter: f64,
     pub insight: f64,
@@ -294,21 +290,6 @@ pub struct Weights {
     pub hand_share: f64,
     /// 082, a probe: a supply ambassador in table mode is the table's row times this.
     pub table_ambassador: f64,
-    /// 082, a probe: above 0, antimatter in table mode is the table's row (9
-    /// credits) times this, in place of `antimatter`. At 1 the strategist held its
-    /// antimatter and lost 59 points (31000, 144 games): off.
-    pub table_antimatter: f64,
-    /// 093: above 0, energy in table mode, held, earned as income or made by a
-    /// city, is the table's rate (`resources.energy`, 4.5 credits) times this,
-    /// in place of `energy`; income at `rates.energy_income_share` of it, as the
-    /// card prices count it (value.rs `income_rate`). Off: at 1 greedy d0 lost
-    /// 15.3 ±4.0 (it hoards energy) and the strategist d2 2.1 ±5.0; at 0.3, which
-    /// is about `energy` 0.8 at the table's credit weight, d2 −4.9 ±2.7 and d0
-    /// +2.1 ±2.1 (31600, 144 games each).
-    pub table_energy: f64,
-    /// 082, a probe: above 0, income (tracks, buildings, rewards) in table mode is
-    /// valued at the table's rates times this, in place of the held resources'.
-    pub table_income: f64,
     /// 149: a seat's Movement (free ambassador moves a round) over the rounds
     /// left, at `rates.movement` credits each times this (horizon mode). Only the
     /// Movement a round counts, never what is left this round: unused it is lost,
@@ -344,13 +325,6 @@ pub struct Weights {
     /// 124 (D47), above 0: a strategy reads the ops a card's triggers and
     /// thresholds resolve ("a trigger that pays credits is a credits card").
     pub strat_contents: f64,
-    /// 124 (D47), above 0 (table mode): a trigger on a teammate's plays of a tag
-    /// fires at the teammates' share of cards with it, not the owner's. The keep
-    /// plan's twin is the forced row `plan_team` (policy.rs).
-    pub team_share: f64,
-    /// 124 (D47), above 0: a token on a card with a threshold (At N) is worth
-    /// what the threshold pays per token, when that beats the held rate.
-    pub threshold_tokens: f64,
     /// 124 (D53), above 0: an insight a round of income is worth this, in place
     /// of the held `insight` weight (horizon mode).
     pub insight_income: f64,
@@ -414,6 +388,17 @@ const RENAMED: [(&str, &str); 7] = [
     ("capstone", "track_capstone"),
     ("presence", "node"),
     ("presence_danger", "node_danger"),
+];
+
+/// 165: the zero-weight probes, retired: (name, why). A spec naming one is refused
+/// with the reason rather than as an unknown weight.
+pub(crate) const RETIRED: [(&str, &str); 6] = [
+    ("hand_cap", "021: at 8 agents hoarded their best cards (d0 38%); always 0 since"),
+    ("table_antimatter", "082: at 1 the strategist held its antimatter and lost 59 points; always 0 since"),
+    ("table_energy", "093: greedy d0 -15.3 at 1, the strategist d2 -4.9 at 0.3; always 0 since"),
+    ("table_income", "082: a probe that never read a gain; always 0 since"),
+    ("team_share", "124 (D47): no gain read (-0.9 +-1.9 alone); always 0 since. The keep plan's `plan_team` remains"),
+    ("threshold_tokens", "124 (D47): no gain read (0.0 +-0.9); always 0 since"),
 ];
 
 /// Weight names only a pre-086 spec uses. Such a spec's `node` meant the
@@ -588,7 +573,6 @@ impl Default for Weights {
             credit_idle: 0.15,
             program: 1.0,
             token: 0.5,
-            hand_cap: 0.0,
             energy: 0.8,
             antimatter: 2.0,
             insight: 0.5,
@@ -614,9 +598,6 @@ impl Default for Weights {
             table: 0.0,
             hand_share: 0.5,
             table_ambassador: 1.0,
-            table_antimatter: 0.0,
-            table_energy: 0.0,
-            table_income: 0.0,
             movement: 0.0,
             pick_cost: 0.0,
             needs_floor: 0.25,
@@ -626,10 +607,6 @@ impl Default for Weights {
             // 124: the strategy and insight-income levers are the engine's (see
             // `engine`; greedy has no strategy and no horizon).
             strat_contents: 0.0,
-            // 124: off; on, neither moved the screen (team_share −0.9 ±1.9 alone and
-            // −2.1 on the candidate; threshold_tokens 0.0 ±0.9 and −1.4).
-            team_share: 0.0,
-            threshold_tokens: 0.0,
             // 124: every agent keeps with spare insight (with the plan's
             // `keep_spare`): what a new player would do (Matt, 2026-11-05, message
             // 5216). 127: the limit rules that came with it are gone with the limits.
@@ -655,6 +632,16 @@ impl Default for Weights {
 impl Weights {
     /// The `engine` agent's defaults: horizon mode, with hand and building
     /// weights that no longer stand in for the future (008 sweep).
+    ///
+    /// The win route (164): the weights that read how the game is won are
+    /// `win`, `blocker` and `level` (the clear-board bar), `unity_tip`,
+    /// `unity_target` and `tier_read` (the purge's Unity tips, 156), `purge`
+    /// (Liberate's bill, 162), `discord_tip` and `discord_danger` (the Discord
+    /// loss) and, here, `clock` (011: the projected Unity win against the
+    /// adversary deck). The rest, tuned 008-149, price the economy whatever the
+    /// win. 011-155 tuned them for a Unity-deck race; 156's purge win left greedy
+    /// ahead of the strategist until 157 and 162 retuned them: after a change to
+    /// how the game is won, read greedy beside the strategist first (docs/agents.md).
     pub fn engine() -> Weights {
         Weights {
             horizon: 1.0,
@@ -931,7 +918,6 @@ impl Eval {
         });
         let strat_scale = w.strat_scale;
         let strat_contents = w.strat_contents > 0.0;
-        let threshold_tokens = w.threshold_tokens > 0.0;
         Eval {
             w,
             id: next_eval_id(),
@@ -979,15 +965,8 @@ impl Eval {
                             index: i,
                             cost: Self::cost(d),
                             value: CardValue::of(tbl, d),
-                            token: {
-                                // 102 (D24): a token on a card that cashes its own pile out is worth that.
-                                let base = value::token_worth_cash(tbl, d);
-                                if threshold_tokens {
-                                    value::token_worth_threshold(tbl, d, base)
-                                } else {
-                                    base
-                                }
-                            },
+                            // 102 (D24): a token on a card that cashes its own pile out is worth that.
+                            token: value::token_worth_cash(tbl, d),
                             pile: if d.is_building() { None } else { pile_kind(d) },
                     })
                     .collect(),
@@ -1106,15 +1085,10 @@ impl Eval {
         }
     }
 
-    /// An energy held (093): the table's rate in table mode with `table_energy`
-    /// on, else the flat `energy` weight.
+    /// An energy held: the flat `energy` weight (093's table rate, `table_energy`,
+    /// retired at 165).
     fn energy_unit(&self) -> f64 {
-        let w = &self.w;
-        if w.table > 0.0 && w.table_energy > 0.0 {
-            w.table * w.table_energy * self.tbl.res(Resource::Energy)
-        } else {
-            w.energy
-        }
+        self.w.energy
     }
 
     /// What `n` energy held is worth: its unit each, and (128, `energy_cap`)
@@ -1153,11 +1127,7 @@ impl Eval {
     pub fn plan_rates(&self) -> PlanRates {
         let w = &self.w;
         let credit = if w.table > 0.0 { w.table } else { w.credits };
-        let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
-            w.table * w.table_antimatter * self.tbl.res(Resource::Antimatter)
-        } else {
-            w.antimatter
-        };
+        let antimatter = w.antimatter;
         let cap = if w.credit_cap > 0.0 { w.credit_cap } else { f64::MAX };
         let idle = if w.credits > 0.0 { w.credit_idle / w.credits } else { 1.0 };
         PlanRates {
@@ -1173,15 +1143,9 @@ impl Eval {
         }
     }
 
-    /// An energy a round to come (income, a city's production; 093): as held,
-    /// less `rates.energy_income_share` in table mode, as the card prices count it.
+    /// An energy a round to come (income, a city's production): as held.
     fn energy_income_unit(&self) -> f64 {
-        let w = &self.w;
-        if w.table > 0.0 && w.table_energy > 0.0 {
-            self.energy_unit() * self.tbl.rate("energy_income_share")
-        } else {
-            w.energy
-        }
+        self.w.energy
     }
 
     /// What a seat's credits are worth: `credits` each up to `credit_cap`,
@@ -1770,7 +1734,7 @@ impl Eval {
             });
             let picks: Vec<(f64, u8)> = drafted.chain(packet).collect();
             self.keepable(&world, g, s, picks, &mut cards);
-            *v += Self::capped(&mut cards, w.hand_cap);
+            *v += cards.iter().sum::<f64>();
             for id in g.pile(&cards::built(s)) {
                 *v += w.built + w.built_cost * Self::cost(cards::def(&world, id));
             }
@@ -1808,14 +1772,6 @@ impl Eval {
     /// The best `cap` of a seat's card values (021: hands outgrew what a
     /// seat can play, so cards beyond a playable hand are worth nothing and
     /// agents stop keeping every card they draft). `cap` 0: no cap.
-    fn capped(cards: &mut [f64], cap: f64) -> f64 {
-        if cap <= 0.0 {
-            return cards.iter().sum();
-        }
-        cards.sort_by(|a, b| b.total_cmp(a));
-        cards.iter().take(cap as usize).sum()
-    }
-
     /// 021: programs in the play area (their tags pay powers) and tokens on
     /// cards, at flat weights; with `table` (082), a token at what its card's
     /// spend pays per token.
@@ -1949,13 +1905,7 @@ impl Eval {
             1.0
         };
         // 021: chips sell 1:1 for credits (what a seat holds counts in `chips`).
-        // 082, a probe: antimatter held and earned at the table's row.
-        let antimatter = if w.table > 0.0 && w.table_antimatter > 0.0 {
-            w.table * w.table_antimatter * self.tbl.res(Resource::Antimatter)
-        } else {
-            w.antimatter
-        };
-        let unit = [w.credits, w.credits, self.energy_income_unit(), antimatter, w.insight, w.research_cube];
+        let unit = [w.credits, w.credits, self.energy_income_unit(), w.antimatter, w.insight, w.research_cube];
         let mut v = 0.0;
         // 074: an owned station makes a cube a round for the rest of the game.
         if w.production != 0.0 {
@@ -2000,17 +1950,6 @@ impl Eval {
                 SeatData { s, tags, prices, income, ctx }
             })
             .collect();
-        // 124 (D47, `team_share`): a trigger on a teammate's plays fires at the
-        // other seats' share of their cards with the tag.
-        let mut seats = seats;
-        if table && self.mix && w.team_share > 0.0 && self.seats > 1 {
-            let mixes: Vec<([i64; TAGS.len()], i64)> =
-                seats.iter().map(|sd| own_mix_counts(&world, g, sd.s, &sd.tags)).collect();
-            for sd in seats.iter_mut() {
-                let others = mixes.iter().enumerate().filter(|&(o, _)| o != sd.s).map(|(_, m)| *m);
-                sd.ctx.team = Some(team_share(tbl, others));
-            }
-        }
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
         let step = if g.round % 2 == 1 { 1 } else { self.seats - 1 };
         for s in 0..self.seats {
@@ -2045,10 +1984,7 @@ impl Eval {
             // the rounds left; board production counts `production` of its own.
             let income = sd.income;
             for (i, (r, n)) in income.iter().enumerate() {
-                let u = if table && w.table_income > 0.0 {
-                    // 082, a probe: income at the table's rates.
-                    w.table * w.table_income * tbl.res(r)
-                } else if r == Resource::ResearchCubes {
+                let u = if r == Resource::ResearchCubes {
                     self.cube_unit(s)
                 } else if r == Resource::Insight && self.patient[s] && self.spare_insight(g, s) > 0.0 {
                     // 124 (`insight_cap`): under Patience the pile carries, so more
@@ -2100,7 +2036,7 @@ impl Eval {
             }
             picks.append(&mut packets[s]);
             self.keepable(&world, g, s, picks, &mut cards);
-            v += Self::capped(&mut cards, w.hand_cap);
+            v += cards.iter().sum::<f64>();
         }
         v
     }

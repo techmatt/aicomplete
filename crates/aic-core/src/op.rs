@@ -168,14 +168,6 @@ pub enum RoundFlag {
     Embargo,
     /// Arrivals don't land in the country in the next build (068).
     Cordon,
-    /// Players near it can't use Actions that cost energy (135).
-    PowerDown,
-    /// The research stations of players near it make no research cubes (135).
-    StationOutage,
-    /// Research stations on or next to it produce nothing (135).
-    StationDark,
-    /// Cities and stations on or next to it produce nothing (135).
-    GridDown,
 }
 
 /// 138: the sites a creation line ("create N per board on the lowest-numbered
@@ -331,21 +323,12 @@ impl RoundFlag {
             RoundFlag::Shelter => "shelter",
             RoundFlag::Embargo => "embargo",
             RoundFlag::Cordon => "cordon",
-            RoundFlag::PowerDown => "power_down",
-            RoundFlag::StationOutage => "station_outage",
-            RoundFlag::StationDark => "station_dark",
-            RoundFlag::GridDown => "grid_down",
         }
-    }
-
-    /// 135: a seat's flag, put on the players near a threat (or every player).
-    pub fn on_seats(self) -> bool {
-        matches!(self, RoundFlag::PowerDown | RoundFlag::StationOutage)
     }
 
     /// 135: a hex's flag, put on the hexes near a threat; the rest go on a country.
     pub fn on_hexes(self) -> bool {
-        matches!(self, RoundFlag::Blackout | RoundFlag::Embargo | RoundFlag::StationDark | RoundFlag::GridDown)
+        matches!(self, RoundFlag::Blackout | RoundFlag::Embargo)
     }
 }
 

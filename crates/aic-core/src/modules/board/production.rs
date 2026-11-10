@@ -318,8 +318,8 @@ pub(super) fn city_energy(g: &mut GameState, cx: &mut Cx) -> Res {
             let l = w.list("board.corp_energy");
             l[c % l.len()]
         };
-        // A blackout on its country or (135) near a threat, or the grid down near one.
-        if hex_flagged(&w, g, RoundFlag::Blackout, h) || hex_flagged(&w, g, RoundFlag::GridDown, h) {
+        // A blackout on its country or (135) near a threat.
+        if hex_flagged(&w, g, RoundFlag::Blackout, h) {
             continue;
         }
         if corrupted(g, h) && player_ambassador(g, h).is_some() {
@@ -389,12 +389,6 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let c = w.map.hexes[h].country as usize;
-        // 135: a dark station (Thermal Runaway, Rolling Blackouts) or the grid
-        // down near it makes nothing; an adversary ambassador on it stays.
-        if hex_flagged(&w, g, RoundFlag::StationDark, h) || hex_flagged(&w, g, RoundFlag::GridDown, h) {
-            cx.tally(g, "board.stations_dark", 1);
-            continue;
-        }
         // 137: one opposing ambassador blocks the output while it stands: an
         // adversary ambassador on a neutral or player station, a player
         // ambassador on the adversary's. An adversary station makes compute.
@@ -416,13 +410,6 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let color = cube_owner(g, h).map_or(Color::Neutral, Color::Seat);
-        // 135 (Cooling Failure): a seat with a station outage makes no cubes.
-        if let Color::Seat(s) = color {
-            if seat_flagged(g, RoundFlag::StationOutage, s) {
-                cx.tally(g, "board.station_outage", 1);
-                continue;
-            }
-        }
         // 142: a player's station makes `owned_station_cubes`, a neutral one `station_cubes`.
         let made = if matches!(color, Color::Seat(_)) { w.int("board.owned_station_cubes") } else { cubes };
         if g.var(&project_done(c)) == 0 {

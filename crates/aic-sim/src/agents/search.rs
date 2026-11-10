@@ -449,8 +449,21 @@ pub fn draw_guesses(rules: &Rules, rng: &mut ChaCha8Rng, state: &GameState, samp
         .collect()
 }
 
-/// [`greedy_scores`] on guesses already drawn.
+/// [`greedy_scores`] on guesses already drawn; profiled, tallied by the
+/// prompt it answers (`prof::prompt`).
 pub fn score_guesses(
+    rules: &Rules,
+    ev: &Eval,
+    state: &GameState,
+    guesses: &[GameState],
+    legal: &[Action],
+    how: Scoring,
+) -> Vec<f64> {
+    let prompt = state.pending.as_ref().map(|p| p.ask.prompt.as_str());
+    prof::prompt(prompt, || score_all(rules, ev, state, guesses, legal, how))
+}
+
+fn score_all(
     rules: &Rules,
     ev: &Eval,
     state: &GameState,

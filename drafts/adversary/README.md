@@ -3,9 +3,9 @@
 Draft content for the new adversary model (Matt, 2026-11-06): the universal threat decks (tiers 1-2; 146: no tier 3), the universal
 project deck, and the Militarist's board and event deck. **These files are the source of truth**: the engine reads
 `content/`, which `python scripts/content/load_adversary.py` writes from them (`--check`: exit 1 if `content/` is
-stale); edit the drafts, never the loaded files. The format, vocabulary and value scale are in [the spec](../../experiments/results/134_militarist_drafts/spec.md), the readable listing (every card, the
-ops the engine lacks, the harms ledger across the drafts) in
-[listing.md](../../experiments/results/134_militarist_drafts/listing.md).
+stale); edit the drafts, never the loaded files. The format, vocabulary and value scale are in [the spec](../../experiments/results/134_militarist_drafts/spec.md);
+the cards as printed are in [docs/adversary-cards.md](../../docs/adversary-cards.md) (134's listing.md is a write-up, no
+longer regenerated).
 
 | File | Deck |
 |---|---|
@@ -19,5 +19,4 @@ pieces), the event standard (151: one Rally X, the fixed order threat, rally, de
 two other lines, "each board" never "each country"), a project's two consequences at most, the event pull ladder, the harms
 ledger's rule, and the draw rule (a random-deal simulation at 1-4 countries and every difficulty's stage counts,
 plus Hall's condition at 4 countries: no Militarist pull may need a second reshuffle). `--content` runs the same
-checks on the loaded `content/` (no value or check lines there, so those are skipped). `--write` also rewrites the
-listing and the picker (`picks/adversary_drafts.json`, images in `art-originals/picks/adversary_drafts/`).
+checks on the loaded `content/` (no value or check lines there, so those are skipped).

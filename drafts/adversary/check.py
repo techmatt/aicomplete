@@ -1,7 +1,6 @@
-"""Check the adversary drafts (134) and write their listing and picker.
+"""Check the adversary drafts (134).
 
     python drafts/adversary/check.py            # checks, then the pull simulation
-    python drafts/adversary/check.py --write    # also the listing and the picker
     python drafts/adversary/check.py --content  # the same checks on what content/ loaded (135's loader)
 
 Checks: ids unique, deck sizes and tags, the tier rules, counters (no credits under 5), Matt's threat card standard
@@ -17,7 +16,6 @@ import json
 import random
 import re
 import sys
-import textwrap
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -190,8 +188,7 @@ def standard_breaks(c):
             out.append(f"{op}: a special piece")
         if op == "each_destroy_node":
             out.append("each player destroys a node (the nearest player's: destroy_node)")
-        if op == "flag" and not (e.get("name") in ("power_down", "station_outage") and not e.get("everywhere")
-                                 and e.get("scope") != "country"):
+        if op == "flag":
             out.append(f"flag {e.get('name')} hits every player near it, not the nearest")
         if e.get("each_country"):
             out.append(f"{op}: an each-country line")
@@ -460,158 +457,6 @@ def check_projects(projects, ops, new_ops):
     print(f"projects: {len(projects)}, tags {dict(tags)}, costs {sorted(p['cost'] for p in projects)}")
 
 
-# ---- listing and picker -------------------------------------------------------------------------------------------
-
-LABEL = {"military": "Military", "influence": "Influence", "cyber": "Cyber", "economic": "Economic", "grid": "Grid",
-         "universal": "Universal", "any": "any"}
-SAC = {"security": "Security", "diplomacy": "Diplomacy", "cyber": "Cyber", "industry": "Industry", "power": "Power",
-       "science": "Science"}
-LOC = {"city": "a city", "coastal_city": "a coastal city", "station": "a research station",
-       "factory": "a factory or industrial zone", "base": "a military base"}
-COLOR = {"military": "#b03a2e", "influence": "#7d3c98", "cyber": "#1f78b4", "economic": "#b7950b",
-         "grid": "#17a589", "universal": "#555555"}
-
-
-def counter_text(opts):
-    out = []
-    for opt in opts:
-        parts = []
-        for i in opt:
-            if "resource" in i:
-                parts.append(f"{i['amount']} {i['resource'].replace('_', ' ')}")
-            elif "sacrifice" in i:
-                parts.append(f"sacrifice {i['amount']} {SAC[i['sacrifice']]} tag{'s' if i['amount'] > 1 else ''}")
-            else:
-                n = i["nodes_near"]
-                parts.append(f"remove {n} of your node{'s' if n > 1 else ''} on or next to it")
-        out.append(" + ".join(parts))
-    return " OR ".join(out)
-
-
-def tag_text(c, tier=None):
-    return " + ".join(f"{LABEL[g]}{' ' + str(tier) if tier else ''}" for g in c["tags"])
-
-
-def pull_text(p):
-    tags = " or ".join(LABEL[g] for g in p["tags"]) if p["tags"] != ["any"] else "any tag"
-    return f"{p.get('count', 1)}x {tags} {p['tier']} per country"
-
-
-def card_lines(c, kind):
-    """(title, subtitle, body lines, value, check) for one card."""
-    if kind.startswith("t"):
-        tier = int(kind[1])
-        sub = f"Threat, tier {tier} | {tag_text(c, tier)} | at {' and '.join(LOC[x] for x in c['locations'])}"
-        body = [f"If not countered: {c['text']}", f"Counter (anyone near it): {counter_text(c['counters'])}"]
-    elif kind == "project":
-        sub = f"Project | {tag_text(c)} | {c['cost']} compute per player{' | ongoing' if c.get('ongoing') else ''}"
-        body = [c["text"]]
-    elif kind == "event":
-        sub = f"Militarist event, stage {c['stage']}"
-        body = [c["text"]]
-    else:
-        sub = "Militarist board"
-        body = (c.get("text") or "").split(" | ")
-    flags = c.get("flags") or []
-    if flags:
-        body.append("Flags: " + "; ".join(flags))
-    return c["name"], sub, body, c.get("value", ""), c.get("check", "")
-
-
-def board_card(b):
-    slots = ", ".join(LABEL[s["tag"]] if s.get("tag") else "open" for s in b["project_slots"])
-    rules = [f"{r['name']}: {r['text']}" for r in b["rules"]]
-    build = ", ".join(f"{k} {v}" for k, v in b["build"].items())
-    text = " | ".join([f"Project slots: {slots}"] + rules + [f"Build: {build}", f"Difficulty: {b['difficulty']['text']}"])
-    return dict(b, text=text, tags=["military"])
-
-
-def esc(s):
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-
-def svg(c, kind):
-    title, sub, body, value, check = card_lines(c, kind)
-    w = 720
-    lines = []
-    for para in body:
-        lines += [(l, "body") for l in textwrap.wrap(para, 80)] + [("", "gap")]
-    lines += [(l, "value") for l in textwrap.wrap("Value: " + value, 96)]
-    lines += [(l, "check") for l in textwrap.wrap("Check: " + check, 96)]
-    subs = textwrap.wrap(sub, 88)
-    h = 92 + 18 * (len(subs) - 1) + 21 * len(lines) + 16
-    color = COLOR.get(c["tags"][0], "#555") if c.get("tags") else "#555"
-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">',
-           f'<rect width="{w}" height="{h}" fill="#fbfaf6" stroke="{color}" stroke-width="6"/>',
-           f'<rect width="{w}" height="58" fill="{color}"/>',
-           f'<text x="16" y="38" font-family="Georgia, serif" font-size="26" fill="#fff">{esc(title)}</text>',
-           ] + [f'<text x="16" y="{80 + 18 * i}" font-family="Arial, sans-serif" font-size="14" fill="#333">{esc(s)}</text>'
-                for i, s in enumerate(subs)]
-    y = 106 + 18 * (len(subs) - 1)
-    for text, style in lines:
-        if style == "gap":
-            y += 6
-            continue
-        fill, size, ital = {"body": ("#111", 17, ""), "value": ("#1a5276", 14, ""),
-                            "check": ("#555", 14, ' font-style="italic"')}[style]
-        out.append(f'<text x="16" y="{y}" font-family="Arial, sans-serif" font-size="{size}" fill="{fill}"{ital}>'
-                   f'{esc(text)}</text>')
-        y += 21
-    out.append("</svg>")
-    return "\n".join(out)
-
-
-def write_outputs(t, projects, mil, table, new_ops):
-    groups = [("Threats, tier 1", "t1", t[1]), ("Threats, tier 2", "t2", t[2]),
-              ("Projects", "project", projects), ("Militarist board", "board", [board_card(mil["board"])]),
-              ("Militarist event deck", "event", sorted(mil["events"], key=lambda e: e["stage"]))]
-    img_dir = ROOT / "art-originals" / "picks" / "adversary_drafts"
-    img_dir.mkdir(parents=True, exist_ok=True)
-    rows, md = [], ["# Adversary drafts (134): the listing", "",
-                    "Generated by `python drafts/adversary/check.py --write` from `drafts/adversary/`. One line per "
-                    "card: its text, counter or pulls, and value. Spec: [spec.md](spec.md).", ""]
-    n = 0
-    for title, kind, cards in groups:
-        md += [f"## {title}", ""]
-        for c in cards:
-            n += 1
-            name, sub, body, value, check = card_lines(c, kind)
-            md.append(f"- **{name}** ({sub}). " + " ".join(body) + f" *Value:* {value} *Check:* {check}")
-            (img_dir / f"{c['id']}.svg").write_text(svg(c, kind), encoding="utf-8", newline="\n")
-            rows.append({"id": c["id"], "label": f"{n}. {title}: {name}", "note": sub, "kind": "many",
-                         "options": [{"key": "keep", "image": f"../art-originals/picks/adversary_drafts/{c['id']}.svg",
-                                      "label": "goes forward"}]})
-        md.append("")
-    current = {r["id"] for r in rows}
-    for old in img_dir.glob("*.svg"):  # this picker's own tiles for cards since renamed
-        if old.stem not in current:
-            old.unlink()
-    ops = engine_ops()
-    md += ["## Ops the engine lacks", "", "Marked `new: true` in the drafts. A new op, then an op the engine has that a "
-           "draft prints with a new field or scope (its `why` says which).", ""]
-    for op, ids in sorted(new_ops.items(), key=lambda x: (x[0] in ops, str(x[0]))):
-        what = "new field or scope" if op in ops else "new op"
-        md.append(f"- `{op}` ({what}): {', '.join(sorted(set(ids)))}")
-    md += ["", "## The harms ledger across the drafts", "",
-           "| Harm | " + " | ".join(SOURCES) + " |", "|---|" + "---|" * len(SOURCES)]
-    for h in HARMS:
-        md.append(f"| {h} | " + " | ".join(str(table[h].get(s, "")) for s in SOURCES) + " |")
-    out = ROOT / "experiments" / "results" / "134_militarist_drafts" / "listing.md"
-    out.write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")
-    manifest = {"name": "adversary_drafts", "title": "Adversary drafts: threats, projects, the Militarist",
-                "intro": "One row per drafted card (134), grouped by deck: tier-1 and tier-2 threats, the "
-                         "project deck, the Militarist board, the Militarist event deck. Each tile shows the card's "
-                         "full text, its value line and its check. Toggle on what goes forward; nothing is "
-                         "preselected. Numbers are sane starting values, not tuned. Notes per row are welcome.",
-                "rows": rows}
-    (ROOT / "picks" / "adversary_drafts.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n",
-                                                         encoding="utf-8", newline="\n")
-    print(f"wrote {n} cards: listing.md, picks/adversary_drafts.json, {img_dir}")
-
-
-SOURCES = ["tier-1 threats", "tier-2 threats", "projects", "Militarist events", "Militarist board"]
-
-
 def main():
     t, projects, mil = load()
     ops = engine_ops()
@@ -624,7 +469,7 @@ def main():
     check_threats(t, ops, new_ops)
     check_projects(projects, ops, new_ops)
     check_militarist(mil, projects, ops, new_ops)
-    table = ledger(t, projects, mil)
+    ledger(t, projects, mil)
     before = len(errors)
     worst_case(t, mil)
     print(f"Hall's condition at 1 and 4 countries (with the extra pulls): "
@@ -641,11 +486,9 @@ def main():
         print("warning:", w)
     for e in errors:
         print("ERROR:", e)
-    if "--write" in sys.argv and CONTENT_MODE:
-        print("ERROR: --write reads the drafts (value and check lines); run it without --content")
-        sys.exit(1)
     if "--write" in sys.argv:
-        write_outputs(t, projects, mil, table, new_ops)
+        print("ERROR: --write is retired (165): its listing and picker were 134's; content/ is read by load_adversary.py")
+        sys.exit(1)
     sys.exit(1 if errors else 0)
 
 

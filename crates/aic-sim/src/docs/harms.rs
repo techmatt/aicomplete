@@ -126,7 +126,7 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::LoseTokens { .. } => vec![TOKENS_STRIPPED],
         Op::FlipStation { .. } => vec![FACILITIES_DESTROYED],
         Op::Flag { name, .. } => match name.name() {
-            "embargo" | "power_down" => vec![BLOCKED],
+            "embargo" => vec![BLOCKED],
             _ => vec![BLACKED_OUT],
         },
         Op::Create { .. } | Op::AdversaryBuild | Op::Rally { .. } => vec![PIECES_PLACED],

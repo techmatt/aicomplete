@@ -1148,10 +1148,7 @@ pub fn threat_rule_break(op: &Op) -> Option<String> {
         Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
         Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
         Op::CorpTroops { past_cap: true, .. } => Some("corp troops past their cap (no special pieces)".into()),
-        Op::Flag { name, everywhere, scope, .. } => {
-            let seat = name.on_seats() && !*everywhere && *scope != Some(crate::op::Scope::Country);
-            (!seat).then(|| format!("flag {name:?} hits every player near it, not the nearest"))
-        }
+        Op::Flag { name, .. } => Some(format!("flag {name:?} hits every player near it, not the nearest")),
         Op::Troops { each_country: true, .. }
         | Op::FlipStation { each_country: true, .. }
         | Op::DealThreats { each_country: true, .. } => Some("an each-country line".into()),

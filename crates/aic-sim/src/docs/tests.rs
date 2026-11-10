@@ -3,7 +3,8 @@ use aic_core::{Config, Rules};
 
 use super::blocks::*;
 use super::run::{
-    block, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS, DOC_BUDGET,
+    block, budget_warnings, card_note_failures, card_quote_failures, op_docs, revision_line_failures, rules_file_failures, unknown_params, BLOCKS,
+    DOC_BUDGET, DOC_WARN,
 };
 
 const BASELINE_JSON: &str = include_str!("../../../../configs/baseline.json");
@@ -120,6 +121,18 @@ fn check_wants_each_block_once_and_files_in_budget() {
     assert_eq!(rules_file_failures(&twice).len(), 1);
     let big = vec![("docs/rules/a.md".to_string(), all + &"x".repeat(DOC_BUDGET))];
     assert_eq!(rules_file_failures(&big).len(), 1);
+}
+
+/// 165: a doc within 1 KB of the budget is warned of; one under it, or over the budget (a failure), is not.
+#[test]
+fn docs_near_the_budget_are_warned_of() {
+    let sizes = |n: usize| vec![("docs/a.md".to_string(), n)];
+    assert!(budget_warnings(&sizes(DOC_WARN)).is_empty());
+    let w = budget_warnings(&sizes(DOC_WARN + 1));
+    assert_eq!(w.len(), 1);
+    assert!(w[0].starts_with("warning: docs/a.md"), "{w:?}");
+    assert_eq!(budget_warnings(&sizes(DOC_BUDGET)).len(), 1);
+    assert!(budget_warnings(&sizes(DOC_BUDGET + 1)).is_empty());
 }
 
 /// 118: a rules file quoting a card's words its face no longer prints fails the check.

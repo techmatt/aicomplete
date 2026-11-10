@@ -397,11 +397,9 @@ fn create_site(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, kind: Facility) {
 }
 
 /// Flag (135 fields): up for `rounds` more rounds (the var holds rounds + 1:
-/// a threat executes after the round's production). A seat's flag
-/// (power_down, station_outage) goes on the seats near it; a hex's (blackout,
-/// embargo, station_dark, grid_down) on the hexes near it, the
-/// rest on the country; `scope` country, the country; `everywhere`, every
-/// country (every seat, for a seat's flag).
+/// a threat executes after the round's production). A hex's flag (blackout,
+/// embargo) goes on the hexes near it, the rest on the country; `scope`
+/// country, the country; `everywhere`, every country.
 #[allow(clippy::too_many_arguments)]
 fn flag(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, name: RoundFlag, scope: Option<Scope>, rounds: i64, everywhere: bool) {
     let w = cx.world;
@@ -411,18 +409,7 @@ fn flag(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, name: RoundFlag, scope: Optio
             cx.set_key(g, k, v);
         }
     };
-    if name.on_seats() {
-        let seats = if everywhere {
-            (0..g.seats.len()).collect()
-        } else if scope == Some(Scope::Country) {
-            seats_in_scope(&w, g, ctx.scope)
-        } else {
-            ctx.seats(&w, g)
-        };
-        for s in seats {
-            raise(g, cx, &board::seat_flag(name, s));
-        }
-    } else if everywhere {
+    if everywhere {
         for c in 0..w.map.countries.len() {
             raise(g, cx, &board::flag(name, c));
         }

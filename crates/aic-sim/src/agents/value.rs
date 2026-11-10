@@ -303,9 +303,9 @@ pub struct Ctx {
     /// 107: the share of the seat's cards carrying each tag (`rates.tag_share`
     /// each, unless the caller reads the seat's own: [`Ctx::with_mix`]).
     pub share: [f64; TAGS.len()],
-    /// 124 (D47, `w.team_share`): the teammates' share of cards carrying each
-    /// tag, which a trigger on a teammate's plays fires at; `None`: the seat's own
-    /// `share`, as before.
+    /// 124 (D47, the keep plan's `plan_team`): the teammates' share of cards
+    /// carrying each tag, which a trigger on a teammate's plays fires at; `None`:
+    /// the seat's own `share`, as before.
     pub team: Option<[f64; TAGS.len()]>,
     /// 128: the share of the table's energy price an energy costs this seat: 1,
     /// or less for a seat whose energy piles up ("energy I can't spend is cheap:
@@ -898,24 +898,6 @@ pub fn token_worth(t: &Table, d: &CardDef) -> Worth {
         a.branches().into_iter().filter(|b| b.tokens > 0).map(|b| list_worth(t, &b.effects).scaled(1.0 / b.tokens as f64)).next()
     });
     spend.unwrap_or(Worth::now(t.token_held()))
-}
-
-/// 124 (D47, `w.threshold_tokens`): `base`, or on a card with a threshold (At
-/// N) what the threshold pays per token when that is more ("a token toward an
-/// At 4 that pays 12 is worth 3").
-pub fn token_worth_threshold(t: &Table, d: &CardDef, base: Worth) -> Worth {
-    let at = d
-        .passives
-        .iter()
-        .filter_map(|p| match p {
-            Op::Threshold { at, then } => Some(t.op("threshold") * triggered(t, then) / (*at).max(1) as f64),
-            _ => None,
-        })
-        .reduce(f64::max);
-    match at {
-        Some(v) if v > base.now => Worth::now(v),
-        _ => base,
-    }
 }
 
 /// 102 (D24): [`token_worth`], but a token on a card whose Action cashes its own

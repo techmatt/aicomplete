@@ -3,9 +3,8 @@
 How a card's price is set, as the set stands. Every price is a **candidate**. The cards themselves are
 [cards.md](cards.md), generated from `content/cards.json`; the rules for writing one are
 [card-guidelines.md](card-guidelines.md). What each pass changed and why is in git and in the pass's write-up under
-`experiments/results/screen-NNN/` (076's card-by-card verdicts: `screen-076-cards/cards.md`). A card whose price needs
-a word in the card viewer gets one current line in `docs/card-pricing-notes.json`, keyed by card id (keys sorted),
-written by the item that sets the price.
+`experiments/results/screen-NNN/` (076's card-by-card verdicts: `screen-076-cards/cards.md`). A card's note for the
+card viewer is one line in `docs/card-pricing-notes.json` (keys sorted; CLAUDE.md, *Working rules*).
 
 ## The rates
 
@@ -18,11 +17,10 @@ Two other places hold rates, and neither is a price:
 - **The search's weights** (`Weights` in `crates/aic-sim/src/agents/eval.rs`) are points tuned against win rate, not
   credits. Where one shadows a table row (held energy `energy` 0.8, `antimatter` 2, `liberated` and
   `liberate_progress`, `station_flip`), the gap is deliberate until a screen moves it: held energy below the table's
-  price is on purpose (100), and `w.table_energy` and `w.table_antimatter` stay off. A table edit does not
+  price is on purpose (100; the probes pricing them at the table are retired). A table edit does not
   move them; say in the write-up when a price and its weight part further.
 - **The effect ledger** (`scripts/cards/effect_ledger.py`) mirrors `agents/value.rs` by hand. The fast-lane test
-  `effect_ledger_mirrors_the_table` checks its committed `cards.csv` against value.rs card by card (bar troop removal, which the ledger counts at what one
-  removes in play): after a change to
+  `effect_ledger_mirrors_the_table` checks its committed `cards.csv` against value.rs card by card (bar troop removal: below): after a change to
   value.rs, `values.json` or a card, rerun the ledger, and fix its `op_worth` if the test still fails.
 
 ## A fair price
@@ -41,7 +39,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   [card-guidelines.md](card-guidelines.md), rulings 19-25): a card's anchor value over what it costs (credits, 4 an
   insight of keep and play, other costs at the anchors) is at most about 1.5 at tier 1 and 2.5 at tier 2. **Those are
   maximums, not a target band** (112): a fair card reads about 1.0-1.5, and a price is never cut only to move a fair card
-  toward the maximum (111 did, and 112 put 80 prices back). A repriced card aims at the middle, about 1.2-1.3, at its
+  toward the maximum. A repriced card aims at the middle, about 1.2-1.3, at its
   played tag count (Matt, *Economy* rev 23, 128). **The anchors set the price; the table is fixed to see a card's real
   worth, never the price cut to make it show a gain. A card the strategist leaves unplayed gets more power, not a lower
   price.** A card under 1.0 is too dear; one over its maximum is
@@ -57,9 +55,8 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   recipe, needs 5-6 about half and much bigger (Zero-Day Auction, needs 5 Cyber: 2 antimatter and draw 6).
 - **The cost curve** (r46, Terraforming Mars scale; Matt: fewer cheap cards, more dear and high-impact ones): tier 1
   median 10 (most 6-20; the big income and late cards 20-46, Moonshot Grant's 46 the top, Gigafactory Charter's "31 credits and
-  2 energy, +10 credit income, draw 2" among them), tier 2 median 15 (most 7-30; the liberate capstones 4-42, Citywide Microgrid's 4 credits beside 8 energy). 6 cards cost 5 or less (r51: 16;
-  r52 put 127's cheapened cards back at the anchors), 11 cost 30 or more. The deck's median is 11. Nine credits is about two thirds of a round's printed credits on the boards (15 / 13 / 11).
-- **Big early and late cards** (r46, Matt): early jump-starts at 25-34 credits (Fabrication Megaplex 25 and 2 energy, r50), no `needs`, playable in rounds 1-3 from
+  2 energy, +10 credit income, draw 2" among them), tier 2 median 15 (most 7-30; the liberate capstones 4-42, Citywide Microgrid's 4 credits beside 8 energy). 6 cards cost 5 or less, 11 cost 30 or more. The deck's median is 11. Nine credits is about two thirds of a round's printed credits on the boards (15 / 13 / 11).
+- **Big early and late cards** (r46, Matt): early jump-starts at 25-34 credits (Fabrication Megaplex 25 and 2 energy), no `needs`, playable in rounds 1-3 from
   the starting 40-46 (Fabrication Megaplex, Frontier Lab Charter, National Grid Buildout, beside Gigafactory Charter,
   Wartime Retooling and Multiyear Defense Budget). The anchors price income at mid-game; bought in round 1-3 it runs
   about 5 rounds (about 1.25× the anchor), so a jump-start reads 1.0-1.3 at the anchors and stays under 1.5 early. Late objectives at 30-46 reach a goal in one play: Moonshot Grant's 8 cubes fill a megaproject (cubes at 9
@@ -80,7 +77,7 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
   at its own trigger's fill (`own_fill`).
 - **Antimatter only on true ultimates** (108): Orbital Mass Driver, Recursive Self-Improvement and Dyson Swarm
   Tranche pay its 7 in credits; the liberate and removal ultimates keep it.
-- **Card throughput** (108): credits pile up (the strategist ends r42's games on 13-21), so the fix is dearer, bigger
+- **Card throughput** (108): credits pile up, so the fix is dearer, bigger
   cards and more of them: engines draw when built, Action buildings turn spare credits (Patent Library, Bug Bounty
   Board), chips (Parts Exchange), energy (Grid Analytics Desk) or Agents (Safehouse Network) into cards, three engines
   draw on their tag's plays (Preprint Server, Supplier Network, Fusion Research Campus), and two board powers do the
@@ -89,25 +86,23 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 - **Insight off every card** counts `rates.insight_discount_share` (0.25) of the plays (107): the floor below.
 - **Insight discounts mostly sit at the floor** (106): `discount_floor` 1 holds insight too, and `science_every` already
   takes a seat with 2 Science tags to it, so a 1-insight discount bites only on 2-insight cards; no deck card prints
-  one since r44 (Hyperscale Botnet took 4 insight a round instead). Science's discount prints credits (Grad Student Pool).
+  one. Science's discount prints credits (Grad Student Pool).
 - **One shape for one job across the tags:** a per-tag income program ("raise your credit income by 1 per 2 X tags"),
-  needs 2 of X (r43), 6 credits and no play insight, one per tag (r51: 1 per 2 tags, the late slope halved; r52: priced
-  at 6 tags at play, 1.30 at the anchors); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
-  (`auto_counter`, Cyber's alone since r44) 9 credits and 1 insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam
+  needs 2 of X (r43), 6 credits and no play insight, one per tag (priced at 6 tags at play, 1.30 at the anchors); a building's per-tag income pays 3 a tag (Foundation Model Campus, r43); a standing counter
+  (`auto_counter`, Cyber's alone) 9 credits and 1 insight, needs 2; a typed jam 5 and a rider of its tag; a free typed-jam
   Action building 7 credits and no play insight (r45), about 3 a round.
 - **Income has a horizon** (r35): an income, of credits, energy or anything, counts for the rounds left at a typical
   purchase less a tempo discount: 4 rounds on a tier-1 card, 2.5 on a tier-2 one (`rates.horizon_t1`, `horizon_t2`).
 - **Repeatable and progressive cards** are priced on their uses: an Action (value less its cost) × the horizon × 0.7;
   a progressive token card (uses × payoff) × 0.7, counting adds as uses (ruling 12).
   A conversion Action passes both the anchor ceiling and a gain at `values.json` only when its output is priced alike
-  in both (Sway, a liberation, a megaproject cube: `project_cube` 6, not the `research_cubes` resource at 3): the
-  anchors put insight at 4 and a draw at 5, the table 2.5 and 4. At tier 1, energy into insight reads over 1.5 at the
+  in both (Sway, a liberation, a megaproject cube: `project_cube` 6, not the `research_cubes` resource at 3). At tier 1, energy into insight reads over 1.5 at the
   anchors or a loss at the table (a gain needs over 1.8 insight an energy, the ceiling under 1.69); into cards only
   1.13-1.35 cards an energy passes both (3 energy for 4 cards). Tier 2's 2.5 ceiling passes either at 1:2 (125).
 - **Energy is rare** (r35): about 4.5 credits an energy, 5 to buy from a neutral city (r36). +1 energy of income or
   production is the horizon × 4.5 × 0.8 (`rates.energy_income_share`: it arrives a drop at a time, not when needed):
-  about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling; it replaced r35's 8-10 anchor), and no card above
-  +2 a card (one tag payoff, Tidal Barrage, reaches +3 at 6 Power tags, r44). Threat counters that offer energy (by
+  about 14 on a tier-1 card, 9 on a tier-2 one (r36, Matt's ruling), and no card above
+  +2 a card (one tag payoff, Tidal Barrage, reaches +3 at 6 Power tags). Threat counters that offer energy (by
   tag), fourteen cards and six Actions (Grid Analytics Desk's draw, Particle Accelerator's cubes, Directed-Energy
   Array's removal, Holographic Assembly Hall's Sway, Wafer Fab Line's draw and chips, Microgrid Lab Compact's station
   claim) take energy.
@@ -131,13 +126,13 @@ nothing, so a staging session can price proposed cards: copy `content/cards.json
 
 Measured or found against play; each is still the table's number until a pass moves it.
 
-- **Antimatter 7** (lowered from 9 at r35): the heuristic holds antimatter at 2 points, about 3 credits; what antimatter
+- **Antimatter 7:** the heuristic holds antimatter at 2 points, about 3 credits; what antimatter
   buys is the ultimates' 1-a-card gate, not 7 credits of anything.
-- **Troop removal 11** (7 each in one country; 15 and 10 at r35-r37, 4 less at r38 when `alignment.troop` went to 0):
+- **Troop removal 11** (7 each in one country):
   the heuristic counts a troop at 12 points, about 20 credits. A count prints "up to": the ledger and the agents count what one removes in play (`values.json` `troops_removed`, 102; Kinetic Interdiction's 6 about 3.6).
 - **The recipe nets every card about its keep + 1** over its costs at the table, so the table alone can't rank cards for
   a draft: tier 2 reads as worth no more than its keep unless the draft leaves the play cost out, as the agents' does.
-- **Energy 4.5** (from 2 at r35): seats now hold about 1-2 at rounds 3 and 6 and 1.8-2.6 at the end (090,
-  `energy_read.py`), against 6-12 at the end at r34.
+- **Energy 4.5:** seats now hold about 1-2 at rounds 3 and 6 and 1.8-2.6 at the end (090,
+  `energy_read.py`).
 - **Insight 2.5:** a fit (it centers tier 1 on its printed prices), not a measure; `economy.insight_unspent` would settle it.
 - **A player cube at completion, about 9:** measured cheaper in play, as energy and chips buy less than their rates.

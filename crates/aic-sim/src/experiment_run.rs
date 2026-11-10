@@ -387,6 +387,15 @@ fn print_timing(games: &[experiment::GameResult], wall_s: f64, report_s: f64) {
             .collect();
         eprintln!("search (of agents + probes): {}", line.join(", "));
     }
+    if let Some(p) = prof::prompts() {
+        let agent = sum(|g| g.agent_ms + g.probe_ms).max(1e-9);
+        for (text, decisions, applies, evals, ms) in p.iter().take(12) {
+            eprintln!(
+                "prompt {:.1}% {decisions} decisions, {applies} applies, {evals} evals: {text}",
+                100.0 * ms / agent
+            );
+        }
+    }
     if let Some((allocs, bytes)) = prof::allocated() {
         let n = games.len().max(1) as f64;
         eprintln!(
