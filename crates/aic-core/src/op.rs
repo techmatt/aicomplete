@@ -265,6 +265,144 @@ impl CorruptSite {
     }
 }
 
+/// 167: a board condition a Unity or Discord card scopes by (fear-card shape, Matt 2026-11-09: never reach).
+/// "An ambassador" is any seat's; "a player's piece" is an ambassador or a node.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Where {
+    /// A hex holding an ambassador.
+    Ambassador,
+    /// A hex on or next to an ambassador.
+    ByAmbassador,
+    /// A hex on or next to an ambassador or a node.
+    ByPlayer,
+    /// A hex within 2 of an ambassador or a node (a tier III's wide condition).
+    NearPlayer,
+    /// A city holding an ambassador.
+    AmbassadorCity,
+    /// A research station holding an ambassador.
+    AmbassadorStation,
+    /// A factory holding an ambassador.
+    AmbassadorFactory,
+    /// A hex holding both agents and an ambassador.
+    Contested,
+    /// A corrupted city.
+    CorruptedCity,
+    /// A hex on or next to a corrupted city (never a tier III's: r68's clearing there was rejected).
+    ByCorruptedCity,
+    /// A corrupted site: a city, research station or factory with the adversary's cube.
+    Corrupted,
+    /// A site a player owns: a city, research station or factory with a player's cube.
+    Owned,
+}
+
+impl Where {
+    pub const ALL: [Where; 12] = [
+        Where::Ambassador,
+        Where::ByAmbassador,
+        Where::ByPlayer,
+        Where::NearPlayer,
+        Where::AmbassadorCity,
+        Where::AmbassadorStation,
+        Where::AmbassadorFactory,
+        Where::Contested,
+        Where::CorruptedCity,
+        Where::ByCorruptedCity,
+        Where::Corrupted,
+        Where::Owned,
+    ];
+    /// The words a card prints: "a hex {words}", "each {noun}".
+    pub fn words(self) -> &'static str {
+        match self {
+            Where::Ambassador => "hex holding an ambassador",
+            Where::ByAmbassador => "hex on or next to an ambassador",
+            Where::ByPlayer => "hex on or next to an ambassador or a node",
+            Where::NearPlayer => "hex within 2 of an ambassador or a node",
+            Where::AmbassadorCity => "city holding an ambassador",
+            Where::AmbassadorStation => "research station holding an ambassador",
+            Where::AmbassadorFactory => "factory holding an ambassador",
+            Where::Contested => "hex holding both agents and an ambassador",
+            Where::CorruptedCity => "corrupted city",
+            Where::ByCorruptedCity => "hex on or next to a corrupted city",
+            Where::Corrupted => "corrupted city, research station or factory",
+            Where::Owned => "city, research station or factory a player owns",
+        }
+    }
+    pub fn name(self) -> &'static str {
+        match self {
+            Where::Ambassador => "ambassador",
+            Where::ByAmbassador => "by_ambassador",
+            Where::ByPlayer => "by_player",
+            Where::NearPlayer => "near_player",
+            Where::AmbassadorCity => "ambassador_city",
+            Where::AmbassadorStation => "ambassador_station",
+            Where::AmbassadorFactory => "ambassador_factory",
+            Where::Contested => "contested",
+            Where::CorruptedCity => "corrupted_city",
+            Where::ByCorruptedCity => "by_corrupted_city",
+            Where::Corrupted => "corrupted",
+            Where::Owned => "owned",
+        }
+    }
+}
+
+/// 167: the adversary step a prohibition switches off where its condition holds.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Step {
+    Rally,
+    Deploy,
+    Corrupt,
+}
+
+impl Step {
+    pub const ALL: [Step; 3] = [Step::Rally, Step::Deploy, Step::Corrupt];
+    pub fn name(self) -> &'static str {
+        match self {
+            Step::Rally => "rally",
+            Step::Deploy => "deploy",
+            Step::Corrupt => "corrupt",
+        }
+    }
+}
+
+/// 167: what a board-conditioned removal takes off.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Removable {
+    Agents,
+    Troops,
+    Botnets,
+    /// Corruption markers (each cleared for its reward, as the Clear action).
+    Markers,
+    /// The adversary's cube off a corrupted research station or factory (never a city: tier III frees none).
+    Cubes,
+}
+
+impl Removable {
+    pub fn words(self) -> &'static str {
+        match self {
+            Removable::Agents => "agents",
+            Removable::Troops => "troops",
+            Removable::Botnets => "botnets",
+            Removable::Markers => "corruption markers",
+            Removable::Cubes => "adversary cubes",
+        }
+    }
+}
+
+/// 167: who acts in a board-conditioned removal.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Per {
+    /// On each hex where the condition holds.
+    Hex,
+    /// In each country piece, from hexes where it holds (players choose).
+    Country,
+    /// Each player, from one hex where it holds (their choice).
+    Player,
+}
+
 /// A facility kind a cleanse may be limited to (r35).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -975,6 +1113,31 @@ pub enum Op {
     OnePlayer {
         then: Vec<Op>,
     },
+    /// 167: "for each `where` (at most `max`)": `then` (team ops) resolves once per hex where the condition
+    /// holds when it resolves, counted on the whole board.
+    PerSite {
+        #[serde(rename = "where")]
+        where_: Where,
+        max: i64,
+        then: Vec<Op>,
+    },
+    /// 167, a board-conditioned removal: up to `count` `pieces` come off, `per` each hex where `where` holds,
+    /// each country piece (from such hexes, players choosing) or each player (from one such hex, their choice).
+    RemoveWhere {
+        pieces: Removable,
+        count: i64,
+        per: Per,
+        #[serde(rename = "where")]
+        where_: Where,
+    },
+    /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
+    /// hex where `where` holds when the step runs. A blocked Rally share or Deploy troop stays in the supply;
+    /// a blocked site doesn't corrupt (Corrupt lines and natural corruption), nothing is pulled into it.
+    Prohibit {
+        step: Step,
+        #[serde(rename = "where")]
+        where_: Where,
+    },
     /// The board's difficulty line: each event's Deploy lands `amount` more troops a board.
     StandingTroopsBonus {
         amount: i64,
@@ -1105,7 +1268,11 @@ impl Op {
     /// The ops printed inside this one (a `then`, a choice's `options`).
     pub fn nested(&self) -> &[Op] {
         match self {
-            Op::IfTags { then, .. } | Op::OnePlayer { then } | Op::When { then, .. } | Op::Threshold { then, .. } => then,
+            Op::IfTags { then, .. }
+            | Op::OnePlayer { then }
+            | Op::PerSite { then, .. }
+            | Op::When { then, .. }
+            | Op::Threshold { then, .. } => then,
             Op::LoseOr { options } => options,
             _ => &[],
         }
@@ -1158,6 +1325,9 @@ impl Op {
             | Op::ThreatAtNode { .. }
             | Op::RemoveBotnets { .. }
             | Op::OnePlayer { .. }
+            | Op::PerSite { .. }
+            | Op::RemoveWhere { .. }
+            | Op::Prohibit { .. }
             | Op::StandingTroopsBonus { .. }
             | Op::ThreatCompute { .. }
             | Op::Rally { .. }

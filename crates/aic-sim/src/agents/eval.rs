@@ -27,7 +27,7 @@ use aic_core::modules::common::{
     self, ADV_AMBASSADOR, ADV_CUBE, FACTORY, HARDEN, STATION, TROOP,
 };
 use aic_core::modules::{adversary, ai, alignment, board, cards, economy, plan, threats};
-use aic_core::op::CorruptSite;
+use aic_core::op::{CorruptSite, Step};
 use aic_core::key::Fnv;
 use aic_core::{GameState, Key, Rules};
 use serde::{Deserialize, Serialize};
@@ -1209,6 +1209,12 @@ impl Eval {
         let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
         // 147 (D67): land corrupts only by a Corrupt land line (no natural corruption).
         let (land_at, land_line) = plan::next_corrupt_n(&world, g, CorruptSite::Land);
+        // 167: a Corrupt prohibition ahead (public): a hex its condition covers now carries no corruption
+        // pressure, so meeting the condition before the adversary turn scores (the Rally forecast skips its sites).
+        let corrupt_round = g.round as i64
+            + if g.phase_index("adversary.corrupt").is_some_and(|i| g.phase <= i) { 0 } else { 1 };
+        let corrupt_ban = g.var(plan::prohibit_keys(Step::Corrupt).0) == corrupt_round;
+        let banned = |h: usize| corrupt_ban && plan::prohibited_in(&world, g, Step::Corrupt, h, corrupt_round);
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
@@ -1289,7 +1295,11 @@ impl Eval {
                     // 034: a corruption marker counts toward corrupting; 138: so do
                     // the ambassadors next door when a gathering Corrupt line is ahead.
                     // 158: a firewall stops the pull from next door (the Rally forecast already skips it).
-                    let toward = Self::toward(rules, &tokens, &arriving, h, gather && !common::firewalled(g, h));
+                    let toward = if banned(h) {
+                        0.0
+                    } else {
+                        Self::toward(rules, &tokens, &arriving, h, gather && !common::firewalled(g, h))
+                    };
                     let p = (toward / corrupt_at as f64).min(1.0);
                     v -= w.corrupted * w.pressure * p * p;
                     if toward + 1.0 >= corrupt_at as f64 {
@@ -1317,7 +1327,11 @@ impl Eval {
                     None
                 };
                 if let Some((n, gathers, share)) = site {
-                    let toward = Self::toward(rules, &tokens, &arriving, h, gathers && !common::firewalled(g, h));
+                    let toward = if banned(h) {
+                        0.0
+                    } else {
+                        Self::toward(rules, &tokens, &arriving, h, gathers && !common::firewalled(g, h))
+                    };
                     if toward > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
                         let r = p * p * share;

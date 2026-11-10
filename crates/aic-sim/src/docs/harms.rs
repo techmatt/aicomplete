@@ -92,6 +92,8 @@ const BLOCKED: usize = 13;
 /// The harms one op does, as rows of [`HARMS`].
 fn op_harms(op: &Op) -> Vec<usize> {
     match op {
+        // 167: "for each X (at most N)": the harms of what it repeats.
+        Op::PerSite { then, .. } => then.iter().flat_map(op_harms).collect(),
         Op::EachDestroyNode { .. } | Op::DestroyNode { .. } | Op::LoseNodeOr { .. } => vec![NODE_DESTROYED],
         Op::PlayersLose { resource: Resource::Credits, .. } => vec![CREDITS_LOST],
         // 146: a threat's "pays 2 ambassadors or discards 2 cards" takes either.

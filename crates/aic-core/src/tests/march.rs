@@ -263,7 +263,7 @@ fn a_landing_troop_skips_a_walled_hex() {
     for &h in &walled {
         put(&mut g, h, node(1), 1);
     }
-    with_cx(&rules, |cx| adversary::land_troops(&mut g, cx, &hexes, 1, "land", "test.landed", None, false)).unwrap();
+    with_cx(&rules, |cx| adversary::land_troops(&mut g, cx, &hexes, 1, "land", "test.landed", None, false, false)).unwrap();
     assert_eq!(g.tokens(open, TROOP), 1);
     assert!(walled.iter().all(|&h| g.tokens(h, TROOP) == 0));
 }

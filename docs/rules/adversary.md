@@ -34,8 +34,11 @@ each board's whole pool lands on that board's sites of type X (city, coastal cit
 botnet hex): its **neutral** ones (no owner cube), else the players', else the adversary's. The pool **spreads
 evenly** over those sites; the players choose which take the remainder, one each. A cordoned board's pool lands nowhere. A project may print "Rally 3: botnet hexes": 3 a board, by the same rule. An arrival on a
 player ambassador cancels it. The card ahead and the pools are public, so next round's landing is known.
-A threat still places its own ambassadors "here". A player's
+A threat still places its own agents "here". A player's
 **firewall** keeps every arrival and Corrupt pull off its hex for a round ([ambassadors.md](ambassadors.md)).
+A Unity **prohibition** (r71) switches Rally, Deploy or Corrupt off where its condition holds as the step runs, in
+the next adversary turn: a site's Rally share or a Deploy troop stays in the supply, a site doesn't corrupt (naturally
+either) ([alignment.md](alignment.md)).
 
 **Corrupt X (candidate).** X is a site type: **city** (`corrupt_at` 4), **research station**
 (`corrupt_station_at` 3), **factory** (`corrupt_factory_at` 3) or, rarely, **land** (`corrupt_land_at` 3; an empty land
@@ -57,7 +60,7 @@ extra corp troop a round from all such rules; its difficulty line) are printed i
 until removed: it makes compute (above), **blocks site claims** on or next to it and counts against the
 purge until Unity eases it ([alignment.md](alignment.md)). **Hard to remove
 (candidate, Matt):** only tier-2 effects (Botnet Takedown, Singularity Exploit, Decapitation Strike, Root Access) and
-Unity cards (Decommission anywhere; Network Cleanup in reach), no standard action. Removing one sways `alignment.botnet` Unity.
+Decommission (a Unity card: each botnet on, then on or next to, a player's piece), no standard action. Removing one sways `alignment.botnet` Unity.
 
 ## The project deck (candidate)
 

@@ -674,6 +674,9 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         | Op::DealThreats { .. }
         | Op::RemoveBotnets { .. }
         | Op::OnePlayer { .. }
+        | Op::PerSite { .. }
+        | Op::RemoveWhere { .. }
+        | Op::Prohibit { .. }
         | Op::Rally { .. }
         | Op::IncreaseIncome { .. }
         | Op::Income { .. }

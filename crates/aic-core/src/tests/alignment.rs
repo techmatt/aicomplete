@@ -1,5 +1,6 @@
 use super::*;
 use crate::modules::adversary::PurgeLevel;
+use crate::modules::common::{cube_owner, is_city};
 use crate::modules::{adversary, alignment};
 
 /// This file's purge steps come at 1, 1 and 2 Unity cards drawn.
@@ -21,7 +22,7 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     let m = &rules.map;
     // One Unity tip made, the bucket full (2 a player, 2 players); no city
     // corrupted but agents about. The next card is Civil
-    // Defense (pushback).
+    // Defense (167: tier I removes next to a corrupted city: none here).
     uncorrupt_cities(&rules, &mut g);
     for c in 0..2 {
         put(&mut g, m.numbered(c, piece(c).cities[1]), ADV_AMBASSADOR, 2);
@@ -31,8 +32,8 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     fill_bucket(&rules, &mut g, Side::Unity);
     next_alignment_card(&mut g, Side::Unity, "civil_defense");
     any_action(&rules, &mut g);
-    // The tip: each country removes an ambassador.
-    assert_eq!(total(&g, ADV_AMBASSADOR), 2);
+    // The tip: no corrupted city, so no agent comes off; at this bar agents don't count.
+    assert_eq!(total(&g, ADV_AMBASSADOR), 4);
     assert_eq!(g.var("alignment.unity_tips"), 2);
     assert_eq!(g.var("alignment.unity"), 0);
     assert!(g.pile("alignment.resolved.unity").iter().any(|k| k.as_str() == "civil_defense"));
@@ -42,18 +43,27 @@ fn a_full_unity_bucket_tips_a_card_and_lowers_the_bar() {
     assert!(o.won && o.reason == "purge", "{o:?}");
 }
 
-/// 157 (r68): the tip's own count picks the tier: Grassroots Funding pays 2 a
-/// round at tier I (tips 1-2: 0-1 earlier), 3 at tier II (tips 3-5: 2-4 earlier).
+/// 157 (r68): the tip's own count picks the tier: Grassroots Funding (167: 1 a round for each site a player
+/// owns) counts at most 2 at tier I (tips 1-2: 0-1 earlier), at most 3 at tier II (tips 3-5: 2-4 earlier).
 #[test]
 fn the_tip_count_picks_a_unity_cards_tier() {
-    for (tips, income, tier) in [(0, 2, 1), (1, 2, 1), (2, 3, 2), (4, 3, 2)] {
+    for (tips, most, tier) in [(0, 2, 1), (1, 2, 1), (2, 3, 2), (4, 3, 2)] {
         let (rules, mut g) = action_only(&[]);
+        let w = rules.world();
+        // Four owned cities, so the tier's cap is what counts.
+        let cities: Vec<usize> = (0..g.hexes.len()).filter(|&h| is_city(&w, h) && cube_owner(&g, h).is_none()).take(4).collect();
+        for h in cities {
+            put(&mut g, h, ADV_CUBE, 0);
+            put(&mut g, h, cube(0), 1);
+        }
+        let owned = crate::modules::plan::sites_where(&w, &g, crate::op::Where::Owned).len() as i64;
+        assert!(owned >= 3);
         g.vars.insert("alignment.unity_tips".into(), tips);
-        assert_eq!(alignment::next_tier(&rules.world(), &g, Side::Unity), tier, "{tips} tips");
+        assert_eq!(alignment::next_tier(&w, &g, Side::Unity), tier, "{tips} tips");
         fill_bucket(&rules, &mut g, Side::Unity);
         next_alignment_card(&mut g, Side::Unity, "grassroots_funding");
         any_action(&rules, &mut g);
-        assert_eq!(alignment::income_bonus(&g), income, "{tips} tips");
+        assert_eq!(alignment::income_bonus(&g), most, "{tips} tips");
     }
 }
 

@@ -96,6 +96,9 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
   depend on more than their seed. The bundle reads no files: `configs/`, `experiments/configs/` and
   `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first.
+  167: a spec written after the workers' bundle was built isn't there, so a worker fails its shards and the main box
+  reruns them late, one at a time (a 3,000-game screen took ~60 min): run a new spec natively, in shards of a few
+  seeds from a copy of the binary (`farm-seeds` runs `target/release/aic-sim.exe` itself, so a rebuild mid-job fails).
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds

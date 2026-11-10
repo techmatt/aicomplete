@@ -1482,6 +1482,16 @@ pub(crate) fn check_ops(ops: &[Op], slot: Slot, what: &str) -> Result<(), String
                     return Err(format!("{what}: a place-token trigger places no tokens (it would loop)"));
                 }
             }
+            // 167: "for each X (at most N)": team ops, once per site (max 0: a blank, the on/off screens' off).
+            Op::PerSite { then, max, .. } => {
+                check_ops(then, Slot::Team, what)?;
+                if then.is_empty() || *max < 0 {
+                    return Err(format!("{what}: per_site resolves team ops, at most max >= 0 times"));
+                }
+            }
+            Op::RemoveWhere { count, .. } if *count < 1 => {
+                return Err(format!("{what}: remove_where removes at least 1"));
+            }
             // 156: a team card's player ops, resolved by one player.
             Op::OnePlayer { then } => {
                 check_ops(then, Slot::Player, what)?;

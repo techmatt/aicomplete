@@ -62,6 +62,9 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   game, cities liberated a game (by a card / by the fallback), the share of games with a liberation, Grant uses,
   strikes a Wall stopped and troops landed by the Wall pressure; `--cards` each liberate card's kept / played a game.
   Seconds.
+- `cards/effect_stats.py READ [--screen DIR] [--flag 5] [--out MD]`: each Unity and Discord card's resolutions a game
+  by tier and what one did (the engine's `fx.<id>.*`), each prohibition's fire rate and blocks; `--screen` an on/off
+  screen (`PAIR_<id>`: its tiers blanked) for the paired win effect, flagged past ±5. Seconds.
 - `configs/no_liberate.py`: writes `experiments/configs/no_liberate.json`, the baseline less every card printing
   `liberate` (read from content); `regen.py` reruns it.
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards

@@ -27,7 +27,7 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 21] = [
+pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
@@ -49,6 +49,7 @@ pub const HOUSE_TERMS: [(&str, &str); 21] = [
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
     ("Firewall", "a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn"),
+    ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
 ];
 
 /// `3 credits, 1 energy`.
@@ -767,19 +768,22 @@ pub(super) fn game_end_block(r: &Rules) -> String {
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
          by your sites and says where its new agents land (the lowest-numbered sites of a \
-         kind), so you always know where the next wave lands. Ambassadors pile up, a card's Corrupt line \
+         kind), so you always know where the next wave lands. Agents pile up, a card's Corrupt line \
          pulls {} of them on and next to a city into it and corrupts it, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
          they bring: they deal more or stronger threats (Offensive \
-         aims one at the node hex most crowded with adversary pieces), create ambassadors, run Corrupt \
-         lines, and take credits, Unity or your ambassadors. Unity has its own track, which nothing on the \
+         aims one at the node hex most crowded with adversary pieces), create agents, run Corrupt \
+         lines, and take credits, more of each the more sites are corrupted. Unity has its own track, which nothing on the \
          Discord side empties: free a corrupted \
          city, clear corruption or remove a botnet and you sway Unity, and each Unity tip brings a good card. \
+         Like fear cards, each acts by what is on the board, never by your reach: for each city holding an \
+         ambassador, on each hex next to one, or each player on one such hex; some forbid the adversary's next \
+         Rally, Deploy or Corrupt where your pieces stand, so place them before its turn. \
          Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which \
-         one resolves (tier I on tips below {t2}, II from tip {t2}, III from tip {t3}), so Unity's late cards \
-         bring ambassadors or clear the ground to free cities with, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
+         one resolves (tier I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later tier counts more \
+         or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
          Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \

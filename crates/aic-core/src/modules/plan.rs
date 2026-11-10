@@ -11,13 +11,13 @@
 
 use crate::content::{Op, RoundFlag};
 use crate::module::World;
-use crate::op::{CorruptSite, CreateAt, CreateIf, RallyAt};
+use crate::op::{CorruptSite, CreateAt, CreateIf, RallyAt, Step, Where};
 use crate::state::GameState;
 
 use super::{adversary, board};
 use super::common::{
-    corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, ADV_AMBASSADOR, LAND_CORRUPTION, BOTNET, FACTORY, MARKER,
-    STATION,
+    corrupted, cube_owner, firewalled, has_building, is_city, is_ocean, next_to, node_owner, player_ambassador, ADV_AMBASSADOR,
+    LAND_CORRUPTION, BOTNET, FACTORY, MARKER, STATION,
 };
 use crate::content::HexKind;
 
@@ -123,6 +123,20 @@ fn held(w: &World, g: &GameState, h: usize, counts: &[i64]) -> i64 {
 /// enough in and corrupts; every ambassador on it goes too. An ambassador
 /// pulled is gone for the targets after it.
 pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: Option<usize>) -> Vec<(usize, Vec<(usize, i64)>)> {
+    corrupt_plan_blocked(w, g, site, n, scope).0
+}
+
+/// [`corrupt_plan`], and the targets a Corrupt prohibition (167) kept from corrupting: `(target, condition,
+/// agents it would have gathered)`. A blocked target pulls nothing, so its neighbors' agents stay for the next.
+#[allow(clippy::type_complexity)]
+pub fn corrupt_plan_blocked(
+    w: &World,
+    g: &GameState,
+    site: CorruptSite,
+    n: i64,
+    scope: Option<usize>,
+) -> (Vec<(usize, Vec<(usize, i64)>)>, Vec<(usize, Where, i64)>) {
+    let mut blocked = Vec::new();
     let mut counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, ADV_AMBASSADOR)).collect();
     let countries: Vec<usize> = match scope {
         Some(c) => vec![c],
@@ -147,6 +161,10 @@ pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: 
             if own + around < n {
                 continue;
             }
+            if let Some(wh) = prohibition_on(w, g, Step::Corrupt, t, g.round as i64) {
+                blocked.push((t, wh, n));
+                continue;
+            }
             let mut pulls = Vec::new();
             if counts[t] > 0 {
                 pulls.push((t, counts[t]));
@@ -165,7 +183,7 @@ pub fn corrupt_plan(w: &World, g: &GameState, site: CorruptSite, n: i64, scope: 
             out.push((t, pulls));
         }
     }
-    out
+    (out, blocked)
 }
 
 /// Natural corruption's targets (138): every `site` already holding `n` on
@@ -261,11 +279,71 @@ pub fn next_rally(w: &World, g: &GameState) -> Vec<(usize, f64)> {
         }
         let n = g.var(&adversary::pool_key(c));
         if let Some(p) = rally_plan(w, g, site, c, n) {
-            let share = p.each as f64 + p.extra as f64 / p.sites.len() as f64;
-            out.extend(p.sites.iter().map(|&h| (h, share)));
+            // 167: a prohibited site's share stays in the supply; the remainder goes to the others.
+            let round = if build_ahead { g.round as i64 } else { g.round as i64 + 1 };
+            let open: Vec<usize> = p.sites.iter().copied().filter(|&h| !prohibited_in(w, g, Step::Rally, h, round)).collect();
+            if open.is_empty() {
+                continue;
+            }
+            let share = p.each as f64 + p.extra.min(open.len() as i64) as f64 / open.len() as f64;
+            out.extend(open.iter().map(|&h| (h, share)));
         }
     }
     out
+}
+
+/// 167: whether board condition `wh` holds on hex `h` now.
+pub fn holds(w: &World, g: &GameState, h: usize, wh: Where) -> bool {
+    let amb = |x: usize| player_ambassador(g, x).is_some();
+    match wh {
+        Where::Ambassador => amb(h),
+        Where::ByAmbassador => next_to(w, h, amb),
+        Where::ByPlayer => next_to(w, h, |x| amb(x) || node_owner(g, x).is_some()),
+        Where::NearPlayer => next_to(w, h, |y| next_to(w, y, |x| amb(x) || node_owner(g, x).is_some())),
+        Where::AmbassadorCity => is_city(w, h) && amb(h),
+        Where::AmbassadorStation => g.tokens(h, STATION) > 0 && amb(h),
+        Where::AmbassadorFactory => g.tokens(h, FACTORY) > 0 && amb(h),
+        Where::Contested => g.tokens(h, ADV_AMBASSADOR) > 0 && amb(h),
+        Where::CorruptedCity => is_city(w, h) && corrupted(g, h),
+        Where::ByCorruptedCity => next_to(w, h, |x| is_city(w, x) && corrupted(g, x)),
+        Where::Corrupted => corrupted(g, h),
+        Where::Owned => cube_owner(g, h).is_some(),
+    }
+}
+
+/// 167: the hexes where `wh` holds, in board order.
+pub fn sites_where(w: &World, g: &GameState, wh: Where) -> Vec<usize> {
+    (0..g.hexes.len()).filter(|&h| !is_ocean(w, h) && holds(w, g, h, wh)).collect()
+}
+
+/// 167: a prohibition's state: the round of the adversary turn it acts in, and the conditions (a bit per
+/// [`Where::ALL`] index). Static keys: [`prohibited_in`] runs inside the agents' forecasts.
+pub fn prohibit_keys(step: Step) -> (&'static str, &'static str) {
+    match step {
+        Step::Rally => ("prohibit.rally.round", "prohibit.rally.where"),
+        Step::Deploy => ("prohibit.deploy.round", "prohibit.deploy.where"),
+        Step::Corrupt => ("prohibit.corrupt.round", "prohibit.corrupt.where"),
+    }
+}
+
+/// 167: the condition of a `step` prohibition acting in the adversary turn of `round` that holds on `h`.
+pub fn prohibition_on(w: &World, g: &GameState, step: Step, h: usize, round: i64) -> Option<Where> {
+    let (rk, wk) = prohibit_keys(step);
+    if g.var(rk) != round {
+        return None;
+    }
+    let mask = g.var(wk);
+    Where::ALL.iter().enumerate().find(|(i, wh)| mask & (1 << i) != 0 && holds(w, g, h, **wh)).map(|(_, wh)| *wh)
+}
+
+/// 167: whether a `step` prohibition stops that step on hex `h` in the adversary turn of `round`.
+pub fn prohibited_in(w: &World, g: &GameState, step: Step, h: usize, round: i64) -> bool {
+    prohibition_on(w, g, step, h, round).is_some()
+}
+
+/// 167: the same, in this round's adversary turn (the step running now).
+pub fn prohibited(w: &World, g: &GameState, step: Step, h: usize) -> bool {
+    prohibited_in(w, g, step, h, g.round as i64)
 }
 
 /// The corrupt number of the coming corrupt step's lines for `site`: the

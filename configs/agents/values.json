@@ -57,7 +57,8 @@
     "own_fill": 1,
     "insight_discount_share": 0.25,
     "own_mix": 1,
-    "mix_prior": 4
+    "mix_prior": 4,
+    "sites_expected": 2
   },
   "ops": {
     "gain": {"credits": 1, "per": "the resource gained, at its rate"},
@@ -148,6 +149,9 @@
     "deal_threats": {"credits": -7, "per": "extra threat"},
     "remove_botnets": {"credits": 12, "per": "botnet removed"},
     "one_player": {"credits": 1, "per": "156: share of the worth of the ops one chosen player resolves (the team picks the best placed)"},
+    "per_site": {"credits": 1, "per": "167: share of the team ops' worth, once per site where the condition holds (rates.sites_expected, at most its max)"},
+    "remove_where": {"credits": 1, "per": "167: share of a piece's own row (pushback, remove_troops, remove_botnet, clear_markers, cleanse) x target_share, on rates.sites_expected hexes or each country or player"},
+    "prohibit": {"credits": 10, "per": "167: an adversary step off where its condition holds for one turn: about two Rally shares (3.3 each) or a corruption stopped (about a tenth of liberate) on the sites the players cover"},
     "income": {"credits": 1, "per": "the resource at its rate, a round"},
     "income_per_tag": {"credits": 1, "per": "the resource at its rate, a round, per `per` tags (rates.tag_count when not known)"},
     "building_discount": {"credits": 0.5, "per": "credit off, a round (about a building every other round)"},

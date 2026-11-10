@@ -1,0 +1,1310 @@
+{
+  "name": "onoff167",
+  "note": "167: each Unity and Discord card on (base) and off (its tiers blanked), and each r70 Unity card restored (old-<id>), the read's pairs, d0-d3; read by scripts/cards/effect_stats.py --screen",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_grassroots_funding",
+      "set": [
+        "alignment.grassroots_funding.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_open_market",
+      "set": [
+        "alignment.open_market.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_think_tank",
+      "set": [
+        "alignment.think_tank.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_ceasefire",
+      "set": [
+        "alignment.ceasefire.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_civil_defense",
+      "set": [
+        "alignment.civil_defense.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_volunteer_corps",
+      "set": [
+        "alignment.volunteer_corps.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_global_coalition",
+      "set": [
+        "alignment.global_coalition.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_new_deal",
+      "set": [
+        "alignment.new_deal.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_decommission",
+      "set": [
+        "alignment.decommission.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_peacekeepers",
+      "set": [
+        "alignment.peacekeepers.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_town_hall_accord",
+      "set": [
+        "alignment.town_hall_accord.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_popular_mandate",
+      "set": [
+        "alignment.popular_mandate.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_reclamation",
+      "set": [
+        "alignment.reclamation.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_mutual_aid",
+      "set": [
+        "alignment.mutual_aid.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_disarmament_talks",
+      "set": [
+        "alignment.disarmament_talks.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_network_cleanup",
+      "set": [
+        "alignment.network_cleanup.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_citizens_assembly",
+      "set": [
+        "alignment.citizens_assembly.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_rebuilding_fund",
+      "set": [
+        "alignment.rebuilding_fund.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_safe_corridors",
+      "set": [
+        "alignment.safe_corridors.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_reconciliation_panel",
+      "set": [
+        "alignment.reconciliation_panel.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_neighborhood_watch",
+      "set": [
+        "alignment.neighborhood_watch.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_rule_of_law",
+      "set": [
+        "alignment.rule_of_law.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_demilitarized_zone",
+      "set": [
+        "alignment.demilitarized_zone.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_incursion",
+      "set": [
+        "alignment.incursion.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_blight",
+      "set": [
+        "alignment.blight.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_propaganda",
+      "set": [
+        "alignment.propaganda.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_offensive",
+      "set": [
+        "alignment.offensive.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_two_fronts",
+      "set": [
+        "alignment.two_fronts.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_firestorm",
+      "set": [
+        "alignment.firestorm.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "bp_old-grassroots_funding",
+      "set": [
+        "alignment.grassroots_funding.tiers.0={\"text\": \"Every player gains 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.grassroots_funding.tiers.1={\"text\": \"Every player gains 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}]}",
+        "alignment.grassroots_funding.tiers.2={\"text\": \"Every player gains 3 credits each round for the rest of the game, and 2 ambassadors now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "bp_old-open_market",
+      "set": [
+        "alignment.open_market.tiers.0={\"text\": \"The next 2 cards any player keeps from the draft are free.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 2}]}",
+        "alignment.open_market.tiers.1={\"text\": \"The next 3 cards any player keeps from the draft are free, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.open_market.tiers.2={\"text\": \"The next 4 cards any player keeps from the draft are free, and every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 4}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "bp_old-think_tank",
+      "set": [
+        "alignment.think_tank.tiers.0={\"text\": \"Every player gains 1 insight each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.1={\"text\": \"Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.2={\"text\": \"Every player gains 1 insight each round for the rest of the game; one player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-ceasefire",
+      "set": [
+        "alignment.ceasefire.tiers.0={\"text\": \"Counter an active threat.\", \"effects\": [{\"op\": \"counter_threat\"}]}",
+        "alignment.ceasefire.tiers.1={\"text\": \"Counter an active threat; one player removes 2 agents in one hex in their reach.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2}]}]}",
+        "alignment.ceasefire.tiers.2={\"text\": \"Counter every active threat; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-civil_defense",
+      "set": [
+        "alignment.civil_defense.tiers.0={\"text\": \"In each country, remove 1 agent, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 1}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.1={\"text\": \"In each country, remove 2 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 2}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.2={\"text\": \"In each country, remove 3 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 3}, {\"op\": \"create_site\", \"kind\": \"station\"}]}"
+      ]
+    },
+    {
+      "name": "bp_old-volunteer_corps",
+      "set": [
+        "alignment.volunteer_corps.tiers.0={\"text\": \"Sway 3 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}]}",
+        "alignment.volunteer_corps.tiers.1={\"text\": \"Sway 3 toward Unity, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.volunteer_corps.tiers.2={\"text\": \"One player gains 8 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 8}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-global_coalition",
+      "set": [
+        "alignment.global_coalition.tiers.0={\"text\": \"Counter an active threat, and every player gains 2 credits.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.global_coalition.tiers.1={\"text\": \"Counter every active threat.\", \"effects\": [{\"op\": \"counter_all\"}]}",
+        "alignment.global_coalition.tiers.2={\"text\": \"Counter every active threat; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-new_deal",
+      "set": [
+        "alignment.new_deal.tiers.0={\"text\": \"Every player gains 5 credits now.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}]}",
+        "alignment.new_deal.tiers.1={\"text\": \"Every player gains 4 credits now, and 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.new_deal.tiers.2={\"text\": \"Every player gains 6 credits now, and 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 6}]}"
+      ]
+    },
+    {
+      "name": "bp_old-decommission",
+      "set": [
+        "alignment.decommission.tiers.0={\"text\": \"Remove a botnet anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 1}]}",
+        "alignment.decommission.tiers.1={\"text\": \"Remove 2 botnets anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}]}",
+        "alignment.decommission.tiers.2={\"text\": \"Remove 2 botnets anywhere on the board; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-peacekeepers",
+      "set": [
+        "alignment.peacekeepers.tiers.0={\"text\": \"One player removes up to 2 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 2, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.1={\"text\": \"One player removes up to 4 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 4, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.2={\"text\": \"One player removes up to 6 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 6, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-town_hall_accord",
+      "set": [
+        "alignment.town_hall_accord.tiers.0={\"text\": \"One player removes up to 2 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 2}]}]}",
+        "alignment.town_hall_accord.tiers.1={\"text\": \"One player removes up to 4 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 4}]}]}",
+        "alignment.town_hall_accord.tiers.2={\"text\": \"One player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-popular_mandate",
+      "set": [
+        "alignment.popular_mandate.tiers.0={\"text\": \"Every player gains 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.popular_mandate.tiers.1={\"text\": \"Every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}",
+        "alignment.popular_mandate.tiers.2={\"text\": \"One player gains 6 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-reclamation",
+      "set": [
+        "alignment.reclamation.tiers.0={\"text\": \"One player takes the adversary cube off a corrupted research station or factory in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 1, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.1={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.2={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-mutual_aid",
+      "set": [
+        "alignment.mutual_aid.tiers.0={\"text\": \"Every player gains 1 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 1}]}",
+        "alignment.mutual_aid.tiers.1={\"text\": \"Every player gains 2 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}]}",
+        "alignment.mutual_aid.tiers.2={\"text\": \"Every player gains 2 energy; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-disarmament_talks",
+      "set": [
+        "alignment.disarmament_talks.tiers.0={\"text\": \"One player removes 2 agents or 2 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2, \"troops\": 2}]}]}",
+        "alignment.disarmament_talks.tiers.1={\"text\": \"One player removes 3 agents or 3 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 3, \"troops\": 3}]}]}",
+        "alignment.disarmament_talks.tiers.2={\"text\": \"One player removes 4 agents or 4 troops in one hex in their reach, then up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 4, \"troops\": 4}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-network_cleanup",
+      "set": [
+        "alignment.network_cleanup.tiers.0={\"text\": \"One player removes a botnet in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}]}]}",
+        "alignment.network_cleanup.tiers.1={\"text\": \"One player removes a botnet in their reach, and clears a corruption marker in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 1}]}]}",
+        "alignment.network_cleanup.tiers.2={\"text\": \"One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 2}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-citizens_assembly",
+      "set": [
+        "alignment.citizens_assembly.tiers.0={\"text\": \"Sway 2 toward Unity, and every player gains 2 credits.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.citizens_assembly.tiers.1={\"text\": \"Sway 4 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 4}]}",
+        "alignment.citizens_assembly.tiers.2={\"text\": \"Sway 3 toward Unity; one player gains 6 ambassadors.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-rebuilding_fund",
+      "set": [
+        "alignment.rebuilding_fund.tiers.0={\"text\": \"Every player gains 4 credits.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.rebuilding_fund.tiers.1={\"text\": \"Every player gains 5 credits and 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.rebuilding_fund.tiers.2={\"text\": \"Every player gains 5 credits and 3 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 3}]}"
+      ]
+    },
+    {
+      "name": "bp_old-safe_corridors",
+      "set": [
+        "alignment.safe_corridors.tiers.0={\"text\": \"One player gains 1 ambassador and moves up to 2 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 1}, {\"op\": \"move_ambassadors\", \"max\": 2}]}]}",
+        "alignment.safe_corridors.tiers.1={\"text\": \"One player gains 2 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 2}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}",
+        "alignment.safe_corridors.tiers.2={\"text\": \"One player gains 4 ambassadors and moves up to 4 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 4}, {\"op\": \"move_ambassadors\", \"max\": 4}]}]}"
+      ]
+    },
+    {
+      "name": "bp_old-reconciliation_panel",
+      "set": [
+        "alignment.reconciliation_panel.tiers.0={\"text\": \"One player removes up to 2 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 2, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.1={\"text\": \"One player removes up to 4 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 4, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.2={\"text\": \"One player removes up to 6 agents in their reach, swaying 1 toward Unity for every 2.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 6, \"unity_per\": 2, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_grassroots_funding",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.grassroots_funding.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_open_market",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.open_market.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_think_tank",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.think_tank.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_ceasefire",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.ceasefire.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_civil_defense",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.civil_defense.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_volunteer_corps",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.volunteer_corps.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_global_coalition",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.global_coalition.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_new_deal",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.new_deal.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_decommission",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.decommission.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_peacekeepers",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.peacekeepers.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_town_hall_accord",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.town_hall_accord.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_popular_mandate",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.popular_mandate.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_reclamation",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.reclamation.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_mutual_aid",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.mutual_aid.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_disarmament_talks",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.disarmament_talks.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_network_cleanup",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.network_cleanup.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_citizens_assembly",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.citizens_assembly.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_rebuilding_fund",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.rebuilding_fund.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_safe_corridors",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.safe_corridors.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_reconciliation_panel",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.reconciliation_panel.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_neighborhood_watch",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.neighborhood_watch.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_rule_of_law",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.rule_of_law.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_demilitarized_zone",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.demilitarized_zone.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_incursion",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.incursion.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_blight",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.blight.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_propaganda",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.propaganda.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_offensive",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.offensive.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_two_fronts",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.two_fronts.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_firestorm",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.firestorm.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "br_old-grassroots_funding",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.grassroots_funding.tiers.0={\"text\": \"Every player gains 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.grassroots_funding.tiers.1={\"text\": \"Every player gains 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}]}",
+        "alignment.grassroots_funding.tiers.2={\"text\": \"Every player gains 3 credits each round for the rest of the game, and 2 ambassadors now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "br_old-open_market",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.open_market.tiers.0={\"text\": \"The next 2 cards any player keeps from the draft are free.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 2}]}",
+        "alignment.open_market.tiers.1={\"text\": \"The next 3 cards any player keeps from the draft are free, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.open_market.tiers.2={\"text\": \"The next 4 cards any player keeps from the draft are free, and every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 4}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "br_old-think_tank",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.think_tank.tiers.0={\"text\": \"Every player gains 1 insight each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.1={\"text\": \"Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.2={\"text\": \"Every player gains 1 insight each round for the rest of the game; one player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-ceasefire",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.ceasefire.tiers.0={\"text\": \"Counter an active threat.\", \"effects\": [{\"op\": \"counter_threat\"}]}",
+        "alignment.ceasefire.tiers.1={\"text\": \"Counter an active threat; one player removes 2 agents in one hex in their reach.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2}]}]}",
+        "alignment.ceasefire.tiers.2={\"text\": \"Counter every active threat; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-civil_defense",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.civil_defense.tiers.0={\"text\": \"In each country, remove 1 agent, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 1}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.1={\"text\": \"In each country, remove 2 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 2}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.2={\"text\": \"In each country, remove 3 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 3}, {\"op\": \"create_site\", \"kind\": \"station\"}]}"
+      ]
+    },
+    {
+      "name": "br_old-volunteer_corps",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.volunteer_corps.tiers.0={\"text\": \"Sway 3 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}]}",
+        "alignment.volunteer_corps.tiers.1={\"text\": \"Sway 3 toward Unity, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.volunteer_corps.tiers.2={\"text\": \"One player gains 8 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 8}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-global_coalition",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.global_coalition.tiers.0={\"text\": \"Counter an active threat, and every player gains 2 credits.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.global_coalition.tiers.1={\"text\": \"Counter every active threat.\", \"effects\": [{\"op\": \"counter_all\"}]}",
+        "alignment.global_coalition.tiers.2={\"text\": \"Counter every active threat; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-new_deal",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.new_deal.tiers.0={\"text\": \"Every player gains 5 credits now.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}]}",
+        "alignment.new_deal.tiers.1={\"text\": \"Every player gains 4 credits now, and 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.new_deal.tiers.2={\"text\": \"Every player gains 6 credits now, and 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 6}]}"
+      ]
+    },
+    {
+      "name": "br_old-decommission",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.decommission.tiers.0={\"text\": \"Remove a botnet anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 1}]}",
+        "alignment.decommission.tiers.1={\"text\": \"Remove 2 botnets anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}]}",
+        "alignment.decommission.tiers.2={\"text\": \"Remove 2 botnets anywhere on the board; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-peacekeepers",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.peacekeepers.tiers.0={\"text\": \"One player removes up to 2 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 2, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.1={\"text\": \"One player removes up to 4 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 4, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.2={\"text\": \"One player removes up to 6 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 6, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-town_hall_accord",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.town_hall_accord.tiers.0={\"text\": \"One player removes up to 2 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 2}]}]}",
+        "alignment.town_hall_accord.tiers.1={\"text\": \"One player removes up to 4 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 4}]}]}",
+        "alignment.town_hall_accord.tiers.2={\"text\": \"One player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-popular_mandate",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.popular_mandate.tiers.0={\"text\": \"Every player gains 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.popular_mandate.tiers.1={\"text\": \"Every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}",
+        "alignment.popular_mandate.tiers.2={\"text\": \"One player gains 6 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-reclamation",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.reclamation.tiers.0={\"text\": \"One player takes the adversary cube off a corrupted research station or factory in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 1, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.1={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.2={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-mutual_aid",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.mutual_aid.tiers.0={\"text\": \"Every player gains 1 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 1}]}",
+        "alignment.mutual_aid.tiers.1={\"text\": \"Every player gains 2 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}]}",
+        "alignment.mutual_aid.tiers.2={\"text\": \"Every player gains 2 energy; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-disarmament_talks",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.disarmament_talks.tiers.0={\"text\": \"One player removes 2 agents or 2 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2, \"troops\": 2}]}]}",
+        "alignment.disarmament_talks.tiers.1={\"text\": \"One player removes 3 agents or 3 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 3, \"troops\": 3}]}]}",
+        "alignment.disarmament_talks.tiers.2={\"text\": \"One player removes 4 agents or 4 troops in one hex in their reach, then up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 4, \"troops\": 4}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-network_cleanup",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.network_cleanup.tiers.0={\"text\": \"One player removes a botnet in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}]}]}",
+        "alignment.network_cleanup.tiers.1={\"text\": \"One player removes a botnet in their reach, and clears a corruption marker in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 1}]}]}",
+        "alignment.network_cleanup.tiers.2={\"text\": \"One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 2}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-citizens_assembly",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.citizens_assembly.tiers.0={\"text\": \"Sway 2 toward Unity, and every player gains 2 credits.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.citizens_assembly.tiers.1={\"text\": \"Sway 4 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 4}]}",
+        "alignment.citizens_assembly.tiers.2={\"text\": \"Sway 3 toward Unity; one player gains 6 ambassadors.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-rebuilding_fund",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.rebuilding_fund.tiers.0={\"text\": \"Every player gains 4 credits.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.rebuilding_fund.tiers.1={\"text\": \"Every player gains 5 credits and 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.rebuilding_fund.tiers.2={\"text\": \"Every player gains 5 credits and 3 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 3}]}"
+      ]
+    },
+    {
+      "name": "br_old-safe_corridors",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.safe_corridors.tiers.0={\"text\": \"One player gains 1 ambassador and moves up to 2 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 1}, {\"op\": \"move_ambassadors\", \"max\": 2}]}]}",
+        "alignment.safe_corridors.tiers.1={\"text\": \"One player gains 2 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 2}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}",
+        "alignment.safe_corridors.tiers.2={\"text\": \"One player gains 4 ambassadors and moves up to 4 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 4}, {\"op\": \"move_ambassadors\", \"max\": 4}]}]}"
+      ]
+    },
+    {
+      "name": "br_old-reconciliation_panel",
+      "set": [
+        "ai.boards=0,2",
+        "alignment.reconciliation_panel.tiers.0={\"text\": \"One player removes up to 2 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 2, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.1={\"text\": \"One player removes up to 4 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 4, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.2={\"text\": \"One player removes up to 6 agents in their reach, swaying 1 toward Unity for every 2.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 6, \"unity_per\": 2, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_grassroots_funding",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.grassroots_funding.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.grassroots_funding.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_open_market",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.open_market.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.open_market.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_think_tank",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.think_tank.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.think_tank.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_ceasefire",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.ceasefire.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.ceasefire.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_civil_defense",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.civil_defense.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.civil_defense.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_volunteer_corps",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.volunteer_corps.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.volunteer_corps.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_global_coalition",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.global_coalition.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.global_coalition.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_new_deal",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.new_deal.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.new_deal.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_decommission",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.decommission.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.decommission.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_peacekeepers",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.peacekeepers.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.peacekeepers.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_town_hall_accord",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.town_hall_accord.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.town_hall_accord.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_popular_mandate",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.popular_mandate.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.popular_mandate.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_reclamation",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.reclamation.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reclamation.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_mutual_aid",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.mutual_aid.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.mutual_aid.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_disarmament_talks",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.disarmament_talks.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.disarmament_talks.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_network_cleanup",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.network_cleanup.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.network_cleanup.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_citizens_assembly",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.citizens_assembly.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.citizens_assembly.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_rebuilding_fund",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.rebuilding_fund.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rebuilding_fund.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_safe_corridors",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.safe_corridors.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.safe_corridors.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_reconciliation_panel",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.reconciliation_panel.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.reconciliation_panel.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_neighborhood_watch",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.neighborhood_watch.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.neighborhood_watch.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_rule_of_law",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.rule_of_law.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.rule_of_law.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_demilitarized_zone",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.demilitarized_zone.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.demilitarized_zone.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_incursion",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.incursion.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.incursion.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_blight",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.blight.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.blight.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_propaganda",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.propaganda.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.propaganda.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_offensive",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.offensive.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.offensive.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_two_fronts",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.two_fronts.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.two_fronts.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_firestorm",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.firestorm.tiers.0.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.1.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]",
+        "alignment.firestorm.tiers.2.effects=[{\"op\": \"per_site\", \"where\": \"owned\", \"max\": 0, \"then\": [{\"op\": \"counter_all\"}]}]"
+      ]
+    },
+    {
+      "name": "pr_old-grassroots_funding",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.grassroots_funding.tiers.0={\"text\": \"Every player gains 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.grassroots_funding.tiers.1={\"text\": \"Every player gains 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}]}",
+        "alignment.grassroots_funding.tiers.2={\"text\": \"Every player gains 3 credits each round for the rest of the game, and 2 ambassadors now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "pr_old-open_market",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.open_market.tiers.0={\"text\": \"The next 2 cards any player keeps from the draft are free.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 2}]}",
+        "alignment.open_market.tiers.1={\"text\": \"The next 3 cards any player keeps from the draft are free, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.open_market.tiers.2={\"text\": \"The next 4 cards any player keeps from the draft are free, and every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"free_purchases\", \"count\": 4}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}"
+      ]
+    },
+    {
+      "name": "pr_old-think_tank",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.think_tank.tiers.0={\"text\": \"Every player gains 1 insight each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.1={\"text\": \"Every player gains 1 insight each round for the rest of the game, and 1 ambassador now.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.think_tank.tiers.2={\"text\": \"Every player gains 1 insight each round for the rest of the game; one player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"insight\", \"amount\": 1}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-ceasefire",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.ceasefire.tiers.0={\"text\": \"Counter an active threat.\", \"effects\": [{\"op\": \"counter_threat\"}]}",
+        "alignment.ceasefire.tiers.1={\"text\": \"Counter an active threat; one player removes 2 agents in one hex in their reach.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2}]}]}",
+        "alignment.ceasefire.tiers.2={\"text\": \"Counter every active threat; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-civil_defense",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.civil_defense.tiers.0={\"text\": \"In each country, remove 1 agent, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 1}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.1={\"text\": \"In each country, remove 2 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 2}, {\"op\": \"create_site\", \"kind\": \"station\"}]}",
+        "alignment.civil_defense.tiers.2={\"text\": \"In each country, remove 3 agents, and a neutral research station opens on its lowest-numbered empty station site.\", \"effects\": [{\"op\": \"pushback\", \"ambassadors\": 3}, {\"op\": \"create_site\", \"kind\": \"station\"}]}"
+      ]
+    },
+    {
+      "name": "pr_old-volunteer_corps",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.volunteer_corps.tiers.0={\"text\": \"Sway 3 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}]}",
+        "alignment.volunteer_corps.tiers.1={\"text\": \"Sway 3 toward Unity, and every player gains 1 ambassador.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.volunteer_corps.tiers.2={\"text\": \"One player gains 8 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 8}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-global_coalition",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.global_coalition.tiers.0={\"text\": \"Counter an active threat, and every player gains 2 credits.\", \"effects\": [{\"op\": \"counter_threat\"}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.global_coalition.tiers.1={\"text\": \"Counter every active threat.\", \"effects\": [{\"op\": \"counter_all\"}]}",
+        "alignment.global_coalition.tiers.2={\"text\": \"Counter every active threat; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"counter_all\"}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-new_deal",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.new_deal.tiers.0={\"text\": \"Every player gains 5 credits now.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}]}",
+        "alignment.new_deal.tiers.1={\"text\": \"Every player gains 4 credits now, and 2 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.new_deal.tiers.2={\"text\": \"Every player gains 6 credits now, and 3 credits each round for the rest of the game.\", \"effects\": [{\"op\": \"team_income\", \"resource\": \"credits\", \"amount\": 3}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 6}]}"
+      ]
+    },
+    {
+      "name": "pr_old-decommission",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.decommission.tiers.0={\"text\": \"Remove a botnet anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 1}]}",
+        "alignment.decommission.tiers.1={\"text\": \"Remove 2 botnets anywhere on the board.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}]}",
+        "alignment.decommission.tiers.2={\"text\": \"Remove 2 botnets anywhere on the board; one player removes up to 3 troops in their reach.\", \"effects\": [{\"op\": \"remove_botnets\", \"count\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 3, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-peacekeepers",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.peacekeepers.tiers.0={\"text\": \"One player removes up to 2 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 2, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.1={\"text\": \"One player removes up to 4 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 4, \"reach\": true}]}]}",
+        "alignment.peacekeepers.tiers.2={\"text\": \"One player removes up to 6 troops in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_troops\", \"count\": 6, \"reach\": true}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-town_hall_accord",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.town_hall_accord.tiers.0={\"text\": \"One player removes up to 2 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 2}]}]}",
+        "alignment.town_hall_accord.tiers.1={\"text\": \"One player removes up to 4 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 4}]}]}",
+        "alignment.town_hall_accord.tiers.2={\"text\": \"One player removes up to 6 agents on or next to one corrupted city in their reach, then gains 2 ambassadors.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}, {\"op\": \"gain_ambassadors\", \"count\": 2}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-popular_mandate",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.popular_mandate.tiers.0={\"text\": \"Every player gains 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.popular_mandate.tiers.1={\"text\": \"Every player gains 2 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 2}]}",
+        "alignment.popular_mandate.tiers.2={\"text\": \"One player gains 6 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-reclamation",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.reclamation.tiers.0={\"text\": \"One player takes the adversary cube off a corrupted research station or factory in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 1, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.1={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}]}]}",
+        "alignment.reclamation.tiers.2={\"text\": \"One player takes the adversary cube off up to 2 corrupted research stations or factories in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"cleanse\", \"amount\": 2, \"one_country\": false}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-mutual_aid",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.mutual_aid.tiers.0={\"text\": \"Every player gains 1 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 1}]}",
+        "alignment.mutual_aid.tiers.1={\"text\": \"Every player gains 2 energy.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}]}",
+        "alignment.mutual_aid.tiers.2={\"text\": \"Every player gains 2 energy; one player removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"energy\", \"amount\": 2}, {\"op\": \"one_player\", \"then\": [{\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-disarmament_talks",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.disarmament_talks.tiers.0={\"text\": \"One player removes 2 agents or 2 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 2, \"troops\": 2}]}]}",
+        "alignment.disarmament_talks.tiers.1={\"text\": \"One player removes 3 agents or 3 troops in one hex in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 3, \"troops\": 3}]}]}",
+        "alignment.disarmament_talks.tiers.2={\"text\": \"One player removes 4 agents or 4 troops in one hex in their reach, then up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"damage\", \"ambassadors\": 4, \"troops\": 4}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-network_cleanup",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.network_cleanup.tiers.0={\"text\": \"One player removes a botnet in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}]}]}",
+        "alignment.network_cleanup.tiers.1={\"text\": \"One player removes a botnet in their reach, and clears a corruption marker in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 1}]}]}",
+        "alignment.network_cleanup.tiers.2={\"text\": \"One player removes a botnet in their reach, clears up to 2 corruption markers in their reach, then removes up to 6 agents on or next to one corrupted city in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_botnet\"}, {\"op\": \"clear_markers\", \"count\": 2}, {\"op\": \"clear_city\", \"max\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-citizens_assembly",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.citizens_assembly.tiers.0={\"text\": \"Sway 2 toward Unity, and every player gains 2 credits.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 2}, {\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 2}]}",
+        "alignment.citizens_assembly.tiers.1={\"text\": \"Sway 4 toward Unity.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 4}]}",
+        "alignment.citizens_assembly.tiers.2={\"text\": \"Sway 3 toward Unity; one player gains 6 ambassadors.\", \"effects\": [{\"op\": \"sway\", \"side\": \"unity\", \"amount\": 3}, {\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 6}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-rebuilding_fund",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.rebuilding_fund.tiers.0={\"text\": \"Every player gains 4 credits.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 4}]}",
+        "alignment.rebuilding_fund.tiers.1={\"text\": \"Every player gains 5 credits and 1 ambassador.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 1}]}",
+        "alignment.rebuilding_fund.tiers.2={\"text\": \"Every player gains 5 credits and 3 ambassadors.\", \"effects\": [{\"op\": \"gain\", \"resource\": \"credits\", \"amount\": 5}, {\"op\": \"gain\", \"resource\": \"ambassadors\", \"amount\": 3}]}"
+      ]
+    },
+    {
+      "name": "pr_old-safe_corridors",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.safe_corridors.tiers.0={\"text\": \"One player gains 1 ambassador and moves up to 2 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 1}, {\"op\": \"move_ambassadors\", \"max\": 2}]}]}",
+        "alignment.safe_corridors.tiers.1={\"text\": \"One player gains 2 ambassadors and moves up to 3 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 2}, {\"op\": \"move_ambassadors\", \"max\": 3}]}]}",
+        "alignment.safe_corridors.tiers.2={\"text\": \"One player gains 4 ambassadors and moves up to 4 of their ambassadors onto pieces in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"gain_ambassadors\", \"count\": 4}, {\"op\": \"move_ambassadors\", \"max\": 4}]}]}"
+      ]
+    },
+    {
+      "name": "pr_old-reconciliation_panel",
+      "set": [
+        "ai.boards=1,2",
+        "alignment.reconciliation_panel.tiers.0={\"text\": \"One player removes up to 2 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 2, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.1={\"text\": \"One player removes up to 4 agents in their reach.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 4, \"reach\": true}]}]}",
+        "alignment.reconciliation_panel.tiers.2={\"text\": \"One player removes up to 6 agents in their reach, swaying 1 toward Unity for every 2.\", \"effects\": [{\"op\": \"one_player\", \"then\": [{\"op\": \"remove_ambassadors_country\", \"max\": 6, \"unity_per\": 2, \"reach\": true}]}]}"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 8,
+  "records": 0
+}

@@ -6,7 +6,7 @@
 //! for winning and losing.
 
 use crate::content::{AdversaryCard, Op, ProjectCard, PullTag, ThreatTag};
-use crate::op::CorruptSite;
+use crate::op::{CorruptSite, Step, Where};
 use crate::key::{Key, KeyBuf};
 use crate::module::{Build, Cx, Module, ModuleDef, ParamSpec, PhaseSpec, Res, VariantDef, World};
 use crate::rng::shuffle;
@@ -505,6 +505,15 @@ impl Module for Adversary {
                         cx.add_tokens(g, h, FIREWALL, -n);
                     }
                 }
+                // 167: so does a prohibition whose adversary turn this was.
+                for step in Step::ALL {
+                    let (rk, wk) = super::plan::prohibit_keys(step);
+                    let r = g.var(rk);
+                    if r != 0 && r <= g.round as i64 {
+                        cx.set_key(g, rk, 0);
+                        cx.set_key(g, wk, 0);
+                    }
+                }
             }
             _ => unreachable!("adversary phase {phase}"),
         }
@@ -949,11 +958,24 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             continue;
         };
         let before = g.var(SUPPLY);
+        // 167: a Rally prohibition keeps a site's share in the supply; the remainder goes to the others.
+        let mut among = Vec::new();
         for &h in &plan.sites {
-            place(g, cx, h, plan.each);
+            match super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64) {
+                Some(wh) => prohibit_tally(g, cx, Step::Rally, wh, plan.each),
+                None => {
+                    place(g, cx, h, plan.each);
+                    among.push(h);
+                }
+            }
         }
-        let mut among = plan.sites.clone();
-        for _ in 0..plan.extra {
+        if among.len() < plan.extra as usize {
+            let wh = plan.sites.iter().find_map(|&h| super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64));
+            if let Some(wh) = wh {
+                prohibit_tally(g, cx, Step::Rally, wh, plan.extra - among.len() as i64);
+            }
+        }
+        for _ in 0..plan.extra.min(among.len() as i64) {
             let opts = among.iter().map(|&h| hex_opt(&w, h)).collect();
             let prompt = || format!("Rally in {}: which site gains one more agent?", country_name(&w, c));
             let Some(i) = cx.choose(0, prompt, opts)? else {
@@ -1019,9 +1041,28 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let hexes = w.map.countries[c].hexes.clone();
-        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true)?;
+        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true, false)?;
     }
     Ok(())
+}
+
+/// 167, a prohibition resolves: `step` won't act where `wh` holds in the next adversary turn (this round's
+/// if its build is still ahead, else next round's). Another prohibition of the same step adds its condition.
+pub fn prohibit(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where) {
+    let build_ahead = g.phase_index("adversary.build").is_some_and(|i| g.phase <= i);
+    let round = g.round as i64 + if build_ahead { 0 } else { 1 };
+    let (rk, wk) = super::plan::prohibit_keys(step);
+    let bit = 1 << Where::ALL.iter().position(|&x| x == wh).unwrap_or(0);
+    let mask = if g.var(rk) == round { g.var(wk) | bit } else { bit };
+    cx.set_key(g, rk, round);
+    cx.set_key(g, wk, mask);
+    cx.tally(g, &format!("prohibit.{}.{}.made", step.name(), wh.name()), 1);
+}
+
+/// 167: a prohibition covered a site the step would act on (`fired`), keeping `n` arrivals or pulls off it.
+fn prohibit_tally(g: &mut GameState, cx: &mut Cx, step: Step, wh: Where, n: i64) {
+    cx.tally(g, &format!("prohibit.{}.{}.fired", step.name(), wh.name()), 1);
+    cx.tally(g, &format!("prohibit.{}.{}.blocked", step.name(), wh.name()), n.max(0));
 }
 
 /// Places `n` agents from the supply on hex `h`. The supply
@@ -1187,7 +1228,11 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
 pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) {
     let w = cx.world;
     let n = corrupt_n(&w, site, cut);
-    for (t, pulls) in super::plan::corrupt_plan(&w, g, site, n, scope) {
+    let (plan, blocked) = super::plan::corrupt_plan_blocked(&w, g, site, n, scope);
+    for (_, wh, k) in blocked {
+        prohibit_tally(g, cx, Step::Corrupt, wh, k);
+    }
+    for (t, pulls) in plan {
         for (h, k) in pulls {
             remove(g, cx, h, k);
             cx.tally(g, "adversary.pulled", k);
@@ -1207,6 +1252,11 @@ fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
     for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory] {
         let n = corrupt_n(&w, site, 0);
         for h in super::plan::natural_targets(&w, g, site, n) {
+            // 167: a Corrupt prohibition covers natural corruption too.
+            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Corrupt, h, g.round as i64) {
+                prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
+                continue;
+            }
             corrupt_hex(g, cx, h, site);
             cx.tally(g, "adversary.corruptions_natural", 1);
             if g.is_over() {
@@ -1230,6 +1280,7 @@ pub fn land_troops(
     tally: &str,
     destroy: Option<&'static str>,
     lowest: bool,
+    deploy: bool,
 ) -> Res {
     let w = cx.world;
     for _ in 0..count {
@@ -1256,6 +1307,13 @@ pub fn land_troops(
             };
             i
         };
+        // 167: a Deploy prohibition keeps the troop in the supply where its condition holds.
+        if deploy {
+            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Deploy, spots[i], g.round as i64) {
+                prohibit_tally(g, cx, Step::Deploy, wh, 1);
+                continue;
+            }
+        }
         place_troop(g, cx, spots[i]);
         cx.per_round(g, OPS, 1);
         cx.tally(g, tally, 1);

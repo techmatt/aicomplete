@@ -424,10 +424,49 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
         format!("{} ({}, tier {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
     });
     let source = if side == Side::Discord { "discord" } else { "unity" };
+    let fx0 = fx_snapshot(g);
     effects::run(g, cx, &printed.effects, &mut effects::Ctx::team().named(source).why(&c.name))?;
+    // 167: what the card did, for the per-effect statistics (`scripts/cards/effect_stats.py`).
+    let after = fx_snapshot(g);
+    cx.tally(g, &format!("fx.{id}.t{tier}"), 1);
+    for (i, name) in FX_MEASURES.iter().enumerate() {
+        if after[i] != fx0[i] {
+            cx.tally(g, &format!("fx.{id}.{name}"), after[i] - fx0[i]);
+        }
+    }
     cx.tally(g, &KeyBuf::new("alignment.card.").text(&id), 1);
     cx.tally(g, &format!("alignment.tier_{}.{tier}", side.name()), 1);
     Ok(())
+}
+
+/// 167: the board and the team, measured around a Unity or Discord card (deltas tallied as `fx.<id>.<measure>`).
+const FX_MEASURES: [&str; 16] = [
+    "agents", "troops", "botnets", "markers", "corrupted", "threats", "credits", "energy", "insight", "ambassadors",
+    "free_keeps", "income_credits", "income_insight", "unity", "unity_pulled", "discord",
+];
+
+fn fx_snapshot(g: &GameState) -> [i64; 16] {
+    let board = |kind: &str| (0..g.hexes.len()).map(|h| g.tokens(h, kind)).sum::<i64>();
+    let seats = |r: Resource| (0..g.seats.len()).map(|s| g.resource(s, r)).sum::<i64>();
+    let counter = |k: &str| g.stats.counters.get(k).copied().unwrap_or(0);
+    [
+        board(ADV_AMBASSADOR),
+        board(TROOP),
+        board(BOTNET),
+        board(MARKER),
+        (0..g.hexes.len()).filter(|&h| corrupted(g, h)).count() as i64,
+        super::threats::active(g).len() as i64,
+        seats(Resource::Credits),
+        seats(Resource::Energy),
+        seats(Resource::Insight),
+        seats(Resource::Ambassadors),
+        g.var(FREE_LEFT),
+        g.var(INCOME_BONUS),
+        g.var(INSIGHT_BONUS),
+        counter("alignment.sway_unity"),
+        counter("alignment.unity_pulled"),
+        counter("alignment.sway_discord"),
+    ]
 }
 
 /// "Discord tips so far; ..." with the tier steps as configured (156).

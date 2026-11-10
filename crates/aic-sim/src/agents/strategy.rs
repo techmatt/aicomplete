@@ -155,6 +155,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
                 | Op::RemoveTroops { .. }
                 | Op::ClearCity { .. }
                 | Op::Pushback { .. }
+                | Op::RemoveWhere { .. }
                 | Op::Convert { .. }
                 | Op::Gather { .. }
                 | Op::Push { .. }
@@ -167,6 +168,7 @@ fn op_categories(all: &[&Op], c: &mut [bool; CATEGORIES.len()]) {
             Op::Shelter
                 | Op::Cordon
                 | Op::Firewall
+                | Op::Prohibit { .. }
                 | Op::Harden { .. }
                 | Op::HardenAction { .. }
                 | Op::ShieldNode { .. }

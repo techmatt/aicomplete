@@ -670,6 +670,32 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
             }
             w.scaled(row("one_player"))
         }
+        // 167: fear-card shape. "For each X (at most N)": the team ops' worth, times the sites expected.
+        Op::PerSite { max, then, .. } => {
+            let mut w = Worth::default();
+            for o in then {
+                w += op_worth(t, o);
+            }
+            w.scaled(row("per_site") * t.rate("sites_expected").min(*max as f64))
+        }
+        // A piece off, at its own row, where the condition holds (target_share), on the hexes, countries or
+        // players it reaches.
+        Op::RemoveWhere { pieces, count, per, .. } => {
+            use aic_core::op::{Per, Removable};
+            let piece = match pieces {
+                Removable::Agents => row("pushback"),
+                Removable::Troops => row("remove_troops"),
+                Removable::Botnets => row("remove_botnet"),
+                Removable::Markers => row("clear_markers"),
+                Removable::Cubes => row("cleanse"),
+            };
+            let reach = match per {
+                Per::Hex => t.rate("sites_expected"),
+                Per::Country | Per::Player => t.rate("countries"),
+            };
+            Worth::now(row("remove_where") * piece * t.rate("target_share") * reach * *count as f64)
+        }
+        Op::Prohibit { .. } => Worth::now(row("prohibit")),
         Op::Income { resource, amount } => Worth::income(row("income") * income_rate(t, *resource) * *amount as f64),
         Op::IncomePerTag { resource, tag, per, amount } => {
             let mut w = Worth::default();

@@ -324,6 +324,17 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
                 run(g, cx, then, &mut inner)?;
             }
         }
+        // 167: fear-card shape: board conditions, never reach.
+        Op::PerSite { where_, max, then } => {
+            for _ in 0..team::per_site_count(&w, g, *where_, *max) {
+                run(g, cx, then, ctx)?;
+                if g.is_over() {
+                    break;
+                }
+            }
+        }
+        Op::RemoveWhere { pieces, count, per, where_ } => team::remove_where(g, cx, *pieces, *count, *per, *where_)?,
+        Op::Prohibit { step, where_ } => adversary::prohibit(g, cx, *step, *where_),
         // 151: the adversary's rally and income.
         Op::Rally { site, count } => {
             let source = if ctx.label == "standing" { "event" } else { ctx.label };

@@ -1,0 +1,4 @@
+d0: n 144, new 90.3, old 99.3, delta -9.0 ± 2.6; new losses {'deck_empty': 14}, old {'deck_empty': 1}
+d1: n 144, new 71.5, old 93.1, delta -21.5 ± 4.2; new losses {'deck_empty': 36, 'discord_deck': 5}, old {'deck_empty': 8, 'discord_deck': 2}
+d2: n 144, new 68.8, old 80.6, delta -11.8 ± 4.6; new losses {'deck_empty': 21, 'discord_deck': 24}, old {'deck_empty': 12, 'discord_deck': 16}
+d3: n 144, new 50.7, old 73.6, delta -22.9 ± 4.6; new losses {'deck_empty': 60, 'discord_deck': 11}, old {'deck_empty': 27, 'discord_deck': 11}
