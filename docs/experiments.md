@@ -139,7 +139,8 @@ the judge off the value table.
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
   measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
-- **Costs:** a 576-game strategist read set (d0-d3) about 4-5 min on 6 threads, double on a busy box.
+- **Costs:** a 576-game strategist read set (d0-d3) about 6-8 min on 6 threads since 162's judge (greedy's cost a
+  game, ~1.6× 157's), double on a busy box.
 - **A before/after read is paired**: the old binary, with its configs (`git archive <main> configs | tar -x`: a new
   parameter in `baseline.json` makes the old binary refuse the new one), on the same seeds, run from its own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own `CARGO_TARGET_DIR`; new
@@ -168,8 +169,8 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 40072 (which item spent which is in its write-up;
-160's: 39880-40071, the native / wasm measurement). Next free: 40072. **The dev seeds for screens are 36800-36831**;
+ledger, after its last read, not before it. Used: every seed below 40408 (each item's
+range is in its write-up). Next free: 40408. **The dev seeds for screens are 36800-36831**;
 screen at 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3.
 
 ## Reading prices

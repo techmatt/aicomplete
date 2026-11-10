@@ -1,0 +1,34 @@
+{
+  "name": "s162-d3",
+  "note": "162: a third fresh set at d3 alone after the final read (40360-40407), the new strategist and greedy: evidence on the d3 gap, not the done-when verdict (two sets).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "records": 0
+}

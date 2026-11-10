@@ -208,6 +208,15 @@ fn deck(tier: u8) -> KeyBuf {
     KeyBuf::new("cards.deck.").num(tier as usize)
 }
 
+/// The words of every prompt that discards a card from hand (162: the agents' search
+/// reads a chain of them as one set of picks; one const writes and reads it). A chain
+/// asks "(k of n)" one prompt after another with nothing between its picks: a site that
+/// draws, triggers or asks anything between two discards must not use these words.
+pub const DISCARD_PROMPT: &str = "discard which card";
+
+/// The start of every discard pile's name: only a reshuffle reads a discard pile's order (162).
+pub const DISCARD_PILES: &str = "cards.discard.";
+
 fn discard_pile(tier: u8) -> KeyBuf {
     KeyBuf::new("cards.discard.").num(tier as usize)
 }

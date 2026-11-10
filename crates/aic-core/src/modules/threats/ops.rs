@@ -62,7 +62,7 @@ pub fn requisition(
                 for k in 0..n {
                     let hand = g.pile(&cards::hand(s)).to_vec();
                     let opts = hand.iter().map(|c| opt(*c)).collect();
-                    let prompt = || format!("{}: discard which card ({} of {n})?", head(why, s), k + 1);
+                    let prompt = || format!("{}: {} ({} of {n})?", head(why, s), cards::DISCARD_PROMPT, k + 1);
                     if let Some(j) = cx.choose(s, prompt, opts)? {
                         cards::discard(g, cx, &hand[j], &cards::hand(s));
                     }

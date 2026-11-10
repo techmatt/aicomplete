@@ -1,0 +1,38 @@
+{
+  "name": "s162-read",
+  "note": "162: the final read, the old judge, the new (`strategist`: b + a) and greedy, paired on the same seeds; three pairs, d0-d3; two 48-seed sets (40264-40311, 40312-40359).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "engine:strategy=1,w.clock=0",
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "records": 0
+}

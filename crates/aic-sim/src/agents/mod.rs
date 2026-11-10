@@ -298,7 +298,14 @@ const SWEEP: &str = "deals=1,lead=0";
 /// Unity rate left it short of the purge's last step, which bought Unity tips over
 /// liberations. Dev seeds 36800-36831, 96 games a level: d1-d3 70.8 / 62.5 / 42.7
 /// on, 74.0 / 69.8 / 49.0 off.
-const STRATEGIST: &str = "strategy=1,w.clock=0";
+/// 162 (r69): greedy's flat weights with strategy, and the purge term (`w.purge` 3.6):
+/// horizon mode valued an ambassador at 2.4 against 3.6 for the credits that buy one,
+/// so the old judge bought 0.7-0.9 a game and freed 2.6-3.0 cities to greedy's 4.3-5.1.
+/// Dev seeds 36800-36831 (screen in `experiments/results/162_judge_purge`); the old
+/// judge is `engine:strategy=1,w.clock=0`.
+const STRATEGIST: &str = "strategy=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,\
+w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
+w.tag_hand=0,w.purge=3.6";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {
@@ -605,7 +612,7 @@ mod tests {
         let spec = |s: &str| AgentSpec::parse(s);
         let base = value::table();
         assert!(std::ptr::eq(spec("strategist").unwrap().table(), base));
-        let a = spec("strategist:t.chips=2.25,t.auto_counter=1.2").unwrap();
+        let a = spec("engine:strategy=1,w.clock=0,t.chips=2.25,t.auto_counter=1.2").unwrap();
         let t = a.table();
         assert_eq!(t.res(aic_core::content::Resource::Chips), 2.25);
         assert_eq!(t.op("auto_counter"), 1.2);

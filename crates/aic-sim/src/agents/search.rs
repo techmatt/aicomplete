@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use aic_core::key::Fnv;
 use aic_core::module::World;
-use aic_core::modules::{adversary, ai};
+use aic_core::modules::{adversary, ai, cards};
 use aic_core::state::{AskKind, Pick};
 use aic_core::{Action, Agent, GameState, Rules};
 use rand_chacha::ChaCha8Rng;
@@ -41,19 +41,59 @@ fn legal_into(rules: &Rules, g: &GameState, out: &mut Vec<Action>) {
     prof::time(Part::Legal, || rules.legal_actions_into(g, out))
 }
 
-/// Positions already valued in one scoring, among the answers to a loss. A
-/// strike's losses come in a chain of prompts over the same pieces, and
-/// destroying one and then another leaves the table the other order leaves:
+/// Positions already valued in one scoring, among the answers to a loss or a
+/// discard. A strike's losses come in a chain of prompts over the same pieces,
+/// and destroying one and then another leaves the table the other order leaves:
 /// 069 found these prompts, a few thousand a batch of games, were 46% of the
 /// time scored, each option replaying the phase. Found by hash, confirmed by
-/// [`same_position`], so a collision can't change a score. Only losses: on every
-/// prompt it cost more than it saved (planner games a minute at c2: 32 to 26).
+/// [`same_position`], so a collision can't change a score. Only losses and
+/// discards: on every prompt it cost more than it saved (planner games a minute
+/// at c2: 32 to 26).
+///
+/// 162: a chain of discards ("discard which card (1 of 3)?") was 64-88% of
+/// greedy's time: every order of the same cards scored again. Two orders leave
+/// the same table but for the discard pile's order, which only a reshuffle
+/// reads (`cards::deck`), and a reshuffle draws on the `cards` stream. So a
+/// position matching but for that order takes the stored value only when no
+/// state under the stored one moved that stream (`dirty` false): the same score
+/// it would have computed.
 #[derive(Default)]
 struct Seen {
-    table: HashMap<u64, Vec<(GameState, usize, f64)>, BuildHasherDefault<Fnv>>,
+    table: HashMap<u64, Vec<Entry>, BuildHasherDefault<Fnv>>,
+    /// Steps so far, in this scoring, that moved the `cards` stream (or reached
+    /// a stored value whose own subtree did).
+    moved: u64,
+    /// Values by a discard chain's set of cards, found before any replay.
+    chains: HashMap<u64, Vec<Chain>, BuildHasherDefault<Fnv>>,
 }
 
-/// A hash of what [`same_position`] compares, or enough of it.
+struct Entry {
+    g: GameState,
+    choices: usize,
+    value: f64,
+    /// A state under this one moved the `cards` stream.
+    dirty: bool,
+}
+
+/// Whether `a`'s prompt is one the search remembers positions under.
+fn remembered(a: &aic_core::state::Pending) -> bool {
+    a.ask.kind == AskKind::Loss || a.ask.prompt.contains(cards::DISCARD_PROMPT)
+}
+
+fn discard_pile(key: &aic_core::Key) -> bool {
+    key.as_str().starts_with(cards::DISCARD_PILES)
+}
+
+/// The `cards` stream (a reshuffle's) moved from `a` to `b`.
+fn cards_moved(a: &GameState, b: &GameState) -> bool {
+    match (a.rng.get("cards"), b.rng.get("cards")) {
+        (Some(x), Some(y)) => !(Arc::ptr_eq(x, y) || x == y),
+        (x, y) => x.is_some() != y.is_some(),
+    }
+}
+
+/// A hash of what [`same_position`] compares, or enough of it: a discard
+/// pile's cards in any order.
 fn position_hash(g: &GameState, choices: usize) -> u64 {
     const PRIME: u64 = 0x0000_0100_0000_01b3;
     let mut h = choices as u64 ^ ((g.round as u64) << 8) ^ ((g.phase as u64) << 40);
@@ -81,11 +121,52 @@ fn position_hash(g: &GameState, choices: usize) -> u64 {
     for (k, v) in g.piles.iter() {
         mix(k.as_str().as_ptr() as u64);
         mix(v.len() as u64);
-        for id in v.iter() {
-            mix(id.as_str().as_ptr() as u64);
+        if discard_pile(k) {
+            let sum = v.iter().fold(0u64, |s, id| s.wrapping_add((id.as_str().as_ptr() as u64).wrapping_mul(PRIME)));
+            mix(sum);
+        } else {
+            for id in v.iter() {
+                mix(id.as_str().as_ptr() as u64);
+            }
         }
     }
     h
+}
+
+/// How two positions compare in [`same_position`].
+#[derive(PartialEq)]
+enum Same {
+    No,
+    /// The same but for the order of a discard pile.
+    ButDiscards,
+    Exactly,
+}
+
+/// The piles of two positions: equal, or equal but for a discard pile's order.
+fn same_piles(a: &GameState, b: &GameState) -> Same {
+    if a.piles == b.piles {
+        return Same::Exactly;
+    }
+    if a.piles.len() != b.piles.len() {
+        return Same::No;
+    }
+    let sorted = |v: &[aic_core::Key]| {
+        let mut ids: Vec<usize> = v.iter().map(|id| id.as_str().as_ptr() as usize).collect();
+        ids.sort_unstable();
+        ids
+    };
+    for ((ka, va), (kb, vb)) in a.piles.iter().zip(b.piles.iter()) {
+        if ka != kb || va.len() != vb.len() {
+            return Same::No;
+        }
+        if Arc::ptr_eq(va, vb) || va == vb {
+            continue;
+        }
+        if !discard_pile(ka) || sorted(va) != sorted(vb) {
+            return Same::No;
+        }
+    }
+    Same::ButDiscards
 }
 
 /// Whether two tables reached by answering one prompt's options are the same
@@ -93,7 +174,7 @@ fn position_hash(g: &GameState, choices: usize) -> u64 {
 /// same answers given in either order. The answers must match as a set, not
 /// only the tables: a loop's progress lives in them alone (a hit Shelter absorbs
 /// moves nothing, and a troop's march keeps its place in a local).
-fn same_position(a: &GameState, b: &GameState) -> bool {
+fn same_position(a: &GameState, b: &GameState) -> Same {
     // Cheapest compares first; the pending snapshot (a whole state) last (148).
     let same_answers = || match (&a.pending, &b.pending) {
         (Some(p), Some(q)) => {
@@ -107,16 +188,65 @@ fn same_position(a: &GameState, b: &GameState) -> bool {
         (None, None) => true,
         _ => false,
     };
-    a.round == b.round
+    let rest = a.round == b.round
         && a.phase == b.phase
         && a.outcome == b.outcome
         && a.rng == b.rng
         && a.vars == b.vars
-        && a.seats == b.seats
-        && a.piles == b.piles
-        && a.hexes == b.hexes
-        && a.stats.counters == b.stats.counters
-        && same_answers()
+        && a.seats == b.seats;
+    if !rest {
+        return Same::No;
+    }
+    let piles = same_piles(a, b);
+    if piles == Same::No || a.hexes != b.hexes || a.stats.counters != b.stats.counters || !same_answers() {
+        return Same::No;
+    }
+    piles
+}
+
+/// 162: where the chain of discards `p` asks for began, in its answers: its
+/// own prompt reads "(k of n)" (a lone "discard which card?" is a chain of one),
+/// and each earlier prompt of the chain had more cards to choose from, so each
+/// recorded its answer. `None` if it isn't a discard.
+fn discard_chain(p: &aic_core::state::Pending) -> Option<usize> {
+    let at = p.ask.prompt.find(cards::DISCARD_PROMPT)?;
+    let rest = &p.ask.prompt[at + cards::DISCARD_PROMPT.len()..];
+    let k = match rest.strip_prefix(" (") {
+        Some(r) => r.split(" of ").next()?.parse::<usize>().ok()?,
+        None => 1,
+    };
+    p.made.len().checked_sub(k.checked_sub(1)?)
+}
+
+/// 162: a value by the cards a chain of discards has taken, as a set: the
+/// cards of one chain, in any order, leave the same table but for the discard
+/// pile's order, so a set already valued is not replayed at all. Kept only when
+/// neither the pick's step nor its subtree moved the `cards` stream (a
+/// reshuffle, the one reader of that order); nothing between a chain's picks
+/// draws (`cards::DISCARD_PROMPT` says so to its sites).
+struct Chain {
+    snapshot: Arc<GameState>,
+    trigger: aic_core::state::Trigger,
+    /// The answers before the chain, in order.
+    before: Vec<Pick>,
+    /// The chain's cards with the new pick, sorted.
+    set: Vec<String>,
+    choices: usize,
+    value: f64,
+}
+
+fn chain_hash(p: &aic_core::state::Pending, start: usize, set: &[&str], choices: usize) -> u64 {
+    let mut h = Fnv::default();
+    (Arc::as_ptr(&p.snapshot) as usize).hash(&mut h);
+    start.hash(&mut h);
+    choices.hash(&mut h);
+    for x in &p.made[..start] {
+        x.option.hash(&mut h);
+    }
+    for s in set {
+        s.hash(&mut h);
+    }
+    h.finish()
 }
 
 /// The value of `g`, with any choice it is waiting on answered best-first
@@ -132,28 +262,80 @@ fn settled(
     let Some(pending) = g.pending.as_ref().filter(|_| !g.is_over() && choices > 0) else {
         return value(rules, ev, g);
     };
-    let loss = pending.ask.kind == AskKind::Loss;
+    let memo = remembered(pending);
+    let chain = if memo { discard_chain(pending) } else { None };
     legal_into(rules, g, legal);
     let opts = std::mem::take(legal);
     let mut best = f64::NEG_INFINITY;
     for a in &opts {
+        let mut by_set = None;
+        if let (Some(start), Action::Choose { option, target: None, .. }) = (chain, a) {
+            let mut set: Vec<&str> = pending.made[start..].iter().map(|x| x.option.as_str()).collect();
+            set.push(option.as_str());
+            set.sort_unstable();
+            let key = chain_hash(pending, start, &set, choices);
+            let hit = seen.chains.get(&key).and_then(|bucket| {
+                bucket.iter().find(|e| {
+                    e.choices == choices
+                        && Arc::ptr_eq(&e.snapshot, &pending.snapshot)
+                        && e.trigger == pending.trigger
+                        && e.before[..] == pending.made[..start]
+                        && e.set.iter().map(String::as_str).eq(set.iter().copied())
+                })
+            });
+            if let Some(e) = hit {
+                best = best.max(e.value);
+                continue;
+            }
+            by_set = Some((key, start, set.iter().map(|s| s.to_string()).collect::<Vec<_>>()));
+        }
         let Some(c) = step(rules, g, a) else { continue };
-        let v = if loss {
+        let moved = cards_moved(g, &c);
+        if moved {
+            seen.moved += 1;
+        }
+        let (v, dirty) = if memo {
             let key = position_hash(&c, choices);
             let found = seen.table.get(&key).and_then(|bucket| {
-                bucket.iter().find(|(p, n, _)| *n == choices && same_position(p, &c)).map(|e| e.2)
+                bucket.iter().find_map(|e| {
+                    if e.choices != choices {
+                        return None;
+                    }
+                    match same_position(&e.g, &c) {
+                        Same::Exactly => Some((e.value, e.dirty)),
+                        Same::ButDiscards if !e.dirty => Some((e.value, false)),
+                        _ => None,
+                    }
+                })
             });
             match found {
-                Some(v) => v,
+                Some((v, dirty)) => {
+                    seen.moved += dirty as u64;
+                    (v, dirty)
+                }
                 None => {
+                    let before = seen.moved;
                     let v = settled(rules, ev, &c, choices - 1, legal, seen);
-                    seen.table.entry(key).or_default().push((c, choices, v));
-                    v
+                    let dirty = seen.moved != before;
+                    seen.table.entry(key).or_default().push(Entry { g: c, choices, value: v, dirty });
+                    (v, dirty)
                 }
             }
         } else {
-            settled(rules, ev, &c, choices - 1, legal, seen)
+            (settled(rules, ev, &c, choices - 1, legal, seen), false)
         };
+        if let Some((key, start, set)) = by_set {
+            if !(dirty || moved) {
+                seen.chains.entry(key).or_default().push(Chain {
+                    snapshot: pending.snapshot.clone(),
+                    trigger: pending.trigger.clone(),
+                    before: pending.made[..start].to_vec(),
+                    set,
+                    choices,
+                    value: v,
+                });
+            }
+        }
         best = best.max(v);
     }
     if best.is_finite() {

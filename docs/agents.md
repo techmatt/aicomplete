@@ -36,7 +36,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; plans once, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode**: income is worth `w.horizon` × its weight × the rounds left (the adversary deck's clock, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` in `eval.rs` |
-| `strategist` | `engine:strategy=1,w.clock=0`: greedy with strategy, no search, the deck clock off (157). **The screens' judge** (*The tiers*). | the engine's |
+| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: a seat's supply ambassadors up to the Liberate bill of the corrupted cities in its reach; a freed city keeps it), no search (162; 157's: `engine:strategy=1,w.clock=0`). **The screens' judge** (*The tiers*). | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on the real state but the Alignment deal (**full information**), valued over `deals` guesses of it; decisions inside a line are scored on a guess. The followed line is reused. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0 and the rest in `agents/planner.rs`. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in** (155): the planner's search on **full information**, the Alignment deal too, each line played to the game's end. A winning line is followed: the seed is proved winnable, so the win rate is a floor on perfect play. Others compare on the heuristic `horizon` rounds on; `reseeds`: lines on other policy guesses at a round's first searched decision. | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `reseeds` 0, `threads` 1 (lines side by side, same play) (`agents/oracle.rs`) |
 
@@ -48,14 +48,14 @@ the strategy multiplier; cost: its price at the table's rates, `plan_table=0`),
 and keeps each drafted card, best ratio first, only if the plan is worth more with it.
 A play waiting a round is worth 15% less; `needs` may be met by cards planned earlier, or short
 now by at most `plan_short` tags; a building over one of the seat's adds only what it beats the
-weakest by (`plan_cover`); each credit paid for keeps costs `plan_credit`. The other switches
-(`plan_niche`, `plan_reach`, `pile_ok`, `plan_copy`, `plan_under`) say their rule in `forced_table!`.
+weakest by (`plan_cover`); each credit paid for keeps costs `plan_credit`. Other switches say
+their rule in `forced_table!`.
 
 **Dominance checks**: one behavior forced, a row of `forced_table!` (`agents/policy.rs`; principles.md).
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
-number `t.` (*The value table*), a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` reads flat
-terms, so the table's and horizon's levers reach only its keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
+number `t.` (*The value table*), a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` and the
+strategist read flat terms (162), so the table's and horizon's levers reach only their keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
@@ -158,12 +158,12 @@ Rules a player could say where a one-step search misses a card's point, each a s
 
 | Tier | Stands for | Spec | Target win % |
 |---|---|---|---|
-| Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth (r68: greedy leads, 157) |
+| Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
 | Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
-| Oracle | A skilled player with full information (155): d3 100, d4 96 at r66; r68 100, 38 (157) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
+| Oracle | A skilled player with full information (155): d3 100, d4 96 at r66; r69 100, 83 (162) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 
-The strategist judges (within about 5 points of `sweep` a pair on the same seeds) at a tenth of
-its time a game; `sweep` spot-checks.
+162 (r69, fresh seeds, 288 games a level): the strategist 98.3 / 93.1 / 80.2 / 65.6 at d0-d3, greedy 98.6 / 88.2 /
+78.8 / 66.7, 157's judge 96.2 / 79.5 / 65.6 / 51.0; it costs about greedy's time a game. `sweep` spot-checks.
 A strategy pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them;
 `aic-sim strategies CONFIG` prints the choices.

@@ -97,6 +97,10 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds
   36800-36801) with no engine named: the same line on native and wasm while they play alike. About 3 s.
+- **`farm-seeds`** (conductor's remote client) runs the worktree's `target/release/aic-sim.exe` on the main box and
+  builds the browsers' bundle from HEAD: commit a spec and its code before farming, and rebuild into another
+  `CARGO_TARGET_DIR` while a job runs (the running exe can't be replaced; rename it aside, then copy). Farm lines
+  carry no timings: a main-box game's ms is in the job's `main.log` (162's `cost162.py` reads it).
 - **Reading a farmed read:** `screens.assemble(spec, first, count, shards, out_dir)` writes `games.jsonl` (the
   header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   only within one engine, counting the seeds left out for mixed engines. `scripts/farm/compare.py A B` counts games

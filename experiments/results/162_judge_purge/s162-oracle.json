@@ -1,0 +1,34 @@
+{
+  "name": "s162-oracle",
+  "note": "162: the oracle row beside the final read, d3, its first 8 seeds a pair.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3
+  ],
+  "agents": [
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1"
+  ],
+  "games": 8,
+  "records": 0,
+  "first_seed": 40264
+}

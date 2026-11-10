@@ -1,0 +1,39 @@
+{
+  "name": "s162-screen",
+  "note": "162: the judge factorial, (a) the purge term and (b) greedy's flat weights with strategy, each on and off, beside greedy; three pairs, d1-d3 (dev seeds 36800-36831).",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "engine:strategy=1,w.clock=0",
+    "engine:strategy=1,w.clock=0,w.purge=3.6",
+    "engine:strategy=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0",
+    "engine:strategy=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,w.tag_hand=0,w.purge=3.6",
+    "greedy"
+  ],
+  "games": 32,
+  "records": 0
+}

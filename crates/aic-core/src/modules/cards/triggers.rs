@@ -312,7 +312,7 @@ pub fn reuse(g: &mut GameState, cx: &mut Cx, seat: usize, this: Option<Key>) -> 
 pub fn discard_hand(g: &mut GameState, cx: &mut Cx, seat: usize, resource: Resource, amount: i64) -> Res {
     let ids: Vec<Key> = g.pile(&hand(seat)).to_vec();
     let opts: Vec<Opt> = ids.iter().map(|c| opt(*c)).collect();
-    let prompt = || format!("Seat {seat}: discard which card?");
+    let prompt = || format!("Seat {seat}: {DISCARD_PROMPT}?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
         discard(g, cx, &ids[i], &hand(seat));
         cx.add_resource(g, seat, resource, amount);

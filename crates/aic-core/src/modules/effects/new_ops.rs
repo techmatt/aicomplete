@@ -482,7 +482,7 @@ fn discard(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, n: i64) -> Res {
     for k in 0..n {
         let hand = g.pile(&cards::hand(s)).to_vec();
         let opts = hand.iter().map(|c| opt(*c)).collect();
-        let prompt = || format!("{}: discard which card ({} of {n})?", head(ctx, s), k + 1);
+        let prompt = || format!("{}: {} ({} of {n})?", head(ctx, s), cards::DISCARD_PROMPT, k + 1);
         let Some(j) = cx.choose(s, prompt, opts)? else {
             break;
         };

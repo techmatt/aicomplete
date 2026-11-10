@@ -195,6 +195,10 @@ pub struct Weights {
     /// 080: each city liberated this game (by a card or the fallback), on top of
     /// the corrupted city it no longer is.
     pub liberated: f64,
+    /// 162, the purge term (any mode; 0 off): each supply ambassador of a seat up to the Liberate
+    /// bill of the corrupted cities in its reach, and each city freed at `liberate_at`'s bill, so
+    /// buying toward a Liberate pays and spending on one costs nothing.
+    pub purge: f64,
     /// 080: a clean or aligned city one adversary ambassador from corrupting,
     /// on top of `pressure`.
     pub at_risk: f64,
@@ -574,6 +578,7 @@ impl Default for Weights {
             ambassador_board: 2.5,
             freeing: 2.0,
             liberated: 10.0,
+            purge: 0.0,
             at_risk: 4.0,
             liberate_progress: 20.0,
             income: 3.0,
@@ -1261,6 +1266,8 @@ impl Eval {
         let near = self.reach_masks(rules, &tokens);
         let seats = self.seats;
         let mut pieces = 0i64;
+        // 162: each seat's Liberate bill, the corrupted cities in its reach (the purge term).
+        let mut bill = [0i64; 4];
         let level = alignment::bar_level(&world, g);
         // 147 (D67): each seat's nodes on sites filling toward corruption, as
         // shares lost (corruption destroys a node on its own hex), and land
@@ -1282,6 +1289,13 @@ impl Eval {
                     // adversary ambassadors add to the cost): gathering toward it, by
                     // the best-placed seat in reach, counts a little, so a seat saves up.
                     if let Some(need) = board::liberate_cost(&world, g, h) {
+                        if w.purge != 0.0 {
+                            for (s, b) in bill.iter_mut().enumerate().take(seats) {
+                                if near[s] >> h & 1 != 0 {
+                                    *b += need;
+                                }
+                            }
+                        }
                         let held = (0..seats)
                             .filter(|&s| near[s] >> h & 1 != 0)
                             .map(|s| g.resource(s, Resource::Ambassadors))
@@ -1529,8 +1543,17 @@ impl Eval {
             v += w.project_cube * (mine as f64 - 0.5 * theirs as f64);
         }
         for s in 0..self.seats {
-            v += self.ambassador_unit() * g.resource(s, Resource::Ambassadors) as f64;
+            let held = g.resource(s, Resource::Ambassadors);
+            v += self.ambassador_unit() * held as f64;
             v += w.chips * g.resource(s, Resource::Chips) as f64;
+            if w.purge != 0.0 {
+                v += w.purge * held.min(bill.get(s).copied().unwrap_or(0)) as f64;
+            }
+        }
+        // 162: a city freed keeps the purge its ambassadors were worth toward it.
+        if w.purge != 0.0 {
+            let freed = g.stats.counters.get("board.cities_freed").copied().unwrap_or(0);
+            v += w.purge * (board::liberate_at(&world) * freed) as f64;
         }
         // The win bar: what still stands between the team and a clear board.
         v -= w.blocker * pieces as f64;

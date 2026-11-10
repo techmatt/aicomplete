@@ -52,6 +52,12 @@ free power usable at every decision with N picks (pick a card, or stop) costs ab
   `Seen` values each position once per scoring, among Loss answers only, confirmed field by field, with the
   same answers as a set (a loop's progress lives only in them). It costs under 1%; on every prompt it costs
   more than it saves.
+- **Discard chains** ("discard which card (k of n)?", `cards::DISCARD_PROMPT`): 64-88% of a greedy game at r69
+  (162), hands of 16-37 cards and every order of the same cards scored. `Seen` takes them too, a position
+  matching but for a discard pile's order (only a reshuffle reads it, on the `cards` stream), and `Seen::chains`
+  values a chain's cards as a set before any replay; both only where no step under the stored value moved the
+  `cards` stream, so the same scores. Greedy 1.86× a game, the strategist 1.13× (one thread, quiet box, 8 games,
+  `experiments/results/162_judge_purge/speed162.py`). What is left there is the replay itself (`apply_to`).
 
 **What is left, by payoff** (shares of the strategist after 141, `profile_win.py`, 4 games from seed 36650,
 d1):
@@ -138,7 +144,8 @@ for the planners). 104's before/after on the same games, and 103's table, are in
 | planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 7.25 | 424 |
 
 **Stale for greedy:** at r68 (157) the flat-weight agents (greedy, the engine on greedy's weights) cost 6-70 s a
-game against the strategist's 1.5-3.6 s, 86-91% of it in `score_choose` (prompt answers). At r40 the strategist was
+game against the strategist's 1.5-3.6 s, 86-91% of it in `score_choose` (prompt answers): discard chains, which
+162 cut (above). At r40 the strategist was
 about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
 threads beside another item, the read of `experiments/archive/screen-082.json` (1,152 games: four greedy agents and
 four planners) took 17 min at r34.
