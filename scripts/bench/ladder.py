@@ -17,8 +17,12 @@ lost to corruption, adversary ambassadors placed (created or rallied), corruptio
 and reshuffles.
 
 A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header. A
-farm line names its engine (`native` or `wasm`): a seed pairs across sides only on one engine, and a line under the
-table counts, per difficulty (or lever), the shared seeds left out for mixed engines.
+farm line names its engine (`native` or `wasm`). Native and wasm play the same games, so a seed pairs across engines
+and a line under the table counts, per difficulty (or lever), the shared seeds played on mixed engines (163);
+`--same-engine` pairs a seed only within one engine and leaves those out, for a revision whose engines diverge.
+
+Each side's win % counts all of its games at that difficulty; only the gap and its SE are paired (163: the old column
+was its paired seeds' rate, so two identical reads printed two rates when seeds were left out).
 """
 import argparse
 import json
@@ -28,10 +32,11 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cells_of, gap, same_engine, stream  # noqa: E402
+from screens import cells_of, gap, pair_seeds, stream  # noqa: E402
 
 BANDS = "90-100,70-80,55-65,40-50"  # 157's prompt
 DECK = 20
+SAME_ENGINE = False  # --same-engine: pair a seed only within one engine (160's rule)
 
 
 def parse_bands(text):
@@ -107,14 +112,21 @@ def won(g):
     return 1 if g["won"] else 0
 
 
+def rate(games):
+    """Win share of {key: game}, over all of them (NaN with none)."""
+    return sum(map(won, games.values())) / len(games) if games else float("nan")
+
+
 def paired(n, o):
-    """(old win share over the keys both played on one engine, mean gap in points, its paired SE in points, keys shared
-    on mixed engines); NaN with no common key. n, o: {key: game}."""
-    common, mixed = same_engine(n, o)
+    """(old win share over all of O, mean gap in points over the keys both played, its paired SE in points, shared
+    keys on mixed engines); the gap is NaN with no common key. n, o: {key: game}. The old share is O's whole rate, as
+    the new column is N's: on the paired keys only it read apart from an identical new side whenever keys were left
+    out (163)."""
+    common, mixed = pair_seeds(n, o, SAME_ENGINE)
     diffs = [won(n[k]) - won(o[k]) for k in common]
+    po = rate(o)
     if not diffs:
-        return float("nan"), float("nan"), float("nan"), mixed
-    po = sum(won(o[k]) for k in common) / len(common)
+        return po, float("nan"), float("nan"), mixed
     if len(diffs) == 1:
         return po, 100 * diffs[0], 0.0, mixed
     m, se, _ = gap(diffs)
@@ -122,9 +134,10 @@ def paired(n, o):
 
 
 def mixed_line(mixed):
-    """160: the shared seeds left out for mixed engines, or nothing when none were."""
+    """The shared seeds played on mixed engines (paired, or left out under --same-engine), or nothing when none were."""
     if any(mixed.values()):
-        print("\nseeds left out for mixed engines (native on one side, wasm on the other): "
+        how = "left out" if SAME_ENGINE else "paired: the engines play alike"
+        print(f"\nseeds on mixed engines (native on one side, wasm on the other; {how}): "
               + ", ".join(f"{k} {v}" for k, v in mixed.items()))
 
 
@@ -198,7 +211,7 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
 
 
 def main():
-    global DECK
+    global DECK, SAME_ENGINE
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("dirs", nargs="*", help="NEW_DIRS OLD_DIRS, each ','-separated")
@@ -206,8 +219,11 @@ def main():
     ap.add_argument("--measures", action="store_true", help="add the adversary's measures, per difficulty and side")
     ap.add_argument("--deck", type=int, default=DECK, help="the project deck's size (default 20)")
     ap.add_argument("--bands", default=BANDS, help=f"each difficulty's band from d0, lo-hi ','-separated (default {BANDS})")
+    ap.add_argument("--same-engine", action="store_true",
+                    help="pair a seed only when both sides played it on one engine (default: across engines)")
     a = ap.parse_args()
     DECK = a.deck
+    SAME_ENGINE = a.same_engine
     if a.screen:
         screen(a.screen.split(","), a.measures)
         return

@@ -26,9 +26,10 @@ size, the same overrides under c2-x and c3-x:
 A spec with several configs or difficulties (an on/off config pair) leads each name with the
 config's file stem and `dN` where they vary: CONFIG/dN/VARIANT/AGENT (100).
 
-A farmed read's lines name their engine (160): a seed pairs only when both sides played it on
-the same engine, and each gap says how many shared seeds were left out for mixed engines. When
-any game is not native, each cell's games by engine are listed.
+A farmed read's lines name their engine (160). Native and wasm play the same games, so a seed
+pairs across engines and each gap counts the shared seeds played on mixed engines (163);
+`--same-engine` pairs a seed only within one engine and leaves those out, for a revision whose
+engines diverge. When any game is not native, each cell's games by engine are listed.
 """
 import argparse
 import math
@@ -38,7 +39,7 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_labels, engine, gap, same_engine, stream  # noqa: E402
+from screens import cell_labels, engine, gap, mixed_text as _mixed_text, pair_seeds, stream  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -66,15 +67,18 @@ def find(cells, text):
     return cells[hits[0]]
 
 
+SAME_ENGINE = False  # --same-engine: pair a seed only within one engine (160's rule)
+
+
 def diffs(base, lever):
-    """lever minus base, won or not, on the seeds both played on one engine (160), and how
-    many shared seeds were left out for mixed engines."""
-    seeds, mixed = same_engine(base, lever)
+    """lever minus base, won or not, on the seeds both played, and how many of them were played
+    on mixed engines (paired, or left out under --same-engine)."""
+    seeds, mixed = pair_seeds(base, lever, SAME_ENGINE)
     return [lever[s]['won'] - base[s]['won'] for s in seeds], mixed
 
 
 def mixed_text(mixed):
-    return f' ({mixed} seeds on mixed engines left out)' if mixed else ''
+    return _mixed_text(mixed, SAME_ENGINE)
 
 
 def against_base(cells):
@@ -109,7 +113,11 @@ def main():
                          '(VARIANT/AGENT or DIR/VARIANT/AGENT). `sweep` follows the engine defaults: '
                          'against a pre-082 run name them, e.g. sweep:plan_table=0,w.table=0,w.packet_keep=1')
     ap.add_argument('--against-base', action='store_true', help='every cN-x variant against cN')
+    ap.add_argument('--same-engine', action='store_true',
+                    help='pair a seed only when both sides played it on one engine (default: across engines)')
     a = ap.parse_args()
+    global SAME_ENGINE
+    SAME_ENGINE = a.same_engine
     cells = {}
     for d in a.dirs:
         prefix = os.path.basename(os.path.normpath(d)) + '/'

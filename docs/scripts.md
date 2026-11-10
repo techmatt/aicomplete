@@ -20,14 +20,14 @@ Current:
   `--set` takes; `#` comments) into `content/*.json` in place, path rules as `apply_entry` in content.rs; a card pass
   keeps its edits as one overlay file and reruns it. `cards.<id>=<JSON object>` writes a whole row: a new card is
   appended, an existing one replaced (125; `--set` has no such form). Nothing deletes: drop a card from the
-  baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check` prints what would change. Run `regen.py` after. It refuses
-  hand-laid `alignment.json`; threats, adversary and projects come from `drafts/adversary/` (edit there).
+  baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check`: a dry run. Then
+  `regen.py`. It refuses hand-laid `alignment.json`; threats, adversary and projects: edit `drafts/adversary/`.
 - `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
   (runs `use.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]`: measures gone quiet: the counter keys the read scripts, web scripts and
-  `crates/aic-sim` (agents aside) quote that no game in DIR wrote (a key a rules change retired). A rare event, a
-  per-round prefix or a test string lists too: read it, don't gate on it.
+  `crates/aic-sim` (agents aside) quote that no game in DIR wrote (a key a rules change retired). Rare events and
+  test strings list too: read it, don't gate on it.
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
   each check against its own agent in one sign, agent minus check, with the paired SE, and games
@@ -120,14 +120,14 @@ Current:
   [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
   `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs).
 - `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck 20]`: the paired ladder
-  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Like
-  `paired.py`, it reads a farmed read (no `results.json`) and pairs a seed only within one engine, counting the rest.
+  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Reads a
+  farmed read (no `results.json`); engines and `--same-engine` as `paired.py`. Each win % is its side's whole rate.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).
-- `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE, rounds and ends, and
-  paired gaps between any two cells, pooled over several `--pair`s, each on the seeds both played on one engine
-  (`native`/`wasm`), saying how many it left out as mixed. A `--pair` cell is its exact name
+- `bench/paired.py DIR... [--pair A B]... [--against-base] [--same-engine]`: any run's cells with win %, SE, rounds
+  and ends, and paired gaps, pooled over several `--pair`s, on the seeds both played, across engines (they play alike,
+  163), counting the mixed ones; `--same-engine` leaves those out. `bench/test_read_tools.py` tests both. A `--pair` cell is its exact name
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
   every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes (report.md pairs only against the

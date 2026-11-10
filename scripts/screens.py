@@ -94,13 +94,24 @@ def engine(g):
     return g.get('engine') or 'native'
 
 
-def same_engine(a, b):
-    """The seeds both {seed: game} A and B played on one engine, and how many seeds they share
-    on mixed engines (160: a seed pairs only within one engine, so an engine's bias can't read
-    as a lever's gap; those seeds are left out)."""
+def pair_seeds(a, b, same_engine=False):
+    """The seeds {seed: game} A and B both played that pair, and how many of the shared ones
+    were played on mixed engines (native on one side, wasm on the other). Native and wasm play
+    the same games (160: 0 of 192 differ; 161: 0 of 2304), so by default a seed pairs across
+    engines and the mixed count is information (163). SAME_ENGINE pairs a seed only within one
+    engine and leaves the mixed ones out, for a revision whose engines diverge."""
     both = [s for s in a if s in b]
-    seeds = [s for s in both if engine(a[s]) == engine(b[s])]
-    return seeds, len(both) - len(seeds)
+    mixed = sum(1 for s in both if engine(a[s]) != engine(b[s]))
+    if same_engine:
+        both = [s for s in both if engine(a[s]) == engine(b[s])]
+    return both, mixed
+
+
+def mixed_text(mixed, same_engine=False):
+    """' (N seeds on mixed engines ...)' for a gap's line, or nothing when none were."""
+    if not mixed:
+        return ''
+    return f' ({mixed} seeds on mixed engines {"left out" if same_engine else "paired"})'
 
 
 def assemble(spec, first, count, shards, out_dir, exe=None):
