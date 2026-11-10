@@ -1,5 +1,8 @@
 # Agents
 
+In prose, the simulator's players are "sim players"; the code keeps "agents" (`agents/`,
+`values.json`), and in the game "agents" are the adversary's pieces (Matt, 2026-11-09).
+
 The skill ladder (`crates/aic-sim/src/agents/`). One team agent drives every seat, hands
 and drafts open, and answers "players choose" questions too. Agents play
 through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the state).

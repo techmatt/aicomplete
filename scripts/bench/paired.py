@@ -25,6 +25,10 @@ size, the same overrides under c2-x and c3-x:
 
 A spec with several configs or difficulties (an on/off config pair) leads each name with the
 config's file stem and `dN` where they vary: CONFIG/dN/VARIANT/AGENT (100).
+
+A farmed read's lines name their engine (160): a seed pairs only when both sides played it on
+the same engine, and each gap says how many shared seeds were left out for mixed engines. When
+any game is not native, each cell's games by engine are listed.
 """
 import argparse
 import math
@@ -34,7 +38,7 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import cell_labels, gap, stream  # noqa: E402
+from screens import cell_labels, engine, gap, same_engine, stream  # noqa: E402
 
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 
@@ -63,8 +67,14 @@ def find(cells, text):
 
 
 def diffs(base, lever):
-    """lever minus base, won or not, on the seeds both played."""
-    return [lever[s]['won'] - base[s]['won'] for s in base if s in lever]
+    """lever minus base, won or not, on the seeds both played on one engine (160), and how
+    many shared seeds were left out for mixed engines."""
+    seeds, mixed = same_engine(base, lever)
+    return [lever[s]['won'] - base[s]['won'] for s in seeds], mixed
+
+
+def mixed_text(mixed):
+    return f' ({mixed} seeds on mixed engines left out)' if mixed else ''
 
 
 def against_base(cells):
@@ -79,10 +89,10 @@ def against_base(cells):
         if not base:
             print(f'{name}: no {prefix}{size}/{agent} to read against')
             continue
-        d = diffs(base, games)
+        d, mixed = diffs(base, games)
         levers[f'{prefix}{lever}/{agent}'].append(d)
         m, se, n = gap(d)
-        print(f'{name} minus {size}: {m:+.1f} ±{se:.1f} on {n} seeds')
+        print(f'{name} minus {size}: {m:+.1f} ±{se:.1f} on {n} seeds{mixed_text(mixed)}')
     if not levers:
         sys.exit('no cN-x variant with its cN')
     for lever, sizes in levers.items():
@@ -119,15 +129,21 @@ def main():
         text = ', '.join(f'{k} {v}' for k, v in ends.most_common())
         print(f'| {name} | {n} | {100 * p:.0f} | {100 * math.sqrt(p * (1 - p) / n):.1f} | {rounds:.2f} | {text} |')
 
-    pooled = []
+    engines = {name: Counter(engine(g) for g in games.values()) for name, games in cells.items()}
+    if any(set(e) - {'native'} for e in engines.values()):
+        for name, e in engines.items():
+            print(f'{name}: ' + ', '.join(f'{k} {v}' for k, v in sorted(e.items())))
+
+    pooled, pooled_mixed = [], 0
     for x, y in a.pair:
-        d = diffs(find(cells, x), find(cells, y))
+        d, mixed = diffs(find(cells, x), find(cells, y))
         pooled += d
+        pooled_mixed += mixed
         m, se, n = gap(d)
-        print(f'{y} minus {x}: {m:+.1f} ±{se:.1f} on {n} seeds')
+        print(f'{y} minus {x}: {m:+.1f} ±{se:.1f} on {n} seeds{mixed_text(mixed)}')
     if len(a.pair) > 1:
         m, se, n = gap(pooled)
-        print(f'pooled: {m:+.1f} ±{se:.1f} on {n} paired seeds')
+        print(f'pooled: {m:+.1f} ±{se:.1f} on {n} paired seeds{mixed_text(pooled_mixed)}')
     if a.against_base:
         against_base(cells)
 

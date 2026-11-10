@@ -1,6 +1,6 @@
 # Simulator
 
-The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`, `cards`;
+The `aic-sim` command line: `run`, `compare`, `show`, `modules`, `replay`, `strategies`, `cards`, `farm` (below);
 `experiment` is in [experiments.md](experiments.md), `docs [--check]` in architecture.md *Generated docs*.
 
 Always run the sim in release.
@@ -70,3 +70,38 @@ replay big sets in batches.
 
 The random agent picks uniformly among all seats' legal actions, passes and choice
 answers included. Treat it as a floor, not as a model of a weak team.
+
+## The farm
+
+A read's games, cut into seed ranges for conductor's remote workers (browser tabs on other machines, 160). The
+native command and the wasm bundle (`crates/aic-farm`) run the same code (`crates/aic-sim/src/farm.rs`):
+
+```sh
+$S farm read --seed 1000 --games 4 --out out/s0.jsonl    # every cell of experiments/farm/read.json, seeds 1000..1003
+$S farm read --header --seed 1000 --games 8               # the games.jsonl header for an assembled range
+$S farm --fingerprint                                     # what a worker must reproduce
+node scripts/farm/build.mjs out/bundle                    # the bundle: farm.mjs, aic_farm.js, aic_farm_bg.wasm
+node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fingerprint]
+```
+
+- **A shard's output** is one line per game, seed by seed and each seed's cells in grid order: `games.jsonl`'s line
+  with every timing 0 and `engine` naming who played it (`native` or `wasm`). Shards concatenated in seed order are
+  byte for byte one run over the whole range. Each game's time goes to stderr. The file is written whole at the
+  end (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one
+  thread (an agent's `threads` dial must be 1). A read seed (12 cells) costs about 28 s natively, ~1.5× in wasm (160).
+- **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3; `cell-d2`: one
+  cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
+  depend on more than their seed. The bundle reads no files: `configs/`, `experiments/configs/` and
+  `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first.
+- **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
+  `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
+- **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds
+  36800-36801) with no engine named: the same line on native and wasm while they play alike. About 3 s.
+- **Reading a farmed read:** `screens.assemble(spec, first, count, shards, out_dir)` writes `games.jsonl` (the
+  header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
+  only within one engine, counting the seeds left out for mixed engines. `scripts/farm/compare.py A B` counts games
+  that differ between two engines' outputs.
+- **Math:** the play path calls no float function past IEEE's exact ones (`powi(2)` in the eval), so native and wasm
+  play the same games. The `libm` build flag (`cargo build --release -p aic-sim --features libm`, off by default)
+  makes native call the `libm` crate, as wasm does (`src/fmath.rs`); wasm has no clock, so its timings read 0
+  (`src/clock.rs`).

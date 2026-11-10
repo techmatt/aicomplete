@@ -98,7 +98,12 @@ export async function openPage({ width = 1366, height = 768 } = {}) {
   let port;
   for (let i = 0; i < 100 && !port; i++) {
     const file = join(profile, 'DevToolsActivePort');
-    if (existsSync(file)) port = readFileSync(file, 'utf8').split('\n')[0].trim();
+    // 160: the browser may still hold the file as it writes it (EBUSY on Windows): try again.
+    try {
+      if (existsSync(file)) port = readFileSync(file, 'utf8').split('\n')[0].trim();
+    } catch (e) {
+      if (e.code !== 'EBUSY' && e.code !== 'EPERM') throw e;
+    }
     if (!port) await sleep(100);
   }
   if (!port) throw new Error('browser did not open a DevTools port');

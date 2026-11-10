@@ -1,0 +1,36 @@
+{
+  "name": "read",
+  "note": "160: the standard read, farmable: the strategist on the three board pairs, d0-d3 (158's read sets). Farm a seed range with `aic-sim farm read --seed F --games N --out FILE`; the shard's range is always given, so `first_seed` and `games` here are unused.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 48,
+  "records": 0
+}

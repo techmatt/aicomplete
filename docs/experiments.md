@@ -50,7 +50,6 @@ stopped run has every cell's first seeds. `--resume` (same spec and `--out`) pla
 a changed spec, config, engine, rules revision or content; without it an earlier stream moves to `games.jsonl.bak`.
 
 - `report.md` and `results.json` exist from the start: wait on `^time:` in stderr or on the process, not on the file.
-- `run_sim.ps1` writes `out/NAME.err` as it runs (`panicked`, or the 10 s progress lines); `out/NAME.exit` marks the end.
 
 **A game that panics** fails alone: stderr and `failed.jsonl` name its seed, config, overrides and panic, `report.md`
 lists it under *Failed games* with its replay line, `results.json` has `games_failed`, no measure counts it, and the
@@ -103,11 +102,10 @@ stderr line and a missing cell.
 
 **Content levers run on one binary.** A variant's `set` (or `--set` on `run` and `compare`) takes an overlay,
 `<table>.<id>.<path>=<JSON>`: tables `cards`, `threats`, `adversary`, `ais`, `alignment`, `projects`; `*` for every id;
-a path through fields and list indexes (`cards.orbital_embassy.passives.0.amount=2`, `ais.*.economy_track.4.cost=2`;
-`corps.horizon.project.cubes=8`: country pieces by lowercase name; `null` clears an optional field; an op's `amount`
-can't be 0: rewrite its list without it, as 122's `gen_disproof.py` does). It is checked like `content/` and lands
-in the config, so `replay` needs nothing else (`experiments/overlay-card-cost.json` is a worked sweep). Only
-player-card text is generated. Each variant repeats its whole list.
+a path through fields and list indexes (`ais.*.economy_track.4.cost=2`; `corps.horizon.project.cubes=8`: country
+pieces by lowercase name; `null` clears an optional field; an op's `amount` can't be 0: rewrite its list without it).
+It is checked like `content/` and lands in the config, so `replay` needs nothing else
+(`experiments/overlay-card-cost.json` is a worked sweep). Each variant repeats its whole list.
 
 ## Reading noise
 
@@ -146,7 +144,8 @@ the judge off the value table.
   parameter in `baseline.json` makes the old binary refuse the new one), on the same seeds, run from its own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` with its own `CARGO_TARGET_DIR`; new
   sim-only measures go in as `patch -p1` in that tree (`git apply` in a worktree silently applies nothing).
-  `bench/per_decision.py` plays each ROOT's own `configs/`: copy them beside both binaries.
+- **Farming a read** (160): `experiments/farm/read.json` is the read as one farmable spec; shards from `aic-sim farm`
+  or a browser's bundle assemble with `screens.assemble` and read as above ([simulator.md](simulator.md), *The farm*).
 - **Levers:** an income lever is an overlay (no build); a rule, content or map what-if needs one.
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
   out/preflight`) for a crash, bad override or dead agent.
@@ -156,8 +155,8 @@ the judge off the value table.
 
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
 `oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
-pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r66 the row costs
-10 s a game at d3 and 61 s at d4; at r69 26 s and 394 s (158: ~50 min on 3 threads beside a read: launch it with
+pair), d3 and d4, the end-game probe on every loss; run it as its own call beside the read. At r69 the row costs
+26 s a game at d3 and 394 s at d4 (158: ~50 min on 3 threads beside a read: launch it with
 the read); `threads=N` plays a decision's lines side by side. Spec and costs: `155_skilled_agents/`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
@@ -169,10 +168,9 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used, or it confirms on the seeds that picked the levers. Any item that spends seeds updates the
-ledger, after its last read, not before it. Used: every seed below 39880 (which item spent which is in its write-up;
-158's: 39592-39879, a final read and a d0 re-read). Next free: 39880. **The dev seeds for screens are 36800-36831**; screen at
-32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3 (146's confirming sets read
-52.8 and 44.4).
+ledger, after its last read, not before it. Used: every seed below 40072 (which item spent which is in its write-up;
+160's: 39880-40071, the native / wasm measurement). Next free: 40072. **The dev seeds for screens are 36800-36831**;
+screen at 32 seeds a cell, and expect 48-seed sets to differ by up to ~10 points at d3.
 
 ## Reading prices
 

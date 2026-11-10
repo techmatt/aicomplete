@@ -1800,7 +1800,7 @@ impl Eval {
         let world = rules.world();
         *v += self.w.program * g.pile(&cards::played(s)).len() as f64;
         let b = ai::board(&world, s);
-        let share = |taken: usize, len: usize| if len == 0 { 0.0 } else { (taken as f64 / len as f64).powi(2) };
+        let share = |taken: usize, len: usize| if len == 0 { 0.0 } else { crate::fmath::powi(taken as f64 / len as f64, 2) };
         *v += self.w.track_capstone
             * (share(board::track_taken(g, s), b.economy_track.len()) + share(board::track2_taken(g, s), b.play_track.len()));
         if let Some(c) = table {

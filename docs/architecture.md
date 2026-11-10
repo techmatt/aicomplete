@@ -9,6 +9,7 @@ rules are in [rules/](rules/README.md).
 - **`aic-sim`**: the native CLI ([simulator.md](simulator.md)), agents
   ([agents.md](agents.md)) and experiment harness ([experiments.md](experiments.md)).
 - **`aic-wasm`**: wasm-bindgen adapter, JSON strings in and out. No rules.
+- **`aic-farm`**: the farm's wasm bundle, `aic-sim`'s farm in a browser ([simulator.md](simulator.md), *The farm*).
 - **`web/`**: the viewer ([web/README.md](../web/README.md)); it draws the
   [generic view](#the-generic-view) and offers only `legal_actions`.
 

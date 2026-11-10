@@ -15,7 +15,7 @@ use std::collections::BTreeMap;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Mutex, Once};
-use std::time::Instant;
+use crate::clock::Instant;
 
 use aic_core::content::{Resource, Side};
 use aic_core::modules::{adversary, alignment, board, cards, common};
@@ -232,6 +232,12 @@ pub fn keep_variants(spec: &mut Spec, keep: &[String]) -> Result<(), String> {
 
 /// Builds every cell, checking every config, override and agent first.
 pub fn cells(spec: &Spec) -> Result<Vec<Cell>, String> {
+    cells_with(spec, &|path| std::fs::read_to_string(path).map_err(|e| e.to_string()))
+}
+
+/// [`cells`], each config's text from `read` (160: the farm's bundle has no
+/// files, only the ones built into it).
+pub fn cells_with(spec: &Spec, read: &dyn Fn(&str) -> Result<String, String>) -> Result<Vec<Cell>, String> {
     if spec.configs.is_empty()
         || spec.agents.is_empty()
         || spec.variants.is_empty()
@@ -278,7 +284,7 @@ pub fn cells(spec: &Spec) -> Result<Vec<Cell>, String> {
     }
     let mut out = Vec::new();
     for path in &spec.configs {
-        let text = std::fs::read_to_string(path).map_err(|e| format!("{path}: {e}"))?;
+        let text = read(path).map_err(|e| format!("{path}: {e}"))?;
         let base = Config::from_json(&text).map_err(|e| format!("{path}: {e}"))?;
         for v in &spec.variants {
             for &d in &spec.difficulties {
@@ -392,6 +398,10 @@ pub struct GameResult {
     /// 154: a round-cap loss's end-game probe, when the spec asks for one.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub endgame: Option<crate::endgame::EndgameRead>,
+    /// 160: the engine that played it, in a farm line (`native` or `wasm`,
+    /// [`crate::farm`]); empty, and not written, in an experiment's.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub engine: String,
     /// Rebuilt from the actions when read back.
     #[serde(skip)]
     pub final_state: Option<Box<GameState>>,

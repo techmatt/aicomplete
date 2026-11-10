@@ -271,9 +271,9 @@ fn sign_test(x: usize, y: usize) -> f64 {
     let (mut ln_c, mut tail) = (0.0f64, 0.0f64);
     for i in 0..=x.min(y) {
         if i > 0 {
-            ln_c += ((n - i + 1) as f64).ln() - (i as f64).ln();
+            ln_c += crate::fmath::ln((n - i + 1) as f64) - crate::fmath::ln(i as f64);
         }
-        tail += (ln_c - n as f64 * std::f64::consts::LN_2).exp();
+        tail += crate::fmath::exp(ln_c - n as f64 * std::f64::consts::LN_2);
     }
     (2.0 * tail).min(1.0)
 }

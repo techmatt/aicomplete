@@ -12,11 +12,18 @@ serde.workspace = true
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 rand.workspace = true
 rand_chacha.workspace = true
+# 160: the float functions as wasm computes them, behind the `libm` flag (src/fmath.rs).
+libm = { version = "0.2", optional = true }
+
+# wasm (the farm's bundle, crates/aic-farm) keeps its own allocator.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 mimalloc = { version = "0.1.52", default-features = false }
 
 [features]
 # Times the search's hot calls; `experiment` prints the split (src/prof.rs).
 profile = []
+# 160: native float functions from the `libm` crate, as on wasm; not the default (src/fmath.rs).
+libm = ["dep:libm"]
 
 # Refuses a test run whose flags became a filter: see the file.
 [[test]]

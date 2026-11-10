@@ -81,6 +81,48 @@ def cell_labels(spec):
     return out
 
 
+def cells_of(spec):
+    """Each cell's config, variant, difficulty and agent (as the spec writes it), by cell id, in
+    `cell_labels`' order. From the header alone, so a farmed read (no results.json) reads too."""
+    return [{'config': c, 'variant': v['name'], 'difficulty': d, 'agent': a}
+            for c in spec['configs'] for v in spec['variants'] for d in spec['difficulties'] for a in spec['agents']]
+
+
+def engine(g):
+    """The engine that played a game, `native` or `wasm`: a farm line names it (160), an
+    experiment's line (native) doesn't."""
+    return g.get('engine') or 'native'
+
+
+def same_engine(a, b):
+    """The seeds both {seed: game} A and B played on one engine, and how many seeds they share
+    on mixed engines (160: a seed pairs only within one engine, so an engine's bias can't read
+    as a lever's gap; those seeds are left out)."""
+    both = [s for s in a if s in b]
+    seeds = [s for s in both if engine(a[s]) == engine(b[s])]
+    return seeds, len(both) - len(seeds)
+
+
+def assemble(spec, first, count, shards, out_dir, exe=None):
+    """160: farmed shards as an experiment output the read scripts take: OUT_DIR/games.jsonl,
+    the header `aic-sim farm SPEC --header` prints for seeds FIRST .. FIRST+COUNT-1, then each
+    shard's lines, in the order given (seed order). EXE: the aic-sim binary (default
+    target/release/aic-sim[.exe]); it runs in the repo root, where SPEC's configs are."""
+    import subprocess
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if exe is None:
+        exe = os.path.join(root, 'target', 'release', 'aic-sim.exe' if os.name == 'nt' else 'aic-sim')
+    head = subprocess.run([exe, 'farm', spec, '--header', '--seed', str(first), '--games', str(count)],
+                          cwd=root, check=True, capture_output=True, text=True, encoding='utf-8').stdout
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, 'games.jsonl'), 'w', encoding='utf-8', newline='\n') as out:
+        out.write(head.strip() + '\n')
+        for s in shards:
+            with open(s, encoding='utf-8') as f:
+                text = f.read()
+            out.write(text if not text or text.endswith('\n') else text + '\n')
+
+
 def load(d):
     """(cells by id, games by cell), without the games' action lists."""
     with open(f'{d}/results.json', encoding='utf-8') as f:

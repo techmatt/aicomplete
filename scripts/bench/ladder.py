@@ -15,6 +15,10 @@ its gap to base paired on the same pair and seed. `--measures` adds, per difficu
 lost to corruption, adversary ambassadors placed (created or rallied), corruptions, compute made, and the project deck
 (amendment 6618): projects revealed and resolved as a share of the deck (`--deck`, 20), distinct projects revealed,
 and reshuffles.
+
+A farmed read (160: shards assembled by `screens.assemble`, no results.json) reads its cells from the header. A
+farm line names its engine (`native` or `wasm`): a seed pairs across sides only on one engine, and a line under the
+table counts, per difficulty (or lever), the shared seeds left out for mixed engines.
 """
 import argparse
 import json
@@ -24,7 +28,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from screens import gap, stream  # noqa: E402
+from screens import cells_of, gap, same_engine, stream  # noqa: E402
 
 BANDS = "90-100,70-80,55-65,40-50"  # 157's prompt
 DECK = 20
@@ -40,11 +44,19 @@ def parse_bands(text):
 
 
 def load(d):
-    """(cell, game) for each game of DIR, in file order."""
-    with open(f"{d}/results.json", encoding="utf-8") as f:
-        cells = {c["cell"]: c for c in json.load(f)["cells"]}
+    """(cell, game) for each game of DIR, in file order. A farmed read has no results.json: its cells are the
+    header spec's. Each cell gets `rank`: its agent's place in the spec's list, which pairs agents across builds
+    whose labels for one agent differ."""
     lines = stream(d)
-    next(lines)
+    head = next(lines)
+    if os.path.exists(f"{d}/results.json"):
+        with open(f"{d}/results.json", encoding="utf-8") as f:
+            cells = {c["cell"]: c for c in json.load(f)["cells"]}
+    else:
+        cells = dict(enumerate(cells_of(head["spec"])))
+    agents = list(dict.fromkeys(cells[k]["agent"] for k in sorted(cells)))
+    for c in cells.values():
+        c["rank"] = agents.index(c["agent"])
     for g in lines:
         yield cells[g["cell"]], g
 
@@ -91,17 +103,29 @@ def mean_table(rows_by_side):
     return "\n".join(lines)
 
 
+def won(g):
+    return 1 if g["won"] else 0
+
+
 def paired(n, o):
-    """(old win share over the common keys, mean gap in points, its paired SE in points); NaN with no common key."""
-    common = [k for k in n if k in o]
-    diffs = [n[k] - o[k] for k in common]
+    """(old win share over the keys both played on one engine, mean gap in points, its paired SE in points, keys shared
+    on mixed engines); NaN with no common key. n, o: {key: game}."""
+    common, mixed = same_engine(n, o)
+    diffs = [won(n[k]) - won(o[k]) for k in common]
     if not diffs:
-        return float("nan"), float("nan"), float("nan")
-    po = sum(o[k] for k in common) / len(common)
+        return float("nan"), float("nan"), float("nan"), mixed
+    po = sum(won(o[k]) for k in common) / len(common)
     if len(diffs) == 1:
-        return po, 100 * diffs[0], 0.0
+        return po, 100 * diffs[0], 0.0, mixed
     m, se, _ = gap(diffs)
-    return po, m, se
+    return po, m, se, mixed
+
+
+def mixed_line(mixed):
+    """160: the shared seeds left out for mixed engines, or nothing when none were."""
+    if any(mixed.values()):
+        print("\nseeds left out for mixed engines (native on one side, wasm on the other): "
+              + ", ".join(f"{k} {v}" for k, v in mixed.items()))
 
 
 def screen(dirs, with_measures):
@@ -113,18 +137,20 @@ def screen(dirs, with_measures):
             lever = v.split("_", 1)[1] if "_" in v else "base"
             pair = v.split("_", 1)[0]
             key = (lever, c["agent"], c["difficulty"])
-            wins[key][(i, pair, g["seed"])] = 1 if g["won"] else 0
+            wins[key][(i, pair, g["seed"])] = g
             ms[f"{lever} {c['agent']}"][c["difficulty"]].append(measures(g))
     print("| lever | agent | d | win % | ±SE | gap vs base | ±SE (paired) | games |")
     print("|---|---|---|---|---|---|---|---|")
+    mixed = {}
     for key in sorted(wins):
         lever, agent, diff = key
         n = wins[key]
-        p = sum(n.values()) / len(n)
+        p = sum(map(won, n.values())) / len(n)
         se = math.sqrt(p * (1 - p) / len(n)) * 100
         base = wins.get(("base", agent, diff), {})
-        _, m, gse = paired(n, base) if lever != "base" else (0, float("nan"), float("nan"))
+        _, m, gse, mixed[f"{lever} {agent} d{diff}"] = paired(n, base) if lever != "base" else (0, float("nan"), float("nan"), 0)
         print(f"| {lever} | {agent} | d{diff} | {100 * p:.1f} | {se:.1f} | {m:+.1f} | {gse:.1f} | {len(n)} |")
+    mixed_line(mixed)
     if with_measures:
         print()
         print(mean_table(ms))
@@ -141,22 +167,23 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
         for i, d in enumerate(dirs):
             for c, g in load(d):
                 diff, v = c["difficulty"], c["variant"]
-                won = 1 if g["won"] else 0
-                key = (i, v, g["seed"])
+                # 160: the agent too (its place in the spec): a run of two agents kept one game a seed, by file order.
+                key = (i, v, c["rank"], g["seed"])
                 if side == "new":
-                    new[diff][key] = won
-                    per_set[diff][i].append(won)
+                    new[diff][key] = g
+                    per_set[diff][i].append(won(g))
                     ms[nl][diff].append(measures(g))
                 else:
-                    old[diff][key] = won
+                    old[diff][key] = g
                     ms[ol][diff].append(measures(g))
     print(f"| d | {nl} win % | ±SE | {ol} win % | gap | ±SE (paired) | sets ({nl}) | band | verdict |")
     print("|---|---|---|---|---|---|---|---|---|")
+    mixed = {}
     for diff in sorted(new):
         n = new[diff]
-        p = sum(n.values()) / len(n)
+        p = sum(map(won, n.values())) / len(n)
         se = math.sqrt(p * (1 - p) / len(n)) * 100
-        po, m, gse = paired(n, old.get(diff, {}))
+        po, m, gse, mixed[f"d{diff}"] = paired(n, old.get(diff, {}))
         sets = " / ".join(f"{100 * sum(x) / len(x):.1f}" for _, x in sorted(per_set[diff].items()))
         if diff in bands:
             lo, hi = bands[diff]
@@ -164,6 +191,7 @@ def ladder(new_dirs, old_dirs, bands, with_measures):
         else:
             band, ok = "-", "-"
         print(f"| d{diff} | **{100 * p:.1f}** | {se:.1f} | {100 * po:.1f} | {m:+.1f} | {gse:.1f} | {sets} | {band} | {ok} | ({len(n)} games)")
+    mixed_line(mixed)
     if with_measures:
         print()
         print(mean_table(ms))

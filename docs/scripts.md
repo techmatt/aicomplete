@@ -6,6 +6,10 @@ Current:
 
 - `wasm-smoke.mjs`: plays one game through the wasm package in Node. `wasm-parity.mjs`:
   replays aic-sim records of each `configs/variants.json` variant in wasm.
+- `farm/build.mjs BUNDLE`: the farm's wasm bundle. `farm/run.mjs BUNDLE SPEC FIRST COUNT OUT [--browser] [--port N]
+  [--fingerprint]`: a shard played on it in Node or headless Edge (`web/scripts/cdp.mjs`), each seed timed.
+  `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win % and the paired
+  gap, ms a game. See simulator.md, *The farm*.
 - `regen.py [--no-build] [--check]`: builds release, checks `content/` against `drafts/adversary/`
   (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
   `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
@@ -27,8 +31,7 @@ Current:
 - `cards/screen.py`: the screen summary: a table of named columns over experiment outputs
   (`--columns a,b,c`, `--preset tiers|041|034|028|018|016`, `--sources`, `--list`) and `--gate DIR`,
   each check against its own agent in one sign, agent minus check, with the paired SE, and games
-  per check when `results.json` has a `gate` key, then the unspent-resources readout. It reads a close run that holds
-  its planner row too, gate key or not; report.md's agent pairs read the other way, check minus reference. `--preset
+  per check when `results.json` has a `gate` key, then the unspent-resources readout. `--preset
   tiers` is cards offered, kept and played per game by tier: run it on the first screen of a card rework, since agents
   draft tier 2 about three picks in four ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
@@ -42,13 +45,12 @@ Current:
   in none, and every draft card no game kept. Seconds.
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
-  where used; the games whose insight after the keep grew three rounds running past `--held`; per cell, seat and
-  resource the mean peak held, and games whose rise (peak less `start`, setup's holding; before 124 the peak) is over
-  `--peak-times` its income a round and `--peak-floor`. A bug hunt runs it on its fresh seeds.
+  where used; games whose insight grew three rounds running past `--held`; per cell, seat and resource the mean
+  peak held, and games whose rise is over `--peak-times` its income a round. A bug hunt runs it on its fresh seeds.
 - `cards/source_read.py DIR... [--top 5] [--pool] [--resource credits,insight,energy,chips|all]`: per cell (`--pool`:
   per agent) and board, each resource's top sources of gains a game (`sources`: `own:`/`other:` an action, `phase:`
   an automatic phase), and the keep counters (`keeps`: picks offered, kept, keep rate, tier-2 share, insight at the
-  keep) split by runaway_read's insight flag. Runs from 124 on. Seconds.
+  keep) split by runaway_read's insight flag. Seconds.
 - `cards/slots_read.py DIR... [--rounds N]`: per cell, each seat's build-overs a game and its buildings standing as
   each round starts, from the `slots.*` counters.
 - `cards/board_read.py DIR... [--powers] [--cards]`: per cell, pooled across DIRs: wins ± SE, the win mix, Patience's
@@ -67,17 +69,14 @@ Current:
   capstones out of the deck; rerun after editing the baseline (`regen.py` does).
 - `cards/economy_read.py DIR... [--rounds 10]`: per cell, pooled across DIRs, per seat and game: draft cards
   kept (opening keeps apart) and played, kept and never played, nodes placed, credit income a round, credits and
-  insight left unspent a round (these three per seat-round that reached upkeep); each board's first dear power (as
-  `use_read.py`) used a game with the seat-rounds it lacked the tags; then each seat's most-held tag on its cards in
-  play by round (`ai.tag_top.<seat>`), mean and share at 3 or more. A variant's seats follow its `ai.boards=`
-  override. Seconds.
+  insight left unspent a round; each board's first dear power used a game; each seat's most-held tag by round
+  (`ai.tag_top.<seat>`). Seconds.
 - `cards/energy_read.py DIR...`: per cell: win %, the energy a seat holds as the action phase ends at rounds 3 and 6
   and its last round (`unspent.<seat>.energy.rNN`), then each energy mechanic's use a game. Seconds.
 - `cards/corp_read.py DIR...`: per cell, pooled across DIRs: wins, completions and their mean round, cubes paid by
   color, cubes stored and converted, uses per converter, stations claimed and built, adversary compute by source.
 - `cards/price_read.py`: per-card rates and stratified win deltas from games.jsonl
-  ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, opening deal and draws
-  included: never a share of offered, which would pass 100.
+  ([experiments.md](experiments.md), *Reading prices*). `kept` is a share of games, not of offered.
 - `cards/effect_ledger.py`: the effect ledger. It splits each card's printed cost over its effects pro rata to the
   reasoned values (`configs/agents/values.json`, an income valued over its tier's horizon), fits a price multiplier
   per effect, and writes CSVs, a sortable `ledger.html` and `outliers.md` to `experiments/results/effect-ledger/`;
@@ -86,10 +85,8 @@ Current:
   `values.json`; `--overlay FILE` (with `--stdout`) applies a card pass's overlay first, to price it before
   writing it; `--hold-ratio OLD.csv` adds the credit price that keeps each card's printed / reasoned ratio of an
   older `cards.csv` (`git show REV:experiments/results/effect-ledger/cards.csv`), for repricing after a value change.
-  Its Python mirror of `agents/value.rs` must change with it (the fast-lane `effect_ledger_mirrors_the_table` checks
-  the committed `cards.csv`). "Remove up to N troops" counts at what it removes in play (`values.json`
-  `troops_removed`, which value.rs reads too, from the engine's `cards.troops_removed.<N>` /
-  `cards.remove_troops.<N>` counters; up to 6 removes about 3.6). Seconds.
+  Its Python mirror of `agents/value.rs` must change with it (a fast-lane test checks the committed `cards.csv`).
+  "Remove up to N troops" counts at what it removes in play (`values.json` `troops_removed`). Seconds.
 - `cards/payback.py [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
   price at a committed seat's fire rates (card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older
   deck's column.
@@ -123,12 +120,14 @@ Current:
   [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
   `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs).
 - `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck 20]`: the paired ladder
-  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base.
+  read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Like
+  `paired.py`, it reads a farmed read (no `results.json`) and pairs a seed only within one engine, counting the rest.
 - `bench/gate_close.py`: `plan GATE_DIR OUT_DIR` picks the rows within 2 SE by gap against paired SE and writes specs
   that carry them on to the cap, reusing their games; `read` merges the runs (`--min-seeds N` leaves out rows short of
   N seeds, and says how many).
 - `bench/paired.py DIR... [--pair A B]... [--against-base]`: any run's cells with win %, SE, rounds and ends, and
-  paired gaps between any two cells, pooled over several `--pair`s. A `--pair` cell is its exact name
+  paired gaps between any two cells, pooled over several `--pair`s, each on the seeds both played on one engine
+  (`native`/`wasm`), saying how many it left out as mixed. A `--pair` cell is its exact name
   (`bp/strategist`, or `DIR/bp/strategist`); a spec with several configs or difficulties leads it with the config's
   file stem and `dN` (`no_liberate/d2/bp/strategist`; `screens.cell_labels`). `--against-base` reads a price sweep:
   every variant `cN-x` against `cN`, per agent, each lever pooled over its sizes (report.md pairs only against the

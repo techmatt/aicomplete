@@ -1,0 +1,13 @@
+[package]
+name = "aic-farm"
+description = "The farm's wasm bundle: a read's games over a seed range in a browser tab, for conductor's remote workers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+aic-sim = { path = "../aic-sim" }
+wasm-bindgen = "0.2"

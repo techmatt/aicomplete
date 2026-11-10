@@ -1,0 +1,21 @@
+{
+  "name": "cell-d2",
+  "note": "160: one standard read cell, the strategist on the bp pair at d2: 160's native / wasm measurements.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 96,
+  "records": 0
+}

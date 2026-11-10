@@ -6,7 +6,7 @@ and a wasm build for a JS front end sit on top of the core, and neither holds an
 
 Where to look: how to build and test is below. The rest has its own page.
 
-- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records.
+- [docs/simulator.md](docs/simulator.md): `aic-sim run`, `compare`, `show`, `replay`, every flag, game records, the farm.
 - [docs/agents.md](docs/agents.md): the agent ladder, the specs, the heuristic, the dominance checks.
 - [docs/experiments.md](docs/experiments.md): experiment specs, outputs, measures, overlays, the
   band and the gate, budgeting a run, the seed ledger (*Fresh seeds for a gate*).
@@ -42,9 +42,10 @@ Where to look: how to build and test is below. The rest has its own page.
 |---|---|
 | `crates/aic-core` | The rules engine. No I/O, no clock, seeded per-purpose RNG streams in the state, serde state, exact replay. `Rules::new(config)` then `new_game` / `legal_actions_into` / `apply_mut`, plus the convenient free functions `new_game`, `legal_actions`, `apply`. |
 | `crates/aic-core/src/modules/` | One file per rules area (`adversary`, `alignment`, `economy`, `ai`), or a directory for the big ones (`board/`, `cards/`, `threats/`), shared code (`common`, `effects/`), read-only forecasts of rules steps that the rule and the agents share (`plan`), the registry in `mod.rs`. |
-| `crates/aic-sim` | Native CLI: seeded games over a seed range, one config or two side by side, with every game replay-checked; the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `cli.rs` parses the arguments; `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates the docs and holds `spelling.rs`, the American-spelling check, and `current_docs.rs`, which refuses an 'NNN's changes' heading; `prof.rs` is the `profile` feature. |
+| `crates/aic-sim` | Native CLI (a library, `lib.rs`, that `main.rs` calls): seeded games over a seed range, one config or two side by side, with every game replay-checked; the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `farm.rs` is a read's games for remote workers; `cli.rs` parses the arguments; `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates and checks the docs; `prof.rs` is the `profile` feature. |
 | `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports (old-revision records there, r6 to r14, don't load). At the top level: the standing specs (`band`, `gate`, `gate-exploit` and `gate-c3` its fast read and 3-country checks, `smoke`, `use` the engine and loop smoke, `same` the identical-games check, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `archive/`: specs of past revisions (every spec not tied to the current one) and those the binary refuses today. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
+| `crates/aic-farm` | The farm's wasm bundle: `aic-sim`'s farm in a browser tab, with the configs and `experiments/farm/` specs built in ([docs/simulator.md](docs/simulator.md), *The farm*). |
 | `content/` | Data embedded at compile time: `map.json` (piece shape, layouts for 1–4 countries, the four printed country pieces with their cities, ocean, setup buildings and megaproject), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. `threats.json`, `projects.json` and `adversary.json` are written from `drafts/adversary/`: edit the drafts. |
 | `drafts/adversary/` | The source of the adversary's content (threat tiers, projects, the Militarist): `python scripts/content/load_adversary.py` writes `content/` and docs/adversary-cards.md; `--check` (regen runs it) refuses a stale `content/`. |
 | `configs/` | Game configs: modules, variants, every parameter. `baseline.json` is the current baseline at `RULES_REVISION`: the deck, 2 countries (3 seat the Researcher), difficulty 0, every number still a candidate; `shared_row.json` differs only in the threat variant (and name): it is derived, so after editing the baseline run `python scripts/configs/shared_row.py`; a core test fails until you do. Other country counts, difficulties, off-variants and optional modules are `--set` lines ([docs/simulator.md](docs/simulator.md)). `configs/agents/` is agent numbers, not a game config: `values.json` (the value table) and `strategies.json`, built into `aic-sim`; changing one changes no rule (docs/agents.md). |
@@ -93,6 +94,7 @@ cargo test-slow                                    # the slow lane alone: nearly
 cargo build --release -p aic-sim                   # ~12 s
 ./target/release/aic-sim docs                      # regenerate the docs built from content and configs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
+node scripts/farm/build.mjs out/bundle             # the farm's wasm bundle (~1 min cold); scripts/farm/run.mjs plays it in Node or a browser
 node scripts/wasm-smoke.mjs                        # needs crates/aic-wasm/pkg from the wasm-pack line above (`npm run wasm` writes web/src/wasm/ and doesn't satisfy it); checks native = wasm
 node scripts/wasm-parity.mjs [games]               # native = wasm over the variant matrix (aic-sim records replayed in wasm); ~22 s with 2 games a variant and agent; rebuilds pkg if older than crates/aic-core, crates/aic-wasm, content/ or configs/
 ```
@@ -107,12 +109,9 @@ Anything after an alias goes to the test binary, with no second `--` (`crates/ai
 "Unrecognized option: 'j'", which looks like a fast pass: check the exit code). Times are on this
 machine, otherwise idle; the first test-profile build takes about 80 s.
 
-- The test profile is optimized (`[profile.test] opt-level = 1` in `Cargo.toml`; debug
-  assertions and overflow checks stay on).
-- `cargo test` runs test binaries one after another, so the fast lane's wall clock
-  is roughly the sum of each binary's slowest test (~1-1.5 s each in aic-sim's three
-  binaries with games). A test that loops over agents or variants splits into one test
-  each, or a scoped thread each, so they run side by side.
+- `cargo test` runs test binaries one after another, so the fast lane's wall clock is
+  about the sum of each binary's slowest test: a test looping over agents or variants
+  splits into one test (or scoped thread) each.
 
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is

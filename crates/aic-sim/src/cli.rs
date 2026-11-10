@@ -78,7 +78,18 @@ experiment:
                     seconds (default 60; 0 = only at the end). Every game is also
                     appended to DIR/games.jsonl as it finishes
     --resume        continue a stopped run of the same spec from DIR/games.jsonl:
-                    play only the games it lacks, then report them all";
+                    play only the games it lacks, then report them all
+
+farm (conductor's remote workers; docs/simulator.md, The farm):
+  aic-sim farm <spec> --seed F --games N --out FILE
+                    every cell of the spec on seeds F..F+N, seed by seed, one game line
+                    each (games.jsonl's, timings 0, engine named) into FILE; two
+                    halves concatenated are the whole range. <spec>: a name in
+                    experiments/farm/ or a path. Each game's time goes to stderr
+  aic-sim farm <spec> --header --seed F --games N
+                    the games.jsonl header line for those seeds
+  aic-sim farm --fingerprint
+                    a short check a worker must reproduce";
 
 const RUN_FLAGS: &[&str] = &[
     "--games", "--seed", "--set", "--set-a", "--agent", "--max-actions", "--threads", "--json",
@@ -101,6 +112,13 @@ const COMMANDS: &[(&str, usize, usize, &str, &[&str])] = &[
     ("cards", 0, 0, "cards takes no paths", &[]),
     ("replay", 1, usize::MAX, "replay takes one or more game records", &[]),
     ("docs", 0, 0, "docs takes no paths", &["--check"]),
+    (
+        "farm",
+        0,
+        1,
+        "farm takes one spec",
+        &["--seed", "--games", "--out", "--header", "--fingerprint"],
+    ),
     ("strategies", 1, 1, "strategies takes one config", &["--games", "--seed", "--set", "--agent"]),
     (
         "experiment",
@@ -159,6 +177,9 @@ pub struct Options {
     pub quick: bool,
     pub resume: bool,
     pub report_every: u64,
+    /// `farm`: print the header line, or the fingerprint, instead of playing.
+    pub header: bool,
+    pub fingerprint: bool,
 }
 
 /// A bad command line: the message, then the usage.
@@ -211,6 +232,8 @@ pub fn parse_args() -> Options {
         quick: false,
         resume: false,
         report_every: 60,
+        header: false,
+        fingerprint: false,
     };
     while let Some(a) = args.next() {
         if a.starts_with("--") {
@@ -251,6 +274,8 @@ pub fn parse_args() -> Options {
             "--json" => o.json = true,
             "--trace" => o.trace = true,
             "--check" => o.check = true,
+            "--header" => o.header = true,
+            "--fingerprint" => o.fingerprint = true,
             "--save" => {
                 let d = value("--save");
                 if d.is_empty() {
