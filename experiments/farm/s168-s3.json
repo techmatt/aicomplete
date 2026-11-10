@@ -1,0 +1,107 @@
+{
+  "name": "s168-s3",
+  "note": "168 s3: Z1 [adversary.ambassador_income=0,3,3,3,2; adversary.compute_income=3,4,16,24,10], Z2 [adversary.ambassador_income=0,1,2,3,2; adversary.compute_income=3,20,28,24,10], Z3 [adversary.ambassador_income=0,1,2,3,2; adversary.compute_income=3,4,28,24,10; adversary.counter_bonus_credits=8]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_Z1",
+      "set": [
+        "adversary.ambassador_income=0,3,3,3,2",
+        "adversary.compute_income=3,4,16,24,10"
+      ]
+    },
+    {
+      "name": "bp_Z2",
+      "set": [
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,20,28,24,10"
+      ]
+    },
+    {
+      "name": "bp_Z3",
+      "set": [
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,28,24,10",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_Z1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,3,3,2",
+        "adversary.compute_income=3,4,16,24,10"
+      ]
+    },
+    {
+      "name": "br_Z2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,20,28,24,10"
+      ]
+    },
+    {
+      "name": "br_Z3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,28,24,10",
+        "adversary.counter_bonus_credits=8"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_Z1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,3,3,2",
+        "adversary.compute_income=3,4,16,24,10"
+      ]
+    },
+    {
+      "name": "pr_Z2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,20,28,24,10"
+      ]
+    },
+    {
+      "name": "pr_Z3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,28,24,10",
+        "adversary.counter_bonus_credits=8"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

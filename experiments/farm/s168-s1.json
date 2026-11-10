@@ -1,0 +1,115 @@
+{
+  "name": "s168-s1",
+  "note": "168 s1: cA [adversary.compute_income=3,7,16,16,10], cB [adversary.compute_income=3,10,22,24,10], aA [adversary.ambassador_income=0,2,2,2,2], aB [adversary.ambassador_income=0,1,2,3,2]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_cA",
+      "set": [
+        "adversary.compute_income=3,7,16,16,10"
+      ]
+    },
+    {
+      "name": "bp_cB",
+      "set": [
+        "adversary.compute_income=3,10,22,24,10"
+      ]
+    },
+    {
+      "name": "bp_aA",
+      "set": [
+        "adversary.ambassador_income=0,2,2,2,2"
+      ]
+    },
+    {
+      "name": "bp_aB",
+      "set": [
+        "adversary.ambassador_income=0,1,2,3,2"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_cA",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,7,16,16,10"
+      ]
+    },
+    {
+      "name": "br_cB",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,10,22,24,10"
+      ]
+    },
+    {
+      "name": "br_aA",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,2,2,2,2"
+      ]
+    },
+    {
+      "name": "br_aB",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,2,3,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_cA",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,7,16,16,10"
+      ]
+    },
+    {
+      "name": "pr_cB",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,10,22,24,10"
+      ]
+    },
+    {
+      "name": "pr_aA",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,2,2,2,2"
+      ]
+    },
+    {
+      "name": "pr_aB",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,2,3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

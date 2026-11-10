@@ -1,0 +1,35 @@
+{
+  "name": "s168-retune",
+  "note": "168 retune: ",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    4
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 32,
+  "records": 0
+}

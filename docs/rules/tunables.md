@@ -72,8 +72,8 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 3, 4, 10, 8, 10 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 0, 1, 1, 1, 2 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
+| `adversary.compute_income` | 3, 4, 18, 24, 13 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.ambassador_income` | 0, 3, 3, 3, 2 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |

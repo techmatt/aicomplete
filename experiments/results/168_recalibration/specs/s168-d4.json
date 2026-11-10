@@ -1,0 +1,133 @@
+{
+  "name": "s168-d4",
+  "note": "168 d4: tips0 [adversary.discord_removed_tips=0], dr0 [adversary.discord_removed=0], t2e0 [adversary.tier2_early=0], a4 [adversary.ambassador_income=0,1,1,1,1], c4 [adversary.compute_income=3,4,10,8,5]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_tips0",
+      "set": [
+        "adversary.discord_removed_tips=0"
+      ]
+    },
+    {
+      "name": "bp_dr0",
+      "set": [
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "bp_t2e0",
+      "set": [
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "bp_a4",
+      "set": [
+        "adversary.ambassador_income=0,1,1,1,1"
+      ]
+    },
+    {
+      "name": "bp_c4",
+      "set": [
+        "adversary.compute_income=3,4,10,8,5"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_tips0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.discord_removed_tips=0"
+      ]
+    },
+    {
+      "name": "br_dr0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "br_t2e0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "br_a4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,1,1,1"
+      ]
+    },
+    {
+      "name": "br_c4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,4,10,8,5"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_tips0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.discord_removed_tips=0"
+      ]
+    },
+    {
+      "name": "pr_dr0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "pr_t2e0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "pr_a4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,1,1,1"
+      ]
+    },
+    {
+      "name": "pr_c4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,4,10,8,5"
+      ]
+    }
+  ],
+  "difficulties": [
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

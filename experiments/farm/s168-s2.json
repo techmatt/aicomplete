@@ -1,0 +1,116 @@
+{
+  "name": "s168-s2",
+  "note": "168 s2: X1 [adversary.ambassador_income=0,1,2,2,2; adversary.compute_income=3,4,22,24,10; adversary.counter_more_at=1], X2 [adversary.ambassador_income=0,1,3,3,2; adversary.compute_income=3,4,10,16,10; adversary.board_difficulty_at=1], X3 [adversary.ambassador_income=0,1,2,3,2; adversary.compute_income=3,4,16,24,10; adversary.counter_more_at=1; adversary.board_difficulty_at=1]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_X1",
+      "set": [
+        "adversary.ambassador_income=0,1,2,2,2",
+        "adversary.compute_income=3,4,22,24,10",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "bp_X2",
+      "set": [
+        "adversary.ambassador_income=0,1,3,3,2",
+        "adversary.compute_income=3,4,10,16,10",
+        "adversary.board_difficulty_at=1"
+      ]
+    },
+    {
+      "name": "bp_X3",
+      "set": [
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,16,24,10",
+        "adversary.counter_more_at=1",
+        "adversary.board_difficulty_at=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_X1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,2,2,2",
+        "adversary.compute_income=3,4,22,24,10",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "br_X2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,3,3,2",
+        "adversary.compute_income=3,4,10,16,10",
+        "adversary.board_difficulty_at=1"
+      ]
+    },
+    {
+      "name": "br_X3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,16,24,10",
+        "adversary.counter_more_at=1",
+        "adversary.board_difficulty_at=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_X1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,2,2,2",
+        "adversary.compute_income=3,4,22,24,10",
+        "adversary.counter_more_at=1"
+      ]
+    },
+    {
+      "name": "pr_X2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,3,3,2",
+        "adversary.compute_income=3,4,10,16,10",
+        "adversary.board_difficulty_at=1"
+      ]
+    },
+    {
+      "name": "pr_X3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,1,2,3,2",
+        "adversary.compute_income=3,4,16,24,10",
+        "adversary.counter_more_at=1",
+        "adversary.board_difficulty_at=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}
