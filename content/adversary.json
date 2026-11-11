@@ -16,7 +16,7 @@
   "rules": [
    {
     "name": "Garrisons",
-    "text": "Income: +1 agent a board a round.",
+    "text": "Income: +1 Agent a country a round.",
     "effects": [
      {
       "op": "increase_income",
@@ -26,12 +26,12 @@
    },
    {
     "name": "Troops where the Protector stands",
-    "text": "Each round: on each board where the Protector has a node, Deploy 1.",
+    "text": "Each round: in each country where the Protector has a Node, Muster 1 on its lowest-numbered adversary or neutral factory (none: none lands).",
     "effects": []
    },
    {
     "name": "Warmongering",
-    "text": "Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base in each production, whatever makes it.",
+    "text": "Each round, a military base with an adversary Troop on or next to it makes 1 extra Drone, even past its cap; at most 1 extra a base in each production, whatever makes it.",
     "effects": [
      {
       "op": "corp_troops",
@@ -45,7 +45,7 @@
    }
   ],
   "difficulty": {
-   "text": "Militarist, harder: every Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.",
+   "text": "Militarist, harder: every Muster lands 1 more Troop a country, and the adversary gains 4 compute for each threat that executes uncountered.",
    "effects": [
     {
      "op": "standing_troops_bonus",
@@ -93,7 +93,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 1. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: cities.",
+   "text": "Threat, each country: Military 1. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -134,7 +134,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each board: Military 1 or Economic 1. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each board: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
+   "text": "Threat, each country: Military 1 or Economic 1. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Each country: a neutral factory opens on its lowest-numbered free site. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -170,7 +170,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each board: Military 1 or Cyber 1. Rally: research stations. Income: +1 agent a board a round. Corrupt: research stations.",
+   "text": "Threat, each country: Military 1 or Cyber 1. Rally: research stations. Income: +1 Agent a country a round. Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -211,7 +211,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 1 or Influence 1. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities.",
+   "text": "Threat, each country: Military 1 or Influence 1. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -248,7 +248,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 1 or Grid 1. Rally: botnet hexes. Income: +2 compute a round. Corrupt: cities.",
+   "text": "Threat, each country: Military 1 or Grid 1. Rally: Botnet hexes. Income: +2 compute a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "projects advanced (compute)",
@@ -288,7 +288,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2. Rally: coastal cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: cities.",
+   "text": "Threat, each country: Military 2. Rally: coastal cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -325,7 +325,7 @@
      "site": "station"
     }
    ],
-   "text": "Threat, each board: Military 2 or Cyber 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Corrupt: research stations.",
+   "text": "Threat, each country: Military 2 or Cyber 2. Rally: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Corrupt: research stations.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -362,7 +362,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Influence 2 or Cyber 2. Rally: cities. Income: +1 agent a board a round. Corrupt: cities (1 fewer).",
+   "text": "Threat, each country: Influence 2 or Cyber 2. Rally: cities. Income: +1 Agent a country a round. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "facilities destroyed or seized"
@@ -402,7 +402,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each board: Military 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Each player with a node on or next to a front's base destroys 1 of those nodes. Corrupt: factories.",
+   "text": "Threat, each country: Military 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Each player with a Node on or next to a front's base destroys 1 of those Nodes. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -451,7 +451,7 @@
      "site": "factory"
     }
    ],
-   "text": "Threat, each board: Military 1 or Economic 1, and Military 2 or Economic 2. Rally: factories. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +2 compute a round. Corrupt: factories.",
+   "text": "Threat, each country: Military 1 or Economic 1, and Military 2 or Economic 2. Rally: factories. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +2 compute a round. Corrupt: factories.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -492,7 +492,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: any tier-2 threat. Rally: cities. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Every adversary troop takes 1 more step this round. Corrupt: cities.",
+   "text": "Threat, each country: any tier-2 threat. Rally: cities. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Every adversary Troop takes 1 more step this round. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -548,7 +548,7 @@
      "site": "city"
     }
    ],
-   "text": "Threat, each board: Military 2, and Economic 2 or Grid 2. Rally: factories. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Income: +1 agent a board a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
+   "text": "Threat, each country: Military 2, and Economic 2 or Grid 2. Rally: factories. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Remove 2 Unity from the Unity track. Corrupt: factories. Corrupt: cities.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -601,7 +601,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each board: any tier-2 threat, and Military 2 or Influence 2. Rally: cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: any tier-2 threat, and Military 2 or Influence 2. Rally: cities. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Sway 1 toward Discord. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -654,7 +654,7 @@
      "cut": 1
     }
    ],
-   "text": "Threat, each board: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Deploy 1: each board, 1 troop on its lowest-numbered factory (else city). Income: +1 agent a board a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
+   "text": "Threat, each country: Military 2 or Cyber 2, and Influence 2. Rally: research stations. Muster 1: each country, 1 Troop on its lowest-numbered factory (else city). Income: +1 Agent a country a round. Corrupt: research stations. Corrupt: cities (1 fewer).",
    "harms": [
     "adversary pieces placed",
     "troops made",
@@ -707,7 +707,7 @@
      "site": "land"
     }
    ],
-   "text": "Threat, each board: Economic 2 or Grid 2, and Military 2 or Cyber 2. Rally: coastal cities. Deploy 2: each board, 2 troops on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Corrupt: cities. Corrupt: land.",
+   "text": "Threat, each country: Economic 2 or Grid 2, and Military 2 or Cyber 2. Rally: coastal cities. Muster 2: each country, 2 Troops on its lowest-numbered factory (else city). Until the end of next round, cities make no energy. Corrupt: cities. Corrupt: land.",
    "harms": [
     "adversary pieces placed",
     "troops made",

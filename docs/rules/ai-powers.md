@@ -15,24 +15,24 @@ still help.
 | Board | Power | Cost | Effect |
 |---|---|---|---|
 | Builder | Mint | 3 credits | gain 1 chip |
-| Builder | Deploy | 1 energy | place 1 node |
-| Builder | Buy In | 1 energy + 6 credits | place 1 node |
+| Builder | Expand | 1 energy | place 1 Node |
+| Builder | Buy In | 1 energy + 6 credits | place 1 Node |
 | Builder | Scrap | 1 Industry | gain 2 chips |
 | Builder | Overcharge | 1 Power | gain 2 energy |
 | Builder | Rush Build | 1 Industry + 1 energy | play a building from your hand, paying no credits |
 | Builder | Focus | 5 credits | gain 1 insight |
 | Builder | Procure | 2 chips | draw 2 cards |
 | Protector | Bulwark | 1 energy | harden 1 facility in reach |
-| Protector | Deploy | 1 energy | place 1 node |
-| Protector | Accord | 1 Diplomacy + 1 energy | place 1 node |
+| Protector | Expand | 1 energy | place 1 Node |
+| Protector | Accord | 1 Diplomacy + 1 energy | place 1 Node |
 | Protector | Stand Down | 1 Security | gain 3 credits |
 | Protector | Recovery | 1 Security | clear a corruption marker in reach |
-| Protector | Shelter | 1 Security + 1 energy | in one country this round, no nodes or facility can be destroyed |
+| Protector | Shelter | 1 Security + 1 energy | in any country (no reach needed) this round, no Node or facility can be destroyed |
 | Protector | Debrief | 1 Diplomacy | draw 2 cards |
-| Protector | Patrol | 1 energy | push up to 3 agents or troops from a hex in reach, each to a hex next to it |
+| Protector | Patrol | 1 energy | push up to 3 Agents or Troops from a hex in reach, each to a hex next to it |
 | Researcher | Fieldwork | 1 energy | draw 3 cards |
-| Researcher | Deploy | 1 energy | place 1 node |
-| Researcher | Peer Review | 3 research cubes | place 1 node |
+| Researcher | Expand | 1 energy | place 1 Node |
+| Researcher | Peer Review | 3 research cubes | place 1 Node |
 | Researcher | Grant | 3 credits | add 1 research cube in your color to an open megaproject |
 | Researcher | Field Station | 1 Industry | build a research station in reach, paying no chips |
 | Researcher | Audit | 1 Cyber | remove 3 compute from one adversary project |
@@ -55,11 +55,11 @@ own currency:
 
 - **Builder, Focus** (a power, once a round): 5 credits → 1 insight, the keep's credit rate opened to plays. At the
   agents' values (a credit 1, an insight 2.5) it reads as a loss: it pays when one insight short stops a play or a keep.
-- **Protector, Vigil** (an Effect of Wall, not a power): when your Wall stops a troop, gain 1 insight. A troop is
-  stopped when a hex next to it holds your node and something it would strike there but for the Wall (a facility any
-  player owns, or the node once troops strike nodes); once a troop a march. An Effect because it happens in the march (phase 7),
-  outside the action phase where powers are used, and the insight pays this round's keeps and plays. The adversary's
-  troops cap it.
+- **Protector, Vigil** (an Effect of Wall, not a power): when a troop ends its march next to your node, gain 1
+  insight: once per troop per march, in any march (a threat's immediate march too); a troop used up striking has no
+  end to its march. An Effect because it happens in a march, outside the action phase where powers are used: the
+  march's (phase 7) pays this round's keeps and plays, an immediate march's (phase 18) comes after them. The
+  adversary's troops cap it.
 - **Researcher, Synthesis** (a power, once a round, no price but the card): discard a card from your hand, gain 2
   insight; Patience banks it. With Fieldwork (1 energy → 3 cards) it turns 1 energy into 2 cards and 2 insight: about 4.5
   credits into 13 at the agents' values. Each is once a round, which caps the loop. A tier-1 card kept for 1 insight and never
@@ -67,7 +67,7 @@ own currency:
 
 **For new players.** Insight is what you spend to keep and play cards, and every board gets 6 a round (5 printed, 1 from the economy track's first space). When you
 are short, turn a research cube into 1 insight at any time (Cintamani's converter gives 2), and use your board's own
-way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time its Wall stops a troop (Vigil), the
+way: the Builder pays 5 credits for 1 (Focus), the Protector gains 1 each time a troop ends its march next to its node (Vigil), the
 Researcher discards a card for 2 (Synthesis). Insight you don't spend still goes at the round's end (the Researcher
 keeps it), but many threat counters offer insight (8 / 10 / 12 by tier, by tag: [threats.md](threats.md) *Counters*),
 so spare insight can stop one.
@@ -80,11 +80,11 @@ station's card is complete, which would otherwise double its cubes each round, c
 
 ## Shelters, hardening and shields
 
-A **shelter** (the Protector's Shelter, or a card's "shelter one country") lasts until cleanup (phase 19) of the round
+A **shelter** (the Protector's Shelter, in any country with no reach needed, or a card's "shelter one country") lasts until cleanup (phase 20) of the round
 it is used in. Used in the actions, it covers the rest of the actions and what comes after them: the income step,
-growth, the threats that execute and war (phases 14-18). The march (phase 7) has already happened, so a shelter never
-meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token or shield
-below, your own ambassador, a base's corp troop, Aegis Doctrine) is the piece owner's choice ([war.md](war.md),
+growth, the threats that execute and war (phases 15-19). The march (phase 7) has already happened, but a threat's
+immediate march (Total War's, phase 18) meets it. It stops a destruction automatically, spending nothing; every other protection (a hardening token or shield
+below, your own ambassador, a base's drone, Aegis Doctrine) is the piece owner's choice ([war.md](war.md),
 *Destruction*).
 
 Hardening (the standard actions, cards) goes only on facilities a token can protect, player-owned stations and

@@ -1255,7 +1255,10 @@ impl Eval {
         let corrupt_round = g.round as i64
             + if g.phase_index("adversary.corrupt").is_some_and(|i| g.phase <= i) { 0 } else { 1 };
         let corrupt_ban = g.var(plan::prohibit_keys(Step::Corrupt).0) == corrupt_round;
-        let banned = |h: usize| corrupt_ban && plan::prohibited_in(&world, g, Step::Corrupt, h, corrupt_round);
+        // 178 (Matt's ruling #30): a firewalled site doesn't corrupt in the turn ahead, as a prohibition holds it.
+        let banned = |h: usize| {
+            common::firewalled(g, h) || (corrupt_ban && plan::prohibited_in(&world, g, Step::Corrupt, h, corrupt_round))
+        };
         let mut v = 0.0;
         let mut corrupted = 0i64;
         let mut stations = [0i64; 4];
@@ -2098,7 +2101,8 @@ impl Eval {
             })
             .collect();
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
-        let step = if g.round % 2 == 1 { 1 } else { self.seats - 1 };
+        // 178: the draft always passes to the next seat (`cards::draft_pick`).
+        let step = 1;
         for s in 0..self.seats {
             let to = if table && g.var(&self.picked[s]) > 0 { (s + step) % self.seats } else { s };
             for id in g.pile(&cards::packet(s)) {

@@ -291,7 +291,7 @@ pub fn uncover_label(u: &Uncover) -> String {
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
     if u.moves > 0 {
-        parts.push(format!("Movement +{}", u.moves));
+        parts.push(format!("Dispatch +{}", u.moves));
     }
     if builds_station(u) {
         parts.push("free station".into());
@@ -310,7 +310,7 @@ pub fn uncover_words(u: &Uncover) -> String {
     }
     parts.extend(u.tags.iter().map(|t| format!("{t} tag")));
     if u.moves > 0 {
-        parts.push(format!("Movement +{}", u.moves));
+        parts.push(format!("Dispatch +{}", u.moves));
     }
     if builds_station(u) {
         parts.push("free station".into());
@@ -484,8 +484,8 @@ impl Module for Ai {
                     if u.moves > 0 {
                         marks.push(TrackMark {
                             key: "movement".into(),
-                            label: format!("Movement +{}", u.moves),
-                            doc: format!("once uncovered, {} more free ambassador move(s) each round; unused ones are lost", u.moves),
+                            label: format!("Dispatch +{}", u.moves),
+                            doc: format!("once uncovered, {} more free Dispatch(es) each round; unused ones are lost", u.moves),
                         });
                     }
                     if builds_station(u) {

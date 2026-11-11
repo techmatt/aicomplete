@@ -227,7 +227,8 @@ def op_worth(t, o):
         each = row('cleanse') if o.get('only') == 'factory' else row('cleanse_station')
         return Worth(now=each * share * n('amount'))
     if op == 'liberate':
-        return Worth(city=row('liberate') + (row('liberate_align') if o.get('align') else 0.0)
+        # 178 (#29): every liberate card puts the seat's cube on, as the Liberate action does.
+        return Worth(city=row('liberate') + row('liberate_align')
                      + row('gain_ambassadors') * r('ambassadors') * n('ambassadors')
                      + row('liberate_troops') * n('troops')
                      + (row('liberate_botnet') if o.get('botnet') else 0.0))
@@ -351,7 +352,7 @@ def fires(t, on):
         return t.rate('fires_play') * min(max(1.0 - on['at'] / t.rate('rebate_span'), 0.05), 1.0)
     return t.rate({'remove_troop': 'fires_troop', 'remove_compute': 'fires_compute',
                    'remove_ambassadors': 'fires_ambassadors', 'place_tokens': 'fires_tokens',
-                   'wall_stops': 'fires_wall'}[ev])
+                   'march_ends_near': 'fires_wall'}[ev])
 
 
 def triggered(t, then):
@@ -462,7 +463,7 @@ def effect_key(o, slot):
     if o['op'] == 'jam':
         cat.append('typed' if o.get('source') else 'any')
     if o['op'] == 'liberate':
-        for k in ('align', 'ambassadors', 'troops', 'botnet'):
+        for k in ('ambassadors', 'troops', 'botnet'):
             if o.get(k):
                 cat.append(k)
     if o['op'] == 'cleanse' and o.get('only'):

@@ -19,6 +19,10 @@ pub const GATHER_PIECE: &str = "gather which pieces?";
 pub const PUSH_FROM: &str = "push pieces from which hex?";
 /// The prompt that asks which piece a Push moves next, and where.
 pub const PUSH_PIECE: &str = "push which pieces, to where?";
+/// The prompt that asks where a strike lands (178: "remove up to N on or next to a hex in reach").
+pub const STRIKE_AT: &str = "remove pieces on or next to which hex?";
+/// The prompt that asks which adversary pieces a strike removes next.
+pub const STRIKE_PIECE: &str = "remove which pieces?";
 /// The option that ends a move early ("up to").
 pub const STOP: &str = "stop";
 
@@ -48,14 +52,16 @@ fn may_arrive(w: &World, g: &GameState, kind: &str, to: usize) -> bool {
     !is_ocean(w, to) && !(kind == ADV_AMBASSADOR && firewalled(g, to)) && !(kind == TROOP && board::walled(w, g, to))
 }
 
-/// The hexes a Gather may target: land in reach, with a piece it may take on a hex next to it.
+/// The hexes a Gather may target: land in reach, with a piece it may take on a hex next to it; a strike's (178):
+/// land in reach with an adversary piece on or next to it.
 pub fn gather_hexes(w: &World, g: &GameState, seat: usize, pieces: &[Piece], strike: bool) -> Vec<usize> {
     (0..g.hexes.len())
         .filter(|&h| !is_ocean(w, h) && in_reach(w, g, seat, h))
         .filter(|&h| {
-            w.map.hexes[h].neighbors.iter().any(|&x| {
-                tokens_of(g, x, pieces).iter().any(|(k, _)| (strike && adversary_piece(k)) || may_arrive(w, g, k, h))
-            })
+            if strike {
+                return next_to(w, h, |x| tokens_of(g, x, pieces).iter().any(|(k, _)| adversary_piece(k)));
+            }
+            w.map.hexes[h].neighbors.iter().any(|&x| tokens_of(g, x, pieces).iter().any(|(k, _)| may_arrive(w, g, k, h)))
         })
         .collect()
 }
@@ -106,37 +112,24 @@ fn sizes(count: i64, left: i64) -> Vec<i64> {
 }
 
 /// Gather up to `max` `pieces` into one hex in reach (166). The player picks the hex, then batches: "2 agents from
-/// X", as often as they like until `max` (one answer may take a whole stack, so a search sees a gather whole). A
-/// strike asks no more after the hex: it removes up to `max` adversary pieces next to it, troops first, then agents
-/// in hex order (every removal helps, so there is nothing to choose but where).
+/// X", as often as they like until `max` (one answer may take a whole stack, so a search sees a gather whole).
+/// A strike is no gather any more (178, Matt's ruling #27, reversing 169's D76): it removes up to `max` adversary
+/// pieces on or next to the hex, the player choosing each batch ([`strike`]).
 pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece], strike: bool) -> Res {
     let w = cx.world;
     let hexes = gather_hexes(&w, g, seat, pieces, strike);
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
-    let Some(i) = cx.choose(seat, || format!("Seat {seat}: {GATHER_INTO}"), opts)? else {
+    let prompt = if strike { STRIKE_AT } else { GATHER_INTO };
+    let Some(i) = cx.choose(seat, || format!("Seat {seat}: {prompt}"), opts)? else {
         return Ok(());
     };
     let to = hexes[i];
+    if strike {
+        return self::strike(g, cx, seat, max, pieces, to);
+    }
     let mut from = w.map.hexes[to].neighbors.to_vec();
     from.sort_unstable();
     let mut moved = 0;
-    if strike {
-        for kind in [TROOP, ADV_AMBASSADOR] {
-            let wanted = match kind {
-                TROOP => pieces.contains(&Piece::Troops),
-                _ => pieces.contains(&Piece::Agents),
-            };
-            for &x in from.iter().filter(|_| wanted) {
-                while moved < max && g.tokens(x, kind) > 0 {
-                    adversary::remove_piece(g, cx, Some(seat), x, kind);
-                    cx.tally(g, "effects.struck", 1);
-                    moved += 1;
-                }
-            }
-        }
-        cx.note(Some(to), || format!("Seat {seat} gathers {moved} pieces into {} and removes them", hex_name(&w, to)));
-        return Ok(());
-    }
     while moved < max {
         let mut units = Vec::new();
         for &x in &from {
@@ -166,6 +159,45 @@ pub(super) fn gather(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, piec
         moved += n;
     }
     cx.note(Some(to), || format!("Seat {seat} gathers {moved} pieces into {}", hex_name(&w, to)));
+    Ok(())
+}
+
+/// The strike (178, Matt's ruling #27): up to `max` adversary `pieces` on or next to hex `at` come off, the player
+/// choosing batches ("2 troops on X", as gathers ask) until `max` or a stop.
+fn strike(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64, pieces: &[Piece], at: usize) -> Res {
+    let w = cx.world;
+    let mut around = w.map.hexes[at].neighbors.to_vec();
+    around.sort_unstable();
+    around.insert(0, at);
+    let mut removed = 0;
+    while removed < max {
+        let mut units = Vec::new();
+        for &x in &around {
+            for (k, name) in tokens_of(g, x, pieces) {
+                if adversary_piece(k) {
+                    for n in sizes(g.tokens(x, k), max - removed) {
+                        units.push((k, x, n, batch(n, &name)));
+                    }
+                }
+            }
+        }
+        if units.is_empty() {
+            break;
+        }
+        let mut opts: Vec<Opt> = units
+            .iter()
+            .map(|(_, x, _, what)| Opt { option: format!("{what} on {}", hex_name(&w, *x)), target: Some(w.map.hexes[*x].hex) })
+            .collect();
+        opts.push(opt(STOP));
+        let Some(j) = cx.choose(seat, || format!("Seat {seat}: {STRIKE_PIECE} (on or next to {})", hex_name(&w, at)), opts)? else { break };
+        let Some(&(k, x, n, _)) = units.get(j) else { break };
+        for _ in 0..n {
+            adversary::remove_piece(g, cx, Some(seat), x, k);
+            cx.tally(g, "effects.struck", 1);
+        }
+        removed += n;
+    }
+    cx.note(Some(at), || format!("Seat {seat} removes {removed} pieces on or next to {}", hex_name(&w, at)));
     Ok(())
 }
 

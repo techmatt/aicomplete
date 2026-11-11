@@ -1,17 +1,17 @@
 # Factories, bases, war and troops
 
-*Factories, bases, corp troops, war every round, the march and node loss. Terms and conventions are in [README.md](README.md).*
+*Factories, bases, drones, war every round, the march and node loss. Terms and conventions are in [README.md](README.md).*
 
 ## Every round: production, then war at the end
 
-There is no production/war clock (137, 139). **Production runs every round** after the action
+**Production runs every round** after the action
 phase: first **one income step** in a printed order (r75, Matt's ruling 6): factories' chips and adversary troops,
 cities' energy, stations' cubes, full megaprojects, then upkeep ([economy.md](economy.md)); then **growth**: extra
-corp troops, then new factories (below). **War is fought at the end of every round** on every front, after
+drones, then new factories (below). **War is fought at the end of every round** on every front, after
 threats execute, so what war destroys is gone for next round's production. **War brought forward** (Casus Belli;
-candidate): the fronts next to the threat's base fight twice in next round's war (their troops
+candidate): the front the threat's base belongs to fights twice in next round's war (their drones
 cancel once, the surplus strikes twice). Declaration of War (an ongoing project): each round, the front with the most
-corp troops fights twice.
+drones fights twice.
 
 ## Factories
 
@@ -23,39 +23,41 @@ corp troops fights twice.
   changes hands later.
 - **Output** (each round; the site table in [ambassadors.md](ambassadors.md)): a player's factory makes
   `factory_chips` (2) chips for its owner; an adversary factory makes 1 adversary troop on its hex (**locked**); a neutral
-  factory makes nothing, except that **on each Discord tip it makes 1 corp troop**. One opposing ambassador or agent blocks a
+  factory makes nothing, except that **on each Discord tip it makes 1 drone**. One opposing ambassador or agent blocks a
   factory's output while it stands. Threats build adversary factories (Mass Production, War Economy), seize them
   (Factory Occupation: corruption, with its cleanup) and destroy them (Siege); a project builds them (Shadow Factories).
-- **Growth** (each round, after the income step and the extra corp troops): every city builds one factory **on a
-  free industrial zone next to it**, or none if it has none (r75). A neutral or aligned city's zone is the players' choice (an aligned city's owner, else seat 0); a
+- **Growth** (each round, after the income step and the extra drones): every city builds one factory **on a
+  free industrial zone next to it** (no facility, no land corruption), or none if it has none (r75). A neutral or aligned city's zone is the players' choice (an aligned city's owner, else seat 0); a
   **corrupted** city's is the lowest-numbered on or next to an agent, else the lowest-numbered. Cities build in hex
   order, blocked or not. Factories destroyed in war regrow this way.
 
 ## Bases and war
 
-**A base is a front's troop pile** (137): each corp has one on each of its active fronts (every printed front is
-active; a 1-country game has none), with no owner and no ambassador rules beyond the troop rule below. There are no
-player troops: corp troops belong to the megacorp of their territory and wait at its bases.
+**A base is a front's drone pile** (137): each corp has one on each of its active fronts (every printed front is
+active; a 1-country game has none), with no owner and no ambassador rules beyond the drone rule below. There are no
+player troops: a corp's pieces are **drones**, their own piece, which belong to the megacorp of their territory and
+wait at its bases.
 
-- **Whenever a corp makes troops, it puts 1 on each of its bases** (so a neutral factory's tip troop is 2 at 3 and 4
-  countries). Bases make no troop of their own. **The troop rule** (r75, Matt's ruling 8): one player ambassador
-  always stops 1 corp troop and is used up. On a base it stops a troop made there; on a neutral factory at a Discord
-  tip it stops 1 of that factory's troops (the players choose which base's, when it can't stop all), so each
-  ambassador there stops one. A full base takes no troop and spends no ambassador; among several players' ambassadors
-  the lowest seat's goes first. An agent on a neutral factory blocks its tip troops outright.
-- **Peacetime:** at most `unit_cap` troops wait at each base. A troop at a base **absorbs
-  an adversary-troop strike** on a facility on or next to the base: 1 troop per hit.
-- **Extra corp troops** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
+- **Whenever a corp makes drones, it puts 1 on each of its bases** (so a neutral factory's tip drone is 2 at 3 and 4
+  countries). Bases make no drone of their own. **The drone rule** (r75, Matt's ruling 8): one player ambassador
+  always stops 1 drone and is used up. On a base it stops a drone made there; on a neutral factory at a Discord
+  tip it stops 1 of that factory's drones (the players choose which base's, when it can't stop all), so each
+  ambassador there stops one. A full base takes no drone and spends no ambassador; among several players' ambassadors
+  the lowest seat's goes first. An agent on a neutral factory blocks its tip drones outright.
+- **Peacetime:** at most `unit_cap` drones wait at each base. A drone at a base **absorbs
+  an adversary-troop strike** on a facility on or next to the base: 1 drone per hit.
+- **Extra drones** (135, candidate) go past the cap: Warmongering (the Militarist's board: a base with an
   adversary troop on or next to it) and Arms Race (ongoing). A base gains at most 1 extra a round from the two
-  together (Matt, 2026-11-06). No threat makes corp troops (146: no special pieces).
-- **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus troop
+  together (Matt, 2026-11-06). War Footing (a project) fills every base to its cap. No threat makes drones
+  (146: no special pieces).
+- **War, at the end of every round:** on each front the piles at the two bases cancel 1 for 1. Each surplus drone
   crosses, acts at once and is used up: it destroys the rival corp's factory nearest its base (not an
   adversary-owned one; ties: lower hex number), **and any node on its hex**, guarded like any node (r75). **Each factory destroyed in war sways `destruction_discord` (1) Discord:** runaway Discord is an
   intended loss route, which players stop by standing ambassadors on bases and neutral factories, claiming
   neutral factories and keeping the Discord track below its tip.
 
 **Adversary troops (candidate): the march.** Adversary troops come from adversary-owned factories (each round),
-from the build's
+from the Muster's
 `wall_troops` landing where the Protector stands, and from projects and threats (Armored Columns, Orbital Strike,
 Total War). They are the adversary's
 mobile threat to player infrastructure. **Targets:** player-owned research stations and
@@ -64,8 +66,8 @@ Cities are never targets (corruption is the adversary's way into cities), nor ar
 adversary-owned facilities.
 
 In the adversary phase (`board.march`, after the corruption step) **every adversary troop
-takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, in hex-number order fixed when the
-march starts. A troop a threat lands follows the troop's normal rules (146: no standing troops); troops a threat
+takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, country by country and by hex number within each, in an order
+fixed when the march starts. A troop a threat lands follows the troop's normal rules (146: no standing troops); troops a threat
 lands to "march at once" (Total War) take their steps as it executes. A step is one of:
 
 - **remove an ambassador** (175, Matt's ruling: ambassadors are non-combatants): a troop that starts a step on a hex
@@ -77,28 +79,27 @@ lands to "march at once" (Total War) take their steps as it executes. A step is 
   players choose: a choice among bad options, as with Spirit Island's blight.
 
 **Wall (candidate, Matt).** Adversary troops can't enter a hex with the Protector's node: a
-march goes around it, and a Deploy there stays in the supply (175: one rule for a blocked landing; a threat's
+march goes around it, and a Muster there stays in the supply (175: one rule for a blocked landing; a threat's
 landing, the players' choice, is offered only open hexes). **Nor can a troop strike into it (Matt):** a
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
 A troop already standing on a hex when the Protector places there leaves as it likes. The
-build's `wall_troops` landing ([adversary.md](adversary.md)) puts the strikes Wall stops where the Protector stands.
-A landing enters a hex, so it counts; a troop made by a factory on its own hex
+Muster's `wall_troops` landing ([adversary.md](adversary.md)) brings troops near the Protector; Vigil pays 1 insight
+for each that ends a march next to its node ([ai-powers.md](ai-powers.md)). A landing enters a hex, so it counts; a troop made by a factory on its own hex
 doesn't enter. With no open way to a target a troop stays where it is.
 
 So a troop moves twice, or moves then destroys, or destroys at once. **A troop that strikes
-is used up** (`troop_spent`), whether the target is destroyed or the hit absorbed, as an
-ambassador is used up when it acts. With no target on the board a troop stays where it is.
+is used up** (`troop_spent`), whether the target is destroyed or the hit absorbed.
 Troops cross borders and never enter ocean; "nearest" and "toward" count the walk over land,
-around walls (above). A troop two hexes from a target hits it in the next march; three or
-four hexes away, in the march after. **Players see each hit coming:** the view draws each
+around walls (above). **Players see each hit coming:** the view draws each
 troop's next target (the nearest; the arrow is solid when the hit lands in the next march):
 an adversary factory within two hexes of your
-station or factory is a known danger. Cards remove troops, each card naming how many.
+station or factory is a known danger. Cards remove troops, each card naming how many; a strike card's "on or next to a
+hex in reach" counts the hex itself, and the player picks which pieces, nothing moving.
 Removing a troop sways `alignment.troop` (0 since r38: stopping its harm already pays).
 
 **For new players.** Adversary troops are the adversary's raiders. They appear on adversary
-factories every round, from most event cards (Deploy: on each board's lowest-numbered factory), some threats and
-projects, and every round 1 lands the same way on each board where the Protector has a node.
+factories every round, from most event cards (Muster: on each country's lowest-numbered factory, else city), some threats and
+projects, and every round 1 lands on an adversary or neutral factory in each country where the Protector has a node.
 Every round, in the adversary's turn,
 each troop takes two steps. If a research station or factory you own is on or next to the
 troop's hex, it destroys that piece and leaves the board; otherwise it walks one hex toward
@@ -106,7 +107,7 @@ the nearest such piece. So a troop two hexes from your piece hits it next round,
 three or four hexes away a round later; the arrows on the board show where each troop is
 heading. Troops never attack cities. **Ambassadors don't fight** (175): a troop that starts a step on a hex with an
 ambassador (any player's) removes one, the players choosing whose, instead of moving or striking, so in two steps it
-can remove two. To stop a hit, remove the troop with a card, keep a corp troop at a military base next to the target,
+can remove two. To stop a hit, remove the troop with a card, keep a drone at a military base next to the target,
 harden the target, stand your own ambassador on it (armor against a strike from next door), or put the Protector's
 node on it or in its way. Troops don't hit nodes.
 
@@ -114,16 +115,16 @@ node on it or in its way. Troops don't hit nodes.
 its output (energy, research cubes, chips), and the adversary's make Discord, compute or raiders. Claim a neutral site,
 or take one back from the adversary, with your ambassadors (5 for a city, 3 for a station or factory). One of your ambassadors standing on an adversary site shuts it off, and one of
 its agents shuts off yours; your own ambassador on your piece takes a hit for it. Each border between countries has a
-military base on each side, a pile of corp troops: every Discord tip, each neutral factory adds a troop to each of its
+military base on each side, a pile of drones: every Discord tip, each neutral factory adds a drone to each of its
 corp's bases (each of your ambassadors standing there stops one), and at the end of every round the two piles cancel and
-each troop left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
-Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra corp
-troops (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
+each drone left over destroys a factory across the border, swaying 1 Discord. So Discord feeds war and war feeds
+Discord: keep neutral factories quiet and the Discord track low. **What resisted this summary:** the extra
+drones (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
 grows by one for each agent already on the site.
 
-**This is the troops' own movement rule**; Gather and Push (cards, the Protector's Patrol) move troops too
+**This is the troops' own movement rule**; Push (Interceptor Battery, the Protector's Patrol) moves troops too
 ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and
-`board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never march or strike (Gather and Push still move them).
+`board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never march or strike (Push still moves them).
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
@@ -150,13 +151,14 @@ node. On a city that is not corrupted it counts 1 toward its Corrupt number (not
 there, a marker never destroys nodes itself. It doesn't count against the purge. **Clearing
 one is worth an action (candidate):** the Clear standard action (`clear_cost` credits) takes
 a marker off in reach and pays `clear_unity` Sway toward Unity and `clear_credits` credits;
-Science cards clear them too, for the same reward. Markers come only from destroyed nodes,
+Science cards clear them too, for the same reward. Clear takes a land corruption token off too (in reach,
+no reward), which lets the hex take a node or factory again. Markers come only from destroyed nodes,
 so the reward can't be farmed: a token lost costs far more than a Sway.
 
-**Destruction.** Only war sways Discord: a factory destroyed by the corp troops crossing a
+**Destruction.** Only war sways Discord: a factory destroyed by the drones crossing a
 front sways `destruction_discord` Discord. An adversary troop's strike (in the march) sways
 nothing (Matt). A shelter on the country stops a destruction, spending nothing. Otherwise **the piece's owner
-chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a corp troop at a
+chooses which protection to spend, or none** (r75, Matt's ruling 5; seat 0 for a neutral piece): a drone at a
 base next to it (adversary strikes only), a hardening token on the hex, **the owner's own ambassador on the hex**
 (armor, 137; another player's never guards it, and a neutral site has none), or the Aegis Doctrine capstone (once a
 round, the Protector's own nodes and facilities, when the Protector chooses). War's node on a destroyed factory's

@@ -41,7 +41,7 @@ try {
   check(marks.includes('free station') && marks.includes('T2 keep'), `the tracks show the free station and the keep upgrade: ${marks.join(', ')}`);
   check(marks.includes('Open Archive') && marks.includes('Open Science'), 'both capstones are on the tracks');
   const powers = await js(`window.aic.view.seats[${SEAT}].board.cards.map((c) => c.name)`);
-  const missing = ['Fieldwork', 'Deploy', 'Peer Review', 'Grant', 'Field Station', 'Audit', 'Particle Run'].filter((p) => !powers.includes(p));
+  const missing = ['Fieldwork', 'Expand', 'Peer Review', 'Grant', 'Field Station', 'Audit', 'Particle Run'].filter((p) => !powers.includes(p));
   check(missing.length === 0, `its powers are all listed${missing.length ? `; missing ${missing}` : ''}`);
   const innate = await js(`window.aic.view.seats[${SEAT}].board.innate?.name ?? ''`);
   check(innate === 'Patience', 'its special rule is Patience');

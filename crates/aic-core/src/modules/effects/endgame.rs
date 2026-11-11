@@ -9,20 +9,9 @@ pub fn convert_cities(w: &World, g: &GameState, seat: usize) -> Vec<usize> {
         .collect()
 }
 
-/// Seat `seat`'s nodes whose reach takes in city `city` (on it or next to it).
-fn casting_nodes(w: &World, g: &GameState, seat: usize, city: usize) -> Vec<usize> {
-    let k = node(seat);
-    let mut out: Vec<usize> = w.map.hexes[city].neighbors.iter().copied().filter(|&x| g.tokens(x, k) > 0).collect();
-    if g.tokens(city, k) > 0 {
-        out.push(city);
-    }
-    out.sort_unstable();
-    out
-}
-
-/// 158 (amendment 6949): up to `max` agents on or next to one city in reach become the seat's,
-/// each onto the node whose reach the card used (arriving as a player ambassador does: onto an adversary
-/// ambassador there, the two cancel).
+/// 158 (amendment 6949): up to `max` agents on or next to one city in reach become the seat's. 178 (Matt's
+/// ruling #32): each becomes the seat's ambassador where it stood (it was on the node whose reach the card
+/// used); another agent still there meets it as any arrival does, 1 for 1 (`board::place_ambassador`).
 pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> Res {
     let w = cx.world;
     let cities = convert_cities(&w, g, seat);
@@ -32,23 +21,13 @@ pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> 
         return Ok(());
     };
     let city = cities[i];
-    let nodes = casting_nodes(&w, g, seat, city);
-    let to = match nodes.as_slice() {
-        [] => return Ok(()),
-        [only] => *only,
-        _ => {
-            let opts = nodes.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = || format!("Seat {seat}: which node casts the conversion?");
-            match cx.choose(seat, prompt, opts)? {
-                Some(k) => nodes[k],
-                None => return Ok(()),
-            }
-        }
-    };
     let mut hexes = w.map.hexes[city].neighbors.to_vec();
     hexes.sort_unstable();
     hexes.insert(0, city);
     let mut left = max;
+    // The agents go first, all of them, then the ambassadors take their places: a swap, so two converted on one
+    // hex both stay; only an agent the card left there meets them.
+    let mut taken: Vec<usize> = Vec::new();
     while left > 0 {
         let held: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, ADV_AMBASSADOR) > 0).collect();
         let count: i64 = held.iter().map(|&h| g.tokens(h, ADV_AMBASSADOR)).sum();
@@ -66,9 +45,12 @@ pub(super) fn convert(g: &mut GameState, cx: &mut Cx, seat: usize, max: i64) -> 
             }
         };
         adversary::remove(g, cx, at, 1);
-        board::place_ambassador(g, cx, seat, to);
+        taken.push(at);
         cx.tally(g, "effects.converted", 1);
         left -= 1;
+    }
+    for at in taken {
+        board::place_ambassador(g, cx, seat, at);
     }
     Ok(())
 }

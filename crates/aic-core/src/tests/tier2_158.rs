@@ -14,10 +14,10 @@ fn by_a_city(g: &mut GameState, m: &Map) -> (usize, usize, usize, usize) {
     (c, lonely[0], lonely[1], lonely[2])
 }
 
-/// Amendment 6949: a converted agent leaves the stack (lowering the city's Liberate bill) and
-/// becomes the seat's, on the node whose reach the card used; the adversary's supply takes it back.
+/// Amendment 6949: a converted agent leaves the stack (lowering the city's Liberate bill) and the adversary's
+/// supply takes it back; 178 (#32): it becomes the seat's ambassador where it stood.
 #[test]
-fn convert_moves_adversary_ambassadors_onto_the_casting_node() {
+fn convert_makes_each_agent_your_ambassador_where_it_stood() {
     let (rules, mut g) = lab(&[]);
     let w = rules.world();
     let m = &rules.map;
@@ -28,9 +28,20 @@ fn convert_moves_adversary_ambassadors_onto_the_casting_node() {
     let supply = g.var(SUPPLY);
     run_ops(&rules, &mut g, &[Op::Convert { max: 3 }]);
     assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(other, ADV_AMBASSADOR)), (0, 0));
-    assert_eq!(g.tokens(me, ambassador(0)), 3);
+    assert_eq!((g.tokens(me, ambassador(0)), g.tokens(c, ambassador(0)), g.tokens(other, ambassador(0))), (0, 2, 1));
     assert_eq!(g.var(SUPPLY), supply + 3);
     assert!(effects::convert_cities(&w, &g, 0).is_empty(), "nothing left to convert");
+}
+
+/// 178: an agent the conversion left on a hex meets the new ambassador there, 1 for 1.
+#[test]
+fn an_agent_left_behind_meets_the_converted_one() {
+    let (rules, mut g) = lab(&[]);
+    let m = &rules.map;
+    let (c, _, _, _) = by_a_city(&mut g, m);
+    put(&mut g, c, ADV_AMBASSADOR, 3);
+    run_ops(&rules, &mut g, &[Op::Convert { max: 1 }]);
+    assert_eq!((g.tokens(c, ADV_AMBASSADOR), g.tokens(c, ambassador(0))), (1, 0));
 }
 
 /// 158: a firewall stops placements on its hex, keeps it off the Rally's sites, and a Corrupt line can't pull

@@ -1604,7 +1604,7 @@ mod tests {
             let k = ai::board(&w, 0).powers.iter().position(|p| p.name == name).unwrap();
             Action::Power { seat: 0, power: k as u8 }
         };
-        let (deploy, buy, scrap) = (by_name("Deploy"), by_name("Buy In"), by_name("Scrap"));
+        let (deploy, buy, scrap) = (by_name("Expand"), by_name("Buy In"), by_name("Scrap"));
         let no_powers = forced("no_powers");
         assert!(no_powers.ruled_out(&w, &g, &scrap) && !no_powers.ruled_out(&w, &g, &deploy));
         let no_node = forced("no_node");

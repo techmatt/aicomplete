@@ -165,7 +165,7 @@ The sheet is `icons.png` from `node tools/card-art/render.mjs`.
 | Threat (`!`) | a threat. Counter is the threat struck through |
 | Jam (threat with a down arrow) | one threat needs that much less of each resource |
 | Clock | delay: a threat waits a round |
-| Requirement plates | yellow: at least; red: at most; stacked cards: built over |
+| Requirement plates | yellow: at least (no card requires at most); stacked cards: built over |
 
 A price rise on paper needs a screen: small raises add up. Reason every price in
 [card-pricing.md](card-pricing.md), and record the change in [rules-history.md](rules-history.md). Center a rate sheet

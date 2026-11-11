@@ -1,0 +1,33 @@
+{
+  "name": "f178-oracle",
+  "note": "178: the oracle row at d4 (177's settings), r77 against r76 on the same seeds.",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    4
+  ],
+  "agents": [
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1"
+  ],
+  "games": 48,
+  "records": 0
+}

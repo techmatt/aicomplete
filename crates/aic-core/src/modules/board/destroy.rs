@@ -84,7 +84,7 @@ pub fn destroy_piece(g: &mut GameState, cx: &mut Cx, h: usize, kind: &str, cause
             .iter()
             .map(|o| {
                 opt(match o {
-                    Guard::Base(b) => format!("spend the corp troop at {}", hex_name(&w, *b)),
+                    Guard::Base(b) => format!("spend the {} at {}", crate::modules::common::DRONE, hex_name(&w, *b)),
                     Guard::Harden => "spend the hardening token".to_string(),
                     Guard::Ambassador(_) => "spend your ambassador there".to_string(),
                     Guard::Aegis(_) => "use the Aegis Doctrine".to_string(),

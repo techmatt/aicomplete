@@ -255,6 +255,11 @@ pub fn deal_at(g: &mut GameState, cx: &mut Cx, tier: u8, h: usize) -> Res {
     Ok(())
 }
 
+/// 178 (Matt's ruling #8): what every threat card prints above its text, the two distance tests named apart: who
+/// may pay toward its counter, and who its harm hits ("the nearest player" in its text).
+pub const THREAT_FRAME: &str =
+    "Payers: any player with a Node or Ambassador on or next to a token. Target: the player with a Node nearest a token.";
+
 /// 146: the seat an uncountered `t`'s harm hits: the nearest by node (see
 /// [`nearest_seats`]); on a tie the lowest tied seat picks among them, as a
 /// loss. `None` when no seat has a node.
@@ -373,7 +378,7 @@ fn deal_round(g: &mut GameState, cx: &mut Cx) {
             pull(g, cx, tier(p.tier), &p.tags, c, None);
         }
     }
-    // From difficulty `extra_threats_at` (4 since 142; 0 at 139, 1 before): `extra_threats` more pulls of the
+    // From difficulty `extra_threats_at` (5 since 177, so no level; 4 at 142, 0 at 139, 1 before): `extra_threats` more pulls of the
     // card's first pull, one per country in turn (country 0 first in round 1, then 1, ...).
     if let (true, Some(p)) = (adversary::level(&w, w.int("adversary.extra_threats_at")), card.pulls.first()) {
         let first = (g.round.max(1) as usize - 1) % n.max(1);
@@ -555,12 +560,13 @@ impl Module for Threats {
                 extra.push_str(&format!(" Jammed: needs {jam} less of each resource."));
             }
             if waits(g, t) {
-                extra.push_str(" Waits: executes next round.");
+                extra.push_str(" Waits token: executes next round.");
             }
             CardView {
                 id: t.to_string(),
                 name: d.name.clone(),
-                text: format!("{} Counter: {need}.{extra}", d.text),
+                // 178 (Matt's ruling #8): the card names its payers and its target apart.
+                text: format!("{THREAT_FRAME} {} Counter: {need}.{extra}", d.text),
                 status: need,
                 cost: None,
             }

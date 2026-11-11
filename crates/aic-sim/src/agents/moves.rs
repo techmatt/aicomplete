@@ -18,11 +18,11 @@ use aic_core::module::World;
 use aic_core::{Action, GameState};
 
 /// Which heuristic answered (the per-game tally: `agents.move.<name>`).
-pub const NAMES: [&str; 3] = ["push", "cancel", "liberate"];
+pub const NAMES: [&str; 4] = ["push", "cancel", "liberate", "strike"];
 
 /// How often each heuristic answered a prompt, over every game this process played (a run prints it
 /// beside its game count: fires a game).
-static FIRES: [AtomicU64; 3] = [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
+static FIRES: [AtomicU64; 4] = [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
 
 /// Counts one answer by heuristic `which`.
 pub fn fired(which: usize) {
@@ -58,6 +58,9 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
         }
         let to = named_hex(w, prompt, " (into ")?;
         return gather_piece(w, g, legal, to);
+    }
+    if prompt.contains(effects::STRIKE_PIECE) {
+        return strike_piece(legal);
     }
     if prompt.contains(effects::PUSH_FROM) {
         return push_from(w, g, legal);
@@ -255,6 +258,19 @@ fn batch(a: &Action) -> Option<(i64, &str)> {
 
 fn is_agents(a: &Action) -> bool {
     batch(a).is_some_and(|(_, w)| w.starts_with("agent"))
+}
+
+/// 178: a strike's next batch (Matt's ruling #27 lets the player choose what comes off on or next to the hex):
+/// the largest batch of troops, then of agents, never a stop. It is the order the engine fixed before r77, so a
+/// strike costs one search answer (its hex) as it did.
+fn strike_piece(legal: &[Action]) -> Option<(usize, usize)> {
+    let best = |word: &str| {
+        (0..legal.len())
+            .filter_map(|i| batch(&legal[i]).filter(|(_, w)| w.starts_with(word)).map(|(n, _)| (n, std::cmp::Reverse(i))))
+            .max()
+            .map(|(_, std::cmp::Reverse(i))| i)
+    };
+    best("troop").or_else(|| best("agent")).map(|i| (i, 3))
 }
 
 /// The gather's next batch into `to`: agents while a spare ambassador stands there to cancel them, ambassadors

@@ -188,8 +188,8 @@ pub fn fighting_play(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key, f: im
     fight_fire(g, cx, s, before)
 }
 
-/// After seat `s`'s action: its fight triggers fire for what it removed (a
-/// troop: each; compute or ambassadors: once for the action), less what a
+/// After seat `s`'s action: its fight triggers fire once for the action if it removed
+/// any of their pieces (178: troops too), less what a
 /// teammate's trigger removed inside it (`Cx::fought`).
 pub fn fight_fire(g: &mut GameState, cx: &mut Cx, seat: usize, before: Option<Watch>) -> Res {
     let others = std::mem::take(&mut cx.fought);
@@ -209,7 +209,8 @@ fn fire_fights(g: &mut GameState, cx: &mut Cx, seat: usize, removed: [i64; 3]) -
     let w = cx.world;
     for (card, on, then) in triggers(&w, g, seat) {
         let times = match on {
-            Event::RemoveTroop => removed[1],
+            // 178: every trigger fires once per action (a troop's was once a troop before r77).
+            Event::RemoveTroop => (removed[1] > 0) as i64,
             Event::RemoveCompute => (removed[2] > 0) as i64,
             Event::RemoveAmbassadors => (removed[0] > 0) as i64,
             _ => 0,
@@ -221,7 +222,7 @@ fn fire_fights(g: &mut GameState, cx: &mut Cx, seat: usize, removed: [i64; 3]) -
     Ok(())
 }
 
-/// Seat `s` placed `n` tokens of `kind` on its cards.
+/// Seat `s` placed `n` tokens of `kind` on its cards: its triggers fire once (178: once per action, not per token).
 pub fn on_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, kind: TokenKind, n: i64) -> Res {
     let w = cx.world;
     if n <= 0 || !has_trigger(&w, g, seat, |e| *e == Event::PlaceTokens { kind }) {
@@ -229,26 +230,26 @@ pub fn on_tokens(g: &mut GameState, cx: &mut Cx, seat: usize, kind: TokenKind, n
     }
     for (card, on, then) in triggers(&w, g, seat) {
         if on == (Event::PlaceTokens { kind }) {
-            fire(g, cx, seat, card, then, n)?;
-        }
-    }
-    Ok(())
-}
-
-/// Seat `s`'s Wall stopped a troop in the march (Vigil).
-pub fn on_wall(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
-    let w = cx.world;
-    for (card, on, then) in triggers(&w, g, seat) {
-        if on == Event::WallStops {
             fire(g, cx, seat, card, then, 1)?;
         }
     }
     Ok(())
 }
 
-/// Whether seat `s` holds a Wall-stops trigger (the march asks before it looks).
-pub fn has_wall_trigger(w: &World, g: &GameState, seat: usize) -> bool {
-    has_trigger(w, g, seat, |e| *e == Event::WallStops)
+/// A troop ended its march next to seat `s`'s node (Vigil).
+pub fn on_march_end(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res {
+    let w = cx.world;
+    for (card, on, then) in triggers(&w, g, seat) {
+        if on == Event::MarchEndsNear {
+            fire(g, cx, seat, card, then, 1)?;
+        }
+    }
+    Ok(())
+}
+
+/// Whether seat `s` holds a march-end trigger, Vigil (the march asks before it looks).
+pub fn has_vigil(w: &World, g: &GameState, seat: usize) -> bool {
+    has_trigger(w, g, seat, |e| *e == Event::MarchEndsNear)
 }
 
 // ---------- the instant ops that read a seat's cards ----------

@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 76 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 77 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -42,11 +42,11 @@ Design intent lives in [principles.md](../principles.md); the engine in
 [architecture.md](../architecture.md). **Keep these files current with every rules change**, each under 15 KB.
 
 <!-- generated: new_players -->
-**For new players.** In the first round you are dealt 8 tier-1 cards and keep 4 free (more at 5 credits each), and 2 tier-2 cards, each kept for 1 insight, to play once you meet its needs: something to plan toward. From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to your neighbor until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 2 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used and discarded. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
+**For new players.** In the first round you are dealt 8 tier-1 cards and keep 4 free (more at 5 credits each), and 2 tier-2 cards, each kept for 1 insight, to play once you meet its needs: something to plan toward. From then on, each round you build a hand of 4 cards one at a time, choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then pay insight to keep what you drafted (1 for tier 1, 2 for tier 2). Insight is this round's attention: what you don't spend is lost. Playing a card costs its credits and 0-2 insight, from the same insight as keeps. Buildings go into your AI board's 3-5 slots; once they are full, a new building goes on top of an old one, which stops working but keeps its tags. Programs stay in front of you and are where lasting income comes from ("raise your credit income by 1 per 2 Science tags on your cards"); buildings are your engine: Actions you use once a round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, and you can sacrifice cards with the right tags to use your AI board's powers. There is no limit on what you hold or on how far cards raise your income; energy you don't spend stays energy, so drafting cards that spend it is up to you.
 
 **Nodes, for new players.** There is no growth step. In the action phase you place nodes with your board's two node powers, each once a round, so 0, 1 or 2 tokens a round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own currency. Either way you also pay the energy printed on the track space you uncover. You start with 3 energy and one city bound to you, which makes energy every round.
 
-**Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you have only your board's Movement each round (1-2 printed, more as Movement spaces are uncovered): one move each, and what you don't use is lost, like insight. **One tag rule:** the tag printed on your AI board, and any a late, costly track space reveals, count like the tags on your cards, for everything a tag does; the only difference is that a board tag can't be sacrificed. You may sell a card from your hand for 1 credit; chips can't be sold.
+**Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, from your supply or anywhere on the map, onto a piece in your reach and costs nothing, but you have only your board's Dispatches each round (1-2 printed, more as Dispatch spaces are uncovered), and what you don't use is lost, like insight. **One tag rule:** the tag printed on your AI board, and any a late, costly track space reveals, count like the tags on your cards, for everything a tag does; the only difference is that a board tag can't be sacrificed. You may sell a card from your hand for 1 credit; chips can't be sold.
 <!-- /generated -->
 
 ## Terms
@@ -58,7 +58,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Shield**: a hardening token on a hex with your node.
 - **Ambassador**: a player's piece, any player's: a card never says whose.
 - **Agent**: the adversary's piece on the board (the Security token is an Operative).
-- **Troop**: an adversary troop, unless it says corp troop (a megacorp's, waiting at its military bases).
+- **Troop**: an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases.
 - **In reach**: on a hex within 1 of your nodes.
 - **A country you're in**: a country where you have a node.
 - **Your home country**: the country you start in.
@@ -71,10 +71,11 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **On your cards**: on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them.
 - **Action**: once a round, always; "A, OR B" is one use, either half.
 - **Open megaproject**: one that isn't complete; research cubes in your color go only onto one.
-- **Convert**: an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used.
-- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "and remove them", picks only the hex and takes troops first).
+- **Liberate**: a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid).
+- **Convert**: an agent on or next to the city leaves its stack and becomes your ambassador where it stood.
+- **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "remove up to N on or next to a hex", moves nothing).
 - **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
-- **Firewall**: a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply); it comes off at the end of the next adversary turn.
+- **Firewall**: a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and its site doesn't corrupt; it comes off at the end of the next adversary turn.
 - **In the next adversary turn, no X**: a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply.
 <!-- /generated -->
 
@@ -90,7 +91,7 @@ The rest:
   are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
   the ambassador), Take down a botnet (where your ambassador stands on one), and country effects such as a tier-2 sweep or Shelter (any country;
   [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
-  move goes further. The adversary's distances (a Corrupt line moving agents from next door, `war_reach`) are its dials, not
+  move goes further. Reach bounds where a piece goes, not where it comes from: a Dispatch, or a card's "move up to N ambassadors", takes one from anywhere. The adversary's distances (a Corrupt line moving agents from next door, `war_reach`) are its dials, not
   a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter needs a city of its country in your
   reach ([board.md](board.md)).
 - **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military
@@ -105,7 +106,7 @@ The rest:
 - **The ladder**: the adversary's pieces, weakest first: agents (the explorers, used
   up when they act), **botnets** (the towns, persistent), troops, corrupted cities and
   stations (the cities). The Liberate action takes a site off the ladder: its agents cancel and it becomes the
-  liberator's ([ambassadors.md](ambassadors.md)); a liberate card leaves the city's agents on it.
+  liberator's ([ambassadors.md](ambassadors.md)); a liberate card does the same, unpaid.
 - **The supply is a cap**: a placement it can't make doesn't happen.
 - **Players choose**: an `Action::Choose` in `legal_actions`. Team choices in the
   adversary's steps, production and threats are asked of seat 0 (an aligned city's

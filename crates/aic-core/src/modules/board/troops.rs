@@ -146,8 +146,9 @@ pub fn march_now(g: &mut GameState, cx: &mut Cx, h: usize, n: i64, steps: Option
 /// each; `marched` counts the troops on each hex that don't move (none marches twice).
 fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, mut marched: Vec<i64>) -> Res {
     let w = cx.world;
-    // 105: seats whose Wall pays when it stops a troop (the Protector's Vigil).
-    let vigil: Vec<bool> = (0..g.seats.len()).map(|s| cards::has_wall_trigger(&w, g, s)).collect();
+    // 178 (Matt's ruling #18): the seats whose Vigil pays when a troop ends its march next to their node (it
+    // paid when a Wall stopped a troop before r77).
+    let vigil: Vec<usize> = (0..g.seats.len()).filter(|&s| cards::has_vigil(&w, g, s)).collect();
     for from in troops {
         if g.tokens(from, TROOP) - marched[from] <= 0 {
             continue;
@@ -155,19 +156,7 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
         let mut at = from;
         let mut alive = true;
         let mut stopped = false;
-        let mut vigil_paid = !vigil.iter().any(|v| *v);
         for _ in 0..steps {
-            // 105: a Wall stops this troop when a hex next to it holds a target
-            // the troop would strike but for the Wall: once a troop a march.
-            if !vigil_paid {
-                if let Some(s) = wall_stopping(&w, g, at) {
-                    vigil_paid = true;
-                    cx.tally(g, "board.wall_stops", 1);
-                    if vigil[s] {
-                        cards::on_wall(g, cx, s)?;
-                    }
-                }
-            }
             // 075: the measure's: a facility a Wall kept this troop off. 099:
             // once a troop a march, not every step it spends beside the Wall.
             if !stopped && next_to(&w, at, |x| walled(&w, g, x) && under_wall(g, x)) {
@@ -225,6 +214,14 @@ fn march_troops(g: &mut GameState, cx: &mut Cx, troops: Vec<usize>, steps: i64, 
         }
         if alive {
             marched[at] += 1;
+            // Vigil: a troop that ends its march (any march, a threat's immediate one too) next to the seat's
+            // node pays it once; one used up striking has no end to its march.
+            for &s in &vigil {
+                if w.map.hexes[at].neighbors.iter().any(|&x| g.tokens(x, node(s)) > 0) {
+                    cx.tally(g, "board.vigil", 1);
+                    cards::on_march_end(g, cx, s)?;
+                }
+            }
         }
     }
     Ok(())
@@ -253,18 +250,6 @@ pub(super) fn troop_targets_on(w: &World, g: &GameState, h: usize) -> Vec<String
         }
     }
     out
-}
-
-/// 105: the seat whose Wall stops a troop at `at`: the first hex next to it
-/// (in neighbor order) with that seat's walled node and something the troop
-/// would strike there but for the Wall.
-fn wall_stopping(w: &World, g: &GameState, at: usize) -> Option<usize> {
-    w.map.hexes[at].neighbors.iter().find_map(|&x| {
-        let s = node_owner(g, x).filter(|&s| has_wall(w, s))?;
-        let facility = under_wall(g, x);
-        let node = g.var(adversary::STAGE) >= w.hot(Hot::TroopNode);
-        (facility || node).then_some(s)
-    })
 }
 
 /// Whether hex `h` holds a player-owned facility, what a Wall there saves.

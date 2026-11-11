@@ -56,11 +56,11 @@
   "name": "Civil Defense",
   "side": "unity",
   "tiers": [
-   {"text": "In each country piece, remove up to 2 agents from hexes on or next to a corrupted city.",
+   {"text": "In each country piece, remove up to 2 Agents from hexes on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "country", "where": "by_corrupted_city"}]},
-   {"text": "In each country piece, remove up to 3 agents from hexes on or next to a corrupted city.",
+   {"text": "In each country piece, remove up to 3 Agents from hexes on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "country", "where": "by_corrupted_city"}]},
-   {"text": "In each country piece, remove up to 6 agents from hexes within 2 of an ambassador or a node.",
+   {"text": "In each country piece, remove up to 6 Agents from hexes within 2 of an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 6, "per": "country", "where": "near_player"}]}
   ]
  },
@@ -95,11 +95,11 @@
   "name": "New Deal",
   "side": "unity",
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 ambassador for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 2 credits and 1 Ambassador for each city, research station or factory a player owns (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 2 credits and 2 Ambassadors for each city, research station or factory a player owns (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 ambassadors for each city, research station or factory a player owns (at most 4).",
+   {"text": "Every player gains 2 credits and 3 Ambassadors for each city, research station or factory a player owns (at most 4).",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -108,11 +108,11 @@
   "name": "Decommission",
   "side": "unity",
   "tiers": [
-   {"text": "Remove each botnet on a hex holding an ambassador.",
+   {"text": "Remove each Botnet on a hex holding an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "ambassador"}]},
-   {"text": "Remove each botnet on a hex on or next to an ambassador.",
+   {"text": "Remove each Botnet on a hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove each botnet on a hex on or next to an ambassador or a node.",
+   {"text": "Remove each Botnet on a hex on or next to an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "botnets", "count": 1, "per": "hex", "where": "by_player"}]}
   ]
  },
@@ -122,11 +122,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 troop from each hex on or next to an ambassador.",
+   {"text": "Remove 1 Troop from each hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove up to 2 troops from each hex on or next to an ambassador.",
+   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Remove up to 2 troops from each hex on or next to an ambassador or a node.",
+   {"text": "Remove up to 2 Troops from each hex on or next to an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "hex", "where": "by_player"}]}
   ]
  },
@@ -136,11 +136,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Each player removes up to 3 agents from one hex on or next to a corrupted city.",
+   {"text": "Each player removes up to 3 Agents from one hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "player", "where": "by_corrupted_city"}]},
-   {"text": "Each player removes up to 4 agents from one hex on or next to a corrupted city.",
+   {"text": "Each player removes up to 4 Agents from one hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 4, "per": "player", "where": "by_corrupted_city"}]},
-   {"text": "Each player removes up to 6 agents from one hex within 2 of an ambassador or a node.",
+   {"text": "Each player removes up to 6 Agents from one hex within 2 of an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 6, "per": "player", "where": "near_player"}]}
   ]
  },
@@ -150,11 +150,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 3 ambassadors for each corrupted city (at most 1).",
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 1).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 1, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]},
-   {"text": "Every player gains 3 ambassadors for each corrupted city (at most 2).",
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 2).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]},
-   {"text": "Every player gains 3 ambassadors for each corrupted city (at most 3).",
+   {"text": "Every player gains 3 Ambassadors for each corrupted city (at most 3).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -164,11 +164,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex holding an ambassador.",
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex holding an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "ambassador"}]},
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an ambassador.",
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an ambassador or a node.",
+   {"text": "Take the adversary cube off each corrupted research station or factory on a hex on or next to an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "cubes", "count": 1, "per": "hex", "where": "by_player"}]}
   ]
  },
@@ -178,11 +178,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 1 energy and 1 ambassador for each city, research station or factory a player owns (at most 1).",
+   {"text": "Every player gains 1 energy and 1 Ambassador for each city, research station or factory a player owns (at most 1).",
     "effects": [{"op": "per_site", "where": "owned", "max": 1, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 1 energy and 2 ambassadors for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 1 energy and 2 Ambassadors for each city, research station or factory a player owns (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 1 energy and 3 ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 1 energy and 3 Ambassadors for each city, research station or factory a player owns (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "energy", "amount": 1}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -192,11 +192,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Each player removes up to 2 troops from one hex on or next to an ambassador.",
+   {"text": "Each player removes up to 2 Troops from one hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 2, "per": "player", "where": "by_ambassador"}]},
-   {"text": "Each player removes up to 3 troops from one hex on or next to an ambassador.",
+   {"text": "Each player removes up to 3 Troops from one hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 3, "per": "player", "where": "by_ambassador"}]},
-   {"text": "Each player removes up to 4 troops from one hex on or next to an ambassador.",
+   {"text": "Each player removes up to 4 Troops from one hex on or next to an Ambassador.",
     "effects": [{"op": "remove_where", "pieces": "troops", "count": 4, "per": "player", "where": "by_ambassador"}]}
   ]
  },
@@ -206,11 +206,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Clear the corruption marker on each hex on or next to an ambassador, for its reward.",
+   {"text": "Clear the corruption marker on each hex on or next to an Ambassador, for its reward.",
     "effects": [{"op": "remove_where", "pieces": "markers", "count": 1, "per": "hex", "where": "by_ambassador"}]},
-   {"text": "Clear the corruption marker on each hex on or next to an ambassador or a node, for its reward.",
+   {"text": "Clear the corruption marker on each hex on or next to an Ambassador or a Node, for its reward.",
     "effects": [{"op": "remove_where", "pieces": "markers", "count": 1, "per": "hex", "where": "by_player"}]},
-   {"text": "Clear 2 corruption markers on each hex on or next to an ambassador or a node, for its reward.",
+   {"text": "Clear 2 corruption markers on each hex on or next to an Ambassador or a Node, for its reward.",
     "effects": [{"op": "remove_where", "pieces": "markers", "count": 2, "per": "hex", "where": "by_player"}]}
   ]
  },
@@ -234,11 +234,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 credits and 1 ambassador for each corrupted city (at most 2).",
+   {"text": "Every player gains 2 credits and 1 Ambassador for each corrupted city (at most 2).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 2, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 1}]}]},
-   {"text": "Every player gains 2 credits and 2 ambassadors for each corrupted city (at most 3).",
+   {"text": "Every player gains 2 credits and 2 Ambassadors for each corrupted city (at most 3).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 3, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 credits and 3 ambassadors for each corrupted city (at most 4).",
+   {"text": "Every player gains 2 credits and 3 Ambassadors for each corrupted city (at most 4).",
     "effects": [{"op": "per_site", "where": "corrupted_city", "max": 4, "then": [{"op": "gain", "resource": "credits", "amount": 2}, {"op": "gain", "resource": "ambassadors", "amount": 3}]}]}
   ]
  },
@@ -248,11 +248,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Every player gains 2 ambassadors for each city, research station or factory a player owns (at most 2).",
+   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 2).",
     "effects": [{"op": "per_site", "where": "owned", "max": 2, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 ambassadors for each city, research station or factory a player owns (at most 3).",
+   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 3).",
     "effects": [{"op": "per_site", "where": "owned", "max": 3, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]},
-   {"text": "Every player gains 2 ambassadors for each city, research station or factory a player owns (at most 4).",
+   {"text": "Every player gains 2 Ambassadors for each city, research station or factory a player owns (at most 4).",
     "effects": [{"op": "per_site", "where": "owned", "max": 4, "then": [{"op": "gain", "resource": "ambassadors", "amount": 2}]}]}
   ]
  },
@@ -262,11 +262,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "Remove 1 agent from each hex on or next to a corrupted city.",
+   {"text": "Remove 1 Agent from each hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 1, "per": "hex", "where": "by_corrupted_city"}]},
-   {"text": "Remove up to 2 agents from each hex on or next to a corrupted city.",
+   {"text": "Remove up to 2 Agents from each hex on or next to a corrupted city.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 2, "per": "hex", "where": "by_corrupted_city"}]},
-   {"text": "Remove up to 3 agents from each hex within 2 of an ambassador or a node.",
+   {"text": "Remove up to 3 Agents from each hex within 2 of an Ambassador or a Node.",
     "effects": [{"op": "remove_where", "pieces": "agents", "count": 3, "per": "hex", "where": "near_player"}]}
   ]
  },
@@ -276,11 +276,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no Rally lands on a site holding an ambassador: its share stays in the supply.",
+   {"text": "In the next adversary turn, no Rally lands on a site holding an Ambassador: its share stays in the supply.",
     "effects": [{"op": "prohibit", "step": "rally", "where": "ambassador"}]},
-   {"text": "In the next adversary turn, no Rally lands on a site on or next to an ambassador: its share stays in the supply.",
+   {"text": "In the next adversary turn, no Rally lands on a site on or next to an Ambassador: its share stays in the supply.",
     "effects": [{"op": "prohibit", "step": "rally", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no Rally lands on a site on or next to an ambassador or a node: its share stays in the supply.",
+   {"text": "In the next adversary turn, no Rally lands on a site on or next to an Ambassador or a Node: its share stays in the supply.",
     "effects": [{"op": "prohibit", "step": "rally", "where": "by_player"}]}
   ]
  },
@@ -290,11 +290,11 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no site on or next to an ambassador corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no site on or next to an Ambassador corrupts, and nothing is pulled into it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_ambassador"}]},
-   {"text": "In the next adversary turn, no site on or next to an ambassador or a node corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no site on or next to an Ambassador or a Node corrupts, and nothing is pulled into it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no site within 2 of an ambassador or a node corrupts, and nothing is pulled into it.",
+   {"text": "In the next adversary turn, no site within 2 of an Ambassador or a Node corrupts, and nothing is pulled into it.",
     "effects": [{"op": "prohibit", "step": "corrupt", "where": "near_player"}]}
   ]
  },
@@ -304,12 +304,12 @@
   "side": "unity",
   "draft": true,
   "tiers": [
-   {"text": "In the next adversary turn, no troop is deployed on a site on or next to an ambassador or a node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "deploy", "where": "by_player"}]},
-   {"text": "In the next adversary turn, no troop is deployed on a site within 2 of an ambassador or a node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "deploy", "where": "near_player"}]},
-   {"text": "In the next adversary turn, no troop is deployed on a site within 2 of an ambassador or a node: it stays in the supply.",
-    "effects": [{"op": "prohibit", "step": "deploy", "where": "near_player"}]}
+   {"text": "In the next adversary turn, no Troop is mustered on a site on or next to an Ambassador or a Node: it stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "muster", "where": "by_player"}]},
+   {"text": "In the next adversary turn, no Troop is mustered on a site within 2 of an Ambassador or a Node: it stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "muster", "where": "near_player"}]},
+   {"text": "In the next adversary turn, no Troop is mustered on a site within 2 of an Ambassador or a Node: it stays in the supply.",
+    "effects": [{"op": "prohibit", "step": "muster", "where": "near_player"}]}
   ]
  },
  {
@@ -330,11 +330,11 @@
   "name": "Blight",
   "side": "discord",
   "tiers": [
-   {"text": "Each board: create 1 agent on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
+   {"text": "Each country: create 1 Agent on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone.",
     "effects": [{"op": "create", "count": 1, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}]},
-   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each board: create 3 agents on the lowest-numbered city holding agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
+   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, and a neutral factory opens on its lowest-numbered free industrial zone; then Corrupt cities.",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "create_site", "kind": "factory"}, {"op": "corrupt", "site": "city"}]}
   ]
  },
@@ -356,11 +356,11 @@
   "name": "Offensive",
   "side": "discord",
   "tiers": [
-   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the node hex with the most agents and troops.",
+   {"text": "Corrupt cities, then deal a tier-2 threat with its token on the Node hex with the most Agents and Troops.",
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the node hex with the most agents and troops.",
+   {"text": "Corrupt cities, then deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
     "effects": [{"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]},
-   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the node hex with the most agents and troops.",
+   {"text": "The adversary builds, then Corrupt cities and deal two tier-2 threats with their tokens on the Node hex with the most Agents and Troops.",
     "effects": [{"op": "adversary_build"}, {"op": "corrupt", "site": "city"}, {"op": "threat_at_node", "tier": 2}, {"op": "threat_at_node", "tier": 2}]}
   ]
  },
@@ -382,11 +382,11 @@
   "name": "Firestorm",
   "side": "discord",
   "tiers": [
-   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents.",
+   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}]},
-   {"text": "Each board: create 2 agents on the lowest-numbered city holding agents, then Corrupt cities.",
+   {"text": "Each country: create 2 Agents on the lowest-numbered city holding Agents, then Corrupt cities.",
     "effects": [{"op": "create", "count": 2, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city"}]},
-   {"text": "Each board: create 3 agents on the lowest-numbered city holding agents, then Corrupt cities (1 fewer).",
+   {"text": "Each country: create 3 Agents on the lowest-numbered city holding Agents, then Corrupt cities (1 fewer).",
     "effects": [{"op": "create", "count": 3, "at": "city", "if": "ambassadors"}, {"op": "corrupt", "site": "city", "cut": 1}]}
   ]
  }

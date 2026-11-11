@@ -12,7 +12,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary troops land here.",
+   "text": "2 adversary Troops land here.",
    "counters": [
     [
      {
@@ -104,7 +104,7 @@
    "locations": [
     "factory"
    ],
-   "text": "1 adversary troop lands here. The nearest player pays 3 chips or discards 1 card.",
+   "text": "1 adversary Troop lands here. The nearest player pays 3 chips or discards 1 card.",
    "counters": [
     [
      {
@@ -153,7 +153,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 2 ambassadors or discards 2 cards. The adversary gains 4 compute.",
+   "text": "The nearest player pays 2 Ambassadors or discards 2 cards. The adversary gains 4 compute.",
    "counters": [
     [
      {
@@ -201,7 +201,7 @@
    "locations": [
     "base"
    ],
-   "text": "1 adversary troop lands here. Sway 2 toward Discord.",
+   "text": "1 adversary Troop lands here. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -299,7 +299,7 @@
    "locations": [
     "city"
    ],
-   "text": "3 agents are created here. Sway 2 toward Discord.",
+   "text": "3 Agents are created here. Sway 2 toward Discord.",
    "counters": [
     [
      {
@@ -347,7 +347,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 2 ambassadors or discards 2 cards. Sway 1 toward Discord.",
+   "text": "The nearest player pays 2 Ambassadors or discards 2 cards. Sway 1 toward Discord.",
    "counters": [
     [
      {
@@ -537,7 +537,7 @@
    "locations": [
     "station"
    ],
-   "text": "2 agents are created here. The nearest player pays 3 research cubes or discards 2 cards.",
+   "text": "2 Agents are created here. The nearest player pays 3 research cubes or discards 2 cards.",
    "counters": [
     [
      {
@@ -676,7 +676,7 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here.",
+   "text": "A Botnet lands on the station here.",
    "counters": [
     [
      {
@@ -813,7 +813,7 @@
    "locations": [
     "factory"
    ],
-   "text": "2 agents are created here. The nearest player pays 2 energy or discards 2 cards.",
+   "text": "2 Agents are created here. The nearest player pays 2 energy or discards 2 cards.",
    "counters": [
     [
      {

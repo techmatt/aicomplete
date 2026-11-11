@@ -112,7 +112,6 @@ fn lab_config(round: &[&str]) -> Config {
         "adversary.botnet_compute=3",
         "board.ambassador_discord=1",
         "board.troop_node=0",
-        "board.free_leaves=0",
         "board.unit_cap=3",
         "board.destruction_discord=1",
         "board.liberate_at=1",
@@ -618,9 +617,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 76;
-const GOLDEN_FINGERPRINT: &str = "c7022cef6cb370c8";
-const GOLDEN_CONTENT_HASH: &str = "01cf6a4efa776d20";
+const GOLDEN_REVISION: u32 = 77;
+const GOLDEN_FINGERPRINT: &str = "f0ea402cf0d5fc6a";
+const GOLDEN_CONTENT_HASH: &str = "cfdd2bbc39ded04b";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

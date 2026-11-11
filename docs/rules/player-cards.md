@@ -16,12 +16,13 @@ The cards config lists which cards are in the game (baseline: all of them).
   first generation).
 - **The draft (rounds 2+).** `cards.tier`: each player builds a hand of `deal` cards **card by card**, choosing for
   each card which deck it comes from; it is dealt face up into the hand, so the next choice sees it. `cards.draft`:
-  take one card, pass the rest to the next seat, until the hands are gone: to seat *s*+1 in odd rounds, *s*−1 in even
-  rounds (as in Terraforming Mars); nobody may pass in `cards.tier` or `cards.draft`. `cards.keep`: keep any drafted cards for insight, `keep_tier1` for a tier-1 card
+  take one card, pass the rest to the next seat, until the hands are gone: always to seat *s*+1, every round;
+  nobody may pass in `cards.tier` or `cards.draft`. `cards.keep`: keep any drafted cards for insight, `keep_tier1` for a tier-1 card
   and `keep_tier2` for a tier-2 card (`keep_tier2_upgraded` with the board's keep upgrade); any insight short is paid
   at `insight_credits` credits an insight (keeps only). An Open Market free keep is used first. The rest are
   discarded when the action phase begins.
-- **Playing** a card costs its credits (buildings minus your discounts: Industry tags, Master Plan), and any
+- **Playing** a card costs its credits, less your discounts (Industry tags and Master Plan off a building; a tag discount
+  such as Darknet Exchange's off any card with that tag), and any
   `insight`, `energy`, `chips`, `antimatter` and research cubes it prints, and lowers any income it prints under
   `lowers` ("lower your credit income 1": your production of that resource falls for the rest of the game; it can't
   be played if that income is lower). **Insight to play:** 0 for small programs and events, 1 by default (removal
@@ -39,10 +40,10 @@ The cards config lists which cards are in the game (baseline: all of them).
   seat that makes little energy still has plenty to play. Seven late sinks (five 2-energy Actions, two tier-2
   buildings with a big energy cost; [cards.md](../cards.md)) serve a seat whose node tracks are full.
 - **The end-game cards (drafts; Matt, 2026-11-09).** Ten tier-2 cards for the last 3-4 rounds act where the
-  agents stand, in reach: **convert** them onto your node (Mass Defection, Double Agents, Open Source
-  Uprising, Embassy of Exiles), **gather** them (and troops) into a hex in reach and remove them (Kettle Operation, Lure
-  Network; r70), **firewall** a hex for a round (Firewall Array, Air Gap), or mass your own (Rally the Allies), and strike
-  (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
+  agents stand, in reach: **convert** them into your ambassadors where they stand (Mass Defection, Double
+  Agents, Open Source Uprising, Embassy of Exiles), **strike** them (Kettle Operation: and troops) on or next to a hex in
+  reach (Kettle Operation, Lure Network), **firewall** a hex for a round (Firewall Array, Air Gap), mass your own
+  (Rally the Allies), or remove them, or troops, on one hex (Surgical Strike). The six events and Open Source Uprising also sway 1-2 Unity; three print a tag threshold ("with 3 Diplomacy tags,
   also …"). None frees a city, none is
   global, none makes a liberation cheaper the next time ([ambassadors.md](ambassadors.md)).
 - **Science owns a niche (candidate).** Among cards, only Science cards clear corruption markers, put a hardening
@@ -65,18 +66,20 @@ The cards config lists which cards are in the game (baseline: all of them).
   first threshold; Intrusion Lab's 1 Operative instead fills its "at 2" on the first removal of compute,
   or a feeder's Operative. A committed seat earns an engine back within 2 rounds. Each tag has a tier-1 play
   trigger and a tier-2 one that counts every tag on the played card, and its engines' payoffs
-  ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber keeps a standing automatic counter
-  (Autonomous Defense Grid: Cyber threats anywhere need 6 less to counter); no other tag has one. No capstone prints a shield or a delay.
+  ([card-grammar.md](card-grammar.md), *The engine wording*). Cyber and Industry each keep a standing
+  automatic counter (Autonomous Defense Grid, Market Stabilization Board: cyber or economic threats anywhere need 6
+  less to counter); no other tag has one. No capstone prints a shield or a delay.
 - **The liberate capstones (candidate; Matt).** Liberating a corrupted city is a core mechanic, and its main route is
   a family of tier-2 cards, one an engine, each paid mostly in its engine's resource and each liberating one corrupted
-  city in your reach ([ambassadors.md](ambassadors.md)), some with an extra, a twist from its own engine:
+  city in your reach as the Liberate action does, unpaid: its agents come off and your cube goes on
+  ([ambassadors.md](ambassadors.md)); some add an extra, a twist from its own engine:
 
   | Card | Engine | Kind | Extra |
   |---|---|---|---|
   | The Nuclear Option | antimatter | event | sway 1 toward Discord |
   | Power to the People | energy | building (over Power, needs 2) | income: 1 credit per Power tag on your cards |
   | Citywide Microgrid | energy (8, a late sink) | building | Action: 2 Sway toward Unity |
-  | Hostile Buyout | Diplomacy, credits | event | your cube goes on the city, and you gain 3 ambassadors |
+  | Hostile Buyout | Diplomacy, credits | event | gain 3 ambassadors |
   | Forensic Audit | research cubes | event | draw 2 cards |
   | Root Access | Cyber (needs Cyber tags) | event | remove a botnet on or next to the city |
   | Peacekeeping Mission | Security (needs Security tags) | event | remove up to 2 adversary troops in the city's country |
@@ -103,18 +106,19 @@ The cards config lists which cards are in the game (baseline: all of them).
   its parts acts; one that would do nothing at all is not. A removal's target is a hex with a piece the card names:
   "remove 1 agent" can't name a hex holding only a troop. A building's when-built effect is not checked.
 - **Own tags:** a card's own tags never count toward its own `needs` (Matt, as in Terraforming Mars): it is still
-  in your hand. Once played, a program's tags count for its own gain per tag ([card-grammar.md](card-grammar.md)).
+  in your hand. Once played, a program's or building's tags count for its own gains per tag, which print "(including
+  this)"; an event's never do ([card-grammar.md](card-grammar.md)).
 - **Buildings** go into a slot: your AI board's `ai.slots` (a building printing `slots` adds them and sits in one
   itself; no card prints it). With a slot free you choose a new slot or **build over** one of your buildings; with
   none free you must build over one. The building underneath is **splayed down**: its passives and ability stop, its
-  tags still count, and it is sacrificed with the stack. A building with `replaces` (most tier-2 buildings, over their
-  own tag: Orbital Embassy, Agency Directorate, Power to the People, each a capstone with a big
+  tags still count, and it is sacrificed with the stack. A building with `replaces` (three tier-2 buildings, each over
+  its own tag: Orbital Embassy, Agency Directorate, Power to the People, each a capstone with a big
   one-off) must be built over one whose top card carries that tag. The engines (Foundation Model Campus, Orbital Mass
   Driver, Capital Projects Office, Hyperscale Botnet, Positron Storage Ring) have none: an engine goes in a free slot
   or over whichever building its owner chooses, so it never buries a better building of its tag.
 - **Tokens** live on buildings that print a type (`tokens`): Datasets (Science), Followers (Diplomacy), Capital
   (Industry), Operatives (Security; r70, so agents are only the adversary's pieces). **A token card is progressive and counts only its own tokens (Matt's ruling 12).** No
-  card gains tokens except as it prints. Each arrives loaded ("Add 2 Operatives here" when built), then grows one of
+  card gains tokens except as it prints. Each but Popular Uprising (empty) arrives loaded ("Add 2 Operatives here" when built), then grows one of
   two ways: an OR Action that adds N here or spends or counts what is here (Synthetic Data Forge, Safehouse Network,
   Popular Uprising), or an Effect that adds tokens when something happens, with an **At N** that takes N off and pays
   by itself (the other six in the deck: Telemetry Archive, Retained Earnings, Intrusion Lab, Open Assembly, Agency

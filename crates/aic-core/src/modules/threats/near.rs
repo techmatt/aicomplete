@@ -39,26 +39,17 @@ pub fn token_of(w: &World, g: &GameState, t: &Key, loc: Location) -> Option<usiz
     })
 }
 
-/// Whether hex `h` in country `c` is a site for a token of type `loc`, with
-/// the factory fallback: a free industrial zone counts only when `c` has no
-/// factory that isn't the adversary's.
+/// The sites in country `c` for a token of type `loc`. 178 (Matt's ruling #8): one condition for every type, a
+/// site of the type that is not the adversary's (a base never is); the factory type's free-zone fallback is gone.
 fn sites(w: &World, g: &GameState, c: usize, loc: Location) -> Vec<usize> {
-    let hexes = &w.map.countries[c].hexes;
-    let pick = |f: &dyn Fn(usize) -> bool| -> Vec<usize> { hexes.iter().copied().filter(|&h| f(h)).collect() };
-    match loc {
-        Location::City => pick(&|h| is_city(w, h) && !corrupted(g, h)),
-        Location::CoastalCity => pick(&|h| is_city(w, h) && w.map.hexes[h].coastal && !corrupted(g, h)),
-        Location::Station => pick(&|h| g.tokens(h, STATION) > 0 && !corrupted(g, h)),
-        Location::Factory => {
-            let factories = pick(&|h| g.tokens(h, FACTORY) > 0 && !corrupted(g, h));
-            if factories.is_empty() {
-                pick(&|h| w.map.hexes[h].industrial && !has_building(g, h))
-            } else {
-                factories
-            }
-        }
-        Location::Base => pick(&|h| is_base(w, h)),
-    }
+    let of_type = |h: usize| match loc {
+        Location::City => is_city(w, h),
+        Location::CoastalCity => is_city(w, h) && w.map.hexes[h].coastal,
+        Location::Station => g.tokens(h, STATION) > 0,
+        Location::Factory => g.tokens(h, FACTORY) > 0,
+        Location::Base => is_base(w, h),
+    };
+    w.map.countries[c].hexes.iter().copied().filter(|&h| of_type(h) && !corrupted(g, h)).collect()
 }
 
 /// Adversary pieces (ambassadors, troops, botnets) on or next to hex `h`.

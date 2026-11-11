@@ -250,7 +250,8 @@ pub(super) fn std_text(w: &World, act: StandardAction) -> String {
             let who = if n == 1 { "an ambassador".to_string() } else { format!("{n} ambassadors") };
             return format!("spend {who} from your supply: remove up to {} agents in reach", w.int("board.remove_count"));
         }
-        StandardAction::Move => "use 1 Movement: move a player ambassador onto a piece in reach",
+        // 178 (Matt's ruling #22): Dispatch, not Move (it plays the same: the ambassador comes from anywhere).
+        StandardAction::Move => "use 1 Dispatch: put a player ambassador, from your supply or the board, onto a piece in reach",
         StandardAction::Ambassador => "gain a player ambassador",
         StandardAction::Claim => {
             return format!(
@@ -291,7 +292,7 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
         StandardAction::Station => (
             "Build a research station",
             format!("{} chips", t("board.station_chips")),
-            "on an open hex in reach that is not an industrial zone; it is yours (your cube)".into(),
+            "on an open hex in reach that is not an industrial zone or corrupted land; it is yours (your cube)".into(),
         ),
         // r75 (Matt's ruling 1): it places nothing (it stood on the hex and removed up to 3 there).
         StandardAction::Remove => (
@@ -300,13 +301,17 @@ pub fn std_rule_text(act: StandardAction, t: &dyn Fn(&str) -> String) -> [String
             format!("remove up to {} agents in reach, from any hexes, your choice", t("board.remove_count")),
         ),
         StandardAction::Clear => (
-            "Clear a corruption marker",
+            "Clear a corruption marker or land corruption",
             format!("{} credits", t("board.clear_cost")),
-            format!("in reach: sway {} toward Unity, gain {} credits", t("board.clear_unity"), t("board.clear_credits")),
+            format!(
+                "in reach: a marker sways {} toward Unity and gains {} credits; land corruption just comes off",
+                t("board.clear_unity"),
+                t("board.clear_credits")
+            ),
         ),
         StandardAction::Move => (
-            "Move a player ambassador",
-            "1 of your Movement this round (your board's, unused ones lost)".into(),
+            "Dispatch a player ambassador",
+            "1 of your Dispatches this round (your board's, unused ones lost)".into(),
             "from your supply or the board onto a piece in reach (not the hex it comes from)".into(),
         ),
         StandardAction::Ambassador => (
@@ -411,7 +416,10 @@ pub(super) fn std_targets(w: &World, g: &GameState, seat: usize, act: StandardAc
     match act {
         StandardAction::Station => station_sites(w, g, seat),
         StandardAction::Remove => all.filter(|&h| reach(h) && g.tokens(h, ADV_AMBASSADOR) > 0).collect(),
-        StandardAction::Clear => all.filter(|&h| reach(h) && g.tokens(h, MARKER) > 0).collect(),
+        // 178 (Matt's ruling #28): a land corruption token too.
+        StandardAction::Clear => {
+            all.filter(|&h| reach(h) && (g.tokens(h, MARKER) > 0 || g.tokens(h, LAND_CORRUPTION) > 0)).collect()
+        }
         // Onto a piece in reach, from the supply or another hex: never onto the
         // hex the seat's only ambassador already holds (020: that charged the
         // energy and moved nothing).
@@ -533,7 +541,14 @@ pub(super) fn std_resolve(
         }
         StandardAction::Clear => {
             if let Some(h) = on_hex(cx)? {
-                clear_marker(g, cx, s, h);
+                // 178 (Matt's ruling #28, amendment 8118): a marker for its reward; else the land corruption
+                // token, which just comes off (no reward yet).
+                if g.tokens(h, MARKER) > 0 {
+                    clear_marker(g, cx, s, h);
+                } else {
+                    cx.add_tokens(g, h, LAND_CORRUPTION, -1);
+                    cx.tally(g, "board.land_cleared", 1);
+                }
             }
         }
         StandardAction::Move => {
@@ -575,8 +590,8 @@ fn clear_words(w: &World) -> String {
         reward.push(Resource::Credits.words(credits));
     }
     if reward.is_empty() {
-        "clear a corruption marker in reach".into()
+        "clear a corruption marker or land corruption in reach".into()
     } else {
-        format!("clear a corruption marker in reach: {}", reward.join(" and "))
+        format!("clear a corruption marker in reach ({}) or land corruption", reward.join(" and "))
     }
 }

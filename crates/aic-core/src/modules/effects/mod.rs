@@ -28,7 +28,7 @@ mod team;
 
 pub use ctx::*;
 pub use endgame::{convert_cities, firewall_hexes};
-pub use moves::{gather_hexes, push_hexes, GATHER_INTO, GATHER_PIECE, PUSH_FROM, PUSH_PIECE, STOP};
+pub use moves::{gather_hexes, push_hexes, GATHER_INTO, GATHER_PIECE, PUSH_FROM, PUSH_PIECE, STOP, STRIKE_AT, STRIKE_PIECE};
 pub use feasible::*;
 pub use targets::*;
 
@@ -104,8 +104,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
         Op::Cleanse { amount, one_country, cities, only } => {
             removal::cleanse(g, cx, seat, *amount, *one_country, *cities, *only)?
         }
-        Op::Liberate { align, ambassadors, troops, botnet } => {
-            removal::liberate_city(g, cx, seat, *align, *ambassadors, *troops, *botnet)?
+        Op::Liberate { ambassadors, troops, botnet } => {
+            removal::liberate_city(g, cx, seat, *ambassadors, *troops, *botnet)?
         }
         Op::ClearCity { max } => removal::clear_city(g, cx, seat, *max)?,
         Op::Harden { count } => resources::harden(g, cx, seat, *count)?,
@@ -125,7 +125,8 @@ fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res {
             let opts = cs.iter().map(|&c| country_opt(&w, c)).collect();
             let prompt = || format!("Seat {seat}: cordon which country?");
             if let Some(i) = cx.choose(seat, prompt, opts)? {
-                // Through the next round: cleanup counts it down (118: no longer cleared at the build).
+                // 178 (Matt's ruling #30): until the end of the next adversary turn (the compute step clears
+                // it); cleanup counts it down, so the forecast reads 2 as "played this round".
                 cx.set_key(g, &board::flag(RoundFlag::Cordon, cs[i]), 2);
             }
         }

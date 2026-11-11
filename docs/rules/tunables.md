@@ -24,7 +24,6 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
 | `board.start_nodes` | 1 | 1..3 | 175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
-| `board.free_leaves` | 0 | 0..5 | agents left on a city as it frees (the piece ladder) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
 | `board.troop_steps` | 2 | 0..5 | steps each adversary troop takes in the march: destroy a target on or next to it, else move 1 hex toward the nearest |
@@ -75,7 +74,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
 | `adversary.compute_income` | 1, 4, 22, 24, 24 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 0, 3, 3, 3, 3 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
+| `adversary.ambassador_income` | 0, 3, 3, 3, 3 | 0..10 | 151: the agent income a country a round (into each country's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
 | `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |

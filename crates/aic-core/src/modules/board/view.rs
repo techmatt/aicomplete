@@ -8,7 +8,7 @@ fn flag_doc(f: RoundFlag) -> &'static str {
         RoundFlag::Sabotage => "Sabotage: while this is up, players with a node here make no energy in upkeep (an uncountered threat's lasts to the end of the next round)",
         RoundFlag::Shelter => "Sheltered: facilities and nodes here can't be destroyed this round",
         RoundFlag::Embargo => "Embargo: while this is up, no site here can be claimed (an uncountered threat's lasts to the end of the next round)",
-        RoundFlag::Cordon => "Cordon: no arrivals land here this round",
+        RoundFlag::Cordon => "Cordon: no arrivals land here until the end of the next adversary turn (its pool waits)",
     }
 }
 
@@ -24,18 +24,13 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     out.bookkeeping(&keys);
     // 149: each seat's Movement left this round, of its Movement.
     for s in 0..g.seats.len() {
-        let doc = "Movement: free ambassador moves this round (Move); what you don't use is lost";
-        out.seat(s, "movement", "Movement", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
+        let doc = "Dispatches: free Dispatches this round (an ambassador onto a piece in reach); what you don't use is lost";
+        out.seat(s, "movement", "Dispatches", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);
     }
     for c in 0..w.map.countries.len() {
         for f in FLAGS {
             if flagged(g, f, c) {
-                // 118: a Cordon at 2 (played this round, or renewed) lasts through the next.
-                let doc = if f == RoundFlag::Cordon && g.var(&flag(f, c)) >= 2 {
-                    "Cordon: no arrivals land here this round or next"
-                } else {
-                    flag_doc(f)
-                };
+                let doc = flag_doc(f);
                 // 148: the label is the doc's name ("Sheltered"), not the key.
                 let label = doc.split(':').next().unwrap_or(doc);
                 out.country(c, f.name(), label, 1, None, doc);

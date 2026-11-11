@@ -418,7 +418,7 @@ fn tip(g: &mut GameState, cx: &mut Cx, side: Side) -> Res {
     let tier = tier_of(&w, before + 1);
     let printed = &c.tiers[tier - 1];
     cx.note(None, || {
-        format!("{} ({}, tier {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
+        format!("{} ({}, strength {}) resolves: {}", c.name, side.name(), crate::content::TIER_NUMERALS[tier - 1], printed.text)
     });
     let source = if side == Side::Discord { "discord" } else { "unity" };
     let fx0 = fx_snapshot(g);
@@ -470,7 +470,7 @@ fn fx_snapshot(g: &GameState) -> [i64; 16] {
 fn tier_words(side: &str, w: &World) -> String {
     let t = w.list("alignment.tier_at");
     format!(
-        "{side} tips so far; a {side} card resolves tier I on tips 1-{}, II from the tip numbered {}, III from tip {}",
+        "{side} tips so far; a {side} card resolves strength I on tips 1-{}, II from the tip numbered {}, III from tip {}",
         t[0] - 1, t[0], t[1]
     )
 }

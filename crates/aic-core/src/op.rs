@@ -377,16 +377,17 @@ impl Where {
 #[serde(rename_all = "snake_case")]
 pub enum Step {
     Rally,
-    Deploy,
+    /// The adversary's troop line (178, Matt's ruling #17: was Deploy, the node power's word too).
+    Muster,
     Corrupt,
 }
 
 impl Step {
-    pub const ALL: [Step; 3] = [Step::Rally, Step::Deploy, Step::Corrupt];
+    pub const ALL: [Step; 3] = [Step::Rally, Step::Muster, Step::Corrupt];
     pub fn name(self) -> &'static str {
         match self {
             Step::Rally => "rally",
-            Step::Deploy => "deploy",
+            Step::Muster => "muster",
             Step::Corrupt => "corrupt",
         }
     }
@@ -488,7 +489,8 @@ pub enum Event {
     },
     /// You play a card whose printed credit cost is at least `at` (a rebate).
     PlayCost { at: i64 },
-    /// You remove an adversary troop: once a troop.
+    /// You remove adversary troops: once a card, Action, power or standard
+    /// action that removes any (178; once a troop before r77).
     RemoveTroop,
     /// You remove compute from adversary projects: once a card, Action, power
     /// or standard action that removes any.
@@ -496,11 +498,11 @@ pub enum Event {
     /// You remove agents (canceling included): once a card,
     /// Action, power or standard action that removes any.
     RemoveAmbassadors,
-    /// You place a token of `kind` on one of your cards: once a token.
+    /// You place tokens of `kind` on your cards: once a placement (178; once a token before r77).
     PlaceTokens { kind: TokenKind },
-    /// Your Wall stops a troop in the march (an AI board's innate: Vigil):
-    /// once a troop a march.
-    WallStops,
+    /// An adversary troop ends its march next to your node (an AI board's innate: Vigil; 178, Matt's ruling #18,
+    /// was "your Wall stops a troop"): once a troop a march, any march.
+    MarchEndsNear,
 }
 
 impl RoundFlag {
@@ -625,13 +627,12 @@ pub enum Op {
         only: Option<Facility>,
     },
     /// Liberate one corrupted city in your reach (080, r34: the liberate
-    /// capstones): its adversary cube comes off, so it is clean; with `align`
-    /// your cube goes on it. Each engine's twist (r35): `ambassadors`, you gain
+    /// capstones): as the Liberate action does (178, Matt's ruling #29), the
+    /// agents on it come off, its adversary cube comes off and your cube goes
+    /// on. Each engine's twist (r35): `ambassadors`, you gain
     /// that many; `troops`, up to that many adversary troops in the city's
     /// country come off; `botnet`, a botnet on or next to the city comes off.
     Liberate {
-        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-        align: bool,
         #[serde(default, skip_serializing_if = "is_zero")]
         ambassadors: i64,
         #[serde(default, skip_serializing_if = "is_zero")]
@@ -660,8 +661,9 @@ pub enum Op {
     },
     /// In one country, facilities and nodes can't be destroyed this round.
     Shelter,
-    /// In one country, no arrivals land through the next round, its build and any
-    /// build a project brings (118; 068: a Security card does an ambassador's job).
+    /// In one country, no arrivals land until the end of the next adversary turn, its build and any
+    /// build a project brings (118; 068: a Security card does an ambassador's job); its agent pool waits
+    /// for the next Rally (178, Matt's ruling #30).
     Cordon,
     /// Play a building from your hand paying no credits; its other costs and
     /// its requirements stand (068: the Builder's expensive power).
@@ -739,16 +741,15 @@ pub enum Op {
     },
     /// 158 (Matt, 2026-11-09): convert up to `max` agents on or
     /// next to one city in your reach: each leaves the adversary's stack and
-    /// becomes yours, onto your node whose reach the card used (the node on or
-    /// next to the city; you choose among several).
+    /// becomes your ambassador where it stood (178, Matt's ruling #32).
     Convert {
         max: i64,
     },
     /// 166 (Matt, 2026-11-09, *Moving pieces*): gather up to `max` `pieces` into one land hex in your
     /// reach, each from a hex next to it, one at a time, the player choosing (and stopping when they
     /// like). They arrive as any piece does (`effects::moves`). With `strike` (Kettle Operation, Lure
-    /// Network), the player picks only the hex: up to `max` adversary pieces next to it come off, troops
-    /// first, so a strike never raises a Liberate bill.
+    /// Network, Honeypot Relay; 178, Matt's ruling #27): nothing moves; up to `max` adversary pieces on or
+    /// next to a hex in reach come off, the player choosing.
     Gather {
         max: i64,
         pieces: Vec<Piece>,
@@ -975,7 +976,7 @@ pub enum Op {
         resource: Resource,
         amount: i64,
     },
-    /// Bases make `count` extra corp troops, `now` or each production (`rounds`, `permanent`), `past_cap`
+    /// Bases make `count` extra Drones (corp troops), `now` or each production (`rounds`, `permanent`), `past_cap`
     /// (`fill`: to the cap; `near`: by a troop).
     CorpTroops {
         #[serde(default, skip_serializing_if = "is_zero")]
@@ -1157,15 +1158,15 @@ pub enum Op {
         where_: Where,
     },
     /// 167, a prohibition (158's firewall generalized): in the next adversary turn, `step` doesn't act on a
-    /// hex where `where` holds when the step runs. A blocked Rally share or Deploy troop stays in the supply;
+    /// hex where `where` holds when the step runs. A blocked Rally share or Muster troop stays in the supply;
     /// a blocked site doesn't corrupt (Corrupt lines and natural corruption), nothing is pulled into it.
     Prohibit {
         step: Step,
         #[serde(rename = "where")]
         where_: Where,
     },
-    /// The board's difficulty line: every Deploy (175: an event's, a project's, the Protector landing) lands
-    /// `amount` more troops a board.
+    /// The board's difficulty line: every Muster (175: an event's, a project's, the Protector landing) lands
+    /// `amount` more troops a country.
     StandingTroopsBonus {
         amount: i64,
     },

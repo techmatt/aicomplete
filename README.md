@@ -130,6 +130,8 @@ content-only edit moves it with no bump unless play changes; update both (the ne
 `content_hash` in any run's `games.jsonl` first line, or `regen.py`'s "content hash" line; the new fingerprint is
 the failing `golden_game` assertion's left side: copy both, never type them). A stale hash shows only once the
 fingerprint matches; `cargo test` stops at the first failing binary (`--no-fail-fast` runs the rest).
+A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
+(178: `adversary.compute` beside `adversary.reveal`), or it silently never runs there.
 
 **This machine.**
 

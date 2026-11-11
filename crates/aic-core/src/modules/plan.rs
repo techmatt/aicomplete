@@ -148,7 +148,7 @@ pub fn converge(w: &World, g: &GameState, site: CorruptSite, scope: Option<usize
             is_target[t] = true;
             match prohibition_on(w, g, Step::Corrupt, t, g.round as i64) {
                 Some(wh) => out.blocked.push((t, wh)),
-                // 158: a firewall keeps arrivals off its hex; the site still corrupts on what it holds.
+                // 158: a firewall keeps arrivals off its hex; 178: nor does the site corrupt (`adversary::corrupt`).
                 None => open[t] = !firewalled(g, t),
             }
             out.targets.push(t);
@@ -307,8 +307,9 @@ pub fn next_rally(w: &World, g: &GameState) -> Vec<(usize, f64)> {
     };
     let mut out = Vec::new();
     for c in 0..w.map.countries.len() {
-        // A cordon counts down at cleanup: before this round's build it blocks this round's Rally; after it, only
-        // one played this round (still at 2) lasts to next round's.
+        // A cordon counts down at cleanup and comes off at the end of the adversary turn (178): before this
+        // round's build it blocks this round's Rally; after it, only one played this round (still at 2) lasts to
+        // next round's.
         let cordon = g.var(&board::flag(RoundFlag::Cordon, c));
         if cordon >= if build_ahead { 1 } else { 2 } {
             continue;
@@ -358,7 +359,7 @@ pub fn sites_where(w: &World, g: &GameState, wh: Where) -> Vec<usize> {
 pub fn prohibit_keys(step: Step) -> (&'static str, &'static str) {
     match step {
         Step::Rally => ("prohibit.rally.round", "prohibit.rally.where"),
-        Step::Deploy => ("prohibit.deploy.round", "prohibit.deploy.where"),
+        Step::Muster => ("prohibit.muster.round", "prohibit.muster.where"),
         Step::Corrupt => ("prohibit.corrupt.round", "prohibit.corrupt.where"),
     }
 }

@@ -1147,7 +1147,7 @@ pub fn threat_rule_break(op: &Op) -> Option<String> {
     match op {
         Op::Troops { stand: true, .. } => Some("a troop that stands (no special pieces)".into()),
         Op::OccupyFactory { .. } => Some("a troop that occupies (no special pieces)".into()),
-        Op::CorpTroops { past_cap: true, .. } => Some("corp troops past their cap (no special pieces)".into()),
+        Op::CorpTroops { past_cap: true, .. } => Some("Drones past their cap (no special pieces)".into()),
         Op::Flag { name, .. } => Some(format!("flag {name:?} hits every player near it, not the nearest")),
         Op::Troops { each_country: true, .. }
         | Op::FlipStation { each_country: true, .. }
@@ -1213,9 +1213,10 @@ fn check_adversary_card(a: &AdversaryCard) -> Result<(), String> {
     Ok(())
 }
 
-/// 151: "each board", never "each country" (they are always equivalent).
-pub fn says_each_country(text: &str) -> bool {
-    text.to_lowercase().contains("each country")
+/// 178 (Matt's ruling #17): "each country", never "each board" (151 had it the other way; they are always
+/// equivalent, and "board" names the AI boards and the adversary board too).
+pub fn says_each_board(text: &str) -> bool {
+    text.to_lowercase().contains("each board")
 }
 
 /// 151: where an event line sits in the fixed step order (threat, rally, deploy, other lines, corrupt).
@@ -1230,10 +1231,10 @@ fn event_step(e: &Op) -> u8 {
 
 /// 151, the event standard (the threat card standard's, for events): one Rally X, its lines in the fixed order
 /// (rally, deploy, other lines, corrupt), at most two other lines (consequences), no per-event compute or
-/// creation line, and "each board", never "each country". The reason it breaks, if it does.
+/// creation line, and "each country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
-    if says_each_country(&a.text) {
-        return Some("it says \"each country\" (each board)".into());
+    if says_each_board(&a.text) {
+        return Some("it says \"each board\" (each country)".into());
     }
     let steps: Vec<u8> = a.standing.iter().chain(&a.twists).map(event_step).collect();
     if steps.iter().filter(|&&s| s == 0).count() != 1 {
@@ -1259,8 +1260,8 @@ pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
 
 /// 151: a project's consequences, its resolve line's included: one, rarely two.
 pub fn project_rule_break(p: &ProjectCard) -> Option<String> {
-    if says_each_country(&p.text) {
-        return Some("it says \"each country\" (each board)".into());
+    if says_each_board(&p.text) {
+        return Some("it says \"each board\" (each country)".into());
     }
     if p.effects.len() + p.resolve.len() > 2 {
         return Some("more than two consequences".into());
@@ -1275,8 +1276,8 @@ fn check_adversary_board(b: &AdversaryBoard) -> Result<(), String> {
     }
     for r in b.rules.iter().chain([&b.difficulty]) {
         check_ops(&r.effects, Slot::Team, &what)?;
-        if says_each_country(&r.text) {
-            return Err(format!("{what}: {:?} says \"each country\" (each board)", r.name));
+        if says_each_board(&r.text) {
+            return Err(format!("{what}: {:?} says \"each board\" (each country)", r.name));
         }
     }
     Ok(())

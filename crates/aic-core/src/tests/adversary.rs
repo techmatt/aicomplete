@@ -211,7 +211,7 @@ fn the_corrupt_step_runs_the_cards_corrupt_lines() {
 fn a_station_flip_face_prints_station_flip_at() {
     let rules = Rules::new(&baseline()).unwrap();
     let n = rules.world().int("adversary.station_flip_at");
-    let want = format!("unless {n} agents");
+    let want = format!("unless {n} Agents");
     // A forced flip (135: "even a player's") reads no tunable.
     let flips = |effects: &[Op]| effects.iter().any(|e| matches!(e, Op::FlipStation { force: false, .. }));
     let c = crate::content();
@@ -394,7 +394,7 @@ fn an_arriving_ambassador_cancels_a_player_ambassador_and_forms_no_botnet() {
 fn botnets_start_on_the_stations_and_make_adversary_compute() {
     // 175: botnets make compute in the compute step (the reveal step's income), with the income and the
     // corrupted stations; here income 0, so botnets and the two corrupted stations.
-    let mut c = lab_config(&["adversary.reveal", ACTIONS]);
+    let mut c = lab_config(&["adversary.reveal", "adversary.compute", ACTIONS]);
     apply_sets(&mut c, &["adversary.compute_income=0,0,0,0,0"]);
     let rules = Rules::new(&c).unwrap();
     let mut g = rules.new_game(1);
@@ -421,7 +421,7 @@ fn botnets_start_on_the_stations_and_make_adversary_compute() {
 #[test]
 fn the_adversary_gains_its_income_at_the_end_of_its_turn() {
     for (d, compute, ambassadors) in [(0, 5, 1), (3, 7, 2)] {
-        let mut c = lab_config(&["adversary.reveal", ACTIONS]);
+        let mut c = lab_config(&["adversary.reveal", "adversary.compute", ACTIONS]);
         let level = format!("adversary.difficulty={d}");
         apply_sets(&mut c, &[&level, "adversary.compute_income=5,5,5,7,7", "adversary.ambassador_income=1,1,1,2,2"]);
         let rules = Rules::new(&c).unwrap();
@@ -584,7 +584,7 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
         },
         "more than two other lines",
     );
-    refused(&|a| a.text = "Deploy 1 in each country.".into(), "each country");
+    refused(&|a| a.text = "Muster 1 on each board.".into(), "each board");
     // Data Heist prints two consequences; a third is refused.
     let p = c.projects.iter().find(|p| p.id == "data_heist").unwrap();
     assert_eq!(p.effects.len() + p.resolve.len(), 2);
@@ -593,6 +593,6 @@ fn the_load_check_refuses_an_event_or_a_project_off_the_standard() {
     three.effects.push(p.effects[0].clone());
     assert!(project_rule_break(&three).is_some_and(|r| r.contains("more than two")));
     let mut country = p.clone();
-    country.text = "Each country: a threat.".into();
-    assert!(project_rule_break(&country).is_some_and(|r| r.contains("each country")));
+    country.text = "Each board: a threat.".into();
+    assert!(project_rule_break(&country).is_some_and(|r| r.contains("each board")));
 }

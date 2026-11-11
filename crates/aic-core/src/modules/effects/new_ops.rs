@@ -160,7 +160,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
                     if !corrupted(g, h) {
                         adversary::corrupt_factory(g, cx, h)?;
                     }
-                } else if w.map.hexes[h].industrial && !has_building(g, h) {
+                } else if free_zones(&w, g).contains(&h) {
                     build_factory(g, cx, ctx, h);
                 }
             }

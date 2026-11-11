@@ -21,7 +21,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
   unpaid threats by **the tempo trade** (`w.tempo`: one-off harm plus what it leaves times the
   rounds left, over what paying now costs the engine), corruption risk (`w.corrupt_exposure`,
-  `w.blight`), the coming Rally (`w.rally_read`), Movement, botnets (−25, D9), cubes, converter
+  `w.blight`), the coming Rally (`w.rally_read`), Dispatches (`w.movement`), botnets (−25, D9), cubes, converter
   cities, the liberation push, a darkened city, Patience insight and idle credits.
 
 | Spec | What it does | Budget parameters (defaults) |

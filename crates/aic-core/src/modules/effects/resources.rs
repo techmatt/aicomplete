@@ -81,11 +81,9 @@ pub(super) fn claim_station(g: &mut GameState, cx: &mut Cx, seat: usize) -> Res 
     let opts = hexes.iter().map(|&h| hex_opt(&w, h)).collect();
     let prompt = || format!("Seat {seat}: claim the research station on which hex?");
     if let Some(i) = cx.choose(seat, prompt, opts)? {
-        // 148 (D70): as the Claim action, one ambassador more for each agent there (they cancel).
-        let extra = board::card_claim_extra(&w, g, hexes[i]).unwrap_or(0);
-        if extra > 0 {
-            cx.add_resource(g, seat, Resource::Ambassadors, -extra);
-        }
+        // 148 (D70): as the Claim action, one ambassador more for each agent there (they cancel); 178: paid
+        // as the action pays, the seat's own ambassadors on the station first.
+        board::pay_card_claim(g, cx, seat, hexes[i]);
         board::claim_site(g, cx, seat, hexes[i], "card");
     }
     Ok(())

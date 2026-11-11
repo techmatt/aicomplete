@@ -12,7 +12,7 @@
    "locations": [
     "base"
    ],
-   "text": "3 adversary troops land here and march at once.",
+   "text": "3 adversary Troops land here and march at once.",
    "counters": [
     [
      {
@@ -105,7 +105,7 @@
     "base",
     "city"
    ],
-   "text": "The nearest player pays 3 ambassadors or discards 3 cards. 1 adversary troop lands on the base here.",
+   "text": "The nearest player pays 3 Ambassadors or discards 3 cards. 1 adversary Troop lands on the base here.",
    "counters": [
     [
      {
@@ -156,7 +156,7 @@
    "locations": [
     "base"
    ],
-   "text": "2 adversary troops land here. The nearest player pays 4 chips or discards 2 cards.",
+   "text": "2 adversary Troops land here. The nearest player pays 4 chips or discards 2 cards.",
    "counters": [
     [
      {
@@ -292,7 +292,7 @@
    "locations": [
     "city"
    ],
-   "text": "4 agents are created here. 3 Unity comes off the Unity track.",
+   "text": "4 Agents are created here. 3 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -388,7 +388,7 @@
    "locations": [
     "city"
    ],
-   "text": "The nearest player pays 4 ambassadors or discards 3 cards. The adversary gains 3 compute.",
+   "text": "The nearest player pays 4 Ambassadors or discards 3 cards. The adversary gains 3 compute.",
    "counters": [
     [
      {
@@ -533,7 +533,7 @@
     "city",
     "coastal_city"
    ],
-   "text": "The nearest player destroys 1 of their nodes closest to it. 3 Unity comes off the Unity track.",
+   "text": "The nearest player destroys 1 of their Nodes closest to it. 3 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -625,7 +625,7 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here. 2 agents are created here.",
+   "text": "A Botnet lands on the station here. 2 Agents are created here.",
    "counters": [
     [
      {
@@ -671,7 +671,7 @@
    "locations": [
     "station"
    ],
-   "text": "The nearest player destroys 1 of their nodes closest to it and discards 3 cards.",
+   "text": "The nearest player destroys 1 of their Nodes closest to it and discards 3 cards.",
    "counters": [
     [
      {
@@ -953,7 +953,7 @@
     "coastal_city",
     "factory"
    ],
-   "text": "4 agents are created here. The nearest player pays 6 chips or discards 3 cards.",
+   "text": "4 Agents are created here. The nearest player pays 6 chips or discards 3 cards.",
    "counters": [
     [
      {
@@ -1003,7 +1003,7 @@
     "city",
     "coastal_city"
    ],
-   "text": "The nearest player destroys 1 of their nodes closest to it and pays 4 energy or discards 3 cards.",
+   "text": "The nearest player destroys 1 of their Nodes closest to it and pays 4 energy or discards 3 cards.",
    "counters": [
     [
      {
@@ -1143,7 +1143,7 @@
     "factory",
     "station"
    ],
-   "text": "The nearest player destroys 2 of their nodes closest to it. The adversary gains 6 compute.",
+   "text": "The nearest player destroys 2 of their Nodes closest to it. The adversary gains 6 compute.",
    "counters": [
     [
      {
@@ -1190,7 +1190,7 @@
     "city",
     "base"
    ],
-   "text": "3 agents are created on the city here. 2 adversary troops land on the base here.",
+   "text": "3 Agents are created on the city here. 2 adversary Troops land on the base here.",
    "counters": [
     [
      {
@@ -1239,7 +1239,7 @@
     "city",
     "factory"
    ],
-   "text": "The nearest player pays 2 ambassadors or discards 2 cards. 3 Unity comes off the Unity track.",
+   "text": "The nearest player pays 2 Ambassadors or discards 2 cards. 3 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -1287,7 +1287,7 @@
    "locations": [
     "station"
    ],
-   "text": "A botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round).",
+   "text": "A Botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round).",
    "counters": [
     [
      {
@@ -1336,7 +1336,7 @@
     "city",
     "base"
    ],
-   "text": "A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their nodes closest to it.",
+   "text": "A tier-2 threat is dealt into this country (it executes next round). The nearest player destroys 1 of their Nodes closest to it.",
    "counters": [
     [
      {
@@ -1385,7 +1385,7 @@
     "factory",
     "city"
    ],
-   "text": "2 adversary troops land on the factory here. 2 Unity comes off the Unity track.",
+   "text": "2 adversary Troops land on the factory here. 2 Unity comes off the Unity track.",
    "counters": [
     [
      {
@@ -1434,7 +1434,7 @@
     "factory",
     "base"
    ],
-   "text": "An adversary factory is built here. 1 adversary troop lands on the factory here.",
+   "text": "An adversary factory is built here. 1 adversary Troop lands on the factory here.",
    "counters": [
     [
      {
@@ -1483,7 +1483,7 @@
     "station",
     "city"
    ],
-   "text": "A botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards.",
+   "text": "A Botnet lands on the station here. The nearest player pays 3 energy or discards 3 cards.",
    "counters": [
     [
      {

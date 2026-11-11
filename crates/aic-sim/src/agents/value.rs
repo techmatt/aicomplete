@@ -537,9 +537,10 @@ pub fn op_worth(t: &Table, op: &Op) -> Worth {
                 Worth::now(each * share * *amount as f64)
             }
         }
-        Op::Liberate { align, ambassadors, troops, botnet } => Worth {
+        // 178 (#29): every liberate card puts the seat's cube on, as the action does.
+        Op::Liberate { ambassadors, troops, botnet } => Worth {
             city: row("liberate")
-                + if *align { row("liberate_align") } else { 0.0 }
+                + row("liberate_align")
                 + row("gain_ambassadors") * r(Resource::Ambassadors) * *ambassadors as f64
                 + row("liberate_troops") * *troops as f64
                 + if *botnet { row("liberate_botnet") } else { 0.0 },
@@ -809,7 +810,7 @@ fn fires(t: &Table, on: &Event) -> f64 {
         Event::RemoveCompute => t.rate("fires_compute"),
         Event::RemoveAmbassadors => t.rate("fires_ambassadors"),
         Event::PlaceTokens { .. } => t.rate("fires_tokens"),
-        Event::WallStops => t.rate("fires_wall"),
+        Event::MarchEndsNear => t.rate("fires_wall"),
     }
 }
 
@@ -1186,10 +1187,12 @@ mod tests {
         let pu = CardValue::of(t, &one_shot);
         // r37: one Action, one-shot: a whole liberation, used once; the Followers
         // it arrives with are that use's fuel, not value of their own.
-        assert!(pu.once && (pu.use_.city - t.op("liberate")).abs() < 1e-9, "{:?}", pu.use_);
+        // 178 (#29): every liberation puts the seat's cube on (`liberate_align`).
+        let liberation = t.op("liberate") + t.op("liberate_align");
+        assert!(pu.once && (pu.use_.city - liberation).abs() < 1e-9, "{:?}", pu.use_);
         assert_eq!(pu.play.now, 0.0, "{:?}", pu.play);
         c.corrupted = true;
         let whole = pu.total(t, &c);
-        assert!((whole - t.op("liberate") - pu.tags).abs() < 1.0, "{whole}");
+        assert!((whole - liberation - pu.tags).abs() < 1.0, "{whole}");
     }
 }

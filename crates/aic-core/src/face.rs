@@ -394,19 +394,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             }
             one(clause(adversary(parts), say))
         }
-        Op::Liberate { align, ambassadors, troops, botnet } => {
+        Op::Liberate { ambassadors, troops, botnet } => {
             let mut parts = minus(1, "cube");
             parts.push(w("city"));
-            let mut say = "liberate a corrupted city in reach".to_string();
-            if *align {
-                say.push_str("; your cube goes on it");
-            }
-            let mut icons = adversary(parts);
-            // D48 (r48): the align mark, your cube onto the city (Hostile Buyout).
-            if *align {
-                icons.extend([w("→"), w("cube")]);
-            }
-            let mut out = vec![clause(icons, say)];
+            // 178 (#29): every liberation is the Liberate action's, so the house term carries it (the Agents on
+            // it come off, your cube goes on); the align mark (D48) would say it on every card, so none prints it.
+            let say = "liberate a corrupted city in reach".to_string();
+            let mut out = vec![clause(adversary(parts), say)];
             if *ambassadors > 0 {
                 let n = *ambassadors;
                 let noun = if n == 1 { "ambassador" } else { "ambassadors" };
@@ -446,11 +440,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         )),
         Op::Shelter => one(clause(
             vec![w("shelter"), w("country")],
-            "shelter one country this round",
+            // 178 (Matt's ruling #24): any country, no reach needed.
+            "shelter any country this round",
         )),
+        // 178 (Matt's ruling #30): the cordon's span is the firewall's.
         Op::Cordon => one(clause(
             adversary(vec![w("ambassador"), w("country"), w("clock")]),
-            "in one country, no arrivals land next round",
+            "cordon a country until the end of the next adversary turn",
         )),
         Op::Peek { count } => {
             let say = if *count == 1 {
@@ -547,15 +543,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             let say = format!("gather up to {max} {} into a hex in reach, each from a hex next to it", piece_words(pieces));
             one(clause(icons, say))
         }
-        // The strike: what is gathered comes off (a removal, so the number carries its minus).
+        // The strike (178, Matt's ruling #27): a removal around a hex, the hex included, the player's choice (the
+        // number carries its minus); no move icon, as nothing moves.
         Op::Gather { max, pieces, strike: true } => {
             let mut icons = vec![Part::Word(format!("\u{2212}\u{2264}{max}"))];
             icons.extend(piece_icons(pieces));
-            icons.extend([w("move"), w("hex")]);
-            let say = format!(
-                "gather up to {max} {} into a hex in reach, each from a hex next to it, and remove them",
-                piece_words(pieces)
-            );
+            icons.push(w("hex"));
+            let say = format!("remove up to {max} {} on or next to a hex in reach, your choice", piece_words(pieces));
             one(clause(icons, say))
         }
         Op::Push { max, pieces } => {
@@ -566,6 +560,8 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         }
         Op::Firewall => one(clause(
             adversary(vec![w("ambassador"), w("hex"), w("clock")]),
+            // 178: its span ("until the end of the next adversary turn") prints on the token and in the house
+            // term; Air Gap's box has no room for it twice.
             "firewall a hex in reach",
         )),
         Op::IfTags { tag: t, count, then } => {
@@ -759,7 +755,9 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
             vec![Part::Yours { yours: vec![w(kind.name())] }],
             format!("when you place a {} on one of your cards", token(kind, 1)),
         ),
-        Event::WallStops => (vec![w("node"), w("troop")], "when your Wall stops a troop".to_string()),
+        Event::MarchEndsNear => {
+            (vec![w("troop"), w("node")], "when a Troop ends its march next to your Node".to_string())
+        }
     }
 }
 
@@ -923,7 +921,57 @@ pub fn card_face(c: &CardDef) -> Face {
     let mut f = Face::default();
     above_art(c, &mut f);
     below_art(c, &mut f);
+    including_this(c, &mut f);
+    f.top_text = pieces_capitalized(&f.top_text);
+    f.text = pieces_capitalized(&f.text);
     f
+}
+
+/// 178 (amendment 8044, Matt: as Spirit Island prints its Invaders): on cards, the pieces' names print
+/// capitalized (Ambassador, Agent, Node, Botnet, Troop; the Drone is a proper name already); the rulebook's prose
+/// keeps them lowercase.
+pub fn pieces_capitalized(text: &str) -> String {
+    const PIECES: [&str; 5] = ["ambassador", "agent", "node", "botnet", "troop"];
+    let mut out = String::with_capacity(text.len());
+    let mut word = String::new();
+    let flush = |word: &mut String, out: &mut String| {
+        let stem = word.strip_suffix('s').unwrap_or(word);
+        if PIECES.contains(&stem) {
+            out.push_str(&title(word));
+        } else {
+            out.push_str(word);
+        }
+        word.clear();
+    };
+    for ch in text.chars() {
+        if ch.is_ascii_alphabetic() {
+            word.push(ch);
+        } else {
+            flush(&mut word, &mut out);
+            out.push(ch);
+        }
+    }
+    flush(&mut word, &mut out);
+    out
+}
+
+/// 178 (Matt, friction #21): a per-tag line counts the card's own tags, and says so. An event's tags never count
+/// (`effects::own_counted`), so its lines stay as they are; nor does a card's own tag count toward its `needs`.
+fn including_this(c: &CardDef, f: &mut Face) {
+    if c.is_event() {
+        return;
+    }
+    let mut tags: Vec<String> = c.tags.iter().map(|t| tag(*t)).collect();
+    tags.dedup();
+    for t in tags {
+        for text in [&mut f.top_text, &mut f.text] {
+            for form in [format!("{t} tag on your cards"), format!("{t} tags on your cards")] {
+                if text.contains(&form) {
+                    *text = text.replace(&form, &format!("{form} (including this)"));
+                }
+            }
+        }
+    }
 }
 
 /// Above the art: income first, in one brown box and one "Each round, ...".

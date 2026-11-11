@@ -179,7 +179,7 @@ try {
     if (st.round >= 1 && st.phase.includes('cards.play') && !shots.has('powers')) {
       shots.add('powers');
       const powers = await js(`[...document.querySelectorAll('#seats ul.powers')].map((u) => u.textContent).join(' | ')`);
-      for (const name of ['Mint', 'Deploy', 'Buy In', 'Scrap', 'Overcharge', 'Rush Build', 'Bulwark', 'Accord', 'Stand Down', 'Recovery', 'Shelter']) check(powers.includes(name), `the seat panels show ${name}`);
+      for (const name of ['Mint', 'Expand', 'Buy In', 'Scrap', 'Overcharge', 'Rush Build', 'Bulwark', 'Accord', 'Stand Down', 'Recovery', 'Shelter']) check(powers.includes(name), `the seat panels show ${name}`);
       // 068: both boards' special rules, printed tags and tracks, capstones at the ends.
       const boards = await js(`({ innate: [...document.querySelectorAll('#seats .innate')].map((e) => e.textContent).join(' | '),
         tracks: [...document.querySelectorAll('#seats .track-row .label')].map((e) => e.textContent).join(' | '),

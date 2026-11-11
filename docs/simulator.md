@@ -114,6 +114,10 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
   that differ between two engines' outputs.
+- **A ladder against the old revision:** `farm-seeds` runs only the worktree's build, so the old side runs natively
+  (`aic-sim experiment` on the farm spec with `first_seed`/`games` set) from a `git archive` export of the base commit
+  built into its own `CARGO_TARGET_DIR`, with its own configs; 178's 144-seed strategist read took 303 s farmed, the
+  old side about 9 min on 4 threads.
 - **Math:** the play path calls no float function past IEEE's exact ones (`powi(2)` in the eval), so native and wasm
   play the same games. The `libm` build flag (`cargo build --release -p aic-sim --features libm`, off by default)
   makes native call the `libm` crate, as wasm does (`src/fmath.rs`); wasm has no clock, so its timings read 0

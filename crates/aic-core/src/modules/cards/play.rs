@@ -358,8 +358,8 @@ pub(super) fn draft_pick(g: &mut GameState, cx: &mut Cx, s: usize, card: &Key) -
         let n = g.seats.len();
         let packets: Vec<Vec<Key>> =
             (0..n).map(|p| g.pile(&packet(p)).to_vec()).collect();
-        // As in Terraforming Mars, the direction alternates by round.
-        let step = if g.round % 2 == 1 { 1 } else { n - 1 };
+        // 178: one fixed direction, to the next seat (it alternated by round before r77).
+        let step = 1;
         for (p, cards) in packets.into_iter().enumerate() {
             cx.set_pile(g, &packet((p + step) % n), cards);
         }

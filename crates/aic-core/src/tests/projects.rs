@@ -167,7 +167,7 @@ fn an_ongoing_project_filled_in_the_build_waits_a_round() {
 #[test]
 fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
     // 175: botnets make compute in the compute step, after the reveal.
-    let (rules, mut g) = lab_with(&["adversary.reveal"], &["adversary.compute_income=0,0,0,0,0"]);
+    let (rules, mut g) = lab_with(&["adversary.reveal", "adversary.compute"], &["adversary.compute_income=0,0,0,0,0"]);
     let m = &rules.map;
     let (a, b) = (
         m.numbered(0, piece(0).stations[0]),

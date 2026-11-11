@@ -15,29 +15,29 @@ economy track adds 2 or 3 more, so placing a node is how your income grows; you'
 now and more money for the first plays. Each round you may turn credits into a chip with Mint, 5 credits into an
 insight with Focus, and 2 chips into 2 cards with Procure. Late in the game, sacrifice cards you have finished with:
 an Industry card pays out chips, a Power card energy, and an Industry card with an energy plays a building from your
-hand for no credits. Each round you may move 1 ambassador for free (Movement 1; 2 from your fourth economy space). Your printed
+hand for no credits. Each round you may Dispatch 1 ambassador for free (2 from your fourth economy space). Your printed
 Industry tag counts like one on your cards.
 
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
-strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build deploys 1 troop on the
-lowest-numbered factory (else a city) in every country you're in (anyone's; on your node's hex it stays in the supply), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
+strike into it, so where you stand is a barrier and no troop strikes a facility under you (war, threats and corruption still can). But each adversary turn's Muster lands 1 troop on the
+lowest-numbered adversary or neutral factory in every country you're in (never a player's; with none, none lands; on your node's hex it stays in the supply), and it can strike in that round's march. Each troop that ends its march next to your node pays you 1 insight (Vigil). You spend energy to harden
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice
 cards you have finished with: a Security card pays out credits or clears a corruption marker, a Diplomacy card draws 2
-cards (Debrief), and a Security card with an energy shelters a whole country for the round. Each round you may move 1
-ambassador for free (Movement 1; 2 from your fourth economy space). Your printed Security tag counts like one on your
+cards (Debrief), and a Security card with an energy shelters a whole country for the round. Each round you may Dispatch 1
+ambassador for free (2 from your fourth economy space). Your printed Security tag counts like one on your
 cards.
 
 **The Researcher, for new players.** Your special rule is Patience: your own insight you don't spend stays with you
 into the next round, so you can save up for a big round (insight another player gave you this round doesn't carry). You start with 40 credits and earn 11 a round, 3 more for each credit
 space of your economy track; round 1 deals as for the Builder. You play off
 the board, on your turn budget and on research cubes. Each round you may turn 1 energy into 3 cards, a card from your hand into 2 insight (Synthesis), and 3
-credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and no energy,
+credits into a research cube on a megaproject that isn't complete yet. Your second node power costs 3 research cubes and, like any node, the uncovered space's energy,
 so build stations early: once their country's card completes they put cubes on your board. Sacrifice an Industry card
 to build a station for free, a Cyber card to strip 3 compute off an adversary project, a Power card and an energy
-for an antimatter. Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may move 2
-ambassadors for free (Movement 2, up to 4), to stand guard on your stations. The hard part to explain: Open
+for an antimatter. Your printed Science tag counts like one on your cards (1 Science card makes 2 for the discount). Each round you may Dispatch 2
+ambassadors for free (up to 4), to stand guard on your stations. The hard part to explain: Open
 Science's insight is handed out in upkeep and lands at the start of the next round.
 
 **Board tags: one tag rule (candidate; Matt, 2026-11-08).** A board's printed tag (Builder Industry, Protector
@@ -45,14 +45,14 @@ Security, Researcher Science) and a tag a track space reveals count like any tag
 discounts, income per tag, a capstone's count), except that they can't be sacrificed: a sacrifice discards a card.
 Revealed tags are rare, late and costly: two a board, on space 6 (cost 3), placed about round 6.
 
-**Movement (candidate; Matt, design doc rev 24).** There is no paid Move. Each round you have your board's
-**Movement**: its printed number plus 1 for each uncovered Movement space, each one a free Move (one of your
-ambassadors from your supply or the board onto a piece or a botnet's hex in reach). Movement unused this round is lost; a space
+**Dispatches (candidate; Matt, design doc rev 24).** There is no paid Dispatch. Each round you have your board's
+**Dispatches**: its printed number plus 1 for each uncovered Dispatch space, each one a free Dispatch (one of your
+ambassadors from your supply or anywhere on the map onto a piece, base, node or botnet's hex in reach). Dispatches unused this round are lost; a space
 counts from when it is uncovered. Cards that move ambassadors (Liaison Corps, Summit Caucus) add to it. Economy space 4
-is reached about round 2-3. **The Researcher is the movement-heavy board,** as its stations spread over the map: its own
+is reached about round 2-3. **The Researcher is the Dispatch-heavy board,** as its stations spread over the map: its own
 ambassador on one armors it and keeps agents off, which would block its cubes.
 
-**Give / get** (`values.json`): a Movement is 1.4 a round; space 6
+**Give / get** (`values.json`): a Dispatch is 1.4 a round; space 6
 (cost 3, about 18) is even on the way to the capstone. A printed tag is free: the tag (1), its discount one card
 sooner, the per-tag cards' pay; the Researcher's Science discount reaches every card it plays.
 
@@ -61,7 +61,7 @@ Effect is while it is in play. A capstone is what a seat pushes on for; at 1-2
 placements a round it is reachable about round 8.
 
 <!-- generated: boards -->
-| Board | Printed income | Starting credits | Slots | Printed tags | Movement | Economy track | Card-play track | Tokens in all |
+| Board | Printed income | Starting credits | Slots | Printed tags | Dispatches | Economy track | Card-play track | Tokens in all |
 |---|---|---|---|---|---|---|---|---|
 | Builder | 15 credits, 5 insight, 1 energy | 40 | 5 | Industry | 1 (up to 2) | 7 | 7 | 14 |
 | Protector | 13 credits, 5 insight, 2 energy | 46 | 4 | Security | 1 (up to 2) | 7 | 7 | 14 |
@@ -85,7 +85,7 @@ prices, Bulwark's energy and the standard project's credits (`harden_credits`), 
 
 **Node powers (candidate).** There is no growth phase. Nodes come from the board's two **node powers**, used in the
 action phase, each once a round, so the powers place 0-2 nodes a round (cards that place nodes add to that: cards
-aren't capped). Every board has the same first one, 1 energy for 1 node; the second costs a steep price in the board's
+aren't capped). Every board has the same first one, Expand: 1 energy for 1 node; the second costs a steep price in the board's
 own currency ([ai-powers.md](ai-powers.md)). Three things keep the loops short: 2 placements a round by power and rising step costs cap energy → node →
 energy income; each second power is once a round; and every tag sacrifice permanently loses cards.
 
@@ -95,10 +95,10 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 1 (on the board at setup) | +1 insight | +1 insight | +1 insight |
 | 2 | +3 credits | +1 energy, +2 credits | +3 credits |
 | 3 | +2 credits | +3 credits | builds a free research station in reach |
-| 4 | +3 credits, **Movement +1** (cost 1) | +3 credits, **Movement +1** (cost 1) | +3 credits, **Movement +1** (cost 1) |
+| 4 | +3 credits, **Dispatch +1** (cost 1) | +3 credits, **Dispatch +1** (cost 1) | +3 credits, **Dispatch +1** (cost 1) |
 | 5 | +3 credits (cost 2) | +3 credits (cost 2) | +3 credits (cost 2) |
 | 6 | +3 credits, Power tag (cost 3) | +2 credits, Cyber tag (cost 3) | +3 credits, Power tag (cost 3) |
-| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
+| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your Nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).
@@ -111,12 +111,12 @@ have tokens).
 | Space | Builder | Protector | Researcher |
 |---|---|---|---|
 | 1 | +1 insight | +1 insight | +1 insight |
-| 2 | **keep upgrade** | **keep upgrade** | +2 insight, **Movement +1** |
+| 2 | **keep upgrade** | **keep upgrade** | +2 insight, **Dispatch +1** |
 | 3 | +2 insight (cost 1) | +2 insight (cost 1) | **keep upgrade** (cost 1) |
 | 4 | +2 credits (cost 2) | +2 credits (cost 2) | +1 insight (cost 2) |
 | 5 | +2 insight (cost 2) | +2 insight (cost 2) | +2 insight (cost 2) |
 | 6 | +1 insight, Cyber tag (cost 3) | +1 insight, Diplomacy tag (cost 3) | +2 credits, Industry tag (cost 3) |
-| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your nodes or facilities would be destroyed, you may keep it. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
+| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your Nodes or facilities would be destroyed, you may keep it. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
@@ -139,7 +139,7 @@ other players; alone it is the Researcher's own, and Patience keeps it. Fieldwor
 cards are paid for again to keep in play (credits and insight); sold, they are 3 credits for 1 energy once a round.
 Followers → ambassadors → alignment → city energy → node is capped by building count and the Followers each
 ambassador costs. Remove agents spends its ambassador and places nothing (r75), capped by the supply.
-**Movement** has no loop: a number a round, used up by moves, gaining nothing held. Wall has no loop, but it takes
+**Dispatches** have no loop: a number a round, used up, gaining nothing held. Wall has no loop, but it takes
 troops away as a harm where the Protector stands; `docs/harms.md`'s checks count sources, so they hold.
 
 `ai.boards` (`[0, 1, 2]`: Builder, Protector, Researcher) gives each seat its board; the list repeats for more seats,
@@ -150,6 +150,6 @@ so 4 players repeat the Builder. A board has no unique cards or starting buildin
 | Board | Special rule |
 |---|---|
 | Builder | *Breadth*: You have 5 building slots; the Protector has 4 and the Researcher 3. |
-| Protector | *Wall*: Adversary troops can't enter or strike a hex with your node. Vigil: when your Wall stops a troop, gain 1 insight. |
+| Protector | *Wall*: Adversary Troops can't enter or strike a hex with your Node. In each adversary turn's Muster, 1 Troop lands on the lowest-numbered adversary or neutral factory of each country where you have a Node (none there: none lands). Vigil: when a Troop ends its march next to your Node, gain 1 insight. |
 | Researcher | *Patience*: Your own unspent insight carries over to the next round; insight other players gave you this round does not. |
 <!-- /generated -->

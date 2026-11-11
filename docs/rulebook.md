@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (second draft)
 
-*Rules revision 76. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 77. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -30,7 +30,7 @@ states. What is still hard to say, and the rule change that would fix it, is ran
 16. [Moving and removing pieces](#16-moving-and-removing-pieces)
 17. [Projects](#17-projects)
 18. [Threat details](#18-threat-details)
-19. [Corp troops in full](#19-corp-troops-in-full)
+19. [Drones in full](#19-drones-in-full)
 20. [Powers and capstones](#20-powers-and-capstones)
 21. [Difficulty](#21-difficulty)
 22. [Player count and solo play](#22-player-count-and-solo-play)
@@ -76,7 +76,7 @@ player order (§3) decides.
 
 There is one **country** per player. A country is a square tile of 16 hexes, numbered 1-16 row by row. Each country
 also belongs to a **megacorp** (Horizon, Cintamani, Onyx, Biomia), which has its own **megaproject** card and its own
-troops. The megacorps are on nobody's side.
+**drones**. The megacorps are on nobody's side.
 
 A hex is a **city**, **open** land or **ocean**. Cities and open hexes are **land**. Some open hexes are printed as
 **industrial zones**: factories are built only there. A city next to ocean, or printed as coastal, is a **coastal
@@ -109,7 +109,7 @@ never block, and a node doesn't own the hex it is on.
 
 A **front** is a long edge shared by two countries, marked on the tiles. With 2 countries there is one front; with 3
 or 4, each country has two. Each country has a **military base** for each of its fronts, printed on an open hex by the
-border. A base is not a site: it is where its megacorp keeps its **corp troops** for that front (§11). Ambassadors may
+border. A base is not a site: it is where its megacorp keeps its **drones** for that front (§11). Ambassadors may
 stand on a base. A one-player game has no fronts and no bases.
 
 ### Pieces
@@ -121,10 +121,10 @@ stand on a base. A one-player game has no fronts and no bases.
 | **Agent** | the adversary | lands on sites, blocks them, corrupts them |
 | **Botnet** | the adversary | lasting token: makes compute, counts against the purge |
 | **Adversary troop** | the adversary | marches and raids player facilities (§6) |
-| **Corp troop** | a megacorp | waits at a base and fights across its front (§11) |
+| **Drone** | a megacorp | waits at a base and fights across its front (§11) |
 | **Owner cube** | a player or the adversary | who owns a site |
 | **Corruption marker** | — | left where a node was destroyed; no node can be placed there |
-| **Land corruption** | the adversary | a corrupted open hex (§6) |
+| **Land corruption** | the adversary | a corrupted open hex; nothing is built or placed on it (§6) |
 | **Firewall, hardening token, location token** | — | §16, §13, §10 |
 
 Some cards hold their own tokens: **Datasets**, **Followers**, **Capital** and **Operatives** (§7). These stay on the
@@ -181,12 +181,12 @@ Each round runs in this order. Only step **D** is yours to play; the rest you re
 
 | | Step | What happens |
 |---|---|---|
-| | **Round start** | Set your insight (§5). Refresh your powers, Actions, antimatter action and Movement. |
+| | **Round start** | Set your insight (§5). Refresh your powers, Actions, antimatter action and Dispatches. |
 | **A** | **Sway** | Each land-corruption token adds 1 Discord (§12). |
-| **B** | **The adversary's turn** (§6) | The face-up event card acts: it deals threats, lands agents, deploys troops, runs projects and corrupts. Adversary troops march. The next card turns face up and the adversary takes its income: agents into the pools, and all its compute onto the projects at once. |
+| **B** | **The adversary's turn** (§6) | The face-up event card acts: it deals threats, lands agents, musters troops, runs projects and corrupts. Adversary troops march. The next card turns face up and the adversary takes its income: agents into the pools, then all its compute onto the projects at once. |
 | **C** | **Cards** (§7) | Round 1: the opening deal. Later rounds: build a hand, draft, keep. |
-| **D** | **Action phase** (§8) | All players at once: play cards, use powers and Actions, place nodes, move ambassadors, pay threats. |
-| **E** | **Production** (§9) | The income step: sites and megaprojects produce and everyone collects income, in one printed order. Then growth: extra corp troops, and each city with a free industrial zone next to it builds a factory. |
+| **D** | **Action phase** (§8) | All players at once: play cards, use powers and Actions, place nodes, dispatch ambassadors, pay threats. |
+| **E** | **Production** (§9) | The income step: sites and megaprojects produce and everyone collects income, in one printed order. Then growth: extra drones, and each city with a free industrial zone next to it builds a factory. |
 | **F** | **Threats** (§10) | Every threat not paid off takes effect. |
 | **G** | **War** (§11) | Every front fights. |
 | **H** | **Cleanup** | Shelters and other this-round effects end. |
@@ -208,10 +208,10 @@ modules/alignment.rs.*
 ## 5. Your AI board
 
 Each player is one AI board: the **Builder**, the **Protector** or the **Researcher**. Your board shows a **special
-rule**, your **income**, one **tag** (§7), your **building slots**, your **Movement**, two **node tracks** and eight
+rule**, your **income**, one **tag** (§7), your **building slots**, your **Dispatches**, two **node tracks** and eight
 **powers**.
 
-| Board | Special rule | Income (upkeep) | Insight a round | Slots | Tag | Movement | Starting credits |
+| Board | Special rule | Income (upkeep) | Insight a round | Slots | Tag | Dispatches | Starting credits |
 |---|---|---|---|---|---|---|---|
 | Builder | *Breadth*: 5 slots | 15 credits, 1 energy | 5 (+1 from setup) | 5 | Industry | 1 | 40 |
 | Protector | *Wall* and *Vigil* | 13 credits, 2 energy | 5 (+1) | 4 | Security | 1 | 46 |
@@ -219,12 +219,14 @@ rule**, your **income**, one **tag** (§7), your **building slots**, your **Move
 
 - **Patience** (Researcher): your own unspent insight carries over to the next round. Insight another player gave you
   does not.
-- **Wall** (Protector): adversary troops can't enter, be deployed onto (the troop stays in the supply) or strike a hex
-  with your node. Nothing else is
-  stopped: corruption, war and threats still destroy what is there. An adversary factory on that hex still makes its
-  troop there; it can't strike that hex, and marches off as usual.
-- **Vigil** (Protector): in the march, once per adversary troop, when a troop starts a step next to one of your nodes
-  whose hex holds a station or factory owned by any player, gain 1 insight (you can spend it this round).
+- **Wall** (Protector): adversary troops can't enter, be mustered onto (the troop stays in the supply) or strike a hex
+  with your node. Nothing else is stopped: corruption, war and threats still destroy what is there. An adversary
+  factory on that hex still makes its troop there; it can't strike that hex, and marches off as usual. Your board
+  also brings troops to you: in each adversary turn's Muster, 1 troop lands in each country where you have a node,
+  on its lowest-numbered adversary or neutral factory (never a player's; with none, none lands; §6, step 6).
+- **Vigil** (Protector): when an adversary troop ends its march next to one of your nodes, gain 1 insight (you can
+  spend it this round). It pays once per troop per march, in any march; a troop used up striking has no end to its
+  march.
 
 ### Resources
 
@@ -239,7 +241,7 @@ Nothing has a holding limit, and nothing caps your income.
 | **Antimatter** | yes | the antimatter action, cards, Horizon's converter | tier-2 cards |
 | **Research cubes** | yes | your stations, once their megaproject is complete (§9) | 1 insight each, converters, Peer Review, threats |
 | **Ambassadors** | yes (your supply) | 1 at the start, cards, 20 credits | claiming, liberating, Remove agents, Envoy, threats |
-| **Movement** | **no** | your board, each round | the Move action, 1 a move |
+| **Dispatches** | **no** | your board and track spaces, each round | the Dispatch action, 1 each |
 
 **Insight is this round's attention.** At the start of each round, set your insight to 5, plus what your uncovered track spaces and
 cards add (your setup node's space adds 1, so you start with 6), less any insight a threat or project made you
@@ -250,7 +252,7 @@ board and cards pays in production's **income step**, at its end (**upkeep**, §
 
 Your nodes start on your board, on two tracks of 7 spaces: the **economy track** and the **card-play track**. To place a
 node, take the next one off either track. That uncovers the space under it, and what the space shows is yours for the
-rest of the game: income, Movement, a tag, a free research station, the **keep upgrade** (tier-2 keeps cost 1 insight
+rest of the game: income, Dispatches, a tag, a free research station, the **keep upgrade** (tier-2 keeps cost 1 insight
 instead of 2, §7), and on the last space a **capstone**, a lasting rule (§20). The card-play track does not limit how
 many cards you play.
 
@@ -264,7 +266,7 @@ space** you uncover. The printed numbers are costs, not income:
 
 A card that places a node **free** pays neither.
 
-> **Example.** The Builder has placed 3 economy nodes. Their Deploy power costs 1 energy, and the economy track's
+> **Example.** The Builder has placed 3 economy nodes. Their Expand power costs 1 energy, and the economy track's
 > fourth space costs 1 more: 2 energy for the node. Placing it on the card-play track instead (its first space, cost 0)
 > would cost 1.
 
@@ -275,7 +277,7 @@ with agents or a corrupted site is allowed (a node doesn't remove agents).
 
 ### Powers
 
-Each power can be used once a round, in the action phase. Every board has two **node powers**: **Deploy** (1 energy:
+Each power can be used once a round, in the action phase. Every board has two **node powers**: **Expand** (1 energy:
 place a node) and a dearer second one (§20). So powers place up to 2 nodes a round; cards can place more. The other
 six powers are conversions, draws and **sacrifice powers**; §20 lists them all.
 
@@ -285,7 +287,8 @@ counts). Events can't be sacrificed, and neither can your board or its track spa
 are wasted.
 
 *Sources: rules/ai-boards.md, rules/ai-powers.md, rules/economy.md (resource table); content/ais.json;
-crates/aic-core/src/modules/ai.rs, modules/economy.rs, modules/board/node.rs, modules/cards/sacrifice.rs.*
+crates/aic-core/src/modules/ai.rs, modules/economy.rs, modules/board/node.rs, modules/board/troops.rs (Vigil),
+modules/adversary.rs (`wall_pressure`), modules/cards/sacrifice.rs.*
 
 ---
 
@@ -293,14 +296,14 @@ crates/aic-core/src/modules/ai.rs, modules/economy.rs, modules/board/node.rs, mo
 
 The adversary has a **board**, an **event deck**, a **project deck**, a supply of agents, troops and botnets, and a
 **pool** of agents beside the map for each country. Each event card shows its **stage** (I, II or III): the stage sets
-which threats it deals (§10). Adversary cards say "each board" where they mean "each country".
+which threats it deals (§10).
 
 The only adversary so far is **the Militarist**. Its board has three project slots and three rules:
 
 - **Garrisons:** +1 agent income in each country. (The agent income in §21's table already includes it.)
 - **Troops where the Protector stands:** step 6 below.
-- **Warmongering:** in production's growth (§9), each military base with an adversary troop on or next to it gains 1 extra corp
-  troop, even past its limit (§19).
+- **Warmongering:** in production's growth (§9), each military base with an adversary troop on or next to it gains 1
+  extra drone, even past its limit (§19).
 
 ### The turn
 
@@ -310,26 +313,27 @@ The only adversary so far is **the Militarist**. Its board has three project slo
    country (cities, coastal cities, research stations, factories or hexes with a botnet), whoever owns it. The
    remainder goes one each to the lowest-numbered of those sites that aren't the adversary's or firewalled (if too
    few, then the adversary's). The pool is now empty.
-4. **Deploy N.** N adversary troops land in each country, one at a time, on its lowest-numbered factory (any owner's);
+4. **Muster N.** N adversary troops land in each country, one at a time, on its lowest-numbered factory (any owner's);
    with none, on its lowest-numbered city; with none, they don't land.
 5. **Other lines**, at most two, in printed order: an income raise, a new neutral factory in each country, Discord,
    Unity taken back, a blackout (cities make no energy this round), and so on. Each card says what it does.
-6. **Troops where the Protector stands.** In each country where the Protector has a node: Deploy 1.
+6. **Troops where the Protector stands.** In each country where the Protector has a node: Muster 1, on that
+   country's lowest-numbered **adversary or neutral** factory, never a player's; with none, none lands.
 7. **Projects.** Ongoing projects act (§17).
 8. **Corrupt X**, once for each Corrupt line on the card (below).
-9. **Natural corruption.** Every city, station and factory not already the adversary's that holds its corrupt number of
-   agents **on its own hex** corrupts. Then every hex with a player's node and **2 agents** loses the node.
+9. **Natural corruption.** Every city, station and factory not already the adversary's that holds its corrupt number
+   of agents **on its own hex** corrupts. Then every hex with a player's node and **2 agents** loses the node.
 10. **March.** Adversary troops march (below).
 11. **Reveal and income.** Turn the next event card face up. Put one round of agent income into each country's pool.
 12. **Compute.** All the adversary's compute arrives now: its income, each botnet and corrupted station without a
-    player's ambassador on it, and what was made since the last turn. Projects fill and resolve (§17). Firewalls come
-    off.
+    player's ambassador on it, and what was made since the last turn. Projects fill and resolve (§17). Firewalls,
+    cordons (§16) and prohibitions (§12) end.
 
-**Every Deploy is the same:** an event card's, a project's ("Deploy 3") and step 6's. A Deploy prohibition stops each,
-and the level surcharge (§21) adds to each.
+**Every Muster follows the same rules:** an event card's, a project's ("Muster 3") and step 6's (only step 6 skips
+players' factories and never takes a city). A Muster prohibition stops each, and the level surcharge (§21) adds to each.
 
 **A blocked landing stays in the supply.** A firewalled site's Rally share (§16), a site or troop a prohibition
-covers (§12), a Deploy onto a hex where the Protector's node stands (Wall, §5): none of them lands, and nothing moves
+covers (§12), a Muster onto a hex where the Protector's node stands (Wall, §5): none of them lands, and nothing moves
 on to the next site.
 
 Whenever an agent lands where players' ambassadors stand, it cancels one of them, one for one (§8).
@@ -344,7 +348,7 @@ on a city counts as an agent there. A site can corrupt two ways:
 - **A Corrupt line** (step 8, when the card prints one): "Corrupt X" names a type (cities, coastal cities, stations,
   factories, open land or nodes). **Every agent next to a site of type X moves onto it** (the players choose if it is
   next to several); then **every site of type X holding its corrupt number corrupts**, and its agents go back to the
-  supply. Only sites the adversary doesn't own yet count.
+  supply. Only sites the adversary doesn't own yet count. Nothing on a firewalled hex (§16) corrupts, either way.
 
 > **Example: Corrupt cities.** A neutral city on hex 6 holds 2 agents. Hex 2, next to it, holds 1; hex 7, also next
 > to it, holds 2. All 3 move onto hex 6, which now holds 5, at least 4: it corrupts, and the 5 agents go back to the
@@ -356,8 +360,8 @@ corrupt the site they name. Corruption never spreads by itself.
 
 **When a site corrupts**, the adversary's cube replaces any owner's cube. Any node on that hex is destroyed (unless
 something protects it, §13), then every ambassador on it is removed. A corrupted open hex gets a **land corruption**
-token: no node can be placed there (a factory or station still can), it adds 1 Discord every round, and nothing
-removes it. A site's corruption never leaves a corruption marker. **When a node hex corrupts** (2 agents), only the
+token: nothing can be built or placed there (no node, factory or research station), and it adds 1 Discord every
+round until a player Clears it (§8). A site's corruption never leaves a corruption marker. **When a node hex corrupts** (2 agents), only the
 node is lost (§13 applies, and it leaves a marker); its agents go back to the supply, and nothing else on the hex
 changes. §15 has every detail.
 
@@ -378,8 +382,8 @@ that one).
 
 > **Example: a march.** An adversary troop stands two hexes from the Builder's factory, and no other player facility
 > is nearer. Step 1: no target on or next to it, so it moves one hex toward the factory. Step 2: the factory is next to
-> it, so it strikes. A corp troop waits at a military base next to the factory, and the Builder chooses to spend it:
-> that corp troop is removed instead, and the factory stands. The adversary troop is used up either way. The Builder
+> it, so it strikes. A drone waits at a military base next to the factory, and the Builder chooses to spend it:
+> that drone is removed instead, and the factory stands. The adversary troop is used up either way. The Builder
 > could instead have spent a hardening token or their own ambassador on the factory, or nothing (§13). A troop is a threat to the nearest player-owned station
 > or factory, and you can always see which.
 
@@ -424,8 +428,8 @@ card costs **5 credits**. Each tier-2 card kept costs **1 insight**. Discard the
 
 1. **Build a hand.** Each player takes 4 cards one at a time, choosing for each whether it comes from the tier-1 or the
    tier-2 deck. Each arrives face up, so you see it before choosing the next. (This is not a draw.)
-2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. In odd rounds
-   pass to the next player in player order; in even rounds, to the previous one. Solo, you keep all 4.
+2. **Draft.** Take one card from the hand in front of you and pass the rest on, until the hands are gone. Always
+   pass to the next player in player order. Solo, you keep all 4.
 3. **Keep.** Pay **1 insight** for each tier-1 card and **2 insight** for each tier-2 card you keep (1 with the keep
    upgrade, and less with Science discounts, below). When your insight runs out, each further insight a keep needs
    costs **5 credits**. Discard the cards you don't keep.
@@ -442,7 +446,8 @@ In the action phase, play a card from your hand by paying:
 
 A **requirement plate** must be met. A **yellow plate** means "at least N of this tag on your cards". A
 **stacked-cards plate** means the card must be built over a building whose top card has that tag. A card's own tags
-never count toward its own requirement.
+never count toward its own requirement, but they do count for its own per-tag gains, which print "(including this)"
+(an event's tags never count).
 
 **Discounts** (a discount never takes a cost below 1; a cost printed 0 stays 0):
 
@@ -467,8 +472,9 @@ covered building **stops working**: its income, Effect and Action stop, and any 
 count.** A card can't be uncovered.
 
 - An **Action** (`→`: pay the left, get the right) is used once a round. "A, OR B" is one use: either half.
-- An **Effect** (`:`: when the left happens, get the right) fires every time, with no limit. A building can trigger
-  itself: a Science building with a Science trigger fires when you play it.
+- An **Effect** (`:`: when the left happens, get the right) fires every time, with no limit: once for each action
+  that sets it off (a card play, a building's Action, a power, a standard action), however many pieces it removed or
+  tokens it placed (§23). A building can trigger itself: a Science building with a Science trigger fires when you play it.
 - An **income** pays every round in upkeep.
 - A one-time gain printed below the art happens when you build it.
 
@@ -511,14 +517,14 @@ Standard actions are always there; cards do the same things better.
 
 | Action | Cost | Effect |
 |---|---|---|
-| **Move** | 1 Movement | put one of your ambassadors, from your supply or from anywhere on the map, onto a site, base, node or botnet in your reach (not the hex it is on) |
+| **Dispatch** | 1 Dispatch | put one of your ambassadors, from your supply or from anywhere on the map, onto a site, base, node or botnet in your reach (not the hex it is on) |
 | **Claim** | ambassadors (below) | take a neutral site in reach: it becomes yours |
 | **Liberate** | ambassadors (below) | take a corrupted site in reach: it becomes yours |
 | **Remove agents** | 1 ambassador from your supply, spent | remove up to 3 agents in your reach, from one hex or several; nothing is placed |
 | **Take down a botnet** | 5 credits | remove a botnet from a hex where your ambassador stands (the ambassador stays); add 1 Unity |
 | **Buy energy** | 4 credits | gain the energy (1) of a neutral city in your reach that isn't blocked or blacked out; each city once a round |
-| **Build a research station** | 2 chips | on an open hex in reach that isn't an industrial zone; it is yours |
-| **Clear** | 2 credits | remove a corruption marker in reach; add 2 Unity |
+| **Build a research station** | 2 chips | on an open hex in reach that isn't an industrial zone or corrupted land; it is yours |
+| **Clear** | 2 credits | remove a corruption marker in reach and add 2 Unity; or remove a land corruption token in reach (no reward) |
 | **Envoy** | 1 ambassador from your supply | remove 1 Discord from the Discord track |
 | **Gain an ambassador** | 20 credits | into your supply |
 | **Harden** | 3 credits | a hardening token on a player's station or factory in reach (§13) |
@@ -545,14 +551,17 @@ time, from one hex or several: your choice, and you may stop early. It places no
 - **Result:** your cube goes on: the site is **yours**. Liberate first takes the adversary's cube off, and adds
   Unity: city **+5**, station or factory **+2**. A botnet on the site stays.
 
-> **Example: block, then liberate.** A corrupted city in your reach makes 1 Discord a round. You Move an ambassador
-> onto it (1 Movement): now it is blocked and makes nothing. A round later you Liberate it: the price is 5 (no agents
+> **Example: block, then liberate.** A corrupted city in your reach makes 1 Discord a round. You Dispatch an
+> ambassador onto it (1 Dispatch): now it is blocked and makes nothing. A round later you Liberate it: the price is 5 (no agents
 > on it), your standing ambassador pays 1 and your supply pays 4. The adversary's cube comes off, yours goes on, and
 > you add 5 Unity. The city is yours: from this round's production it makes you 1 energy a round.
 
-**Liberate cards** (some tier-2 cards) liberate a corrupted city in reach for their own price instead. They take the
-adversary's cube off and add 5 Unity, but **leave the agents on the city**, so it starts blocked, and put your cube
-on only if the card says so.
+**Liberate cards** (some tier-2 cards) liberate a corrupted city in reach for their own price instead: exactly as
+Liberate does, unpaid. The agents on the city come off, the adversary's cube comes off, you add 5 Unity, and your cube
+goes on.
+
+A card that lets you **claim** a neutral research station pays its extra (one ambassador per agent on it) as Claim
+does: your ambassadors on the station first, then your supply.
 
 ### Megaprojects and converters
 
@@ -596,9 +605,9 @@ Insight is not part of it: it is set at the start of the round (§5).
 
 **Growth:**
 
-6. **Extra corp troops.** Warmongering and some projects add corp troops to bases (§19).
+6. **Extra drones.** Warmongering and some projects add drones to bases (§19).
 7. **Cities build factories.** Every city, blocked or not, builds one factory on a **free** industrial zone (one with
-   no factory) **next to it**, country by country in hex-number order; a city with none builds nothing. The factory
+   no factory, station or land corruption) **next to it**, country by country in hex-number order; a city with none builds nothing. The factory
    takes the city's owner:
    - a player's city builds its owner's factory, on the zone its owner chooses;
    - a neutral city builds a **neutral** factory (anyone may claim it, §8), on the zone the players choose;
@@ -620,10 +629,11 @@ at the end of the round.
 (Military, Influence, Cyber, Economic, Grid). Turn up threat cards until one fits (§18 has the details).
 
 **Location tokens.** A threat prints one or two location types (city, coastal city, research station, factory,
-military base). It puts a **location token** in its country on a place of each type: the one with the most adversary
-pieces on or next to it. §18 has the tie-breaks.
+military base). It puts a **location token** in its country on a place of each type that isn't the adversary's: the one
+with the most adversary pieces on or next to it. §18 has the tie-breaks.
 
-**Near and nearest.** These are two different tests:
+**Near and nearest.** These are two different tests, printed above every threat's text ("Payers: any player with a
+Node or Ambassador on or next to a token. Target: the player with a Node nearest a token."):
 
 - **Near (who can pay):** you are near a threat if one of your nodes **or ambassadors** is on or next to one of its
   tokens. Only players near a threat may pay toward it or use a card on it.
@@ -648,7 +658,7 @@ round), or pay it off outright. A few buildings pay off part of every threat of 
 **When threats take effect** (step F), each threat not paid off does what it prints, country by country, then is
 discarded with its tokens. Pieces it places go on its token. A resource harm reads "pay N or discard M cards": the
 player chooses; with neither possible, they pay what they have and discard their hand. A threat dealt after the
-action phase began (by a Discord card or another threat) waits until next round.
+action phase began (by a Discord card or another threat) gets a **waits** token: it takes effect next round.
 
 > **Example.** A Military threat's token sits on a research station. The Protector's ambassador stands next to it, so
 > the Protector is near and may pay; the Builder's node is 2 hexes away, so the Builder is not near. Nobody pays.
@@ -661,28 +671,28 @@ action phase began (by a Discord card or another threat) waits until next round.
 
 ## 11. War
 
-The megacorps fight each other across the fronts with **corp troops**. These are not the adversary's troops: they
+The megacorps fight each other across the fronts with **drones**. These are not the adversary's troops: they
 never march, and they never strike your stations.
 
-**Where corp troops come from.** Each base holds up to **2** corp troops. Whenever a corp makes troops, it puts 1 on
-each of its bases that has room. A corp makes troops:
+**Where drones come from.** Each base holds up to **2** drones. Whenever a corp makes drones, it puts 1 on each of
+its bases that has room. A corp makes drones:
 
-- **each time the Discord track tips** (§12): every neutral factory puts 1 corp troop on each base of its own country,
-  unless an agent stands on it. Each of your ambassadors on that factory, or on a base, stops one troop and is spent
+- **each time the Discord track tips** (§12): every neutral factory puts 1 drone on each base of its own country,
+  unless an agent stands on it. Each of your ambassadors on that factory, or on a base, stops one drone and is spent
   (§19);
 - from Warmongering and some projects, in production's growth (§9, §19).
 
 **War**, at the end of every round (step G), on each front:
 
 1. The two bases' piles cancel 1 for 1, and both bases are emptied.
-2. Each troop left over crosses and strikes the rival corp's factory nearest its base, counting hexes (tie: the lower
+2. Each drone left over crosses and strikes the rival corp's factory nearest its base, counting hexes (tie: the lower
    number): a neutral or player factory, never the adversary's.
 3. The strike is on the **factory**, and the factory is protected like any facility (§13). If it is destroyed, it
    adds **1 Discord**, and **any node on its hex** would be destroyed too: that node is protected like any node, so
    its owner may spend a protection for it (§13).
-4. A troop whose strike is stopped is still used up, and the next troop aims at the same factory.
+4. A drone whose strike is stopped is still used up, and the next drone aims at the same factory.
 
-A corp troop at a base also protects facilities on or next to its hex from **adversary** troops: the facility's owner
+A drone at a base also protects facilities on or next to its hex from **adversary** troops: the facility's owner
 may spend it instead (§13).
 
 *Sources: rules/war.md; crates/aic-core/src/modules/board/troops.rs, modules/board/production.rs.*
@@ -717,26 +727,26 @@ A track **tips** when it holds **3 × the number of players**. Then:
 
 1. Take one tip's worth off. The rest stays on the track toward its next tip, on both tracks.
 2. Add 1 to that side's tip count.
-3. **Discord only:** every neutral factory makes corp troops (§11).
-4. Draw that side's top card and resolve it at the tier for its tip count, this tip included: **tier I** on tips 1-2,
-   **tier II** on tips 3-5, **tier III** from tip 6.
+3. **Discord only:** every neutral factory makes drones (§11).
+4. Draw that side's top card and resolve it at the strength for its tip count, this tip included: **strength I** on
+   tips 1-2, **strength II** on tips 3-5, **strength III** from tip 6.
 
 If both tracks are full, Discord tips first. A card that fills a track again tips it again.
 
 ### The cards
 
-Every Unity and Discord card prints three tiers. Each acts across the map by a condition ("for each site a player
-owns"), not in one player's reach. Some Unity cards **forbid** the adversary's next Rally, Deploy or Corrupt where a
+Every Unity and Discord card prints three strengths. Each acts across the map by a condition ("for each site a player
+owns"), not in one player's reach. Some Unity cards **forbid** the adversary's next Rally, Muster or Corrupt where a
 condition holds: that step skips each site where the condition holds when the step runs, and what it would have placed
 stays in the supply. A Corrupt prohibition also stops natural corruption there, and no agent moves onto such a site; a
-Deploy prohibition stops every Deploy that turn: the event card's, a project's and the Protector landing.
+Muster prohibition stops every Muster that turn: the event card's, a project's and the Protector landing.
 
 - **The Unity deck** (23 cards) reshuffles when it runs out.
 - **The Discord deck** (6 cards) **never reshuffles.** A Discord tip with no card left loses the game: you survive 6
   Discord tips and lose on the 7th, at every level (§21).
 
 *Sources: rules/alignment.md; configs/baseline.json (`tip_per_player` 3, `carry` 2, `hold_off` 1, `tier_at` 3, 6); content/alignment.json;
-crates/aic-core/src/modules/alignment.rs, modules/board/production.rs (the tip's corp troops).*
+crates/aic-core/src/modules/alignment.rs, modules/board/production.rs (the tip's drones).*
 
 ---
 
@@ -751,7 +761,7 @@ Your **nodes** and your **facilities** (stations and factories) can be destroyed
 | **Corruption** (a Corrupt line, natural corruption, a threat that corrupts a site) | the node on the corrupted hex, then every ambassador there |
 | **A node hex's corruption** (2 agents on a hex with your node, §6) | that node; the agents go to the supply |
 | **An adversary troop's strike** | the player-owned station or factory it strikes (never a node) |
-| **War** | the factory a corp troop strikes, and any node on its hex |
+| **War** | the factory a drone strikes, and any node on its hex |
 | **Threats and event lines** | what they print ("destroy a node", Border War's node near a base) |
 
 A destroyed facility takes its owner's cube with it. A destroyed node leaves the game and leaves a **corruption
@@ -768,7 +778,7 @@ When a node or facility would be destroyed:
    adversary's turn.
 2. Otherwise **its owner chooses** one protection to spend, or none (for a neutral piece, the players choose). Each is
    used up:
-   - a **corp troop** at a base on or next to the hex (against an adversary troop's strike only);
+   - a **drone** at a base on or next to the hex (against an adversary troop's strike only);
    - a **hardening token** on the hex (on a hex with your node it is called a **shield**);
    - **your own ambassador** on the hex (never another player's);
    - **Aegis Doctrine** (a Protector capstone): once a round, on one of the Protector's own nodes or facilities.
@@ -805,8 +815,8 @@ You win the moment the map holds none of what the purge asks for. It asks for le
 | 3-5 | corrupted cities, botnets, adversary troops |
 | 6 or more | corrupted cities |
 
-Agents waiting in the pools are not on the map. Corrupted stations, factories and land never count, nor do corp
-troops.
+Agents waiting in the pools are not on the map. Corrupted stations, factories and land never count, nor do
+drones.
 
 ### Losing
 
@@ -840,12 +850,12 @@ corruption, where a node may stand; "nodes": a hex with any player's node).
    else on its hex changes.
 
 A card may print "(1 fewer)": the corrupt number is 1 lower for that line. No agent moves onto a firewalled target,
-but it still corrupts on what it holds.
+and it doesn't corrupt (agents already on it stay).
 
 **Natural corruption** (step 9) checks each city, station and factory that isn't the adversary's: with its corrupt
 number of agents on its own hex (a marker on a city counting as one), it corrupts. Then each hex with a player's node
 and **2 agents** loses that node (§13 still applies); the agents go back to the supply and the site there, if any, is
-untouched. Open land never corrupts this way. A firewall doesn't stop it.
+untouched. Open land never corrupts this way. Nothing on a firewalled hex corrupts, a node included.
 
 > **Example: Corrupt cities.** A neutral city on hex 6 holds 2 agents. Hex 2, next to it and to no other city, holds
 > 1; hex 7 holds 2 and is next to hex 6 and to the city on hex 11, which holds 1. Hex 2's agent moves onto hex 6. The
@@ -871,20 +881,21 @@ You may stop after any piece. Moved pieces arrive as usual: an agent moved onto 
 them (§8).
 No agent enters a firewall; no adversary troop enters the Protector's node hex.
 
-**Remove from around a hex.** Some cards (Kettle Operation, Lure Network, Honeypot Relay) remove up to N agents, or
-agents and troops, from the hexes **next to** a hex you pick in reach, never from that hex itself: troops first, then
-agents, in hex-number order.
+**Remove around a hex.** Some cards (Kettle Operation, Lure Network, Honeypot Relay) remove up to N agents, or
+agents and troops, **on or next to** a hex you pick in reach: the hex itself counts, and you choose which pieces, a
+batch at a time, and may stop early. Nothing moves.
 
-**Convert.** Some late cards turn agents into your ambassadors: up to N agents on or next to a city in your reach come
-off and become your ambassadors, arriving on the hex of the node that gave you reach (your choice if several).
+**Convert.** Some late cards turn agents into your ambassadors: up to N agents on or next to a city in your reach
+each become your ambassador where it stood. The converted agents come off first, then your ambassadors go on, so two
+converted on one hex both stay; an agent the card left on that hex meets one of them, one for one (§8).
 
 **Firewall.** Some cards put a firewall on a land hex in your reach. While it stands, no agent lands, is placed or
-moves in there: its Rally share stays in the supply, like any blocked landing. Troops pass. It comes off at the end
-of the next adversary turn (step 12).
+moves in there: its Rally share stays in the supply, like any blocked landing. Nothing on it corrupts (agents already
+there stay). Troops pass. It lasts until the end of the next adversary turn (step 12).
 
-**Cordon.** Hardpoint Lockdown cordons a country: until the end of next round, no agents land there from a Rally or a
-card line (troops still land, and Gather and Push still move agents in). That country's pool still empties at its
-Rally: those agents go back to the supply.
+**Cordon.** Hardpoint Lockdown cordons a country until the end of the next adversary turn (step 12): no agents land
+there from a Rally or a card line (troops still land, and Gather and Push still move agents in). That country's pool
+waits: it lands at the first Rally after the cordon ends, with the income added meanwhile.
 
 *Sources: rules/ambassadors.md (Moving pieces), rules/adversary.md (Firewalls); crates/aic-core/src/modules/effects/moves.rs,
 modules/effects/endgame.rs, modules/effects/removal.rs, modules/adversary.rs.*
@@ -921,13 +932,13 @@ Compute with no project to go on is lost. No project resolves outside the comput
 **Dealing.** Stage I event cards deal one tier-1 threat in each country, stage II one tier-2 (Supply Lines: one tier-1
 and one tier-2), and stage III two tier-2. Each deal names one or two threat tags, or "any". For each deal, for each
 country in turn, turn up the top card of that tier's threat deck. It stays if it carries a named tag (a **Universal**
-card has every tag) **and** the country has a place of one of its location types. Otherwise discard it and turn up the
-next. When a threat deck runs out, shuffle its discards into a new deck.
+card has every tag) **and** the country has a place of one of its location types that isn't the adversary's.
+Otherwise discard it and turn up the next. When a threat deck runs out, shuffle its discards into a new deck.
 
-**Location tokens.** For each printed type, the token goes on the place of that type with the most adversary pieces
-(agents, troops, botnets) on or next to it; tie: the lower hex number. Cities and stations must not be corrupted;
-factories must not be the adversary's (with none, a free industrial zone takes the token); any base will do. A type
-the country has none of gets no token. A threat's two tokens never share a hex.
+**Location tokens.** For each printed type, the token goes on the place of that type that isn't the adversary's with
+the most adversary pieces (agents, troops, botnets) on or next to it; tie: the lower hex number. The same test holds
+for every type (a base is never the adversary's). A type the country has no such place of gets no token. A threat's
+two tokens never share a hex.
 
 **Difficulty.** From level 1, resource items on threats cost more (§21); tag items never change.
 
@@ -935,15 +946,15 @@ the country has none of gets no token. A threat's two tokens never share a hex.
 
 ---
 
-## 19. Corp troops in full
+## 19. Drones in full
 
-- **At a Discord tip,** every neutral factory with no agent on it puts 1 troop on each base of its own country that has
+- **At a Discord tip,** every neutral factory with no agent on it puts 1 drone on each base of its own country that has
   room (2 bases at 3-4 countries, 1 at 2 countries).
-- **One ambassador always stops one troop**, and is spent. A player's ambassador on a base stops the troop that base
-  would get. Each one on a neutral factory stops one of that factory's troops at that tip (if it can't stop them
-  all, the players choose which base goes without). A full base takes no troop and spends no ambassador (with
+- **One ambassador always stops one drone**, and is spent. A player's ambassador on a base stops the drone that base
+  would get. Each one on a neutral factory stops one of that factory's drones at that tip (if it can't stop them
+  all, the players choose which base goes without). A full base takes no drone and spends no ambassador (with
   several players' ambassadors there, the earliest in player order is spent).
-- **Warmongering** and the Arms Race project add 1 troop to a base even past its limit (at most 1 extra a base a
+- **Warmongering** and the Arms Race project add 1 drone to a base even past its limit (at most 1 extra a base a
   round). The War Footing project fills every base.
 
 *Sources: rules/war.md; crates/aic-core/src/modules/board/production.rs.*
@@ -960,7 +971,7 @@ Each power can be used once a round, in the action phase. A tag in a cost means 
 | Protector | **Accord** (1 Diplomacy, 1 energy: a node) | **Stand Down** (1 Security: 3 credits) | **Debrief** (1 Diplomacy: draw 2) | **Recovery** (1 Security: clear a marker in reach, +2 Unity), **Shelter** (1 Security, 1 energy: in any one country, nothing can be destroyed this round), **Bulwark** (1 energy: harden a facility in reach), **Patrol** (1 energy: push up to 3 agents or adversary troops from a hex in reach) |
 | Researcher | **Peer Review** (3 research cubes: a node) | **Grant** (3 credits: 1 cube in your color on a megaproject that isn't complete), **Synthesis** (discard a card from your hand: 2 insight) | **Fieldwork** (1 energy: draw 3) | **Field Station** (1 Industry: a research station without the chips, where Build a research station could go), **Audit** (1 Cyber: remove 3 compute from a project), **Particle Run** (1 Power, 1 energy: 1 antimatter) |
 
-Every board also has **Deploy** (1 energy: place a node). Node powers also pay the track space's energy (§5).
+Every board also has **Expand** (1 energy: place a node). Node powers also pay the track space's energy (§5).
 
 | Board | Economy track capstone | Card-play track capstone |
 |---|---|---|
@@ -976,11 +987,11 @@ Every board also has **Deploy** (1 energy: place a node). Node powers also pay t
 
 Your claim and liberate costs are the same at every level. Each row is the whole level:
 
-| Level | Corrupt numbers (city / station / factory / land / node) | Threat costs | Deploy | Unpaid threats | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
+| Level | Corrupt numbers (city / station / factory / land / node) | Threat costs | Muster | Unpaid threats | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 1 | 1 | — |
 | 1 | 3 / 2 / 2 / 3 / 2 | +1 each non-credit resource, +4 credits | as printed | — | 4 / 4 / 3 | 11 | 4 | 4 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | +2 each non-credit resource, +4 credits | +1 troop on every Deploy | +4 compute each | 4 / 4 / 3 | 11 | 22 | 4 | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | +2 each non-credit resource, +4 credits | +1 troop on every Muster | +4 compute each | 4 / 4 / 3 | 11 | 22 | 4 | — |
 | 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 | +4 compute each | 4 / 2 / 3 | 9 | 24 | 4 | — |
 | 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 | +4 compute each | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
 
@@ -1001,7 +1012,7 @@ item ("2 Security") never changes.
 - **Boards:** Builder, Protector, Researcher, then a second Builder. 2 players: no Researcher. Solo: the Builder only.
 - **Tipping:** both tracks tip at 3 × the number of players.
 - **Projects** print a cost for each number of players (§17).
-- **Corp troops:** at 3-4 countries every corp has two bases, so a neutral factory makes 2 troops at a Discord tip.
+- **Drones:** at 3-4 countries every corp has two bases, so a neutral factory makes 2 drones at a Discord tip.
 - **Solo:** one country, so no fronts, no bases and no war. You keep all 4 cards you take in the draft. "Another
   player" on a card means you: an Effect that fires when another player plays a card fires on your own plays, and a
   shared gain is paid once.
@@ -1077,8 +1088,10 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Clock | after a threat: delay (it waits a round). After an agent and a hex: a firewall. After an agent and a country: a cordon |
 | Requirement plates | yellow: at least; stacked cards: built over |
 
-**When an Effect fires.** An Effect on removing troops fires once for each troop. One on removing agents or compute
-fires once for each card, Action, power or standard action that removed any. A **rebate** Effect fires when you play a
+**When an Effect fires.** Every Effect fires once per action, and prints its unit: one on removing troops, agents or
+compute fires once for each card, Action, power or standard action that removed any, and one on placing tokens on
+your cards once for each placement. A per-tag play trigger ("+1 per Diplomacy tag on it") fires once and pays per
+tag. A **rebate** Effect fires when you play a
 card whose printed credit cost, before discounts, is at least N.
 
 *Sources: docs/card-guidelines.md (Legend), rules/card-grammar.md (Boxes, Connectors, Shapes);
@@ -1090,14 +1103,18 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
 
 - **Agent:** the adversary's piece. **Ambassador:** a player's piece, any player's.
 - **At N:** §7, *Tokens on cards*.
-- **Base (military base):** where a megacorp keeps its corp troops for one front, §2 and §11.
+- **Base (military base):** where a megacorp keeps its drones for one front, §2 and §11.
 - **Blocked:** a site with an opposing piece on it; it makes nothing, §2.
 - **Building:** a card. **Facility:** a research station or factory on the map.
 - **Compute:** what the adversary spends on projects, §6 and §17.
 - **Corrupt number:** how many agents corrupt a site, §6.
 - **Corrupted:** owned by the adversary. **Neutral:** owned by nobody.
 - **A country you're in:** a country where you have a node. **Your home country:** the one you start in.
+- **Dispatch:** the standard action that puts one of your ambassadors onto a piece in reach; **Dispatches:** how many
+  you have each round, §5 and §8.
 - **Draw:** take the top tier-1 card, free.
+- **Drone:** a megacorp's piece, waiting at a base and fighting in war, §11.
+- **Expand:** every board's 1-energy node power, §5.
 - **Firewall, cordon:** §16. **Front:** §2.
 - **Here:** on this card.
 - **In reach:** on or next to one of your nodes.
@@ -1105,7 +1122,7 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
   **growth** follows it, §9.
 - **Land:** a city or open hex.
 - **Megaproject:** a megacorp's 8-cube card, §8.
-- **Movement:** your Moves each round, §5.
+- **Muster N:** N adversary troops land in each country, §6.
 - **Near (a threat):** your node or ambassador on or next to one of its tokens. **Nearest:** the player whose node is
   closest, §10.
 - **Next to:** sharing an edge. **On or next to:** that hex, or one sharing an edge with it.
@@ -1118,9 +1135,9 @@ crates/aic-core/src/face.rs, modules/cards/triggers.rs.*
 - **Shield:** a hardening token on a hex with your node.
 - **Site:** a city, research station or factory.
 - **Stage:** I, II or III, printed on each event card, §6.
+- **Strength:** Unity and Discord cards resolve at strength I, II or III (by tip count), §12.
 - **Sway:** add Unity or Discord to its track. **Tip:** §12.
-- **Tier:** player cards and threats come in tier 1 and tier 2 (decks); Unity and Discord cards resolve at tier I, II
-  or III (by tip count).
-- **Troop:** on a card, an adversary troop, unless it says corp troop.
+- **Tier:** player cards and threats come in tier 1 and tier 2 (decks).
+- **Troop:** always the adversary's; a megacorp's piece is a drone.
 
 *Sources: rules/README.md (Terms), docs/player-aid.md.*

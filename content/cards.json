@@ -3317,7 +3317,6 @@
   "effects": [
    {
     "op": "liberate",
-    "align": true,
     "ambassadors": 3
    }
   ]

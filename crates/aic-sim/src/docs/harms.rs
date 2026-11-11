@@ -44,7 +44,7 @@ pub const SOURCES: [&str; 12] = [
 /// What the board rules (the sources content doesn't print) do: source, harm,
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
 pub const RULE_HARMS: [(&str, &str, &str); 16] = [
-    ("income and rally", "adversary pieces placed", "agent income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
+    ("income and rally", "adversary pieces placed", "agent income fills each country's pool; every event's Rally X lands it on the sites of its type (151)"),
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),

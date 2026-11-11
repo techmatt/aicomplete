@@ -284,7 +284,7 @@ const TOKEN_NAMES: Record<string, string> = {
   ambassador: 'ambassador',
   station: 'research station',
   troop: 'adversary troop',
-  unit: 'corp troop',
+  unit: 'Drone (corp troop)',
   harden: 'hardening token',
   firewall: 'firewall (no agent may arrive here)',
 };

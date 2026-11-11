@@ -247,7 +247,7 @@ fn reuse_may_take_the_other_half() {
 }
 
 #[test]
-fn fight_triggers_fire_once_an_action_or_once_a_troop() {
+fn fight_triggers_fire_once_an_action() {
     // 119: Signal Hijack's 2 troops pinned (r46), so both troops near go.
     let hijack = r#"cards.signal_hijack.effects=[{"op":"remove_troops","count":2,"reach":true}]"#;
     let (rules, mut g) = table_with(&[hijack], &["signal_hijack"], &["security_contractor_hq", "honeypot_relay", "security_ops_floor"]);
@@ -261,7 +261,8 @@ fn fight_triggers_fire_once_an_action_or_once_a_troop() {
     let cost = cards::play_cost(&w, &g, 0, cards::def(&w, "signal_hijack"));
     play(&rules, &mut g, 0, "signal_hijack");
     assert_eq!(g.tokens(near, TROOP), 0);
-    assert_eq!(g.resource(0, r), before - cost + 2 * n, "one firing a troop");
+    // 178 (Matt's ruling #19): once for the action, however many troops (it was once a troop).
+    assert_eq!(g.resource(0, r), before - cost + n, "one firing for two troops");
     // Ambassadors: once for the action, however many.
     let (r, n) = trigger_gain(&rules, "honeypot_relay");
     put(&mut g, near, ADV_AMBASSADOR, 3);
@@ -497,8 +498,9 @@ fn the_boards_insight_powers() {
     assert_eq!(g.resource(0, Resource::Insight), 2);
 }
 
+/// 178 (Matt's ruling #18): Vigil pays when a troop ends its march next to the Protector's node.
 #[test]
-fn vigil_pays_when_the_wall_stops_a_troop() {
+fn vigil_pays_when_a_troop_ends_its_march_next_to_your_node() {
     let (rules, mut g) = lab_with(&["board.march"], &["board.troop_node=0"]);
     let m = &rules.map;
     let p = m.numbered(0, piece(0).node);
@@ -509,8 +511,8 @@ fn vigil_pays_when_the_wall_stops_a_troop() {
     run(&rules, &mut g);
     answer_all(&rules, &mut g);
     assert_eq!(g.tokens(p, node(1)), 1, "the Wall held");
-    assert_eq!(g.resource(1, Resource::Insight), 1, "Vigil: 1 insight for the troop stopped");
-    assert_eq!(g.stats.counters["board.wall_stops"], 1);
+    assert_eq!(g.resource(1, Resource::Insight), 1, "Vigil: 1 insight for the troop that ended next to it");
+    assert_eq!(g.stats.counters["board.vigil"], 1);
 }
 
 #[test]

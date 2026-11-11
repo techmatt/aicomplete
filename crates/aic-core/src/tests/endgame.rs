@@ -8,7 +8,7 @@ use crate::modules::{adversary, alignment, board};
 use crate::state::Pick;
 
 /// Liberate's city numbers (the lab pins them off).
-const HOLD: [&str; 2] = ["board.liberate_at=5", "board.free_leaves=1"];
+const HOLD: [&str; 1] = ["board.liberate_at=5"];
 
 fn empty_deck(g: &mut GameState, side: &str) {
     g.piles.insert(format!("alignment.deck.{side}").into(), Vec::new().into());
@@ -90,8 +90,7 @@ fn every_corrupted_city_is_no_loss() {
 /// ambassadors plus 1 for each agent on it (those cancel); agents next to it
 /// don't count. r75 (Matt's ruling 2): the seat's own ambassadors on the city pay
 /// first, its supply the rest, never another seat's; the city becomes the
-/// seat's (its cube goes on) and no agent lands on it (`free_leaves` is a
-/// liberate card's).
+/// seat's (its cube goes on) and no agent lands on it.
 #[test]
 fn liberating_a_city_pays_from_your_own_ambassadors_and_makes_it_yours() {
     let (rules, mut g) = lab_with(&[], &HOLD);

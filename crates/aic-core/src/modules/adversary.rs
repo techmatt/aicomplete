@@ -46,7 +46,7 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("stage1_added", 0, 3, "151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step)"),
     ParamSpec::int("extra_corrupted", 0, 3, "difficulty 4: more cities per country start corrupted"),
     ParamSpec::list("compute_income", 0, 30, "151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board)"),
-    ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a board a round (into each board's pool), at difficulty 0-4"),
+    ParamSpec::list("ambassador_income", 0, 10, "151: the agent income a country a round (into each country's pool), at difficulty 0-4"),
     ParamSpec::int("tier2_early", 0, 3, "difficulty 4+: tier-2 threats start this many rounds sooner"),
     ParamSpec::int("discord_removed", 0, 3, "difficulty 4+: Discord cards removed at setup (from tier 1)"),
     ParamSpec::int("wall_troops", 0, 5, "build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop)"),
@@ -56,11 +56,14 @@ const PARAMS: &[ParamSpec] = &[
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act"),
+    PhaseSpec::auto("build", "the event card after its threats: Rally X (each country's pool lands), Muster (its troops), its other lines; the board's rules; ongoing projects act"),
     PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every agent next to an X moves onto it, then every X holding its number corrupts"),
     PhaseSpec::auto("natural", "natural corruption: every city, research station or factory holding its number corrupts, then every node hex holding a node's"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: agent income into each board's pool, and the compute step (income, botnets, corrupted stations and the compute banked since the last turn onto the projects, which resolve as they fill); then every firewall comes off"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then agent income into each country's pool"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
+    // 178 (amendment 8112): its own phase, so a project's prompt doesn't follow the reveal's hidden draw in one
+    // phase (a determinized replay of it could resolve another project first). No play change.
+    PhaseSpec::auto("compute", "the compute step (income, botnets, corrupted stations and the compute banked since the last turn onto the projects, which resolve as they fill); then every firewall, cordon and prohibition of this turn comes off: the adversary turn ends"),
 ];
 
 pub static DEF: ModuleDef = ModuleDef {
@@ -459,12 +462,26 @@ impl Module for Adversary {
             }
             3 => {
                 reveal(g, cx);
-                income(g, cx)?;
+                if !g.is_over() {
+                    fill_pools(g, cx);
+                }
+            }
+            5 => {
+                if !g.is_over() {
+                    compute_step(g, cx)?;
+                }
                 // 158: firewalls come off at the end of the adversary turn after they went on.
                 for h in 0..g.hexes.len() {
                     let n = g.tokens(h, FIREWALL);
                     if n > 0 {
                         cx.add_tokens(g, h, FIREWALL, -n);
+                    }
+                }
+                // 178 (Matt's ruling #30): so does a cordon (it lasted to the end of the next round).
+                for c in 0..cx.world.map.countries.len() {
+                    let k = board::flag(crate::content::RoundFlag::Cordon, c);
+                    if g.var(&k) > 0 {
+                        cx.set_key(g, &k, 0);
                     }
                 }
                 // 167: so does a prohibition whose adversary turn this was.
@@ -565,7 +582,7 @@ impl Module for Adversary {
             "agent income",
             g.var(INCOME_AMBASSADORS),
             None,
-            "agents a board a round, into each board's pool; the next Rally lands the pool",
+            "agents a country a round, into each country's pool; the next Rally lands the pool",
         );
         let pool: i64 = (0..w.map.countries.len()).map(|c| g.var(&pool_key(c))).sum();
         out.global(
@@ -658,7 +675,7 @@ impl Module for Adversary {
                 Where::ALL.iter().enumerate().filter(|(i, _)| mask & (1 << i) != 0).map(|(_, wh)| wh.words()).collect();
             let name = match step {
                 Step::Rally => "Rally",
-                Step::Deploy => "Deploy",
+                Step::Muster => "Muster",
                 Step::Corrupt => "Corrupt",
             };
             out.global(
@@ -1015,15 +1032,6 @@ fn fill_pools(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// 151, income, at the end of the adversary's turn: each board's pool gains its ambassador income, to land at
-/// the next Rally; then the compute step (175: all compute at once, onto the projects).
-fn income(g: &mut GameState, cx: &mut Cx) -> Res {
-    if g.is_over() {
-        return Ok(());
-    }
-    fill_pools(g, cx);
-    compute_step(g, cx)
-}
 
 /// 151: "increase income": for the rest of the game.
 pub fn increase_income(g: &mut GameState, cx: &mut Cx, compute: i64, ambassadors: i64) {
@@ -1048,6 +1056,10 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
         None => (0..w.map.countries.len()).collect(),
     };
     for c in boards {
+        // 178 (Matt's ruling #30): a cordoned country's pool waits in the supply for its next Rally (it was lost).
+        if board::flagged(g, crate::content::RoundFlag::Cordon, c) {
+            continue;
+        }
         let n = if count > 0 {
             count
         } else {
@@ -1055,7 +1067,7 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             cx.set_key(g, &pool_key(c), 0);
             p
         };
-        if n <= 0 || board::flagged(g, crate::content::RoundFlag::Cordon, c) {
+        if n <= 0 {
             continue;
         }
         let Some(plan) = super::plan::rally_plan(&w, g, site, c, n) else {
@@ -1118,8 +1130,8 @@ pub fn create(g: &mut GameState, cx: &mut Cx, line: super::plan::CreateLine, sco
 
 /// Troop pressure where the Protector stands (080, candidate): in the round's
 /// build, `wall_troops` adversary troops land in each country where a seat with
-/// Wall has a node, as any landing does (on a factory, else a city, never on
-/// a walled hex), so Wall has strikes to stop.
+/// Wall has a node, on the lowest-numbered adversary or neutral factory (178;
+/// a Wall there keeps it in the supply), so Wall has strikes to stop.
 fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
     let w = cx.world;
     let n = w.int("adversary.wall_troops");
@@ -1131,7 +1143,17 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
         if !walls.iter().any(|&s| has_node_in(&w, g, s, c)) {
             continue;
         }
-        let hexes = w.map.countries[c].hexes.clone();
+        // 178 (Matt's ruling #18, printed on the Protector's board): only on an adversary or neutral factory,
+        // never a player's; with none in the country, nothing lands (it took a city, or a player's factory).
+        let hexes: Vec<usize> = w.map.countries[c]
+            .hexes
+            .iter()
+            .copied()
+            .filter(|&h| g.tokens(h, FACTORY) > 0 && crate::modules::common::cube_owner(g, h).is_none())
+            .collect();
+        if hexes.is_empty() {
+            continue;
+        }
         // 175: a Deploy like any other: the level surcharge, a Deploy prohibition, Wall keeping it in the supply.
         let n = n + deploy_bonus(&w);
         land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true, true)?;
@@ -1380,6 +1402,11 @@ pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64
             prohibit_tally(g, cx, Step::Corrupt, wh, held);
             continue;
         }
+        // 178 (Matt's ruling #30): a firewalled site doesn't corrupt.
+        if firewalled(g, t) {
+            cx.tally(g, "adversary.firewall_held", 1);
+            continue;
+        }
         // An earlier corruption may have taken this target's node (a node line) or flipped it already.
         if !super::plan::corrupt_target(&w, g, t, site) {
             continue;
@@ -1418,6 +1445,11 @@ fn natural_corruption(g: &mut GameState, cx: &mut Cx) -> Res {
             // 167: a Corrupt prohibition covers natural corruption too.
             if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Corrupt, h, g.round as i64) {
                 prohibit_tally(g, cx, Step::Corrupt, wh, g.tokens(h, ADV_AMBASSADOR));
+                continue;
+            }
+            // 178 (Matt's ruling #30): a firewalled site doesn't corrupt, naturally either.
+            if firewalled(g, h) {
+                cx.tally(g, "adversary.firewall_held", 1);
                 continue;
             }
             corrupt_hex(g, cx, h, site)?;
@@ -1475,8 +1507,8 @@ pub fn land_troops(
         };
         // 167: a Deploy prohibition keeps the troop in the supply where its condition holds.
         if deploy {
-            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Deploy, spots[i], g.round as i64) {
-                prohibit_tally(g, cx, Step::Deploy, wh, 1);
+            if let Some(wh) = super::plan::prohibition_on(&w, g, Step::Muster, spots[i], g.round as i64) {
+                prohibit_tally(g, cx, Step::Muster, wh, 1);
                 continue;
             }
         }

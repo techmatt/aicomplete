@@ -27,12 +27,12 @@ pub fn strategies_block() -> String {
 }
 
 /// The words cards lean on, once: `docs/rules/README.md`'s *Terms* and the player aid print these.
-pub const HOUSE_TERMS: [(&str, &str); 22] = [
+pub const HOUSE_TERMS: [(&str, &str); 23] = [
     ("Facility", "a research station or factory on the board. A building is always a card. Harden goes on a facility and nothing else"),
     ("Shield", "a hardening token on a hex with your node"),
     ("Ambassador", "a player's piece, any player's: a card never says whose"),
     ("Agent", "the adversary's piece on the board (the Security token is an Operative)"),
-    ("Troop", "an adversary troop, unless it says corp troop (a megacorp's, waiting at its military bases)"),
+    ("Troop", "an adversary troop; a megacorp's is a Drone, its own piece, waiting at its military bases"),
     ("In reach", "on a hex within 1 of your nodes"),
     ("A country you're in", "a country where you have a node"),
     ("Your home country", "the country you start in"),
@@ -45,10 +45,11 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("On your cards", "on tags: on your cards in play, covered buildings included, and your board's tags, printed or revealed by its tracks. Tokens count only on the card that holds them"),
     ("Action", "once a round, always; \"A, OR B\" is one use, either half"),
     ("Open megaproject", "one that isn't complete; research cubes in your color go only onto one"),
-    ("Convert", "an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
-    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"and remove them\", picks only the hex and takes troops first)"),
+    ("Liberate", "a corrupted site: the agents on it come off, the adversary's cube comes off and yours goes on (the action pays for it in ambassadors; a card's is unpaid)"),
+    ("Convert", "an agent on or next to the city leaves its stack and becomes your ambassador where it stood"),
+    ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"remove up to N on or next to a hex\", moves nothing)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply); it comes off at the end of the next adversary turn"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply) and its site doesn't corrupt; it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
 ];
 
@@ -131,7 +132,7 @@ pub(super) fn adversary_block() -> String {
             ]
         })
         .collect();
-    table(&["Card", "Stage", "Threat (each board)", "Rally", "Deploy", "Corrupt"], rows)
+    table(&["Card", "Stage", "Threat (each country)", "Rally", "Muster", "Corrupt"], rows)
 }
 
 pub(super) fn alignment_block() -> String {
@@ -149,7 +150,7 @@ pub(super) fn alignment_block() -> String {
             .collect();
         out.push_str(&format!("- **{}** ({}): {}.\n", side.name(), names.len(), names.join(", ")));
     }
-    out.push_str("- Each card's three tiers: [cards.md](../cards.md#unity-and-discord-cards).\n");
+    out.push_str("- Each card's three strengths: [cards.md](../cards.md#unity-and-discord-cards).\n");
     out
 }
 
@@ -367,17 +368,21 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
     };
     // Each of `steps`' six dials (`corrupt_cut_at` .. `stage_swap_at`) sits at whatever level its `_at` value names.
     let mut rows: Vec<(String, Vec<&str>)> = vec![
-        ("Base rules".into(), vec![]),
+        // The incomes are a list with an entry a level, not a step: every level reads its own entry.
+        (
+            "Base rules; the incomes, an entry a level".into(),
+            vec!["adversary.compute_income", "adversary.ambassador_income"],
+        ),
         (String::new(), vec![]),
         (String::new(), vec![]),
         (
-            "The level's incomes (its entries); stage-II cards removed, stage-I cards added back".into(),
-            vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage2_removed", "adversary.stage1_added"],
+            "Stage-II cards removed, stage-I cards added back".into(),
+            vec!["adversary.stage2_removed", "adversary.stage1_added"],
         ),
         (
             // 177: the Discord clause only while `discord_removed` removes a card.
             if int(r, "adversary.discord_removed") > 0 {
-                "A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup"
+                "A still shorter Discord deck: the removed cards count as tips already made, so the Discord strengths come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup"
             } else {
                 "Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); optionally more corrupted cities per country at setup"
             }
@@ -447,7 +452,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
                 per_board(r, "ai.start_credits", i),
                 per_board(r, "ai.slots", i),
                 b.tags.iter().map(|t| title(t.name())).collect::<Vec<_>>().join(", "),
-                // 149: printed Movement, and the most its spaces raise it to.
+                // 149: printed Dispatches, and the most its spaces raise it to.
                 format!(
                     "{} (up to {})",
                     b.moves,
@@ -465,7 +470,7 @@ pub(super) fn boards_block(r: &Rules, c: &Content) -> String {
         "Starting credits",
         "Slots",
         "Printed tags",
-        "Movement",
+        "Dispatches",
         "Economy track",
         "Card-play track",
         "Tokens in all",
@@ -491,7 +496,7 @@ pub(super) fn space(u: &Uncover) -> String {
     }
     parts.extend(u.tags.iter().map(|t| format!("{} tag", title(t.name()))));
     if u.moves > 0 {
-        parts.push(format!("**Movement +{}**", u.moves));
+        parts.push(format!("**Dispatch +{}**", u.moves));
     }
     if aic_core::modules::ai::builds_station(u) {
         parts.push("builds a free research station in reach".to_string());
@@ -708,14 +713,14 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          at {} credits each), and {} tier-2 cards, each kept for {} insight, to play once you meet \
          its needs: something to plan toward. From then on, each round you build a hand of {} cards one at a time, \
          choosing for each whether it comes from the cheaper tier-1 deck or the stronger tier-2 \
-         deck; you take one card and pass the rest to your neighbor until the hands are gone, then \
+         deck; you take one card and pass the rest to the next player in seat order until the hands are gone, then \
          pay insight to keep what you drafted ({} for tier 1, {} for tier 2). Insight is this round's \
          attention: what you don't spend is lost. Playing a card costs its credits and {} insight, \
          from the same insight as keeps. Buildings go into your AI board's {} slots; once they are \
          full, a new building goes on top of an old one, which stops working but keeps its tags. \
          Programs stay in front of you and are where lasting income comes from (\"raise your credit \
          income by 1 per 2 Science tags on your cards\"); buildings are your engine: Actions you use once a \
-         round and Effects that pay each time their trigger happens; events are used and discarded. Every card in front of you \
+         round and Effects that pay each time their trigger happens; events are used once and set aside, never to return. Every card in front of you \
          shows tags (Science, Industry, Cyber, Power, Diplomacy, Security): they unlock some cards, \
          and you can sacrifice cards with the right tags to use your AI board's powers. There is no \
          limit on what you hold or on how far cards raise your income; energy you don't spend stays \
@@ -725,9 +730,10 @@ pub(super) fn new_players_block(r: &Rules) -> String {
          round from them, and cards can add more. Every board has 1 energy for 1 node; the second costs more, in the board's own \
          currency. Either way you also pay the energy printed on the track space you uncover. You \
          start with {} energy and one city bound to you, which makes energy every round.\n\n\
-         **Movement, tags and sales, for new players.** Moving an ambassador costs nothing, but you \
-         have only your board's Movement each round ({} printed, more as Movement spaces are \
-         uncovered): one move each, and what you don't use is lost, like insight. **One tag rule:** \
+         **Dispatches, tags and sales, for new players.** A Dispatch puts one of your ambassadors, \
+         from your supply or anywhere on the map, onto a piece in your reach and costs nothing, but you \
+         have only your board's Dispatches each round ({} printed, more as Dispatch spaces are \
+         uncovered), and what you don't use is lost, like insight. **One tag rule:** \
          the tag printed on your AI board, and any a late, costly track space reveals, count like the \
          tags on your cards, for everything a tag does; the only difference is that a board tag can't \
          be sacrificed. You may sell a card from your hand for {} credit; chips can't be sold.\n",
@@ -785,9 +791,9 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          Like fear cards, each acts by what is on the board, never by your reach: for each site a player owns or \
          each corrupted one, on each hex on or next to your pieces or a corrupted city, or each player from one such \
          hex; some forbid the adversary's next \
-         Rally, Deploy or Corrupt where your pieces stand, so place them before its turn. \
-         Every Unity and Discord card prints three tiers, and the tip's own count on its side picks which \
-         one resolves (tier I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later tier counts more \
+         Rally, Muster or Corrupt where your pieces stand, so place them before its turn. \
+         Every Unity and Discord card prints three strengths, and the tip's own count on its side picks which \
+         one resolves (strength I on tips below {t2}, II from tip {t2}, III from tip {t3}): a later strength counts more \
          or reaches wider, and Discord's late cards hit harder. The {unity} Unity cards reshuffle when the deck runs out. \
          Each Unity you sway may instead take 1 Discord off its track, and Envoy trades one of your \
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \

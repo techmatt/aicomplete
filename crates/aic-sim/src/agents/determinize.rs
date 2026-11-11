@@ -434,12 +434,25 @@ mod tests {
             let mut k = seed;
             while !g.is_over() {
                 r.legal_actions_into(&g, &mut legal);
-                // 176: a prompt in `adversary.reveal` replays from the phase's start, through the reveal's
-                // draw from the hidden adversary deck and 175's compute step: on a guess, another project may
-                // resolve first. The agents never guess a pending table (151); splitting the compute step into a
-                // phase of its own would restore the check there (flagged in 176's write-up).
-                let reveal = g.config.round.get(g.phase).is_some_and(|p| p == "adversary.reveal");
-                if g.pending.is_some() && !reveal {
+                // 178 (amendment 8112): the compute step is its own phase (`adversary.compute`), after the
+                // reveal's hidden draw, so a project's prompt there replays like any other (176 skipped the whole
+                // reveal phase). A resolution replays from its snapshot, so a prompt that follows a hidden draw
+                // in the same resolution (a project resolved and the row refilled from the project deck, then the
+                // next one asks) can't replay on a guess: the agents never guess a pending table (151).
+                let drew = g.pending.as_ref().is_some_and(|p| {
+                    let hidden = |s: &GameState| {
+                        use aic_core::{content::Side, modules::alignment::deck};
+                        (
+                            s.pile(aic_core::modules::adversary::PROJECT_DECK).len(),
+                            s.pile("threats.deck.1").len(),
+                            s.pile("threats.deck.2").len(),
+                            s.pile(&deck(Side::Unity)).len(),
+                            s.pile(&deck(Side::Discord)).len(),
+                        )
+                    };
+                    hidden(&p.snapshot) != hidden(&g)
+                });
+                if g.pending.is_some() && !drew {
                     found += 1;
                     let mut h = g.clone();
                     determinize(r, &mut h, &mut ChaCha8Rng::seed_from_u64(k));

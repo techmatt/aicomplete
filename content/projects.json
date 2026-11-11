@@ -29,7 +29,7 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Every military base fills with corp troops to its cap.",
+  "text": "Every military base fills with Drones to its cap.",
   "effects": [
    {
     "op": "corp_troops",
@@ -51,7 +51,7 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "Each player pays 2 ambassadors or discards 2 cards.",
+  "text": "Each player pays 2 Ambassadors or discards 2 cards.",
   "effects": [
    {
     "op": "requisition",
@@ -73,7 +73,7 @@
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "Deploy 3: each board, 3 troops on its lowest-numbered factory (else city).",
+  "text": "Muster 3: each country, 3 Troops on its lowest-numbered factory (else city).",
   "effects": [
    {
     "op": "troops",
@@ -93,7 +93,7 @@
   ],
   "cost": 11,
   "ongoing": true,
-  "text": "Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production).",
+  "text": "Ongoing: Each round, every military base makes 1 extra Drone, even past its cap (at most 1 extra a base each production).",
   "effects": [
    {
     "op": "corp_troops",
@@ -115,7 +115,7 @@
   ],
   "cost": 18,
   "ongoing": true,
-  "text": "Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice.",
+  "text": "Now: Muster 3: each country, 3 Troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most Drones fights twice.",
   "effects": [
    {
     "op": "extra_war",
@@ -163,7 +163,7 @@
   ],
   "cost": 11,
   "ongoing": false,
-  "text": "Income: +1 agent a board a round.",
+  "text": "Income: +1 Agent a country a round.",
   "effects": [
    {
     "op": "increase_income",
@@ -182,7 +182,7 @@
   ],
   "cost": 18,
   "ongoing": false,
-  "text": "Rally 3, each board: cities. Corrupt: cities (1 fewer).",
+  "text": "Rally 3, each country: cities. Corrupt: cities (1 fewer).",
   "effects": [
    {
     "op": "rally",
@@ -236,7 +236,7 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Rally 3, each board: botnet hexes.",
+  "text": "Rally 3, each country: Botnet hexes.",
   "effects": [
    {
     "op": "rally",
@@ -256,7 +256,7 @@
   ],
   "cost": 9,
   "ongoing": false,
-  "text": "Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it).",
+  "text": "Rally 2, each country: research stations. Each country: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 Agents are on it).",
   "effects": [
    {
     "op": "rally",
@@ -303,7 +303,7 @@
   ],
   "cost": 7,
   "ongoing": false,
-  "text": "The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory).",
+  "text": "The adversary builds a factory in the country with the most free industrial zones (none free: 2 Agents on a factory).",
   "effects": [
    {
     "op": "adversary_factory",
@@ -386,7 +386,7 @@
   ],
   "cost": 6,
   "ongoing": false,
-  "text": "Each board: an extra tier-2 threat, any tag.",
+  "text": "Each country: an extra tier-2 threat, any tag.",
   "effects": [
    {
     "op": "deal_threats",
@@ -407,7 +407,7 @@
   ],
   "cost": 10,
   "ongoing": false,
-  "text": "Each board rallies its agent income now, to this round's Rally. Corrupt: cities.",
+  "text": "Each country rallies its Agent income now, to this round's Rally. Corrupt: cities.",
   "effects": [
    {
     "op": "adversary_build"

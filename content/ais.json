@@ -112,7 +112,7 @@
     ]
    },
    {
-    "name": "Deploy",
+    "name": "Expand",
     "tags": [],
     "cost": [
      [
@@ -120,7 +120,7 @@
       1
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",
@@ -141,7 +141,7 @@
       6
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",
@@ -320,10 +320,10 @@
  {
   "id": "protector",
   "name": "Protector",
-  "text": "The defender: plays on the board; troops stop at its nodes and can't strike there.",
+  "text": "The defender: plays on the board; Troops stop at its Nodes and can't strike there.",
   "innate": {
    "name": "Wall",
-   "text": "Adversary troops can't enter or strike a hex with your node. Vigil: when your Wall stops a troop, gain 1 insight.",
+   "text": "Adversary Troops can't enter or strike a hex with your Node. In each adversary turn's Muster, 1 Troop lands on the lowest-numbered adversary or neutral factory of each country where you have a Node (none there: none lands). Vigil: when a Troop ends its march next to your Node, gain 1 insight.",
    "passives": [
     {
      "op": "wall"
@@ -331,7 +331,7 @@
     {
      "op": "when",
      "on": {
-      "event": "wall_stops"
+      "event": "march_ends_near"
      },
      "then": [
       {
@@ -419,7 +419,7 @@
     "cost": 5,
     "capstone": {
      "name": "Sanctuary",
-     "text": "Corruption never destroys your nodes.",
+     "text": "Corruption never destroys your Nodes.",
      "passives": [
       {
        "op": "corruption_shield"
@@ -447,7 +447,7 @@
     ]
    },
    {
-    "name": "Deploy",
+    "name": "Expand",
     "tags": [],
     "cost": [
      [
@@ -455,7 +455,7 @@
       1
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",
@@ -477,7 +477,7 @@
       1
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",
@@ -526,7 +526,7 @@
       1
      ]
     ],
-    "text": "in one country this round, no nodes or facility can be destroyed",
+    "text": "in any country (no reach needed) this round, no Node or facility can be destroyed",
     "effects": [
      {
       "op": "shelter"
@@ -564,7 +564,7 @@
       1
      ]
     ],
-    "text": "push up to 3 agents or troops from a hex in reach, each to a hex next to it",
+    "text": "push up to 3 Agents or Troops from a hex in reach, each to a hex next to it",
     "effects": [
      {
       "op": "push",
@@ -639,7 +639,7 @@
     "cost": 5,
     "capstone": {
      "name": "Aegis Doctrine",
-     "text": "Once a round, when one of your nodes or facilities would be destroyed, you may keep it.",
+     "text": "Once a round, when one of your Nodes or facilities would be destroyed, you may keep it.",
      "passives": [
       {
        "op": "civic_shelter"
@@ -768,7 +768,7 @@
     ]
    },
    {
-    "name": "Deploy",
+    "name": "Expand",
     "tags": [],
     "cost": [
      [
@@ -776,7 +776,7 @@
       1
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",
@@ -793,7 +793,7 @@
       3
      ]
     ],
-    "text": "place 1 node",
+    "text": "place 1 Node",
     "effects": [
      {
       "op": "place_node",

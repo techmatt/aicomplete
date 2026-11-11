@@ -52,7 +52,7 @@ fn every_board_places_for_1_energy_once_a_round() {
         let (rules, mut g) = at_step(&[], 1);
         let start = rules.map.numbered(seat as usize, piece(seat as usize).node);
         put(&mut g, start, node(seat as usize), 1);
-        let deploy = power(&rules, seat as usize, "Deploy");
+        let deploy = power(&rules, seat as usize, "Expand");
         set_res(&mut g, seat as usize, Resource::Energy, 1);
         let before = node_count(&g, seat as usize);
         rules.apply_mut(&mut g, &deploy, None).unwrap();
@@ -69,7 +69,7 @@ fn a_node_power_pays_its_energy_and_then_the_step() {
     let (rules, mut g) = at_step(&[], 5);
     let w = rules.world();
     let step = step_cost(&w, 5);
-    let deploy = power(&rules, 0, "Deploy");
+    let deploy = power(&rules, 0, "Expand");
     set_res(&mut g, 0, Resource::Energy, step);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the step is on top");
     set_res(&mut g, 0, Resource::Energy, step + 1);
@@ -132,7 +132,7 @@ fn tokens_of_a_placement_still_uncover() {
     let w = rules.world();
     set_res(&mut g, 0, Resource::Energy, 1);
     let income = ai::track_income(&w, &g, 0).len();
-    rules.apply_mut(&mut g, &power(&rules, 0, "Deploy"), None).unwrap();
+    rules.apply_mut(&mut g, &power(&rules, 0, "Expand"), None).unwrap();
     answer_all(&rules, &mut g);
     assert_eq!(board::track_taken(&g, 0) + board::track2_taken(&g, 0), 3);
     assert_eq!(ai::track_income(&w, &g, 0).len(), income + 1);
@@ -170,8 +170,8 @@ fn placing_node_takes_the_next_track_token_and_uncovers_its_income() {
         .all(|&h| rules.map.adjacent(h, start) && g.tokens(h, node(0)) == 0));
     // Deploy, which refreshes here: a test of the track, not of its limit.
     let place = |rules: &Rules, g: &mut GameState| {
-        g.vars.insert(ai::power_used(0, power_index(rules, 0, "Deploy")).into(), 0);
-        act(rules, g, power(rules, 0, "Deploy"));
+        g.vars.insert(ai::power_used(0, power_index(rules, 0, "Expand")).into(), 0);
+        act(rules, g, power(rules, 0, "Expand"));
     };
     place(&rules, &mut g);
     // The 2nd space (the Builder's): +3 credits a round (078).
@@ -206,7 +206,7 @@ fn a_track_s_last_steps_cost_more() {
     g.vars.insert(board::track2_key(0).into(), b.play_track.len() as i64 - 1);
     let extra = b.economy_track.last().unwrap().cost.min(b.play_track.last().unwrap().cost);
     assert!(extra > 0);
-    let deploy = power(&rules, 0, "Deploy");
+    let deploy = power(&rules, 0, "Expand");
     set_res(&mut g, 0, Resource::Energy, extra);
     assert!(rules.apply_mut(&mut g.clone(), &deploy, None).is_err(), "the power's 1 energy too");
     set_res(&mut g, 0, Resource::Energy, extra + 1);

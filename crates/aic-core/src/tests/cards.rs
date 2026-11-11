@@ -587,12 +587,15 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     let mut g = free;
     let w = rules.world();
     let hexes = effects::gather_hexes(&w, &g, 1, &[crate::op::Piece::Agents], true);
-    let picks = if hexes.len() > 1 {
+    let mut picks = if hexes.len() > 1 {
         let o = crate::modules::common::hex_opt(&w, hexes[0]);
         vec![crate::state::Pick { option: o.option, target: o.target }]
     } else {
         Vec::new()
     };
+    // 178: the strike asks which pieces (on or next to the hex).
+    let name = crate::modules::common::hex_name(&w, next);
+    picks.push(crate::state::Pick { option: format!("2 agents on {name}"), target: Some(m.hexes[next].hex) });
     with_cx_picks(&rules, picks, |cx| cards::play_free_building(&mut g, cx, 1)).unwrap();
     assert!(g.stats.counters["effects.struck"] >= 1);
     assert_eq!(g.resource(1, Resource::Credits), credits + 3);

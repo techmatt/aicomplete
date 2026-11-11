@@ -24,6 +24,9 @@ pub const ADV_AMBASSADOR: &str = "ambassador:adversary";
 pub const TROOP: &str = "troop";
 /// Corp units waiting at a military base (the base's country's corp).
 pub const UNIT: &str = "unit";
+/// 178 (Matt, amendments 8118 and 8122): what a corp unit prints as, its own piece; the one name to swap in
+/// generated text (content's hand-written text: `experiments/results/178_rules_words/rename178.py`).
+pub const DRONE: &str = "Drone";
 /// A hardening token: absorbs one destruction of a facility or node on its hex.
 pub const HARDEN: &str = "harden";
 /// A botnet: persistent, makes adversary compute, an ambassador on its hex may take it down (r75's standard action).
@@ -105,9 +108,10 @@ pub fn has_building(g: &GameState, h: usize) -> bool {
     g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0
 }
 
-/// An open hex with no building: where buildings go.
+/// An open hex with no building and no land corruption: where buildings go (178, Matt's ruling #28: corrupted
+/// land forbids building).
 pub fn buildable(w: &World, g: &GameState, h: usize) -> bool {
-    w.map.hexes[h].kind == HexKind::Open && !has_building(g, h)
+    w.map.hexes[h].kind == HexKind::Open && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0
 }
 
 /// Whether hex `h` holds a piece an ambassador can sit on (node included).
@@ -149,11 +153,11 @@ pub fn scope_countries(w: &World, scope: Option<usize>) -> Vec<usize> {
     }
 }
 
-/// Free industrial zones: printed zones holding no building, where a factory
+/// Free industrial zones: printed zones holding no building and no land corruption (178), where a factory
 /// may be built.
 pub fn free_zones(w: &World, g: &GameState) -> Vec<usize> {
     (0..g.hexes.len())
-        .filter(|&h| w.map.hexes[h].industrial && !has_building(g, h))
+        .filter(|&h| w.map.hexes[h].industrial && !has_building(g, h) && g.tokens(h, LAND_CORRUPTION) == 0)
         .collect()
 }
 

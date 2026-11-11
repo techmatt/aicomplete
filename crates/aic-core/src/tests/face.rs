@@ -79,16 +79,20 @@ fn no_face_prints_an_exception() {
 #[test]
 fn a_removal_says_which_pieces() {
     let monitors = face_of("ceasefire_monitors").text;
-    assert!(monitors.starts_with("Remove 3 agents or 1 troop from a hex in reach."), "{monitors}");
-    assert_eq!(face_of("bounty_board").text, "Remove 1 troop in reach. Gain 1 credit per Security tag on your cards.");
+    // 178 (amendment 8044): piece names print capitalized on cards.
+    assert!(monitors.starts_with("Remove 3 Agents or 1 Troop from a hex in reach."), "{monitors}");
+    assert_eq!(
+        face_of("bounty_board").text,
+        "Remove 1 Troop in reach. Gain 1 credit per Security tag on your cards (including this)."
+    );
     // 076 (ruling 6): a printed number in one country, never "per hex"; 111 (Matt's ruling 3): most in reach.
     assert_eq!(
         face_of("eviction_worm").text,
-        "Remove 3 agents in reach. Remove 4 compute from an adversary project."
+        "Remove 3 Agents in reach. Remove 4 compute from an adversary project."
     );
     assert_eq!(
         face_of("kinetic_interdiction").text,
-        "Pay 1 antimatter. Remove 2 troops in one country. Remove 6 agents in reach."
+        "Pay 1 antimatter. Remove 2 Troops in one country. Remove 6 Agents in reach."
     );
     for c in &content().cards {
         assert!(!c.text.contains("per hex"), "{}: {}", c.id, c.text);
@@ -99,7 +103,7 @@ fn a_removal_says_which_pieces() {
 #[test]
 fn harden_says_facility_and_a_shield_says_shield() {
     assert_eq!(face_of("faraday_yard").text, "Raise your energy income by 1. Harden 3 facilities in reach.");
-    assert_eq!(face_of("benchmark_suite").text, "Shield 3 of your nodes.");
+    assert_eq!(face_of("benchmark_suite").text, "Shield 3 of your Nodes.");
 }
 
 /// 063: one mark, one reading.
@@ -178,11 +182,12 @@ fn icon_lines_print_only_what_the_viewer_draws() {
 }
 
 /// r48 (D48): icons say what the words say: Great Liberation's city on its cube,
-/// Field Grant's station limit, Hostile Buyout's align mark.
+/// Field Grant's station limit. 178 (#29): every liberation puts your cube on, so no card prints the align mark
+/// (Hostile Buyout's was the one).
 #[test]
-fn icons_show_the_city_the_station_and_the_align_mark() {
+fn icons_show_the_city_and_the_station() {
     let line = |id: &str| serde_json::to_string(&face_of(id).effect).unwrap();
     assert!(line("great_liberation").contains(r#""cube","city""#), "{}", line("great_liberation"));
     assert!(line("field_grant").contains(r#""megaproject","/","station""#), "{}", line("field_grant"));
-    assert!(line("hostile_buyout").contains(r#""→","cube""#), "{}", line("hostile_buyout"));
+    assert!(!line("hostile_buyout").contains(r#""→","cube""#), "{}", line("hostile_buyout"));
 }
