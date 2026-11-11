@@ -92,12 +92,35 @@ fn counted(n: i64, icon: &str) -> Vec<Part> {
     }
 }
 
-/// A negative always has its minus sign, 1 too.
+/// A negative always has its minus sign, 1 too. 179 (Matt, friction #34): the minus is pay or lose, and only
+/// that: a cost paid anywhere (below the art, left of an Action's arrow) prints it, a discount never does.
 fn minus(n: i64, icon: &str) -> Vec<Part> {
     vec![Part::Word(format!("\u{2212}{n}")), w(icon)]
 }
 
+/// 179 (friction #34): "less", a discount or a jam: its own mark (`less:N`), never the minus.
+fn less(n: i64, icon: &str) -> Vec<Part> {
+    vec![Part::Word(format!("less:{n}")), w(icon)]
+}
+
+/// 179 (friction #38): At N, when the tokens here reach N: the number in a ring (`at:N`), then the disc.
+fn at(n: i64, icon: &str) -> Vec<Part> {
+    vec![Part::Word(format!("at:{n}")), w(icon)]
+}
+
+/// 179 (friction #36): below the art, the brown box moves an income track once: a track arrow, up or down,
+/// before the amount (no sign: the minus is pay or lose).
+fn track_move(n: i64, rest: Vec<Part>) -> Vec<Part> {
+    let mut p = vec![w(if n < 0 { "lower" } else { "raise" })];
+    if n.abs() != 1 {
+        p.push(Part::Word(n.abs().to_string()));
+    }
+    p.extend(rest);
+    vec![Part::Income { income: p }]
+}
+
 /// 166: a Gather's or Push's pieces as icons: ambassadors bare, agents and troops in the adversary's frame.
+/// 179 (Matt, friction #33): an agent prints its own figure, the map's.
 fn piece_icons(pieces: &[crate::op::Piece]) -> Vec<Part> {
     use crate::op::Piece;
     let mut out = Vec::new();
@@ -105,7 +128,7 @@ fn piece_icons(pieces: &[crate::op::Piece]) -> Vec<Part> {
     for p in pieces {
         match p {
             Piece::Ambassadors => out.push(w("ambassador")),
-            Piece::Agents => adv.push(w("ambassador")),
+            Piece::Agents => adv.push(w("agent")),
             Piece::Troops => adv.push(w("troop")),
         }
     }
@@ -218,7 +241,7 @@ fn pieces(ambassadors: i64, troops: i64) -> String {
 fn removal_icons(ambassadors: i64, troops: i64) -> Vec<Part> {
     let mut parts = Vec::new();
     if ambassadors > 0 {
-        parts.extend(minus(ambassadors, "ambassador"));
+        parts.extend(minus(ambassadors, "agent"));
     }
     if ambassadors > 0 && troops > 0 {
         parts.push(w("OR"));
@@ -325,21 +348,21 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, format!("remove {} per hex of a country", pieces(*ambassadors, *troops))))
         }
         Op::DestroyAll => one(clause(
-            adversary(vec![w("ALL"), w("ambassador"), w("troop"), w("hex")]),
+            adversary(vec![w("ALL"), w("agent"), w("troop"), w("hex")]),
             "remove every agent and troop in one hex",
         )),
         Op::RemoveBotnet => one(clause(adversary(minus(1, "botnet")), "remove a botnet in reach")),
         Op::RemoveAmbassadorsCountry { unity_per, max, reach } => {
             // 111: "in reach" prints no place, as a botnet or a marker in reach.
             let (mut icons, what) = if *max > 0 && *reach {
-                (adversary(minus(*max, "ambassador")), format!("remove {} in reach", plural(*max, "agent")))
+                (adversary(minus(*max, "agent")), format!("remove {} in reach", plural(*max, "agent")))
             } else if *max > 0 {
-                let mut p = minus(*max, "ambassador");
+                let mut p = minus(*max, "agent");
                 p.push(w("country"));
                 (adversary(p), format!("remove {} in one country", plural(*max, "agent")))
             } else {
                 (
-                    adversary(vec![w("ALL"), w("ambassador"), w("country")]),
+                    adversary(vec![w("ALL"), w("agent"), w("country")]),
                     "remove every agent in one country".to_string(),
                 )
             };
@@ -347,7 +370,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
                 return one(clause(icons, what));
             }
             icons.extend([w("sway"), w("/")]);
-            icons.extend(adversary(vec![Part::Word(unity_per.to_string()), w("ambassador")]));
+            icons.extend(adversary(vec![Part::Word(unity_per.to_string()), w("agent")]));
             one(clause(icons, format!("{what}, and sway 1 toward Unity per {unity_per} removed")))
         }
         Op::RemoveTroops { count, reach } => {
@@ -421,11 +444,11 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         }
         Op::ClearCity { max } => {
             let (parts, what) = if *max > 0 {
-                let mut p = minus(*max, "ambassador");
+                let mut p = minus(*max, "agent");
                 p.push(w("city"));
                 (p, format!("{max} agents"))
             } else {
-                (vec![w("ALL"), w("ambassador"), w("city")], "every agent".to_string())
+                (vec![w("ALL"), w("agent"), w("city")], "every agent".to_string())
             };
             one(clause(adversary(parts), format!("remove {what} on or next to one corrupted city in reach")))
         }
@@ -443,9 +466,10 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             // 178 (Matt's ruling #24): any country, no reach needed.
             "shelter any country this round",
         )),
-        // 178 (Matt's ruling #30): the cordon's span is the firewall's.
+        // 178 (Matt's ruling #30): the cordon's span is the firewall's. 179 (friction #35): the wall mark (the
+        // clock is a delay only).
         Op::Cordon => one(clause(
-            adversary(vec![w("ambassador"), w("country"), w("clock")]),
+            adversary(vec![w("agent"), w("country"), w("wall")]),
             "cordon a country until the end of the next adversary turn",
         )),
         Op::Peek { count } => {
@@ -456,12 +480,13 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             };
             one(clause(counted(*count, "peek"), say))
         }
+        // 179 (friction #40): the jam prints outside the dark frame, its number the less mark.
         Op::Jam { amount: n, source: None } => one(clause(
-            adversary(minus(*n, "jam")),
+            less(*n, "jam"),
             format!("one threat needs {n} less of each resource"),
         )),
         Op::Jam { amount: n, source: Some(s) } => one(clause(
-            adversary(minus(*n, "jam")),
+            less(*n, "jam"),
             format!("counts as {n} toward {} threat", s.a_word()),
         )),
         Op::CounterThreat => one(clause(adversary(vec![w("counter")]), "counter one threat")),
@@ -478,22 +503,21 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         Op::DiscardProject => one(clause(adversary(minus(1, "project")), "discard an adversary project")),
         // 106: a program's per-tag income raise, counted once.
         Op::ProductionPerTag { resource, tag: t, per } => {
-            let mut icons = vec![w("+1"), w(icon(*resource)), w("/")];
+            let mut icons = vec![w(icon(*resource)), w("/")];
             if *per != 1 {
                 icons.push(Part::Word(per.to_string()));
             }
             icons.push(hash(*t));
             let tags = if *per == 1 { format!("{} tag", tag(*t)) } else { format!("{per} {} tags", tag(*t)) };
             one(clause(
-                vec![Part::Income { income: icons }],
+                track_move(1, icons),
                 format!("raise your {} income by 1 per {tags} on your cards", track(*resource)),
             ))
         }
         Op::Production { resource, amount: n } => {
-            let sign = if *n < 0 { format!("\u{2212}{}", -n) } else { format!("+{n}") };
             let verb = if *n < 0 { "lower" } else { "raise" };
             one(clause(
-                vec![Part::Income { income: vec![Part::Word(sign), w(icon(*resource))] }],
+                track_move(*n, vec![w(icon(*resource))]),
                 format!("{verb} your {} income by {}", track(*resource), n.abs()),
             ))
         }
@@ -518,14 +542,15 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             vec![w("ALL"), w("move"), w("hex")],
             "each of your ambassadors on the board may move 1 hex onto an adjacent piece",
         )),
+        // 179 (friction #39): onto one piece, the destination mark (Liaison Corps' plain move is onto pieces).
         Op::Consolidate { max } => one(clause(
-            vec![Part::Word(max.to_string()), w("move")],
+            vec![Part::Word(max.to_string()), w("move"), w("onto")],
             format!("move up to {max} ambassadors in reach onto one piece"),
         )),
         // 158: convert, gather and the firewall (Matt, 2026-11-09).
         Op::Convert { max } => {
             let mut icons = adversary({
-                let mut p = minus(*max, "ambassador");
+                let mut p = minus(*max, "agent");
                 p.push(w("city"));
                 p
             });
@@ -559,7 +584,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
             one(clause(icons, say))
         }
         Op::Firewall => one(clause(
-            adversary(vec![w("ambassador"), w("hex"), w("clock")]),
+            adversary(vec![w("agent"), w("hex"), w("wall")]),
             // 178: its span ("until the end of the next adversary turn") prints on the token and in the house
             // term; Air Gap's box has no room for it twice.
             "firewall a hex in reach",
@@ -631,7 +656,7 @@ fn once(op: &Op, gain: &str) -> Vec<Clause> {
         // 105: a brown box below the art moves the track; the solid outline is
         // one of your cards.
         Op::CopyIncome => one(clause(
-            vec![Part::Income { income: vec![Part::Yours { yours: vec![w("building")] }] }],
+            track_move(1, vec![Part::Yours { yours: vec![w("building")] }]),
             "raise your income by one of your buildings' Each round output",
         )),
         Op::Reuse => one(clause(
@@ -750,7 +775,7 @@ fn event_face(on: &Event) -> (Vec<Part>, String) {
             // 106: compute is only ever on adversary projects; the long form didn't fit 7.5 pt.
             "when you remove adversary compute".to_string(),
         ),
-        Event::RemoveAmbassadors => (adversary(vec![w("ambassador")]), "when you remove agents".to_string()),
+        Event::RemoveAmbassadors => (adversary(vec![w("agent")]), "when you remove agents".to_string()),
         Event::PlaceTokens { kind } => (
             vec![Part::Yours { yours: vec![w(kind.name())] }],
             format!("when you place a {} on one of your cards", token(kind, 1)),
@@ -772,7 +797,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
                 None => vec![w("play")],
             };
             parts.push(w(":"));
-            parts.extend(minus(*n, icon(*resource)));
+            parts.extend(less(*n, icon(*resource)));
             let which = t.map_or("your cards".to_string(), |t| format!("your {} cards", tag(t)));
             effect(parts, format!("{which} cost {} less to play", amount(*resource, *n)))
         }
@@ -803,7 +828,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         }
         Op::Threshold { at, then } => {
             let kind = kind.expect("Content::check: a threshold counts the card's own tokens");
-            let mut parts = counted(*at, kind.name());
+            let mut parts = self::at(*at, kind.name());
             parts.push(w(":"));
             let cls = clauses(then, "gain");
             parts.extend(cls.iter().flat_map(|c| c.icons.clone()));
@@ -830,7 +855,7 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
         }
         Op::BuildingDiscount { amount: n } => {
             let mut parts = vec![w("building"), w(":")];
-            parts.extend(minus(*n, "credits"));
+            parts.extend(less(*n, "credits"));
             effect(parts, format!("your buildings cost {} less", amount(Resource::Credits, *n)))
         }
         Op::HardenAction { chips: n } => {
@@ -851,20 +876,22 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
             format!("each round, remove {n} compute from each adversary project"),
         ),
         Op::AutoCounter { source, amount: n } => effect(
-            adversary(minus(*n, "jam")),
+            less(*n, "jam"),
             format!("{source} threats need {n} less to counter"),
         ),
         Op::UnityBonus { amount: n } => effect(
             { let mut p = adversary(minus(1, "troop")); p.push(w(":")); p.extend(counted(*n, "sway")); p },
             format!("when you remove an adversary troop, sway {n} more toward Unity"),
         ),
+        // 179 (Matt, friction #37; Aegis by amendment 8227): the shield is one stop on one piece (a token); the roof
+        // covers many pieces (Shelter: a whole country for the round; with a node, all of your pieces: Aegis keeps
+        // any one of them once a round, Sanctuary every node against corruption).
         Op::CorruptionShield => effect(
-            vec![w("corrupt"), w(":"), w("harden"), w("node")],
+            vec![w("corrupt"), w(":"), w("shelter"), w("node")],
             "corruption never destroys your nodes".to_string(),
         ),
-        // The shield stops one destruction; the roof is a whole country for the round.
         Op::CivicShelter => effect(
-            vec![w("harden"), w("node")],
+            vec![w("shelter"), w("node")],
             "once a round, when one of your nodes or facilities would be destroyed, you may keep it".to_string(),
         ),
         Op::TagsFromHand { tag: t } => effect(
@@ -875,17 +902,18 @@ fn standing(op: &Op, kind: Option<TokenKind>) -> Standing {
     }
 }
 
-/// The left side of an Action: what it pays, tokens from this card last.
+/// The left side of an Action: what it pays, tokens from this card last. 179 (Matt, friction #34): a cost paid
+/// prints its minus here too, one rule for costs.
 fn action_cost(a: &Ability, kind: Option<TokenKind>) -> (Vec<Part>, Vec<String>) {
     let mut parts = Vec::new();
     let mut said = Vec::new();
     for (r, n) in &a.cost {
-        parts.extend(counted(*n, icon(*r)));
+        parts.extend(minus(*n, icon(*r)));
         said.push(amount(*r, *n));
     }
     if a.tokens != 0 {
         let kind = kind.expect("Content::check: an ability's tokens are the card's own");
-        parts.extend(counted(a.tokens, kind.name()));
+        parts.extend(minus(a.tokens, kind.name()));
         said.push(format!("{} {}", a.tokens, token(kind, a.tokens)));
     }
     (parts, said)
@@ -1101,7 +1129,7 @@ fn below_art(c: &CardDef, f: &mut Face) {
         said.push(sentence(&format!("pay {}", listed(&list))));
     }
     for (r, n) in &c.lowers {
-        f.effect.push(vec![Part::Income { income: minus(*n, icon(*r)) }]);
+        f.effect.push(track_move(-n, vec![w(icon(*r))]));
         said.push(sentence(&format!("lower your {} income by {n}", track(*r))));
     }
     for cl in clauses(&c.effects, "gain") {

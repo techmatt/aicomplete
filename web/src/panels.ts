@@ -383,7 +383,9 @@ function boardHtml(v: View, seatIndex: number): string {
     const steps = t.steps.map((st, i) => {
       // 044: with nothing uncovered no step is in effect (the second track at the start).
       const cls = ['step', i < t.uncovered ? 'open' : 'covered', i === t.current && t.uncovered > 0 ? 'current' : ''].filter(Boolean).join(' ');
-      const marks = (st.marks ?? []).map((m) => `<span class="mark m-${esc(m.key)}" title="${esc(m.doc ?? m.key)}">${esc(m.label)}</span>`).join('');
+      // 179 (Matt, friction #16): the space's cost prints as a cost, first, in the cost style.
+      const shown = [...(st.marks ?? [])].sort((a, b) => Number(b.key === 'cost') - Number(a.key === 'cost'));
+      const marks = shown.map((m) => `<span class="mark m-${esc(m.key)}" title="${esc(m.doc ?? m.key)}">${esc(m.label)}</span>`).join('');
       return `<span class="${cls}" data-track="${seatIndex}:${ti}:${i}"><b>${st.value}</b>${marks}</span>`;
     }).join('');
     return `<div class="track-row"><span class="label" title="${esc(t.label)}">${esc(t.label)}</span>${steps}</div>`;

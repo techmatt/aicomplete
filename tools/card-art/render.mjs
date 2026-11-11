@@ -11,7 +11,7 @@ import path from 'node:path';
 
 import { FRAMES, MM, OUT, SHEET_CSS, TOOL, cardPage, frameOf, frameUrl, layout, loadCards, readJson, sheetPages } from './lib.mjs';
 import { inset, renderCard } from '../../web/card/card.js';
-import { ICON_NAMES, icon, stacked, tagMedallion } from '../../web/card/icons.js';
+import { ICON_NAMES, atRing, icon, less, stacked, tagMedallion } from '../../web/card/icons.js';
 
 const argv = process.argv.slice(2);
 const pdf = argv.includes('--pdf');
@@ -102,6 +102,7 @@ if (!named.length) {
   const set = (names) => names.map((n) => `<div class="cell">${n.startsWith('#') ? tagMedallion(n.slice(1)) : icon(n)}<small>${n.replace('#', '')}</small></div>`).join('');
   const sheet = `<div class="card sheet" style="--strip:#333;height:auto;width:120mm;background:#efeadc"><div class="row">${set(ICON_NAMES)}</div>
     <div class="row">${['<span class="income">', '<span class="adversary">', '<span class="other">', '<span class="yours">'].map((o) => `<div class="fx-line">${o}<span class="fx-num">2</span>${icon('credits')}</span></div>`).join('')}</div>
+    <div class="row"><div class="fx-line"><span class="fx-num">−2</span>${icon('credits')}</div><div class="fx-line">${less(3)}${icon('jam')}</div><div class="fx-line">${atRing(4)}${icon('datasets')}</div><div class="fx-line"><span class="income">${icon('raise')}<span class="fx-num">2</span>${icon('credits')}</span></div><div class="fx-line"><span class="fx-num">3</span>${icon('move')}${icon('onto')}</div></div>
     <div class="row plates"><div class="requirement at-least"><span class="fx-num">2</span>${tagMedallion('power')}</div><div class="requirement at-most"><span class="fx-num">1</span>${tagMedallion('cyber')}</div><div class="requirement replaces">${stacked()}${tagMedallion('science')}</div></div></div>`;
   await show(sheet, '.sheet .row{display:flex;flex-wrap:wrap;gap:2mm;padding:2mm}.cell{width:17mm;display:flex;flex-direction:column;align-items:center;gap:.5mm}.cell small{font:6pt sans-serif}.cell .medallion{width:6.2mm;height:6.2mm}.plates>div{height:5.2mm}');
   await (await p.$('.sheet')).screenshot({ path: path.join(OUT, 'icons.png') });

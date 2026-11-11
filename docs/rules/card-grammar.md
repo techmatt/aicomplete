@@ -11,8 +11,8 @@ only, is what lasts while the building is active: income, *Effect:*, *Action:*. 
 Below the art is what happens once, when you play the card: extra costs first, then gains, placements and moves.
 
 **Boxes.** No box: gain it once, now. A brown box is income: above the art it pays each round ("Each round, ...");
-below the art it moves your income track once ("Raise your X income by N", "Lower ..." for a minus). A minus before a
-plain icon: pay or lose it now. A dark frame acts on the adversary's pieces, projects or threats. A dashed outline is
+with a track arrow (below the art, or after an Effect's `:`) it moves your income track once ("Raise your X income by N" up, "Lower ..." down). A minus
+before an icon is pay or lose, only that: every paid cost prints it, an Action's too. A dark frame acts on the adversary's pieces, projects or threats. A dashed outline is
 another player. A thin solid outline is your cards: a token in it goes to, or comes from, one of your cards (nothing
 counts tokens across cards). No outline is you, or this card.
 
@@ -22,12 +22,13 @@ per. OR is written out; a line opening with OR is the other half of an Action, o
 has an exception: every symbol means what it always means ([card-guidelines.md](../card-guidelines.md)).
 
 **Shapes.** Square tiles are resources, discs are tokens on cards (alone, on this card), bare silhouettes are pieces
-on the board and moving them, ringed circles are tags. A number goes before its icon, no number means 1, and a
-negative always has its minus. In the dark frame a clock is a delay (threats wait a round), a minus on the jam mark a
-jam (off one threat's counter). `≤`N is up to N, your choice: a give. The shield mark stops one destruction (alone, a
-hardening token on a facility; with a node, a shield; with a country, the Aegis Doctrine capstone's); the shelter mark is a whole
-country for the round. A node with a struck-through coin is placed free. The rules text says what the icons say, in
-the same order, and opens with the box's word.
+on the board and moving them (each piece one symbol: ambassador, agent, node, botnet, troop, drone), ringed circles are
+tags. A number goes before its icon, no number means 1. The less mark (a number over a double chevron) is a discount
+or, before the jam mark outside the dark frame, a jam. A ringed number before discs is At N. The clock is a delay only;
+the wall is a firewall (agent, hex) or cordon (agent, country). `≤`N is up to N, your choice: a give. A pin after a
+move is onto one piece. The shield is one stop on one piece (a hardening token; with a node, a shield); the roof
+covers many (Shelter's country; with a node, all your pieces). A node with a struck-through coin is placed free. The text says what the icons
+say, in order, opening with the box's word.
 
 Card details beyond the card text:
 
@@ -138,8 +139,8 @@ building with a Science trigger fires it. The `play` mark is a card you play.
   don't raise it. A building's "each round, 3 credits per Science tag on your cards (including this)" (`income_per_tag` with an
   `amount`, Foundation Model Campus) counts again every round while it is active.
 - **For new players:** a building with a colon pays you every time the thing on its left happens: you play a card of
-  that tag, a teammate does, you remove a troop. A minus after the colon makes those cards cheaper. Discs and a
-  number before the colon count up on the card and pay when they reach it.
+  that tag, a teammate does, you remove a troop. The less mark after the colon makes those cards cheaper. A ringed
+  number and discs before the colon count up on the card and pay when they reach it.
 - **Reuse (`reuse`, an Action):** use again another of your buildings' Actions you used this round, paying its cost
   again, either half of an "A, OR B" Action, not only the half you used (Matt, r48: a combo with a strong Action is
   fine; a card it breaks is redesigned); never one whose own Action is a reuse (two would loop) (Simulation Cluster).

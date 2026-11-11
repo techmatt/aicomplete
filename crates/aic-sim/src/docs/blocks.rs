@@ -508,11 +508,13 @@ pub(super) fn space(u: &Uncover) -> String {
     if parts.is_empty() {
         parts.push("nothing".to_string());
     }
-    let mut out = parts.join(", ");
+    // 179 (Matt, friction #16): the space's cost prints as a cost, first: what you pay to uncover it.
+    let out = parts.join(", ");
     if u.cost != 0 {
-        out.push_str(&format!(" (cost {})", u.cost));
+        format!("pay {} energy: {out}", u.cost)
+    } else {
+        out
     }
-    out
 }
 
 /// A node track of every board, space by space. `first` labels space 1.

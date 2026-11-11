@@ -257,17 +257,17 @@ instead of 2, §7), and on the last space a **capstone**, a lasting rule (§20).
 many cards you play.
 
 **Placing a node costs two things:** the cost of the power or card that places it, **plus the energy printed on the
-space** you uncover. The printed numbers are costs, not income:
+space** you uncover. Each space prints its cost as a cost ("pay N energy"), not as income:
 
 | Space | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
-| Economy track (energy to uncover) | 0 | 0 | 0 | 1 | 2 | 3 | 5 |
-| Card-play track | 0 | 0 | 1 | 2 | 2 | 3 | 5 |
+| Economy track: energy to pay | free | free | free | pay 1 | pay 2 | pay 3 | pay 5 |
+| Card-play track: energy to pay | free | free | pay 1 | pay 2 | pay 2 | pay 3 | pay 5 |
 
 A card that places a node **free** pays neither.
 
 > **Example.** The Builder has placed 3 economy nodes. Their Expand power costs 1 energy, and the economy track's
-> fourth space costs 1 more: 2 energy for the node. Placing it on the card-play track instead (its first space, cost 0)
+> fourth space costs 1 more: 2 energy for the node. Placing it on the card-play track instead (its first space, free)
 > would cost 1.
 
 **Where:** on a land hex in your reach with no node of any player, no corruption marker and no land corruption. A hex
@@ -1042,8 +1042,8 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 |---|---|
 | Resources (square tiles) | credits (a coin), energy (a lightning bolt), insight (an eye), chips (a chip), antimatter (an atom), research cubes (stacked cubes), cards (two cards); the adversary's compute (a grid) |
 | Tokens on cards (discs) | Datasets (a database), Followers (two people), Capital (a bank), Operatives (a target) |
-| Pieces (bare silhouettes) | ambassador (a figure), node (a house shape), troop, botnet (a starburst), cube, corruption marker |
-| Places | city (a skyline), research station (a dome with a mast), factory (a sawtooth roof), a hex outline, a country (a cluster of hexes), a megaproject (a card with a cube), an adversary project (a plain card) |
+| Pieces (bare silhouettes) | each piece has one symbol of its own, usable in a sentence: **ambassador** (a figure), **agent** (a figure in a brimmed hat, as on the map), **node** (a house shape), **botnet** (a starburst), **troop** (a winged arrowhead), **drone** (a megacorp's troop: two chevrons, as on the map); also the cube and the corruption marker |
+| Places | city (a skyline), research station (a dome with a mast), factory (a sawtooth roof), a hex outline, a country (a cluster of hexes), a megaproject (a card with a cube), an adversary project (a plain card), one of your buildings (a block with windows), a building slot (a dashed outline) |
 | Tags (ringed circles) | Science, Industry, Cyber, Power, Diplomacy, Security, each its own symbol; an empty ring is any tag |
 
 ### Marks
@@ -1051,16 +1051,16 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Mark | Means |
 |---|---|
 | Number before an icon | how many (no number: 1) |
-| Minus before an icon | pay it or lose it now |
+| Minus before an icon | pay it or lose it, and only that: every cost you pay prints it, an Action's too |
+| Less (a number over a double chevron down) | that much less: a discount, or a jam |
 | `≤`N | up to N, your choice |
 | `≥`N | at least N (a rebate's printed credit cost) |
 | `/` | per |
 | OR, ALL, ACT | written out; ACT is an Action granted |
 | Brown box above the art | income, each round |
-| Brown box below the art, with a plus | raise your income once (with a minus: lower it) |
-| **Dark frame** | acts on the adversary: its pieces, projects or threats. Inside it a minus number means "remove up to N" |
-| Ambassador figure **in the dark frame** | an **agent** (outside the frame it is an ambassador) |
-| A place after a piece | where: after a cube, only that kind of site; after a botnet or ambassadors, on or next to that place; after a country, in one country |
+| Brown box with a track arrow | move your income track once: arrow up, raise it; arrow down, lower it (below the art, or after an Effect's `:`) |
+| **Dark frame** | acts on the adversary: its pieces, projects or threats. Inside it a minus number means "remove up to N" (the adversary loses them) |
+| A place after a piece | where: after a cube, only that kind of site; after a botnet, agents or ambassadors, on or next to that place; after a country, in one country |
 | Dashed outline | another player |
 | Thin solid outline | one of your cards: a disc in it goes to, or comes from, one of your cards |
 | A disc alone | a token on this card ("here") |
@@ -1071,8 +1071,8 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 |---|---|
 | `→` | an Action: pay the left, get the right, once a round. A bare `→` is free. |
 | OR at a line's start | the other half of the Action above: one use a round, either half |
-| `:` | an Effect: when the left happens, get the right. A minus after it: those cards cost that much less |
-| Discs left of `:` | At N: when the tokens here reach N, they come off and the right happens |
+| `:` | an Effect: when the left happens, get the right. The less mark after it: those cards cost that much less |
+| A number in a ring, then discs, left of `:` | At N: when the tokens here reach N, they come off and the right happens |
 
 ### Special marks
 
@@ -1081,11 +1081,15 @@ The shape says the kind of thing; the picture inside says which. (The art is not
 | Play (a card with an arrow onto it) | a card you play, with its tag if any; in a dashed outline, another player's |
 | Node | place a node, paying its track space |
 | Node with a struck-through coin | place a node free |
-| Shield | stops one destruction: alone, a hardening token on a facility; with a node, a shield, or on a capstone the Aegis Doctrine (your own nodes and facilities) |
-| Shelter (a roof) | a whole country, this round |
+| Move (a figure with an arrow) | move ambassadors onto pieces; with a pin after it, all onto one piece |
+| Shield | one stop on one piece: alone, a hardening token on a facility; with a node, a shield on one node |
+| Roof | cover over many pieces: with a country, Shelter (the whole country, this round); with a node, all your pieces (the Aegis Doctrine keeps any one of your nodes or facilities once a round; Sanctuary, every node from corruption) |
+| Sway (a marker on a track) | sway toward Unity on the Alignment track |
+| Peek (a card with an eye) | look at the top of the adversary deck |
 | Threat (`!`) | a threat; struck through: pay it off |
-| Jam (a threat with a down arrow) | a threat needs that much less of each resource (its minus means "less to pay") |
-| Clock | after a threat: delay (it waits a round). After an agent and a hex: a firewall. After an agent and a country: a cordon |
+| Jam (a threat with a down arrow) | after the less mark, outside the dark frame: a threat needs that much less of each resource |
+| Clock | a delay only: the threat waits a round |
+| Wall (bricks) | no agent may arrive: after an agent and a hex, a firewall; after an agent and a country, a cordon |
 | Requirement plates | yellow: at least; stacked cards: built over |
 
 **When an Effect fires.** Every Effect fires once per action, and prints its unit: one on removing troops, agents or

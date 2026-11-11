@@ -22,7 +22,7 @@ inside that range with its examples, against the first draft's 7,975 core words 
 Its density is the sharper signal: at r73, 40 entries that only a rule or component change would fix, 17 of them in
 rules met every round; r74 fixed six (five of those every round), leaving 34 and 12; r75 fixed nine more (three every
 round), leaving 25 and 9; r76 fixed one (setup), leaving 24 and 9; r77 fixed thirteen (six every round), leaving 11
-and 3. The word counts are r73's.
+and 3; 179's icons fixed eight (none every round), leaving 3 and 3. The word counts are r73's.
 
 ## The worst left
 
@@ -40,31 +40,23 @@ ruled: threats print payers and target with one token condition (#8); Expand, Mu
 (#17); the Protector's landing and Vigil (#18); every trigger once per action (#19); "(including this)" on own-tag
 gains (#21); Dispatch (#22); Shelter's "any country" (#24); one draft direction (#26); "on or next to, your choice"
 (#27); Clear takes land corruption, which forbids building (#28); liberate cards liberate as the action does (#29);
-firewall and cordon to the next adversary turn's end (#30); converts where they stood (#32). The rows keep their r73
-numbers.
+firewall and cordon to the next adversary turn's end (#30); converts where they stood (#32). 179 (Matt's icon rulings,
+no rules change) fixed the icons: an agent figure of its own (#33), the minus for pay or lose only with a less mark
+for discounts (#34), a wall for firewall and cordon (#35), the track arrow below the art (#36), the shield one stop and
+the roof more (#37), At N's ring (#38), the destination pin (#39) and the jam outside the frame (#40); node-track
+spaces print their cost as a cost (#16's half). The rows keep their r73 numbers.
 
 1. **Insight and keeps** (#2): one resource with a reset, a carve-out, a debt and three keep prices.
-2. **Node tracks** (#16): two prices from two places, printed numbers that read as income.
+2. **Node tracks** (#16): two prices from two places.
 3. **Event lines** (#31): an open list of line kinds on every event card.
-4. **The minus** (#34): four meanings by position.
-5. **The agent icon** (#33): your piece and the enemy's share a figure.
-6. **The shield** (#37): three meanings, and Aegis looks like the node shield.
 
 ## The table
 
 | # | Rule | What makes it hard (evidence) | Proposed change |
 |---|---|---|---|
 | 2 | [Insight and keeps](rulebook.md#resources) (every round) | Reset each round, except Patience keeps your own but not gifted insight (G, V flagged: "track where each insight came from"); the board prints 5 but you have 6 from round 1 (V2 asked); less last round's losses, a debt across the round; credits stand in for keeps but not plays (V flagged); opening tier-2 keeps 1 insight, later 2, upgraded 1, Science-discounted only from round 2; the opening's 4 free tier-1 keeps, then 5 credits. | Print 6 on the board. Insight-loss tokens on your board, removed when insight is set. Patience keeps all unspent insight. **One keep price all game** (1 insight a card), credits never. |
-| 16 | [Node tracks](rulebook.md#node-tracks) (every round) | Two prices from two places: the power's (or card's) cost plus the energy printed on the space uncovered. V's false familiarity (severity 3): Spirit Island track numbers are what you **gain**, so 0, 0, 0, 1, 2, 3, 5 reads as energy income; the "card-play track" reads as a card-play limit, which doesn't exist. | Print each space's cost as a cost (a minus, or "pay"), and the track's name for what it gives. Or the powers cost only their tag or currency and every placement pays the space, stated once on the track. |
+| 16 | [Node tracks](rulebook.md#node-tracks) (every round) | Two prices from two places: the power's (or card's) cost plus the energy printed on the space uncovered. (179: each space now prints its cost as a cost, "pay N", so V's false familiarity, the numbers read as Spirit Island income, is gone; Matt kept the track names.) | The powers cost only their tag or currency and every placement pays the space, stated once on the track. |
 | 31 | [Event lines](rulebook.md#the-turn) (every round) | An event card's other lines are an open list (income, a new factory, Discord, Unity taken back, a blackout, Border War's node loss, Forced March). | A fixed short list of line kinds, each with an icon. |
-| 33 | [Icon: agents](rulebook.md#marks) | Agents print as the **ambassador figure** inside the dark frame: your piece and the enemy's share a figure (G flagged). Convert prints both side by side. | An agent figure of its own, matching the map piece. |
-| 34 | [Icon: the minus](rulebook.md#marks) | Four meanings by position: pay or lose now, remove (dark frame), cheaper (after `:`), lower an income. Action costs left of `→` print no minus. | One rule for costs, and a distinct "less" mark for discounts. |
-| 35 | [Icon: the clock](rulebook.md#special-marks) | Delay, firewall (agent + hex) and cordon (agent + country) share it. | A wall mark for firewall and cordon; the clock for delay only. |
-| 36 | [Icon: the brown box](rulebook.md#marks) | Above the art, income each round; below the art, a one-time income raise, told apart by position and a plus. | A track arrow in the below-art box. |
-| 37 | [Icon: the shield](rulebook.md#special-marks) | Three meanings by company (hardening, shield, Aegis), while the roof with a country is Shelter. Since r75 Aegis prints shield + node (your own pieces), the node shield's own mark, told apart only by sitting on a capstone. | Shield for one stop, roof for a whole country. |
-| 38 | [Icon: the disc](rulebook.md#connectors) | Four meanings by the connector after it: add here, At N, pay tokens, one of your cards. | Teach At N with its own ring around the number. |
-| 39 | [Icon: move lines](rulebook.md#16-moving-and-removing-pieces) | Liaison Corps (move up to N ambassadors onto pieces in reach) and Summit Caucus (move up to N onto one piece) print the same icon line. | A destination mark for the one-piece form. |
-| 40 | [Icon: the dark frame's numbers](rulebook.md#marks) | A minus number in the frame is "remove up to N", but delay prints a bare count there and jam a minus meaning "less to pay". | The jam outside the frame. |
 
 ## Engine against docs/rules
 

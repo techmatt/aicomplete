@@ -32,17 +32,32 @@ const TOKENS = {
 
 // A bare silhouette: a board piece, or moving one.
 const AMBASSADOR = '<circle cx="12" cy="6" r="4.2" fill="currentColor"/><path d="M4 22.500c0-8 3-11.500 8-11.500s8 3.500 8 11.500z" fill="currentColor"/>';
+// 179 (Matt, friction #33): the adversary's agent has a figure of its own, as the map draws it: a
+// brimmed hat over the head and a collar cut into the coat (web/src/board.ts, `ambassador:adversary`).
+const AGENT = '<path d="M8.300 4.600 9 1.300h6l.7 3.300h3.100v1.700H5.200V4.600z" fill="currentColor"/><circle cx="12" cy="9.200" r="3.300" fill="currentColor"/><path fill-rule="evenodd" d="M4 22.500c0-6.800 3-9.800 8-9.800s8 3 8 9.800zM10.300 13.200 12 17.600l1.700-4.400z" fill="currentColor"/>';
+// 179: the corp's troop, the Drone: the map's rank chevrons (`unit`).
+const DRONE = '<path d="M2.500 10.500 12 3l9.500 7.500v4L12 7 2.500 14.500zM2.500 17.500 12 10l9.500 7.500v4L12 14l-9.500 7.500z" fill="currentColor"/>';
 const PIECES = {
   ambassador: AMBASSADOR,
+  agent: AGENT,
+  drone: DRONE,
   node: fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z'),
   // A placement that pays no track step: the node, a coin struck through at its shoulder.
   free_node: `<g transform="translate(-2.500 2.500) scale(.84)">${fill('M12 2 4 8.500V22h16V8.500zM9.500 13h5v9h-5z')}</g><circle cx="17.500" cy="6.500" r="5.200" fill="#efeadc" stroke="currentColor" stroke-width="1.800"/>${line('M13.800 10.200l7.400-7.400', 1.800)}`,
   factory: fill('M3 22V10l6 4v-4l6 4V3h6v19z'),
   // Moving a piece: the silhouette with an arrow.
   move: `<g transform="translate(-3.500 2) scale(.84)">${AMBASSADOR}</g>${line('M14.500 12h8M19 8l3.500 4-3.500 4', 2.4)}`,
-  // Harden and shelter act on a country's board, so they are bare too.
+  // 179 (friction #39): onto one piece, the move's destination: a map pin.
+  onto: `<path fill-rule="evenodd" d="M12 22.500S4.500 14.800 4.500 9.300a7.500 7.500 0 0 1 15 0c0 5.500-7.500 13.200-7.500 13.200zM12 6.300a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="currentColor"/>`,
+  // Harden and shelter act on a country's board, so they are bare too. 179 (friction #37): the
+  // shield is one stop, the roof a whole country (Shelter), or every one of your pieces (Aegis).
   harden: fill('M12 1.500 3.500 4.500v7c0 5.500 3.500 9 8.500 11 5-2 8.500-5.500 8.500-11v-7z'),
   shelter: `${fill('M2 13 12 3l10 10h-3v0z')}${line('M5.500 14v7.500h13V14', 2.4)}`,
+  // 179 (friction #35): a wall, firewall and cordon (agents may not arrive): the map's firewall bricks.
+  wall: fill('M2 3.500h9.300v5.200H2zM12.700 3.500H22v5.200h-9.300zM2 10h4.300v5.200H2zM7.700 10h8.600v5.200H7.700zM17.700 10H22v5.200h-4.300zM2 16.500h9.300v5.200H2zM12.700 16.500H22v5.200h-9.300z'),
+  // 179 (friction #36): below the art, the brown box moves your income track: up a step, or down.
+  raise: `${line('M3 20.500h18M4 18v5M9.300 18v5M14.700 18v5M20 18v5', 1.600)}${line('M12 15V3.500M6.500 8.500 12 3l5.500 5.500', 2.600)}`,
+  lower: `${line('M3 20.500h18M4 18v5M9.300 18v5M14.700 18v5M20 18v5', 1.600)}${line('M12 3v11.500M6.500 9.500 12 15l5.500-5.500', 2.600)}`,
   // A country, for "in one country": the map's hex cluster.
   country: fill('M8 2.500 12 4.800v4.600L8 11.700 4 9.400V4.800zM16.500 2.500l4 2.300v4.600l-4 2.300-4-2.300V4.800zM12.200 12.300l4 2.300v4.600l-4 2.300-4-2.300v-4.600z'),
   // A research station: a dome with its mast, as the board draws one.
@@ -61,9 +76,10 @@ const PIECES = {
   sway: `${line('M3 12h18M3 8v8M21 8v8', 2.200)}${fill('M9 6.500 16 12l-7 5.500z')}`,
   marker: fill('M12 2 22 12 12 22 2 12zM12 7l-5 5 5 5 5-5z'),
   threat: fill('M12 2 23 21H1zM10.800 9v6.500h2.400V9zm0 7.800v2.400h2.400v-2.400z'),
-  // A jam: the threat with its cost pressed down, needing less of each resource.
+  // A jam: the threat with its cost pressed down, needing less of each resource. 179 (friction #40):
+  // it prints outside the dark frame, after the less mark.
   jam: `${line('M12 2.500 22.500 20.500H1.500z', 2.200)}${line('M12 7.500v8M8.500 12.500l3.500 3.500 3.500-3.500', 2.200)}`,
-  // A delay: the threat waits.
+  // A delay: the threat waits. 179 (friction #35): delay only.
   clock: `<circle cx="12" cy="12" r="9.500" fill="none" stroke="currentColor" stroke-width="2.400"/>${line('M12 6.500V12l4 2.500', 2.400)}`,
   // A threat struck through: countered.
   counter: `${fill('M12 2 23 21H1z')}${line('M3 3l18 18', 3)}`,
@@ -88,9 +104,9 @@ const TAGS = {
 export const ICON_NAMES = [...Object.keys(RESOURCES), ...Object.keys(TOKENS), ...Object.keys(PIECES), ...Object.keys(TAGS).map((t) => `#${t}`)];
 
 /** Is this word in a card's icon line an icon, rather than a number or connector? */
-export const isIcon = (name) => name in RESOURCES || name in TOKENS || name in PIECES;
+export const isIcon = (name) => Object.hasOwn(RESOURCES, name) || Object.hasOwn(TOKENS, name) || Object.hasOwn(PIECES, name);
 /** A tag in a count, written `#science` in an icon line. */
-export const isTag = (name) => name.startsWith('#') && name.slice(1) in TAGS;
+export const isTag = (name) => name.startsWith('#') && Object.hasOwn(TAGS, name.slice(1));
 
 export function icon(name) {
   if (RESOURCES[name]) return `<span class="ico tile" style="--c:${RESOURCES[name][0]}" aria-label="${name}">${svg(RESOURCES[name][1])}</span>`;
@@ -107,6 +123,13 @@ export function tagMedallion(tag) {
 
 /** Connectors, vector like the glyphs. */
 export const arrow = () => svg(line('M2.500 12h17M13 5.500l7 6.500-7 6.500', 3), 'arrow');
+/**
+ * 179 (friction #34): "less", a discount or a jam: its number over a double chevron down, so the
+ * minus keeps one meaning (pay or lose).
+ */
+export const less = (n) => `<span class="fx-less" aria-label="${n} less"><span class="fx-num">${n}</span>${svg(line('M5 4.500l7 6 7-6M5 12.500l7 6 7-6', 2.800), 'less')}</span>`;
+/** 179 (friction #38): At N, when the tokens here reach N: the number in a ring. */
+export const atRing = (n) => `<span class="fx-at" aria-label="at ${n}"><span class="fx-num">${n}</span></span>`;
 /** The stacked cards of "replaces". */
 export const stacked = () => svg('<rect x="3" y="7.500" width="12" height="14" rx="1.600" fill="#efeadc" stroke="#23262a" stroke-width="1.600"/><rect x="6" y="5" width="12" height="14" rx="1.600" fill="#efeadc" stroke="#23262a" stroke-width="1.600"/><rect x="9" y="2.500" width="12" height="14" rx="1.600" fill="#efeadc" stroke="#23262a" stroke-width="1.600"/>', 'stack');
 /** The tiny eye of the insight hexagon. */

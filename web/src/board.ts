@@ -75,6 +75,16 @@ function glyph(kind: string, s: number, paint: Paint): SVGElement {
     }
     case 'ambassador': {
       const col = ownerColor(arg, paint, c);
+      if (arg === 'adversary') {
+        // 179 (Matt, friction #33): an agent has its own figure, the card's (web/card/icons.js AGENT): a brimmed
+        // hat over the head, a collar cut into the coat.
+        g.append(
+          p(`M${f(-0.32 * s)},${f(-0.8 * s)} L${f(-0.26 * s)},${f(-1.08 * s)} H${f(0.26 * s)} L${f(0.32 * s)},${f(-0.8 * s)} H${f(0.62 * s)} V${f(-0.68 * s)} H${f(-0.62 * s)} Z`, col),
+          el('circle', { cx: 0, cy: f(-0.36 * s), r: f(0.3 * s), fill: col, class: 'glyph' }),
+          el('path', { d: `M${f(-0.75 * s)},${f(0.95 * s)} Q${f(-0.75 * s)},${f(0.02 * s)} 0,${f(0.02 * s)} Q${f(0.75 * s)},${f(0.02 * s)} ${f(0.75 * s)},${f(0.95 * s)} Z M${f(-0.12 * s)},${f(0.1 * s)} L0,${f(0.45 * s)} L${f(0.12 * s)},${f(0.1 * s)} Z`, fill: col, 'fill-rule': 'evenodd', class: 'glyph' }),
+        );
+        break;
+      }
       g.append(
         el('circle', { cx: 0, cy: f(-0.5 * s), r: f(0.38 * s), fill: col, class: 'glyph' }),
         p(`M${f(-0.75 * s)},${f(0.95 * s)} Q${f(-0.75 * s)},${f(-0.05 * s)} 0,${f(-0.05 * s)} Q${f(0.75 * s)},${f(-0.05 * s)} ${f(0.75 * s)},${f(0.95 * s)} Z`, col),

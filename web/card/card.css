@@ -67,6 +67,17 @@
 .card .fx-per { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 15pt; line-height: 1; }
 .card .fx-word { font-family: 'Saira Condensed', sans-serif; font-weight: 700; font-size: 9.500pt; line-height: 1; letter-spacing: 0.04em; }
 .card .fx-line .ico[aria-label='move'] { margin-right: 0.8mm; }
+/* 179: less (a discount, a jam): the number over a double chevron down. At N: the number in a ring. */
+.card .fx-less { display: inline-flex; align-items: center; gap: 0.1mm; flex: none; }
+.card .fx-less svg.less { width: 3.600mm; height: 3.600mm; color: currentColor; }
+.card .fx-at { display: inline-flex; align-items: center; justify-content: center; flex: none; box-sizing: border-box; min-width: 5.200mm; height: 5.200mm; padding: 0 0.5mm; border: 0.400mm solid currentColor; border-radius: 2.600mm; }
+.card .fx-at .fx-num { font-size: 11pt; }
+/* The track arrow is narrow: it leads the brown box, it isn't a counted icon. */
+.card .income .ico[aria-label='raise'], .card .income .ico[aria-label='lower'] { width: 3.400mm; }
+.card .lasting .income .ico[aria-label='raise'], .card .lasting .income .ico[aria-label='lower'] { width: 3mm; }
+.card .effect.dense .income .ico[aria-label='raise'], .card .effect.dense .income .ico[aria-label='lower'] { width: 2.400mm; }
+/* A piece's symbol inside a sentence (amendment 8045): the height of a capital, over every box's icon size. */
+.card .effect .rules .fx-inline .ico { width: 1.050em; height: 1.050em; vertical-align: -0.150em; }
 .card .lasting .fx-icons { column-gap: 1.800mm; }
 .card .lasting .fx-line + .fx-line { border-left: 0.3mm solid #b5ad98; padding-left: 1.800mm; }
 .card .fx-line svg.arrow { width: 4.200mm; height: 4.200mm; color: #15181c; flex: none; }
@@ -96,6 +107,12 @@
 .card .lasting .fx-per { font-size: 12pt; }
 .card .lasting .fx-word { font-size: 8pt; }
 .card .lasting .fx-line svg.arrow { width: 3.400mm; height: 3.400mm; }
+.card .lasting .fx-at { min-width: 4mm; height: 4mm; padding: 0 0.3mm; border-width: 0.350mm; }
+.card .lasting .fx-at .fx-num { font-size: 9pt; }
+.card .lasting .fx-less svg.less { width: 3mm; height: 3mm; }
+.card .effect.dense .fx-at { min-width: 3.300mm; height: 3.300mm; border-width: 0.300mm; }
+.card .effect.dense .fx-at .fx-num { font-size: 8pt; }
+.card .effect.dense .fx-less svg.less { width: 2.300mm; height: 2.300mm; }
 .card .effect.dense { gap: 0.2mm; }
 .card .effect.dense .fx-icons { column-gap: 0.800mm; row-gap: 0.1mm; flex-wrap: nowrap; }
 .card .effect.dense .fx-line { gap: 0.3mm; }

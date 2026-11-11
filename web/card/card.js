@@ -3,7 +3,7 @@
 // Needs card.css. Geometry comes from layout.json; the icon set is in icons.js. The frame
 // holds the fixed structure only: what changes card by card is drawn here. Where a thing
 // sits is what it is: see tools/card-art/README.md.
-import { arrow, eye, icon, isIcon, isTag, stacked, tagMedallion } from './icons.js';
+import { arrow, atRing, eye, icon, isIcon, isTag, less, stacked, tagMedallion } from './icons.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
@@ -71,15 +71,25 @@ function part(p) {
   if (TEXT[p]) return TEXT[p]();
   if (isTag(p)) return `<span class="fx-tag">${tagMedallion(p.slice(1))}</span>`;
   if (isIcon(p)) return icon(p);
+  // 179: `less:N` (a discount or a jam) and `at:N` (At N), each its own mark.
+  const m = /^(less|at):(\d+)$/.exec(p);
+  if (m) return m[1] === 'less' ? less(m[2]) : atRing(m[2]);
   if (/^[−+]?[≤≥]?[\dn]+$/.test(p)) return `<span class="fx-num">${esc(p)}</span>`;
   throw new Error(`no icon or number ${p}`);
 }
 const iconLine = (parts) => `<div class="fx-line" data-safe>${parts.map(part).join('')}</div>`;
 
+/**
+ * Rules text, with any `{piece}` marker drawn as that icon inline in the sentence (amendment 8045:
+ * every piece's symbol is usable in a card's sentences, as Spirit Island prints presence). The
+ * generated faces print words today; a marker naming no icon prints as written.
+ */
+const rulesText = (s) => esc(s).replace(/\{(\w+)\}/g, (m, n) => (isIcon(n) ? `<span class="fx-inline">${icon(n)}</span>` : m));
+
 /** Icon lines over rules text: the panel below the art, and a building's top box. */
 const effectBox = (cls, box, lines = [], text = '') => `<div class="effect ${cls}" style="${place(box)}">
       ${lines.length ? `<div class="fx-icons">${lines.map(iconLine).join('')}</div>` : ''}
-      ${text ? `<p class="rules" data-safe>${esc(text)}</p>` : ''}
+      ${text ? `<p class="rules" data-safe>${rulesText(text)}</p>` : ''}
     </div>`;
 
 /**

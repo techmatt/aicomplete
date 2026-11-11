@@ -114,7 +114,9 @@ fn each_mark_has_one_reading() {
         let card = format!(r#"{{"id": "t", "name": "T", "tier": 1, "kind": "program", "cost": 8, "insight": 1, "tags": ["science"], "effects": {effects}}}"#);
         serde_json::to_string(&pinned(&card)).unwrap()
     };
-    assert!(json(r#"[{"op": "jam", "amount": 6}, {"op": "draw", "count": 2}]"#).contains(r#""−6","jam""#));
+    // 179 (friction #34, #40): a jam is the less mark, outside the dark frame; the minus is pay or lose.
+    let jam = json(r#"[{"op": "jam", "amount": 6}, {"op": "draw", "count": 2}]"#);
+    assert!(jam.contains(r#"["less:6","jam"]"#) && !jam.contains("adversary"), "{jam}");
     assert!(json(r#"[{"op": "place_node", "count": 3, "free": true}, {"op": "gain_per_node", "resource": "energy"}]"#).contains(r#""3","free_node""#));
     // Dashed is another player; the solid box is one of your cards (076: never a count across them).
     let other = r#"[{"op": "choose_player"}, {"op": "other_gain", "resource": "chips", "amount": 2}, {"op": "production", "resource": "credits", "amount": 4}]"#;
@@ -124,8 +126,9 @@ fn each_mark_has_one_reading() {
     // No card prints Civic Shelter since r42: a building is given it here.
     let mut shelter = content().cards.iter().find(|c| c.is_building()).expect("a building").clone();
     shelter.passives = vec![crate::content::Op::CivicShelter];
-    // r75: Aegis guards your own pieces, not a country: shield + node.
-    assert!(serde_json::to_string(&crate::face::card_face(&shelter)).unwrap().contains(r#"["harden","node"]"#));
+    // r75: Aegis guards your own pieces, not a country. 179 (Matt, friction #37, amendment 8227): the shield is one
+    // stop on one piece, so Aegis, over all of your pieces, prints the roof + node.
+    assert!(serde_json::to_string(&crate::face::card_face(&shelter)).unwrap().contains(r#"["shelter","node"]"#));
     for c in &content().cards {
         let all = serde_json::to_string(&crate::face::card_face(c)).unwrap();
         for token in ["datasets", "capital", "followers", "agents"] {
@@ -156,7 +159,10 @@ fn icon_lines_print_only_what_the_viewer_draws() {
     }
     assert!(known.contains("credits") && known.contains("troop") && known.contains("#cyber"), "{known:?}");
     let number = |w: &str| {
-        // card.js: /^[−+]?[≤≥]?[\dn]+$/
+        // card.js: /^(less|at):(\d+)$/ (179), then /^[−+]?[≤≥]?[\dn]+$/
+        if let Some(n) = w.strip_prefix("less:").or_else(|| w.strip_prefix("at:")) {
+            return !n.is_empty() && n.chars().all(|c| c.is_ascii_digit());
+        }
         let w = w.strip_prefix(['−', '+']).unwrap_or(w);
         let w = w.strip_prefix(['≤', '≥']).unwrap_or(w);
         !w.is_empty() && w.chars().all(|c| c.is_ascii_digit() || c == 'n')
@@ -179,6 +185,55 @@ fn icon_lines_print_only_what_the_viewer_draws() {
         bad.extend(all.into_iter().filter(|w| !known.contains(*w) && !number(w)).map(|w| format!("{}: {w:?}", c.id)));
     }
     assert!(bad.is_empty(), "icon-line words the viewer can't draw:\n{}", bad.join("\n"));
+}
+
+/// 179 (Matt's icon rulings, friction #33-#40): each mark means one thing. Pinned cards, so a card pass leaves it.
+#[test]
+fn the_icon_rulings_give_each_mark_one_meaning() {
+    use crate::face::Part;
+    let program = |effects: &str, extra: &str| {
+        let card = format!(r#"{{"id": "t", "name": "T", "tier": 1, "kind": "program", "cost": 8, "insight": 1, "tags": ["science"]{extra}, "effects": {effects}}}"#);
+        serde_json::to_string(&pinned(&card)).unwrap()
+    };
+    // #33, #35: the agent's own figure; the wall for firewall and cordon, the clock a delay only.
+    let walls = program(r#"[{"op": "firewall"}, {"op": "cordon"}, {"op": "delay_threat", "count": 2}]"#, "");
+    assert!(walls.contains(r#"{"adversary":["agent","hex","wall"]}"#), "{walls}");
+    assert!(walls.contains(r#"{"adversary":["agent","country","wall"]}"#), "{walls}");
+    assert!(walls.contains(r#"{"adversary":["2","clock"]}"#), "{walls}");
+    // #36: below the art the brown box opens with the track arrow, up or down; no sign.
+    let track = program(r#"[{"op": "production", "resource": "credits", "amount": 4}]"#, r#", "lowers": [["energy", 1]]"#);
+    assert!(track.contains(r#"{"income":["lower","energy"]}"#) && track.contains(r#"{"income":["raise","4","credits"]}"#), "{track}");
+    // #39: onto one piece prints the pin; onto pieces does not.
+    let moves = program(r#"[{"op": "consolidate", "max": 6}, {"op": "move_ambassadors", "max": 4}]"#, "");
+    assert!(moves.contains(r#"["6","move","onto"]"#) && moves.contains(r#"["4","move"]"#), "{moves}");
+    // #34, #38: an Action's cost prints its minus; At N its ring.
+    let b = pinned(
+        r#"{"id": "t", "name": "T", "tier": 1, "kind": "building", "cost": 8, "insight": 0, "tags": ["science"],
+        "tokens": {"kind": "datasets"}, "ability": {"cost": [["energy", 2]], "effects": [{"op": "draw", "count": 1}]},
+        "passives": [{"op": "threshold", "at": 4, "then": [{"op": "gain", "resource": "insight", "amount": 3}]}]}"#,
+    );
+    let top = serde_json::to_string(&b.top).unwrap();
+    assert!(top.contains(r#"["−2","energy","→","cards"]"#) && top.contains(r#"["at:4","datasets",":","3","insight"]"#), "{top}");
+    // Every card: an agent is never the ambassador figure in the frame, and a jam never sits in it.
+    fn framed<'a>(parts: &'a [Part], inside: bool, out: &mut Vec<(&'a str, bool)>) {
+        for p in parts {
+            match p {
+                Part::Word(w) => out.push((w, inside)),
+                Part::Adversary { adversary: v } => framed(v, true, out),
+                Part::Income { income: v } | Part::Other { other: v } | Part::Yours { yours: v } => framed(v, inside, out),
+            }
+        }
+    }
+    for c in &content().cards {
+        let f = crate::face::card_face(c);
+        let mut all = Vec::new();
+        for line in f.top.iter().chain(f.effect.iter()) {
+            framed(line, false, &mut all);
+        }
+        for (w, inside) in all {
+            assert!(!(inside && (w == "ambassador" || w == "jam")), "{}: {w} in the dark frame", c.id);
+        }
+    }
 }
 
 /// r48 (D48): icons say what the words say: Great Liberation's city on its cube,

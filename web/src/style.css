@@ -288,6 +288,8 @@ code { font: 0.92em ui-monospace, Consolas, monospace; }
 .step.current { border: 2px solid var(--accent); }
 .step .mark { font-size: 0.7em; font-weight: 700; border-radius: 2px; padding: 0 0.15em; }
 .step .m-tier2 { color: #fff; background: var(--good); }
+/* 179 (friction #16): a space's energy cost reads as a cost, not as income. */
+.step .m-cost { color: #fff; background: #b4471a; }
 .step.covered .mark { opacity: 0.6; }
 .row { display: flex; flex-wrap: wrap; gap: 0.25em; align-items: center; margin-top: 0.3em; }
 .what { color: var(--muted); font-size: 0.9em; min-width: 5.5em; }

@@ -36,8 +36,9 @@ insight hexagon, requirements, tags, nothing else. Above the art (buildings): wh
 income, *Effect:*, *Action:*. Below the art: what happens once, extra costs first, as
 minus-icons. No box: gain now. Brown box: income. Dark frame: the adversary's pieces or
 projects. Dashed outline: another player; thin solid outline: counted across your cards. A square tile is a resource, a disc a
-token on a card, a bare silhouette a board piece, a ringed circle a tag. In the dark frame a
-clock is a delay, a minus on the jam mark a jam. All marks: the legend in [docs/card-guidelines.md](../../docs/card-guidelines.md). The cost group
+token on a card, a bare silhouette a board piece, a ringed circle a tag. The minus is pay or
+lose only; the less mark (a number over a double chevron) a discount or, before the jam mark
+outside the frame, a jam; the clock a delay only, the wall a firewall or cordon. All marks: the legend in [docs/card-guidelines.md](../../docs/card-guidelines.md). The cost group
 follows Race for the Galaxy: a hexagon at about 70% of the octagon, in front of its lower
 right, with a halo in the strip color; at 0 insight it is omitted.
 

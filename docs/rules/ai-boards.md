@@ -95,10 +95,10 @@ energy income; each second power is once a round; and every tag sacrifice perman
 | 1 (on the board at setup) | +1 insight | +1 insight | +1 insight |
 | 2 | +3 credits | +1 energy, +2 credits | +3 credits |
 | 3 | +2 credits | +3 credits | builds a free research station in reach |
-| 4 | +3 credits, **Dispatch +1** (cost 1) | +3 credits, **Dispatch +1** (cost 1) | +3 credits, **Dispatch +1** (cost 1) |
-| 5 | +3 credits (cost 2) | +3 credits (cost 2) | +3 credits (cost 2) |
-| 6 | +3 credits, Power tag (cost 3) | +2 credits, Cyber tag (cost 3) | +3 credits, Power tag (cost 3) |
-| 7 | **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. (cost 5) | **Sanctuary** (capstone): Corruption never destroys your Nodes. (cost 5) | **Open Archive** (capstone): Each round, 1 research cube onto your board. (cost 5) |
+| 4 | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** | pay 1 energy: +3 credits, **Dispatch +1** |
+| 5 | pay 2 energy: +3 credits | pay 2 energy: +3 credits | pay 2 energy: +3 credits |
+| 6 | pay 3 energy: +3 credits, Power tag | pay 3 energy: +2 credits, Cyber tag | pay 3 energy: +3 credits, Power tag |
+| 7 | pay 5 energy: **Full Capacity** (capstone): 1 chip each round per 2 Industry tags on your cards. | pay 5 energy: **Sanctuary** (capstone): Corruption never destroys your Nodes. | pay 5 energy: **Open Archive** (capstone): Each round, 1 research cube onto your board. |
 <!-- /generated -->
 
 The **keep upgrade**: tier-2 keeps cost `keep_tier2_upgraded` instead of `keep_tier2` ([player-cards.md](player-cards.md)).
@@ -112,11 +112,11 @@ have tokens).
 |---|---|---|---|
 | 1 | +1 insight | +1 insight | +1 insight |
 | 2 | **keep upgrade** | **keep upgrade** | +2 insight, **Dispatch +1** |
-| 3 | +2 insight (cost 1) | +2 insight (cost 1) | **keep upgrade** (cost 1) |
-| 4 | +2 credits (cost 2) | +2 credits (cost 2) | +1 insight (cost 2) |
-| 5 | +2 insight (cost 2) | +2 insight (cost 2) | +2 insight (cost 2) |
-| 6 | +1 insight, Cyber tag (cost 3) | +1 insight, Diplomacy tag (cost 3) | +2 credits, Industry tag (cost 3) |
-| 7 | +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. (cost 5) | +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your Nodes or facilities would be destroyed, you may keep it. (cost 5) | +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. (cost 5) |
+| 3 | pay 1 energy: +2 insight | pay 1 energy: +2 insight | pay 1 energy: **keep upgrade** |
+| 4 | pay 2 energy: +2 credits | pay 2 energy: +2 credits | pay 2 energy: +1 insight |
+| 5 | pay 2 energy: +2 insight | pay 2 energy: +2 insight | pay 2 energy: +2 insight |
+| 6 | pay 3 energy: +1 insight, Cyber tag | pay 3 energy: +1 insight, Diplomacy tag | pay 3 energy: +2 credits, Industry tag |
+| 7 | pay 5 energy: +1 insight, **Master Plan** (capstone): Your buildings cost 2 credits less. | pay 5 energy: +1 insight, **Aegis Doctrine** (capstone): Once a round, when one of your Nodes or facilities would be destroyed, you may keep it. | pay 5 energy: +1 insight, **Open Science** (capstone): Each round, 2 insight from the supply, split among other players. |
 <!-- /generated -->
 
 **Loops and caps.** No resource has a holding limit and no cap limits production ([economy.md](economy.md), *No
