@@ -22,7 +22,7 @@ pub(super) fn board_view(g: &GameState, w: &World, out: &mut ViewOut) {
     // 135: hex flags, standing troops, occupations and registrations.
     keys.extend(MARKS);
     out.bookkeeping(&keys);
-    // 149: each seat's Movement left this round, of its Movement.
+    // 149: each seat's Dispatch left this round, of its Dispatch.
     for s in 0..g.seats.len() {
         let doc = "Dispatches: free Dispatches this round (an ambassador onto a piece in reach); what you don't use is lost";
         out.seat(s, "movement", "Dispatches", moves_left(w, g, s), Some(ai::movement(w, g, s)), doc);

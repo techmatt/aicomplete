@@ -136,6 +136,13 @@ pub struct Opt {
     pub target: Option<Hex>,
 }
 
+/// Answering an ask with one of its options.
+impl From<Opt> for Pick {
+    fn from(o: Opt) -> Pick {
+        Pick { option: o.option, target: o.target }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct HexState {
     pub tokens: Table<i64>,

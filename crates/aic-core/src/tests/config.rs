@@ -231,3 +231,28 @@ fn a_bad_parameter_value_names_its_key() {
     }
     assert!(Config::from_json(BASELINE).is_ok());
 }
+
+/// 182 (178's hazard): every phase of every module a shipped config runs is in its `round`, or that step silently
+/// never plays. Lab configs drop phases on purpose, so only the shipped ones are checked.
+#[test]
+fn every_shipped_config_rounds_every_module_phase() {
+    let no_liberate = include_str!("../../../../experiments/configs/no_liberate.json");
+    for (name, text) in [("baseline", BASELINE), ("shared_row", SHARED_ROW), ("no_liberate", no_liberate)] {
+        let c = Config::from_json(text).unwrap();
+        let listed: BTreeSet<&str> = c.round.iter().flat_map(|e| e.split('+')).collect();
+        for m in &c.modules {
+            let def = crate::modules::find(&m.module).unwrap();
+            let v = def.variants.iter().find(|v| v.name == m.variant).unwrap_or(&def.variants[0]);
+            for p in v.phases {
+                let id = format!("{}.{}", m.module, p.name);
+                assert!(listed.contains(id.as_str()), "{name}: {id} is in no round entry");
+            }
+        }
+    }
+}
+
+/// The labs' `ACTIONS` is the baseline's combined decision entry, so a lab plays every decision part.
+#[test]
+fn the_lab_action_phase_is_the_baselines() {
+    assert!(baseline().round.iter().any(|e| e == ACTIONS), "{ACTIONS} is not a baseline round entry");
+}

@@ -2101,10 +2101,8 @@ impl Eval {
             })
             .collect();
         let mut packets: Vec<Vec<(f64, u8)>> = vec![Vec::new(); self.seats];
-        // 178: the draft always passes to the next seat (`cards::draft_pick`).
-        let step = 1;
         for s in 0..self.seats {
-            let to = if table && g.var(&self.picked[s]) > 0 { (s + step) % self.seats } else { s };
+            let to = if table && g.var(&self.picked[s]) > 0 { cards::pass_to(s, self.seats) } else { s };
             for id in g.pile(&cards::packet(s)) {
                 let tier = cards::def(&world, id).tier;
                 let keep = if table { w.table * tbl.keep(tier) } else { w.hand_cost * keep_insight(&world, tier) };

@@ -414,7 +414,7 @@ fn hardening_goes_on_different_buildings_a_token_can_protect() {
     put(&mut g, b, FACTORY, 1);
     put(&mut g, b, cube(0), 1);
     let o = modules::common::hex_opt(&rules.world(), b);
-    run_ops_with(&rules, &mut g, vec![crate::state::Pick { option: o.option, target: o.target }], &harden);
+    run_ops_with(&rules, &mut g, vec![o.into()], &harden);
     assert_eq!((g.tokens(a, HARDEN), g.tokens(b, HARDEN)), (1, 1));
 }
 

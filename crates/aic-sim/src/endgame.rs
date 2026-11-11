@@ -8,7 +8,7 @@
 //! stronger player wins it. It never touches the game being played.
 
 use aic_core::content::{Op, Resource, Side};
-use aic_core::modules::{adversary, alignment, cards, common};
+use aic_core::modules::{adversary, alignment, board, cards, common};
 use aic_core::op::{Piece, Removable};
 use aic_core::{GameState, Rules};
 use serde::{Deserialize, Serialize};
@@ -55,10 +55,11 @@ pub struct Pieces {
     pub liberate_cost: i64,
     /// Remove actions (one ambassador each) to clear the adversary
     /// ambassadors off every hex that is not a corrupted city, `remove_count`
-    /// a use from any hexes (r75). (178: no agent lands on a liberated city, so `remove_after_liberate` and
+    /// a use from any hexes (r75). It ignores reach (the Remove action takes agents in reach). (178: no agent lands on a liberated city, so `remove_after_liberate` and
     /// `free_leaves` are gone.)
     pub remove_actions: i64,
-    /// Corruption markers (Clear sways 2 Unity for 2 credits each), and of them in some seat's reach.
+    /// Corruption markers (Clear sways `board.clear_unity` Unity for `board.clear_cost` credits each), and of
+    /// them in some seat's reach.
     pub markers: i64,
     pub markers_in_reach: i64,
     /// The purge's count at the state's own level.
@@ -112,7 +113,6 @@ pub struct EndgameRead {
 pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
     let w = rules.world();
     let level = alignment::bar_level(&w, g);
-    let lib_at = w.int("board.liberate_at");
     let per_use = w.int("board.remove_count").max(1);
     let mut p = Pieces::default();
     let mut loose = 0;
@@ -129,7 +129,7 @@ pub fn pieces(rules: &Rules, g: &GameState) -> Pieces {
         if common::corrupted_city(&w, g, h) {
             p.cities += 1;
             p.ambassadors_on_corrupted += amb;
-            p.liberate_cost += lib_at + amb;
+            p.liberate_cost += board::liberate_cost(&w, g, h).unwrap_or(0);
             if (0..g.seats.len()).any(|s| common::in_reach(&w, g, s, h)) {
                 p.cities_in_reach += 1;
             }
@@ -228,19 +228,8 @@ pub fn probe(rules: &Rules, probe: &EndgameProbe, g: &GameState, starts: &[GameS
     let mut legal = Vec::new();
     for k in 0..probe.rollouts {
         let mut s = snap.clone();
-        let mut a = spec.build(rules, g.seed.wrapping_add(0x0e9d_9a3e).wrapping_add(k as u64 * 0x9e37_79b9));
-        let mut n = 0;
-        while n < max_actions {
-            rules.legal_actions_into(&s, &mut legal);
-            if legal.is_empty() {
-                break;
-            }
-            let i = a.choose(rules, &s, &legal);
-            if rules.apply_mut(&mut s, &legal[i], None).is_err() {
-                break;
-            }
-            n += 1;
-        }
+        let seed = g.seed.wrapping_add(0x0e9d_9a3e).wrapping_add(k as u64 * 0x9e37_79b9);
+        crate::experiment::play_out(rules, &mut s, &spec, seed, max_actions, &mut legal);
         r.replays += 1;
         let won = s.outcome.as_ref().is_some_and(|o| o.won);
         r.replay_wins += won as usize;

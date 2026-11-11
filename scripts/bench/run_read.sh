@@ -12,9 +12,12 @@
 set -e
 P=$1; EXE=$2; ROOT=$3; TAG=$4; OUT=$5; T=$6
 TOP=$(pwd)
+# 182: EXE and OUTPREFIX may be absolute (C:/... or /...) or relative to the repo root.
+case "$EXE" in /*|[A-Za-z]:*) ;; *) EXE="$TOP/$EXE" ;; esac
+case "$OUT" in /*|[A-Za-z]:*) ;; *) OUT="$TOP/$OUT" ;; esac
 mkdir -p "$ROOT/out"
 for half in a b c; do
   [ "$ROOT" = "." ] || cp "out/read-$P-$TAG-$half.json" "$ROOT/out/"
-  (cd "$ROOT" && nice -n 10 "$TOP/$EXE" experiment "out/read-$P-$TAG-$half.json" --threads "$T" --out "$TOP/$OUT-$half" > "$TOP/$OUT-$half.log" 2>&1)
+  (cd "$ROOT" && nice -n 10 "$EXE" experiment "out/read-$P-$TAG-$half.json" --threads "$T" --out "$OUT-$half" > "$OUT-$half.log" 2>&1)
 done
-echo "READ DONE $TAG" >> "$TOP/$OUT.done"
+echo "READ DONE $TAG" >> "$OUT.done"

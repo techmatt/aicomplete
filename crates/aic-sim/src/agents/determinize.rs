@@ -38,12 +38,12 @@ use rand::{RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 /// Piles whose order is hidden but whose contents are known.
-pub(crate) const SHUFFLED: [&str; 7] = [
+/// (182: no `threats.deck.3`: tier 3 went at 146, `content::THREAT_TIERS`.)
+pub(crate) const SHUFFLED: [&str; 6] = [
     "cards.deck.1",
     "cards.deck.2",
     "threats.deck.1",
     "threats.deck.2",
-    "threats.deck.3",
     DEALT[0].1,
     DEALT[1].1,
 ];

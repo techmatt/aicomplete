@@ -7,12 +7,6 @@ use crate::modules::{board, effects};
 use crate::op::Piece;
 use crate::state::Pick;
 
-/// A city, the seat's node on a lonely neighbor, and two more lonely neighbors.
-fn by_a_city(g: &mut GameState, m: &Map) -> (usize, usize, usize, usize) {
-    let (c, lonely) = city_with_lonely_neighbors(m);
-    put(g, lonely[0], node(0), 1);
-    (c, lonely[0], lonely[1], lonely[2])
-}
 
 /// The hex pick, only when the prompt has more than one option (a single option is taken without asking).
 fn hex_pick(w: &crate::module::World, options: &[usize], h: usize) -> Vec<Pick> {
@@ -21,7 +15,7 @@ fn hex_pick(w: &crate::module::World, options: &[usize], h: usize) -> Vec<Pick> 
         return Vec::new();
     }
     let o = hex_opt(w, h);
-    vec![Pick { option: o.option, target: o.target }]
+    vec![o.into()]
 }
 
 fn piece_pick(w: &crate::module::World, label: &str, h: usize) -> Pick {

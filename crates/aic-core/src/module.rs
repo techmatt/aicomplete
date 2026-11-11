@@ -166,7 +166,7 @@ pub type Res<T = ()> = Result<T, Halt>;
 /// Behavior of a built module. Phase arguments are indices into the
 /// variant's `phases`. Every method is deterministic: randomness only via
 /// [`Cx::rng`], and only from purposes the variant declared, or
-/// [`Cx::deck_rng`] and [`Cx::threat_rng`] for a deck's reshuffle.
+/// [`Cx::deck_rng`], [`Cx::threat_rng`] and [`Cx::adversary_rng`] (the project deck) for a deck's reshuffle.
 ///
 /// `run`, `act` and `after` may stop for a choice (`Cx::choose` returning
 /// `Err(Halt::Ask)`, passed on with `?`). They are then run again from the

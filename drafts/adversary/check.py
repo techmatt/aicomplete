@@ -54,11 +54,11 @@ def stage_deals():
     out = []
     for d in range(5):
         s1, s2, s3 = a["stage_cards"]
-        if d >= a.get("stage_swap_at", 2):
+        if d >= a["stage_swap_at"]:
             s1, s3 = s1 - a["stage1_removed"], s3 + a["stage3_added"]
-        if d >= 3:
-            s1, s2 = s1 + a.get("stage1_added", 0), s2 - a["stage2_removed"]
-        out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a.get("extra_threats_at", 1) else 0))
+        if d >= 3:  # adversary.rs `build`'s literal 3, not a config key (182: deferred)
+            s1, s2 = s1 + a["stage1_added"], s2 - a["stage2_removed"]
+        out.append((d, (s1, s2, s3), a["extra_threats"] if d >= a["extra_threats_at"] else 0))
     return out
 
 
@@ -376,10 +376,10 @@ def event_step(e):
 def event_breaks(ev):
     """151, the event standard (the Rust twin is `content::event_rule_break`): one Rally X, the fixed order (threat,
     rally, deploy, other lines, corrupt), at most two other lines, no per-event compute or creation line, "each
-    board", never "each country"."""
+    country", never "each board" (178, Matt's ruling #17; 151 had it the other way)."""
     out = []
-    if "each country" in ev.get("text", "").lower():
-        out.append('says "each country" (each board)')
+    if "each board" in ev.get("text", "").lower():
+        out.append('says "each board" (each country)')
     steps = [event_step(e) for e in ev.get("standing", []) + ev.get("twists", [])]
     if steps.count(0) != 1:
         out.append("one Rally X line")
@@ -399,8 +399,8 @@ def event_breaks(ev):
 def project_breaks(p):
     """151: a project's consequences (one, rarely two) and its words (the Rust twin is `content::project_rule_break`)."""
     out = []
-    if "each country" in p.get("text", "").lower():
-        out.append('says "each country" (each board)')
+    if "each board" in p.get("text", "").lower():
+        out.append('says "each board" (each country)')
     if len(p.get("effects", [])) + len(p.get("resolve", [])) > 2:
         out.append("more than two consequences")
     return out
@@ -410,8 +410,8 @@ def check_militarist(mil, projects, ops, new_ops):
     b = mil["board"]
     check_card_common(b, "board", ops, new_ops)
     for r in b.get("rules", []) + [b.get("difficulty", {})]:
-        if "each country" in r.get("text", "").lower():
-            errors.append(f"board rule {r.get('name', 'difficulty')}: says \"each country\" (each board)")
+        if "each board" in r.get("text", "").lower():
+            errors.append(f"board rule {r.get('name', 'difficulty')}: says \"each board\" (each country)")
     for r in b.get("rules", []):
         for e in walk_effects(r.get("effects", [])):
             if "rule" in e:  # a rule of today's engine, named, not an op

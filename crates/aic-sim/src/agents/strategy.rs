@@ -329,7 +329,7 @@ pub fn schedule(d: &CardDef, p: usize, contents: bool) -> f64 {
 /// 116: `scale` (the heuristic's `strat_scale`, 1 by default) stretches each
 /// multiplier's distance from 1: `1 + scale × (m − 1)`; at 0 every multiplier is
 /// one. Only the multipliers read it: the choice itself (`choose`) and the keep
-/// plan's `plan_reach` and `plan_chain` (policy.rs, `committed`) still follow
+/// plan's `plan_reach` and `plan_chain` (keep_plan.rs, `committed`) still follow
 /// the chosen strategy's tags, so 0 is not quite `strategy=0`.
 #[derive(Debug)]
 pub struct Mults(Vec<Vec<[f64; 3]>>);

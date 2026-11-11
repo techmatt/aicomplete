@@ -97,7 +97,7 @@ fn a_content_change_changes_its_block() {
 #[test]
 fn every_listed_block_has_a_body() {
     let r = baseline(&[]);
-    for name in BLOCKS {
+    for (name, _) in BLOCKS {
         assert!(block(name, &r).is_some(), "{name}");
     }
     assert!(block("no_such_block", &r).is_none());
@@ -107,7 +107,7 @@ fn every_listed_block_has_a_body() {
 /// pasted twice, or a file past the budget, fails the check.
 #[test]
 fn check_wants_each_block_once_and_files_in_budget() {
-    let all: String = BLOCKS.iter().map(|b| format!("<!-- generated: {b} -->\n<!-- /generated -->\n")).collect();
+    let all: String = BLOCKS.iter().map(|(b, _)| format!("<!-- generated: {b} -->\n<!-- /generated -->\n")).collect();
     let ok = vec![("docs/rules/a.md".to_string(), all.clone())];
     assert!(rules_file_failures(&ok).is_empty());
     let missing = vec![("docs/rules/a.md".to_string(), all.replace("generated: tunables -->", "x -->"))];

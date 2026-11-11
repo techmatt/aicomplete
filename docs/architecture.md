@@ -175,11 +175,11 @@ all of [ops.md](ops.md), [harms.md](harms.md) and [player-aid.md](player-aid.md)
 `drafts/adversary/` and [adversary-cards.md](adversary-cards.md). A block is a pure function of `Rules` or `Content` in
 `crates/aic-sim/src/docs/blocks.rs`, named in `run` (`run.rs`), tested in `tests.rs`.
 
-`aic-sim docs` fails on a broken harm distribution (`harm_failures`). `--check`, and a
-fast-lane test, also refuse a stale block, a British spelling (`spelling.rs`), a
-heading like `## 080's changes` (`current_docs.rs`), an id in
-`docs/card-pricing-notes.json` that is no player card, a missing or doubled block, a doc page (CLAUDE.md's list)
-over 15 KB, and in a rules file a backticked `module.param` or bare `snake_case` name
+`aic-sim docs` (written or `--check`) fails on a broken harm distribution (`harm_failures`), a missing or doubled
+block, a doc page (CLAUDE.md's list) over 15 KB, a stale rules-revision line or card quote in `docs/rules/`, a
+British spelling or stale house word (`spelling.rs`), a heading like `## 080's changes` (`current_docs.rs`) and an
+id in `docs/card-pricing-notes.json` that is no player card. `--check`, and a fast-lane test, also refuse a stale
+file, and in a rules file a backticked `module.param` or bare `snake_case` name
 that is neither a tunable nor an op (`NOT_TUNABLES` lists the others it may print); the rules name a tunable, not its value. Two more fast-lane tests refuse a face
 icon-line word `web/card/icons.js` has no icon for (`tests/face.rs`), and a committed
 `experiments/results/effect-ledger/cards.csv` that values a card otherwise than

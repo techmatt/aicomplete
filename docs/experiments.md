@@ -112,7 +112,7 @@ a card group) as overlays, and read which part carries the gap.
 
 ## Reading noise
 
-**Seeds are noisy.** 24 seeds is about ±10, 48 about ±7, 16 about ±15. Seed sets alone move a pair 10-25 points at 48
+**Seeds are noisy.** Per cell (one pair, one level): 24 seeds is about ±10, 48 about ±7, 16 about ±15. Seed sets alone move a pair 10-25 points at 48
 seeds. A screen's SE is about 50/√n points over n paired games: size a screen so its SE is at most half the effect it
 must resolve (171).
 
@@ -131,12 +131,10 @@ the judge off the value table.
 - **Order:** the engine smoke read (`use.json`, 16-32 seeds, 20-30 s on 6 threads), then the strategist read. After a
   change to how the game is won, greedy first ([agents.md](agents.md), *The tiers*): a greedy lead stops calibration
   for a question.
-- **Current recipe:** `scripts/bench/read_specs.py read TAG SEED --tag NNN [--probe]` (three 48-seed sets, the three
-  pairs, d0-d3, into `out/`; `screen` a dev screen, `--offs` a config per new card switched off) on both binaries
-  (`scripts/bench/run_read.sh`; flags in [scripts.md](scripts.md)). Read by `scripts/bench/ladder.py NEW OLD
-  --measures` (pooled, paired, by set), and the item readers in `experiments/results/`: `wins158.py` (by lever or
-  config), `rates158.py` (card rates), `ends157.py` and `endgame157.py` (by Unity step), `partial157.py` (a live run). Since 174 greedy costs
-  about what the strategist does (2 ms a decision, about 1 s a game).
+- **Current recipe (162-178):** the new side farmed from a committed spec in `experiments/farm/` (d0-d4 since 168;
+  *Farming a read* below), the old side natively; read by `scripts/bench/ladder.py NEW OLD --measures` (pooled,
+  paired, by set). `scripts/bench/read_specs.py read` (d0-d3, into `out/`) and `run_read.sh` are the native route.
+  Since 174 greedy costs about what the strategist does (2 ms a decision, about 1 s a game).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
@@ -149,8 +147,8 @@ the judge off the value table.
 - **Farming a read:** `experiments/farm/read.json` is the read as one spec ([simulator.md](simulator.md), *The farm*).
   177 (r76): a 720-game strategist set farms in 75-240 s with the laptop joined; after a broker restart the client
   ran a 3,360-game screen's shards one at a time on the main box (36 min). The old side runs natively, its folder's
-  configs (`aic-sim experiment SPEC --seed F`, or shards: `aic-sim farm read --seed S --games 8`). Assemble each
-  side as `aic-sim farm read --header --seed F --games N` then the shards in seed order, and read with `ladder.py`.
+  configs (`aic-sim experiment SPEC --seed F`, or shards: `aic-sim farm read --seed S --games 8`). Assemble shards
+  with `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` and read with `ladder.py`.
 - **Levers:** an income or card lever is an overlay (`cards.<id>.effects.0.max=5`, *Content levers*), no build; a
   rule, content or map what-if needs one.
 - **Same games:** `experiments/same-noplanner.json` is same.json ([speed.md](speed.md)) with greedy for the planner
@@ -173,7 +171,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 42853 (each item's range is in its write-up). Next free: 42853. **The dev seeds for screens are
+seed below 42997 (each item's range is in its write-up). Next free: 42997. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

@@ -2,17 +2,16 @@
 
     python scripts/regen.py [--no-build] [--check]
 
-Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), checks that
-`content/` matches `drafts/adversary/` (`load_adversary.py --check`; run the loader without it to write), sets
-docs/rules/README.md's revision line from `RULES_REVISION` in the source, then runs
-`aic-sim docs`, `scripts/cards/cards_doc.py`, `scripts/cards/effect_ledger.py` and
-`scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the derived configs: 122 left
-no_liberate.json stale when the baseline gained params), prints the content hash and rules revision from `aic-sim show
-configs/baseline.json`, sets docs/rules/README.md's "at rules revision N" line from it, and then
-`git status --short`. Stops at the first failing step, naming
-it. `--no-build` uses the binary already built. `--check` writes nothing: it runs the loader's,
-`aic-sim docs`'s and `cards_doc.py`'s `--check` and the README revision line, and exits 1 if any is stale. Each step prints its
-wall time.
+Builds `aic-sim` (release; `CARGO_BUILD_JOBS` from the environment, default 3), checks the drafts
+(`drafts/adversary/check.py`, 182: 178 left it red unseen) and that `content/` matches `drafts/adversary/`
+(`load_adversary.py --check`; run the loader without it to write), sets docs/rules/README.md's "at rules revision N"
+line from `RULES_REVISION` in the source, then runs `aic-sim docs`, `scripts/cards/cards_doc.py`,
+`scripts/cards/effect_ledger.py` and `scripts/configs/shared_row.py` and `scripts/configs/no_liberate.py` (the
+derived configs: 122 left no_liberate.json stale when the baseline gained params), prints the content hash and rules
+revision from `aic-sim show configs/baseline.json` (warning if the binary's revision isn't the source's), and then
+`git status --short`. Stops at the first failing step, naming it. `--no-build` uses the binary already built.
+`--check` writes nothing: it runs the drafts check, the loader's, `aic-sim docs`'s and `cards_doc.py`'s `--check`
+and the README revision line, and exits 1 if any is stale. Each step prints its wall time.
 """
 import argparse
 import os
@@ -98,6 +97,7 @@ def main():
              ['cargo', 'build', '--release', '-p', 'aic-sim'], env=env)
     need_sim()
     loader = [PY, os.path.join('scripts', 'content', 'load_adversary.py'), '--check']
+    step('drafts/adversary/check.py', [PY, os.path.join('drafts', 'adversary', 'check.py')])
     if a.check:
         step('load_adversary.py --check', loader)
         step('aic-sim docs --check', [SIM, 'docs', '--check'])
@@ -119,7 +119,8 @@ def main():
     m = re.search(r'content hash (\S+)\s+rules revision (\S+)', first)
     if m:
         print(f'content hash {m.group(1)}  rules revision {m.group(2)}')
-        readme_revision(m.group(2), check=False)
+        if m.group(2) != source_revision():
+            print(f'warning: the binary reads rules revision {m.group(2)}, the source {source_revision()}: rebuild')
     else:
         print(f'could not read the hashes from: {first!r}')
     step('git status --short', ['git', 'status', '--short'])

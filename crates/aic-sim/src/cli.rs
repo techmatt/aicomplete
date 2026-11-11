@@ -28,7 +28,8 @@ options:
   --games N         games per config (default 200)
   --seed S          first seed (default 0); seeds S..S+N
   --set K=V         override for every config: countries=N, <module>.<param>=V,
-                    <module>.variant=NAME; V is 3 or 1,2,3; or a content overlay,
+                    <module>.variant=NAME, <module>=off (drops it), <module>.<param>=
+                    (empty: unsets it); V is 3 or 1,2,3; or a content overlay,
                     <table>.<id>.<path>=JSON, as cards.<id>.cost=4 (repeatable)
   --set-a K=V       override for config A only (repeatable)
   --set-b K=V       override for config B only (repeatable)
@@ -141,6 +142,7 @@ fn hint(command: &str, flag: &str) -> &'static str {
         ("experiment", "--save") => " (records are always saved)",
         ("show", "--set-a" | "--set-b") | ("run", "--set-b") => " (one config: use --set)",
         ("replay", "--set" | "--set-a" | "--set-b") => " (a record carries its own config)",
+        ("farm", "--threads") => " (a shard is one thread: run more shards side by side)",
         _ => "",
     }
 }

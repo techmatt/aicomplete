@@ -56,9 +56,11 @@
 //! change a heuristic weight (see [`eval::Weights`]). `sweep` is a planner
 //! profile, not a rung.
 
+pub mod cards;
 pub mod determinize;
 pub mod eval;
 pub mod guide;
+pub mod keep_plan;
 pub mod moves;
 pub mod oracle;
 pub mod planner;

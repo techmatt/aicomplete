@@ -156,6 +156,5 @@ an action against one guess (`deals=1,lead=0`), and `deals=4,lead=60` about 1.25
 | planner with strategy rollouts (`planner:strategy=1`) | 55.4 | 38.6 | 23626 | `same.json` |
 | oracle (the row's spec, d3 and d4) | 171 | 139 | 67160 | oracle row |
 
-The oracle row's wall time (96 games: 48 oracle, 48 strategist, 3 threads) went 1,379 s to 1,179 s; it is its
-slowest game (before: br d4 seed 36803, 1,068 s), which a change of lines moves either way. `same.json` takes about
-6.5 min on 6 threads (10 min before 174), most of it the planner rows.
+The oracle row's wall time (96 games, 3 threads) is about 20 min, its slowest game (174). `same.json` takes about
+6.5 min on 6 threads, most of it the planner rows; `same-noplanner.json` about 1 min (182).

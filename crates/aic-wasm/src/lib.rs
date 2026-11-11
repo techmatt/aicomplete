@@ -119,6 +119,8 @@ pub fn record_text(state_json: &str, actions_json: &str, note: &str) -> Result<S
     let state: GameState = parse("state", state_json)?;
     let actions: Vec<Action> = parse("actions", actions_json)?;
     let r = Rules::new(&state.config).map_err(err)?;
+    // 182: as `view`, `legal_actions` and `apply` do: a state that doesn't fit its config fails here, not on replay.
+    r.check_state(&state).map_err(err)?;
     Ok(SavedGame::new(&r, state.seed, actions, &state, note).to_text())
 }
 

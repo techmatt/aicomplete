@@ -113,7 +113,7 @@ Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest
 ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
 node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
 step, then fills the cheapest project on its board; a full project fires there, and its slot refills at once. **Harder levels** make threats
-harsher, not more: difficulty 1 lets sites corrupt with one fewer agent and makes every counter cost 1 more of
+harsher, not more: difficulty 1 lets cities, stations and factories corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (4 more credits), 2 adds 1 more again (credits unchanged) and the Militarist's line (4 compute for each
 unpaid threat, 1 more troop on every Muster), 3 gives a shorter, busier game, and 4 deals tier-2 threats sooner; no
 level deals an extra threat. Levels 1 to 3 also raise the adversary's compute income (most at 2), and level 1 starts

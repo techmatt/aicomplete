@@ -232,7 +232,7 @@ pub fn keep_variants(spec: &mut Spec, keep: &[String]) -> Result<(), String> {
 
 /// Builds every cell, checking every config, override and agent first.
 pub fn cells(spec: &Spec) -> Result<Vec<Cell>, String> {
-    cells_with(spec, &|path| std::fs::read_to_string(path).map_err(|e| e.to_string()))
+    cells_with(spec, &crate::farm::disk)
 }
 
 /// [`cells`], each config's text from `read` (160: the farm's bundle has no
@@ -632,27 +632,28 @@ fn win_probability(
     for k in 0..rollouts {
         let mut s = g.clone();
         determinize(rules, &mut s, &mut rng);
-        let mut a = agent.build(
-            rules,
-            g.seed
-                .wrapping_add(salt)
-                .wrapping_add(k as u64 * 0x9e37_79b9),
-        );
-        let mut n = 0;
-        while n < max_actions {
-            rules.legal_actions_into(&s, &mut legal);
-            if legal.is_empty() {
-                break;
-            }
-            let i = a.choose(rules, &s, &legal);
-            if rules.apply_mut(&mut s, &legal[i], None).is_err() {
-                break;
-            }
-            n += 1;
-        }
+        play_out(rules, &mut s, agent, g.seed.wrapping_add(salt).wrapping_add(k as u64 * 0x9e37_79b9), max_actions, &mut legal);
         wins += s.outcome.as_ref().is_some_and(|o| o.won) as usize;
     }
     wins as f64 / rollouts as f64
+}
+
+/// Plays `s` on with a fresh `agent` seeded `seed` until the game ends, an action fails or `max_actions` are
+/// taken (182: one loop for the win probability and the end-game probe's replays).
+pub fn play_out(rules: &Rules, s: &mut GameState, agent: &AgentSpec, seed: u64, max_actions: usize, legal: &mut Vec<Action>) {
+    let mut a = agent.build(rules, seed);
+    let mut n = 0;
+    while n < max_actions {
+        rules.legal_actions_into(s, legal);
+        if legal.is_empty() {
+            break;
+        }
+        let i = a.choose(rules, s, legal);
+        if rules.apply_mut(s, &legal[i], None).is_err() {
+            break;
+        }
+        n += 1;
+    }
 }
 
 /// Plays one game of one cell and measures it.

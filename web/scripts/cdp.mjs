@@ -35,7 +35,7 @@ export async function newGame(page, file, seed) {
 }
 
 /** The action phase's menu is up (seat 0 may pass or a standard action is legal). */
-export const ACTING = `window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
+const ACTING =`window.aic.legal.some((a) => a.type === 'standard' || a.type === 'pass' && a.seat === 0)`;
 
 /** Opens the viewer and plays `config` (a parsed config object) at `seed`, up to its first decision. */
 export async function playConfig(page, config, seed = '1') {
@@ -61,15 +61,6 @@ export async function toRound(page, n, limit = 900) {
 export async function shotTo(page, dir, name) {
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 });
   writeFileSync(join(dir, `${name}.png`), await page.shot());
-}
-
-/** A shots script's page: `shot(name)` saves into the AIC_SHOTS folder. */
-export async function shotsPage() {
-  const dir = process.env.AIC_SHOTS;
-  if (!dir) throw new Error('set AIC_SHOTS to the folder for the screenshots');
-  mkdirSync(dir, { recursive: true });
-  const page = await openPage();
-  return { page, shot: (name) => shotTo(page, dir, name) };
 }
 
 function browserPath() {

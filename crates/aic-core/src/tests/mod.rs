@@ -1,3 +1,14 @@
+//! The core's tests, by topic, and the fixtures they share (182: which to use when):
+//!
+//! - `action_only`: the baseline after setup, playing only the action phase (`ACTIONS`, the baseline's entry).
+//! - `lab` / `lab_with` / `lab_actions`: a lab config whose round lists only the phases a test needs (list each in
+//!   baseline order; `ACTIONS` goes last), board emptied or as set up; lab params pin some numbers (`lab_config`).
+//! - `threat_lab`: threats with `counter_pct` pinned.
+//! - `with_cx`: one engine step on a `Cx` (it can't read an ask); `with_answers`: every ask answered by a rule;
+//!   `with_cx_picks`: asks answered by given picks; `destroy_with`: a destroy with its protection prompt answered;
+//!   `test_cx`: the `Cx` they share.
+//! - `run_ops` / `run_ops_with`: content ops on a seat; `deal` / `deal_at`: a card into a pile.
+
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
@@ -25,14 +36,14 @@ mod factories;
 mod freeing;
 mod invariants;
 mod map;
+mod fear_cards;
+mod gather_push;
 mod march;
-mod moves_166;
 mod new_ops;
 mod ops;
 mod overlay;
 mod plan;
 mod node_powers;
-mod fear_167;
 mod production;
 mod projects;
 mod researcher;
@@ -40,8 +51,8 @@ mod science;
 mod setup;
 mod standard_actions;
 mod threat_sources;
-mod tier2_158;
 mod threats;
+mod tier2_ops;
 mod view;
 mod war;
 
@@ -274,6 +285,14 @@ fn city_with_lonely_neighbors(m: &Map) -> (usize, Vec<usize>) {
     panic!("no city with three lonely neighbors");
 }
 
+/// A city, the seat's node on a lonely neighbor (its reach takes in only this city), and two more lonely
+/// neighbors.
+fn by_a_city(g: &mut GameState, m: &Map) -> (usize, usize, usize, usize) {
+    let (c, lonely) = city_with_lonely_neighbors(m);
+    put(g, lonely[0], node(0), 1);
+    (c, lonely[0], lonely[1], lonely[2])
+}
+
 fn piece(c: usize) -> &'static content::CountryPiece {
     &crate::content().map.countries[c]
 }
@@ -485,17 +504,22 @@ fn gain_and_pour(g: &mut GameState, cx: &mut module::Cx, n: i64) -> module::Res 
     crate::modules::adversary::pour_waiting(g, cx)
 }
 
+/// A test step's `Cx` over `choices` (182: the one constructor the helpers below share).
+fn test_cx<'a>(rules: &'a Rules, choices: &'a mut module::Choices) -> module::Cx<'a> {
+    module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices, fought: [0; 3] }
+}
+
 /// r75: `board::destroy_piece` with its protection prompt answered: `spend` takes the first protection offered,
 /// else none. Returns whether the piece was destroyed.
 fn destroy_with(rules: &Rules, g: &mut GameState, h: usize, kind: &str, cause: modules::board::Cause, spend: bool) -> bool {
     let mut choices = module::Choices::new(Vec::new());
-    let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices, fought: [0; 3] };
+    let mut cx = test_cx(rules, &mut choices);
     let first = modules::board::destroy_piece(&mut g.clone(), &mut cx, h, kind, cause);
     let picks = match (first, choices.asked) {
         (Ok(_), _) => Vec::new(),
         (Err(module::Halt::Ask), Some(a)) => {
             let o = if spend { a.options[0].clone() } else { a.options.last().cloned().expect("an option") };
-            vec![crate::state::Pick { option: o.option, target: o.target }]
+            vec![o.into()]
         }
         (e, _) => panic!("{e:?}"),
     };
@@ -514,7 +538,7 @@ fn with_answers<T>(
     loop {
         let mut choices = module::Choices::new(picks.clone());
         let result = {
-            let mut cx = module::Cx { world: rules.world(), module: "test", purposes: &[], events: None, choices: &mut choices, fought: [0; 3] };
+            let mut cx = test_cx(rules, &mut choices);
             f(&mut g.clone(), &mut cx).map(|_| ())
         };
         match result {
@@ -522,7 +546,7 @@ fn with_answers<T>(
             Err(module::Halt::Ask) => {
                 let a = choices.asked.expect("an ask");
                 let o = a.options[choose(&a)].clone();
-                picks.push(crate::state::Pick { option: o.option, target: o.target });
+                picks.push(o.into());
             }
             Err(e) => panic!("{e:?}"),
         }
@@ -537,15 +561,7 @@ fn with_cx_picks<T>(
     f: impl FnOnce(&mut module::Cx) -> T,
 ) -> T {
     let mut choices = module::Choices::new(picks);
-    let mut cx = module::Cx {
-        world: rules.world(),
-        module: "test",
-        purposes: &[],
-        events: None,
-        choices: &mut choices,
-        fought: [0; 3],
-    };
-    f(&mut cx)
+    f(&mut test_cx(rules, &mut choices))
 }
 
 /// Runs `ops` for seat 0, its choices answered by `picks`.

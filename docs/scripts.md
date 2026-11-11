@@ -8,8 +8,8 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   [--fingerprint]`: a shard played on it in Node or headless Edge (`web/scripts/cdp.mjs`), each seed timed.
   `farm/compare.py A B [--ms A_ERR B_ERR]`: two engines' outputs of one range: games that differ, win % and the paired
   gap, ms a game. See simulator.md, *The farm*.
-- `regen.py [--no-build] [--check]`: builds release, checks `content/` against `drafts/adversary/`
-  (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
+- `regen.py [--no-build] [--check]`: builds release, runs `drafts/adversary/check.py`, checks `content/` against
+  `drafts/adversary/` (`load_adversary.py --check`), writes `RULES_REVISION` into `docs/rules/README.md`, then `aic-sim docs`,
   `cards_doc.py`, `effect_ledger.py`, `shared_row.py`, `no_liberate.py`; prints the content hash and `git status`.
   `--check`: the `--check`s and the revision line only.
 - `configs/shared_row.py`: regenerates `configs/shared_row.json` from the baseline.
@@ -21,26 +21,27 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   appended, an existing one replaced (`--set` has no such form). Nothing deletes: drop a card from the
   baseline deck (then `shared_row.py`), `cards.json` and `scenes.json` by hand. `--check`: a dry run. Then
   `regen.py`. It refuses hand-laid `alignment.json`; threats, adversary and projects: edit `drafts/adversary/`.
-- `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--max-plays 12]`: the loop smoke before a full read
+- `cards/loop_smoke.py [DIR...] [--run] [--spec S] [--games 16] [--seed S] [--threads 6] [--max-plays 12]`: the loop smoke before a full read
   (runs `use.json` to `out/loop-smoke` with no DIR): timeouts, ends, the most plays of one card in a game; exits 1
   on a timeout or `--max-plays`.
 - `cards/counter_names.py DIR... [--all]`: measures gone quiet: the counter keys the read scripts, web scripts and
   `crates/aic-sim` (agents aside) quote that no game in DIR wrote (a key a rules change retired). Rare events and
   test strings list too: read it, don't gate on it.
 - `cards/screen.py`: the screen summary: named columns over experiment outputs (`--columns a,b,c`, `--preset
-  tiers|041|034|028|018|016`, `--sources`, `--list`); `--gate DIR` each check against its own agent (agent minus
+  tiers|041|034|018|016`, `--sources`, `--list`); `--gate DIR` each check against its own agent (agent minus
   check, paired SE), then the unspent-resources readout. `--preset
   tiers` is cards offered, kept and played per game by tier: run it on the first screen of a card rework, since agents
   draft tier 2 about three picks in four ([card-pricing.md](card-pricing.md)) and a tier-1 change may never show.
   `scripts/screens.py` holds what it shares with the other readers, and is the way to read a run from Python:
-  `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`), read
-  under its former name (`RENAMED`) in older runs.
+  `load(dir)` gives the games with their cells, `cnt(game, key)` a counter (a power is `ai.power.<board>.<k>`).
+  `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD... [--exe EXE]` turns farmed shards (seed order)
+  into an experiment output: the spec's header, then the shards, as `OUT_DIR/games.jsonl`.
 - `cards/threat_read.py DIR... [--cards]`: per cell, threats dealt, countered by kind of option, paid abroad, and the
   typed counters and capstones played, from `games.jsonl`.
 - `content/load_adversary.py [--check]`: `drafts/adversary/` (the source) into `content/` and `docs/adversary-cards.md`.
-- `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs (each with
-  `games.jsonl` and `results.json`): the draft cards kept in more than `--min` percent of games (default 1) and played
-  in none, and every draft card no game kept. Seconds. A farmed read has no `results.json`: run it on a screen.
+- `cards/play_read.py DIR... [--min PCT] [--agents A,B]`: per agent, pooled over its cells and DIRs: the draft cards kept in more than `--min` percent of games (default 1) and played
+  in none, and every draft card no game kept. Seconds. A farmed read (no `results.json`) reads from its header
+  spec, as do `screens.load` and `dealt` (182): agents by the spec's names, not resolved.
 - `cards/runaway_read.py DIR... [--times 5] [--floor 20] [--held 150] [--peak-times 3] [--peak-floor 10] [--top 15]`: loops:
   each trigger, threshold, reuse, discount or converter counter whose per-game maximum is over `--times` its mean
   where used; games whose insight grew three rounds running past `--held`; per cell, seat and resource the mean
@@ -85,7 +86,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
   `--cards FILE`, `--values FILE` read proposed files; `--overlay FILE` (with `--stdout`) prices an overlay before it
   is written; `--hold-ratio OLD.csv` adds the price keeping an older `cards.csv`'s printed / reasoned ratio (repricing
   after a value change). It mirrors `agents/value.rs` by hand (card-pricing.md). Seconds.
-- `cards/payback.py [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
+- `cards/payback.py [--cards CARDS.json] [--old CARDS.json [--old-keep-tier2 N]]`: rounds each engine building takes to pay back its
   price at a committed seat's fire rates (card-pricing.md *Engines*), at `values.json`'s rates; `--old` adds an older
   deck's column.
 - `run_sim.ps1 NAME [-NoBuild] ARGS...`: any long run: builds, copies the exe to `out/NAME.exe`, starts it below
@@ -115,7 +116,7 @@ What each script under `scripts/` is for, and how to run it. Run them from the r
 - `bench/read_specs.py {offs|screen|read} ... --tag NNN [--cards a,b,c]`: a rules item's specs into `out/`: `read TAG SEED
   [AGENT] [--probe] [SET...]` three 48-seed sets, the three pairs, d0-d3; `screen NAME AGENTS LEVELS SEEDS [--offs]
   [--first N] [LEVER...]` a dev screen (`tag:a=1;b=2` a lever); `offs` a config per `--cards` card switched off.
-  `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs).
+  `bench/run_read.sh NNN EXE ROOT TAG OUT THREADS` runs a read's three sets on one binary (ROOT its configs; EXE, OUT absolute or from the repo root).
 - `bench/ladder.py NEW[,...] OLD[,...] [--measures] [--bands 90-100,70-80,55-65,40-50] [--deck 20]`: the paired ladder
   read per difficulty, sides labeled by rules revision; `--screen DIR[,...]` a screen's levers against base. Reads a
   farmed read (no `results.json`); engines and `--same-engine` as `paired.py`. Each win % is its side's whole rate.

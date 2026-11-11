@@ -10,7 +10,7 @@ income, Unity swayed and pulled, Discord swayed). A prohibition's `prohibit.<ste
 to its card and tier: the games it fired in (its condition covered a site the step acted on) among the games its card
 resolved, and the arrivals or pulls it kept off a firing game.
 
-`--screen DIR`: an on/off screen (experiments/farm/onoff167.json): variants `PAIR` (base) and `PAIR_<card id>` (that
+`--screen DIR`: an on/off screen (167's experiments/archive/farm/onoff167.json): variants `PAIR` (base) and `PAIR_<card id>` (that
 card's three tiers blanked, so the deck order and the Discord clock stand). Each card's paired win effect, on minus
 off in points, per level: over every paired game, and over the games where the card resolved in the base (before the
 draw both sides play the same game). A card whose effect over its games exceeds `--flag` points at any level is
@@ -40,8 +40,15 @@ def deck():
         for t, tier in enumerate(c['tiers'], 1):
             for e in tier['effects']:
                 if e['op'] == 'prohibit':
-                    bans[(e['step'], e['where'])] = (c['id'], t)
+                    # 182: every (card, tier) printing it: the engine's tally carries no tier, so two tiers (or
+                    # cards) sharing a (step, where) share one row, labeled with all of them.
+                    bans.setdefault((e['step'], e['where']), []).append((c['id'], t))
     return cards, bans
+
+
+def tiers_label(bans, k, cid):
+    """`2-3`: the tiers of card CID that print prohibition K (one engine tally)."""
+    return '-'.join(str(t) for c, t in bans[k] if c == cid)
 
 
 def games(d):
@@ -77,12 +84,12 @@ def read_table(read, cards, bans):
             total = sum(res.values())
             what = {m: sum(g['counters'].get(f'fx.{cid}.{m}', 0) for g in gs) / total for m in MEASURES} if total else {}
             ban = None
-            mine = [k for k, v in bans.items() if v[0] == cid]
+            mine = [k for k, v in bans.items() if any(c == cid for c, _ in v)]
             if mine:
                 fired = [g for g in gs if any(g['counters'].get(f'prohibit.{s}.{w}.fired', 0) for s, w in mine)]
                 blocked = sum(g['counters'].get(f'prohibit.{s}.{w}.blocked', 0) for g in fired for s, w in mine)
                 ban = {'fired': len(fired), 'blocked': blocked,
-                       'by_tier': {bans[k][1]: (sum(1 for g in gs if g['counters'].get(f'prohibit.{k[0]}.{k[1]}.made', 0)),
+                       'by_tier': {tiers_label(bans, k, cid): (sum(1 for g in gs if g['counters'].get(f'prohibit.{k[0]}.{k[1]}.made', 0)),
                                                 sum(1 for g in gs if g['counters'].get(f'prohibit.{k[0]}.{k[1]}.fired', 0)),
                                                 sum(g['counters'].get(f'prohibit.{k[0]}.{k[1]}.blocked', 0) for g in gs))
                                    for k in mine}}

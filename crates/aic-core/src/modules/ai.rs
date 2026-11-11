@@ -97,8 +97,8 @@ pub fn revealed_tags<'w>(w: &World<'w>, g: &GameState, seat: usize) -> impl Iter
     uncovered_spaces(w, g, seat).flat_map(|u| &u.tags)
 }
 
-/// Seat `s`'s Movement (149): free ambassador moves each round, the board's
-/// printed ones and its uncovered Movement spaces'.
+/// Seat `s`'s Dispatch (149): free ambassador moves each round, the board's
+/// printed ones and its uncovered Dispatch spaces'.
 pub fn movement(w: &World, g: &GameState, seat: usize) -> i64 {
     board(w, seat).moves + uncovered_spaces(w, g, seat).map(|u| u.moves).sum::<i64>()
 }

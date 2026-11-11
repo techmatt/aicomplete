@@ -24,14 +24,27 @@ def content(name):
         return json.load(f)
 
 
+def cells_for(d):
+    """DIR's cells by id: results.json's, or for a farmed run (none: 182) the header spec's (`cells_of`, each with
+    its `cell` id), as `bench/ladder.py` reads them."""
+    path = os.path.join(d, 'results.json')
+    if os.path.exists(path):
+        with open(path, encoding='utf-8') as f:
+            return {c['cell']: c for c in json.load(f)['cells']}
+    return {i: dict(c, cell=i) for i, c in enumerate(cells_of(next(stream(d))['spec']))}
+
+
 def dealt(dirs):
     """The card ids the runs in DIRS could deal: each cell's config's `cards` list and any card a game saw (118: a card
-    cut from the deck is still in content, and would read as "never kept")."""
+    cut from the deck is still in content, and would read as "never kept"; a farmed run, with no results.json, only
+    the configs' lists)."""
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     out = set()
     for d in dirs:
-        with open(os.path.join(d, 'results.json'), encoding='utf-8') as f:
-            res = json.load(f)
+        res = {'cells': list(cells_for(d).values())}
+        if os.path.exists(os.path.join(d, 'results.json')):
+            with open(os.path.join(d, 'results.json'), encoding='utf-8') as f:
+                res = json.load(f)
         out.update(cid for per in res.get('cards', {}).values() for cid in per)
         for path in {c.get('config') for c in res['cells'] if c.get('config')}:
             full = path if os.path.isabs(path) else os.path.join(root, path)
@@ -123,6 +136,7 @@ def assemble(spec, first, count, shards, out_dir, exe=None):
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if exe is None:
         exe = os.path.join(root, 'target', 'release', 'aic-sim.exe' if os.name == 'nt' else 'aic-sim')
+    exe = os.path.abspath(exe)  # it runs in the repo root, so a relative path is the caller's
     head = subprocess.run([exe, 'farm', spec, '--header', '--seed', str(first), '--games', str(count)],
                           cwd=root, check=True, capture_output=True, text=True, encoding='utf-8').stdout
     os.makedirs(out_dir, exist_ok=True)
@@ -135,9 +149,8 @@ def assemble(spec, first, count, shards, out_dir, exe=None):
 
 
 def load(d):
-    """(cells by id, games by cell), without the games' action lists."""
-    with open(f'{d}/results.json', encoding='utf-8') as f:
-        cells = {c['cell']: c for c in json.load(f)['cells']}
+    """(cells by id, games by cell), without the games' action lists. A farmed run (no results.json) reads too."""
+    cells = cells_for(d)
     games = collections.defaultdict(list)
     lines = stream(d)
     next(lines)
@@ -147,51 +160,10 @@ def load(d):
     return cells, games
 
 
-# Renamed counters: name -> former name. A former name may itself be renamed: `old_names`
-# follows the chain, newest first.
-RENAMED = {
-    # 086: presence -> node, the adversary's node -> botnet (also `board.node_lost.<source>`,
-    # in `old_names`).
-    'adversary.compute_botnets': 'adversary.compute_nodes',
-    'adversary.botnets_made': 'adversary.nodes_made',
-    'adversary.botnets_removed': 'adversary.nodes_removed',
-    'alignment.sacrificed_node': 'alignment.sacrificed_presence',
-    'alignment.purge_blocked_by_botnets': 'alignment.purge_blocked_by_nodes',
-    'board.last_node_safe': 'board.last_presence_safe',
-    'board.node_placed': 'board.presence_placed',
-    'board.node_capstones': 'board.presence_capstones',
-    'board.node_lost': 'board.presence_lost',
-    'board.node_drained': 'board.presence_drained',
-    'effects.botnets_cut': 'effects.nodes_cut',
-    # 102 (D40): `board.stations_free` (a station built paying no chips) read as
-    # `board.stations_freed` (the Free a station action).
-    'board.stations_built_free': 'board.stations_free',
-}
-
-
-def old_names(k):
-    """The counter's former names, newest first: the `RENAMED` chain (and 086's
-    `board.node_lost.<source>`), then its name before 026, when chips were called hardware."""
-    names, n = [], k
-    while True:
-        if n in RENAMED:
-            n = RENAMED[n]
-        elif n.startswith('board.node_lost.'):
-            n = 'board.presence_lost.' + n[len('board.node_lost.'):]
-        else:
-            break
-        names.append(n)
-    names.append(k.replace('chips', 'hardware'))
-    return [n for n in dict.fromkeys(names) if n != k]
-
-
 def cnt(g, k):
-    """Counter `k` of game `g`, read under its former name in older results; 0 if absent."""
-    c = g['counters']
-    if k in c:
-        return c[k]
-    return next((c[o] for o in old_names(k) if o in c), 0)
-
+    """Counter `k` of game `g`; 0 if absent. (182 dropped the map of counters renamed at
+    026-102: no current read compares against outputs that old.)"""
+    return g['counters'].get(k, 0)
 
 
 def mean(gs, f):
@@ -227,7 +199,7 @@ def checked_cnt(games):
     warned = set()
 
     def checked(g, k):
-        if k not in seen and not seen.intersection(old_names(k)) and k not in warned:
+        if k not in seen and k not in warned:
             warned.add(k)
             print(f'warning: no game has counter {k}: it may be gone, so its 0 means nothing', file=sys.stderr)
         return cnt(g, k)
@@ -326,3 +298,23 @@ def gate(cells, games, rows=None):
             name = f'{conf} {v}' if len(configs) > 1 else v
             close = 'close' if ':' in a and abs(100 * (p - q)) < 2 * max(paired, 1e-9) else ''
             print(f'| {name} d{d} | {a} |{n} {100 * q:.0f} | {100 * (p - q):+.0f} ±{100 * se:.0f}{flag} | {paired:.0f} | {close} |')
+
+
+def main(argv):
+    """182: `assemble` from the command line (168, 177 and 178 each wrapped it in a script)."""
+    import argparse
+    ap = argparse.ArgumentParser(prog='screens.py', description='Shared read helpers; `assemble` farmed shards.')
+    sub = ap.add_subparsers(dest='cmd', required=True)
+    a = sub.add_parser('assemble', help='farmed shards (seed order) into OUT_DIR/games.jsonl, header first')
+    a.add_argument('spec', help='the farm spec name (experiments/farm/SPEC.json)')
+    a.add_argument('first', type=int, help='first seed of the whole range')
+    a.add_argument('count', type=int, help='seeds in the whole range')
+    a.add_argument('out_dir')
+    a.add_argument('shards', nargs='+', help='shard outputs, in seed order')
+    a.add_argument('--exe', help='aic-sim binary for the header (default target/release/aic-sim)')
+    args = ap.parse_args(argv)
+    assemble(args.spec, args.first, args.count, args.shards, args.out_dir, args.exe)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

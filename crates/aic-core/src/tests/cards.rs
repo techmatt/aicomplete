@@ -589,7 +589,7 @@ fn a_building_s_own_play_fires_its_fight_trigger() {
     let hexes = effects::gather_hexes(&w, &g, 1, &[crate::op::Piece::Agents], true);
     let mut picks = if hexes.len() > 1 {
         let o = crate::modules::common::hex_opt(&w, hexes[0]);
-        vec![crate::state::Pick { option: o.option, target: o.target }]
+        vec![o.into()]
     } else {
         Vec::new()
     };

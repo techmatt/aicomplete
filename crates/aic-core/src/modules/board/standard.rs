@@ -8,7 +8,7 @@ pub enum StandardAction {
     Station,
     Remove,
     Clear,
-    /// 149: a free move from the seat's Movement (the paid Move is gone).
+    /// 149: a free move from the seat's Dispatch (the paid Move is gone).
     Move,
     Ambassador,
     /// 137: claim a neutral city, station or factory (it was Align, cities only).
@@ -134,7 +134,7 @@ pub(super) fn printed_price(w: &World, act: StandardAction) -> Price {
         StandardAction::Station => chips(i("station_chips")),
         StandardAction::Remove => ambassadors(i("remove_ambassadors")),
         StandardAction::Clear => credits(i("clear_cost")),
-        // 149: paid from the seat's Movement, not a resource (`moves_left`).
+        // 149: paid from the seat's Dispatch, not a resource (`moves_left`).
         StandardAction::Move => Price::default(),
         StandardAction::Ambassador => credits(i("ambassador_credits")),
         // 137: the ambassadors depend on the site: [`target_price`].
@@ -212,7 +212,7 @@ pub fn botnet_targets(g: &GameState, seat: usize) -> Vec<usize> {
     (0..g.hexes.len()).filter(|&h| g.tokens(h, BOTNET) > 0 && g.tokens(h, ambassador(seat)) > 0).collect()
 }
 
-/// The var counting seat `s`'s Movement used this round (149), cleared in cleanup.
+/// The var counting seat `s`'s Dispatch used this round (149), cleared in cleanup.
 pub fn moved_key(seat: usize) -> KeyBuf {
     KeyBuf::new(MOVED).num(seat)
 }
@@ -220,7 +220,7 @@ pub fn moved_key(seat: usize) -> KeyBuf {
 /// Prefix of [`moved_key`].
 pub(super) const MOVED: &str = "board.moved.";
 
-/// Seat `s`'s Movement left this round (149): its board's [`ai::movement`]
+/// Seat `s`'s Dispatch left this round (149): its board's [`ai::movement`]
 /// less the free moves it has made.
 pub fn moves_left(w: &World, g: &GameState, seat: usize) -> i64 {
     ai::movement(w, g, seat) - g.var(&moved_key(seat))

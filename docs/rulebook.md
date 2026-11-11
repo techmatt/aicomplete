@@ -175,7 +175,7 @@ before anyone acts.
 
 *Sources: rules/board.md (Setup), rules/adversary.md (Income, The event deck), rules/ai-boards.md;
 configs/baseline.json (`start_corrupted` 1, `start_ambassadors` 1, `supply_per_country` 24, `start_energy` 3);
-crates/aic-core/src/modules/board/mod.rs, modules/adversary.rs, modules/ai.rs.*
+crates/aic-core/src/modules/board/mod.rs, modules/adversary/, modules/ai.rs.*
 
 ---
 
@@ -285,7 +285,7 @@ six, printed on your board, are conversions, draws and **sacrifice powers**, pai
 
 *Sources: rules/ai-boards.md, rules/ai-powers.md, rules/economy.md (resource table); content/ais.json;
 crates/aic-core/src/modules/ai.rs, modules/economy.rs, modules/board/node.rs, modules/board/troops.rs (Vigil),
-modules/adversary.rs (`wall_pressure`), modules/cards/sacrifice.rs.*
+modules/adversary/ (`wall_pressure`), modules/cards/sacrifice.rs.*
 
 ---
 
@@ -405,7 +405,7 @@ unless a player's ambassador stands on it, and counts against the purge until Un
 Removing one adds 1 Unity.
 
 *Sources: rules/adversary.md (Each round, Income, Rally X, Corrupt X, Botnets), rules/war.md (the march);
-content/adversary.json; crates/aic-core/src/modules/adversary.rs, modules/plan.rs, modules/board/troops.rs.*
+content/adversary.json; crates/aic-core/src/modules/adversary/, modules/plan.rs, modules/board/troops.rs.*
 
 ---
 
@@ -816,7 +816,7 @@ first spaces of both tracks cost no energy, so an early second node costs only i
 lone node: two agents on it take it, and a Corrupt nodes line pulls in every agent next to it.
 
 *Sources: rules/war.md (Node loss), rules/ai-powers.md (Shelters, hardening and shields), rules/ambassadors.md
-(Armor); crates/aic-core/src/modules/board/destroy.rs, modules/board/node.rs, modules/adversary.rs (corrupt_hex),
+(Armor); crates/aic-core/src/modules/board/destroy.rs, modules/board/node.rs, modules/adversary/ (corrupt_hex),
 modules/effects/team.rs, modules/effects/new_ops.rs.*
 
 ---
@@ -849,7 +849,7 @@ Everyone loses at once if:
 The adversary running out of agents is not a loss: a placement it can't make doesn't happen.
 
 *Sources: rules/alignment.md (The purge, Losing), rules/adversary.md (The event deck); configs/baseline.json
-(`purge_at`); crates/aic-core/src/modules/alignment.rs, modules/adversary.rs.*
+(`purge_at`); crates/aic-core/src/modules/alignment.rs, modules/adversary/.*
 
 ---
 
@@ -884,7 +884,7 @@ untouched. Open land never corrupts this way. Nothing on a firewalled hex corrup
 **What corruption destroys:** the node on the hex (§13), then every ambassador on it. Nothing else.
 
 *Sources: rules/adversary.md (Corrupt X); crates/aic-core/src/modules/plan.rs (converge, corrupt_plan,
-natural_targets), modules/adversary.rs (corrupt_sites, corrupt_node).*
+natural_targets), modules/adversary/ (corrupt_sites, corrupt_node).*
 
 ---
 
@@ -917,7 +917,7 @@ there from a Rally or a card line (troops still land, and Gather and Push still 
 waits: it lands at the first Rally after the cordon ends, with the income added meanwhile.
 
 *Sources: rules/ambassadors.md (Moving pieces), rules/adversary.md (Firewalls); crates/aic-core/src/modules/effects/moves.rs,
-modules/effects/endgame.rs, modules/effects/removal.rs, modules/adversary.rs.*
+modules/effects/endgame.rs, modules/effects/removal.rs, modules/adversary/.*
 
 ---
 
@@ -942,7 +942,7 @@ onto the **cheapest** project showing, by printed cost, however full (tie: the f
 **Each slot refills as it empties:** deal the next project into it at once, and the rest of the compute goes on.
 Compute with no project to go on is lost. No project resolves outside the compute step.
 
-*Sources: rules/adversary.md (The project deck); content/projects.json; crates/aic-core/src/modules/adversary.rs.*
+*Sources: rules/adversary.md (The project deck); content/projects.json; crates/aic-core/src/modules/adversary/.*
 
 ---
 
@@ -1026,7 +1026,7 @@ and tier-2 threats a card sooner.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
 `adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json
-(Garrisons); crates/aic-core/src/modules/adversary.rs, modules/threats/counter.rs.*
+(Garrisons); crates/aic-core/src/modules/adversary/, modules/threats/counter.rs.*
 
 ---
 

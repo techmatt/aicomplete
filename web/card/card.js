@@ -46,13 +46,12 @@ function insight(card, box) {
     </div>`;
 }
 
-/** Requirements, then replaces: at least is yellow, at most red, replaces the stacked cards. */
+/** Requirements, then replaces: at least is yellow, replaces the stacked cards (182: no card requires at most). */
 function requirement(card, x, box) {
   const count = ([tag, n]) => `${n > 1 ? `<span class="fx-num">${n}</span>` : ''}${tagMedallion(tag)}`;
   const plate = (cls, body) => `<div class="requirement ${cls}">${body}</div>`;
   const plates = [
     card.needs?.length ? plate('at-least', card.needs.map(count).join('')) : '',
-    card.at_most?.length ? plate('at-most', card.at_most.map(count).join('')) : '',
     card.replaces ? plate('replaces', stacked() + tagMedallion(card.replaces)) : '',
   ].join('');
   const crowd = (card.needs?.length ?? 0) + (card.replaces ? 1 : 0) >= 3 ? ' crowded' : '';
@@ -179,7 +178,7 @@ export async function fitCards(root = document) {
 }
 
 /**
- * @param card     content: name, kind, cost, insight, needs, at_most, replaces, tags, and
+ * @param card     content: name, kind, cost, insight, needs, replaces, tags, and
  *                 the generated face (faces.json): top and top_text above the art
  *                 (buildings), effect and text below it
  * @param layout   web/card/layout.json, through inset()

@@ -19,7 +19,7 @@ $S modules                                         # registry: modules, variants
 $S run configs/baseline.json --games 2000 --save out/games              # first 20 losses as records
 $S replay out/games/*.json                         # check records natively (also browser bug reports)
 $S strategies configs/baseline.json --agent strategist --games 48 --seed 30700 --set adversary.difficulty=2  # each seat's strategy at its round-1 keep, CSV seed,seat,board,strategy (--agent defaults to strategist)
-$S cards                                           # every content card, CSV id,kind,tier,engine,liberate: the agents' engine and liberate tests (policy.rs) for scripts
+$S cards                                           # every content card, CSV id,kind,tier,engine,liberate: the agents' engine and liberate tests (agents/cards.rs) for scripts
 ```
 
 | Option | Default | Meaning |
@@ -88,17 +88,15 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   with every timing 0 and `engine` naming who played it (`native` or `wasm`). Shards concatenated in seed order are
   byte for byte one run over the whole range. Each game's time goes to stderr. The file is written whole at the
   end (a `.part` renamed), so a killed shard leaves none. `--seed` and `--games` are required. A shard is one
-  thread (an agent's `threads` dial must be 1). A read seed (12 cells) costs about 51 s natively on one core
-  since 162's judge (163; 28 s at 160), ~1.5× in wasm on the same box (160), ~50 s in Matt's laptop tab
-  on 2 cores (163; 111 s in one earlier run), and over 2 min a core on all 7 (B5: set its slider to 2-3). A 4-seed shard is ~3.5 min: a job of few shards is bound by its slowest shard
-  (163: 32 seeds, 8 shards, took 410 s main-box-only against 342 s for the same read as one 6-thread experiment).
+  thread (an agent's `threads` dial must be 1). A strategist game costs about 1 s natively on one core since 174
+  (178: 2,160 games in ~9 min on 4 threads), so a read seed (12 cells) about 12 s; wasm is ~1.5× native (160); the
+  laptop tab is best at 2-3 cores (163, B5). A job of few shards is bound by its slowest shard.
 - **A farmed spec** is a file in `experiments/farm/` (`read`: the strategist, three pairs, d0-d3; `cell-d2`: one
   cell); the argument is its name. A gated spec, win-probability probes and `inject_panic` are refused: their games
   depend on more than their seed. The bundle reads no files: `configs/`, `experiments/configs/` and
-  `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first.
-  167: a spec written after the workers' bundle was built isn't there, so a worker fails its shards and the main box
-  reruns them late, one at a time (a 3,000-game screen took ~60 min): run a new spec natively, in shards of a few
-  seeds from a copy of the binary (`farm-seeds` runs `target/release/aic-sim.exe` itself, so a rebuild mid-job fails).
+  `experiments/farm/` are built into it (`crates/aic-farm/build.rs`), so a spec to farm is committed first: a spec
+  missing from the workers' bundle fails there and the main box reruns its shards late, one at a time (167: a
+  3,000-game screen took ~60 min). A finished item's specs move to `experiments/archive/farm/` (not built in).
 - **The bundle's API** (`farm.mjs`): the default export `init()` (in Node it reads the wasm beside it),
   `fingerprint()`, `run(first, count, args)` returning the shard's text (`args`: one spec name), `engine()`.
 - **The fingerprint** is the rules revision, the content hash and a hash of two strategist games (baseline, d2, seeds
@@ -110,8 +108,8 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
   native `cargo build --release`, which fails (`Access is denied`) while another `aic-sim` runs from that exe: run a
   local oracle row from a copy (177). The shards write under conductor's job folder; the out file appears only at
   the end.
-- **Reading a farmed read:** `screens.assemble(spec, first, count, shards, out_dir)` writes `games.jsonl` (the
-  header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
+- **Reading a farmed read:** `python scripts/screens.py assemble SPEC FIRST COUNT OUT_DIR SHARD...` writes
+  `games.jsonl` (the header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games
   that differ between two engines' outputs.
 - **A ladder against the old revision:** `farm-seeds` runs only the worktree's build, so the old side runs natively

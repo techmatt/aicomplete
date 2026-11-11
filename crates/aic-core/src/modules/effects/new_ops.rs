@@ -330,7 +330,7 @@ fn force_flip(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_country: bool) -> 
 }
 
 /// CorruptCity (135): the threat's city. `at` location (Regime Change) also destroys the nodes on and next
-/// to it, never a last one. The no-location form (the most infiltrated city) is gone (142, P1): the load
+/// to it, a last one too (175). The no-location form (the most infiltrated city) is gone (142, P1): the load
 /// check refuses it.
 fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) -> Res {
     let w = cx.world;
@@ -351,14 +351,13 @@ fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) -> 
 }
 
 /// Where a creation line comes from, for its tally (138): a threat, the
-/// event card (its standing lines), the board, a project, a Discord or Unity card.
+/// event card (its standing lines), a project, a Discord or Unity card.
 fn create_source(ctx: &Ctx) -> &'static str {
     if ctx.threat.is_some() {
         return "threat";
     }
     match ctx.label {
         "standing" => "event",
-        "board" => "board",
         "project" => "project",
         "discord" => "discord",
         "unity" => "unity",
@@ -687,8 +686,8 @@ fn corp_troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, c: Corp, when: CorpWhe
 }
 
 /// Scorched Earth: the factory under the threat's token is destroyed (as any
-/// destruction, absorbed the same way), with the nodes on its hex, never a
-/// last one.
+/// destruction, absorbed the same way), with the nodes on its hex, a last
+/// one too (175).
 fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) -> Res {
     let w = cx.world;
     let Some(h) = token(&w, g, ctx, Some(Location::Factory)) else {

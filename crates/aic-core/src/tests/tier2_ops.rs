@@ -6,13 +6,6 @@ use crate::modules::common::FIREWALL;
 use crate::modules::{adversary, effects, plan};
 use crate::op::CorruptSite;
 
-/// A city, the seat's node on a lonely neighbor (its reach takes in only this city), and two more lonely
-/// neighbors.
-fn by_a_city(g: &mut GameState, m: &Map) -> (usize, usize, usize, usize) {
-    let (c, lonely) = city_with_lonely_neighbors(m);
-    put(g, lonely[0], node(0), 1);
-    (c, lonely[0], lonely[1], lonely[2])
-}
 
 /// Amendment 6949: a converted agent leaves the stack (lowering the city's Liberate bill) and the adversary's
 /// supply takes it back; 178 (#32): it becomes the seat's ambassador where it stood.

@@ -34,6 +34,22 @@ pub use standard::*;
 pub use troops::*;
 use view::*;
 
+// 182: `run`'s auto phases by name, indices into the variant's `phases` (0 is `act`); a test checks them.
+const BASES: usize = 1;
+const WAR: usize = 2;
+const MARCH: usize = 3;
+const PRODUCE: usize = 4;
+const CLEANUP: usize = 5;
+
+#[cfg(test)]
+#[test]
+fn phase_indices_match_phases() {
+    let phases = DEF.variants[0].phases;
+    for (i, name) in [(BASES, "bases"), (WAR, "war"), (MARCH, "march"), (PRODUCE, "produce"), (CLEANUP, "cleanup")] {
+        assert_eq!(phases[i].name, name);
+    }
+}
+
 pub static DEF: ModuleDef = ModuleDef {
     id: "board",
     summary: "Country pieces, cities, facilities, bases and fronts; production, war, ambassadors, standard actions",
@@ -403,11 +419,11 @@ impl Module for Board {
 
     fn run(&self, phase: usize, g: &mut GameState, cx: &mut Cx) -> Res {
         match phase {
-            1 => produce_units(g, cx)?,
-            2 => battle(g, cx)?,
-            3 => march(g, cx)?,
-            4 => produce(g, cx)?,
-            5 => cleanup(g, cx),
+            BASES => produce_units(g, cx)?,
+            WAR => battle(g, cx)?,
+            MARCH => march(g, cx)?,
+            PRODUCE => produce(g, cx)?,
+            CLEANUP => cleanup(g, cx),
             _ => unreachable!("board: no auto phase {phase}"),
         }
         Ok(())
@@ -498,7 +514,7 @@ fn expire_marks(g: &mut GameState, cx: &mut Cx) {
             cx.set_key(g, &k, 0);
         }
     }
-    // 149: Movement unused this round is lost (tallied, for the movement read).
+    // 149: Dispatch unused this round is lost (tallied, for the movement read).
     for s in 0..g.seats.len() {
         let lost = moves_left(&cx.world, g, s);
         if lost > 0 {

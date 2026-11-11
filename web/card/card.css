@@ -29,14 +29,13 @@
 .card .insight-fig b { font-weight: 700; line-height: 0.72; }
 .card .insight-fig svg.eye { width: 2.400mm; height: 2.400mm; color: #5b2f96; }
 
-/* Requirement plates: at least, at most, replaces. */
+/* Requirement plates: at least, replaces. */
 .card .requirements { gap: 0.6mm; }
 .card .requirement {
   box-sizing: border-box; height: 100%; display: flex; align-items: center; gap: 0.3mm; padding: 0 0.8mm; border-radius: 1mm;
   border: 0.3mm solid #23262a; box-shadow: 0 0 0 0.2mm #e9edf0, 0 0.3mm 0.6mm 0.2mm rgb(0 0 0 / 45%), inset 0 0.25mm 0.3mm rgb(255 255 255 / 70%);
 }
 .card .requirement.at-least { background: #f2c92e; }
-.card .requirement.at-most { background: #d43a2f; }
 .card .requirement.replaces { background: var(--plate, #efeadc); }
 .card .requirement .fx-num { font-size: 12pt; }
 .card .requirement .medallion { width: 4.400mm; height: 4.400mm; }

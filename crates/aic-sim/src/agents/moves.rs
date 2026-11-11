@@ -5,10 +5,12 @@
 //! - **cancel**: gather (or, with no empty land to push to, push) agents onto a hex where a spare ambassador
 //!   stands (no armor, no Liberate it pays toward), so they cancel, as `effects::moves::arrive` resolves it;
 //! - **liberate**: gather a seat's own ambassadors that hold nothing onto an adversary site, when that seat, in
-//!   reach, can then pay its Liberate (r75: only the acting seat's ambassadors on the site pay).
+//!   reach, can then pay its Liberate (r75: only the acting seat's ambassadors on the site pay);
+//! - **strike** (178): answer every strike batch prompt (`effects::STRIKE_PIECE`): the largest batch of troops,
+//!   then of agents, never a stop.
 //!
-//! Each answers only its own prompts; anything else (a strike's target, troops) is left to the agent's search.
-//! The `move_rules` dial turns them off (`Forced`), for the on/off read.
+//! Each answers only its own prompts; anything else (a strike's hex, a Gather that strikes) is left to the
+//! agent's search. The `move_rules` dial turns them off (`Forced`), for the on/off read.
 
 use aic_core::content::{Op, Piece};
 use aic_core::op::CorruptSite;
@@ -17,11 +19,12 @@ use aic_core::modules::{board, cards, common, effects, plan};
 use aic_core::module::World;
 use aic_core::{Action, GameState};
 
-/// Which heuristic answered (the per-game tally: `agents.move.<name>`).
+/// Which heuristic answered: the names [`report`] prints, indexed as [`pick`] returns them.
 pub const NAMES: [&str; 4] = ["push", "cancel", "liberate", "strike"];
 
-/// How often each heuristic answered a prompt, over every game this process played (a run prints it
-/// beside its game count: fires a game).
+/// How often each heuristic answered a prompt: one process-wide count, pooled across every cell and game the
+/// process played and including the answers given inside planner rollouts, not a per-game tally (a run prints
+/// it divided by its game count: fires a game).
 static FIRES: [AtomicU64; 4] = [AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0), AtomicU64::new(0)];
 
 /// Counts one answer by heuristic `which`.
@@ -29,7 +32,8 @@ pub fn fired(which: usize) {
     FIRES[which].fetch_add(1, Ordering::Relaxed);
 }
 
-/// "push N, cancel N, liberate N" over `games` games (per game), or None if none fired.
+/// "push N, cancel N, liberate N, strike N": `FIRES` over `games` games (per game, rollouts' answers
+/// included), or None if none fired.
 pub fn report(games: usize) -> Option<String> {
     let n: Vec<u64> = FIRES.iter().map(|f| f.load(Ordering::Relaxed)).collect();
     (n.iter().sum::<u64>() > 0).then(|| {
@@ -78,13 +82,7 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Opti
 /// onto a target this agent tips while it holds a seat's last node, if another will do.
 pub fn converge(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<usize> {
     let p = g.pending.as_ref()?;
-    let prompt = p.ask.prompt.as_str();
-    let rest = prompt.strip_prefix("Corrupt ")?;
-    if !rest.contains("moves onto which?") {
-        return None;
-    }
-    let site = CorruptSite::ALL.into_iter().find(|s| rest.starts_with(&format!("{} (at ", s.plural())))?;
-    let n: i64 = rest[site.plural().len() + 5..].split(')').next()?.parse().ok()?;
+    let (site, n) = aic_core::modules::adversary::read_converge_prompt(&p.ask.prompt)?;
     let to: Vec<usize> = legal.iter().map(|a| option_hex(w, a)).collect::<Option<Vec<_>>>()?;
     let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, common::ADV_AMBASSADOR)).collect();
     let amb: Vec<i64> =

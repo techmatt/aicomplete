@@ -4,6 +4,9 @@ use std::collections::BTreeMap;
 
 use aic_core::content::{content, Op, Resource};
 
+use aic_core::Rules;
+
+use super::blocks::tick;
 use super::table;
 
 /// The harms of the ledger, in its row order.
@@ -48,8 +51,8 @@ pub const RULE_HARMS: [(&str, &str, &str); 16] = [
     ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
-    ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
+    ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (its owner may spend a protection: r75)"),
     ("corruption", "facilities destroyed or seized", "a research station or factory that corrupts becomes the adversary's"),
     ("corruption", "ambassadors lost", "player ambassadors on it are lost"),
@@ -265,7 +268,7 @@ pub fn harm_failures() -> Vec<String> {
 }
 
 /// `docs/harms.md`: the ledger, from content and `RULE_HARMS`.
-pub(super) fn harms_md() -> String {
+pub(super) fn harms_md(r: &Rules) -> String {
     let marks = harm_marks();
     let mut head = vec!["Harm"];
     head.extend(SOURCES);
@@ -289,14 +292,16 @@ pub(super) fn harms_md() -> String {
          updates `RULE_HARMS` or `op_harms`.\n\nOne row per harm, one column per kind of source. A number \
          is how many printed cards do it (a threat, Discord card, twist or project counts once); \
          `yes` is a rule of the board. `Discord cards` covers both tiers; `march` is the adversary \
-         troops' strikes, which take facilities only at `board.troop_node` 4. The `yes` cells \
-         are true at the baseline's numbers (`board.ambassador_discord` is 0, so an agent \
-         darkening an aligned city doesn't sway).\n\n{}\n\
+         troops' strikes, which take facilities only at {troop_node}. The `yes` cells \
+         are true at the baseline's numbers ({amb_discord}: an agent \
+         darkening an aligned city sways only when that is above 0).\n\n{}\n\
          **Checks** (`aic-sim docs --check`, and a fast test): every harm in at least 2 kinds of \
          source; each threat tier at least 5 kinds of harm; no kind of source more than about half \
          of the printed node destruction. Measured shares are in the 034 screen (`experiments/results/screen-034-clocks/clocks.md`).\n\n\
          ## The board's rules\n\n{notes}",
         table(&head, rows),
         rev = aic_core::RULES_REVISION,
+        troop_node = tick(r, "board.troop_node"),
+        amb_discord = tick(r, "board.ambassador_discord"),
     )
 }

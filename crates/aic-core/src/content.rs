@@ -534,7 +534,7 @@ pub struct Pull {
 }
 
 /// An adversary event card (135): the clock and the stager. 151: its steps always in one order, threat, rally,
-/// deploy, corrupt: its pulls; its standing lines (its Rally X, then its Deploy troops, then any other line such
+/// muster, corrupt: its pulls; its standing lines (its Rally X, then its Muster troops, then any other line such
 /// as an income increase); its twists (other lines read while it is current, then its Corrupt X lines).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -657,8 +657,8 @@ pub struct AiBoard {
     /// cards, for everything but a sacrifice).
     #[serde(default)]
     pub tags: Vec<Tag>,
-    /// 149: Movement printed on the board: free ambassador moves each round
-    /// (unused ones are lost), before the track's Movement spaces add to it.
+    /// 149: Dispatch printed on the board: free ambassador moves each round
+    /// (unused ones are lost), before the track's Dispatch spaces add to it.
     #[serde(default)]
     pub moves: i64,
 }
@@ -690,7 +690,7 @@ pub struct Uncover {
     /// cards (requirements, discounts, per-tag income), never for a sacrifice.
     #[serde(default)]
     pub tags: Vec<Tag>,
-    /// 149: "Movement +N": N more free ambassador moves each round once uncovered.
+    /// 149: "Dispatch +N": N more free ambassador moves each round once uncovered.
     #[serde(default)]
     pub moves: i64,
     /// The track's end (068): a standing rule once uncovered.
@@ -1219,7 +1219,7 @@ pub fn says_each_board(text: &str) -> bool {
     text.to_lowercase().contains("each board")
 }
 
-/// 151: where an event line sits in the fixed step order (threat, rally, deploy, other lines, corrupt).
+/// 151: where an event line sits in the fixed step order (threat, rally, muster, other lines, corrupt).
 fn event_step(e: &Op) -> u8 {
     match e {
         Op::Rally { count: 0, .. } => 0,
@@ -1230,7 +1230,7 @@ fn event_step(e: &Op) -> u8 {
 }
 
 /// 151, the event standard (the threat card standard's, for events): one Rally X, its lines in the fixed order
-/// (rally, deploy, other lines, corrupt), at most two other lines (consequences), no per-event compute or
+/// (rally, muster, other lines, corrupt), at most two other lines (consequences), no per-event compute or
 /// creation line, and "each country", never "each board". The reason it breaks, if it does.
 pub fn event_rule_break(a: &AdversaryCard) -> Option<String> {
     if says_each_board(&a.text) {

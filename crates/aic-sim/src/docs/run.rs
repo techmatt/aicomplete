@@ -228,64 +228,45 @@ fn fill(text: &str, block: &dyn Fn(&str) -> Option<String>) -> String {
     out
 }
 
-/// Every generated block of `docs/rules/`; each must stand in exactly one file there.
-pub(super) const BLOCKS: [&str; 21] = [
-    "new_players",
-    "draft_set",
-    "house_terms",
-    "countries",
-    "corps",
-    "projects",
-    "round_cap",
-    "adversary",
-    "difficulty",
-    "sway_sources",
-    "alignment",
-    "purge_ease",
-    "game_end",
-    "standard_actions",
-    "boards",
-    "node_track",
-    "node_track2",
-    "powers",
-    "board_details",
-    "threats",
-    "tunables",
+/// A generated block's body from the rules.
+type Body = fn(&Rules) -> String;
+
+/// Every generated block of `docs/rules/` with its body (182: one table, not a name list and a match); each must
+/// stand in exactly one file there.
+pub(super) const BLOCKS: [(&str, Body); 21] = [
+    ("new_players", new_players_block),
+    ("draft_set", |r| draft_set_block(r, content())),
+    ("house_terms", |_| house_terms()),
+    ("countries", |_| countries_block(content())),
+    ("corps", |_| corps_block(content())),
+    ("projects", |_| projects_block()),
+    ("round_cap", round_cap_block),
+    ("adversary", |_| adversary_block()),
+    ("difficulty", difficulty_block),
+    ("sway_sources", sway_sources_block),
+    ("alignment", |_| alignment_block()),
+    ("purge_ease", purge_ease_block),
+    ("game_end", game_end_block),
+    ("standard_actions", standard_actions_block),
+    ("boards", |r| boards_block(r, content())),
+    ("node_track", |_| node_track_block(content())),
+    ("node_track2", |_| node_track2_block(content())),
+    ("powers", |_| powers_block(content())),
+    ("board_details", |_| board_details_block(content())),
+    ("threats", |_| threats_block()),
+    ("tunables", tunables_block),
 ];
 
 /// The body of the generated block `name`, or `None` for an unknown name.
 pub(super) fn block(name: &str, r: &Rules) -> Option<String> {
-    Some(match name {
-        "house_terms" => house_terms(),
-        "draft_set" => draft_set_block(r, content()),
-        "threats" => threats_block(),
-        "adversary" => adversary_block(),
-        "alignment" => alignment_block(),
-        "projects" => projects_block(),
-        "tunables" => tunables_block(r),
-        "countries" => countries_block(content()),
-        "corps" => corps_block(content()),
-        "round_cap" => round_cap_block(r),
-        "difficulty" => difficulty_block(r),
-        "boards" => boards_block(r, content()),
-        "board_details" => board_details_block(content()),
-        "node_track" => node_track_block(content()),
-        "node_track2" => node_track2_block(content()),
-        "powers" => powers_block(content()),
-        "standard_actions" => standard_actions_block(r),
-        "sway_sources" => sway_sources_block(r),
-        "purge_ease" => purge_ease_block(r),
-        "new_players" => new_players_block(r),
-        "game_end" => game_end_block(r),
-        _ => return None,
-    })
+    BLOCKS.iter().find(|(n, _)| *n == name).map(|(_, body)| body(r))
 }
 
 /// What is wrong with the rules files (path, text) as a set: a block of [`BLOCKS`] missing or
 /// in more than one place, or a file over [`DOC_BUDGET`].
 pub(super) fn rules_file_failures(files: &[(String, String)]) -> Vec<String> {
     let mut out = Vec::new();
-    for name in BLOCKS {
+    for (name, _) in BLOCKS {
         let marker = format!("{OPEN}{name} -->");
         let mut at: Vec<&str> = Vec::new();
         for (p, t) in files {
@@ -503,7 +484,7 @@ pub fn run(o: &Options) {
     let mut files: Vec<(String, String, String)> = vec![
         (FACES_JSON.to_string(), faces_json(), on_disk(FACES_JSON)),
         (OPS_MD.to_string(), ops_md(&src), on_disk(OPS_MD)),
-        (HARMS_MD.to_string(), harms_md(), on_disk(HARMS_MD)),
+        (HARMS_MD.to_string(), harms_md(&r), on_disk(HARMS_MD)),
         (PLAYER_AID_MD.to_string(), player_aid_md(), on_disk(PLAYER_AID_MD)),
     ];
     let agents_old = on_disk(AGENTS_MD);

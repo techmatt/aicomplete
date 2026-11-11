@@ -62,9 +62,9 @@ Protector + Researcher), no c3, an engine smoke read first, then the judge (the 
 the target is 45-85 a pair, aiming near 60-75 without chasing it; no gate and no pooled second set
 ([experiments.md](experiments.md), *The ballpark read*).
 
-**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). 168 recalibrated the incomes to them at r72: 91.7 / 75.7 / 62.8 / 42.0, d4 37.5 (the oracle 95.8 at d4); at r73 with
-174's sim players, 94.4 / 71.8 / 58.3 / 40.3, d4 35.4 (fresh seeds; the oracle 100 at d4 on 24 games). 177 (r76, incomes
-climbing): 88.5 / 79.9 / 58.3 / 44.1, d4 below d3 on the same seeds (the oracle 91.7 at d4); d0 resists every per-level dial.
+**Per-level bands (157; Matt took the pick at 159).** The judge (the strategist) reads each level against a band: d0 90-100, d1 70-80, d2 55-65, d3 40-50 (`bench/ladder.py`'s default `--bands`). Current (178, r77, fresh seeds): 90.7 / 81.0 / 68.1 / 55.8, d4 50.0 (the
+oracle 100 at d4): d1-d3 over their bands, driven by the Protector's Vigil (178's write-up). Earlier ladders are in
+the recalibration write-ups (168, 177); d0 resisted every per-level dial (177).
 
 **Cities corrupted and liberated (Matt, 2026-11-03; measured from r34).** Cities corrupted and liberated per game are a
 measured target per difficulty: at easy levels a win may need no liberation at all (the adversary corrupts no new city);

@@ -2,7 +2,7 @@
 
     python scripts/cards/play_read.py DIR [DIR ...] [--min 1.0] [--agents planner,engine]
 
-Each DIR holds an experiment's games.jsonl and results.json (whose `cells` name each game's agent). Per agent, pooled over its cells and DIRs: for each player card,
+Each DIR holds an experiment's games.jsonl (and results.json, or a farmed run's header spec, naming each game's agent). Per agent, pooled over its cells and DIRs: for each player card,
 the share of games that kept it and its plays in all of them: listed when kept in more than `--min` percent of the
 games and played in none (the "kept, never played" read); then every draft card no game of that agent kept.
 A card counts once a game, whichever seat held it.
@@ -16,7 +16,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from screens import dealt  # noqa: E402
+from screens import cells_for, dealt  # noqa: E402
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     idle = collections.defaultdict(collections.Counter)
     kept = collections.defaultdict(collections.Counter)
     for d in a.dirs:
-        cells = {c['cell']: c for c in json.load(open(os.path.join(d, 'results.json'), encoding='utf-8'))['cells']}
+        cells = cells_for(d)
         with open(os.path.join(d, 'games.jsonl'), encoding='utf-8') as f:
             f.readline()
             for line in f:

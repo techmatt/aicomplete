@@ -8,7 +8,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 
 - **No peeking.** Before a search an agent replaces what the printed game hides with
   a guess from its own RNG (`agents/determinize.rs`); a test checks hidden information alone
-  moves no decision (the planner and oracle: the table below).
+  moves no decision.
 - **Own randomness.** Each agent's RNG is the game seed on its kind's stream.
 - **Decides at the top level:** outside the action phase the planner follows its line. A node
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
@@ -35,7 +35,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1; planner and oracle: `discards` 0 |
 
-**Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafts by a plan
+**Keeping by plan (`agents/keep_plan.rs`).** Greedy, engine and planner keep drafts by a plan
 (`plan_keep`). At its first keep of a round a seat sketches `plan_rounds` rounds from what it
 holds and earns, fills each round's budget with the cards it would play, by value per cost
 (value: the table at the rounds then left times the strategy multiplier; cost: its price at the
@@ -48,16 +48,17 @@ adds only what it beats the weakest by (`plan_cover`). Each switch's default and
 **Move heuristics (`agents/moves.rs`, 166; `move_rules`, on).** Gather and Push prompts: push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
 armor, no Claim or Liberate it pays toward) to cancel; gather a seat's own free ambassadors onto an adversary site
-when that seat can then pay its Liberate (never onto a node hex). Anything else, and every strike, is the search's.
-`aic-sim experiment` prints their fires a game. **Converge** (175, `converge_rule`, on): a Corrupt line's agent next
+when that seat can then pay its Liberate (never onto a node hex). A strike's batches (178): troops, then agents,
+largest first; its hex, and anything else, is the search's. `aic-sim experiment` prints their fires a game (all
+cells pooled). **Converge** (175, `converge_rule`, on): a Corrupt line's agent next
 to several sites goes where `plan::converge_pick` sends it. **Buy energy** (176, `energy_rule`, on): a seat with no
 card left to play buys a neutral city's energy when its credits plus this round's income, less the price, reach the
 eval's credit cap (a pass is scored before income). **Botnet reach** (176,
 `w.botnet_reach` 0.3): an ambassador on a botnet's hex is worth that share of it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
-number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` and the
-strategist read flat terms, so the table's and horizon's levers reach only their keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
+number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). Greedy and the
+strategist read flat terms: the table's and horizon's levers reach only their keep plan. Sweeps: [`scripts/tune/`](../scripts/tune/README.md).
 
 ## The value table
 
@@ -123,8 +124,8 @@ As a player says them (the config's `says`):
 
 ## Strategy-guide heuristics
 
-Rules a player could say where a one-step search misses a card's point, each a switch, on,
-its rule on its field or `forced_table!` row; the spare-insight rule is every agent's (Matt 2026-11-05).
+Rules a player could say that a one-step search misses, each a switch (on), ruled on its field or
+`forced_table!` row; the spare-insight rule is every agent's (Matt 2026-11-05).
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
   `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`; armor as the engine reads it, `w.shelter_armor`, D71).
@@ -136,7 +137,7 @@ its rule on its field or `forced_table!` row; the spare-insight rule is every ag
   worth `w.insight_idle` (0.1), held or as income, and so is a keep paid from it (`keep_spare`, `plan_spare`).
 - *A trigger that pays credits is a credits card*: strategies read triggers' and
   thresholds' ops (`w.strat_contents`). Insight income is worth `w.insight_income` (1.5, D53).
-  Off (no gain read): `plan_team`. Retired zero-weight probes are refused with their reason (`eval::RETIRED`).
+  Off (no gain read): `plan_team`. Retired probes: `eval::RETIRED`.
 - *A per-tag card pays at the count you'll play it at*: table `tag_count` 5 plus the card's own
   tags; the engine adds `w.tag_hand` (0.5) of its hand's.
 - *Spare energy is cheap: draft and use what spends it* (engine): energy over `w.energy_cap`
@@ -155,12 +156,11 @@ its rule on its field or `forced_table!` row; the spare-insight rule is every ag
 | Tier | Stands for | Spec | Target win % |
 |---|---|---|---|
 | Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
-| Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
+| Greedy with strategy | The judge | `strategist` | the per-level bands ([principles.md](principles.md)) |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
-| Oracle | A skilled player with full information: d3 95.8, d4 100 at r73 (174, 24 games each) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
+| Oracle | A skilled player with full information | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 
-174 (r73, fresh seeds 41701-41844, 432 games a level, greedy 144): the strategist 94.4 / 71.8 / 58.3 / 40.3 / 33.8
-at d0-d4, greedy 94.4 / 75.7 / 68.8 / 43.1 / 41.7; each about 2 ms a decision.
-After a change to how the game is won, read greedy beside the strategist in the first smoke (16 dev seeds): a greedy lead means the engine weights still encode the old win (156).
+The current ladder: [principles.md](principles.md); about 2 ms a decision. After a change to how the game is won,
+smoke greedy beside the strategist: a greedy lead means the engine weights still encode the old win (156).
 A strategy pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them;
 `aic-sim strategies CONFIG` prints the choices.

@@ -224,7 +224,7 @@ fn list(r: &Rules, key: &str) -> Vec<i64> {
 
 /// A tunable as the tables print it: `` `botnet_compute` 1 ``, or with its module
 /// where the bare name says little (`` `alignment.botnet` 2 ``).
-fn tick(r: &Rules, key: &str) -> String {
+pub(super) fn tick(r: &Rules, key: &str) -> String {
     let name = key.split_once('.').map_or(key, |(_, p)| p);
     let shown = if name.contains('_') && name != "free_city" { name } else { key };
     format!("`{shown}` {}", value(&tunable(r, key).value))
@@ -360,6 +360,30 @@ pub(super) fn round_cap_block(r: &Rules) -> String {
     )
 }
 
+/// Level 4's row: a clause for each of its three dials that does something (177, 182: a dial at 0 prints none).
+fn level4_text(r: &Rules) -> String {
+    let mut clauses: Vec<String> = Vec::new();
+    if int(r, "adversary.discord_removed") > 0 {
+        clauses.push("A still shorter Discord deck: the removed cards count as tips already made, so the Discord strengths come a tip sooner".into());
+    }
+    if int(r, "adversary.tier2_early") > 0 {
+        clauses.push("tier-2 threats sooner".into());
+    }
+    let extra = int(r, "adversary.extra_corrupted");
+    if extra > 0 {
+        clauses.push(format!("{extra} more corrupted {} per country at setup", if extra == 1 { "city" } else { "cities" }));
+    }
+    let mut text = clauses.join("; ");
+    if let Some(c) = text.get(0..1) {
+        text = c.to_uppercase() + &text[1..];
+    }
+    if int(r, "adversary.discord_removed") == 0 {
+        let note = "the Discord deck as at level 3: `discord_removed` 0";
+        text = if text.is_empty() { format!("Nothing more: {note}") } else { format!("{text} ({note})") };
+    }
+    text
+}
+
 /// What each difficulty level adds.
 pub(super) fn difficulty_block(r: &Rules) -> String {
     let t = |keys: &[&str]| {
@@ -379,19 +403,21 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             "Stage-II cards removed, stage-I cards added back".into(),
             vec!["adversary.stage2_removed", "adversary.stage1_added"],
         ),
-        (
-            // 177: the Discord clause only while `discord_removed` removes a card.
-            if int(r, "adversary.discord_removed") > 0 {
-                "A still shorter Discord deck: the removed cards count as tips already made, so the Discord strengths come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup"
-            } else {
-                "Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); optionally more corrupted cities per country at setup"
-            }
-            .into(),
-            vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
-        ),
+        (level4_text(r), vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"]),
     ];
+    // 182: the sites `corrupt_cut` lowers, read from the list (city, station, factory, land), not printed whole.
+    let cut_sites: Vec<&str> = ["city", "station", "factory", "land"]
+        .into_iter()
+        .zip(list(r, "adversary.corrupt_cut"))
+        .filter(|&(_, cut)| cut > 0)
+        .map(|(site, _)| site)
+        .collect();
+    let cut_text = format!(
+        "{} corrupt with fewer agents (from `corrupt_cut_at`)",
+        if cut_sites.is_empty() { "no site".to_string() } else { cut_sites.join(", ") }
+    );
     let steps: [(&str, &str, &[&str]); 6] = [
-        ("adversary.corrupt_cut_at", "each site type corrupts with fewer agents (city, station, factory, land; from `corrupt_cut_at`)",
+        ("adversary.corrupt_cut_at", &cut_text,
             &["adversary.corrupt_cut", "adversary.corrupt_cut_at"]),
         ("adversary.counter_bonus_at", "counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`)",
             &["adversary.counter_bonus_all", "adversary.counter_bonus_credits", "adversary.counter_bonus", "adversary.counter_bonus_at"]),

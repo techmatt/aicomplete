@@ -24,14 +24,14 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
     let named = ctx.why.as_deref().map(|n| format!("{n}: an adversary troop lands on which hex?"));
     let prompt = named.as_deref().unwrap_or(base);
     let tally = ctx.says("threats.troops", "adversary.project_troops");
-    // 151: an event's, a project's or the board's troops land deterministically (the lowest-numbered).
-    let lowest = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board");
-    // 175: each of those is a Deploy: a Deploy prohibition stops it and the level surcharge adds to it.
-    let deploy = lowest;
-    let count = if deploy { count + adversary::deploy_bonus(&w) } else { count };
+    // 151: an event's or a project's troops land deterministically (the lowest-numbered; the board's Protector
+    // landing does too, in `adversary::wall_pressure`).
+    // 175: each of those is a Muster: a Muster prohibition stops it and the level surcharge adds to it.
+    let muster = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project");
+    let count = if muster { count + adversary::muster_bonus(&w) } else { count };
     for hexes in regions(&w, g, ctx, each_country) {
         let kills = destroy.then_some(ctx.label);
-        adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills, lowest, deploy)?;
+        adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills, muster)?;
     }
     Ok(())
 }
@@ -55,7 +55,7 @@ pub(super) fn flip_station(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, each_count
             spots.retain(|h| Some(*h) == here);
         }
         // 151: a project's or an event's flip takes the lowest-numbered station.
-        if ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board") {
+        if ctx.threat.is_none() && matches!(ctx.label, "standing" | "project") {
             if let Some(&h) = spots.iter().min_by_key(|&&h| w.map.hexes[h].number) {
                 adversary::corrupt_station(g, cx, h)?;
             }

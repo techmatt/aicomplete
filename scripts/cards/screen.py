@@ -1,7 +1,7 @@
 """The one screen summary: a table of named columns over `aic-sim experiment` outputs.
 
     python scripts/cards/screen.py DIR [DIR ...] --columns variant,d,agent,n,win [--sources]
-    python scripts/cards/screen.py DIR [DIR ...] --preset 041    # or tiers, 034, 028, 018, 016
+    python scripts/cards/screen.py DIR [DIR ...] --preset 041    # or tiers, 034, 018, 016
     python scripts/cards/screen.py --gate DIR [DIR ...]
     python scripts/cards/screen.py --list
 
@@ -173,7 +173,6 @@ COLUMNS = {
     'ends': ('ends', ends_text),
     'wins_mix': ('wins: purge / Unity', wins_mix),
     'loss_mix': ('losses: Discord / node / cap (% of losses)', loss_mix),
-    'wins_split': ('wins: purge / Unity deck', wins_mix),
     'loss_ends': ('losses: Discord / node / deck-out', loss_ends),
     'node_rounds': ('node-loss rounds', lambda c, gs: hist(g['rounds'] for g in gs if g['reason'] == 'node')),
     'tokens_left': ('tokens left a seat', tokens_left),
@@ -186,7 +185,6 @@ COLUMNS = {
     'node_lost_mean': ('node lost', per_game('board.node_lost')),
     'node': ('node', per_game('board.node_placed')),
     'freed': ('freed', per_game('board.cities_freed')),
-    'bases_united': ('bases united', per_game('board.bases_united')),
     'tips': ('Unity / Discord tips', per_game('alignment.tips_unity', 'alignment.tips_discord')),
     # 145: 138 replaced arrivals with creation lines (`adversary.arrivals` read 0 since).
     'arrivals': ('created / removed a round', per_round('adversary.created', 'adversary.ambassadors_removed')),
@@ -209,7 +207,6 @@ COLUMNS = {
     'offered_tier': ('offered: tier 1 / 2', by_tier('offered')),
     'kept_tier': ('kept: tier 1 / 2', by_tier('kept')),
     'played_tier': ('played: tier 1 / 2', by_tier('played')),
-    'tier2_dealt': ('tier-2 dealt', per_game('cards.dealt_tier2')),
     'powers': ('powers / tags', per_game('ai.powers_used', 'ai.tags_sacrificed')),
     'replaced': ('replaced', per_game('cards.replaced')),
     'token_flow': ('tokens + / -', per_game('cards.tokens_gained', 'cards.tokens_spent')),
@@ -222,8 +219,6 @@ PRESETS = {
             'markers_city,placed_by_round,node_lost,freed,delayed', True),
     '034': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_mix,loss_mix,node_rounds,tokens_left,'
             'node_lost,freed', True),
-    '028': ('variant,d,agent,n,win,win_rounds,loss_rounds,wins_split,loss_ends,tips,node_lost,freed,'
-            'bases_united', True),
     '018': ('variant,d,agent,n,win,rounds,left,tips,ends,node,factories,factories_end,chips,botnets,compute,'
             'freed,played', False),
     '016': ('variant,d,agent,n,win,rounds,tips,ends,node,botnets,factories,factories_end,chips', False),

@@ -44,7 +44,7 @@ Where to look: how to build and test is below; the rest has its own page.
 | `crates/aic-core` | The rules engine (invariants: [docs/architecture.md](docs/architecture.md)). `Rules::new(config)` then `new_game` / `legal_actions_into` / `apply_mut`, plus the free functions `new_game`, `legal_actions`, `apply`. |
 | `crates/aic-core/src/modules/` | One file per rules area (`adversary`, `alignment`, `economy`, `ai`), or a directory for the big ones (`board/`, `cards/`, `threats/`), shared code (`common`, `effects/`), read-only forecasts of rules steps that the rule and the agents share (`plan`), the registry in `mod.rs`. |
 | `crates/aic-sim` | Native CLI (a library, `lib.rs`, that `main.rs` calls; [docs/simulator.md](docs/simulator.md)); the agent skill ladder (`agents/`) and the experiment harness (`experiment.rs`, `experiment_run.rs`, `gate.rs`, `report/`); `farm.rs` is a read's games for remote workers; `cli.rs` parses the arguments; `play.rs` is `run`, `compare`, `replay` and traces; `docs/` generates and checks the docs; `prof.rs` is the `profile` feature. |
-| `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports (old-revision records there, r6 to r14, don't load). At the top level: the standing specs (`band`, `gate`, `gate-exploit` and `gate-c3` its fast read and 3-country checks, `smoke`, `use` the engine and loop smoke, `same` the identical-games check, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `archive/`: every spec not tied to the current revision, and those the binary refuses today. |
+| `experiments/` | Experiment specs, and `results/<name>/`: committed cycle reports (old-revision records there, r6 to r14, don't load). At the top level: the standing specs (`band`, `gate`, `gate-exploit` and `gate-c3` its fast read and 3-country checks, `smoke`, `use` the engine and loop smoke, `same` and `same-noplanner` the identical-games checks, `ladder-v0`, `overlay-card-cost`, `sanity-line`) and those of the current revision. `farm/`: farmed specs. `archive/`: every spec not tied to the current revision, and those the binary refuses today. |
 | `crates/aic-wasm` | wasm-bindgen bindings, JSON strings in and out. |
 | `crates/aic-farm` | The farm's wasm bundle: `aic-sim`'s farm in a browser tab, with the configs and `experiments/farm/` specs built in ([docs/simulator.md](docs/simulator.md), *The farm*). |
 | `content/` | Data embedded at compile time: `map.json` (pieces, layouts for 1–4 countries, setup), `cards.json`, `threats.json`, `adversary.json`, `ais.json`, `alignment.json` (the Unity and Discord decks), `projects.json` (the adversary's project deck), all built from code primitives. |
@@ -116,7 +116,7 @@ which looks like a fast pass: check the exit code). Times are on this
 machine, otherwise idle; the first test-profile build takes ~80 s more. `cargo test` runs
 test binaries one after another, so the fast lane's wall clock is about the sum of each binary's
 slowest test: a test looping over agents or variants splits into one test (or scoped thread) each. A red crate stops
-the run before the next crate's tests: `cargo test --workspace --no-fail-fast` when several reds are expected (175).
+the run: `cargo test --workspace --no-fail-fast [-- --include-ignored]` (a cargo flag: not through `test-all`, 177).
 
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is
@@ -128,8 +128,7 @@ plays the same moves it with no bump; a new counter doesn't. (A fast-lane test.)
 `GOLDEN_CONTENT_HASH` (wasm-smoke `GOLDEN_CONTENT`), the content hash over raw bytes: a
 content-only edit moves it with no bump unless play changes; update both (the new hash is
 `content_hash` in any run's `games.jsonl` first line, or `regen.py`'s "content hash" line; the new fingerprint is
-the failing `golden_game` assertion's left side: copy both, never type them). A stale hash shows only once the
-fingerprint matches; `cargo test` stops at the first failing binary (`--no-fail-fast` runs the rest).
+the failing `golden_game` assertion's left side: copy both, never type them).
 A new phase goes in `configs/baseline.json`'s `round` list and in every lab test config that lists its neighbor
 (178: `adversary.compute` beside `adversary.reveal`), or it silently never runs there.
 
