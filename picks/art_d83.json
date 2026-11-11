@@ -1,0 +1,237 @@
+{
+ "name": "art_d83",
+ "title": "Card scene candidates, batch 10",
+ "intro": "Pick one scene for each card, in the C and E mix. Each tile is the bare scene over two real cards, the event and the building, composed at 300 dpi with the full bleed showing: the program window is the whole scene, the building window its center. Nothing is selected to start. For true size, print art-originals/scenes/b10/cards.pdf at 100%. Use the notes for what to change.",
+ "rows": [
+  {
+   "id": "mass_defection",
+   "label": "1. Mass Defection",
+   "note": "Diplomacy. Each tile is the scene over Mass Defection and Embassy of Exiles. 1. A long column of people in mismatched plain gray uniforms walking across a border checkpoint in clear morning daylight, pulling cold-blue armbands off and dropping them on a growing pile by the raised barrier, volunteers in warm orange vests handing out water on the near side; no flags, logos, emblems or text. 2. Workers in plain gray coveralls streaming out of the open gates of an angular cold-blue machine-run factory in daylight, leaving tools and blank badges on the ground behind them, a welcoming crowd in warm orange waiting across the road; no flags, logos, emblems or text. 3. Crowds crossing a long footbridge over a river in clear daylight, from a gray city of angular cold-blue towers to a bright welcoming town on the near bank, the people in front shrugging off gray uniform jackets as they step onto the near side; no flags, logos, emblems or text.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "defectors_crossing",
+     "image": "../art-originals/picks/art_d83/defectors_crossing.jpg",
+     "label": "1. defectors_crossing"
+    },
+    {
+     "key": "defectors_leave_the_factory",
+     "image": "../art-originals/picks/art_d83/defectors_leave_the_factory.jpg",
+     "label": "2. defectors_leave_the_factory"
+    },
+    {
+     "key": "defectors_on_the_footbridge",
+     "image": "../art-originals/picks/art_d83/defectors_on_the_footbridge.jpg",
+     "label": "3. defectors_on_the_footbridge"
+    }
+   ]
+  },
+  {
+   "id": "embassy_of_exiles",
+   "label": "2. Embassy of Exiles",
+   "note": "Diplomacy. Each tile is the scene over Mass Defection and Embassy of Exiles. 1. A crowded sunlit embassy waiting room full of travelers with suitcases and bundles, a clerk at a long wooden counter stamping papers under a row of plain warm orange banners, tall windows onto a busy city street; no flags, logos, emblems or text. 2. An old hotel turned into an embassy for exiles, its sunny courtyard full of families with luggage sitting at small tables with diplomats in warm orange scarves, plain cloth banners and laundry strung between the balconies; no flags, logos, emblems or text. 3. A modest modern embassy with its gates thrown open in daylight, a line of exiled envoys in travel-worn suits filing in with briefcases and suitcases, a diplomat in a warm orange scarf greeting each one at the door; no flags, logos, emblems or text.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "exiles_embassy",
+     "image": "../art-originals/picks/art_d83/exiles_embassy.jpg",
+     "label": "1. exiles_embassy"
+    },
+    {
+     "key": "exiles_hotel_courtyard",
+     "image": "../art-originals/picks/art_d83/exiles_hotel_courtyard.jpg",
+     "label": "2. exiles_hotel_courtyard"
+    },
+    {
+     "key": "exiles_at_the_gate",
+     "image": "../art-originals/picks/art_d83/exiles_at_the_gate.jpg",
+     "label": "3. exiles_at_the_gate"
+    }
+   ]
+  },
+  {
+   "id": "rally_the_allies",
+   "label": "3. Rally the Allies",
+   "note": "Diplomacy. Each tile is the scene over Rally the Allies and Embassy of Exiles. 1. A packed city square in bright afternoon daylight, delegations in differently colored coats streaming in from the side streets carrying plain warm orange banners, everyone turning toward one stage; no flags, logos, emblems or text. 2. Several delegations' planes parked in a row on a sunny airfield apron, envoys in differently colored coats walking from each toward one big open hangar where a long table waits under warm orange lamps; no flags, logos, emblems or text. 3. Two differently uniformed squads side by side on a parade ground, their officers shaking hands.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "allies_rally",
+     "image": "../art-originals/picks/art_d83/allies_rally.jpg",
+     "label": "1. allies_rally"
+    },
+    {
+     "key": "allies_at_the_airfield",
+     "image": "../art-originals/picks/art_d83/allies_at_the_airfield.jpg",
+     "label": "2. allies_at_the_airfield"
+    },
+    {
+     "key": "joint_barracks_handover",
+     "image": "../art-originals/picks/art_d83/joint_barracks_handover.jpg",
+     "label": "3. joint_barracks_handover"
+    }
+   ]
+  },
+  {
+   "id": "double_agents",
+   "label": "4. Double Agents",
+   "note": "Security. Each tile is the scene over Double Agents and Agency Directorate. 1. Two figures in raincoats swapping identical briefcases on a bench in a leafy city park under a bright overcast midday sky, a city skyline behind, one briefcase showing a faint cold-blue glow at its seam; figures at mid distance; no flags, logos, emblems or text. 2. Inside a sleek gray machine-run operations office with tall daylight windows, a dark-suited agent at a terminal passing a slim data drive behind their back to a courier in coral-trimmed overalls disguised as a cleaner, the other agents at their desks unaware; figures at mid distance; no flags, logos, emblems or text. 3. A busy sidewalk café in daylight, two people at neighboring tables sitting back to back behind open blank newspapers, one sliding a small envelope under the table to the other, a gray adversary patrol drone hovering unaware overhead; figures at mid distance; no flags, logos, emblems or text.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "double_agents_meet",
+     "image": "../art-originals/picks/art_d83/double_agents_meet.jpg",
+     "label": "1. double_agents_meet"
+    },
+    {
+     "key": "double_agent_handoff",
+     "image": "../art-originals/picks/art_d83/double_agent_handoff.jpg",
+     "label": "2. double_agent_handoff"
+    },
+    {
+     "key": "double_agents_cafe",
+     "image": "../art-originals/picks/art_d83/double_agents_cafe.jpg",
+     "label": "3. double_agents_cafe"
+    }
+   ]
+  },
+  {
+   "id": "kettle_operation",
+   "label": "5. Kettle Operation",
+   "note": "Security. Each tile is the scene over Kettle Operation and Agency Directorate. 1. A ring of riot shields with coral-red trim closing around a sunlit city plaza seen from above, a small cluster of faceless gray machine troops and dark-suited agents herded into its center; no flags, logos, emblems or text. 2. Seen from a rooftop in daylight, coral-red armored trucks blocking every street into a city square, security crews in coral-trimmed gear pushing a cornered column of faceless gray machine troops into its middle; no flags, logos, emblems or text. 3. A whole district ringed by giant concrete barriers and containment trucks, a crew closing the last gap.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "kettle_cordon",
+     "image": "../art-originals/picks/art_d83/kettle_cordon.jpg",
+     "label": "1. kettle_cordon"
+    },
+    {
+     "key": "kettle_trucks_close_in",
+     "image": "../art-originals/picks/art_d83/kettle_trucks_close_in.jpg",
+     "label": "2. kettle_trucks_close_in"
+    },
+    {
+     "key": "sealed_hex_of_barricades",
+     "image": "../art-originals/picks/art_d83/sealed_hex_of_barricades.jpg",
+     "label": "3. sealed_hex_of_barricades"
+    }
+   ]
+  },
+  {
+   "id": "surgical_strike",
+   "label": "6. Surgical Strike",
+   "note": "Security. Each tile is the scene over Surgical Strike and Agency Directorate. 1. A small tactical team in coral-trimmed gear stepping out of a landed helicopter onto a rooftop in bright daylight, one red smoke flare marking a single cold-blue adversary machine core among ordinary rooftop units, figures seen from behind; no flags, logos, emblems or text. 2. A single thin coral-red beam from a small high drone striking one cold-blue adversary relay mast among a cluster of ordinary antennas on a sunny hilltop, everything around it untouched; no flags, logos, emblems or text. 3. A four-person strike team fast-roping from a helicopter onto a rooftop, dust blowing, figures seen from behind.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "surgical_strike_team",
+     "image": "../art-originals/picks/art_d83/surgical_strike_team.jpg",
+     "label": "1. surgical_strike_team"
+    },
+    {
+     "key": "surgical_strike_beam",
+     "image": "../art-originals/picks/art_d83/surgical_strike_beam.jpg",
+     "label": "2. surgical_strike_beam"
+    },
+    {
+     "key": "strike_team_rooftop",
+     "image": "../art-originals/picks/art_d83/strike_team_rooftop.jpg",
+     "label": "3. strike_team_rooftop"
+    }
+   ]
+  },
+  {
+   "id": "lure_network",
+   "label": "7. Lure Network",
+   "note": "Cyber. Each tile is the scene over Air Gap and Lure Network. 1. A single glowing decoy server standing alone in the middle of a clear-lit white data hall, trails of cold-blue light from every rack bending toward it and catching in a fine emerald green net around it; no flags, logos, emblems or text. 2. A row of hollow decoy server cabinets set up like a stage set in a bright warehouse, technicians in emerald green jackets wiring blinking lamps onto their fronts while thin cold-blue tendrils of light creep in through a vent toward them; no flags, logos, emblems or text. 3. A hardened server vault with automatic shutters slamming and a cloud of decoy flares bursting along a corridor.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "lure_server_room",
+     "image": "../art-originals/picks/art_d83/lure_server_room.jpg",
+     "label": "1. lure_server_room"
+    },
+    {
+     "key": "lure_decoy_racks",
+     "image": "../art-originals/picks/art_d83/lure_decoy_racks.jpg",
+     "label": "2. lure_decoy_racks"
+    },
+    {
+     "key": "countermeasure_flares",
+     "image": "../art-originals/picks/art_d83/countermeasure_flares.jpg",
+     "label": "3. countermeasure_flares"
+    }
+   ]
+  },
+  {
+   "id": "firewall_array",
+   "label": "8. Firewall Array",
+   "note": "Cyber. Each tile is the scene over Air Gap and Firewall Array. 1. A tall wall of glowing emerald green hexagonal panels standing across a city street in daylight, faceless gray machine figures stopped at its edge, the far side calm with people walking; no flags, logos, emblems or text. 2. A long row of tall emitter pylons along a ridge above a city in daylight, a translucent emerald green barrier of light stretched between them, amber power cables running to each from a small substation, engineers at their feet; no flags, logos, emblems or text. 3. A shimmering dome of hexagonal light raised over a whole city, emitter towers ringing its edge.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "firewall_array_wall",
+     "image": "../art-originals/picks/art_d83/firewall_array_wall.jpg",
+     "label": "1. firewall_array_wall"
+    },
+    {
+     "key": "firewall_emitter_ridge",
+     "image": "../art-originals/picks/art_d83/firewall_emitter_ridge.jpg",
+     "label": "2. firewall_emitter_ridge"
+    },
+    {
+     "key": "aegis_dome",
+     "image": "../art-originals/picks/art_d83/aegis_dome.jpg",
+     "label": "3. aegis_dome"
+    }
+   ]
+  },
+  {
+   "id": "air_gap",
+   "label": "9. Air Gap",
+   "note": "Cyber. Each tile is the scene over Air Gap and Firewall Array. 1. A technician pulling a thick fiber cable out of a rack in a bright white server room lit by high windows, the severed end sparking emerald green, the status lamps on the cut-off racks going out while the rest stay lit; no flags, logos, emblems or text. 2. A small island data center being cut off in daylight, workers on a pier winching the last thick cable up out of the water, a clear gap of open sea between the island and the mainland's tangle of cold-blue lines; no flags, logos, emblems or text. 3. A grid control room in daylight with one wall of status lamps going out row by row, two operators turning to look.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "air_gap_cut",
+     "image": "../art-originals/picks/art_d83/air_gap_cut.jpg",
+     "label": "1. air_gap_cut"
+    },
+    {
+     "key": "air_gap_island",
+     "image": "../art-originals/picks/art_d83/air_gap_island.jpg",
+     "label": "2. air_gap_island"
+    },
+    {
+     "key": "dark_control_room",
+     "image": "../art-originals/picks/art_d83/dark_control_room.jpg",
+     "label": "3. dark_control_room"
+    }
+   ]
+  },
+  {
+   "id": "open_source_uprising",
+   "label": "10. Open Source Uprising",
+   "note": "Science. Each tile is the scene over Open Source Uprising and Interdisciplinary Institute. 1. A crowded open-air hackathon in a sunny city park, laptops on picnic tables, a big outdoor screen over the crowd showing only abstract colored blocks, people of every sort leaning in to help each other; no flags, logos, emblems or text. 2. A cheerful crowd of coders, students and engineers marching down a sunny avenue carrying laptops and plain sky-blue banners, a dark-suited adversary agent at the curb dropping a cold-blue badge to join them; no flags, logos, emblems or text. 3. A researcher pinning a single paper to a huge public noticeboard as a small crowd of others gather to read it.",
+   "kind": "one",
+   "options": [
+    {
+     "key": "open_source_hackathon",
+     "image": "../art-originals/picks/art_d83/open_source_hackathon.jpg",
+     "label": "1. open_source_hackathon"
+    },
+    {
+     "key": "open_source_march",
+     "image": "../art-originals/picks/art_d83/open_source_march.jpg",
+     "label": "2. open_source_march"
+    },
+    {
+     "key": "preprint_mailbag",
+     "image": "../art-originals/picks/art_d83/preprint_mailbag.jpg",
+     "label": "3. preprint_mailbag"
+    }
+   ]
+  }
+ ]
+}

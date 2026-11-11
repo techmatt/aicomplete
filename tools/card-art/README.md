@@ -103,15 +103,17 @@ browser; `npm ci` first):
   or 60 (cards.pdf about 400 MB for 120 cards):
   background it. `npm ci` first in a fresh worktree. Runs at below-normal priority, one
   image at a time. Each new batch replaces `batch` in `scenes.json`, so the scenes already
-  drawn are the row ids in `picks/scene_batch_<n>.json` (batch 9: the option keys in
-  `picks/art_d69.json`). Passes the scene to
+  drawn are the row ids in `picks/scene_batch_<n>.json` (batches 9 and 10: the option keys in
+  `picks/art_d69.json`, `picks/art_d83.json`). Passes the scene to
   `renderCard`'s `artUrl`, which center-crops it to the window `fit` measured: 53.3×33.2 mm
   for program and event, 53.3×25.3 mm for buildings, so a building shows the middle 76%.
 - `npm run art:alts`: an art round of candidates. `scene-gen` for the batch, then `scene-picker
   --one`, which writes one pick-one row per card (the scene's `card`, else its `for`, the card a
   candidate was written for), an option per scene keyed by its id, nothing selected. A round's
   scenes go in through `scenes_io` with `for` set, `picker` named for the round (`art_d69`);
-  Matt's pick moves the winner to `card`.
+  Matt's pick moves the winner to `card`. An unused drawn scene put up as a candidate gets `for`
+  beside its `was` and its raw draw copied into the round's `raw/`; then run `scene-gen` naming
+  only the new ids and `scene-picker --one`, since `art:alts` would redraw the whole batch (186).
 - Every deck card has a suggested scene, drawn. A scene whose card was cut or
   redrawn has `was` in place of `card`: drawn, in the pool, suggested for nothing. A scene with
   both was drawn for `was` and reused on `card`: an unused scene that broadly fits a new card's
