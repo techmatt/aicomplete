@@ -246,11 +246,10 @@ pub enum Hot {
     MomentumEvery,
     TroopNode,
     LiberateAt,
-    LastSafeStage,
 }
 
 impl Hot {
-    const ALL: [Hot; 8] = [
+    const ALL: [Hot; 7] = [
         Hot::NodeLoss,
         Hot::ClearWinStage,
         Hot::TipPerPlayer,
@@ -258,7 +257,6 @@ impl Hot {
         Hot::MomentumEvery,
         Hot::TroopNode,
         Hot::LiberateAt,
-        Hot::LastSafeStage,
     ];
 
     /// The parameter's name.
@@ -271,7 +269,6 @@ impl Hot {
             Hot::MomentumEvery => "alignment.momentum_every",
             Hot::TroopNode => "board.troop_node",
             Hot::LiberateAt => "board.liberate_at",
-            Hot::LastSafeStage => "board.last_safe_stage",
         }
     }
 }

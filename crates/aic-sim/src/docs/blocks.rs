@@ -48,7 +48,7 @@ pub const HOUSE_TERMS: [(&str, &str); 22] = [
     ("Convert", "an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used"),
     ("Gather up to N", "pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, \"and remove them\", picks only the hex and takes troops first)"),
     ("Push up to N", "pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece"),
-    ("Firewall", "a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn"),
+    ("Firewall", "a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply); it comes off at the end of the next adversary turn"),
     ("In the next adversary turn, no X", "a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply"),
 ];
 
@@ -97,12 +97,7 @@ fn corrupt_words(a: &aic_core::content::AdversaryCard) -> String {
         .iter()
         .filter_map(|t| match t {
             aic_core::content::Op::Corrupt { site, cut } => {
-                let name = match site.name() {
-                    "city" => "cities",
-                    "station" => "research stations",
-                    "factory" => "factories",
-                    other => other,
-                };
+                let name = site.plural();
                 Some(if *cut > 0 { format!("{name} ({cut} fewer)") } else { name.to_string() })
             }
             _ => None,
@@ -164,15 +159,18 @@ pub(super) fn projects_block() -> String {
         .iter()
         .map(|p| {
             let tags: Vec<&str> = p.tags.iter().map(|t| t.name()).collect();
+            // 175: printed per player count (the cost is per player: 2, 3 and 4 players read off the card).
             vec![
                 p.name.clone(),
                 tags.join(" + "),
-                p.cost.to_string(),
+                (2 * p.cost).to_string(),
+                (3 * p.cost).to_string(),
+                (4 * p.cost).to_string(),
                 if p.ongoing { "ongoing" } else { "once" }.to_string(),
             ]
         })
         .collect();
-    table(&["Project", "Tags", "Compute per player", "Resolves"], rows)
+    table(&["Project", "Tags", "2 players", "3 players", "4 players", "Resolves"], rows)
 }
 
 fn value(v: &ParamValue) -> String {
@@ -758,18 +756,18 @@ pub(super) fn game_end_block(r: &Rules) -> String {
     let tiers = list(r, "alignment.tier_at");
     let (t2, t3) = (tiers.first().copied().unwrap_or(0), tiers.get(1).copied().unwrap_or(0));
     let unity = content().alignment.iter().filter(|c| c.side == aic_core::content::Side::Unity).count();
-    // `board.last_safe_stage`: a last node is safe while the adversary card is below that stage.
-    let safe = match int(r, "board.last_safe_stage") {
-        2 => "In stage I your last one is safe. ",
-        3 => "In stages I and II your last one is safe. ",
-        _ => "",
+    // 175: no stage protects a last node; `board.start_nodes` may give a spare.
+    let safe = match int(r, "board.start_nodes") {
+        1 => "No stage protects your last node: keep a second one on the board. ".to_string(),
+        n => format!("No stage protects your last node; you start with {n}. "),
     };
     format!(
         "**How the game ends, for new players.** The only way to win is the purge, and Unity eases it, \
          step by step, like terror levels. {easing} Pressure comes every round: the face-up adversary event card deals threats \
-         by your sites and says where its new agents land (the lowest-numbered sites of a \
-         kind), so you always know where the next wave lands. Agents pile up, a card's Corrupt line \
-         pulls {} of them on and next to a city into it and corrupts it, and corrupted \
+         by your sites and says where its new agents land (spread evenly over every site of a kind), \
+         so you always know where the next wave lands. Agents pile up, a card's Corrupt line \
+         moves every agent next to a city onto it, a city holding {} corrupts, a hex with your node and {} \
+         loses the node, and corrupted \
          cities and uncountered threats fill the Discord track. Each time it \
          fills, it tips: a Discord card hurts you, and the Discord deck is small: when a tip finds it empty, \
          you lose. Discord cards never destroy your nodes directly, only through the threats and corruptions \
@@ -789,12 +787,13 @@ pub(super) fn game_end_block(r: &Rules) -> String {
          ambassadors for the same, so you choose between racing toward Unity and holding off the next \
          Discord card. You also lose if any player has no nodes left on the board. \
          Nodes are lost only where the board is overrun: an uncountered threat near them, a corruption of \
-         their own hex, war across a front (it takes the factory's hex) and Border War (nodes by a front's \
+         their own hex (or agents on it), war across a front (it takes the factory's hex) and Border War (nodes by a front's \
          base). A lost token leaves the game and marks its hex, so you can't act from there any more; its \
          income stays. {safe}The adversary deck is a round cap too, {} rounds at \
          most (fewer at the harder levels), and reaching it loses. So there are three different \
          pressures: the Discord deck (politics), your nodes (the board) and the cap.\n",
         int(r, "adversary.corrupt_at"),
+        int(r, "adversary.corrupt_node_at"),
         dealt(r, 0).iter().sum::<usize>(),
     )
 }

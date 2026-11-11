@@ -20,10 +20,11 @@ const PARAMS: &[ParamSpec] = &[
     ParamSpec::int("difficulty", 0, 4, "difficulty level 0-4 (each level includes the ones below)"),
     ParamSpec::list("stage_cards", 0, 20, "adversary cards dealt from stage I, II and III (before difficulty)"),
     ParamSpec::int("supply_per_country", 0, 40, "agents in the supply per country"),
-    ParamSpec::int("corrupt_at", 1, 20, "Corrupt city: agents a city gathers (on it and next to it) to corrupt"),
-    ParamSpec::int("corrupt_station_at", 1, 20, "Corrupt station: agents a research station gathers to corrupt"),
-    ParamSpec::int("corrupt_factory_at", 1, 20, "Corrupt factory: agents a factory gathers to corrupt"),
-    ParamSpec::int("corrupt_land_at", 1, 20, "Corrupt land: agents an empty land hex gathers to take land corruption"),
+    ParamSpec::int("corrupt_at", 1, 20, "a city's corrupt number: the agents on it that corrupt it (coastal cities too)"),
+    ParamSpec::int("corrupt_station_at", 1, 20, "a research station's corrupt number"),
+    ParamSpec::int("corrupt_factory_at", 1, 20, "a factory's corrupt number"),
+    ParamSpec::int("corrupt_land_at", 1, 20, "open land's corrupt number (only a Corrupt open land line; it takes land corruption)"),
+    ParamSpec::int("corrupt_node_at", 1, 20, "175: a node's corrupt number: a hex with a player's node and this many agents loses the node"),
     ParamSpec::list("corrupt_cut", 0, 5, "difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land)"),
     ParamSpec::int("corrupt_cut_at", 0, 5, "the difficulty level from which corrupt_cut applies"),
     ParamSpec::int("blight_discord", 0, 5, "Discord each land-corruption token sways each round"),
@@ -55,10 +56,10 @@ const PARAMS: &[ParamSpec] = &[
 ];
 
 const PHASES: &[PhaseSpec] = &[
-    PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act; botnets make adversary compute onto the projects"),
-    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every X that can gather its number of agents (on it and next to it) pulls them in and corrupts"),
-    PhaseSpec::auto("natural", "natural corruption: every city, research station or factory already holding its number corrupts, with no move"),
-    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: base compute onto the projects, agent income into each board's pool; then every firewall comes off"),
+    PhaseSpec::auto("build", "the event card after its threats: Rally X (each board's pool lands), Deploy (its troops), its other lines; the board's rules; ongoing projects act"),
+    PhaseSpec::auto("corrupt", "the event card's Corrupt X lines: every agent next to an X moves onto it, then every X holding its number corrupts"),
+    PhaseSpec::auto("natural", "natural corruption: every city, research station or factory holding its number corrupts, then every node hex holding a node's"),
+    PhaseSpec::auto("reveal", "reveal the next event card face up, a round ahead; then income: agent income into each board's pool, and the compute step (income, botnets, corrupted stations and the compute banked since the last turn onto the projects, which resolve as they fill); then every firewall comes off"),
     PhaseSpec::auto("event", "the face-up event card becomes this round's (none left: the adversary wins)"),
 ];
 
@@ -301,9 +302,9 @@ fn flip(g: &mut GameState, cx: &mut Cx) {
     });
 }
 
-/// The board's difficulty line's extra standing troops (135), from
-/// `adversary.board_difficulty_at`.
-fn standing_troops_bonus(w: &World) -> i64 {
+/// The board's difficulty line's extra troops on every Deploy (135; 175: an event's, a project's and the
+/// Protector landing alike), from `adversary.board_difficulty_at`.
+pub fn deploy_bonus(w: &World) -> i64 {
     if !level(w, w.int("adversary.board_difficulty_at")) {
         return 0;
     }
@@ -331,24 +332,10 @@ pub fn threat_compute(w: &World) -> i64 {
 }
 
 /// The event card's standing lines (135): compute, ambassadors and troops,
-/// resolved as the team's; a line landing troops gets the difficulty bonus.
+/// resolved as the team's; a Deploy gets the difficulty bonus where it lands (`team::troops`, 175).
 fn standing(g: &mut GameState, cx: &mut Cx, c: &AdversaryCard) -> Res {
-    let w = cx.world;
-    let bonus = standing_troops_bonus(&w);
     for e in &c.standing {
-        let op = match e {
-            Op::Troops { count, each_country: true, destroy, at, stand, location, if_ } if bonus > 0 => Op::Troops {
-                count: count + bonus,
-                each_country: true,
-                destroy: *destroy,
-                at: *at,
-                stand: *stand,
-                location: *location,
-                if_: *if_,
-            },
-            other => other.clone(),
-        };
-        effects::run(g, cx, std::slice::from_ref(&op), &mut effects::Ctx::team().named("standing").why(&c.name))?;
+        effects::run(g, cx, std::slice::from_ref(e), &mut effects::Ctx::team().named("standing").why(&c.name))?;
         if g.is_over() {
             break;
         }
@@ -442,37 +429,12 @@ impl Module for Adversary {
                         return Ok(());
                     }
                 }
-                // Botnets make compute, except under a player ambassador.
-                let per = w.int("adversary.botnet_compute");
-                let (mut made, mut blocked) = (0, 0);
-                for h in 0..g.hexes.len() {
-                    let n = g.tokens(h, BOTNET) * per;
-                    if n == 0 {
-                        continue;
-                    }
-                    let cut = cut_key(h);
-                    if g.var(&cut) > 0 {
-                        // A hack cut it off (021): no compute this build.
-                        cx.set_key(g, &cut, 0);
-                        blocked += n;
-                    } else if player_ambassador(g, h).is_some() {
-                        blocked += n;
-                    } else {
-                        made += n;
-                    }
-                }
-                if blocked > 0 {
-                    cx.tally(g, "adversary.compute_blocked", blocked);
-                    cx.per_round(g, "adversary.compute_blocked", blocked);
-                }
-                cx.tally(g, "adversary.compute_botnets", made);
-                gain_compute(g, cx, made)?;
             }
             1 => {
                 // 138: the card's Corrupt X lines, in card order (they replace the spread).
                 for t in twists(&w, g) {
                     if let Op::Corrupt { site, cut } = t {
-                        corrupt_sites(g, cx, *site, *cut, None);
+                        corrupt_sites(g, cx, *site, *cut, None)?;
                         if g.is_over() {
                             return Ok(());
                         }
@@ -589,7 +551,14 @@ impl Module for Adversary {
             "adv. compute income",
             g.var(INCOME_COMPUTE),
             None,
-            "adversary compute income a round, at the end of its turn, onto the projects",
+            "adversary compute income a round, added in its compute step with every other source",
+        );
+        out.global(
+            "compute_waiting",
+            "adv. compute waiting",
+            g.var(WAITING) + g.var(WAITING_EVERY) * g.pile(PROJECTS).len() as i64,
+            None,
+            "compute made since the adversary's last turn: it goes onto the projects in its next compute step",
         );
         out.global(
             "income_ambassadors",
@@ -709,6 +678,7 @@ impl Module for Adversary {
             "adversary.ongoing_from.",
             "adversary.cut.",
             "adversary.pool.",
+            "adversary.slot.",
         ]);
     }
 }
@@ -741,11 +711,30 @@ fn draw_project(g: &mut GameState, cx: &mut Cx, reshuffles: &mut u32) -> Option<
 /// into the first empty slot it fits (a slot's tag, or any; Universal fits
 /// every slot), else to the discard; the discard reshuffles when the deck runs
 /// out; a slot still unfilled after one reshuffle takes the next card anyway
-/// (tallied: a content bug). The row is the slots in order.
+/// (tallied: a content bug). The row is the slots in order. 175: only the empty slots are dealt (each slot
+/// refills as it empties); a visible project keeps its slot (`slot_key`).
 fn deal_projects(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
     let slots = &w.content.adversary_board.project_slots;
     let mut filled: Vec<Option<Key>> = vec![None; slots.len()];
+    let mut loose = Vec::new();
+    for id in g.pile(PROJECTS).to_vec() {
+        let k = g.var(&slot_key(&id)) - 1;
+        if k >= 0 && (k as usize) < filled.len() && filled[k as usize].is_none() {
+            filled[k as usize] = Some(id);
+        } else {
+            loose.push(id);
+        }
+    }
+    // A visible project with no slot recorded (a state built by hand) takes the first empty slot it fits.
+    for id in loose {
+        let tags = &project(&w, &id).tags;
+        let fits = |k: usize| filled[k].is_none() && slots[k].tag.is_none_or(|t| ThreatTag::fits(tags, &[PullTag::Is(t)]));
+        if let Some(k) = (0..slots.len()).find(|&k| fits(k)).or_else(|| filled.iter().position(Option::is_none)) {
+            cx.set_key(g, &slot_key(&id), k as i64 + 1);
+            filled[k] = Some(id);
+        }
+    }
     let mut reshuffles = 0u32;
     while filled.iter().any(Option::is_none) {
         let Some(id) = draw_project(g, cx, &mut reshuffles) else {
@@ -772,6 +761,7 @@ fn deal_projects(g: &mut GameState, cx: &mut Cx) {
         cx.move_card(g, &id, PROJECT_DECK, to, false)
             .expect("top of the project deck");
         if let Some(k) = at {
+            cx.set_key(g, &slot_key(&id), k as i64 + 1);
             filled[k] = Some(id);
         }
     }
@@ -780,17 +770,105 @@ fn deal_projects(g: &mut GameState, cx: &mut Cx) {
     cx.set_pile(g, PROJECTS, row);
 }
 
-/// The adversary gains `n` compute: each point goes onto the cheapest
-/// visible project (ties: the first in the row); a project that fills
-/// resolves at once. With no project left, compute is lost.
+/// 175: the slot a visible project sits in (1-based; 0: none).
+fn slot_key(id: &str) -> KeyBuf {
+    KeyBuf::new("adversary.slot.").text(id)
+}
+
+/// A project leaves its slot (resolved or discarded): the slot refills at once (175).
+fn leave_slot(g: &mut GameState, cx: &mut Cx, id: &str) {
+    cx.set_key(g, &slot_key(id), 0);
+    deal_projects(g, cx);
+}
+
+/// 175: compute waiting for the adversary's turn: every source banks here, and the compute step adds it to
+/// the projects.
+pub const WAITING: &str = "adversary.compute_waiting";
+/// 175: compute waiting to go onto every visible project (`compute_every`), in the same step.
+pub const WAITING_EVERY: &str = "adversary.compute_every_waiting";
+
+/// The adversary gains `n` compute (175): it waits beside the projects until the compute step of the
+/// adversary's turn ([`compute_step`]); no project resolves outside that step.
 pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     if n <= 0 {
         return Ok(());
     }
-    let w = cx.world;
+    cx.add_key(g, WAITING, n);
     cx.add_key(g, COMPUTE, n);
     cx.tally(g, "adversary.compute_made", n);
     cx.per_round(g, "adversary.compute", n);
+    Ok(())
+}
+
+/// 175, the compute step (the end of the adversary's turn): all compute is added once: the printed income,
+/// each botnet without a player ambassador on it (and not hacked this round), each corrupted research station
+/// without one, and everything banked since the last step (threats, cards, projects). `compute_every` goes
+/// on every visible project first; then each point onto the cheapest visible project, a full one resolving
+/// at once and its slot refilling.
+pub fn compute_step(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    let income = g.var(INCOME_COMPUTE).max(0);
+    cx.tally(g, "adversary.compute_income", income);
+    let per = w.int("adversary.botnet_compute");
+    let (mut botnets, mut blocked) = (0, 0);
+    for h in 0..g.hexes.len() {
+        let n = g.tokens(h, BOTNET) * per;
+        if n == 0 {
+            continue;
+        }
+        let cut = cut_key(h);
+        if g.var(&cut) > 0 {
+            // A hack cut it off (021): no compute this turn.
+            cx.set_key(g, &cut, 0);
+            blocked += n;
+        } else if player_ambassador(g, h).is_some() {
+            blocked += n;
+        } else {
+            botnets += n;
+        }
+    }
+    if blocked > 0 {
+        cx.tally(g, "adversary.compute_blocked", blocked);
+        cx.per_round(g, "adversary.compute_blocked", blocked);
+    }
+    cx.tally(g, "adversary.compute_botnets", botnets);
+    // 137: an adversary station makes compute; one player ambassador on it blocks it.
+    let cubes = w.int("board.station_cubes");
+    let mut stations = 0;
+    for h in 0..g.hexes.len() {
+        if g.tokens(h, STATION) == 0 || !corrupted(g, h) {
+            continue;
+        }
+        if player_ambassador(g, h).is_some() {
+            cx.tally(g, "board.blocked.station_adversary", 1);
+        } else {
+            stations += cubes;
+        }
+    }
+    cx.tally(g, "board.station_compute", stations);
+    let fresh = income + botnets + stations;
+    cx.add_key(g, COMPUTE, fresh);
+    cx.tally(g, "adversary.compute_made", fresh);
+    cx.per_round(g, "adversary.compute", fresh);
+    cx.add_key(g, WAITING, fresh);
+    pour_waiting(g, cx)
+}
+
+/// 175: the waiting compute goes onto the projects (the compute step's second half): `compute_every` on every
+/// visible project first, then each point onto the cheapest one (ties: the first slot), a full one resolving at
+/// once and its slot refilling. With no project left, compute is lost.
+pub fn pour_waiting(g: &mut GameState, cx: &mut Cx) -> Res {
+    let w = cx.world;
+    let every = g.var(WAITING_EVERY);
+    cx.set_key(g, WAITING_EVERY, 0);
+    if every > 0 {
+        spend_every(g, cx, every)?;
+        if g.is_over() {
+            return Ok(());
+        }
+    }
+    let n = g.var(WAITING);
+    cx.set_key(g, WAITING, 0);
     for _ in 0..n {
         let Some(id) = g
             .pile(PROJECTS)
@@ -813,9 +891,17 @@ pub fn gain_compute(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     Ok(())
 }
 
-/// The adversary gains `n` compute on every visible project (074). A project
-/// that fills resolves at once, and one dealt by that gains nothing this time.
+/// The adversary gains `n` compute on every visible project (074): 175, it waits for the compute step.
 pub fn compute_every(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
+    if n > 0 {
+        cx.add_key(g, WAITING_EVERY, n);
+    }
+    Ok(())
+}
+
+/// `n` compute on every visible project, in the compute step. A project that fills resolves at once, and one
+/// dealt by that gains nothing this time.
+fn spend_every(g: &mut GameState, cx: &mut Cx, n: i64) -> Res {
     let w = cx.world;
     for id in projects(g) {
         cx.add_key(g, COMPUTE, n);
@@ -869,9 +955,7 @@ fn resolve_project(g: &mut GameState, cx: &mut Cx, id: &str) -> Res {
     cx.note(None, || {
         format!("Adversary project {} resolves: {}", p.name, p.text)
     });
-    if g.pile(PROJECTS).is_empty() {
-        deal_projects(g, cx);
-    }
+    leave_slot(g, cx, id);
     let once = if p.ongoing { &p.resolve } else { &p.effects };
     effects::run(g, cx, once, &mut effects::Ctx::team().named("project").why(&p.name))?;
     Ok(())
@@ -897,9 +981,7 @@ pub fn discard_project(g: &mut GameState, cx: &mut Cx, id: &str) {
     cx.note(None, || {
         format!("Adversary project {} is discarded", project(&w, id).name)
     });
-    if g.pile(PROJECTS).is_empty() {
-        deal_projects(g, cx);
-    }
+    leave_slot(g, cx, id);
 }
 
 /// Reveals the top deck card face up as next round's card (nothing if the deck is empty).
@@ -933,16 +1015,14 @@ fn fill_pools(g: &mut GameState, cx: &mut Cx) {
     }
 }
 
-/// 151, income, at the end of the adversary's turn: its compute income goes onto the projects, and each board's
-/// pool gains its ambassador income, to land at the next Rally.
+/// 151, income, at the end of the adversary's turn: each board's pool gains its ambassador income, to land at
+/// the next Rally; then the compute step (175: all compute at once, onto the projects).
 fn income(g: &mut GameState, cx: &mut Cx) -> Res {
     if g.is_over() {
         return Ok(());
     }
     fill_pools(g, cx);
-    let n = g.var(INCOME_COMPUTE);
-    cx.tally(g, "adversary.compute_income", n.max(0));
-    gain_compute(g, cx, n)
+    compute_step(g, cx)
 }
 
 /// 151: "increase income": for the rest of the game.
@@ -959,8 +1039,8 @@ pub fn rally_site(c: &AdversaryCard) -> Option<crate::op::RallyAt> {
 }
 
 /// 151, Rally X in board `scope` or every board: each board places its pool (or `count`, a project's rally)
-/// by [`super::plan::rally_plan`]: every eligible site gets the even share, and players choose which get one
-/// more (the remainder, one each). The supply is a cap. Tallied as `adversary.rallied` and by source.
+/// by [`super::plan::rally_plan`]: every site of the type gets the even share, the remainder one each on the
+/// lowest-numbered not the adversary's (175). The supply is a cap. Tallied as `adversary.rallied` and by source.
 pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i64, scope: Option<usize>, source: &str) -> Res {
     let w = cx.world;
     let boards: Vec<usize> = match scope {
@@ -983,30 +1063,15 @@ pub fn rally(g: &mut GameState, cx: &mut Cx, site: crate::op::RallyAt, count: i6
             continue;
         };
         let before = g.var(SUPPLY);
-        // 167: a Rally prohibition keeps a site's share in the supply; the remainder goes to the others.
-        let mut among = Vec::new();
-        for &h in &plan.sites {
+        // 175: one rule for a blocked landing: a prohibited or firewalled site's share stays in the supply.
+        for &(h, k) in &plan.shares {
+            if k <= 0 {
+                continue;
+            }
             match super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64) {
-                Some(wh) => prohibit_tally(g, cx, Step::Rally, wh, plan.each),
-                None => {
-                    place(g, cx, h, plan.each);
-                    among.push(h);
-                }
+                Some(wh) => prohibit_tally(g, cx, Step::Rally, wh, k),
+                None => place(g, cx, h, k),
             }
-        }
-        if among.len() < plan.extra as usize {
-            let wh = plan.sites.iter().find_map(|&h| super::plan::prohibition_on(&w, g, Step::Rally, h, g.round as i64));
-            if let Some(wh) = wh {
-                prohibit_tally(g, cx, Step::Rally, wh, plan.extra - among.len() as i64);
-            }
-        }
-        for _ in 0..plan.extra.min(among.len() as i64) {
-            let opts = among.iter().map(|&h| hex_opt(&w, h)).collect();
-            let prompt = || format!("Rally in {}: which site gains one more agent?", country_name(&w, c));
-            let Some(i) = cx.choose(0, prompt, opts)? else {
-                break;
-            };
-            place(g, cx, among.remove(i), 1);
         }
         let made = before - g.var(SUPPLY);
         cx.tally(g, "adversary.rallied", made);
@@ -1066,7 +1131,9 @@ fn wall_pressure(g: &mut GameState, cx: &mut Cx) -> Res {
             continue;
         }
         let hexes = w.map.countries[c].hexes.clone();
-        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true, false)?;
+        // 175: a Deploy like any other: the level surcharge, a Deploy prohibition, Wall keeping it in the supply.
+        let n = n + deploy_bonus(&w);
+        land_troops(g, cx, &hexes, n, "Troops land where the Protector stands: on which hex?", "adversary.wall_troops", None, true, true)?;
     }
     Ok(())
 }
@@ -1199,6 +1266,10 @@ pub fn corrupt_city(g: &mut GameState, cx: &mut Cx, h: usize) {
 /// are lost (024: they would free it in the same step); a marker comes off.
 pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) {
     let w = cx.world;
+    if site == CorruptSite::Node {
+        corrupt_node(g, cx, h);
+        return;
+    }
     if site == CorruptSite::Land {
         cx.add_tokens(g, h, LAND_CORRUPTION, 1);
     } else {
@@ -1229,15 +1300,33 @@ pub fn corrupt_hex(g: &mut GameState, cx: &mut Cx, h: usize, site: CorruptSite) 
     });
 }
 
+/// 175, a node hex corrupts: its agents go to the supply and the node is destroyed (the protections apply;
+/// the Sanctuary capstone keeps it). Nothing else on the hex changes.
+fn corrupt_node(g: &mut GameState, cx: &mut Cx, h: usize) {
+    let w = cx.world;
+    let n = g.tokens(h, ADV_AMBASSADOR);
+    remove(g, cx, h, n);
+    if let Some(s) = node_owner(g, h) {
+        if !cards::has_passive(&w, g, s, |p| matches!(p, Op::CorruptionShield)) {
+            board::destroy_piece(g, cx, h, node(s), board::Cause::Effect("corruption"));
+        }
+    }
+    cx.tally(g, "adversary.corruptions", 1);
+    cx.tally(g, "adversary.corruptions.node", 1);
+    cx.note(Some(h), || format!("The node at {} is corrupted", hex_name(&w, h)));
+}
+
 /// 138: the corrupt number of `site` this game: its config number, less the
 /// difficulty's `corrupt_cut` from `corrupt_cut_at`, less a line's `cut`; at
-/// least 1.
+/// least 1. 175: a coastal city's is a city's; a node's takes no difficulty cut.
 pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
+    let site = if site == CorruptSite::CoastalCity { CorruptSite::City } else { site };
     let base = match site {
-        CorruptSite::City => w.int("adversary.corrupt_at"),
+        CorruptSite::City | CorruptSite::CoastalCity => w.int("adversary.corrupt_at"),
         CorruptSite::Station => w.int("adversary.corrupt_station_at"),
         CorruptSite::Factory => w.int("adversary.corrupt_factory_at"),
         CorruptSite::Land => w.int("adversary.corrupt_land_at"),
+        CorruptSite::Node => w.int("adversary.corrupt_node_at"),
     };
     let ladder = if level(w, w.int("adversary.corrupt_cut_at")) {
         let i = CorruptSite::ALL.iter().position(|&s| s == site).unwrap_or(0);
@@ -1248,33 +1337,77 @@ pub fn corrupt_n(w: &World, site: CorruptSite, cut: i64) -> i64 {
     (base - ladder - cut).max(1)
 }
 
-/// 138, a Corrupt X line in country `scope` or everywhere: what
-/// [`super::plan::corrupt_plan`] says, pulled in and corrupted.
-pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) {
+/// 175, a Corrupt X line in country `scope` or everywhere: every agent next to an X ([`super::plan::converge`])
+/// moves onto it, players choosing for one next to several; then every X holding its number corrupts. A
+/// moving agent arriving on a player ambassador cancels it, as any arrival does.
+pub fn corrupt_sites(g: &mut GameState, cx: &mut Cx, site: CorruptSite, cut: i64, scope: Option<usize>) -> Res {
     let w = cx.world;
     let n = corrupt_n(&w, site, cut);
-    let (plan, blocked) = super::plan::corrupt_plan_blocked(&w, g, site, n, scope);
-    for (_, wh, k) in blocked {
-        prohibit_tally(g, cx, Step::Corrupt, wh, k);
+    let cv = super::plan::converge(&w, g, site, scope);
+    // Single-target agents first, so a choice sees where the forced ones went.
+    let mut flexible = Vec::new();
+    for (h, to) in &cv.sources {
+        if to.len() == 1 {
+            let k = g.tokens(*h, ADV_AMBASSADOR);
+            for _ in 0..k {
+                converge_one(g, cx, *h, to[0]);
+            }
+        } else {
+            flexible.push((*h, to.clone()));
+        }
     }
-    for (t, pulls) in plan {
-        for (h, k) in pulls {
-            remove(g, cx, h, k);
-            cx.tally(g, "adversary.pulled", k);
+    for (h, to) in flexible {
+        while g.tokens(h, ADV_AMBASSADOR) > 0 {
+            let opts = to.iter().map(|&t| hex_opt(&w, t)).collect();
+            let prompt =
+                || format!("Corrupt {} (at {n}): the agent at {} moves onto which?", site.plural(), hex_name(&w, h));
+            let Some(i) = cx.choose(0, prompt, opts)? else {
+                break;
+            };
+            converge_one(g, cx, h, to[i]);
+        }
+    }
+    for t in cv.targets {
+        let held = g.tokens(t, ADV_AMBASSADOR) + if site != CorruptSite::Node && is_city(&w, t) { g.tokens(t, MARKER) } else { 0 };
+        if held < n {
+            continue;
+        }
+        if let Some(&(_, wh)) = cv.blocked.iter().find(|(b, _)| *b == t) {
+            prohibit_tally(g, cx, Step::Corrupt, wh, held);
+            continue;
+        }
+        // An earlier corruption may have taken this target's node (a node line) or flipped it already.
+        if !super::plan::corrupt_target(&w, g, t, site) {
+            continue;
         }
         corrupt_hex(g, cx, t, site);
         if g.is_over() {
-            return;
+            return Ok(());
         }
+    }
+    Ok(())
+}
+
+/// 175: one agent moves from `from` onto `to` (Corrupt X's convergence): on a player ambassador the two cancel.
+fn converge_one(g: &mut GameState, cx: &mut Cx, from: usize, to: usize) {
+    cx.add_tokens(g, from, ADV_AMBASSADOR, -1);
+    cx.tally(g, "adversary.converged", 1);
+    if let Some(s) = player_ambassador(g, to) {
+        cx.add_tokens(g, to, ambassador(s), -1);
+        cx.add_key(g, SUPPLY, 1);
+        cx.tally(g, "adversary.canceled", 1);
+    } else {
+        cx.add_tokens(g, to, ADV_AMBASSADOR, 1);
     }
 }
 
 /// 138, natural corruption at the end of the event card: every city,
 /// research station or factory already holding its corrupt number (a city's
-/// markers count, 034) corrupts, with no move, in hex order.
+/// markers count, 034) corrupts, with no move, in hex order; 175: then every
+/// hex with a player's node holding a node's number loses the node.
 fn natural_corruption(g: &mut GameState, cx: &mut Cx) {
     let w = cx.world;
-    for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory] {
+    for site in [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Node] {
         let n = corrupt_n(&w, site, 0);
         for h in super::plan::natural_targets(&w, g, site, n) {
             // 167: a Corrupt prohibition covers natural corruption too.
@@ -1309,8 +1442,10 @@ pub fn land_troops(
 ) -> Res {
     let w = cx.world;
     for _ in 0..count {
-        // 068: a landing enters its hex, so a Wall stops it too.
-        let open = |h: &usize| !board::walled(&w, g, *h);
+        // 068: a landing enters its hex, so a Wall stops it too. 175: a deterministic landing (a Deploy) aims at
+        // the lowest-numbered factory whatever stands there, and a Wall there keeps it in the supply; a chosen
+        // one (a threat's) is offered only open hexes.
+        let open = |h: &usize| lowest || !board::walled(&w, g, *h);
         let mut spots: Vec<usize> = hexes
             .iter()
             .copied()
@@ -1338,6 +1473,10 @@ pub fn land_troops(
                 prohibit_tally(g, cx, Step::Deploy, wh, 1);
                 continue;
             }
+        }
+        if board::walled(&w, g, spots[i]) {
+            cx.tally(g, "adversary.walled_landing", 1);
+            continue;
         }
         place_troop(g, cx, spots[i]);
         cx.per_round(g, OPS, 1);

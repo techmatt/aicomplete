@@ -1,6 +1,5 @@
 //! Node: the two tracks, what a placement costs and pays, and losing a node.
 
-use crate::module::Hot;
 use crate::key::KeyBuf;
 use crate::content::Uncover;
 
@@ -181,22 +180,14 @@ pub fn place_node(g: &mut GameState, cx: &mut Cx, seat: usize, how: Placing) -> 
     Ok(true)
 }
 
-/// Whether seat `s`'s node is safe as its last (027): while this round's
-/// adversary card is below `last_safe_stage` (stage II), nothing destroys a
-/// player's last node. Public for the agents' forecasts (092's shelter read).
-pub fn last_node_safe(w: &World, g: &GameState, s: usize) -> bool {
-    g.var(adversary::STAGE) < w.hot(Hot::LastSafeStage) && node_count(g, s) <= 1
-}
-
-/// Seat `s` loses its nodes on hex `h`, unless it is safe as their last.
+/// Seat `s` loses its nodes on hex `h` (175: a last node too: no stage protects it).
 /// It leaves the game, as in Spirit Island (034: what it uncovered stays
 /// uncovered), and leaves a corruption marker on the hex unless the hex has
 /// corruption already. The tally names `source`. Returns whether it went.
 pub fn lose_node(g: &mut GameState, cx: &mut Cx, h: usize, s: usize, source: &str) -> bool {
     let w = cx.world;
-    if last_node_safe(&w, g, s) {
-        cx.tally(g, "board.last_node_safe", 1);
-        return false;
+    if node_count(g, s) <= 1 {
+        cx.tally(g, "board.last_node_lost", 1);
     }
     cx.add_tokens(g, h, node(s), -1);
     // 041: a shield on the hex goes with the token it shielded.

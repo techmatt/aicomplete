@@ -75,7 +75,8 @@ megaproject is the corp's defining card.
 
 - **Stations** follow the one site model ([ambassadors.md](ambassadors.md)). Each makes `station_cubes` research cube
   a round, in production, in its owner's color: a player's or **neutral**; an adversary station (corrupted) makes
-  that much adversary compute instead (137), so no adversary cube reaches a megaproject. No player starts with a
+  no cube but adds that much compute in the adversary's compute step (137, 175), so no adversary cube reaches a
+  megaproject. No player starts with a
   station: building one (`station_chips`) or claiming the neutral one (`claim_station` ambassadors) is an investment.
   One opposing ambassador or agent on a station blocks its output while it stands; an adversary station is liberated to
   neutral by the Liberate action.

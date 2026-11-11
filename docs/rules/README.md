@@ -22,7 +22,7 @@ The rules are split by area. Read this page, then only the files your task touch
 - [card-grammar.md](card-grammar.md): how a card's printed words resolve: costs, reach, targets, effects.
 - [tunables.md](tunables.md): every baseline config parameter with its value, range and meaning (generated).
 
-What the code implements, at rules revision 73 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
+What the code implements, at rules revision 74 (`RULES_REVISION`, `crates/aic-core/src/lib.rs`):
 the Militarist against Builder, Protector and Researcher (two countries seat Builder and
 Protector, three add the Researcher), 1-4 countries. The player cards are in
 [cards.md](../cards.md), priced in [card-pricing.md](../card-pricing.md). The
@@ -74,7 +74,7 @@ The house words, as the player aid prints them ([player-aid.md](../player-aid.md
 - **Convert**: an agent on or next to the city leaves its stack and becomes yours, on your node whose reach you used.
 - **Gather up to N**: pieces (ambassadors, agents, troops; botnets and markers never move) into a hex in your reach, each from a hex next to it; you may stop at any piece (a strike, "and remove them", picks only the hex and takes troops first).
 - **Push up to N**: pieces from a hex in your reach, each to a hex next to it that you choose; you may stop at any piece.
-- **Firewall**: a token on a hex: no agent lands or is pulled there; it comes off at the end of the next adversary turn.
+- **Firewall**: a token on a hex: no agent lands or moves there (a Rally share for it stays in the supply); it comes off at the end of the next adversary turn.
 - **In the next adversary turn, no X**: a Unity card's prohibition: that step skips each site where the condition holds when the step runs; what it would have placed stays in the supply.
 <!-- /generated -->
 
@@ -90,7 +90,7 @@ The rest:
   are most of a card's. The exceptions are Spread (Exodus Corridors, measured from
   the ambassador), and country effects such as a tier-2 sweep or Shelter (any country;
   [card-grammar.md](card-grammar.md)). Reach is 1 for every player rule: no deck card's
-  move goes further. The adversary's distances (a Corrupt line's gathering from next door, `war_reach`) are its dials, not
+  move goes further. The adversary's distances (a Corrupt line moving agents from next door, `war_reach`) are its dials, not
   a player's reach ([adversary.md](adversary.md), [war.md](war.md)). A converter is not a map target: it needs a node in a city of
   its country ([board.md](board.md)).
 - **Site**: a city, research station or factory (137: one site model, [ambassadors.md](ambassadors.md)). A military

@@ -52,8 +52,9 @@ adds only what it beats the weakest by (`plan_cover`). Each switch's default and
 **Move heuristics (`agents/moves.rs`, 166; `move_rules`, on).** Gather and Push prompts: push agents off the next
 Corrupt site onto empty land with no clean site next to it; gather (or push) agents onto a spare ambassador (no
 armor, no Liberate it pays toward) to cancel; gather free ambassadors onto an adversary site when a seat in reach can
-then pay its Liberate. Anything else, and every strike, is the search's. `aic-sim experiment` prints their fires a
-game (all its games: an on/off run halves it).
+then pay its Liberate (never onto a node hex). Anything else, and every strike, is the search's. `aic-sim experiment`
+prints their fires a game. **Converge** (175, `converge_rule`, on): a Corrupt line's agent next to several sites
+goes where `plan::converge_pick` sends it.
 
 Spec syntax: `kind[:key=value,...]`; a weight takes `w.` (`greedy:w.corrupted=40`), a table
 number `t.`, a plan or strategy switch goes bare (`strategist:plan_bury=0`). `greedy` and the

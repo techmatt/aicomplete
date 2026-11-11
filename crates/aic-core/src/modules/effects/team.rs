@@ -26,10 +26,11 @@ pub(super) fn troops(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64, each
     let tally = ctx.says("threats.troops", "adversary.project_troops");
     // 151: an event's, a project's or the board's troops land deterministically (the lowest-numbered).
     let lowest = ctx.threat.is_none() && matches!(ctx.label, "standing" | "project" | "board");
+    // 175: each of those is a Deploy: a Deploy prohibition stops it and the level surcharge adds to it.
+    let deploy = lowest;
+    let count = if deploy { count + adversary::deploy_bonus(&w) } else { count };
     for hexes in regions(&w, g, ctx, each_country) {
         let kills = destroy.then_some(ctx.label);
-        // 167: an event's Deploy is the step a Deploy prohibition switches off.
-        let deploy = ctx.threat.is_none() && ctx.label == "standing";
         adversary::land_troops(g, cx, &hexes, count, prompt, tally, kills, lowest, deploy)?;
     }
     Ok(())
@@ -92,11 +93,8 @@ pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count
         hexes.retain(|&h| within(&w, h, 1).into_iter().any(|x| is_base(&w, x)));
     }
     for s in ctx.seats(&w, g) {
+        // 175: any source takes a last node (135's threat floor is gone).
         for _ in 0..count {
-            // 135: a threat never takes a last node.
-            if ctx.threat.is_some() && node_count(g, s) <= 1 {
-                break;
-            }
             board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect(ctx.label), ctx.why.as_deref())?;
         }
     }
@@ -104,7 +102,7 @@ pub(super) fn each_destroy_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count
 }
 
 /// 146 (`DestroyNode`): the player a threat hits destroys `count` of their
-/// nodes closest to it, wherever they are; never their last node.
+/// nodes closest to it, wherever they are (175: their last node too).
 pub(super) fn destroy_nearest_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, count: i64) -> Res {
     let w = cx.world;
     let Some(t) = ctx.threat else {
@@ -112,9 +110,6 @@ pub(super) fn destroy_nearest_node(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, co
     };
     for s in ctx.seats(&w, g) {
         for _ in 0..count {
-            if node_count(g, s) <= 1 {
-                break;
-            }
             let hexes = threats::nearest_nodes(&w, g, s, &t);
             if hexes.is_empty() {
                 break;

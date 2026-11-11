@@ -69,13 +69,17 @@ takes `troop_steps` steps** (Forced March's twist: more), one troop at a time, i
 march starts. A troop a threat lands follows the troop's normal rules (146: no standing troops); troops a threat
 lands to "march at once" (Total War) take their steps as it executes. A step is one of:
 
+- **remove an ambassador** (175, Matt's ruling: ambassadors are non-combatants): a troop that starts a step on a hex
+  with an ambassador, any player's, removes one (players choose whose) instead of moving or striking, so it can
+  remove two in a march; ambassador armor still answers a strike from next door ([ambassadors.md](ambassadors.md)), or
 - **destroy** a target on or next to its hex (players choose which), or
 - with none there, **move** one hex toward the nearest target. When several hexes are
   equally good steps (several targets equally near, or several ways toward one), the
   players choose: a choice among bad options, as with Spirit Island's blight.
 
 **Wall (candidate, Matt).** Adversary troops can't enter a hex with the Protector's node: a
-march goes around it, and a landing skips it. **Nor can a troop strike into it (Matt):** a
+march goes around it, and a Deploy there stays in the supply (175: one rule for a blocked landing; a threat's
+landing, the players' choice, is offered only open hexes). **Nor can a troop strike into it (Matt):** a
 facility on a hex with the Protector's node is no target, so it stands until the node goes.
 A troop already standing on a hex when the Protector places there leaves as it likes. The
 build's `wall_troops` landing ([adversary.md](adversary.md)) puts the strikes Wall stops where the Protector stands.
@@ -91,7 +95,7 @@ four hexes away, in the march after. **Players see each hit coming:** the view d
 troop's next target (the nearest; the arrow is solid when the hit lands in the next march),
 and every troop on the board was there through an action phase except those that arrive
 between the action phase and the march (built in production, placed by an uncountered
-threat or by Armored Columns in the build): an adversary factory within two hexes of your
+threat, or deployed in the build): an adversary factory within two hexes of your
 station or factory is a known danger. Cards remove troops, each card naming how many.
 Removing a troop sways `alignment.troop` toward Unity: 0 since r38 (Matt: removing one already
 pays by stopping its harm, so the Sway counted it twice); a card meant to build Unity that way
@@ -105,9 +109,11 @@ each troop takes two steps. If a research station or factory you own is on or ne
 troop's hex, it destroys that piece and leaves the board; otherwise it walks one hex toward
 the nearest such piece. So a troop two hexes from your piece hits it next round, and one
 three or four hexes away a round later; the arrows on the board show where each troop is
-heading. Troops never attack cities. To stop a hit, remove the troop with a card, keep a
-corp troop at a military base next to the target, harden the target, stand your own ambassador on
-it, or put the Protector's node on it or in its way. Troops don't hit nodes.
+heading. Troops never attack cities. **Ambassadors don't fight** (175): a troop that starts a step on a hex with an
+ambassador (any player's) removes one, the players choosing whose, instead of moving or striking, so in two steps it
+can remove two. To stop a hit, remove the troop with a card, keep a corp troop at a military base next to the target,
+harden the target, stand your own ambassador on it (armor against a strike from next door), or put the Protector's
+node on it or in its way. Troops don't hit nodes.
 
 **Sites, bases and war, for new players.** Cities, research stations and factories work alike: whoever owns one gets
 its output (energy, research cubes, chips), and the adversary's make Discord, compute or raiders. Claim a neutral site
@@ -121,28 +127,23 @@ Discord: keep neutral factories quiet and the Discord track low. **What resisted
 troops (Warmongering, Arms Race) ignore the pile's cap, and the agent count you pay for
 grows by one for each agent already on the site.
 
-**This is the troops' own movement rule** (an exception to "no movement rules"); a Corrupt line's pull moves agents one
-hex onto the site that corrupts ([adversary.md](adversary.md)), and Gather and Push (cards, the Protector's Patrol) move
+**This is the troops' own movement rule** (an exception to "no movement rules"); a Corrupt line moves every agent next
+to a site of its type one hex onto it ([adversary.md](adversary.md)), and Gather and Push (cards, the Protector's Patrol) move
 ambassadors, agents and troops ([ambassadors.md](ambassadors.md)). **A Discord tip doesn't move troops**, and
 `board.troop_steps` 0 is the off-switch ([README.md](README.md#off-variants)): troops never march or strike (Gather and Push still move them).
 
 **Node destruction.** A player with no nodes on the board loses the game for everyone ([alignment.md](alignment.md)).
 **It is a slide, not a cliff, and it is local (139, Matt):** a seat loses tokens a few at a time from the middle of
-the game on, only where the board is overrun: an uncountered threat that prints it (146: Dark Cities, Purge
-Protocols, Grid Collapse, Overload and Last Ultimatum make the nearest player destroy their node closest to it, never
-their last; Siege takes the node on its factory's hex), a site that becomes
-corrupted (138: only a node on its own hex), war that destroys a factory (nodes on its hex and, by `war_reach`, next
-to it: 0, an adversary dial kept below the players' reach 1, so war takes only the factory's hex) and Border War (each
-player with a node on or next to a front's base destroys 1 of those; Matt's message 5847). **Nothing else destroys a
-node:** Discord cards, projects and the other event cards print board pressure instead (more or higher-tier threats,
-creation, Corrupt lines, credits, Unity or ambassadors lost; [alignment.md](alignment.md)); Offensive deals a threat
-onto the node hex with the most agents and troops (ties: country, then lower hex number), which
-destroys nodes only if it goes uncountered. A hit is each player's own pick of which token, and it is absorbed as any
-destruction is (below), so a token shielded by an ambassador is a good pick.
-**While this round's adversary card is stage I, a player's last node can't be destroyed**
-(candidate, **Early fragility**, kept at 139): each player starts with 1, and a war in round 2 would
-otherwise end the game. A threat's printed node line never takes a last node, at any stage. A site that corrupts destroys the node on its hex as any destruction (138): an
-ambassador there, a shield or a shelter answers it.
+the game on, only where the board is overrun: an uncountered threat that prints it (146: the nearest player destroys
+their node closest to it; Siege takes the node on its factory's hex), a site that corrupts (138: only a node on its
+own hex), a node hex holding `corrupt_node_at` (2) agents (175, [adversary.md](adversary.md)), war that destroys a
+factory (nodes on its hex and, by `war_reach` 0, none next to it) and Border War (each player with a node on or next
+to a front's base destroys 1 of those). **Nothing else destroys a node:** Discord cards, projects and the other event
+cards print board pressure instead ([alignment.md](alignment.md)); Offensive deals a threat onto the node hex with the
+most agents and troops. A hit is each player's own pick of which token, absorbed as any destruction is (below).
+**No last-node safety (175, Matt's ruling).** Every source above takes a last node, at any stage; a player with no
+nodes still loses for everyone. A spare is the tool: each player starts with `board.start_nodes` (1; extras on the
+lowest-numbered free land hexes next to the start, off no track; 177 calibrates the tool set).
 
 **A lost node (locked, as in Spirit Island).** A destroyed node, or one paid to counter a threat,
 **leaves the game**: it does not go back on its track, and what it uncovered stays

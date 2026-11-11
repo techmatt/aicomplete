@@ -356,7 +356,8 @@ mod tests {
         let printed = w.content.alignment.iter().filter(|c| c.side == Side::Unity).count();
         assert_eq!(printed, g.pile(key).len());
         let last = *g.pile(key).last().unwrap();
-        let reached = (0..40).any(|s| {
+        // 175: 200 guesses (40 missed a 23-card deck's last card about one time in six: r74's start state did).
+        let reached = (0..200).any(|s| {
             let mut h = g.clone();
             determinize(&r, &mut h, &mut ChaCha8Rng::seed_from_u64(s));
             h.pile(key).first() == Some(&last)

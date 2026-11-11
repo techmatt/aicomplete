@@ -52,16 +52,34 @@ fn compute_fills_the_cheapest_project_which_resolves_when_full() {
     );
     // At 2 players: Botnet Swarm 12, Disinformation 10, Market Crash 10.
     row(&mut g, &["botnet_swarm", "disinformation", "market_crash"]);
-    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,11)).unwrap();
     // Disinformation (the first of the cheapest) filled at 10 and resolved:
-    // 5 (142; 4 before) toward Discord. The 11th point went onto Market Crash.
+    // 5 (142; 4 before) toward Discord. The 11th point went onto the cheapest of the row, its slot refilled
+    // at once (175).
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 5);
-    assert_eq!(g.var(&adversary::project_key("market_crash")), 1);
+    let on: i64 = adversary::projects(&g).iter().map(|p| g.var(&adversary::project_key(p))).sum();
+    assert_eq!(on, 1);
     assert_eq!(g.var(&adversary::project_key("botnet_swarm")), 0);
     assert_eq!(g.var(adversary::COMPUTE), 11);
     assert_eq!(g.stats.counters["adversary.project.disinformation"], 1);
     assert_eq!(g.stats.per_round["adversary.compute"][1], 11);
+}
+
+/// 175: each slot refills as it empties; the others keep their projects and compute.
+#[test]
+fn a_slot_refills_as_its_project_resolves() {
+    let (rules, mut g) = lab_with(&[], &["projects.disinformation.cost=5", "projects.armored_columns.cost=10"]);
+    row(&mut g, &["armored_columns", "disinformation"]);
+    g.vars.insert(adversary::project_key("armored_columns").into(), 3);
+    g.piles.insert(PROJECT_DECK.into(), ["station_coup", "war_footing"].map(Key::new).to_vec().into());
+    set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx, 10)).unwrap();
+    assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
+    // The Military slot keeps Armored Columns and its 3; an open slot takes Station Coup.
+    assert_eq!(g.pile(PROJECTS)[0], "armored_columns");
+    assert!(g.pile(PROJECTS).iter().any(|p| p == "station_coup"));
+    assert_eq!(g.var(&adversary::project_key("armored_columns")), 3);
 }
 
 #[test]
@@ -92,7 +110,7 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     );
     // Setup's misses: cleared, so the deck never reshuffles here.
     set_pile(&mut g, adversary::PROJECT_DISCARD, &[]);
-    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 11)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,11)).unwrap();
     // Disinformation (10) resolved: Sway 5 toward Discord.
     assert_eq!(g.pile(PROJECTS_DONE), ["disinformation"]);
     assert_eq!(g.var("alignment.discord"), 5);
@@ -108,7 +126,7 @@ fn a_new_row_is_dealt_into_the_slots_when_all_have_resolved() {
     // An ongoing project (Grid Capture, 18) goes into play and acts every round's build.
     row(&mut g, &["grid_capture"]);
     g.vars.insert(adversary::project_key("grid_capture").into(), 17);
-    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
     assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
     // The deck holds one card: it fills the Military slot, the rest stay empty.
     assert_eq!(g.pile(PROJECTS), ["war_footing"]);
@@ -139,7 +157,7 @@ fn an_ongoing_project_filled_in_the_build_waits_a_round() {
     row(&mut g, &["grid_capture"]);
     let cost = adversary::project_cost(&w, &g, "grid_capture");
     g.vars.insert(adversary::project_key("grid_capture").into(), cost - 1);
-    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, 1)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,1)).unwrap();
     assert_eq!(g.pile(PROJECTS_ONGOING), ["grid_capture"]);
     assert!(adversary::ongoing_acting(&g).is_empty(), "not this round");
     g.round += 1;
@@ -148,7 +166,8 @@ fn an_ongoing_project_filled_in_the_build_waits_a_round() {
 
 #[test]
 fn a_player_ambassador_on_a_botnet_stops_its_compute_and_stays() {
-    let (rules, mut g) = lab(&["adversary.build"]);
+    // 175: botnets make compute in the compute step, after the reveal.
+    let (rules, mut g) = lab_with(&["adversary.reveal"], &["adversary.compute_income=0,0,0,0,0"]);
     let m = &rules.map;
     let (a, b) = (
         m.numbered(0, piece(0).stations[0]),
@@ -188,10 +207,12 @@ fn a_fifth_to_two_thirds_of_the_threats_carry_compute() {
 fn an_uncountered_threat_puts_its_compute_on_a_project() {
     let (rules, mut g) = threat_lab_with(&[r#"threats.embargo.effects=[{"op":"compute","amount":3}]"#]);
     row(&mut g, &["false_flag"]);
-    // Embargo, pinned to 3 compute.
+    // Embargo, pinned to 3 compute: 175, it waits for the adversary's compute step.
     deal(&mut g, "embargo", 0);
     pass_round(&rules, &mut g);
     assert_eq!(g.stats.counters["threats.executed"], 1);
+    assert_eq!(g.var(adversary::WAITING), 3);
+    with_cx(&rules, |cx| adversary::pour_waiting(&mut g, cx)).unwrap();
     assert_eq!(g.var(&adversary::project_key("false_flag")), 3);
 }
 
@@ -229,7 +250,9 @@ fn security_cards_drain_or_discard_a_project() {
             card: "killswitch_directive".into(),
         },
     );
-    assert_eq!(g.pile(PROJECTS).len(), 1);
+    // 175: its slot refills at once.
+    assert!(!g.pile(PROJECTS).iter().any(|p| p == "false_flag"));
+    assert!(g.pile(PROJECTS).iter().any(|p| p == "disinformation"));
     assert_eq!(g.var(&adversary::project_key("false_flag")), 0);
     assert_eq!(g.stats.counters["adversary.projects_discarded"], 1);
 }
@@ -289,7 +312,7 @@ fn purge_the_unaligned_takes_an_ambassador_never_a_node() {
     }
     row(&mut g, &["purge_the_unaligned"]);
     let cost = adversary::project_cost(&rules.world(), &g, "purge_the_unaligned");
-    with_cx(&rules, |cx| adversary::gain_compute(&mut g, cx, cost)).unwrap();
+    with_cx(&rules, |cx| gain_and_pour(&mut g, cx,cost)).unwrap();
     assert_eq!(g.pile(PROJECTS_DONE), ["purge_the_unaligned"]);
     assert_eq!((total(&g, node(0)), total(&g, node(1))), (2, 2));
     assert_eq!((g.resource(0, Resource::Ambassadors), g.resource(1, Resource::Ambassadors)), (0, 0));

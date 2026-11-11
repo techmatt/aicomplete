@@ -8,9 +8,9 @@
 //! open table; the eval credits a sheltered country with what it saves.
 
 use aic_core::content::{CounterItem, Op, RoundFlag};
-use aic_core::module::{Hot, World};
+use aic_core::module::World;
 use aic_core::modules::common::{self, FACTORY, HARDEN, UNIT};
-use aic_core::modules::{adversary, board, threats};
+use aic_core::modules::{board, threats};
 use aic_core::GameState;
 
 /// Pieces a destruction showing on the table would take in `country` this
@@ -38,7 +38,7 @@ pub enum Armor {
     /// 147: as the engine does (`board::destroy_piece`): a hardening token, the
     /// node owner's ambassador or the site owner's; each destroy spends one unit
     /// while any lasts, then takes a node. 148: one pool a hex across the
-    /// country's threats, and never a seat's last node (as the engine spares it).
+    /// country's threats (175: a seat's last node too, as the engine takes it).
     ByOwner,
 }
 
@@ -157,10 +157,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
     let mut pool: Vec<HexArmor> = Vec::new();
     let mut taken: Vec<i64> = Vec::new();
     let mut left: [Option<i64>; 4] = [None; 4];
-    // The engine's last-node floors: "destroy a node" never takes a seat's
-    // last (`team::destroy_nearest_node`); any other destroy spares it below
-    // the last-safe stage (`board::last_node_safe`).
-    let safe_stage = g.var(adversary::STAGE) < w.hot(Hot::LastSafeStage);
+    // 175: no last-node floor: every source takes a seat's last node.
     for (t, scope) in threats::active(g) {
         if scope != country || threats::waits(g, &t) {
             continue;
@@ -177,7 +174,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
         for op in &w.content.threat(&t).effects {
             match op {
                 Op::DestroyNode { count } if armor == Armor::AnyAmbassador => {
-                    if let Some(s) = hit.filter(|&s| s < seats && !board::last_node_safe(w, g, s)) {
+                    if let Some(s) = hit.filter(|&s| s < seats) {
                         let near: Vec<usize> =
                             threats::nearest_nodes(w, g, s, &t).into_iter().filter(|h| hexes.contains(h)).collect();
                         lost[s] += (near.iter().filter(|&&h| !absorbed(h)).count() as i64).min(*count);
@@ -198,7 +195,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                     let k = common::node(s);
                     for _ in 0..*count {
                         let have = *left[s].get_or_insert_with(|| common::node_count(g, s));
-                        if have <= 1 {
+                        if have <= 0 {
                             break;
                         }
                         if near.iter().any(|&i| pool[i].spend(s)) {
@@ -226,7 +223,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                             continue;
                         }
                         let have = *left[s].get_or_insert_with(|| common::node_count(g, s));
-                        if taken[i] >= g.tokens(h, common::node(s)) || (safe_stage && have <= 1) {
+                        if taken[i] >= g.tokens(h, common::node(s)) {
                             continue;
                         }
                         taken[i] += 1;
@@ -250,7 +247,7 @@ pub fn shelter_saves(w: &World, g: &GameState, country: usize, counter_first: bo
                             continue;
                         }
                         if let Some(s) = common::node_owner(g, h) {
-                            if s < seats && !board::last_node_safe(w, g, s) {
+                            if s < seats {
                                 lost[s] += 1;
                                 hit += 1;
                             }
@@ -373,13 +370,15 @@ mod tests {
         assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 0.0, "two units, two destroys");
     }
 
-    /// 148: the forecast never takes a seat's last node, however many destroys
-    /// show (the engine's "destroy a node" stops at one).
+    /// 175: the forecast takes a seat's last node as the engine does (148's floor is gone): three destroys
+    /// take both of two nodes, and one destroy a lone node.
     #[test]
-    fn the_forecast_spares_the_last_node() {
+    fn the_forecast_takes_the_last_node() {
         let (r, g) = lab(&["overload", "dark_cities"], 2, 0);
-        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 1.0, "three destroys, two nodes");
+        assert_eq!(shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).nodes[0], 2.0, "three destroys, two nodes");
         let (r, g) = lab(&["overload"], 1, 0);
-        assert!(!shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner).any());
+        let saves = shelter_saves(&r.world(), &g, 0, false, Armor::ByOwner);
+        assert_eq!(saves.nodes[0], 1.0);
+        assert!(saves.any());
     }
 }

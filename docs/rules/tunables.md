@@ -23,7 +23,7 @@ Every parameter of the baseline config, with its value and range, generated from
 | `board.claim_city` | 4 | 1..10 | the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at) |
 | `board.claim_station` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral research station |
 | `board.claim_factory` | 3 | 1..10 | the Claim action: ambassadors that claim a neutral factory |
-| `board.last_safe_stage` | 2 | 0..3 | while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe) |
+| `board.start_nodes` | 1 | 1..3 | 175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track) |
 | `board.free_leaves` | 0 | 0..5 | agents left on a city as it frees (the piece ladder) |
 | `board.destruction_discord` | 1 | 0..5 | Discord each facility destroyed in war sways |
 | `board.troop_spent` | 1 | 0..1 | 1: an adversary troop that strikes a target is used up |
@@ -48,10 +48,11 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.difficulty` | 0 | 0..4 | difficulty level 0-4 (each level includes the ones below) |
 | `adversary.stage_cards` | 4, 4, 3 | 0..20 | adversary cards dealt from stage I, II and III (before difficulty) |
 | `adversary.supply_per_country` | 24 | 0..40 | agents in the supply per country |
-| `adversary.corrupt_at` | 4 | 1..20 | Corrupt city: agents a city gathers (on it and next to it) to corrupt |
-| `adversary.corrupt_station_at` | 3 | 1..20 | Corrupt station: agents a research station gathers to corrupt |
-| `adversary.corrupt_factory_at` | 3 | 1..20 | Corrupt factory: agents a factory gathers to corrupt |
-| `adversary.corrupt_land_at` | 3 | 1..20 | Corrupt land: agents an empty land hex gathers to take land corruption |
+| `adversary.corrupt_at` | 4 | 1..20 | a city's corrupt number: the agents on it that corrupt it (coastal cities too) |
+| `adversary.corrupt_station_at` | 3 | 1..20 | a research station's corrupt number |
+| `adversary.corrupt_factory_at` | 3 | 1..20 | a factory's corrupt number |
+| `adversary.corrupt_land_at` | 3 | 1..20 | open land's corrupt number (only a Corrupt open land line; it takes land corruption) |
+| `adversary.corrupt_node_at` | 2 | 1..20 | 175: a node's corrupt number: a hex with a player's node and this many agents loses the node |
 | `adversary.corrupt_cut` | 1, 1, 1, 0 | 0..5 | difficulty corrupt_cut_at+: how much lower each corrupt number is (city, station, factory, land) |
 | `adversary.corrupt_cut_at` | 1 | 0..5 | the difficulty level from which corrupt_cut applies |
 | `adversary.blight_discord` | 1 | 0..5 | Discord each land-corruption token sways each round |

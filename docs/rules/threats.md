@@ -49,7 +49,7 @@ one whose node is closest to one of its tokens (hex distance, wherever that node
 players pick one (the engine asks the lowest tied seat, a loss; agents pick the seat that loses least). A player with
 no node on the board is never hit; with no node anywhere, only its board consequences land. So every uncountered
 threat lands on exactly one player, a predictable amount. "Destroy a node" takes the hit player's node closest to
-it, never their last.
+it, their last too (175).
 
 **Countering: a menu.** A threat prints a few ways to pay; the table pays **one option in full**:
 
@@ -92,7 +92,8 @@ after a counter phase in which it can be paid (Matt). **A resource harm reads "p
 player's choice; with neither possible, the player pays what they have and discards their hand), so holding none
 dodges nothing; theft is the same payment, and the adversary gains its compute either way. A corruption or seizure a
 threat prints is corruption, with its cleanup (the node on the site or its armor, the ambassadors there), and takes
-only the site it names. No threat takes a player's last node.
+only the site it names. A threat takes a player's last node like any other (175: no last-node safety, [war.md](war.md)).
+Its compute waits for the adversary's compute step ([adversary.md](adversary.md)).
 
 **For new players (the adversary model).** Each round the adversary's event card comes first. Its top line deals
 threats: in each country, turn up cards from the named tier's threat deck until one has a listed tag (a Universal card
@@ -101,13 +102,14 @@ or next to a token, you are *near* that threat and may help pay it off. Each thr
 scarce thing (energy, ambassadors, insight, research cubes, chips, or cards given up for their tags) or credits;
 resources can be pooled between players, giving up cards is done by one player alone. What a threat takes if unpaid is
 never what it asks for. Next the card rallies (each board's pool of agents lands on the sites of the type
-it names, spread evenly) and deploys its troops, then its other lines, its Corrupt lines (each site that can gather enough agents from itself and next door corrupts) and the march. You draft and act; production then runs from one
+it names, spread evenly) and deploys its troops, then its other lines, its Corrupt lines (every agent next to a site of
+the type moves onto it, and each site holding its number corrupts) and the march. You draft and act; production then runs from one
 snapshot of the board. At the end of the round each threat nobody paid does what it prints, and nothing else: one
 consequence, sometimes two, from a short list (troops or agents on its spot, compute, Sway toward
 Discord, Unity pulled back, a site corrupted or seized, a botnet, or the nearest player paying energy, chips, cubes or
 ambassadors or discarding cards, losing insight, a building, or a node). A player harm always hits the one player whose
-node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute fills the cheapest project on the
-adversary's board; a full project fires, and when every slot has fired they refill. **Harder levels** make threats
+node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Compute waits for the adversary's compute
+step, then fills the cheapest project on its board; a full project fires there, and its slot refills at once. **Harder levels** make threats
 harsher, not more: difficulty 1 lets sites corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (3 more credits), 2 adds 1 more again (3 credits), 3 gives the adversary 4 compute for each unpaid threat
 (and a shorter, busier game), and only 4 deals an extra threat a round.

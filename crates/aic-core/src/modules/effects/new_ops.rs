@@ -34,7 +34,7 @@ pub(super) fn one(g: &mut GameState, cx: &mut Cx, e: &Op, ctx: &mut Ctx) -> Res 
             adversary::create(g, cx, line, ctx.scope, &near, location, create_source(ctx));
         }
         Op::CreateSite { kind } => create_site(g, cx, ctx, *kind),
-        Op::Corrupt { site, cut } => adversary::corrupt_sites(g, cx, *site, *cut, ctx.scope),
+        Op::Corrupt { site, cut } => adversary::corrupt_sites(g, cx, *site, *cut, ctx.scope)?,
         Op::Flag { name, scope, rounds, everywhere } => flag(g, cx, ctx, *name, *scope, *rounds, *everywhere),
         Op::Requisition { resource, amount, cards: n, next_round } => {
             requisition(g, cx, ctx, *resource, *amount, *n, *next_round)?
@@ -340,7 +340,7 @@ fn corrupt_city(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, at: Option<Spot>) {
         if at == Some(Spot::Location) {
             for x in within(&w, h, 1) {
                 for s in 0..g.seats.len() {
-                    if g.tokens(x, node(s)) > 0 && node_count(g, s) >= 2 {
+                    if g.tokens(x, node(s)) > 0 {
                         board::lose_node(g, cx, x, s, ctx.label);
                     }
                 }
@@ -486,11 +486,7 @@ fn lose_node_or(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: 
     let hexes = ctx.hexes(&w, g);
     for s in ctx.seats(&w, g) {
         let mine = |g: &GameState| -> Vec<usize> {
-            if node_count(g, s) >= 2 {
-                hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect()
-            } else {
-                Vec::new()
-            }
+            hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect()
         };
         let can_pay = g.resource(s, r) >= amount;
         let mut opts = Vec::new();
@@ -710,7 +706,7 @@ fn destroy_factory(g: &mut GameState, cx: &mut Cx, ctx: &Ctx) {
         cx.set_key(g, &board::destroyed_key(t), h as i64 + 1);
     }
     for s in 0..g.seats.len() {
-        if g.tokens(h, node(s)) > 0 && node_count(g, s) >= 2 {
+        if g.tokens(h, node(s)) > 0 {
             board::lose_node(g, cx, h, s, ctx.label);
         }
     }

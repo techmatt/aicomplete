@@ -45,10 +45,10 @@ pub const SOURCES: [&str; 12] = [
 /// and the rule, as the ledger's note. Update this when an adversary rule changes.
 pub const RULE_HARMS: [(&str, &str, &str); 17] = [
     ("income and rally", "adversary pieces placed", "agent income fills each board's pool; every event's Rally X lands it on the sites of its type (151)"),
-    ("income and rally", "projects advanced (compute)", "compute income onto the projects every round (151)"),
+    ("income and rally", "projects advanced (compute)", "compute income onto the projects in the compute step every round (151; 175: with all other compute)"),
     ("income and rally", "ambassadors lost", "an arriving agent cancels a player ambassador there"),
     ("income and rally", "production blacked out", "an agent on a city or station blocks its output while it stands (137)"),
-    ("income and rally", "insight lost", "an agent on a lone node drains insight every round until removed"),
+    ("corruption", "node destroyed", "a hex with a player's node and `corrupt_node_at` agents loses the node (175; protections apply)"),
     ("botnets", "projects advanced (compute)", "each botnet makes compute"),
     ("botnets", "actions or claims blocked", "a botnet blocks site claims next to it"),
     ("corruption", "node destroyed", "a node on the corrupted hex itself is destroyed (an allied ambassador there is armor)"),
@@ -100,6 +100,9 @@ fn op_harms(op: &Op) -> Vec<usize> {
         Op::Requisition { resource: Resource::Ambassadors, .. } | Op::Theft { resource: Resource::Ambassadors, .. } => {
             vec![AMBASSADORS_LOST, CARDS_DISCARDED]
         }
+        // 175: "pays N insight or discards M cards" (Data Heist) is an insight loss too (the ledger read only the
+        // discard while the node drain kept insight's second source).
+        Op::Requisition { resource: Resource::Insight, .. } => vec![INSIGHT_LOST, CARDS_DISCARDED],
         Op::Requisition { .. } | Op::DiscardMostExpensive | Op::Discard { .. } => vec![CARDS_DISCARDED],
         Op::Theft { resource: Resource::Credits, .. } | Op::LoseIncome { resource: Resource::Credits, .. } => {
             vec![CREDITS_LOST]

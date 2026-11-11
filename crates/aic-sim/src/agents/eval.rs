@@ -1165,16 +1165,31 @@ impl Eval {
     }
 
     /// What site `h` would count toward corrupting: its own adversary
-    /// ambassadors (and a city's markers), plus, with a gathering line ahead,
-    /// those next to it in its country (138).
+    /// ambassadors (and a city's markers), plus, with a Corrupt line ahead,
+    /// those next to it (175: every agent next door moves onto it, across borders, but one standing on a clean
+    /// site of the same kind stays there).
     /// 151: `arriving` adds the coming Rally's expected ambassadors (empty: none).
     fn toward(rules: &Rules, t: &[HexTokens], arriving: &[f64], h: usize, gather: bool) -> f64 {
         let world = rules.world();
         let at = |x: usize| t[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
         let mut n = at(h) + if common::is_city(&world, h) { t[h].marker as f64 } else { 0.0 };
         if gather {
-            let c = world.map.hexes[h].country;
-            n += world.map.hexes[h].neighbors.iter().filter(|&&x| world.map.hexes[x].country == c).map(|&x| at(x)).sum::<f64>();
+            // The clean site kind on a hex (0: none): 1 city, 2 station, 3 factory.
+            let kind = |x: usize| -> u8 {
+                if t[x].adv_cube > 0 {
+                    0
+                } else if common::is_city(&world, x) {
+                    1
+                } else if t[x].station > 0 {
+                    2
+                } else if t[x].factory > 0 {
+                    3
+                } else {
+                    0
+                }
+            };
+            let own = kind(h);
+            n += world.map.hexes[h].neighbors.iter().filter(|&&x| own == 0 || kind(x) != own).map(|&x| at(x)).sum::<f64>();
         }
         n
     }
@@ -1217,6 +1232,8 @@ impl Eval {
         let (factory_at, factory_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Factory);
         // 147 (D67): land corrupts only by a Corrupt land line (no natural corruption).
         let (land_at, land_line) = plan::next_corrupt_n(&world, g, CorruptSite::Land);
+        // 175: a node hex's own number, and whether a Corrupt nodes line ahead gathers onto it.
+        let (node_at, node_gather) = plan::next_corrupt_n(&world, g, CorruptSite::Node);
         // 167: a Corrupt prohibition ahead (public): a hex its condition covers now carries no corruption
         // pressure, so meeting the condition before the adversary turn scores (the Rally forecast skips its sites).
         let corrupt_round = g.round as i64
@@ -1334,15 +1351,45 @@ impl Eval {
                 } else {
                     None
                 };
+                // 175: a node hex corrupts on its own number (2) of agents, whatever site it holds: a
+                // second read, the larger of the two counting. Agents only (a marker is a site's).
+                let node_r = if held && !banned(h) {
+                    let open = !common::firewalled(g, h);
+                    let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
+                    let mut k = at(h);
+                    if node_gather && open {
+                        // A Corrupt nodes line: agents next door move on, but not those on another node hex.
+                        k += world.map.hexes[h]
+                            .neighbors
+                            .iter()
+                            .filter(|&&x| tokens[x].node[..seats].iter().all(|&n| n == 0))
+                            .map(|&x| at(x))
+                            .sum::<f64>();
+                    } else if open && site.is_some_and(|(_, gathers, _)| gathers) {
+                        // The site's own Corrupt line moves agents onto this hex: short of the site's number they
+                        // stay, and the node goes at natural corruption.
+                        let markers = if city { t.marker as f64 } else { 0.0 };
+                        k = Self::toward(rules, &tokens, &arriving, h, true) - markers;
+                    }
+                    if k > 0.0 {
+                        let p = ((k + 0.5) / node_at.max(1) as f64).min(1.0);
+                        p * p
+                    } else {
+                        0.0
+                    }
+                } else {
+                    0.0
+                };
+                let site = site.or(if node_r > 0.0 { Some((node_at, node_gather, 0.0)) } else { None });
                 if let Some((n, gathers, share)) = site {
                     let toward = if banned(h) {
                         0.0
                     } else {
                         Self::toward(rules, &tokens, &arriving, h, gathers && !common::firewalled(g, h))
                     };
-                    if toward > 0.0 {
+                    if toward > 0.0 || node_r > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
-                        let r = p * p * share;
+                        let r = (p * p * share).max(node_r);
                         for (s, e) in exposed.iter_mut().enumerate().take(seats) {
                             if w.corrupt_exposure <= 0.0 || t.node[s] == 0 {
                                 continue;
@@ -1360,9 +1407,9 @@ impl Eval {
                             let armored = t.ambassador[s] > 0 || t.harden > 0;
                             *e += if armored { r * ARMORED_SHARE } else { r };
                         }
-                        if !city && t.station == 0 && t.factory == 0 {
+                        if share > 0.0 && !city && t.station == 0 && t.factory == 0 {
                             // Land corrupted drips Discord every round after.
-                            blight += r;
+                            blight += p * p * share;
                         }
                     }
                 }
@@ -1565,9 +1612,17 @@ impl Eval {
         v += w.level * level.steps() as f64;
         // A resolved (or ongoing) project counts in full, so letting one
         // fill never scores better than holding it back.
+        let mut cheapest = f64::MAX;
         for id in adversary::projects(g) {
             let cost = adversary::project_cost(&world, g, &id).max(1) as f64;
+            cheapest = cheapest.min(cost);
             v -= w.project * g.var(&adversary::project_key(&id)) as f64 / cost;
+        }
+        // 175: compute made since the adversary's last turn waits beside the projects until its compute step,
+        // then goes onto the cheapest: read as already there.
+        let waiting = g.var(adversary::WAITING) as f64;
+        if waiting > 0.0 && cheapest < f64::MAX {
+            v -= w.project * waiting / cheapest;
         }
         let resolved = g.stats.counters.get("adversary.projects_resolved");
         v -= w.project * resolved.copied().unwrap_or(0) as f64;

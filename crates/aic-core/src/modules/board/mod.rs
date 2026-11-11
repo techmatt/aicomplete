@@ -15,7 +15,7 @@ use crate::state::GameState;
 use crate::view::ViewOut;
 
 use super::common::*;
-use super::{adversary, ai, alignment, cards, economy, effects};
+use super::{adversary, ai, alignment, cards, effects};
 
 mod ambassadors;
 mod destroy;
@@ -57,7 +57,7 @@ pub static DEF: ModuleDef = ModuleDef {
             ParamSpec::int("claim_city", 1, 10, "the Claim action: ambassadors that claim a neutral city (the adversary's corrupt_at)"),
             ParamSpec::int("claim_station", 1, 10, "the Claim action: ambassadors that claim a neutral research station"),
             ParamSpec::int("claim_factory", 1, 10, "the Claim action: ambassadors that claim a neutral factory"),
-            ParamSpec::int("last_safe_stage", 0, 3, "while this round's adversary card is below this stage, nothing destroys a player's last node (0: never safe)"),
+            ParamSpec::int("start_nodes", 1, 3, "175: nodes each player starts with: its start hex, then the lowest-numbered free land hexes next to it (the extras off no track)"),
             ParamSpec::int("free_leaves", 0, 5, "agents left on a city as it frees (the piece ladder)"),
             ParamSpec::int("destruction_discord", 0, 5, "Discord each facility destroyed in war sways"),
             ParamSpec::int("troop_spent", 0, 1, "1: an adversary troop that strikes a target is used up"),
@@ -84,8 +84,8 @@ pub static DEF: ModuleDef = ModuleDef {
             PhaseSpec::decision("act", "standard actions and projects: station, remove, clear, move (from the round's Movement), ambassador, claim, liberate, harden, sell, drain; completed megaprojects' converters"),
             PhaseSpec::auto("bases", "production: factories make chips or adversary troops, extra corp troops, cities grow factories"),
             PhaseSpec::auto("war", "at the end of the round, the corp troops on either side of each front fight"),
-            PhaseSpec::auto("march", "each adversary troop takes its steps: destroy a target next to it, else move toward the nearest"),
-            PhaseSpec::auto("produce", "cities make energy (an agent on one stays and darkens it) and research stations produce (an opposing piece blocks one); an agent on a lone node drains its owner's insight into adversary compute; full megaprojects complete"),
+            PhaseSpec::auto("march", "each adversary troop takes its steps: remove an ambassador on its hex, else destroy a target next to it, else move toward the nearest"),
+            PhaseSpec::auto("produce", "cities make energy (an agent on one stays and darkens it) and research stations produce (an opposing piece blocks one; an adversary station's compute waits for the compute step); full megaprojects complete"),
             PhaseSpec::auto("cleanup", "count the country flags down"),
         ],
         rng: &[],
@@ -296,6 +296,21 @@ impl Module for Board {
             let start = w.map.numbered(c, n);
             cx.add_tokens(g, start, node(s), 1);
             cx.set_key(g, &track_key(s), 1);
+            // 175: no last node is safe, so a player may start with a spare: on the lowest-numbered free
+            // land hex next to the start (no city, base or building; off no track: it uncovers nothing).
+            let mut spares: Vec<usize> = w.map.hexes[start]
+                .neighbors
+                .iter()
+                .copied()
+                .filter(|&x| w.map.hexes[x].country as usize == c && !is_ocean(&w, x) && !is_city(&w, x) && !is_base(&w, x))
+                .collect();
+            spares.sort_by_key(|&x| w.map.hexes[x].number);
+            for _ in 1..w.int("board.start_nodes") {
+                let Some(i) = spares.iter().position(|&x| node_owner(g, x).is_none() && !has_building(g, x)) else {
+                    break;
+                };
+                cx.add_tokens(g, spares.remove(i), node(s), 1);
+            }
             cx.add_resource(g, s, Resource::Ambassadors, w.int("board.start_ambassadors"));
             if let Some(h) = bound_city(&w, g, c, start) {
                 cx.add_tokens(g, h, cube(s), 1);

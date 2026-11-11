@@ -185,6 +185,9 @@ macro_rules! forced_table {
             /// 166: the move heuristics answer Gather and Push prompts (`agents::moves`: push agents off the
             /// next Corrupt site, gather agents onto ambassadors, gather ambassadors toward a Liberate).
             (move_rules: bool, false, 1.0, "166: move heuristics for Gather and Push (push agents off the next Corrupt site, gather agents onto ambassadors, gather ambassadors to a Liberate)")
+            /// 175: a Corrupt X line's agent next to several sites goes where the players lose least
+            /// (`plan::converge_pick`: onto a site corrupting anyway, else the one holding fewest).
+            (converge_rule: bool, false, 1.0, "175: a Corrupt line's converging agent goes onto a site corrupting anyway, else the one holding fewest")
             /// 082: the keep plan values cards by the value table (0: printed cost
             /// plus 1, the niche jobs and capstone jobs, as before 082).
             (plan_table: bool, false, 1.0, "keep plan values cards by the value table (0: by printed cost, as before 082)")
@@ -652,6 +655,11 @@ impl Agent for Policy {
         }
         if self.forced.always_buy_cubes && !pending {
             if let Some(i) = first_power(legal, |s, k| ai::power_buys_cube(&world, s, k)) {
+                return i;
+            }
+        }
+        if self.forced.converge_rule && pending {
+            if let Some(i) = super::moves::converge(&world, g, legal) {
                 return i;
             }
         }

@@ -10,7 +10,7 @@ Cities, research stations and factories follow one set of rules and differ only 
 |---|---|---|---|
 | Neutral | sells its energy ([economy.md](economy.md)) | a neutral cube onto its megaproject ([board.md](board.md)) | nothing, except **on each Discord tip it makes 1 corp troop** ([war.md](war.md)) |
 | Player | its energy to its owner | `owned_station_cubes` research cubes in its owner's color | `factory_chips` chips to its owner |
-| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute | 1 adversary troop on its hex |
+| Adversary | its energy diverted: `divert_discord` Discord a unit | `station_cubes` adversary compute (in the adversary's compute step) | 1 adversary troop on its hex |
 
 - **One opposing piece blocks a site's output while it stands.** An agent on a neutral or player
   site, a player ambassador on an adversary site: that round the site makes nothing, and the piece stays
@@ -19,7 +19,8 @@ Cities, research stations and factories follow one set of rules and differ only 
   `ambassador_discord` (0) a unit.
 - **Your own ambassador is armor:** when your node, or a site you own, would be destroyed, your ambassador on its hex
   is used up instead ([war.md](war.md), *Destruction*; a neutral site has none). One ambassador on your site's hex
-  covers the site and your node there.
+  covers the site and your node there. Against troops it answers a strike from next door; a troop standing on the
+  hex removes ambassadors first, one a step (175: ambassadors are non-combatants, [war.md](war.md)).
 - **Claiming is symmetric** (the Claim action, [economy.md](economy.md)): a neutral site in reach with a site claim
   ([README.md](README.md#terms)), for as many ambassadors as the adversary's Corrupt X needs for that type:
   `claim_city` 4 (Corrupt city's `corrupt_at` 4), `claim_station` 3 and `claim_factory` 3 (139, Matt: Corrupt
@@ -71,15 +72,15 @@ for the last rounds, and never free a city: the players still reach it and Liber
   two cancel). A converted ambassador is on the board, not in your supply: it is armor or a blocker, and moves like
   any other; standing on the city, it pays toward a Liberate there.
 - **Firewall** (Firewall Array's Action, Air Gap): a token on one land hex in your reach. While it stands no
-  agent arrives there: a Rally skips the site (the pool spreads over the rest), a creation line takes
-  the next site, a threat's or Discord card's placement there doesn't happen, and a Corrupt line pulls nothing into
-  it from next door (it corrupts only on what it already holds). Troops are not stopped. It comes off at the end of
+  agent arrives there: the site's Rally share stays in the supply (175: one rule for a blocked landing), a creation
+  line takes the next site, a threat's or Discord card's placement there doesn't happen, and a Corrupt line moves no
+  agent onto it (it corrupts only on what it already holds). Troops are not stopped. It comes off at the end of
   the next adversary turn (after its income), so it lasts one round; the building places a fresh one each round.
 
 A **base** is no site: it is a front's troop pile ([war.md](war.md)). A player ambassador standing on a base is used
 up instead of the next corp troop made there; an agent on one does nothing.
-A **node** alone on its hex: an agent on it costs its owner 1 insight next round and puts 1 compute on
-the cheapest adversary project each production; it stays until removed.
+A **node**'s hex corrupts at `corrupt_node_at` (2) agents, whatever else stands there (175, [adversary.md](adversary.md)):
+the node is lost unless something absorbs it, and the agents go to the supply. One agent on it costs nothing.
 
 - **An agent and an ambassador cancel.** When an agent arrives on a hex holding a player ambassador, or an
   ambassador on agents, both are removed (the agent to the adversary's supply), with no Unity. **Two

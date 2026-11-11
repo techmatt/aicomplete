@@ -103,8 +103,7 @@ pub fn lose_ambassador(g: &mut GameState, cx: &mut Cx, seats: &[usize], why: Opt
 }
 
 /// Each player in `scope` loses a node in `scope` or pays `amount`
-/// `resource` (their choice). Losing one needs 2 or more on the board (027:
-/// this never takes a last node); with neither possible, what they have.
+/// `resource` (their choice; 175: a last node too); with neither possible, what they have.
 #[allow(clippy::too_many_arguments)]
 pub fn lose_node_or(
     g: &mut GameState,
@@ -118,11 +117,8 @@ pub fn lose_node_or(
 ) -> Res {
     let w = cx.world;
     for &s in seats {
-        let mine: Vec<usize> = if node_count(g, s) >= 2 {
-            hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect()
-        } else {
-            Vec::new()
-        };
+        // 175: a last node is no exception.
+        let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect();
         let mut opts = Vec::new();
         let can_pay = g.resource(s, resource) >= amount;
         if can_pay {

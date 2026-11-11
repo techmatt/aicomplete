@@ -7,9 +7,9 @@
 Project slots: Military, Open, Open.
 
 - **Garrisons.** Income: +1 agent a board a round.
-- **Troops where the Protector stands.** Each round: on each board where the Protector has a node, 1 adversary troop lands on its lowest-numbered factory (else city), never a hex Wall holds.
+- **Troops where the Protector stands.** Each round: on each board where the Protector has a node, Deploy 1.
 - **Warmongering.** Each round, a military base with an adversary troop on or next to it makes 1 extra corp troop, even past its cap; at most 1 extra a base in each production, whatever makes it.
-- **Difficulty.** Militarist, harder: each event's Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.
+- **Difficulty.** Militarist, harder: every Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.
 
 ## Event deck
 
@@ -89,7 +89,7 @@ Project slots: Military, Open, Open.
 | Grid Collapse | Grid | city, coastal city | The nearest player destroys 1 of their nodes closest to it and pays 4 energy or discards 3 cards. | 5 research cubes; 17 credits |
 | Power Rationing | Grid | city | The nearest player pays 4 energy or discards 3 cards. | 4 ambassadors; 17 credits |
 | Thermal Runaway | Grid | station | The nearest player pays 6 research cubes or discards 3 cards. The adversary gains 4 compute. | 3 Power tags; 17 credits |
-| Overload | Grid | factory, station | The nearest player destroys 2 of their nodes closest to it (never their last). The adversary gains 6 compute. | 3 Power tags; 17 credits |
+| Overload | Grid | factory, station | The nearest player destroys 2 of their nodes closest to it. The adversary gains 6 compute. | 3 Power tags; 17 credits |
 | Garrison State | Universal | city, base | 3 agents are created on the city here. 2 adversary troops land on the base here. | 7 insight; 17 credits |
 | Shock Doctrine | Universal | city, factory | The nearest player pays 2 ambassadors or discards 2 cards. 3 Unity comes off the Unity track. | 4 energy; 17 credits |
 | Full Spectrum Assault | Universal | station | A botnet lands on the station here. A tier-1 threat is dealt into this country (it executes next round). | 4 ambassadors; 17 credits |
@@ -100,25 +100,25 @@ Project slots: Military, Open, Open.
 
 ## Projects
 
-| Project | Tags | Compute per player | Resolves | Text |
+| Project | Tags | Compute (2 / 3 / 4 players) | Resolves | Text |
 |---|---|---|---|---|
-| Raiding Parties | Military | 4 | once | Each player pays 5 chips or discards 3 cards. |
-| War Footing | Military | 7 | once | Every military base fills with corp troops to its cap. |
-| Purge the Unaligned | Military | 7 | once | Each player pays 2 ambassadors or discards 2 cards. |
-| Armored Columns | Military | 10 | once | Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). |
-| Arms Race | Military | 11 | ongoing | Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production). |
-| Declaration of War | Military | 18 | ongoing | Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice. |
-| Disinformation | Influence | 5 | once | Sway 5 toward Discord. |
-| Recruitment Drive | Influence | 11 | once | Income: +1 agent a board a round. |
-| Infiltration Drive | Influence | 18 | once | Rally 3, each board: cities. Corrupt: cities (1 fewer). |
-| Data Heist | Cyber | 6 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards. |
-| Botnet Swarm | Cyber | 6 | once | Rally 3, each board: botnet hexes. |
-| Station Coup | Cyber | 9 | once | Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it). |
-| Market Crash | Economic | 5 | once | Each player pays 10 credits or discards 3 cards. |
-| Shadow Factories | Economic | 7 | once | The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory). |
-| Capital Flight | Economic | 8 | once | Each player's credit income falls by 4 for the rest of the game. |
-| Rolling Blackouts | Grid | 6 | once | Until the end of next round, cities make no energy. |
-| Grid Capture | Grid | 9 | ongoing | Ongoing: Each player pays 1 energy or discards 1 card. |
-| False Flag | Universal | 6 | once | Each board: an extra tier-2 threat, any tag. |
-| Grand Offensive | Universal | 10 | once | Each board rallies its agent income now, to this round's Rally. Corrupt: cities. |
-| Propaganda Network | Universal | 14 | ongoing | Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord. |
+| Raiding Parties | Military | 8 / 12 / 16 | once | Each player pays 5 chips or discards 3 cards. |
+| War Footing | Military | 14 / 21 / 28 | once | Every military base fills with corp troops to its cap. |
+| Purge the Unaligned | Military | 14 / 21 / 28 | once | Each player pays 2 ambassadors or discards 2 cards. |
+| Armored Columns | Military | 20 / 30 / 40 | once | Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). |
+| Arms Race | Military | 22 / 33 / 44 | ongoing | Ongoing: Each round, every military base makes 1 extra corp troop, even past its cap (at most 1 extra a base each production). |
+| Declaration of War | Military | 36 / 54 / 72 | ongoing | Now: Deploy 3: each board, 3 troops on its lowest-numbered factory (else city). Ongoing: Each round, the front with the most corp troops fights twice. |
+| Disinformation | Influence | 10 / 15 / 20 | once | Sway 5 toward Discord. |
+| Recruitment Drive | Influence | 22 / 33 / 44 | once | Income: +1 agent a board a round. |
+| Infiltration Drive | Influence | 36 / 54 / 72 | once | Rally 3, each board: cities. Corrupt: cities (1 fewer). |
+| Data Heist | Cyber | 12 / 18 / 24 | once | Each player removes 3 tokens from their cards (their choice of cards). Each player pays 3 insight next round or discards 2 cards. |
+| Botnet Swarm | Cyber | 12 / 18 / 24 | once | Rally 3, each board: botnet hexes. |
+| Station Coup | Cyber | 18 / 27 / 36 | once | Rally 2, each board: research stations. Each board: its lowest-numbered research station not the adversary's flips (a player's holds unless 2 agents are on it). |
+| Market Crash | Economic | 10 / 15 / 20 | once | Each player pays 10 credits or discards 3 cards. |
+| Shadow Factories | Economic | 14 / 21 / 28 | once | The adversary builds a factory on the board with the most free industrial zones (none free: 2 agents on a factory). |
+| Capital Flight | Economic | 16 / 24 / 32 | once | Each player's credit income falls by 4 for the rest of the game. |
+| Rolling Blackouts | Grid | 12 / 18 / 24 | once | Until the end of next round, cities make no energy. |
+| Grid Capture | Grid | 18 / 27 / 36 | ongoing | Ongoing: Each player pays 1 energy or discards 1 card. |
+| False Flag | Universal | 12 / 18 / 24 | once | Each board: an extra tier-2 threat, any tag. |
+| Grand Offensive | Universal | 20 / 30 / 40 | once | Each board rallies its agent income now, to this round's Rally. Corrupt: cities. |
+| Propaganda Network | Universal | 28 / 42 / 56 | ongoing | Now: Income: +2 compute a round. Ongoing: Sway 2 toward Discord. |

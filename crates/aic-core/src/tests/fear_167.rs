@@ -29,9 +29,9 @@ fn a_corrupt_prohibition_stops_a_covered_city() {
     into_its_turn(&mut g, Step::Corrupt);
     assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c), "no ambassador yet");
     put(&mut g, lonely[1], ambassador(0), 1);
-    let (plan, blocked) = plan::corrupt_plan_blocked(&w, &g, CorruptSite::City, n, None);
-    assert!(!plan.iter().any(|(t, _)| *t == c));
-    assert!(blocked.iter().any(|(t, wh, _)| *t == c && *wh == Where::ByAmbassador));
+    assert!(!plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));
+    let cv = plan::converge(&w, &g, CorruptSite::City, None);
+    assert!(cv.blocked.iter().any(|(t, wh)| *t == c && *wh == Where::ByAmbassador));
     // Another round: the prohibition has lapsed.
     g.round += 1;
     assert!(plan::corrupt_plan(&w, &g, CorruptSite::City, n, None).iter().any(|(t, _)| *t == c));

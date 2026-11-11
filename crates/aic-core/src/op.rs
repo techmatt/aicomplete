@@ -249,18 +249,44 @@ pub enum CorruptSite {
     City,
     Station,
     Factory,
-    /// An empty land hex (no piece, not ocean): it takes the land-corruption token.
+    /// Open land: an empty land hex (no piece, not ocean): it takes the land-corruption token.
     Land,
+    /// 175: a coastal city (a city's corrupt number).
+    CoastalCity,
+    /// 175: a hex with a player's node: it loses the node (protections apply).
+    Node,
 }
 
 impl CorruptSite {
-    pub const ALL: [CorruptSite; 4] = [CorruptSite::City, CorruptSite::Station, CorruptSite::Factory, CorruptSite::Land];
+    /// In `corrupt_cut`'s order (city, station, factory, land); the two after it read no cut of their own
+    /// (a coastal city takes a city's).
+    pub const ALL: [CorruptSite; 6] = [
+        CorruptSite::City,
+        CorruptSite::Station,
+        CorruptSite::Factory,
+        CorruptSite::Land,
+        CorruptSite::CoastalCity,
+        CorruptSite::Node,
+    ];
     pub fn name(self) -> &'static str {
         match self {
             CorruptSite::City => "city",
             CorruptSite::Station => "station",
             CorruptSite::Factory => "factory",
             CorruptSite::Land => "land",
+            CorruptSite::CoastalCity => "coastal_city",
+            CorruptSite::Node => "node",
+        }
+    }
+    /// The printed plural ("Corrupt cities").
+    pub fn plural(self) -> &'static str {
+        match self {
+            CorruptSite::City => "cities",
+            CorruptSite::Station => "research stations",
+            CorruptSite::Factory => "factories",
+            CorruptSite::Land => "open land",
+            CorruptSite::CoastalCity => "coastal cities",
+            CorruptSite::Node => "nodes",
         }
     }
 }
@@ -833,8 +859,8 @@ pub enum Op {
     /// threatened node hex in scope (the node hex with the most agents and troops; ties: the first
     /// in board order), its first location token on that hex; it is countered or executes like any other.
     ThreatAtNode { tier: u8 },
-    /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed;
-    /// never a last node from a threat, nor in stage I. 139: a threat's or a twist's only (Border War); the team
+    /// Each player in scope destroys `count` of their nodes in scope (their choice), unless absorbed
+    /// (175: a last node too). 139: a threat's or a twist's only (Border War); the team
     /// slot (Discord cards, projects) destroys no nodes. `bases` (139, Border War): only nodes on or next to a
     /// front's military base, so a player with none there loses none.
     EachDestroyNode {
@@ -842,8 +868,8 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_false")]
         bases: bool,
     },
-    /// 146: a threat's: the nearest player destroys `count` of their nodes closest to it, wherever they are;
-    /// never their last node.
+    /// 146: a threat's: the nearest player destroys `count` of their nodes closest to it, wherever they are
+    /// (175: a last node too).
     DestroyNode {
         #[serde(default = "one", skip_serializing_if = "is_one")]
         count: i64,
@@ -883,8 +909,8 @@ pub enum Op {
     AdversaryBuild,
 
     // ---------- instant: threats ----------
-    /// Each player in scope loses `count` nodes in scope or pays `amount` `resource` (their choice); never a last
-    /// node.
+    /// Each player in scope loses `count` nodes in scope or pays `amount` `resource` (their choice; 175: a last
+    /// node too).
     LoseNodeOr {
         resource: Resource,
         amount: i64,
@@ -967,7 +993,7 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "is_zero")]
         rounds: i64,
     },
-    /// The factory under the token is destroyed with the nodes on its hex (never a last node).
+    /// The factory under the token is destroyed with the nodes on its hex (175: a last node too).
     DestroyFacility {
         at: DestroyAt,
     },
@@ -1078,18 +1104,18 @@ pub enum Op {
     CreateSite {
         kind: Facility,
     },
-    /// 138, Corrupt X: in each country in scope, every `site` that can gather
-    /// its corrupt number (`adversary.corrupt_*`, less `cut`) of agents
-    /// with one move each (on it and next to it, in its country)
-    /// pulls them in, lowest-numbered hexes first, and corrupts.
+    /// 175, Corrupt X: in each country in scope, every agent next to a `site` (one not yet the adversary's)
+    /// moves onto it (players choose if it is next to several); then every such site holding its corrupt
+    /// number (`adversary.corrupt_*`, less `cut`) corrupts and its agents go to the supply.
     Corrupt {
         site: CorruptSite,
         #[serde(default, skip_serializing_if = "is_zero")]
         cut: i64,
     },
-    /// 151, Rally X: each board's agent pool lands on its `site` sites: the neutral ones, else
-    /// the players', else the adversary's; spread evenly, players breaking ties. `count`: that many a board
-    /// instead of the pool (a project's rally). A cordoned board's pool lands nowhere.
+    /// 151, Rally X: each board's agent pool lands on every `site` site, whoever owns it (175: no tiers),
+    /// spread evenly, the remainder on the lowest-numbered not the adversary's; a blocked site's share stays in
+    /// the supply. `count`: that many a board instead of the pool (a project's rally). A cordoned board's pool
+    /// lands nowhere.
     Rally {
         site: RallyAt,
         #[serde(default, skip_serializing_if = "is_zero")]
@@ -1138,7 +1164,8 @@ pub enum Op {
         #[serde(rename = "where")]
         where_: Where,
     },
-    /// The board's difficulty line: each event's Deploy lands `amount` more troops a board.
+    /// The board's difficulty line: every Deploy (175: an event's, a project's, the Protector landing) lands
+    /// `amount` more troops a board.
     StandingTroopsBonus {
         amount: i64,
     },

@@ -116,7 +116,6 @@ fn lab_config(round: &[&str]) -> Config {
         "board.unit_cap=3",
         "board.destruction_discord=1",
         "board.liberate_at=1",
-        "board.last_safe_stage=0",
         "board.troop_steps=2",
         "board.troop_spent=1",
         // The build asks nothing: no Wall-pressure landing (080). Pin any new
@@ -481,6 +480,12 @@ fn with_cx<T>(rules: &Rules, f: impl FnOnce(&mut module::Cx) -> T) -> T {
     with_cx_picks(rules, Vec::new(), f)
 }
 
+/// 175: `n` compute made and the compute step's pour run at once (compute waits for the adversary's turn).
+fn gain_and_pour(g: &mut GameState, cx: &mut module::Cx, n: i64) -> module::Res {
+    crate::modules::adversary::gain_compute(g, cx, n)?;
+    crate::modules::adversary::pour_waiting(g, cx)
+}
+
 /// `with_cx` with the choices already answered by `picks`.
 fn with_cx_picks<T>(
     rules: &Rules,
@@ -568,9 +573,9 @@ fn variant_matrix() -> Vec<Config> {
 
 // ---------- the golden game ----------
 
-const GOLDEN_REVISION: u32 = 73;
-const GOLDEN_FINGERPRINT: &str = "8a878a1deb5cae3a";
-const GOLDEN_CONTENT_HASH: &str = "a856e33ac05ebb10";
+const GOLDEN_REVISION: u32 = 74;
+const GOLDEN_FINGERPRINT: &str = "4f8cb8a692ca698c";
+const GOLDEN_CONTENT_HASH: &str = "9a4b84b013cf90d0";
 
 /// A fixed game (baseline, seed u64::MAX; action `k` is legal action
 /// `(k * 7919) % count`: "always the first" can pay and withdraw forever).

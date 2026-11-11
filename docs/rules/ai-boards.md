@@ -19,8 +19,8 @@ hand for no credits. Each round you may move 1 ambassador for free (Movement 1; 
 Industry tag counts like one on your cards.
 
 **The Protector, for new players.** Your special rule is Wall: adversary troops can't enter a hex with your node or
-strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build lands 1 troop on a factory
-(else a city) in every country you're in (anyone's factory, never your node's hex), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
+strike into it, so where you stand is a barrier and a facility under you is safe. But each round's build deploys 1 troop on the
+lowest-numbered factory (else a city) in every country you're in (anyone's; on your node's hex it stays in the supply), and it can strike in that round's march. Each troop your Wall stops pays you 1 insight (Vigil). You spend energy to harden
 facilities with Bulwark, and your board prints 2 energy a round. You earn fewer credits (13 a round), so you start with
 more: 46. Each credit space of your economy track adds 2 or 3 credits, the first one 1 energy too. Round 1 deals as
 for the Builder. Late in the game, sacrifice

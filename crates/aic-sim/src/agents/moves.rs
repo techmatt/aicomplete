@@ -68,6 +68,25 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)
     None
 }
 
+/// 175: the open prompt is a Corrupt X line's converging agent ("Corrupt cities (at 4): the agent at .. moves
+/// onto which?", `adversary::corrupt_sites`): the option [`plan::converge_pick`] takes, against the number the
+/// prompt prints (the resolving line's, cut included).
+pub fn converge(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
+    let p = g.pending.as_ref()?;
+    let prompt = p.ask.prompt.as_str();
+    let rest = prompt.strip_prefix("Corrupt ")?;
+    if !rest.contains("moves onto which?") {
+        return None;
+    }
+    let site = CorruptSite::ALL.into_iter().find(|s| rest.starts_with(&format!("{} (at ", s.plural())))?;
+    let n: i64 = rest[site.plural().len() + 5..].split(')').next()?.parse().ok()?;
+    let to: Vec<usize> = legal.iter().map(|a| option_hex(w, a)).collect::<Option<Vec<_>>>()?;
+    let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, common::ADV_AMBASSADOR)).collect();
+    let amb: Vec<i64> =
+        (0..g.hexes.len()).map(|h| (0..g.seats.len()).map(|s| g.tokens(h, common::ambassador(s))).sum()).collect();
+    Some(plan::converge_pick(w, g, site, &to, &counts, &amb, n))
+}
+
 /// The Gather the open resolution plays: its pieces and strike, read from the card played or used.
 fn gather_op(w: &World, g: &GameState) -> Option<(Vec<Piece>, bool)> {
     let p = g.pending.as_ref()?;
@@ -149,7 +168,9 @@ fn spare(w: &World, g: &GameState, h: usize) -> bool {
 
 /// A hex an agent may be pushed to without harm: land with no site, and no clean site next to it.
 fn safe(w: &World, g: &GameState, d: usize) -> bool {
+    // 175: a player's node hex corrupts at 2 agents: never a landing spot.
     board::site_kind(w, g, d).is_none()
+        && common::node_owner(g, d).is_none()
         && !w.map.hexes[d].neighbors.iter().any(|&x| board::site_kind(w, g, x).is_some() && !common::corrupted(g, x))
 }
 
@@ -229,14 +250,29 @@ fn at_risk(w: &World, g: &GameState) -> Vec<(usize, i64, i64, bool)> {
         (board::SiteKind::Station, plan::next_corrupt_n(w, g, CorruptSite::Station)),
         (board::SiteKind::Factory, plan::next_corrupt_n(w, g, CorruptSite::Factory)),
     ];
+    let (node_n, node_gathers) = plan::next_corrupt_n(w, g, CorruptSite::Node);
     let mut out = Vec::new();
     for h in 0..g.hexes.len() {
+        // 175: a player's node hex corrupts at its own number (2), whatever site it holds.
+        if common::node_owner(g, h).is_some() && !common::firewalled(g, h) {
+            let count = agents(g, h) + if node_gathers { agents_next_to(w, g, h) } else { 0 };
+            if count > 0 && count + 1 >= node_n {
+                out.push((h, count, node_n, node_gathers));
+            }
+        }
         let Some(kind) = board::site_kind(w, g, h) else { continue };
         if common::corrupted(g, h) || common::firewalled(g, h) {
             continue;
         }
         let Some(&(_, (n, gathers))) = lines.iter().find(|(k, _)| *k == kind) else { continue };
-        let count = agents(g, h) + if gathers { agents_next_to(w, g, h) } else { 0 };
+        // 175: agents on a clean site of the same kind next door stay there (the line moves only the others).
+        let next: i64 = w.map.hexes[h]
+            .neighbors
+            .iter()
+            .filter(|&&x| !(board::site_kind(w, g, x) == Some(kind) && !common::corrupted(g, x)))
+            .map(|&x| agents(g, x))
+            .sum();
+        let count = agents(g, h) + if gathers { next } else { 0 };
         if count > 0 && count + 2 >= n {
             out.push((h, count, n, gathers));
         }

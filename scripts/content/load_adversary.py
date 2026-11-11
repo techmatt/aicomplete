@@ -112,10 +112,13 @@ def cards_page(threats, projects, adversary):
             locs = ", ".join(x.replace("_", " ") for x in t["locations"])
             menu = "; ".join(counter_words(o) for o in t["counters"])
             out.append(f"| {cell(t['name'])} | {tags} | {locs} | {cell(t['text'])} | {cell(menu)} |")
-    out += ["", "## Projects", "", "| Project | Tags | Compute per player | Resolves | Text |", "|---|---|---|---|---|"]
+    # 175: a project prints its cost for each player count (the per-player cost times 2, 3, 4).
+    out += ["", "## Projects", "", "| Project | Tags | Compute (2 / 3 / 4 players) | Resolves | Text |",
+            "|---|---|---|---|---|"]
     for p in projects:
         tags = " + ".join(x.capitalize() for x in p["tags"])
-        out.append(f"| {cell(p['name'])} | {tags} | {p['cost']} | {'ongoing' if p['ongoing'] else 'once'} | "
+        costs = " / ".join(str(p["cost"] * n) for n in (2, 3, 4))
+        out.append(f"| {cell(p['name'])} | {tags} | {costs} | {'ongoing' if p['ongoing'] else 'once'} | "
                    f"{cell(p['text'])} |")
     return "\n".join(out) + "\n"
 

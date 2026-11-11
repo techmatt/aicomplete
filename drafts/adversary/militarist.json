@@ -26,12 +26,12 @@
    },
    {
     "name": "Troops where the Protector stands",
-    "text": "Each round: on each board where the Protector has a node, 1 adversary troop lands on its lowest-numbered factory (else city), never a hex Wall holds.",
+    "text": "Each round: on each board where the Protector has a node, Deploy 1.",
     "effects": [
      {
       "rule": "adversary.build",
       "reads": "wall_troops",
-      "note": "lands on the lowest-numbered factory there (151: deterministic), else a city, never a hex Wall holds"
+      "note": "175: a Deploy like an event's: the lowest-numbered factory there (else city); on a hex Wall holds it stays in the supply; a Deploy prohibition and the level surcharge apply"
      }
     ]
    },
@@ -56,7 +56,7 @@
    "botnet_compute": 1
   },
   "difficulty": {
-   "text": "Militarist, harder: each event's Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.",
+   "text": "Militarist, harder: every Deploy lands 1 more troop a board, and the adversary gains 4 compute for each threat that executes uncountered.",
    "effects": [
     {
      "op": "standing_troops_bonus",

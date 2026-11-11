@@ -294,13 +294,11 @@ fn zone_owner(g: &mut GameState, cx: &mut Cx, z: usize) -> Res<Option<usize>> {
 
 /// Production step 3: cities make energy, stations research cubes; an
 /// agent on a station takes its output and is removed; on a
-/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then an agent on a
-/// lone node drains 1 of its owner's next insight into adversary compute,
-/// and last full megaprojects complete.
+/// city it stays and the city is dark (r37 neutral, r38 aligned too). Then
+/// full megaprojects complete. (175: the agent on a lone node's insight drain is gone: a node hex corrupts.)
 pub(super) fn produce(g: &mut GameState, cx: &mut Cx) -> Res {
     city_energy(g, cx)?;
     station_cubes(g, cx)?;
-    node_leak(g, cx)?;
     complete_projects(g, cx)
 }
 
@@ -392,16 +390,8 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
         // 137: one opposing ambassador blocks the output while it stands: an
         // agent on a neutral or player station, a player
         // ambassador on the adversary's. An adversary station makes compute.
+        // 175: an adversary station's compute is added in the adversary's compute step.
         if corrupted(g, h) {
-            if player_ambassador(g, h).is_some() {
-                cx.tally(g, "board.blocked.station_adversary", 1);
-            } else {
-                cx.tally(g, "board.station_compute", cubes);
-                adversary::gain_compute(g, cx, cubes)?;
-                if g.is_over() {
-                    return Ok(());
-                }
-            }
             continue;
         }
         if g.tokens(h, ADV_AMBASSADOR) > 0 {
@@ -428,34 +418,6 @@ pub(super) fn station_cubes(g: &mut GameState, cx: &mut Cx) -> Res {
     Ok(())
 }
 
-/// An agent on a node (with no other piece to divert)
-/// costs its owner 1 insight next round and adds 1 compute to the cheapest
-/// adversary project; it stays until removed (068; 021: it was used up).
-fn node_leak(g: &mut GameState, cx: &mut Cx) -> Res {
-    let w = cx.world;
-    for h in 0..g.hexes.len() {
-        let Some(s) = node_owner(g, h) else {
-            continue;
-        };
-        // (020: a Sabotage flag used to skip the leak here, a data-center-era
-        // leftover the rules don't have; once F1 let the flag reach production
-        // it would have helped the players.)
-        if g.tokens(h, ADV_AMBASSADOR) == 0 {
-            continue;
-        }
-        // Only a lone node: on a city, base, station or factory the
-        // ambassador belongs to that piece (020: the leak drained a corrupted
-        // city's ambassadors so it never spread, and ate those a clean city or
-        // a base was gathering).
-        if is_city(&w, h) || is_base(&w, h) || has_building(g, h) {
-            continue;
-        }
-        cx.add_key(g, &economy::insight_debt(s), 1);
-        cx.tally(g, "board.node_drained", 1);
-        adversary::gain_compute(g, cx, 1)?;
-    }
-    Ok(())
-}
 
 /// 074: checked once, at the end of production: a megaproject holding its
 /// cubes or more completes. Every cube on it pays, overflow included, and is

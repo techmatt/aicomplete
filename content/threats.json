@@ -2019,7 +2019,7 @@
    "factory",
    "station"
   ],
-  "text": "The nearest player destroys 2 of their nodes closest to it (never their last). The adversary gains 6 compute.",
+  "text": "The nearest player destroys 2 of their nodes closest to it. The adversary gains 6 compute.",
   "counters": [
    [
     {

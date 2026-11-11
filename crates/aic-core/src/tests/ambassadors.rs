@@ -181,8 +181,7 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
     }
     assert_eq!(g.stats.counters["board.city_dark"], 2);
 
-    // 021: an agent on a node costs its owner 1 insight
-    // next round and adds 1 compute to the cheapest project; it stays (068).
+    // 175: an agent on a node no longer drains insight or makes compute (a node hex corrupts instead).
     let mut g = g0.clone();
     let d = m.numbered(0, piece(0).node);
     put(&mut g, d, node(0), 1);
@@ -195,12 +194,11 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
             g.var("adversary.compute") - made,
             g.tokens(d, ADV_AMBASSADOR)
         ),
-        (1, 1, 1)
+        (0, 0, 1)
     );
 
-    // 020: only a lone node leaks. On a corrupted city the ambassador is
-    // the city's (it stays to spread); on a station it blocks the cube and
-    // stays (137: it took the cube and was used up).
+    // On a corrupted city the ambassador is the city's (it stays to spread); on a station it blocks the cube
+    // and stays (137: it took the cube and was used up).
     let mut g = g0.clone();
     put(&mut g, city, ADV_CUBE, 1);
     put(&mut g, city, ADV_AMBASSADOR, 1);
@@ -247,7 +245,8 @@ fn ambassadors_divert_cities_and_stations_and_leak_node_compute() {
         (key(&g, 0, None), key(&g, 0, Some(0)), key(&g, 1, None), neutral_key(&g)),
         (0, 0, 0, 1)
     );
-    assert_eq!(g.var(adversary::COMPUTE) - compute, rules.world().int("board.station_cubes"));
+    // 175: the corrupted station's compute comes in the adversary's compute step, not in production.
+    assert_eq!(g.var(adversary::COMPUTE) - compute, 0);
     assert_eq!(g.tokens(s0, ADV_AMBASSADOR), 1);
     let mut g = g0.clone();
     put(&mut g, s0, STATION, 1);
@@ -267,11 +266,14 @@ fn a_player_ambassador_absorbs_a_destruction() {
     }
     put(&mut g, at, FACTORY, 1);
     put(&mut g, at, cube(0), 1);
-    put(&mut g, at, TROOP, 1);
+    // 175: a troop next door (not on the ambassador's hex) strikes; the ambassador absorbs it.
+    let beside = m.hexes[at].neighbors.iter().copied().find(|&x| kind(m, x) != HexKind::Ocean).unwrap();
+    put(&mut g, beside, TROOP, 1);
     put(&mut g, at, ambassador(0), 1);
     let discord = g.var("alignment.discord");
     // The ambassador absorbs the strike; the troop that struck is used up.
     run(&rules, &mut g);
+    assert_eq!(g.tokens(beside, TROOP), 0);
     assert_eq!(
         (
             g.tokens(at, FACTORY),
@@ -286,6 +288,22 @@ fn a_player_ambassador_absorbs_a_destruction() {
     run(&rules, &mut g);
     assert_eq!((g.tokens(at, FACTORY), g.tokens(at, TROOP)), (0, 0));
     assert_eq!(g.var("alignment.discord"), discord);
+}
+
+/// 175: ambassadors are non-combatants: a troop starting a step on an ambassador's hex removes one instead
+/// of moving or striking, so with 2 steps it removes two.
+#[test]
+fn a_troop_on_an_ambassadors_hex_removes_one_a_step() {
+    let (rules, mut g) = lab(&["board.march"]);
+    let m = &rules.map;
+    let at = m.numbered(0, piece(0).factories[0]);
+    put(&mut g, at, FACTORY, 1);
+    put(&mut g, at, cube(0), 1);
+    put(&mut g, at, TROOP, 1);
+    put(&mut g, at, ambassador(0), 2);
+    run_answered(&rules, &mut g);
+    assert_eq!((g.tokens(at, ambassador(0)), g.tokens(at, FACTORY), g.tokens(at, TROOP)), (0, 1, 1));
+    assert_eq!(g.stats.counters["board.troop_removed_ambassador"], 2);
 }
 
 /// 137: only the piece owner's ambassador is armor: another seat's on an owned
@@ -363,6 +381,8 @@ fn an_ambassador_on_a_factory_stays_and_one_on_a_corrupted_station_blocks_it() {
     assert_eq!(g.var(&board::project_key(c, Some(1))), seat_cubes);
     assert_eq!(g.var(&board::project_key(c, None)), adversary_cubes);
     assert_eq!(g.var(adversary::COMPUTE), compute);
+    // 175: the block is read in the adversary's compute step.
+    with_cx(&rules, |cx| adversary::compute_step(&mut g, cx)).unwrap();
     assert_eq!(g.stats.counters["board.blocked.station_adversary"], 1);
 }
 

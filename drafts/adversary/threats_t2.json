@@ -88,7 +88,7 @@
     "projects advanced (compute)"
    ],
    "value": "counter 4 ambassadors (16) or 17 credits (17); uncountered 19.4 at values.json (a troop 9 with its strike), 1.21x the cheapest counter",
-   "check": "bites the factory's owner (a node on it goes with it, never a last node)",
+   "check": "bites the factory's owner (a node on it goes with it, a last node too: 175)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -563,7 +563,7 @@
     "Unity pulled back"
    ],
    "value": "counter 3 Power tags (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
-   "check": "bites a seat's network and the Unity race; never a last node",
+   "check": "bites a seat's network and the Unity race; a last node too (175)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -701,7 +701,7 @@
     "cards discarded"
    ],
    "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
-   "check": "bites a seat's network and hand; never a last node",
+   "check": "bites a seat's network and hand; a last node too (175)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -1035,7 +1035,7 @@
     "energy lost"
    ],
    "value": "counter 5 research cubes (15) or 17 credits (17); uncountered 16 at values.json (a troop 9 with its strike), 1.07x the cheapest counter",
-   "check": "bites a seat's network and energy; never a last node",
+   "check": "bites a seat's network and energy; a last node too (175)",
    "flags": [
     "146: rewritten to Matt's threat card standard (2026-11-07): one consequence or two, the nearest player hit, one counter option or two, no shared currency, no special pieces"
    ],
@@ -1143,7 +1143,7 @@
     "factory",
     "station"
    ],
-   "text": "The nearest player destroys 2 of their nodes closest to it (never their last). The adversary gains 6 compute.",
+   "text": "The nearest player destroys 2 of their nodes closest to it. The adversary gains 6 compute.",
    "counters": [
     [
      {

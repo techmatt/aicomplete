@@ -101,16 +101,16 @@ fn rng_draws_are_fixed_width_and_pinned() {
     assert_eq!(draws, GOLDEN_DRAWS);
 }
 
-/// A state waiting on a build choice: 151, a Rally's remainder (board 0's pool of 1 over its many clean
-/// cities), whose site the players choose (an event's troops land on the lowest-numbered factory, no choice).
+/// A state waiting on an adversary-turn choice: 175, a Corrupt cities line's agent next to two cities, which
+/// the players choose to move it onto (151's Rally remainder, the old choice here, is now fixed).
 fn build_choice() -> (Rules, GameState) {
-    use crate::modules::adversary::pool_key;
-    let (rules, mut g) = lab(&["adversary.build"]);
-    for c in 0..rules.map.countries.len() {
-        g.vars.insert(pool_key(c).into(), 0);
-    }
-    g.vars.insert(pool_key(0).into(), 1);
-    set_pile(&mut g, NEXT, &["mil_s1_war_drums"]);
+    let (rules, mut g) = lab(&["adversary.corrupt"]);
+    let m = &rules.map;
+    let between = (0..m.hexes.len())
+        .find(|&h| kind(m, h) == HexKind::Open && m.hexes[h].neighbors.iter().filter(|&&x| kind(m, x) == HexKind::City).count() >= 2)
+        .expect("an open hex next to two cities");
+    put(&mut g, between, ADV_AMBASSADOR, 1);
+    set_pile(&mut g, CURRENT, &["mil_s1_war_drums"]);
     run(&rules, &mut g);
     assert!(g.pending.is_some());
     (rules, g)

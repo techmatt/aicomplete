@@ -65,13 +65,13 @@ raises are on programs, the engines' triggers, Actions and Effects on buildings;
   off), `botnet` (a botnet on or next to the city comes off; its icon carries the city glyph). Only the liberate capstones print it ([player-cards.md](player-cards.md)).
 - **Clear a city (`clear_city`):** remove up to N agents (Amnesty Decree: 4) around one corrupted
   city in reach, on it or next to it, your choice which (with no more there than the card takes, all go). Each on the city adds one to the Liberate action's bill ([ambassadors.md](ambassadors.md)); those
-  next to it don't, so clearing them only thins what a Corrupt line could pull in.
+  next to it don't, so clearing them only thins what a Corrupt line could move onto it.
 - **Card text:** extra costs and lowered income included; a long card sets smaller. **Shelter one country**:
   nothing in it, facility or node, can be destroyed this round.
 - **Projects:** a drain removes compute from one visible adversary project; **drain all** from every visible one; a
-  discard takes one with its compute (if the row is then empty, the next row is dealt).
+  discard takes one with its compute, and its slot refills at once from the deck.
 - **Botnets:** removing a botnet (tier 2, in reach) is, with Decommission (a Unity card, [alignment.md](alignment.md)), the only way to remove
-  one ([adversary.md](adversary.md)); cutting one off (`cut_botnet`; no content prints it) makes it produce no compute in the next build.
+  one ([adversary.md](adversary.md)); cutting one off (`cut_botnet`; no content prints it) makes it produce no compute in the next compute step.
 - **Draw:** every draw takes the top cards of the tier-1 deck into your hand, no keep paid. An empty tier-1 deck
   reshuffles its discard; with both empty it does nothing, and a card that only draws (Fieldwork) is
   not offered. A played event goes to its played pile, never the discard, so no reshuffle brings it back.

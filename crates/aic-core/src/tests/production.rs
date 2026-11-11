@@ -122,9 +122,10 @@ fn a_neutral_station_makes_a_neutral_cube_unless_an_adversary_ambassador_blocks_
 
 /// 137: an adversary station makes adversary compute, before its country's
 /// megaproject completes and after (it put an adversary cube on the project).
+/// 175: in the adversary's compute step (the reveal step's income), not production.
 #[test]
 fn an_adversary_station_makes_compute_before_and_after_completion() {
-    let (rules, mut g) = lab(&["board.produce"]);
+    let (rules, mut g) = lab_with(&["board.produce", "adversary.reveal"], &["adversary.compute_income=0,0,0,0,0"]);
     let cubes = rules.world().int("board.station_cubes");
     for c in 0..2 {
         let h = rules.map.numbered(c, piece(c).stations[0]);

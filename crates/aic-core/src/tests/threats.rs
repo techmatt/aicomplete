@@ -331,7 +331,7 @@ fn an_uncountered_threat_destroys_the_nearest_players_closest_node_never_the_las
     assert_eq!(g.tokens(s0_far, node(0)), 1);
     assert_eq!((g.tokens(s1_a, node(1)), g.tokens(s1_b, node(1))), (1, 1), "nobody else's");
 
-    // The nearest player's last node stays, and the harm passes to nobody.
+    // 175: the nearest player's last node goes too.
     let (rules, mut g, factory, c) = supply_raid_lab(DESTROY, &[]);
     let m = &rules.map;
     let next = at_distance(m, factory, 1, &[]);
@@ -341,7 +341,7 @@ fn an_uncountered_threat_destroys_the_nearest_players_closest_node_never_the_las
     deal_at(&mut g, "supply_raid", c, &[factory]);
     pass_all(&rules, &mut g);
     answer_all(&rules, &mut g);
-    assert_eq!(total(&g, node(0)), 1, "its last node");
+    assert_eq!(total(&g, node(0)), 0, "its last node");
     assert_eq!(total(&g, node(1)), 2);
 }
 

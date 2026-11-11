@@ -363,9 +363,10 @@ function project(p) {
     tier: p.stage,
     tierLabel: `Stage ${p.stage}`,
     cost: p.cost,
-    costLabel: `${p.cost} compute per player`,
+    // 175: printed per player count.
+    costLabel: `${2 * p.cost} / ${3 * p.cost} / ${4 * p.cost} compute (2 / 3 / 4 players)`,
     keywords: p.ongoing ? ['ongoing'] : [],
-    price: [['Compute per player', p.cost]],
+    price: [['2 players', 2 * p.cost], ['3 players', 3 * p.cost], ['4 players', 4 * p.cost]],
     ops: { effects: p.effects },
   });
 }

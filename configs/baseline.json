@@ -19,7 +19,7 @@
         "claim_city": 4,
         "claim_station": 3,
         "claim_factory": 3,
-        "last_safe_stage": 2,
+        "start_nodes": 1,
         "free_leaves": 0,
         "destruction_discord": 1,
         "troop_spent": 1,
@@ -62,6 +62,7 @@
         "corrupt_station_at": 3,
         "corrupt_factory_at": 3,
         "corrupt_land_at": 3,
+        "corrupt_node_at": 2,
         "corrupt_cut": [
           1,
           1,

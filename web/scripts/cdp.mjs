@@ -6,8 +6,12 @@
 
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// The browser profiles live under the checkout's git-ignored out/ (175, parked P1): %TEMP% is scanned by
+// Defender, which slowed every launch.
+const profileRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'out', 'cdp');
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -88,7 +92,8 @@ function browserPath() {
  * and returns its JSON value.
  */
 export async function openPage({ width = 1366, height = 768 } = {}) {
-  const profile = mkdtempSync(join(tmpdir(), 'aic-cdp-'));
+  mkdirSync(profileRoot, { recursive: true });
+  const profile = mkdtempSync(join(profileRoot, 'aic-cdp-'));
   const browser = spawn(browserPath(), [
     '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`,
     '--no-first-run', '--no-default-browser-check', `--window-size=${width},${height}`,

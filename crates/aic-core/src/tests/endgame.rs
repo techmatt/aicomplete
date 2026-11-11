@@ -130,23 +130,16 @@ fn liberating_needs_a_node_on_or_next_to_the_city() {
     assert_eq!(g.tokens(h, ADV_CUBE), 0);
 }
 
+/// 175: no stage protects a last node: corruption takes it in stage I.
 #[test]
-fn stage_one_never_takes_a_last_node() {
-    let (rules, mut g) = lab_with(&[], &["board.last_safe_stage=2"]);
+fn stage_one_takes_a_last_node_too() {
+    let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).cities[0]);
     put(&mut g, h, node(0), 1);
     g.vars.insert(STAGE.into(), 1);
     with_cx(&rules, |cx| adversary::corrupt_city(&mut g, cx, h));
-    assert_eq!(g.tokens(h, node(0)), 1, "stage I: it stays");
-    let gone = with_cx(&rules, |cx| {
-        board::destroy_piece(&mut g, cx, h, node(0), board::Cause::Troop)
-    });
-    assert!(!gone);
-    g.vars.insert(STAGE.into(), 2);
-    let gone = with_cx(&rules, |cx| {
-        board::destroy_piece(&mut g, cx, h, node(0), board::Cause::Troop)
-    });
-    assert!(gone, "stage II: it goes");
+    assert_eq!(g.tokens(h, node(0)), 0, "stage I: it goes");
+    assert_eq!(g.stats.counters["board.last_node_lost"], 1);
 }
 
 /// 139 (Offensive): a Discord card deals a threat onto the board's most
@@ -174,21 +167,20 @@ fn a_discord_card_deals_a_threat_onto_the_most_threatened_node_hex() {
     assert_eq!(g.stats.counters["threats.dealt_at_node"], 1);
 }
 
+/// 175: a choice threat may take a last node: unable to pay, the player loses it.
 #[test]
-fn a_choice_threat_never_takes_a_last_node() {
+fn a_choice_threat_takes_a_last_node_too() {
     use crate::modules::threats;
     let (rules, mut g) = lab(&[]);
     let h = rules.map.numbered(0, piece(0).node);
     put(&mut g, h, node(0), 1);
     set_res(&mut g, 0, Resource::Credits, 2);
-    // No option is left: the player pays what they have and keeps the node.
     with_cx(&rules, |cx| {
         let hexes = crate::modules::common::scope_hexes(&rules.world(), Some(0));
         threats::lose_node_or(&mut g, cx, &[0], &hexes, Resource::Credits, 6, "threat1", None)
     })
     .unwrap();
-    assert_eq!(g.tokens(h, node(0)), 1);
-    assert_eq!(g.resource(0, Resource::Credits), 0);
+    assert_eq!(g.tokens(h, node(0)), 0);
 }
 
 // 028: rules revision 17.
@@ -202,9 +194,9 @@ fn node_on_track(g: &mut GameState, s: usize, hexes: &[usize]) {
 }
 
 #[test]
-fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
+fn each_player_destroys_a_node_of_their_choice_last_included() {
     use crate::modules::common::hex_name;
-    let (rules, mut g) = lab_with(&[], &["board.last_safe_stage=2"]);
+    let (rules, mut g) = lab(&[]);
     let (a, b) = (rules.map.numbered(0, piece(0).node), rules.map.numbered(0, piece(0).cities[0]));
     let last = rules.map.numbered(1, piece(1).node);
     put(&mut g, a, node(0), 1);
@@ -215,15 +207,13 @@ fn each_player_destroys_a_node_of_their_choice_but_not_a_stage_one_last() {
         let hexes = [h, b];
         board::destroy_own_node(g, cx, s, &hexes, board::Cause::Effect("discord"), None).unwrap();
     };
-    with_cx(&rules, |cx| hit(&mut g, cx, 1, last));
-    assert_eq!(g.tokens(last, node(1)), 1, "stage I: it stays");
     // The player picks which: here the second of seat 0's two.
     let pick = crate::state::Pick { option: hex_name(&rules.world(), b), target: Some(rules.map.hexes[b].hex) };
     with_cx_picks(&rules, vec![pick], |cx| hit(&mut g, cx, 0, a));
     assert_eq!((g.tokens(a, node(0)), g.tokens(b, node(0))), (1, 0));
-    g.vars.insert(STAGE.into(), 2);
+    // 175: a last node goes in stage I too.
     with_cx(&rules, |cx| hit(&mut g, cx, 1, last));
-    assert_eq!(g.tokens(last, node(1)), 0, "stage II: it goes");
+    assert_eq!(g.tokens(last, node(1)), 0, "stage I: it goes");
 }
 
 /// 136: every printed Unity card is dealt (156: into one deck).

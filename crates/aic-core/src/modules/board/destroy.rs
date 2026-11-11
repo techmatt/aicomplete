@@ -24,8 +24,7 @@ impl Cause {
     }
 }
 
-/// A piece of `kind` on hex `h` would be destroyed. A node safe as its
-/// owner's last stays. A Shelter Order in
+/// A piece of `kind` on hex `h` would be destroyed (175: a last node too). A Shelter Order in
 /// its country, a corp unit at a base next to it (adversary strikes only,
 /// [`Cause::Troop`]), a hardening token, the owner's ambassador on the hex (137:
 /// armor), or the Aegis Doctrine capstone absorbs it (in that order); otherwise it goes, and a war
@@ -41,10 +40,6 @@ pub fn destroy_piece(
     let w = cx.world;
     let c = w.map.hexes[h].country as usize;
     let owner = (0..g.seats.len()).find(|&s| kind == node(s));
-    if owner.is_some_and(|s| last_node_safe(&w, g, s)) {
-        cx.tally(g, "board.last_node_safe", 1);
-        return false;
-    }
     let by_troop = cause == Cause::Troop;
     if flagged(g, RoundFlag::Shelter, c) {
         return false;
@@ -104,7 +99,7 @@ pub fn destroy_piece(
 
 /// Seat `s` destroys one of its nodes in `hexes`, its choice (028): a hit
 /// on the player, not a hex. Absorbed as any destruction is, so a player may
-/// pick a token it has shielded. Safe as a last node in stage I.
+/// pick a token it has shielded.
 pub fn destroy_own_node(
     g: &mut GameState,
     cx: &mut Cx,
@@ -116,10 +111,6 @@ pub fn destroy_own_node(
     let w = cx.world;
     let mine: Vec<usize> = hexes.iter().copied().filter(|&h| g.tokens(h, node(s)) > 0).collect();
     if mine.is_empty() {
-        return Ok(());
-    }
-    if last_node_safe(&w, g, s) {
-        cx.tally(g, "board.last_node_safe", 1);
         return Ok(());
     }
     let opts = mine.iter().map(|&h| hex_opt(&w, h)).collect();

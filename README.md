@@ -115,7 +115,8 @@ Anything after an alias goes to the test binary, with no second `--` (`crates/ai
 which looks like a fast pass: check the exit code). Times are on this
 machine, otherwise idle; the first test-profile build takes ~80 s more. `cargo test` runs
 test binaries one after another, so the fast lane's wall clock is about the sum of each binary's
-slowest test: a test looping over agents or variants splits into one test (or scoped thread) each.
+slowest test: a test looping over agents or variants splits into one test (or scoped thread) each. A red crate stops
+the run before the next crate's tests: `cargo test --workspace --no-fail-fast` when several reds are expected (175).
 
 **Rules changes:** the `golden_game` test pins the final state of one fixed game
 (baseline, seed `u64::MAX`, action *k* = legal action `(k × 7919) mod count`). If a rules change is
