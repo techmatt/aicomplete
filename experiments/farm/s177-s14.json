@@ -1,0 +1,74 @@
+{
+  "name": "s177-s14",
+  "note": "177 s14: c24 [adversary.compute_income=1,4,22,24,24], a2 [adversary.ambassador_income=0,3,3,3,2]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_c24",
+      "set": [
+        "adversary.compute_income=1,4,22,24,24"
+      ]
+    },
+    {
+      "name": "bp_a2",
+      "set": [
+        "adversary.ambassador_income=0,3,3,3,2"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_c24",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,22,24,24"
+      ]
+    },
+    {
+      "name": "br_a2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,3,3,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_c24",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,22,24,24"
+      ]
+    },
+    {
+      "name": "pr_a2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,3,3,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

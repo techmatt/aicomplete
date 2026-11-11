@@ -1,0 +1,44 @@
+{
+  "name": "s177-oracle-t2e0",
+  "note": "177: the oracle at d4 with adversary.tier2_early=0, set a's first 8 seeds a pair",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": [
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.tier2_early=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    4
+  ],
+  "agents": [
+    "oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1"
+  ],
+  "games": 8,
+  "first_seed": 42277,
+  "records": 0,
+  "endgame": {
+    "back": 3,
+    "agent": "",
+    "rollouts": 1,
+    "all_losses": true
+  }
+}

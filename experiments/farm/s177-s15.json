@@ -1,0 +1,54 @@
+{
+  "name": "s177-s15",
+  "note": "177 s15: t2e0 [adversary.tier2_early=0]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_t2e0",
+      "set": [
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_t2e0",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_t2e0",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.tier2_early=0"
+      ]
+    }
+  ],
+  "difficulties": [
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

@@ -684,7 +684,8 @@ impl Agent for Policy {
             }
         }
         if self.forced.converge_rule && pending {
-            if let Some(i) = super::moves::converge(&world, g, legal) {
+            let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
+            if let Some(i) = super::moves::converge(&world, g, legal, last_node) {
                 return i;
             }
         }
@@ -694,7 +695,8 @@ impl Agent for Policy {
             }
         }
         if self.forced.move_rules && pending {
-            if let Some((i, which)) = super::moves::pick(&world, g, legal) {
+            let last_node = self.eval().is_some_and(|e| e.w.last_node > 0.0);
+            if let Some((i, which)) = super::moves::pick(&world, g, legal, last_node) {
                 super::moves::fired(which);
                 return i;
             }

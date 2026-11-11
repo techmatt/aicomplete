@@ -316,7 +316,7 @@ const SWEEP: &str = "deals=1,lead=0";
 /// judge is `engine:strategy=1,w.clock=0`.
 const STRATEGIST: &str = "strategy=1,w.built=4,w.built_cost=0.5,w.clock=0,w.energy_cap=0,w.hand=3,w.hand_cost=0.4,\
 w.horizon=0,w.insight_income=0,w.movement=0,w.packet_keep=1,w.production=0,w.strat_contents=0,w.table=0,\
-w.tag_hand=0,w.purge=3.6";
+w.tag_hand=0,w.purge=3.6,w.last_node=120";
 
 /// A kind's place on the [`LADDER`].
 fn rung(kind: &str) -> Option<usize> {

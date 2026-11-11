@@ -1,0 +1,38 @@
+{
+  "name": "s177-fa",
+  "note": "177 fa: base",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist",
+    "greedy"
+  ],
+  "games": 48,
+  "records": 0
+}

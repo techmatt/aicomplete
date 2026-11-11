@@ -1,0 +1,112 @@
+{
+  "name": "s177-s6",
+  "note": "177 s6: C5 [adversary.corrupt_at=5; adversary.corrupt_cut=2,1,1,0], S4 [adversary.corrupt_station_at=4; adversary.corrupt_factory_at=4; adversary.corrupt_cut=1,2,2,0], CS [adversary.corrupt_at=5; adversary.corrupt_station_at=4; adversary.corrupt_factory_at=4; adversary.corrupt_cut=2,2,2,0]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_C5",
+      "set": [
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    },
+    {
+      "name": "bp_S4",
+      "set": [
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=1,2,2,0"
+      ]
+    },
+    {
+      "name": "bp_CS",
+      "set": [
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=2,2,2,0"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_C5",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    },
+    {
+      "name": "br_S4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=1,2,2,0"
+      ]
+    },
+    {
+      "name": "br_CS",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=2,2,2,0"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_C5",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_cut=2,1,1,0"
+      ]
+    },
+    {
+      "name": "pr_S4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=1,2,2,0"
+      ]
+    },
+    {
+      "name": "pr_CS",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.corrupt_at=5",
+        "adversary.corrupt_station_at=4",
+        "adversary.corrupt_factory_at=4",
+        "adversary.corrupt_cut=2,2,2,0"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

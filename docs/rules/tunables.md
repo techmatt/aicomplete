@@ -67,17 +67,17 @@ Every parameter of the baseline config, with its value and range, generated from
 | `adversary.counter_more_at` | 2 | 0..5 | the difficulty level from which counter_more_all and counter_more_credits apply (142) |
 | `adversary.counter_bonus_at` | 1 | 0..5 | the difficulty level from which counter_bonus and counter_bonus_all apply (142; 1 before) |
 | `adversary.extra_threats` | 1 | 0..5 | difficulty extra_threats_at+: extra threats dealt each round in all, one per country in turn |
-| `adversary.extra_threats_at` | 4 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
+| `adversary.extra_threats_at` | 5 | 0..5 | the difficulty level from which extra_threats are dealt (139) |
 | `adversary.stage1_removed` | 1 | 0..3 | difficulty stage_swap_at+: stage-I cards removed |
 | `adversary.stage3_added` | 1 | 0..3 | difficulty stage_swap_at+: stage-III cards added (the cap holds, its end gets harder) |
 | `adversary.stage_swap_at` | 4 | 0..5 | the difficulty level from which stage1_removed and stage3_added apply (142; 2 before) |
 | `adversary.stage2_removed` | 2 | 0..3 | difficulty 3+: stage-II cards removed (a shorter round cap) |
 | `adversary.stage1_added` | 0 | 0..3 | 151: difficulty 3+: stage-I cards added back (with stage2_removed, a smaller d3 step) |
 | `adversary.extra_corrupted` | 0 | 0..3 | difficulty 4: more cities per country start corrupted |
-| `adversary.compute_income` | 3, 4, 18, 24, 13 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
-| `adversary.ambassador_income` | 0, 3, 3, 3, 2 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
+| `adversary.compute_income` | 1, 4, 22, 24, 24 | 0..30 | 151: the adversary's base compute income a round, at difficulty 0-4 (fixed, not per board) |
+| `adversary.ambassador_income` | 0, 3, 3, 3, 3 | 0..10 | 151: the agent income a board a round (into each board's pool), at difficulty 0-4 |
 | `adversary.tier2_early` | 1 | 0..3 | difficulty 4+: tier-2 threats start this many rounds sooner |
-| `adversary.discord_removed` | 1 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
+| `adversary.discord_removed` | 0 | 0..3 | difficulty 4+: Discord cards removed at setup (from tier 1) |
 | `adversary.wall_troops` | 1 | 0..5 | build: adversary troops landing in each country where a seat with Wall has a node (pressure for Wall to stop) |
 | `adversary.station_flip_at` | 2 | 0..5 | agents on a player's research station before an effect can flip it (short of that, one lands there instead) |
 | `adversary.botnet_compute` | 1 | 0..5 | adversary compute each botnet makes a round (none with a player ambassador on it) |

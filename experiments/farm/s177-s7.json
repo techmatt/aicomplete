@@ -1,0 +1,113 @@
+{
+  "name": "s177-s7",
+  "note": "177 s7: c20 [adversary.compute_income=1,4,20,24,27], c21 [adversary.compute_income=1,4,21,24,27], c22 [adversary.compute_income=1,4,22,24,27], c23 [adversary.compute_income=1,4,23,24,27]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_c20",
+      "set": [
+        "adversary.compute_income=1,4,20,24,27"
+      ]
+    },
+    {
+      "name": "bp_c21",
+      "set": [
+        "adversary.compute_income=1,4,21,24,27"
+      ]
+    },
+    {
+      "name": "bp_c22",
+      "set": [
+        "adversary.compute_income=1,4,22,24,27"
+      ]
+    },
+    {
+      "name": "bp_c23",
+      "set": [
+        "adversary.compute_income=1,4,23,24,27"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_c20",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,20,24,27"
+      ]
+    },
+    {
+      "name": "br_c21",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,21,24,27"
+      ]
+    },
+    {
+      "name": "br_c22",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,22,24,27"
+      ]
+    },
+    {
+      "name": "br_c23",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,23,24,27"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_c20",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,20,24,27"
+      ]
+    },
+    {
+      "name": "pr_c21",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,21,24,27"
+      ]
+    },
+    {
+      "name": "pr_c22",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,22,24,27"
+      ]
+    },
+    {
+      "name": "pr_c23",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,23,24,27"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

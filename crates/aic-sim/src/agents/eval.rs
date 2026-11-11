@@ -26,6 +26,7 @@ use aic_core::content::{CardDef, Op, Resource, Side, TagOrAny, RESOURCES, TAGS};
 use aic_core::modules::common::{
     self, ADV_AMBASSADOR, ADV_CUBE, FACTORY, HARDEN, STATION, TROOP,
 };
+use aic_core::module::Hot;
 use aic_core::modules::{adversary, ai, alignment, board, cards, economy, plan, threats};
 use aic_core::op::{CorruptSite, Step};
 use aic_core::key::Fnv;
@@ -378,6 +379,11 @@ pub struct Weights {
     /// 176: each botnet with a player's ambassador on its hex, a share of `botnet`: r75's standard action takes
     /// it down from there (credits, the ambassador stays), so moving one there is a step toward it (0: off).
     pub botnet_reach: f64,
+    /// 177 (0: off, as before): a seat's last node read as the game it is (`alignment.node_loss`). A raw count
+    /// of 1 with exposure `e` charges `e` (to 1) of this; a shelter keeping a last node credits its share; a
+    /// seat at 0 nodes mid-resolution scores as lost; an ambassador on a node hex cancels an arrival rather
+    /// than armoring it (r75); and the converge and push rules keep agents off a last node about to tip.
+    pub last_node: f64,
 }
 
 /// Weights renamed since experiments named them: (former name, name).
@@ -629,6 +635,7 @@ impl Default for Weights {
             block: 4.0,
             armor: 1.0,
             botnet_reach: 0.3,
+            last_node: 0.0,
         }
     }
 }
@@ -1228,6 +1235,11 @@ impl Eval {
             };
         }
         let world = rules.world();
+        // 177: a seat with no node left on the board mid-resolution (alignment's node_loss check, run at the
+        // step's end, `alignment.rs` tips/losses) has lost the game already.
+        if w.last_node > 0.0 && world.hot(Hot::NodeLoss) > 0 && adversary::loss(g).is_some() {
+            return -w.win;
+        }
         // The next corrupt step's number for each site, read off the card ahead
         // (public), and whether a Corrupt line there gathers from next door (138).
         let (corrupt_at, gather) = plan::next_corrupt_n(&world, g, CorruptSite::City);
@@ -1251,14 +1263,22 @@ impl Eval {
         let tokens = self.keys.read(g);
         // 151: the coming Rally, a round ahead, as expected ambassadors a hex (`rally_read` of them).
         let mut arriving: Vec<f64> = Vec::new();
+        // 177 (`last_node`): the player ambassadors a Rally's arrivals there leave standing, by hex (empty: all).
+        let mut rally_used: Vec<f64> = Vec::new();
         if w.rally_read > 0.0 {
             let fore = plan::next_rally(&world, g);
             if !fore.is_empty() {
                 arriving = vec![0.0; g.hexes.len()];
+                if w.last_node > 0.0 {
+                    rally_used = vec![0.0; g.hexes.len()];
+                }
                 for (h, n) in fore {
                     // An arrival on a player ambassador cancels it rather than landing.
                     let held: i64 = tokens[h].ambassador[..self.seats].iter().sum();
                     arriving[h] += (n - held as f64).max(0.0) * w.rally_read;
+                    if let Some(u) = rally_used.get_mut(h) {
+                        *u += n.min(held as f64) * w.rally_read;
+                    }
                 }
             }
         }
@@ -1273,6 +1293,8 @@ impl Eval {
         // corruption's Discord to come.
         let mut exposed = [0.0f64; 4];
         let mut shielded: [Option<bool>; 4] = [None; 4];
+        // 177: each seat's Aegis Doctrine unused this round (`board::destroy_piece`'s last guard).
+        let mut aegis: [Option<bool>; 4] = [None; 4];
         let mut blight = 0.0f64;
         for h in 0..g.hexes.len() {
             let t = &tokens[h];
@@ -1354,11 +1376,21 @@ impl Eval {
                 } else {
                     None
                 };
+                let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
+                // 177 (`last_node`): r75, each agent moving onto a hex first cancels a player ambassador standing
+                // there (`board::agent_cancels`, from `adversary::converge_one`): those the Rally's arrivals leave
+                // cancel the gathered agents, `total` less the hex's own `base`, before any count there.
+                let cancels = if w.last_node > 0.0 && held {
+                    let standing: i64 = t.ambassador[..seats].iter().sum();
+                    (standing as f64 - rally_used.get(h).copied().unwrap_or(0.0)).max(0.0)
+                } else {
+                    0.0
+                };
+                let net = |total: f64, base: f64| base + (total - base - cancels).max(0.0);
                 // 175: a node hex corrupts on its own number (2) of agents, whatever site it holds: a
                 // second read, the larger of the two counting. Agents only (a marker is a site's).
                 let node_r = if held && !banned(h) {
                     let open = !common::firewalled(g, h);
-                    let at = |x: usize| tokens[x].adv_ambassador as f64 + arriving.get(x).copied().unwrap_or(0.0);
                     let mut k = at(h);
                     if node_gather && open {
                         // A Corrupt nodes line: agents next door move on, but not those on another node hex.
@@ -1368,11 +1400,17 @@ impl Eval {
                             .filter(|&&x| tokens[x].node[..seats].iter().all(|&n| n == 0))
                             .map(|&x| at(x))
                             .sum::<f64>();
+                        if cancels > 0.0 {
+                            k = net(k, at(h));
+                        }
                     } else if open && site.is_some_and(|(_, gathers, _)| gathers) {
                         // The site's own Corrupt line moves agents onto this hex: short of the site's number they
                         // stay, and the node goes at natural corruption.
                         let markers = if city { t.marker as f64 } else { 0.0 };
                         k = Self::toward(rules, &tokens, &arriving, h, true) - markers;
+                        if cancels > 0.0 {
+                            k = net(k, at(h));
+                        }
                     }
                     if k > 0.0 {
                         let p = ((k + 0.5) / node_at.max(1) as f64).min(1.0);
@@ -1385,11 +1423,12 @@ impl Eval {
                 };
                 let site = site.or(if node_r > 0.0 { Some((node_at, node_gather, 0.0)) } else { None });
                 if let Some((n, gathers, share)) = site {
-                    let toward = if banned(h) {
-                        0.0
-                    } else {
-                        Self::toward(rules, &tokens, &arriving, h, gathers && !common::firewalled(g, h))
-                    };
+                    let pulls = gathers && !common::firewalled(g, h);
+                    let mut toward = if banned(h) { 0.0 } else { Self::toward(rules, &tokens, &arriving, h, pulls) };
+                    if cancels > 0.0 && pulls && toward > 0.0 {
+                        // 177: the site's own line gathers too: its arrivals cancel the ambassadors first.
+                        toward = net(toward, at(h) + if city { t.marker as f64 } else { 0.0 });
+                    }
                     if toward > 0.0 || node_r > 0.0 {
                         let p = ((toward + 1.0) / n.max(1) as f64).min(1.0);
                         let r = (p * p * share).max(node_r);
@@ -1407,7 +1446,18 @@ impl Eval {
                             // Armor against corruption is a hardening token or the node
                             // owner's own ambassador (the engine takes the site owner's
                             // cube first, so the site owner's ambassador is no armor here).
-                            let armored = t.ambassador[s] > 0 || t.harden > 0;
+                            // 177 (`last_node`): r75, the gathered agents cancel the ambassadors on the hex
+                            // before it holds its number (`adversary::converge_one`), so only a hardening token
+                            // or a ready Aegis Doctrine is left to spend (`board::destroy_piece`'s guards).
+                            let armored = if w.last_node > 0.0 {
+                                t.harden > 0
+                                    || *aegis[s].get_or_insert_with(|| {
+                                        g.var(&cards::civic_used(s)) == 0
+                                            && cards::has_passive(&world, g, s, |p| matches!(p, Op::CivicShelter))
+                                    })
+                            } else {
+                                t.ambassador[s] > 0 || t.harden > 0
+                            };
                             *e += if armored { r * ARMORED_SHARE } else { r };
                         }
                         if share > 0.0 && !city && t.station == 0 && t.factory == 0 {
@@ -1513,7 +1563,8 @@ impl Eval {
         }
         let mut thin = i64::MAX;
         for (s, &e) in exposed.iter().enumerate().take(self.seats) {
-            let mut count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
+            let raw = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
+            let mut count = raw;
             if e > 0.0 {
                 // 147 (D67): a node on a site filling toward corruption is that
                 // share lost: the node and what losing one costs beyond it (as a
@@ -1521,17 +1572,14 @@ impl Eval {
                 // nodes less the exposed ones (136 read cities only, and was off).
                 v -= w.corrupt_exposure * e * (w.node + w.shelter_node);
                 count -= e.round() as i64;
+                // 177: the danger step folds 1 and 0 nodes together, so an exposed last node charged nothing.
+                if raw == 1 && w.last_node > 0.0 {
+                    v -= w.last_node * e.min(1.0);
+                }
             }
             thin = thin.min(count);
-            match count {
-                ..=1 => v -= w.node_danger,
-                2 => v -= 0.5 * w.node_danger,
-                // 034: a token lost stays lost and a hit takes 2, so the danger
-                // starts sooner.
-                3 => v -= 0.25 * w.node_danger,
-                4 => v -= 0.1 * w.node_danger,
-                _ => {}
-            }
+            // 034: a token lost stays lost and a hit takes 2, so the danger starts sooner.
+            v -= danger_share(count) * w.node_danger;
         }
         // 092: a shelter is worth the destruction showing that it stops.
         if w.shelter_read > 0.0 {
@@ -1545,6 +1593,10 @@ impl Eval {
                     let count = tokens.iter().filter(|t| t.node[s] > 0).count() as i64;
                     let step = danger_share(count - 1) - danger_share(count);
                     v += w.shelter_read * k * (w.node + w.shelter_node + step * w.node_danger);
+                    // 177: sheltering keeps a seat's last node (the step above is 0 there).
+                    if count == 1 && w.last_node > 0.0 {
+                        v += w.shelter_read * w.last_node * k.min(1.0);
+                    }
                 }
                 v += w.shelter_read * saves.factories * (w.owned_factory + w.factory);
             }
@@ -2431,6 +2483,47 @@ impl PlanRates {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Sets `n` of token `k` on hex `h` (0 removes it).
+    fn put(g: &mut GameState, h: usize, k: &str, n: i64) {
+        let t = &mut Arc::make_mut(&mut Arc::make_mut(&mut g.hexes)[h]).tokens;
+        if n == 0 {
+            t.retain(|key, _| key.as_str() != k);
+        } else {
+            t.insert(k.into(), n);
+        }
+    }
+
+    /// 177: `last_node` is off by default (the strategist alias sets it) and set by name. On, a seat with no node
+    /// mid-resolution scores as a lost game, and an exposed last node costs more than off.
+    #[test]
+    fn last_node_reads_the_last_node() {
+        let d = Weights::default();
+        assert_eq!(d.last_node, 0.0);
+        let mut on = Weights::default();
+        assert!(on.set("last_node", 100.0));
+        let r = crate::agents::tests::rules(0);
+        let g0 = r.new_game(1);
+        let nodes = |g: &GameState, s: usize| (0..g.hexes.len()).filter(|&h| g.tokens(h, common::node(s)) > 0).collect::<Vec<_>>();
+        let off = Eval::new(&r, Weights::default());
+        let lit = Eval::new(&r, Weights { last_node: 100.0, ..Weights::default() });
+        // Seat 1's nodes gone, its loss not yet run.
+        let mut g = g0.clone();
+        for h in nodes(&g, 1) {
+            put(&mut g, h, common::node(1), 0);
+        }
+        assert!(off.value(&r, &g) > -off.w.win);
+        assert_eq!(lit.value(&r, &g), -lit.w.win);
+        // Seat 0 down to one node, an agent on its hex (a node hex corrupts at 2).
+        let mut g = g0.clone();
+        let mine = nodes(&g, 0);
+        for &h in &mine[1..] {
+            put(&mut g, h, common::node(0), 0);
+        }
+        put(&mut g, mine[0], ADV_AMBASSADOR, 1);
+        let gap = off.value(&r, &g) - lit.value(&r, &g);
+        assert!(gap > 0.0 && gap <= 100.0, "an exposed last node charges up to the weight: {gap}");
+    }
 
     #[test]
     fn picks_count_only_as_far_as_insight_keeps_them() {

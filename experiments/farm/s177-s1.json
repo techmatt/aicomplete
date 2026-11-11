@@ -1,0 +1,178 @@
+{
+  "name": "s177-s1",
+  "note": "177 s1: A [adversary.compute_income=2,4,22,30,30; adversary.ambassador_income=0,3,3,3,3], B [adversary.compute_income=1,4,22,30,30; adversary.ambassador_income=0,3,3,4,4], C [adversary.compute_income=2,4,22,30,30; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0], D [adversary.compute_income=2,4,22,30,30; adversary.ambassador_income=0,3,3,3,3; adversary.extra_threats_at=5], E [board.start_nodes=2], F [adversary.compute_income=3,4,18,24,24; adversary.ambassador_income=0,3,3,3,3]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_A",
+      "set": [
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "bp_B",
+      "set": [
+        "adversary.compute_income=1,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,4,4"
+      ]
+    },
+    {
+      "name": "bp_C",
+      "set": [
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "bp_D",
+      "set": [
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "bp_E",
+      "set": [
+        "board.start_nodes=2"
+      ]
+    },
+    {
+      "name": "bp_F",
+      "set": [
+        "adversary.compute_income=3,4,18,24,24",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_A",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "br_B",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,4,4"
+      ]
+    },
+    {
+      "name": "br_C",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "br_D",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "br_E",
+      "set": [
+        "ai.boards=0,2",
+        "board.start_nodes=2"
+      ]
+    },
+    {
+      "name": "br_F",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=3,4,18,24,24",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_A",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    },
+    {
+      "name": "pr_B",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,4,4"
+      ]
+    },
+    {
+      "name": "pr_C",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0"
+      ]
+    },
+    {
+      "name": "pr_D",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=2,4,22,30,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "pr_E",
+      "set": [
+        "ai.boards=1,2",
+        "board.start_nodes=2"
+      ]
+    },
+    {
+      "name": "pr_F",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=3,4,18,24,24",
+        "adversary.ambassador_income=0,3,3,3,3"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

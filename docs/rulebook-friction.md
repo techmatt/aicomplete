@@ -1,4 +1,4 @@
-# Rulebook friction (rules revision 75)
+# Rulebook friction (rules revision 76)
 
 *What is still hard to say in [rulebook.md](rulebook.md) (second draft), ranked by how much each costs a reader, with
 the rule change that would fix it. Matt's test: a rule that can't be said well is a bad sign about the rule. Only what
@@ -21,7 +21,7 @@ Island's base-game core rules are about 6,000-8,000 words (172's estimate from i
 inside that range with its examples, against the first draft's 7,975 core words with none; it still has no diagrams.
 Its density is the sharper signal: at r73, 40 entries that only a rule or component change would fix, 17 of them in
 rules met every round; r74 fixed six (five of those every round), leaving 34 and 12; r75 fixed nine more (three every
-round), leaving 25 and 9. The word counts are r73's.
+round), leaving 25 and 9; r76 fixed one (setup), leaving 24 and 9. The word counts are r73's.
 
 ## The ten worst
 
@@ -33,7 +33,8 @@ block), factory growth (#5: next to the city, a neutral city's factory neutral),
 chooses, only your own ambassador, war's node guarded), production timing (#7: one income step; Buy energy in the
 action phase), corp troops (#13: one ambassador stops one troop), holding Discord off (#14: no filter), tipping (#15:
 both tracks keep their overflow) and the converters (#25: each once a round, a city of the country in reach); Aegis
-Doctrine's half of #24 went with #6. The rows keep their r73 numbers.
+Doctrine's half of #24 went with #6. r76 (177) fixed difficulty (#20): both incomes climb with the level, and level 4
+is level 3 plus a short list (no removed Discord card, no extra threat). The rows keep their r73 numbers.
 
 1. **Insight and keeps** (#2): one resource with a reset, a carve-out, a debt and three keep prices.
 2. **Near and nearest** (#8): two distance tests on one threat, plus per-type token conditions.
@@ -56,7 +57,6 @@ Doctrine's half of #24 went with #6. The rows keep their r73 numbers.
 | 17 | [Words with two meanings](rulebook.md#24-glossary) (every round) | **Deploy** is every board's node power and the adversary's troop line. **Tier** is a deck (1, 2) and a Unity or Discord card's strength (I-III), while event cards have **stages** I-III, and a stage-I card deals tier-1 threats. **Board** is an AI board and the adversary board, and on adversary cards a country ("each board"; G flagged). **Overrun** is a threat's name, so natural corruption can't borrow it. (The second draft already avoids "strike" for cards and uses the cards' "on or next to"; 172's draft had defined "next to" to include "on", against the printed cards.) | Rename: the node power "Expand", the adversary line "Muster"; Unity and Discord "strength I-III"; print "each country" on adversary cards. |
 | 18 | [Wall, Vigil and the Protector's troops](rulebook.md#5-your-ai-board) (every round, 2+ players) | Wall stops only adversary troops; a factory on the Wall hex still makes its troop; a Deploy onto a Wall hex stays in the supply (r74). The adversary deploys 1 troop a round where the Protector is, on the lowest-numbered factory, which can be a player's (G: "my own factory gets a troop that strikes it"): printed on the adversary's board, not the Protector's. **Vigil** pays when a troop is about to step next to a node on a facility, a counterfactual (D 3 of 3; G, V flagged "fiddly"). | Print the landing on the Protector's board too, and land it on an adversary or neutral factory. Vigil: "when a troop ends its march next to your node, gain 1 insight". |
 | 19 | [When an Effect fires](rulebook.md#connectors) (card text) | "When you remove a troop" fires once a troop; "when you remove agents" or compute once per card, Action, power or standard action that removed any. G and V both flagged it as a patch. A teammate's trigger that removes counts as its owner's. | All once per action, or all per piece, with the unit printed. |
-| 20 | [Difficulty](rulebook.md#21-difficulty) (setup) | The incomes don't climb: compute 3, 4, 18, 24, then 13 at level 4; agents 1, 4, 4, 4, 3 (G, V flagged "non-monotonic, arbitrary"). Level 4 is a list of setup changes. | Smooth the curve, or explain level 4's trade (fewer pieces, harder deck) on the difficulty card. |
 | 21 | [Tags on your cards](rulebook.md#tags) (every round) | Covered buildings' tags count; events' don't; board tags count but can't be sacrificed; a card's own tags don't count for its own requirement but do count for its own per-tag gain. | "A card's own tags never count for anything on that card"; board tags the one stated exception. |
 | 22 | [Move](rulebook.md#standard-actions) (every round) | "Movement" reads as distance, but each point puts an ambassador from your supply **or anywhere on the map** onto a site, base, node or (r75) botnet in reach. G, V: "can I move onto an empty hex?" (G11, V14 right). | Rename it ("Dispatch"), or limit the source to your reach, so a move is a move. |
 | 24 | [Shelter](rulebook.md#20-powers-and-capstones) (late game) | Shelter covers any country, with no reach, unlike every other power, and lasts from the action phase to cleanup, so it never meets the adversary's turn (G25, V8 asked); it is also the one protection spent automatically (r75). Its roof mark looks like Aegis Doctrine's shield. (Aegis's half of this row, spent automatically on anyone's piece, went at r75: the Protector chooses when, on their own pieces.) | Print "any country" on Shelter. |

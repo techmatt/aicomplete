@@ -1,6 +1,6 @@
 # AI Complete: Rulebook (second draft)
 
-*Rules revision 75. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
+*Rules revision 76. This book teaches the game as the simulator plays it today. Every number is a candidate. The AI
 boards, the threats, the adversary's cards and the Unity and Discord cards are placeholders, so card text is left out
 except where an example needs it. Part 1 teaches the game in the order you play it; Part 2 is the reference. Each
 section ends with a small **Sources** line for reviewers: the rules files ([rules/](rules/README.md)) and code it
@@ -733,8 +733,7 @@ Deploy prohibition stops every Deploy that turn: the event card's, a project's a
 
 - **The Unity deck** (23 cards) reshuffles when it runs out.
 - **The Discord deck** (6 cards) **never reshuffles.** A Discord tip with no card left loses the game: you survive 6
-  Discord tips and lose on the 7th. (Level 4 removes a card and starts the tip count at 1: you survive 5, and each
-  tier comes a tip sooner, §21.)
+  Discord tips and lose on the 7th, at every level (§21).
 
 *Sources: rules/alignment.md; configs/baseline.json (`tip_per_player` 3, `carry` 2, `hold_off` 1, `tier_at` 3, 6); content/alignment.json;
 crates/aic-core/src/modules/alignment.rs, modules/board/production.rs (the tip's corp troops).*
@@ -784,7 +783,9 @@ Protector capstone), and spends nothing of theirs.
 ### Your last node
 
 Nothing protects a last node but the protection order above: anything that destroys a node can destroy your last
-one, at any stage. Any player with no nodes loses the game for everyone, so keep a second node on the board.
+one, at any stage. Any player with no nodes loses the game for everyone, so keep a second node on the board: the
+first spaces of both tracks cost no energy, so an early second node costs only its power. Watch the hexes next to a
+lone node: two agents on it take it, and a Corrupt nodes line pulls in every agent next to it.
 
 *Sources: rules/war.md (Node loss), rules/ai-powers.md (Shelters, hardening and shields), rules/ambassadors.md
 (Armor); crates/aic-core/src/modules/board/destroy.rs, modules/board/node.rs, modules/adversary.rs (corrupt_hex),
@@ -977,13 +978,15 @@ Your claim and liberate costs are the same at every level. Each row is the whole
 
 | Level | Corrupt numbers (city / station / factory / land / node) | Threat costs | Deploy | Unpaid threats | Event cards (I / II / III) | Rounds | Compute income | Agent income a country (with Garrisons) | Other |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 3 | 1 | — |
+| 0 | 4 / 3 / 3 / 3 / 2 | as printed | as printed | — | 4 / 4 / 3 | 11 | 1 | 1 | — |
 | 1 | 3 / 2 / 2 / 3 / 2 | +1 each non-credit resource, +4 credits | as printed | — | 4 / 4 / 3 | 11 | 4 | 4 | — |
-| 2 | 3 / 2 / 2 / 3 / 2 | +2 each non-credit resource, +4 credits | +1 troop on every Deploy | +4 compute each | 4 / 4 / 3 | 11 | 18 | 4 | — |
+| 2 | 3 / 2 / 2 / 3 / 2 | +2 each non-credit resource, +4 credits | +1 troop on every Deploy | +4 compute each | 4 / 4 / 3 | 11 | 22 | 4 | — |
 | 3 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 | +4 compute each | 4 / 2 / 3 | 9 | 24 | 4 | — |
-| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 | +4 compute each | 3 / 2 / 4 | 9 | 13 | 3 | one Discord card removed: put the Discord tip-count marker on 1 at setup (the first Discord tip of the game counts as tip 2); you survive 5 Discord tips and lose on the 6th; 1 extra threat each round, countries in turn; the last stage-I card deals tier-2 threats |
+| 4 | 3 / 2 / 2 / 3 / 2 | as level 2 | +1 | +4 compute each | 3 / 2 / 4 | 9 | 24 | 4 | the last stage-I card deals tier-2 threats |
 
-Threat surcharges apply to resource items only; a tag item ("2 Security") never changes.
+Both incomes climb with the level (never down). Level 4 is level 3 with a stage-I card swapped for a stage-III card
+and tier-2 threats a card sooner. Threat surcharges apply to resource items only; a tag
+item ("2 Security") never changes.
 
 *Sources: rules/adversary.md (Difficulty, The event deck), rules/threats.md (Countering); configs/baseline.json
 `adversary` (`compute_income`, `ambassador_income`, `counter_bonus_*`, `counter_more_*`); content/adversary.json

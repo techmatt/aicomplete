@@ -31,7 +31,7 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
 | `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins), `discards` 0; weights: `Weights::engine` |
-| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: supply ambassadors toward the Liberate bills in reach), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
+| `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: supply ambassadors toward the Liberate bills in reach) and `w.last_node` 120 (177), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
 | `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1; planner and oracle: `discards` 0 |
 
@@ -128,6 +128,7 @@ its rule on its field or `forced_table!` row; the spare-insight rule is every ag
 
 - *Shelter what a destruction showing would take, once you can't counter it* (`agents/guide.rs`,
   `w.shelter_read`, `w.shelter_node`, `w.shelter_counter`; armor as the engine reads it, `w.shelter_armor`, D71).
+- *Guard your last node* (177; the strategist's 120, 0 elsewhere): `w.last_node` (eval, converge and push rules).
 - *Don't bury a building that still earns more than the new one adds* (`plan_bury`).
 - *Count your research cubes like credits* (`plan_cubes`).
 - *Pick the strategy your board's powers feed* (`strat_powers`).

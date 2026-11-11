@@ -1,0 +1,118 @@
+{
+  "name": "s177-s9",
+  "note": "177 s9: L1 [adversary.ambassador_income=0,3,5,3,3], L2 [adversary.compute_income=1,4,30,24,27], L3 [adversary.ambassador_income=0,3,4,4,4; adversary.compute_income=1,4,24,24,27], L4 [adversary.ambassador_income=0,3,4,4,4]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_L1",
+      "set": [
+        "adversary.ambassador_income=0,3,5,3,3"
+      ]
+    },
+    {
+      "name": "bp_L2",
+      "set": [
+        "adversary.compute_income=1,4,30,24,27"
+      ]
+    },
+    {
+      "name": "bp_L3",
+      "set": [
+        "adversary.ambassador_income=0,3,4,4,4",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "bp_L4",
+      "set": [
+        "adversary.ambassador_income=0,3,4,4,4"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_L1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,5,3,3"
+      ]
+    },
+    {
+      "name": "br_L2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,30,24,27"
+      ]
+    },
+    {
+      "name": "br_L3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,4,4,4",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "br_L4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,4,4,4"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_L1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,5,3,3"
+      ]
+    },
+    {
+      "name": "pr_L2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,30,24,27"
+      ]
+    },
+    {
+      "name": "pr_L3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,4,4,4",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "pr_L4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,4,4,4"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

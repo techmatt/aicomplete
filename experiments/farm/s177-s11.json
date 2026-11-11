@@ -1,0 +1,101 @@
+{
+  "name": "s177-s11",
+  "note": "177 s11: U1 [adversary.compute_income=1,4,28,24,27], U2 [adversary.compute_income=1,4,28,28,28; adversary.stage1_added=1], U3 [adversary.compute_income=1,4,24,24,27; adversary.stage1_added=1]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_U1",
+      "set": [
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    },
+    {
+      "name": "bp_U2",
+      "set": [
+        "adversary.compute_income=1,4,28,28,28",
+        "adversary.stage1_added=1"
+      ]
+    },
+    {
+      "name": "bp_U3",
+      "set": [
+        "adversary.compute_income=1,4,24,24,27",
+        "adversary.stage1_added=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_U1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    },
+    {
+      "name": "br_U2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,28,28,28",
+        "adversary.stage1_added=1"
+      ]
+    },
+    {
+      "name": "br_U3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,24,24,27",
+        "adversary.stage1_added=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_U1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    },
+    {
+      "name": "pr_U2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,28,28,28",
+        "adversary.stage1_added=1"
+      ]
+    },
+    {
+      "name": "pr_U3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,24,24,27",
+        "adversary.stage1_added=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

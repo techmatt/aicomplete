@@ -112,7 +112,7 @@ node is nearest the threat. Tier 1 is small; tier 2 is about two tier-1s. Comput
 step, then fills the cheapest project on its board; a full project fires there, and its slot refills at once. **Harder levels** make threats
 harsher, not more: difficulty 1 lets sites corrupt with one fewer agent and makes every counter cost 1 more of
 each thing (3 more credits), 2 adds 1 more again (3 credits), 3 gives the adversary 4 compute for each unpaid threat
-(and a shorter, busier game), and only 4 deals an extra threat a round.
+(and a shorter, busier game), and 4 deals tier-2 threats sooner; no level deals an extra threat.
 **What resisted a summary:** where a token goes (the most-threatened uncorrupted site of its type, by count of
 adversary pieces), that a threat skips a country lacking its location, and that only resource options pool.
 

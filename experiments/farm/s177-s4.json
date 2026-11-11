@@ -1,0 +1,127 @@
+{
+  "name": "s177-s4",
+  "note": "177 s4: R1 [adversary.compute_income=1,4,18,24,27; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0; adversary.extra_threats_at=5], R2 [adversary.compute_income=1,4,18,24,30; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0; adversary.extra_threats_at=5], K1 [adversary.compute_income=1,4,18,24,27; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0; adversary.extra_threats_at=5; board.claim_city=1]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_R1",
+      "set": [
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "bp_R2",
+      "set": [
+        "adversary.compute_income=1,4,18,24,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "bp_K1",
+      "set": [
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "board.claim_city=1"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_R1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "br_R2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,18,24,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "br_K1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "board.claim_city=1"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_R1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "pr_R2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,18,24,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "pr_K1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,18,24,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "board.claim_city=1"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

@@ -1,0 +1,170 @@
+{
+  "name": "s177-s2",
+  "note": "177 s2: P1 [adversary.compute_income=1,4,20,27,27; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0; adversary.extra_threats_at=5], P2 [adversary.compute_income=1,4,20,27,30; adversary.ambassador_income=0,3,3,3,3; adversary.discord_removed=0; adversary.extra_threats_at=5; adversary.tier2_early=0], P3 [adversary.compute_income=0,4,20,27,27; adversary.ambassador_income=0,3,3,3,4; adversary.discord_removed=0; adversary.extra_threats_at=5; adversary.stage_swap_at=5], K3 [board.claim_city=3], K4 [board.claim_city=4]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_P1",
+      "set": [
+        "adversary.compute_income=1,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "bp_P2",
+      "set": [
+        "adversary.compute_income=1,4,20,27,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "bp_P3",
+      "set": [
+        "adversary.compute_income=0,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,4",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.stage_swap_at=5"
+      ]
+    },
+    {
+      "name": "bp_K3",
+      "set": [
+        "board.claim_city=3"
+      ]
+    },
+    {
+      "name": "bp_K4",
+      "set": [
+        "board.claim_city=4"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_P1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "br_P2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,20,27,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "br_P3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=0,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,4",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.stage_swap_at=5"
+      ]
+    },
+    {
+      "name": "br_K3",
+      "set": [
+        "ai.boards=0,2",
+        "board.claim_city=3"
+      ]
+    },
+    {
+      "name": "br_K4",
+      "set": [
+        "ai.boards=0,2",
+        "board.claim_city=4"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_P1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5"
+      ]
+    },
+    {
+      "name": "pr_P2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,20,27,30",
+        "adversary.ambassador_income=0,3,3,3,3",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.tier2_early=0"
+      ]
+    },
+    {
+      "name": "pr_P3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=0,4,20,27,27",
+        "adversary.ambassador_income=0,3,3,3,4",
+        "adversary.discord_removed=0",
+        "adversary.extra_threats_at=5",
+        "adversary.stage_swap_at=5"
+      ]
+    },
+    {
+      "name": "pr_K3",
+      "set": [
+        "ai.boards=1,2",
+        "board.claim_city=3"
+      ]
+    },
+    {
+      "name": "pr_K4",
+      "set": [
+        "ai.boards=1,2",
+        "board.claim_city=4"
+      ]
+    }
+  ],
+  "difficulties": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 32,
+  "records": 0
+}

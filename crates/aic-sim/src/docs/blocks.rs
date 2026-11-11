@@ -375,7 +375,13 @@ pub(super) fn difficulty_block(r: &Rules) -> String {
             vec!["adversary.compute_income", "adversary.ambassador_income", "adversary.stage2_removed", "adversary.stage1_added"],
         ),
         (
-            "A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup".into(),
+            // 177: the Discord clause only while `discord_removed` removes a card.
+            if int(r, "adversary.discord_removed") > 0 {
+                "A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup"
+            } else {
+                "Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); optionally more corrupted cities per country at setup"
+            }
+            .into(),
             vec!["adversary.discord_removed", "adversary.tier2_early", "adversary.extra_corrupted"],
         ),
     ];

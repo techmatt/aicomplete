@@ -106,7 +106,10 @@ node scripts/farm/run.mjs out/bundle read 1000 2 out/w.jsonl [--browser] [--fing
 - **`farm-seeds`** (conductor's remote client) runs the worktree's `target/release/aic-sim.exe` on the main box and
   builds the browsers' bundle from HEAD: commit a spec and its code before farming, and rebuild into another
   `CARGO_TARGET_DIR` while a job runs (the running exe can't be replaced; rename it aside, then copy). Farm lines
-  carry no timings: a main-box game's ms is in the job's `main.log` (162's `cost162.py` reads it).
+  carry no timings: a main-box game's ms is in the job's `main.log` (162's `cost162.py` reads it). It first runs a
+  native `cargo build --release`, which fails (`Access is denied`) while another `aic-sim` runs from that exe: run a
+  local oracle row from a copy (177). The shards write under conductor's job folder; the out file appears only at
+  the end.
 - **Reading a farmed read:** `screens.assemble(spec, first, count, shards, out_dir)` writes `games.jsonl` (the
   header, then the shards); `bench/paired.py` and `bench/ladder.py` read it with no `results.json`, and pair a seed
   across engines, counting the seeds on mixed engines (`--same-engine` leaves them out, 163). `scripts/farm/compare.py A B` counts games

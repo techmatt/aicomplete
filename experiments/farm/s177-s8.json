@@ -1,0 +1,95 @@
+{
+  "name": "s177-s8",
+  "note": "177 s8: A4 [adversary.ambassador_income=0,3,4,3,3], M1 [adversary.counter_more_credits=1], M2 [adversary.counter_more_credits=2]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_A4",
+      "set": [
+        "adversary.ambassador_income=0,3,4,3,3"
+      ]
+    },
+    {
+      "name": "bp_M1",
+      "set": [
+        "adversary.counter_more_credits=1"
+      ]
+    },
+    {
+      "name": "bp_M2",
+      "set": [
+        "adversary.counter_more_credits=2"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_A4",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.ambassador_income=0,3,4,3,3"
+      ]
+    },
+    {
+      "name": "br_M1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=1"
+      ]
+    },
+    {
+      "name": "br_M2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.counter_more_credits=2"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_A4",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.ambassador_income=0,3,4,3,3"
+      ]
+    },
+    {
+      "name": "pr_M1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=1"
+      ]
+    },
+    {
+      "name": "pr_M2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.counter_more_credits=2"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

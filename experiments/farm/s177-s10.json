@@ -1,0 +1,95 @@
+{
+  "name": "s177-s10",
+  "note": "177 s10: T1 [adversary.compute_income=1,4,24,24,27], T2 [adversary.compute_income=1,4,27,27,27], T3 [adversary.compute_income=1,4,30,30,30]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_T1",
+      "set": [
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "bp_T2",
+      "set": [
+        "adversary.compute_income=1,4,27,27,27"
+      ]
+    },
+    {
+      "name": "bp_T3",
+      "set": [
+        "adversary.compute_income=1,4,30,30,30"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_T1",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "br_T2",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,27,27,27"
+      ]
+    },
+    {
+      "name": "br_T3",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,30,30,30"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_T1",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "pr_T2",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,27,27,27"
+      ]
+    },
+    {
+      "name": "pr_T3",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,30,30,30"
+      ]
+    }
+  ],
+  "difficulties": [
+    2,
+    3,
+    4
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 64,
+  "records": 0
+}

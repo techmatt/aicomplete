@@ -174,11 +174,11 @@ Players **lose** when a round starts with no card to turn face up (step 1): a ba
 | 0 | Base rules |  |
 | 1 | Each site type corrupts with fewer agents (city, station, factory, land; from `corrupt_cut_at`); counters cost more: every resource item, a credits item by its own step, the first option's more still (from `counter_bonus_at`) | `corrupt_cut` 1, 1, 1, 0, `corrupt_cut_at` 1, `counter_bonus_all` 1, `counter_bonus_credits` 4, `counter_bonus` 0, `counter_bonus_at` 1 |
 | 2 | Counters cost more again (from `counter_more_at`); the adversary board's difficulty line (from `board_difficulty_at`) | `counter_more_all` 1, `counter_more_credits` 0, `counter_more_at` 2, `board_difficulty_at` 2 |
-| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 3, 4, 18, 24, 13, `ambassador_income` 0, 3, 3, 3, 2, `stage2_removed` 2, `stage1_added` 0 |
-| 4 | A still shorter Discord deck: the removed cards count as tips already made, so the Discord tiers come a tip sooner; tier-2 threats sooner; optionally more corrupted cities per country at setup; extra threats each round in all, countries in turn; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 1, `tier2_early` 1, `extra_corrupted` 0, `extra_threats` 1, `extra_threats_at` 4, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
+| 3 | The level's incomes (its entries); stage-II cards removed, stage-I cards added back | `compute_income` 1, 4, 22, 24, 24, `ambassador_income` 0, 3, 3, 3, 3, `stage2_removed` 2, `stage1_added` 0 |
+| 4 | Tier-2 threats sooner (the Discord deck as at level 3: `discord_removed` 0); optionally more corrupted cities per country at setup; a stage-I card swapped for a stage-III card (the table above; from `stage_swap_at`) | `discord_removed` 0, `tier2_early` 1, `extra_corrupted` 0, `stage1_removed` 1, `stage3_added` 1, `stage_swap_at` 4 |
 <!-- /generated -->
 
-**The ladder raises intensity, not count** (142, Matt): below d4 no level adds a threat. d4's extra threats are more
-pulls of the card's first pull; its "tier-2 threats sooner" deals a stage-I card's pulls from tier 2 once a stage-II
+**The ladder raises intensity, not count** (142, Matt): no level adds a threat (177 turned d4's extra threats off,
+`extra_threats_at` 5, and kept the Discord deck whole, `discord_removed` 0, so both incomes climb). d4's "tier-2 threats sooner" deals a stage-I card's pulls from tier 2 once a stage-II
 card is `tier2_early` cards ahead. Discord tips don't raise the level. **The players' claim and liberate costs are
 the same at every difficulty.** Reads: [experiments/history.md](../../experiments/history.md).

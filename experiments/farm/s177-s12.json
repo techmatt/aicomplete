@@ -1,0 +1,133 @@
+{
+  "name": "s177-s12",
+  "note": "177 s12: c18 [adversary.compute_income=1,4,18,24,27], c24 [adversary.compute_income=1,4,24,24,27], c25 [adversary.compute_income=1,4,25,24,27], c27 [adversary.compute_income=1,4,27,24,27], c28 [adversary.compute_income=1,4,28,24,27]",
+  "configs": [
+    "configs/baseline.json"
+  ],
+  "variants": [
+    {
+      "name": "bp",
+      "set": []
+    },
+    {
+      "name": "bp_c18",
+      "set": [
+        "adversary.compute_income=1,4,18,24,27"
+      ]
+    },
+    {
+      "name": "bp_c24",
+      "set": [
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "bp_c25",
+      "set": [
+        "adversary.compute_income=1,4,25,24,27"
+      ]
+    },
+    {
+      "name": "bp_c27",
+      "set": [
+        "adversary.compute_income=1,4,27,24,27"
+      ]
+    },
+    {
+      "name": "bp_c28",
+      "set": [
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    },
+    {
+      "name": "br",
+      "set": [
+        "ai.boards=0,2"
+      ]
+    },
+    {
+      "name": "br_c18",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,18,24,27"
+      ]
+    },
+    {
+      "name": "br_c24",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "br_c25",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,25,24,27"
+      ]
+    },
+    {
+      "name": "br_c27",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,27,24,27"
+      ]
+    },
+    {
+      "name": "br_c28",
+      "set": [
+        "ai.boards=0,2",
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    },
+    {
+      "name": "pr",
+      "set": [
+        "ai.boards=1,2"
+      ]
+    },
+    {
+      "name": "pr_c18",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,18,24,27"
+      ]
+    },
+    {
+      "name": "pr_c24",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,24,24,27"
+      ]
+    },
+    {
+      "name": "pr_c25",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,25,24,27"
+      ]
+    },
+    {
+      "name": "pr_c27",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,27,24,27"
+      ]
+    },
+    {
+      "name": "pr_c28",
+      "set": [
+        "ai.boards=1,2",
+        "adversary.compute_income=1,4,28,24,27"
+      ]
+    }
+  ],
+  "difficulties": [
+    2
+  ],
+  "agents": [
+    "strategist"
+  ],
+  "games": 192,
+  "records": 0
+}

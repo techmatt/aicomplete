@@ -40,7 +40,8 @@ pub fn report(games: usize) -> Option<String> {
 }
 
 /// The option a move heuristic picks for the open prompt, and which heuristic (an index into [`NAMES`]).
-pub fn pick(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)> {
+/// `last_node` (177, the eval's `w.last_node` on): the push never lands agents where a last node can tip.
+pub fn pick(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<(usize, usize)> {
     let p = g.pending.as_ref()?;
     let prompt = p.ask.prompt.as_str();
     let gather = gather_op(w, g);
@@ -63,15 +64,16 @@ pub fn pick(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize)
     }
     if prompt.contains(effects::PUSH_PIECE) {
         let from = named_hex(w, prompt, " (from ")?;
-        return push_piece(w, g, legal, from);
+        return push_piece(w, g, legal, from, last_node);
     }
     None
 }
 
 /// 175: the open prompt is a Corrupt X line's converging agent ("Corrupt cities (at 4): the agent at .. moves
 /// onto which?", `adversary::corrupt_sites`): the option [`plan::converge_pick`] takes, against the number the
-/// prompt prints (the resolving line's, cut included).
-pub fn converge(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
+/// prompt prints (the resolving line's, cut included). `last_node` (177): unless a target corrupts anyway, not
+/// onto a target this agent tips while it holds a seat's last node, if another will do.
+pub fn converge(w: &World, g: &GameState, legal: &[Action], last_node: bool) -> Option<usize> {
     let p = g.pending.as_ref()?;
     let prompt = p.ask.prompt.as_str();
     let rest = prompt.strip_prefix("Corrupt ")?;
@@ -84,7 +86,43 @@ pub fn converge(w: &World, g: &GameState, legal: &[Action]) -> Option<usize> {
     let counts: Vec<i64> = (0..g.hexes.len()).map(|h| g.tokens(h, common::ADV_AMBASSADOR)).collect();
     let amb: Vec<i64> =
         (0..g.hexes.len()).map(|h| (0..g.seats.len()).map(|s| g.tokens(h, common::ambassador(s))).sum()).collect();
-    Some(plan::converge_pick(w, g, site, &to, &counts, &amb, n))
+    let first = plan::converge_pick(w, g, site, &to, &counts, &amb, n);
+    let held = |t: usize| plan::held(w, g, t, &counts, site);
+    if !last_node || to.iter().any(|&t| held(t) >= n) {
+        return Some(first);
+    }
+    // As `plan::converge_pick` reads it: one more arrival, less the ambassadors still to cancel, reaches `n`.
+    let tips = |t: usize| held(t) - amb[t] + 1 >= n && last_node_at(w, g, t);
+    if !tips(to[first]) {
+        return Some(first);
+    }
+    (0..to.len()).filter(|&i| !tips(to[i])).min_by_key(|&i| held(to[i]) - amb[to[i]]).or(Some(first))
+}
+
+/// 177: hex `h` holds a seat's only node, which a corruption there would destroy (`adversary::corrupt_hex`,
+/// `board::destroy_piece`): not sheltered, and the seat has no Sanctuary (`CorruptionShield`).
+fn last_node_at(w: &World, g: &GameState, h: usize) -> bool {
+    let Some(s) = common::node_owner(g, h) else { return false };
+    common::node_count(g, s) == 1
+        && !board::flagged(g, aic_core::content::RoundFlag::Shelter, w.map.hexes[h].country as usize)
+        && !cards::has_passive(w, g, s, |p| matches!(p, Op::CorruptionShield))
+}
+
+/// 177: pushing `n` agents from `from` onto `d` lets a Corrupt nodes line gather a last node's hex next to `d` up
+/// to its number (`adversary.corrupt_node_at`): its agents and those next door (not on another node hex, which
+/// stay: `plan::converge`), after the move.
+fn tips_last_node(w: &World, g: &GameState, from: usize, d: usize, n: i64) -> bool {
+    let at = aic_core::modules::adversary::corrupt_n(w, CorruptSite::Node, 0);
+    let moves = |y: usize| common::node_owner(g, y).is_none();
+    w.map.hexes[d].neighbors.iter().any(|&x| {
+        if !last_node_at(w, g, x) || common::firewalled(g, x) {
+            return false;
+        }
+        let next = &w.map.hexes[x].neighbors;
+        let near: i64 = next.iter().filter(|&&y| moves(y)).map(|&y| agents(g, y)).sum();
+        let gone = if next.contains(&from) && moves(from) { n } else { 0 };
+        agents(g, x) + near - gone + n >= at
+    })
 }
 
 /// The Gather the open resolution plays: its pieces and strike, read from the card played or used.
@@ -318,7 +356,7 @@ fn push_from(w: &World, g: &GameState, legal: &[Action]) -> Option<(usize, usize
 
 /// The push's next batch from `from`: the most agents onto empty land away from every clean site; anything else
 /// (troops, ambassadors, a move that helps no site) is the search's.
-fn push_piece(w: &World, g: &GameState, legal: &[Action], from: usize) -> Option<(usize, usize)> {
+fn push_piece(w: &World, g: &GameState, legal: &[Action], from: usize, last_node: bool) -> Option<(usize, usize)> {
     let risk = at_risk(w, g);
     let here = pressure(w, &risk, from);
     let mut best: Option<(f64, usize)> = None;
@@ -330,7 +368,12 @@ fn push_piece(w: &World, g: &GameState, legal: &[Action], from: usize) -> Option
         let n = batch(a).map_or(1, |(n, _)| n) as f64;
         // Onto empty land away from every clean site only. Not onto a standing ambassador: canceling spends an
         // ambassador a Liberate or armor needs (166's dev screens: the games the push heuristic lost each had one).
-        let gain = if safe(w, g, d) && pressure(w, &risk, d) == 0.0 && standing(g, d) == 0 {
+        // 177: nor next to a last node they would bring to its number.
+        let gain = if safe(w, g, d)
+            && pressure(w, &risk, d) == 0.0
+            && standing(g, d) == 0
+            && !(last_node && tips_last_node(w, g, from, d, n as i64))
+        {
             here * n
         } else {
             continue;
