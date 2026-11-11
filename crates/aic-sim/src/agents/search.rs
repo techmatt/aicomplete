@@ -65,6 +65,8 @@ struct Seen {
     moved: u64,
     /// Values by a discard chain's set of cards, found before any replay.
     chains: HashMap<u64, Vec<Chain>, BuildHasherDefault<Fnv>>,
+    /// 174: levels a discard prompt is resolved at, at most (`discards`; `None`: as `choices`).
+    discards: Option<usize>,
 }
 
 struct Entry {
@@ -262,6 +264,15 @@ fn settled(
     let Some(pending) = g.pending.as_ref().filter(|_| !g.is_over() && choices > 0) else {
         return value(rules, ev, g);
     };
+    // 174: a chain of discards scored every set of `choices` + 1 cards of the hand
+    // (H³/6 positions a step at 2): `discards` caps the levels a discard prompt takes.
+    let choices = match seen.discards {
+        Some(cap) if cap < choices && pending.ask.prompt.contains(cards::DISCARD_PROMPT) => cap,
+        _ => choices,
+    };
+    if choices == 0 {
+        return value(rules, ev, g);
+    }
     let memo = remembered(pending);
     let chain = if memo { discard_chain(pending) } else { None };
     legal_into(rules, g, legal);
@@ -381,6 +392,9 @@ pub struct Scoring {
     pub sacrificing_choices: usize,
     /// `choices` for an answer to an open prompt.
     pub answer_choices: usize,
+    /// 174: levels a discard prompt ("discard which card") is resolved at, at most
+    /// (`usize::MAX`: as any other prompt).
+    pub discard_choices: usize,
 }
 
 impl Scoring {
@@ -396,7 +410,13 @@ impl Scoring {
             placing_choices,
             sacrificing_choices: placing_choices + SACRIFICE_PROMPTS,
             answer_choices: choices,
+            discard_choices: usize::MAX,
         }
+    }
+
+    /// 174: a discard prompt resolved at most `levels` deep (99: no cap).
+    pub fn discards(self, levels: usize) -> Self {
+        Scoring { discard_choices: if levels >= 99 { usize::MAX } else { levels }, ..self }
     }
 
     /// Inside a rollout: a node power at no more levels than it asks (046,
@@ -471,7 +491,7 @@ fn score_all(
     legal: &[Action],
     how: Scoring,
 ) -> Vec<f64> {
-    let Scoring { samples, depth, choices, placing_choices, sacrificing_choices, answer_choices } = how;
+    let Scoring { samples, depth, choices, placing_choices, sacrificing_choices, answer_choices, discard_choices } = how;
     super::eval::new_decision();
     let world = rules.world();
     let mut scores = vec![0.0; legal.len()];
@@ -479,7 +499,7 @@ fn score_all(
     let bases: &[GameState] = if samples == 0 { std::slice::from_ref(state) } else { guesses };
     let has_pass = legal.iter().any(|a| matches!(a, Action::Pass { .. }));
     for base in bases {
-        let mut seen = Seen::default();
+        let mut seen = Seen { discards: (discard_choices != usize::MAX).then_some(discard_choices), ..Seen::default() };
         // A pass is scored as the table it leaves, not what follows it: the
         // last pass hands the round on to threats and the adversary, and
         // scoring that would make stalling (pay, withdraw, pay...) look
@@ -621,6 +641,12 @@ impl Greedy {
     /// An answer to a prompt looks at most `levels` prompts on (069).
     pub fn answers(mut self, levels: usize) -> Self {
         self.how.answer_choices = self.how.answer_choices.min(levels);
+        self
+    }
+
+    /// 174: a discard prompt resolved at most `levels` deep (99: no cap).
+    pub fn discards(mut self, levels: usize) -> Self {
+        self.how = self.how.discards(levels);
         self
     }
 

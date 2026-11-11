@@ -441,6 +441,29 @@ impl<'a> Cx<'a> {
         self.ask(seat, prompt, options, AskKind::Loss)
     }
 
+    /// [`Cx::choose`] among `keys`, each an option labeled by its name (a card of a
+    /// hand): the same answers, but a replay matches its answer without building the
+    /// labels (174: a discard chain's replays built a hand of them for every answer).
+    pub fn choose_key(&mut self, seat: usize, prompt: impl PromptText, keys: &[Key]) -> Res<Option<usize>> {
+        match keys.len() {
+            0 => return Ok(None),
+            1 => return Ok(Some(0)),
+            _ => {}
+        }
+        let ch = &mut *self.choices;
+        if ch.replaying() {
+            let p = &ch.made[ch.used];
+            let i = keys
+                .iter()
+                .position(|k| p.target.is_none() && k.as_str() == p.option)
+                .ok_or_else(|| Halt::Illegal(format!("{:?} is not an option of {:?}", p.option, prompt.text())))?;
+            ch.used += 1;
+            return Ok(Some(i));
+        }
+        let options = keys.iter().map(|k| Opt { option: k.as_str().to_string(), target: None }).collect();
+        self.ask(seat, prompt, options, AskKind::Plain)
+    }
+
     fn ask(&mut self, seat: usize, prompt: impl PromptText, options: Vec<Opt>, kind: AskKind) -> Res<Option<usize>> {
         match options.len() {
             0 => return Ok(None),

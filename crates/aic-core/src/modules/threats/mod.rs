@@ -22,7 +22,10 @@ mod counter;
 mod near;
 mod ops;
 
-pub use counter::{cheapest_resource_need, need_and_share, paid_share, requirement, resource_only, UNPAYABLE};
+pub use counter::{
+    cheapest_resource_need, need_and_share, need_and_share_with, paid_share, requirement, resource_only, standing_counters,
+    CounterSteps, UNPAYABLE,
+};
 use counter::*;
 pub use near::{counterable, near, near_hexes, near_seats, nearest_nodes, nearest_seats, node_distance, token_of, tokens};
 use near::*;

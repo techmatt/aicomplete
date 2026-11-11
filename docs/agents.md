@@ -16,6 +16,8 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
   power is scored deeper than `choices` (`search.rs`: `PLACING_PROMPTS`, `SACRIFICE_PROMPTS`).
 - **`choices` counts prompts** (a placement is two: track, hex). An effect resolved a prompt a piece is scored
   part of the way, so it reads as paid for little: 166's moves take a batch a prompt for this.
+- **A discard prompt resolves no further** (`discards` 0): a card to discard is valued by the table it leaves.
+  174's change of play at r73 (5.8× a decision, each tier within about 1 SE); `discards=99` plays as before.
 - **Heuristic** (`agents/eval.rs`, `Weights`, a rule on each field): win/loss, cities,
   a seat's last nodes, the adversary's pieces, the Discord deck's last cards, Alignment (the next
   card's tier, `w.tier_read`; the horizon aims at the purge's last step), projects, holdings,
@@ -29,13 +31,13 @@ through the public API only (`legal_actions_into`, `apply_mut`, `apply_to`, the 
 | Spec | What it does | Budget parameters (defaults) |
 |---|---|---|
 | `random` | Uniform over legal actions. | none |
-| `greedy` | One action at a time, each scored by the heuristic after it, its choices resolved best-first; a pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2 |
+| `greedy` | One action at a time, each scored by the heuristic after it, its choices resolved best-first; a pass scores the table as it is (else stalling beats stopping). | `samples` 1 (guesses averaged), `depth` 1 (actions looked ahead), `choices` 2, `discards` 0 |
 | `beam` | Beam search over the round's remaining action sequences, scored at the next round's start; plans once, replans when a draw or reveal differs from its guess. | `width` 6, `depth` 120 (steps), `branch` 0 (children per sequence, 0 = all), `choices` 2 |
 | `rollout` | Across rounds: the beam's `candidates` best end-of-round positions, each run `horizon` more rounds by `rollouts` greedy playouts on fresh guesses; best mean wins. | `width` 4, `depth` 120, `branch` 0, `choices` 2, `candidates` 3, `rollouts` 4, `horizon` 2 |
-| `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins); weights: `Weights::engine` |
+| `engine` | The heuristic in **horizon mode** (`w.horizon`: income × the rounds left, discounted by danger); holdings by the value table (`w.table=0`: flat terms); the **deck clock** (`w.clock`) charges each round the team's Unity rate would leave it short. Searched like greedy; `width` > 0: a beam, `candidates` > 0: rollouts. | `width` 0, `samples` 1, `choices` 2, `answers` 99 (prompts an answer looks on; 1 loses wins), `discards` 0; weights: `Weights::engine` |
 | `strategist` | Greedy's flat weights with strategy and the **purge term** (`w.purge` 3.6: a seat's supply ambassadors up to the Liberate bill of the corrupted cities in its reach; a freed city keeps it), no search. **The screens' judge**. | `STRATEGIST`, `agents/mod.rs` |
 | `planner` | The engine, rolling out a shortlist of action-phase alternatives `horizon` rounds with the engine as policy; the heuristic's best line is taken. A line runs on **full information** but the Alignment deal, valued over `deals` guesses of it; decisions inside it are scored on a guess (`agents/planner.rs`). | `horizon` 2, `alts` 2, `budget` 8, `margin` 40, `deals` 4, `lead` 0. `sweep[:...]` is `planner:deals=1,lead=0`. |
-| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 (lines side by side, same play) |
+| `oracle` | **A measuring stick, opt in**: the planner's search on **full information**, the deal too, each line played to the game's end; a winning line is followed, so the win rate is a floor on perfect play (`agents/oracle.rs`). | the planner's four, `reseeds` 0, `threads` 1 (lines side by side, same play); planner and oracle: `discards` 0 |
 
 **Keeping by plan (`agents/policy.rs`).** Greedy, engine and planner keep drafts by a plan
 (`plan_keep`). At its first keep of a round a seat sketches `plan_rounds` rounds from what it
@@ -63,9 +65,8 @@ strategist read flat terms, so the table's and horizon's levers reach only their
 tag left in play, token and op, prices' one home (`Weights` are points; card-pricing.md, *The
 rates*). A card is worth its effects now,
 its standing effects a round times the rounds it counts for, a use of its Action times
-`uses_share` of them (a token card's spend over its cycle of adds), and its tags. The rounds are
-those left in a game; in the typical context (the opening's choice, the effect ledger) its
-tier's horizon, `horizon_t1` 4, `horizon_t2` 2.5. "Remove up to N troops" counts
+`uses_share` of them (a token card's spend over its cycle of adds), and its tags, over the rounds left
+(typical context: `horizon_t1` 4, `horizon_t2` 2.5). "Remove up to N troops" counts
 `troops_removed` (D26). An `overrides` row adds flat credits to one card, with its reason: the scoped fix for a card the
 table under-prices against the anchors; built, the card keeps it, spread over the rounds left.
 `t.<key>=v` in a spec sets one number for that agent (`t.<section>.<key>` where a name is in two).
@@ -155,10 +156,10 @@ its rule on its field or `forced_table!` row; the spare-insight rule is every ag
 | Greedy, flat terms | A new player (Matt, 2026-11-03) | `greedy` | none; the strategist's lead over it measures depth |
 | Greedy with strategy | The d2 judge | `strategist` | d2 45-85 |
 | Planner with strategy rollouts | Spot checks | `planner:strategy=1` | none |
-| Oracle | A skilled player with full information: d3 100, d4 83 at r69 (162) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
+| Oracle | A skilled player with full information: d3 95.8, d4 100 at r73 (174, 24 games each) | `oracle:strategy=1,alts=32,budget=192,reseeds=64,answers=1` | d4 95 (Matt, 2026-11-08) |
 
-162 (r69, fresh seeds, 288 games a level): the strategist 98.3 / 93.1 / 80.2 / 65.6 at d0-d3, greedy 98.6 / 88.2 /
-78.8 / 66.7; it costs about greedy's time a game.
+174 (r73, fresh seeds 41701-41844, 432 games a level, greedy 144): the strategist 94.4 / 71.8 / 58.3 / 40.3 / 33.8
+at d0-d4, greedy 94.4 / 75.7 / 68.8 / 43.1 / 41.7; each about 2 ms a decision.
 After a change to how the game is won, read greedy beside the strategist in the first smoke (16 dev seeds): a greedy lead means the engine weights still encode the old win (156).
 A strategy pairing's win rate is the balance read: `strategist:strat0=I,strat1=J` fixes them;
 `aic-sim strategies CONFIG` prints the choices.

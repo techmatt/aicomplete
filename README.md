@@ -95,9 +95,9 @@ generated docs, so after a content edit run `python scripts/regen.py` first. Red
 ```sh
 cargo build --workspace
 cargo test --workspace                             # fast lane: ~5 s once built, ~13 s after an edit in aic-sim (rebuild included)
-cargo test-all                                     # full run, slow lane included: ~4 min on 6 test threads (greedy experiment games)
+cargo test-all                                     # full run, slow lane included: ~3.5 min on 6 test threads, rebuild included (174)
 cargo test-slow                                    # the slow lane alone: nearly all of that
-cargo build --release -p aic-sim                   # ~12 s
+cargo build --release -p aic-sim                   # ~30 s after an aic-sim edit, ~45 s after aic-core, ~1 min cold (174)
 ./target/release/aic-sim docs                      # regenerate the generated docs (--check: report only)
 wasm-pack build crates/aic-wasm --target web       # ~20 s cold, ~9 s warm -> crates/aic-wasm/pkg (git-ignored)
 node scripts/farm/build.mjs out/bundle             # the farm's wasm bundle (~1 min cold)

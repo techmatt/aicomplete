@@ -251,7 +251,18 @@ fn under_wall(g: &GameState, h: usize) -> bool {
 
 /// Whether hex `h` holds anything an adversary troop targets.
 fn is_troop_target(w: &World, g: &GameState, h: usize) -> bool {
-    !troop_targets_on(w, g, h).is_empty()
+    target_here(w, g, h, g.var(adversary::STAGE) >= w.hot(Hot::TroopNode))
+}
+
+/// [`troop_targets_on`] is not empty, without building it (174: the march read every
+/// hex's targets as strings for every step of every troop); `nodes`: the stage
+/// makes a node a target.
+fn target_here(w: &World, g: &GameState, h: usize, nodes: bool) -> bool {
+    if walled(w, g, h) {
+        return false;
+    }
+    (cube_owner(g, h).is_some() && !corrupted(g, h) && (g.tokens(h, FACTORY) > 0 || g.tokens(h, STATION) > 0))
+        || (nodes && node_owner(g, h).is_some())
 }
 
 /// Whether an adversary troop at `h` has a target on or next to it.
@@ -312,7 +323,8 @@ fn land_distances(w: &World, walls: &[bool], sources: impl Iterator<Item = usize
 /// Walking distance from the nearest troop target, for every hex (`None`
 /// with no target reachable over land).
 fn target_gaps(w: &World, g: &GameState) -> Vec<Option<u32>> {
-    land_distances(w, &wall_mask(w, g), (0..g.hexes.len()).filter(|&h| is_troop_target(w, g, h)))
+    let nodes = g.var(adversary::STAGE) >= w.hot(Hot::TroopNode);
+    land_distances(w, &wall_mask(w, g), (0..g.hexes.len()).filter(|&h| target_here(w, g, h, nodes)))
 }
 
 /// The land hexes next to `at` that bring a troop closer to the nearest

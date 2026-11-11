@@ -750,6 +750,9 @@ pub struct Eval {
     /// Each seat's "took a card from this draft hand" var (082: a packet a seat has
     /// picked from goes to the next seat, so it counts for that seat).
     picked: [String; 4],
+    /// 174: the config's counter steps (`threats::CounterSteps`), read once where the
+    /// adversary module is configured (else read where a threat asks, as before).
+    counter_steps: Option<threats::CounterSteps>,
 }
 
 /// One card, read once (see [`Eval::facts`]).
@@ -993,6 +996,11 @@ impl Eval {
                     .collect(),
             ),
             picked: std::array::from_fn(aic_core::modules::cards::picked_key),
+            counter_steps: world
+                .params
+                .get("adversary.counter_bonus_at")
+                .is_some()
+                .then(|| threats::CounterSteps::read(&world)),
         }
     }
 
@@ -1585,12 +1593,20 @@ impl Eval {
         let mut out = Vec::new();
         // 147: the tempo trade's rounds, read once a position.
         let tempo_r = if w.threat_harm > 0.0 && w.tempo > 0.0 { self.tempo_rounds(g) / w.tempo_ref.max(1.0) } else { 1.0 };
-        for (t, _scope) in threats::active(g) {
+        let active = threats::active(g);
+        // 174: the seats' standing counters read once, not once a threat (`need_and_share`'s walk was a tenth).
+        let standing = if active.is_empty() { Vec::new() } else { threats::standing_counters(&world, g) };
+        let steps = match self.counter_steps {
+            Some(s) => s,
+            None if active.is_empty() => return out,
+            None => threats::CounterSteps::read(&world),
+        };
+        for (t, _scope) in active {
             // 135: the cheapest resource option of the menu (a tag or node option
             // is a whole payment, priced by what it removes, not pooled).
             // 145: the share paid in each option's own currencies (summed units across
             // currencies read 1 credit toward 15 as a third of a 3-energy counter).
-            let (need, share) = threats::need_and_share(&world, g, &t);
+            let (need, share) = threats::need_and_share_with(&world, g, &t, &standing, &steps);
             if need <= 0 {
                 continue;
             }

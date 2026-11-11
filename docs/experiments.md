@@ -135,13 +135,14 @@ the judge off the value table.
   pairs, d0-d3, into `out/`; `screen` a dev screen, `--offs` a config per new card switched off) on both binaries
   (`scripts/bench/run_read.sh`; flags in [scripts.md](scripts.md)). Read by `scripts/bench/ladder.py NEW OLD
   --measures` (pooled, paired, by set), and the item readers in `experiments/results/`: `wins158.py` (by lever or
-  config), `rates158.py` (card rates), `ends157.py` and `endgame157.py` (by Unity step), `partial157.py` (a live run). A flat-weight agent (`greedy`) costs 11-31 s a game on 8 threads at r68:
-  cap its seeds (24 a level beside a read).
+  config), `rates158.py` (card rates), `ends157.py` and `endgame157.py` (by Unity step), `partial157.py` (a live run). Since 174 greedy costs
+  about what the strategist does (2 ms a decision, about 1 s a game).
 - **Standing measures (amendment 6618), reported old against new every read:** corruption node losses and adversary
   ambassadors placed a game, and the project deck's turnover: projects revealed (`adversary.projects_revealed`, every
   draw) and resolved as a share of the deck, distinct projects revealed, and reshuffles, per level (`--measures`). A
   measure the old binary never tallied goes into its tree as a patch before its first read, or the read is redone.
-- **Costs:** a 576-game strategist read set (d0-d3) about 6-8 min on 6 threads, double on a busy box.
+- **Costs (r73, 174):** a 576-game strategist read set (d0-d3) about 1.5 min on 6 threads (7 min before 174), a
+  720-game set with d4 about 2 min; double on a busy box.
 - **A before/after read is paired**: the old binary and its configs (README, *This machine*), same seeds, own folder.
   Copy it before the first edit, or build `git archive REV | tar -x -C out/rREV` (own `CARGO_TARGET_DIR`); new
   sim-only measures go in as `patch -p1` there (`git apply` in a worktree silently applies nothing).
@@ -152,7 +153,7 @@ the judge off the value table.
 - **Levers:** an income or card lever is an overlay (`cards.<id>.effects.0.max=5`, *Content levers*), no build; a
   rule, content or map what-if needs one.
 - **Same games:** `experiments/same-noplanner.json` is same.json ([speed.md](speed.md)) with greedy for the planner
-  rows (57-80 s a game at r69): for a refactor not reaching the planner or oracle (~2 min a side).
+  rows (about 21 s a game at r73): for a refactor not reaching the planner or oracle (~2 min a side).
 - **Copy the binary before a run, then rebuild freely.** **Preflight** a long run (`SPEC --games 1 --out
   out/preflight`) for a crash, bad override or dead agent.
 - **Reading:** `scripts/bench/paired.py DIR`, `scripts/cards/use_read.py DIR` and others in
@@ -160,8 +161,8 @@ the judge off the value table.
 
 **Skilled rows (155).** `python scripts/bench/skilled_rows.py READ.json` writes the read's companion spec: the
 `oracle` (full information, [agents.md](agents.md)) and the strategist on the read's first 24 seeds a level (8 a
-pair), d3 and d4, the end-game probe on every loss. At r69 the row costs
-26 s a game at d3 and 394 s at d4 (~50 min on 3 threads: launch it with the read); `threads=N` plays a decision's lines side by side. Spec and costs: `155_skilled_agents/`.
+pair), d3 and d4, the end-game probe on every loss. At r73 (174) an oracle game costs 30-160 s (a mean of 67 s),
+and the row's wall time, about 20 min on 3 threads, is its slowest game (10-18 min): launch it with the read; `threads=N` plays a decision's lines side by side. Spec and costs: `155_skilled_agents/`.
 
 `experiments/band.json` places a win rate (`--seed S --games 96`, the planner at 2 and 3 countries); read its win mix (the purge by
 Unity step, `ends156.py`) before a rule touching the end state. `sanity-line.json`: after a rollout policy or `prune` change, the
@@ -171,7 +172,7 @@ line alone reads near the engine.
 
 **Fresh seeds for a gate or a confirming read.** Specs start at seed 0: give a confirming read a `--seed` no screen
 of this revision used. Any item that spends seeds updates the ledger, after its last read, not before it. Used: every
-seed below 41701 (each item's range is in its write-up). Next free: 41701. **The dev seeds for screens are
+seed below 41989 (each item's range is in its write-up). Next free: 41989. **The dev seeds for screens are
 36800-36831**: screen at 32 seeds a cell.
 
 ## Reading prices

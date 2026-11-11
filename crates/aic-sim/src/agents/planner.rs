@@ -80,6 +80,8 @@ pub struct PlannerCfg {
     pub powers: usize,
     /// Prompts an answer inside a rollout looks on (at most `choices`).
     pub answers: usize,
+    /// 174: levels a discard prompt is resolved at, at most (99: no cap).
+    pub discards: usize,
     /// Guesses of the Alignment deal a line's value is averaged over.
     pub deals: usize,
     /// What an alternative must lead the line to beat by.
@@ -155,11 +157,12 @@ pub(super) fn rollout_policy(
     prune: usize,
     powers: usize,
     answers: usize,
+    discards: usize,
 ) -> Box<dyn Agent + Send> {
     let rng = ChaCha8Rng::seed_from_u64(seed);
     // `pruned` changes what the policy can play, not only how fast: see `Greedy::prune`.
     let greedy = Greedy::new(ev.clone(), rng, samples, 1, choices);
-    let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).in_rollout());
+    let inner = Box::new(greedy.pruned(prune).powers(powers).answers(answers).discards(discards).in_rollout());
     Box::new(Policy::new(inner, forced.clone()).with_strategies(ev.strategies()))
 }
 
@@ -181,7 +184,7 @@ impl Planner {
     fn policy(&self, g: &GameState) -> Box<dyn Agent + Send> {
         let c = &self.cfg;
         let seed = g.seed ^ g.stats.actions as u64;
-        rollout_policy(&self.ev, &self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers)
+        rollout_policy(&self.ev, &self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
     }
 
     /// Plays `g` on with the rollout policy to the first decision of round
@@ -357,7 +360,7 @@ impl Agent for Planner {
         if self.spent.0 != state.round {
             self.spent = (state.round, 0);
         }
-        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices);
+        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices).discards(self.cfg.discards);
         // The guesses are always drawn, so what follows sees the same RNG, but
         // scoring them waits until something reads the scores: the shortlist,
         // or a line with no move here. Outside the shortlist that is rare (069).

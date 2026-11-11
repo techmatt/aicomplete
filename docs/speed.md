@@ -2,21 +2,25 @@
 
 What a run costs and where it goes. Current rates are in [experiments.md](experiments.md); the bench scripts are in [scripts.md](scripts.md).
 
-**Where the time goes (profiled at r58, 141).** The agents are 97% of a run. Every agent is one machine: the
-strategist scores each legal action by applying it to a copy and resolving the action's own prompts
-best-first (`search::settled`, 72% of its time), and the heuristic (`Eval::value`, 54%) now outweighs the
-rules (`Rules::apply_to`, 36%). The planner's rollouts run the same search, so a speed-up to one serves all.
-The r58 standard read (`read-139-r58-{a,b}`, 432 games, 6 threads) takes 88 s at 2.14 ms a decision (141:
-146 s and 3.04 before). **A read's wall time is its slowest games:** at r58 one d0 game of 11 rounds took 62
-s of a 74 s half-read. Read `games.csv`'s `ms` column for the tail before profiling the mean. Profiles from
-103, 104 and 141 are in [103's](../experiments/results/103_agent_profiling/profile.md),
-[104's](../experiments/results/104_agent_speed_2/speed.md) and
-[141's](../experiments/results/141_speed_r58/README.md) write-ups. Legal-action generation is about 1%.
+**Where the time goes (profiled at r73, 174).** The agents are 96-99% of a run. Every agent is one machine: the
+strategist scores each legal action by applying it to a copy and resolving the action's own prompts best-first
+(`search::settled`, 67% of its time); the heuristic (`Eval::value`, 49%) outweighs the rules (`Rules::apply_to`,
+38%), and the binary search by name is 17.5% self. The planner's and oracle's lines run the same search (the oracle
+at d4: `Eval::value` 50%, the troop march 13%). A standard read (`read_specs.py read`, three sets from 36800, the
+three pairs, d0-d3, 1,728 games, 6 threads, a quiet box) takes 276 s at 2.00 ms a decision, greedy on set a (576
+games) 99 s at 2.04 (174: 1,290 s at 9.55 and 531 s at 10.74 before). No prompt is over 4% of a game. **A read's wall time is its slowest
+games:** before 174 one 12-round game took 47 s of a set's 436 s; after, the slowest is 4.9 s. Read
+`games.csv`'s `ms` column for the tail before profiling the mean (`experiments/results/174_speed/tail174.py`).
+Profiles: [174's write-up](../experiments/results/174_speed/README.md) and those of 103, 104, 141. Legal-action
+generation is about 1%.
 
 **What a rule costs the agents.** The strategist resolves every prompt of every legal action it scores, so a
 free power usable at every decision with N picks (pick a card, or stop) costs about N² evaluations a decision:
 105's first Synthesis (discard any number of cards) doubled a Researcher pair's agent time; one card a use cost
-1.3×. Prefer one pick a use.
+1.3×. Prefer one pick a use. A chain of prompts a player answers one by one ("discard which card (k of n)") is
+worse: at `choices` 2 each answer scored every set of three cards of the hand, H³/6 positions, each replaying the
+phase from its snapshot (174: 50-95% of a game at r73; Trade Blockade, Manhunt and Conscription took 5 s a
+decision in long games).
 
 **What keeps it cheap.**
 
@@ -56,32 +60,40 @@ free power usable at every decision with N picks (pick a card, or stop) costs ab
   (162), hands of 16-37 cards and every order of the same cards scored. `Seen` takes them too, a position
   matching but for a discard pile's order (only a reshuffle reads it, on the `cards` stream), and `Seen::chains`
   values a chain's cards as a set before any replay; both only where no step under the stored value moved the
-  `cards` stream, so the same scores. Greedy 1.86× a game, the strategist 1.13× (one thread, quiet box, 8 games,
-  `experiments/results/162_judge_purge/speed162.py`). What is left there is the replay itself (`apply_to`).
+  `cards` stream, so the same scores. Since 174 the agents' `discards` (default 0) values each answer of a
+  discard prompt by the table it leaves, without resolving the next card (*Approximations*); `Cx::choose_key`
+  replays a card answer without building the hand's labels.
+- **Threats in the heuristic:** each active threat's need and share read every seat's standing counters; they are
+  read once a position (`threats::standing_counters`, `need_and_share_with`, the config's `CounterSteps` once an
+  `Eval`). The troop march tests a hex for a target without building its target list (`troops::target_here`).
 
-**What is left, by payoff** (shares of the strategist after 141, `profile_win.py`, 4 games from seed 36650,
-d1):
+**What is left, by payoff** (shares of the strategist after 174, `profile_win.py`, 4 games from seed 36800, d1;
+the oracle at d4 alike):
 
-1. **The heuristic's per-seat terms**, `Eval::value` 54% total: most of it is the seat terms rebuilt on every
-   call (`hand_worth` 11% over hand, draft and packet; `mix_counts`, `hand_tags`, the seat-terms store's
-   key). A hand's worth by its cards, resources and rounds left, kept a decision long as the tableau terms
-   are, is the next exact payoff. Under it, `Worth::per_round` and `CardValue::total` are about 3%.
-2. **Replaying a prompt's phase for each option**: `Rules::apply_to` is 36%, mostly the replay from the
-   snapshot under `search::settled`. Resuming from the resolved part is a redesign of how prompts resolve.
-3. **The binary search by name**, 18% self: `var`, `pile`, `troop_targets_on`, `threats::near::reach`,
-   the node tracks. Keys carrying their first eight bytes gained nothing (103). Next: typed slots for the
-   hottest vars (the tracks, the stage, the buckets), a state-layout change: a shadow kept beside `vars`
-   must stay out of serde and `PartialEq`.
-4. **Copies, allocations and drops**, about 18%: `memcpy` 7%, mimalloc 5.5%, drops 3.4%, clone 2.8%,
-   from `Eval::value`'s per-call vectors (tokens, seats, packets, hand) and the state copies.
-5. **The Rush Build test** in long games: after 141 the slowest r58 game (bp d0, seed 36589) is still 16 ms
-   a decision against 2 typical. A source's test still prices and counts the hand again after each removal.
-6. **Counters** (`Cx::tally` 1.1%, redone on every replay) and **parameters by name** (`World::int` 1.1%).
+1. **The heuristic's per-position reads**, `Eval::value` 49%: its per-call vectors (`from_iter` 10%: tokens,
+   threats, hands, picks), `guide::shelter_saves` 4.9%, the threats' need and share 4.7% (the paid vars by
+   name), `plan::next_rally` 4.3%, the hex tokens read 4.2%, `next_corrupt_n` 2.8%, `near_seats` 2.4%. Most
+   read the board, not a seat's tableau, so the tableau store doesn't reach them: a per-decision store keyed
+   by the hexes' `Arc` (shared until written) would.
+2. **Replaying a prompt's phase for each option**: `Rules::apply_to` 38% (card fights and plays 11%, the
+   troop march 13% of the oracle's d4). Resuming from the resolved part is a redesign of how prompts resolve.
+3. **The binary search by name**, 17.5% self: `var` (the heuristic's), `pile`, `troop_targets_on`,
+   `near_mask`, the node tracks. Keys carrying their first eight bytes gained nothing (103). Next: typed slots
+   for the hottest vars (the tracks, the stage, the buckets, the paid vars), a state-layout change: a shadow
+   kept beside `vars` must stay out of serde and `PartialEq`.
+4. **Copies, allocations and drops**, about 15%: `memcpy` 6.7%, mimalloc 6%, drops 2.2%, clone 1.7%.
+5. **The oracle row's d4 games** (its wall time): lines × the engine policy's cost a decision; items 1-3
+   reach it. Its search dials (`alts`, `budget`, `reseeds`) are the row's spec, Matt's to set.
+6. **Counters** (`Cx::tally` 1.2%, redone on every replay) and **parameters by name** (`World::int` 1.7%).
 
-**Approximations** (screened on fresh seeds, 103): none adopted. An answer to an open prompt looking one
+**Approximations.** Adopted (174, r73): **`discards` 0** (greedy, engine, planner, oracle): a discard prompt's
+answer is valued by the table it leaves, not by the best next card (`choices` 2 had it score every set of three
+cards). On fresh seeds 41701-41844 (432 strategist games a level, paired on base) every tier moved within about
+one SE (strategist d0-d4: −1.4, −0.9, −2.1, −0.5, +0.2; greedy within its SE); the strategist 5.8×, greedy 5.9× a
+decision. `discards` 1 (3.7×) read d0 −2.8 ±1.1: not adopted. 103's: an answer to any open prompt looking one
 prompt on (`engine:answers=1`) is 0.72 × the time and lost 9.0 ±3.8 (bp, d0); keeping a seat's terms by its
-tableau alone (missing the income vars) passed card ranks but lost more than 1 SE in two of six pairs, and its
-exact form above gives the same time. Rows in [103's write-up](../experiments/results/103_agent_profiling/speed.md).
+tableau alone lost more than 1 SE in two of six pairs. Rows in [174's](../experiments/results/174_speed/README.md)
+and [103's](../experiments/results/103_agent_profiling/speed.md) write-ups.
 
 **Profiling.** Every run prints the split (`time: ...` on stderr, and in the report's *Timing*); `cargo
 build --release -p aic-sim --features profile` adds the search's own split (apply, clone, legal, heuristic,
@@ -103,7 +115,7 @@ is 8% faster than release and takes minutes to build.
 suite elsewhere on the box halved a whole table). `python scripts/bench/same_results.py DIR_A DIR_B` compares
 two experiment outputs, timing aside: the check that a speed-up or a late fix changed no game
 (`experiments/same.json`: strategist, engine, planner and `planner:strategy=1` on the three pairs, 192
-games, about 2 min on 6 threads). `same_play.py` is the wider one. After a value-table change, other games swing a
+games; its cost: *The agent tiers*). `same_play.py` is the wider one. After a value-table change, other games swing a
 10-20 game ratio 0.5-2.4x (131): read the code's cost on the same games (`per_decision.py OLD NEW --old-agent greedy
 --agent "greedy:t.chips=1.5"`, the new binary's `t.` arm replaying the old table) and play's from a run's
 `agent_ms / decisions` over hundreds of games. **Cost a decision grows with game length**, not only with options:
@@ -131,22 +143,19 @@ speed:** a dropped action stays out for the whole phase, and at `prune=6` the li
 and the engine's 78, for about 17% more time. The default `deals=4,lead=0` costs 1.57 × (c2) and 1.54 × (c3)
 an action against one guess (`deals=1,lead=0`), and `deals=4,lead=60` about 1.25-1.28 × a game.
 
-**The agent tiers at r40.** One thread, a quiet box, c2 (Builder + Protector), d2, from seed 1000, the best
-of two passes of `python scripts/bench/per_decision.py OLD NEW --agent A` (16 games for the greedy rows, 8
-for the planners). 104's before/after on the same games, and 103's table, are in
-[104's write-up](../experiments/results/104_agent_speed_2/speed.md):
+**The agent tiers at r73 (174).** Agent ms a game, 6 threads, a quiet box; the read rows over set a's 576 (greedy
+96) games, d0-d3, the `same.json` rows over its 48 games a cell (d2), the oracle row over its 48 oracle games
+(d3 and d4, 3 threads); before and after 174 on the same seeds:
 
-| agent | ms / decision | ms / game | rounds | decisions / game |
+| agent | ms / decision before | after | ms / game after | games |
 |---|---|---|---|---|
-| engine (greedy, no strategy) | 0.69 | 305 | 7.12 | 445 |
-| strategist (greedy with strategy) | 0.69 | 274 | 6.50 | 400 |
-| sweep (`planner:deals=1,lead=0`) | 7.4 | 3214 | 7.50 | 436 |
-| planner (4 deals) | 10.4 | 4596 | 7.25 | 440 |
-| planner with strategy rollouts (`planner:strategy=1`) | 12.5 | 5290 | 7.25 | 424 |
+| strategist (`engine:strategy=1`, the judge) | 8.94 | 1.94 | 929 | read set a |
+| greedy (flat terms) | 12.1 | 1.93 | 953 | read set a, 8 seeds |
+| engine (horizon mode) | 2.43 | 1.83 | 1076 | `same.json` |
+| planner (4 deals) | 54.3 | 34.6 | 20769 | `same.json` |
+| planner with strategy rollouts (`planner:strategy=1`) | 55.4 | 38.6 | 23626 | `same.json` |
+| oracle (the row's spec, d3 and d4) | 171 | 139 | 67160 | oracle row |
 
-**Stale for greedy:** at r68 (157) the flat-weight agents (greedy, the engine on greedy's weights) cost 6-70 s a
-game against the strategist's 1.5-3.6 s, 86-91% of it in `score_choose` (prompt answers): discard chains, which
-162 cut (above). At r40 the strategist was
-about 17 × faster a game than the planner, and 12 × faster than `sweep`. Under load, 6
-threads beside another item, the read of `experiments/archive/screen-082.json` (1,152 games: four greedy agents and
-four planners) took 17 min at r34.
+The oracle row's wall time (96 games: 48 oracle, 48 strategist, 3 threads) went 1,379 s to 1,179 s; it is its
+slowest game (before: br d4 seed 36803, 1,068 s), which a change of lines moves either way. `same.json` takes about
+6.5 min on 6 threads (10 min before 174), most of it the planner rows.

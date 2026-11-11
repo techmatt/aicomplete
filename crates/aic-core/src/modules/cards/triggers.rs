@@ -6,7 +6,6 @@
 
 use super::*;
 use crate::content::Event;
-use crate::state::Opt;
 
 /// A seat's triggers, in a fixed order (innate, capstones, buildings by
 /// slot): the card that holds each (none for a board's), its event and ops.
@@ -324,11 +323,11 @@ pub fn reuse(g: &mut GameState, cx: &mut Cx, seat: usize, this: Option<Key>) -> 
 
 /// Seat `s` discards a card from its hand and gains `amount` of `resource`.
 pub fn discard_hand(g: &mut GameState, cx: &mut Cx, seat: usize, resource: Resource, amount: i64) -> Res {
-    let ids: Vec<Key> = g.pile(&hand(seat)).to_vec();
-    let opts: Vec<Opt> = ids.iter().map(|c| opt(*c)).collect();
+    let ids = g.pile(&hand(seat));
     let prompt = || format!("Seat {seat}: {DISCARD_PROMPT}?");
-    if let Some(i) = cx.choose(seat, prompt, opts)? {
-        discard(g, cx, &ids[i], &hand(seat));
+    if let Some(i) = cx.choose_key(seat, prompt, ids)? {
+        let c = ids[i];
+        discard(g, cx, &c, &hand(seat));
         cx.add_resource(g, seat, resource, amount);
         cx.tally(g, "cards.hand_discarded", 1);
     }

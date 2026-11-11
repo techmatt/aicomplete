@@ -50,6 +50,8 @@ pub struct OracleCfg {
     pub prune: usize,
     pub powers: usize,
     pub answers: usize,
+    /// 174: levels a discard prompt is resolved at, at most (99: no cap).
+    pub discards: usize,
     /// Lines played side by side (scoped threads); the choice is the same at any count.
     pub threads: usize,
 }
@@ -145,7 +147,7 @@ impl Kit<'_> {
     fn policy(&self, g: &GameState, salt: u64) -> Box<dyn Agent + Send> {
         let c = self.cfg;
         let seed = (g.seed ^ g.stats.actions as u64).wrapping_add(salt.wrapping_mul(0x9E37_79B9_7F4A_7C15));
-        rollout_policy(self.ev, self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers)
+        rollout_policy(self.ev, self.forced, seed, c.samples, c.choices, c.prune, c.powers, c.answers, c.discards)
     }
 
     /// The line from `state` opening with `first` (or the policy's own move),
@@ -230,7 +232,7 @@ impl Agent for Oracle {
         if self.spent.0 != state.round {
             self.spent = (state.round, 0, false);
         }
-        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices);
+        let how = Scoring::decision(self.cfg.samples, 1, self.cfg.choices).discards(self.cfg.discards);
         let guesses = draw_guesses(rules, &mut self.rng, state, self.cfg.samples);
         let at = state.round + self.cfg.horizon;
         let followed = self.line.take().filter(|l| l.actions.get(l.next).is_some_and(|a| legal.contains(a)));

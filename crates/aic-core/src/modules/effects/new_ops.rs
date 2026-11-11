@@ -466,14 +466,15 @@ fn requisition(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, r: Resource, amount: i
 
 /// Seat `s` discards `n` cards from hand, its choice.
 fn discard(g: &mut GameState, cx: &mut Cx, ctx: &Ctx, s: usize, n: i64) -> Res {
+    let hand_key = cards::hand(s);
     for k in 0..n {
-        let hand = g.pile(&cards::hand(s)).to_vec();
-        let opts = hand.iter().map(|c| opt(*c)).collect();
+        let hand = g.pile(&hand_key);
         let prompt = || format!("{}: {} ({} of {n})?", head(ctx, s), cards::DISCARD_PROMPT, k + 1);
-        let Some(j) = cx.choose(s, prompt, opts)? else {
+        let Some(j) = cx.choose_key(s, prompt, hand)? else {
             break;
         };
-        cards::discard(g, cx, &hand[j], &cards::hand(s));
+        let c = hand[j];
+        cards::discard(g, cx, &c, &hand_key);
     }
     Ok(())
 }

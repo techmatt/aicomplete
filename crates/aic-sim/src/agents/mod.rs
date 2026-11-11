@@ -172,6 +172,12 @@ macro_rules! policy_param_rows {
     };
 }
 
+/// 174: the `discards` parameter's description (greedy, engine, planner, oracle).
+/// 174 (r73): 0, each card of a discard chain valued by the table its own discard leaves. At 2 (as `choices`) a
+/// chain step scored every set of three cards of the hand: 50-95% of a game, 5.8 x a decision; 0 holds every tier's
+/// win % within about one SE on fresh seeds (`experiments/results/174_speed/`). 99: no cap.
+const DISCARDS: &str = "levels a discard prompt (\"discard which card\") is resolved at, at most choices (174; 99: no cap)";
+
 /// The skill tiers, weakest first, with each one's budget parameters and
 /// their defaults.
 pub const LADDER: &[(&str, &[Param])] = &[
@@ -190,6 +196,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
                 2.0,
                 "levels of an action's own choices resolved best-first before scoring",
             ),
+            ("discards", 0.0, DISCARDS),
         ],
     ),
     (
@@ -241,6 +248,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("branch", 0.0, "children kept per sequence (0 = all)"),
             ("choices", 2.0, "levels of an action's own choices resolved before scoring"),
             ("answers", 99.0, "width 0: prompts an answer to an open prompt looks on, at most choices (103)"),
+            ("discards", 0.0, DISCARDS),
             ("samples", 1.0, "width 0: guesses of the hidden cards averaged per decision"),
             (
                 "candidates",
@@ -267,6 +275,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
             ("powers", 6.0, "with prune, powers each seat keeps through a phase of a rollout (069)"),
             ("answers", 99.0, "prompts an answer looks on inside a rollout, at most choices (069)"),
+            ("discards", 0.0, DISCARDS),
             ("deals", 4.0, "guesses of the Alignment deal a line's value is averaged over"),
             ("lead", 0.0, "what an alternative must lead the line to beat by, on the first deal and on the mean"),
         ],
@@ -284,6 +293,7 @@ pub const LADDER: &[(&str, &[Param])] = &[
             ("prune", 12.0, "actions each seat keeps through a phase of a rollout (0: all)"),
             ("powers", 6.0, "with prune, powers each seat keeps through a phase of a rollout"),
             ("answers", 99.0, "prompts an answer looks on inside a rollout, at most choices"),
+            ("discards", 0.0, DISCARDS),
             ("threads", 1.0, "lines played side by side in one decision (the same play at any count)"),
         ],
     ),
@@ -400,7 +410,7 @@ impl AgentSpec {
         if kind == "engine" {
             // What the chosen mode never reads: set, it would only be a label.
             let on = |k: &str| params[k].round() > 0.0;
-            let mut unread = vec!["samples", "answers"];
+            let mut unread = vec!["samples", "answers", "discards"];
             if !on("width") {
                 unread = vec!["depth", "branch", "candidates", "rollouts", "horizon"];
             } else if !on("candidates") {
@@ -508,13 +518,9 @@ impl AgentSpec {
         let rng = agent_rng(game_seed, &self.kind);
         let ev = eval::Eval::with_table(rules, self.weights(), self.table());
         match self.kind.as_str() {
-            "greedy" => Box::new(Greedy::new(
-                ev,
-                rng,
-                self.p("samples"),
-                self.p("depth"),
-                self.p("choices"),
-            )),
+            "greedy" => Box::new(
+                Greedy::new(ev, rng, self.p("samples"), self.p("depth"), self.p("choices")).discards(self.p("discards")),
+            ),
             "beam" => Box::new(Beam::new(
                 ev,
                 rng,
@@ -538,7 +544,9 @@ impl AgentSpec {
                 }),
             )),
             "engine" if self.p("width") == 0 => Box::new(
-                Greedy::new(ev, rng, self.p("samples"), 1, self.p("choices")).answers(self.p("answers")),
+                Greedy::new(ev, rng, self.p("samples"), 1, self.p("choices"))
+                    .answers(self.p("answers"))
+                    .discards(self.p("discards")),
             ),
             "engine" => Box::new(Beam::new(
                 ev,
@@ -567,6 +575,7 @@ impl AgentSpec {
                     prune: self.p("prune"),
                     powers: self.p("powers"),
                     answers: self.p("answers"),
+                    discards: self.p("discards"),
                     deals: self.p("deals"),
                     lead: self.params["lead"],
                 },
@@ -586,6 +595,7 @@ impl AgentSpec {
                     prune: self.p("prune"),
                     powers: self.p("powers"),
                     answers: self.p("answers"),
+                    discards: self.p("discards"),
                     threads: self.p("threads"),
                 },
             )),

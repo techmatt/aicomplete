@@ -47,24 +47,45 @@ pub fn requirement(w: &World, g: &GameState, threat: &str) -> Vec<Vec<CounterIte
     requirement_less(w, threat, g.var(&jam_key(threat)) + standing(w, g, threat))
 }
 
+/// The config's counter steps [`requirement_less`] reads, read once (174: the
+/// heuristic asks them of every threat of every position it values).
+#[derive(Debug, Clone, Copy)]
+pub struct CounterSteps {
+    bonus: i64,
+    all: i64,
+    credits: i64,
+    credit_pct: i64,
+}
+
+impl CounterSteps {
+    pub fn read(w: &World) -> CounterSteps {
+        // 142: the counter step from `counter_bonus_at` (d2), and a second one from `counter_more_at` (d3).
+        let (mut bonus, mut all, mut credits) = (0, 0, 0);
+        if adversary::level(w, w.int("adversary.counter_bonus_at")) {
+            bonus = w.int("adversary.counter_bonus");
+            all = w.int("adversary.counter_bonus_all");
+            credits = w.int("adversary.counter_bonus_credits");
+        }
+        if adversary::level(w, w.int("adversary.counter_more_at")) {
+            all += w.int("adversary.counter_more_all");
+            credits += w.int("adversary.counter_more_credits");
+        }
+        CounterSteps { bonus, all, credits, credit_pct: w.int("adversary.counter_credit_pct") }
+    }
+}
+
 /// [`requirement`] less `cut` of each resource item (floor 0).
 pub(super) fn requirement_less(w: &World, threat: &str, cut: i64) -> Vec<Vec<CounterItem>> {
-    // 142: the counter step from `counter_bonus_at` (d2), and a second one from `counter_more_at` (d3).
-    let (mut bonus, mut all, mut credits) = (0, 0, 0);
-    if adversary::level(w, w.int("adversary.counter_bonus_at")) {
-        bonus = w.int("adversary.counter_bonus");
-        all = w.int("adversary.counter_bonus_all");
-        credits = w.int("adversary.counter_bonus_credits");
-    }
-    if adversary::level(w, w.int("adversary.counter_more_at")) {
-        all += w.int("adversary.counter_more_all");
-        credits += w.int("adversary.counter_more_credits");
-    }
+    requirement_with(w, threat, cut, &CounterSteps::read(w))
+}
+
+/// [`requirement_less`] with the config's steps already read.
+fn requirement_with(w: &World, threat: &str, cut: i64, steps: &CounterSteps) -> Vec<Vec<CounterItem>> {
+    let CounterSteps { bonus, all, credits, credit_pct } = *steps;
     // 138: every resource counter item of a tier-N threat costs `counter_pct[N-1]` percent of its printed amount
     // (rounded up), at every difficulty.
     let d = def(w, threat);
     let pct = w.list("adversary.counter_pct").get(d.tier as usize - 1).copied().unwrap_or(100);
-    let credit_pct = w.int("adversary.counter_credit_pct");
     d.counters
         .iter()
         .enumerate()
@@ -118,8 +139,44 @@ pub fn paid_share(w: &World, g: &GameState, threat: &str) -> f64 {
 /// [`cheapest_resource_need`] and [`paid_share`] from one read of the menu
 /// (the agents' eval asks both of every threat).
 pub fn need_and_share(w: &World, g: &GameState, threat: &str) -> (i64, f64) {
+    need_and_share_of(g, threat, &requirement(w, g, threat))
+}
+
+/// 174: every seat's standing counters (`Op::AutoCounter`: its threat source and amount), for
+/// [`need_and_share_with`]: one walk of the seats' passives a position, not one a threat.
+pub fn standing_counters(w: &World, g: &GameState) -> Vec<(ThreatSource, i64)> {
+    let mut out = Vec::new();
+    for s in 0..g.seats.len() {
+        cards::each_passive(w, g, s, |p| {
+            if let Op::AutoCounter { source, amount } = p {
+                out.push((*source, *amount));
+            }
+        });
+    }
+    out
+}
+
+/// [`need_and_share`] with the seats' standing counters ([`standing_counters`]) and the config's
+/// steps ([`CounterSteps::read`]) already read: the same numbers.
+pub fn need_and_share_with(
+    w: &World,
+    g: &GameState,
+    threat: &str,
+    standing: &[(ThreatSource, i64)],
+    steps: &CounterSteps,
+) -> (i64, f64) {
+    let cut = if scope_of(g, threat).is_none() {
+        0
+    } else {
+        standing.iter().filter(|(source, _)| of_type(w, threat, *source)).map(|(_, n)| n).sum()
+    };
+    let req = requirement_with(w, threat, g.var(&jam_key(threat)) + cut, steps);
+    need_and_share_of(g, threat, &req)
+}
+
+fn need_and_share_of(g: &GameState, threat: &str, req: &[Vec<CounterItem>]) -> (i64, f64) {
     let (mut need, mut share) = (UNPAYABLE, 0.0f64);
-    for o in requirement(w, g, threat).iter().filter(|o| resource_only(o)) {
+    for o in req.iter().filter(|o| resource_only(o)) {
         let needs = resource_needs(o);
         let (mut ask, mut got, mut gap) = (0, 0, 0);
         for (r, n) in needs {
