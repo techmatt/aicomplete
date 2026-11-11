@@ -5,13 +5,66 @@
 //   AIC_URL     the viewer the scripts drive (default http://localhost:5173/)
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, rmSync, statSync, writeFileSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // The browser profiles live under the checkout's git-ignored out/ (175, parked P1): %TEMP% is scanned by
 // Defender, which slowed every launch.
 const profileRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'out', 'cdp');
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+let swept = false;
+
+/** True when a browser still holds `profile`: Edge and Chrome keep `lockfile` open on Windows
+ *  (so deleting it fails) and leave a `SingletonLock` link to `host-pid` elsewhere. */
+function profileInUse(profile) {
+  const lock = join(profile, 'lockfile');
+  if (existsSync(lock)) {
+    try {
+      rmSync(lock, { force: true });
+    } catch {
+      return true;
+    }
+  }
+  try {
+    const pid = Number(readlinkSync(join(profile, 'SingletonLock')).split('-').pop());
+    if (pid) {
+      process.kill(pid, 0);
+      return true;
+    }
+  } catch {
+    // No link, or its process is gone.
+  }
+  return false;
+}
+
+/** Deletes `aic-cdp-*` profiles over a day old, left by runs killed before `close()` (~0.5 GB
+ *  each). Once per process; a profile a live browser holds is left alone, however old. */
+function sweepStaleProfiles() {
+  if (swept) return;
+  swept = true;
+  let names;
+  try {
+    names = readdirSync(profileRoot);
+  } catch {
+    return;
+  }
+  const now = Date.now();
+  for (const name of names) {
+    if (!name.startsWith('aic-cdp-')) continue;
+    const dir = join(profileRoot, name);
+    try {
+      const st = statSync(dir);
+      if (!st.isDirectory() || now - st.mtimeMs < DAY_MS || profileInUse(dir)) continue;
+      rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+    } catch (e) {
+      console.warn(`could not delete the stale browser profile ${dir}: ${e.message}`);
+    }
+  }
+}
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -84,6 +137,7 @@ function browserPath() {
  */
 export async function openPage({ width = 1366, height = 768 } = {}) {
   mkdirSync(profileRoot, { recursive: true });
+  sweepStaleProfiles();
   const profile = mkdtempSync(join(profileRoot, 'aic-cdp-'));
   const browser = spawn(browserPath(), [
     '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`,
